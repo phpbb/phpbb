@@ -5,11 +5,11 @@
 <!-- ENDIF -->
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td colspan="2" align="left" valign="bottom"><a class="maintitle" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><br /><span class="gensmall"> [ <a href="{U_VIEW_MODERATORS}">{L_VIEW_MODERATORS}</a> ]<br /><br /><b>{LOGGED_IN_USER_LIST}</b></span></td>
 		<td align="right" valign="bottom" nowrap="nowrap"><span class="gensmall"><b>{PAGINATION}</b></span></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td width="50" align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></a></td>
 		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
 		<!-- BEGIN navlinks -->
@@ -21,7 +21,7 @@
 </table>
 
 <table class="forumline" width="100%" cellspacing="1" cellpadding="4" border="0">
-	<tr> 
+	<tr>
 		<th class="thCornerL" colspan="3" height="25" align="center" nowrap="nowrap">&nbsp;{L_TOPICS}&nbsp;</th>
 		<th class="thTop" width="100" align="center" nowrap="nowrap">&nbsp;{L_AUTHOR}&nbsp;</th>
 		<th class="thTop" width="50" align="center" nowrap="nowrap">&nbsp;{L_REPLIES}&nbsp;</th>
@@ -30,7 +30,7 @@
 		<th class="thCornerR" align="center" nowrap="nowrap">&nbsp;{L_RATING}&nbsp;</th>
 	</tr>
 	<!-- BEGIN topicrow -->
-	<tr> 
+	<tr>
 		<td class="row1" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<td class="row1" align="center" valign="middle">{topicrow.TOPIC_ICON}</td>
 		<td class="row1" width="100%"><span class="topictitle">{topicrow.NEWEST_POST_IMG}{topicrow.TOPIC_TYPE}<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a></span><span class="gensmall"><br />{topicrow.GOTO_PAGE}</span></td>
@@ -41,17 +41,17 @@
 		<td class="row3Right" align="center" valign="middle"><span class="postdetails">{topicrow.TOPIC_RATING}</span></td>
 	</tr>
 	<!-- BEGINELSE -->
-	<tr> 
+	<tr>
 		<td class="row1" colspan="8" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
 	</tr>
 	<!-- END topicrow -->
-	<tr> 
+	<tr>
 		<form method="post" action="{S_FORUM_ACTION}"><td class="catBottom" colspan="8" height="28" align="center" valign="middle"><span class="genmed">{L_DISPLAY_TOPICS}:&nbsp;{S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input type="submit" class="liteoption" value="{L_GO}" name="sort" /></span></td></form>
 	</tr>
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td align="left" width="50" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 		<td class="nav" width="100%" align="left" valign="middle"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a>
 		<!-- BEGIN navlinks -->
@@ -69,7 +69,7 @@
 </table>
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
-	<tr> 
+	<tr>
 		<td align="right"><!-- INCLUDE jumpbox.html --></td>
 	</tr>
 </table>
@@ -87,7 +87,7 @@
 				<td width="20" align="center">{FOLDER_ANNOUNCE_IMG}</td>
 				<td class="gensmall">{L_ANNOUNCEMENT}</td>
 			</tr>
-			<tr> 
+			<tr>
 				<td width="20" align="center">{FOLDER_HOT_NEW_IMG}</td>
 				<td class="gensmall">{L_NEW_POSTS_HOT}</td>
 				<td>&nbsp;&nbsp;</td>

@@ -28,6 +28,14 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitia
 //error_reporting(E_ALL);
 set_magic_quotes_runtime(0);
 
+// If magic quotes is off, addslashes
+if ( !get_magic_quotes_gpc() )
+{
+	$_GET = slash_input_data($_GET);
+	$_POST = slash_input_data($_POST);
+	$_COOKIE = slash_input_data($_COOKIE);
+}
+
 require($phpbb_root_path . 'config.'.$phpEx);
 
 if ( !defined('PHPBB_INSTALLED') )
@@ -36,12 +44,17 @@ if ( !defined('PHPBB_INSTALLED') )
 	exit;
 }
 
-//set_error_handler('message');
+// Set PHP error handler to ours
+set_error_handler('msg_handler');
 
 // Define some constants/variables
-define('ANONYMOUS', 0);
+$board_config = array();
+$theme = array();
+$lang = array();
 
 // User related
+define('ANONYMOUS', 0);
+
 define('USER_ACTIVATION_NONE', 0);
 define('USER_ACTIVATION_SELF', 1);
 define('USER_ACTIVATION_ADMIN', 2);
@@ -53,10 +66,9 @@ define('USER_AVATAR_REMOTE', 2);
 define('USER_AVATAR_GALLERY', 3);
 
 // ACL
-define('ACL_PREVENT', 1);
-define('ACL_DENY', 2);
-define('ACL_ALLOW', 4);
-define('ACL_PERMIT', 8);
+define('ACL_DENY', 0);
+define('ACL_ALLOW', 1);
+define('ACL_INHERIT', 2);
 
 // Group settings
 define('GROUP_OPEN', 0);
@@ -123,51 +135,20 @@ define('VOTE_DESC_TABLE', $table_prefix.'vote_desc');
 define('VOTE_RESULTS_TABLE', $table_prefix.'vote_results');
 define('VOTE_USERS_TABLE', $table_prefix.'vote_voters');
 
-// If magic quotes is off, addslashes
-if ( !get_magic_quotes_gpc() )
-{
-	$HTTP_GET_VARS = slash_input_data($HTTP_GET_VARS);
-	$HTTP_POST_VARS = slash_input_data($HTTP_POST_VARS);
-	$HTTP_COOKIE_VARS = slash_input_data($HTTP_COOKIE_VARS);
-}
-
-$board_config = array();
-$userdata = array();
-$theme = array();
-$images = array();
-$lang = array();
-
 // Include files
 require($phpbb_root_path . 'includes/template.'.$phpEx);
 require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 require($phpbb_root_path . 'db/' . $dbms . '.'.$phpEx);
+require($phpbb_root_path . 'config_cache.'.$phpEx);
 
 // Instantiate some basic classes
-$session = new session();
+$user = new user();
 $auth = new auth();
 $template = new Template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
-// Obtain users IP
-if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) || !empty($_ENV['HTTP_X_FORWARDED_FOR']))
-{
-	$user_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty($_ENV['REMOTE_ADDR']) ) ? $_ENV['REMOTE_ADDR'] : $REMOTE_ADDR );
-	$x_ip = ( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_ENV['HTTP_X_FORWARDED_FOR'];
-
-	if ( preg_match('/^([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/', $x_ip, $ip_list) )
-	{
-		$private_ip = array('/^0\./', '/^127\.0\.0\.1/', '/^192\.168\..*/', '/^172\.16\..*/', '/^10\..*/', '/^224\..*/', '/^240\..*/');
-		$user_ip = preg_replace($private_ip, $client_ip, $ip_list[1]);
-	}
-}
-else
-{
-	$user_ip = ( !empty($_SERVER['REMOTE_ADDR']) ) ? $_SERVER['REMOTE_ADDR'] : ( ( !empty($_ENV['REMOTE_ADDR']) ) ? $_ENV['REMOTE_ADDR'] : $REMOTE_ADDR );
-}
-
-// Setup forum wide options, if this fails we output a CRITICAL_ERROR since
-// basic forum information is not available
+// Obtain boardwide default config
 $sql = "SELECT *
 	FROM " . CONFIG_TABLE;
 $result = $db->sql_query($sql, false);

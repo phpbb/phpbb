@@ -45,7 +45,7 @@ require('pagestart.' . $phpEx);
 //
 if (!$auth->acl_get('a_general'))
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 //
@@ -173,13 +173,13 @@ if (isset($_POST['import_pak']))
 			}
 		}
 
-		message_die(MESSAGE, $lang['Smilies_import_success']);
+		message_die(MESSAGE, $user->lang['Smilies_import_success']);
 	}
 	else
 	{
 		if (!count($smilies_paks))
 		{
-			$smilies_paks_select = $lang['No_smilies_pak'];
+			$smilies_paks_select = $user->lang['No_smilies_pak'];
 		}
 		else
 		{
@@ -192,33 +192,33 @@ if (isset($_POST['import_pak']))
 			$smilies_paks_select .= '</select>';
 		}
 
-		page_header($lang['Import_smilies']);
+		page_header($user->lang['Import_smilies']);
 ?>
-<h1><?php echo $lang['Import_smilies'] ?></h1>
+<h1><?php echo $user->lang['Import_smilies'] ?></h1>
 
-<p><?php echo $lang['Import_smilies_explain'] ?></p>
+<p><?php echo $user->lang['Import_smilies_explain'] ?></p>
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Smilies_import'] ?></th>
+		<th colspan="2"><?php echo $user->lang['Smilies_import'] ?></th>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Select_package'] ?></td>
+		<td class="row2"><?php echo $user->lang['Select_package'] ?></td>
 		<td class="row2"><?php echo $smilies_paks_select ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Delete_existing_smilies'] ?></td>
+		<td class="row1"><?php echo $user->lang['Delete_existing_smilies'] ?></td>
 		<td class="row1"><input type="checkbox" name="clear_current" /></td>
 	</tr>
 	<tr>
-		<td class="row2" colspan="2" align="center"><?php echo $lang['Smilies_conflicts'] ?><br />
+		<td class="row2" colspan="2" align="center"><?php echo $user->lang['Smilies_conflicts'] ?><br />
 			<table align="center" border="0"><tr><td>
-			&nbsp;<input type="radio" name="replace_existing" value="1" checked="checked" /> <?php echo $lang['Replace_existing_smilies'] ?>&nbsp;<br />
-			&nbsp;<input type="radio" name="replace_existing" value="0" /> <?php echo $lang['Keep_existing_smilies'] ?>&nbsp;</td></tr></table>
+			&nbsp;<input type="radio" name="replace_existing" value="1" checked="checked" /> <?php echo $user->lang['Replace_existing_smilies'] ?>&nbsp;<br />
+			&nbsp;<input type="radio" name="replace_existing" value="0" /> <?php echo $user->lang['Keep_existing_smilies'] ?>&nbsp;</td></tr></table>
 		</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" name="import_pak" type="submit" value="<?php echo $lang['Import_smilies'] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" name="import_pak" type="submit" value="<?php echo $user->lang['Import_smilies'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -250,8 +250,8 @@ elseif (isset($_GET['export_pak']))
 }
 elseif (isset($_POST['export_pak']))
 {
-	page_header($lang['Export_smilies']);
-	message_die(MESSAGE, sprintf($lang['Export_smilies_explain'], '<a href="admin_smilies.' . $phpEx . $SID . '&amp;export_pak=send">', '</a>'));
+	page_header($user->lang['Export_smilies']);
+	message_die(MESSAGE, sprintf($user->lang['Export_smilies_explain'], '<a href="admin_smilies.' . $phpEx . $SID . '&amp;export_pak=send">', '</a>'));
 }
 elseif (isset($_POST['add']))
 {
@@ -265,9 +265,9 @@ elseif (isset($_POST['add']))
 		$filename_list .= '<option value="' . $smile_url . '">' . htmlspecialchars($smile_url) . '</option>';
 	}
 
-	page_header($lang['Add_smile']);
+	page_header($user->lang['Add_smile']);
 ?>
-<h1><?php echo $lang['Add_smile'] ?></h1>
+<h1><?php echo $user->lang['Add_smile'] ?></h1>
 
 <script language="javascript" type="text/javascript" defer="defer">
 <!--
@@ -288,30 +288,30 @@ function update_smile_dimensions()
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=create"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['smile_config'] ?></th>
+		<th colspan="2"><?php echo $user->lang['smile_config'] ?></th>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_code'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_code'] ?></td>
 		<td class="row2"><input type="text" name="smile_code" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Smile_url'] ?></td>
+		<td class="row1"><?php echo $user->lang['Smile_url'] ?></td>
 		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo (!empty($default_image)) ? $phpbb_root_path . $board_config['smilies_path'] . '/' . $default_image : '../images/spacer.gif' ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_width'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_width'] ?></td>
 		<td class="row2"><input type="text" size="4" name="smile_width" value="0" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Smile_height'] ?></td>
+		<td class="row1"><?php echo $user->lang['Smile_height'] ?></td>
 		<td class="row1"><input type="text" size="4" name="smile_height" value="0" /></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_emotion'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_emotion'] ?></td>
 		<td class="row2"><input type="text" name="smile_emotion" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="mainoption" type="submit" value="<?php echo $user->lang['Submit'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -323,7 +323,7 @@ switch ($mode)
 {
 	case 'delete':
 		$db->sql_query('DELETE FROM ' . SMILIES_TABLE . ' WHERE smilies_id = ' . intval($_GET['smile_id']));
-		message_die(MESSAGE, $lang['Smile_deleted']);
+		message_die(MESSAGE, $user->lang['Smile_deleted']);
 	break;
 
 	case 'edit':
@@ -346,10 +346,10 @@ switch ($mode)
 					$selected = ' selected="selected"';
 					$after = FALSE;
 				}
-				$order_list = '<option value="' . ($row['smile_order'] + 1) . '"' . $selected . '>' . sprintf($lang['After_smile'], htmlspecialchars($row['code'])) . '</option>' . $order_list;
+				$order_list = '<option value="' . ($row['smile_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['After_smile'], htmlspecialchars($row['code'])) . '</option>' . $order_list;
 			}
 		}
-		$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $lang['First'] . '</option>' . $order_list;
+		$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['First'] . '</option>' . $order_list;
 
 		$filename_list = '';
 		foreach ($smilies_images as $smile_url)
@@ -367,9 +367,9 @@ switch ($mode)
 			$filename_list .= '<option value="' . $smile_url . '"' . htmlspecialchars($smile_url) . $smile_selected . '>' . $smile_url . '</option>';
 		}
 
-		page_header($lang['Edit_smile']);
+		page_header($user->lang['Edit_smile']);
 ?>
-<h1><?php echo $lang['Edit_smile'] ?></h1>
+<h1><?php echo $user->lang['Edit_smile'] ?></h1>
 
 <script language="javascript" type="text/javascript" defer="defer">
 <!--
@@ -390,38 +390,38 @@ function update_smile_dimensions()
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>&amp;mode=modify"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th class="th" colspan="2"><?php echo $lang['Smile_config'] ?></th>
+		<th class="th" colspan="2"><?php echo $user->lang['Smile_config'] ?></th>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_code'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_code'] ?></td>
 		<td class="row2"><input type="text" name="smile_code" value="<?php echo $smile_data['code'] ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Smile_url'] ?></td>
+		<td class="row1"><?php echo $user->lang['Smile_url'] ?></td>
 		<td class="row1"><select name="smile_url" onChange="update_smile(this.options[selectedIndex].value);"><?php echo $filename_list ?></select> &nbsp; <img name="smile_image" src="<?php echo $phpbb_root_path . $board_config['smilies_path'] . '/' . $smile_edit_img ?>" border="0" alt="" onLoad="update_smile_dimensions()" /> &nbsp;</td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_emotion'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_emotion'] ?></td>
 		<td class="row2"><input type="text" name="smile_emotion" value="<?php echo $smile_data['emoticon'] ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Smile_width'] ?></td>
+		<td class="row1"><?php echo $user->lang['Smile_width'] ?></td>
 		<td class="row1"><input type="text" size="3" name="smile_width" value="<?php echo $smile_data['smile_width'] ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_height'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_height'] ?></td>
 		<td class="row2"><input type="text" size="3" name="smile_height" value="<?php echo $smile_data['smile_height'] ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Display_on_posting'] ?></td>
+		<td class="row1"><?php echo $user->lang['Display_on_posting'] ?></td>
 		<td class="row1"><input type="checkbox" name="smile_on_posting" <?php echo ($smile_data['smile_on_posting']) ? ' checked="checked"' : '' ?>/></td>
 	</tr>
 	<tr>
-		<td class="row2"><?php echo $lang['Smile_order'] ?></td>
+		<td class="row2"><?php echo $user->lang['Smile_order'] ?></td>
 		<td class="row2"><select name="smile_order"><?php echo $order_list ?></select></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="hidden" name="smile_id" value="<?php echo $smile_data['smilies_id'] ?>" /><input class="mainoption" type="submit" value="<?php echo $lang['Submit'] ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input type="hidden" name="smile_id" value="<?php echo $smile_data['smilies_id'] ?>" /><input class="mainoption" type="submit" value="<?php echo $user->lang['Submit'] ?>" /></td>
 	</tr>
 </table></form>
 <?php
@@ -491,12 +491,12 @@ function update_smile_dimensions()
 		if ($mode == 'modify')
 		{
 			$db->sql_query_array('UPDATE ' . SMILIES_TABLE . " SET WHERE smilies_id = $smile_id", $sql);
-			message_die(MESSAGE, $lang['Smile_edited']);
+			message_die(MESSAGE, $user->lang['Smile_edited']);
 		}
 		else
 		{
 			$db->sql_query_array('INSERT INTO ' . SMILIES_TABLE, $sql);
-			message_die(MESSAGE, $lang['Smile_added']);
+			message_die(MESSAGE, $user->lang['Smile_added']);
 		}
 	break;
 
@@ -533,20 +533,20 @@ function update_smile_dimensions()
 				FROM ' . SMILIES_TABLE . '
 				ORDER BY smile_on_posting DESC, smile_order ASC';
 		$result = $db->sql_query($sql);
-		page_header($lang['Emoticons']);
+		page_header($user->lang['Emoticons']);
 ?>
 
-<h1><?php echo $lang['Emoticons']; ?></h1>
+<h1><?php echo $user->lang['Emoticons']; ?></h1>
 
-<p><?php echo $lang['Emoticons_explain']; ?></p>
+<p><?php echo $user->lang['Emoticons_explain']; ?></p>
 
 <form method="post" action="admin_smilies.<?php echo $phpEx . $SID ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th><?php echo $lang['Code']; ?></th>
-		<th><?php echo $lang['Smile']; ?></th>
-		<th><?php echo $lang['Emotion']; ?></th>
-		<th colspan="2"><?php echo $lang['Action']; ?></th>
-		<th colspan="2"><?php echo $lang['Reorder']; ?></th>
+		<th><?php echo $user->lang['Code']; ?></th>
+		<th><?php echo $user->lang['Smile']; ?></th>
+		<th><?php echo $user->lang['Emotion']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Action']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Reorder']; ?></th>
 	</tr>
 <?php
 
@@ -558,7 +558,7 @@ function update_smile_dimensions()
 				$spacer = TRUE;
 ?>
 	<tr>
-		<td class="row3" colspan="7" align="center"><?php echo $lang['Smilies_not_displayed'] ?></td>
+		<td class="row3" colspan="7" align="center"><?php echo $user->lang['Smilies_not_displayed'] ?></td>
 	</tr>
 <?php
 			}
@@ -568,10 +568,10 @@ function update_smile_dimensions()
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
 		<td class="<?php echo $row_class; ?>" align="center"><img src="<?php echo './../' . $board_config['smilies_path'] . '/' . $row['smile_url']; ?>" width="<?php echo $row['smile_width']; ?>" height="<?php echo $row['smile_height']; ?>" alt="<?php echo htmlspecialchars($row['code']); ?>" /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emoticon']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=edit&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $lang['Edit']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=delete&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $lang['Delete']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_up&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $lang['Up']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_down&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $lang['Down']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=edit&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $user->lang['Edit']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=delete&amp;smile_id=" . $row['smilies_id']; ?>"><?php echo $user->lang['Delete']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_up&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $user->lang['Up']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_smilies.$phpEx$SID&amp;mode=move_down&amp;smile_order=" . $row['smile_order']; ?>"><?php echo $user->lang['Down']; ?></a></td>
 	</tr>
 <?php
 
@@ -579,7 +579,7 @@ function update_smile_dimensions()
 
 ?>
 	<tr>
-		<td class="cat" colspan="7" align="center"><input type="submit" name="add" value="<?php echo $lang['Add_smile']; ?>" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pak" value="<?php echo $lang['Import_smilies']; ?>">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pak" value="<?php echo $lang['Export_smilies']; ?>"></td>
+		<td class="cat" colspan="7" align="center"><input type="submit" name="add" value="<?php echo $user->lang['Add_smile']; ?>" class="mainoption" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="import_pak" value="<?php echo $user->lang['Import_smilies']; ?>">&nbsp;&nbsp;<input class="liteoption" type="submit" name="export_pak" value="<?php echo $user->lang['Export_smilies']; ?>"></td>
 	</tr>
 </table></form>
 

@@ -45,7 +45,7 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 //
 if (!$auth->acl_get('a_forum'))
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 //
@@ -202,7 +202,7 @@ switch ($mode)
 				VALUES ($forum_id, '$forum_name', '$forum_desc', $parent_id, $left_id, $right_id, $forum_status, $forum_style, $post_count_inc, $prune_enable, $prune_days, $prune_freq)";
 		$db->sql_query($sql);
 
-		$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
+		$message = $user->lang['Forums_updated'] . "<br /><br />" . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
 		message_die(MESSAGE, $message);
 
 	break;
@@ -252,7 +252,7 @@ switch ($mode)
 
 		$db->sql_query_array('UPDATE ' . FORUMS_TABLE . " SET WHERE forum_id = $forum_id", $sql);
 
-		$message = $lang['Forums_updated'] . "<br /><br />" . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
+		$message = $user->lang['Forums_updated'] . "<br /><br />" . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $parent_id . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="index.' . $phpEx . $SID . '?pane=right' . '">', '</a>');
 		message_die(MESSAGE, $message);
 
 	break;
@@ -280,7 +280,7 @@ switch ($mode)
 		{
 			if (empty($_POST['posts_to_id']))
 			{
-				$message = $lang['No_destination_forum'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
+				$message = $user->lang['No_destination_forum'] . '<br /><br />' . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
 
 				message_die(ERROR, $message);
 			}
@@ -305,7 +305,7 @@ switch ($mode)
 		{
 			if (empty($_POST['subforums_to_id']))
 			{
-				$message = $lang['No_destination_forum'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
+				$message = $user->lang['No_destination_forum'] . '<br /><br />' . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&mode=delete&f=' . $forum_id. '">', '</a>');
 
 				message_die(ERROR, $message);
 			}
@@ -340,7 +340,7 @@ switch ($mode)
 		$db->sql_query($sql);
 
 		$return_id = (!empty($_POST['subforums_to_id'])) ? $_POST['subforums_to_id'] : $parent_id;
-		$message = $lang['Forum_deleted'] . '<br /><br />' . sprintf($lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $return_id. '">', '</a>');
+		$message = $user->lang['Forum_deleted'] . '<br /><br />' . sprintf($user->lang['Click_return_forumadmin'], '<a href="admin_forums.' . $phpEx . $SID . '&parent_id=' . $return_id. '">', '</a>');
 
 		message_die(MESSAGE, $message);
 	break;
@@ -371,9 +371,9 @@ switch ($mode)
 
 			$parents_list = make_forums_list('all', $parent_id, $subforums_id);
 
-			$l_title = ($forum_status != ITEM_CATEGORY) ? $lang['Edit_forum'] : $lang['Edit_category'];
+			$l_title = ($forum_status != ITEM_CATEGORY) ? $user->lang['Edit_forum'] : $user->lang['Edit_category'];
 			$newmode = 'modify';
-			$buttonvalue = $lang['Update'];
+			$buttonvalue = $user->lang['Update'];
 			$prune_enabled = ($prune_enable) ? 'checked="checked" ' : '';
 
 			if ($forum_status != ITEM_CATEGORY)
@@ -390,9 +390,9 @@ switch ($mode)
 			}
 			$parents_list = make_forums_list('all', $parent_id);
 
-			$l_title = $lang['Create_forum'];
+			$l_title = $user->lang['Create_forum'];
 			$newmode = 'create';
-			$buttonvalue = $lang['Create_forum'];
+			$buttonvalue = $user->lang['Create_forum'];
 
 			$forum_desc = '';
 			$forum_style = '';
@@ -414,27 +414,27 @@ switch ($mode)
 		$forum_checked = ($forum_status != ITEM_CATEGORY) ? 'checked="checked" ' : '';
 		$category_checked = ($forum_status == ITEM_CATEGORY) ? 'checked="checked" ' : '';
 
-		$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . $forumunlocked . '>' . $lang['Unlocked'] . "</option>\n";
-		$statuslist .= '<option value="' . ITEM_LOCKED . '"' . $forumlocked . '>' . $lang['Locked'] . "</option>\n";
+		$statuslist = '<option value="' . ITEM_UNLOCKED . '"' . $forumunlocked . '>' . $user->lang['Unlocked'] . "</option>\n";
+		$statuslist .= '<option value="' . ITEM_LOCKED . '"' . $forumlocked . '>' . $user->lang['Locked'] . "</option>\n";
 
 		page_header($l_title);
 
 ?>
 <h1><?php echo $l_title ?></h1>
 
-<p><?php echo $lang['Forum_edit_delete_explain'] ?></p>
+<p><?php echo $user->lang['Forum_edit_delete_explain'] ?></p>
 
 <form action="<?php echo "admin_forums.$phpEx$SID" ?>" method="post">
 <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
 <tr>
-  <th class="thHead" colspan="2"><?php echo $lang['General_settings'] ?></th>
+  <th class="thHead" colspan="2"><?php echo $user->lang['General_settings'] ?></th>
 </tr>
 <tr>
-  <td class="row1"><?php echo ($forum_status != ITEM_CATEGORY) ? $lang['Forum_name'] : $lang['Category_name'] ?></td>
+  <td class="row1"><?php echo ($forum_status != ITEM_CATEGORY) ? $user->lang['Forum_name'] : $user->lang['Category_name'] ?></td>
   <td class="row2"><input type="text" size="25" name="forum_name" value="<?php echo $forum_name ?>" class="post" /></td>
 </tr>
 <tr>
-  <td class="row1"><?php echo $lang['Forum_desc'] ?></td>
+  <td class="row1"><?php echo $user->lang['Forum_desc'] ?></td>
   <td class="row2"><textarea rows="5" cols="45" wrap="virtual" name="forum_desc" class="post"><?php echo $forum_desc ?></textarea></td>
 </tr>
 <?php
@@ -443,22 +443,22 @@ switch ($mode)
 	{
 ?>
 <tr>
-  <td class="row1"><?php echo $lang['Forum_type'] ?></td>
-  <td class="row2"><input type="radio" name="is_category" value="0" <?php echo $forum_checked ?>/><?php echo $lang['Forum'] ?> &nbsp; <input type="radio" name="is_category" value="1" <?php echo $category_checked ?>/><?php echo $lang['Category'] ?></td>
+  <td class="row1"><?php echo $user->lang['Forum_type'] ?></td>
+  <td class="row2"><input type="radio" name="is_category" value="0" <?php echo $forum_checked ?>/><?php echo $user->lang['Forum'] ?> &nbsp; <input type="radio" name="is_category" value="1" <?php echo $category_checked ?>/><?php echo $user->lang['Category'] ?></td>
 </tr>
 <?php
 
 	}
 ?>
 <tr>
-  <td class="row1"><?php echo $lang['Parent'] ?></td>
+  <td class="row1"><?php echo $user->lang['Parent'] ?></td>
   <td class="row2"><select name="parent_id">
-  <option value="0"><?php echo $lang['No_parent'] ?></option>
+  <option value="0"><?php echo $user->lang['No_parent'] ?></option>
   <?php echo $parents_list ?></select></td>
 </tr>
 <tr>
-  <td class="row1"><?php echo $lang['Style'] ?></td>
-  <td class="row2"><select name="forum_style"><option value="0"><?php echo $lang['Default_style'] ?></option><?php echo $styles_list ?></select></td>
+  <td class="row1"><?php echo $user->lang['Style'] ?></td>
+  <td class="row2"><select name="forum_style"><option value="0"><?php echo $user->lang['Default_style'] ?></option><?php echo $styles_list ?></select></td>
 </tr>
 <?php
 
@@ -466,16 +466,16 @@ switch ($mode)
 	{
 ?>
 <tr>
-  <th class="thHead" colspan="2"><?php echo $lang['Forum_settings'] ?></th>
+  <th class="thHead" colspan="2"><?php echo $user->lang['Forum_settings'] ?></th>
 </tr>
 <tr>
-  <td class="row1"><?php echo $lang['Forum_status'] ?></td>
+  <td class="row1"><?php echo $user->lang['Forum_status'] ?></td>
   <td class="row2"><select name="forum_status"><?php echo $statuslist ?></select></td>
 </tr>
 <tr>
-  <td class="row1"><?php echo $lang['Options'] ?></td>
+  <td class="row1"><?php echo $user->lang['Options'] ?></td>
   <td class="row2">
-	<input type="checkbox" name="disable_post_count" <?php echo ((!empty($post_count_inc)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Disable_post_count'] ?>
+	<input type="checkbox" name="disable_post_count" <?php echo ((!empty($post_count_inc)) ? '' : 'checked="checked" ') ?>/><?php echo $user->lang['Disable_post_count'] ?>
 <?php
 		if ($mode == 'edit' && $parent_id > 0)
 		{
@@ -488,7 +488,7 @@ switch ($mode)
 				{
 ?>
 					<br />
-					<input type="checkbox" name="display_on_index" <?php echo ((!empty($display_on_index)) ? '' : 'checked="checked" ') ?>/><?php echo $lang['Display_on_index'] ?>
+					<input type="checkbox" name="display_on_index" <?php echo ((!empty($display_on_index)) ? '' : 'checked="checked" ') ?>/><?php echo $user->lang['Display_on_index'] ?>
 <?php
 				}
 			}
@@ -500,29 +500,29 @@ switch ($mode)
 		{
 ?>
 <tr>
-  <td class="row1"><?php echo $lang['Forum_type'] ?></td>
-  <td class="row2"><input type="checkbox" name="set_category" /><?php echo $lang['Set_as_category'] ?><br />
-  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="delete" checked="checked" /><?php echo $lang['Delete_all_posts'] ?><br />
-  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="move" /><?php echo $lang['Move_posts_to'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select>
+  <td class="row1"><?php echo $user->lang['Forum_type'] ?></td>
+  <td class="row2"><input type="checkbox" name="set_category" /><?php echo $user->lang['Set_as_category'] ?><br />
+  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="delete" checked="checked" /><?php echo $user->lang['Delete_all_posts'] ?><br />
+  &nbsp; &nbsp; &nbsp;<input type="radio" name="action" value="move" /><?php echo $user->lang['Move_posts_to'] ?> <select name="to_forum_id"><?php echo $forums_list ?></select>
   </td>
 </tr>
 <?php
 		}
 ?>
 <tr>
-  <td class="row1"><?php echo $lang['Forum_pruning'] ?></td>
+  <td class="row1"><?php echo $user->lang['Forum_pruning'] ?></td>
   <td class="row2"><table cellspacing="0" cellpadding="1" border="0">
 	  <tr>
-		<td align="right" valign="middle"><?php echo $lang['Enabled'] ?></td>
+		<td align="right" valign="middle"><?php echo $user->lang['Enabled'] ?></td>
 		<td align="left" valign="middle"><input type="checkbox" name="prune_enable" value="1" <?php echo $prune_enabled ?>/></td>
 	  </tr>
 	  <tr>
-		<td align="right" valign="middle"><?php echo $lang['prune_days'] ?></td>
-		<td align="left" valign="middle">&nbsp;<input type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" class="post" />&nbsp;<?php echo $lang['Days'] ?></td>
+		<td align="right" valign="middle"><?php echo $user->lang['prune_days'] ?></td>
+		<td align="left" valign="middle">&nbsp;<input type="text" name="prune_days" value="<?php echo $prune_days ?>" size="5" class="post" />&nbsp;<?php echo $user->lang['Days'] ?></td>
 	  </tr>
 	  <tr>
-		<td align="right" valign="middle"><?php echo $lang['prune_freq'] ?></td>
-		<td align="left" valign="middle">&nbsp;<input type="text" name="prune_freq" value="<?php echo $prune_freq ?>" size="5" class="post" />&nbsp;<?php echo $lang['Days'] ?></td>
+		<td align="right" valign="middle"><?php echo $user->lang['prune_freq'] ?></td>
+		<td align="left" valign="middle">&nbsp;<input type="text" name="prune_freq" value="<?php echo $prune_freq ?>" size="5" class="post" />&nbsp;<?php echo $user->lang['Days'] ?></td>
 	  </tr>
   </table></td>
 </tr>
@@ -542,7 +542,7 @@ switch ($mode)
 	break;
 
 	case 'delete':
-		page_header($lang['Forum_delete']);
+		page_header($user->lang['Forum_delete']);
 		extract(get_forum_info($_GET['f']));
 
 		$subforums_id = array();
@@ -556,17 +556,17 @@ switch ($mode)
 		$move_posts_list = make_forums_list('forums', $parent_id, $subforums_id);
 
 ?>
-<h1><?php echo $lang['Forum_delete'] ?></h1>
+<h1><?php echo $user->lang['Forum_delete'] ?></h1>
 
-<p><?php echo $lang['Forum_delete_explain'] ?></p>
+<p><?php echo $user->lang['Forum_delete_explain'] ?></p>
 
 <form action="admin_forums.<?php echo $phpEx . $SID ?>&mode=remove&f=<?php echo $forum_id ?>" method="post">
   <table cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
 	<tr>
-	  <th colspan="2" class="thHead"><?php echo $lang['Forum_delete'] ?></th>
+	  <th colspan="2" class="thHead"><?php echo $user->lang['Forum_delete'] ?></th>
 	  </tr>
 	<tr>
-	  <td class="row1"><?php echo ($forum_status == ITEM_CATEGORY) ? $lang['Category_name'] : $lang['Forum_name'] ?></td>
+	  <td class="row1"><?php echo ($forum_status == ITEM_CATEGORY) ? $user->lang['Category_name'] : $user->lang['Forum_name'] ?></td>
 	  <td class="row1"><span class="row1"><?php echo $forum_name ?></span></td>
 	</tr>
 <?php
@@ -574,12 +574,12 @@ switch ($mode)
 	{
 ?>
 	<tr>
-	  <td class="row1"><?php echo $lang['Action'] ?></td>
-	  <td class="row1"><input type="radio" name="action_posts" value="delete" checked="checked" /> <?php echo $lang['Delete_all_posts'] ?></td>
+	  <td class="row1"><?php echo $user->lang['Action'] ?></td>
+	  <td class="row1"><input type="radio" name="action_posts" value="delete" checked="checked" /> <?php echo $user->lang['Delete_all_posts'] ?></td>
 	</tr>
 	<tr>
 	  <td class="row1"></td>
-	  <td class="row1"><input type="radio" name="action_posts" value="move" /> <?php echo $lang['Move_posts_to'] ?> <select name="posts_to_id" ?><option value="0"></option><?php echo $move_posts_list ?></select></td>
+	  <td class="row1"><input type="radio" name="action_posts" value="move" /> <?php echo $user->lang['Move_posts_to'] ?> <select name="posts_to_id" ?><option value="0"></option><?php echo $move_posts_list ?></select></td>
 	</tr>
 <?php
 	}
@@ -587,18 +587,18 @@ switch ($mode)
 	{
 ?>
 	<tr>
-	  <td class="row1"><?php echo $lang['Action'] ?></td>
-	  <td class="row1"><input type="radio" name="action_subforums" value="delete" checked="checked" /> <?php echo $lang['Delete_subforums'] ?></td>
+	  <td class="row1"><?php echo $user->lang['Action'] ?></td>
+	  <td class="row1"><input type="radio" name="action_subforums" value="delete" checked="checked" /> <?php echo $user->lang['Delete_subforums'] ?></td>
 	</tr>
 	<tr>
 	  <td class="row1"></td>
-	  <td class="row1"><input type="radio" name="action_subforums" value="move" /> <?php echo $lang['Move_subforums_to'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
+	  <td class="row1"><input type="radio" name="action_subforums" value="move" /> <?php echo $user->lang['Move_subforums_to'] ?> <select name="subforums_to_id" ?><option value="0"></option><?php echo $forums_list ?></select></td>
 	</tr>
 <?php
 	}
 ?>
 	<tr>
-	  <td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $lang['Move_and_Delete'] ?>" class="mainoption" /></td>
+	  <td class="cat" colspan="2" align="center"><input type="submit" name="submit" value="<?php echo $user->lang['Move_and_Delete'] ?>" class="mainoption" /></td>
 	</tr>
   </table>
 </form>
@@ -615,7 +615,7 @@ if (empty($show_index))
 	page_footer();
 }
 
-page_header($lang['Manage']);
+page_header($user->lang['Manage']);
 
 $parent_id = (!empty($_GET['parent_id'])) ? $_GET['parent_id'] : 0;
 
@@ -648,7 +648,7 @@ else
 <?php echo $navigation ?><br />
 <form method="post" action="<?php echo "admin_forums.$phpEx$SID&mode=add" ?>"><table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline" align="center">
 	<tr>
-		<th class="thHead" colspan="9"><?php echo $lang['Forum_admin'] ?></th>
+		<th class="thHead" colspan="9"><?php echo $user->lang['Forum_admin'] ?></th>
 	</tr>
 <?php
 
@@ -690,9 +690,9 @@ while ($row = $db->sql_fetchrow($result))
 ?>
 	<tr>
 		<td class="cat" colspan="5"><span class="cattitle"><b><?php echo $forum_title ?></b></span></td>
-		<td class="cat" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $lang['Edit'] ?></a></span></td>
-		<td class="cat" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=delete"><?php echo $lang['Delete'] ?></a></span></td>
-		<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=move_up&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Move_up'] ?></a> <a href="admin_forums.<?php echo $url ?>&mode=move_down&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Move_down'] ?></a></span></td>
+		<td class="cat" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $user->lang['Edit'] ?></a></span></td>
+		<td class="cat" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=delete"><?php echo $user->lang['Delete'] ?></a></span></td>
+		<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=move_up&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Move_up'] ?></a> <a href="admin_forums.<?php echo $url ?>&mode=move_down&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Move_down'] ?></a></span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen">&nbsp</span></td>
 	</tr>
 
@@ -732,17 +732,17 @@ while ($row = $db->sql_fetchrow($result))
 		<td width="1" class="row3"></td>
 		<td width="40%" class="row2"<?php echo $colspan ?>><span class="gen"><?php echo $forum_title ?></span><br /><span class="gensmall"><?php echo $forum_desc ?></span></td>
 		<?php echo $forum_stats ?>
-		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $lang['Edit'] ?></a></span></td>
-		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=delete"><?php echo $lang['Delete'] ?></a></span></td>
-		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=move_up&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Move_up'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&mode=move_down&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Move_down'] ?></a></span></td>
-		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=resync&parent_id=<?php echo $parent_id ?>"><?php echo ($sub_row['forum_status'] != ITEM_CATEGORY) ? $lang['Resync'] : '&nbsp;' ?></a></span></td>
+		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $user->lang['Edit'] ?></a></span></td>
+		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=delete"><?php echo $user->lang['Delete'] ?></a></span></td>
+		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=move_up&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Move_up'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&mode=move_down&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Move_down'] ?></a></span></td>
+		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=resync&parent_id=<?php echo $parent_id ?>"><?php echo ($sub_row['forum_status'] != ITEM_CATEGORY) ? $user->lang['Resync'] : '&nbsp;' ?></a></span></td>
 	</tr>
 <?php
 		}
 ?>
 	<tr>
 		<td width="1" class="row3"></td>
-		<td width="100%" colspan="8" class="row2"><input type="text" name="forum_name[<? echo $row['forum_id'] ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $row['forum_id'] ?>]" value="<?php echo $lang['Create_forum'] ?>" /></td>
+		<td width="100%" colspan="8" class="row2"><input type="text" name="forum_name[<? echo $row['forum_id'] ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $row['forum_id'] ?>]" value="<?php echo $user->lang['Create_forum'] ?>" /></td>
 	</tr>
 <?php
 	}
@@ -752,10 +752,10 @@ while ($row = $db->sql_fetchrow($result))
 	<tr>
 		<td width="40%" class="row2"<?php echo $colspan ?>><span class="gen"><?php echo $forum_title ?></span><br /><span class="gensmall"><?php echo $forum_desc ?></span></td>
 		<?php echo $forum_stats ?>
-		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $lang['Edit'] ?></a></span></td>
-		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=delete"><?php echo $lang['Delete'] ?></a></span></td>
-		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=move_up&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Move_up'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&mode=move_down&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Move_down'] ?></a></span></td>
-		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=resync&parent_id=<?php echo $parent_id ?>"><?php echo $lang['Resync'] ?></a></span></td>
+		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=edit"><?php echo $user->lang['Edit'] ?></a></span></td>
+		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=delete"><?php echo $user->lang['Delete'] ?></a></span></td>
+		<td class="row2" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=move_up&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Move_up'] ?></a> <br /> <a href="admin_forums.<?php echo $url ?>&mode=move_down&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Move_down'] ?></a></span></td>
+		<td class="row1" align="center" valign="middle"><span class="gen"><a href="admin_forums.<?php echo $url ?>&mode=resync&parent_id=<?php echo $parent_id ?>"><?php echo $user->lang['Resync'] ?></a></span></td>
 	</tr>
 <?php
 	}
@@ -763,7 +763,7 @@ while ($row = $db->sql_fetchrow($result))
 
 ?>
 	<tr>
-		<td width="100%" colspan="9" class="cat"><input type="text" name="forum_name[<? echo $parent_id ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $parent_id ?>]" value="<?php echo $lang['Create_forum'] ?>" /></td>
+		<td width="100%" colspan="9" class="cat"><input type="text" name="forum_name[<? echo $parent_id ?>]" /> <input type="submit" class="liteoption"  name="parent_id[<? echo $parent_id ?>]" value="<?php echo $user->lang['Create_forum'] ?>" /></td>
 	</tr>
 </table></form>
 

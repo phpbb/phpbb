@@ -52,7 +52,7 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 //
 if ( !$auth->acl_get('a_general') )
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 //
@@ -85,7 +85,7 @@ switch( $mode )
 					break;
 			}
 
-			message_die(MESSAGE, $lang['Backups_not_supported']);
+			message_die(MESSAGE, $user->lang['Backups_not_supported']);
 			break;
 		}
 
@@ -97,32 +97,32 @@ switch( $mode )
 
 		if ( !isset($_POST['backupstart']) && !isset($_GET['backupstart']) )
 		{
-			page_header($lang['DB_Backup']);
+			page_header($user->lang['DB_Backup']);
 
 ?>
 
-<h1><?php echo $lang['DB_Backup']; ?></h1>
+<h1><?php echo $user->lang['DB_Backup']; ?></h1>
 
-<p><?php echo $lang['Backup_explain']; ?></p>
+<p><?php echo $user->lang['Backup_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_database.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Backup_options']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Backup_options']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Backup_type']; ?>: </td>
-		<td class="row2"><input type="radio" name="type" value="full"  checked="checked" /> <?php echo $lang['Full_backup']; ?>&nbsp;&nbsp;<input type="radio" name="type" value="structure" /> <?php echo $lang['Structure_only']; ?>&nbsp;&nbsp;<input type="radio" name="type" value="data" /> <?php echo $lang['Data_only']; ?></td>
+		<td class="row1"><?php echo $user->lang['Backup_type']; ?>: </td>
+		<td class="row2"><input type="radio" name="type" value="full"  checked="checked" /> <?php echo $user->lang['Full_backup']; ?>&nbsp;&nbsp;<input type="radio" name="type" value="structure" /> <?php echo $user->lang['Structure_only']; ?>&nbsp;&nbsp;<input type="radio" name="type" value="data" /> <?php echo $user->lang['Data_only']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Include_search_index']; ?>: <br /><span class="gensmall"><?php echo $lang['Include_search_index_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="search" value="0" /> <?php echo $lang['No']; ?>&nbsp;&nbsp;<input type="radio" name="search" value="1" checked="checked" /> <?php echo $lang['Yes']; ?></td>
+		<td class="row1"><?php echo $user->lang['Include_search_index']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Include_search_index_explain']; ?></span></td>
+		<td class="row2"><input type="radio" name="search" value="0" /> <?php echo $user->lang['No']; ?>&nbsp;&nbsp;<input type="radio" name="search" value="1" checked="checked" /> <?php echo $user->lang['Yes']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Additional_tables']; ?>: <br /><span class="gensmall"><?php echo $lang['Additional_tables_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['Additional_tables']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Additional_tables_explain']; ?></span></td>
 		<td class="row2"><input type="text" name="tables" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Store_local']; ?>: <br /><span class="gensmall"><?php echo $lang['Store_local_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['Store_local']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Store_local_explain']; ?></span></td>
 		<td class="row2"><input type="text" name="store" size="40" /></td>
 	</tr>
 <?php
@@ -132,8 +132,8 @@ switch( $mode )
 
 ?>
 	<tr>
-		<td class="row1"><?php echo $lang['Compress_file']; ?>: </td>
-		<td class="row2"><input type="radio" name="compress" value="none" checked="checked" /> <?php echo $lang['None']; ?><?php
+		<td class="row1"><?php echo $user->lang['Compress_file']; ?>: </td>
+		<td class="row2"><input type="radio" name="compress" value="none" checked="checked" /> <?php echo $user->lang['None']; ?><?php
 
 				if ( extension_loaded('zlib') )
 				{
@@ -158,7 +158,7 @@ switch( $mode )
 
 ?>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="backupstart" value="<?php echo $lang['Start_backup']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="backupstart" value="<?php echo $user->lang['Start_backup']; ?>" class="mainoption" /></td>
 	</tr>
 </table></form>
 
@@ -170,10 +170,10 @@ switch( $mode )
 		{
 			$meta = "<meta http-equiv=\"refresh\" content=\"0;url=admin_database.$phpEx?mode=backup&amp;type=$backup_type&amp;tables=" . quotemeta($additional_tables) . "&amp;search=$search&amp;store=" . quotemeta($store_path) . "&amp;compress=$compress&amp;backupstart=1&amp;startdownload=1\">";
 
-			$message = ( empty($store_path) ) ? $lang['Backup_download'] : $lang['Backup_writing'];
+			$message = ( empty($store_path) ) ? $user->lang['Backup_download'] : $user->lang['Backup_writing'];
 
-			page_header($lang['DB_Backup'], $meta);
-			page_message($lang['DB_Backup'], $message);
+			page_header($user->lang['DB_Backup'], $meta);
+			page_message($user->lang['DB_Backup'], $message);
 			page_footer();
 		}
 
@@ -301,7 +301,7 @@ switch( $mode )
 			fclose($fp);
 			unset($contents);
 
-			message_die(MESSAGE, $lang['Backup_success']);
+			message_die(MESSAGE, $user->lang['Backup_success']);
 		}
 
 		exit;
@@ -328,19 +328,19 @@ switch( $mode )
 
 			if ( $file_tmpname == '' || $filename == '' || !file_exists($file_tmpname) )
 			{
-				message_die(MESSAGE, $lang['Restore_Error_no_file']);
+				message_die(MESSAGE, $user->lang['Restore_Error_no_file']);
 			}
 
 			$ext = substr($filename, strrpos($filename, '.') + 1);
 
 			if ( !preg_match('/^(sql|gz|bz2)$/', $ext) )
 			{
-				message_die(MESSAGE, $lang['Restore_Error_filename']);
+				message_die(MESSAGE, $user->lang['Restore_Error_filename']);
 			}
 
 			if ( ( !extension_loaded('zlib') && $ext == 'gz' ) || ( !extension_loaded('zip') && $ext == 'zip' ) || ( $ext == 'bz2' && !extension_loaded('bz2') ) )
 			{
-				message_die(MESSAGE, $lang['Compress_unsupported']);
+				message_die(MESSAGE, $user->lang['Compress_unsupported']);
 			}
 
 			$sql_query = '';
@@ -383,27 +383,27 @@ switch( $mode )
 
 			add_admin_log('log_db_restore');
 
-			message_die(MESSAGE, $lang['Restore_success']);
+			message_die(MESSAGE, $user->lang['Restore_success']);
 		}
 
 		//
 		// Restore page
 		//
-		page_header($lang['DB_Restore']);
+		page_header($user->lang['DB_Restore']);
 
 ?>
 
-<h1><?php echo $lang['DB_Restore']; ?></h1>
+<h1><?php echo $user->lang['DB_Restore']; ?></h1>
 
-<p><?php echo $lang['Restore_explain']; ?></p>
+<p><?php echo $user->lang['Restore_explain']; ?></p>
 
 <form enctype="multipart/form-data" method="post" action="<?php echo "admin_database.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
-		<th colspan="2"><?php echo $lang['Select_file']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Select_file']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Upload_file']; ?>: <br /><span class="gensmall"><?php
+		<td class="row1"><?php echo $user->lang['Upload_file']; ?>: <br /><span class="gensmall"><?php
 
-		echo $lang['Supported_extensions'];
+		echo $user->lang['Supported_extensions'];
 
 		$types = ': <u>sql</u>';
 		if ( extension_loaded('zlib') )
@@ -421,11 +421,11 @@ switch( $mode )
 		<td class="row2"><input type="file" name="backup_file" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Local_backup_file']; ?>: <br /><span class="gensmall"><?php echo $lang['Local_backup_file_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['Local_backup_file']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Local_backup_file_explain']; ?></span></td>
 		<td class="row2"><input type="text" name="local" size="40" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" name="restorestart" value="<?php echo $lang['Start_Restore']; ?>" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" name="restorestart" value="<?php echo $user->lang['Start_Restore']; ?>" class="mainoption" /></td>
 	</tr>
 </table></form>
 

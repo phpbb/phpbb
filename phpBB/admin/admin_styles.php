@@ -29,7 +29,7 @@ require('pagestart.' . $phpEx);
 //
 if ( !$auth->acl_get('a_styles') )
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 /*
@@ -53,17 +53,8 @@ $mode = ( isset($_GET['mode']) ) ? $_GET['mode'] : $_POST['mode'];
 switch ( $mode )
 {
 	case 'editimageset':
-		$imgroot = ( isset($_POST['imgroot']) ) ? $_POST['imgroot']  : 'subSilver';
+		$imgroot = ( isset($_POST['imgroot']) ) ? $_POST['imgroot']  : $board_config['default_style'];
 
-		if ( isset($_POST['img_root']) )
-		{
-			$sql = "SELECT *
-				FROM " . STYLES_IMAGE_TABLE . "
-				WHERE imageset_path LIKE '" . $_POST['imgroot'] . "'";
-			$result = $db->sql_query($sql);
-
-			$images = $db->sql_fetchrow($result);
-		}
 		if ( isset($_POST['img_addconfig']) )
 		{
 		}
@@ -71,7 +62,7 @@ switch ( $mode )
 		{
 		}
 
-		$imageset = array('imageset_path', 'post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_profile', 'icon_pm', 'icon_delete', 'icon_ip', 'icon_quote', 'icon_search', 'icon_edit', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm', 'goto_post', 'goto_post_new', 'goto_post_latest', 'goto_post_newest', 'forum', 'forum_new', 'forum_locked', 'folder', 'folder_new', 'folder_hot', 'folder_hot_new', 'folder_locked', 'folder_locked_new', 'folder_sticky', 'folder_sticky_new', 'folder_announce', 'folder_announce_new', 'topic_watch', 'topic_unwatch', 'poll_left', 'poll_center', 'poll_right', 'rating');
+		$imageset = array('imageset_path', 'post_new', 'post_locked', 'post_pm', 'reply_new', 'reply_pm', 'reply_locked', 'icon_profile', 'icon_pm', 'icon_delete', 'icon_ip', 'icon_quote', 'icon_search', 'icon_edit', 'icon_email', 'icon_www', 'icon_icq', 'icon_aim', 'icon_yim', 'icon_msnm', 'icon_no_email', 'icon_no_www', 'icon_no_icq', 'icon_no_aim', 'icon_no_yim', 'icon_no_msnm', 'goto_post', 'goto_post_new', 'goto_post_latest', 'goto_post_newest', 'forum', 'forum_new', 'forum_locked', 'sub_forum', 'sub_forum_new', 'folder', 'folder_new', 'folder_hot', 'folder_hot_new', 'folder_locked', 'folder_locked_new', 'folder_sticky', 'folder_sticky_new', 'folder_announce', 'folder_announce_new', 'topic_watch', 'topic_unwatch', 'poll_left', 'poll_center', 'poll_right', 'rating');
 
 		$sql = "SELECT imageset_name, imageset_path
 			FROM " . STYLES_IMAGE_TABLE . "
@@ -100,42 +91,64 @@ switch ( $mode )
 		//
 		// Output page
 		//
-		page_header($lang['Styles']);
+		page_header($user->lang['Edit_Imageset']);
 
-		echo '<form method="post" action="admin_styles.' . $phpEx . '?mode=editimageset">';
+?>
 
-		echo '<h2>Edit Imageset</h2>';
+<form method="post" action="admin_styles.<?php echo $phpEx . $SID; ?>&amp;mode=editimageset">
 
-		echo '<p>Template set: <select name="imgroot">' . $imgroot_options . '</select>&nbsp; <input class="liteoption" type="submit" name="img_root" value="Select" /></p>';
+<h2>Edit Imageset</h2>
 
-		echo '<p>Use this panel to edit or remove imagesets from the database.</p>';
+<p>Template set: <select name="imgroot"><?php echo $imgroot_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="img_root" value="Select set" /> &nbsp; <input class="liteoption" type="submit" name="create" value="Create new set" /></p>
 
-		echo '<table cellspacing="1" cellpadding="2" border="0" align="center" bgcolor="#98AAB1">';
-		echo '<tr>';
-		echo '<td class="cat" colspan="6" height="28" align="center"><span class="gen">Available images: <select name="imageset">' . $imgname_options . '</select></span></td>';
-		echo '</tr>';
-		echo '<tr>';
-		echo '<th height="25">Image</th><th>Source</th><th>Width</th><th>Height</th><th>Border</th><th>&nbsp;</th>';
-		echo '</tr>';
+<p>Here you can create, edit, delete and download imagesets.</p>
 
-		for($i = 0; $i < count($imageset); $i++)
-		{
-			$class = ( !($i%2) ) ? 'row1' : 'row2';
+<?php
 
-			echo '<tr>';
-			echo '<td class="' . $class . '" height="25"><span class="gen">' . ucfirst(str_replace('_', ' ', $imageset[$i])) . '</span></td>';
-			echo '<td class="' . $class . '"><input class="text" type="text" name="src[' . $imageset[$i] . ']" value="' . ( ( !empty($images[$imageset[$i]]) ) ? $images[$imageset[$i]] : '' ) . '" size="20" maxsize="30" /></td>';
-			echo '<td class="' . $class . '"><input class="text" type="text" name="width[' . $imageset[$i] . ']" size="3" maxsize="3" /></td>';
-			echo '<td class="' . $class . '"><input class="text" type="text" name="height[' . $imageset[$i] . ']" size="3" maxsize="3" /></td>';
-			echo '<td class="' . $class . '"><input class="text" type="text" name="border[' . $imageset[$i] . ']" size="2" maxsize="2" /></td>';
-			echo '<td class="' . $class . '"><input class="liteoption" type="submit" value="Update" onclick="this.form.' . $imageset[$i] . '.value=this.form.imageset.options[this.form.imageset.selectedIndex].value;return false" />&nbsp;<input class="liteoption" type="submit" value="Clear" onclick="this.form.' . $imageset[$i] . '.value=\'\';return false" />&nbsp;</td>';
-			echo '</tr>';
-		}
+	if ( isset($_POST['img_root']) )
+	{
+		$sql = "SELECT *
+			FROM " . STYLES_IMAGE_TABLE . "
+			WHERE imageset_path LIKE '" . $_POST['imgroot'] . "'";
+		$result = $db->sql_query($sql);
 
-		echo '<td class="cat" colspan="6" height="28" align="center"><input class="liteoption" type="submit" name="img_update" value="Update set" /> &nbsp; <input class="liteoption" type="submit" name="img_delete" value="Delete set" /> &nbsp; <input class="liteoption" type="reset" value="Undo" /></td>';
-		echo '</tr>';
-		echo '</table>';
-		echo '</form>';
+		$images = $db->sql_fetchrow($result);
+
+?>
+<table class="bg" cellspacing="1" cellpadding="2" border="0" align="center">
+	<tr>
+		<th height="25">Image</th><th>Graphic</th><th>&nbsp;</th>
+	</tr>
+<?php
+
+			for($i = 1; $i < count($imageset); $i++)
+			{
+				$row_class = ( !($i%2) ) ? 'row1' : 'row2';
+
+				$img = ( !empty($images[$imageset[$i]]) ) ? '<img src=' . $images[$imageset[$i]] . ' />' : '';
+				$img = str_replace('"imagesets/', '"../imagesets/', $img);
+				$img = str_replace('{LANG}', $user->img_lang, $img);
+				$img = str_replace('{RATE}', 3, $img);
+?>
+	<tr>
+		<td class="<?php echo $row_class; ?>" height="25"><span class="gen"><?php echo ucfirst(str_replace('_', ' ', $imageset[$i])); ?></span></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo $img; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center">&nbsp;<input class="liteoption" type="submit" value="Edit" /></td>
+	</tr>
+<?php
+
+			}
+
+?>
+	<tr>
+		<td class="cat" colspan="3" height="28" align="center"> <input class="liteoption" type="submit" name="download" value="Download set" &nbsp; <input class="liteoption" type="submit" name="img_delete" value="Delete set" /> </td>
+	</tr>
+</table></form>
+
+<?php
+
+	}
+
 		page_footer();
 
 		break;
@@ -205,17 +218,17 @@ switch ( $mode )
 		//
 		//
 		//
-		page_header($lang['Edit_template']);
+		page_header($user->lang['Edit_template']);
 
 ?>
 
-<h2><?php echo $lang['Edit_template']; ?></h2>
+<h2><?php echo $user->lang['Edit_template']; ?></h2>
 
-<p><?php echo $lang['Edit_template_explain']; ?></p>
+<p><?php echo $user->lang['Edit_template_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=edittemplate"; ?>">
 
-<p><?php echo $lang['Select_template']; ?>: <select name="tplroot"><?php echo $tplroot_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="Select" /></p>
+<p><?php echo $user->lang['Select_template']; ?>: <select name="tplroot"><?php echo $tplroot_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="Select" /></p>
 
 <table class="bg" width="95%" cellspacing="1" cellpadding="0" border="0" align="center">
 	<tr>
@@ -265,11 +278,11 @@ switch ( $mode )
 
 				add_admin_log('log_theme_edit', $theme_name);
 
-				message_die(MESSAGE, $lang['Success_theme_update']);
+				message_die(MESSAGE, $user->lang['Success_theme_update']);
 			}
 		}
 
-		page_header($lang['Edit_theme']);
+		page_header($user->lang['Edit_theme']);
 
 		$sql = "SELECT theme_id, theme_name
 			FROM " . STYLES_CSS_TABLE;
@@ -306,24 +319,24 @@ switch ( $mode )
 
 <form method="post" action="<?php echo "admin_styles.$phpEx$SID&amp;mode=$mode"; ?>">
 
-<h2><?php echo $lang['Edit_theme']; ?></h2>
+<h2><?php echo $user->lang['Edit_theme']; ?></h2>
 
-<p><?php echo $lang['Edit_theme_explain']; ?></p>
+<p><?php echo $user->lang['Edit_theme_explain']; ?></p>
 
 <table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $lang['Select_theme']; ?>: <select name="themeroot"><?php echo $theme_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="<?php echo $lang['Select']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $user->lang['Select_theme']; ?>: <select name="themeroot"><?php echo $theme_options; ?></select>&nbsp; <input class="liteoption" type="submit" name="tpl_root" value="<?php echo $user->lang['Select']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['CSS_data']; ?>: <br /><span class="gensmall"><?php echo $lang['CSS_data_explain']; ?></td>
+		<td class="row1"><?php echo $user->lang['CSS_data']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CSS_data_explain']; ?></td>
 		<td class="row2"><textarea class="edit" cols="65" rows="15" name="css_data"><?php echo htmlentities($css_data); ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['CSS_sheet']; ?>: </td>
+		<td class="row1"><?php echo $user->lang['CSS_sheet']; ?>: </td>
 		<td class="row2"><input type="text" name="css_external" maxlength="60" size="60" value="<?php echo $css_external; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $lang['Reset']; ?>" /></td>
+		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="update" value="<?php echo $user->lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="reset" value="<?php echo $user->lang['Reset']; ?>" /></td>
 	</tr>
 </table></form>
 

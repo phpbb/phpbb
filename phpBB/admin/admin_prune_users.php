@@ -69,7 +69,7 @@ if ( isset($_POST['prune']) )
 	{
 		$values = array('prune', 'deactivate', 'delete', 'users', 'username', 'email', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'deleteposts');
 
-		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $lang['Confirm_prune_users'] . '<br /><br /><input class="liteoption" type="submit" name="confirm" value="' . $lang['Yes'] . '" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="' . $lang['No'] . '" />';
+		$l_message = '<form method="post" action="admin_prune_users.' . $phpEx . $SID . '">' . $user->lang['Confirm_prune_users'] . '<br /><br /><input class="liteoption" type="submit" name="confirm" value="' . $user->lang['Yes'] . '" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="' . $user->lang['No'] . '" />';
 
 		foreach ( $values as $field )
 		{
@@ -78,17 +78,17 @@ if ( isset($_POST['prune']) )
 
 		$l_message .= '</form>';
 
-		page_header($lang['Prune_users']);
+		page_header($user->lang['Prune_users']);
 
 ?>
 
-<h1><?php echo $lang['Prune_users']; ?></h1>
+<h1><?php echo $user->lang['Prune_users']; ?></h1>
 
-<p><?php echo $lang['Prune_users_explain']; ?></p>
+<p><?php echo $user->lang['Prune_users_explain']; ?></p>
 
 <?php
 
-		page_message($lang['Confirm'], $l_message, false);
+		page_message($user->lang['Confirm'], $l_message, false);
 		page_footer();
 
 	}
@@ -194,14 +194,14 @@ if ( isset($_POST['prune']) )
 			unset($usernames);
 		}
 
-		message_die(MESSAGE, $lang['Success_user_prune']);
+		message_die(MESSAGE, $user->lang['Success_user_prune']);
 	}
 }
 
 //
 //
 //
-$find_count = array('lt' => $lang['Less_than'], 'eq' => $lang['Equal_to'], 'gt' => $lang['More_than']);
+$find_count = array('lt' => $user->lang['Less_than'], 'eq' => $user->lang['Equal_to'], 'gt' => $user->lang['More_than']);
 $s_find_count = '';
 foreach ( $find_count as $key => $value )
 {
@@ -209,7 +209,7 @@ foreach ( $find_count as $key => $value )
 	$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 }
 
-$find_time = array('lt' => $lang['Before'], 'gt' => $lang['After']);
+$find_time = array('lt' => $user->lang['Before'], 'gt' => $user->lang['After']);
 $s_find_join_time = '';
 foreach ( $find_time as $key => $value )
 {
@@ -224,48 +224,48 @@ foreach ( $find_time as $key => $value )
 //
 //
 //
-page_header($lang['Prune_users']);
+page_header($user->lang['Prune_users']);
 
 ?>
 
-<h1><?php echo $lang['Prune_users']; ?></h1>
+<h1><?php echo $user->lang['Prune_users']; ?></h1>
 
-<p><?php echo $lang['Prune_users_explain']; ?></p>
+<p><?php echo $user->lang['Prune_users_explain']; ?></p>
 
 <form method="post" name="post" action="<?php echo "admin_prune_users.$phpEx$SID"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Prune_users']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Prune_users']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Username']; ?>: </td>
+		<td class="row1"><?php echo $user->lang['Username']; ?>: </td>
 		<td class="row2"><input class="post" type="text" name="username" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Email']; ?>: </td>
+		<td class="row1"><?php echo $user->lang['Email']; ?>: </td>
 		<td class="row2"><input class="post" type="text" name="email" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Joined']; ?>: <br /><span class="gensmall"><?php echo $lang['Joined_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['Joined']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Joined_explain']; ?></span></td>
 		<td class="row2"><select name="joined_select"><?php echo $s_find_join_time; ?></select> <input class="post" type="text" name="joined" maxlength="10" size="10" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Last_active']; ?>: <br /><span class="gensmall"><?php echo $lang['Last_active_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['Last_active']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Last_active_explain']; ?></span></td>
 		<td class="row2"><select name="active_select"><?php echo $s_find_active_time; ?></select> <input class="post" type="text" name="active" maxlength="10" size="10" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Posts']; ?>: </td>
+		<td class="row1"><?php echo $user->lang['Posts']; ?>: </td>
 		<td class="row2"><select name="count_select"><?php echo $s_find_count; ?></select> <input class="post" type="text" name="count" /></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Prune_users']; ?>: <br /><span class="gensmall"><?php echo $lang['Select_users_explain']; ?></span></td>
+		<td class="row1"><?php echo $user->lang['Prune_users']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Select_users_explain']; ?></span></td>
 		<td class="row2"><textarea name="users" cols="40" rows="5"></textarea></td>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Delete_user_posts']; ?>: <br /><span class="gensmall"><?php echo $lang['Delete_user_posts_explain']; ?></span></td>
-		<td class="row2"><input type="radio" name="deleteposts" value="1" /> <?php echo $lang['Yes']; ?> &nbsp;&nbsp; <input type="radio" name="deleteposts" value="0" checked="checked" /> <?php echo $lang['No']; ?></td>
+		<td class="row1"><?php echo $user->lang['Delete_user_posts']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Delete_user_posts_explain']; ?></span></td>
+		<td class="row2"><input type="radio" name="deleteposts" value="1" /> <?php echo $user->lang['Yes']; ?> &nbsp;&nbsp; <input type="radio" name="deleteposts" value="0" checked="checked" /> <?php echo $user->lang['No']; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Prune_users']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="deactivate" value="<?php echo $lang['Deactivate']; ?>" />&nbsp;&nbsp;<input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID&amp;mode=searchuser&amp;field=users"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="prune" value="1" /></td>
+		<td class="cat" colspan="2" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['Prune_users']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="deactivate" value="<?php echo $user->lang['Deactivate']; ?>" />&nbsp;&nbsp;<input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID&amp;mode=searchuser&amp;field=users"; ?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="prune" value="1" /></td>
 	</tr>
 </table></form>
 

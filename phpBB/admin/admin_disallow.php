@@ -59,7 +59,7 @@ if( isset($_POST['add_name']) )
 
 	if ( !validate_username($disallowed_user) )
 	{
-		$message = $lang['Disallowed_already'];
+		$message = $user->lang['Disallowed_already'];
 	}
 	else
 	{
@@ -67,10 +67,10 @@ if( isset($_POST['add_name']) )
 			VALUES('" . str_replace("\'", "''", $disallowed_user) . "')";
 		$result = $db->sql_query( $sql );
 
-		$message = $lang['Disallow_successful'];
+		$message = $user->lang['Disallow_successful'];
 	}
 
-	$message .= '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . "admin_disallow.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
+	$message .= '<br /><br />' . sprintf($user->lang['Click_return_disallowadmin'], '<a href="' . "admin_disallow.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
 	add_admin_log('log_disallow_add', str_replace('%', '*', $disallowed_user));
 
@@ -84,7 +84,7 @@ else if( isset($_POST['delete_name']) )
 		WHERE disallow_id = $disallowed_id";
 	$db->sql_query($sql);
 
-	$message .= $lang['Disallowed_deleted'] . '<br /><br />' . sprintf($lang['Click_return_disallowadmin'], '<a href="' . "admin_disallow.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
+	$message .= $user->lang['Disallowed_deleted'] . '<br /><br />' . sprintf($user->lang['Click_return_disallowadmin'], '<a href="' . "admin_disallow.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
 	add_admin_log('log_disallow_delete');
 
@@ -112,28 +112,28 @@ if ( $row = $db->sql_fetchrow($result) )
 //
 // Output page
 //
-page_header($lang['Users']);
+page_header($user->lang['Users']);
 
 ?>
 
-<h1><?php echo $lang['Disallow_control']; ?></h1>
+<h1><?php echo $user->lang['Disallow_control']; ?></h1>
 
-<p><?php echo $lang['Disallow_explain']; ?></p>
+<p><?php echo $user->lang['Disallow_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_disallow.$phpEx$SID"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Add_disallow_title']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Add_disallow_title']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Username']; ?><br /><span class="gensmall"><?php echo $lang['Add_disallow_explain']; ?></span></td>
-		<td class="row2"><input type="text" name="disallowed_user" size="30" />&nbsp;<input type="submit" name="add_name" value="<?php echo $lang['Add_disallow']; ?>" class="mainoption" /></td>
+		<td class="row1"><?php echo $user->lang['Username']; ?><br /><span class="gensmall"><?php echo $user->lang['Add_disallow_explain']; ?></span></td>
+		<td class="row2"><input type="text" name="disallowed_user" size="30" />&nbsp;<input type="submit" name="add_name" value="<?php echo $user->lang['Add_disallow']; ?>" class="mainoption" /></td>
 	</tr>
 	<tr>
-		<th colspan="2"><?php echo $lang['Delete_disallow_title']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Delete_disallow_title']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1"><?php echo $lang['Username']; ?><br /><span class="gensmall"><?php echo $lang['Delete_disallow_explain']; ?></span></td>
-		<td class="row2"><?php if ( $disallow_select != '' ) { ?><select name="disallowed_id"><?php echo $disallow_select; ?></select>&nbsp;<input type="submit" name="delete_name" value="<?php echo $lang['Delete']; ?>" class="liteoption" /><?php } else { echo $lang['No_disallowed']; } ?></td>
+		<td class="row1"><?php echo $user->lang['Username']; ?><br /><span class="gensmall"><?php echo $user->lang['Delete_disallow_explain']; ?></span></td>
+		<td class="row2"><?php if ( $disallow_select != '' ) { ?><select name="disallowed_id"><?php echo $disallow_select; ?></select>&nbsp;<input type="submit" name="delete_name" value="<?php echo $user->lang['Delete']; ?>" class="liteoption" /><?php } else { echo $user->lang['No_disallowed']; } ?></td>
 	</tr>
 </table></form>
 

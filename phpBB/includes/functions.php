@@ -103,14 +103,16 @@ function get_forum_branch($forum_id, $type='all', $order='descending', $include_
 		default:
 			$condition = 'f2.left_id BETWEEN f1.left_id AND f1.right_id OR f1.left_id BETWEEN f2.left_id AND f2.right_id';
 	}
-	$sql = 'SELECT f2.*
-			FROM ' . FORUMS_TABLE . ' f1
-			LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition
-			WHERE f1.forum_id = $forum_id
-			ORDER BY f2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
 
 	$rows = array();
+
+	$sql = 'SELECT f2.*
+		FROM ( ' . FORUMS_TABLE . ' f1
+		LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition )
+		WHERE f1.forum_id = $forum_id
+		ORDER BY f2.left_id " . ( ($order == 'descending') ? 'ASC' : 'DESC' );
 	$result = $db->sql_query($sql);
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if (!$include_forum && $row['forum_id'] == $forum_id)
@@ -122,10 +124,8 @@ function get_forum_branch($forum_id, $type='all', $order='descending', $include_
 	return $rows;
 }
 
-//
 // Obtain list of moderators of each forum
 // First users, then groups ... broken into two queries
-//
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $SID, $db, $phpEx;
@@ -166,17 +166,17 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 //
 function get_forum_rules($mode, &$rules, &$forum_id)
 {
-	global $SID, $auth, $lang, $phpEx;
+	global $SID, $auth, $user, $phpEx;
 
-	$rules .= ( ( $auth->acl_get('f_post', $forum_id) ) ? $lang['Rules_post_can'] : $lang['Rules_post_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_reply', $forum_id) ) ? $lang['Rules_reply_can'] : $lang['Rules_reply_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_edit', $forum_id) ) ? $lang['Rules_edit_can'] : $lang['Rules_edit_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_delete', $forum_id) || $auth->acl_get('m_delete', $forum_id) ) ? $lang['Rules_delete_can'] : $lang['Rules_delete_cannot'] ) . '<br />';
-	$rules .= ( ( $auth->acl_get('f_attach', $forum_id) ) ? $lang['Rules_attach_can'] : $lang['Rules_attach_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_post', $forum_id) ) ? $user->lang['Rules_post_can'] : $user->lang['Rules_post_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_reply', $forum_id) ) ? $user->lang['Rules_reply_can'] : $user->lang['Rules_reply_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_edit', $forum_id) ) ? $user->lang['Rules_edit_can'] : $user->lang['Rules_edit_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_delete', $forum_id) || $auth->acl_get('m_delete', $forum_id) ) ? $user->lang['Rules_delete_can'] : $user->lang['Rules_delete_cannot'] ) . '<br />';
+	$rules .= ( ( $auth->acl_get('f_attach', $forum_id) ) ? $user->lang['Rules_attach_can'] : $user->lang['Rules_attach_cannot'] ) . '<br />';
 
 	if ( $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id) )
 	{
-		$rules .= sprintf($lang['Rules_moderate'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+		$rules .= sprintf($user->lang['Rules_moderate'], '<a href="modcp.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 	}
 
 	return;
@@ -184,9 +184,9 @@ function get_forum_rules($mode, &$rules, &$forum_id)
 
 function make_jumpbox($action, $forum_id = false)
 {
-	global $auth, $template, $lang, $db, $nav_links, $phpEx;
+	global $auth, $template, $user, $db, $nav_links, $phpEx;
 
-	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $lang['Select_forum'] . '</option><option value="-1">&nbsp;</option>';
+	$boxstring = '<select name="f" onChange="if(this.options[this.selectedIndex].value != -1){ forms[\'jumpbox\'].submit() }"><option value="-1">' . $user->lang['Select_forum'] . '</option><option value="-1">&nbsp;</option>';
 
 	$sql = 'SELECT forum_id, forum_name, forum_status, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
@@ -249,9 +249,7 @@ function make_jumpbox($action, $forum_id = false)
 				$holding = '';
 			}
 
-			//
 			// TODO: do not add empty categories to nav links
-			//
 			$nav_links['chapter forum'][$row['forum_id']] = array (
 				'url' => ($row['forum_status'] == ITEM_CATEGORY) ? "index.$phpEx$SIDc=" : "viewforum.$phpEx$SID&f=" . $row['forum_id'],
 				'title' => $row['forum_name']
@@ -263,13 +261,13 @@ function make_jumpbox($action, $forum_id = false)
 
 	if (!$right)
 	{
-		$boxstring .= '<option value="-1">' . $lang['No_forums'] . '</option>';
+		$boxstring .= '<option value="-1">' . $user->lang['No_forums'] . '</option>';
 	}
 	$boxstring .= '</select>';
 
 	$template->assign_vars(array(
-		'L_GO' => $lang['Go'],
-		'L_JUMP_TO' => $lang['Jump_to'],
+		'L_GO' => $user->lang['Go'],
+		'L_JUMP_TO' => $user->lang['Jump_to'],
 
 		'S_JUMPBOX_SELECT' => $boxstring,
 		'S_JUMPBOX_ACTION' => $action)
@@ -278,16 +276,14 @@ function make_jumpbox($action, $forum_id = false)
 	return;
 }
 
-//
 // Pick a language, any language ...
-//
 function language_select($default, $select_name = "language", $dirname="language")
 {
 	global $phpEx;
 
 	$dir = opendir($dirname);
 
-	$lang = array();
+	$user = array();
 	while ( $file = readdir($dir) )
 	{
 		if ( preg_match('#^lang_#', $file) && !is_file($dirname . '/' . $file) && !is_link($dirname . '/' . $file) )
@@ -295,30 +291,28 @@ function language_select($default, $select_name = "language", $dirname="language
 			$filename = trim(str_replace('lang_', '', $file));
 			$displayname = preg_replace('/^(.*?)_(.*)$/', '\\1 [ \\2 ]', $filename);
 			$displayname = preg_replace('/\[(.*?)_(.*)\]/', '[ \\1 - \\2 ]', $displayname);
-			$lang[$displayname] = $filename;
+			$user->lang[$displayname] = $filename;
 		}
 	}
 
 	closedir($dir);
 
-	@asort($lang);
-	@reset($lang);
+	@asort($user);
+	@reset($user);
 
-	$lang_select = '<select name="' . $select_name . '">';
-	foreach ( $lang as $displayname => $filename )
+	$user_select = '<select name="' . $select_name . '">';
+	foreach ( $user as $displayname => $filename )
 	{
 		$selected = ( strtolower($default) == strtolower($filename) ) ? ' selected="selected"' : '';
-		$lang_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+		$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
 	}
-	$lang_select .= '</select>';
+	$user_select .= '</select>';
 
-	return $lang_select;
+	return $user_select;
 }
 
-//
 // Pick a template/theme combo,
-//
-function style_select($default_style, $select_name = "style", $dirname = "templates")
+function style_select($default_style, $select_name = 'style', $dirname = 'templates')
 {
 	global $db;
 
@@ -339,15 +333,13 @@ function style_select($default_style, $select_name = "style", $dirname = "templa
 	return $style_select;
 }
 
-//
 // Pick a timezone
-//
 function tz_select($default, $select_name = 'timezone')
 {
-	global $sys_timezone, $lang;
+	global $sys_timezone, $user;
 
 	$tz_select = '<select name="' . $select_name . '">';
-	while( list($offset, $zone) = @each($lang['tz']) )
+	foreach ( $user->lang['tz'] as $offset => $zone )
 	{
 		$selected = ( $offset == $default ) ? ' selected="selected"' : '';
 		$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
@@ -357,20 +349,16 @@ function tz_select($default, $select_name = 'timezone')
 	return $tz_select;
 }
 
-//
 // Topic and forum watching common code
-//
 function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id)
 {
-	global $template, $db, $lang, $phpEx, $SID, $start;
+	global $template, $db, $user, $phpEx, $SID, $start;
 
 	$table_sql = ( $mode == 'forum' ) ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ( $mode == 'forum' ) ? 'forum_id' : 'topic_id';
 	$u_url = ( $mode == 'forum' ) ? 'f' : 't';
 
-	//
 	// Is user watching this thread?
-	//
 	if ( $user_id )
 	{
 		$can_watch = TRUE;
@@ -399,7 +387,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 					'META' => '<meta http-equiv="refresh" content="3;url=' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">')
 				);
 
-				$message = $lang['No_longer_watching_' . $mode] . '<br /><br />' . sprintf($lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
+				$message = $user->lang['No_longer_watching_' . $mode] . '<br /><br />' . sprintf($user->lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
 				message_die(MESSAGE, $message);
 			}
 			else
@@ -433,7 +421,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 					'META' => '<meta http-equiv="refresh" content="3;url=' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">')
 				);
 
-				$message = $lang['You_are_watching_' . $mode] . '<br /><br />' . sprintf($lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
+				$message = $user->lang['You_are_watching_' . $mode] . '<br /><br />' . sprintf($user->lang['Click_return_' . $mode], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
 				message_die(MESSAGE, $message);
 			}
 			else
@@ -460,58 +448,16 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 
 	if ( $can_watch )
 	{
-		if ( $is_watching )
-		{
-			$watch_url = "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;unwatch=$mode&amp;start=$start";
-			$img = ( $mode == 'forum' ) ? $images['Forum_un_watch'] : $images['Topic_un_watch'];
-
-			$s_watching = '<a href="' . $watch_url . '">' . $lang['Stop_watching_' . $mode] . '</a>';
-			$s_watching_img = ( isset($img) ) ? '<a href="' . $watch_url . '"><img src="' . $img . '" alt="' . $lang['Stop_watching_' . $mode] . '" title="' . $lang['Stop_watching_' . $mode] . '" border="0"></a>' : '';
-		}
-		else
-		{
-			$watch_url = "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;watch=$mode&amp;start=$start";
-			$img = ( $mode == 'forum' ) ? $images['Forum_watch'] : $images['Topic_watch'];
-
-			$s_watching = '<a href="' . $watch_url . '">' . $lang['Start_watching_' . $mode] . '</a>';
-			$s_watching_img = ( isset($img) ) ? '<a href="' . $watch_url . '"><img src="' . $img . '" alt="' . $lang['Stop_watching_' . $mode] . '" title="' . $lang['Start_watching_' . $mode] . '" border="0"></a>' : '';
-		}
+		$s_watching = ( $is_watching ) ? '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;unwatch=$mode&amp;start=$start" . '">' . $user->lang['Stop_watching_' . $mode] . '</a>' : '<a href="' . "view$mode." . $phpEx . $SID . '&amp;' . $u_url . "=$match_id&amp;watch=$mode&amp;start=$start" . '">' . $user->lang['Start_watching_' . $mode] . '</a>';
 	}
 
 	return;
 }
 
-//
-// Create date/time from format and timezone
-//
-function create_date($format, $gmepoch, $tz)
-{
-	global $board_config, $lang;
-	static $translate;
-
-	if ( empty($translate) && $board_config['default_lang'] != 'english' )
-	{
-		foreach ( $lang['datetime'] as $match => $replace )
-		{
-			$translate[$match] = $replace;
-		}
-	}
-
-	return ( !empty($translate) ) ? strtr(@gmdate($format, $gmepoch + (3600 * $tz)), $translate) : @gmdate($format, $gmepoch + (3600 * $tz));
-}
-
-function create_img($img, $alt = '')
-{
-	return '<img src=' . $img . ' alt="' . $alt . '" title="' . $alt . '" />';
-}
-
-//
-// Pagination routine, generates
-// page number sequence
-//
+// Pagination routine, generates page number sequence
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = TRUE)
 {
-	global $lang;
+	global $user;
 
 	$total_pages = ceil($num_items/$per_page);
 
@@ -522,7 +468,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$on_page = floor($start_item / $per_page) + 1;
 
-	$page_string = ( $on_page == 1 ) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $on_page - 2 ) * $per_page ) . '">' . $lang['Previous'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
+	$page_string = ( $on_page == 1 ) ? '<b>1</b>' : '<a href="' . $base_url . "&amp;start=" . ( ( $on_page - 2 ) * $per_page ) . '">' . $user->lang['Previous'] . '</a>&nbsp;&nbsp;<a href="' . $base_url . '">1</a>';
 
 	if ( $total_pages > 5 )
 	{
@@ -556,18 +502,18 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		}
 	}
 
-	$page_string .= ( $on_page == $total_pages ) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . ( ( $total_pages - 1 ) * $per_page ) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ( $on_page * $per_page ) . '">' . $lang['Next'] . '</a>';
+	$page_string .= ( $on_page == $total_pages ) ? '<b>' . $total_pages . '</b>' : '<a href="' . $base_url . '&amp;start=' . ( ( $total_pages - 1 ) * $per_page ) . '">' . $total_pages . '</a>&nbsp;&nbsp;<a href="' . $base_url . "&amp;start=" . ( $on_page * $per_page ) . '">' . $user->lang['Next'] . '</a>';
 
-	$page_string = $lang['Goto_page'] . ' ' . $page_string;
+	$page_string = $user->lang['Goto_page'] . ' ' . $page_string;
 
 	return $page_string;
 }
 
 function on_page($num_items, $per_page, $start)
 {
-	global $lang;
+	global $user;
 
-	return sprintf($lang['Page_of'], floor( $start / $per_page ) + 1, max(ceil( $num_items / $per_page ), 1) );
+	return sprintf($user->lang['Page_of'], floor( $start / $per_page ) + 1, max(ceil( $num_items / $per_page ), 1) );
 }
 
 // Obtain list of naughty words and build preg style replacement arrays for use by the
@@ -581,25 +527,20 @@ function obtain_word_list(&$orig_word, &$replacement_word)
 		FROM  " . WORDS_TABLE;
 	$result = $db->sql_query($sql);
 
-	if ( $row = $db->sql_fetchrow($result) )
+	while ( $row = $db->sql_fetchrow($result) )
 	{
-		do
-		{
-			$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-			$replacement_word[] = $row['replacement'];
-		}
-		while ( $row = $db->sql_fetchrow($result) );
+		$orig_word[] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+		$replacement_word[] = $row['replacement'];
 	}
 
 	return true;
 }
 
-//
 // Redirects the user to another page then exits the script nicely
-//
 function redirect($location)
 {
 	global $db;
+
 	if (isset($db))
 	{
 		$db->sql_close();
@@ -610,39 +551,26 @@ function redirect($location)
 	exit;
 }
 
-//
 // This is general replacement for die(), allows templated output in users (or default)
 // language, etc. $msg_code can be one of these constants:
 //
 // -> MESSAGE : Use for any simple text message, eg. results of an operation, authorisation
 //    failures, etc.
 // -> ERROR : Use for any error, a simple page will be output
-//
-// $errno, $errstr, $errfile, $errline
 function message_die($msg_code, $msg_text = '', $msg_title = '')
 {
-	global $db, $session, $auth, $template, $board_config, $theme, $lang, $user;
-	global $userdata, $user_ip, $phpEx, $phpbb_root_path, $nav_links, $starttime;
+	global $db, $auth, $template, $board_config, $user, $nav_links;
+	global $phpEx, $phpbb_root_path, $starttime;
 
 	switch ( $msg_code )
 	{
 		case MESSAGE:
-			if ( empty($lang) && !empty($board_config['default_lang']) )
-			{
-				if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx) )
-				{
-					$board_config['default_lang'] = 'english';
-				}
-
-				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
-			}
-
-			$msg_title = ( $msg_title == '' ) ? $lang['Information'] : $msg_title;
-			$msg_text = ( !empty($lang[$msg_text]) ) ? $lang[$msg_text] : $msg_text;
+			$msg_title = ( $msg_title == '' ) ? $user->lang['Information'] : $msg_title;
+			$msg_text = ( !empty($user->lang[$msg_text]) ) ? $user->lang[$msg_text] : $msg_text;
 
 			if ( !defined('HEADER_INC') )
 			{
-				if ( empty($userdata) )
+				if ( empty($user->lang) )
 				{
 					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $msg_title . '</title></html>' . "\n";
 					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $msg_title . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
@@ -694,8 +622,8 @@ function message_die($msg_code, $msg_text = '', $msg_title = '')
 // Error and message handler, call with trigger_error if reqd
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
-	global $db, $session, $auth, $template, $board_config, $theme, $lang, $userdata, $user_ip;
-	global $phpEx, $phpbb_root_path, $nav_links, $starttime;
+	global $db, $auth, $template, $board_config, $user, $nav_links;
+	global $phpEx, $phpbb_root_path, $starttime;
 
 	switch ( $errno )
 	{
@@ -705,33 +633,26 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_NOTICE:
 			break;
 
-		case E_ERROR:
 		case E_USER_ERROR:
-			$db->sql_close();
+			if ( isset($db) )
+			{
+				$db->sql_close();
+			}
 
-			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>phpBB 2 :: General Error</title></html>' . "\n";
-			echo '<body><h1 style="font-family:Verdana,serif;font-size:18pt;font-weight:bold">phpBB2 :: General Error</h1><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">' . $msg_text . '</p><hr style="height:2px;border-style:dashed;color:black" /><p style="font-family:Verdana,serif;font-size:10pt">Contact the site administrator to report this failure</p></body></html>';
+			echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $msg_title . '</title></html>' . "\n";
+			echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $msg_title . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
+			exit;
 			break;
 
 		case E_USER_NOTICE:
-			if ( empty($lang) && !empty($board_config['default_lang']) )
-			{
-				if ( !file_exists($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx) )
-				{
-					$board_config['default_lang'] = 'english';
-				}
-
-				include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
-			}
-
-			$msg_text = ( !empty($lang[$msg_text]) ) ? $lang[$msg_text] : $msg_text;
+			$msg_text = ( !empty($user->lang[$msg_text]) ) ? $user->lang[$msg_text] : $msg_text;
 
 			if ( !defined('HEADER_INC') )
 			{
-				if ( empty($userdata) )
+				if ( empty($user->data) )
 				{
-					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $lang['Information'] . '</title></html>' . "\n";
-					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $lang['Information'] . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
+					echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="admin/subSilver.css" type="text/css"><style type="text/css">th { background-image: url(\'admin/images/cellpic3.gif\') } td.cat	{ background-image: url(\'admin/images/cellpic1.gif\') }</style><title>' . $user->lang['Information'] . '</title></html>' . "\n";
+					echo '<body><table width="100%" height="100%" border="0"><tr><td align="center" valign="middle"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0"><tr><th>' . $user->lang['Information'] . '</th></tr><tr><td class="row1" align="center">' . $msg_text . '</td></tr></table></td></tr></table></body></html>';
 					$db->sql_close();
 					exit;
 				}

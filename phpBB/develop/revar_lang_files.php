@@ -27,7 +27,7 @@
 // Remove or comment the next line (die(".... ) to enable this script.
 // Do NOT FORGET to either remove this script or disable it after you have used it.
 //
-die("Please read the first lines of this script for instructions on how to enable it");
+//die("Please read the first lines of this script for instructions on how to enable it");
 
 $vars = array('lang_main' => 'lang', 'lang_admin' => 'lang', 'lang_faq' => 'faq', 'lang_bbcode' => 'faq');
 
@@ -36,7 +36,7 @@ $dir = opendir($dirname);
 
 while ( $file = readdir($dir) )
 {
-	if ( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
+	if ( $file != 'CVS' && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
 	{
 		foreach($vars as $lang_file => $lang_var)
 		{

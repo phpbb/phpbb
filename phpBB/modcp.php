@@ -76,15 +76,13 @@ if ( isset($_POST['cancel']) )
 		$redirect = "index.$phpEx$SID";
 	}
 
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . $redirect);
-	exit;
+	redirect($redirect);
 }
 
 // Start session management
-$userdata = $session->start();
-$auth->acl($userdata, $forum_id);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 

@@ -100,20 +100,16 @@ if (isset($_GET['view']) && empty($post_id))
 	}
 }
 
-//
 // Start session management
-//
-$userdata = $session->start();
-//
+$user->start();
 // End session management
-//
 
-if ( $userdata['user_id'] && isset($_POST['rating']) )
+if ( $user->data['user_id'] && isset($_POST['rating']) )
 {
 	$sql = "SELECT rating
 		FROM " . TOPICS_RATINGS_TABLE . "
 		WHERE topic_id = $topic_id
-			AND user_id = " . $userdata['user_id'];
+			AND user_id = " . $user->data['user_id'];
 	$result = $db->sql_query($sql);
 
 	$rating = ( $row = $db->sql_fetchrow($result) ) ? $row['rating'] : '';
@@ -125,7 +121,7 @@ if ( $userdata['user_id'] && isset($_POST['rating']) )
 	{
 		$new_rating = intval($_POST['rating']);
 
-		$sql = ( $rating != '' ) ? "UPDATE " . TOPICS_RATING_TABLE . " SET rating = $new_rating WHERE user_id = " . $userdata['user_id'] . " AND topic_id = $topic_id" : "INSERT INTO " . TOPICS_RATING_TABLE . " (topic_id, user_id, rating) VALUES ($topic_id, " . $userdata['user_id'] . ", $new_rating)";
+		$sql = ( $rating != '' ) ? "UPDATE " . TOPICS_RATING_TABLE . " SET rating = $new_rating WHERE user_id = " . $user->data['user_id'] . " AND topic_id = $topic_id" : "INSERT INTO " . TOPICS_RATING_TABLE . " (topic_id, user_id, rating) VALUES ($topic_id, " . $user->data['user_id'] . ", $new_rating)";
 	}
 }
 
@@ -152,8 +148,8 @@ if ( !(extract($db->sql_fetchrow($result))) )
 }
 
 // Configure style, language, etc.
-$user = new user($userdata, false, $forum_style);
-$auth->acl($userdata, $forum_id, array('f_read', 'f_post', 'f_reply', 'f_attach'));
+$user->setup(false, $forum_style);
+$auth->acl($user->data, $forum_id);
 // End configure
 
 //
@@ -161,14 +157,14 @@ $auth->acl($userdata, $forum_id, array('f_read', 'f_post', 'f_reply', 'f_attach'
 //
 if ( !$auth->acl_get('f_read', $forum_id) )
 {
-	if ( $userdata['user_id'] )
+	if ( $user->data['user_id'] )
 	{
 		$redirect = ( isset($post_id) ) ? "p=$post_id" : "t=$topic_id";
 		$redirect .= ( isset($start) ) ? "&start=$start" : '';
 		redirect('login.' . $phpEx . $SID . '&redirect=viewtopic.' . $phpEx . '&' . $redirect);
 	}
 
-	message_die(MESSAGE, $lang['Sorry_auth_read']);
+	message_die(MESSAGE, $user->lang['Sorry_auth_read']);
 }
 //
 // End auth check
@@ -181,13 +177,13 @@ if ( !empty($post_id) )
 
 $s_watching_topic = '';
 $s_watching_topic_img = '';
-watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $userdata['user_id'], $topic_id);
+watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id);
 
 //
 // Post ordering options
 //
-$previous_days = array(0 => $lang['All_Posts'], 1 => $lang['1_Day'], 7 => $lang['7_Days'], 14 => $lang['2_Weeks'], 30 => $lang['1_Month'], 90 => $lang['3_Months'], 180 => $lang['6_Months'], 364 => $lang['1_Year']);
-$sort_by_text = array('a' => $lang['Author'], 't' => $lang['Post_time'], 's' => $lang['Subject']);
+$previous_days = array(0 => $user->lang['All_Posts'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);
+$sort_by_text = array('a' => $user->lang['Author'], 't' => $user->lang['Post_time'], 's' => $user->lang['Subject']);
 $sort_by = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'pt.post_subject');
 
 if ( isset($_POST['sort']) )
@@ -245,7 +241,7 @@ foreach ( $sort_by_text as $key => $text )
 $select_sort .= '</select>';
 
 $select_sort_dir = '<select name="sort_dir">';
-$select_sort_dir .= ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $lang['Ascending'] . '</option><option value="d">' . $lang['Descending'] . '</option>' : '<option value="a">' . $lang['Ascending'] . '</option><option value="d" selected="selected">' . $lang['Descending'] . '</option>';
+$select_sort_dir .= ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $user->lang['Ascending'] . '</option><option value="d">' . $user->lang['Descending'] . '</option>' : '<option value="a">' . $user->lang['Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Descending'] . '</option>';
 $select_sort_dir .= '</select>';
 
 $select_post_days = '<select name="postdays">';
@@ -268,14 +264,14 @@ while ( $row = $db->sql_fetchrow($result) )
 $db->sql_freeresult($result);
 
 $rating = '';
-if ( $userdata['user_id'] )
+if ( $user->data['user_id'] )
 {
-	$rating_text = array(-5 => $lang['Very_poor'], -2 => $lang['Quite_poor'], 0 => $lang['Unrated'], 2 => $lang['Quite_good'], 5 => $lang['Very_good']);
+	$rating_text = array(-5 => $user->lang['Very_poor'], -2 => $user->lang['Quite_poor'], 0 => $user->lang['Unrated'], 2 => $user->lang['Quite_good'], 5 => $user->lang['Very_good']);
 
 	$sql = "SELECT rating
 		FROM " . TOPICS_RATINGS_TABLE . "
 		WHERE topic_id = $topic_id
-			AND user_id = " . $userdata['user_id'];
+			AND user_id = " . $user->data['user_id'];
 	$result = $db->sql_query($sql);
 
 	$user_rating = ( $row = $db->sql_fetchrow($result) ) ? $row['rating'] : 0;
@@ -332,11 +328,11 @@ $s_forum_rules = '';
 get_forum_rules('topic', $s_forum_rules, $forum_id);
 
 $topic_mod = '';
-$topic_mod .= ( $auth->acl_get('m_lock', $forum_id) ) ? ( ( $topic_status == TOPIC_UNLOCKED ) ? '<option value="lock">' . $lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $lang['Unlock_topic'] . '</option>' ) : '';
-$topic_mod .= ( $auth->acl_get('m_delete', $forum_id) ) ? '<option value="delete">' . $lang['Delete_topic'] . '</option>' : '';
-$topic_mod .= ( $auth->acl_get('m_move', $forum_id) ) ? '<option value="move">' . $lang['Move_topic'] . '</option>' : '';
-$topic_mod .= ( $auth->acl_get('m_split', $forum_id) ) ? '<option value="split">' . $lang['Split_topic'] . '</option>' : '';
-$topic_mod .= ( $auth->acl_get('m_merge', $forum_id) ) ? '<option value="merge">' . $lang['Merge_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->acl_get('m_lock', $forum_id) ) ? ( ( $topic_status == TOPIC_UNLOCKED ) ? '<option value="lock">' . $user->lang['Lock_topic'] . '</option>' : '<option value="unlock">' . $user->lang['Unlock_topic'] . '</option>' ) : '';
+$topic_mod .= ( $auth->acl_get('m_delete', $forum_id) ) ? '<option value="delete">' . $user->lang['Delete_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->acl_get('m_move', $forum_id) ) ? '<option value="move">' . $user->lang['Move_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->acl_get('m_split', $forum_id) ) ? '<option value="split">' . $user->lang['Split_topic'] . '</option>' : '';
+$topic_mod .= ( $auth->acl_get('m_merge', $forum_id) ) ? '<option value="merge">' . $user->lang['Merge_topic'] . '</option>' : '';
 
 //
 // If we've got a hightlight set pass it on to pagination.
@@ -353,13 +349,13 @@ $view_forum_url = 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id;
 $view_prev_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=previous';
 $view_next_topic_url = 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '&amp;view=next';
 
-$reply_img = ( $forum_status == FORUM_LOCKED || $topic_status == TOPIC_LOCKED ) ? create_img($theme['reply_locked'], $lang['Topic_locked']) : create_img($theme['reply_new'], $lang['Reply_to_topic']);
-$post_img = ( $forum_status == FORUM_LOCKED ) ? create_img($theme['post_locked'], $lang['Forum_locked']) : create_img($theme['post_new'], $lang['Post_new_topic']);
+$reply_img = ( $forum_status == FORUM_LOCKED || $topic_status == TOPIC_LOCKED ) ? $user->img('reply_locked', $user->lang['Topic_locked']) : $user->img('reply_new', $user->lang['Reply_to_topic']);
+$post_img = ( $forum_status == FORUM_LOCKED ) ? $user->img('post_locked', $user->lang['Forum_locked']) : $user->img('post_new', $user->lang['Post_new_topic']);
 
 //
 // Set a cookie for this topic
 //
-if ( $userdata['user_id'] )
+if ( $user->data['user_id'] )
 {
 	$mark_topics = ( isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t']) ) ? unserialize(stripslashes($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_t'])) : array();
 
@@ -376,10 +372,8 @@ $template->set_filenames(array(
 );
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
-//
 // Output page header
-//
-$page_title = $lang['View_topic'] .' - ' . $topic_title;
+$page_title = $user->lang['View_topic'] .' - ' . $topic_title;
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 if ( count($orig_word) )
@@ -387,37 +381,35 @@ if ( count($orig_word) )
 	$topic_title = preg_replace($orig_word, $replacement_word, $topic_title); // Censor topic title
 }
 
-//
 // Send vars to template
-//
 $template->assign_vars(array(
 	'FORUM_ID' => $forum_id,
     'FORUM_NAME' => $forum_name,
     'TOPIC_ID' => $topic_id,
     'TOPIC_TITLE' => $topic_title,
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )),
+	'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $board_config['posts_per_page'] ) + 1 ), ceil( $topic_replies / $board_config['posts_per_page'] )),
 
 	'POST_IMG' => $post_img,
 	'REPLY_IMG' => $reply_img,
 
-	'L_AUTHOR' => $lang['Author'],
-	'L_MESSAGE' => $lang['Message'],
-	'L_POSTED' => $lang['Posted'],
-	'L_POST_SUBJECT' => $lang['Post_subject'],
-	'L_VIEW_NEXT_TOPIC' => $lang['View_next_topic'],
-	'L_VIEW_PREVIOUS_TOPIC' => $lang['View_previous_topic'],
-	'L_BACK_TO_TOP' => $lang['Back_to_top'],
-	'L_DISPLAY_POSTS' => $lang['Display_posts'],
-	'L_LOCK_TOPIC' => $lang['Lock_topic'],
-	'L_UNLOCK_TOPIC' => $lang['Unlock_topic'],
-	'L_MOVE_TOPIC' => $lang['Move_topic'],
-	'L_SPLIT_TOPIC' => $lang['Split_topic'],
-	'L_DELETE_TOPIC' => $lang['Delete_topic'],
-	'L_GOTO_PAGE' => $lang['Goto_page'],
-	'L_SORT_BY' => $lang['Sort_by'],
-	'L_RATE_TOPIC' => $lang['Rate_topic'],
-	'L_QUICK_MOD' => $lang['Quick_mod'],
+	'L_AUTHOR' => $user->lang['Author'],
+	'L_MESSAGE' => $user->lang['Message'],
+	'L_POSTED' => $user->lang['Posted'],
+	'L_POST_SUBJECT' => $user->lang['Post_subject'],
+	'L_VIEW_NEXT_TOPIC' => $user->lang['View_next_topic'],
+	'L_VIEW_PREVIOUS_TOPIC' => $user->lang['View_previous_topic'],
+	'L_BACK_TO_TOP' => $user->lang['Back_to_top'],
+	'L_DISPLAY_POSTS' => $user->lang['Display_posts'],
+	'L_LOCK_TOPIC' => $user->lang['Lock_topic'],
+	'L_UNLOCK_TOPIC' => $user->lang['Unlock_topic'],
+	'L_MOVE_TOPIC' => $user->lang['Move_topic'],
+	'L_SPLIT_TOPIC' => $user->lang['Split_topic'],
+	'L_DELETE_TOPIC' => $user->lang['Delete_topic'],
+	'L_GOTO_PAGE' => $user->lang['Goto_page'],
+	'L_SORT_BY' => $user->lang['Sort_by'],
+	'L_RATE_TOPIC' => $user->lang['Rate_topic'],
+	'L_QUICK_MOD' => $user->lang['Quick_mod'],
 
 	'S_TOPIC_LINK' => 't',
 	'S_SELECT_SORT_DIR' => $select_sort_dir,
@@ -443,11 +435,11 @@ $template->assign_vars(array(
 //
 $nav_links['prev'] = array(
 	'url' => $view_prev_topic_url,
-	'title' => $lang['View_previous_topic']
+	'title' => $user->lang['View_previous_topic']
 );
 $nav_links['next'] = array(
 	'url' => $view_next_topic_url,
-	'title' => $lang['View_next_topic']
+	'title' => $user->lang['View_next_topic']
 );
 $nav_links['up'] = array(
 	'url' => $view_forum_url,
@@ -477,7 +469,7 @@ if ( !empty($poll_start) )
 		$sql = "SELECT vote_id
 			FROM " . VOTE_USERS_TABLE . "
 			WHERE vote_id = $vote_id
-				AND vote_user_id = " . $userdata['user_id'];
+				AND vote_user_id = " . $user->data['user_id'];
 		$result = $db->sql_query($sql);
 
 		$user_voted = ( $row = $db->sql_fetchrow($result) ) ? TRUE : 0;
@@ -507,7 +499,7 @@ if ( !empty($poll_start) )
 				$vote_percent = ( $vote_results_sum > 0 ) ? $vote_info[$i]['vote_result'] / $vote_results_sum : 0;
 				$poll_length = round($vote_percent * $board_config['vote_graphic_length']);
 				$vote_percent = sprintf("%.1d%%", ($vote_percent * 100));
-				$vote_graphic_img = create_img($theme['voting_graphic'] . ' width="' . $poll_length . '"', $vote_percent);
+				$vote_graphic_img = $user->img($theme['voting_graphic'] . ' width="' . $poll_length . '"', $vote_percent);
 
 				if ( count($orig_word) )
 				{
@@ -526,7 +518,7 @@ if ( !empty($poll_start) )
 			$template->assign_vars(array(
 				'S_HAS_POLL_DISPLAY' => true,
 
-				'L_TOTAL_VOTES' => $lang['Total_votes'],
+				'L_TOTAL_VOTES' => $user->lang['Total_votes'],
 				'TOTAL_VOTES' => $vote_results_sum)
 			);
 
@@ -549,8 +541,8 @@ if ( !empty($poll_start) )
 			$template->assign_vars(array(
 				'S_HAS_POLL_OPTIONS' => true,
 
-				'L_SUBMIT_VOTE' => $lang['Submit_vote'],
-				'L_VIEW_RESULTS' => $lang['View_results'],
+				'L_SUBMIT_VOTE' => $user->lang['Submit_vote'],
+				'L_VIEW_RESULTS' => $user->lang['View_results'],
 
 				'U_VIEW_RESULTS' => "viewtopic.$phpEx$SID&amp;t=$topic_id&amp;postdays=$post_days&amp;postorder=$post_order&amp;vote=viewresult")
 			);
@@ -600,15 +592,15 @@ if ( $row = $db->sql_fetchrow($result) )
 	do
 	{
 		$poster_id = $row['user_id'];
-		$poster = ( !$poster_id ) ? $lang['Guest'] : $row['username'];
+		$poster = ( !$poster_id ) ? $user->lang['Guest'] : $row['username'];
 
-		$poster_posts = ( $row['user_id'] ) ? $lang['Posts'] . ': ' . $row['user_posts'] : '';
+		$poster_posts = ( $row['user_id'] ) ? $user->lang['Posts'] . ': ' . $row['user_posts'] : '';
 
-		$poster_from = ( $row['user_from'] && $row['user_id'] ) ? $lang['Location'] . ': ' . $row['user_from'] : '';
+		$poster_from = ( $row['user_from'] && $row['user_id'] ) ? $user->lang['Location'] . ': ' . $row['user_from'] : '';
 
 		if ( !isset($poster_details[$poster_id]['joined']) )
 		{
-			$poster_details[$poster_id]['joined'] = ( $row['user_id'] ) ? $lang['Joined'] . ': ' . $user->format_date($row['user_regdate'], $lang['DATE_FORMAT']) : '';
+			$poster_details[$poster_id]['joined'] = ( $row['user_id'] ) ? $user->lang['Joined'] . ': ' . $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '';
 		}
 
 		if ( !isset($poster_details[$poster_id]['avatar']) )
@@ -669,25 +661,25 @@ if ( $row = $db->sql_fetchrow($result) )
 		if ( !$poster_id && $row['post_username'] != '' )
 		{
 			$poster = $row['post_username'];
-			$poster_rank = $lang['Guest'];
+			$poster_rank = $user->lang['Guest'];
 		}
 
 		if ( !isset($poster_details[$poster_id]['profile']) && $poster_id )
 		{
 			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
-			$poster_details[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
-			$poster_details[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+			$poster_details[$poster_id]['profile_img'] = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
+			$poster_details[$poster_id]['profile'] = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
 			$temp_url = "privmsg.$phpEx$SID&amp;mode=post&amp;u=$poster_id";
-			$poster_details[$poster_id]['pm_img'] = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
-			$poster_details[$poster_id]['pm'] = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+			$poster_details[$poster_id]['pm_img'] = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['Send_private_message']) . '</a>';
+			$poster_details[$poster_id]['pm'] = '<a href="' . $temp_url . '">' . $user->lang['Send_private_message'] . '</a>';
 
 			if ( !empty($row['user_viewemail']) || $auth->acl_get('m_', $forum_id) )
 			{
 				$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $poster_id : 'mailto:' . $row['user_email'];
 
-				$poster_details[$poster_id]['email_img'] = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
-				$poster_details[$poster_id]['email'] = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+				$poster_details[$poster_id]['email_img'] = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
+				$poster_details[$poster_id]['email'] = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
 			}
 			else
 			{
@@ -695,14 +687,14 @@ if ( $row = $db->sql_fetchrow($result) )
 				$poster_details[$poster_id]['email'] = '';
 			}
 
-			$poster_details[$poster_id]['www_img'] = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . create_img($theme['icon_www'], $lang['Visit_website']) . '</a>' : '';
-			$poster_details[$poster_id]['www'] = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+			$poster_details[$poster_id]['www_img'] = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
+			$poster_details[$poster_id]['www'] = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
 
 			if ( !empty($row['user_icq']) )
 			{
 				$poster_details[$poster_id]['icq_status_img'] = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-				$poster_details[$poster_id]['icq_img'] = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . create_img($theme['icon_icq'], $lang['ICQ']) . '</a>';
-				$poster_details[$poster_id]['icq'] =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+				$poster_details[$poster_id]['icq_img'] = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
+				$poster_details[$poster_id]['icq'] =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 			}
 			else
 			{
@@ -711,21 +703,21 @@ if ( $row = $db->sql_fetchrow($result) )
 				$poster_details[$poster_id]['icq'] = '';
 			}
 
-			$poster_details[$poster_id]['aim_img'] = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . create_img($theme['icon_aim'], $lang['AIM']) . '</a>' : '';
-			$poster_details[$poster_id]['aim'] = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+			$poster_details[$poster_id]['aim_img'] = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
+			$poster_details[$poster_id]['aim'] = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
 			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id";
-			$poster_details[$poster_id]['msn_img'] = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . create_img($theme['icon_msnm'], $lang['MSNM']) . '</a>' : '';
-			$poster_details[$poster_id]['msn'] = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+			$poster_details[$poster_id]['msn_img'] = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
+			$poster_details[$poster_id]['msn'] = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
-			$poster_details[$poster_id]['yim_img'] = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
-			$poster_details[$poster_id]['yim'] = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+			$poster_details[$poster_id]['yim_img'] = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
+			$poster_details[$poster_id]['yim'] = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
 
 			if ( $auth->acl_get('f_search', $forum_id) )
 			{
 				$temp_url = 'search.' . $phpEx . $SID . '&amp;search_author=' . urlencode($row['username']) .'"&amp;showresults=posts';
-				$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
-				$search ='<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
+				$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['Search_user_posts']) . '</a>';
+				$search ='<a href="' . $temp_url . '">' . $user->lang['Search_user_posts'] . '</a>';
 			}
 			else
 			{
@@ -759,14 +751,14 @@ if ( $row = $db->sql_fetchrow($result) )
 		// Non-user specific images/text
 		//
 		$temp_url = 'posting.' . $phpEx . $SID . '&amp;mode=quote&amp;p=' . $row['post_id'];
-		$quote_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_quote'], $lang['Reply_with_quote']) . '</a>';
-		$quote = '<a href="' . $temp_url . '">' . $lang['Reply_with_quote'] . '</a>';
+		$quote_img = '<a href="' . $temp_url . '">' . $user->img('icon_quote', $user->lang['Reply_with_quote']) . '</a>';
+		$quote = '<a href="' . $temp_url . '">' . $user->lang['Reply_with_quote'] . '</a>';
 
-		if ( ( $userdata['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) ) || $auth->acl_get('m_edit', $forum_id) || $auth->acl_get('a_') )
+		if ( ( $user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) ) || $auth->acl_get('m_edit', $forum_id) || $auth->acl_get('a_') )
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=editpost&amp;p=" . $row['post_id'];
-			$edit_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_edit'], $lang['Edit_delete_post']) . '</a>';
-			$edit = '<a href="' . $temp_url . '">' . $lang['Edit_delete_post'] . '</a>';
+			$edit_img = '<a href="' . $temp_url . '">' . $user->img('icon_edit', $user->lang['Edit_delete_post']) . '</a>';
+			$edit = '<a href="' . $temp_url . '">' . $user->lang['Edit_delete_post'] . '</a>';
 		}
 		else
 		{
@@ -777,8 +769,8 @@ if ( $row = $db->sql_fetchrow($result) )
 		if ( $auth->acl_get('m_ip', $forum_id) )
 		{
 			$temp_url = "modcp.$phpEx$SID&amp;mode=ip&amp;p=" . $row['post_id'] . "&amp;t=" . $topic_id;
-			$ip_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_ip'], $lang['View_IP']) . '</a>';
-			$ip = '<a href="' . $temp_url . '">' . $lang['View_IP'] . '</a>';
+			$ip_img = '<a href="' . $temp_url . '">' . $user->img('icon_ip', $user->lang['View_IP']) . '</a>';
+			$ip = '<a href="' . $temp_url . '">' . $user->lang['View_IP'] . '</a>';
 		}
 		else
 		{
@@ -786,11 +778,11 @@ if ( $row = $db->sql_fetchrow($result) )
 			$ip = '';
 		}
 
-		if ( ( $userdata['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $forum_topic_data['topic_last_post_id'] == $row['post_id'] ) || $auth->acl_get('m_delete', $forum_id) )
+		if ( ( $user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $forum_topic_data['topic_last_post_id'] == $row['post_id'] ) || $auth->acl_get('m_delete', $forum_id) )
 		{
 			$temp_url = "posting.$phpEx$SID&amp;mode=delete&amp;p=" . $row['post_id'];
-			$delpost_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_delete'], $lang['Delete_post']) . '</a>';
-			$delpost = '<a href="' . $temp_url . '">' . $lang['Delete_post'] . '</a>';
+			$delpost_img = '<a href="' . $temp_url . '">' . $user->img('icon_delete', $user->lang['Delete_post']) . '</a>';
+			$delpost = '<a href="' . $temp_url . '">' . $user->lang['Delete_post'] . '</a>';
 		}
 		else
 		{
@@ -932,7 +924,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		//
 		if ( $row['post_edit_count'] )
 		{
-			$l_edit_time_total = ( $row['post_edit_count'] == 1 ) ? $lang['Edited_time_total'] : $lang['Edited_times_total'];
+			$l_edit_time_total = ( $row['post_edit_count'] == 1 ) ? $user->lang['Edited_time_total'] : $user->lang['Edited_times_total'];
 
 			$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, $poster, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
@@ -951,7 +943,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 			if ( $user_sig != '' && $user_sig_bbcode_uid != '' && $auth->acl_get('f_sigs', $forum_id) )
 			{
-				if ( !$auth->acl_get('f_html', $forum_id) && $userdata['user_allowhtml'] )
+				if ( !$auth->acl_get('f_html', $forum_id) && $user->data['user_allowhtml'] )
 				{
 					$user_sig = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $user_sig);
 				}
@@ -981,7 +973,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		//
 		// Define the little post icon
 		//
-		$mini_post_img = ( $row['post_time'] > $userdata['user_lastvisit'] && $row['post_time'] > $topic_last_read ) ? create_img($theme['goto_post_new'], $lang['New_post']) : create_img($theme['goto_post'], $lang['Post']);
+		$mini_post_img = ( $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read ) ? $user->img('goto_post_new', $user->lang['New_post']) : $user->img('goto_post', $user->lang['Post']);
 
 		//
 		// Again this will be handled by the templating
@@ -1039,12 +1031,14 @@ if ( $row = $db->sql_fetchrow($result) )
 			'U_MINI_POST' => $mini_post_url,
 			'U_POST_ID' => $row['post_id'])
 		);
+
+		$i++;
 	}
 	while ( $row = $db->sql_fetchrow($result) );
 }
 else
 {
-	message_die(MESSAGE, $lang['No_posts_topic']);
+	message_die(MESSAGE, $user->lang['No_posts_topic']);
 }
 
 //

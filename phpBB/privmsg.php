@@ -73,15 +73,13 @@ else
 //
 if ( $cancel )
 {
-	$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
-	header($header_location . "privmsg.$phpEx$SIDfolder=$folder");
-	exit;
+	redirect("privmsg.$phpEx$SIDfolder=$folder");
 }
 
 // Start session management
-$userdata = $session->start();
-$auth->acl($userdata);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 //

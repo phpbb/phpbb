@@ -53,57 +53,42 @@ foreach ($forum_rows as $row)
 	switch ($forum_status)
 	{
 		case ITEM_CATEGORY:
-			$folder_image = $theme['sub_forum'];
-			$folder_alt = $lang['Category'];
+			$folder_image = 'sub_forum';
+			$folder_alt = 'Category';
 		break;
 
 		case ITEM_LOCKED:
-			$folder_image = $theme['forum_locked'];
-			$folder_alt = $lang['Forum_locked'];
+			$folder_image = 'forum_locked';
+			$folder_alt = 'Forum_locked';
 		break;
 
 		default:
 			$unread_topics = false;
-			if ($userdata['user_id'] && $forum_last_post_time > $userdata['user_lastvisit'])
+			if ($user->data['user_id'] && $forum_last_post_time > $user->data['user_lastvisit'])
 			{
 				$unread_topics = true;
-				if (isset($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all']))
-				{
-					if ($HTTP_COOKIE_VARS[$board_config['cookie_name'] . '_f_all'] > $forum_last_post_time)
-					{
-						$unread_topics = false;
-					}
-				}
-
-				if (isset($mark_topics[$forum_id]) || isset($mark_forums[$forum_id]))
-				{
-					if ($mark_forums[$forum_id] > $userdata['user_lastvisit'] || !max($mark_topics[$forum_id]))
-					{
-						$unread_topics = false;
-					}
-				}
 			}
 
-			$folder_image = ($unread_topics) ? $theme['forum_new'] : $theme['forum'];
-			$folder_alt = ($unread_topics) ? $lang['New_posts'] : $lang['No_new_posts'];
+			$folder_image = ($unread_topics) ? 'forum_new' : 'forum';
+			$folder_alt = ($unread_topics) ? 'New_posts' : 'No_new_posts';
 	}
 
 	if ($forum_last_post_id)
 	{
-		$last_post = create_date($board_config['default_dateformat'], $forum_last_post_time, $board_config['board_timezone']) . '<br />';
+		$last_post = $user->format_date($forum_last_post_time) . '<br />';
 
-		$last_post .= ($forum_last_poster_id == ANONYMOUS) ? (($forum_last_poster_name != '') ? $forum_last_poster_name . ' ' : $lang['Guest'] . ' ') : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $forum_last_poster_id . '">' . $username . '</a> ';
+		$last_post .= ($forum_last_poster_id == ANONYMOUS) ? (($forum_last_poster_name != '') ? $forum_last_poster_name . ' ' : $user->lang['Guest'] . ' ') : '<a href="profile.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u='  . $forum_last_poster_id . '">' . $username . '</a> ';
 
-		$last_post .= '<a href="viewtopic.' . $phpEx . '$SID&amp;f=' . $forum_id . '&amp;p=' . $forum_last_post_id . '#' . $forum_last_post_id . '">' . create_img($theme['goto_post_latest'], $lang['View_latest_post']) . '</a>';
+		$last_post .= '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;p=' . $forum_last_post_id . '#' . $forum_last_post_id . '">' . $user->img('goto_post_latest', 'View_latest_post') . '</a>';
 	}
 	else
 	{
-		$last_post = $lang['No_Posts'];
+		$last_post = $user->lang['No_Posts'];
 	}
 
 	if (!empty($forum_moderators[$forum_id]))
 	{
-		$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $lang['Moderator'] . ': ' : $lang['Moderators'] . ': ' ;
+		$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['Moderator'] . ': ' : $user->lang['Moderators'] . ': ' ;
 		$moderators_list = implode(', ', $forum_moderators[$forum_id]);
 	}
 	else
@@ -127,7 +112,7 @@ foreach ($forum_rows as $row)
 		}
 		$subforums_list = implode(', ', $links);
 
-		$l_subforums = (count($subforums[$forum_id]) == 1) ? $lang['Subforum'] . ': ' : $lang['Subforums'] . ': ';
+		$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['Subforum'] . ': ' : $user->lang['Subforums'] . ': ';
 	}
 	else
 	{
@@ -157,7 +142,7 @@ foreach ($forum_rows as $row)
 	$template->assign_block_vars('forumrow', array(
 		$forum_type_switch	=>	TRUE,
 
-		'FORUM_FOLDER_IMG'	=>	create_img($folder_image, $folder_alt),
+		'FORUM_FOLDER_IMG'	=>	$user->img($folder_image, $folder_alt),
 		'FORUM_NAME'		=>	$forum_name,
 		'FORUM_DESC'		=>	$forum_desc,
 

@@ -44,7 +44,7 @@ class sql_db
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->password = $sqlpassword;
-		$this->server = $sqlserver . ( ( $port ) ? ':' . $port : '' ); 
+		$this->server = $sqlserver . ( ( $port ) ? ':' . $port : '' );
 		$this->dbname = $database;
 
 		$this->db_connect_id = ( $this->persistency ) ? @mysql_pconnect($this->server, $this->user, $this->password) : @mysql_connect($this->server, $this->user, $this->password);
@@ -117,7 +117,7 @@ class sql_db
 	//
 	// Base query method
 	//
-	function sql_query($query = '', $transaction = false)
+	function sql_query($query = '')
 	{
 		if ($query != '')
 		{
@@ -181,10 +181,10 @@ class sql_db
 			return false;
 		}
 
-		return ( $this->query_result) ? $this->query_result : ( ( $transaction == END_TRANSACTION ) ? true : false );
+		return ( $this->query_result) ? $this->query_result : fals;
 	}
 
-	function sql_query_limit($query = '', $total, $offset = 0, $transaction = false)
+	function sql_query_limit($query = '', $total, $offset = 0)
 	{
 		if ( $query != '' )
 		{
@@ -205,7 +205,7 @@ class sql_db
 	}
 
 	// Idea for this from Ikonboard
-	function sql_query_array($query = '', $assoc_ary = false, $transaction = false)
+	function sql_query_array($query = '', $assoc_ary = false)
 	{
 		if (!is_array($assoc_ary))
 		{
@@ -392,8 +392,8 @@ class sql_db
 			$this_page = ( !empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
 			$this_page .= '&' . ( ( !empty($_SERVER['QUERY_STRING']) ) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING'] );
 
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>PAGE</u><br /><br />'  . $this_page . ( ( $sql != '' ) ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '' ) . '<br />';
-			message_die(ERROR, $message);
+			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . $this_page . ( ( $sql != '' ) ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '' ) . '<br />';
+			trigger_error($message, E_USER_ERROR);
 		}
 
 		$result['message'] = @mysql_error();

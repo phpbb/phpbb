@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-$lang = array_merge($lang, array(
+$this->lang = array_merge($this->lang, array(
 	'ENCODING' => 'iso-8859-15',
 	'DIRECTION' => 'ltr',
 	'LEFT' => 'left',
@@ -72,6 +72,7 @@ $lang = array_merge($lang, array(
 	'Next' => 'Next',
 	'Previous' => 'Previous',
 	'Goto_page' => 'Goto page',
+	'Start_page' => 'Make my start page',
 	'Joined' => 'Joined',
 	'IP_Address' => 'IP Address',
 	'Select_forum' => 'Select a forum',

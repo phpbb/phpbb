@@ -36,9 +36,8 @@ if ( !empty($setmodules) )
 }
 
 define('IN_PHPBB', 1);
-//
+
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
@@ -47,7 +46,7 @@ require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 // Do we have forum admin permissions?
 if ( !$auth->acl_get('a_auth') )
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 // Define some vars
@@ -71,76 +70,54 @@ else
 	$mode = '';
 }
 
-//
 // Start program proper
-//
 switch ( $mode )
 {
 	case 'forums':
-		$l_title = $lang['Permissions'];
-		$l_title_explain = $lang['Permissions_explain'];
+		$l_title = $user->lang['Permissions'];
+		$l_title_explain = $user->lang['Permissions_explain'];
 		$l_can = '_can';
 		break;
 	case 'moderators':
-		$l_title = $lang['Moderators'];
-		$l_title_explain = $lang['Moderators_explain'];
+		$l_title = $user->lang['Moderators'];
+		$l_title_explain = $user->lang['Moderators_explain'];
 		$l_can = '_can';
 		break;
 	case 'supermoderators':
-		$l_title = $lang['Super_Moderators'];
-		$l_title_explain = $lang['Super_Moderators_explain'];
+		$l_title = $user->lang['Super_Moderators'];
+		$l_title_explain = $user->lang['Super_Moderators_explain'];
 		$l_can = '_can';
 		break;
 	case 'administrators':
-		$l_title = $lang['Administrators'];
-		$l_title_explain = $lang['Administrators_explain'];
+		$l_title = $user->lang['Administrators'];
+		$l_title_explain = $user->lang['Administrators_explain'];
 		$l_can = '_can_admin';
 		break;
 }
 
-//
-// Brief explanation of how things work when updating ...
-//
-// Granting someone any admin permissions grants them permissions
-// to all other options, e.g. Moderator and Forums across the board.
-// This is done via the acl class
-//
+// Call update or delete, both can take multiple user/group
+// ids. Additionally inheritance is handled (by the auth API)
 if ( isset($_POST['update']) )
 {
 	$auth_admin = new auth_admin();
 
-	switch ( $_POST['type'] )
+	// Admin wants subforums to inherit permissions ... so handle this
+	if ( !empty($_POST['inherit']) )
 	{
-		case 'user':
-			$set = 'acl_set_user';
-			break;
-
-		case 'group':
-			$set = 'acl_set_group';
-			break;
+		array_push($_POST['inherit'], $forum_id);
+		$forum_id = $_POST['inherit'];
 	}
 
 	foreach ( $_POST['entries'] as $id )
 	{
-		$auth_admin->$set($forum_id, $id, $_POST['option']);
+		$auth_admin->acl_set($_POST['type'], $forum_id, $id, $_POST['option']);
 	}
 
-	message_die(MESSAGE, 'Permissions updated successfully');
+	trigger_error('Permissions updated successfully');
 }
 else if ( isset($_POST['delete']) )
 {
 	$auth_admin = new auth_admin();
-
-	switch ( $_POST['type'] )
-	{
-		case 'user':
-			$set = 'acl_delete_user';
-			break;
-
-		case 'group':
-			$set = 'acl_delete_group';
-			break;
-	}
 
 	$option_ids = false;
 	if ( !empty($_POST['option']) )
@@ -164,23 +141,21 @@ else if ( isset($_POST['delete']) )
 
 	foreach ( $_POST['entries'] as $id )
 	{
-		$auth_admin->$set($forum_id, $id, $option_ids);
+		$auth_admin->acl_delete($_POST['type'], $forum_id, $id, $option_ids);
 	}
 
-	message_die(MESSAGE, 'Permissions updated successfully');
+	trigger_error('Permissions updated successfully');
 }
 
-//
 // Get required information, either all forums if
 // no id was specified or just the requsted if it
 // was
-//
 if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators' )
 {
-	//
+//
 	// Clear some vars, grab some info if relevant ...
-	//
 	$s_hidden_fields = '';
+
 	if ( !empty($forum_id) )
 	{
 		$sql = "SELECT forum_name
@@ -194,16 +169,12 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		$l_title .= ' : <i>' . $forum_info['forum_name'] . '</i>';
 	}
 
-	//
 	// Generate header
-	//
 	page_header($l_title);
 
 ?>
 
 <h1><?php echo $l_title; ?></h1>
-
-<p><?php echo $l_title_explain; ?></p>
 
 <?php
 
@@ -238,7 +209,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 	$group_list = '';
 	while ( $row = $db->sql_fetchrow($result) )
 	{
-		$group_list .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($lang[$row['group_name']]) ) ? $lang[$row['group_name']] : $row['group_name'] ) . '</option>';
+		$group_list .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($user->lang[$row['group_name']]) ) ? $user->lang[$row['group_name']] : $row['group_name'] ) . '</option>';
 	}
 	$db->sql_freeresult($result);
 
@@ -247,10 +218,12 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 ?>
 
+<p><?php echo $l_title_explain; ?></p>
+
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
-		<td align="center"><h1><?php echo $lang['Users']; ?></h1></td>
-		<td align="center"><h1><?php echo $lang['Groups']; ?></h1></td>
+		<td align="center"><h1><?php echo $user->lang['Users']; ?></h1></td>
+		<td align="center"><h1><?php echo $user->lang['Groups']; ?></h1></td>
 	</tr>
 	<tr>
 
@@ -275,13 +248,13 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 ?>
 			<tr>
-				<th><?php echo $lang['Manage_users']; ?></th>
+				<th><?php echo $user->lang['Manage_users']; ?></th>
 			</tr>
 			<tr>
 				<td class="row1" align="center"><select style="width:280px" name="entries[]" multiple="multiple" size="5"><?php echo $users; ?></select></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $lang['Advanced']; ?>" /><input type="hidden" name="type" value="user" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="option" value="<?php echo $type_sql; ?>" /></td>
+				<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $user->lang['Advanced']; ?>" /><input type="hidden" name="type" value="user" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="option" value="<?php echo $type_sql; ?>" /></td>
 			</tr>
 		</table></form></td>
 
@@ -300,19 +273,19 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		$groups = '';
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$groups .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($lang[$row['group_name']]) ) ? $lang[$row['group_name']] : $row['group_name'] ) . '</option>';
+			$groups .= '<option value="' . $row['group_id'] . '">' . ( ( !empty($user->lang[$row['group_name']]) ) ? $user->lang[$row['group_name']] : $row['group_name'] ) . '</option>';
 		}
 		$db->sql_freeresult($result);
 
 ?>
 		<tr>
-			<th><?php echo $lang['Manage_groups']; ?></th>
+			<th><?php echo $user->lang['Manage_groups']; ?></th>
 		</tr>
 		<tr>
 			<td class="row1" align="center"><select style="width:280px" name="entries[]" multiple="multiple" size="5"><?php echo $groups; ?></select></td>
 		</tr>
 		<tr>
-			<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $lang['Advanced']; ?>" /><input type="hidden" name="type" value="group" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="option" value="<?php echo $type_sql; ?>" /></td>
+			<td class="cat" align="center"><input class="liteoption" type="submit" name="delete" value="<?php echo $user->lang['Remove_selected']; ?>" /> &nbsp; <input class="liteoption" type="submit" name="advanced" value="<?php echo $user->lang['Advanced']; ?>" /><input type="hidden" name="type" value="group" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="option" value="<?php echo $type_sql; ?>" /></td>
 		</tr>
 	</table></form></td>
 
@@ -321,25 +294,25 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
 			<tr>
-				<th><?php echo $lang['Add_users']; ?></th>
+				<th><?php echo $user->lang['Add_users']; ?></th>
 			</tr>
 			<tr>
 				<td class="row1" align="center"><textarea cols="40" rows="4" name="entries"></textarea></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $lang['Find_username']; ?>" class="liteoption" onClick="window.open('<?php echo "../search.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" />&nbsp; <input type="submit" name="usersubmit" value="<?php echo $user->lang['Find_username']; ?>" class="liteoption" onclick="window.open('<?php echo "../search.$phpEx$SID"; ?>&amp;mode=searchuser&amp;form=2&amp;field=entries', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=650');return false;" /><input type="hidden" name="type" value="user" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
 
 		<td><form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table width="90%" class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 			<tr>
-				<th><?php echo $lang['Add_groups']; ?></th>
+				<th><?php echo $user->lang['Add_groups']; ?></th>
 			</tr>
 			<tr>
 				<td class="row1" align="center"><select name="entries[]" multiple="multiple" size="4"><?php echo $group_list; ?></select></td>
 			</tr>
 			<tr>
-				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /><input type="hidden" name="type" value="group" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
+				<td class="cat" align="center"> <input type="submit" name="add" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" />&nbsp; <input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" /><input type="hidden" name="type" value="group" /><input type="hidden" name="advanced" value="1" /><input type="hidden" name="new" value="1" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /></td>
 			</tr>
 		</table></form></td>
 
@@ -403,7 +376,7 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		$auth = array();
 		while ( $row = $db->sql_fetchrow($result) )
 		{
-			$ug_test = ( !empty($lang[$row['name']]) ) ? $lang[$row['name']] : $row['name'];
+			$ug_test = ( !empty($user->lang[$row['name']]) ) ? $user->lang[$row['name']] : $row['name'];
 			$ug .= ( !strstr($ug, $ug_test) ) ? $ug_test . "\n" : '';
 
 			$ug_test = '<input type="hidden" name="entries[]" value="' . $row['id'] . '" />';
@@ -415,17 +388,80 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 
 ?>
 
-<p><?php echo $lang['Permissions_extra_explain']; ?></p>
+<script language="Javascript" type="text/javascript">
+<!--
 
-<p><?php echo $lang['Permissions_extra2_explain']; ?></p>
+	// NEEDS COMPLETING ... OR SCRAPPING :D
+	quick_options = new Array();
+	quick_options['basic'] = new Array();
+	quick_options['basic']['allow'] = '34, 36,';
+	quick_options['basic']['deny'] = '35,';
+	quick_options['basic']['inherit'] = '';
+	quick_options['advanced'] = new Array();
 
-<form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	function marklist(match, status)
+	{
+		for (i = 0; i < document.acl.length; i++)
+		{
+			if (document.acl.elements[i].name.indexOf(match) == 0)
+				document.acl.elements[i].checked = status;
+		}
+	}
+
+	function quick_set(option)
+	{
+		if (option)
+		{
+			var expr = new RegExp(/\d+/);
+			for (i = 0; i < document.acl.length; i++)
+			{
+				var elem = document.acl.elements[i];
+				if (elem.name.indexOf('option') == 0)
+				{
+					switch (option)
+					{
+						case 'all_allow':
+							if (elem.value == <?php echo ACL_ALLOW; ?>)
+								elem.checked = true;
+							break;
+						case 'all_deny':
+							if (elem.value == <?php echo ACL_DENY; ?>)
+								elem.checked = true;
+							break;
+						case 'all_inherit':
+							if (elem.value == <?php echo ACL_INHERIT; ?>)
+								elem.checked = true;
+							break;
+						default:
+							option_id = elem.name.match(expr)[0];
+							if (quick_options[option]['allow'].indexOf(option_id + ',') != -1 && elem.value == <?php echo ACL_ALLOW; ?>)
+								elem.checked = true;
+							else if (quick_options[option]['deny'].indexOf(option_id + ',') != -1 && elem.value == <?php echo ACL_DENY; ?>)
+								elem.checked = true;
+							else if (quick_options[option]['inherit'].indexOf(option_id + ',') != -1 && elem.value == <?php echo ACL_INHERIT; ?>)
+								elem.checked = true;
+							break;
+					}
+				}
+			}
+		}
+	}
+//-->
+</script>
+
+<p><?php echo $user->lang['ACL_explain']; ?></p>
+
+<form method="post" name="acl" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table cellspacing="1" cellpadding="0" border="0" align="center">
 	<tr>
-		<th>&nbsp;<?php echo $lang[$l_type . $l_can]; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $lang['Permit']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $lang['Allow']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $lang['Deny']; ?>&nbsp;</th>
-		<th>&nbsp;<?php echo $lang['Prevent']; ?>&nbsp;</th>
+		<td align="right">Quick settings: <select name="set" onchange="quick_set(this.options[this.selectedIndex].value);"><option><?php echo '-- ' . $user->lang['Select'] . ' --'; ?></option><option value="all_allow"><?php echo $user->lang['All_Allow']; ?></option><option value="all_deny"><?php echo $user->lang['All_Deny']; ?></option><option value="all_inherit"><?php echo $user->lang['All_Inherit']; ?></option><option value="basic"><?php echo $user->lang['Basic']; ?></option><option value="advanced"><?php echo $user->lang['Advanced']; ?></option></select></td>
+	</tr>
+	<tr>
+		<td><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
+	<tr>
+		<th>&nbsp;<?php echo $user->lang['Option']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['Allow']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['Deny']; ?>&nbsp;</th>
+		<th>&nbsp;<?php echo $user->lang['Inherit']; ?>&nbsp;</th>
 	</tr>
 <?php
 
@@ -433,34 +469,72 @@ if ( !empty($forum_id) || $mode == 'administrators' || $mode == 'supermoderators
 		{
 			$row_class = ( $row_class == 'row1' ) ? 'row2' : 'row1';
 
-			$l_can_cell = ( !empty($lang['acl_' . $auth_options[$i]['auth_value']]) ) ? $lang['acl_' . $auth_options[$i]['auth_value']] : $auth_options[$i]['auth_value'];
+			$l_can_cell = ( !empty($user->lang['acl_' . $auth_options[$i]['auth_value']]) ) ? $user->lang['acl_' . $auth_options[$i]['auth_value']] : ucfirst(preg_replace('#.*?_#', '', $auth_options[$i]['auth_value']));
 
-			$permit_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_PERMIT ) ? ' checked="checked"' : '';
 			$allow_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_ALLOW ) ? ' checked="checked"' : '';
 			$deny_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_DENY ) ? ' checked="checked"' : '';
-			$prevent_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_PREVENT ) ? ' checked="checked"' : '';
+			$inherit_type = ( $auth[$auth_options[$i]['auth_value']] == ACL_INHERIT ) ? ' checked="checked"' : '';
 
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $l_can_cell; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PERMIT; ?>"<?php echo $permit_type; ?> /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_ALLOW; ?>"<?php echo $allow_type; ?> /></td>
 		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_DENY; ?>"<?php echo $deny_type; ?> /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_PREVENT; ?>"<?php echo $prevent_type; ?> /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input type="radio" name="option[<?php echo $auth_options[$i]['auth_option_id']; ?>]" value="<?php echo ACL_INHERIT; ?>"<?php echo $inherit_type; ?> /></td>
 	</tr>
 <?php
 
 		}
 
+		if ( $type_sql == 'f' || $type_sql == 'm' )
+		{
+			$children = get_forum_branch($forum_id, 'children', 'descending', false);
+
+			if ( !empty($children) )
+			{
 ?>
 	<tr>
-		<th colspan="5"><?php echo $lang['Applies_to_' . $l_type]; ?></th>
+		<th colspan="4"><?php echo $user->lang['Inheritance']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" colspan="5" align="center"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
+		<td class="row1" colspan="4"><table width="100%" cellspacing="1" cellpadding="0" border="0">
+			<tr>
+				<td colspan="4" height="16"><span class="gensmall"><?php echo $user->lang['Inheritance_explain']; ?></span></td>
+			</tr>
+<?php
+				foreach ( $children as $row )
+				{
+
+?>
+			<tr>
+				<td><input type="checkbox" name="inherit[]" value="<?php echo $row['forum_id']; ?>" /> <?php echo $row['forum_name']; ?></td>
+			</tr>
+<?php
+
+				}
+
+?>
+			<tr>
+				<td height="16" align="center"><a class="gensmall" href="javascript:marklist('inherit', true);"><?php echo $user->lang['Mark_all']; ?></a> :: <a href="javascript:marklist('inherit', false);" class="gensmall"><?php echo $user->lang['Unmark_all']; ?></a></td>
+			</tr>
+		</table></td>
+	</tr>
+<?php
+
+			}
+		}
+
+?>
+	<tr>
+		<td class="cat" colspan="4" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $user->lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $user->lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $_POST['type']; ?>" /><?php echo $ug_hidden; ?></td>
+	</tr>
+	<!-- tr>
+		<th colspan="4"><?php echo $user->lang['Applies_to_' . $l_type]; ?></th>
 	</tr>
 	<tr>
-		<td class="cat" colspan="5" align="center"><input class="mainoption" type="submit" name="update" value="<?php echo $lang['Update']; ?>" />&nbsp;&nbsp;<input class="liteoption" type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" /><input type="hidden" name="f" value="<?php echo $forum_id; ?>" /><input type="hidden" name="type" value="<?php echo $_POST['type']; ?>" /><?php echo $ug_hidden; ?></td>
+		<td class="row1" colspan="4" align="center"><textarea cols="40" rows="3"><?php echo trim($ug); ?></textarea></td>
+	</tr -->
+</table></td>
 	</tr>
 </table></form>
 
@@ -484,10 +558,10 @@ else
 
 <form method="post" action="<?php echo "admin_permissions.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th align="center"><?php echo $lang['Select_a_Forum']; ?></th>
+		<th align="center"><?php echo $user->lang['Select_a_Forum']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select> &nbsp;<input type="submit" value="<?php echo $lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="row1" align="center">&nbsp;<select name="f"><?php echo $select_list; ?></select> &nbsp;<input type="submit" value="<?php echo $user->lang['Look_up_Forum']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 

@@ -92,7 +92,7 @@ if ( $mode != '' )
 		{
 			if ( empty($rank_id) )
 			{
-				message_die(MESSAGE, $lang['Must_select_rank']);
+				message_die(MESSAGE, $user->lang['Must_select_rank']);
 			}
 
 			$sql = "SELECT * FROM " . RANKS_TABLE . "
@@ -108,36 +108,36 @@ if ( $mode != '' )
 			$rank_info['rank_special'] = 0;
 		}
 
-		page_header($lang['Ranks']);
+		page_header($user->lang['Ranks']);
 
 ?>
 
-<h1><?php echo $lang['Ranks']; ?></h1>
+<h1><?php echo $user->lang['Ranks']; ?></h1>
 
-<p><?php echo $lang['Ranks_explain']; ?></p>
+<p><?php echo $user->lang['Ranks_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="2"><?php echo $lang['Ranks']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Ranks']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" width="40%"><?php echo $lang['Rank_title']; ?>: </td>
+		<td class="row1" width="40%"><?php echo $user->lang['Rank_title']; ?>: </td>
 		<td class="row2"><input type="text" name="title" size="35" maxlength="40" value="<?php echo $rank_info['rank_title']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%"><?php echo $lang['Rank_special']; ?>: </td>
-		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ( $rank_info['rank_special'] ) ? ' checked="checked"' : ''; ?> /><?php echo $lang['Yes']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo ( !$rank_info['rank_special'] ) ? ' checked="checked"' : ''; ?> /> <?php echo $lang['No']; ?></td>
+		<td class="row1" width="40%"><?php echo $user->lang['Rank_special']; ?>: </td>
+		<td class="row2"><input type="radio" name="special_rank" value="1"<?php echo ( $rank_info['rank_special'] ) ? ' checked="checked"' : ''; ?> /><?php echo $user->lang['Yes']; ?> &nbsp;&nbsp;<input type="radio" name="special_rank" value="0"<?php echo ( !$rank_info['rank_special'] ) ? ' checked="checked"' : ''; ?> /> <?php echo $user->lang['No']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%"><?php echo $lang['Rank_minimum']; ?>: </td>
+		<td class="row1" width="40%"><?php echo $user->lang['Rank_minimum']; ?>: </td>
 		<td class="row2"><input type="text" name="min_posts" size="5" maxlength="10" value="<?php echo ( $rank_info['rank_special'] ) ? '' : $rank_info['rank_min']; ?>" /></td>
 	</tr>
 	<tr>
-		<td class="row1" width="40%"><?php echo $lang['Rank_image']; ?>: <br /><span class="gensmall"><?php echo $lang['Rank_image_explain']; ?></span></td>
+		<td class="row1" width="40%"><?php echo $user->lang['Rank_image']; ?>: <br /><span class="gensmall"><?php echo $user->lang['Rank_image_explain']; ?></span></td>
 		<td class="row2"><input type="text" name="rank_image" size="40" maxlength="255" value="<?php echo ( $rank_info['rank_image'] != '' ) ? $rank_info['rank_image'] : ''; ?>" /><br /><?php echo ( $rank_info['rank_image'] != '' ) ? '<img src="../' . $rank_info['rank_image'] . '" />' : ''; ?></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $lang['Submit']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $lang['Reset']; ?>" class="liteoption" /></td>
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="submit" name="submit" value="<?php echo $user->lang['Submit']; ?>" class="mainoption" />&nbsp;&nbsp;<input type="reset" value="<?php echo $user->lang['Reset']; ?>" class="liteoption" /></td>
 	</tr>
 </table></form>
 
@@ -160,7 +160,7 @@ if ( $mode != '' )
 
 		if ( $rank_title == '' )
 		{
-			message_die(MESSAGE, $lang['Must_select_rank']);
+			message_die(MESSAGE, $user->lang['Must_select_rank']);
 		}
 
 		if ( $special_rank == 1 )
@@ -185,19 +185,19 @@ if ( $mode != '' )
 				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
 				WHERE rank_id = $rank_id";
 
-			$message = $lang['Rank_updated'];
+			$message = $user->lang['Rank_updated'];
 		}
 		else
 		{
 			$sql = "INSERT INTO " . RANKS_TABLE . " (rank_title, rank_special, rank_min, rank_image)
 				VALUES ('" . str_replace("\'", "''", $rank_title) . "', $special_rank, $min_posts, '" . str_replace("\'", "''", $rank_image) . "')";
 
-			$message = $lang['Rank_added'];
+			$message = $user->lang['Rank_added'];
 		}
 
 		$db->sql_query($sql);
 
-		$message .= '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
 		message_die(MESSAGE, $message);
 
@@ -228,33 +228,33 @@ if ( $mode != '' )
 				WHERE user_rank = $rank_id";
 			$db->sql_query($sql);
 
-			$message = $lang['Rank_removed'] . '<br /><br />' . sprintf($lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
+			$message = $user->lang['Rank_removed'] . '<br /><br />' . sprintf($user->lang['Click_return_rankadmin'], '<a href="' . "admin_ranks.$phpEx$SID" . '">', '</a>') . '<br /><br />' . sprintf($user->lang['Click_return_admin_index'], '<a href="' . "index.$phpEx$SID&amp;pane=right" . '">', '</a>');
 
 			message_die(MESSAGE, $message);
 
 		}
 		else
 		{
-			message_die(MESSAGE, $lang['Must_select_rank']);
+			message_die(MESSAGE, $user->lang['Must_select_rank']);
 		}
 	}
 }
 
-page_header($lang['Ranks']);
+page_header($user->lang['Ranks']);
 
 ?>
 
-<h1><?php echo $lang['Ranks']; ?></h1>
+<h1><?php echo $user->lang['Ranks']; ?></h1>
 
-<p><?php echo $lang['Ranks_explain']; ?></p>
+<p><?php echo $user->lang['Ranks_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_ranks.$phpEx$SID"; ?>"><table class="bg" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th><?php echo $lang['Rank_title']; ?></th>
-        <th><?php echo $lang['Rank_minimum']; ?></th>
-		<th><?php echo $lang['Rank_special']; ?></th>
-		<th><?php echo $lang['Edit']; ?></th>
-		<th><?php echo $lang['Delete']; ?></th>
+		<th><?php echo $user->lang['Rank_title']; ?></th>
+        <th><?php echo $user->lang['Rank_minimum']; ?></th>
+		<th><?php echo $user->lang['Rank_special']; ?></th>
+		<th><?php echo $user->lang['Edit']; ?></th>
+		<th><?php echo $user->lang['Delete']; ?></th>
 	</tr>
 <?php
 
@@ -274,9 +274,9 @@ if ( $row = $db->sql_fetchrow($result) )
 	<tr>
 		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['rank_title']; ?></td>
         <td class="<?php echo $row_class; ?>" align="center"><?php echo ( $row['rank_special'] ) ? '-' : $row['rank_min']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo ( $row['rank_special'] ) ? $lang['Yes'] : $lang['No']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=" . $row['rank_id']; ?>"><?php echo $lang['Edit']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=" . $row['rank_id']; ?>"><?php echo $lang['Delete']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><?php echo ( $row['rank_special'] ) ? $user->lang['Yes'] : $user->lang['No']; ?></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=edit&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['Edit']; ?></a></td>
+		<td class="<?php echo $row_class; ?>" align="center"><a href="<?php echo "admin_ranks.$phpEx$SID&amp;mode=delete&amp;id=" . $row['rank_id']; ?>"><?php echo $user->lang['Delete']; ?></a></td>
 	</tr>
 <?php
 
@@ -286,7 +286,7 @@ if ( $row = $db->sql_fetchrow($result) )
 
 ?>
 	<tr>
-		<td class="cat" colspan="6" align="center"><input type="submit" class="mainoption" name="add" value="<?php echo $lang['Add_new_rank']; ?>" /></td>
+		<td class="cat" colspan="6" align="center"><input type="submit" class="mainoption" name="add" value="<?php echo $user->lang['Add_new_rank']; ?>" /></td>
 	</tr>
 </table></form>
 

@@ -27,9 +27,9 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Set page ID for session management
-$userdata = $session->start();
-$auth = new auth($userdata);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 extract($_GET);
@@ -40,7 +40,7 @@ $redirect = (!empty($redirect)) ? $_SERVER['QUERY_STRING'] : '';
 // Do the login/logout/form/whatever
 if ( isset($login) || isset($logout)  )
 {
-	if ( isset($login) && !$userdata['user_id'] )
+	if ( isset($login) && !$user->data['user_id'] )
 	{
 		$autologin = ( !empty($autologin) ) ? true : false;
 
@@ -62,9 +62,9 @@ if ( isset($login) || isset($logout)  )
 			message_die(MESSAGE, $message);
 		}
 	}
-	else if ( $userdata['user_id'] )
+	else if ( $user->data['user_id'] )
 	{
-		$session->destroy($userdata);
+		$session->destroy($user->data);
 	}
 
 	//
@@ -74,7 +74,7 @@ if ( isset($login) || isset($logout)  )
 	redirect($redirect_url);
 }
 
-if ( !$userdata['user_id'] )
+if ( !$user->data['user_id'] )
 {
 	$template->assign_vars(array(
 		'L_ENTER_PASSWORD' => $lang['Enter_password'],

@@ -42,18 +42,18 @@
 		</table>{S_HIDDEN_FIELDS}</form></td>
 	</tr>
 	<!-- ELSEIF S_HAS_POLL_DISPLAY -->
-	<tr> 
+	<tr>
 		<td class="row2" colspan="2"><br clear="all" /><table cellspacing="0" cellpadding="4" border="0" align="center">
-			<tr> 
+			<tr>
 				<td colspan="4" align="center"><span class="gen"><b>{POLL_QUESTION}</b></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td align="center"><table cellspacing="0" cellpadding="2" border="0">
 					<!-- BEGIN poll_option -->
-					<tr> 
+					<tr>
 						<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 						<td><table cellspacing="0" cellpadding="0" border="0">
-							<tr> 
+							<tr>
 								<td><img src="templates/subSilver/images/vote_lcap.gif" width="4" alt="" height="12" /></td>
 								<td><img src="{poll_option.POLL_OPTION_IMG}" width="{poll_option.POLL_OPTION_IMG_WIDTH}" height="12" alt="{poll_option.POLL_OPTION_PERCENT}" /></td>
 								<td><img src="templates/subSilver/images/vote_rcap.gif" width="4" alt="" height="12" /></td>
@@ -65,7 +65,7 @@
 					<!-- END poll_option -->
 				</table></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td colspan="4" align="center"><span class="gen"><b>{L_TOTAL_VOTES} : {TOTAL_VOTES}</b></span></td>
 			</tr>
 		</table><br clear="all" /></td>
@@ -87,7 +87,7 @@
 				<td width="100%"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp; &nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
 				<td valign="top" align="right" nowrap="nowrap">{postrow.QUOTE_IMG} {postrow.EDIT_IMG} {postrow.DELETE_IMG} {postrow.IP_IMG}</td>
 			</tr>
-			<tr> 
+			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
 			<tr>
@@ -102,23 +102,23 @@
 	<!-- ENDIF -->
 		<td width="150" align="left" valign="middle"><span class="nav"><a href="#top" class="nav">{L_BACK_TO_TOP}</a></span></td>
 		<td width="100%" height="28" valign="bottom" nowrap="nowrap"><table cellspacing="0" cellpadding="0" border="0" height="18" width="18">
-			<tr> 
-				<td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}<script language="JavaScript" type="text/javascript"><!-- 
+			<tr>
+				<td valign="middle" nowrap="nowrap">{postrow.PROFILE_IMG} {postrow.PM_IMG} {postrow.EMAIL_IMG} {postrow.WWW_IMG} {postrow.AIM_IMG} {postrow.YIM_IMG} {postrow.MSN_IMG}<script language="JavaScript" type="text/javascript"><!--
 
 	if ( navigator.userAgent.toLowerCase().indexOf('mozilla') != -1 && navigator.userAgent.indexOf('5.') == -1 )
 		document.write(' {postrow.ICQ_IMG}');
 	else
 		document.write('</td><td>&nbsp;</td><td valign="top" nowrap="nowrap"><div style="position:relative"><div style="position:absolute">{postrow.ICQ_IMG}</div><div style="position:absolute;left:3px;top:-1px">{postrow.ICQ_STATUS_IMG}</div></div>');
-				
+
 				//--></script><noscript>{postrow.ICQ_IMG}</noscript></td>
 			</tr>
 		</table></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="spaceRow" colspan="2" height="1"><img src="templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<!-- END postrow -->
-	<tr align="center"> 
+	<tr align="center">
 		<td class="catBottom" colspan="2" height="28"><table cellspacing="0" cellpadding="0" border="0">
 			<tr><form method="post" action="{S_TOPIC_ACTION}">
 				<td align="center"><span class="gensmall">{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}&nbsp;{L_SORT_BY} {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></span></td>
@@ -128,7 +128,7 @@
 </table>
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td align="left" valign="middle" nowrap="nowrap"><span class="nav"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp; &nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a></span></td>
 		<td align="left" valign="middle" width="100%"><span class="nav">&nbsp; &nbsp;<a href="{U_INDEX}" class="nav">{L_INDEX}</a> -> <a href="{U_VIEW_FORUM}" class="nav">{FORUM_NAME}</a></span></td>
 		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_TIMEZONE}</span><br /><span class="nav">{PAGINATION}</span></td>
@@ -139,7 +139,7 @@
 </table>
 
 <table width="100%" cellspacing="2" border="0" align="center">
-	<tr> 
+	<tr>
 		<td width="40%" valign="top" nowrap="nowrap" align="left"><span class="gensmall">{S_WATCH_TOPIC}<!-- IF S_SELECT_RATING --><br /><form method="post" action="{S_TOPIC_ACTION}">{L_RATE_TOPIC}: {S_SELECT_RATING}&nbsp;<input class="liteoption" type="submit" value="{L_GO}" name="sort" /></form><!-- ENDIF --></span></td>
 		<td align="right" valign="top" nowrap="nowrap"><!-- INCLUDE jumpbox.html --><span class="gensmall">{S_AUTH_LIST}<!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}">{L_QUICK_MOD}: {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></span></td>
 	</tr>

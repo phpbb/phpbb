@@ -25,9 +25,9 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
-$userdata = $session->start();
-$auth->acl($userdata);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 // Load the appropriate faq file

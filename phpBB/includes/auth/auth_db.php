@@ -2,13 +2,13 @@
 
 //
 // Authentication plug-ins is largely down to
-// Sergey Kanareykin, our thanks to him. 
+// Sergey Kanareykin, our thanks to him.
 //
 function login_db(&$username, &$password)
 {
 	global $db, $board_config;
 
-	$sql = "SELECT user_id, username, user_password, user_email, user_active  
+	$sql = "SELECT user_id, username, user_password, user_email, user_active
 		FROM " . USERS_TABLE . "
 		WHERE username = '" . str_replace("\'", "''", $username) . "'";
 	$result = $db->sql_query($sql);

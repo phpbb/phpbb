@@ -387,7 +387,6 @@ function split_sql_file($sql, $delimiter)
 						// save memory.
 						$tokens[$j] = '';
 					}
-
 				} // for..
 			} // else
 		}
@@ -399,107 +398,63 @@ function split_sql_file($sql, $delimiter)
 // Extension of auth class for changing permissions
 class auth_admin extends auth
 {
-	function acl_set_user(&$forum_id, &$user_id, &$auth)
+	// Note that the set/delete methods are basically the same
+	// so if possible they should be merged
+	function acl_set($mode, &$forum_id, &$ug_id, &$auth)
 	{
 		global $db;
 
-		$forum_sql = ( $forum_id ) ? "AND a.forum_id IN ($forum_id, 0)" : '';
+		if ( !is_array($forum_id) )
+		{
+			$forum_id = array($forum_id);
+		}
+		// NOTE THIS USED TO BE IN ($forum_id, 0) ...
+		$forum_sql = 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')';
 
-		$sql = "SELECT o.auth_option_id, o.auth_value, a.auth_allow_deny
-			FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
-			WHERE a.auth_option_id = o.auth_option_id
-				$forum_sql
-				AND a.user_id = $user_id";
+		$sql = ( $mode == 'user' ) ? "SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_USERS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.user_id = $ug_id" :"SELECT o.auth_option_id, o.auth_value, a.forum_id, a.auth_allow_deny FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $forum_sql AND a.group_id = $ug_id";
 		$result = $db->sql_query($sql);
 
-		$user_auth = array();
-		if ( $row = $db->sql_fetchrow($result) )
+		$cur_auth = array();
+		while ( $row = $db->sql_fetchrow($result) )
 		{
-			do
-			{
-				$user_auth[$user_id][$row['auth_option_id']] = $row['auth_allow_deny'];
-			}
-			while ( $row = $db->sql_fetchrow($result) );
+			$cur_auth[$row['forum_id']][$row['auth_option_id']] = $row['auth_allow_deny'];
 		}
 		$db->sql_freeresult($result);
 
-		foreach ( $auth as $auth_option_id => $allow )
+		$table = ( $mode == 'user' ) ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+		$id_field  = $mode . '_id';
+
+		foreach ( $forum_id as $forum)
 		{
-			if ( !empty($user_auth) )
+			foreach ( $auth as $auth_option_id => $allow )
 			{
-				foreach ( $user_auth as $user => $user_auth_ary )
+				if ( !empty($cur_auth[$forum]) )
 				{
-					$sql_ary[] = ( !isset($user_auth_ary[$auth_option_id]) ) ? "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)" : ( ( $user_auth_ary[$auth_option_id] != $allow ) ? "UPDATE " . ACL_USERS_TABLE . " SET auth_allow_deny = $allow WHERE user_id = $user_id AND forum_id = $forum_id AND auth_option_id = $auth_option_id" : '' );
+					$sql_ary[] = ( !isset($cur_auth[$forum][$auth_option_id]) ) ? "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)" : ( ( $cur_auth[$forum][$auth_option_id] != $allow ) ? "UPDATE " . $table . " SET auth_allow_deny = $allow WHERE $id_field = $ug_id AND forum_id = $forum AND auth_option_id = $auth_option_id" : '' );
+				}
+				else
+				{
+					$sql_ary[] = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_allow_deny) VALUES ($ug_id, $forum, $auth_option_id, $allow)";
 				}
 			}
-			else
-			{
-				$sql_ary[] = "INSERT INTO " . ACL_USERS_TABLE . " (user_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($user_id, $forum_id, $auth_option_id, $allow)";
-			}
 		}
-
-		foreach ( $sql_ary as $sql )
-		{
-			$db->sql_query($sql);
-		}
-
+		unset($forum_id);
 		unset($user_auth);
-		unset($sql_ary);
-
-		$this->acl_clear_prefetch();
-	}
-
-	function acl_set_group(&$forum_id, &$group_id, &$auth)
-	{
-		global $db;
-
-		$forum_sql = "AND a.forum_id IN ($forum_id, 0)";
-
-		$sql = "SELECT o.auth_option_id, o.auth_value, a.auth_allow_deny
-			FROM " . ACL_GROUPS_TABLE . " a, " . ACL_OPTIONS_TABLE . " o
-			WHERE a.auth_option_id = o.auth_option_id
-				$forum_sql
-				AND a.group_id = $group_id";
-		$result = $db->sql_query($sql);
-
-		$group_auth = array();
-		if ( $row = $db->sql_fetchrow($result) )
-		{
-			do
-			{
-				$group_auth[$group_id][$row['auth_option_id']] = $row['auth_allow_deny'];
-			}
-			while ( $row = $db->sql_fetchrow($result) );
-		}
-		$db->sql_freeresult($result);
-
-		foreach ( $auth as $auth_option_id => $allow )
-		{
-			if ( !empty($group_auth) )
-			{
-				foreach ( $group_auth as $group => $group_auth_ary )
-				{
-					$sql_ary[] = ( !isset($group_auth_ary[$auth_option_id]) ) ? "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option_id, $allow)" : ( ( $group_auth_ary[$auth_option_id] != $allow ) ? "UPDATE " . ACL_GROUPS_TABLE . " SET auth_allow_deny = $allow WHERE group_id = $group_id AND forum_id = $forum_id and auth_option_id = $auth_option_id" : '' );
-				}
-			}
-			else
-			{
-				$sql_ary[] = "INSERT INTO " . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_allow_deny) VALUES ($group_id, $forum_id, $auth_option_id, $allow)";
-			}
-		}
 
 		foreach ( $sql_ary as $sql )
 		{
-			$db->sql_query($sql);
+			if ( $sql != '' )
+			{
+				$result = $db->sql_query($sql);
+				$db->sql_freeresult($result);
+			}
 		}
-
-		unset($group_auth);
 		unset($sql_ary);
 
 		$this->acl_clear_prefetch();
 	}
 
-	function acl_delete_user($forum_id, $user_id, $auth_ids = false)
+	function acl_delete($mode, &$forum_id, &$ug_id, $auth_ids = false)
 	{
 		global $db;
 
@@ -513,31 +468,11 @@ class auth_admin extends auth
 			$auth_sql = " AND auth_option_id IN ($auth_sql)";
 		}
 
-		$sql = "DELETE FROM " . ACL_USERS_TABLE . "
-			WHERE user_id = $user_id
-				AND forum_id = $forum_id
-				$auth_sql";
-		$db->sql_query($sql);
+		$table = ( $mode == 'user' ) ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+		$id_field  = $mode . '_id';
 
-		$this->acl_clear_prefetch();
-	}
-
-	function acl_delete_group($forum_id, $group_id, $auth_type = false)
-	{
-		global $db;
-
-		$auth_sql = '';
-		if ( $auth_ids )
-		{
-			for($i = 0; $i < count($auth_ids); $i++)
-			{
-				$auth_sql .= ( ( $auth_sql != '' ) ? ', ' : '' ) . $auth_ids[$i];
-			}
-			$auth_sql = " AND auth_option_id IN ($auth_sql)";
-		}
-
-		$sql = "DELETE FROM " . ACL_GROUPS_TABLE . "
-			WHERE group_id = $group_id
+		$sql = "DELETE FROM $table
+			WHERE $id_field = $ug_id
 				AND forum_id = $forum_id
 				$auth_sql";
 		$db->sql_query($sql);
@@ -554,6 +489,25 @@ class auth_admin extends auth
 		$db->sql_query($sql);
 
 		return;
+	}
+
+	function acl_add_option($options)
+	{
+		global $db;
+
+		if ( !is_array($options) )
+		{
+			message_die(ERROR, 'Incorrect parameter for acl_add_option');
+		}
+
+		// If we go with the | GLOBAL | FORUM | setup the array
+		// needs to be a hash setup appropriately. We then need
+		// to insert each new option with an appropriate global
+		// or local id
+		//
+		// If we stay with the current | FORUM | setup the array
+		// need not be a hash. Each entry would simply be inserted
+
 	}
 }
 

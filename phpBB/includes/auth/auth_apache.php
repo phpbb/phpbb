@@ -2,7 +2,7 @@
 
 //
 // Authentication plug-ins is largely down to
-// Sergey Kanareykin, our thanks to him. 
+// Sergey Kanareykin, our thanks to him.
 //
 function login_apache(&$username, &$password)
 {
@@ -13,7 +13,7 @@ function login_apache(&$username, &$password)
 
 	if ( $php_auth_user && $php_auth_pw )
 	{
-		$sql = "SELECT user_id, username, user_password, user_email, user_active  
+		$sql = "SELECT user_id, username, user_password, user_email, user_active
 			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\'", "''", $username) . "'";
 		$result = $db->sql_query($sql);

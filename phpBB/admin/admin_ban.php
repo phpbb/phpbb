@@ -528,8 +528,27 @@ switch ( $mode )
 		<th colspan="2"><?php echo $l_unban_title; ?></th>
 	</tr>
 	<tr>
+<?php
+
+	if ( $banned_options != '' )
+	{
+
+?>
 		<td class="row1" width="45%"><?php echo $l_ban_cell; ?>: <br /></td>
-		<td class="row1"> <?php if ( $banned_options != '' ) { ?><select name="unban[]" multiple="multiple" size="5"><?php echo $banned_options; ?></select><?php } else { echo $l_no_ban_cell;  } ?></td>
+		<td class="row1"> <select name="unban[]" multiple="multiple" size="5"><?php echo $banned_options; ?></select></td>
+<?php
+
+	}
+	else
+	{
+
+?>
+		<td class="row1" colspan="2" align="center"><?php echo $l_no_ban_cell;  ?></td>
+<?php
+
+	}
+
+?>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="submit" name="unbansubmit" value="<?php echo $lang['Submit']; ?>" class="mainoption" /></td>

@@ -132,7 +132,7 @@ if ( isset($_POST['submit']) )
 		$emailer->send();
 		$emailer->reset();
 
-		message_die(MESSAGE, $lang['Email_sent']);
+		message_die(MESSAGE, $user->lang['Email_sent']);
 	}
 }
 
@@ -144,7 +144,7 @@ $sql = "SELECT group_id, group_name
 	FROM ".GROUPS_TABLE;
 $result = $db->sql_query($sql);
 
-$select_list = '<select name = "g"><option value = "-1">' . $lang['All_users'] . '</option>';
+$select_list = '<select name = "g"><option value = "-1">' . $user->lang['All_users'] . '</option>';
 if ( $row = $db->sql_fetchrow($result) )
 {
 	do
@@ -155,32 +155,32 @@ if ( $row = $db->sql_fetchrow($result) )
 }
 $select_list .= '</select>';
 
-page_header($lang['Mass_Email']);
+page_header($user->lang['Mass_Email']);
 
 ?>
 
-<h1><?php echo $lang['Mass_Email']; ?></h1>
+<h1><?php echo $user->lang['Mass_Email']; ?></h1>
 
-<p><?php echo $lang['Mass_email_explain']; ?></p>
+<p><?php echo $user->lang['Mass_email_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_mass_email.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
 	<tr>
-		<th colspan="2"><?php echo $lang['Compose']; ?></th>
+		<th colspan="2"><?php echo $user->lang['Compose']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><b><?php echo $lang['Recipients']; ?></b></td>
+		<td class="row1" align="right"><b><?php echo $user->lang['Recipients']; ?></b></td>
 		<td class="row2" align="left"><?php echo $select_list; ?></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right"><b><?php echo $lang['Subject']; ?></b></td>
+		<td class="row1" align="right"><b><?php echo $user->lang['Subject']; ?></b></td>
 		<td class="row2"><span class="gen"><input type="text" name="subject" size="45" maxlength="100" tabindex="2" class="post" value="<?php echo $subject; ?>" /></span></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right" valign="top"><span class="gen"><b><?php echo $lang['Message']; ?></b></span>
+		<td class="row1" align="right" valign="top"><span class="gen"><b><?php echo $user->lang['Message']; ?></b></span>
 		<td class="row2"><textarea class="post" name="message" rows="15" cols="35" wrap="virtual" style="width:450px" tabindex="3"><?php echo $message; ?></textarea></td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="submit" value="<?php echo $lang['Email']; ?>" name="submit" class="mainoption" /></td>
+		<td class="cat" colspan="2" align="center"><input type="submit" value="<?php echo $user->lang['Email']; ?>" name="submit" class="mainoption" /></td>
 	</tr>
 </table></form>
 

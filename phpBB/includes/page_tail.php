@@ -19,14 +19,10 @@
  *
  ***************************************************************************/
 
-//
 // Close our DB connection.
-//
 $db->sql_close();
 
-//
 // Output page creation time
-//
 if (defined('DEBUG'))
 {
 	$mtime = explode(' ', microtime());
@@ -44,15 +40,15 @@ if (defined('DEBUG'))
 
 	if ($auth->acl_get('a_'))
 	{
-		$debug_output .= ' | <a href="' . $_SERVER['REQUEST_URI'] . '&amp;explain=1">Explain</a>';		
+		$debug_output .= ' | <a href="' . $_SERVER['REQUEST_URI'] . '&amp;explain=1">Explain</a>';
 	}
 	$debug_output .= ' ]';
 }
 
 $template->assign_vars(array(
-	'PHPBB_VERSION' => $board_config['version'],
-	'ADMIN_LINK' => ( $auth->acl_get('a_') ) ? '<a href="' . "admin/index.$phpEx?sid=" . $userdata['session_id'] . '">' . $lang['Admin_panel'] . '</a><br /><br />' : '',
-	'DEBUG_OUTPUT' => (defined('DEBUG')) ? $debug_output : ''
+	'PHPBB_VERSION'	=> $board_config['version'],
+	'ADMIN_LINK' 	=> ( $auth->acl_get('a_') ) ? '<a href="' . "admin/index.$phpEx?sid=" . $user->data['session_id'] . '">' . $user->lang['Admin_panel'] . '</a><br /><br />' : '',
+	'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : ''
 ));
 
 $template->display('body');

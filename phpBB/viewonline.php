@@ -25,9 +25,9 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
-$userdata = $session->start();
-$auth->acl($userdata);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 //
@@ -100,7 +100,7 @@ while ( $row = $db->sql_fetchrow($result) )
 	{
 		if ( $row['session_ip'] != $prev_ip )
 		{
-			$username = $lang['Guest'];
+			$username = $user->lang['Guest'];
 			$view_online = true;
 			$guest_users++;
 
@@ -118,7 +118,7 @@ while ( $row = $db->sql_fetchrow($result) )
 		switch ( $on_page[1] )
 		{
 			case 'index':
-				$location = $lang['Forum_index'];
+				$location = $user->lang['Forum_index'];
 				$location_url = "index.$phpEx$SID";
 				break;
 
@@ -134,10 +134,10 @@ while ( $row = $db->sql_fetchrow($result) )
 					switch ( $on_page[1] )
 					{
 						case 'posting':
-							$location = sprintf($lang['Posting_message'], $forum_data[$forum_id]);
+							$location = sprintf($user->lang['Posting_message'], $forum_data[$forum_id]);
 							break;
 						case 'viewtopic':
-							$location = sprintf($lang['Reading_topic'], $forum_data[$forum_id]);
+							$location = sprintf($user->lang['Reading_topic'], $forum_data[$forum_id]);
 							break;
 						case 'viewforum':
 							$location .= $forum_data[$forum_id];
@@ -147,51 +147,51 @@ while ( $row = $db->sql_fetchrow($result) )
 				}
 				else
 				{
-					$location = $lang['Forum_index'];
+					$location = $user->lang['Forum_index'];
 					$location_url = "index.$phpEx$SID";
 				}
 				break;
 
 			case 'search':
-				$location = $lang['Searching_forums'];
+				$location = $user->lang['Searching_forums'];
 				$location_url = "search.$phpEx$SID";
 				break;
 
 			case 'profile':
-				$location = $lang['Viewing_profile'];
+				$location = $user->lang['Viewing_profile'];
 				$location_url = "index.$phpEx$SID";
 				break;
 
 			case 'faq':
-				$location = $lang['Viewing_FAQ'];
+				$location = $user->lang['Viewing_FAQ'];
 				$location_url = "faq.$phpEx$SID";
 				break;
 
 			case 'viewonline':
-				$location = $lang['Viewing_online'];
+				$location = $user->lang['Viewing_online'];
 				$location_url = "viewonline.$phpEx$SID";
 				break;
 
 			case 'memberslist':
-				$location = $lang['Viewing_member_list'];
+				$location = $user->lang['Viewing_member_list'];
 				$location_url = "memberlist.$phpEx$SID";
 				break;
 
 			default:
-				$location = $lang['Forum_index'];
+				$location = $user->lang['Forum_index'];
 				$location_url = "index.$phpEx$SID";
 				break;
 		}
 
 		$template->assign_block_vars($which_row, array(
-			'USERNAME' => $username,
-			'LASTUPDATE' => $user->format_date($row['session_time']),
-			'FORUM_LOCATION' => $location,
+			'USERNAME' 		=> $username,
+			'LASTUPDATE' 	=> $user->format_date($row['session_time']),
+			'FORUM_LOCATION'=> $location,
 
-			'S_ROW_COUNT' => $$which_counter,
+			'S_ROW_COUNT'	=> $$which_counter,
 
-			'U_USER_PROFILE' => "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $user_id,
-			'U_FORUM_LOCATION' => $location_url)
+			'U_USER_PROFILE'	=> "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $user_id,
+			'U_FORUM_LOCATION'	=> $location_url)
 		);
 
 		$$which_counter++;
@@ -200,57 +200,59 @@ while ( $row = $db->sql_fetchrow($result) )
 
 if( $registered_users == 0 )
 {
-	$l_r_user_s = $lang['Reg_users_zero_online'];
+	$l_r_user_s = $user->lang['Reg_users_zero_online'];
 }
 else if( $registered_users == 1 )
 {
-	$l_r_user_s = $lang['Reg_user_online'];
+	$l_r_user_s = $user->lang['Reg_user_online'];
 }
 else
 {
-	$l_r_user_s = $lang['Reg_users_online'];
+	$l_r_user_s = $user->lang['Reg_users_online'];
 }
 
 if( $hidden_users == 0 )
 {
-	$l_h_user_s = $lang['Hidden_users_zero_online'];
+	$l_h_user_s = $user->lang['Hidden_users_zero_online'];
 }
 else if( $hidden_users == 1 )
 {
-	$l_h_user_s = $lang['Hidden_user_online'];
+	$l_h_user_s = $user->lang['Hidden_user_online'];
 }
 else
 {
-	$l_h_user_s = $lang['Hidden_users_online'];
+	$l_h_user_s = $user->lang['Hidden_users_online'];
 }
 
 if( $guest_users == 0 )
 {
-	$l_g_user_s = $lang['Guest_users_zero_online'];
+	$l_g_user_s = $user->lang['Guest_users_zero_online'];
 }
 else if( $guest_users == 1 )
 {
-	$l_g_user_s = $lang['Guest_user_online'];
+	$l_g_user_s = $user->lang['Guest_user_online'];
 }
 else
 {
-	$l_g_user_s = $lang['Guest_users_online'];
+	$l_g_user_s = $user->lang['Guest_users_online'];
 }
 
 $template->assign_vars(array(
-	'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
-	'TOTAL_GUEST_USERS_ONLINE' => sprintf($l_g_user_s, $guest_users),
+	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users),
+	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_users),
 
-	'L_WHOSONLINE' => $lang['Who_is_online'],
-	'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
-	'L_USERNAME' => $lang['Username'],
-	'L_FORUM_LOCATION' => $lang['Forum_Location'],
-	'L_LAST_UPDATE' => $lang['Last_updated'],
-	'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'],
-	'L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing'])
+	'META' => '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">',
+
+	'L_WHOSONLINE' => $user->lang['Who_is_online'],
+	'L_ONLINE_EXPLAIN' => $user->lang['Online_explain'],
+	'L_USERNAME' => $user->lang['Username'],
+	'L_FORUM_LOCATION' => $user->lang['Forum_Location'],
+	'L_LAST_UPDATE' => $user->lang['Last_updated'],
+	'L_NO_GUESTS_BROWSING' => $user->lang['No_users_browsing'],
+	'L_NO_REGISTERED_USERS_BROWSING' => $user->lang['No_users_browsing'])
 );
 
-$page_title = $lang['Who_is_online'];
+$page_title = $user->lang['Who_is_online'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(

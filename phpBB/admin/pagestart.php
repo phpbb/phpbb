@@ -27,24 +27,20 @@ if ( !defined('IN_PHPBB') )
 define('IN_ADMIN', true);
 include($phpbb_root_path . 'common.'.$phpEx);
 
-//
 // Start session management
-//
-$userdata = $session->start($update);
-$auth->acl($userdata, false, 'a_');
-$user = new user($userdata);
-//
+$user->start($update);
+$user->setup();
+$auth->acl($user->data);
 // End session management
-//
 
 //
 // If session_ids do not match, rewrite the URL correctly then redirect the user
 //
-if ($_REQUEST['sid'] != $userdata['session_id'])
+if ($_REQUEST['sid'] != $user->data['session_id'])
 {
 	$url = preg_replace('/sid=([^&]*)(&?)/i', '', $_SERVER['REQUEST_URI']);
 	$url = preg_replace('/\?$/', '', $url);
-	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
+	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $user->data['session_id'];
 	redirect($url);
 }
 
@@ -52,7 +48,7 @@ if ($_REQUEST['sid'] != $userdata['session_id'])
 // Functions
 function page_header($sub_title, $meta = '', $table_html = true)
 {
-	global $board_config, $db, $lang, $phpEx;
+	global $board_config, $db, $user, $phpEx;
 
 	define('HEADER_INC', true);
 
@@ -65,13 +61,13 @@ function page_header($sub_title, $meta = '', $table_html = true)
 		}
 	}
 
-	header("Content-type: text/html; charset=" . $lang['ENCODING']);
+	header("Content-type: text/html; charset=" . $user->lang['ENCODING']);
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $lang['ENCODING']; ?>">
+<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $user->lang['ENCODING']; ?>">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <link rel="stylesheet" href="subSilver.css" type="text/css">
 <?php
@@ -115,7 +111,7 @@ td.cat	{ background-image: url('images/cellpic1.gif') }
 
 function page_footer($copyright_html = true)
 {
-	global $board_config, $db, $lang, $phpEx;
+	global $board_config, $db, $phpEx;
 
 	// Close our DB connection.
 	$db->sql_close();
@@ -146,7 +142,7 @@ function page_footer($copyright_html = true)
 
 function page_message($title, $message, $show_header = false)
 {
-	global $phpEx, $SID, $lang;
+	global $phpEx, $SID, $user;
 
 	if ( $show_header )
 	{
@@ -156,7 +152,7 @@ function page_message($title, $message, $show_header = false)
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
 		<td><a href="../index.<?php echo $phpEx . $SID; ?>"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
-		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
+		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $user->lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
 
@@ -185,7 +181,7 @@ function page_message($title, $message, $show_header = false)
 
 function add_admin_log()
 {
-	global $db, $userdata, $user_ip;
+	global $db, $user;
 
 	$arguments = func_get_args();
 
@@ -193,7 +189,7 @@ function add_admin_log()
 	$data = ( !sizeof($arguments) ) ? '' : addslashes(serialize($arguments));
 
 	$sql = "INSERT INTO " . LOG_ADMIN_TABLE . " (user_id, log_ip, log_time, log_operation, log_data)
-		VALUES (" . $userdata['user_id'] . ", '$user_ip', " . time() . ", '$action', '$data')";
+		VALUES (" . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
 	$db->sql_query($sql);
 
 	return;
@@ -201,7 +197,7 @@ function add_admin_log()
 
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
-	global $db, $lang, $phpEx, $SID;
+	global $db, $user, $phpEx, $SID;
 
 	$table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
 	$forum_sql = ( $mode == 'mod' && $forum_id ) ? "AND l.forum_id = $forum_id" : '';
@@ -227,7 +223,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			$log[$i]['ip'] = $row['log_ip'];
 			$log[$i]['time'] = $row['log_time'];
 
-			$log[$i]['action'] = ( !empty($lang[$row['log_operation']]) ) ? $lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+			$log[$i]['action'] = ( !empty($user->lang[$row['log_operation']]) ) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
 
 			if ( !empty($row['log_data']) )
 			{

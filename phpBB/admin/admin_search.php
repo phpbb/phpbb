@@ -46,7 +46,7 @@ include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 //
 if ( !$auth->acl_get('a_general') )
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 //
@@ -295,13 +295,13 @@ if ( isset($_POST['start']) || isset($_GET['batchstart']) )
 			WHERE config_name = 'board_disable'";
 		$db->sql_query($sql);
 
-		page_header($lang['Search_indexing']);
+		page_header($user->lang['Search_indexing']);
 
 ?>
 
-<h1><?php echo $lang['Search_indexing']; ?></h1>
+<h1><?php echo $user->lang['Search_indexing']; ?></h1>
 
-<p><?php echo $lang['Search_indexing_complete']; ?></p>
+<p><?php echo $user->lang['Search_indexing_complete']; ?></p>
 
 <?php
 
@@ -319,13 +319,13 @@ else if ( isset($_POST['cancel']) )
 		WHERE config_name = 'board_disable'";
 	$db->sql_query($sql);
 
-	page_header($lang['Search_indexing']);
+	page_header($user->lang['Search_indexing']);
 
 ?>
 
-<h1><?php echo $lang['Search_indexing']; ?></h1>
+<h1><?php echo $user->lang['Search_indexing']; ?></h1>
 
-<p><?php echo $lang['Search_indexing_cancel']; ?></p>
+<p><?php echo $user->lang['Search_indexing_cancel']; ?></p>
 
 <?php
 
@@ -334,17 +334,17 @@ else if ( isset($_POST['cancel']) )
 }
 else
 {
-	page_header($lang['Search_indexing']);
+	page_header($user->lang['Search_indexing']);
 
 ?>
 
-<h1><?php echo $lang['Search_indexing']; ?></h1>
+<h1><?php echo $user->lang['Search_indexing']; ?></h1>
 
-<p><?php echo $lang['Search_indexing_explain']; ?></p>
+<p><?php echo $user->lang['Search_indexing_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_search.$phpEx$SID"; ?>"><table cellspacing="1" cellpadding="4" border="0" align="center" bgcolor="#98AAB1">
 	<tr>
-		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $lang['Start']; ?>" class="mainoption" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $lang['Cancel']; ?>" class="mainoption" />&nbsp;</td>
+		<td class="cat" height="28" align="center">&nbsp;<input type="submit" name="start" value="<?php echo $user->lang['Start']; ?>" class="mainoption" /> &nbsp; <input type="submit" name="cancel" value="<?php echo $user->lang['Cancel']; ?>" class="mainoption" />&nbsp;</td>
 	</tr>
 </table></form>
 

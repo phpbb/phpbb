@@ -21,25 +21,19 @@
 
 define('IN_PHPBB', 1);
 
-//
 // Define some vars
-//
 $pane = ( isset($_GET['pane']) ) ? $_GET['pane'] : '';
 $update = ( $pane == 'right' ) ? true : false;
 
-//
 // Include files
-//
 $phpbb_root_path = '../';
 require($phpbb_root_path . 'extension.inc');
 require('pagestart.' . $phpEx);
 
-//
 // Do we have any admin permissions at all?
-//
 if ( !$auth->acl_get('a_') )
 {
-	message_die(MESSAGE, 'No_admin', '', true);
+	trigger_error('No_admin');
 }
 
 // Generate relevant output
@@ -52,7 +46,7 @@ if ( isset($_GET['pane']) && $_GET['pane'] == 'top' )
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 	<tr>
 		<td><a href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><img src="images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></a></td>
-		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
+		<td width="100%" background="images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $user->lang['Admin_title']; ?></span> &nbsp; &nbsp; &nbsp;</td>
 	</tr>
 </table>
 
@@ -88,13 +82,13 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 	<tr>
 		<td width="100%"><table width="100%" cellpadding="4" cellspacing="1" border="0">
 			<tr>
-				<th class="menu" height="25">&#0187; <?php echo $lang['Return_to']; ?></th>
+				<th class="menu" height="25">&#0187; <?php echo $user->lang['Return_to']; ?></th>
 			</tr>
 			<tr>
-				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><?php echo $lang['Admin_Index']; ?></a></td>
+				<td class="row1"><a class="genmed" href="index.<?php echo $phpEx . $SID; ?>&amp;pane=right" target="main"><?php echo $user->lang['Admin_Index']; ?></a></td>
 			</tr>
 			<tr>
-				<td class="row2"><a class="genmed" href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><?php echo $lang['Forum_index']; ?></a></td>
+				<td class="row2"><a class="genmed" href="../index.<?php echo $phpEx . $SID; ?>" target="_top"><?php echo $user->lang['Forum_index']; ?></a></td>
 			</tr>
 <?php
 
@@ -103,7 +97,7 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 		@ksort($module);
 		foreach ( $module as $cat => $action_ary )
 		{
-			$cat = ( !empty($lang[$cat . '_cat']) ) ? $lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
+			$cat = ( !empty($user->lang[$cat . '_cat']) ) ? $user->lang[$cat . '_cat'] : preg_replace('/_/', ' ', $cat);
 
 ?>
 			<tr>
@@ -115,7 +109,7 @@ else if ( isset($_GET['pane']) && $_GET['pane'] == 'left' )
 
 			foreach ( $action_ary as $action => $file )
 			{
-				$action = ( !empty($lang[$action]) ) ? $lang[$action] : preg_replace('/_/', ' ', $action);
+				$action = ( !empty($user->lang[$action]) ) ? $user->lang[$action] : preg_replace('/_/', ' ', $action);
 
 				$cell_bg = ( $cell_bg == 'row1' ) ? 'row2' : 'row1';
 ?>
@@ -225,7 +219,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 	else
 	{
 		// Couldn't open Avatar dir.
-		$avatar_dir_size = $lang['Not_available'];
+		$avatar_dir_size = $user->lang['Not_available'];
 	}
 
 	if ( $posts_per_day > $total_posts )
@@ -283,12 +277,12 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 			}
 			else
 			{
-				$dbsize = $lang['Not_available'];
+				$dbsize = $user->lang['Not_available'];
 			}
 		}
 		else
 		{
-			$dbsize = $lang['Not_available'];
+			$dbsize = $user->lang['Not_available'];
 		}
 	}
 	else if ( preg_match('/^mssql/', SQL_LAYER) )
@@ -297,11 +291,11 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 			FROM sysfiles";
 		$result = $db->sql_query($sql);
 
-		$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $lang['Not_available'];
+		$dbsize = ( $row = $db->sql_fetchrow($result) ) ? intval($row['dbsize']) : $user->lang['Not_available'];
 	}
 	else
 	{
-		$dbsize = $lang['Not_available'];
+		$dbsize = $user->lang['Not_available'];
 	}
 
 	if ( is_int($dbsize) )
@@ -309,7 +303,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 		$dbsize = ( $dbsize >= 1048576 ) ? sprintf('%.2f MB', ( $dbsize / 1048576 )) : ( ( $dbsize >= 1024 ) ? sprintf('%.2f KB', ( $dbsize / 1024 )) : sprintf('%.2f Bytes', $dbsize) );
 	}
 
-	page_header($lang['Admin_Index']);
+	page_header($user->lang['Admin_Index']);
 
 ?>
 
@@ -325,64 +319,64 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 //-->
 </script>
 
-<h1><?php echo $lang['Welcome_phpBB']; ?></h1>
+<h1><?php echo $user->lang['Welcome_phpBB']; ?></h1>
 
-<p><?php echo $lang['Admin_intro']; ?></p>
+<p><?php echo $user->lang['Admin_intro']; ?></p>
 
-<h1><?php echo $lang['Forum_stats']; ?></h1>
+<h1><?php echo $user->lang['Forum_stats']; ?></h1>
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<th width="25%" nowrap="nowrap" height="25"><?php echo $lang['Statistic']; ?></th>
-		<th width="25%"><?php echo $lang['Value']; ?></th>
-		<th width="25%" nowrap="nowrap"><?php echo $lang['Statistic']; ?></th>
-		<th width="25%"><?php echo $lang['Value']; ?></th>
+		<th width="25%" nowrap="nowrap" height="25"><?php echo $user->lang['Statistic']; ?></th>
+		<th width="25%"><?php echo $user->lang['Value']; ?></th>
+		<th width="25%" nowrap="nowrap"><?php echo $user->lang['Statistic']; ?></th>
+		<th width="25%"><?php echo $user->lang['Value']; ?></th>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_posts']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Number_posts']; ?>:</td>
 		<td class="row2"><b><?php echo $total_posts; ?></b></td>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Posts_per_day']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Posts_per_day']; ?>:</td>
 		<td class="row2"><b><?php echo $posts_per_day; ?></b></td>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_topics']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Number_topics']; ?>:</td>
 		<td class="row2"><b><?php echo $total_topics; ?></b></td>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Topics_per_day']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Topics_per_day']; ?>:</td>
 		<td class="row2"><b><?php echo $topics_per_day; ?></b></td>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Number_users']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Number_users']; ?>:</td>
 		<td class="row2"><b><?php echo $total_users; ?></b></td>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Users_per_day']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Users_per_day']; ?>:</td>
 		<td class="row2"><b><?php echo $users_per_day; ?></b></td>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Board_started']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Board_started']; ?>:</td>
 		<td class="row2"><b><?php echo $start_date; ?></b></td>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Avatar_dir_size']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Avatar_dir_size']; ?>:</td>
 		<td class="row2"><b><?php echo $avatar_dir_size; ?></b></td>
 	</tr>
 	<tr>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Database_size']; ?>:</td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Database_size']; ?>:</td>
 		<td class="row2"><b><?php echo $dbsize; ?></b></td>
-		<td class="row1" nowrap="nowrap"><?php echo $lang['Gzip_compression']; ?>:</td>
-		<td class="row2"><b><?php echo ( $board_config['gzip_compress'] ) ? $lang['ON'] : $lang['OFF']; ?></b></td>
+		<td class="row1" nowrap="nowrap"><?php echo $user->lang['Gzip_compression']; ?>:</td>
+		<td class="row2"><b><?php echo ( $board_config['gzip_compress'] ) ? $user->lang['ON'] : $user->lang['OFF']; ?></b></td>
 	</tr>
 	<!-- tr>
-		<td class="row1" colspan="4"><?php echo sprintf($lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($board_config['record_online_date'])); ?></td>
+		<td class="row1" colspan="4"><?php echo sprintf($user->lang['Record_online_users'], $board_config['record_online_users'], $user->format_date($board_config['record_online_date'])); ?></td>
 	</tr -->
 </table>
 
-<h1><?php echo $lang['Admin_log']; ?></h1>
+<h1><?php echo $user->lang['Admin_log']; ?></h1>
 
-<p><?php echo $lang['Admin_log_index_explain']; ?></p>
+<p><?php echo $user->lang['Admin_log_index_explain']; ?></p>
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<th width="15%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
-		<th width="15%"><?php echo $lang['IP']; ?></th>
-		<th width="20%"><?php echo $lang['Time']; ?></th>
-		<th width="45%" nowrap="nowrap"><?php echo $lang['Action']; ?></th>
+		<th width="15%" height="25" nowrap="nowrap"><?php echo $user->lang['Username']; ?></th>
+		<th width="15%"><?php echo $user->lang['IP']; ?></th>
+		<th width="20%"><?php echo $user->lang['Time']; ?></th>
+		<th width="45%" nowrap="nowrap"><?php echo $user->lang['Action']; ?></th>
 	</tr>
 <?php
 
@@ -406,15 +400,15 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 ?>
 </table>
 
-<h1><?php echo $lang['Inactive_users']; ?></h1>
+<h1><?php echo $user->lang['Inactive_users']; ?></h1>
 
-<p><?php echo $lang['Inactive_users_explain']; ?></p>
+<p><?php echo $user->lang['Inactive_users_explain']; ?></p>
 
 <form method="post" name="inactive" action="<?php echo "index.$phpEx$SID&amp;pane=right"; ?>"><table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<th width="45%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
-		<th width="45%"><?php echo $lang['Joined']; ?></th>
-		<th width="5%" nowrap="nowrap"><?php echo $lang['Mark']; ?></th>
+		<th width="45%" height="25" nowrap="nowrap"><?php echo $user->lang['Username']; ?></th>
+		<th width="45%"><?php echo $user->lang['Joined']; ?></th>
+		<th width="5%" nowrap="nowrap"><?php echo $user->lang['Mark']; ?></th>
 	</tr>
 <?php
 
@@ -454,7 +448,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 ?>
 	<tr>
-		<td class="row1" colspan="3" align="center"><?php echo $lang['No_inactive_users']; ?></td>
+		<td class="row1" colspan="3" align="center"><?php echo $user->lang['No_inactive_users']; ?></td>
 	</tr>
 <?php
 
@@ -465,7 +459,7 @@ elseif ( isset($_GET['pane']) && $_GET['pane'] == 'right' )
 
 <table width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b></td>
+		<td align="right" valign="top" nowrap="nowrap"><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $user->lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $user->lang['Unmark_all']; ?></a></span></b></td>
 	</tr>
 </table></form>
 
@@ -481,12 +475,12 @@ else
 	//
 	header("Expires: " . gmdate("D, d M Y H:i:s", time()) . " GMT");
 	header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
-	header("Content-type: text/html; charset=" . $lang['ENCODING']);
+	header("Content-type: text/html; charset=" . $user->lang['ENCODING']);
 
 ?>
 <html>
 <head>
-<title><?php echo $lang['Admin_title']; ?></title>
+<title><?php echo $user->lang['Admin_title']; ?></title>
 </head>
 
 <frameset rows="60, *" border="0" framespacing="0" frameborder="NO">
@@ -499,7 +493,7 @@ else
 
 <noframes>
 	<body bgcolor="white" text="#000000">
-		<p><?php echo $lang['No_frames']; ?></p>
+		<p><?php echo $user->lang['No_frames']; ?></p>
 	</body>
 </noframes>
 </html>

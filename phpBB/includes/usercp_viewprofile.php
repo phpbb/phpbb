@@ -27,11 +27,11 @@ if ( !defined('IN_PHPBB') )
 	exit;
 }
 
-if ( empty($HTTP_GET_VARS['u']) || $HTTP_GET_VARS['u'] == ANONYMOUS )
+if ( empty($_GET['u']) || $_GET['u'] == ANONYMOUS )
 {
-	message_die(MESSAGE, $lang['No_user_id_specified']);
+	message_die(MESSAGE, $user->lang['No_user_id_specified']);
 }
-$profiledata = get_userdata(intval($HTTP_GET_VARS['u']));
+$profiledata = get_userdata(intval($_GET['u']));
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
@@ -117,8 +117,8 @@ if ( $profiledata['user_viewemail'] || $auth->acl_get('a_') )
 {
 	$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $profiledata['user_id'] : 'mailto:' . $profiledata['user_email'];
 
-	$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
-	$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+	$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
+	$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
 }
 else
 {
@@ -127,21 +127,21 @@ else
 }
 
 $temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
-$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
+$profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
 $temp_url = "privmsg.$phpEx$SID&amp;mode=post&amp;u=$user_id";
-$pm_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
-$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+$pm_img = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['Send_private_message']) . '</a>';
+$pm = '<a href="' . $temp_url . '">' . $user->lang['Send_private_message'] . '</a>';
 
-$www_img = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_userwww">' . create_img($theme['icon_www'], $lang['Visit_website']) . '</a>' : '';
-$www = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+$www_img = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
+$www = ( $profiledata['user_website'] ) ? '<a href="' . $profiledata['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
 
 if ( !empty($profiledata['user_icq']) )
 {
 	$icq_status_img = '<a href="http://wwp.icq.com/' . $profiledata['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $profiledata['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '">' . create_img($theme['icon_icq'], $lang['ICQ']) . '</a>';
-	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+	$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
+	$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $profiledata['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 }
 else
 {
@@ -150,36 +150,36 @@ else
 	$icq = '';
 }
 
-$aim_img = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . create_img($theme['icon_aim'], $lang['AIM']) . '</a>' : '';
-$aim = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+$aim_img = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
+$aim = ( $profiledata['user_aim'] ) ? '<a href="aim:goim?screenname=' . $profiledata['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
 $temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-$msn_img = ( $profiledata['user_msnm'] ) ? '<a href="' . $temp_url . '">' . create_img($theme['icon_msnm'], $lang['MSNM']) . '</a>' : '';
-$msn = ( $profiledata['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+$msn_img = ( $profiledata['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
+$msn = ( $profiledata['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
-$yim_img = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
-$yim = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+$yim_img = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
+$yim = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
 
 $temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($profiledata['username']) . "&amp;showresults=posts";
-$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
-$search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
+$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['Search_user_posts']) . '</a>';
+$search = '<a href="' . $temp_url . '">' . $user->lang['Search_user_posts'] . '</a>';
 
 //
 // Generate page
 //
-$page_title = $lang['Viewing_profile'];
+$page_title = $user->lang['Viewing_profile'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->assign_vars(array(
 	'USERNAME' => $profiledata['username'],
-	'JOINED' => $user->format_date($profiledata['user_regdate'], $lang['DATE_FORMAT']),
+	'JOINED' => $user->format_date($profiledata['user_regdate'], $user->lang['DATE_FORMAT']),
 	'POSTER_RANK' => $poster_rank,
 	'RANK_IMAGE' => $rank_image,
 	'POSTS_PER_DAY' => $posts_per_day,
 	'POSTS' => $profiledata['user_posts'],
 	'PERCENTAGE' => $percentage . '%',
-	'POST_DAY_STATS' => sprintf($lang['User_post_day_stats'], $posts_per_day),
-	'POST_PERCENT_STATS' => sprintf($lang['User_post_pct_stats'], $percentage),
+	'POST_DAY_STATS' => sprintf($user->lang['User_post_day_stats'], $posts_per_day),
+	'POST_PERCENT_STATS' => sprintf($user->lang['User_post_pct_stats'], $percentage),
 
 	'SEARCH_IMG' => $search_img,
 	'SEARCH' => $search,
@@ -204,25 +204,25 @@ $template->assign_vars(array(
 	'INTERESTS' => ( $profiledata['user_interests'] ) ? $profiledata['user_interests'] : '&nbsp;',
 	'AVATAR_IMG' => $avatar_img,
 
-	'L_VIEWING_PROFILE' => sprintf($lang['Viewing_user_profile'], $profiledata['username']),
-	'L_ABOUT_USER' => sprintf($lang['About_user'], $profiledata['username']),
-	'L_AVATAR' => $lang['Avatar'],
-	'L_POSTER_RANK' => $lang['Poster_rank'],
-	'L_JOINED' => $lang['Joined'],
-	'L_TOTAL_POSTS' => $lang['Total_posts'],
-	'L_SEARCH_USER_POSTS' => sprintf($lang['Search_user_posts'], $profiledata['username']),
-	'L_CONTACT' => $lang['Contact'],
-	'L_EMAIL_ADDRESS' => $lang['Email_address'],
-	'L_EMAIL' => $lang['Email'],
-	'L_PM' => $lang['Private_Message'],
-	'L_ICQ_NUMBER' => $lang['ICQ'],
-	'L_YAHOO' => $lang['YIM'],
-	'L_AIM' => $lang['AIM'],
-	'L_MESSENGER' => $lang['MSNM'],
-	'L_WEBSITE' => $lang['Website'],
-	'L_LOCATION' => $lang['Location'],
-	'L_OCCUPATION' => $lang['Occupation'],
-	'L_INTERESTS' => $lang['Interests'],
+	'L_VIEWING_PROFILE' => sprintf($user->lang['Viewing_user_profile'], $profiledata['username']),
+	'L_ABOUT_USER' => sprintf($user->lang['About_user'], $profiledata['username']),
+	'L_AVATAR' => $user->lang['Avatar'],
+	'L_POSTER_RANK' => $user->lang['Poster_rank'],
+	'L_JOINED' => $user->lang['Joined'],
+	'L_TOTAL_POSTS' => $user->lang['Total_posts'],
+	'L_SEARCH_USER_POSTS' => sprintf($user->lang['Search_user_posts'], $profiledata['username']),
+	'L_CONTACT' => $user->lang['Contact'],
+	'L_EMAIL_ADDRESS' => $user->lang['Email_address'],
+	'L_EMAIL' => $user->lang['Email'],
+	'L_PM' => $user->lang['Private_Message'],
+	'L_ICQ_NUMBER' => $user->lang['ICQ'],
+	'L_YAHOO' => $user->lang['YIM'],
+	'L_AIM' => $user->lang['AIM'],
+	'L_MESSENGER' => $user->lang['MSNM'],
+	'L_WEBSITE' => $user->lang['Website'],
+	'L_LOCATION' => $user->lang['Location'],
+	'L_OCCUPATION' => $user->lang['Occupation'],
+	'L_INTERESTS' => $user->lang['Interests'],
 
 	'U_SEARCH_USER' => "search.$phpEx$SID&amp;search_author=" . urlencode($profiledata['username']),
 

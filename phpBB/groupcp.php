@@ -111,8 +111,9 @@ function generate_user_info(&$row, $date_format, $group_mod, &$from, &$posts, &$
 //
 // Start session management
 //
-$userdata = $session->start();
-$auth->acl($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 //
 // End session management
 //
@@ -125,40 +126,39 @@ $server_port = ( $board_config['server_port'] <> 80 ) ? ':' . trim($board_config
 
 $server_url = $server_protocol . $server_name . $server_port . $script_name;
 
-if ( isset($HTTP_GET_VARS[POST_GROUPS_URL]) || isset($HTTP_POST_VARS[POST_GROUPS_URL]) )
+if ( isset($_GET[POST_GROUPS_URL]) || isset($_POST[POST_GROUPS_URL]) )
 {
-	$group_id = ( isset($HTTP_GET_VARS[POST_GROUPS_URL]) ) ? intval($HTTP_GET_VARS[POST_GROUPS_URL]) : intval($HTTP_POST_VARS[POST_GROUPS_URL]);
+	$group_id = ( isset($_GET[POST_GROUPS_URL]) ) ? intval($_GET[POST_GROUPS_URL]) : intval($_POST[POST_GROUPS_URL]);
 }
 else
 {
 	$group_id = '';
 }
 
-if ( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
+if ( isset($_POST['mode']) || isset($_GET['mode']) )
 {
-	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = ( isset($_POST['mode']) ) ? $_POST['mode'] : $_GET['mode'];
 }
 else
 {
 	$mode = '';
 }
 
-$confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
-$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
+$confirm = ( isset($_POST['confirm']) ) ? TRUE : 0;
+$cancel = ( isset($_POST['cancel']) ) ? TRUE : 0;
 
-$start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
 
 //
 // Default var values
 //
-$header_location = ( @preg_match('/Microsoft|WebSTAR/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
 $is_moderator = FALSE;
 
-if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
+if ( isset($_POST['groupstatus']) && $group_id )
 {
-	if ( !$userdata['session_logged_in'] )
+	if ( !$user->data['session_logged_in'] )
 	{
-		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		redirect("login.$phpEx$SIDredirect=groupcp.$phpEx&g=$group_id");
 	}
 
 	$sql = "SELECT group_moderator
@@ -171,7 +171,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 
 	$row = $db->sql_fetchrow($result);
 
-	if ( $row['group_moderator'] != $userdata['user_id'] && $userdata['user_level'] != ADMIN )
+	if ( $row['group_moderator'] != $user->data['user_id'] && $user->data['user_level'] != ADMIN )
 	{
 		$template->assign_vars(array(
 			'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
@@ -183,7 +183,7 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 	}
 
 	$sql = "UPDATE " . GROUPS_TABLE . "
-		SET group_type = " . intval($HTTP_POST_VARS['group_type']) . "
+		SET group_type = " . intval($_POST['group_type']) . "
 		WHERE group_id = $group_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -199,15 +199,15 @@ if ( isset($HTTP_POST_VARS['groupstatus']) && $group_id )
 	message_die(MESSAGE, $message);
 
 }
-else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
+else if ( isset($_POST['joingroup']) && $group_id )
 {
 	//
 	// First, joining a group
 	// If the user isn't logged in redirect them to login
 	//
-	if ( !$userdata['session_logged_in'] )
+	if ( !$user->data['session_logged_in'] )
 	{
-		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		redirect("login.$phpEx$SID&redirect=groupcp.$phpEx&g=$group_id");
 	}
 
 	$sql = "SELECT ug.user_id, g.group_type
@@ -226,7 +226,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		{
 			do
 			{
-				if ( $userdata['user_id'] == $row['user_id'] )
+				if ( $user->data['user_id'] == $row['user_id'] )
 				{
 					$template->assign_vars(array(
 						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("index.$phpEx") . '">')
@@ -255,7 +255,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	}
 
 	$sql = "INSERT INTO " . USER_GROUP_TABLE . " (group_id, user_id, user_pending)
-		VALUES ($group_id, " . $userdata['user_id'] . ", 1)";
+		VALUES ($group_id, " . $user->data['user_id'] . ", 1)";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(ERROR, "Error inserting user group subscription", "", __LINE__, __FILE__, $sql);
@@ -300,7 +300,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 
 	message_die(MESSAGE, $message);
 }
-else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending']) && $group_id )
+else if ( isset($_POST['unsub']) || isset($_POST['unsubpending']) && $group_id )
 {
 	//
 	// Second, unsubscribing from a group
@@ -308,28 +308,28 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	//
 	if ( $cancel )
 	{
-		header($header_location . append_sid("groupcp.$phpEx", true));
+		redirect("groupcp.$phpEx$SID");
 	}
-	elseif ( !$userdata['session_logged_in'] )
+	elseif ( !$user->data['session_logged_in'] )
 	{
-		header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+		redirect("login.$phpEx$SID&redirect=groupcp.$phpEx&g=$group_id");
 	}
 
 	if ( $confirm )
 	{
 		$sql = "DELETE FROM " . USER_GROUP_TABLE . "
-			WHERE user_id = " . $userdata['user_id'] . "
+			WHERE user_id = " . $user->data['user_id'] . "
 				AND group_id = $group_id";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(ERROR, 'Could not delete group memebership data', '', __LINE__, __FILE__, $sql);
 		}
 
-		if ( $userdata['user_level'] != ADMIN && $userdata['user_level'] == MOD )
+		if ( $user->data['user_level'] != ADMIN && $user->data['user_level'] == MOD )
 		{
 			$sql = "SELECT COUNT(auth_mod) AS is_auth_mod
 				FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug
-				WHERE ug.user_id = " . $userdata['user_id'] . "
+				WHERE ug.user_id = " . $user->data['user_id'] . "
 					AND aa.group_id = ug.group_id
 					AND aa.auth_mod = 1";
 			if ( !($result = $db->sql_query($sql)) )
@@ -341,7 +341,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 			{
 				$sql = "UPDATE " . USERS_TABLE . "
 					SET user_level = " . USER . "
-					WHERE user_id = " . $userdata['user_id'];
+					WHERE user_id = " . $user->data['user_id'];
 				if ( !($result = $db->sql_query($sql)) )
 				{
 					message_die(ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
@@ -359,7 +359,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	}
 	else
 	{
-		$unsub_msg = ( isset($HTTP_POST_VARS['unsub']) ) ? $lang['Confirm_unsub'] : $lang['Confirm_unsub_pending'];
+		$unsub_msg = ( isset($_POST['unsub']) ) ? $lang['Confirm_unsub'] : $lang['Confirm_unsub_pending'];
 
 		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" /><input type="hidden" name="unsub" value="1" />';
 
@@ -391,11 +391,11 @@ else if ( $group_id )
 	// Did the group moderator get here through an email?
 	// If so, check to see if they are logged in.
 	//
-	if ( isset($HTTP_GET_VARS['validate']) )
+	if ( isset($_GET['validate']) )
 	{
-		if ( !$userdata['session_logged_in'] )
+		if ( !$user->data['user_id'] )
 		{
-			header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+			redirect("login.$phpEx$SID&redirect=groupcp.$phpEx&g=$group_id");
 		}
 	}
 
@@ -444,7 +444,7 @@ else if ( $group_id )
 	{
 		$group_moderator = $group_info['group_moderator'];
 
-		if ( $group_moderator == $userdata['user_id'] || $userdata['user_level'] == ADMIN )
+		if ( $group_moderator == $user->data['user_id'] || $user->data['user_level'] == ADMIN )
 		{
 			$is_moderator = TRUE;
 		}
@@ -452,11 +452,11 @@ else if ( $group_id )
 		//
 		// Handle Additions, removals, approvals and denials
 		//
-		if ( !empty($HTTP_POST_VARS['add']) || !empty($HTTP_POST_VARS['remove']) || isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) )
+		if ( !empty($_POST['add']) || !empty($_POST['remove']) || isset($_POST['approve']) || isset($_POST['deny']) )
 		{
-			if ( !$userdata['session_logged_in'] )
+			if ( !$user->data['session_logged_in'] )
 			{
-				header($header_location . append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+				redirect("login.$phpEx$SIDredirect=groupcp.$phpEx&g=$group_id");
 			}
 
 			if ( !$is_moderator )
@@ -470,9 +470,9 @@ else if ( $group_id )
 				message_die(MESSAGE, $message);
 			}
 
-			if ( isset($HTTP_POST_VARS['add']) )
+			if ( isset($_POST['add']) )
 			{
-				$username = ( isset($HTTP_POST_VARS['username']) ) ? $HTTP_POST_VARS['username'] : "";
+				$username = ( isset($_POST['username']) ) ? $_POST['username'] : "";
 
 				$sql = "SELECT user_id, user_email, user_lang, user_level
 					FROM " . USERS_TABLE . "
@@ -583,10 +583,10 @@ else if ( $group_id )
 			}
 			else
 			{
-				if ( ( ( isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) ) && isset($HTTP_POST_VARS['pending_members']) ) || ( isset($HTTP_POST_VARS['remove']) && isset($HTTP_POST_VARS['members']) ) )
+				if ( ( ( isset($_POST['approve']) || isset($_POST['deny']) ) && isset($_POST['pending_members']) ) || ( isset($_POST['remove']) && isset($_POST['members']) ) )
 				{
 
-					$members = ( isset($HTTP_POST_VARS['approve']) || isset($HTTP_POST_VARS['deny']) ) ? $HTTP_POST_VARS['pending_members'] : $HTTP_POST_VARS['members'];
+					$members = ( isset($_POST['approve']) || isset($_POST['deny']) ) ? $_POST['pending_members'] : $_POST['members'];
 
 					$sql_in = '';
 					for($i = 0; $i < count($members); $i++)
@@ -594,7 +594,7 @@ else if ( $group_id )
 						$sql_in .= ( ( $sql_in != '' ) ? ', ' : '' ) . $members[$i];
 					}
 
-					if ( isset($HTTP_POST_VARS['approve']) )
+					if ( isset($_POST['approve']) )
 					{
 						if ( $group_info['auth_mod'] )
 						{
@@ -616,7 +616,7 @@ else if ( $group_id )
 							FROM ". USERS_TABLE . "
 							WHERE user_id IN ($sql_in)";
 					}
-					else if ( isset($HTTP_POST_VARS['deny']) || isset($HTTP_POST_VARS['remove']) )
+					else if ( isset($_POST['deny']) || isset($_POST['remove']) )
 					{
 						if ( $group_info['auth_mod'] )
 						{
@@ -678,7 +678,7 @@ else if ( $group_id )
 					//
 					// Email users when they are approved
 					//
-					if ( isset($HTTP_POST_VARS['approve']) )
+					if ( isset($_POST['approve']) )
 					{
 						if ( !($result = $db->sql_query($sql_select)) )
 						{
@@ -711,7 +711,7 @@ else if ( $group_id )
 						$email_headers = 'From: ' . $board_config['board_email'] . "\nReturn-Path: " . $board_config['board_email'] . "\nBcc: " . $email_addresses . "\r\n";
 
 						$emailer->use_template('group_approved');
-						$emailer->email_address($userdata['user_email']);
+						$emailer->email_address($user->data['user_email']);
 						$emailer->set_subject();//$lang['Group_approved']
 						$emailer->extra_headers($email_headers);
 
@@ -807,7 +807,7 @@ else if ( $group_id )
 	{
 		for($i = 0; $i < $members_count; $i++)
 		{
-			if ( $group_members[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
+			if ( $group_members[$i]['user_id'] == $user->data['user_id'] && $user->data['session_logged_in'] )
 			{
 				$is_group_member = TRUE;
 			}
@@ -819,19 +819,19 @@ else if ( $group_id )
 	{
 		for($i = 0; $i < $modgroup_pending_count; $i++)
 		{
-			if ( $modgroup_pending_list[$i]['user_id'] == $userdata['user_id'] && $userdata['session_logged_in'] )
+			if ( $modgroup_pending_list[$i]['user_id'] == $user->data['user_id'] && $user->data['session_logged_in'] )
 			{
 				$is_group_pending_member = TRUE;
 			}
 		}
 	}
 
-	if ( $userdata['user_level'] == ADMIN )
+	if ( $user->data['user_level'] == ADMIN )
 	{
 		$is_moderator = TRUE;
 	}
 
-	if ( $userdata['user_id'] == $group_info['group_moderator'] )
+	if ( $user->data['user_id'] == $group_info['group_moderator'] )
 	{
 		$is_moderator = TRUE;
 
@@ -847,7 +847,7 @@ else if ( $group_id )
 
 		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" />';
 	}
-	else if ( $userdata['user_id'] == ANONYMOUS )
+	else if ( $user->data['user_id'] == ANONYMOUS )
 	{
 		$group_details =  $lang['Login_to_join'];
 		$s_hidden_fields = '';
@@ -1143,11 +1143,11 @@ else
 	// Select all group that the user is a member of or where the user has
 	// a pending membership.
 	//
-	if ( $userdata['session_logged_in'] )
+	if ( $user->data['session_logged_in'] )
 	{
 		$sql = "SELECT g.group_id, g.group_name, g.group_type, ug.user_pending
 			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = " . $userdata['user_id'] . "
+			WHERE ug.user_id = " . $user->data['user_id'] . "
 				AND ug.group_id = g.group_id
 				AND g.group_single_user <> " . TRUE . "
 			ORDER BY g.group_name, ug.user_id";
@@ -1198,7 +1198,7 @@ else
 	$s_group_list_opt = '';
 	while( $row = $db->sql_fetchrow($result) )
 	{
-		if  ( $row['group_type'] != GROUP_HIDDEN || $userdata['user_level'] == ADMIN )
+		if  ( $row['group_type'] != GROUP_HIDDEN || $user->data['user_level'] == ADMIN )
 		{
 			$s_group_list_opt .='<option value="' . $row['group_id'] . '">' . $row['group_name'] . '</option>';
 		}
@@ -1237,7 +1237,7 @@ else
 			$template->assign_block_vars('switch_groups_remaining', array() );
 		}
 
-		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
+		$s_hidden_fields = '<input type="hidden" name="sid" value="' . $user->data['session_id'] . '" />';
 
 		$template->assign_vars(array(
 			'L_GROUP_MEMBERSHIP_DETAILS' => $lang['Group_member_details'],

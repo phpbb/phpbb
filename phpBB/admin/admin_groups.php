@@ -47,7 +47,7 @@ require('pagestart.' . $phpEx);
 //
 if ( !$auth->acl_get('a_group') )
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 if( isset($_POST[POST_GROUPS_URL]) || isset($_GET[POST_GROUPS_URL]) )
@@ -96,7 +96,7 @@ if( isset($_POST['edit']) || isset($_POST['new']) )
 
 		if( !$db->sql_numrows($result) )
 		{
-			message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
+			message_die(GENERAL_MESSAGE, $user->lang['Group_not_exist']);
 		}
 
 		$group_info = $db->sql_fetchrow($result);
@@ -151,23 +151,23 @@ if( isset($_POST['edit']) || isset($_POST['new']) )
 		"GROUP_DESCRIPTION" => $group_info['group_description'],
 		"GROUP_MODERATOR" => $group_moderator,
 
-		"L_GROUP_TITLE" => $lang['Group_administration'],
-		"L_GROUP_EDIT_DELETE" => ( isset($_POST['new']) ) ? $lang['New_group'] : $lang['Edit_group'],
-		"L_GROUP_NAME" => $lang['group_name'],
-		"L_GROUP_DESCRIPTION" => $lang['group_description'],
-		"L_GROUP_MODERATOR" => $lang['group_moderator'],
-		"L_FIND_USERNAME" => $lang['Find_username'],
-		"L_GROUP_STATUS" => $lang['group_status'],
-		"L_GROUP_OPEN" => $lang['group_open'],
-		"L_GROUP_CLOSED" => $lang['group_closed'],
-		"L_GROUP_HIDDEN" => $lang['group_hidden'],
-		"L_GROUP_DELETE" => $lang['group_delete'],
-		"L_GROUP_DELETE_CHECK" => $lang['group_delete_check'],
-		"L_SUBMIT" => $lang['Submit'],
-		"L_RESET" => $lang['Reset'],
-		"L_DELETE_MODERATOR" => $lang['delete_group_moderator'],
-		"L_DELETE_MODERATOR_EXPLAIN" => $lang['delete_moderator_explain'],
-		"L_YES" => $lang['Yes'],
+		"L_GROUP_TITLE" => $user->lang['Group_administration'],
+		"L_GROUP_EDIT_DELETE" => ( isset($_POST['new']) ) ? $user->lang['New_group'] : $user->lang['Edit_group'],
+		"L_GROUP_NAME" => $user->lang['group_name'],
+		"L_GROUP_DESCRIPTION" => $user->lang['group_description'],
+		"L_GROUP_MODERATOR" => $user->lang['group_moderator'],
+		"L_FIND_USERNAME" => $user->lang['Find_username'],
+		"L_GROUP_STATUS" => $user->lang['group_status'],
+		"L_GROUP_OPEN" => $user->lang['group_open'],
+		"L_GROUP_CLOSED" => $user->lang['group_closed'],
+		"L_GROUP_HIDDEN" => $user->lang['group_hidden'],
+		"L_GROUP_DELETE" => $user->lang['group_delete'],
+		"L_GROUP_DELETE_CHECK" => $user->lang['group_delete_check'],
+		"L_SUBMIT" => $user->lang['Submit'],
+		"L_RESET" => $user->lang['Reset'],
+		"L_DELETE_MODERATOR" => $user->lang['delete_group_moderator'],
+		"L_DELETE_MODERATOR_EXPLAIN" => $user->lang['delete_moderator_explain'],
+		"L_YES" => $user->lang['Yes'],
 
 		"U_SEARCH_USER" => append_sid("../search.$phpEx?mode=searchuser"),
 
@@ -212,7 +212,7 @@ else if( isset($_POST['group_update']) )
 			message_die(GENERAL_ERROR, "Couldn't update auth_access", "", __LINE__, __FILE__, $sql);
 		}
 
-		$message = $lang['Deleted_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
+		$message = $user->lang['Deleted_group'] . "<br /><br />" . sprintf($user->lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($user->lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 		message_die(GENERAL_MESSAGE, $message);
 	}
@@ -226,11 +226,11 @@ else if( isset($_POST['group_update']) )
 
 		if( $group_name == "" )
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_group_name']);
+			message_die(GENERAL_MESSAGE, $user->lang['No_group_name']);
 		}
 		else if( $group_moderator == "" )
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
+			message_die(GENERAL_MESSAGE, $user->lang['No_group_moderator']);
 		}
 
 		$this_userdata = get_userdata($group_moderator);
@@ -238,7 +238,7 @@ else if( isset($_POST['group_update']) )
 
 		if( !$group_moderator )
 		{
-			message_die(GENERAL_MESSAGE, $lang['No_group_moderator']);
+			message_die(GENERAL_MESSAGE, $user->lang['No_group_moderator']);
 		}
 
 		if( $mode == "editgroup" )
@@ -253,7 +253,7 @@ else if( isset($_POST['group_update']) )
 			}
 			if( !$db->sql_numrows($result) )
 			{
-				message_die(GENERAL_MESSAGE, $lang['Group_not_exist']);
+				message_die(GENERAL_MESSAGE, $user->lang['Group_not_exist']);
 			}
 			$group_info = $db->sql_fetchrow($result);
 
@@ -284,7 +284,7 @@ else if( isset($_POST['group_update']) )
 				message_die(GENERAL_ERROR, "Couldn't update group", "", __LINE__, __FILE__, $sql);
 			}
 
-			$message = $lang['Updated_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
+			$message = $user->lang['Updated_group'] . "<br /><br />" . sprintf($user->lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($user->lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -314,29 +314,29 @@ else if( isset($_POST['group_update']) )
 				message_die(GENERAL_ERROR, "Couldn't insert new user-group info", "", __LINE__, __FILE__, $sql);
 			}
 
-			$message = $lang['Added_new_group'] . "<br /><br />" . sprintf($lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
+			$message = $user->lang['Added_new_group'] . "<br /><br />" . sprintf($user->lang['Click_return_groupsadmin'], "<a href=\"" . append_sid("admin_groups.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($user->lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");;
 
 			message_die(GENERAL_MESSAGE, $message);
 
 		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['Group_mode_not_selected']);
+			message_die(GENERAL_MESSAGE, $user->lang['Group_mode_not_selected']);
 		}
 	}
 }
 
-page_header($lang['Manage']);
+page_header($user->lang['Manage']);
 
 ?>
 
-<h1><?php echo $lang['Manage']; ?></h1>
+<h1><?php echo $user->lang['Manage']; ?></h1>
 
-<p><?php echo $lang['Group_manage_explain']; ?></p>
+<p><?php echo $user->lang['Group_manage_explain']; ?></p>
 
 <form method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th colspan="3"><?php echo $lang['Manage']; ?></th>
+		<th colspan="3"><?php echo $user->lang['Manage']; ?></th>
 	</tr>
 <?php
 
@@ -375,13 +375,13 @@ page_header($lang['Manage']);
 	foreach ( $groups as $group_ary )
 	{
 		$group_id = $group_ary['group_id'];
-		$group_name = ( !empty($lang[$group_ary['group_name']]) ) ? $lang[$group_ary['group_name']] : $group_ary['group_name'];
+		$group_name = ( !empty($user->lang[$group_ary['group_name']]) ) ? $user->lang[$group_ary['group_name']] : $group_ary['group_name'];
 
 ?>
 	<tr>
 		<td class="cat"><span class="cattitle"><?php echo $group_name;?></span></td>
-		<td class="cat" align="center">&nbsp;<input class="liteoption" type="submit" name="edit[<?php echo $group_id; ?>]" value="<?php echo $lang['Edit'];?>" />&nbsp;</td>
-		<td class="cat" align="center">&nbsp;<input class="liteoption" type="submit" name="delete[<?php echo $group_id; ?>]" value="<?php echo $lang['Delete'];?>" />&nbsp;</td>
+		<td class="cat" align="center">&nbsp;<input class="liteoption" type="submit" name="edit[<?php echo $group_id; ?>]" value="<?php echo $user->lang['Edit'];?>" />&nbsp;</td>
+		<td class="cat" align="center">&nbsp;<input class="liteoption" type="submit" name="delete[<?php echo $group_id; ?>]" value="<?php echo $user->lang['Delete'];?>" />&nbsp;</td>
 	</tr>
 <?php
 
@@ -394,8 +394,8 @@ page_header($lang['Manage']);
 ?>
 	<tr>
 		<td class="<?php echo $row_class; ?>"><?php echo $pending_ary['username'];?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="approve[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $lang['Approve_selected'];?>" /></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="decline[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $lang['Deny_selected'];?>" /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="approve[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Approve_selected'];?>" /></td>
+		<td class="<?php echo $row_class; ?>" align="center"><input class="liteoption" type="submit" name="decline[<?php echo $pending_ary['user_id']; ?>]" value="<?php echo $user->lang['Deny_selected'];?>" /></td>
 	</tr>
 <?php
 			}

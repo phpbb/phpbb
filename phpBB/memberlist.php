@@ -25,9 +25,9 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
-$userdata = $session->start();
-$auth->acl($userdata);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 $start = ( isset($_GET['start']) ) ? intval($_GET['start']) : 0;
@@ -71,7 +71,7 @@ else
 //
 // Memberlist sorting
 //
-$mode_types_text = array($lang['Sort_Joined'], $lang['Sort_Username'], $lang['Sort_Location'], $lang['Sort_Posts'], $lang['Sort_Email'],  $lang['Sort_Website'], $lang['Sort_Top_Ten']);
+$mode_types_text = array($user->lang['Sort_Joined'], $user->lang['Sort_Username'], $user->lang['Sort_Location'], $user->lang['Sort_Posts'], $user->lang['Sort_Email'],  $user->lang['Sort_Website'], $user->lang['Sort_Top_Ten']);
 $mode_types = array('joindate', 'username', 'location', 'posts', 'email', 'website', 'topten');
 
 $select_sort_mode = '<select name="mode">';
@@ -83,7 +83,7 @@ for($i = 0; $i < count($mode_types_text); $i++)
 $select_sort_mode .= '</select>';
 
 $select_sort_order = '<select name="order">';
-$select_sort_order .= ( $sort_order == 'a' ) ? '<option value="a" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="d">' . $lang['Sort_Descending'] . '</option>' : '<option value="a">' . $lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $lang['Sort_Descending'] . '</option>';
+$select_sort_order .= ( $sort_order == 'a' ) ? '<option value="a" selected="selected">' . $user->lang['Sort_Ascending'] . '</option><option value="d">' . $user->lang['Sort_Descending'] . '</option>' : '<option value="a">' . $user->lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Sort_Descending'] . '</option>';
 $select_sort_order .= '</select>';
 
 if ( $mode != 'topten' || $board_config['topics_per_page'] < 10 )
@@ -102,22 +102,22 @@ else
 //
 $template->assign_vars(array(
 	'PAGINATION' => $pagination,
-	'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )),
+	'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_members / $board_config['topics_per_page'] )),
 
-	'L_SELECT_SORT_METHOD' => $lang['Select_sort_method'],
-	'L_EMAIL' => $lang['Email'],
-	'L_WEBSITE' => $lang['Website'],
-	'L_FROM' => $lang['Location'],
-	'L_ORDER' => $lang['Order'],
-	'L_SORT' => $lang['Sort'],
-	'L_SUBMIT' => $lang['Sort'],
-	'L_AIM' => $lang['AIM'],
-	'L_YIM' => $lang['YIM'],
-	'L_MSNM' => $lang['MSNM'],
-	'L_ICQ' => $lang['ICQ'],
-	'L_JOINED' => $lang['Joined'],
-	'L_POSTS' => $lang['Posts'],
-	'L_GOTO_PAGE' => $lang['Goto_page'],
+	'L_SELECT_SORT_METHOD' => $user->lang['Select_sort_method'],
+	'L_EMAIL' => $user->lang['Email'],
+	'L_WEBSITE' => $user->lang['Website'],
+	'L_FROM' => $user->lang['Location'],
+	'L_ORDER' => $user->lang['Order'],
+	'L_SORT' => $user->lang['Sort'],
+	'L_SUBMIT' => $user->lang['Sort'],
+	'L_AIM' => $user->lang['AIM'],
+	'L_YIM' => $user->lang['YIM'],
+	'L_MSNM' => $user->lang['MSNM'],
+	'L_ICQ' => $user->lang['ICQ'],
+	'L_JOINED' => $user->lang['Joined'],
+	'L_POSTS' => $user->lang['Posts'],
+	'L_GOTO_PAGE' => $user->lang['Goto_page'],
 
 	'S_MODE_SELECT' => $select_sort_mode,
 	'S_ORDER_SELECT' => $select_sort_order,
@@ -176,7 +176,7 @@ if ( $row = $db->sql_fetchrow($result) )
 		$user_id = $row['user_id'];
 
 		$from = ( !empty($row['user_from']) ) ? $row['user_from'] : '&nbsp;';
-		$joined = $user->format_date($row['user_regdate'], $lang['DATE_FORMAT']);
+		$joined = $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']);
 		$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
 
 		$poster_avatar = '';
@@ -200,8 +200,8 @@ if ( $row = $db->sql_fetchrow($result) )
 		{
 			$email_uri = ( $board_config['board_email_form'] ) ? "profile.$phpEx$SID&amp;mode=email&amp;u=" . $user_id : 'mailto:' . $row['user_email'];
 
-			$email_img = '<a href="' . $email_uri . '">' . create_img($theme['icon_email'], $lang['Send_email']) . '</a>';
-			$email = '<a href="' . $email_uri . '">' . $lang['Send_email'] . '</a>';
+			$email_img = '<a href="' . $email_uri . '">' . $user->img('icon_email', $user->lang['Send_email']) . '</a>';
+			$email = '<a href="' . $email_uri . '">' . $user->lang['Send_email'] . '</a>';
 		}
 		else
 		{
@@ -210,21 +210,21 @@ if ( $row = $db->sql_fetchrow($result) )
 		}
 
 		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-		$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
-		$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+		$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
+		$profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
 		$temp_url = "privmsg.$phpEx$SID&amp;mode=post&amp;u=$user_id";
-		$pm_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_pm'], $lang['Send_private_message']) . '</a>';
-		$pm = '<a href="' . $temp_url . '">' . $lang['Send_private_message'] . '</a>';
+		$pm_img = '<a href="' . $temp_url . '">' . $user->img('icon_pm', $user->lang['Send_private_message']) . '</a>';
+		$pm = '<a href="' . $temp_url . '">' . $user->lang['Send_private_message'] . '</a>';
 
-		$www_img = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . create_img($theme['icon_www'], $lang['Visit_website']) . '</a>' : '';
-		$www = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $lang['Visit_website'] . '</a>' : '';
+		$www_img = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->img('icon_www', $user->lang['Visit_website']) . '</a>' : '';
+		$www = ( $row['user_website'] ) ? '<a href="' . $row['user_website'] . '" target="_userwww">' . $user->lang['Visit_website'] . '</a>' : '';
 
 		if ( !empty($row['user_icq']) )
 		{
 			$icq_status_img = '<a href="http://wwp.icq.com/' . $row['user_icq'] . '#pager"><img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&img=5" width="18" height="18" border="0" /></a>';
-			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . create_img($theme['icon_icq'], $lang['ICQ']) . '</a>';
-			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $lang['ICQ'] . '</a>';
+			$icq_img = '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->img('icon_icq', $user->lang['ICQ']) . '</a>';
+			$icq =  '<a href="http://wwp.icq.com/scripts/search.dll?to=' . $row['user_icq'] . '">' . $user->lang['ICQ'] . '</a>';
 		}
 		else
 		{
@@ -233,19 +233,19 @@ if ( $row = $db->sql_fetchrow($result) )
 			$icq = '';
 		}
 
-		$aim_img = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . create_img($theme['icon_aim'], $lang['AIM']) . '</a>' : '';
-		$aim = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $lang['AIM'] . '</a>' : '';
+		$aim_img = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->img('icon_aim', $user->lang['AIM']) . '</a>' : '';
+		$aim = ( $row['user_aim'] ) ? '<a href="aim:goim?screenname=' . $row['user_aim'] . '&amp;message=Hello+Are+you+there?">' . $user->lang['AIM'] . '</a>' : '';
 
 		$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-		$msn_img = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . create_img($theme['icon_msnm'], $lang['MSNM']) . '</a>' : '';
-		$msn = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $lang['MSNM'] . '</a>' : '';
+		$msn_img = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->img('icon_msnm', $user->lang['MSNM']) . '</a>' : '';
+		$msn = ( $row['user_msnm'] ) ? '<a href="' . $temp_url . '">' . $user->lang['MSNM'] . '</a>' : '';
 
-		$yim_img = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . create_img($theme['icon_yim'], $lang['YIM']) . '</a>' : '';
-		$yim = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
+		$yim_img = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->img('icon_yim', $user->lang['YIM']) . '</a>' : '';
+		$yim = ( $row['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg">' . $user->lang['YIM'] . '</a>' : '';
 
 		$temp_url = "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=posts";
-		$search_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_search'], $lang['Search_user_posts']) . '</a>';
-		$search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
+		$search_img = '<a href="' . $temp_url . '">' . $user->img('icon_search', $user->lang['Search_user_posts']) . '</a>';
+		$search = '<a href="' . $temp_url . '">' . $user->lang['Search_user_posts'] . '</a>';
 
 		$template->assign_block_vars('memberrow', array(
 			'ROW_NUMBER' => $i + ( $start + 1 ),
@@ -284,7 +284,7 @@ if ( $row = $db->sql_fetchrow($result) )
 	while ( $row = $db->sql_fetchrow($result) );
 }
 
-$page_title = $lang['Memberlist'];
+$page_title = $user->lang['Memberlist'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 $template->set_filenames(array(
@@ -325,7 +325,7 @@ function username_search()
 	//
 	//
 	//
-	$sort_by_types_text = array($lang['Sort_Username'], $lang['Sort_Email'], $lang['Sort_Post_count'], $lang['Sort_Joined'], $lang['Sort_Last_active']);
+	$sort_by_types_text = array($user->lang['Sort_Username'], $user->lang['Sort_Email'], $user->lang['Sort_Post_count'], $user->lang['Sort_Joined'], $user->lang['Sort_Last_active']);
 	$s_sort_by = '';
 	for($i = 0; $i < count($sort_by_types_text); $i++)
 	{
@@ -333,7 +333,7 @@ function username_search()
 		$s_sort_by .= '<option value="' . $i . '"' . $selected . '>' . $sort_by_types_text[$i] . '</option>';
 	}
 
-	$sort_order_text = array('a' => $lang['Ascending'], 'd' => $lang['Descending']);
+	$sort_order_text = array('a' => $user->lang['Ascending'], 'd' => $user->lang['Descending']);
 	$s_sort_order = '';
 	foreach ( $sort_order_text as $key => $value )
 	{
@@ -341,7 +341,7 @@ function username_search()
 		$s_sort_order .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 	}
 
-	$find_count = array('lt' => $lang['Less_than'], 'eq' => $lang['Equal_to'], 'gt' => $lang['More_than']);
+	$find_count = array('lt' => $user->lang['Less_than'], 'eq' => $user->lang['Equal_to'], 'gt' => $user->lang['More_than']);
 	$s_find_count = '';
 	foreach ( $find_count as $key => $value )
 	{
@@ -349,7 +349,7 @@ function username_search()
 		$s_find_count .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 	}
 
-	$find_time = array('lt' => $lang['Before'], 'gt' => $lang['After']);
+	$find_time = array('lt' => $user->lang['Before'], 'gt' => $user->lang['After']);
 	$s_find_join_time = '';
 	foreach ( $find_time as $key => $value )
 	{
@@ -395,7 +395,7 @@ function username_search()
 	//
 	//
 	//
-	$page_title = $lang['Search'];
+	$page_title = $user->lang['Search'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 	$template->set_filenames(array(
@@ -414,26 +414,26 @@ function username_search()
 		'COUNT' => $count,
 
 		'PAGINATION' => $pagination,
-		'PAGE_NUMBER' => sprintf($lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_users / $board_config['topics_per_page'] )),
+		'PAGE_NUMBER' => sprintf($user->lang['Page_of'], ( floor( $start / $board_config['topics_per_page'] ) + 1 ), ceil( $total_users / $board_config['topics_per_page'] )),
 
-		'L_SEARCH_USERNAME' => $lang['Find_username'],
-		'L_SEARCH_EXPLAIN' => $lang['Find_username_explain'],
-		'L_RESET' => $lang['Reset'],
-		'L_EMAIL' => $lang['Email'],
-		'L_ICQ_NUMBER' => $lang['ICQ'],
-		'L_MESSENGER' => $lang['MSNM'],
-		'L_YAHOO' => $lang['YIM'],
-		'L_AIM' => $lang['AIM'],
-		'L_JOINED' => $lang['Joined'],
-		'L_ACTIVE' => $lang['Last_active'],
-		'L_POSTS' => $lang['Posts'],
-		'L_SORT_BY' => $lang['Sort_by'],
-		'L_SORT_ASCENDING' => $lang['Sort_Ascending'],
-		'L_SORT_DESCENDING' => $lang['Sort_Descending'],
-		'L_SELECT_MARKED' => $lang['Select_marked'],
-		'L_MARK' => $lang['Mark'],
-		'L_MARK_ALL' => $lang['Mark_all'],
-		'L_UNMARK_ALL' => $lang['Unmark_all'],
+		'L_SEARCH_USERNAME' => $user->lang['Find_username'],
+		'L_SEARCH_EXPLAIN' => $user->lang['Find_username_explain'],
+		'L_RESET' => $user->lang['Reset'],
+		'L_EMAIL' => $user->lang['Email'],
+		'L_ICQ_NUMBER' => $user->lang['ICQ'],
+		'L_MESSENGER' => $user->lang['MSNM'],
+		'L_YAHOO' => $user->lang['YIM'],
+		'L_AIM' => $user->lang['AIM'],
+		'L_JOINED' => $user->lang['Joined'],
+		'L_ACTIVE' => $user->lang['Last_active'],
+		'L_POSTS' => $user->lang['Posts'],
+		'L_SORT_BY' => $user->lang['Sort_by'],
+		'L_SORT_ASCENDING' => $user->lang['Sort_Ascending'],
+		'L_SORT_DESCENDING' => $user->lang['Sort_Descending'],
+		'L_SELECT_MARKED' => $user->lang['Select_marked'],
+		'L_MARK' => $user->lang['Mark'],
+		'L_MARK_ALL' => $user->lang['Mark_all'],
+		'L_UNMARK_ALL' => $user->lang['Unmark_all'],
 
 		'S_FORM_NAME' => $form,
 		'S_FIELD_NAME' => $field,
@@ -462,13 +462,13 @@ function username_search()
 			$username = $row['username'];
 			$user_id = $row['user_id'];
 
-			$joined = $user->format_date($row['user_regdate'], $lang['DATE_FORMAT']);
+			$joined = $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']);
 			$posts = ( $row['user_posts'] ) ? $row['user_posts'] : 0;
-			$active = ( !$row['user_lastvisit'] ) ? $lang['Never'] : $user->format_date($row['user_lastvisit'], $lang['DATE_FORMAT']);
+			$active = ( !$row['user_lastvisit'] ) ? $user->lang['Never'] : $user->format_date($row['user_lastvisit'], $user->lang['DATE_FORMAT']);
 
 			$temp_url = "profile.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id";
-			$profile_img = '<a href="' . $temp_url . '">' . create_img($theme['icon_profile'], $lang['Read_profile']) . '</a>';
-			$profile = '<a href="' . $temp_url . '">' . $lang['Read_profile'] . '</a>';
+			$profile_img = '<a href="' . $temp_url . '">' . $user->img('icon_profile', $user->lang['Read_profile']) . '</a>';
+			$profile = '<a href="' . $temp_url . '">' . $user->lang['Read_profile'] . '</a>';
 
 			$template->assign_block_vars('memberrow', array(
 				'ROW_NUMBER' => $i + ( $start + 1 ),

@@ -46,7 +46,7 @@ require('pagestart.' . $phpEx);
 //
 if ( !$auth->acl_get('a_general') )
 {
-	message_die(MESSAGE, $lang['No_admin']);
+	message_die(MESSAGE, $user->lang['No_admin']);
 }
 
 //
@@ -74,8 +74,8 @@ else
 
 // Define some vars depending on which logs we're looking at
 $log_table_sql = ( $mode == 'admin' ) ? LOG_ADMIN_TABLE : LOG_MOD_TABLE;
-$l_title = ( $mode == 'admin' ) ? $lang['Admin_logs'] : $lang['Mod_logs'];
-$l_title_explain = ( $mode == 'admin' ) ? $lang['Admin_logs_explain'] : $lang['Mod_logs_explain'];
+$l_title = ( $mode == 'admin' ) ? $user->lang['Admin_logs'] : $user->lang['Mod_logs'];
+$l_title_explain = ( $mode == 'admin' ) ? $user->lang['Admin_logs_explain'] : $user->lang['Mod_logs_explain'];
 
 //
 // Delete entries if requested and able
@@ -126,8 +126,8 @@ else
 	$sort_dir = 'd';
 }
 
-$previous_days = array(0 => $lang['All_Entries'], 1 => $lang['1_Day'], 7 => $lang['7_Days'], 14 => $lang['2_Weeks'], 30 => $lang['1_Month'], 90 => $lang['3_Months'], 180 => $lang['6_Months'], 364 => $lang['1_Year']);
-$sort_by_text = array('u' => $lang['Sort_Username'], 't' => $lang['Sort_date'], 'i' => $lang['Sort_ip'], 'o' => $lang['Sort_action']);
+$previous_days = array(0 => $user->lang['All_Entries'], 1 => $user->lang['1_Day'], 7 => $user->lang['7_Days'], 14 => $user->lang['2_Weeks'], 30 => $user->lang['1_Month'], 90 => $user->lang['3_Months'], 180 => $user->lang['6_Months'], 364 => $user->lang['1_Year']);
+$sort_by_text = array('u' => $user->lang['Sort_Username'], 't' => $user->lang['Sort_date'], 'i' => $user->lang['Sort_ip'], 'o' => $user->lang['Sort_action']);
 $sort_by = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 $sort_day_options = '';
@@ -144,7 +144,7 @@ foreach ( $sort_by_text as $key => $text )
 	$sort_key_options .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
 }
 
-$sort_order_options = ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $lang['Sort_Ascending'] . '</option><option value="d">' . $lang['Sort_Descending'] . '</option>' : '<option value="a">' . $lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $lang['Sort_Descending'] . '</option>';
+$sort_order_options = ( $sort_dir == 'a' ) ? '<option value="a" selected="selected">' . $user->lang['Sort_Ascending'] . '</option><option value="d">' . $user->lang['Sort_Descending'] . '</option>' : '<option value="a">' . $user->lang['Sort_Ascending'] . '</option><option value="d" selected="selected">' . $user->lang['Sort_Descending'] . '</option>';
 
 $sort_sql = $sort_by[$sort_key] . ' ' . ( ( $sort_dir == 'd' ) ? 'DESC' : 'ASC' );
 
@@ -169,7 +169,7 @@ if ( $mode == 'mod' )
 ?>
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
 	<tr>
-		<td align="right"><?php echo $lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" /></td>
+		<td align="right"><?php echo $user->lang['Select_forum']; ?>: <select name="f" onchange="this.form.submit()"><?php echo $forum_box; ?></select> <input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" /></td>
 	</tr>
 </table>
 <?php
@@ -180,14 +180,14 @@ if ( $mode == 'mod' )
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
-		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $lang['Display_log']; ?>: &nbsp;<select name="sort_days"><?php echo $sort_day_options; ?></select>&nbsp;<?php echo $lang['Sort_by']; ?> <select name="sort_key"><?php echo $sort_key_options; ?></select> <select name="sort_dir"><?php echo $sort_order_options; ?></select>&nbsp;<input class="liteoption" type="submit" value="<?php echo $lang['Go']; ?>" name="sort" /></span></td>
+		<td class="cat" colspan="5" height="28" align="center"><span class="gensmall"><?php echo $user->lang['Display_log']; ?>: &nbsp;<select name="sort_days"><?php echo $sort_day_options; ?></select>&nbsp;<?php echo $user->lang['Sort_by']; ?> <select name="sort_key"><?php echo $sort_key_options; ?></select> <select name="sort_dir"><?php echo $sort_order_options; ?></select>&nbsp;<input class="liteoption" type="submit" value="<?php echo $user->lang['Go']; ?>" name="sort" /></span></td>
 	</tr>
 	<tr>
-		<th width="15%" height="25" nowrap="nowrap"><?php echo $lang['Username']; ?></th>
-		<th width="15%" nowrap="nowrap"><?php echo $lang['IP']; ?></th>
-		<th width="20%" nowrap="nowrap"><?php echo $lang['Time']; ?></th>
-		<th width="45%" nowrap="nowrap"><?php echo $lang['Action']; ?></th>
-		<th nowrap="nowrap"><?php echo $lang['Mark']; ?></th>
+		<th width="15%" height="25" nowrap="nowrap"><?php echo $user->lang['Username']; ?></th>
+		<th width="15%" nowrap="nowrap"><?php echo $user->lang['IP']; ?></th>
+		<th width="20%" nowrap="nowrap"><?php echo $user->lang['Time']; ?></th>
+		<th width="45%" nowrap="nowrap"><?php echo $user->lang['Action']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['Mark']; ?></th>
 	</tr>
 <?php
 
@@ -208,7 +208,7 @@ if ( $log_count )
 	<tr>
 		<td class="<?php echo $row_class; ?>" nowrap="nowrap"><?php echo $log_data[$i]['username']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $log_data[$i]['ip']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo create_date($board_config['default_dateformat'], $log_data[$i]['time'], $board_config['board_timezone']); ?></td>
+		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><?php echo $user->format_date($log_data[$i]['time']); ?></td>
 		<td class="<?php echo $row_class; ?>"><?php echo $log_data[$i]['action']; ?></td>
 		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap"><input type="checkbox" name="mark[]" value="<?php echo $log_data[$i]['id']; ?>" /></td>
 	</tr>
@@ -221,7 +221,7 @@ if ( $log_count )
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" height="28" align="right"><input class="liteoption" type="submit" name="delmarked" value="<?php echo $lang['Delete_marked']; ?>" />&nbsp; <input class="liteoption" type="submit" name="delall" value="<?php echo $lang['Delete_all']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="5" height="28" align="right"><input class="liteoption" type="submit" name="delmarked" value="<?php echo $user->lang['Delete_marked']; ?>" />&nbsp; <input class="liteoption" type="submit" name="delall" value="<?php echo $user->lang['Delete_all']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 
@@ -231,7 +231,7 @@ else
 {
 ?>
 	<tr>
-		<td class="row1" colspan="5" align="center" nowrap="nowrap"><?php echo $lang['No_entries']; ?></td>
+		<td class="row1" colspan="5" align="center" nowrap="nowrap"><?php echo $user->lang['No_entries']; ?></td>
 	</tr>
 <?php
 
@@ -249,7 +249,7 @@ else
 	{
 
 
-?><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $lang['Unmark_all']; ?></a></span></b>&nbsp;<br /><br /><?php
+?><b><span class="gensmall"><a href="javascript:marklist(true);" class="gensmall"><?php echo $user->lang['Mark_all']; ?></a> :: <a href="javascript:marklist(false);" class="gensmall"><?php echo $user->lang['Unmark_all']; ?></a></span></b>&nbsp;<br /><br /><?php
 
 	}
 

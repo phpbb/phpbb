@@ -26,9 +26,9 @@ include($phpbb_root_path . 'extension.inc');
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
-$userdata = $session->start();
-$auth->acl($userdata);
-$user = new user($userdata);
+$user->start();
+$user->setup();
+$auth->acl($user->data);
 // End session management
 
 // Set default email variables
@@ -76,17 +76,13 @@ if ( isset($_GET['mode']) || isset($_POST['mode']) )
 	}
 	else if ( $mode == 'editprofile' || $mode == 'register' )
 	{
-		if ( !$userdata['user_id'] && $mode == 'editprofile' )
+		if ( !$user->data['user_id'] && $mode == 'editprofile' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . "login.$phpEx$SID&redirect=profile.$phpEx&mode=editprofile");
-			exit;
+			redirect("login.$phpEx$SID&redirect=profile.$phpEx&mode=editprofile");
 		}
-		else if ( $userdata['user_id'] && $mode == 'register' )
+		else if ( $user->data['user_id'] && $mode == 'register' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . "index.$phpEx$SID");
-			exit;
+			redirect("index.$phpEx$SID");
 		}
 
 		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
@@ -110,9 +106,7 @@ if ( isset($_GET['mode']) || isset($_POST['mode']) )
 }
 else
 {
-	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-	header($header_location . "index.$phpEx$SID");
-	exit;
+	redirect("index.$phpEx$SID");
 }
 
 ?>
