@@ -62,7 +62,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 
 	$sql = "SELECT session_id 
 		FROM {$table_prefix}sessions 
-		WHERE session_id = '" . ((!get_magic_quotes_gpc()) ? $db->sql_escape($sid) : $sid . "'";
+		WHERE session_id = '" . ((!get_magic_quotes_gpc()) ? $db->sql_escape($sid) : $sid) . "'";
 	$result = $db->sql_query($sql);
 
 	if ($db->sql_fetchrow($result))
@@ -75,7 +75,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 		if ($row = $db->sql_fetchrow($result2))
 		{
 			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
-			header('Content-type: text/css');
+			//header('Content-type: text/css');
 
 			echo $row['css_data'];
 		}
