@@ -139,18 +139,17 @@ if($total_categories)
 		case 'postgresql':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
-				FROM ".FORUMS_TABLE." f, ".TOPICS_TABLE." t, ".POSTS_TABLE." p, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
+				FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p, " . USERS_TABLE . " u 
 				WHERE f.forum_last_post_id = p.post_id
 					AND p.post_id = t.topic_last_post_id
 					AND p.poster_id = u.user_id
-					AND af.forum_id = f.forum_id
 					$limit_forums
 					UNION (
 						SELECT f.*, NULL, NULL, NULL, NULL, NULL, NULL, NULL
-						FROM ".FORUMS_TABLE." f
+						FROM " . FORUMS_TABLE . " f
 						WHERE NOT EXISTS (
 							SELECT p.post_time
-							FROM ".POSTS_TABLE." p
+							FROM " . POSTS_TABLE . " p
 							WHERE f.forum_last_post_id = p.post_id
 						)
 							$limit_forums
@@ -161,11 +160,10 @@ if($total_categories)
 		case 'oracle':
 			$limit_forums = ($viewcat != -1) ? "AND f.cat_id = $viewcat " : "";
 			$sql = "SELECT f.*, t.topic_id, t.topic_replies, t.topic_last_post_id, u.username, u.user_id, p.post_time, p.post_username
-				FROM ".FORUMS_TABLE." f, ".POSTS_TABLE." p, ".TOPICS_TABLE." t, ".USERS_TABLE." u, ".AUTH_FORUMS_TABLE." af
+				FROM " . FORUMS_TABLE . " f, " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t, " . USERS_TABLE . " u 
 				WHERE f.forum_last_post_id = p.post_id(+)
 					AND p.post_id = t.topic_last_post_id(+)
 					AND p.poster_id = u.user_id(+)
-					AND af.forum_id = f.forum_id(+)
 					$limit_forums
 				ORDER BY f.cat_id, f.forum_order";
 			break;
@@ -205,8 +203,8 @@ if($total_categories)
 	//
 	$sql = "SELECT f.forum_id, u.username, u.user_id
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
-		WHERE ( aa.forum_id = f.forum_id OR aa.forum_id = 0 )
-			AND aa.auth_mod = 1
+		WHERE aa.forum_id = f.forum_id 
+			AND aa.auth_mod = " . TRUE . " 
 			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id
 		ORDER BY f.forum_id, u.user_id";

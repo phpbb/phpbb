@@ -60,7 +60,7 @@ if(isset($forum_id))
 		FROM ".FORUMS_TABLE." f, ".USERS_TABLE." u, ".USER_GROUP_TABLE." ug, ".AUTH_ACCESS_TABLE." aa
 		WHERE f.forum_id = $forum_id 
 			AND aa.auth_mod = 1
-			AND ( aa.forum_id = f.forum_id  OR aa.forum_id = 0 )
+			AND aa.forum_id = f.forum_id 
 			AND ug.group_id = aa.group_id
 			AND u.user_id = ug.user_id";
 }

@@ -164,7 +164,7 @@ function auth($type, $forum_id, $userdata, $f_access = -1)
 
 	if($userdata['session_logged_in'])
 	{
-		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND ( au.forum_id = $forum_id OR au.forum_id = 0 )" : "";
+		$forum_match_sql = ($forum_id != AUTH_LIST_ALL) ? "AND au.forum_id = $forum_id" : "";
 		$sql = "SELECT au.forum_id, $a_sql, au.auth_mod, g.group_single_user  
 			FROM ".AUTH_ACCESS_TABLE." au, " . USER_GROUP_TABLE. " ug, " . GROUPS_TABLE. " g 
 			WHERE ug.user_id = ".$userdata['user_id']. " 
