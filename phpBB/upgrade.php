@@ -557,8 +557,15 @@ if( !empty($next) )
 	switch($next)
 	{
 		case 'start':
-
 		case 'cleanstart':
+			print "Dropping sessions and themes tables ... ";
+			flush();
+
+			query("DROP TABLE sessions", "Couldn't drop table 'sessions'");
+			query("DROP TABLE themes", "Couldn't drop table 'themes'");   
+
+			print "Done<br />\n";
+
 			end_step('mod_old_tables');
 
 		case 'mod_old_tables':
@@ -1232,7 +1239,7 @@ if( !empty($next) )
 				query($sql, "Couldn't update posts to remove deleted user poster_id values");
 			}
 
-			print "Removed $users_removed Users ... Done<br />\n";
+			print "Removed $users_removed non-existent user references ... Done<br />\n";
 
 			echo "<br />Complete<br />\n";
 			end_step('convert_pm');
@@ -1937,7 +1944,7 @@ if( !empty($next) )
 			common_header();
 			print "Dropping unused tables ... <br />\n";
 
-			$drop_tables = array('access', 'forum_access', 'forum_mods', 'headermetafooter', 'sessions', 'themes', 'whosonline', $table_prefix . 'old_config');
+			$drop_tables = array('access', 'forum_access', 'forum_mods', 'headermetafooter', 'whosonline', $table_prefix . 'old_config');
 
 			for($i = 0; $i < count($drop_tables); $i++)
 			{
