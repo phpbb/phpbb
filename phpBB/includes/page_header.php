@@ -97,7 +97,7 @@ if (!empty($config['load_online']) && !empty($config['load_online_time']))
 					$logged_hidden_online++;
 				}
 
-				if ($row['user_allow_viewonline'] || $auth->acl_get('a_'))
+				if ($row['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 				{
 					$user_online_link = '<a href="' . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $user_online_link . '</a>';
 					$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
