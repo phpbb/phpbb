@@ -613,8 +613,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
 			{
 				$sql = "SELECT user_email 
-				FROM " . USERS_TABLE . "
-				WHERE user_level = " . ADMIN;
+					FROM " . USERS_TABLE . "
+					WHERE user_level = " . ADMIN;
 				
 				if ( !($result = $db->sql_query($sql)) )
 				{
