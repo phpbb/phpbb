@@ -115,7 +115,7 @@ DROP TABLE IF EXISTS phpbb_forums;
 
 CREATE TABLE phpbb_forums (
    forum_id int(10) NOT NULL auto_increment,
-   cat_id int(10),
+   cat_id int(10) NOT NULL,
    forum_name varchar(150),
    forum_desc text,
    forum_access tinyint(3),
@@ -264,7 +264,7 @@ DROP TABLE IF EXISTS phpbb_themes;
 
 CREATE TABLE phpbb_themes (
    themes_id int(11) NOT NULL auto_increment,
-   themes_name varchar(30),
+   themes_name varchar(30) NOT NULL,
    head_stylesheet varchar(100),
    body_background varchar(100),
    body_bgcolor varchar(6),
