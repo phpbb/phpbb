@@ -327,10 +327,10 @@ adm_page_header($user->lang['BOTS']);
 
 <form method="post" action="<?php "admin_bots.$phpEx$SID"; ?>"><table class="bg" width="90%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<th><?php echo $user->lang['BOT_NAME']; ?></th>
-		<th><?php echo $user->lang['BOT_LAST_VISIT']; ?></th>
-		<th colspan="3"><?php echo $user->lang['OPTIONS']; ?></th>
-		<th><?php echo $user->lang['MARK']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['BOT_NAME']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['BOT_LAST_VISIT']; ?></th>
+		<th colspan="3" nowrap="nowrap"><?php echo $user->lang['OPTIONS']; ?></th>
+		<th nowrap="nowrap"><?php echo $user->lang['MARK']; ?></th>
 	</tr>
 <?php
 
