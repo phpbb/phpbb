@@ -153,7 +153,7 @@ if( isset($HTTP_POST_VARS['submit']) )
 			// contained in the annotated php manual at php.com (ereg
 			// section)
 			//
-			if( eregi("^(([[:alnum:]]+([-_.][[:alnum:]]+)*\.?)|(\*))@([[:alnum:]]+([-_]?[[:alnum:]]+)*\.){1,3}([[:alnum:]]{2,6})$", trim($email_list_temp[$i])) )
+			if( eregi("^(([[:alnum:]\*]+([-_.][[:alnum:]\*]+)*\.?)|(\*))@([[:alnum:]]+([-_]?[[:alnum:]]+)*\.){1,3}([[:alnum:]]{2,6})$", trim($email_list_temp[$i])) )
 			{
 				$email_list[] = trim($email_list_temp[$i]);
 			}

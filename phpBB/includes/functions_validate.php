@@ -113,7 +113,7 @@ function validate_email($email)
 			{
 				while( $row = $db->sql_fetchrow($result) )
 				{
-					$match_email = str_replace('*@', '.*@', $row['ban_email']);
+					$match_email = str_replace('*', '.*', $row['ban_email']);
 					if ( preg_match('/^' . $match_email . '$/is', $email) )
 					{
 						return array('error' => true, 'error_msg' => $lang['Email_banned']);
