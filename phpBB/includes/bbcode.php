@@ -483,20 +483,34 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 						// Mark the lowest nesting level if needed.
 						if ($mark_lowest_level && ($curr_nesting_depth == 1))
 						{
+							if ($open_tag[0] == '[code]')
+							{
+								$code_entities_match = array('#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#');
+								$code_entities_replace = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;');
+								$between_tags = preg_replace($code_entities_match, $code_entities_replace, $between_tags);
+							}
 							$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$curr_nesting_depth:$uid]";
 							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$curr_nesting_depth:$uid]";
 						}
 						else
 						{
-							if ($open_is_regexp)
+							if ($open_tag[0] == '[code]')
 							{
-								$text = $before_start_tag . $start_tag;
+								$text = $before_start_tag . '&#91;code&#93;';
+								$text .= $between_tags . '&#91;/code&#93;';
 							}
 							else
 							{
-								$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+								if ($open_is_regexp)
+								{
+									$text = $before_start_tag . $start_tag;
+								}
+								else
+								{
+									$text = $before_start_tag . substr($start_tag, 0, $start_length - 1) . ":$uid]";
+								}
+								$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
 							}
-							$text .= $between_tags . substr($close_tag_new, 0, $close_tag_new_length - 1) . ":$uid]";
 						}
 
 						$text .= $after_end_tag;

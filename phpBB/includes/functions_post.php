@@ -108,23 +108,6 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 	if( $bbcode_on && $bbcode_uid != '' )
 	{
-		$tmp_message = $message;
-		if ( ($match_count = preg_match_all('#^(.*?)\[code\](.*?)\[\/code\](.*?)$#is', $tmp_message, $match)) )
-		{
-			$code_entities_match = array('#<#', '#>#', '#"#', '#:#', '#\[#', '#\]#', '#\(#', '#\)#', '#\{#', '#\}#');
-			$code_entities_replace = array('&lt;', '&gt;', '&quot;', '&#58;', '&#91;', '&#93;', '&#40;', '&#41;', '&#123;', '&#125;');
-
-			$message = '';
-			
-			for($i = 0; $i < $match_count; $i++)
-			{
-				$message .= $match[1][$i] . '[code]' . preg_replace($code_entities_match, $code_entities_replace, $match[2][$i]) . '[/code]';
-				$tmp_message = $match[3][$i];
-			}
-
-			$message .= $tmp_message;
-		}
-		
 		$message = bbencode_first_pass($message, $bbcode_uid);
 	}
 
