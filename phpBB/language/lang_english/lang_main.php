@@ -623,6 +623,7 @@ $lang['Account_inactive_admin'] = 'Your account has been created. However, this 
 $lang['Account_active'] = 'Your account has now been activated. Thank you for registering';
 $lang['Account_active_admin'] = 'The account has now been activated';
 $lang['Reactivate'] = 'Reactivate your account!';
+$lang['Already_activated'] = 'You have already activated your account';
 $lang['COPPA'] = 'Your account has been created but has to be approved, please check your email for details.';
 
 $lang['Registration'] = 'Registration Agreement Terms';

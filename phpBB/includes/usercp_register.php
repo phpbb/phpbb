@@ -388,12 +388,13 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 		if ( $mode == 'editprofile' )
 		{
-			if ( $email != $current_email && ( $board_config['require_activation'] == USER_ACTIVATION_SELF || $board_config['require_activation'] == USER_ACTIVATION_ADMIN ) && $userdata['user_level'] != ADMIN )
+			if ( $email != $userdata['user_email'] && $board_config['require_activation'] != USER_ACTIVATION_NONE && $userdata['user_level'] != ADMIN )
 			{
 				$user_active = 0;
+
 				$user_actkey = gen_rand_string(true);
-				$key_len = 54 - (strlen($server_url));
-				$key_len = ($key_len > 6) ? $key_len : 6;
+				$key_len = 54 - ( strlen($server_url) );
+				$key_len = ( $key_len > 6 ) ? $key_len : 6;
 				$user_actkey = substr($user_actkey, 0, $key_len);
 
 				if ( $userdata['session_logged_in'] )
@@ -435,7 +436,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					'USERNAME' => $username,
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']), 
 
-					'U_ACTIVATE' => $server_url . '?mode=activate&act_key=' . $user_actkey)
+					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 				);
 				$emailer->send();
 				$emailer->reset();
@@ -558,8 +559,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					'PASSWORD' => $password_confirm,
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
-					'U_ACTIVATE' => $server_url . '?mode=activate&act_key=' . $user_actkey,
-
 					'FAX_INFO' => $board_config['coppa_fax'],
 					'MAIL_INFO' => $board_config['coppa_mail'],
 					'EMAIL_ADDRESS' => $email,
@@ -582,7 +581,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					'PASSWORD' => $password_confirm,
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
-					'U_ACTIVATE' => $server_url . '?mode=activate&act_key=' . $user_actkey)
+					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 				);
 			}
 
@@ -600,7 +599,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					'USERNAME' => $username,
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
-					'U_ACTIVATE' => $server_url . '?mode=activate&act_key=' . $user_actkey)
+					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
 				);
 				$emailer->send();
 				$emailer->reset();
