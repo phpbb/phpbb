@@ -135,6 +135,7 @@ $adv = (isset($HTTP_GET_VARS['adv'])) ? $HTTP_GET_VARS['adv'] : -1;
 if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 {
 	$user_id = $HTTP_POST_VARS[POST_USERS_URL];
+	$adv = (isset($HTTP_POST_VARS['adv'])) ? TRUE : FALSE;
 
 	//
 	// This is where things become fun ...
@@ -230,15 +231,6 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 	}
 	else
 	{
-
-		$change_mod_ary = (isset($HTTP_POST_VARS['moderator'])) ? $HTTP_POST_VARS['moderator'] : array();
-		$change_prv_ary = (isset($HTTP_POST_VARS['private'])) ? $HTTP_POST_VARS['private'] : array();
-		if( !isset($change_prv_ary) )
-		{
-
-
-		}
-
 		//
 		// Pull all the auth/group 
 		// for this user
@@ -263,6 +255,38 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 
 		$forum_access = $db->sql_fetchrowset($fa_result);
 
+		$change_prv_list = array();
+
+		$change_mod_ary = (isset($HTTP_POST_VARS['moderator'])) ? $HTTP_POST_VARS['moderator'] : array();
+
+		for($i = 0; $i < count($forum_access); $i++)
+		{
+			$forum_id = $forum_access[$i]['forum_id'];
+
+			for($j = 0; $j < count($forum_auth_fields); $j++)
+			{
+				$field = $forum_auth_fields[$j];
+
+				if( isset($HTTP_POST_VARS['private']) )
+				{
+					if( $forum_access[$i][$field] == AUTH_ACL )
+					{
+						if( isset($HTTP_POST_VARS['private'][$forum_id]) )
+						{
+							$change_prv_list[$forum_id][$field] = $HTTP_POST_VARS['private'][$forum_id];
+						}
+					}
+				}
+				else
+				{
+					if( isset($HTTP_POST_VARS[$field][$forum_id]) )
+					{
+						$change_prv_list[$forum_id][$field] = $HTTP_POST_VARS[$field][$forum_id];
+					}
+				}
+			}
+		}
+		
 		//
 		// The data above lists access and moderator permissions
 		// for this user given by all the groups they belong to.
@@ -284,14 +308,11 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 		$warning_mod_grpname = array();
 		$warning_mod_frmname = array();
 		$valid_auth_mod_sql = array();
-		$valid_auth_mod_sql_val = "";
 
 		$warning_prv_grpid = array();
 		$warning_prv_grpname = array();
 		$warning_prv_frmname = array();
 		$valid_auth_prv_sql = array();
-		$valid_auth_prv_sql_fld = "";
-		$valid_auth_prv_sql_val = "";
 
 		for($i = 0; $i < count($forum_access); $i++)
 		{
@@ -300,8 +321,12 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			$update_mod = FALSE;
 			$update_acl = FALSE;
 
+			$valid_auth_mod_sql_val = "";
+			$valid_auth_prv_sql_fld = "";
+			$valid_auth_prv_sql_val = "";
+
 			@reset($change_mod_ary);
-			@reset($change_mod_prv);
+			@reset($change_prv_list);
 
 			//
 			// Moderator control
@@ -367,7 +392,7 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 			//
 			// Private/ACL control
 			//
-			while(list($prv_forum_id, $new_prv_status) = @each($change_prv_ary))
+			while(list($prv_forum_id, $new_prv_ary) = @each($change_prv_list))
 			{
 				if($prv_forum_id == $this_forum_id && empty($valid_auth_mod_sql[$this_forum_id]) )
 				{
@@ -388,49 +413,45 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 							//
 							// Step through all auth fields
 							//
-							for($k = 0; $k < count($forum_auth_fields); $k++)
+							@reset($new_prv_ary);
+							while( list($this_prv_field, $new_prv_status) = each($new_prv_ary) )
 							{
-								$this_prv_field = $forum_auth_fields[$k];
-
 								//
 								// Is this field set to ACL?
 								//
-								if($forum_access[$i][$this_prv_field] == AUTH_ACL)
+								$cur_prv_status = $u_access[$j][$this_prv_field];
+
+								if($cur_prv_status == $new_prv_status && $is_single_user)
 								{
-									$cur_prv_status = $u_access[$j][$this_prv_field];
-
-									if($cur_prv_status == $new_prv_status && $is_single_user)
+									//
+									// No need to update so set update to true
+									//
+									$update_acl = TRUE;
+								}
+								else if( ( $cur_prv_status || $u_access[$j]['auth_mod'] ) && !$new_prv_status && !$is_single_user && !$warned)
+								{
+									//
+									// user can mod via group auth, we'll warn
+									// the admin but carry out the op anyway if reqd.
+									//
+									$warning_prv_grpid[$this_forum_id][] = $u_access[$j]['group_id'];
+									$warning_prv_grpname[$this_forum_id][] = $u_access[$j]['group_name'];
+									$warning_prv_frmname[$this_forum_id][] = $forum_access[$i]['forum_name'];
+									$warned = TRUE;
+								}
+								else if($cur_prv_status != $new_prv_status && $is_single_user)
+								{
+									if( $valid_auth_prv_sql_val != "")
 									{
-										//
-										// No need to update so set update to true
-										//
-										$update_acl = TRUE;
+										$valid_auth_prv_sql_val .= ", ";
 									}
-									else if( ( $cur_prv_status || $u_access[$j]['auth_mod'] ) && !$new_prv_status && !$is_single_user && !$warned)
-									{
-										//
-										// user can mod via group auth, we'll warn
-										// the admin but carry out the op anyway if reqd.
-										//
-										$warning_prv_grpid[$this_forum_id][] = $u_access[$j]['group_id'];
-										$warning_prv_grpname[$this_forum_id][] = $u_access[$j]['group_name'];
-										$warning_prv_frmname[$this_forum_id][] = $forum_access[$i]['forum_name'];
-										$warned = TRUE;
-									}
-									else if($cur_prv_status != $new_prv_status && $is_single_user)
-									{
-										if(!empty($valid_auth_prv_sql_val))
-										{
-											$valid_auth_prv_sql_val .= ", ";
-										}
-										$valid_auth_prv_sql_val .= "$this_prv_field = $new_prv_status";
+									$valid_auth_prv_sql_val .= "$this_prv_field = $new_prv_status";
 
-										$update_acl = TRUE;
+									$update_acl = TRUE;
 
-										if(!$new_prv_status)
-										{
-											$is_all_zeroed = TRUE;
-										}
+									if(!$new_prv_status)
+									{
+										$is_all_zeroed = TRUE;
 									}
 								}
 							}
@@ -452,37 +473,41 @@ if(isset($HTTP_POST_VARS['submit']) && !empty($HTTP_POST_VARS[POST_USERS_URL]))
 						}
 					}
 
-					if(!$update_acl && $new_prv_status)
+					if(!$update_acl)
 					{
-						$valid_auth_prv_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, ";
-
 						//
 						// Step through all auth fields
 						//
-						for($k = 0; $k < count($forum_auth_fields); $k++)
-						{
-							$this_prv_field = $forum_auth_fields[$k];
+						$all_zeroed = TRUE;
 
+						@reset($new_prv_ary);
+						while( list($this_prv_field, $new_prv_status) = each($new_prv_ary) )
+						{
 							//
 							// Is this field set to ACL?
 							//
-							if($forum_access[$i][$this_prv_field] == AUTH_ACL)
+							if( $valid_auth_prv_sql_fld != "" )
 							{
-								if( !empty($valid_auth_prv_sql_fld) )
-								{
-									$valid_auth_prv_sql_fld .= ", ";
-								}
+								$valid_auth_prv_sql_fld .= ", ";
+							}
 
-								if( !empty($valid_auth_prv_sql_val) )
-								{
-									$valid_auth_prv_sql_val .= ", ";
-								}
-								$valid_auth_prv_sql_fld .= "$this_prv_field";
-								$valid_auth_prv_sql_val .= "$new_prv_status";
+							if( $valid_auth_prv_sql_val != "" )
+							{
+								$valid_auth_prv_sql_val .= ", ";
+							}
+							$valid_auth_prv_sql_fld .= "$this_prv_field";
+							$valid_auth_prv_sql_val .= "$new_prv_status";
+
+							if($new_prv_status)
+							{
+								$all_zeroed = FALSE;
 							}
 						}
 
-						$valid_auth_prv_sql[$this_forum_id] .= $valid_auth_prv_sql_fld . ") VALUES ($this_forum_id, " . $ug_info['group_id'] . ", " . $valid_auth_prv_sql_val . ")";
+						if(!$all_zeroed)
+						{
+							$valid_auth_prv_sql[$this_forum_id] = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id,  $valid_auth_prv_sql_fld) VALUES ($this_forum_id, " . $ug_info['group_id'] . ", $valid_auth_prv_sql_val)";
+						}
 
 						$update_acl = TRUE;
 					}
@@ -605,6 +630,14 @@ else
 	// Front end
 	//
 	$user_id = $HTTP_GET_VARS[POST_USERS_URL];
+	if( isset($HTTP_GET_VARS['adv']) )
+	{
+		$adv = $HTTP_GET_VARS['adv'];
+	}
+	else
+	{
+		$adv = FALSE;
+	}
 
 	$template_header = "admin/page_header.tpl";
 	include('page_header_admin.'.$phpEx);
@@ -614,7 +647,7 @@ else
 	);
 
 
-	$sql = "SELECT f.forum_id, f.forum_name, f.auth_view, f.auth_read, f.auth_post, f.auth_reply, f.auth_edit, f.auth_delete, f.auth_announce, f.auth_sticky 
+	$sql = "SELECT f.* 
 		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c 
 		WHERE c.cat_id = f.cat_id 
 		ORDER BY c.cat_order ASC, f.forum_order ASC";
@@ -622,7 +655,7 @@ else
 
 	$forum_access = $db->sql_fetchrowset($fa_result);
 
-	if($adv == -1)
+	if( empty($adv) )
 	{
 		for($i = 0; $i < count($forum_access); $i++)
 		{
@@ -655,222 +688,299 @@ else
 				}
 			}
 		}
+	}
 
-		$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user  
-			FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug   
-			WHERE u.user_id = $user_id 
-				AND ug.user_id = u.user_id 
-				AND g.group_id = ug.group_id";
-		$u_result = $db->sql_query($sql);
-		$userinf = $db->sql_fetchrowset($u_result);
+	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user  
+		FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug   
+		WHERE u.user_id = $user_id 
+			AND ug.user_id = u.user_id 
+			AND g.group_id = ug.group_id";
+	$u_result = $db->sql_query($sql);
+	$userinf = $db->sql_fetchrowset($u_result);
 
-		$sql = "SELECT aa.forum_id, aa.auth_view, aa.auth_read, aa.auth_post, aa.auth_reply, aa.auth_edit, aa.auth_delete, aa.auth_mod  
-			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
-			WHERE ug.user_id = $user_id 
-				AND g.group_id = ug.group_id 
-				AND aa.group_id = ug.group_id 
-				AND g.group_single_user = " . TRUE;
-		$au_result = $db->sql_query($sql);
+	$sql = "SELECT aa.*   
+		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g   
+		WHERE ug.user_id = $user_id 
+			AND g.group_id = ug.group_id 
+			AND aa.group_id = ug.group_id 
+			AND g.group_single_user = " . TRUE;
+	$au_result = $db->sql_query($sql);
 
-		$num_u_access = $db->sql_numrows($au_result);
+	$num_u_access = $db->sql_numrows($au_result);
 
-		if($num_u_access)
+	if($num_u_access)
+	{
+		while($u_row = $db->sql_fetchrow($au_result))
 		{
-			while($u_row = $db->sql_fetchrow($au_result))
-			{
-				$u_access[$u_row['forum_id']][] = $u_row;
-				$num_forum_access[$u_row['forum_id']]++;
-			}
+			$u_access[$u_row['forum_id']][] = $u_row;
+			$num_forum_access[$u_row['forum_id']]++;
 		}
+	}
 
-		$is_admin = ($userinf[0]['user_level'] == ADMIN && $userinf[0]['user_id'] != ANONYMOUS) ? 1 : 0;
+	$is_admin = ($userinf[0]['user_level'] == ADMIN && $userinf[0]['user_id'] != ANONYMOUS) ? 1 : 0;
 
-		for($i = 0; $i < count($forum_access); $i++)
+	for($i = 0; $i < count($forum_access); $i++)
+	{
+		$f_forum_id = $forum_access[$i]['forum_id'];
+		$is_forum_restricted[$f_forum_id] = 0;
+
+		for($j = 0; $j < count($forum_auth_fields); $j++)
 		{
-			$f_forum_id = $forum_access[$i]['forum_id'];
-			$is_forum_restricted[$f_forum_id] = 0;
+			$key = $forum_auth_fields[$j];
+			$value = $forum_access[$i][$key];
 
-			for($j = 0; $j < count($forum_auth_fields); $j++)
+			switch($value)
 			{
-				$key = $forum_auth_fields[$j];
-				$value = $forum_access[$i][$key];
+				case AUTH_ALL:
+					$auth_user[$f_forum_id][$key] = 1;
+					break;
 
-				switch($value)
-				{
-					case AUTH_ALL:
-						$auth_user[$f_forum_id][$key] = 1;
-						break;
+				case AUTH_REG:
+					$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS) ? 1 : 0;
+					break;
 
-					case AUTH_REG:
-						$auth_user[$f_forum_id][$key] = ($user_id != ANONYMOUS) ? 1 : 0;
-						break;
-
-					case AUTH_ACL:
-						if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
-						{
-							$result = a_auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin);
-							$auth_user[$f_forum_id][$key] = $result['auth'];
-						}
-						else
-						{
-							$auth_user[$f_forum_id][$key] = 0;
-						}
-						break;
-		
-					case AUTH_MOD:
-						if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
-						{
-							$result = a_auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin);
-							$auth_user[$f_forum_id][$key] = $result['auth'];
-						}
-						else
-						{
-							$auth_user[$f_forum_id][$key] = 0;
-						}
-						break;
-	
-					case AUTH_ADMIN:
-						$auth_user[$f_forum_id][$key] = $is_admin;
-						break;
-
-					default:
-						$auth_user[$f_forum_id][$key] = 0;
-						break;
-				}
-			}
-			//
-			// Is user a moderator?
-			//
-			if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
-			{
-				$result = a_auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], 0);
-				$auth_user[$f_forum_id]['auth_mod'] = $result['auth'];
-			}
-			else
-			{
-				$auth_user[$f_forum_id][$key] = 0;
-			}
-		}
-
-		while(list($forumkey, $user_ary) = each($auth_user))
-		{
-			$simple_auth[$forumkey] = 1;
-			while(list($fieldkey, $value) = each($user_ary))
-			{
-				$simple_auth[$forumkey] = $simple_auth[$forumkey] && $value; 
-			}
-		}
-		reset($auth_user);
-
-		$i = 0;
-		if($adv == -1)
-		{
-			while(list($forumkey, $user_ary) = each($auth_user))
-			{
-				if($basic_auth_level[$forumkey] == "private")
-				{
-					$allowed = 1;
-					for($j = 0; $j < count($basic_auth_level_fields[$forumkey]); $j++)
+				case AUTH_ACL:
+					if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
 					{
-						if(!$auth_user[$forumkey][$basic_auth_level_fields[$forumkey][$j]])
-						{
-							$allowed = 0;
-						}
-					}
-					$optionlist_acl = "<select name=\"private[$forumkey]\">";
-					if($is_admin || $user_ary['auth_mod'])
-					{
-						$optionlist_acl .= "<option value=\"1\">Allowed Access</option>";
-					}
-					else if($allowed)
-					{
-						$optionlist_acl .= "<option value=\"1\" selected>Allowed Access</option><option value=\"0\">Disallowed Access</option>";
+						$result = a_auth_check_user(AUTH_ACL, $key, $u_access[$f_forum_id], $is_admin);
+						$auth_user[$f_forum_id][$key] = $result['auth'];
+						$auth_field_acl[$f_forum_id][$key] = $result['auth'];
 					}
 					else
 					{
-						$optionlist_acl .= "<option value=\"1\">Allowed Access</option><option value=\"0\" selected>Disallowed Access</option>";
+						$auth_user[$f_forum_id][$key] = 0;
 					}
-					$optionlist_acl .= "</select>";
-				}
-				else
-				{
-					$optionlist_acl = "&nbsp;";
-				}
-
-				$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
-				if($user_ary['auth_mod'])
-				{
-					$optionlist_mod .= "<option value=\"1\" selected>Is a Moderator</option><option value=\"0\">Is not a Moderator</option>";
-				}
-				else
-				{
-					$optionlist_mod .= "<option value=\"1\">Is a Moderator</option><option value=\"0\" selected>Is not a Moderator</option>";
-				}
-				$optionlist_mod .= "</select>";
-
-				$row_class = ($i%2) ? "row2" : "row1";
-
-				$template->assign_block_vars("forums", array(
-					"ROW_CLASS" => $row_class, 
-					"FORUM_NAME" => $forum_access[$i]['forum_name'], 
-
-					"U_FORUM_AUTH" => append_sid("admin_forumauth.$phpEx?f=" . $forum_access[$i]['forum_id']), 
-			
-					"S_ACL_SELECT" => $optionlist_acl,
-					"S_MOD_SELECT" => $optionlist_mod)
-				);
-				$i++;
-			}
-		}
-		reset($auth_user);
-
-		$t_username .= $userinf[0]['username'];
-		$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected>Administrator</option><option value="user">User</option></select>' : '<select name="userlevel"><option value="admin">Administrator</option><option value="user" selected>User</option></select>';
-
-		for($i = 0; $i < count($userinf); $i++)
-		{
-			if(!$userinf[$i]['group_single_user'])
-			{
-				$group_name[] = $userinf[$i]['group_name'];
-				$group_id[] = $userinf[$i]['group_id'];
-			}
-		}
+					break;
 	
-		if(count($group_name))
+				case AUTH_MOD:
+					if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
+					{
+						$result = a_auth_check_user(AUTH_MOD, $key, $u_access[$f_forum_id], $is_admin);
+						$auth_user[$f_forum_id][$key] = $result['auth'];
+					}
+					else
+					{
+						$auth_user[$f_forum_id][$key] = 0;
+					}
+					break;
+
+				case AUTH_ADMIN:
+					$auth_user[$f_forum_id][$key] = $is_admin;
+					break;
+
+				default:
+					$auth_user[$f_forum_id][$key] = 0;
+					break;
+			}
+		}
+
+		//
+		// Is user a moderator?
+		//
+		if($user_id != ANONYMOUS && $num_forum_access[$f_forum_id])
 		{
-			$t_usergroup_list = "";
-			for($i = 0; $i < count($userinf); $i++)
+			$result = a_auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], 0);
+			$auth_user[$f_forum_id]['auth_mod'] = $result['auth'];
+		}
+		else
+		{
+			$auth_user[$f_forum_id][$key] = 0;
+		}
+	}
+
+	$i = 0;
+	while(list($forumkey, $user_ary) = each($auth_user))
+	{
+		if( empty($adv) )
+		{
+			if($basic_auth_level[$forumkey] == "private")
 			{
-				$t_usergroup_list .= "<a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id[$i] . "\">" . $group_name[$i] . "</a>";
-				if($i < count($group_name) - 1)
+				$allowed = 1;
+
+				for($j = 0; $j < count($basic_auth_level_fields[$forumkey]); $j++)
 				{
-					$t_usergroup_list .= ", ";
+					if(!$auth_user[$forumkey][$basic_auth_level_fields[$forumkey][$j]])
+					{
+						$allowed = 0;
+					}
 				}
+				$optionlist_acl = "<select name=\"private[$forumkey]\">";
+				if($is_admin || $user_ary['auth_mod'])
+				{
+					$optionlist_acl .= "<option value=\"1\">Allowed Access</option>";
+				}
+				else if($allowed)
+				{
+					$optionlist_acl .= "<option value=\"1\" selected>Allowed Access</option><option value=\"0\">Disallowed Access</option>";
+				}
+				else
+				{
+					$optionlist_acl .= "<option value=\"1\">Allowed Access</option><option value=\"0\" selected>Disallowed Access</option>";
+				}
+				$optionlist_acl .= "</select>";
+			}
+			else
+			{
+				$optionlist_acl = "&nbsp;";
 			}
 		}
 		else
 		{
-			$t_usergroup_list = "None";
+			@reset($forum_access);
+			while(list($key, $forum_row) = each($forum_access))
+			{
+				$forum_id =  $forum_row['forum_id'];
+
+				for($j = 0; $j < count($forum_auth_fields); $j++)
+				{
+					$field_name = $forum_auth_fields[$j];
+
+					if( $forum_row[$field_name] == AUTH_ACL )
+					{
+						$optionlist_acl_adv[$forum_id][$j] = "<select name=\"" . $field_name . "[$forum_id]\">";
+
+						if( isset($auth_field_acl[$forum_id][$field_name]) && !($is_admin || $user_ary['auth_mod']) )
+						{
+							if(!$auth_field_acl[$forum_id][$field_name])
+							{
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option><option value=\"0\" selected>Off</option>";
+							}
+							else
+							{
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\" selected>On</option><option value=\"0\">Off</option>";
+							}
+						}
+						else
+						{
+							if($is_admin || $user_ary['auth_mod'])
+							{
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option>";
+							}
+							else
+							{
+								$optionlist_acl_adv[$forum_id][$j] .= "<option value=\"1\">On</option><option value=\"0\" selected>Off</option>";
+							}
+						}
+
+						$optionlist_acl_adv[$forum_id][$j] .= "</select>";
+
+					}
+				}
+			}
 		}
 
-		$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_USERS_URL . "\" value=\"$user_id\">";
-		$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\">";
+		$optionlist_mod = "<select name=\"moderator[$forumkey]\">";
+		if($user_ary['auth_mod'])
+		{
+			$optionlist_mod .= "<option value=\"1\" selected>Moderator</option><option value=\"0\">Not Moderator</option>";
+		}
+		else
+		{
+			$optionlist_mod .= "<option value=\"1\">Moderator</option><option value=\"0\" selected>Not Moderator</option>";
+		}
+		$optionlist_mod .= "</select>";
 
-		$template->assign_vars(array(
-			"USERNAME" => $t_username, 
-			"USER_GROUP_MEMBERSHIPS" => "This user is a $s_user_type and belongs to the following groups: $t_usergroup_list",
+		$row_class = ($i%2) ? "row2" : "row1";
 
-			"L_USER_OR_GROUPNAME" => "Username", 
-			"L_USER_OR_GROUP" => "User", 
+		$template->assign_block_vars("forums", array(
+			"ROW_CLASS" => $row_class, 
+			"FORUM_NAME" => $forum_access[$i]['forum_name'], 
 
-			"U_USER_OR_GROUP" => append_sid("admin_userauth.$phpEx"), 
-			"U_FORUMAUTH" => append_sid("admin_forumauth.$phpEx"), 
-
-			"S_USER_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
-			"S_HIDDEN_FIELDS" => $s_hidden_fields)
+			"U_FORUM_AUTH" => append_sid("admin_forumauth.$phpEx?f=" . $forum_access[$i]['forum_id']), 
+	
+			"S_MOD_SELECT" => $optionlist_mod)
 		);
 
-	} // if adv == -1
+		if(!$adv)
+		{
+			$template->assign_block_vars("forums.aclvalues", array(
+				"S_ACL_SELECT" => $optionlist_acl)
+			);
+		}
+		else
+		{
+			for($j = 0; $j < count($forum_auth_fields); $j++)
+			{
+				$template->assign_block_vars("forums.aclvalues", array(
+					"S_ACL_SELECT" => $optionlist_acl_adv[$forumkey][$j])
+				);
+			}
+		}
+
+		$i++;
+	}
+	reset($auth_user);
+
+	$t_username .= $userinf[0]['username'];
+	$s_user_type = ($is_admin) ? '<select name="userlevel"><option value="admin" selected>Administrator</option><option value="user">User</option></select>' : '<select name="userlevel"><option value="admin">Administrator</option><option value="user" selected>User</option></select>';
+
+	for($i = 0; $i < count($userinf); $i++)
+	{
+		if(!$userinf[$i]['group_single_user'])
+		{
+			$group_name[] = $userinf[$i]['group_name'];
+			$group_id[] = $userinf[$i]['group_id'];
+		}
+	}
+
+	if(count($group_name))
+	{
+		$t_usergroup_list = "";
+		for($i = 0; $i < count($userinf); $i++)
+		{
+			$t_usergroup_list .= "<a href=\"admin_groupauth.$phpEx?" . POST_GROUPS_URL . "=" . $group_id[$i] . "\">" . $group_name[$i] . "</a>";
+			if($i < count($group_name) - 1)
+			{
+				$t_usergroup_list .= ", ";
+			}
+		}
+	}
+	else
+	{
+		$t_usergroup_list = "None";
+	}
+
+	$s_hidden_fields = "<input type=\"hidden\" name=\"" . POST_USERS_URL . "\" value=\"$user_id\">";
+	$s_hidden_fields .= "<input type=\"hidden\" name=\"curadmin\" value=\"" . $is_admin ."\">";
+
+	$s_column_span = 2; // Two columns always present
+	if(!$adv)
+	{
+		$template->assign_block_vars("acltype", array(
+			"L_UG_ACL_TYPE" => "Simple Auth Setting")
+		);
+		$s_column_span++;
+	}
+	else
+	{
+		for($i = 0; $i < count($forum_auth_fields); $i++)
+		{
+			$template->assign_block_vars("acltype", array(
+				"L_UG_ACL_TYPE" => ucfirst(preg_replace("/auth_/", "", $forum_auth_fields[$i])))
+			);
+			$s_column_span++;
+		}
+	}
+	
+	$switch_mode = "admin_userauth.$phpEx?" . POST_USERS_URL . "=" . $user_id . "&adv=";
+	$switch_mode .= ( !$adv ) ? "1" : "0";
+	$switch_mode_text = ( !$adv ) ? "Advanced Mode" : "Simple Mode";
+	$u_switch_mode = '<a href="' . $switch_mode . '">' . $switch_mode_text . '</a>';
+
+	$template->assign_vars(array(
+		"USERNAME" => $t_username, 
+		"USER_GROUP_MEMBERSHIPS" => "This user is a $s_user_type and belongs to the following groups: $t_usergroup_list",
+
+		"L_USER_OR_GROUPNAME" => "Username", 
+		"L_USER_OR_GROUP" => "User", 
+
+		"U_USER_OR_GROUP" => append_sid("admin_userauth.$phpEx"), 
+		"U_SWITCH_MODE" => $u_switch_mode,
+
+		"S_COLUMN_SPAN" => $s_column_span, 
+		"S_USER_AUTH_ACTION" => append_sid("admin_userauth.$phpEx"),
+		"S_HIDDEN_FIELDS" => $s_hidden_fields)
+	);
 
 }
 
