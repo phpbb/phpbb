@@ -55,7 +55,7 @@ p.searchbarreg { margin: 0px; float: right; font-size: 60%; white-space: nowrap;
 p.forumdesc { margin: 0px 4px 0px 0px; padding: 4px; font-size: 60%; }
 a.forumlink { color: #069; font-size: 80%; font-weight: bold; }
 
-p.topictitle { margin: 1px 0px; font-size: 65%; font-weight: bold; }
+p.topictitle { margin: 1px 0px; display: inline; font-size: 65%; font-weight: bold; }
 p.topicauthor { margin: 1px 0px; font-size: 70%; }
 p.topicdetails { margin: 1px 0px; font-size: 65%; }
 
