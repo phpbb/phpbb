@@ -420,7 +420,7 @@ function delete_attachment($post_id_array = -1, $attach_id_array = -1, $page = '
 		$sql_id = 'post_id';
 	}
 
-	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . ' 
+	$sql = "DELETE FROM " . ATTACHMENTS_TABLE . " 
 		WHERE attach_id IN (" . implode(', ', $attach_id_array) . ") 
 			AND $sql_id IN (" . implode(', ', $post_id_array) . ")";
 	$db->sql_query($sql);
