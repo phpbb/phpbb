@@ -674,7 +674,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				{
 					if($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']))
 					{
-						//mail($to_userdata['user_email'], $lang['Notification_subject'], $email_msg, "From: ".$board_config['board_email_from']."\r\n");
+						@mail($to_userdata['user_email'], $lang['Notification_subject'], $email_msg, "From: ".$board_config['board_email_from']."\r\n");
 					}
 				}
 
@@ -782,7 +782,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 	if($board_config['allow_html'])
 	{
-		$html_status = $lang['HTML'] . $lang['is_ON'];
+		$html_status = $lang['ON'];
 		$html_toggle = '<input type="checkbox" name="disable_html" ';
 		if($disable_html)
 		{
@@ -792,12 +792,12 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	}
 	else
 	{
-		$html_status = $lang['HTML'] . $lang['is_OFF'];
+		$html_status = $lang['OFF'];
 	}
 
 	if($board_config['allow_bbcode'])
 	{
-		$bbcode_status = $lang['BBCode'] . $lang['is_ON'];
+		$bbcode_status = $lang['ON'];
 		$bbcode_toggle = '<input type="checkbox" name="disable_bbcode" ';
 		if($disable_bbcode)
 		{
@@ -812,12 +812,17 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		
 	if($board_config['allow_smilies'])
 	{
+		$smilies_status = $lang['ON'];
 		$smile_toggle = '<input type="checkbox" name="disable_smile" ';
 		if($disable_smilies)
 		{
 			$smile_toggle .= "checked";
 		}
 		$smile_toggle .= "> " . $lang['Disable'] . $lang['Smilies'] . $lang['in_this_post'];
+	}
+	else
+	{
+		$smilies_status = $lang['OFF'];
 	}
 
 	$sig_toggle = '<input type="checkbox" name="attach_sig" ';
@@ -864,6 +869,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"MESSAGE_INPUT" => $message_input,
 		"HTML_STATUS" => $html_status,
 		"HTML_TOGGLE" => $html_toggle,
+		"SMILIES_STATUS" => $smilies_status, 
 		"SMILE_TOGGLE" => $smile_toggle,
 		"SIG_TOGGLE" => $sig_toggle,
 		"NOTIFY_TOGGLE" => $notify_toggle,
@@ -879,6 +885,9 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"L_POST_A" => $post_a,
 		"L_FIND_USERNAME" => $lang['Find_username'],
 		"L_FIND" => $lang['Find'],
+		"L_HTML_IS" => $lang['HTML'] . " " . $lang['is'],
+		"L_BBCODE_IS" => $lang['BBCode'] . " " . $lang['is'],
+		"L_SMILIES_ARE" => $lang['Smilies'] . " " . $lang['are'],
 
 		"S_ALPHA_SELECT" => $user_alpha_select,
 		"S_NAMES_SELECT" => $user_names_select, 
