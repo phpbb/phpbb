@@ -25,6 +25,15 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_PROFILE, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
 switch($mode)
 {
 	case 'viewprofile':

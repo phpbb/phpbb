@@ -72,11 +72,4 @@ else
 
 include('language/lang_'.$default_lang.'.'.$phpEx);
 
-//
-// Initialise session stuff 
-// See file for more details ...
-//
-
-$userdata = session_pagestart($db, $user_ip, $session_length);
-
 ?>

@@ -45,7 +45,7 @@ if(isset($HTTP_POST_VARS['submit']) || isset($HTTP_GET_VARS['submit']))
 		{
 			if(md5($password) == $rowresult["user_password"])
 			{
-				$session_id = session_begin($db, $rowresult["user_id"], $user_ip, $session_length, 1, $rowresult["user_password"]);
+				$session_id = session_begin($rowresult["user_id"], $user_ip, PAGE_INDEX, $session_length, 1, $rowresult["user_password"]);
 				if($session_id)
 				{
 					header("Location: index.$phpEx");

@@ -27,9 +27,10 @@
 // Adds/updates a new session to the database for the given userid.
 // Returns the new session ID on success.
 //
-function session_begin($db, $user_id, $user_ip, $session_length, $login = 0, $password = "") 
+function session_begin($user_id, $user_ip, $page_id, $session_length, $login = 0, $password = "") 
 {
 
+	global $db;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
@@ -37,52 +38,79 @@ function session_begin($db, $user_id, $user_ip, $session_length, $login = 0, $pa
 	$expiry_time = $current_time - $session_length;
 	$int_ip = encode_ip($user_ip);
 
-	if($user_id == ANONYMOUS)
-	{
-		$login = 0;
-	}
-	
-	$sql = "UPDATE ".SESSIONS_TABLE."
-		SET session_user_id = $user_id, session_time = $current_time, session_logged_in = $login
-		WHERE (session_id = ".$HTTP_COOKIE_VARS[$cookiename]['sessionid'].")
-			AND (session_ip = $int_ip)";
+	//
+	// Initial ban check against IP and userid
+	//
+	$sql = "SELECT ban_ip, ban_userid
+		FROM ".BANLIST_TABLE."
+		WHERE (ban_ip = '$int_ip' OR ban_userid = '$user_id')
+			AND (ban_start < $current_time AND ban_end > $current_time )";
 	$result = $db->sql_query($sql);
-	if(!$result || !$db->sql_affectedrows())
+	if (!$result) 
 	{
-		mt_srand( (double) microtime() * 1000000);
-		$session_id = mt_rand();
-	
-		$sql = "INSERT INTO ".SESSIONS_TABLE."
-				(session_id, session_user_id, session_time, session_ip, session_logged_in)
-				VALUES
-				($session_id, $user_id, $current_time, $int_ip, $login)";
-		$result = $db->sql_query($sql);
-		if(!$result)
-		{
-			if(DEBUG)
-			{
-				error_die($db, GENERAL_ERROR, "Error creating new session : session_pagestart");
-			}
-			else
-			{
-				error_die($db, SESSION_CREATE);
-			}
-		}
+		error_die(QUERY_ERROR, "Couldn't obtain ban information.", __LINE__, __FILE__);
+	}
+	$ban_info = $db->sql_fetchrow($result);
 
-		setcookie($cookiename."[sessionid]", $session_id, $session_length, "", "", "");
+	//
+	// Check for user and ip ban ...
+	// 
+	if($ban_info['ban_ip'] || $ban_info['ban_userid'])
+	{
+		error_die(AUTH_BANNED);
 	}
 	else
 	{
-		$session_id = $HTTP_COOKIE_VARS[$cookiename]['sessionid'];
-	}
+		if($user_id == ANONYMOUS)
+		{
+			$login = 0;
+		}
+	
+		$sql = "UPDATE ".SESSIONS_TABLE."
+			SET session_user_id = $user_id, session_time = $current_time, session_page = $page_id, session_logged_in = $login
+			WHERE (session_id = ".$HTTP_COOKIE_VARS[$cookiename]['sessionid'].")
+				AND (session_ip = '$int_ip')";
+	
+		$result = $db->sql_query($sql);
 
-	if(!empty($password) && AUTOLOGON)
-	{
-		setcookie($cookiename."[useridref]", $password, $cookielife, "", "", "");
+		if(!$result || !$db->sql_affectedrows())
+		{
+			mt_srand( (double) microtime() * 1000000);
+			$session_id = mt_rand();
+	
+			$sql = "INSERT INTO ".SESSIONS_TABLE."
+					(session_id, session_user_id, session_time, session_ip, session_page, session_logged_in)
+					VALUES
+					($session_id, $user_id, $current_time, '$int_ip', $page_id, $login)";
+			$result = $db->sql_query($sql);
+			if(!$result)
+			{
+				if(DEBUG)
+				{
+					error_die($db, GENERAL_ERROR, "Error creating new session : session_begin");
+				}
+				else
+				{
+					error_die($db, SESSION_CREATE);
+				}
+			}
+
+			setcookie($cookiename."[sessionid]", $session_id, $session_length);
+		}
+		else
+		{
+			$session_id = $HTTP_COOKIE_VARS[$cookiename]['sessionid'];
+		}
+
+		if(!empty($password) && AUTOLOGON)
+		{
+			setcookie($cookiename."[useridref]", $password, $cookielife);
+		}
+		setcookie($cookiename."[userid]", $user_id, $cookielife);
+		setcookie($cookiename."[sessionstart]", $current_time, $cookielife);
+		setcookie($cookiename."[sessiontime]", $current_time, $session_length);
+
 	}
-	setcookie($cookiename."[userid]", $user_id, $cookielife, "", "", "");
-	setcookie($cookiename."[sessionstart]", $current_time, $cookielife, "", "", "");
-	setcookie($cookiename."[sessiontime]", $current_time, $session_length, "", "", "");
 
 	return $session_id;
    
@@ -93,14 +121,13 @@ function session_begin($db, $user_id, $user_ip, $session_length, $login = 0, $pa
 // Checks for a given user session, tidies session
 // table and updates user sessions at each page refresh
 //
-function session_pagestart($db, $user_ip, $session_length)
+function session_pagestart($user_ip, $thispage_id, $session_length)
 {
-
+	global $db;
 	global $cookiename, $cookiedomain, $cookiepath, $cookiesecure, $cookielife;
 	global $HTTP_COOKIE_VARS;
 
 	unset($userdata);
-
 	$current_time = time();
 	$int_ip = encode_ip($user_ip);
 
@@ -132,9 +159,9 @@ function session_pagestart($db, $user_ip, $session_length)
 		$userid = $HTTP_COOKIE_VARS[$cookiename]['userid'];
 		$sql = "SELECT u.*, s.session_id, s.session_time, s.session_logged_in, b.ban_ip, b.ban_userid
 			FROM ".USERS_TABLE." u
-			LEFT JOIN ".BANLIST_TABLE." b ON ( (b.ban_ip = $int_ip OR b.ban_userid = u.user_id)
+			LEFT JOIN ".BANLIST_TABLE." b ON ( (b.ban_ip = '$int_ip' OR b.ban_userid = u.user_id)
 				AND ( b.ban_start < $current_time AND b.ban_end > $current_time ) )
-			LEFT JOIN ".SESSIONS_TABLE." s ON ( u.user_id = s.session_user_id  AND s.session_ip = $int_ip )
+			LEFT JOIN ".SESSIONS_TABLE." s ON ( u.user_id = s.session_user_id  AND s.session_ip = '$int_ip' )
 			WHERE u.user_id = $userid";
 		$result = $db->sql_query($sql);
 		if (!$result) 
@@ -180,9 +207,9 @@ function session_pagestart($db, $user_ip, $session_length)
 				{
 
 					$sql = "UPDATE ".SESSIONS_TABLE."
-						SET session_time = '$current_time'
+						SET session_time = '$current_time', session_page = '$thispage_id'
 						WHERE (session_id = ".$userdata['session_id'].")
-							AND (session_ip = $int_ip)
+							AND (session_ip = '$int_ip')
 							AND (session_user_id = ".$userdata['user_id'].")";
 					$result = $db->sql_query($sql);
 					if(!$result)
@@ -202,7 +229,7 @@ function session_pagestart($db, $user_ip, $session_length)
 						// Update was success, send current time to cookie
 						// and return userdata
 						//
-						setcookie($cookiename."[sessiontime]", $current_time, $session_length, "", "", "");
+						setcookie($cookiename."[sessiontime]", $current_time, $session_length);
 
 						return $userdata;
 					} // if (affectedrows)
@@ -247,7 +274,7 @@ function session_pagestart($db, $user_ip, $session_length)
 			$password = "";
 			$userdata['session_logged_in'] = 0;
 		}
-		$result = session_begin($db, $userdata['user_id'], $user_ip, $session_length, $autologon, $password);
+		$result = session_begin($userdata['user_id'], $user_ip, $thispage_id, $session_length, $autologon, $password);
 		if(!$result)
 		{
 			if(DEBUG)
@@ -266,53 +293,21 @@ function session_pagestart($db, $user_ip, $session_length)
 
 		//
 		// No userid cookie exists so we'll
-		// check for an IP ban and set up
-		// a new anonymous session
+		// set up a new anonymous session
 		//
-		$int_ip = encode_ip($user_ip);
-		$sql = "SELECT ban_ip
-			FROM ".BANLIST_TABLE."
-			WHERE ban_ip = $int_ip";
-		$result = $db->sql_query($sql);
-		if (!$result) 
+		$result = session_begin(ANONYMOUS, $user_ip, $thispage_id, $session_length, 0);
+		if(!$result)
 		{
 			if(DEBUG)
 			{
-				error_die($db, GENERAL_ERROR, "Error doing DB query non-userid ban_ip row fetch : session_pagestart");
+				error_die($db, GENERAL_ERROR, "Error creating anonymous session : session_pagestart");
 			}
 			else
 			{
 				error_die($db, SESSION_CREATE);
 			}
 		}
-		$banned_ip = $db->sql_fetchrow($result);
-
-		//
-		// Check for user and ip ban ...
-		// 
-		if($banned_ip['ban_ip'])
-		{
-			error_die($db, BANNED);
-		}
-		else
-		{
-
-			$result = session_begin($db, ANONYMOUS, $user_ip, $session_length);
-			if(!$result)
-			{
-				if(DEBUG)
-				{
-					error_die($db, GENERAL_ERROR, "Error creating anonymous session : session_pagestart");
-				}
-				else
-				{
-					error_die($db, SESSION_CREATE);
-				}
-			}
-			$userdata['session_logged_in'] = 0;
-
-		}
-
+		$userdata['session_logged_in'] = 0;
 	}
 
 	return $userdata;

@@ -178,6 +178,101 @@ function theme_select($default, $db)
 	return($theme_select);
 }
 
+//
+// Initialise user settings on page load
+//
+function init_userprefs($userdata)
+{
+
+	global $override_user_theme;
+	global $bgcolor, $table_bgcolor, $textcolor, $category_title, $table_header;
+	global $color1, $color2, $header_image, $newtopic_image;
+	global $reply_locked_image, $reply_image, $linkcolor, $vlinkcolor;
+	global $default_lang, $date_format, $sys_timezone;
+
+	if(!$override_user_theme)
+	{
+		if($userdata['user_id'] != ANONYMOUS || $userdata['user_id'] != DELETED)
+		{
+			$theme = setuptheme($userdata["user_theme"]);
+		}
+		else
+		{
+			$theme = setuptheme($default_theme);
+		}
+	}
+	else
+	{
+		$theme = setuptheme($override_user_theme);
+	}
+	if($theme) 
+	{
+		$bgcolor = $theme["bgcolor"];
+		$table_bgcolor = $theme["table_bgcolor"];
+		$textcolor = $theme["textcolor"];
+		$category_title = $theme["category_title"];
+		$table_header = $theme["table_header"];
+		$color1 = $theme["color1"];
+		$color2 = $theme["color2"];
+		$header_image = $theme["header_image"];
+		$newtopic_image = $theme["newtopic_image"];
+		$reply_locked_image = $theme["reply_locked_image"];
+		$reply_image = $theme["reply_image"];
+		$linkcolor = $theme["linkcolor"];
+		$vlinkcolor = $theme["vlinkcolor"];
+	}
+	if($userdata["user_lang"] != "")
+	{
+		$default_lang = $userdata["user_lang"];
+	}
+	if($userdata["user_dateformat"] != "")
+	{
+		$date_format = $userdata["user_dateformat"];
+	}
+	if($userdata["user_timezone"])
+	{
+		$sys_timezone = $userdata["user_timezone"];
+	}
+
+	// Include the appropriate language file ... if it exists.
+	if(!strstr($PHP_SELF, "admin"))
+	{
+		if(file_exists('language/lang_'.$default_lang.'.'.$phpEx))
+		{
+			include('language/lang_'.$default_lang.'.'.$phpEx);
+		}
+	}
+	else
+	{
+		if(strstr($PHP_SELF, "topicadmin"))
+		{
+			include('language/lang_'.$default_lang.'.'.$phpEx);
+		}
+		else
+		{
+			include('../language/lang_'.$default_lang.'.'.$phpEx);
+		}
+	}
+
+	return;
+
+}
+function setuptheme($theme)
+{
+	global $db;
+
+	$sql = "SELECT * 
+		FROM ".THEMES_TABLE." 
+		WHERE theme_id = '$theme'";
+	if(!$result = $db->sql_query($sql))
+		return(0);
+
+	if(!$myrow = $db->sql_fetchrow($result))
+		return(0);
+
+	return($myrow);
+}
+
 function tz_select($default)
 {
 	global $board_tz;

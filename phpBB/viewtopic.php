@@ -60,6 +60,16 @@ $forum_row = $db->sql_fetchrowset($result);
 $topic_title = $forum_row[0]["topic_title"];
 $forum_id = $forum_row[0]["forum_id"];
 $forum_name = stripslashes($forum_row[0]["forum_name"]);
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
 for($x = 0; $x < $total_rows; $x++)
 {
 	$moderators[] = array("user_id" => $forum_row[$x]["user_id"],

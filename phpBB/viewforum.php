@@ -23,8 +23,30 @@
 include('extension.inc');
 include('common.'.$phpEx);
 
+//
+// Obtain which forum id is required
+//
+if(!isset($HTTP_GET_VARS['forum']) && !isset($HTTP_POST_VARS['forum']))  // For backward compatibility
+{
+	$forum_id = ($HTTP_GET_VARS[POST_FORUM_URL]) ? $HTTP_GET_VARS[POST_FORUM_URL] : $HTTP_POST_VARS[POST_FORUM_URL];
+}
+else
+{
+	$forum_id = ($HTTP_GET_VARS['forum']) ? $HTTP_GET_VARS['forum'] : $HTTP_POST_VARS['forum'];
+}
+
 $pagetype = "viewforum";
 $page_title = "View Forum - $forum_name";
+
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, $forum_id, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
 
 // Check if the user has acutally sent a forum ID with his/her request
 // If not give them a nice error page.

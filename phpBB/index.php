@@ -27,6 +27,15 @@ include('common.'.$phpEx);
 $pagetype = "index";
 $page_title = "Forum Index";
 
+//
+// Start session management
+//
+$userdata = session_pagestart($user_ip, PAGE_INDEX, $session_length);
+init_userprefs($userdata);
+//
+// End session management
+//
+
 $total_posts = get_db_stat($db, 'postcount');
 $total_users = get_db_stat($db, 'usercount');
 $newest_userdata = get_db_stat($db, 'newestuser');

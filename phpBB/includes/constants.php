@@ -72,6 +72,16 @@ define(POST_USERS_URL, 'u');
 // Session parameters
 define(AUTOLOGON, 0);
 
+// Page numbers for session handling
+define(PAGE_INDEX, 0);
+define(PAGE_LOGIN, -1);
+define(PAGE_SEARCH, -2);
+define(PAGE_REGISTER, -3);
+define(PAGE_PROFILE, -4);
+define(PAGE_VIEWONLINE, -6);
+define(PAGE_VIEWMEMBERS, -7);
+define(PAGE_FAQ, -8);
+
 define('BANLIST_TABLE', $table_prefix.'banlist');
 define('CATEGORIES_TABLE', $table_prefix.'categories');
 define('CONFIG_TABLE', $table_prefix.'config');
