@@ -40,6 +40,7 @@ include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 // Start session management
 $user->start();
 $auth->acl($user->data);
+$user->setup();
 
 // Grab only parameters needed here
 $mode = (!empty($_REQUEST['mode'])) ? strval($_REQUEST['mode']) : '';
@@ -1148,8 +1149,6 @@ function topic_review($topic_id, $is_inline_review = false)
 	global $user, $auth, $db, $template, $bbcode;
 	global $censors, $config, $phpbb_root_path, $phpEx, $SID;
 
-	$user->setup();
-	
 	// Define censored word matches
 	if (empty($censors))
 	{
@@ -1235,6 +1234,7 @@ function topic_review($topic_id, $is_inline_review = false)
 				'POSTER_NAME' 		=> $poster,
 				'POST_DATE' 		=> $user->format_date($row['post_time']),
 				'POST_SUBJECT' 		=> $post_subject,
+				'POST_ID'			=> $row['post_id'],
 				'MESSAGE' 			=> nl2br($message),
 
 				'S_ROW_COUNT'	=> $i++)

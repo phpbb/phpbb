@@ -84,6 +84,7 @@ function bbstyle(bbnumber) {
 	donotinsert = false;
 	theSelection = false;
 	bblast = 0;
+	document.forms[form_name].elements[text_name].focus();
 
 	if (bbnumber == -1) { // Close all open tags & default button names
 		while (bbcode[0]) {

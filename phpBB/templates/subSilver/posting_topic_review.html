@@ -5,11 +5,57 @@
 		<th height="28" align="center">{L_TOPIC_REVIEW}</th>
 	</tr>
 	<tr>
-		<td class="row1"><iframe width="100%" height="300" src="{U_REVIEW_TOPIC}">
+		<td class="row1"><iframe width="100%" height="300" name="review_window" src="{U_REVIEW_TOPIC}">
 
 <!-- ELSE -->
 
 <!-- INCLUDE simple_header.html -->
+
+
+<script language="javascript" type="text/javascript" src="templates/subSilver/editor.js"></script>
+
+<script language="JavaScript" type="text/javascript">
+<!--
+
+var parent_form_name = 'post';
+var parent_text_name = 'message';
+
+function insert_quote(text) {
+	if (window.parent.document.forms[parent_form_name].elements[parent_text_name].createTextRange && window.parent.document.forms[parent_form_name].elements[parent_text_name].caretPos) 
+	{
+		var caretPos = window.parent.document.forms[parent_form_name].elements[parent_text_name].caretPos;
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? text + ' ' : text;
+		window.parent.document.forms[parent_form_name].elements[parent_text_name].focus();
+	} else {
+	window.parent.document.forms[parent_form_name].elements[parent_text_name].value += text;
+	window.parent.document.forms[parent_form_name].elements[parent_text_name].focus();
+	}
+}
+
+function addquote(post_id, username) {
+
+	var text_name = 'message_' + post_id;
+
+	if ((clientVer >= 4) && is_ie && is_win)
+	{
+		theSelection = document.selection.createRange().text; // Get text selection - does not consider the div only!
+	}
+
+	if (!theSelection)
+	{
+		eval("theSelection = document.all." + text_name + ".innerText;");
+	}
+
+	if (theSelection)
+	{
+		insert_quote('[quote="' + username + '"]' + theSelection + '[/quote]');
+	}
+
+	return;
+}
+
+//-->
+</script>
 
 <table class="tablebg" width="100%" cellpadding="2" cellspacing="1" border="0">
 	<tr>
@@ -26,12 +72,13 @@
 		<td height="28" valign="top"><table width="100%" border="0" cellspacing="0" cellpadding="0">
 			<tr>
 				<td width="100%">{postrow.MINI_POST_IMG}<span class="postdetails">{L_POSTED}: {postrow.POST_DATE}<span class="gen">&nbsp;</span>&nbsp;&nbsp;&nbsp;{L_POST_SUBJECT}: {postrow.POST_SUBJECT}</span></td>
+				<td valign="top" align="right" nowrap="nowrap"><input type="button" class="button" name="addquote" value="{L_QUOTE}" style="width: 50px" onClick="addquote({postrow.POST_ID}, '{postrow.POSTER_NAME}');" /></td>
 			</tr>
 			<tr>
 				<td colspan="2"><hr /></td>
 			</tr>
 			<tr>
-				<td colspan="2"><span class="postbody">{postrow.MESSAGE}</span></td>
+				<td colspan="2"><span class="postbody"><div id="message_{postrow.POST_ID}">{postrow.MESSAGE}</div></span></td>
 			</tr>
 		</table></td>
 	</tr>
