@@ -270,6 +270,7 @@ Backups completed ok.<P>
 	   change_column($db, "forums", "forum_type", "tinyint(3)", "null");
 	   add_column($db, "forums", "forum_posts", "int(10)", "default '0' not null");
 	   add_column($db, "forums", "forum_topics", "int(10)", "default '0' not null");
+	   add_column($db, "forums", "forum_last_post_id", "int(10)", "default '0' not null");
 
 		echo "Altered table forums <br>";
 
