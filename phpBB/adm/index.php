@@ -106,6 +106,7 @@ else if (isset($_GET['pane']) && $_GET['pane'] == 'left')
 
 			@ksort($action_ary);
 
+			$row_class = '';
 			foreach ($action_ary as $action => $file)
 			{
 				if (!empty($file))

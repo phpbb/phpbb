@@ -1689,7 +1689,7 @@ function event_execute($mode)
 }
 
 // Extension of auth class for changing permissions
-if (class_exists(auth))
+if (class_exists('auth'))
 {
 	class auth_admin extends auth
 	{
@@ -1957,7 +1957,7 @@ if (class_exists(auth))
 	}
 }
 
-if (class_exists(template))
+if (class_exists('template'))
 {
 	class template_admin extends template
 	{

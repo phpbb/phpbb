@@ -129,7 +129,7 @@ class acm
 			$this->load();
 		}
 
-		if ($expire_time > 0)
+		if ($expire_time > 0 && isset($this->vars_ts[$varname]))
 		{
 			if ($this->vars_ts[$varname] <= time() - $expire_time)
 			{
