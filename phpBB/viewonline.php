@@ -282,7 +282,7 @@ if( count($onlinerow_guest) )
 		$guest_userip_ary[] = $onlinerow_guest[$i]['session_ip'];
 		$guest_users++;
 
-		if($onlinerow_guest[$i]['session_page'] < 1 || !$is_auth_ary[$onlinerow_reg[$i]['session_page']]['auth_view'] )
+		if( $onlinerow_guest[$i]['session_page'] < 1 || !$is_auth_ary[$onlinerow_guest[$i]['session_page']]['auth_view'] )
 		{
 			switch($onlinerow_guest[$i]['session_page'])
 			{
