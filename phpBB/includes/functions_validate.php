@@ -29,7 +29,8 @@ function validate_username($username)
 {
 	global $db, $lang, $userdata;
 
-	$username = str_replace("\'", "''", $username);
+	$username = substr(str_replace("\'", "'", $username), 0, 25);
+	$username = str_replace("'", "''", $username);
 
 	$sql = "SELECT username 
 		FROM " . USERS_TABLE . " 

@@ -466,7 +466,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
-					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, $username),
+					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
 					'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
 
 					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
@@ -577,7 +577,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
 					'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
-					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, $username),
+					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
 					'PASSWORD' => $password_confirm,
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
@@ -599,7 +599,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->assign_vars(array(
 					'SITENAME' => $board_config['sitename'],
 					'WELCOME_MSG' => sprintf($lang['Welcome_subject'], $board_config['sitename']),
-					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, $username),
+					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
 					'PASSWORD' => $password_confirm,
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
@@ -635,7 +635,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				$emailer->extra_headers($email_headers . "Bcc: $bcc_list\n");
 
 				$emailer->assign_vars(array(
-					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, $username),
+					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
 					'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
 
 					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
