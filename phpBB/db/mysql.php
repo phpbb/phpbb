@@ -19,7 +19,7 @@
  *
  ***************************************************************************/
 
-if ( !defined('SQL_LAYER') )
+if (!defined('SQL_LAYER'))
 {
 
 define('SQL_LAYER', 'mysql');
@@ -44,14 +44,14 @@ class sql_db
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->password = $sqlpassword;
-		$this->server = $sqlserver . ( ( $port ) ? ':' . $port : '' );
+		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ( $this->persistency ) ? @mysql_pconnect($this->server, $this->user, $this->password) : @mysql_connect($this->server, $this->user, $this->password);
+		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $this->password) : @mysql_connect($this->server, $this->user, $this->password);
 
-		if ( $this->db_connect_id && $this->dbname != '')
+		if ($this->db_connect_id && $this->dbname != '')
 		{
-			if ( @mysql_select_db($this->dbname) )
+			if (@mysql_select_db($this->dbname))
 			{
 				return $this->db_connect_id;
 			}
@@ -93,20 +93,23 @@ class sql_db
 
 	function sql_transaction($status = 'begin')
 	{
-		switch ( $status )
+		switch ($status)
 		{
 			case 'begin':
 				$this->transaction = true;
-//				$result = mysql_query('BEGIN', $this->db_connect_id);
+				$result = @mysql_query('BEGIN', $this->db_connect_id);
 				break;
+
 			case 'commit':
 				$this->transaction = false;
-//				$result = mysql_query('COMMIT', $this->db_connect_id);
+				$result = @mysql_query('COMMIT', $this->db_connect_id);
 				break;
+
 			case 'rollback':
 				$this->transaction = false;
-//				$result = mysql_query('ROLLBACK', $this->db_connect_id);
+				$result = @mysql_query('ROLLBACK', $this->db_connect_id);
 				break;
+
 			default:
 				$result = true;
 		}
@@ -114,14 +117,13 @@ class sql_db
 		return $result;
 	}
 
-	//
 	// Base query method
-	//
 	function sql_query($query = '', $expire_time = 0)
 	{
 		if ($query != '')
 		{
 			global $cache;
+
 			if (!$expire_time || !$cache->sql_load($query, $expire_time))
 			{
 				if ($expire_time)
@@ -132,22 +134,26 @@ class sql_db
 				$this->query_result = false;
 				$this->num_queries++;
 
-				if (!empty($_REQUEST['explain']))
+				if (!empty($_GET['explain']))
 				{
 					global $starttime;
+
 					$curtime = explode(' ', microtime());
 					$curtime = $curtime[0] + $curtime[1] - $starttime;
 				}
+
 				if (!$this->query_result = @mysql_query($query, $this->db_connect_id))
 				{
 					$this->sql_error($query);
 				}
-				if (!empty($_REQUEST['explain']))
+
+				if (!empty($_GET['explain']))
 				{
 					$endtime = explode(' ', microtime());
 					$endtime = $endtime[0] + $endtime[1] - $starttime;
 
 					$this->sql_report .= "<pre>Query:\t" . htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n\t", $query)) . "\n\n";
+
 					if ($this->query_result)
 					{
 						$this->sql_report .= "Time before:  $curtime\nTime after:   $endtime\nElapsed time: <b>" . ($endtime - $curtime) . "</b>\n</pre>";
@@ -157,7 +163,9 @@ class sql_db
 						$error = $this->sql_error();
 						$this->sql_report .= '<b>FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']) . '<br><br><pre>';
 					}
+
 					$this->sql_time += $endtime - $curtime;
+
 					if (preg_match('/^SELECT/', $query))
 					{
 						$html_table = FALSE;
@@ -174,11 +182,13 @@ class sql_db
 								$this->sql_report .= "<tr>\n<td>" . implode("&nbsp;</td>\n<td>", array_values($row)) . "&nbsp;</td>\n</tr>\n";
 							}
 						}
+
 						if ($html_table)
 						{
 							$this->sql_report .= '</table><br>';
 						}
 					}
+
 					$this->sql_report .= "<hr>\n";
 				}
 
@@ -196,20 +206,17 @@ class sql_db
 			return false;
 		}
 
-		return ( $this->query_result) ? $this->query_result : false;
+		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	function sql_query_limit($query = '', $total, $offset = 0, $expire_time = 0)
+	function sql_query_limit($query, $total, $offset = 0, $expire_time = 0)
 	{
-		if ( $query != '' )
+		if ($query != '')
 		{
 			$this->query_result = false;
 			$this->num_queries++;
 
-			if ( !empty($total) )
-			{
-				$query .= ' LIMIT ' . ( ( !empty($offset) ) ? $offset . ', ' . $total : $total );
-			}
+			$query .= ' LIMIT ' . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
 			return $this->sql_query($query, $expire_time);
 		}
@@ -275,41 +282,42 @@ class sql_db
 		return $query;
 	}
 
-	//
 	// Other query methods
 	//
 	// NOTE :: Want to remove _ALL_ reliance on sql_numrows from core code ...
 	//         don't want this here by a middle Milestone
-	//
 	function sql_numrows($query_id = false)
 	{
-		if ( !$query_id )
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @mysql_num_rows($query_id) : false;
+		return ($query_id) ? @mysql_num_rows($query_id) : false;
 	}
 
 	function sql_affectedrows()
 	{
-		return ( $this->db_connect_id ) ? @mysql_affected_rows($this->db_connect_id) : false;
+		return ($this->db_connect_id) ? @mysql_affected_rows($this->db_connect_id) : false;
 	}
 
 	function sql_fetchrow($query_id = 0)
 	{
-		if ( !$query_id )
+		global $cache;
+
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		global $cache;
 		if ($cache->sql_exists($query_id))
 		{
-			return $cache->sql_fetchrow($query_id);
+			$return = $cache->sql_fetchrow($query_id);
+			print_r($return);
+			return $return;
 		}
 
-		return ( $query_id ) ? @mysql_fetch_assoc($query_id) : false;
+		return ($query_id) ? @mysql_fetch_assoc($query_id) : false;
 	}
 
 	function sql_fetchrowset($query_id = 0)
@@ -371,27 +379,27 @@ class sql_db
 
 	function sql_rowseek($rownum, $query_id = 0)
 	{
-		if ( !$query_id )
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @mysql_data_seek($query_id, $rownum) : false;
+		return ($query_id) ? @mysql_data_seek($query_id, $rownum) : false;
 	}
 
 	function sql_nextid()
 	{
-		return ( $this->db_connect_id ) ? @mysql_insert_id($this->db_connect_id) : false;
+		return ($this->db_connect_id) ? @mysql_insert_id($this->db_connect_id) : false;
 	}
 
 	function sql_freeresult($query_id = false)
 	{
-		if ( !$query_id )
+		if (!$query_id)
 		{
 			$query_id = $this->query_result;
 		}
 
-		return ( $query_id ) ? @mysql_free_result($query_id) : false;
+		return ($query_id) ? @mysql_free_result($query_id) : false;
 	}
 
 	function sql_escape($msg)
@@ -407,17 +415,17 @@ class sql_db
 			'code' => @mysql_errno()
 		);
 
-		if ( !$this->return_on_error )
+		if (!$this->return_on_error)
 		{
-			if ( $this->transaction )
+			if ($this->transaction)
 			{
 				$this->sql_transaction(ROLLBACK);
 			}
 
-			$this_page = ( !empty($_SERVER['PHP_SELF']) ) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
-			$this_page .= '&' . ( ( !empty($_SERVER['QUERY_STRING']) ) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING'] );
+			$this_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+			$this_page .= '&' . ((!empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : $_ENV['QUERY_STRING']);
 
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . $this_page . ( ( $sql != '' ) ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '' ) . '<br />';
+			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysql_error() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . $this_page . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
 			trigger_error($message, E_USER_ERROR);
 		}
 

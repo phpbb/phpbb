@@ -45,13 +45,13 @@ if (!defined('PHPBB_INSTALLED'))
 }
 
 // Load Extensions
-if ( (isset($load_extensions)) && ($load_extensions != '') )
+if (!empty($load_extensions))
 {
 	$load_extensions = explode(',', $load_extensions);
 
-	for ($i = 0; $i < count($load_extensions); $i++)
+	foreach ($load_extensions as $extension)
 	{
-		@dl(trim($load_extensions[$i]));
+		@dl(trim($extension));
 	}
 }
 
@@ -63,7 +63,7 @@ require($phpbb_root_path . 'includes/session.'.$phpEx);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 
 // User related
-define('ANONYMOUS', 0);
+define('ANONYMOUS', 1);
 
 define('USER_ACTIVATION_NONE', 0);
 define('USER_ACTIVATION_SELF', 1);
@@ -154,8 +154,6 @@ set_error_handler('msg_handler');
 // Instantiate some basic classes
 $user = new user();
 $auth = new auth();
-
-// Need these here so instantiate them now
 $cache = new acm();
 $template = new template();
 $db = new sql_db($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
@@ -229,7 +227,7 @@ if (time() - $config['cache_interval'] >= $config['cache_last_gc'])
 // Show 'Board is disabled' message
 if ($config['board_disable'] && !defined('IN_ADMIN') && !defined('IN_LOGIN'))
 {
-	$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'Board_disable';
+	$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 	trigger_error($message);
 }
 
