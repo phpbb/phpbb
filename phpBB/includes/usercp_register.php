@@ -330,8 +330,8 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		if ( empty($username) )
 		{
+			// Error is already triggered, since one field is empty.
 			$error = TRUE;
-			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Username_disallowed'];
 		}
 		else if ( $username != $userdata['username'] || $mode == 'register' )
 		{
@@ -367,7 +367,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 		$signature = prepare_message($signature, $allowhtml, $allowbbcode, $allowsmilies, $signature_bbcode_uid);
 	}
 
-	//??
 	if ( $website != '' )
 	{
 		rawurlencode($website);

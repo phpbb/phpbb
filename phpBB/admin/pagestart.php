@@ -55,6 +55,7 @@ if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 	$url = preg_replace('/sid=([^&]*)(&?)/i', '', $url);
 	$url = preg_replace('/\?$/', '', $url);
 	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
+
 	redirect($url);
 }
 
