@@ -152,38 +152,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 	//
 	// Carry out requests
 	//
-	if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'user' && $user_level == ADMIN )
-	{
-		//
-		// Make admin a user (if already admin) ... ignore if you're trying
-		// to change yourself from an admin to user!
-		//
-		if ( $userdata['user_id'] != $user_id )
-		{
-			$sql = "UPDATE " . AUTH_ACCESS_TABLE . "
-				SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0
-				WHERE group_id = $group_id";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not update auth access', '', __LINE__, __FILE__, $sql);
-			}
-
-			//
-			// Update users level, reset to USER
-			//
-			$sql = "UPDATE " . USERS_TABLE . "
-				SET user_level = " . USER . "
-				WHERE user_id = $user_id";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
-			}
-		}
-
-		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
-		message_die(GENERAL_MESSAGE, $message);
-	}
-	else if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'admin' && $user_level != ADMIN )
+	if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'admin' && $user_level != ADMIN )
 	{
 		//
 		// Make user an admin (if already user)
@@ -224,176 +193,213 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 	}
 	else
 	{
-		$change_mod_list = ( isset($HTTP_POST_VARS['moderator']) ) ? $HTTP_POST_VARS['moderator'] : false;
-
-		if ( empty($adv) )
+		if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'user' && $user_level == ADMIN )
 		{
-			$change_acl_list = ( isset($HTTP_POST_VARS['private']) ) ? $HTTP_POST_VARS['private'] : false;
+			//
+			// Make admin a user (if already admin) ... ignore if you're trying
+			// to change yourself from an admin to user!
+			//
+			if ( $userdata['user_id'] != $user_id )
+			{
+				$sql = "UPDATE " . AUTH_ACCESS_TABLE . "
+					SET auth_view = 0, auth_read = 0, auth_post = 0, auth_reply = 0, auth_edit = 0, auth_delete = 0, auth_sticky = 0, auth_announce = 0
+					WHERE group_id = $group_id";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update auth access', '', __LINE__, __FILE__, $sql);
+				}
+
+				//
+				// Update users level, reset to USER
+				//
+				$sql = "UPDATE " . USERS_TABLE . "
+					SET user_level = " . USER . "
+					WHERE user_id = $user_id";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
+				}
+			}
+
+			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
 		}
 		else
 		{
-			$change_acl_list = array();
-			for($j = 0; $j < count($forum_auth_fields); $j++)
-			{
-				$auth_field = $forum_auth_fields[$j];
+	
+			$change_mod_list = ( isset($HTTP_POST_VARS['moderator']) ) ? $HTTP_POST_VARS['moderator'] : false;
 
-				while( list($forum_id, $value) = @each($HTTP_POST_VARS['private_' . $auth_field]) )
-				{
-					$change_acl_list[$forum_id][$auth_field] = $value;
-				}
+			if ( empty($adv) )
+			{
+				$change_acl_list = ( isset($HTTP_POST_VARS['private']) ) ? $HTTP_POST_VARS['private'] : false;
 			}
-		}
-
-		$sql = "SELECT * 
-			FROM " . FORUMS_TABLE . " f
-			ORDER BY forum_order";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
-		}
-
-		$forum_access = array();
-		while( $row = $db->sql_fetchrow($result) )
-		{
-			$forum_access[] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		$sql = ( $mode == 'user' ) ? "SELECT aa.* FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g WHERE ug.user_id = $user_id AND g.group_id = ug.group_id AND aa.group_id = ug.group_id AND g.group_single_user = " . TRUE : "SELECT * FROM " . AUTH_ACCESS_TABLE . " WHERE group_id = $group_id";
-		if ( !($result = $db->sql_query($sql)) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
-		}
-
-		$auth_access = array();
-		while( $row = $db->sql_fetchrow($result) )
-		{
-			$auth_access[$row['forum_id']] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		$forum_auth_action = array();
-		$update_acl_status = array();
-		$update_mod_status = array();
-
-		for($i = 0; $i < count($forum_access); $i++)
-		{
-			$forum_id = $forum_access[$i]['forum_id'];
-
-			if ( 
-				( isset($auth_access[$forum_id]['auth_mod']) && $change_mod_list[$forum_id]['auth_mod'] != $auth_access[$forum_id]['auth_mod'] ) || 
-				( !isset($auth_access[$forum_id]['auth_mod']) && !empty($change_mod_list[$forum_id]['auth_mod']) ) 
-			)
+			else
 			{
-				$update_mod_status[$forum_id] = $change_mod_list[$forum_id]['auth_mod'];
+				$change_acl_list = array();
+				for($j = 0; $j < count($forum_auth_fields); $j++)
+				{
+					$auth_field = $forum_auth_fields[$j];
 
-				if ( !$update_mod_status[$forum_id] )
-				{
-					$forum_auth_action[$forum_id] = 'delete';
-				}
-				else if ( !isset($auth_access[$forum_id]['auth_mod']) )
-				{
-					$forum_auth_action[$forum_id] = 'insert';
-				}
-				else
-				{
-					$forum_auth_action[$forum_id] = 'update';
-				}
-			}
-
-			for($j = 0; $j < count($forum_auth_fields); $j++)
-			{
-				$auth_field = $forum_auth_fields[$j];
-
-				if( $forum_access[$i][$auth_field] == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) )
-				{
-					if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
-						( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] != $auth_access[$forum_id][$auth_field] ) || 
-						( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||
-						!empty($update_mod_status[$forum_id])
-					)
+					while( list($forum_id, $value) = @each($HTTP_POST_VARS['private_' . $auth_field]) )
 					{
-						$update_acl_status[$forum_id][$auth_field] = ( !empty($update_mod_status[$forum_id]) ) ? 0 :  $change_acl_list[$forum_id][$auth_field];
-
-						if ( isset($auth_access[$forum_id][$auth_field]) && empty($update_acl_status[$forum_id][$auth_field]) && $forum_auth_action[$forum_id] != 'insert' && $forum_auth_action[$forum_id] != 'update' )
-						{
-							$forum_auth_action[$forum_id] = 'delete';
-						}
-						else if ( !isset($auth_access[$forum_id][$auth_field]) && !( $forum_auth_action[$forum_id] == 'delete' && empty($update_acl_status[$forum_id][$auth_field]) ) )
-						{
-							$forum_auth_action[$forum_id] = 'insert';
-						}
-						else if ( isset($auth_access[$forum_id][$auth_field]) && !empty($update_acl_status[$forum_id][$auth_field]) ) 
-						{
-							$forum_auth_action[$forum_id] = 'update';
-						}
+						$change_acl_list[$forum_id][$auth_field] = $value;
 					}
-					else if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
-						( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] == $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] == 'delete' )
+				}
+			}
+
+			$sql = "SELECT * 
+				FROM " . FORUMS_TABLE . " f
+				ORDER BY forum_order";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
+			}
+
+			$forum_access = array();
+			while( $row = $db->sql_fetchrow($result) )
+			{
+				$forum_access[] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			$sql = ( $mode == 'user' ) ? "SELECT aa.* FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE. " g WHERE ug.user_id = $user_id AND g.group_id = ug.group_id AND aa.group_id = ug.group_id AND g.group_single_user = " . TRUE : "SELECT * FROM " . AUTH_ACCESS_TABLE . " WHERE group_id = $group_id";
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
+			}
+
+			$auth_access = array();
+			while( $row = $db->sql_fetchrow($result) )
+			{
+				$auth_access[$row['forum_id']] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			$forum_auth_action = array();
+			$update_acl_status = array();
+			$update_mod_status = array();
+
+			for($i = 0; $i < count($forum_access); $i++)
+			{
+				$forum_id = $forum_access[$i]['forum_id'];
+
+				if ( 
+					( isset($auth_access[$forum_id]['auth_mod']) && $change_mod_list[$forum_id]['auth_mod'] != $auth_access[$forum_id]['auth_mod'] ) || 
+					( !isset($auth_access[$forum_id]['auth_mod']) && !empty($change_mod_list[$forum_id]['auth_mod']) ) 
+				)
+				{
+					$update_mod_status[$forum_id] = $change_mod_list[$forum_id]['auth_mod'];
+
+					if ( !$update_mod_status[$forum_id] )
+					{
+						$forum_auth_action[$forum_id] = 'delete';
+					}
+					else if ( !isset($auth_access[$forum_id]['auth_mod']) )
+					{
+						$forum_auth_action[$forum_id] = 'insert';
+					}
+					else
 					{
 						$forum_auth_action[$forum_id] = 'update';
 					}
 				}
-			}
-		}
 
-		//
-		// Checks complete, make updates to DB
-		//
-		$delete_sql = '';
-		while( list($forum_id, $action) = @each($forum_auth_action) )
-		{
-			if ( $action == 'delete' )
-			{
-				$delete_sql .= ( ( $delete_sql != '' ) ? ', ' : '' ) . $forum_id;
-			}
-			else
-			{
-				if ( $action == 'insert' )
+				for($j = 0; $j < count($forum_auth_fields); $j++)
 				{
-					$sql_field = '';
-					$sql_value = '';
-					while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
-					{
-						$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . $auth_type;
-						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . $value;
-					}
-					$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . 'auth_mod';
-					$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+					$auth_field = $forum_auth_fields[$j];
 
-					$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, $sql_field) 
-						VALUES ($forum_id, $group_id, $sql_value)";
+					if( $forum_access[$i][$auth_field] == AUTH_ACL && isset($change_acl_list[$forum_id][$auth_field]) )
+					{
+						if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
+							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] != $auth_access[$forum_id][$auth_field] ) || 
+							( !isset($auth_access[$forum_id][$auth_field]) && !empty($change_acl_list[$forum_id][$auth_field]) ) ) ||
+							!empty($update_mod_status[$forum_id])
+						)
+						{
+							$update_acl_status[$forum_id][$auth_field] = ( !empty($update_mod_status[$forum_id]) ) ? 0 :  $change_acl_list[$forum_id][$auth_field];
+
+							if ( isset($auth_access[$forum_id][$auth_field]) && empty($update_acl_status[$forum_id][$auth_field]) && $forum_auth_action[$forum_id] != 'insert' && $forum_auth_action[$forum_id] != 'update' )
+							{
+								$forum_auth_action[$forum_id] = 'delete';
+							}
+							else if ( !isset($auth_access[$forum_id][$auth_field]) && !( $forum_auth_action[$forum_id] == 'delete' && empty($update_acl_status[$forum_id][$auth_field]) ) )
+							{
+								$forum_auth_action[$forum_id] = 'insert';
+							}
+							else if ( isset($auth_access[$forum_id][$auth_field]) && !empty($update_acl_status[$forum_id][$auth_field]) ) 
+							{
+								$forum_auth_action[$forum_id] = 'update';
+							}
+						}
+						else if ( ( empty($auth_access[$forum_id]['auth_mod']) && 
+							( isset($auth_access[$forum_id][$auth_field]) && $change_acl_list[$forum_id][$auth_field] == $auth_access[$forum_id][$auth_field] ) ) && $forum_auth_action[$forum_id] == 'delete' )
+						{
+							$forum_auth_action[$forum_id] = 'update';
+						}
+					}
+				}
+			}
+
+			//
+			// Checks complete, make updates to DB
+			//
+			$delete_sql = '';
+			while( list($forum_id, $action) = @each($forum_auth_action) )
+			{
+				if ( $action == 'delete' )
+				{
+					$delete_sql .= ( ( $delete_sql != '' ) ? ', ' : '' ) . $forum_id;
 				}
 				else
 				{
-					$sql_values = '';
-					while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
+					if ( $action == 'insert' )
 					{
-						$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . $auth_type . ' = ' . $value;
-					}
-					$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . 'auth_mod = ' . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+						$sql_field = '';
+						$sql_value = '';
+						while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
+						{
+							$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . $auth_type;
+							$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . $value;
+						}
+						$sql_field .= ( ( $sql_field != '' ) ? ', ' : '' ) . 'auth_mod';
+						$sql_value .= ( ( $sql_value != '' ) ? ', ' : '' ) . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
 
-					$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
-						SET $sql_values 
-						WHERE group_id = $group_id 
-							AND forum_id = $forum_id";
+						$sql = "INSERT INTO " . AUTH_ACCESS_TABLE . " (forum_id, group_id, $sql_field) 
+							VALUES ($forum_id, $group_id, $sql_value)";
+					}
+					else
+					{
+						$sql_values = '';
+						while ( list($auth_type, $value) = @each($update_acl_status[$forum_id]) )
+						{
+							$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . $auth_type . ' = ' . $value;
+						}
+						$sql_values .= ( ( $sql_values != '' ) ? ', ' : '' ) . 'auth_mod = ' . ( ( !isset($update_mod_status[$forum_id]) ) ? 0 : $update_mod_status[$forum_id]);
+
+						$sql = "UPDATE " . AUTH_ACCESS_TABLE . " 
+							SET $sql_values 
+							WHERE group_id = $group_id 
+								AND forum_id = $forum_id";
+					}
+					if( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, "Couldn't update private forum permissions", "", __LINE__, __FILE__, $sql);
+					}
 				}
+			}
+
+			if ( $delete_sql != '' )
+			{
+				$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
+					WHERE group_id = $group_id 
+						AND forum_id IN ($delete_sql)";
 				if( !($result = $db->sql_query($sql)) )
 				{
-					message_die(GENERAL_ERROR, "Couldn't update private forum permissions", "", __LINE__, __FILE__, $sql);
+					message_die(GENERAL_ERROR, "Couldn't delete permission entries", "", __LINE__, __FILE__, $sql);
 				}
 			}
-		}
 
-		if ( $delete_sql != '' )
-		{
-			$sql = "DELETE FROM " . AUTH_ACCESS_TABLE . " 
-				WHERE group_id = $group_id 
-					AND forum_id IN ($delete_sql)";
-			if( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, "Couldn't delete permission entries", "", __LINE__, __FILE__, $sql);
-			}
+			$l_auth_return = ( $mode == 'user' ) ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
+			$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
 		}
 
 		//
@@ -497,8 +503,6 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			}
 		}
 
-		$l_auth_return = ( $mode == 'user' ) ? $lang['Click_return_userauth'] : $lang['Click_return_groupauth'];
-		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($l_auth_return, '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
 		message_die(GENERAL_MESSAGE, $message);
 	}
 }
