@@ -98,6 +98,8 @@ $l_nonewposts 	= "No New $l_posts $l_sincelast";
 $l_indextitle	= "Forum Index";
 
 // Members and profile
+$l_reginfo	= "Registration Information";
+$l_profileinfo = "Profile Information (this information will be publicly viewable)";
 $l_profile	= "Profile";
 $l_register	= "Register";
 $l_onlyreq 	= "Only requried if being changed";
@@ -191,9 +193,12 @@ $l_version	= "Version";
 // Auth
 
 // Register
+$l_accountinactive = "Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Pease check your email for further information.";
+$l_coppa = "Your account has been created, however in complance with the COPPA act you must print out this page and have you parent or guardian email it to: <br>$l_mailingaddress<br>Or fax it to: <br> $l_faxinfo<br> Once this information has been recived your account will be activated by the administrator and you will recive and email notification.";
+$l_acountadded = "Thank you for registering with $sitename. Your account has been successfully created.";
+$l_nowactive = "Your account is now been activated. You may login and post with this account. Thank you for using $sitename forums.";
 $l_notfilledin	= "Error - you did not fill in all the required fields.";
-$l_invalidname	= "The username you chose \"$username\" has been taken.";
-$l_disallowname	= "The username you chose, \"$username\" has been disallowed by the administrator.";
+$l_invalidname	= "The username you chose \"$username\" has been taken or has been disallowed by the administrator.";
 
 $l_welcomesubj	= "Welcome to $sitename Forums";
 $l_welcomemail	= 
@@ -217,10 +222,36 @@ Thank you for registering.
 
 $email_sig
 ";
+
+$l_welcomeemailactivate = 
+"
+$l_welcomesubj,
+
+Please keep this email for your records.
+
+
+Your account information is as follows:
+
+----------------------------
+Username: $username
+Password: $password
+----------------------------
+
+Your account is currently INACTIVE. You cannot use it until you visit the following link:
+http://$SERVER_NAME$PHP_SELF?mode=activate&act_key=$act_key
+
+Please do not forget your password as it has been encrypted in our database and we cannot retrieve it for you.
+However, should you forget your password we provide an easy to use script to generate and email a new, random, password.
+
+Thank you for registering.
+
+$email_sig
+";
+
 $l_beenadded	= "You have been added to the database.";
 $l_thankregister= "Thank you for registering!";
 $l_useruniq	= "Must be unique. No two users can have the same Username.";
-$l_storecookie	= "Store my username in a cookie for 1 year.";
+$l_storecookie	= "Store my username in a cookie for 1 year";
 
 // Prefs
 $l_prefupdated	= "$l_preferences updated. $l_click <a href=\"index.$phpEx\">$l_here</a> $l_returnindex";
@@ -235,7 +266,7 @@ $l_boardtheme	= "Board Theme";
 $l_boardlang    = "Board Language";
 $l_nothemes	= "No Themes In database";
 $l_saveprefs	= "Save $l_preferences";
-
+$l_timezone		= "Timezone";
 // Search
 $l_searchterms	= "Keywords";
 $l_searchany	= "Search for ANY of the terms (Default)";

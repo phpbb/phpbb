@@ -22,6 +22,8 @@
  * 
  ***************************************************************************/ 
 
+DEFINE(HEADER_INC, TRUE);
+
 // Parse and show the overall header.  
 $template->set_filenames(array("overall_header" => "overall_header.tpl",
 			  "overall_footer" => "overall_footer.tpl"));
@@ -130,6 +132,21 @@ switch($pagetype)
 			    "FORUM_NAME" => $forum_name,
 			    "L_POSTNEWIN" => $l_postnewin));
    $template->pparse("header");
+   break;
+   case 'register':
+   	if(!isset($agreed))
+   	{
+   		if(!isset($coppa))
+   		{
+   			$coppa = FALSE;
+   		}
+   		$template->set_filenames(array("body" => "agreement.tpl"));
+			$template->assign_vars(array("COPPA" => $coppa));   		
+   	}
+   	else
+   	{
+   		$template->set_filenames(array("body" => "profile_add_body.tpl"));
+   	}
    break;
 }
 			    

@@ -28,30 +28,30 @@ if($submit)
 {
    $userdata = get_userdata($username, $db);
    if($userdata["error"])
-     {
-	error_die($db, LOGIN_FAILED);
-     }
+   {
+		error_die($db, LOGIN_FAILED);
+	}
    else 
-     {
-	if(!auth("login", $db))
-	  {
-	     error_die($db, LOGIN_FAILED);
-	  }
-	else 
-	  {
-	     $sessid = new_session($userdata[user_id], $user_ip, $session_cookie_time, $db);
-	     set_session_cookie($sessid, $session_cookie_time, $session_cookie, "", "", 0);
-	     header("Location: index.$phpEx");
-	  }
-     }
+	{
+		if(!auth("login", $db))
+	  	{
+	   	error_die($db, LOGIN_FAILED);
+	  	}
+		else 
+	  	{
+	   	$sessid = new_session($userdata[user_id], $user_ip, $session_cookie_time, $db);
+			set_session_cookie($sessid, $session_cookie_time, $session_cookie, "", "", 0);
+			header("Location: index.$phpEx");
+		}
+	}
 }
 else if($logout)
 {
-   if($user_logged_in)
-     {
-	end_user_session($userdata["user_id"], $db);
-     }
-   header("Location: index.$phpEx");
+	if($user_logged_in)
+	{
+		end_user_session($userdata["user_id"], $db);
+	}
+	header("Location: index.$phpEx");
 }
    
 ?>

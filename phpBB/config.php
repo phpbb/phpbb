@@ -29,9 +29,9 @@ $session_cookie_time = 3600;
 // DB connection config
 $dbms = "mysql";
 $dbhost = "localhost";
-$dbname = "phpbb2";
-$dbuser = "phpbb2";
-$dbpasswd = "bbphp2bb";
+$dbname = "";
+$dbuser = "";
+$dbpasswd = "";
 
 // Date format (needs to go into DB)
 $date_format = "M d Y h:i:s a"; // American datesformat

@@ -70,7 +70,7 @@ define(POST_FORUM_URL, 'f');
 define(POST_USERS_URL, 'u');
 
 define('BANLIST_TABLE', $table_prefix.'banlist');
-define('CATEGORIES_TABLE', $table_prefix.'categories');
+define('CATEGORIES_TABLE', $table_prefix.'catagories');
 define('CONFIG_TABLE', $table_prefix.'config');
 define('DISALLOW_TABLE', $table_prefix.'disallow');
 define('FORUM_ACCESS_TABLE', $table_prefix.'forum_access');

@@ -63,6 +63,8 @@ else
 	$email_sig = stripslashes($config[0]["email_sig"]);
 	$email_from = $config[0]["email_from"];
 	$default_lang = $config[0]["default_lang"];
+	$require_activation = $config[0]["require_activation"];
+	$sys_timezone = $config[0]["system_timezone"];
 	$sys_lang = $default_lang;            
 }
 
