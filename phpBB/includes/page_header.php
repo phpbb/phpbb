@@ -351,6 +351,7 @@ $template->assign_vars(array(
 	"L_JOINED" => $lang['Joined'],
 	"L_AUTO_LOGIN" => $lang['Log_me_in'],
 	"L_AUTHOR" => $lang['Author'],
+	"L_SUBJECT" => $lang['Subject'],
 	"L_MESSAGE" => $lang['Message'],
 	"L_LOGIN_LOGOUT" => $l_login_logout,
 	"L_SEARCH_NEW" => $lang['Search_new'], 

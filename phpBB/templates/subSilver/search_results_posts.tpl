@@ -27,7 +27,7 @@
 	  {L_VIEWS}: <b>{searchresults.TOPIC_VIEWS}</b></span><br />
 	</td>
 	<td valign="top" class="row1">{searchresults.MINI_POST_IMG}<span class="postdetails">{L_FORUM}:&nbsp;<b><a href="{searchresults.U_FORUM}" class="postdetails">{searchresults.FORUM_NAME}</a></b>&nbsp;&nbsp;&nbsp;{L_POSTED}: 
-	  {searchresults.POST_DATE}&nbsp;&nbsp;&nbsp;Subject: <b><a href="{searchresults.U_POST}">{searchresults.POST_SUBJECT}</a></b></span></td>
+	  {searchresults.POST_DATE}&nbsp;&nbsp;&nbsp;{L_SUBJECT}: <b><a href="{searchresults.U_POST}">{searchresults.POST_SUBJECT}</a></b></span></td>
   </tr>
   <tr>
 	<td valign="top" class="row1"><span class="postbody">{searchresults.MESSAGE}</span></td>
