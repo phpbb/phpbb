@@ -171,9 +171,17 @@ class emailer
 	//
 	function send()
 	{
-		global $phpEx;
+		global $phpEx, $phpbb_root_dir;
 
-		$phpbb_root_path = "./";
+		if (isset($phpbb_root_dir))
+		{
+			// we must be in the admin section.
+			$phpbb_root_path = $phpbb_root_dir;
+		}
+		else
+		{
+			$phpbb_root_path = "./";
+		}
 
 		if ($this->address == NULL)
 		{

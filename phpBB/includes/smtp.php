@@ -41,7 +41,7 @@ function server_parse($socket, $response)
 	}
 	if(!(substr($server_response, 0, 3) == $response))
 	{
-		message_die(GENERAL_ERROR, "Ran into problems sending Mail", "", __LINE__, __FILE__);
+		message_die(GENERAL_ERROR, "Ran into problems sending Mail. Response: $server_response", "", __LINE__, __FILE__);
 	}
 }
 
@@ -63,7 +63,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	//
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	//
-	$message = ereg_replace("[^\r]\n", "\r\n", $message);
+	$message = preg_replace("/(?<!\r)\n/si", "\r\n", $message);
 
 	if ($headers != "")
 	{
@@ -81,7 +81,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 		$headers = chop($headers);
 
 		// Make sure there are no bare linefeeds in the headers
-		$headers = ereg_replace("[^\r]\n", "\r\n", $headers);
+		$headers = preg_replace("/(?<!\r)\n/si", "\r\n", $headers);
 	}
 	if(trim($mail_to) == "")
 	{
@@ -114,7 +114,7 @@ function smtpmail($mail_to, $subject, $message, $headers = "")
 	server_parse($socket, "250");
 
 	// Specify who the mail is from....
-	fputs($socket, "MAIL FROM: $email_from\r\n");
+	fputs($socket, "MAIL FROM: " . $board_config['board_email'] . "\r\n");
 	server_parse($socket, "250");
 
 	// Specify each user to send to and build to header.
