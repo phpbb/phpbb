@@ -153,8 +153,8 @@ else
 		//
 		$template->assign_vars(array(
 			"L_FORUM_PRUNE" => $lang['Forum_Prune'],
-			"L_SELECT_FORUM" => $lang['Select_a'] . " " . $lang['Forum'], 
-			"L_LOOK_UP" => $lang['Look_up'] . " " . $lang['Forum'],
+			"L_SELECT_FORUM" => $lang['Select_a_Forum'], 
+			"L_LOOK_UP" => $lang['Look_up_Forum'],
 
 			"S_FORUMPRUNE_ACTION" => append_sid("admin_forum_prune.$phpEx"),
 			"S_FORUMS_SELECT" => $select_list)
