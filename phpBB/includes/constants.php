@@ -124,6 +124,7 @@ define(PAGE_TOPIC_OFFSET, 5000);
 
 
 // Auth settings
+define(AUTH_LIST_ALL, 0);
 define(AUTH_ALL, 0);
 
 define(AUTH_REG, 1);
@@ -144,8 +145,6 @@ define(AUTH_STICKY, 8);
 define(AUTH_POLLCREATE, 9);
 define(AUTH_VOTE, 10);
 define(AUTH_ATTACH, 11);
-
-define(AUTH_LIST_ALL, 20);
 
 
 // Table names

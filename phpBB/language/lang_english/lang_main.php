@@ -26,12 +26,16 @@
 //
 // You should also try to set a locale and a character
 // encoding (plus direction). The encoding and direction
-// will be sent to the template
+// will be sent to the template. The locale may or may
+// not work, it's dependent on OS support and the syntax
+// varies ... give it your best guess!
 //
 
 setlocale(LC_ALL, "en");
 $lang['ENCODING'] = "iso-8859-1";
 $lang['DIRECTION'] = "LTR";
+$lang['LEFT'] = "LEFT";
+$lang['RIGHT'] = "RIGHT";
 
 //
 // Common, these terms are used
@@ -193,15 +197,15 @@ $lang['View_newest_posts'] = "View posts since your last visit";
 $lang['Topics_marked_read'] = "The topics for this forum have now been marked read";
 
 $lang['Rules_post_can'] = "You <b>can</b> post new topics in this forum";
-$lang['Rules_post_cannot'] = "You <b>can</b> post new topics in this forum";
+$lang['Rules_post_cannot'] = "You <b>cannot</b> post new topics in this forum";
 $lang['Rules_reply_can'] = "You <b>can</b> reply to topics in this forum";
-$lang['Rules_reply_cannot'] = "You <b>can</b> reply to topics in this forum";
+$lang['Rules_reply_cannot'] = "You <b>cannot</b> reply to topics in this forum";
 $lang['Rules_edit_can'] = "You <b>can</b> edit your posts in this forum";
-$lang['Rules_edit_cannot'] = "You <b>can</b> edit your posts in this forum";
+$lang['Rules_edit_cannot'] = "You <b>cannot</b> edit your posts in this forum";
 $lang['Rules_delete_can'] = "You <b>can</b> delete posts in this forum";
-$lang['Rules_delete_cannot'] = "You <b>can</b> delete posts in this forum";
+$lang['Rules_delete_cannot'] = "You <b>cannot</b> delete posts in this forum";
 $lang['Rules_vote_can'] = "You <b>can</b> vote in polls in this forum";
-$lang['Rules_vote_cannot'] = "You <b>can</b> vote in polls in this forum";
+$lang['Rules_vote_cannot'] = "You <b>cannot</b> vote in polls in this forum";
 $lang['Rules_moderate'] = "You <b>can</b> %smoderate this forum%s"; // %s replaced by a href 
 
 //
@@ -639,6 +643,9 @@ $lang['this_forum'] = " this forum";
 // Viewonline
 //
 $lang['Who_is_online'] = "Who is online";
+$lang['Reg_users_online'] = "There are %d Registered and %d Hidden users online";
+$lang['Guest_users_online'] = "There are %d Guest users online";
+$lang['Guest_user_online'] = "There is %d Guest user online";
 $lang['Online_explain'] = "This data is based on users active over the past five minutes";
 $lang['No_users_browsing'] = "There are no users currently browsing this forum";
 $lang['Location'] = "Location";
