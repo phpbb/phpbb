@@ -395,13 +395,13 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 		//
 		// Update user level to mod for appropriate users
 		// 
-		$sql = "SELECT u.user_id, SUM(aa.auth_mod) AS mod
+		$sql = "SELECT u.user_id 
 			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u  
 			WHERE ug.group_id = aa.group_id 
 				AND u.user_id = ug.user_id 
 				AND u.user_level NOT IN (" . MOD . ", " . ADMIN . ") 
 			GROUP BY u.user_id 
-			HAVING mod > 0";
+			HAVING SUM(aa.auth_mod) > 0";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, "Couldn't obtain user/group permissions", "", __LINE__, __FILE__, $sql);
@@ -420,7 +420,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 		switch ( SQL_LAYER )
 		{
 			case 'postgresql':
-				$sql = "SELECT u.user_id    
+				$sql = "SELECT u.user_id 
 					FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa
 					WHERE ug.user_id = u.user_id 
 						AND aa.group_id = ug.group_id 
@@ -441,22 +441,22 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == "user" && $user_id ) || ( 
 					)";
 				break;
 			case 'oracle':
-				$sql = "SELECT u.user_id, SUM(aa.auth_mod) AS mod   
+				$sql = "SELECT u.user_id 
 					FROM " . USERS_TABLE . " u, " . USER_GROUP_TABLE . " ug, " . AUTH_ACCESS_TABLE . " aa 
 					WHERE ug.user_id = u.user_id(+)
 						AND aa.group_id = ug.group_id(+) 
 						AND u.user_level NOT IN (" . USER . ", " . ADMIN . ")
 					GROUP BY u.user_id 
-					HAVING mod = 0";
+					HAVING SUM(aa.auth_mod) = 0";
 				break;
 			default:
-				$sql = "SELECT u.user_id, SUM(aa.auth_mod) AS mod   
+				$sql = "SELECT u.user_id 
 					FROM ( ( " . USERS_TABLE . " u  
 					LEFT JOIN " . USER_GROUP_TABLE . " ug ON ug.user_id = u.user_id ) 
 					LEFT JOIN " . AUTH_ACCESS_TABLE . " aa ON aa.group_id = ug.group_id ) 
 					WHERE u.user_level NOT IN (" . USER . ", " . ADMIN . ")
 					GROUP BY u.user_id 
-					HAVING mod = 0";
+					HAVING SUM(aa.auth_mod) = 0";
 				break;
 		}
 		if ( !($result = $db->sql_query($sql)) )
