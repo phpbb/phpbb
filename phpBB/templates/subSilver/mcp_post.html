@@ -46,12 +46,12 @@
 	<tr class="row2">
 	<!-- ENDIF -->
 		<td><span class="gen"><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a> [ {userrow.POSTS} ]</span></td>
-		<td align="right"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
+		<td align="center"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
 	</tr>
 	<!-- END userrow -->
-
 	<tr>
-		<td colspan="2" height="28" class="cat"><span class="gen">{L_OTHER_IPS}</span></td>
+		<td height="28" class="cat"><span class="gen">{L_OTHER_IPS}</span></td>
+		<td class="cat" width="10%" nowrap="nowrap"><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span></td>
 	</tr>
 	<!-- BEGIN iprow -->
 	<!-- IF iprow.S_ROW_COUNT is even -->
@@ -59,8 +59,8 @@
 	<!-- ELSE -->
 	<tr class="row2">
 	<!-- ENDIF -->
-		<td><span class="gen"><a href="{iprow.U_PROFILE}">{iprow.USERNAME}</a> [ {iprow.POSTS} ]</span></td>
-		<td align="right"><a href="{iprow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
+		<td><span class="gen">{iprow.IP} [ {iprow.POSTS} ]</span></td>
+		<td align="center"><span class="gen">[ <a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a> ]</span></td>
 	</tr>
 	<!-- END iprow -->
 </table>

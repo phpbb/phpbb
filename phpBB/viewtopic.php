@@ -699,7 +699,7 @@ if ($row = $db->sql_fetchrow($result))
 
 		if ($auth->acl_get('m_ip', $forum_id))
 		{
-			$temp_url = "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=ip&amp;p=" . $row['post_id'] . "&amp;t=" . $topic_id;
+			$temp_url = "mcp.$phpEx?sid=" . $user->session_id . "&amp;mode=post_details&amp;p=" . $row['post_id'] . "&amp;t=$topic_id#ip";
 			$ip_img = '<a href="' . $temp_url . '">' . $user->img('btn_ip', $user->lang['VIEW_IP']) . '</a>';
 			$ip = '<a href="' . $temp_url . '">' . $user->lang['VIEW_IP'] . '</a>';
 		}

@@ -1395,20 +1395,20 @@ switch ($mode)
 				AND p.poster_id = u.user_id";
 		$result = $db->sql_query($sql);
 
-		if (!$row = $db->sql_fetchrow($result))
+		if (!$post_info = $db->sql_fetchrow($result))
 		{
 			trigger_error('POST_NOT_EXIST');
 		}
 		else
 		{
-			$poster = (!empty($row['username'])) ? $row['username'] : ((!$row['post_username']) ? $user->lang['Guest'] : $row['post_username']);
+			$poster = (!empty($post_info['username'])) ? $post_info['username'] : ((!$post_info['post_username']) ? $user->lang['Guest'] : $post_info['post_username']);
 
-			$message = $row['post_text'];
-			$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_data['topic_title'];
+			$message = $post_info['post_text'];
+			$post_subject = ($post_info['post_subject'] != '') ? $post_info['post_subject'] : $topic_data['topic_title'];
 
 			// If the board has HTML off but the post has HTML
 			// on then we process it, else leave it alone
-			if (!$config['allow_html'] && $row['enable_html'])
+			if (!$config['allow_html'] && $post_info['enable_html'])
 			{
 				$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
 			}
@@ -1419,45 +1419,16 @@ switch ($mode)
 				'S_CAN_VIEWIP'	=>	$auth->acl_get('m_viewip', $forum_id),
 
 				'POSTER_NAME'	=>	$poster,
-				'POST_DATE'		=>	$user->format_date($row['post_time']),
-				'POST_IP'		=>	$row['poster_ip'],
+				'POST_DATE'		=>	$user->format_date($post_info['post_time']),
+				'POST_IP'		=>	$post_info['poster_ip'] . ' (' . @gethostbyaddr($post_info['poster_ip']) . ')',
 				'POST_SUBJECT'	=>	$post_subject,
 				'MESSAGE'		=>	$message,
 
-				'SEARCH_IMG'	=>	$user->img('icon_search', $user->lang['SEARCH'])
+				'U_LOOKUP_ALL'	=>	$mcp_url . '&amp;mode=post_details&amp;rdns=all#ip',
+
+				'SEARCH_IMG'	=>	$user->img('btn_search', 'SEARCH_USER_POSTS')
 			));
 		}
-
-		// Get other IP's this user has posted under
-		$sql = 'SELECT poster_ip, COUNT(*) AS postings
-			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $post_info['poster_id'] . '
-			GROUP BY poster_ip
-			ORDER BY postings DESC';
-		$result = $db->sql_query($sql);
-
-		$i = 0;
-		while ($iprow = $db->sql_fetchrow($result))
-		{
-			if ($iprow['poster_ip'] == $row['poster_ip'])
-			{
-				$template->assign_vars(array(
-					'POSTS' => $iprow['postings'] . ' ' . (($iprow['postings'] == 1) ? $user->lang['Post'] : $user->lang['Posts'])
-				));
-				continue;
-			}
-
-			$ip = $iprow['poster_ip'];
-			$ip = ($rdns_ip_num == $iprow['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
-
-			$template->assign_block_vars('userrow', array(
-				'S_ROW_COUNT'	=>	$i++,
-				'IP'			=>	$ip,
-				'POSTS'			=>	$iprow['postings'] . ' ' . (($iprow['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS']),
-				'U_LOOKUP_IP'	=>	$mcp_url . '&amp;mode=post_details&amp;rdns=' . $iprow['poster_ip']
-			));
-		}
-		$db->sql_freeresult($result);
 
 		// Get other users who've posted under this IP
 		$sql = "SELECT u.user_id, u.username, COUNT(*) as postings
@@ -1471,19 +1442,40 @@ switch ($mode)
 		$i = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$id = $row['user_id'];
-			$username = (!$id) ? $user->lang['Guest'] : $row['username'];
-
 			$template->assign_block_vars('userrow', array(
-				'USERNAME' => $username,
-				'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['Post'] : $user->lang['Posts']),
-				'L_SEARCH_POSTS' => sprintf($user->lang['Search_user_posts'], $username),
+				'S_ROW_COUNT'	=>	$i++,
 
-				'U_PROFILE' => "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
-				'U_SEARCHPOSTS' => "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=topics")
-			);
+				'USERNAME'		=>	($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
+				'POSTS'			=>	$row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS']),
+
+				'U_PROFILE' => "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
+				'U_SEARCHPOSTS' => "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=topics"
+			));
 
 			$i++;
+		}
+		$db->sql_freeresult($result);
+
+		// Get other IP's this user has posted under
+		$sql = 'SELECT poster_ip, COUNT(*) AS postings
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $post_info['poster_id'] . '
+			GROUP BY poster_ip
+			ORDER BY postings DESC';
+		$result = $db->sql_query($sql);
+
+		$i = 0;
+		$rdns_ip_num = (!empty($_GET['rdns'])) ? $_GET['rdns'] : '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$ip = ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? @gethostbyaddr($row['poster_ip']) . ' (' . $row['poster_ip'] . ')' : $row['poster_ip'];
+
+			$template->assign_block_vars('iprow', array(
+				'S_ROW_COUNT'	=>	$i++,
+				'IP'			=>	$ip,
+				'POSTS'			=>	$row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS']),
+				'U_LOOKUP_IP'	=>	$mcp_url . '&amp;mode=post_details&amp;rdns=' . $row['poster_ip'] . '#ip'
+			));
 		}
 		$db->sql_freeresult($result);
 	break;
@@ -1615,94 +1607,6 @@ switch ($mode)
 		$return_url .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $to_forum_id . '&amp;t=' . $to_topic_id . '">', '</a>');
 		trigger_error($user->lang['TOPIC_SPLIT'] . $return_url . $return_mcp);
 	break;
-
-	case 'ip':
-		mcp_header('mcp_viewip.html');
-
-		$rdns_ip_num = (isset($_GET['rdns'])) ? $_GET['rdns'] : '';
-
-		if (!$post_id)
-		{
-			trigger_error('POST_NOT_EXIST');
-		}
-
-		$ip_this_post = $post_info['poster_ip'];
-		$ip_this_post = ($rdns_ip_num == $ip_this_post) ? @gethostbyaddr($ip_this_post) : $ip_this_post;
-
-		$template->assign_vars(array(
-			'L_IP_INFO' => $user->lang['IP_info'],
-			'L_THIS_POST_IP' => $user->lang['This_posts_IP'],
-			'L_OTHER_IPS' => $user->lang['Other_IP_this_user'],
-			'L_OTHER_USERS' => $user->lang['Users_this_IP'],
-			'L_LOOKUP_IP' => $user->lang['Lookup_IP'],
-			'L_SEARCH' => $user->lang['Search'],
-
-			'SEARCH_IMG' => $images['icon_search'],
-
-			'IP' => $ip_this_post,
-
-			'U_LOOKUP_IP' => $mcp_url . '&amp;mode=ip&amp;rdns=' . $ip_this_post
-		));
-
-		// Get other IP's this user has posted under
-		$sql = 'SELECT poster_ip, COUNT(*) AS postings
-			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $post_info['poster_id'] . '
-			GROUP BY poster_ip
-			ORDER BY postings DESC';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['poster_ip'] == $post_info['poster_ip'])
-			{
-				$template->assign_vars(array(
-					'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['Post'] : $user->lang['Posts'])
-				));
-				continue;
-			}
-
-			$ip = $row['poster_ip'];
-			$ip = ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? gethostbyaddr($ip) : $ip;
-
-			$template->assign_block_vars('iprow', array(
-				'IP' => $ip,
-				'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['Post'] : $user->lang['Posts']),
-
-				'U_LOOKUP_IP' => $mcp_url . '&amp;mode=ip&amp;rdns=' . $row['poster_ip'])
-			);
-		}
-		$db->sql_freeresult($result);
-
-		// Get other users who've posted under this IP
-		$sql = "SELECT u.user_id, u.username, COUNT(*) as postings
-			FROM " . USERS_TABLE ." u, " . POSTS_TABLE . " p
-			WHERE p.poster_id = u.user_id
-				AND p.poster_ip = '" . $post_info['poster_ip'] . "'
-			GROUP BY u.user_id, u.username
-			ORDER BY postings DESC";
-		$result = $db->sql_query($sql);
-
-		$i = 0;
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$id = $row['user_id'];
-			$username = (!$id) ? $user->lang['Guest'] : $row['username'];
-
-			$template->assign_block_vars('userrow', array(
-				'USERNAME' => $username,
-				'POSTS' => $row['postings'] . ' ' . (($row['postings'] == 1) ? $user->lang['Post'] : $user->lang['Posts']),
-				'L_SEARCH_POSTS' => sprintf($user->lang['Search_user_posts'], $username),
-
-				'U_PROFILE' => "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$id",
-				'U_SEARCHPOSTS' => "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;showresults=topics")
-			);
-
-			$i++;
-		}
-		$db->sql_freeresult($result);
-	break;
-
 
 	case 'select_topic':
 	case 'forum_view':
