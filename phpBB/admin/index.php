@@ -146,6 +146,8 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		"L_BOARD_STARTED" => $lang['Board_started'],
 		"L_AVATAR_DIR_SIZE" => $lang['Avatar_dir_size'],
 		"L_DB_SIZE" => $lang['Database_size'], 
+		"L_FORUM_LOCATION" => $lang['Forum_Location'],
+		"L_STARTED" => $lang['Login'],
 		"L_GZIP_COMPRESSION" => $lang['Gzip_compression'])
 	);
 
