@@ -283,7 +283,6 @@ $lang['Preview'] = "Preview";
 $lang['Cancel_post'] = "Cancel post";
 
 $lang['Flood_Error'] = "You cannot make another post so soon after your last, please try again in a short while.";
-$lang['Sorry_edit_own_posts'] = "Sorry but you can only edit your own posts";
 $lang['Empty_subject'] = "You must specifiy a subject when posting a new topic";
 $lang['Empty_message'] = "You must enter a message when posting";
 $lang['Announce_and_sticky'] = "You cannot post a topic that is both an announcement and a sticky topic";
@@ -293,6 +292,14 @@ $lang['No_post_id'] = "You must select a post to edit";
 $lang['No_topic_id'] = "You must select a topic to reply to";
 $lang['No_valid_mode'] = "You can only post, reply edit or quote messages, please return and try again";
 $lang['No_such_post'] = "There is no such post, please return and try again";
+$lang['Edit_own_posts'] = "Sorry but you can only edit your own posts";
+$lang['Delete_own_posts'] = "Sorry but you can only delete your own posts";
+$lang['Cannot_delete_replied'] = "Sorry but you may not delete posts that have been replied to";
+$lang['Cannot_delete_poll'] = "Sorry but you cannot delete an active poll";
+$lang['Empty_poll_title'] = "You must enter a title for your poll";
+$lang['To_few_poll_options'] = "You must enter at least two poll options";
+$lang['To_many_poll_options'] = "You have tried to enter too many poll options";
+$lang['Post_has_no_poll'] = "This post has no poll";
 
 $lang['Add_poll'] = "Add a Poll";
 $lang['Add_poll_explain'] = "If you do not want to add a poll to your topic leave the fields blank";
@@ -304,9 +311,6 @@ $lang['Delete'] = "Delete";
 $lang['Poll_for'] = "Run poll for";
 $lang['Poll_for_explain'] = "[ Enter 0 or leave blank for a never ending poll ]";
 $lang['Delete_poll'] = "Delete Poll";
-$lang['Empty_poll_title'] = "You must enter a title for your poll";
-$lang['To_few_poll_options'] = "You must enter at least two poll options";
-$lang['To_many_poll_options'] = "You have tried to enter too many poll options";
 
 $lang['Attach_signature'] = "Attach signature (signatures can be changed in profile)";
 $lang['Disable'] = "Disable "; // This is followed by a type, eg. HTML, Smilies, etc. and then 'on this post'
@@ -414,11 +418,13 @@ $lang['Private_message'] = "Send Private Message";
 $lang['Hidden_email'] = "[ Hidden ]";
 $lang['Search_user_posts'] = "Search for posts by this user";
 $lang['Interests'] = "Interests";
-$lang['Occupation'] = "Occupation";
+$lang['Occupation'] = "Occupation"; 
+$lang['Poster_rank'] = "Poster rank";
 
 $lang['posts_per_day'] = "posts per day";
 $lang['of_total'] = "of total"; // follows percentage of total posts
 
+$lang['No_user_id_specified'] = "Sorry but that user does not exist";
 $lang['Wrong_Profile'] = "You cannot modify a profile that is not your own.";
 $lang['Bad_username'] = "The username you choose has been taken or is disallowed by the administrator.";
 $lang['Sorry_banned_or_taken_email'] = "Sorry but the email address you gave has either been banned, is already registered to another user or is invalid. Please try an alternative address, if that is also banned you should contact the board administrator for advice";
