@@ -1064,7 +1064,6 @@ $lang = array_merge($lang, array(
 
 	'WELCOME_INSTALL'	=> 'Welcome to phpBB 2 Installation',
 
-	'INSTALL_ADVICE_EXPLAIN'=> 'Before proceeding with full installation phpBB will carry out some tests on your server and basic install. Please ensure you read through the results thoroughly and do not proceed until all tests are passed.', 
 	'INSTALL_REQUIRED'		=> 'Required', 
 	'INSTALL_OPTIONAL'		=> 'Optional', 
 	'UNAVAILABLE'	=> 'Unavailable', 
@@ -1072,6 +1071,8 @@ $lang = array_merge($lang, array(
 	'TESTS_PASSED'	=> 'Tests passed', 
 	'TESTS_FAILED'	=> 'Tests failed', 
 
+	'INSTALL_ADVICE'	=> 'Installation Compatibility', 
+	'INSTALL_ADVICE_EXPLAIN'=> 'Before proceeding with full installation phpBB will carry out some tests on your server and basic install. Please ensure you read through the results thoroughly and do not proceed until all tests are passed.', 
 	'PHP_AND_APPS'			=> 'PHP and Applications', 
 	'INSTALL_REQUIRED_PHP'	=> 'You must be running at least PHP 4.1.0 with support for at least one compatible database. If no support modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice.', 
 	'INSTALL_OPTIONAL_PHP'	=> 'These modules or applications are optional, you do not need these to use phpBB 2.2. However if you do have them they will will enable greater functionality.', 
@@ -1107,9 +1108,9 @@ $lang = array_merge($lang, array(
 	'ADMIN_CONFIG'			=> 'Admin Configuration',
 	'DEFAULT_LANG'			=> 'Default board language',
 	'ADMIN_USERNAME'		=> 'Administrator Username',
-	'ADMIN_EMAIL_CONFIRM'	=> 'Admin Email Address [ Confirm ]',
+	'ADMIN_EMAIL_CONFIRM'	=> 'Confirm Admin Email Address',
 	'ADMIN_PASSWORD'		=> 'Administrator Password',
-	'ADMIN_PASSWORD_CONFIRM'=> 'Administrator Password [ Confirm ]',
+	'ADMIN_PASSWORD_CONFIRM'=> 'Confirm Administrator Password',
 	'DB_CONFIG'			=> 'Database Configuration', 
 	'DBMS'				=> 'Database Type',
 	'DB_HOST'			=> 'Database Server Hostname or DSN',

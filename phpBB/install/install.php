@@ -302,11 +302,11 @@ if ($stage == 0)
 		{
 			if (!can_load_dll($dll))
 			{
-				$dlls_db[$db_name] = '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>';
+				$dlls_db[$db_name] = '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>';
 				continue;
 			}
 		}
-		$dlls_db[$db_name] = '<span style="color:green">' . $lang['AVAILABLE'] . '</span>';
+		$dlls_db[$db_name] = '<b style="color:green">' . $lang['AVAILABLE'] . '</b>';
 		$passed['db'] = true;
 	}
 
@@ -318,18 +318,22 @@ if ($stage == 0)
 		{
 			if (!can_load_dll($dll))
 			{
-				$dlls_other[$dll] = '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>';
+				$dlls_other[$dll] = '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>';
 				continue;
 			}
 		}
-		$dlls_other[$dll] = '<span style="color:green">' . $lang['AVAILABLE'] . '</span>';
+		$dlls_other[$dll] = '<b style="color:green">' . $lang['AVAILABLE'] . '</b>';
 	}
 
 	inst_page_header();
 
 ?>
 
+<h1><?php echo $lang['INSTALL_ADVICE']; ?></h1>
+
 <p><?php echo $lang['INSTALL_ADVICE_EXPLAIN']; ?></p>
+
+<hr />
 
 <h1><?php echo $lang['PHP_AND_APPS']; ?></h1>
 
@@ -347,17 +351,17 @@ if ($stage == 0)
 	if (version_compare($php_version, '4.1.0') < 0)
 	{
 		$passed['db'] = false;
-		echo '<span style="color:red">' . $lang['NO'] . '</span>';
+		echo '<b style="color:red">' . $lang['NO'] . '</b>';
 	}
 	else
 	{
 		// We also give feedback on whether we're running in safe mode
-		echo '<span style="color:green">' . $lang['YES'];
+		echo '<b style="color:green">' . $lang['YES'];
 		if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
 		{
 			echo ', ' . $lang['PHP_SAFE_MODE'];
 		}
-		echo '</span>';
+		echo '</b>';
 	}
 
 ?></td>
@@ -428,7 +432,7 @@ if ($stage == 0)
 ?>
 	<tr>
 		<td>&bull;&nbsp;<b><?php echo $lang['APP_MAGICK']; ?>: </b></td>
-		<td><?php echo ($imagemagick) ? '<span style="color:green">' . $lang['AVAILABLE'] . ', ' . $imagemagick . '</span>' : '<span style="color:blue">' . $lang['NO_LOCATION'] . '</span>'; ?></td>
+		<td><?php echo ($imagemagick) ? '<b style="color:green">' . $lang['AVAILABLE'] . ', ' . $imagemagick . '</b>' : '<b style="color:blue">' . $lang['NO_LOCATION'] . '</b>'; ?></td>
 	</tr>
 </table>
 
@@ -467,8 +471,8 @@ if ($stage == 0)
 
 		$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
-		$exists = ($exists) ? '<span style="color:green">' . $lang['FILE_FOUND'] . '</span>' : '<span style="color:red">' . $lang['FILE_NOT_FOUND'] . '</span>';
-		$write = ($write) ? ', <span style="color:green">' . $lang['FILE_WRITEABLE'] . '</span>' : (($exists) ? ', <span style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</span>' : '');
+		$exists = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
+		$write = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
 
 ?>
 	<tr>
@@ -504,8 +508,8 @@ if ($stage == 0)
 		$write = $exists = false;
 	}
 
-	$exists = ($exists) ? '<span style="color:green">' . $lang['FILE_FOUND'] . '</span>' : '<span style="color:red">' . $lang['FILE_NOT_FOUND'] . '</span>';
-	$write = ($write) ? ', <span style="color:green">' . $lang['FILE_WRITEABLE'] . '</span>' : (($exists) ? ', <span style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</span>' : '');
+	$exists = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
+	$write = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
 
 ?>
 	<tr>
@@ -524,13 +528,15 @@ if ($stage == 0)
 
 	$next_text = ($passed['db'] && $passed['files']) ? $lang['INSTALL_NEXT_PASS'] : $lang['INSTALL_NEXT_FAIL'];
 
+	$s_hidden_fields = ($imagemagick) ? '<input type="hidden" name="imagemagick" value="' . $imagemagick . '" />' : '';
+
 ?>
 
 <p><?php echo $next_text; ?></p>
 
 <table class="bg" width="80%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
-		<td class="cat" colspan="2" align="center"><input type="hidden" name="stage" value="1" /><input class="liteoption" name="retest" type="submit" value="Test Again" /><?php 
+		<td class="cat" colspan="2" align="center"><?php echo $s_hidden_fields; ?><input type="hidden" name="stage" value="1" /><input class="liteoption" name="retest" type="submit" value="Test Again" /><?php 
 	
 	if ($passed['db'] && $passed['files'])
 	{
