@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+{META}
 <meta name="MSSmartTagsPreventParsing" content="TRUE">
 <link rel="stylesheet" href="../templates/subSilver/{T_HEAD_STYLESHEET}" type="text/css" />
 <style type="text/css">
