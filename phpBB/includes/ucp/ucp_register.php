@@ -247,7 +247,7 @@ class ucp_register extends module
 					$messenger->template($email_template, $lang);
 					$messenger->subject($subject);
 
-					$messenger->replyto($user->data['board_contact']);
+					$messenger->replyto($config['board_contact']);
 					$messenger->to($email, $username);
 
 					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -355,7 +355,7 @@ class ucp_register extends module
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				if ($config['max_reg_attempts'] && $row['attempts'] >= $row['max_reg_attempts'])
+				if ($config['max_reg_attempts'] && $row['attempts'] >= $config['max_reg_attempts'])
 				{
 					trigger_error($user->lang['TOO_MANY_REGISTERS']);
 				}
