@@ -271,14 +271,14 @@ CREATE TABLE phpbb_search_results (
 # Table structure for table `phpbb_search_wordlist`
 #
 DROP TABLE IF EXISTS phpbb_search_wordlist;
-CREATE TABLE phpbb_search_wordlist (
-  word_id int(11) NOT NULL auto_increment,
-  word_text varchar(100) NOT NULL default '',
-  word_weight tinyint(4) NOT NULL default '0',
-  PRIMARY KEY  (word_id),
-  KEY word_text (word_text)
-);
-
+CREATE TABLE `phpbb_search_wordlist` (
+  `word_text` varchar(50) binary NOT NULL default '',
+  `word_id` int(11) NOT NULL auto_increment,
+  `word_weight` tinyint(4) NOT NULL default '0',
+  `word_common` tinyint(1) unsigned NOT NULL default '0',
+  PRIMARY KEY (`word_text`),
+  KEY `word_id`(`word_id`)
+)
 
 # --------------------------------------------------------
 #
