@@ -19,6 +19,14 @@
 </table>
 
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="2" border="0">
+	<tr align="right">
+		<td class="cat" colspan="2" height="28"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td><span class="nav">&nbsp;<a href="{U_PRINT_TOPIC}" title="{L_PRINT_TOPIC}">{L_PRINT_TOPIC}</a></span></td>
+				<td align="right"><span class="nav"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a> :: <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</span></td>
+			</tr>
+		</table></td>
+	</tr>
 	<!-- IF S_HAS_POLL_OPTIONS -->
 	<tr>
 		<td class="row2" colspan="2"><br clear="all" /><form method="post" action="{S_POLL_ACTION}"><table cellspacing="0" cellpadding="4" border="0" align="center">
@@ -155,7 +163,7 @@
 <table width="100%" cellspacing="2" border="0" align="center">
 	<tr>
 		<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="liteoption" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
-		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall">{S_AUTH_LIST}</span></td>
+		<td align="right" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 	</tr>
 </table>
 
