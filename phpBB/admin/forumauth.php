@@ -15,21 +15,22 @@ include('common.'.$phpEx);
 //
 
 $simple_auth_ary = array(
-	0  => array(0, 0, 0, 0, 1, 0, 0, 0, 0), 
-	1  => array(0, 0, 1, 1, 1, 1, 1, 1, 1), 
-	2  => array(1, 1, 1, 1, 1, 1, 1, 1, 1), 
-	3  => array(0, 2, 2, 2, 2, 2, 2, 2, 2),
-	4  => array(2, 2, 2, 2, 2, 2, 2, 2, 2),
-	5  => array(0, 3, 3, 3, 3, 3, 3, 3, 3),
-	6  => array(3, 3, 3, 3, 3, 3, 3, 3, 3), 
-	7  => array(0, 0, 3, 0, 0, 0, 3, 3, 3), 
-	8  => array(0, 0, 3, 1, 0, 0, 3, 3, 3)
+	0  => array(0, 0, 0, 0, 1, 0, 3, 3, 0, 0, 0), 
+	1  => array(0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3), 
+	2  => array(0, 0, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
+	3  => array(1, 1, 1, 1, 1, 1, 3, 3, 1, 1, 1), 
+	4  => array(0, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2),
+	5  => array(2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2),
+	6  => array(0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3),
+	7  => array(3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3), 
+	8  => array(0, 0, 3, 0, 0, 0, 3, 3, 3, 3, 3), 
+	9  => array(0, 0, 3, 1, 0, 0, 3, 3, 3, 3, 3)
 );
 
-$simple_auth_types = array("Public", "Registered", "Registered [Hidden]", "Private", "Private [Hidden]", "Moderators", "Moderators [Hidden]", "Moderator Post + All Reply", "Moderator Post + Reg Reply");
+$simple_auth_types = array("Public", "Test Restricted", "Registered", "Registered [Hidden]", "Private", "Private [Hidden]", "Moderators", "Moderators [Hidden]", "Moderator Post + All Reply", "Moderator Post + Reg Reply");
 
 
-$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_votecreate", "auth_vote", "auth_attachments");
+$forum_auth_fields = array("auth_view", "auth_read", "auth_post", "auth_reply", "auth_edit", "auth_delete", "auth_sticky", "auth_announce", "auth_votecreate", "auth_vote", "auth_attachments");
 $forum_auth_levels = array("ALL", "REG", "ACL", "MOD", "ADMIN");
 $forum_auth_const = array(AUTH_ALL, AUTH_REG, AUTH_ACL, AUTH_MOD, AUTH_ADMIN);
 
@@ -311,7 +312,6 @@ for($i = 0; $i < count($forum_mods_list); $i++)
 
 ?>
 		<th bgcolor="#CCCCCC">Forum Title</th>
-		<th bgcolor="#CCCCCC">Moderator/s</th>
 <?php
 
 	}
@@ -359,7 +359,6 @@ for($i = 0; $i < count($forum_mods_list); $i++)
 		if(empty($forum_id))
 		{
 			echo "<td align=\"center\" bgcolor=\"#DDDDDD\">".$forum_name[$i]."</td>\n";
-			echo "<td align=\"center\" bgcolor=\"#DDDDDD\">".$moderators_links."</td>\n";
 
 			$colspan = 2;
 		}
