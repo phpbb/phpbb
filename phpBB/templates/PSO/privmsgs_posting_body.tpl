@@ -18,12 +18,12 @@ function insertCode(formObj, selectObj){
 		<td bgcolor="{T_TH_COLOR1}"><table border="0" cellpadding="3" cellspacing="1" width="100%">
 			<tr>
 				<td colspan="2" bgcolor="{T_TH_COLOR3}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_POST_A}</b></font></td>
-	        </tr>
-            <tr>
-				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_USERNAME}</b></font></td>
-				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{S_USERNAME_INPUT}</font></td>
 			</tr>
-            <tr>
+			<tr>
+				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_USERNAME}</b></font></td>
+				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{S_USERNAME_INPUT}</font>&nbsp;&nbsp;&nbsp;<span class="gensmall">{L_FIND_USERNAME}&nbsp;{S_ALPHA_SELECT}&nbsp;{S_NAMES_SELECT}&nbsp;<input type="submit" name="usersubmit" value="{L_FIND}"></td>
+			</tr>
+			<tr>
 				<td bgcolor="{T_TD_COLOR1}"><font face="{T_FONTFACE1}" size="{T_FONTSIZE2}"><b>{L_SUBJECT}</b></font></td>
 				<td bgcolor="{T_TD_COLOR2}"><font face="{T_FONTFACE3}" size="{T_FONTSIZE2}">{SUBJECT_INPUT}</font></td>
 			</tr>

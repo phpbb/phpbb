@@ -200,6 +200,8 @@ $lang['To'] = "To";
 $lang['Date'] = "Date"; 
 $lang['Mark'] = "Mark"; 
 
+$lang['Cannot_send_privmsg'] = "Sorry but you are not currently allowed to send private messages.";
+
 $lang['No_to_user'] = "You must specify a username to send this message";
 $lang['No_such_user'] = "Sorry but no such user exists";
 
@@ -214,7 +216,12 @@ $lang['Send_a_new_message'] = "Send a new private message";
 $lang['Send_a_reply'] = "Reply to a private message";
 $lang['Edit_message'] = "Edit private message";
 
-$lang['Notification_email'] = "Hello " . $username . "\n\n, You have received a new private message on your account at " . $forum_title . ". To view it immediately click the following link " . $pm_url . ", you may of course visit the site later your message will be stored in your Inbox.\n\n" . $board_config['email_from'] . "\n\n-------------------\n" . $board_config['email_sig'];
+$lang['Notification_subject'] = "New Private Message has arrived";
+$lang['Notification_email'] = "Hello " . $to_userdata['username'] . "\n\n, You have received a new private message on your account at " . $board_config['sitename'] . ". To view it immediately click the following link " . $pm_url . ", you may of course visit the site later your message will be stored in your Inbox.\n";
+
+$lang['Find_username'] = "Find a username";
+$lang['Find'] = "Find";
+$lang['No_match'] = "No matches found";
 
 //
 // Profiles/Registration

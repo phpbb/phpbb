@@ -38,6 +38,7 @@ init_userprefs($userdata);
 // End session management
 //
 
+
 $folder = (!empty($HTTP_POST_VARS['folder'])) ? $HTTP_POST_VARS['folder'] : ( (!empty($HTTP_GET_VARS['folder'])) ? $HTTP_GET_VARS['folder'] : "inbox" );
 if(empty($HTTP_POST_VARS['cancel']))
 {
@@ -306,10 +307,34 @@ if($mode == "read")
 }
 else if($mode == "post" || $mode == "reply" || $mode == "edit")
 {
+	// -----------------------------
+	// Posting capabilities are here
+	// -----------------------------
 
 	if(!$userdata['session_logged_in'])
 	{
 		header("Location: " . append_sid("login.$phpEx?forward_page=privmsg.$phpEx&folder=$folder&mode=$mode"));
+	}
+
+	if(!$userdata['user_allow_pm'])
+	{
+		//
+		// Admin has prevented user
+		// from sending PM's
+		//
+		include('includes/page_header.'.$phpEx);
+
+		$msg = $lang['Cannot_send_privmsg'];
+
+		$template->set_filenames(array(
+			"reg_header" => "error_body.tpl")
+		);
+		$template->assign_vars(array(
+			"ERROR_MESSAGE" => $msg)
+		);
+		$template->pparse("reg_header");
+
+		include('includes/page_tail.'.$phpEx);
 	}
 
 	//
@@ -347,11 +372,14 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		}
 	}
 
-	if(!empty($HTTP_GET_VARS[POST_USERS_URL]) && !$preview && empty($HTTP_POST_VARS['submit']))
+	if(empty($HTTP_GET_VARS[POST_USERS_URL]) && !$preview && empty($HTTP_POST_VARS['submit']))
 	{
+		$user_id = $HTTP_GET_VARS[POST_USERS_URL];
+
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
-			WHERE user_id = " . $HTTP_GET_VARS[POST_USERS_URL];
+			WHERE user_id = $user_id 
+				AND user_id <> " . ANONYMOUS;
 		if(!$result = $db->sql_query($sql))
 		{
 			$error = TRUE;
@@ -367,10 +395,90 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		$to_username = stripslashes($HTTP_POST_VARS['to_username']);
 	}
+	else if( !empty($HTTP_POST_VARS['to_username_list']) && empty($HTTP_POST_VARS['usersubmit']) )
+	{
+		$to_username = stripslashes($HTTP_POST_VARS['to_username_list']);
+	}
 	else
 	{
 		$to_username = "";
 	}
+
+	//
+	//
+	//
+	if( !empty($HTTP_POST_VARS['usersubmit']) || $preview)
+	{
+		if(!empty($HTTP_POST_VARS['to_username']) && !$preview)
+		{
+			$to_username_partial = stripslashes(str_replace("*", "%", $HTTP_POST_VARS['to_username']));
+			$to_username = "";
+			$first_letter = 65;
+
+			$sql = "SELECT username 
+				FROM " . USERS_TABLE . " 
+				WHERE ( username LIKE '%$to_username_partial' 
+					OR username LIKE '$to_username_partial%' 
+					OR username LIKE '%$to_username_partial%' 
+					OR username LIKE '$to_username_partial' ) 
+					AND user_id <> " . ANONYMOUS;
+
+		}
+		else
+		{
+			$first_letter = ($preview) ? 65 : $HTTP_POST_VARS['user_alpha'];
+
+			$sql = "SELECT username 
+				FROM " . USERS_TABLE . " 
+				WHERE ( username LIKE '" . chr($first_letter) . "%' 
+					OR username LIKE '$first_letter' ) 
+					AND user_id <> " . ANONYMOUS;
+
+		}
+
+	}
+	else
+	{
+		$first_letter = 65;
+
+		$sql = "SELECT username 
+			FROM " . USERS_TABLE . " 
+			WHERE ( username LIKE '" . chr($first_letter) . "%' 
+				OR username LIKE '$first_letter' ) 
+				AND user_id <> " . ANONYMOUS;
+	}
+
+	$result = $db->sql_query($sql);
+	$name_set = $db->sql_fetchrowset($result);
+
+	$user_names_select = "<select name=\"to_username_list\">";
+	if($db->sql_numrows($result))
+	{
+		for($i = 0; $i < count($name_set); $i++)
+		{
+			$name_selected = ($HTTP_POST_VARS['to_username_list'] == $name_set[$i]['username']) ? " selected" : "";
+			$user_names_select .=  "<option value=\"" . $name_set[$i]['username'] . "\"$name_selected>" . $name_set[$i]['username'] . "</option>\n";
+		}
+	}
+	else
+	{
+		$user_names_select .=  "<option value=\"" . ANONYMOUS . "\"$name_selected>" . $lang['No_match'] . "</option>\n";
+	}
+	$user_names_select .= "</select>";
+
+	$user_alpha_select = "<select name=\"user_alpha\">";
+	for($i = 65; $i < 91; $i++)
+	{
+		if($first_letter == $i)
+		{
+			$user_alpha_select .= "<option value=\"$i\" selected>" . chr($i) . "</option>";
+		}
+		else
+		{
+			$user_alpha_select .= "<option value=\"$i\">" . chr($i) . "</option>";
+		}
+	}
+	$user_alpha_select .= "</select>";
 
 	if($mode == "edit" && !$preview && !$submit)
 	{ 
@@ -516,9 +624,10 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 
 		if(!empty($to_username))
 		{
-			$sql = "SELECT user_id  
+			$sql = "SELECT user_id, username, user_notify_pm, user_email   
 				FROM " . USERS_TABLE . " 
-				WHERE username = '" . addslashes($to_username) . "'";
+				WHERE username = '" . addslashes($to_username) . "' 
+					AND user_id <> " . ANONYMOUS;
 			if(!$result = $db->sql_query($sql))
 			{
 				$error = TRUE;
@@ -526,7 +635,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			}
 			else
 			{
-				list($to_userid) = $db->sql_fetchrow($result);
+				$to_userdata = $db->sql_fetchrow($result);
 			}
 		}
 		else
@@ -546,12 +655,12 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 			if($mode != "edit")
 			{
 				$sql_info = "INSERT INTO " . PRIVMSGS_TABLE . " (privmsgs_type, privmsgs_subject, privmsgs_from_userid, privmsgs_to_userid, privmsgs_date, privmsgs_ip, privmsgs_bbcode_uid) 
-					VALUES (" . PRIVMSGS_NEW_MAIL . ", '$subject', " . $userdata['user_id'] . ", $to_userid, $msg_time, '$user_ip', '" . $bbcode_uid . "')";
+					VALUES (" . PRIVMSGS_NEW_MAIL . ", '$subject', " . $userdata['user_id'] . ", " . $to_userdata['user_id'] . ", $msg_time, '$user_ip', '" . $bbcode_uid . "')";
 			}
 			else
 			{
 				$sql_info = "UPDATE " . PRIVMSGS_TABLE . " 
-					SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '$subject', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = $to_userid, privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_bbcode_uid = '$bbcode_uid' 
+					SET privmsgs_type = " . PRIVMSGS_NEW_MAIL . ", privmsgs_subject = '$subject', privmsgs_from_userid = " . $userdata['user_id'] . ", privmsgs_to_userid = " . $to_userdata['user_id'] . ", privmsgs_date = $msg_time, privmsgs_ip = '$user_ip', privmsgs_bbcode_uid = '$bbcode_uid' 
 					WHERE privmsgs_id = $privmsgs_id";	
 			}
 
@@ -578,6 +687,13 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 				if(!$pm_sent_text_status = $db->sql_query($sql))
 				{
 					error_die(SQL_QUERY, "Could not insert/update private message sent text.", __LINE__, __FILE__);
+				}
+				else if($mode != "edit")
+				{
+					if($to_userdata['user_notify_pm'] && !empty($to_userdata['user_email']))
+					{
+						//mail($to_userdata['user_email'], $lang['Notification_subject'], $email_msg, "From: ".$board_config['board_email_from']."\r\n");
+					}
 				}
 
 				include('includes/page_header.'.$phpEx);
@@ -606,7 +722,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	{
 		unset($mod_group_list);
 		$sql = "SELECT g.group_id, g.group_name, g.group_moderator, g.group_single_user, u.username 
-			FROM phpbb_groups g, phpbb_user_group ug, phpbb_users u 
+			FROM " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u 
 			WHERE g.group_moderator = " . $userdata['user_id'] ." 
 				AND ug.group_id = g.group_id 
 				AND u.user_id = ug.user_id";
@@ -735,6 +851,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		$post_a = $lang['Edit_message'];
 	}
 
+	$username_input = '<input type="text" name="to_username" value="'.$to_username.'">';
 	$subject_input = '<input type="text" name="subject" value="'.$subject.'" size="50" maxlength="255">';
 	$message_input = '<textarea name="message" rows="10" cols="40" wrap="virtual">' . $message . '</textarea>';
 
@@ -746,7 +863,7 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 	}
 		
 	$template->assign_vars(array(
-		"S_USERNAME_INPUT" => "<input type=\"text\" name=\"to_username\" value=\"$to_username\">", 
+		"S_USERNAME_INPUT" => $username_input, 
 		"SUBJECT_INPUT" => $subject_input,
 		"MESSAGE_INPUT" => $message_input,
 		"HTML_STATUS" => $html_status,
@@ -764,7 +881,11 @@ else if($mode == "post" || $mode == "reply" || $mode == "edit")
 		"L_SUBMIT" => $lang['Submit_post'],
 		"L_CANCEL" => $lang['Cancel_post'],
 		"L_POST_A" => $post_a,
+		"L_FIND_USERNAME" => $lang['Find_username'],
+		"L_FIND" => $lang['Find'],
 
+		"S_ALPHA_SELECT" => $user_alpha_select,
+		"S_NAMES_SELECT" => $user_names_select, 
 		"S_POST_ACTION" => append_sid("privmsg.$phpEx"),
 		"S_HIDDEN_FORM_FIELDS" => $s_hidden_fields)
 	);
@@ -989,7 +1110,7 @@ $template->assign_vars(array(
 	"S_POST_NEW_MSG" => $post_new_mesg_url)
 );
 
-$sql_tot = "SELECT COUNT(privmsgs_id)_total FROM " . PRIVMSGS_TABLE . " ";
+$sql_tot = "SELECT COUNT(privmsgs_id) AS total FROM " . PRIVMSGS_TABLE . " ";
 $sql = "SELECT pm.privmsgs_type, pm.privmsgs_id, pm.privmsgs_date, pm.privmsgs_subject, u.user_id, u.username FROM " . PRIVMSGS_TABLE . " pm, " . USERS_TABLE . " u ";
 
 switch($folder)
