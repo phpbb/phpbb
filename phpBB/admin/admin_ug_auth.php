@@ -180,8 +180,8 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			}
 		}
 
-		header("Location: " . append_sid("admin_ug_auth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
-		exit;
+		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
+		message_die(GENERAL_MESSAGE, $message);
 	}
 	else if ( $mode == 'user' && $HTTP_POST_VARS['userlevel'] == 'admin' && $user_level != ADMIN )
 	{
@@ -219,8 +219,8 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			}
 		}
 
-		header("Location: " . append_sid("admin_ug_auth.$phpEx?" . POST_USERS_URL . "=$user_id", true));
-		exit;
+		$message = $lang['Auth_updated'] . '<br /><br />' . sprintf($lang['Click_return_userauth'], '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode") . '">', '</a>') . '<br /><br />' . sprintf($lang['Click_return_admin_index'], '<a href="' . append_sid("index.$phpEx?pane=right") . '">', '</a>');
+		message_die(GENERAL_MESSAGE, $message);
 	}
 	else
 	{
