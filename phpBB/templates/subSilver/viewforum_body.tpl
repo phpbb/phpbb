@@ -63,34 +63,36 @@
 </table>
 
 <table width="100%" cellspacing="0" border="0" align="center" cellpadding="0">
-  <tr>
-	<td align="left" valign="top"><table cellspacing="3" cellpadding="0" border="0">
-		<tr>
-		<td width="20" align="left"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEW_POSTS}" width="19" height="18" /></td>
-		<td class="gensmall">{L_NEW_POSTS}</td>
-		<td>&nbsp;&nbsp;</td>
-		<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NO_NEW_POSTS}" width="19" height="18" /></td>
-		<td class="gensmall">{L_NO_NEW_POSTS}</td>
-		<td>&nbsp;&nbsp;</td>
-		<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="{L_ANNOUNCEMENT}" width="19" height="18" /></td>
-		<td class="gensmall">{L_ANNOUNCEMENT}</td>
-	  </tr>
-	  <tr> 
-		<td width="20" align="center"><img src="templates/subSilver/images/folder_new_hot.gif" alt="{L_NEW_POSTS_HOT}" width="19" height="18" /></td>
-		<td class="gensmall">{L_NEW_POSTS_HOT}</td>
-		<td>&nbsp;&nbsp;</td>
-		<td width="20" align="center"><img src="templates/subSilver/images/folder_hot.gif" alt="{L_NO_NEW_POSTS_HOT}" width="19" height="18" /></td>
-		<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
-		<td>&nbsp;&nbsp;</td>
-		<td width="20" align="center"><img src="templates/subSilver/images/folder_sticky.gif" alt="{L_STICKY}" width="19" height="18" /></td>
-  		<td class="gensmall">{L_STICKY}</td>
-	  </tr>
-	  <tr>
-		<td class="gensmall"><img src="templates/subSilver/images/folder_lock_new.gif" alt="{L_NEW_POSTS_TOPIC_LOCKED}" width="19" height="18" /></td>
-		<td class="gensmall">{L_NEW_POSTS_LOCKED}</td>
-		<td>&nbsp;&nbsp;</td>
-		<td class="gensmall"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_NO_NEW_POSTS_TOPIC_LOCKED}" width="19" height="18" /></td>
-		<td class="gensmall">{L_NO_NEW_POSTS_LOCKED}</td>
-	</table></td>
-	<td align="right"><span class="gensmall">{S_AUTH_LIST}</span></td>
+	<tr>
+		<td align="left" valign="top"><table cellspacing="3" cellpadding="0" border="0">
+			<tr>
+				<td width="20" align="left"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEW_POSTS}" width="19" height="18" /></td>
+				<td class="gensmall">{L_NEW_POSTS}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NO_NEW_POSTS}" width="19" height="18" /></td>
+				<td class="gensmall">{L_NO_NEW_POSTS}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="templates/subSilver/images/folder_announce.gif" alt="{L_ANNOUNCEMENT}" width="19" height="18" /></td>
+				<td class="gensmall">{L_ANNOUNCEMENT}</td>
+			</tr>
+			<tr> 
+				<td width="20" align="center"><img src="templates/subSilver/images/folder_new_hot.gif" alt="{L_NEW_POSTS_HOT}" width="19" height="18" /></td>
+				<td class="gensmall">{L_NEW_POSTS_HOT}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="templates/subSilver/images/folder_hot.gif" alt="{L_NO_NEW_POSTS_HOT}" width="19" height="18" /></td>
+				<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td width="20" align="center"><img src="templates/subSilver/images/folder_sticky.gif" alt="{L_STICKY}" width="19" height="18" /></td>
+				<td class="gensmall">{L_STICKY}</td>
+			</tr>
+			<tr>
+				<td class="gensmall"><img src="templates/subSilver/images/folder_lock_new.gif" alt="{L_NEW_POSTS_TOPIC_LOCKED}" width="19" height="18" /></td>
+				<td class="gensmall">{L_NEW_POSTS_LOCKED}</td>
+				<td>&nbsp;&nbsp;</td>
+				<td class="gensmall"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_NO_NEW_POSTS_TOPIC_LOCKED}" width="19" height="18" /></td>
+				<td class="gensmall">{L_NO_NEW_POSTS_LOCKED}</td>
+			</tr>
+		</table></td>
+		<td align="right"><span class="gensmall">{S_AUTH_LIST}</span></td>
+	</tr>
 </table>
