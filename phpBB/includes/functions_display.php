@@ -1,16 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_display.php
-// STARTED   : Thu Nov 07, 2002
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* Display Forums
+*/
 function display_forums($root_data = '', $display_moderators = TRUE)
 {
 	global $config, $db, $template, $auth, $user, $phpEx, $SID, $forum_moderators, $phpbb_root_path;
@@ -335,6 +335,9 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	return $active_forum_ary;
 }
 
+/**
+* Get topic author
+*/
 function topic_topic_author(&$topic_row)
 {
 	global $phpEx, $SID, $phpbb_root_path, $user;
@@ -346,6 +349,9 @@ function topic_topic_author(&$topic_row)
 	return $topic_author;
 }
 
+/**
+* Generate topic pagination
+*/
 function topic_generate_pagination($replies, $url)
 {
 	global $config, $user;
@@ -380,6 +386,9 @@ function topic_generate_pagination($replies, $url)
 	return $pagination;
 }
 
+/**
+* Generate topic status
+*/
 function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum, &$folder_img, &$folder_alt, &$topic_type)
 {
 	global $user, $config;
@@ -472,7 +481,9 @@ function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum,
 	return $unread_topic;
 }
 
-// Display Attachments
+/**
+* Display Attachments
+*/
 function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
 {
 	global $extensions, $template, $cache, $attachment_tpl;

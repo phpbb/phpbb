@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : report.php 
-// STARTED   : Thu Apr 3, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -355,10 +354,7 @@ function report_notification($notify_user, $report_post, $report_data)
 			$messenger->send($notify_row['notify_type']);
 			$messenger->reset();
 
-			if ($messenger->queue)
-			{
-				$messenger->queue->save();
-			}
+			$messenger->save_queue();
 		}
 		else
 		{

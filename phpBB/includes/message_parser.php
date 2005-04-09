@@ -1,16 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : message_parser.php
-// STARTED   : Fri Feb 28, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @ignore
+*/
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -35,10 +35,11 @@ if (!class_exists('bbcode'))
 	include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 }
 
-// BBCODE_FIRSTPASS
-//
-
-// BBCODE first pass class (functions for parsing messages for db storage)
+/**
+* @package phpBB3
+* BBCODE FIRSTPASS
+* BBCODE first pass class (functions for parsing messages for db storage)
+*/
 class bbcode_firstpass extends bbcode
 {
 	var $message = '';
@@ -600,11 +601,11 @@ class bbcode_firstpass extends bbcode
 	}
 }
 
-// PARSE_MESSAGE EXTENDS BBCODE 
-//
-
-// Main message parser for posting, pm, etc. takes raw message
-// and parses it for attachments, html, bbcode and smilies
+/**
+* @package phpBB3
+* Main message parser for posting, pm, etc. takes raw message
+* and parses it for attachments, html, bbcode and smilies
+*/
 class parse_message extends bbcode_firstpass
 {
 	var $attachment_data = array();
@@ -1144,7 +1145,11 @@ class parse_message extends bbcode_firstpass
 	}
 }
 
-// Parses a given message and updates/maintains the fulltext tables
+/**
+* @package phpBB3
+* Parses a given message and updates/maintains the fulltext tables
+* @todo replace fulltext_search in message_parser with search modules
+*/
 class fulltext_search
 {
 	function split_words($mode, $text)

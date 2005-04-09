@@ -1,15 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : help_bbcode.php [ English ]
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* help_bbcode [English]
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
+
+/**
+*/
 
 // DEVELOPERS PLEASE NOTE 
 //

@@ -1,19 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin_jabber.php 
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+* @todo Check/enter/update transport info
+*/
 
-// TODO
-// Check/enter/update transport info
-
+/**
+*/
 if (!empty($setmodules))
 {
 	if (!$auth->acl_get('a_server'))

@@ -1,33 +1,30 @@
 <?php
-/***************************************************************************
-
-	Class.Jabber.PHP v0.4
-	(c) 2002 Carlo "Gossip" Zottmann
-	http://phpjabber.g-blog.net *** gossip@jabber.g-blog.net
-
-	The FULL documentation and examples for this software can be found at
-	http://phpjabber.g-blog.net (not many doc comments in here, sorry)
-
-	last modified: 27.04.2003 13:01:53 CET
-
- ***************************************************************************/
-
-/* 
-	Modified by psoTFX, phpBB Group, 2003.
-	Removed functions/support not critical to integration with phpBB
-
-	$Id$
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
 */
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
-
+/**
+* @package phpBB3
+*
+*	Class.Jabber.PHP v0.4
+*	(c) 2002 Carlo "Gossip" Zottmann
+*	http://phpjabber.g-blog.net *** gossip@jabber.g-blog.net
+*
+*	The FULL documentation and examples for this software can be found at
+*	http://phpjabber.g-blog.net (not many doc comments in here, sorry)
+*
+*	last modified: 27.04.2003 13:01:53 CET
+*
+* 
+*	Modified by psoTFX, phpBB Group, 2003.
+*	Removed functions/support not critical to integration with phpBB
+*
+*/
 class Jabber
 {
 	var $server;
@@ -938,7 +935,10 @@ class Jabber
 	}
 }
 
-//
+/**
+* @package phpBB3
+* MakeXML
+*/
 class MakeXML extends Jabber
 {
 	var $nodes;
@@ -1038,7 +1038,10 @@ class MakeXML extends Jabber
 	}
 }
 
-// 
+/**
+* @package phpBB3
+* Connector
+*/
 class CJP_StandardConnector
 {
 	var $active_socket;

@@ -1,39 +1,41 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_admin.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001,2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// Simple version of jumpbox, just lists authed forums
+/**
+* Simple version of jumpbox, just lists authed forums
+*/
 function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true)
 {
 	global $db, $user, $auth;
 
 	$acl = ($ignore_acl) ? '' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel');
-	$rowset = get_forum_list($acl, false, $ignore_nonpost, true);
 
-	$right = $cat_right = 0;
-	$forum_list = $padding = $holding = '';
+	// This query is identical to the jumpbox one
+	$sql = 'SELECT forum_id, parent_id, forum_name, forum_type, left_id, right_id
+		FROM ' . FORUMS_TABLE . '
+		ORDER BY left_id ASC';
+	$result = $db->sql_query($sql);
+
+	$right = $iteration = 0;
 	$padding_store = array('0' => '');
+	$forum_list = $padding = '';
 
-	foreach ($rowset as $row)
+	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
+	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
+	// If this happens, the padding could be "broken"
+
+	while ($row = $db->sql_fetchrow($result))
 	{
-		if ((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || 
-			$row['forum_id'] == $ignore_id)
-		{
-			continue;
-		}
-
 		if ($row['left_id'] < $right)
 		{
-			$padding .= '&nbsp; &nbsp; &nbsp;';
+			$padding .= '&nbsp; &nbsp;';
 			$padding_store[$row['parent_id']] = $padding;
 		}
 		else if ($row['left_id'] > $right + 1)
@@ -43,35 +45,41 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		$right = $row['right_id'];
 
+		if ($acl && !$auth->acl_gets($acl, $row['forum_id']))
+		{
+			continue;
+		}
+
+		if ((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || $row['forum_id'] == $ignore_id)
+		{
+			continue;
+		}
+
+		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
+		{
+			// Non-postable forum with no subforums, don't display
+			continue;
+		}
+
+		if ($row['forum_type'] != FORUM_POST && $ignore_nonpost)
+		{
+			continue;
+		}
+
 		$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
 
-		if ($row['left_id'] > $cat_right)
-		{
-			$holding = '';
-		}
+		$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 
-		if ($row['right_id'] - $row['left_id'] > 1 && $ignore_emptycat)
-		{
-			$cat_right = max($cat_right, $row['right_id']);
-
-			$holding .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
-		}
-		else
-		{
-			$forum_list .= $holding . '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
-			$holding = '';
-		}
+		$iteration++;
 	}
-
-	if (!$right)
-	{
-		$forum_list .= '<option value="-1">' . $user->lang['NO_FORUMS'] . '</option>';
-	}
+	unset($padding_store);
 
 	return $forum_list;
 }
 
-// Generate size select form
+/**
+* Generate size select form
+*/
 function size_select($select_name, $size_compare)
 {
 	global $user;
@@ -92,7 +100,9 @@ function size_select($select_name, $size_compare)
 	return ($select_field);
 }
 
-// Obtain authed forums list
+/**
+* Obtain authed forums list
+*/
 function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = FALSE, $no_cache = FALSE)
 {
 	global $db, $auth;
@@ -131,6 +141,9 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 	return $rowset;
 }
 
+/**
+* Get forum branch
+*/
 function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = TRUE)
 {
 	global $db;
@@ -172,6 +185,9 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	return $rows;
 }
 
+/**
+* Get physical file listing
+*/
 function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 {
 	$matches = array();
@@ -206,7 +222,9 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 	return $matches;
 }
 
-// Posts and topics manipulation
+/*
+* Move topic(s)
+*/
 function move_topics($topic_ids, $forum_id, $auto_sync = true)
 {
 	global $db;
@@ -250,6 +268,9 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	}
 }
 
+/**
+* Move post(s)
+*/
 function move_posts($post_ids, $topic_id, $auto_sync = true)
 {
 	global $db;
@@ -309,6 +330,9 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	}
 }
 
+/**
+* Remove topic(s)
+*/
 function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 {
 	global $db;
@@ -377,6 +401,9 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 	return $return;
 }
 
+/**
+* Remove post(s)
+*/
 function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 {
 	global $db;
@@ -436,10 +463,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 	return sizeof($post_ids);
 }
 
-// Delete Attachments
-// mode => (post, topic, attach, user)
-// ids => (post_ids, topic_ids, attach_ids, user_ids)
-// resync => set this to false if you are deleting posts or topics...
+/**
+* Delete Attachments
+* mode => (post, topic, attach, user)
+* ids => (post_ids, topic_ids, attach_ids, user_ids)
+* resync => set this to false if you are deleting posts or topics...
+*/
 function delete_attachments($mode, $ids, $resync = TRUE)
 {
 	global $db, $config;
@@ -628,6 +657,9 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 	return $num_deleted;
 }
 
+/**
+* Remove topic shadows
+*/
 function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 {
 	$where = (is_array($forum_id)) ? 'AND t.forum_id IN (' . implode(', ', $forum_id) . ')' : (($forum_id) ? "AND t.forum_id = $forum_id" : '');
@@ -672,7 +704,9 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 	}
 }
 
-// Delete File
+/**
+* Delete File
+*/
 function phpbb_unlink($filename, $mode = 'file')
 {
 	global $config, $user, $phpbb_root_path;
@@ -681,22 +715,23 @@ function phpbb_unlink($filename, $mode = 'file')
 	return @unlink($filename);
 }
 
-// All-encompasing sync function
-//
-// Usage:
-// sync('topic', 'topic_id', 123);			<= resync topic #123
-// sync('topic', 'forum_id', array(2, 3));	<= resync topics from forum #2 and #3
-// sync('topic');							<= resync all topics
-// sync('topic', 'range', 'topic_id BETWEEN 1 AND 60');	<= resync a range of topics/forums (only available for 'topic' and 'forum' modes)
-//
-// Modes:
-// - topic_moved		Removes topic shadows that would be in the same forum as the topic they link to
-// - topic_approved		Resyncs the topic_approved flag according to the status of the first post
-// - post_reported		Resyncs the post_reported flag, relying on actual reports
-// - topic_reported		Resyncs the topic_reported flag, relying on post_reported flags
-// - post_attachement	Same as post_reported, thanks to a quick Search/Replace
-// - topic_attachement	Same as topic_reported, thanks to a quick Search/Replace
-//
+/**
+* All-encompasing sync function
+*
+* Usage:
+* sync('topic', 'topic_id', 123);			<= resync topic #123
+* sync('topic', 'forum_id', array(2, 3));	<= resync topics from forum #2 and #3
+* sync('topic');							<= resync all topics
+* sync('topic', 'range', 'topic_id BETWEEN 1 AND 60');	<= resync a range of topics/forums (only available for 'topic' and 'forum' modes)
+*
+* Modes:
+* - topic_moved		Removes topic shadows that would be in the same forum as the topic they link to
+* - topic_approved		Resyncs the topic_approved flag according to the status of the first post
+* - post_reported		Resyncs the post_reported flag, relying on actual reports
+* - topic_reported		Resyncs the topic_reported flag, relying on post_reported flags
+* - post_attachement	Same as post_reported, thanks to a quick Search/Replace
+* - topic_attachement	Same as topic_reported, thanks to a quick Search/Replace
+*/
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE, $sync_extra = FALSE)
 {
 	global $db;
@@ -1346,7 +1381,9 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 	}
 }
 
-
+/**
+* Prune function
+*/
 function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true)
 {
 	global $db;
@@ -1408,7 +1445,9 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	return delete_topics('topic_id', $topic_list, $auto_sync);
 }
 
-// Function auto_prune(), this function now relies on passed vars
+/**
+* Function auto_prune(), this function now relies on passed vars
+*/
 function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq)
 {
 	global $db;
@@ -1437,8 +1476,10 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 	return;
 }
 
-// remove_comments will strip the sql comment lines out of an uploaded sql file
-// specifically for mssql and postgres type files in the install....
+/**
+* remove_comments will strip the sql comment lines out of an uploaded sql file
+* specifically for mssql and postgres type files in the install....
+*/
 function remove_comments(&$output)
 {
 	$lines = explode("\n", $output);
@@ -1470,14 +1511,18 @@ function remove_comments(&$output)
 	return $output;
 }
 
-// remove_remarks will strip the sql comment lines out of an uploaded sql file
+/**
+* remove_remarks will strip the sql comment lines out of an uploaded sql file
+*/
 function remove_remarks(&$sql)
 {
 	$sql = preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
 }
 
-// split_sql_file will split an uploaded sql file into single sql statements.
-// Note: expects trim() to have already been run on $sql.
+/**
+* split_sql_file will split an uploaded sql file into single sql statements.
+* Note: expects trim() to have already been run on $sql.
+*/
 function split_sql_file($sql, $delimiter)
 {
 	// Split up our string into "possible" SQL statements.
@@ -1565,8 +1610,10 @@ function split_sql_file($sql, $delimiter)
 	return $output;
 }
 
-// Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
-// and group names must be carried through for the moderators table
+/**
+* Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
+* and group names must be carried through for the moderators table
+*/
 function cache_moderators()
 {
 	global $db, $cache;
@@ -1657,7 +1704,9 @@ function cache_moderators()
 	}
 }
 
-// Logging functions
+/**
+* Add log event
+*/
 function add_log()
 {
 	global $db, $user;
@@ -1701,6 +1750,9 @@ function add_log()
 	return;
 }
 
+/**
+* View log
+*/
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
 	global $db, $user, $auth, $phpEx, $SID;
@@ -1773,13 +1825,13 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		$log[$i]['topic_id'] = $row['topic_id'];
 		$log[$i]['viewforum'] = ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? ((defined('IN_ADMIN')) ? '../' : '') . "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '';
 
-		$log[$i]['action'] = (!empty($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : ucfirst(str_replace('_', ' ', $row['log_operation']));
+		$log[$i]['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
 
 		if (!empty($row['log_data']))
 		{
 			$log_data_ary = unserialize(stripslashes($row['log_data']));
 
-			if (!empty($user->lang[$row['log_operation']]))
+			if (isset($user->lang[$row['log_operation']]))
 			{
 				foreach ($log_data_ary as $log_data)
 				{
@@ -1790,7 +1842,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			}
 			else
 			{
-				$log[$i]['action'] = implode('', $log_data_ary);
+				$log[$i]['action'] .= '<br />' . implode('', $log_data_ary);
 			}
 		}
 
@@ -1846,9 +1898,12 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	return;
 }
 
-// Extension of auth class for changing permissions
 if (class_exists('auth'))
 {
+	/**
+	* @package phpBB3
+	* Extension of auth class for changing permissions
+	*/
 	class auth_admin extends auth
 	{
 		// Set a user or group ACL record
@@ -2115,8 +2170,10 @@ if (class_exists('auth'))
 	}
 }
 
-// Update Post Informations (First/Last Post in topic/forum)
-// Should be used instead of sync() if only the last post informations are out of sync... faster
+/**
+* Update Post Informations (First/Last Post in topic/forum)
+* Should be used instead of sync() if only the last post informations are out of sync... faster
+*/
 function update_post_information($type, $ids)
 {
 	global $db;

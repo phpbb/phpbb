@@ -1,29 +1,26 @@
 <?php
-  /***************************************************************************
-   *                               postgres7.php
-   *                            -------------------
-   *   begin                : Saturday, Feb 13, 2001
-   *   copyright            : (C) 2001 The phpBB Group
-   *   email                : supportphpbb.com
-   *
-   *   $Id$
-   *
-   ***************************************************************************/
+/** 
+*
+* @package dbal_postgres
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-/***************************************************************************
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- ***************************************************************************/
-
+/**
+* @ignore
+*/
 if (!defined("SQL_LAYER"))
 {
 
 define("SQL_LAYER","postgresql");
 
+/**
+* @package dbal_postgres
+* PostgreSQL Database Abstraction Layer
+* Minimum Requirement is Version 7.3+
+*/
 class sql_db
 {
 

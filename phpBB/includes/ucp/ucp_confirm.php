@@ -1,23 +1,25 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_confirm.php
-// STARTED   : Mon May 19, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// Note to potential users of this code ...
-//
-// Remember this is released under the _GPL_ and is subject
-// to that licence. Do not incorporate this within software 
-// released or distributed in any way under a licence other
-// than the GPL. We will be watching ... ;)
-
+/**
+* @package ucp
+* ucp_confirm
+* Visual confirmation
+*
+* Note to potential users of this code ...
+*
+* Remember this is released under the _GPL_ and is subject
+* to that licence. Do not incorporate this within software 
+* released or distributed in any way under a licence other
+* than the GPL. We will be watching ... ;)
+*/
 class ucp_confirm extends module 
 {
 	function ucp_confirm($id, $mode)

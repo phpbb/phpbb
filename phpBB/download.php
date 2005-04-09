@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : download.php
-// STARTED   : Thu Apr 10, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -144,10 +143,9 @@ else
 }
 
 
-// ---------
-// FUNCTIONS
-//
-
+/**
+* Send file to browser
+*/
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
 	global $user, $db, $config, $phpbb_root_path;
@@ -177,27 +175,27 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	{
 		$browser_version = $log_version[1];
 		$browser_agent = 'omniweb';
-    }
+	}
 	else if (ereg('(Konqueror/)(.*)(;)', $user_agent, $log_version))
 	{
 		$browser_version = $log_version[2];
 		$browser_agent = 'konqueror';
-    }
+	}
 	else if (ereg('Mozilla/([0-9].[0-9]{1,2})', $user_agent, $log_version) && ereg('Safari/([0-9]*)', $user_agent, $log_version2))
 	{
 		$browser_version = $log_version[1] . '.' . $log_version2[1];
 		$browser_agent = 'safari';
-    }
+	}
 	else if (ereg('Mozilla/([0-9].[0-9]{1,2})', $user_agent, $log_version))
 	{
 		$browser_version = $log_version[1];
 		$browser_agent = 'mozilla';
-    }
+	}
 	else
 	{
 		$browser_version = 0;
 		$browser_agent = 'other';
-    }
+	}
 
 	// Correct the mime type - we force application/octetstream for all files, except images
 	// Please do not change this, it is a security precaution
@@ -236,6 +234,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	exit;
 }
 
+/**
+* Check if downloading item is allowed
+*/
 function download_allowed()
 {
 	global $config, $user, $db;
@@ -329,9 +330,5 @@ function download_allowed()
 	
 	return $allowed;
 }
-
-//
-// FUNCTIONS
-// ---------
 
 ?>

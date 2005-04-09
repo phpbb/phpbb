@@ -1,16 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_activate.php
-// STARTED   : Mon May 19, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
- 
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
+
+/**
+* @package ucp
+* ucp_activate
+* User activation
+*/
 class ucp_activate extends module 
 {
 	function ucp_activate($id, $mode)
@@ -91,7 +93,7 @@ class ucp_activate extends module
 			);
 
 			$messenger->send($row['user_notify_type']);
-			$messenger->queue->save();
+			$messenger->save_queue();
 
 			$message = 'ACCOUNT_ACTIVE_ADMIN';
 		}

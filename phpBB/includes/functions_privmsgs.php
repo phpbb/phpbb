@@ -1,15 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_privmsgs.php
-// STARTED   : Sun Apr 18, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
+
+/**
+*/
 
 // Define Rule processing schema
 // NOTE: might change
@@ -100,7 +100,9 @@ $global_rule_conditions = array(
 	RULE_IS_GROUP		=> 'group'
 );
 
-// Get all folder
+/**
+* Get all folder
+*/
 function get_folder($user_id, &$folder, $folder_id = false)
 {
 	global $db, $user, $template;
@@ -178,7 +180,9 @@ function get_folder($user_id, &$folder, $folder_id = false)
 	return;
 }
 
-// Delete Messages From Sentbox - we are doing this here because this saves us a bunch of checks and queries
+/**
+* Delete Messages From Sentbox - we are doing this here because this saves us a bunch of checks and queries
+*/
 function clean_sentbox($num_sentbox_messages)
 {
 	global $db, $user, $config;
@@ -207,7 +211,9 @@ function clean_sentbox($num_sentbox_messages)
 	}
 }
 
-// Check Rule against Message Informations
+/**
+* Check Rule against Message Informations
+*/
 function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 {
 	global $user, $config;
@@ -252,7 +258,9 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 	return false;
 }
 
-// Place new messages into appropiate folder
+/**
+* Place new messages into appropiate folder
+*/
 function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 {
 	global $db, $user, $config;
@@ -569,7 +577,9 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	return $num_not_moved;
 }
 
-// Move PM from one to another folder
+/**
+* Move PM from one to another folder
+*/
 function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_folder_id)
 {
 	global $db, $user;
@@ -656,7 +666,9 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 	return $num_moved;
 }
 
-// Update unread message status
+/**
+* Update unread message status
+*/
 function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 {
 	if (!$unread)
@@ -753,7 +765,9 @@ function handle_mark_actions($user_id, $mark_action)
 	return true;
 }
 
-// Delete PM(s)
+/**
+* Delete PM(s)
+*/
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
 	global $db;
@@ -884,7 +898,9 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 }
 
-// Rebuild message header
+/**
+* Rebuild message header
+*/
 function rebuild_header($check_ary)
 {
 	global $db;
@@ -917,7 +933,9 @@ function rebuild_header($check_ary)
 	return $address;
 }
 
-// Print out/Assign recipient informations
+/**
+* Print out/Assign recipient informations
+*/
 function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 {
 	global $db, $user, $template, $phpbb_root_path, $SID, $phpEx;
@@ -1033,7 +1051,9 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 	return $addresses;
 }
 
-// Get folder status
+/**
+* Get folder status
+*/
 function get_folder_status($folder_id, $folder)
 {
 	global $db, $user, $config;
@@ -1067,7 +1087,9 @@ function get_folder_status($folder_id, $folder)
 // COMPOSE MESSAGES
 //
 
-// Submit PM
+/**
+* Submit PM
+*/
 function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template;
@@ -1338,7 +1360,9 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	return $data['msg_id'];
 }
 
-// PM Notification
+/**
+* PM Notification
+*/
 function pm_notification($mode, $author, $recipients, $subject, $message)
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
@@ -1422,10 +1446,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	}
 	unset($msg_list_ary);
 
-	if ($messenger->queue)
-	{
-		$messenger->queue->save();
-	}
+	$messenger->save_queue();
 
 	unset($messenger);
 }

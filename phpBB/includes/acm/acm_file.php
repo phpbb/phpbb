@@ -1,16 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : acm_file.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package acm_file
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package acm_file
+* ACM File Based Caching
+*/
 class acm
 {
 	var $vars = array();

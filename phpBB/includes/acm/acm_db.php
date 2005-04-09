@@ -1,16 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : acm_db.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/**
+*
+* @package acm_db
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package acm_db
+* ACM Database Caching
+*/
 class acm
 {
 	// Contains all loaded variables

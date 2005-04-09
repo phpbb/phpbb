@@ -1,16 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_profile.php
-// STARTED   : Mon May 19, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package ucp
+* ucp_profile
+* Changing profile settings
+*/
 class ucp_profile extends module
 {
 	function ucp_profile($id, $mode)
@@ -150,7 +152,7 @@ class ucp_profile extends module
 								$db->sql_freeresult($result);
 							}
 
-							$messenger->queue->save();
+							$messenger->save_queue();
 
 							$sql_ary += array(
 								'user_type'		=> USER_INACTIVE,

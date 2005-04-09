@@ -1,16 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : session.php
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$ 
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package phpBB3
+* Session class
+*/
 class session
 {
 	var $session_id = '';
@@ -184,7 +185,7 @@ class session
 		$db->sql_freeresult($result);
 
 		// Check autologin request, is it valid?
-		if ($this->data === false || ($this->data['user_password'] != $autologin && !$set_autologin) || ($this->data['user_type'] == USER_INACTIVE && !$bot))
+		if ($this->data === false || ($this->data['user_password'] !== $autologin && !$set_autologin) || ($this->data['user_type'] == USER_INACTIVE && !$bot))
 		{
 			$autologin = '';
 			$this->data['user_id'] = $user_id = ANONYMOUS;
@@ -475,8 +476,11 @@ class session
 	}
 }
 
-// Contains (at present) basic user methods such as configuration
-// creating date/time ... keep this?
+/**
+* @package phpBB3
+* Contains (at present) basic user methods such as configuration
+* creating date/time ... keep this?
+*/
 class user extends session
 {
 	var $lang = array();
@@ -865,8 +869,11 @@ class user extends session
 	}
 }
 
-// Will be keeping my eye of 'other products' to ensure these things don't
-// mysteriously appear elsewhere, think up your own solutions!
+/**
+* @package phpBB3
+* Will be keeping my eye of 'other products' to ensure these things don't
+* mysteriously appear elsewhere, think up your own solutions!
+*/
 class auth
 {
 	var $founder = false;

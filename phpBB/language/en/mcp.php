@@ -1,17 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp.php [ English ]
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* mcp [English]
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// DO NOT CHANGE
+/**
+* DO NOT CHANGE
+*/
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -98,6 +99,7 @@ $lang += array(
 	'LOG_UNLOCK'			=> '<b>Unlocked topic</b><br />&#187; %s',
 	'LOG_UNLOCK_POST'		=> '<b>Unlocked post</b><br />&#187; %s',
 	'LOG_UNRATE'			=> '<b>Unrated post</b><br />&#187; %s',
+	'LOG_USER_LOCK'			=> '<b>User locked own topic</b><br />&#187; %s',
 	'LOGVIEW_VIEWTOPIC'		=> 'View Topic',
 	'LOGVIEW_VIEWLOGS'		=> 'View Topic Log',
 	'LOGVIEW_VIEWFORUM'		=> 'View Forum',

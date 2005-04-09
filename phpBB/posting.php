@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : posting.php
-// STARTED   : Sat Feb 17, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -1165,11 +1164,9 @@ if ($mode == 'reply' || $mode == 'quote')
 page_footer();
 
 
-// ---------
-// FUNCTIONS
-//
-
-// Delete Post
+/**
+* Delete Post
+*/
 function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 {
 	global $db, $user, $config, $auth, $phpEx, $SID;
@@ -1306,7 +1303,9 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 }
 
 
-// Submit Post
+/**
+* Submit Post
+*/
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true)
 {
 	global $db, $auth, $user, $config, $phpEx, $SID, $template, $phpbb_root_path;
@@ -1857,9 +1856,5 @@ function upload_popup($forum_style)
 
 	$template->display('popup');
 }
-
-//
-// FUNCTIONS
-// ---------
 
 ?>

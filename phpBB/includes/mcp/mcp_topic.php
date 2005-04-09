@@ -1,20 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp_topic.php
-// STARTED   : Thu Jul 08, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package mcp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-//
-// TODO:
-//
-
+/**
+* View topic in MCP
+*/
 function mcp_topic_view($id, $mode, $action, $url)
 {
 	global $SID, $phpEx, $phpbb_root_path, $config;
@@ -215,6 +211,9 @@ function mcp_topic_view($id, $mode, $action, $url)
 	);
 }
 
+/**
+* Split topic
+*/
 function split_topic($mode, $topic_id, $to_forum_id, $subject)
 {
 	global $db, $template, $user, $phpEx, $SID, $phpbb_root_path, $auth;
@@ -392,7 +391,9 @@ function split_topic($mode, $topic_id, $to_forum_id, $subject)
 	}
 }
 
-// Merge selected posts into selected topic
+/**
+* Merge selected posts into selected topic
+*/
 function merge_posts($topic_id, $to_topic_id)
 {
 	global $db, $template, $user, $phpEx, $SID, $phpbb_root_path, $auth;

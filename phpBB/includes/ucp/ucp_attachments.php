@@ -1,20 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_attachments.php
-// STARTED   : Mon Nov 03, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-//
-// * Use this for ACP integration - changeable user id
-//
-
+/**
+* @package ucp
+* ucp_attachments
+* User attachments
+*/
 class ucp_attachments extends module
 {
 	function ucp_attachments($id, $mode)

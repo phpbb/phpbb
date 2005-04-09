@@ -1,45 +1,44 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_pm.php
-// STARTED   : Sat Mar 27, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
-
-// TODO:
-//
-// * Review of post when replying/quoting
-// * Handle delete flag (user deletes PM from outbox)
-// * Report PM
-// * Check Permissions (compose message - to user/group)
-
-/*
-	folder=
-		(int)		display folder with the id used
-		(string)	can be inbox, outbox or sentbox
-
-	Display Unread Messages - mode=unread
-	Display Messages (default to inbox) - mode=view_messages
-	Display single message - mode=view_messages&action=view_message&p=[msg_id] or &p=[msg_id] (short linkage)
-
-	if the folder id with (&f=[folder_id]) is used when displaying messages, one query will be saved. If it is not used, phpBB needs to grab
-	the folder id first in order to display the input boxes and folder names and such things. ;) phpBB always checks this against the database to make
-	sure the user is able to view the message.
-
-	Composing Messages (mode=compose):
-		To specific user (u=[user_id])
-		To specific group (g=[group_id])
-		Quoting a post (action=quote&q=1&p=[post_id])
-		Quoting a PM (action=quote&p=[msg_id])
-		Forwarding a PM (action=forward&p=[msg_id])
-
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
 */
 
+/**
+* @package ucp
+* ucp_pm
+*
+* Private Message Class
+*
+* @param int $folder display folder with the id used
+* @param inbox|outbox|sentbox display folder with the associated name
+*
+*
+*	Display Unread Messages - mode=unread
+*	Display Messages (default to inbox) - mode=view_messages
+*	Display single message - mode=view_messages&action=view_message&p=[msg_id] or &p=[msg_id] (short linkage)
+*
+*	if the folder id with (&f=[folder_id]) is used when displaying messages, one query will be saved. If it is not used, phpBB needs to grab
+*	the folder id first in order to display the input boxes and folder names and such things. ;) phpBB always checks this against the database to make
+*	sure the user is able to view the message.
+*
+*	Composing Messages (mode=compose):
+*		To specific user (u=[user_id])
+*		To specific group (g=[group_id])
+*		Quoting a post (action=quote&q=1&p=[post_id])
+*		Quoting a PM (action=quote&p=[msg_id])
+*		Forwarding a PM (action=forward&p=[msg_id])
+*
+*
+* @todo Review of post when replying/quoting
+* @todo Report PM
+* @todo Check Permissions (compose message - to user/group)
+*
+*/
 class ucp_pm extends module
 {
 	function ucp_pm($id, $mode)

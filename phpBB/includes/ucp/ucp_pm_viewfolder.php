@@ -1,18 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : viewfolder.php
-// STARTED   : Sun Apr 11, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// * Called from ucp_pm with mode == 'view_messages' && action == 'view_folder'
-
+/**
+* View message folder
+* Called from ucp_pm with mode == 'view_messages' && action == 'view_folder'
+*/
 function view_folder($id, $mode, $folder_id, $folder, $type)
 {
 	global $phpbb_root_path, $phpEx, $SID, $user, $template, $auth, $config, $db;
@@ -179,8 +178,11 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 	}
 }
 
-// Get PM's in folder x from user x
-// Get PM's in all folders from user x with type of x (unread, new)
+/**
+* Get Messages from folder/user
+*
+* @param unread|new|folder $type type of message
+*/
 function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 {
 	global $user, $db, $template, $config, $auth, $_POST;

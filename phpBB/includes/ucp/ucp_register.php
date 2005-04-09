@@ -1,16 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_register.php
-// STARTED   : Mon May 19, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package ucp
+* ucp_register
+* Board registration
+*/
 class ucp_register extends module
 {
 	function ucp_register($id, $mode)
@@ -69,7 +71,7 @@ class ucp_register extends module
 			else
 			{
 				$template->assign_vars(array(
-					'L_AGREEMENT'		=> $user->lang['UCP_AGREEMENT'],
+					'L_TERMS_OF_USE'	=> $user->lang['TERMS_OF_USE_CONTENT'],
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTER_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
@@ -413,7 +415,7 @@ class ucp_register extends module
 				$db->sql_freeresult($result);
 		
 				$code = gen_rand_string(6);
-				$confirm_id = md5(uniqid($user_ip));
+				$confirm_id = md5(uniqid($user->ip));
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,

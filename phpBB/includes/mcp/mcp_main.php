@@ -1,16 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp_main.php
-// STARTED   : Mon Sep 02, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package mcp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package mcp
+* mcp_main
+* Handling mcp actions
+*/
 class mcp_main extends module
 {
 
@@ -196,10 +198,9 @@ class mcp_main extends module
 	}
 }
 
-
-
-
-// Lock/Unlock Topic/Post
+/**
+* Lock/Unlock Topic/Post
+*/
 function lock_unlock($mode, $ids)
 {
 	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path;
@@ -272,7 +273,9 @@ function lock_unlock($mode, $ids)
 	}
 }
 
-// Change Topic Type
+/**
+* Change Topic Type
+*/
 function change_topic_type($mode, $topic_ids)
 {
 	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path;
@@ -376,7 +379,9 @@ function change_topic_type($mode, $topic_ids)
 	}
 }
 
-// Move Topic
+/**
+* Move Topic
+*/
 function mcp_move_topic($topic_ids)
 {
 	global $auth, $user, $db, $template;
@@ -523,7 +528,9 @@ function mcp_move_topic($topic_ids)
 	}
 }
 
-// Delete Topics
+/**
+* Delete Topics
+*/
 function mcp_delete_topic($topic_ids)
 {
 	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path;
@@ -581,7 +588,9 @@ function mcp_delete_topic($topic_ids)
 	}
 }
 
-// Delete Posts
+/**
+* Delete Posts
+*/
 function mcp_delete_post($post_ids)
 {
 	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path;
@@ -690,7 +699,9 @@ function mcp_delete_post($post_ids)
 	}
 }
 
-// Fork Topic
+/**
+* Fork Topic
+*/
 function mcp_fork_topic($topic_ids)
 {
 	global $auth, $user, $db, $template, $config;

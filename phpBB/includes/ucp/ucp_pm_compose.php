@@ -1,18 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : compose.php
-// STARTED   : Sat Mar 27, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// * Called from ucp_pm with mode == 'compose'
-
+/**
+* Compose private message
+* Called from ucp_pm with mode == 'compose'
+*/
 function compose_pm($id, $mode, $action)
 {
 	global $template, $db, $auth, $user;
@@ -763,7 +762,9 @@ function compose_pm($id, $mode, $action)
 	}
 }
 
-// For composing messages, handle list actions
+/**
+* For composing messages, handle list actions
+*/
 function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_to, $add_bcc)
 {
 	global $_REQUEST;
@@ -832,7 +833,9 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 
 }
 
-// Return number of recipients
+/**
+* Return number of private message recipients
+*/
 function num_recipients($address_list)
 {
 	$num_recipients = 0;
@@ -845,7 +848,9 @@ function num_recipients($address_list)
 	return $num_recipients;
 }
 
-// Get recipient at position 'pos'
+/**
+* Get recipient at position 'pos'
+*/
 function get_recipient_pos($address_list, $position = 1)
 {
 	$recipient = array();

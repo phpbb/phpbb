@@ -1,20 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp_forum.php
-// STARTED   : Thu Jul 08, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package mcp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-//
-// TODO:
-//
-
+/**
+* MCP Forum View
+*/
 function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 {
 	global $SID, $phpEx, $phpbb_root_path, $config;
@@ -199,6 +195,9 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 	unset($topic_rows);
 }
 
+/**
+* Resync topics
+*/
 function mcp_resync_topics($topic_ids)
 {
 	global $auth, $db, $template, $phpEx, $user, $SID, $phpbb_root_path;

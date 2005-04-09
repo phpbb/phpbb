@@ -1,16 +1,27 @@
 <?php
+/** 
+*
+* LDAP auth plug-in for phpBB3
+*
+* Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
+*
+* This is for initial authentication via an LDAP server, user information is then
+* obtained from the integrated user table
+*
+* You can do any kind of checking you like here ... the return data format is
+* either the resulting row of user information, an integer zero (indicating an
+* inactive user) or some error string
+*
+* @package login
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// LDAP auth plug-in for phpBB 2.2
-// $Id$
-//
-// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
-//
-// This is for initial authentication via an LDAP server, user information is then
-// obtained from the integrated user table
-//
-// You can do any kind of checking you like here ... the return data format is
-// either the resulting row of user information, an integer zero (indicating an
-// inactive user) or some error string
+/**
+* Login function
+*/
 function login_ldap(&$username, &$password)
 {
 	global $db, $config;
@@ -52,8 +63,10 @@ function login_ldap(&$username, &$password)
 	return false;
 }
 
-// This function is used to output any required fields in the authentication
-// admin panel. It also defines any required configuration table fields.
+/**
+* This function is used to output any required fields in the authentication
+* admin panel. It also defines any required configuration table fields.
+*/
 function admin_ldap(&$new)
 {
 	global $user;
@@ -78,11 +91,13 @@ function admin_ldap(&$new)
 
 }
 
-// Would be nice to allow syncing of 'appropriate' data when user updates
-// their username, password, etc. ... should be up to the plugin what data
-// is updated.
-//
-// $mode perhaps being one of NEW, UPDATE, DELETE
+/**
+* Would be nice to allow syncing of 'appropriate' data when user updates
+* their username, password, etc. ... should be up to the plugin what data
+* is updated.
+*
+* @param new|update|delete $mode defining the action to take on user updates
+*/
 function usercp_ldap($mode)
 {
 	global $db, $config;

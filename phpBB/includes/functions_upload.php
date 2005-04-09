@@ -1,21 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_upload.php
-// STARTED   : Sun Mar 6, 2005
-// COPYRIGHT : © 2005 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$ 
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-//
-// Upload Class responsible for handling all file uploads
-//
-
-// Single File
+/**
+* @package phpBB3
+* Responsible for holding all file relevant informations, as well as doing file-specific operations.
+* The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
+*/
 class filespec
 {
 	var $filename = '';
@@ -40,9 +37,6 @@ class filespec
 
 	/**
 	* File Class
-	*
-	* Responsible for holding all file relevant informations, as well as doing file-specific operations.
-	* The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
 	*
 	* @access private
 	*
@@ -80,7 +74,6 @@ class filespec
 	* @access public
 	* @param real|unique $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
 	* @param string $prefix Prefix applied to filename
-	*
 	*/
 	function clean_filename($mode = 'unique', $prefix = '')
 	{
@@ -144,7 +137,6 @@ class filespec
 	* @access public
 	* @param string $destination_path Destination path, for example $config['avatar_path']
 	* @param octal $chmod Permission mask for chmodding the file after a successful move
-	*
 	*/
 	function move_file($destination, $chmod = 0666)
 	{
@@ -256,7 +248,10 @@ class filespec
 	}
 }
 
-// Class for assigning error messages before a real filespec class can be assigned
+/**
+* @package phpBB3
+* Class for assigning error messages before a real filespec class can be assigned
+*/
 class fileerror extends filespec
 {
 	function fileerror($error_msg)
@@ -265,6 +260,12 @@ class fileerror extends filespec
 	}
 }
 
+/**
+* @package phpBB3
+* File upload class
+*
+* Init class (all parameters optional and able to be set/overwritten seperatly) - scope is global and valid for all uploads
+*/
 class fileupload
 {
 	var $allowed_extensions = array();
@@ -276,9 +277,6 @@ class fileupload
 	var $error_prefix = '';
 
 	/**
-	* File upload class
-	*
-	* Init class (all parameters optional and able to be set/overwritten seperatly) - scope is global and valid for all uploads
 	*
 	* @param string $error_prefix Used error messages will get prefixed by this string
 	* @param array $allowed_extensions Array of allowed extensions, for example array('jpg', 'jpeg', 'gif', 'png')
@@ -347,7 +345,6 @@ class fileupload
 	* @access public
 	* @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
-	*
 	*/
 	function form_upload($form_name)
 	{
@@ -405,7 +402,6 @@ class fileupload
 	* @access public
 	* @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
-	*
 	*/
 	function remote_upload($upload_url)
 	{

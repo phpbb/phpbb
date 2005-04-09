@@ -1,16 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_groups.php
-// STARTED   : Sun Jun 6, 2004
-// COPYRIGHT : © 2001, 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package ucp
+* ucp_groups
+*/
 class ucp_groups extends module
 {
 	function ucp_groups($id, $mode)

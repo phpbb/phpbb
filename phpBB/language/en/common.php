@@ -1,17 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : common.php [ English ]
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* common [English]
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// DO NOT CHANGE
+/**
+* DO NOT CHANGE
+*/
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -43,6 +44,7 @@ $lang += array(
 	'6_MONTHS'				=> '6 Months',
 	'7_DAYS'				=> '7 Days',
 
+	'ACCOUNT_ALREADY_ACTIVATED'	=> 'Your account is already activated',
 	'ACCOUNT_NOT_ACTIVATED'	=> 'Your account has not been activated yet',
 	'ACP'					=> 'Administration Control Panel',
 	'ACTIVE_ERROR'			=> 'You have specified an inactive username. Please activate your account and try again. If you continue to have problems please contact a board administrator.',
@@ -173,19 +175,6 @@ $lang += array(
 	'JUMP_PAGE'				=> 'Enter the page number you wish to goto',
 	'JUMP_TO'				=> 'Jump to',
 
-	'KARMA'					=> array(
-		'-5'	=> 'Extremely Bad',
-		'-4'	=> 'Very Bad',
-		'-3'	=> 'Very Poor',
-		'-2'	=> 'Bad',
-		'-1'	=> 'Poor',
-		'0'		=> 'Neutral',
-		'1'		=> 'Positive',
-		'2'		=> 'Good',
-		'3'		=> 'Very Good',
-		'4'		=> 'Extremely good',
-		'5'		=> 'Excellent'
-	),
 	'KB'				=> 'KB',
 
 	'LAST_POST'			=> 'Last Post',
@@ -208,8 +197,13 @@ $lang += array(
 	'LOGIN_INFO'		=> 'In order to login you must be registered. Registering takes only a few seconds but gives you increased capabilies. The board administrator may also grant additional permissions to registered users. Before you login please ensure you are familiar with our terms of use and related policies. Please ensure you read any forum rules as you navigate around the board.',
 	'LOGIN_VIEWFORUM'	=> 'The board administrator requires you to be registered and logged in to view this forum.',
 	'LOGOUT_USER'		=> 'Logout [ %s ]',
+	'LOG_ADMIN_AUTH_FAIL'	=> '<b>Failed administration login attempt</b>',
+	'LOG_ADMIN_AUTH_SUCCESS'=> '<b>Sucessful administration login</b>',
 	'LOG_DELETE_TOPIC'	=> '<b>Deleted topic</b><br />&#187; %s',
+	'LOG_EMAIL_ERROR'	=> '<b>Email error<br />&#187; %s',
+	'LOG_JABBER_ERROR'	=> '<b>Jabber error<br />&#187; %s',
 	'LOG_ME_IN'			=> 'Log me on automatically each visit',
+	'LOG_USER_FEEDBACK'	=> '<b>Added user feedback</b><br />&#187; %s',
 	'LOG_USER_GENERAL'	=> '%s',
 
 	'MARK'				=> 'Mark',
@@ -311,6 +305,7 @@ $lang += array(
 	'REPLY_WITH_QUOTE'	=> 'Reply with quote',
 	'REPLYING_GLOBAL_ANNOUNCE'	=> 'Replying to global announcement',
 	'REPLYING_MESSAGE'	=> 'Replying to message in %s',
+	'RESEND_ACTIVATION'	=> 'Resend activation email',
 	'RESET'				=> 'Reset',
 	'RETURN_INDEX'		=> 'Click %sHere%s to return to the index',
 	'RETURN_FORUM'		=> 'Click %sHere%s to return to the forum',

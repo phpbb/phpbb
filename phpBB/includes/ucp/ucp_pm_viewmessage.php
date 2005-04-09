@@ -1,16 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : viewmessage.php
-// STARTED   : Mon Apr 12, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* View private message
+*/
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $phpbb_root_path, $phpEx, $SID, $user, $template, $auth, $config, $db;
@@ -222,7 +222,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 }
 
-// Display Message History
+/**
+* Display Message History
+*/
 function message_history($msg_id, $user_id, $message_row, $folder)
 {
 	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $SID, $auth, $bbcode;
@@ -356,7 +358,9 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	return true;
 }
 
-// Get User Informations (only for message display)
+/**
+* Get User Informations (only for message display)
+*/
 function get_user_informations($user_id, $user_row)
 {
 	global $config, $db, $auth, $user, $phpbb_root_path, $phpEx, $SID;

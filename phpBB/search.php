@@ -1,22 +1,19 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : search.php 
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+* @todo Introduce phrase searching?
+* @todo Stemmers?
+* @todo Find similar?
+* @todo Relevancy?
+*/
 
-//TODO
-//Introduce phrase searching?
-//Stemmers?
-//Find similar?
-//Relevancy?
-
+/**
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);

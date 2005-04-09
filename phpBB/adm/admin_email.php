@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin_email.php
-// STARTED   : Thu May 31, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 if (!empty($setmodules))
 {
 	$file = basename(__FILE__);
@@ -161,10 +160,7 @@ if (isset($_POST['submit']))
 		}
 		unset($email_list);
 
-		if ($messenger->queue)
-		{
-			$messenger->queue->save();
-		}
+		$messenger->save_queue();
 
 		if ($group_id)
 		{

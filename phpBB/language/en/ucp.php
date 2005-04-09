@@ -1,17 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp.php [ English ]
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* ucp [English]
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// DO NOT CHANGE
+/**
+* DO NOT CHANGE
+*/
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -33,6 +34,7 @@ $lang += array(
 	'ACCOUNT_COPPA'				=> 'Your account has been created but has to be approved, please check your email for details.',
 	'ACCOUNT_INACTIVE'			=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
 	'ACCOUNT_INACTIVE_ADMIN'	=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated',
+	'ACTIVATION_EMAIL_SENT'		=> 'The activation email has been sent to your email address',
 	'ADD'						=> 'Add',
 	'ADD_BCC'					=> 'Add [Bcc]',
 	'ADD_FOES'					=> 'Add new foes',
@@ -305,6 +307,7 @@ $lang += array(
 	'SORT_POST_TIME'			=> 'Post Time',
 	'SORT_SIZE'					=> 'Filesize',
 
+	'TERMS_OF_USE_CONTENT'		=> 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.',
 	'TIMEZONE'					=> 'Timezone',
 	'TO'						=> 'To',
 	'TOO_MANY_RECIPIENTS'		=> 'Too many recipients',
@@ -312,7 +315,6 @@ $lang += array(
 
 	'UCP'						=> 'User Control Panel',
 	'UCP_ADMIN_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. The administrator will review your account and if approved you will an email at the address you specified.',
-	'UCP_AGREEMENT'				=> 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.',
 	'UCP_AIM'					=> 'AOL Instant Messenger',
 	'UCP_ATTACHMENTS'			=> 'Attachments',
 	'UCP_COPPA_BEFORE'			=> 'Before %s',
@@ -350,6 +352,7 @@ $lang += array(
 
 	'UCP_REGISTER_DISABLE'		=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'				=> 'Send password',
+	'UCP_RESEND'				=> 'Send activation email',
 	'UCP_WATCHED'				=> 'Watched items',
 	'UCP_WELCOME'				=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
 	'UCP_YIM'					=> 'Yahoo Messenger',

@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : adm/index.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 define('IN_PHPBB', 1);
 // Include files
 $phpbb_root_path = './../';
@@ -205,10 +204,7 @@ elseif ($pane == 'right')
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					if ($messenger->queue)
-					{
-						$messenger->queue->save();
-					}
+					$messenger->save_queue();
 
 					unset($email_list);
 
@@ -283,7 +279,6 @@ elseif ($pane == 'right')
 			add_log('admin', 'LOG_RESYNC_STATS');
 			break;
 
-		// TODO: Temporary or a useful function?
 		case 'user':
 			if (!$auth->acl_get('a_defaults'))
 			{
@@ -291,40 +286,37 @@ elseif ($pane == 'right')
 			}
 
 			$post_count_ary = $auth->acl_getf('f_postcount');
-				
+
 			$forum_ary = array();
 			foreach ($post_count_ary as $forum_id => $allowed)
 			{
-				if ($allowed['f_read'] && $allowed['f_postcount'])
+				if ($allowed['f_postcount'])
 				{
 					$forum_ary[] = $forum_id;
 				}
 			}
-			$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id IN (' . implode(', ', $forum_ary) . ')' : '';
-			unset($forum_ary, $post_count_ary);
 			
-			$sql = 'SELECT user_id FROM ' . USERS_TABLE . ' 
-				WHERE user_type NOT IN (' . USER_INACTIVE . ')';
-			$result = $db->sql_query($sql);
-
-			while ($user_row = $db->sql_fetchrow($result))
+			if (!sizeof($forum_ary))
 			{
-				$user_id = (int) $user_row['user_id'];
-
-				$sql = 'SELECT COUNT(p.post_id) AS num_posts   
-					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-					WHERE p.poster_id = ' . $user_id . " 
-						AND f.forum_id = p.forum_id 
-						$post_count_sql";
-				$result2 = $db->sql_query($sql);
-				$num_real_posts = (int) $db->sql_fetchfield('num_posts', 0, $result2);
-				$db->sql_freeresult($result2);
-
-				$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = $num_real_posts	WHERE user_id = $user_id");
+				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
 			}
-			$db->sql_freeresult($result);
+			else
+			{
+				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+					FROM ' . POSTS_TABLE . '
+					WHERE poster_id <> ' . ANONYMOUS . '
+						AND forum_id IN (' . implode(', ', $forum_ary) . ')
+					GROUP BY poster_id';
+				$result = $db->sql_query($sql);
 
-			add_log('admin', 'LOG_RESYNC_USER');
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
+				}
+				$db->sql_freeresult($result);
+			}
+
+			add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
 			break;
 		
 		case 'date':
@@ -333,7 +325,7 @@ elseif ($pane == 'right')
 				trigger_error($user->lang['NO_ADMIN']);
 			}
 
-			set_config('board_startdate', time() - 1, true);
+			set_config('board_startdate', time() - 1);
 			add_log('admin', 'LOG_RESET_DATE');
 			break;
 	}
@@ -537,9 +529,8 @@ elseif ($pane == 'right')
 		<td class="row2">&nbsp;</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="4" align="right"><select name="action"><option value="online"><?php echo $user->lang['RESET_ONLINE']; ?></option><option value="date"><?php echo $user->lang['RESET_DATE']; ?></option><option value="stats"><?php echo $user->lang['RESYNC_STATS']; ?></option>
-			<!-- option value="user"><?php echo $user->lang['RESYNC_USER_POSTS']; ?></option -->
-		</select> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
+		<td class="cat" colspan="4" align="right"><select name="action"><option value="online"><?php echo $user->lang['RESET_ONLINE']; ?></option><option value="date"><?php echo $user->lang['RESET_DATE']; ?></option><option value="stats"><?php echo $user->lang['RESYNC_STATS']; ?></option><option value="user"><?php echo $user->lang['RESYNC_POSTCOUNTS']; ?></option>
+			</select> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
 	</tr>
 </table></form>
 

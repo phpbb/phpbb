@@ -1,22 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_user.php
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-//
-// User functions
-//
-
-// Obtain user_ids from usernames or vice versa. Returns false on
-// success else the error string
+/**
+* Obtain user_ids from usernames or vice versa. Returns false on
+* success else the error string
+*/
 function user_get_id_name(&$user_id_ary, &$username_ary)
 {
 	global $db;
@@ -66,7 +61,9 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 	return false;
 }
 
-// Updates a username across all relevant tables/fields
+/**
+* Updates a username across all relevant tables/fields
+*/
 function user_update_name($old_name, $new_name)
 {
 	global $config, $db;
@@ -95,6 +92,9 @@ function user_update_name($old_name, $new_name)
 	}
 }
 
+/**
+* Remove User
+*/
 function user_delete($mode, $user_id)
 {
 	global $config, $db, $user, $auth;
@@ -207,8 +207,10 @@ function user_delete($mode, $user_id)
 	return false;
 }
 
-// Flips user_type from active to inactive and vice versa, handles
-// group membership updates
+/**
+* Flips user_type from active to inactive and vice versa, handles
+* group membership updates
+*/
 function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false)
 {
 	global $db, $user, $auth;
@@ -293,6 +295,9 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 	return false;
 }
 
+/**
+* Ban User
+*/
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason)
 {
 	global $db, $user, $auth;
@@ -570,6 +575,9 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	return false;
 }
 
+/**
+* Unban User
+*/
 function user_unban($mode, $ban)
 {
 	global $db, $user, $auth;
@@ -631,7 +639,9 @@ function user_unban($mode, $ban)
 
 }
 
-// Whois facility
+/**
+* Whois facility
+*/
 function user_ipwhois($ip)
 {
 	$ipwhois = '';
@@ -673,12 +683,13 @@ function user_ipwhois($ip)
 
 	return $ipwhois;
 }
-//
-// Data validation ... used primarily but not exclusively by
-// ucp modules
-//
 
-// "Master" function for validating a range of data types
+/**
+* Data validation ... used primarily but not exclusively by
+* ucp modules
+*
+* "Master" function for validating a range of data types
+*/
 function validate_data($data, $val_ary)
 {
 	$error = array();
@@ -705,6 +716,9 @@ function validate_data($data, $val_ary)
 	return $error;
 }
 
+/**
+* Validate String
+*/
 function validate_string($string, $optional = false, $min = 0, $max = 0)
 {
 	if (empty($string) && $optional)
@@ -724,6 +738,9 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 	return false;
 }
 
+/**
+* Validate Number
+*/
 function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 {
 	if (empty($num) && $optional)
@@ -743,6 +760,9 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 	return false;
 }
 
+/**
+* Validate Match
+*/
 function validate_match($string, $optional = false, $match)
 {
 	if (empty($string) && $optional)
@@ -757,9 +777,11 @@ function validate_match($string, $optional = false, $match)
 	return false;
 }
 
-// Check to see if the username has been taken, or if it is disallowed.
-// Also checks if it includes the " character, which we don't allow in usernames.
-// Used for registering, changing names, and posting anonymously with a username
+/**
+* Check to see if the username has been taken, or if it is disallowed.
+* Also checks if it includes the " character, which we don't allow in usernames.
+* Used for registering, changing names, and posting anonymously with a username
+*/
 function validate_username($username)
 {
 	global $config, $db, $user;
@@ -825,12 +847,9 @@ function validate_username($username)
 	return false;
 }
 
-// TODO?
-// Ability to limit types of email address ... not by banning, seperate table
-// capability to require (or deny) use of certain addresses when user is
-// registering from certain IP's/hosts
-
-// Check to see if email address is banned or already present in the DB
+/**
+* Check to see if email address is banned or already present in the DB
+*/
 function validate_email($email)
 {
 	global $config, $db, $user;
@@ -875,10 +894,9 @@ function validate_email($email)
 	return false;
 }
 
-//
-// Avatar functions
-//
-
+/**
+* Remove avatar
+*/
 function avatar_delete($id)
 {
 	global $phpbb_root_path, $config, $db, $user;
@@ -891,6 +909,9 @@ function avatar_delete($id)
 	return false;
  }
 
+/**
+* Remote avatar linkage
+*/
 function avatar_remote($data, &$error)
 {
 	global $config, $db, $user, $phpbb_root_path;
@@ -930,6 +951,9 @@ function avatar_remote($data, &$error)
 	return array(AVATAR_REMOTE, $data['remotelink'], $width, $height);
 }
 
+/**
+* Avatar upload using the upload class
+*/
 function avatar_upload($data, &$error)
 {
 	global $phpbb_root_path, $config, $db, $user;
@@ -959,6 +983,9 @@ function avatar_upload($data, &$error)
 	return array(AVATAR_UPLOAD, $file->get('realname'), $file->get('width'), $file->get('height'));
 }
 
+/**
+* Avatar Gallery
+*/
 function avatar_gallery($category, &$error)
 {
 	global $config, $phpbb_root_path, $user;
@@ -1015,8 +1042,10 @@ function avatar_gallery($category, &$error)
 // Usergroup functions
 //
 
-// Add or edit a group. If we're editing a group we only update user
-// parameters such as rank, etc. if they are changed
+/**
+* Add or edit a group. If we're editing a group we only update user
+* parameters such as rank, etc. if they are changed
+*/
 function group_create($group_id, $type, $name, $desc)
 {
 	global $phpbb_root_path, $config, $db, $user, $file_upload;
@@ -1093,6 +1122,9 @@ function group_create($group_id, $type, $name, $desc)
 	return (sizeof($error)) ? $error : false;
 }
 
+/**
+* Group Delete
+*/
 function group_delete($group_id, $group_name = false)
 {
 	global $db;
@@ -1162,6 +1194,9 @@ function group_delete($group_id, $group_name = false)
 	return false;
 }
 
+/**
+* Add user(s) to group
+*/
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0)
 {
 	global $db, $auth;
@@ -1355,9 +1390,11 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	return false;
 }
 
-// Remove a user/s from a given group. When we remove users we update their
-// default group_id. We do this by examining which "special" groups they belong
-// to. The selection is made based on a reasonable priority system
+/**
+* Remove a user/s from a given group. When we remove users we update their
+* default group_id. We do this by examining which "special" groups they belong
+* to. The selection is made based on a reasonable priority system
+*/
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
 	global $db, $auth;
@@ -1485,7 +1522,9 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	return false;
 }
 
-// This is used to promote (to leader), demote or set as default a member/s
+/**
+* This is used to promote (to leader), demote or set as default a member/s
+*/
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
 	global $db, $auth;
@@ -1622,8 +1661,10 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	return false;
 }
 
-// Obtain either the members of a specified group or the groups to
-// which the specified users are members
+/**
+* Obtain either the members of a specified group or the groups to
+* which the specified users are members
+*/
 function group_memberships($group_id = false, $user_id_ary = false)
 {
 	global $db;

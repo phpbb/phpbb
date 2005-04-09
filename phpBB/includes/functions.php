@@ -1,17 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001,2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-
+/**
+* Set variable, used by {@link request_var the request_var function}
+*/
 function set_var(&$result, $var, $type, $multibyte = false)
 {
 	settype($var, $type);
@@ -29,6 +28,11 @@ function set_var(&$result, $var, $type, $multibyte = false)
 	}
 }
 
+/**
+* request_var
+*
+* Used to get passed variable
+*/
 function request_var($var_name, $default, $multibyte = false)
 {
 	if (!isset($_REQUEST[$var_name]))
@@ -66,6 +70,9 @@ function request_var($var_name, $default, $multibyte = false)
 	}
 }
 
+/**
+* Set config value. Creates missing config entry.
+*/
 function set_config($config_name, $config_value, $is_dynamic = false)
 {
 	global $db, $cache, $config;
@@ -92,7 +99,9 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 	}
 }
 
-// Generates an alphanumeric random string of given length
+/**
+* Generates an alphanumeric random string of given length
+*/
 function gen_rand_string($num_chars)
 {
 	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
@@ -110,6 +119,10 @@ function gen_rand_string($num_chars)
 	return $rand_str;
 }
 
+/**
+* Get userdata
+* @param mixed $user user id or username
+*/
 function get_userdata($user)
 {
 	global $db;
@@ -123,7 +136,9 @@ function get_userdata($user)
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
 }
 
-// Create forum rules for given forum
+/**
+* Create forum rules for given forum
+*/
 function generate_forum_rules(&$forum_data)
 {
 	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
@@ -152,8 +167,10 @@ function generate_forum_rules(&$forum_data)
 	);
 }
 
-// Create forum navigation links for given forum, create parent
-// list if currently null, assign basic forum info to template
+/**
+* Create forum navigation links for given forum, create parent
+* list if currently null, assign basic forum info to template
+*/
 function generate_forum_nav(&$forum_data)
 {
 	global $db, $user, $template, $phpEx, $SID, $phpbb_root_path;
@@ -194,7 +211,9 @@ function generate_forum_nav(&$forum_data)
 	return;
 }
 
-// Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
+/**
+* Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
+*/
 function get_forum_parents(&$forum_data)
 {
 	global $db;
@@ -234,7 +253,9 @@ function get_forum_parents(&$forum_data)
 	return $forum_parents;
 }
 
-// Obtain list of moderators of each forum
+/**
+* Obtain list of moderators of each forum
+*/
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $config, $template, $db, $phpEx, $SID;
@@ -270,7 +291,9 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	return;
 }
 
-// User authorisation levels output
+/**
+* User authorisation levels output
+*/
 function gen_forum_auth_level($mode, $forum_id)
 {
 	global $SID, $template, $auth, $user;
@@ -291,6 +314,9 @@ function gen_forum_auth_level($mode, $forum_id)
 	return;
 }
 
+/**
+* Generate sort selection fields
+*/
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param)
 {
 	global $user;
@@ -326,6 +352,9 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	return;
 }
 
+/**
+* Generate Jumpbox
+*/
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false)
 {
 	global $config, $auth, $template, $user, $db, $phpEx, $SID;
@@ -419,7 +448,9 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	return;
 }
 
-// Pick a language, any language ...
+/**
+* Pick a language, any language ...
+*/
 function language_select($default = '')
 {
 	global $db;
@@ -440,7 +471,9 @@ function language_select($default = '')
 	return $lang_options;
 }
 
-// Pick a template/theme combo,
+/** 
+* Pick a template/theme combo,
+*/
 function style_select($default = '', $all = false)
 {
 	global $db;
@@ -463,7 +496,9 @@ function style_select($default = '', $all = false)
 	return $style_options;
 }
 
-// Pick a timezone
+/**
+* Pick a timezone
+*/
 function tz_select($default = '')
 {
 	global $sys_timezone, $user;
@@ -481,7 +516,9 @@ function tz_select($default = '')
 	return $tz_select;
 }
 
-// Topic and forum watching common code
+/**
+* Topic and forum watching common code
+*/
 function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id, $notify_status = 'unset', $start = 0)
 {
 	global $template, $db, $user, $phpEx, $SID, $start, $phpbb_root_path;
@@ -586,7 +623,9 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	return;
 }
 
-// Marks a topic or form as read
+/**
+* Marks a topic or form as read
+*/
 function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 {
 	global $config, $db, $user;
@@ -759,10 +798,11 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 	}
 }
 
-
-// Pagination routine, generates page number sequence
-// tpl_prefix is for using different pagination blocks at one page
-function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = true, $tpl_prefix = '')
+/**
+* Pagination routine, generates page number sequence
+* tpl_prefix is for using different pagination blocks at one page
+*/
+function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
 {
 	global $template, $user;
 
@@ -813,6 +853,19 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
 
+	if ($add_prevnext_text)
+	{
+		if ($on_page != 1) 
+		{
+			$page_string = '<a href="' . $base_url . '&amp;start=' . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
+		}
+
+		if ($on_page != $total_pages)
+		{
+			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . '&amp;start=' . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+		}
+	}
+
 	$template->assign_vars(array(
 		$tpl_prefix . 'BASE_URL'	=> $base_url,
 		$tpl_prefix . 'PER_PAGE'	=> $per_page,
@@ -824,6 +877,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	return $page_string;
 }
 
+/**
+* Return current page (pagination)
+*/
 function on_page($num_items, $per_page, $start)
 {
 	global $template, $user;
@@ -835,9 +891,10 @@ function on_page($num_items, $per_page, $start)
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
 
-// Obtain list of naughty words and build preg style replacement arrays for use by the
-// calling script, note that the vars are passed as references this just makes it easier
-// to return both sets of arrays
+/**
+* Obtain list of naughty words and build preg style replacement arrays for use by the
+* calling script
+*/
 function obtain_word_list(&$censors)
 {
 	global $db, $cache, $user;
@@ -871,7 +928,9 @@ function obtain_word_list(&$censors)
 	return true;
 }
 
-// Obtain currently listed icons, re-caching if necessary
+/**
+* Obtain currently listed icons
+*/
 function obtain_icons(&$icons)
 {
 	global $db, $cache;
@@ -904,7 +963,9 @@ function obtain_icons(&$icons)
 	return;
 }
 
-// Obtain ranks
+/**
+* Obtain ranks
+*/
 function obtain_ranks(&$ranks)
 {
 	global $db, $cache;
@@ -945,7 +1006,9 @@ function obtain_ranks(&$ranks)
 	}
 }
 
-// Obtain allowed extensions
+/**
+* Obtain allowed extensions
+*/
 function obtain_attach_extensions(&$extensions, $forum_id = false)
 {
 	global $db, $cache;
@@ -1025,6 +1088,9 @@ function obtain_attach_extensions(&$extensions, $forum_id = false)
 	return;
 }
 
+/**
+* Generate board url
+*/
 function generate_board_url()
 {
 	global $config;
@@ -1034,7 +1100,9 @@ function generate_board_url()
 	return (($config['cookie_secure']) ? 'https://' : 'http://') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['server_name'])) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) : '') . (($path) ? '/' . $path : '');
 }
 
-// Redirects the user to another page then exits the script nicely
+/**
+* Redirects the user to another page then exits the script nicely
+*/
 function redirect($url)
 {
 	global $db, $cache, $config, $user;
@@ -1072,7 +1140,9 @@ function redirect($url)
 	exit;
 }
 
-// Meta refresh assignment
+/**
+* Meta refresh assignment
+*/
 function meta_refresh($time, $url)
 {
 	global $template;
@@ -1082,7 +1152,9 @@ function meta_refresh($time, $url)
 	);
 }
 
-// Build Confirm box
+/**
+* Build Confirm box
+*/
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html')
 {
 	global $user, $template, $db;
@@ -1159,10 +1231,12 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	page_footer();
 }
 
-// Generate login box or verify password
+/**
+* Generate login box or verify password
+*/
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $SID, $db, $user, $template, $auth, $phpEx, $phpbb_root_path;
+	global $SID, $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 
 	$err = '';
 
@@ -1177,11 +1251,22 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// If authentication is successful we redirect user to previous page
 		if (($result = $auth->login($username, $password, $autologin, $viewonline, $admin)) === true)
 		{
+			// If admin authentication
+			if ($admin)
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
+			}
+						
 			$redirect = request_var('redirect', "index.$phpEx$SID");
 			meta_refresh(3, $redirect);
 
 			$message = (($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT']) . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
 			trigger_error($message);
+		}
+
+		if ($admin)
+		{
+			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		}
 
 		// If we get a non-numeric (e.g. string) value we output an error
@@ -1191,7 +1276,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		// If we get an integer zero then we are inactive, else the username/password is wrong
-		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] :  $user->lang['LOGIN_ERROR'];
+		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] : $user->lang['LOGIN_ERROR'];
 	}
 
 	if (!$redirect)
@@ -1216,9 +1301,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
-		'U_SEND_PASSWORD' 	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=sendpassword",
-		'U_TERMS_USE'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=terms",
-		'U_PRIVACY'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=privacy",
+		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=sendpassword" : '',
+		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] != USER_ACTIVATION_NONE && $config['email_enable']) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=resend_act" : '',
+		'U_TERMS_USE'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=terms",
+		'U_PRIVACY'				=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=privacy",
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_LOGIN_ACTION'		=> (!$admin) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login" : "index.$phpEx$SID",
@@ -1235,7 +1321,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	page_footer();
 }
 
-// Generate forum login box
+/**
+* Generate forum login box
+*/
 function login_forum_box(&$forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
@@ -1297,7 +1385,9 @@ function login_forum_box(&$forum_data)
 	page_footer();
 }
 
-// Bump Topic Check - used by posting and viewtopic
+/**
+* Bump Topic Check - used by posting and viewtopic
+*/
 function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
 {
 	global $config, $auth, $user;
@@ -1327,7 +1417,9 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	return $bump_time;
 }
 
-// Censoring
+/**
+* Censoring
+*/
 function censor_text($text)
 {
 	global $censors, $user;
@@ -1336,7 +1428,7 @@ function censor_text($text)
 	{
 		$censors = array();
 
-		// For ANONYMOUS, this option should be enabled by default
+		// TODO: For ANONYMOUS, this option should be enabled by default
 		if ($user->optionget('viewcensors'))
 		{
 			obtain_word_list($censors);
@@ -1351,7 +1443,9 @@ function censor_text($text)
 	return $text;
 }
 
-// Smiley processing
+/**
+* Smiley processing
+*/
 function smiley_text($text, $force_option = false)
 {
 	global $config, $user, $phpbb_root_path;
@@ -1359,7 +1453,9 @@ function smiley_text($text, $force_option = false)
 	return ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies')) ? preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text) : str_replace('<img src="{SMILIES_PATH}', '<img src="' . $phpbb_root_path . $config['smilies_path'], $text);
 }
 
-// Inline Attachment processing
+/**
+* Inline Attachment processing
+*/
 function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_id = 0, $preview = false)
 {
 	global $config, $user;
@@ -1391,7 +1487,9 @@ function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_
 	return array_unique($unset_tpl);
 }
 
-// Check if extension is allowed to be posted within forum X (forum_id 0 == private messaging)
+/**
+* Check if extension is allowed to be posted within forum X (forum_id 0 == private messaging)
+*/
 function extension_allowed($forum_id, $extension, &$extensions)
 {
 	if (!sizeof($extensions))
@@ -1425,7 +1523,9 @@ function extension_allowed($forum_id, $extension, &$extensions)
 	return false;
 }
 
-// Error and message handler, call with trigger_error if reqd
+/**
+* Error and message handler, call with trigger_error if reqd
+*/
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
@@ -1515,21 +1615,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 			exit;
 			break;
-
-/*		remove me
-		default:
-			if (defined('DEBUG_EXTRA'))
-			{
-				if (!strstr($errfile, '/cache/'))
-				{
-					echo "<b>Another Error</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
-				}
-			}
-			break;*/
 	}
 }
 
-//
+/**
+* Generate page header
+*/
 function page_header($page_title = '')
 {
 	global $db, $config, $template, $SID, $user, $auth, $phpEx, $phpbb_root_path;
@@ -1823,6 +1914,9 @@ function page_header($page_title = '')
 	return;
 }
 
+/**
+* Generate page footer
+*/
 function page_footer()
 {
 	global $db, $config, $template, $SID, $user, $auth, $cache, $messenger, $starttime, $phpbb_root_path, $phpEx;

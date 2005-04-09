@@ -1,21 +1,26 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mssql-odbc.php 
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package dbal_odbc_mssql
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @ignore
+*/
 if (!defined('SQL_LAYER'))
 {
 
 define('SQL_LAYER', 'mssql-odbc');
 
+/**
+* @package dbal_odbc_mssql
+* MSSQL ODBC Database Abstraction Layer for MSSQL
+* Minimum Requirement is Version 2000+
+*/
 class sql_db
 {
 	var $db_connect_id;

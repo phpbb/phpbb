@@ -1,25 +1,26 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp.php
-// STARTED   : Mon May 5, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package mcp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @ignore
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
-// ---------
-// FUNCTIONS
-//
+/**
+* @package mcp
+* MCP Module
+*/
 class module
 {
 	var $id = 0;
@@ -278,10 +279,9 @@ class module
 		return false;
 	}
 }
-//
-// FUNCTIONS
-// ---------
 
+/**
+*/
 
 // Start session management
 $user->start();
@@ -438,7 +438,9 @@ switch ($mode)
 //
 // LITTLE HELPER
 
-// request_var, the array way
+/**
+* request_var, the array way
+*/
 function get_array($var, $default_value)
 {
 	$ids = request_var($var, $default_value);
@@ -463,7 +465,9 @@ function get_array($var, $default_value)
 	return $ids;
 }
 
-// Build simple hidden fields from array
+/**
+* Build simple hidden fields from array
+*/
 function build_hidden_fields($field_ary)
 {
 	$s_hidden_fields = '';
@@ -486,7 +490,9 @@ function build_hidden_fields($field_ary)
 	return $s_hidden_fields;
 }
 
-// Get simple topic data
+/**
+* Get simple topic data
+*/
 function get_topic_data($topic_ids, $acl_list = false)
 {
 	global $auth, $db;
@@ -516,7 +522,9 @@ function get_topic_data($topic_ids, $acl_list = false)
 	return $rowset;
 }
 
-// Get simple post data
+/**
+* Get simple post data
+*/
 function get_post_data($post_ids, $acl_list = false)
 {
 	global $db, $auth;
@@ -549,6 +557,9 @@ function get_post_data($post_ids, $acl_list = false)
 	return $rowset;
 }
 
+/**
+* Get simple forum data
+*/
 function get_forum_data($forum_id, $acl_list = 'f_list')
 {
 	global $auth, $db;
@@ -576,6 +587,9 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 	return $rowset;
 }
 
+/**
+* sorting in mcp
+*/
 function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
 	global $db, $user, $auth, $template;
@@ -732,7 +746,9 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 	}
 }
 
-//
+/**
+* Validate ids
+*/
 function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 {
 	global $db, $auth;

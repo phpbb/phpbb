@@ -1,17 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin.php [ English ]
-// STARTED   : Sat Dec 16, 2000
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* admin [English]
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// DO NOT CHANGE
+/**
+* DO NOT CHANGE
+*/
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -201,6 +202,7 @@ $lang += array(
 	'log_prune_user_del_anon'=> '<b>Users Pruned and Posts Retained</b><br />%s',
 
 	'LOG_RESYNC_STATS'		=> '<b>Post, topic and user stats reset</b>',
+	'LOG_RESYNC_POSTCOUNTS'	=> '<b>User postcounts synced</b>',
 	'LOG_RESET_DATE'		=> '<b>Board start date reset</b>',
 	'LOG_RESET_ONLINE'		=> '<b>Most users online reset</b>',
 
@@ -277,9 +279,6 @@ $lang += array(
 	'LOG_JAB_REGISTER'	=> '<b>Jabber account registered</b>',
 	'LOG_JAB_CHANGED'	=> '<b>Jabber account changed</b>',
 
-	'LOG_EMAIL_ERROR'	=> '%s',
-	'LOG_JABBER_ERROR'	=> '%s',
-
 	'LOG_BOT_ADDED'		=> '<b>New bot added</b><br />&#187; %s',
 	'LOG_BOT_UPDATED'	=> '<b>Existing bot updated</b><br />&#187; %s',
 	'LOG_BOT_DELETE'	=> '<b>Deleted bot</b><br />&#187; %s',
@@ -316,6 +315,7 @@ $lang += array(
 	'RESET_ONLINE'		=> 'Reset Online',
 	'RESET_DATE'		=> 'Reset Date',
 	'RESYNC_STATS'		=> 'Resync Stats',
+	'RESYNC_POSTCOUNTS'	=> 'Resync Postcounts',
 
 	'INACTIVE_USERS'		=> 'Inactive Users',
 	'INACTIVE_USERS_EXPLAIN'=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',

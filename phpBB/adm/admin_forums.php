@@ -1,22 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin_forums.php
-// STARTED   : Thu Jul 12, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
-
-/*
-	TODO:
-
-	- make a function to verify and/or fix the tree?
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
 */
 
+/**
+*/
 if (!empty($setmodules))
 {
 	if (!$auth->acl_gets('a_forum', 'a_forumadd', 'a_forumdel'))

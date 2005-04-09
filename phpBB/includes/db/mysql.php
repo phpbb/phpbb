@@ -1,21 +1,26 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mysql.php 
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package dbal_mysql
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @ignore
+*/
 if (!defined('SQL_LAYER'))
 {
 
 define('SQL_LAYER', 'mysql');
 
+/**
+* @package dbal_mysql
+* MySQL Database Abstraction Layer
+* Minimum Requirement is 3.23+/4.0+/4.1+
+*/
 class sql_db
 {
 	var $db_connect_id;

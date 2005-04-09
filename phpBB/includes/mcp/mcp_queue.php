@@ -1,16 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp_queue.php
-// STARTED   : Mon Sep 02, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package mcp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package mcp
+* mcp_queue
+* Handling the moderation queue
+*/
 class mcp_queue extends module
 {
 
@@ -460,12 +462,9 @@ function approve_post($post_id_list)
 
 				$messenger->send($post_data['user_notify_type']);
 				$messenger->reset();
-
-				if ($messenger->queue)
-				{
-					$messenger->queue->save();
-				}
 			}
+
+			$messenger->save_queue();
 		}
 
 		// Send out normal user notifications
@@ -669,12 +668,9 @@ function disapprove_post($post_id_list)
 
 				$messenger->send($post_data['user_notify_type']);
 				$messenger->reset();
-
-				if ($messenger->queue)
-				{
-					$messenger->queue->save();
-				}
 			}
+
+			$messenger->save_queue();
 		}
 		unset($post_info, $disapprove_reason);
 

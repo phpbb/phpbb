@@ -1,18 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : memberlist.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// TODO
-// Add permission check for IM clients
+/**
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -177,7 +174,7 @@ switch ($mode)
 					);
 
 					$messenger->send(NOTIFY_IM);
-					$messenger->queue->save();
+					$messenger->save_queue();
 
 					$s_select = 'S_SENT_JABBER';
 				}
@@ -591,7 +588,7 @@ switch ($mode)
 				);
 
 				$messenger->send($row['user_notify_type']);
-				$messenger->queue->save();
+				$messenger->save_queue();
 
 				meta_refresh(3, "index.$phpEx$SID");
 				$message = (!$topic_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '">', '</a>');
@@ -650,7 +647,7 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_where = $form = $field = '';
+		$sql_from = $sql_where = $form = $field = '';
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$form	= request_var('form', '');
@@ -669,7 +666,7 @@ switch ($mode)
 			$count_select	= request_var('count_select', 'eq');
 			$joined			= explode('-', request_var('joined', ''));
 			$active			= explode('-', request_var('active', ''));
-			$count			= request_var('count', 0);
+			$count			= (request_var('count', '')) ? request_var('count', 0) : '';
 			$ipdomain		= request_var('ip', '');
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
@@ -697,14 +694,14 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? " AND u.username LIKE '" . str_replace('*', '%', $db->sql_escape($username)) ."'" : '';
-			$sql_where .= ($email) ? " AND u.user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) ."' " : '';
-			$sql_where .= ($icq) ? " AND u.user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) ."' " : '';
-			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) ."' " : '';
-			$sql_where .= ($yahoo) ? " AND u.user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) ."' " : '';
-			$sql_where .= ($msn) ? " AND u.user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) ."' " : '';
+			$sql_where .= ($username) ? " AND u.username LIKE '" . str_replace('*', '%', $db->sql_escape($username)) . "'" : '';
+			$sql_where .= ($email) ? " AND u.user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) . "' " : '';
+			$sql_where .= ($icq) ? " AND u.user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) . "' " : '';
+			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) . "' " : '';
+			$sql_where .= ($yahoo) ? " AND u.user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) . "' " : '';
+			$sql_where .= ($msn) ? " AND u.user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) . "' " : '';
 			$sql_where .= ($jabber) ? " AND u.user_jabber LIKE '" . str_replace('*', '%', $db->sql_escape($jabber)) . "' " : '';
-			$sql_where .= ($count) ? " AND u.user_posts " . $find_key_match[$count_select] . " $count " : '';
+			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
 
@@ -738,7 +735,6 @@ switch ($mode)
 
 		// Are we looking at a usergroup? If so, fetch additional info
 		// and further restrict the user info query
-		$sql_from = $sql_where = '';
 		if ($mode == 'group')
 		{
 			$sql = 'SELECT *
@@ -970,9 +966,9 @@ make_jumpbox('viewforum.'.$phpEx);
 page_footer();
 
 
-// ---------
-// FUNCTIONS
-//
+/**
+* Prepare profile data
+*/
 function show_profile($data)
 {
 	global $config, $auth, $template, $user, $ranks, $SID, $phpEx, $phpbb_root_path;
@@ -983,7 +979,7 @@ function show_profile($data)
 	$rank_title = $rank_img = '';
 	if (!empty($data['user_rank']))
 	{
-		$rank_title = $ranks['special'][$data['user_rank']]['rank_title'];
+		$rank_title = (isset($ranks['special'][$data['user_rank']]['rank_title'])) ? $ranks['special'][$data['user_rank']]['rank_title'] : '';
 		$rank_img = (!empty($ranks['special'][$data['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$data['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$data['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$data['user_rank']]['rank_title'] . '" /><br />' : '';
 	}
 	else
@@ -1042,8 +1038,5 @@ function show_profile($data)
 		'S_ONLINE'	=> (intval($data['session_time']) >= time() - 300) ? true : false
 	);
 }
-//
-// FUNCTIONS
-// ---------
 
 ?>

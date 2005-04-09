@@ -1,21 +1,20 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : pagestart.php
-// STARTED   : Thu Aug 2, 2001
-// COPYRIGHT : © 2001, 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
+/**
+*/
 define('NEED_SID', true);
 define('IN_ADMIN', true);
 require($phpbb_root_path . 'common.'.$phpEx);
@@ -324,7 +323,10 @@ function build_cfg_template($tpl_type, $config_key, $options = '')
 }
 
 
-// General ACP module class
+/**
+* @package acp
+* General ACP module class
+*/
 class module
 {
 	var $id = 0;

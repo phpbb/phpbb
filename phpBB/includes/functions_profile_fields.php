@@ -1,16 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_profile_fields.php
-// STARTED   : Tue Oct 21, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package phpBB3
+* Custom Profile Fields
+*/
 class custom_profile
 {
 	var $profile_types = array(1 => 'int', 2 => 'string', 3 => 'text', 4 => 'bool', 5 => 'dropdown', 6 => 'date');
@@ -714,6 +715,10 @@ class custom_profile
 	}
 }
 
+/**
+* @package phpBB3
+* Custom Profile Fields ACP
+*/
 class custom_profile_admin extends custom_profile
 {
 	var $vars = array();

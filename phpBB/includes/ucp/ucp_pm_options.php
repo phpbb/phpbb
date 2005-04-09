@@ -1,16 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : options.php
-// STARTED   : Mon Apr 19, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* Execute message options
+*/
 function message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions)
 {
 	global $phpbb_root_path, $phpEx, $SID, $user, $template, $auth, $config, $db;
@@ -476,6 +476,9 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	show_defined_rules($user->data['user_id'], $check_lang, $rule_lang, $action_lang, $folder);
 }
 
+/**
+* Defining check option for message rules
+*/
 function define_check_option($hardcoded, $check_option, $check_lang)
 {
 	global $template;
@@ -498,6 +501,9 @@ function define_check_option($hardcoded, $check_option, $check_lang)
 	);
 }
 
+/**
+* Defining action option for message rules
+*/
 function define_action_option($hardcoded, $action_option, $action_lang, $folder)
 {
 	global $db, $template, $user;
@@ -542,6 +548,9 @@ function define_action_option($hardcoded, $action_option, $action_lang, $folder)
 	);
 }
 
+/**
+* Defining rule option for message rules
+*/
 function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 {
 	global $template;
@@ -564,6 +573,9 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 	);
 }
 
+/**
+* Defining condition option for message rules
+*/
 function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
 	global $db, $template;
@@ -668,6 +680,9 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	);
 }
 
+/**
+* Display defined message rules
+*/
 function show_defined_rules($user_id, $check_lang, $rule_lang, $action_lang, $folder)
 {
 	global $db, $template;

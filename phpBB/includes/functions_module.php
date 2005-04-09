@@ -1,16 +1,17 @@
-<?
-// -------------------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_module.php
-// STARTED   : Sat Oct 30 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------------------
+<?php
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package phpBB3
+* Module Class handling all types of modules
+*/
 class module
 {
 	var $id = 0;

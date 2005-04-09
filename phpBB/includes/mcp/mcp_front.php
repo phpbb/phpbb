@@ -1,23 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : mcp_front.php
-// STARTED   : Thu Jul 08, 2004
-// COPYRIGHT : © 2004 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package mcp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-//
-// TODO:
-//	- add list of forums user is moderator in (with links to common management facilities)
-//	- add statistics (how many reports handled, how many posts locked/moved... etc.? - 
-//			those would be only valid from the time the log is valid (and not purged)
-//
-
+/**
+* MCP Front Panel
+*/
 function mcp_front_view($id, $mode, $action, $url)
 {
 	global $SID, $phpEx, $phpbb_root_path, $config;

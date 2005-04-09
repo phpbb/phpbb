@@ -1,17 +1,16 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_posting.php
-// STARTED   : Sun Jul 14, 2002
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// Fill smiley templates (or just the variables) with smileys, either in a window or inline
+/**
+* Fill smiley templates (or just the variables) with smileys, either in a window or inline
+*/
 function generate_smilies($mode, $forum_id)
 {
 	global $SID, $auth, $db, $user, $config, $template;
@@ -90,7 +89,9 @@ function generate_smilies($mode, $forum_id)
 	}
 }
 
-// Update Last Post Informations
+/**
+* Update Last Post Informations
+*/
 function update_last_post_information($type, $id)
 {
 	global $db;
@@ -133,7 +134,10 @@ function update_last_post_information($type, $id)
 	return $update_sql;
 }
 
-// Upload Attachment - filedata is generated here
+/**
+* Upload Attachment - filedata is generated here
+* Uses upload class
+*/
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false)
 {
 	global $auth, $user, $config, $db, $phpbb_root_path;
@@ -221,8 +225,8 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		}
 	}
 
-	// TODO - Check Free Disk Space - need testing under windows
-	if ($free_space = disk_free_space($phpbb_root_path . $config['upload_path']))
+	// Check free disk space
+	if ($free_space = @disk_free_space($phpbb_root_path . $config['upload_path']))
 	{
 		if ($free_space <= $file->get('filesize'))
 		{
@@ -250,7 +254,9 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	return $filedata;
 }
 
-// Calculate the needed size for Thumbnail
+/**
+* Calculate the needed size for Thumbnail
+*/
 function get_img_size_format($width, $height)
 {
 	// Maximum Width the Image can take
@@ -272,7 +278,9 @@ function get_img_size_format($width, $height)
 	}
 }
 
-// Return supported image types
+/**
+* Return supported image types
+*/
 function get_supported_image_types($type = false)
 {
 	if (@extension_loaded('gd'))
@@ -327,7 +335,9 @@ function get_supported_image_types($type = false)
 	return array('gd' => false);
 }
 
-// Create Thumbnail
+/**
+* Create Thumbnail
+*/
 function create_thumbnail($source, $destination, $mimetype) 
 {
 	global $config;
@@ -423,7 +433,9 @@ function create_thumbnail($source, $destination, $mimetype)
 	return true;
 }
 
-// DECODE TEXT -> This will/should be handled by bbcode.php eventually
+/**
+* DECODE TEXT -> This will/should be handled by bbcode.php eventually
+*/
 function decode_message(&$message, $bbcode_uid = '')
 {
 	global $config;
@@ -450,7 +462,9 @@ function decode_message(&$message, $bbcode_uid = '')
 	return;
 }
 
-// Generate Topic Icons for display
+/**
+* Generate Topic Icons for display
+*/
 function posting_gen_topic_icons($mode, $icon_id)
 {
 	global $phpbb_root_path, $config, $template;
@@ -488,7 +502,9 @@ function posting_gen_topic_icons($mode, $icon_id)
 	return false;
 }
 
-// Assign Inline attachments (build option fields)
+/**
+* Assign Inline attachments (build option fields)
+*/
 function posting_gen_inline_attachments(&$attachment_data)
 {
 	global $template;
@@ -510,7 +526,9 @@ function posting_gen_inline_attachments(&$attachment_data)
 	return false;
 }
 
-// Build topic types able to be selected
+/**
+* Build topic types able to be selected
+*/
 function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 {
 	global $auth, $user, $template, $topic_type;
@@ -566,6 +584,9 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 	return $toggle;
 }
 
+/**
+* Generate inline attachment entry
+*/
 function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 {
 	global $template, $config, $phpbb_root_path, $SID, $phpEx;
@@ -616,7 +637,9 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 	return sizeof($attachment_data);
 }
 
-// Load Drafts
+/**
+* Load Drafts
+*/
 function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 {
 	global $user, $db, $template, $phpEx, $SID, $auth;
@@ -717,7 +740,9 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	}
 }
 
-// Topic Review
+/**
+* Topic Review
+*/
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
 	global $user, $auth, $db, $template, $bbcode, $template;
@@ -802,7 +827,9 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	return true;
 }
 
-// User Notification
+/**
+* User Notification
+*/
 function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
@@ -977,10 +1004,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		}
 		unset($msg_list_ary);
 
-		if ($messenger->queue)
-		{
-			$messenger->queue->save();
-		}
+		$messenger->save_queue();
 	}
 
 	// Handle the DB updates

@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin_viewlogs.php 
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 if (!empty($setmodules))
 {
 	if (!$auth->acl_get('a_'))
@@ -54,10 +53,7 @@ $sort_dir	= request_var('sd', 'd');
 // Define some vars depending on which logs we're looking at
 $log_type = ($mode == 'admin') ? LOG_ADMIN : (($mode == 'mod') ? LOG_MOD : LOG_CRITICAL);
 
-if ($log_type == LOG_MOD)
-{
-	$user->add_lang('mcp');
-}
+$user->add_lang('mcp');
 
 // Delete entries if requested and able
 if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -125,7 +121,23 @@ if ($mode == 'mod')
 
 }
 
+//
+// Grab log data
+//
+$log_data = array();
+$log_count = 0;
+view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
+
 ?>
+
+<table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
+<tr>
+	<td align="left" valign="top">&nbsp;<span class="nav"><?php echo on_page($log_count, $config['topics_per_page'], $start); ?></span></td>
+	<td align="right" valign="top" nowrap="nowrap">
+		<span class="nav"><?php	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true); ?></span>
+	</td>
+</tr>
+</table>
 
 <table class="bg" width="100%" cellpadding="4" cellspacing="1" border="0">
 	<tr>
@@ -139,13 +151,6 @@ if ($mode == 'mod')
 		<th nowrap="nowrap"><?php echo $user->lang['MARK']; ?></th>
 	</tr>
 <?php
-
-//
-// Grab log data
-//
-$log_data = array();
-$log_count = 0;
-view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
 
 $row_class = '';
 
@@ -221,8 +226,8 @@ else
 ?><b><a href="javascript:marklist('list', true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('list', false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br /><br /><?php
 
 	}
-
-	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start); 
+	
+	echo generate_pagination("admin_viewlogs.$phpEx$SID&amp;mode=$mode&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true);
 	
 ?></span></td>
 	</tr>

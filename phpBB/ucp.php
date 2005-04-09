@@ -1,35 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : bbcode.php
-// STARTED   : Thu Nov 21, 2002
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
-// TODO for 2.2:
-//
-// * Registration
-//    * Link to (additional?) registration conditions
-
-// * Opening tab:
-//    * Last visit time
-//    * Last active in
-//    * Most active in
-//    * New PM counter
-//    * Unread PM counter
-//    * Link/s to MCP if applicable?
-
-// * PM system
-//    * See privmsg
-
-// * Permissions?
-//    * List permissions granted to this user (in UCP and ACP UCP)
-
+/**
+*/
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
@@ -53,11 +33,10 @@ $user->setup('ucp');
 
 $ucp = new module();
 
-
-
-// ---------
-// FUNCTIONS
-//
+/**
+* @package ucp
+* UCP Module
+*/
 class module
 {
 	var $id = 0;
@@ -248,11 +227,6 @@ class module
 		return false;
 	}
 }
-//
-// FUNCTIONS
-// ---------
-
-
 
 // Basic "global" modes
 switch ($mode)
@@ -261,6 +235,11 @@ switch ($mode)
 		$ucp->load('ucp', 'activate');
 		$ucp->module->ucp_activate();
 		redirect("index.$phpEx$SID");
+		break;
+
+	case 'resend_act':
+		$ucp->load('ucp', 'resend');
+		$ucp->module->ucp_resend();
 		break;
 
 	case 'sendpassword':
@@ -302,6 +281,10 @@ switch ($mode)
 
 		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
 		trigger_error($message);
+		break;
+
+	case 'terms_of_use':
+	case 'privacy_statement':
 		break;
 
 	case 'delete_cookies':

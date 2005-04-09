@@ -1,16 +1,17 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_messenger.php 
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package phpBB3
+* Messenger
+*/
 class messenger
 {
 	var $vars, $msg, $extra_headers, $replyto, $from, $subject, $necoding;
@@ -230,12 +231,19 @@ class messenger
 		$user->start();
 
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-		add_log('critical', $type . '_ERROR', $msg);
+		add_log('critical', 'LOG_' . $type . '_ERROR', $msg);
 	}
 
 	//
 	// Messenger methods
 	//
+	function save_queue()
+	{
+		if ($this->use_queue)
+		{
+			$this->queue->save();
+		}
+	}
 
 	function msg_email()
 	{
@@ -404,7 +412,11 @@ class messenger
 	}
 }
 
-// At the moment it is only handling the email queue
+/**
+* @package phpBB3
+* Queue
+* At the moment it is only handling the email queue
+*/
 class queue
 {
 	var $data = array();
@@ -636,7 +648,9 @@ class queue
 
 }
 
-// Replacement or substitute for PHP's mail command
+/**
+* Replacement or substitute for PHP's mail command
+*/
 function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers = '')
 {
 	global $config, $user;
@@ -828,9 +842,12 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	return true;
 }
 
-// SMTP Class
-// Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
-// See docs/AUTHORS for more details
+/**
+* @package phpBB3
+* SMTP Class
+* Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
+* See docs/AUTHORS for more details
+*/
 class smtp_class
 {
 	var $server_response = '';
@@ -1171,10 +1188,12 @@ class smtp_class
 	}
 }
 
-// Encodes the given string for proper display for this encoding ... nabbed 
-// from php.net and modified. There is an alternative encoding method which 
-// may produce less output but it's questionable as to its worth in this 
-// scenario IMO
+/**
+* Encodes the given string for proper display for this encoding ... nabbed 
+* from php.net and modified. There is an alternative encoding method which 
+* may produce less output but it's questionable as to its worth in this 
+* scenario IMO
+*/
 function mail_encode($str, $encoding)
 {
 	if ($encoding == '')

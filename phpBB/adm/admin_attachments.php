@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin_attachments.php
-// STARTED   : Sun Apr 20, 2003
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 if (!empty($setmodules))
 {
 	$filename = basename(__FILE__);
@@ -120,7 +119,7 @@ if ($mode == 'attach')
 		add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
 
 		// Check Settings
-		test_upload($error, $new['upload_dir'], false);
+		test_upload($error, $new['upload_path'], false);
 
 		if (!sizeof($error))
 		{
@@ -420,7 +419,7 @@ if ($submit && $mode == 'orphan')
 			}
 			else
 			{
-				upload_file($row['post_id'], $row['topic_id'], $row['forum_id'], $config['upload_dir'], $upload_list[$row['post_id']]);
+				upload_file($row['post_id'], $row['topic_id'], $row['forum_id'], $config['upload_path'], $upload_list[$row['post_id']]);
 			}
 		}
 		unset($message_parser);
@@ -528,7 +527,7 @@ if ($mode == 'attach')
 	</tr>
 	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang['UPLOAD_DIR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_DIR_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="25" maxlength="100" name="upload_dir" class="post" value="<?php echo $new['upload_dir'] ?>" /></td>
+		<td class="row2"><input type="text" size="25" maxlength="100" name="upload_path" class="post" value="<?php echo $new['upload_path'] ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row1"><b><?php echo $user->lang['DISPLAY_ORDER']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['DISPLAY_ORDER_EXPLAIN']; ?></span></td>
@@ -1188,10 +1187,10 @@ if ($mode == 'orphan')
 {
 	$attach_filelist = array();
 
-	$dir = @opendir($phpbb_root_path . $config['upload_dir']);
+	$dir = @opendir($phpbb_root_path . $config['upload_path']);
 	while ($file = @readdir($dir))
 	{
-		if (is_file($phpbb_root_path . $config['upload_dir'] . '/' . $file) && filesize($phpbb_root_path . $config['upload_dir'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
+		if (is_file($phpbb_root_path . $config['upload_path'] . '/' . $file) && filesize($phpbb_root_path . $config['upload_path'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
 		{
 			$attach_filelist[$file] = $file;
 		}
@@ -1243,12 +1242,12 @@ function marklist(match, name, status)
 	foreach ($attach_filelist as $file)
 	{
 		$row_class = (++$i % 2 == 0) ? 'row2' : 'row1';
-		$filesize = @filesize($phpbb_root_path . $config['upload_dir'] . '/' . $file);
+		$filesize = @filesize($phpbb_root_path . $config['upload_path'] . '/' . $file);
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 ?>
 		<tr>
-			<td class="<?php echo $row_class; ?>"><a href="<?php echo $phpbb_root_path . $config['upload_dir'] . '/' . $file; ?>" class="gen" target="file"><?php echo $file; ?></a></td>
+			<td class="<?php echo $row_class; ?>"><a href="<?php echo $phpbb_root_path . $config['upload_path'] . '/' . $file; ?>" class="gen" target="file"><?php echo $file; ?></a></td>
 			<td class="<?php echo $row_class; ?>"><?php echo $filesize . ' ' . $size_lang; ?></td>
 			<td class="<?php echo $row_class; ?>"><b class="gen">ID: </b><input type="text" name="post_id[<?php echo $file; ?>]" class="post" size="7" maxlength="10" value="<?php echo (!empty($post_ids[$file])) ? $post_ids[$file] : ''; ?>" /></td>
 			<td class="<?php echo $row_class; ?>"><input type="checkbox" name="add[<?php echo $file; ?>]" /></td>
@@ -1399,7 +1398,7 @@ function download_select($select_name, $group_id = false)
 	return $group_select;
 }
 
-// Upload already uploaded file... huh? are you kidding?
+/* Upload already uploaded file... huh? are you kidding?
 function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 {
 	global $message_parser, $db, $user, $phpbb_root_path;
@@ -1418,8 +1417,8 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 			'poster_id'			=> $user->data['user_id'],
 			'topic_id'			=> $topic_id,
 			'in_message'		=> 0,
-			'physical_filename'	=> $filedata['destination_filename'],
-			'real_filename'		=> $filedata['filename'],
+			'physical_filename'	=> $filedata['physical_filename'],
+			'real_filename'		=> $filedata['real_filename'],
 			'comment'			=> $message_parser->filename_data['filecomment'],
 			'extension'			=> $filedata['extension'],
 			'mimetype'			=> $filedata['mimetype'],
@@ -1459,6 +1458,7 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 		echo '<span style="color:red">' . sprintf($user->lang['ADMIN_UPLOAD_ERROR'], implode("<br />\t", $filedata['error'])) . '</span><br /><br />';
 	}
 }
+*/
 
 // Search Imagick
 function search_imagemagick()
@@ -1551,7 +1551,7 @@ function perform_site_list()
 					$ip_2_counter = ($ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
 					$ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
 
-					if($ip_2_counter == 0 && $ip_2_end == 254)
+					if ($ip_2_counter == 0 && $ip_2_end == 254)
 					{
 						$ip_2_counter = 256;
 						$ip_2_fragment = 256;

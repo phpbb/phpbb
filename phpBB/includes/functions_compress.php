@@ -1,16 +1,17 @@
-<?
-// -------------------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : functions_compress.php
-// STARTED   : Sat Jul 19 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------------------
+<?php
+/** 
+*
+* @package phpBB3
+* @version $Id$ 
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package phpBB3
+* Class for handling archives (compression/decompression)
+*/
 class compress 
 {
 	var $fp = 0;
@@ -104,13 +105,17 @@ class compress
 	}
 }
 
-// Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
-// Marc Delisle, http://www.phpmyadmin.net/
-//
-// Modified extensively by psoTFX, © phpBB Group, 2003
-//
-// Based on work by Eric Mueller and Denis125
-// Official ZIP file format: http://www.pkware.com/appnote.txt
+/**
+* @package phpBB3
+*
+* Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
+* Marc Delisle, http://www.phpmyadmin.net/
+*
+* Modified extensively by psoTFX, © phpBB Group, 2003
+*
+* Based on work by Eric Mueller and Denis125
+* Official ZIP file format: http://www.pkware.com/appnote.txt
+*/
 class compress_zip extends compress
 {
 	var $datasec = array();
@@ -394,8 +399,12 @@ class compress_zip extends compress
 	}
 }
 
-// Tar/tar.gz compression routine
-// Header/checksum creation derived from tarfile.pl, © Tom Horsley, 1994
+/**
+* @package phpBB3
+*
+* Tar/tar.gz compression routine
+* Header/checksum creation derived from tarfile.pl, © Tom Horsley, 1994
+*/
 class compress_tar extends compress 
 {
 	var $isgz = false;

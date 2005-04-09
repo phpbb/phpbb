@@ -1,16 +1,18 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : ucp_remind.php
-// STARTED   : Mon May 19, 2003
-// COPYRIGHT : © 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package ucp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+* @package ucp
+* ucp_remind
+* Sending password reminders
+*/
 class ucp_remind extends module 
 {
 	function ucp_remind($id, $mode)
@@ -75,10 +77,7 @@ class ucp_remind extends module
 			);
 
 			$messenger->send($row['user_notify_type']);
-			if ($messenger->queue)
-			{
-				$messenger->queue->save();
-			}
+			$messenger->save_queue();
 
 
 			meta_refresh(3, "index.$phpEx$SID");

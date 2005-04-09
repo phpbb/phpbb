@@ -1,36 +1,34 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : template.php
-// STARTED   : Sat, Feb 13, 2001
-// COPYRIGHT : © 2001, 2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
-
-/*
-	Template class.
-
-	Nathan Codding - Original version design and implementation
-	Crimsonbane - Initial caching proposal and work
-	psoTFX - Completion of file caching, decompilation routines and implementation of
-	conditionals/keywords and associated changes
-
-	The interface was inspired by PHPLib templates,  and the template file (formats are
-	quite similar)
-
-	The keyword/conditional implementation is currently based on sections of code from
-	the Smarty templating engine (c) 2001 ispi of Lincoln, Inc. which is released
-	(on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
-	derived from an LGPL application may be relicenced under the GPL, this applies
-	to this source
-
-	DEFINE directive inspired by a request by Cyberalien
+/** 
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
 */
 
+/**
+* @package phpBB3
+*
+* Template class.
+*
+* Nathan Codding - Original version design and implementation
+* Crimsonbane - Initial caching proposal and work
+* psoTFX - Completion of file caching, decompilation routines and implementation of
+* conditionals/keywords and associated changes
+*
+* The interface was inspired by PHPLib templates,  and the template file (formats are
+* quite similar)
+*
+* The keyword/conditional implementation is currently based on sections of code from
+* the Smarty templating engine (c) 2001 ispi of Lincoln, Inc. which is released
+* (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
+* derived from an LGPL application may be relicenced under the GPL, this applies
+* to this source
+* 
+* DEFINE directive inspired by a request by Cyberalien
+*/
 class template
 {
 
@@ -285,38 +283,49 @@ class template
 		return true;
 	}
 
-	//	Change already assigned key variable pair (one-dimensional - single loop entry)
-	//
-	//	$blockname	: the blockname, for example 'loop'
-	//	$vararray	: the var array to insert/add or merge
-	//	$key		: (array) KEY => VALUE [the key/value pair to search for within the loop to determine the correct position] OR
-	//				  (int) Position [the position to change or insert at directly given]
-  	//				  
-	//				  If key is false the position is set to 0
-	//				  If key is true the position is set to the last entry
-	//	
-	//	$mode		: insert|change
-	//					If insert, the vararray is inserted at the given position (position counting from zero). 
-	//					If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be
-	//					replaced by the new value).
-	//
-	//	Since counting begins by zero...
-	//	inserting at the last position will result in this array: array(vararray, last positioned array)
-	//	inserting at the position 1 will result in this array: array(first positioned array, vararray, following vars)
+	/**
+	* Change already assigned key variable pair (one-dimensional - single loop entry)
+	*
+	* Some Examples:
+	* <code>
+	*
+	* alter_block_array('loop', $varrarray); // Insert vararray at the end
+	* alter_block_array('loop', $vararray, 2); // Insert vararray at position 2
+	* alter_block_array('loop', $vararray, array('KEY' => 'value')); // Insert vararray at the position where the key 'KEY' has the value of 'value' 
+	* alter_block_array('loop', $vararray, false); // Insert vararray at first position
+	* alter_block_array('loop', $vararray, true); //Insert vararray at last position (assign_block_vars equivalence)
+	*
+	* alter_block_array('loop', $vararray, 2, 'change'); // Change/Merge vararray with existing array at position 2
+	* alter_block_array('loop', $vararray, array('KEY' => 'value'), 'change'); // Change/Merge vararray with existing array at the position where the key 'KEY' has the value of 'value' 
+	* alter_block_array('loop', $vararray, false, 'change'); // Change/Merge vararray with existing array at first position
+	* alter_block_array('loop', $vararray, true, 'change'); // Change/Merge vararray with existing array at last position
+	*
+	* </code>
+	*
+	* @param string $blockname the blockname, for example 'loop'
+	* @param array $vararray the var array to insert/add or merge
+	* @param mixed $key Key to search for
+	*
+	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
+	*
+	* int: Position [the position to change or insert at directly given]
+	*
+	* If key is false the position is set to 0
+	*
+	* If key is true the position is set to the last entry
+	* 
+	* @param insert|change $mode Mode to execute
+	*
+	*	If insert, the vararray is inserted at the given position (position counting from zero). 
+	*
+	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
+	*
+	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
+	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
+	*
+	*/
 	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
 	{
-		//	Examples:
-		//	('loop', $varrarray)		: Insert vararray at the end
-		//	('loop', $vararray, 2)		: Insert vararray at position 2
-		//	('loop', $vararray, array('KEY' => 'value'))	: Insert vararray at the position where the key 'KEY' has the value of 'value' 
-		//  ('loop', $vararray, false)	: Insert vararray at first position
-		//  ('loop', $vararray, true)	: Insert vararray at last position	(assign_block_vars equivalence)
-
-		//	('loop', $vararray, 2, 'change')		: Change/Merge vararray with existing array at position 2
-		//	('loop', $vararray, array('KEY' => 'value'), 'change')	: Change/Merge vararray with existing array at the position where the key 'KEY' has the value of 'value' 
-		//  ('loop', $vararray, false, 'change')	: Change/Merge vararray with existing array at first position
-		//  ('loop', $vararray, true, 'change')		: Change/Merge vararray with existing array at last position
-
 		if (strpos($blockname, '.') !== false)
 		{
 			// Nested blocks are not supported
@@ -889,12 +898,12 @@ class template
 	}
 
 	/**
-	 * Generates a reference to the given variable inside the given (possibly nested)
-	 * block namespace. This is a string of the form:
-	 * ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
-	 * It's ready to be inserted into an "echo" line in one of the templates.
-	 * NOTE: expects a trailing "." on the namespace.
-	 */
+	* Generates a reference to the given variable inside the given (possibly nested)
+	* block namespace. This is a string of the form:
+	* ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
+	* It's ready to be inserted into an "echo" line in one of the templates.
+	* NOTE: expects a trailing "." on the namespace.
+	*/
 	function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
 	{
 		// Strip the trailing period.
@@ -912,13 +921,13 @@ class template
 	}
 
 	/**
-	 * Generates a reference to the array of data values for the given
-	 * (possibly nested) block namespace. This is a string of the form:
-	 * $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
-	 *
-	 * If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
-	 * NOTE: does not expect a trailing "." on the blockname.
-	 */
+	* Generates a reference to the array of data values for the given
+	* (possibly nested) block namespace. This is a string of the form:
+	* $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
+	*
+	* If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
+	* NOTE: does not expect a trailing "." on the blockname.
+	*/
 	function generate_block_data_ref($blockname, $include_last_iterator, $defop = false)
 	{
 		// Get an array of the blocks involved.

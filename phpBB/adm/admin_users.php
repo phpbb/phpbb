@@ -1,16 +1,15 @@
 <?php
-// -------------------------------------------------------------
-//
-// $Id$
-//
-// FILENAME  : admin_users.php
-// STARTED   : Sat Feb 13, 2001
-// COPYRIGHT : © 2001,2003 phpBB Group
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ] 
-// 
-// -------------------------------------------------------------
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
 
+/**
+*/
 if (!empty($setmodules))
 {
 	if (!$auth->acl_gets('a_user', 'a_useradd', 'a_userdel'))
@@ -321,7 +320,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 								);
 
 								$messenger->send(NOTIFY_EMAIL);
-								$messenger->queue->save();
+								$messenger->save_queue();
 
 								add_log('admin', 'LOG_USER_REACTIVATE', $username);
 								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
@@ -2020,7 +2019,7 @@ if (!$auth->acl_get('a_user'))
 adm_page_footer();
 
 
-// Module class
+/* Module class
 class acp_admin_users extends module
 {
 
@@ -2028,5 +2027,6 @@ class acp_admin_users extends module
 
 
 }
+*/
 
 ?>
