@@ -31,7 +31,7 @@ class acm
 		global $phpEx;
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
-			@include($this->cache_dir . 'data_global.' . $phpEx);
+			include($this->cache_dir . 'data_global.' . $phpEx);
 		}
 		else
 		{

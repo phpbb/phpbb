@@ -370,7 +370,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-			$this->jabber = new Jabber;
+			$this->jabber = new jabber;
 
 			$this->jabber->server	= $config['jab_host'];
 			$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
@@ -378,32 +378,32 @@ class messenger
 			$this->jabber->password = $config['jab_password'];
 			$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
 
-			if (!$this->jabber->Connect())
+			if (!$this->jabber->connect())
 			{
 				$this->error('JABBER', 'Could not connect to Jabber server');
 				return false;
 			}
 
-			if (!$this->jabber->SendAuth())
+			if (!$this->jabber->send_auth())
 			{
 				$this->error('JABBER', 'Could not authorise on Jabber server');
 				return false;
 			}
-			$this->jabber->SendPresence(NULL, NULL, 'online');
+			$this->jabber->send_presence(NULL, NULL, 'online');
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->SendMessage($address, 'normal', NULL, array('body' => $msg));
+				$this->jabber->send_message($address, 'normal', NULL, array('body' => $msg));
 			}
 
 			sleep(1);
-			$this->jabber->Disconnect();
+			$this->jabber->disconnect();
 		}
 		else
 		{
 			$this->queue->put('jabber', array(
 				'addresses'		=> $addresses,
-				'subject'		=> htmlentities($subject),
+				'subject'		=> htmlentities($this->subject),
 				'msg'			=> htmlentities($this->msg))
 			);
 		}
@@ -449,7 +449,7 @@ class queue
 	{
 		global $db, $config, $phpEx, $phpbb_root_path;
 
-		set_config('last_queue_run', time());
+		set_config('last_queue_run', time(), true);
 
 		// Delete stale lock file
 		if (file_exists($this->cache_file . '.lock') && !file_exists($this->cache_file))
@@ -494,7 +494,7 @@ class queue
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-					$this->jabber = new Jabber;
+					$this->jabber = new jabber;
 
 					$this->jabber->server	= $config['jab_host'];
 					$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
@@ -502,18 +502,18 @@ class queue
 					$this->jabber->password = $config['jab_password'];
 					$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
 
-					if (!$this->jabber->Connect())
+					if (!$this->jabber->connect())
 					{
 						messenger::error('JABBER', 'Could not connect to Jabber server');
 						continue 2;
 					}
 
-					if (!$this->jabber->SendAuth())
+					if (!$this->jabber->send_auth())
 					{
 						messenger::error('JABBER', 'Could not authorise on Jabber server');
 						continue 2;
 					}
-					$this->jabber->SendPresence(NULL, NULL, 'online');
+					$this->jabber->send_presence(NULL, NULL, 'online');
 					break;
 
 				default:
@@ -545,7 +545,7 @@ class queue
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
-							$this->jabber->SendMessage($address, 'normal', NULL, array('body' => $msg));
+							$this->jabber->send_message($address, 'normal', NULL, array('body' => $msg));
 						}
 						break;
 				}
@@ -564,7 +564,7 @@ class queue
 					// Hang about a couple of secs to ensure the messages are
 					// handled, then disconnect
 					sleep(1);
-					$this->jabber->Disconnect();
+					$this->jabber->disconnect();
 					break;
 			}
 		}

@@ -153,7 +153,7 @@ class custom_profile
 	}
 	
 	// Assign fields to template, mode can be profile (for profile change) or register (for registration)
-//	function generate_profile_fields($mode, $lang_id, $cp_error)
+	// function generate_profile_fields($mode, $lang_id, $cp_error)
 	function generate_profile_fields($mode, $lang_id)
 	{
 		global $db, $template, $auth;
@@ -227,7 +227,7 @@ class custom_profile
 					else if ($i = strpos($ident, '_bbcode'))
 					{
 						// Add extra data (bbcode_uid and bbcode_bitfield) to the data for this profile field.
-                        // TODO: Maybe we should try to make this a bit more generic (not limited to bbcode)?
+						// TODO: Maybe we should try to make this a bit more generic (not limited to bbcode)?
 						$field = substr($ident, 0, $i);
 						$subfield = substr($ident, $i+1);
 						$user_fields[$row['user_id']][$field]['data'][$subfield] = $value;
@@ -373,7 +373,7 @@ class custom_profile
 				break;
 			case 'text':
 				// Prepare further, censor_text, smilies, bbcode, html, whatever
-                if ($ident_ary['data']['bbcode_bitfield'])
+				if ($ident_ary['data']['bbcode_bitfield'])
 				{
 					$bbcode = new bbcode($ident_ary['data']['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($value, $ident_ary['data']['bbcode_uid'], $ident_ary['data']['bbcode_bitfield']);
@@ -416,7 +416,7 @@ class custom_profile
 		}
 		else
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value) : ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $default_value : $user->profile_fields[$profile_row['field_ident']]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value) : ((!isset($user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]) || $preview) ? $default_value : $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]);
 		}
 
 		switch ($field_validation)
@@ -526,7 +526,7 @@ class custom_profile
 		global $template;
 
 		// Get the data associated with this field for this user
-        $value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
+		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
 		$this->set_tpl_vars($profile_row, $value);
 
 		return $this->get_cp_html();
@@ -538,7 +538,8 @@ class custom_profile
 		global $user;
 
 		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
-        if ($preview == false)
+		
+		if ($preview == false)
 		{
 			$message_parser = new parse_message();
 			$message_parser->message = $value;
@@ -663,12 +664,14 @@ class custom_profile
 					$message_parser = new parse_message(request_var($var_name, ''));
 					
 					// Get the allowed settings from the global settings. Magic URLs are always set to true.
-               // TODO: It might be nice to make this a per field setting.
+					// TODO: It might be nice to make this a per field setting.
 					$message_parser->parse($config['allow_html'], $config['allow_bbcode'], true, $config['allow_smilies']);
-					$var = array($profile_row['field_ident'] => $message_parser->message,
+					$var = array(
+						$profile_row['field_ident'] => $message_parser->message,
 						$profile_row['field_ident'] . '_bbcode_uid' => $message_parser->bbcode_uid,
 						$profile_row['field_ident'] . '_bbcode_bitfield' => $message_parser->bbcode_bitfield,
-						'submitted' => request_var($var_name, ''));
+						'submitted' => request_var($var_name, '')
+					);
 					break;
 			default:
 				$var = request_var($var_name, $profile_row['field_default_value']);

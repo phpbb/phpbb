@@ -96,6 +96,7 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 	if (!$is_dynamic)
 	{
 		$cache->destroy('config');
+		$cache->save();
 	}
 }
 
@@ -380,6 +381,18 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		if ($row['left_id'] < $right)
+		{
+			$padding++;
+			$padding_store[$row['parent_id']] = $padding;
+		}
+		else if ($row['left_id'] > $right + 1)
+		{
+			$padding = $padding_store[$row['parent_id']];
+		}
+
+		$right = $row['right_id'];
+
 		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
 		{
 			// Non-postable forum with no subforums, don't display
@@ -408,18 +421,6 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			$iteration++;
 			$display_jumpbox = true;
 		}
-
-		if ($row['left_id'] < $right)
-		{
-			$padding++;
-			$padding_store[$row['parent_id']] = $padding;
-		}
-		else if ($row['left_id'] > $right + 1)
-		{
-			$padding = $padding_store[$row['parent_id']];
-		}
-
-		$right = $row['right_id'];
 
 		$template->assign_block_vars('jumpbox_forums', array(
 			'FORUM_ID'		=> $row['forum_id'],
@@ -1360,6 +1361,7 @@ function login_forum_box(&$forum_data)
 			}
 			while ($row = $db->sql_fetchrow($result));
 
+			// Remove expired sessions
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
 				WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
 			$db->sql_query($sql);
@@ -1887,7 +1889,7 @@ function page_header($page_title = '')
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 		'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
+		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], (($tz >= 0) ? '+' . $tz : $tz), $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], (($tz >= 0) ? '+' . $tz : $tz), ''),
 		'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0,
 		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0,

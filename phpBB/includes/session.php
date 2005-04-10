@@ -1220,6 +1220,7 @@ class auth
 				// If login returned anything other than an array there was an error
 				if (!is_array($login))
 				{
+					// TODO: Login Attempt++
 					return $login;
 				}
 

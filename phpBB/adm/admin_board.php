@@ -194,6 +194,7 @@ $display_vars = array(
 			'min_pass_chars'	=> array('lang' => 'PASSWORD_LENGTH',	'type' => 'custom', 'options' => 'password_length(\'{VALUE}\')', 'explain' => true),
 			'pass_complex'		=> array('lang' => 'PASSWORD_TYPE',		'type' => 'select', 'options' => 'select_password_chars(\'{VALUE}\')', 'explain' => true),
 			'chg_passforce'		=> array('lang' => 'FORCE_PASS_CHANGE',	'type' => 'text:3:3', 'explain' => true),
+			'max_login_attempts'=> array('lang' => 'LOGIN_LIMIT',		'type' => 'text:4:4', 'explain' => true),
 			'allow_emailreuse'	=> array('lang' => 'ALLOW_EMAIL_REUSE',	'type' => 'radio:yes_no', 'explain' => true),
 			'edit_time'			=> array('lang' => 'EDIT_TIME',			'type' => 'text:3:3', 'explain' => true),
 			'display_last_edited' => array('lang' => 'DISPLAY_LAST_EDITED', 'type' => 'radio:yes_no', 'explain' => true),

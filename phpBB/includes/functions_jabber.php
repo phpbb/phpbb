@@ -25,7 +25,7 @@
 *	Removed functions/support not critical to integration with phpBB
 *
 */
-class Jabber
+class jabber
 {
 	var $server;
 	var $port;
@@ -57,100 +57,99 @@ class Jabber
 	var $returned_keep_alive;
 	var $txnid;
 
-	var $CONNECTOR;
+	var $connector;
 
-	function Jabber()
+	function jabber()
 	{
-		$this->port					= "5222";
-
+		$this->port					= '5222';
 		$this->resource				= NULL;
+		$this->packet_queue			= $this->subscription_queue = array();
+		$this->iq_sleep_timer		= $this->delay_disconnect = 1;
 
-		$this->packet_queue			= $this->subscription_queue	= array();
-
-		$this->iq_sleep_timer		= $this->delay_disconnect		= 1;
-
-		$this->returned_keep_alive	= TRUE;
+		$this->returned_keep_alive	= true;
 		$this->txnid				= 0;
 
 		$this->iq_version_name		= "Class.Jabber.PHP -- http://phpjabber.g-blog.net -- by Carlo 'Gossip' Zottmann, gossip@jabber.g-blog.net";
 		$this->iq_version_version	= '0.4';
 		$this->iq_version_os		= $_SERVER['SERVER_SOFTWARE'];
 
-		$this->error_codes			= array(400 => 'Bad Request',
-											401 => 'Unauthorized',
-											402 => 'Payment Required',
-											403 => 'Forbidden',
-											404 => 'Not Found',
-											405 => 'Not Allowed',
-											406 => 'Not Acceptable',
-											407 => 'Registration Required',
-											408 => 'Request Timeout',
-											409 => 'Conflict',
-											500 => 'Internal Server Error',
-											501 => 'Not Implemented',
-											502 => 'Remove Server Error',
-											503 => 'Service Unavailable',
-											504 => 'Remove Server Timeout',
-											510 => 'Disconnected');
+		$this->error_codes			= array(
+			400 => 'Bad Request',
+			401 => 'Unauthorized',
+			402 => 'Payment Required',
+			403 => 'Forbidden',
+			404 => 'Not Found',
+			405 => 'Not Allowed',
+			406 => 'Not Acceptable',
+			407 => 'Registration Required',
+			408 => 'Request Timeout',
+			409 => 'Conflict',
+			500 => 'Internal Server Error',
+			501 => 'Not Implemented',
+			502 => 'Remove Server Error',
+			503 => 'Service Unavailable',
+			504 => 'Remove Server Timeout',
+			510 => 'Disconnected'
+		);
 	}
 
-	function Connect()
+	function connect()
 	{
-		$this->CONNECTOR = new CJP_StandardConnector;
+		$this->connector = new cjp_standard_connector;
 
-		if ($this->CONNECTOR->OpenSocket($this->server, $this->port))
+		if ($this->connector->open_socket($this->server, $this->port))
 		{
-			$this->SendPacket("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-			$this->SendPacket("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>\n");
+			$this->send_packet("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
+			$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>\n");
 
 			sleep(2);
 
 			if ($this->_check_connected())
 			{
-				$this->connected = TRUE;	// Nathan Fritz
-				return TRUE;
+				$this->connected = true; // Nathan Fritz
+				return true;
 			}
 			else
 			{
-				return FALSE;
+				return false;
 			}
 		}
 		else
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
-	function Disconnect()
+	function disconnect()
 	{
 		if (is_int($this->delay_disconnect))
 		{
 			sleep($this->delay_disconnect);
 		}
 
-		$this->SendPacket('</stream:stream>');
-		$this->CONNECTOR->CloseSocket();
+		$this->send_packet('</stream:stream>');
+		$this->connector->close_socket();
 	}
 
-	function CruiseControl($seconds = -1)
+	function cruise_control($seconds = -1)
 	{
 		$count = 0;
 
 		while ($count != $seconds)
 		{
-			$this->Listen();
+			$this->listen();
 
 			do
 			{
-				$packet = $this->GetFirstFromQueue();
+				$packet = $this->get_first_from_queue();
 
 				if ($packet)
 				{
-					$this->CallHandler($packet);
+					$this->call_handler($packet);
 				}
 
 			}
-			while (count($this->packet_queue) > 1);
+			while (sizeof($this->packet_queue) > 1);
 
 			$count += 0.25;
 			usleep(250000);
@@ -158,38 +157,38 @@ class Jabber
 			if ($this->last_ping_time != date('H:i'))
 			{
 				// Modified by Nathan Fritz
-				if ($this->returned_keep_alive == FALSE)
+				if ($this->returned_keep_alive == false)
 				{
-					$this->connected = FALSE;
-					$this->AddToLog('EVENT: Disconnected');
+					$this->connected = false;
+					//EVENT: Disconnected
 				}
 
 				$this->returned_keep_alive = FALSE;
 				$this->keep_alive_id = 'keep_alive_' . time();
-				$this->SendPacket("<iq id='{$this->keep_alive_id}'/>", 'CruiseControl');
-				$this->last_ping_time = date("H:i");
+				$this->send_packet("<iq id='{$this->keep_alive_id}'/>", 'cruise_control');
+				$this->last_ping_time = date('H:i');
 			}
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	function SendAuth()
+	function send_auth()
 	{
 		$this->auth_id	= 'auth_' . md5(time() . $_SERVER['REMOTE_ADDR']);
 		$this->jid		= "{$this->username}@{$this->server}/{$this->resource}";
 
 		// request available authentication methods
 		$payload	= "<username>{$this->username}</username>";
-		$packet		= $this->SendIq(NULL, 'get', $this->auth_id, 'jabber:iq:auth', $payload);
+		$packet		= $this->send_iq(NULL, 'get', $this->auth_id, 'jabber:iq:auth', $payload);
 
 		// was a result returned?
-		if ($this->GetInfoFromIqType($packet) == 'result' && $this->GetInfoFromIqId($packet) == $this->auth_id)
+		if ($this->get_info_from_iq_type($packet) == 'result' && $this->get_info_from_iq_id($packet) == $this->auth_id)
 		{
 			if (@function_exists('mhash') && isset($packet['iq']['#']['query'][0]['#']['sequence'][0]['#']) && isset($packet['iq']['#']['query'][0]['#']['token'][0]['#']))
 			{
 				// auth_0k
-				return $this->_sendauth_0k($packet['iq']['#']['query'][0]['#']['token'][0]['#'], $packet['iq']['#']['query'][0]['#']['sequence'][0]['#']);
+				return $this->_sendauth_ok($packet['iq']['#']['query'][0]['#']['token'][0]['#'], $packet['iq']['#']['query'][0]['#']['sequence'][0]['#']);
 			}
 			elseif (@function_exists('mhash') && isset($packet['iq']['#']['query'][0]['#']['digest']))
 			{
@@ -205,17 +204,17 @@ class Jabber
 		else
 		{
 			// no result returned
-			return FALSE;
+			return false;
 		}
 	}
 
-	function AccountRegistration($reg_email = NULL, $reg_name = NULL)
+	function account_registration($reg_email = NULL, $reg_name = NULL)
 	{
-		$packet = $this->SendIq($this->server, 'get', 'reg_01', 'jabber:iq:register');
+		$packet = $this->send_iq($this->server, 'get', 'reg_01', 'jabber:iq:register');
 
 		if ($packet)
 		{
-			$key = $this->GetInfoFromIqKey($packet);	// just in case a key was passed back from the server
+			$key = $this->get_info_from_iq_key($packet); // just in case a key was passed back from the server
 			unset($packet);
 
 			$payload = "<username>{$this->username}</username>
@@ -225,14 +224,14 @@ class Jabber
 
 			$payload .= ($key) ? "<key>$key</key>\n" : '';
 
-			$packet = $this->SendIq($this->server, 'set', 'reg_01', 'jabber:iq:register', $payload);
+			$packet = $this->send_iq($this->server, 'set', 'reg_01', 'jabber:iq:register', $payload);
 
-			if ($this->GetInfoFromIqType($packet) == 'result')
+			if ($this->get_info_from_iq_type($packet) == 'result')
 			{
 				$return_code = (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#'])) ? 1 : 2;
 				$this->jid = ($this->resource) ? "{$this->username}@{$this->server}/{$this->resource}" : "{$this->username}@{$this->server}";
 			}
-			elseif ($this->GetInfoFromIqType($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
+			elseif ($this->get_info_from_iq_type($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
 			{
 				// "conflict" error, i.e. already registered
 				if ($packet['iq']['#']['error'][0]['@']['code'] == '409')
@@ -253,26 +252,26 @@ class Jabber
 		}
 	}
 
-	function ChangePassword($new_password)
+	function change_password($new_password)
 	{
-		$packet = $this->SendIq($this->server, 'get', 'A0', 'jabber:iq:register');
+		$packet = $this->send_iq($this->server, 'get', 'A0', 'jabber:iq:register');
 
 		if ($packet)
 		{
-			$key = $this->GetInfoFromIqKey($packet);	// just in case a key was passed back from the server
+			$key = $this->get_info_from_iq_key($packet); // just in case a key was passed back from the server
 			unset($packet);
 
 			$payload = "<username>{$this->username}</username>
 						<password>{$new_password}</password>\n";
 			$payload .= ($key) ? "<key>$key</key>\n" : '';
 
-			$packet = $this->SendIq($this->server, 'set', 'A0', 'jabber:iq:register', $payload);
+			$packet = $this->send_iq($this->server, 'set', 'A0', 'jabber:iq:register', $payload);
 
-			if ($this->GetInfoFromIqType($packet) == 'result')
+			if ($this->get_info_from_iq_type($packet) == 'result')
 			{
 				$return_code = (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#'])) ? 1 : 2;
 			}
-			elseif ($this->GetInfoFromIqType($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
+			elseif ($this->get_info_from_iq_type($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
 			{
 				// "conflict" error, i.e. already registered
 				if ($packet['iq']['#']['error'][0]['@']['code'] == '409')
@@ -293,19 +292,19 @@ class Jabber
 		}
 	}
 
-	function SendPacket($xml)
+	function send_packet($xml)
 	{
 		$xml = trim($xml);
 
-		return ($this->CONNECTOR->WriteToSocket($xml)) ? TRUE : FALSE;
+		return ($this->connector->write_to_socket($xml)) ? true : false;
 	}
 
 	// get the transport registration fields
 	// method written by Steve Blinch, http://www.blitzaffe.com 
-	function TransportRegistrationDetails($transport)
+	function transport_registration_details($transport)
 	{
 		$this->txnid++;
-		$packet = $this->SendIq($transport, 'get', "reg_{$this->txnid}", "jabber:iq:register", NULL, $this->jid);
+		$packet = $this->send_iq($transport, 'get', "reg_{$this->txnid}", "jabber:iq:register", NULL, $this->jid);
 
 		if ($packet)
 		{
@@ -329,14 +328,14 @@ class Jabber
 
 	// register with the transport
 	// method written by Steve Blinch, http://www.blitzaffe.com 
-	function TransportRegistration($transport, $details)
+	function transport_registration($transport, $details)
 	{
 		$this->txnid++;
-		$packet = $this->SendIq($transport, 'get', "reg_{$this->txnid}", "jabber:iq:register", NULL, $this->jid);
+		$packet = $this->send_iq($transport, 'get', "reg_{$this->txnid}", "jabber:iq:register", NULL, $this->jid);
 
 		if ($packet)
 		{
-			$key = $this->GetInfoFromIqKey($packet);	// just in case a key was passed back from the server
+			$key = $this->get_info_from_iq_key($packet); // just in case a key was passed back from the server
 			unset($packet);
 		
 			$payload = ($key) ? "<key>$key</key>\n" : '';
@@ -345,9 +344,9 @@ class Jabber
 				$payload .= "<$element>$value</$element>\n";
 			}
 		
-			$packet = $this->SendIq($transport, 'set', "reg_{$this->txnid}", "jabber:iq:register", $payload);
+			$packet = $this->send_iq($transport, 'set', "reg_{$this->txnid}", "jabber:iq:register", $payload);
 		
-			if ($this->GetInfoFromIqType($packet) == 'result')
+			if ($this->get_info_from_iq_type($packet) == 'result')
 			{
 				if (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#']))
 				{
@@ -358,12 +357,12 @@ class Jabber
 					$return_code = 2;
 				}
 			}
-			elseif ($this->GetInfoFromIqType($packet) == 'error')
+			elseif ($this->get_info_from_iq_type($packet) == 'error')
 			{
 				if (isset($packet['iq']['#']['error'][0]['#']))
 				{
 					$return_code = "Error " . $packet['iq']['#']['error'][0]['@']['code'] . ": " . $packet['iq']['#']['error'][0]['#'];
-					$this->AddToLog('ERROR: TransportRegistration()');
+					// ERROR: TransportRegistration()
 				}
 			}
 
@@ -375,11 +374,11 @@ class Jabber
 		}
 	}
 
-	function Listen()
+	function listen()
 	{
-		unset($incoming);
+		$incoming = '';
 
-		while ($line = $this->CONNECTOR->ReadFromSocket(4096))
+		while ($line = $this->connector->read_from_socket(4096))
 		{
 			$incoming .= $line;
 		}
@@ -396,16 +395,16 @@ class Jabber
 			}
 		}
 
-		return TRUE;
+		return true;
 	}
 
-	function StripJID($jid = NULL)
+	function strip_jid($jid = NULL)
 	{
 		preg_match('#(.*)\/(.*)#Ui', $jid, $temp);
 		return ($temp[1] != '') ? $temp[1] : $jid;
 	}
 
-	function SendMessage($to, $type = 'normal', $id = NULL, $content = NULL, $payload = NULL)
+	function send_message($to, $type = 'normal', $id = NULL, $content = NULL, $payload = NULL)
 	{
 		if ($to && is_array($content))
 		{
@@ -418,12 +417,12 @@ class Jabber
 
 			$xml = "<message to='$to' type='$type' id='$id'>\n";
 
-			if ($content['subject'])
+			if (isset($content['subject']) && $content['subject'])
 			{
 				$xml .= '<subject>' . $content['subject'] . "</subject>\n";
 			}
 
-			if ($content['thread'])
+			if (isset($content['thread']) && $content['thread'])
 			{
 				$xml .= '<thread>' . $content['thread'] . "</thread>\n";
 			}
@@ -432,22 +431,22 @@ class Jabber
 			$xml .= $payload;
 			$xml .= "</message>\n";
 
-			if ($this->SendPacket($xml))
+			if ($this->send_packet($xml))
 			{
-				return TRUE;
+				return true;
 			}
 			else
 			{
-				return FALSE;
+				return false;
 			}
 		}
 		else
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
-	function SendPresence($type = NULL, $to = NULL, $status = NULL, $show = NULL, $priority = NULL)
+	function send_presence($type = NULL, $to = NULL, $status = NULL, $show = NULL, $priority = NULL)
 	{
 		$xml = '<presence';
 		$xml .= ($to) ? " to='$to'" : '';
@@ -460,10 +459,10 @@ class Jabber
 
 		$xml .= ($status || $show || $priority) ? "</presence>\n" : '';
 
-		return ($this->SendPacket($xml)) ? TRUE : FALSE;
+		return ($this->send_packet($xml)) ? true : false;
 	}
 
-	function SendError($to, $id = NULL, $error_number, $error_message = NULL)
+	function send_error($to, $id = NULL, $error_number, $error_message = NULL)
 	{
 		$xml = "<iq type='error' to='$to'";
 		$xml .= ($id) ? " id='$id'" : '';
@@ -473,17 +472,17 @@ class Jabber
 		$xml .= "</error>\n";
 		$xml .= '</iq>';
 
-		$this->SendPacket($xml);
+		$this->send_packet($xml);
 	}
 
-	function GetFirstFromQueue()
+	function get_first_from_queue()
 	{
 		return array_shift($this->packet_queue);
 	}
 
-	function GetFromQueueById($packet_type, $id)
+	function get_from_queue_by_id($packet_type, $id)
 	{
-		$found_message = FALSE;
+		$found_message = false;
 
 		foreach ($this->packet_queue as $key => $value)
 		{
@@ -496,30 +495,30 @@ class Jabber
 			}
 		}
 
-		return (is_array($found_message)) ? $found_message : FALSE;
+		return (is_array($found_message)) ? $found_message : false;
 	}
 
-	function CallHandler($packet = NULL)
+	function call_handler($packet = NULL)
 	{
-		$packet_type	= $this->_get_packet_type($packet);
+		$packet_type = $this->_get_packet_type($packet);
 
 		if ($packet_type == 'message')
 		{
 			$type		= $packet['message']['@']['type'];
 			$type		= ($type != '') ? $type : 'normal';
-			$funcmeth	= "Handler_message_$type";
+			$funcmeth	= "handler_message_$type";
 		}
 		elseif ($packet_type == 'iq')
 		{
 			$namespace	= $packet['iq']['#']['query'][0]['@']['xmlns'];
 			$namespace	= str_replace(':', '_', $namespace);
-			$funcmeth	= "Handler_iq_$namespace";
+			$funcmeth	= "handler_iq_$namespace";
 		}
 		elseif ($packet_type == 'presence')
 		{
 			$type		= $packet['presence']['@']['type'];
 			$type		= ($type != '') ? $type : 'available';
-			$funcmeth	= "Handler_presence_$type";
+			$funcmeth	= "handler_presence_$type";
 		}
 
 		if ($funcmeth != '')
@@ -534,20 +533,20 @@ class Jabber
 			}
 			else
 			{
-				$this->Handler_NOT_IMPLEMENTED($packet);
+				$this->handler_not_implemented($packet);
 			}
 		}
 	}
 
-	function SendIq($to = NULL, $type = 'get', $id = NULL, $xmlns = NULL, $payload = NULL, $from = NULL)
+	function send_iq($to = NULL, $type = 'get', $id = NULL, $xmlns = NULL, $payload = NULL, $from = NULL)
 	{
 		if (!preg_match('#^(get|set|result|error)$#', $type))
 		{
 			unset($type);
 
-			return FALSE;
+			return false;
 		}
-		elseif ($id && $xmlns)
+		else if ($id && $xmlns)
 		{
 			$xml = "<iq type='$type' id='$id'";
 			$xml .= ($to) ? " to='$to'" : '';
@@ -558,15 +557,15 @@ class Jabber
 						</query>
 					</iq>";
 
-			$this->SendPacket($xml);
+			$this->send_packet($xml);
 			sleep($this->iq_sleep_timer);
-			$this->Listen();
+			$this->listen();
 
-			return (preg_match('#^(get|set)$#', $type)) ? $this->GetFromQueueById('iq', $id) : TRUE;
+			return (preg_match('#^(get|set)$#', $type)) ? $this->get_from_queue_by_id('iq', $id) : true;
 		}
 		else
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -575,7 +574,7 @@ class Jabber
 	// private methods
 	// ======================================================================
 
-	function _sendauth_0k($zerok_token, $zerok_sequence)
+	function _sendauth_ok($zerok_token, $zerok_sequence)
 	{
 		// initial hash of password
 		$zerok_hash = @mhash(MHASH_SHA1, $this->password);
@@ -596,10 +595,10 @@ class Jabber
 					<hash>$zerok_hash</hash>
 					<resource>{$this->resource}</resource>";
 
-		$packet = $this->SendIq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
+		$packet = $this->send_iq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
 
 		// was a result returned?
-		return ($this->GetInfoFromIqType($packet) == 'result' && $this->GetInfoFromIqId($packet) == $this->auth_id) ? TRUE : FALSE;
+		return ($this->get_info_from_iq_type($packet) == 'result' && $this->get_info_from_iq_id($packet) == $this->auth_id) ? true : false;
 	}
 
 	function _sendauth_digest()
@@ -608,10 +607,10 @@ class Jabber
 					<resource>{$this->resource}</resource>
 					<digest>" . bin2hex(mhash(MHASH_SHA1, $this->stream_id . $this->password)) . "</digest>";
 
-		$packet = $this->SendIq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
+		$packet = $this->send_iq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
 
 		// was a result returned?
-		return ($this->GetInfoFromIqType($packet) == 'result' && $this->GetInfoFromIqId($packet) == $this->auth_id) ? TRUE : FALSE;
+		return ($this->get_info_from_iq_type($packet) == 'result' && $this->get_info_from_iq_id($packet) == $this->auth_id) ? true : false;
 	}
 
 	function _sendauth_plaintext()
@@ -620,17 +619,17 @@ class Jabber
 					<password>{$this->password}</password>
 					<resource>{$this->resource}</resource>";
 
-		$packet = $this->SendIq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
+		$packet = $this->send_iq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
 
 		// was a result returned?
-		return ($this->GetInfoFromIqType($packet) == 'result' && $this->GetInfoFromIqId($packet) == $this->auth_id) ? TRUE : FALSE;
+		return ($this->get_info_from_iq_type($packet) == 'result' && $this->get_info_from_iq_id($packet) == $this->auth_id) ? true : false;
 	}
 
 	function _listen_incoming()
 	{
-		unset($incoming);
-
-		while ($line = $this->CONNECTOR->ReadFromSocket(4096))
+		$incoming = '';
+		
+		while ($line = $this->connector->read_from_socket(4096))
 		{
 			$incoming .= $line;
 		}
@@ -651,16 +650,16 @@ class Jabber
 			{
 				$this->stream_id = $incoming_array['stream:stream']['@']['id'];
 
-				return TRUE;
+				return true;
 			}
 			else
 			{
-				return FALSE;
+				return false;
 			}
 		}
 		else
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
@@ -669,7 +668,7 @@ class Jabber
 		$temp = preg_split('#<(message|iq|presence|stream)#', $incoming, -1, PREG_SPLIT_DELIM_CAPTURE);
 		$array = array();
 
-		for ($a = 1; $a < count($temp); $a = $a + 2)
+		for ($a = 1; $a < sizeof($temp); $a = $a + 2)
 		{
 			$array[] = '<' . $temp[$a] . $temp[($a + 1)];
 		}
@@ -685,7 +684,7 @@ class Jabber
 			$packet_type = key($packet);
 		}
 
-		return ($packet_type) ? $packet_type : FALSE;
+		return ($packet_type) ? $packet_type : false;
 	}
 
 	// _array_htmlspecialchars()
@@ -707,82 +706,82 @@ class Jabber
 	// <message/> parsers
 	// ======================================================================
 
-	function GetInfoFromMessageFrom($packet = NULL)
+	function get_info_from_message_from($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['message']['@']['from'] : FALSE;
+		return (is_array($packet)) ? $packet['message']['@']['from'] : false;
 	}
 
-	function GetInfoFromMessageType($packet = NULL)
+	function get_info_from_message_type($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['message']['@']['type'] : FALSE;
+		return (is_array($packet)) ? $packet['message']['@']['type'] : false;
 	}
 
-	function GetInfoFromMessageId($packet = NULL)
+	function get_info_from_message_id($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['message']['@']['id'] : FALSE;
+		return (is_array($packet)) ? $packet['message']['@']['id'] : false;
 	}
 
-	function GetInfoFromMessageThread($packet = NULL)
+	function get_info_from_message_thread($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['message']['#']['thread'][0]['#'] : FALSE;
+		return (is_array($packet)) ? $packet['message']['#']['thread'][0]['#'] : false;
 	}
 
-	function GetInfoFromMessageSubject($packet = NULL)
+	function get_info_from_message_subject($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['message']['#']['subject'][0]['#'] : FALSE;
+		return (is_array($packet)) ? $packet['message']['#']['subject'][0]['#'] : false;
 	}
 
-	function GetInfoFromMessageBody($packet = NULL)
+	function get_info_from_message_body($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['message']['#']['body'][0]['#'] : FALSE;
+		return (is_array($packet)) ? $packet['message']['#']['body'][0]['#'] : false;
 	}
 
-	function GetInfoFromMessageError($packet = NULL)
+	function get_info_from_message_error($packet = NULL)
 	{
 		$error = preg_replace('#^\/$#', '', ($packet['message']['#']['error'][0]['@']['code'] . '/' . $packet['message']['#']['error'][0]['#']));
-		return (is_array($packet)) ? $error : FALSE;
+		return (is_array($packet)) ? $error : false;
 	}
 
 	// ======================================================================
 	// <iq/> parsers
 	// ======================================================================
 
-	function GetInfoFromIqFrom($packet = NULL)
+	function get_info_from_iq_from($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['iq']['@']['from'] : FALSE;
+		return (is_array($packet)) ? $packet['iq']['@']['from'] : false;
 	}
 
-	function GetInfoFromIqType($packet = NULL)
+	function get_info_from_iq_type($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['iq']['@']['type'] : FALSE;
+		return (is_array($packet)) ? $packet['iq']['@']['type'] : false;
 	}
 
-	function GetInfoFromIqId($packet = NULL)
+	function get_info_from_iq_id($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['iq']['@']['id'] : FALSE;
+		return (is_array($packet)) ? $packet['iq']['@']['id'] : false;
 	}
 
-	function GetInfoFromIqKey($packet = NULL)
+	function get_info_from_iq_key($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['iq']['#']['query'][0]['#']['key'][0]['#'] : FALSE;
+		return (is_array($packet)) ? $packet['iq']['#']['query'][0]['#']['key'][0]['#'] : false;
 	}
 
-	function GetInfoFromIqError($packet = NULL)
+	function get_info_from_iq_error($packet = NULL)
 	{
 		$error = preg_replace('#^\/$#', '', ($packet['iq']['#']['error'][0]['@']['code'] . '/' . $packet['iq']['#']['error'][0]['#']));
-		return (is_array($packet)) ? $error : FALSE;
+		return (is_array($packet)) ? $error : false;
 	}
 
 	// ======================================================================
 	// <message/> handlers
 	// ======================================================================
 
-	function Handler_message_normal($packet)
+	function handler_message_normal($packet)
 	{
 		$from = $packet['message']['@']['from'];
 	}
 
-	function Handler_message_error($packet)
+	function handler_message_error($packet)
 	{
 		$from = $packet['message']['@']['from'];
 	}
@@ -792,29 +791,29 @@ class Jabber
 	// ======================================================================
 
 	// simple client authentication
-	function Handler_iq_jabber_iq_auth($packet)
+	function handler_iq_jabber_iq_auth($packet)
 	{
-		$from	= $this->GetInfoFromIqFrom($packet);
-		$id		= $this->GetInfoFromIqId($packet);
+		$from	= $this->get_info_from_iq_from($packet);
+		$id		= $this->get_info_from_iq_id($packet);
 
-		$this->SendError($from, $id, 501);
+		$this->send_error($from, $id, 501);
 	}
 
 	// method for interactive registration
-	function Handler_iq_jabber_iq_register($packet)
+	function handler_iq_jabber_iq_register($packet)
 	{
-		$from	= $this->GetInfoFromIqFrom($packet);
-		$id		= $this->GetInfoFromIqId($packet);
+		$from	= $this->get_info_from_iq_from($packet);
+		$id		= $this->get_info_from_iq_id($packet);
 
-		$this->SendError($from, $id, 501);
+		$this->send_error($from, $id, 501);
 	}
 
 	// keepalive method, added by Nathan Fritz
-	function Handler_iq_($packet)
+	function handler_iq_($packet)
 	{
-		if ($this->keep_alive_id == $this->GetInfoFromIqId($packet))
+		if ($this->keep_alive_id == $this->get_info_from_iq_id($packet))
 		{
-			$this->returned_keep_alive = TRUE;
+			$this->returned_keep_alive = true;
 		}
 	}
 	
@@ -823,13 +822,13 @@ class Jabber
 	// ======================================================================
 
 	// Generic handler for unsupported requests
-	function Handler_NOT_IMPLEMENTED($packet)
+	function handler_not_implemented($packet)
 	{
 		$packet_type	= $this->_get_packet_type($packet);
-		$from			= call_user_func(array(&$this, 'GetInfoFrom' . ucfirst($packet_type) . 'From'), $packet);
-		$id				= call_user_func(array(&$this, 'GetInfoFrom' . ucfirst($packet_type) . 'Id'), $packet);
+		$from			= call_user_func(array(&$this, 'get_info_from_' . strtolower($packet_type) . '_from'), $packet);
+		$id				= call_user_func(array(&$this, 'get_info_from_' . strtolower($packet_type) . '_id'), $packet);
 
-		$this->SendError($from, $id, 501);
+		$this->send_error($from, $id, 501);
 	}
 
 	// Third party code
@@ -861,12 +860,12 @@ class Jabber
 	{
 		$children = array();
 
-		if ($vals[$i]['value'])
+		if (isset($vals[$i]['value']) && $vals[$i]['value'])
 		{
 			array_push($children, trim($vals[$i]['value']));
 		}
 
-		while (++$i < count($vals))
+		while (++$i < sizeof($vals))
 		{
 			switch ($vals[$i]['type'])
 			{
@@ -876,9 +875,9 @@ class Jabber
 
 				case 'complete':
 					$tagname = $vals[$i]['tag'];
-					$size = sizeof($children[$tagname]);
-					$children[$tagname][$size]['#'] = trim($vals[$i]['value']);
-					if ($vals[$i]['attributes'])
+					$size = (isset($children[$tagname])) ? sizeof($children[$tagname]) : 0;
+					$children[$tagname][$size]['#'] = (isset($vals[$i]['value'])) ? trim($vals[$i]['value']) : '';
+					if (isset($vals[$i]['attributes']) && $vals[$i]['attributes'])
 					{
 						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
 					}
@@ -886,7 +885,7 @@ class Jabber
 
 				case 'open':
 					$tagname = $vals[$i]['tag'];
-					$size = sizeof($children[$tagname]);
+					$size = (isset($children[$tagname])) ? sizeof($children[$tagname]) : 0;
 					if ($vals[$i]['attributes'])
 					{
 						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
@@ -907,9 +906,9 @@ class Jabber
 		return $children;
 	}
 
-	// TraverseXMLize()
+	// traverse_xmlize()
 	// (c) acebone@f2s.com, a HUGE help!
-	function TraverseXMLize($array, $arrName = 'array', $level = 0)
+	function traverse_xmlize($array, $arr_name = 'array', $level = 0)
 	{
 		if ($level == 0)
 		{
@@ -920,11 +919,11 @@ class Jabber
 		{
 			if (is_array($val))
 			{
-				$this->TraverseXMLize($val, $arrName . '[' . $key . ']', $level + 1);
+				$this->traverse_xmlize($val, $arr_name . '[' . $key . ']', $level + 1);
 			}
 			else
 			{
-				echo '$' . $arrName . '[' . $key . '] = "' . $val . "\"\n";
+				echo '$' . $arr_name . '[' . $key . '] = "' . $val . "\"\n";
 			}
 		}
 
@@ -937,18 +936,19 @@ class Jabber
 
 /**
 * @package phpBB3
-* MakeXML
+* make_xml
+* Currently not in use
 */
-class MakeXML extends Jabber
+class make_xml extends jabber
 {
 	var $nodes;
 
-	function MakeXML()
+	function make_xml()
 	{
 		$nodes = array();
 	}
 
-	function AddPacketDetails($string, $value = NULL)
+	function add_packet_details($string, $value = NULL)
 	{
 		if (preg_match('#\(([0-9]*)\)$#i', $string))
 		{
@@ -971,7 +971,7 @@ class MakeXML extends Jabber
 		eval('$this->nodes' . $node . ' = "' . htmlspecialchars($value) . '";');
 	}
 
-	function BuildPacket($array = NULL)
+	function build_packet($array = NULL)
 	{
 		if (!$array)
 		{
@@ -1010,7 +1010,7 @@ class MakeXML extends Jabber
 							$text .= '>';
 						}
 
-						$text .= $this->BuildPacket($value[$a]);
+						$text .= $this->build_packet($value[$a]);
 						$text .= "</$key>\n";
 					}
 				}
@@ -1034,47 +1034,47 @@ class MakeXML extends Jabber
 				$newarray[$key] = $val;
 			}
 		}
-		return (is_array($newarray)) ? $newarray : FALSE;
+		return (is_array($newarray)) ? $newarray : false;
 	}
 }
 
 /**
 * @package phpBB3
-* Connector
+* connector
 */
-class CJP_StandardConnector
+class cjp_standard_connector
 {
 	var $active_socket;
 
-	function OpenSocket($server, $port)
+	function open_socket($server, $port)
 	{
 		if ($this->active_socket = @fsockopen($server, $port, $err, $err2, 5))
 		{
 			@socket_set_blocking($this->active_socket, 0);
 			@socket_set_timeout($this->active_socket, 31536000);
 
-			return TRUE;
+			return true;
 		}
 		else
 		{
-			return FALSE;
+			return false;
 		}
 	}
 
-	function CloseSocket()
+	function close_socket()
 	{
 		return @fclose($this->active_socket);
 	}
 
-	function WriteToSocket($data)
+	function write_to_socket($data)
 	{
 		return @fwrite($this->active_socket, $data);
 	}
 
-	function ReadFromSocket($chunksize)
+	function read_from_socket($chunksize)
 	{
 		$buffer = stripslashes(@fread($this->active_socket, $chunksize));
-		@set_magic_quotes_runtime(get_magic_quotes_gpc());
+		//@set_magic_quotes_runtime(get_magic_quotes_gpc());
 
 		return $buffer;
 	}
