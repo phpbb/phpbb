@@ -314,14 +314,14 @@ if ($mode == 'approve' || $mode == 'disapprove')
 }
 
 // Only Moderators can go beyond this point
-if ($user->data['user_id'] == ANONYMOUS)
+if (!$user->data['is_registered'])
 {
-	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
-
-	if ($user->data['user_id'] == ANONYMOUS)
+	if ($user->data['is_bot'])
 	{
 		redirect("index.$phpEx$SID");
 	}
+
+	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
 }
 
 $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;

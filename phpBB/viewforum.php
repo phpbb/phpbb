@@ -37,7 +37,7 @@ if (!$forum_id)
 }
 
 // Grab appropriate forum data
-if ($user->data['user_id'] == ANONYMOUS)
+if (!$user->data['is_registered'])
 {
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
@@ -85,7 +85,7 @@ if (!($forum_data = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
-if ($user->data['user_id'] == ANONYMOUS && $config['load_db_lastread'])
+if (!$user->data['is_registered'] && $config['load_db_lastread'])
 {
 	$forum_data['mark_time'] = 0;
 }
@@ -117,7 +117,7 @@ if ($forum_data['forum_password'])
 }
 
 // Redirect to login upon emailed notification links
-if (isset($_GET['e']) && $user->data['user_id'] == ANONYMOUS)
+if (isset($_GET['e']) && !$user->data['is_registered'])
 {
 	login_box('', $user->lang['LOGIN_NOTIFY_FORUM']);
 }
@@ -158,7 +158,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	// Handle marking posts
 	if ($mark_read == 'topics')
 	{
-		if ($user->data['user_id'] != ANONYMOUS)
+		if ($user->data['is_registered'])
 		{
 			markread('mark', $forum_id);
 		}
@@ -307,11 +307,11 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 			break;
 
 		default:
-			$sql_from = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))' : TOPICS_TABLE . ' t ';
+			$sql_from = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['is_registered']) ? '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))' : TOPICS_TABLE . ' t ';
 	}
 
 	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
-	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['user_id'] != ANONYMOUS) ? ', tt.mark_type, tt.mark_time' : '';
+	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['is_registered']) ? ', tt.mark_type, tt.mark_time' : '';
 
 	if ($forum_data['forum_type'] == FORUM_POST)
 	{
@@ -397,7 +397,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 			if ($config['load_db_lastread'])
 			{
-				$mark_time_topic = ($user->data['user_id'] != ANONYMOUS) ? $row['mark_time'] : 0;
+				$mark_time_topic = ($user->data['is_registered']) ? $row['mark_time'] : 0;
 			}
 			else
 			{
@@ -480,7 +480,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	// on all topics (as we do in 2.0.x). It looks for unread or new topics, if it doesn't find
 	// any it updates the forum last read cookie. This requires that the user visit the forum
 	// after reading a topic
-	if ($forum_data['forum_type'] == FORUM_POST && $user->data['user_id'] != ANONYMOUS && count($topic_list) && $mark_forum_read)
+	if ($forum_data['forum_type'] == FORUM_POST && $user->data['is_registered'] && sizeof($topic_list) && $mark_forum_read)
 	{
 		markread('mark', $forum_id);
 	}

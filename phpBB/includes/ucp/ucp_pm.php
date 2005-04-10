@@ -45,7 +45,7 @@ class ucp_pm extends module
 	{
 		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $SID, $config;
 		
-		if ($user->data['user_id'] == ANONYMOUS)
+		if (!$user->data['is_registered'])
 		{
 			trigger_error('NO_MESSAGE');
 		}
@@ -89,7 +89,7 @@ class ucp_pm extends module
 			case 'popup':
 			
 				$l_new_message = '';
-				if ($user->data['user_id'] != ANONYMOUS)
+				if ($user->data['is_registered'])
 				{
 					if ($user->data['user_new_privmsg'])
 					{

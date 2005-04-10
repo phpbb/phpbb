@@ -389,7 +389,7 @@ class jabber
 		{
 			$temp = $this->_split_incoming($incoming);
 
-			for ($a = 0; $a < count($temp); $a++)
+			for ($a = 0, $size = sizeof($temp); $a < $size; $a++)
 			{
 				$this->packet_queue[] = $this->xmlize($temp[$a]);
 			}
@@ -957,7 +957,7 @@ class make_xml extends jabber
 
 		$temp = @explode('/', $string);
 
-		for ($a = 0; $a < count($temp); $a++)
+		for ($a = 0, $size = sizeof($temp); $a < $size; $a++)
 		{
 			$temp[$a] = preg_replace('#^[@]{1}([a-z0-9_]*)$#i', '["@"]["\1"]', $temp[$a]);
 			$temp[$a] = preg_replace('#^([a-z0-9_]*)\(([0-9]*)\)$/i', '["\1"][\2]', $temp[$a]);
@@ -1001,7 +1001,7 @@ class make_xml extends jabber
 				}
 				elseif (is_array($value))
 				{
-					for ($a = 0; $a < count($value); $a++)
+					for ($a = 0, $size = sizeof($value); $a < $size; $a++)
 					{
 						$text .= "<$key";
 

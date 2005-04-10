@@ -441,7 +441,7 @@ class ucp_main extends module
 					
 					if ($config['load_db_lastread'])
 					{
-						$mark_time_topic = ($user->data['user_id'] != ANONYMOUS) ? $row['mark_time'] : 0;
+						$mark_time_topic = ($user->data['is_registered']) ? $row['mark_time'] : 0;
 						$mark_time_forum = $row['forum_mark_time'];
 					}
 					else

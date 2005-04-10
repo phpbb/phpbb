@@ -763,7 +763,7 @@ class template
 
 					$new_tokens	= $this->_parse_is_expr($is_arg, array_slice($tokens, $i+1));
 
-					array_splice($tokens, $is_arg_start, count($tokens), $new_tokens);
+					array_splice($tokens, $is_arg_start, sizeof($tokens), $new_tokens);
 
 					$i = $is_arg_start;
 

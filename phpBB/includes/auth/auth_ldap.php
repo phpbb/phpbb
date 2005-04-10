@@ -39,7 +39,7 @@ function login_ldap(&$username, &$password)
 	$search = @ldap_search($ldap, $config['ldap_base_dn'], $config['ldap_uid'] . '=' . $username, array($config['ldap_uid']));
 	$result = @ldap_get_entries($ldap, $search);
 
-	if (is_array($result) && count($result) > 1)
+	if (is_array($result) && sizeof($result) > 1)
 	{
 		if (@ldap_bind($ldap, $result[0]['dn'], $password))
 		{

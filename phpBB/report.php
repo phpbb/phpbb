@@ -24,7 +24,7 @@ $user->setup('mcp');
 $id = request_var('p', request_var('pm', 0));
 $report_post = (request_var('p', 0)) ? true : false;
 $reason_id = request_var('reason_id', 0);
-$user_notify = (!empty($_REQUEST['notify']) && $user->data['user_id'] != ANONYMOUS) ? true : false;
+$user_notify = (!empty($_REQUEST['notify']) && $user->data['is_registered']) ? true : false;
 $report_text = request_var('report_text', '');
 
 if (!$id)
@@ -100,7 +100,7 @@ $result = $db->sql_query($sql);
 
 if ($row = $db->sql_fetchrow($result))
 {
-	if ($user->data['user_id'] != ANONYMOUS)
+	if ($user->data['is_registered'])
 	{
 		// A report exists, extract $row if we're going to display the form
 		if ($reason_id)
@@ -295,7 +295,7 @@ $template->assign_vars(array(
 	'S_REPORT_ACTION'	=> "{$phpbb_root_path}report.$phpEx$SID&amp;$u_report" . (($report_id) ? "&amp;report_id=$report_id" : ''),
 
 	'S_NOTIFY'			=> (!empty($user_notify)) ? true : false,
-	'S_CAN_NOTIFY'		=> ($user->data['user_id'] == ANONYMOUS) ? false : true,
+	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false,
 	'S_REPORT_POST'		=> $report_post)
 );
 

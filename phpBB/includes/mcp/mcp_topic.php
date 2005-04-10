@@ -133,7 +133,7 @@ function mcp_topic_view($id, $mode, $action, $url)
 			'MESSAGE'		=> $message,
 			'POST_ID'		=> $row['post_id'],
 
-			'POST_ICON_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['user_id'] != ANONYMOUS) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
+			'POST_ICON_IMG' => ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 
 			'S_CHECKBOX'		=> $s_checkbox,
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,

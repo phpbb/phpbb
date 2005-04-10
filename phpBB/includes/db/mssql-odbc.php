@@ -558,7 +558,7 @@ class sql_db
 					{
 						while ($row = $this->sql_fetchrow($result))
 						{
-							if (!$html_table && count($row))
+							if (!$html_table && sizeof($row))
 							{
 								$html_table = TRUE;
 								$html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>';

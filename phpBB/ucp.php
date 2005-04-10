@@ -248,7 +248,7 @@ switch ($mode)
 		break;
 
 	case 'register':
-		if ($user->data['user_id'] != ANONYMOUS || isset($_REQUEST['not_agreed']))
+		if ($user->data['is_registered'] || isset($_REQUEST['not_agreed']))
 		{
 			redirect("index.$phpEx$SID");
 		}
@@ -263,7 +263,7 @@ switch ($mode)
 		break;
 
 	case 'login':
-		if ($user->data['user_id'] != ANONYMOUS)
+		if ($user->data['is_registered'])
 		{
 			redirect("index.$phpEx$SID");
 		}
@@ -322,9 +322,9 @@ switch ($mode)
 
 
 // Only registered users can go beyond this point
-if ($user->data['user_id'] == ANONYMOUS || $user->data['user_type'] == USER_INACTIVE || $user->data['user_type'] == USER_IGNORE)
+if (!$user->data['is_registered'])
 {
-	if ($user->data['user_id'] != ANONYMOUS)
+	if ($user->data['is_bot'])
 	{
 		redirect("index.$phpEx$SID");
 	}

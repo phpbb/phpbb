@@ -148,7 +148,7 @@ class sql_db
 						{
 							while ($row = @sqlite_fetch_array($result, @sqlite_ASSOC))
 							{
-								if (!$html_table && count($row))
+								if (!$html_table && sizeof($row))
 								{
 									$html_table = TRUE;
 									$this->sql_report .= "<table width=100% border=1 cellpadding=2 cellspacing=1>\n";

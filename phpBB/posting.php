@@ -245,7 +245,7 @@ if ($sql)
 	$enable_magic_url = $drafts = false;
 
 	// User own some drafts?
-	if ($user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts') && $mode != 'delete')
+	if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts') && $mode != 'delete')
 	{
 		$sql = 'SELECT draft_id
 			FROM ' . DRAFTS_TABLE . '
@@ -265,7 +265,7 @@ if ($sql)
 }
 
 // Notify user checkbox
-if ($mode != 'post' && $user->data['user_id'] != ANONYMOUS)
+if ($mode != 'post' && $user->data['is_registered'])
 {
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_WATCH_TABLE . '
@@ -282,7 +282,7 @@ else
 
 if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
 {
-	if ($user->data['user_id'] != ANONYMOUS)
+	if ($user->data['is_registered'])
 	{
 		trigger_error('USER_CANNOT_' . strtoupper($mode));
 	}
@@ -328,7 +328,7 @@ if ($mode == 'edit')
 
 
 // Delete triggered ?
-if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('f_delete', $forum_id) && $post_id == $topic_last_post_id) || $auth->acl_get('m_delete', $forum_id)))
+if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id) && $post_id == $topic_last_post_id) || $auth->acl_get('m_delete', $forum_id)))
 {
 	$s_hidden_fields = '<input type="hidden" name="p" value="' . $post_id . '" /><input type="hidden" name="f" value="' . $forum_id . '" /><input type="hidden" name="mode" value="delete" />';
 
@@ -434,7 +434,7 @@ else if ($mode == 'bump')
 }
 
 // Save Draft
-if ($save && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 {
 	$subject = request_var('subject', '', true);
 	$subject = (!$subject && $mode != 'post') ? $topic_title : $subject;
@@ -467,7 +467,7 @@ if ($save && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts
 }
 
 // Load Draft
-if ($draft_id && $user->data['user_id'] != ANONYMOUS && $auth->acl_get('u_savedrafts'))
+if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 {
 	$sql = 'SELECT draft_subject, draft_message
 		FROM ' . DRAFTS_TABLE . "
@@ -517,7 +517,7 @@ if ($submit || $preview || $refresh)
 	$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 	$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-	$enable_sig			= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig']) && $user->data['user_id'] != ANONYMOUS) ? true : false);
+	$enable_sig			= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
 	$notify				= (isset($_POST['notify']));
 	$topic_lock			= (isset($_POST['lock_topic']));
@@ -620,7 +620,7 @@ if ($submit || $preview || $refresh)
 		// Flood check
 		$last_post_time = 0;
 
-		if ($user->data['user_id'] != ANONYMOUS)
+		if ($user->data['is_registered'])
 		{
 			$last_post_time = $user->data['user_lastpost_time'];
 		}
@@ -648,7 +648,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Validate username
-	if (($username && $user->data['user_id'] == ANONYMOUS) || ($mode == 'edit' && $post_username))
+	if (($username && !$user->data['is_registered']) || ($mode == 'edit' && $post_username))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -765,7 +765,7 @@ if ($submit || $preview || $refresh)
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $topic_status;
-			$perm_lock_unlock = ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster));
+			$perm_lock_unlock = ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_poster));
 
 			if ($topic_status == ITEM_LOCKED && !$topic_lock && $perm_lock_unlock)
 			{
@@ -784,7 +784,7 @@ if ($submit || $preview || $refresh)
 						AND topic_moved_id = 0";
 				$db->sql_query($sql);
 
-				$user_lock = ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster) ? 'USER_' : '';
+				$user_lock = ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_poster) ? 'USER_' : '';
 
 				add_log('mod', $forum_id, $topic_id, 'LOG_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK'), $topic_title);
 			}
@@ -1005,7 +1005,7 @@ $bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_
 $smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies']) ? !$user->optionget('smilies') : 1);
 $urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 $sig_checked		= $enable_sig;
-$notify_checked		= (isset($notify)) ? $notify : ((!$notify_set) ? (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_notify'] : 0) : 1);
+$notify_checked		= (isset($notify)) ? $notify : ((!$notify_set) ? (($user->data['is_registered']) ? $user->data['user_notify'] : 0) : 1);
 $lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($topic_status == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_edit_locked;
 
@@ -1090,7 +1090,7 @@ $template->assign_vars(array(
 	'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 	'S_EDIT_POST'			=> ($mode == 'edit'),
 	'S_EDIT_REASON'			=> ($mode == 'edit' && $user->data['user_id'] != $poster_id),
-	'S_DISPLAY_USERNAME'	=> ($user->data['user_id'] == ANONYMOUS || ($mode == 'edit' && $post_username)),
+	'S_DISPLAY_USERNAME'	=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_username)),
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 	'S_DELETE_ALLOWED' 		=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 	'S_HTML_ALLOWED'		=> $html_status,
@@ -1099,18 +1099,18 @@ $template->assign_vars(array(
 	'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'		=> $smilies_status,
 	'S_SMILIES_CHECKED' 	=> ($smilies_checked) ? ' checked="checked"' : '',
-	'S_SIG_ALLOWED'			=> ($auth->acl_get('f_sigs', $forum_id) && $config['allow_sig'] && $user->data['user_id'] != ANONYMOUS),
+	'S_SIG_ALLOWED'			=> ($auth->acl_get('f_sigs', $forum_id) && $config['allow_sig'] && $user->data['is_registered']),
 	'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? ' checked="checked"' : '',
-	'S_NOTIFY_ALLOWED'		=> ($user->data['user_id'] != ANONYMOUS),
+	'S_NOTIFY_ALLOWED'		=> ($user->data['is_registered']),
 	'S_NOTIFY_CHECKED' 		=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'	=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster))),
+	'S_LOCK_TOPIC_ALLOWED'	=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_poster))),
 	'S_LOCK_TOPIC_CHECKED'	=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'	=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)),
 	'S_LOCK_POST_CHECKED'	=> ($lock_post_checked) ? ' checked="checked"' : '',
 	'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'			=> $topic_type_toggle,
-	'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $user->data['user_id'] != ANONYMOUS),
-	'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $user->data['user_id'] != ANONYMOUS && $drafts),
+	'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered']),
+	'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $drafts),
 	'S_FORM_ENCTYPE'		=> $form_enctype,
 
 	'S_POST_ACTION' 		=> $s_action,
@@ -1355,7 +1355,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'enable_smilies' 	=> $data['enable_smilies'],
 				'enable_magic_url' 	=> $data['enable_urls'],
 				'enable_sig' 		=> $data['enable_sig'],
-				'post_username'		=> ($user->data['user_id'] == ANONYMOUS) ? stripslashes($username) : '',
+				'post_username'		=> (!$user->data['is_registered']) ? stripslashes($username) : '',
 				'post_subject'		=> $subject,
 				'post_text' 		=> $data['message'],
 				'post_checksum'		=> $data['message_md5'],
@@ -1437,7 +1437,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'icon_id'			=> $data['icon_id'],
 				'topic_approved'	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'topic_title' 		=> $subject,
-				'topic_first_poster_name' => ($user->data['user_id'] == ANONYMOUS && $username) ? stripslashes($username) : $user->data['username'],
+				'topic_first_poster_name' => (!$user->data['is_registered'] && $username) ? stripslashes($username) : $user->data['username'],
 				'topic_type'		=> $topic_type,
 				'topic_time_limit'	=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'	=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0
@@ -1537,7 +1537,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_post_id'	=> $data['post_id'],
 				'topic_last_post_time'	=> $current_time,
 				'topic_last_poster_id'	=> (int) $user->data['user_id'],
-				'topic_last_poster_name'=> ($user->data['user_id'] == ANONYMOUS && $username) ? stripslashes($username) : $user->data['username']
+				'topic_last_poster_name'=> (!$user->data['is_registered'] && $username) ? stripslashes($username) : $user->data['username']
 			);
 		}
 

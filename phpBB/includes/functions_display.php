@@ -34,7 +34,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	// Display list of active topics for this category?
 	$show_active = (isset($root_data['forum_flags']) && $root_data['forum_flags'] & 16) ? true : false;
 
-	if ($config['load_db_lastread'] && $user->data['user_id'] != ANONYMOUS)
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		switch (SQL_LAYER)
 		{
@@ -65,7 +65,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 	$forum_ids		= array($root_data['forum_id']);
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($mark_read == 'forums' && $user->data['user_id'] != ANONYMOUS)
+		if ($mark_read == 'forums' && $user->data['is_registered'])
 		{
 			if ($auth->acl_get('f_list', $row['forum_id']))
 			{
@@ -157,7 +157,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 		$mark_time_forum = ($config['load_db_lastread']) ? $row['mark_time'] : ((isset($tracking_topics[$forum_id][0])) ? base_convert($tracking_topics[$forum_id][0], 36, 10) + $config['board_startdate'] : 0);
 
-		if ($mark_time_forum < $row['forum_last_post_time'] && $user->data['user_id'] != ANONYMOUS)
+		if ($mark_time_forum < $row['forum_last_post_time'] && $user->data['is_registered'])
 		{
 			$forum_unread[$parent_id] = true;
 		}
@@ -240,7 +240,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 					}
 					$subforums_list = implode(', ', $links);
 
-					$l_subforums = (count($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
+					$l_subforums = (sizeof($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
 				}
 			}
 
@@ -290,7 +290,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 		$l_moderator = $moderators_list = '';
 		if ($display_moderators && !empty($forum_moderators[$forum_id]))
 		{
-			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
+			$l_moderator = (sizeof($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
 			$moderators_list = implode(', ', $forum_moderators[$forum_id]);
 		}
 
@@ -440,7 +440,7 @@ function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum,
 			$folder_new = 'folder_locked_new';
 		}
 
-		if ($user->data['user_id'] != ANONYMOUS)
+		if ($user->data['is_registered'])
 		{
 			$unread_topic = $new_votes = true;
 

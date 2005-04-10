@@ -252,7 +252,7 @@ while ($row = $db->sql_fetchrow($result))
 		'FORUM_LOCATION'=> $location,
 		'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
 
-		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE && $row['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
+		'U_USER_PROFILE'	=> (($row['user_type'] == USER_NORMAL || $row['user_type'] == USER_FOUNDER) && $row['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
 		'U_USER_IP'			=> "{$phpbb_root_path}viewonline.$phpEx$SID" . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;mode=lookup&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir",
 		'U_WHOIS'			=> "{$phpbb_root_path}viewonline.$phpEx$SID&amp;mode=whois&amp;s=" . $row['session_id'],
 		'U_FORUM_LOCATION'	=> $phpbb_root_path . $location_url,

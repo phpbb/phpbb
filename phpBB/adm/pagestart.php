@@ -27,8 +27,13 @@ $user->setup('admin');
 // End session management
 
 // Did user forget to login? Give 'em a chance to here ...
-if ($user->data['user_id'] == ANONYMOUS)
+if (!$user->data['is_registered'])
 {
+	if ($user->data['is_bot'])
+	{
+		redirect("../index.$phpEx$SID");
+	}
+
 	login_box('', $user->lang['LOGIN_ADMIN'], $user->lang['LOGIN_ADMIN_SUCCESS'], true);
 }
 

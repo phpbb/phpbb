@@ -473,7 +473,7 @@ class queue
 			@set_time_limit(60);
 
 			$package_size = $data_ary['package_size'];
-			$num_items = (count($data_ary['data']) < $package_size) ? count($data_ary['data']) : $package_size;
+			$num_items = (sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
 
 			switch ($object)
 			{
@@ -552,7 +552,7 @@ class queue
 			}
 
 			// No more data for this object? Unset it
-			if (!count($this->queue_data[$object]['data']))
+			if (!sizeof($this->queue_data[$object]['data']))
 			{
 				unset($this->queue_data[$object]);
 			}
@@ -602,9 +602,13 @@ class queue
 			
 			foreach ($this->queue_data as $object => $data_ary)
 			{
-				if (count($this->data[$object]))
+				if (isset($this->data[$object]) && sizeof($this->data[$object]))
 				{
 					$this->data[$object]['data'] = array_merge($data_ary['data'], $this->data[$object]['data']);
+				}
+				else
+				{
+					$this->data[$object]['data'] = $data_ary['data'];
 				}
 			}
 		}

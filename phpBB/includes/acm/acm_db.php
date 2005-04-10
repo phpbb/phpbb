@@ -87,13 +87,14 @@ class acm
 		}
 		$this->var_expires = array();
 
-		if (count($delete))
+		if (sizeof($delete))
 		{
 			$sql = 'DELETE FROM ' . CACHE_TABLE . "
 				WHERE var_name IN ('" . implode("', '", $delete) . "')";
 			$db->sql_query($sql);
 		}
-		if (count($insert))
+
+		if (sizeof($insert))
 		{
 			switch (SQL_LAYER)
 			{

@@ -110,7 +110,7 @@ function gen_rand_string($num_chars)
 	list($usec, $sec) = explode(' ', microtime());
 	mt_srand($sec * $usec);
 
-	$max_chars = count($chars) - 1;
+	$max_chars = sizeof($chars) - 1;
 	$rand_str = '';
 	for ($i = 0; $i < $num_chars; $i++)
 	{
@@ -505,7 +505,7 @@ function tz_select($default = '')
 	global $sys_timezone, $user;
 
 	$tz_select = '';
-	foreach ($user->lang['tz'] as $offset => $zone)
+	foreach ($user->lang['tz']['zones'] as $offset => $zone)
 	{
 		if (is_numeric($offset))
 		{
@@ -631,7 +631,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 {
 	global $config, $db, $user;
 
-	if ($user->data['user_id'] == ANONYMOUS)
+	if (!$user->data['is_registered'])
 	{
 		return;
 	}
@@ -1804,7 +1804,7 @@ function page_header($page_title = '')
 	$s_privmsg_new = false;
 
 	// Obtain number of new private messages if user is logged in
-	if ($user->data['user_id'] != ANONYMOUS)
+	if ($user->data['is_registered'])
 	{
 		if ($user->data['user_new_privmsg'])
 		{
@@ -1842,7 +1842,7 @@ function page_header($page_title = '')
 
 	// Which timezone?
 	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-
+	
 	// The following assigns all _common_ variables that may be used at any point
 	// in a template.
 	$template->assign_vars(array(
@@ -1889,10 +1889,10 @@ function page_header($page_title = '')
 		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
 		'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], (($tz >= 0) ? '+' . $tz : $tz), $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], (($tz >= 0) ? '+' . $tz : $tz), ''),
-		'S_DISPLAY_ONLINE_LIST'	=> (!empty($config['load_online'])) ? 1 : 0,
-		'S_DISPLAY_SEARCH'		=> (!empty($config['load_search'])) ? 1 : 0,
-		'S_DISPLAY_PM'			=> (!empty($config['allow_privmsg'])) ? 1 : 0,
+		'S_TIMEZONE' 			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
+		'S_DISPLAY_ONLINE_LIST'	=> ($config['load_online']) ? 1 : 0,
+		'S_DISPLAY_SEARCH'		=> ($config['load_search']) ? 1 : 0,
+		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered']) ? 1 : 0,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 
@@ -1957,7 +1957,7 @@ function page_footer()
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['user_id'] != ANONYMOUS) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
 	);
 
 	$template->display('body');

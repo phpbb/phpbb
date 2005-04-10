@@ -49,7 +49,7 @@ if ($view && !$post_id)
 {
 	if ($view == 'unread')
 	{
-		if ($user->data['user_id'] != ANONYMOUS)
+		if ($user->data['is_registered'])
 		{
 			if ($config['load_db_lastread'])
 			{
@@ -152,7 +152,7 @@ else
 $extra_fields = (!$post_id)  ? '' : ', COUNT(p2.post_id) AS prev_posts';
 $order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password ORDER BY p.post_id ASC';
 
-if ($user->data['user_id'] != ANONYMOUS)
+if ($user->data['is_registered'])
 {
 	switch (SQL_LAYER)
 	{
@@ -199,7 +199,7 @@ extract($topic_data);
 $topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_replies_real : $topic_replies;
 unset($topic_replies_real);
 
-if ($user->data['user_id'] != ANONYMOUS)
+if ($user->data['is_registered'])
 {
 	if ($config['load_db_lastread'])
 	{
@@ -351,13 +351,13 @@ $viewtopic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$
 // Are we watching this topic?
 $s_watching_topic = $s_watching_topic_img = array();
 $s_watching_topic['link'] = $s_watching_topic['title'] = '';
-if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['user_id'] != ANONYMOUS)
+if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
 	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $notify_status, $start);
 }
 
 // Bookmarks
-if ($config['allow_bookmarks'] && $user->data['user_id'] != ANONYMOUS && request_var('bookmark', 0))
+if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('bookmark', 0))
 {
 	if (!$bookmarked)
 	{
@@ -417,7 +417,7 @@ gen_forum_auth_level('topic', $forum_id);
 
 // Quick mod tools
 $topic_mod = '';
-$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['user_id'] != ANONYMOUS && $user->data['user_id'] == $topic_poster)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_poster)) ? (($topic_status == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
 $topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . $user->lang['DELETE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="move">' . $user->lang['MOVE_TOPIC'] . '</option>' : '';
 $topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . $user->lang['SPLIT_TOPIC'] . '</option>' : '';
@@ -504,8 +504,8 @@ $template->assign_vars(array(
 	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'],
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
 
-	'U_BOOKMARK_TOPIC'		=> ($user->data['user_id'] != ANONYMOUS && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
-	'L_BOOKMARK_TOPIC'		=> ($user->data['user_id'] != ANONYMOUS && $config['allow_bookmarks'] && $bookmarked) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
+	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
+	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $bookmarked) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 
 	'U_POST_NEW_TOPIC' 		=> "posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 	'U_POST_REPLY_TOPIC' 	=> "posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id",
@@ -531,7 +531,7 @@ if (!empty($poll_start))
 	$db->sql_freeresult($result);
 
 	$cur_voted_id = array();
-	if ($user->data['user_id'] != ANONYMOUS)
+	if ($user->data['is_registered'])
 	{
 		$sql = 'SELECT poll_option_id
 			FROM ' . POLL_VOTES_TABLE . '
@@ -587,7 +587,7 @@ if (!empty($poll_start))
 					AND topic_id = $topic_id";
 			$db->sql_query($sql);
 
-			if ($user->data['user_id'] != ANONYMOUS)
+			if ($user->data['is_registered'])
 			{
 				$sql = 'INSERT INTO  ' . POLL_VOTES_TABLE . " (topic_id, poll_option_id, vote_user_id, vote_user_ip)
 					VALUES ($topic_id, $option, " . $user->data['user_id'] . ", '$user->ip')";
@@ -605,7 +605,7 @@ if (!empty($poll_start))
 						AND topic_id = $topic_id";
 				$db->sql_query($sql);
 
-				if ($user->data['user_id'] != ANONYMOUS)
+				if ($user->data['is_registered'])
 				{
 					$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
 						WHERE topic_id = $topic_id
@@ -616,7 +616,7 @@ if (!empty($poll_start))
 			}
 		}
 
-		if ($user->data['user_id'] == ANONYMOUS)
+		if ($user->data['user_id'] == ANONYMOUS && !$user->data['is_bot'])
 		{
 			$user->set_cookie('poll_' . $topic_id, implode(',', $voted_id), time() + 31536000);
 		}
@@ -1251,7 +1251,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'EDIT_REASON'	=> $row['post_edit_reason'],
 		'BUMPED_MESSAGE'=> $l_bumped_by,
 
-		'MINI_POST_IMG' => ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),
+		'MINI_POST_IMG' => ($user->data['is_registered'] && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? $user->img('icon_post_new', 'NEW_POST') : $user->img('icon_post', 'POST'),
 		'POST_ICON_IMG' => (!empty($row['icon_id'])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
@@ -1286,7 +1286,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
-		'S_UNREAD_POST'		=> ($user->data['user_id'] != ANONYMOUS && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
+		'S_UNREAD_POST'		=> ($user->data['is_registered'] && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
 		'S_FIRST_UNREAD'	=> ($unread_post_id == $row['post_id']) ? true : false,
 		'S_CUSTOM_FIELDS'	=> (sizeof($cp_row)) ? true : false
 	);

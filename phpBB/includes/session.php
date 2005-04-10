@@ -110,6 +110,9 @@ class session
 							WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 						$db->sql_query($sql);
 					}
+					
+					$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
+					$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
 
 					return true;
 				}
@@ -135,7 +138,7 @@ class session
 		$bot = false;
 
 		// Pull bot information from DB and loop through it
-		$sql = 'SELECT user_id, bot_agent, bot_ip
+		$sql = 'SELECT user_id, bot_agent, bot_ip 
 			FROM ' . BOTS_TABLE . '
 			WHERE bot_active = 1';
 		$result = $db->sql_query($sql);
@@ -146,8 +149,8 @@ class session
 			{
 				$bot = $row['user_id'];
 			}
-			
-			if ($row['bot_ip'] && (!$row['bot_agent'] || $bot))
+
+			if ($row['bot_ip'] && (!$row['bot_agent'] || !$bot))
 			{
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
 				{
@@ -276,6 +279,8 @@ class session
 
 		// Is there an existing session? If so, grab last visit time from that
 		$this->data['session_last_visit'] = ($this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
+		$this->data['is_registered'] = (!$bot && $user_id != ANONYMOUS) ? true : false;
+		$this->data['is_bot'] = ($bot) ? true : false;
 
 		// Create or update the session
 		$db->sql_return_on_error(true);
@@ -358,9 +363,18 @@ class session
 		$db->sql_query($sql);
 
 		// Reset some basic data immediately
-		$this->session_id = $this->data['username'] = $this->data['user_permissions'] = '';
 		$this->data['user_id'] = ANONYMOUS;
-		$this->data['session_admin'] = 0;
+
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . ANONYMOUS;
+		$result = $db->sql_query($sql);
+	
+		$this->data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$this->session_id = $this->data['session_id'] = '';
+		$this->data['session_time'] = $this->data['session_admin'] = 0;
 
 		// Trigger EVENT_END_SESSION
 

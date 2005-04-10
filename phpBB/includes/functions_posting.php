@@ -868,7 +868,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		WHERE w.' . (($topic_notification) ? 'topic_id' : 'forum_id') . ' = ' . (($topic_notification) ? $topic_id : $forum_id) . "
 			AND w.user_id NOT IN ($sql_ignore_users)
 			AND w.notify_status = 0
-			AND u.user_id = w.user_id";
+			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')
+			AND u.user_id = w.user_id';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -900,7 +901,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			WHERE fw.forum_id = $forum_id
 				AND fw.user_id NOT IN ($sql_ignore_users)
 				AND fw.notify_status = 0
-				AND u.user_id = fw.user_id";
+				AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')
+				AND u.user_id = fw.user_id';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
