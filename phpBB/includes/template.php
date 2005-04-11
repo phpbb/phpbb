@@ -126,7 +126,6 @@ class template
 		return true;
 	}
 
-
 	// Load a compiled template if possible, if not, recompile it
 	function _tpl_load(&$handle)
 	{
@@ -265,18 +264,47 @@ class template
 				$str = &$str[sizeof($str) - 1];
 			}
 
+			$vararray['S_ROW_COUNT'] = sizeof($str[$blocks[$blockcount]]);
+			
+			// Assign S_FIRST_ROW
+			if (sizeof($str[$blocks[$blockcount]]) == 0)
+			{
+				$vararray['S_FIRST_ROW'] = true;
+			}
+
+			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
+			// This is much more clever than going through the complete template data on display (phew)
+			$vararray['S_LAST_ROW'] = true;
+			if (sizeof($str[$blocks[$blockcount]]) > 0)
+			{
+				unset($str[$blocks[$blockcount]][sizeof($str[$blocks[$blockcount]]) - 1]['S_LAST_ROW']);
+			}
+
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
-			$vararray['S_ROW_COUNT'] = sizeof($str[$blocks[$blockcount]]);
 			$str[$blocks[$blockcount]][] = &$vararray;
 		}
 		else
 		{
 			// Top-level block.
+			$vararray['S_ROW_COUNT'] = sizeof($this->_tpldata[$blockname]);
+
+			// Assign S_FIRST_ROW
+			if (sizeof($this->_tpldata[$blockname]) == 0)
+			{
+				$vararray['S_FIRST_ROW'] = true;
+			}
+
+			// We always assign S_LAST_ROW and remove the entry before
+			$vararray['S_LAST_ROW'] = true;
+			if (sizeof($this->_tpldata[$blockname]) > 0)
+			{
+				unset($this->_tpldata[$blockname][sizeof($this->_tpldata[$blockname]) - 1]['S_LAST_ROW']);
+			}
+			
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
-			$vararray['S_ROW_COUNT'] = sizeof($this->_tpldata[$blockname]);
 			$this->_tpldata[$blockname][] = &$vararray;
 		}
 

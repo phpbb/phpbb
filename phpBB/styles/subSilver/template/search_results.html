@@ -30,7 +30,11 @@
 	<!-- BEGIN searchresults -->
 	<tr valign="middle">
 		<td class="row1" width="25" align="center">{searchresults.TOPIC_FOLDER_IMG}</td>
-		<td class="row1" width="25" align="center">{searchresults.TOPIC_ICON_IMG}</td>
+		<td class="row1" width="25" align="center">
+			<!-- IF {searchresults.TOPIC_ICON_IMG} -->
+				<img src="{T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}" width="{searchresults.TOPIC_ICON_IMG_WIDTH}" height="{searchresults.TOPIC_ICON_IMG_HEIGHT}" alt="" title="" />
+			<!-- ENDIF -->
+		</td>
 		<td class="row1">
 			<!-- IF searchresults.S_TOPIC_UNAPPROVED -->
 				<a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;

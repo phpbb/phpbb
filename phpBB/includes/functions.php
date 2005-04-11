@@ -1900,6 +1900,12 @@ function page_header($page_title = '')
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template',
 		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset',
 		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset/' . $user->data['user_lang'],
+		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
+		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
+		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
+		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
+		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
+		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
 		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
