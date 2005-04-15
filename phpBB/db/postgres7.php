@@ -123,7 +123,7 @@ class sql_db
 			$this->num_queries++;
 
 			$query = preg_replace("/LIMIT ([0-9]+),([ 0-9]+)/", "LIMIT \\2 OFFSET \\1", $query);
-			$query = preg_replace('#(.*SELECT.*)(username|user_email|ban_email) = \'(.*)\'#ise', "\"\\1LOWER(\\2) = '\" . strtolower('\\3') . \"'\"", $query);
+			$query = preg_replace('#(.*WHERE.*)(username|user_email|ban_email) = \'(.*)\'#ise', "\"\\1LOWER(\\2) = '\" . strtolower('\\3') . \"'\"", $query);
 
 			if( $transaction == BEGIN_TRANSACTION && !$this->in_transaction )
 			{
