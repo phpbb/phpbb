@@ -1068,7 +1068,7 @@ class auth
 			}
 		}
 
-		$hold_str = $userdata['user_permissions'];
+		$hold_str = '';
 		if (is_array($hold_ary))
 		{
 			ksort($hold_ary);
