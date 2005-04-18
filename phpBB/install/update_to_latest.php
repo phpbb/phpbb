@@ -420,6 +420,8 @@ switch ($row['config_value'])
 			
 		}
 
+	case '.0.2':
+
 	case '.0.3':
 
 		switch (SQL_LAYER)
@@ -900,6 +902,19 @@ switch ($row['config_value'])
 		}
 		$db->sql_freeresult($result);
 		
+	case '.0.6':
+	case '.0.7':
+	case '.0.8':
+	case '.0.9':
+	case '.0.10':
+	case '.0.11':
+	case '.0.12':
+	case '.0.13':
+	case '.0.14':
+
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_allowhtml = 1 WHERE user_id = ' . ANONYMOUS;
+		_sql($sql, $errored, $error_ary);
+
 		break;
 
 	default:
