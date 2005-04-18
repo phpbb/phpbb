@@ -47,9 +47,9 @@ if( isset($HTTP_GET_VARS['export_pack']) )
 	}
 }
 
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 //
 // Check to see what mode we should operate in.
@@ -57,6 +57,7 @@ require('pagestart.' . $phpEx);
 if( isset($HTTP_POST_VARS['mode']) || isset($HTTP_GET_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_POST_VARS['mode']) ) ? $HTTP_POST_VARS['mode'] : $HTTP_GET_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else
 {
@@ -72,7 +73,7 @@ $dir = @opendir($phpbb_root_path . $board_config['smilies_path']);
 
 while($file = @readdir($dir))
 {
-	if( !@is_dir($phpbb_root_path . $board_config['smilies_path'] . '/' . $file) )
+	if( !@is_dir(phpbb_realpath($phpbb_root_path . $board_config['smilies_path'] . '/' . $file)) )
 	{
 		$img_size = @getimagesize($phpbb_root_path . $board_config['smilies_path'] . '/' . $file);
 
@@ -239,7 +240,7 @@ else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_p
 			FROM " . SMILIES_TABLE;
 		if( !$result = $db->sql_query($sql) )
 		{
-			message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
+			message_die(GENERAL_ERROR, "Could not get smiley list", "", __LINE__, __FILE__, $sql);
 		}
 
 		$resultset = $db->sql_fetchrowset($result);
@@ -265,7 +266,7 @@ else if( isset($HTTP_POST_VARS['export_pack']) || isset($HTTP_GET_VARS['export_p
 	message_die(GENERAL_MESSAGE, $message);
 
 }
-else if( isset($HTTP_POST_VARS['add']) )
+else if( isset($HTTP_POST_VARS['add']) || isset($HTTP_GET_VARS['add']) )
 {
 	//
 	// Admin has selected to add a smiley.
@@ -286,7 +287,7 @@ else if( isset($HTTP_POST_VARS['add']) )
 	$template->assign_vars(array(
 		"L_SMILEY_TITLE" => $lang['smiley_title'],
 		"L_SMILEY_CONFIG" => $lang['smiley_config'],
-		"L_SMILEY_EXPLAIN" => $lang['smiley_instr'],
+		"L_SMILEY_EXPLAIN" => $lang['smile_desc'],
 		"L_SMILEY_CODE" => $lang['smiley_code'],
 		"L_SMILEY_URL" => $lang['smiley_url'],
 		"L_SMILEY_EMOTION" => $lang['smiley_emot'],
@@ -313,6 +314,7 @@ else if ( $mode != "" )
 			//
 
 			$smiley_id = ( !empty($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$smiley_id = intval($smiley_id);
 
 			$sql = "DELETE FROM " . SMILIES_TABLE . "
 				WHERE smilies_id = " . $smiley_id;
@@ -333,6 +335,7 @@ else if ( $mode != "" )
 			//
 
 			$smiley_id = ( !empty($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$smiley_id = intval($smiley_id);
 
 			$sql = "SELECT *
 				FROM " . SMILIES_TABLE . "
@@ -340,7 +343,7 @@ else if ( $mode != "" )
 			$result = $db->sql_query($sql);
 			if( !$result )
 			{
-				message_die(GENERAL_ERROR, $lang['smile_edit_err'], "", __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not obtain emoticon information', "", __LINE__, __FILE__, $sql);
 			}
 			$smile_data = $db->sql_fetchrow($result);
 
@@ -399,10 +402,17 @@ else if ( $mode != "" )
 			// Get the submitted data, being careful to ensure that we only
 			// accept the data we are looking for.
 			//
-			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
-			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
-			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
+			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? trim($HTTP_POST_VARS['smile_code']) : trim($HTTP_GET_VARS['smile_code']);
+			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? trim($HTTP_POST_VARS['smile_url']) : trim($HTTP_GET_VARS['smile_url']);
+			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? trim($HTTP_POST_VARS['smile_emotion']) : trim($HTTP_GET_VARS['smile_emotion']);
 			$smile_id = ( isset($HTTP_POST_VARS['smile_id']) ) ? intval($HTTP_POST_VARS['smile_id']) : intval($HTTP_GET_VARS['smile_id']);
+
+			// If no code was entered complain ...
+			if ($smile_code == '' || $smile_url == '')
+			{
+				message_die(MESSAGE, $lang['Fields_empty']);
+			}
+
 			//
 			// Convert < and > to proper htmlentities for parsing.
 			//
@@ -415,8 +425,7 @@ else if ( $mode != "" )
 			$sql = "UPDATE " . SMILIES_TABLE . "
 				SET code = '" . str_replace("\'", "''", $smile_code) . "', smile_url = '" . str_replace("\'", "''", $smile_url) . "', emoticon = '" . str_replace("\'", "''", $smile_emotion) . "'
 				WHERE smilies_id = $smile_id";
-			$result = $db->sql_query($sql);
-			if( !$result )
+			if( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't update smilies info", "", __LINE__, __FILE__, $sql);
 			}
@@ -438,6 +447,12 @@ else if ( $mode != "" )
 			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
 			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
 			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
+
+			// If no code was entered complain ...
+			if ($smile_code == '' || $smile_url == '')
+			{
+				message_die(MESSAGE, $lang['Fields_empty']);
+			}
 
 			//
 			// Convert < and > to proper htmlentities for parsing.
@@ -536,6 +551,6 @@ else
 //
 // Page Footer
 //
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

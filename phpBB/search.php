@@ -60,6 +60,7 @@ else
 if ( isset($HTTP_POST_VARS['search_author']) || isset($HTTP_GET_VARS['search_author']))
 {
 	$search_author = ( isset($HTTP_POST_VARS['search_author']) ) ? $HTTP_POST_VARS['search_author'] : $HTTP_GET_VARS['search_author'];
+	$search_author = phpbb_clean_username($search_author);
 }
 else
 {
@@ -69,6 +70,7 @@ else
 $search_id = ( isset($HTTP_GET_VARS['search_id']) ) ? $HTTP_GET_VARS['search_id'] : '';
 
 $show_results = ( isset($HTTP_POST_VARS['show_results']) ) ? $HTTP_POST_VARS['show_results'] : 'posts';
+$show_results = ($show_results == 'topics') ? 'topics' : 'posts';
 
 if ( isset($HTTP_POST_VARS['search_terms']) )
 {
@@ -107,19 +109,22 @@ else
 if ( !empty($HTTP_POST_VARS['search_time']) || !empty($HTTP_GET_VARS['search_time']))
 {
 	$search_time = time() - ( ( ( !empty($HTTP_POST_VARS['search_time']) ) ? intval($HTTP_POST_VARS['search_time']) : intval($HTTP_GET_VARS['search_time']) ) * 86400 );
+	$topic_days = (!empty($HTTP_POST_VARS['search_time'])) ? intval($HTTP_POST_VARS['search_time']) : intval($HTTP_GET_VARS['search_time']);
 }
 else
 {
 	$search_time = 0;
+	$topic_days = 0;
 }
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 
-//
-// Define some globally used data
-//
 $sort_by_types = array($lang['Sort_Time'], $lang['Sort_Post_Subject'], $lang['Sort_Topic_Title'], $lang['Sort_Author'], $lang['Sort_Forum']);
-$sort_by_sql = array('p.post_time', 'pt.post_subject', 't.topic_title', 'u.username', 'f.forum_id');
+
+//
+// encoding match for workaround
+//
+$multibyte_charset = 'utf-8, big5, shift_jis, euc-kr, gb2312';
 
 //
 // Begin core code
@@ -143,6 +148,11 @@ if ( $mode == 'searchuser' )
 else if ( $search_keywords != '' || $search_author != '' || $search_id )
 {
 	$store_vars = array('search_results', 'total_match_count', 'split_search', 'sort_by', 'sort_dir', 'show_results', 'return_chars');
+	$search_results = '';
+
+	//
+	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
+	$limiter = 5000;
 
 	//
 	// Cycle through options ...
@@ -161,8 +171,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				}
 				else
 				{
-					header("Location: login.$phpEx?redirect=search&search_id=newposts");
-					exit;
+					redirect(append_sid("login.$phpEx?redirect=search.$phpEx&search_id=newposts", true));
 				}
 
 				$show_results = 'topics';
@@ -175,12 +184,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				{
 					$sql = "SELECT post_id 
 						FROM " . POSTS_TABLE . " 
-						WHERE poster_id = " . $userdata['user_id'];;
+						WHERE poster_id = " . $userdata['user_id'];
 				}
 				else
 				{
-					header("Location: login.$phpEx?redirect=search&search_id=egosearch");
-					exit;
+					redirect(append_sid("login.$phpEx?redirect=search.$phpEx&search_id=egosearch", true));
 				}
 
 				$show_results = 'topics';
@@ -189,6 +197,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 			else
 			{
+				if (preg_match('#^[\*%]+$#', trim($search_author)) || preg_match('#^[^\*]{1,2}$#', str_replace(array('*', '%'), '', trim($search_author))))
+				{
+					$search_author = '';
+				}
+
 				$search_author = str_replace('*', '%', trim($search_author));
 				
 				$sql = "SELECT user_id
@@ -216,6 +229,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 				$sql = "SELECT post_id 
 					FROM " . POSTS_TABLE . " 
 					WHERE poster_id IN ($matching_userids)";
+				
+				if ($search_time)
+				{
+					$sql .= " AND post_time >= " . $search_time;
+				}
 			}
 
 			if ( !($result = $db->sql_query($sql)) )
@@ -237,12 +255,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_stopwords.txt'); 
 			$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/search_synonyms.txt'); 
-		
-			$split_search = array();
-			$cleaned_search = clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array);
-			$split_search = split_words($cleaned_search, 'search');
 
-			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : '';
+			$split_search = array();
+			$split_search = ( !strstr($multibyte_charset, $lang['ENCODING']) ) ?  split_words(clean_words('search', stripslashes($search_keywords), $stopword_array, $synonym_array), 'search') : split(' ', $search_keywords);	
+
+			$search_msg_only = ( !$search_fields ) ? "AND m.title_match = 0" : ( ( strstr($multibyte_charset, $lang['ENCODING']) ) ? '' : '' );
 
 			$word_count = 0;
 			$current_match_type = 'or';
@@ -252,6 +269,12 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			for($i = 0; $i < count($split_search); $i++)
 			{
+				if (preg_match('#^[\*%]+$#', trim($split_search[$i])) || preg_match('#^[^\*]{1,2}$#', str_replace(array('*', '%'), '', trim($split_search[$i]))))
+				{
+					$split_search[$i] = '';
+					continue;
+				}
+
 				switch ( $split_search[$i] )
 				{
 					case 'and':
@@ -272,14 +295,25 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 							$current_match_type = 'and';
 						}
 
-						$match_word = str_replace('*', '%', $split_search[$i]);
-
-						$sql = "SELECT m.post_id 
-							FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
-							WHERE w.word_text LIKE '$match_word' 
-								AND m.word_id = w.word_id 
-								AND w.word_common <> 1 
+						if ( !strstr($multibyte_charset, $lang['ENCODING']) )
+						{
+							$match_word = str_replace('*', '%', $split_search[$i]);
+							$sql = "SELECT m.post_id 
+								FROM " . SEARCH_WORD_TABLE . " w, " . SEARCH_MATCH_TABLE . " m 
+								WHERE w.word_text LIKE '$match_word' 
+									AND m.word_id = w.word_id 
+									AND w.word_common <> 1 
+									$search_msg_only";
+						}
+						else
+						{
+							$match_word =  addslashes('%' . str_replace('*', '', $split_search[$i]) . '%');
+							$search_msg_only = ( $search_fields ) ? "OR post_subject LIKE '$match_word'" : '';
+							$sql = "SELECT post_id
+								FROM " . POSTS_TEXT_TABLE . "
+								WHERE post_text LIKE '$match_word'
 								$search_msg_only";
+						}
 						if ( !($result = $db->sql_query($sql)) )
 						{
 							message_die(GENERAL_ERROR, 'Could not obtain matched posts list', '', __LINE__, __FILE__, $sql);
@@ -384,6 +418,11 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		//
 		if ( $search_author != '' )
 		{
+			if (preg_match('#^[\*%]+$#', trim($search_author)) || preg_match('#^[^\*]{1,2}$#', str_replace(array('*', '%'), '', trim($search_author))))
+			{
+				$search_author = '';
+			}
+
 			$search_author = str_replace('*', '%', trim(str_replace("\'", "''", $search_author)));
 		}
 
@@ -391,29 +430,125 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			if ( $show_results == 'topics' )
 			{
-				$where_sql = '';
+				//
+				// This one is a beast, try to seperate it a bit (workaround for connection timeouts)
+				//
+				$search_id_chunks = array();
+				$count = 0;
+				$chunk = 0;
 
-				if ( $search_time )
+				if (count($search_ids) > $limiter)
 				{
-					$where_sql .= ( $search_author == '' && $auth_sql == ''  ) ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time ";
-				}
-
-				if ( $search_author == '' && $auth_sql == '' )
-				{
-					$sql = "SELECT topic_id 
-						FROM " . POSTS_TABLE . "
-						WHERE post_id IN (" . implode(", ", $search_ids) . ") 
-							$where_sql 
-						GROUP BY topic_id";
+					for ($i = 0; $i < count($search_ids); $i++) 
+					{
+						if ($count == $limiter)
+						{
+							$chunk++;
+							$count = 0;
+						}
+					
+						$search_id_chunks[$chunk][$count] = $search_ids[$i];
+						$count++;
+					}
 				}
 				else
 				{
-					$from_sql = POSTS_TABLE . " p"; 
+					$search_id_chunks[0] = $search_ids;
+				}
 
-					if ( $search_author != '' )
+				$search_ids = array();
+
+				for ($i = 0; $i < count($search_id_chunks); $i++)
+				{
+					$where_sql = '';
+
+					if ( $search_time )
 					{
-						$from_sql .= ", " . USERS_TABLE . " u";
-						$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author' ";
+						$where_sql .= ( $search_author == '' && $auth_sql == ''  ) ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time ";
+					}
+	
+					if ( $search_author == '' && $auth_sql == '' )
+					{
+						$sql = "SELECT topic_id 
+							FROM " . POSTS_TABLE . "
+							WHERE post_id IN (" . implode(", ", $search_id_chunks[$i]) . ") 
+							$where_sql 
+							GROUP BY topic_id";
+					}
+					else
+					{
+						$from_sql = POSTS_TABLE . " p"; 
+
+						if ( $search_author != '' )
+						{
+							$from_sql .= ", " . USERS_TABLE . " u";
+							$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author' ";
+						}
+
+						if ( $auth_sql != '' )
+						{
+							$from_sql .= ", " . FORUMS_TABLE . " f";
+							$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
+						}
+
+						$sql = "SELECT p.topic_id 
+							FROM $from_sql 
+							WHERE p.post_id IN (" . implode(", ", $search_id_chunks[$i]) . ") 
+								$where_sql 
+							GROUP BY p.topic_id";
+					}
+
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, 'Could not obtain topic ids', '', __LINE__, __FILE__, $sql);
+					}
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$search_ids[] = $row['topic_id'];
+					}
+					$db->sql_freeresult($result);
+				}
+
+				$total_match_count = sizeof($search_ids);
+		
+			}
+			else if ( $search_author != '' || $search_time || $auth_sql != '' )
+			{
+				$search_id_chunks = array();
+				$count = 0;
+				$chunk = 0;
+
+				if (count($search_ids) > $limiter)
+				{
+					for ($i = 0; $i < count($search_ids); $i++) 
+					{
+						if ($count == $limiter)
+						{
+							$chunk++;
+							$count = 0;
+						}
+					
+						$search_id_chunks[$chunk][$count] = $search_ids[$i];
+						$count++;
+					}
+				}
+				else
+				{
+					$search_id_chunks[0] = $search_ids;
+				}
+
+				$search_ids = array();
+
+				for ($i = 0; $i < count($search_id_chunks); $i++)
+				{
+					$where_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')' : 'p.post_id IN (' . implode(', ', $search_id_chunks[$i]) . ')';
+					$select_sql = ( $search_author == '' && $auth_sql == '' ) ? 'post_id' : 'p.post_id';
+					$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . ' p';
+
+					if ( $search_time )
+					{
+						$where_sql .= ( $search_author == '' && $auth_sql == '' ) ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time";
 					}
 
 					if ( $auth_sql != '' )
@@ -422,65 +557,26 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
 					}
 
-					$sql = "SELECT p.topic_id 
+					if ( $search_author != '' )
+					{
+						$from_sql .= ", " . USERS_TABLE . " u";
+						$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author'";
+					}
+
+					$sql = "SELECT " . $select_sql . " 
 						FROM $from_sql 
-						WHERE p.post_id IN (" . implode(", ", $search_ids) . ") 
-							$where_sql 
-						GROUP BY p.topic_id";
+						WHERE $where_sql";
+					if ( !($result = $db->sql_query($sql)) )
+					{
+						message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
+					}
+
+					while( $row = $db->sql_fetchrow($result) )
+					{
+						$search_ids[] = $row['post_id'];
+					}
+					$db->sql_freeresult($result);
 				}
-
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not obtain topic ids', '', __LINE__, __FILE__, $sql);
-				}
-
-				$search_ids = array();
-				while( $row = $db->sql_fetchrow($result) )
-				{
-					$search_ids[] = $row['topic_id'];
-				}
-				$db->sql_freeresult($result);
-
-				$total_match_count = sizeof($search_ids);
-		
-			}
-			else if ( $search_author != '' || $search_time || $auth_sql != '' )
-			{
-				$where_sql = ( $search_author == '' && $auth_sql == '' ) ? "post_id IN (" . implode(', ', $search_ids) . ")" : "p.post_id IN (" . implode(", ", $search_ids) . ")";
-				$from_sql = (  $search_author == '' && $auth_sql == '' ) ? POSTS_TABLE : POSTS_TABLE . " p";
-
-				if ( $search_time )
-				{
-					$where_sql .= ( $search_author == '' && $auth_sql == '' ) ? " AND post_time >= $search_time " : " AND p.post_time >= $search_time";
-				}
-
-				if ( $auth_sql != '' )
-				{
-					$from_sql .= ", " . FORUMS_TABLE . " f";
-					$where_sql .= " AND f.forum_id = p.forum_id AND $auth_sql";
-				}
-
-				if ( $search_author != '' )
-				{
-					$from_sql .= ", " . USERS_TABLE . " u";
-					$where_sql .= " AND u.user_id = p.poster_id AND u.username LIKE '$search_author'";
-				}
-
-				$sql = "SELECT p.post_id 
-					FROM $from_sql 
-					WHERE $where_sql";
-				if ( !($result = $db->sql_query($sql)) )
-				{
-					message_die(GENERAL_ERROR, 'Could not obtain post ids', '', __LINE__, __FILE__, $sql);
-				}
-
-				$search_ids = array();
-				while( $row = $db->sql_fetchrow($result) )
-				{
-					$search_ids[] = $row['post_id'];
-				}
-
-				$db->sql_freeresult($result);
 
 				$total_match_count = count($search_ids);
 			}
@@ -566,6 +662,21 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		// so we can serialize it and place it in the DB
 		//
 		$store_search_data = array();
+
+		//
+		// Limit the character length (and with this the results displayed at all following pages) to prevent
+		// truncated result arrays. Normally, search results above 12000 are affected.
+		// - to include or not to include
+		/*
+		$max_result_length = 60000;
+		if (strlen($search_results) > $max_result_length)
+		{
+			$search_results = substr($search_results, 0, $max_result_length);
+			$search_results = substr($search_results, 0, strrpos($search_results, ','));
+			$total_match_count = count(explode(', ', $search_results));
+		}
+		*/
+
 		for($i = 0; $i < count($store_vars); $i++)
 		{
 			$store_search_data[$store_vars[$i]] = $$store_vars[$i];
@@ -578,7 +689,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$search_id = mt_rand();
 
 		$sql = "UPDATE " . SEARCH_TABLE . " 
-			SET search_id = $search_id, search_array = '$result_array'
+			SET search_id = $search_id, search_array = '" . str_replace("\'", "''", $result_array) . "'
 			WHERE session_id = '" . $userdata['session_id'] . "'";
 		if ( !($result = $db->sql_query($sql)) || !$db->sql_affectedrows() )
 		{
@@ -592,7 +703,8 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	}
 	else
 	{
-		if ( intval($search_id) )
+		$search_id = intval($search_id);
+		if ( $search_id )
 		{
 			$sql = "SELECT search_array 
 				FROM " . SEARCH_TABLE . " 
@@ -640,10 +752,29 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 					AND p2.post_id = t.topic_last_post_id
 					AND u2.user_id = p2.poster_id";
 		}
-		
+
 		$per_page = ( $show_results == 'posts' ) ? $board_config['posts_per_page'] : $board_config['topics_per_page'];
 
-		$sql .= " ORDER BY " . $sort_by_sql[$sort_by] . " $sort_dir LIMIT $start, " . $per_page;
+		$sql .= " ORDER BY ";
+		switch ( $sort_by )
+		{
+			case 1:
+				$sql .= ( $show_results == 'posts' ) ? 'pt.post_subject' : 't.topic_title';
+				break;
+			case 2:
+				$sql .= 't.topic_title';
+				break;
+			case 3:
+				$sql .= 'u.username';
+				break;
+			case 4:
+				$sql .= 'f.forum_id';
+				break;
+			default:
+				$sql .= ( $show_results == 'posts' ) ? 'p.post_time' : 'p2.post_time';
+				break;
+		}
+		$sql .= " $sort_dir LIMIT $start, " . $per_page;
 
 		if ( !$result = $db->sql_query($sql) )
 		{
@@ -725,7 +856,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$forum_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $searchset[$i]['forum_id']);
 			$topic_url = append_sid("viewtopic.$phpEx?" . POST_TOPIC_URL . '=' . $searchset[$i]['topic_id'] . "&amp;highlight=$highlight_active");
-			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active#" . $searchset[$i]['post_id']);
+			$post_url = append_sid("viewtopic.$phpEx?" . POST_POST_URL . '=' . $searchset[$i]['post_id'] . "&amp;highlight=$highlight_active") . '#' . $searchset[$i]['post_id'];
 
 			$post_date = create_date($board_config['default_dateformat'], $searchset[$i]['post_time'], $board_config['board_timezone']);
 
@@ -751,11 +882,6 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 						$message = preg_replace("/\[.*?:$bbcode_uid:?.*?\]/si", '', $message);
 						$message = preg_replace('/\[url\]|\[\/url\]/si', '', $message);
 						$message = ( strlen($message) > $return_chars ) ? substr($message, 0, $return_chars) . ' ...' : $message;
-
-						if ( count($search_string) )
-						{
-							$message = preg_replace($search_string, $replace_string, $message);
-						}
 					}
 					else
 					{
@@ -1291,7 +1417,7 @@ $template->assign_vars(array(
 	'S_CATEGORY_OPTIONS' => $s_categories, 
 	'S_TIME_OPTIONS' => $s_time, 
 	'S_SORT_OPTIONS' => $s_sort_by,
-	'S_HIDDEN_FIELDS' => $s_hidden_fields)
+	'S_HIDDEN_FIELDS' => '')
 );
 
 $template->pparse('body');

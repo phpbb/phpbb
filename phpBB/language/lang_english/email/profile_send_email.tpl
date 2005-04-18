@@ -1,3 +1,5 @@
+Charset: iso-8859-1
+
 Hello {TO_USERNAME},
 
 The following is an email sent to you by {FROM_USERNAME} via your account on {SITENAME}. If this message is spam, contains abusive or other comments you find offensive please contact the webmaster of the board at the following address:

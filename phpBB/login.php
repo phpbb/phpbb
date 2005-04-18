@@ -40,23 +40,26 @@ init_userprefs($userdata);
 // End session management
 //
 
-$header_location = ( @preg_match('/Microsoft|WebSTAR|Xitami/', getenv('SERVER_SOFTWARE')) ) ? 'Refresh: 0; URL=' : 'Location: ';
+// session id check
+if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+{
+	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+}
+else
+{
+	$sid = '';
+}
 
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
-	//
-	// This appears to work for IIS5 CGI under Win2K. Uses getenv
-	// since this doesn't exist for ISAPI mode and therefore the 
-	// normal Location redirector is used in preference
-	//
 	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
 	{
-		$username = isset($HTTP_POST_VARS['username']) ? $HTTP_POST_VARS['username'] : '';
+		$username = isset($HTTP_POST_VARS['username']) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
 
-		$sql = "SELECT user_id, username, user_password, user_active, user_level 
+		$sql = "SELECT user_id, username, user_password, user_active, user_level
 			FROM " . USERS_TABLE . "
-			WHERE username = '" . str_replace("\'", "''", $username) . "'";
+			WHERE username = '" . str_replace("\\'", "''", $username) . "'";
 		if ( !($result = $db->sql_query($sql)) )
 		{
 			message_die(GENERAL_ERROR, 'Error in obtaining userdata', '', __LINE__, __FILE__, $sql);
@@ -66,7 +69,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		{
 			if( $row['user_level'] != ADMIN && $board_config['board_disable'] )
 			{
-				header($header_location . append_sid("index.$phpEx", true));
+				redirect(append_sid("index.$phpEx", true));
 			}
 			else
 			{
@@ -78,14 +81,8 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 
 					if( $session_id )
 					{
-						if( !empty($HTTP_POST_VARS['redirect']) )
-						{
-							header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
-						}
-						else
-						{
-							header($header_location . append_sid("index.$phpEx", true));
-						}
+						$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "index.$phpEx";
+						redirect(append_sid($url, true));
 					}
 					else
 					{
@@ -94,13 +91,19 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				}
 				else
 				{
-					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : '';
+					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
+					$redirect = str_replace('?', '&', $redirect);
+
+					if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r"))
+					{
+						message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
+					}
 
 					$template->assign_vars(array(
-						'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
+						'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
 					);
 
-					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . append_sid("login.$phpEx?redirect=$redirect") . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 					message_die(GENERAL_MESSAGE, $message);
 				}
@@ -108,13 +111,19 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		}
 		else
 		{
-			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? $HTTP_POST_VARS['redirect'] : "";
+			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "";
+			$redirect = str_replace("?", "&", $redirect);
+
+			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r"))
+			{
+				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
+			}
 
 			$template->assign_vars(array(
-				'META' => '<meta http-equiv="refresh" content="3;url=' . append_sid("login.$phpEx?redirect=$redirect") . '">')
+				'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
 			);
 
-			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], '<a href="' . append_sid("login.$phpEx?redirect=$redirect") . '">', '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+			$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
@@ -126,25 +135,21 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			session_end($userdata['session_id'], $userdata['user_id']);
 		}
 
-		if( !empty($HTTP_POST_VARS['redirect']) )
+		if (!empty($HTTP_POST_VARS['redirect']) || !empty($HTTP_GET_VARS['redirect']))
 		{
-			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
+			$url = (!empty($HTTP_POST_VARS['redirect'])) ? htmlspecialchars($HTTP_POST_VARS['redirect']) : htmlspecialchars($HTTP_GET_VARS['redirect']);
+			$url = str_replace('&amp;', '&', $url);
+			redirect(append_sid($url, true));
 		}
 		else
 		{
-			header($header_location . append_sid("index.$phpEx", true));
+			redirect(append_sid("index.$phpEx", true));
 		}
 	}
 	else
 	{
-		if( !empty($HTTP_POST_VARS['redirect']) )
-		{
-			header($header_location . append_sid($HTTP_POST_VARS['redirect'], true));
-		}
-		else
-		{
-			header($header_location . append_sid("index.$phpEx", true));
-		}
+		$url = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "index.$phpEx";
+		redirect(append_sid($url, true));
 	}
 }
 else
@@ -166,10 +171,9 @@ else
 		{
 			$forward_to = $HTTP_SERVER_VARS['QUERY_STRING'];
 
-			if( preg_match("/^redirect=(.*)$/si", $forward_to, $forward_matches) )
+			if( preg_match("/^redirect=([a-z0-9\.#\/\?&=\+\-_]+)/si", $forward_to, $forward_matches) )
 			{
 				$forward_to = ( !empty($forward_matches[3]) ) ? $forward_matches[3] : $forward_matches[1];
-
 				$forward_match = explode('&', $forward_to);
 
 				if(count($forward_match) > 1)
@@ -187,7 +191,6 @@ else
 							$forward_page .= $forward_match[$i];
 						}
 					}
-
 					$forward_page = $forward_match[0] . '?' . $forward_page;
 				}
 				else
@@ -209,11 +212,11 @@ else
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'L_ENTER_PASSWORD' => $lang['Enter_password'], 
+			'L_ENTER_PASSWORD' => $lang['Enter_password'],
 			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
-			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"), 
-			
+			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"),
+
 			'S_HIDDEN_FIELDS' => $s_hidden_fields)
 		);
 
@@ -223,7 +226,7 @@ else
 	}
 	else
 	{
-		header($header_location . append_sid("index.$phpEx", true));
+		redirect(append_sid("index.$phpEx", true));
 	}
 
 }

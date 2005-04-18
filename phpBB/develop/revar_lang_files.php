@@ -36,7 +36,7 @@ $dir = opendir($dirname);
 
 while ( $file = readdir($dir) )
 {
-	if ( ereg("^lang_", $file) && !is_file($dirname . "/" . $file) && !is_link($dirname . "/" . $file) )
+	if ( ereg("^lang_", $file) && !is_file(realpath($dirname . "/" . $file)) && !is_link(realpath($dirname . "/" . $file)) )
 	{
 		foreach($vars as $lang_file => $lang_var)
 		{
