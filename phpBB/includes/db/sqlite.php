@@ -11,10 +11,10 @@
 /**
 * @ignore
 */
-if (!defined('SQL_LAYER'))
+if (!defined("SQL_LAYER"))
 {
 
-define('SQL_LAYER', 'sqlite');
+define("SQL_LAYER","sqlite");
 
 /**
 * @package dbal_sqlite

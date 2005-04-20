@@ -87,18 +87,23 @@ class sql_db
 		switch ($status)
 		{
 			case 'begin':
-				$this->transaction = true;
 				$result = @mysql_query('BEGIN', $this->db_connect_id);
+				$this->transaction = true;
 				break;
 
 			case 'commit':
-				$this->transaction = false;
 				$result = @mysql_query('COMMIT', $this->db_connect_id);
+				$this->transaction = false;
+				
+				if (!$result)
+				{
+					@mysql_query('ROLLBACK', $this->db_connect_id);
+				}
 				break;
 
 			case 'rollback':
-				$this->transaction = false;
 				$result = @mysql_query('ROLLBACK', $this->db_connect_id);
+				$this->transaction = false;
 				break;
 
 			default:
@@ -281,16 +286,20 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
+
 		if ($query_id)
 		{
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
+
+			$result = array();
 			while ($this->rowset[$query_id] = $this->sql_fetchrow($query_id))
 			{
 				$result[] = $this->rowset[$query_id];
 			}
 			return $result;
 		}
+		
 		return false;
 	}
 
@@ -300,6 +309,7 @@ class sql_db
 		{
 			$query_id = $this->query_result;
 		}
+
 		if ($query_id)
 		{
 			if ($rownum > -1)
@@ -310,7 +320,7 @@ class sql_db
 			{
 				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
 				{
-					if ($this->sql_fetchrow())
+					if ($this->sql_fetchrow($query_id))
 					{
 						$result = $this->row[$query_id][$field];
 					}

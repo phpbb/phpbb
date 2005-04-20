@@ -96,6 +96,12 @@ class sql_db
 				$result = @mysqli_commit($this->db_connect_id);
 				@mysqli_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
+
+				if (!$result)
+				{
+					@mysqli_rollback($this->db_connect_id);
+					@mysqli_autocommit($this->db_connect_id, true);
+				}
 				break;
 
 			case 'rollback':
@@ -290,13 +296,15 @@ class sql_db
 
 			unset($this->rowset[$cur_index]);
 			unset($this->row[$cur_index]);
-
+			
+			$result = array();
 			while ($this->rowset[$cur_index] = $this->sql_fetchrow($query_id))
 			{
 				$result[] = $this->rowset[$cur_index];
 			}
 			return $result;
 		}
+
 		return false;
 	}
 

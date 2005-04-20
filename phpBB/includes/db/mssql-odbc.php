@@ -107,6 +107,12 @@ class sql_db
 				$result = @odbc_commit($this->db_connect_id);
 				@odbc_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
+
+				if (!$result)
+				{
+					@odbc_rollback($this->db_connect_id);
+					@odbc_autocommit($this->db_connect_id, true);
+				}
 				break;
 
 			case 'rollback':
@@ -467,7 +473,7 @@ class sql_db
 
 	function sql_escape($msg)
 	{
-		return $msg;
+		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
 	}
 
 	function sql_error($sql = '')

@@ -92,6 +92,11 @@ class sql_db
 			case 'commit':
 				$result = @ibase_commit();
 				$this->transaction = false;
+
+				if (!$result)
+				{
+					@ibase_rollback();
+				}
 				break;
 
 			case 'rollback':
@@ -273,6 +278,7 @@ class sql_db
 			unset($this->rowset[$query_id]);
 			unset($this->row[$query_id]);
 
+			$result = array();
 			while ($this->rowset[$query_id] = get_object_vars(@ibase_fetch_object($query_id, IBASE_TEXT)))
 			{
 				$result[] = $this->rowset[$query_id];
@@ -309,7 +315,7 @@ class sql_db
 			{
 				if (empty($this->row[$query_id]) && empty($this->rowset[$query_id]))
 				{
-					if ($this->sql_fetchrow())
+					if ($this->sql_fetchrow($query_id))
 					{
 						$result = $this->row[$query_id][$field];
 					}
