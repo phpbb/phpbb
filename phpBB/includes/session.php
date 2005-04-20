@@ -804,7 +804,7 @@ class user extends session
 		$db->sql_freeresult($result);
 	}
 
-	function img($img, $alt = '', $width = false, $suffix = '')
+	function img($img, $alt = '', $width = false, $suffix = '', $type = 'full_tag')
 	{
 		static $imgs;
 		global $phpbb_root_path;
@@ -832,15 +832,31 @@ class user extends session
 				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
 			}
 
-			$imgsrc = '"' . $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc) . '"';
-			$width = ($width) ? ' width="' . $width . '"' : '';
-			$height = ($height) ? ' height="' . $height . '"' : '';
-
-			$imgs[$img . $suffix] = $imgsrc . $width . $height;
+			$imgs[$img . $suffix]['src'] = $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
+			$imgs[$img . $suffix]['width'] = $width;
+			$imgs[$img . $suffix]['height'] = ($height) ? ' height="' . $height . '"' : '';
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
-		return '<img src=' . $imgs[$img . $suffix] . ' alt="' . $alt . '" title="' . $alt . '" name="' . $img . '" />';
+		
+		switch ($type)
+		{
+			case 'src':
+				return $imgs[$img . $suffix]['src'];
+				break;
+			
+			case 'width':
+				return $imgs[$img . $suffix]['width'];
+				break;
+
+			case 'height':
+				return $imgs[$img . $suffix]['height'];
+				break;
+
+			default:
+				return '<img src="' . $imgs[$img . $suffix]['src'] . '"' . (($imgs[$img . $suffix]['width']) ? ' width="' . $imgs[$img . $suffix]['width'] . '"' : '') . (($imgs[$img . $suffix]['height']) ? ' height="' . $imgs[$img . $suffix]['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
+				break;
+		}
 	}
 
 	// Start code for checking/setting option bit field for user table
