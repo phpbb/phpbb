@@ -50,7 +50,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT2  DEFAULT '0' NOT NULL,
-  auth_setting INT2 DEFAULT '0' NOT NULL,
+  auth_setting INT2 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX group_id_phpbb_auth_groups_index ON phpbb_auth_groups (group_id);
@@ -61,7 +61,7 @@ CREATE SEQUENCE phpbb_auth_options_auth_opti;
 
 CREATE TABLE phpbb_auth_options (
   auth_option_id INT2 DEFAULT nextval('phpbb_auth_options_auth_opti'),
-  auth_option char(20) NOT NULL,
+  auth_option varchar(20) NOT NULL,
   is_global INT2 DEFAULT '0' NOT NULL,
   is_local INT2 DEFAULT '0' NOT NULL,
   founder_only INT2 DEFAULT '0' NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE phpbb_auth_users (
   user_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT2  DEFAULT '0' NOT NULL,
-  auth_setting INT2 DEFAULT '0' NOT NULL,
+  auth_setting INT2 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX user_id_phpbb_auth_users_index ON phpbb_auth_users (user_id);
@@ -137,7 +137,7 @@ CREATE TABLE phpbb_bbcodes (
 CREATE TABLE phpbb_bookmarks (
    topic_id INT4  DEFAULT '0' NOT NULL,
    user_id INT4  DEFAULT '0' NOT NULL,
-   order_id INT4  DEFAULT '0' NOT NULL,
+   order_id INT4  DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX order_id_phpbb_bookmarks_index ON phpbb_bookmarks (order_id);
@@ -182,9 +182,9 @@ CREATE INDEX is_dynamic_phpbb_config_index ON phpbb_config (is_dynamic);
 
 /* Table: phpbb_confirm */
 CREATE TABLE phpbb_confirm (
-  confirm_id char(32) DEFAULT '' NOT NULL,
-  session_id char(32) DEFAULT '' NOT NULL,
-  code char(6) DEFAULT '' NOT NULL,
+  confirm_id varchar(32) DEFAULT '' NOT NULL,
+  session_id varchar(32) DEFAULT '' NOT NULL,
+  code varchar(6) DEFAULT '' NOT NULL,
   PRIMARY KEY (session_id,confirm_id)
 );
 
@@ -239,7 +239,7 @@ CREATE SEQUENCE phpbb_extension_groups_group;
 
 CREATE TABLE phpbb_extension_groups (
   group_id INT4 DEFAULT nextval('phpbb_extension_groups_group'),
-  group_name char(20) NOT NULL,
+  group_name varchar(20) NOT NULL,
   cat_id INT2 DEFAULT '0' NOT NULL,
   allow_group INT2 DEFAULT '0' NOT NULL,
   download_mode INT2  DEFAULT '1' NOT NULL,
@@ -319,7 +319,7 @@ SELECT SETVAL('phpbb_forums_forum_id_seq',(select case when max(forum_id)>0 then
 CREATE TABLE phpbb_forum_access (
   forum_id INT4  DEFAULT '0' NOT NULL,
   user_id INT4  DEFAULT '0' NOT NULL,
-  session_id char(32) DEFAULT '' NOT NULL,
+  session_id varchar(32) DEFAULT '' NOT NULL,
   PRIMARY KEY (forum_id,user_id,session_id),
   CHECK (forum_id>=0),
   CHECK (user_id>=0)
@@ -339,7 +339,7 @@ CREATE TABLE phpbb_forums_marking (
 CREATE TABLE phpbb_forums_watch (
   forum_id INT2  DEFAULT '0' NOT NULL,
   user_id INT4 DEFAULT '0' NOT NULL,
-  notify_status INT2 DEFAULT '0' NOT NULL,
+  notify_status INT2 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX forum_id_phpbb_forums_watch_index ON phpbb_forums_watch (forum_id);
@@ -444,10 +444,10 @@ SELECT SETVAL('phpbb_log_log_id_seq',(select case when max(log_id)>0 then max(lo
 CREATE TABLE phpbb_moderator_cache (
   forum_id INT4  NOT NULL,
   user_id INT4  DEFAULT '0' NOT NULL,
-  username char(30) DEFAULT '' NOT NULL,
+  username varchar(30) DEFAULT '' NOT NULL,
   group_id INT4  DEFAULT '0' NOT NULL,
-  groupname char(30) DEFAULT '' NOT NULL,
-  display_on_index INT2  DEFAULT '1' NOT NULL,
+  groupname varchar(30) DEFAULT '' NOT NULL,
+  display_on_index INT2  DEFAULT '1' NOT NULL
 );
 
 CREATE INDEX display_on_index_phpbb_moderator_cache_index ON phpbb_moderator_cache (display_on_index);
@@ -458,7 +458,7 @@ CREATE SEQUENCE phpbb_modules_module_id_seq;
 
 CREATE TABLE phpbb_modules (
   module_id INT4 DEFAULT nextval('phpbb_modules_module_id_seq'),
-  module_type char(3) DEFAULT '' NOT NULL,
+  module_type varchar(3) DEFAULT '' NOT NULL,
   module_title varchar(50) DEFAULT '' NOT NULL,
   module_filename varchar(50) DEFAULT '' NOT NULL,
   module_order INT4 DEFAULT '0' NOT NULL,
@@ -478,7 +478,7 @@ CREATE TABLE phpbb_poll_results (
   poll_option_id INT2  DEFAULT '0' NOT NULL,
   topic_id INT4  NOT NULL,
   poll_option_text varchar(255) NOT NULL,
-  poll_option_total INT4  DEFAULT '0' NOT NULL,
+  poll_option_total INT4  DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX poll_option_id_phpbb_poll_results_index ON phpbb_poll_results (poll_option_id);
@@ -489,7 +489,7 @@ CREATE TABLE phpbb_poll_voters (
   topic_id INT4  DEFAULT '0' NOT NULL,
   poll_option_id INT2  DEFAULT '0' NOT NULL,
   vote_user_id INT4  DEFAULT '0' NOT NULL,
-  vote_user_ip varchar(40) NOT NULL,
+  vote_user_ip varchar(40) NOT NULL
 );
 
 CREATE INDEX topic_id_phpbb_poll_voters_index ON phpbb_poll_voters (topic_id);
@@ -642,12 +642,12 @@ CREATE TABLE phpbb_privmsgs_to (
    user_id INT4  DEFAULT '0' NOT NULL,
    author_id INT4  DEFAULT '0' NOT NULL,
    deleted INT2  DEFAULT '0' NOT NULL,
-   new INT2  DEFAULT '1' NOT NULL,
+   "new" INT2  DEFAULT '1' NOT NULL,
    unread INT2  DEFAULT '1' NOT NULL,
    replied INT2  DEFAULT '0' NOT NULL,
    marked INT2  DEFAULT '0' NOT NULL,
    forwarded INT2  DEFAULT '0' NOT NULL,
-   folder_id INT4 DEFAULT '0' NOT NULL,
+   folder_id INT4 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX msg_id_phpbb_privmsgs_to_index ON phpbb_privmsgs_to (msg_id);
@@ -733,16 +733,6 @@ CREATE TABLE phpbb_ranks (
 
 SELECT SETVAL('phpbb_ranks_rank_id_seq',(select case when max(rank_id)>0 then max(rank_id)+1 else 1 end from phpbb_ranks));
 
-/* Table: phpbb_ratings */
-CREATE TABLE phpbb_ratings (
-  post_id INT4  DEFAULT '0' NOT NULL,
-  user_id INT2  UNSIGNED DEFAULT '0' NOT NULL,
-  rating INT2 DEFAULT '0' NOT NULL,
-);
-
-CREATE INDEX post_id_phpbb_ratings_index ON phpbb_ratings (post_id);
-CREATE INDEX user_id_phpbb_ratings_index ON phpbb_ratings (user_id);
-
 /* Table: phpbb_reports_reasons */
 CREATE SEQUENCE phpbb_reports_reasons_reason;
 
@@ -794,7 +784,7 @@ CREATE INDEX session_id_phpbb_search_results_index ON phpbb_search_results (sess
 CREATE SEQUENCE phpbb_search_wordlist_word_i;
 
 CREATE TABLE phpbb_search_wordlist (
-  word_text varchar(50) BINARY DEFAULT '' NOT NULL,
+  word_text varchar(50) DEFAULT '' NOT NULL,
   word_id INT4 DEFAULT nextval('phpbb_search_wordlist_word_i'),
   word_common INT2  DEFAULT '0' NOT NULL,
   PRIMARY KEY (word_text),
@@ -809,7 +799,7 @@ SELECT SETVAL('phpbb_search_wordlist_word_i',(select case when max(word_id)>0 th
 CREATE TABLE phpbb_search_wordmatch (
   post_id INT4  DEFAULT '0' NOT NULL,
   word_id INT4  DEFAULT '0' NOT NULL,
-  title_match INT2 DEFAULT '0' NOT NULL,
+  title_match INT2 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX word_id_phpbb_search_wordmatch_index ON phpbb_search_wordmatch (word_id);
@@ -851,9 +841,9 @@ CREATE SEQUENCE phpbb_smilies_smiley_id_seq;
 
 CREATE TABLE phpbb_smilies (
    smiley_id INT2 DEFAULT nextval('phpbb_smilies_smiley_id_seq'),
-   code char(10),
-   smiley char(50),
-   smiley_url char(50),
+   code varchar(10),
+   emotion varchar(50),
+   smiley_url varchar(50),
    smiley_width INT2  NOT NULL,
    smiley_height INT2  NOT NULL,
    smiley_order INT2  NOT NULL,
@@ -879,13 +869,10 @@ CREATE TABLE phpbb_styles (
    theme_id INT2  NOT NULL,
    imageset_id INT2  NOT NULL,
    PRIMARY KEY (style_id),
+
   CHECK (template_id>=0),
   CHECK (theme_id>=0),
   CHECK (imageset_id>=0)
-
-   KEY (template_id),
-   KEY (theme_id),
-   KEY (imageset_id)
 );
 
 CREATE UNIQUE INDEX style_name_phpbb_styles_index ON phpbb_styles (style_name);
@@ -916,9 +903,7 @@ CREATE TABLE phpbb_styles_template_data (
    template_filename varchar(50) DEFAULT '' NOT NULL,
    template_included TEXT DEFAULT '' NOT NULL,
    template_mtime INT4 DEFAULT '0' NOT NULL,
-   template_data text,
-   KEY (template_id),
-   KEY (template_filename)
+   template_data text
 );
 
 /* Table: phpbb_styles_theme */
@@ -1109,7 +1094,7 @@ CREATE TABLE phpbb_topics_marking (
 CREATE TABLE phpbb_topics_watch (
   topic_id INT4  DEFAULT '0' NOT NULL,
   user_id INT4  DEFAULT '0' NOT NULL,
-  notify_status INT2 DEFAULT '0' NOT NULL,
+  notify_status INT2 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX topic_id_phpbb_topics_watch_index ON phpbb_topics_watch (topic_id);
@@ -1121,7 +1106,7 @@ CREATE TABLE phpbb_user_group (
    group_id INT4 DEFAULT '0' NOT NULL,
    user_id INT4  DEFAULT '0' NOT NULL,
    group_leader INT2 DEFAULT '0' NOT NULL,
-   user_pending INT2,
+   user_pending INT2
 );
 
 CREATE INDEX group_id_phpbb_user_group_index ON phpbb_user_group (group_id);
@@ -1218,8 +1203,8 @@ CREATE SEQUENCE phpbb_words_word_id_seq;
 
 CREATE TABLE phpbb_words (
    word_id INT4 DEFAULT nextval('phpbb_words_word_id_seq'),
-   word char(100) NOT NULL,
-   replacement char(100) NOT NULL,
+   word varchar(100) NOT NULL,
+   replacement varchar(100) NOT NULL,
    PRIMARY KEY (word_id)
 );
 
@@ -1230,7 +1215,7 @@ CREATE TABLE phpbb_zebra (
   user_id INT4  DEFAULT '0' NOT NULL,
   zebra_id INT4  DEFAULT '0' NOT NULL,
   friend INT2 DEFAULT '0' NOT NULL,
-  foe INT2 DEFAULT '0' NOT NULL,
+  foe INT2 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX user_id_phpbb_zebra_index ON phpbb_zebra (user_id);

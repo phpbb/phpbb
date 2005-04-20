@@ -461,13 +461,6 @@ CREATE TABLE [phpbb_ranks] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [phpbb_ratings] (
-	[post_id] [int] NOT NULL ,
-	[user_id] [int] NOT NULL ,
-	[rating] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [phpbb_reports] (
 	[report_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[reason_id] [int] NOT NULL ,
@@ -535,7 +528,7 @@ GO
 CREATE TABLE [phpbb_smilies] (
 	[smiley_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[code] [varchar] (10) NULL ,
-	[smiley] [varchar] (50) NULL ,
+	[emotion] [varchar] (50) NULL ,
 	[smiley_url] [varchar] (50) NULL ,
 	[smiley_width] [int] NOT NULL ,
 	[smiley_height] [int] NOT NULL ,
@@ -1735,12 +1728,6 @@ CREATE  INDEX [field_type] ON [phpbb_profile_fields]([field_type]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [field_order] ON [phpbb_profile_fields]([field_order]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [post_id] ON [phpbb_ratings]([post_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [user_id] ON [phpbb_ratings]([user_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [session_id] ON [phpbb_search_results]([session_id]) ON [PRIMARY]

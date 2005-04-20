@@ -455,13 +455,6 @@ CREATE TABLE phpbb_ranks (
   rank_image VARCHAR(100)
 );;
 
-# phpbb_ratings
-CREATE TABLE phpbb_ratings (
-  post_id INTEGER DEFAULT 0  NOT NULL,
-  user_id INTEGER DEFAULT 0  NOT NULL,
-  rating INTEGER DEFAULT 0  NOT NULL
-);;
-
 # phpbb_reports
 CREATE TABLE phpbb_reports (
   report_id INTEGER NOT NULL,
@@ -530,7 +523,7 @@ CREATE TABLE phpbb_sitelist (
 CREATE TABLE phpbb_smilies (
   smiley_id INTEGER NOT NULL,
   code VARCHAR(10),
-  smiley VARCHAR(50),
+  emotion VARCHAR(50),
   smiley_url VARCHAR(50),
   smiley_width INTEGER DEFAULT 0  NOT NULL,
   smiley_height INTEGER DEFAULT 0  NOT NULL,
@@ -1211,16 +1204,6 @@ ADD PRIMARY KEY (
 ALTER TABLE phpbb_ranks
 ADD PRIMARY KEY (
   rank_id
-);;
-
-CREATE INDEX post_id52
-ON phpbb_ratings(
-  post_id
-);;
-
-CREATE INDEX user_id53
-ON phpbb_ratings(
-  user_id
 );;
 
 ALTER TABLE phpbb_reports

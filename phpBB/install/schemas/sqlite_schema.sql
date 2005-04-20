@@ -376,16 +376,6 @@ CREATE TABLE phpbb_ranks (
    PRIMARY KEY (rank_id) 
 );
 
--- Table: 'phpbb_ratings'
-CREATE TABLE phpbb_ratings (
-  post_id INTEGER DEFAULT 0 NOT NULL,
-  user_id INTEGER DEFAULT 0 NOT NULL,
-  rating INTEGER DEFAULT 0 NOT NULL
-);
-
-CREATE INDEX post_id ON phpbb_ratings (post_id);
-CREATE INDEX user_id4 ON phpbb_ratings (user_id);
-
 -- Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER NOT NULL,

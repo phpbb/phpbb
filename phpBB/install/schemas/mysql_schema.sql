@@ -536,15 +536,6 @@ CREATE TABLE phpbb_ranks (
    PRIMARY KEY (rank_id)
 );
 
-# Table: 'phpbb_ratings'
-CREATE TABLE phpbb_ratings (
-  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  user_id tinyint(4) UNSIGNED UNSIGNED DEFAULT '0' NOT NULL,
-  rating tinyint(4) DEFAULT '0' NOT NULL,
-  KEY post_id (post_id),
-  KEY user_id (user_id)
-);
-
 # Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
   reason_id smallint(6) NOT NULL auto_increment,
@@ -624,7 +615,7 @@ CREATE TABLE phpbb_sitelist (
 CREATE TABLE phpbb_smilies (
    smiley_id tinyint(4) UNSIGNED NOT NULL auto_increment,
    code char(10),
-   smiley char(50),
+   emotion char(50),
    smiley_url char(50),
    smiley_width tinyint(4) UNSIGNED NOT NULL,
    smiley_height tinyint(4) UNSIGNED NOT NULL,
