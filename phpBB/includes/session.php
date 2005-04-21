@@ -834,7 +834,7 @@ class user extends session
 
 			$imgs[$img . $suffix]['src'] = $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
 			$imgs[$img . $suffix]['width'] = $width;
-			$imgs[$img . $suffix]['height'] = ($height) ? ' height="' . $height . '"' : '';
+			$imgs[$img . $suffix]['height'] = $height;
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
