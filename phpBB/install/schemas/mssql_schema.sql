@@ -1407,12 +1407,6 @@ ALTER TABLE [phpbb_ranks] WITH NOCHECK ADD
 	CONSTRAINT [DF_ranks__rank_special] DEFAULT (0) FOR [rank_special]
 GO
 
-ALTER TABLE [phpbb_ratings] WITH NOCHECK ADD 
-	CONSTRAINT [DF_rating_post_id] DEFAULT (0) FOR [post_id],
-	CONSTRAINT [DF_rating_user_id] DEFAULT (0) FOR [user_id],
-	CONSTRAINT [DF_rating_rating] DEFAULT (0) FOR [rating]
-GO
-
 ALTER TABLE [phpbb_reports] WITH NOCHECK ADD 
 	CONSTRAINT [DF_report_reason_id] DEFAULT (0) FOR [reason_id],
 	CONSTRAINT [DF_report_post_id] DEFAULT (0) FOR [post_id],

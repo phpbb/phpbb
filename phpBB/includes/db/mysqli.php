@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package dbal_odbc_mssql
+* @package dbal_mysqli
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -14,12 +14,12 @@
 if (!defined('SQL_LAYER'))
 {
 
-define('SQL_LAYER', 'mssql-odbc');
+define('SQL_LAYER', 'mysqli');
 
 /**
-* @package dbal_odbc_mssql
-* MSSQL ODBC Database Abstraction Layer for MSSQL
-* Minimum Requirement is Version 2000+
+* @package dbal_mysqli
+* MySQLi Database Abstraction Layer
+* Minimum Requirement is MySQL 4.1+ and the mysqli-extension
 */
 class sql_db
 {
@@ -31,11 +31,7 @@ class sql_db
 	var $num_queries = 0;
 	var $open_queries = array();
 
-	var $result_rowset = array();
-	var $field_names = array();
-	var $field_types = array();
-	var $num_rows = array();
-	var $current_row = array();
+	var $indexed = 0;
 
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
@@ -44,9 +40,17 @@ class sql_db
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $sqlpassword) : @odbc_connect($this->server, $this->user, $sqlpassword);
+		$this->db_connect_id = ($this->persistency) ? @mysqli_pconnect($this->server, $this->user, $sqlpassword) : @mysqli_connect($this->server, $this->user, $sqlpassword);
 
-		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+		if ($this->db_connect_id && $this->dbname != '')
+		{
+			if (@mysqli_select_db($this->db_connect_id, $this->dbname))
+			{
+				return $this->db_connect_id;
+			}
+		}
+
+		return $this->sql_error('');
 	}
 
 	//
@@ -61,27 +65,10 @@ class sql_db
 
 		if ($this->transaction)
 		{
-			@odbc_commit($this->db_connect_id);
+			@mysqli_commit($this->db_connect_id);
 		}
 
-		if (sizeof($this->result_rowset))
-		{
-			unset($this->result_rowset);
-			unset($this->field_names);
-			unset($this->field_types);
-			unset($this->num_rows);
-			unset($this->current_row);
-		}
-
-		if (sizeof($this->open_queries))
-		{
-			foreach ($this->open_queries as $i_query_id => $query_id)
-			{
-				@odbc_free_result($query_id);
-			}
-		}
-
-		return @odbc_close($this->db_connect_id);
+		return @mysqli_close($this->db_connect_id);
 	}
 
 	function sql_return_on_error($fail = false)
@@ -99,25 +86,25 @@ class sql_db
 		switch ($status)
 		{
 			case 'begin':
-				$result = @odbc_autocommit($this->db_connect_id, false);
+				$result = @mysqli_autocommit($this->db_connect_id, false);
 				$this->transaction = true;
 				break;
 
 			case 'commit':
-				$result = @odbc_commit($this->db_connect_id);
-				@odbc_autocommit($this->db_connect_id, true);
+				$result = @mysqli_commit($this->db_connect_id);
+				@mysqli_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
 
 				if (!$result)
 				{
-					@odbc_rollback($this->db_connect_id);
-					@odbc_autocommit($this->db_connect_id, true);
+					@mysqli_rollback($this->db_connect_id);
+					@mysqli_autocommit($this->db_connect_id, true);
 				}
 				break;
 
 			case 'rollback':
-				$result = @odbc_rollback($this->db_connect_id);
-				@odbc_autocommit($this->db_connect_id, true);
+				$result = @mysqli_rollback($this->db_connect_id);
+				@mysqli_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
 				break;
 
@@ -142,14 +129,19 @@ class sql_db
 			}
 
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
-
+			
 			if (!$this->query_result)
 			{
 				$this->num_queries++;
 
-				if (($this->query_result = $this->_odbc_execute_query($query)) === false)
+				if (($this->query_result = @mysqli_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
+				}
+
+				if (is_object($this->query_result))
+				{
+					$this->query_result->cur_index = $this->indexed++;
 				}
 
 				if (defined('DEBUG_EXTRA'))
@@ -159,13 +151,7 @@ class sql_db
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
-					// odbc_free_result called within sql_save()
-				}
-				else if (strpos($query, 'SELECT') !== false && $this->query_result)
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
 			else if (defined('DEBUG_EXTRA'))
@@ -181,76 +167,6 @@ class sql_db
 		return ($this->query_result) ? $this->query_result : false;
 	}
 
-	function _odbc_execute_query($query)
-	{
-		$result = false;
-		
-		if (eregi("^SELECT ", $query))
-		{
-			$result = @odbc_exec($this->db_connect_id, $query); 
-
-			if ($result)
-			{
-				if (empty($this->field_names[$result]))
-				{
-					for ($i = 1, $j = @odbc_num_fields($result) + 1; $i < $j; $i++)
-					{
-						$this->field_names[$result][] = @odbc_field_name($result, $i);
-						$this->field_types[$result][] = @odbc_field_type($result, $i);
-					}
-				}
-
-				$this->current_row[$result] = 0;
-				$this->result_rowset[$result] = array();
-
-				$row_outer = (isset($row_offset)) ? $row_offset + 1 : 1;
-				$row_outer_max = (isset($num_rows)) ? $row_offset + $num_rows + 1 : 1E9;
-				$row_inner = 0;
-
-				while (@odbc_fetch_row($result, $row_outer) && $row_outer < $row_outer_max)
-				{
-					for ($i = 0, $j = sizeof($this->field_names[$result]); $i < $j; $i++)
-					{
-						$this->result_rowset[$result][$row_inner][$this->field_names[$result][$i]] = stripslashes(@odbc_result($result, $i + 1));
-					}
-
-					$row_outer++;
-					$row_inner++;
-				}
-
-				$this->num_rows[$result] = sizeof($this->result_rowset[$result]);	
-			}
-		}
-		else if (eregi("^INSERT ", $query))
-		{
-			$result = @odbc_exec($this->db_connect_id, $query);
-
-			if ($result)
-			{
-				$result_id = @odbc_exec($this->db_connect_id, 'SELECT @@IDENTITY');
-				if ($result_id)
-				{
-					if (@odbc_fetch_row($result_id))
-					{
-						$this->next_id[$this->db_connect_id] = @odbc_result($result_id, 1);	
-						$this->affected_rows[$this->db_connect_id] = @odbc_num_rows($result);
-					}
-				}
-			}
-		}
-		else
-		{
-			$result = @odbc_exec($this->db_connect_id, $query);
-
-			if ($result)
-			{
-				$this->affected_rows[$this->db_connect_id] = @odbc_num_rows($result);
-			}
-		}
-
-		return $result;
-	}
-
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{ 
 		if ($query != '') 
@@ -263,10 +179,7 @@ class sql_db
 				$total = -1;
 			}
 
-			$row_offset = ($total) ? $offset : '';
-			$num_rows = ($total) ? $total : $offset;
-
-			$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
+			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
 			return $this->sql_query($query, $cache_ttl); 
 		} 
@@ -343,12 +256,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ($query_id) ? @$this->num_rows($query_id) : false;
+		return ($query_id) ? @mysqli_num_rows($query_id) : false;
 	}
 
 	function sql_affectedrows()
 	{
-		return ($this->affected_rows[$this->db_connect_id]) ? $this->affected_rows[$this->db_connect_id] : false;
+		return ($this->db_connect_id) ? @mysqli_affected_rows($this->db_connect_id) : false;
 	}
 
 	function sql_fetchrow($query_id = false)
@@ -360,12 +273,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($this->num_rows[$query_id] && $this->current_row[$query_id] < $this->num_rows[$query_id]) ? $this->result_rowset[$query_id][$this->current_row[$query_id]++] : false;
+		return ($query_id) ? @mysqli_fetch_assoc($query_id) : false;
 	}
 
 	function sql_fetchrowset($query_id = false)
@@ -375,7 +288,22 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		return ($this->num_rows[$query_id]) ? $this->result_rowset[$query_id] : false;
+		if ($query_id)
+		{
+			$cur_index = (is_object($query_id)) ? $query_id->cur_index : $query_id;
+
+			unset($this->rowset[$cur_index]);
+			unset($this->row[$cur_index]);
+			
+			$result = array();
+			while ($this->rowset[$cur_index] = $this->sql_fetchrow($query_id))
+			{
+				$result[] = $this->rowset[$cur_index];
+			}
+			return $result;
+		}
+
+		return false;
 	}
 
 	function sql_fetchfield($field, $rownum = -1, $query_id = false)
@@ -387,14 +315,37 @@ class sql_db
 
 		if ($query_id)
 		{
-			if ($rownum < $this->num_rows[$query_id])
+			if ($rownum > -1)
 			{
-				$getrow = ($rownum == -1) ? $this->current_row[$query_id] - 1 : $rownum;
-
-				return $this->result_rowset[$query_id][$getrow][$this->field_names[$query_id][$field]];
+				@mysqli_data_seek($query_id, $rownum);
+				$row = @mysqli_fetch_assoc($query_id);
+				$result = isset($row[$field]) ? $row[$field] : false;
 			}
+			else
+			{
+				$cur_index = (is_object($query_id)) ? $query_id->cur_index : $query_id;
+	
+				if (empty($this->row[$cur_index]) && empty($this->rowset[$cur_index]))
+				{
+					if ($this->row[$cur_index] = $this->sql_fetchrow($query_id))
+					{
+						$result = $this->row[$cur_index][$field];
+					}
+				}
+				else
+				{
+					if ($this->rowset[$cur_index])
+					{
+						$result = $this->rowset[$cur_index][$field];
+					}
+					elseif ($this->row[$cur_index])
+					{
+						$result = $this->row[$cur_index][$field];
+					}
+				}
+			}
+			return $result;
 		}
-
 		return false;
 	}
 
@@ -405,18 +356,12 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if (isset($this->current_row[$query_id]))
-		{
-			$this->current_row[$query_id] = $rownum;
-			return true;
-		}
-
-		return false;
+		return ($query_id) ? @mysqli_data_seek($query_id, $rownum) : false;
 	}
 
 	function sql_nextid()
 	{
-		return ($this->next_id[$this->db_connect_id]) ? $this->next_id[$this->db_connect_id] : false;
+		return ($this->db_connect_id) ? @mysqli_insert_id($this->db_connect_id) : false;
 	}
 
 	function sql_freeresult($query_id = false)
@@ -426,26 +371,27 @@ class sql_db
 			$query_id = $this->query_result;
 		}
 
-		if (isset($this->open_queries[(int) $query_id]))
+		$cur_index = (is_object($query_id)) ? $query_id->cur_index : $query_id;
+
+		unset($this->rowset[$cur_index]);
+		unset($this->row[$cur_index]);
+
+		if (is_object($query_id))
 		{
-			unset($this->open_queries[(int) $query_id]);
-			unset($this->num_rows[$query_id]);
-			unset($this->current_row[$query_id]);
-			unset($this->result_rowset[$query_id]);
-			unset($this->field_names[$query_id]);
-			unset($this->field_types[$query_id]);
-
-			return @odbc_free_result($query_id);
+			$this->indexed--;
+			return @mysqli_free_result($query_id);
 		}
-
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 	function sql_escape($msg)
 	{
-		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
+		return @mysqli_real_escape_string($this->db_connect_id, $msg);
 	}
-
+	
 	function sql_error($sql = '')
 	{
 		if (!$this->return_on_error)
@@ -453,7 +399,7 @@ class sql_db
 			$this_page = (isset($_SERVER['PHP_SELF']) && !empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
 			$this_page .= '&' . ((isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : (isset($_ENV['QUERY_STRING']) ? $_ENV['QUERY_STRING'] : ''));
 
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @odbc_errormsg() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
+			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . @mysqli_error($this->db_connect_id) . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
 
 			if ($this->transaction)
 			{
@@ -464,8 +410,8 @@ class sql_db
 		}
 
 		$result = array(
-			'message'	=> @odbc_errormsg(),
-			'code'		=> @odbc_error()
+			'message'	=> @mysqli_error($this->db_connect_id),
+			'code'		=> @mysqli_errno($this->db_connect_id)
 		);
 
 		return $result;
@@ -478,7 +424,7 @@ class sql_db
 			return;
 		}
 
-		global $cache, $starttime, $phpbb_root_path;
+		global $db, $cache, $starttime, $phpbb_root_path;
 		static $curtime, $query_hold, $html_hold;
 		static $sql_report = '';
 		static $cache_num_queries = 0;
@@ -495,7 +441,7 @@ class sql_db
 				{
 					$cache->unload();
 				}
-				$this->sql_close();
+				$db->sql_close();
 
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
@@ -514,6 +460,53 @@ class sql_db
 				$query_hold = $query;
 				$html_hold = '';
 
+				$explain_query = $query;
+				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+				elseif (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+
+				if (preg_match('/^SELECT/', $explain_query))
+				{
+					$html_table = FALSE;
+
+					if ($result = @mysqli_query($this->db_connect_id, "EXPLAIN $explain_query"))
+					{
+						while ($row = @mysqli_fetch_assoc($result))
+						{
+							if (!$html_table && sizeof($row))
+							{
+								$html_table = TRUE;
+								$html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>';
+								
+								foreach (array_keys($row) as $val)
+								{
+									$html_hold .= '<th nowrap="nowrap">' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</th>';
+								}
+								$html_hold .= '</tr>';
+							}
+							$html_hold .= '<tr>';
+
+							$class = 'row1';
+							foreach (array_values($row) as $val)
+							{
+								$class = ($class == 'row1') ? 'row2' : 'row1';
+								$html_hold .= '<td class="' . $class . '">' . (($val) ? $val : '&nbsp;') . '</td>';
+							}
+							$html_hold .= '</tr>';
+						}
+					}
+
+					if ($html_table)
+					{
+						$html_hold .= '</table>';
+					}
+				}
+
 				$curtime = explode(' ', microtime());
 				$curtime = $curtime[0] + $curtime[1];
 				break;
@@ -522,8 +515,11 @@ class sql_db
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1];
 
-				$result = $this->_odbc_execute_query($query);
-
+				$result = @mysqli_query($this->db_connect_id, $query);
+				while ($void = @mysqli_fetch_assoc($result))
+				{
+					// Take the time spent on parsing rows into account
+				}
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];
 
@@ -538,7 +534,7 @@ class sql_db
 				// Pad the start time to not interfere with page timing
 				$starttime += $time_db;
 
-				@odbc_free_result($result);
+				@mysqli_free_result($result);
 				$cache_num_queries++;
 				break;
 
@@ -559,7 +555,7 @@ class sql_db
 				else
 				{
 					$error = $this->sql_error();
-					$sql_report .= '<b style="color: red">FAILED</b> - ' . SQL_LAYER . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
+					$sql_report .= '<b style="color: red">FAILED</b> - MySQL Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
 				$sql_report .= '</p>';
@@ -568,7 +564,6 @@ class sql_db
 				break;
 		}
 	}
-
 } // class sql_db
 
 } // if ... define

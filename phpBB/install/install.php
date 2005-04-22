@@ -92,10 +92,17 @@ $available_dbms = array(
 		'DELIM'			=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
-	'mysql4'	=> array(
-		'LABEL'			=> 'MySQL 4.1.x',
+	'mysqli'	=> array(
+		'LABEL'			=> 'MySQL 4.1.x (MySQLi)',
 		'SCHEMA'		=> 'mysql',
 		'MODULE'		=> 'mysqli', 
+		'DELIM'			=> ';',
+		'COMMENTS'		=> 'remove_remarks'
+	),
+	'mysql4'	=> array(
+		'LABEL'			=> 'MySQL 4',
+		'SCHEMA'		=> 'mysql',
+		'MODULE'		=> 'mysql', 
 		'DELIM'			=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
@@ -105,13 +112,6 @@ $available_dbms = array(
 		'MODULE'		=> 'mssql', 
 		'DELIM'			=> 'GO',
 		'COMMENTS'		=> 'remove_comments'
-	),
-	'msaccess' => array(
-		'LABEL'			=> 'MS Access [ ODBC ]',
-		'SCHEMA'		=> '',
-		'MODULE'		=> 'odbc', 
-		'DELIM'			=> '',
-		'COMMENTS'		=> ''
 	),
 	'mssql-odbc'=>	array(
 		'LABEL'			=> 'MS SQL Server [ ODBC ]',
@@ -1402,6 +1402,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 		{
 			case 'mysql':
 			case 'mysql4':
+			case 'mysqli':
 				$sql = "SHOW TABLES";
 				$field = "Tables_in_{$dbname}";
 				break;
@@ -1412,13 +1413,6 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 					FROM sysobjects 
 					WHERE type='U'";
 				$field = "name";
-				break;
-
-			case 'msaccess':
-				$sql = 'SELECT * FROM MSysObjects
-					WHERE Type = 1
-						AND Name Not Like "MSys*"';
-				$field = "Name";
 				break;
 
 			case 'postgres':
