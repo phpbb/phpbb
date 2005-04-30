@@ -424,6 +424,7 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_required] [int] NOT NULL ,
 	[field_show_on_reg] [int] NOT NULL ,
 	[field_hide] [int] NOT NULL ,
+	[field_no_view] [int] NOT NULL ,
 	[field_active] [int] NOT NULL ,
 	[field_order] [int] NOT NULL 
 ) ON [PRIMARY]
@@ -701,6 +702,7 @@ GO
 CREATE TABLE [phpbb_topics_marking] (
 	[user_id] [int] NOT NULL ,
 	[topic_id] [int] NOT NULL ,
+	[forum_id] [int] NOT NULL ,
 	[mark_type] [int] NOT NULL ,
 	[mark_time] [int] NOT NULL 
 ) ON [PRIMARY]
@@ -1382,6 +1384,7 @@ ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD
 	CONSTRAINT [DF_pffiel_field_required] DEFAULT (0) FOR [field_required],
 	CONSTRAINT [DF_pffiel_field_show_on_reg] DEFAULT (0) FOR [field_show_on_reg],
 	CONSTRAINT [DF_pffiel_field_hide] DEFAULT (0) FOR [field_hide],
+	CONSTRAINT [DF_pffiel_field_no_view] DEFAULT (0) FOR [field_no_view],
 	CONSTRAINT [DF_pffiel_field_active] DEFAULT (0) FOR [field_active],
 	CONSTRAINT [DF_pffiel_field_order] DEFAULT (0) FOR [field_order]
 GO
@@ -1510,6 +1513,7 @@ GO
 ALTER TABLE [phpbb_topics_marking] WITH NOCHECK ADD 
 	CONSTRAINT [DF_tmarki_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_tmarki_topic_id] DEFAULT (0) FOR [topic_id],
+	CONSTRAINT [DF_tmarki_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_tmarki_mark_type] DEFAULT (0) FOR [mark_type],
 	CONSTRAINT [DF_tmarki_mark_time] DEFAULT (0) FOR [mark_time]
 GO

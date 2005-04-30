@@ -671,6 +671,7 @@ CREATE TABLE phpbb_profile_fields (
    field_required INT2  DEFAULT '0' NOT NULL,
    field_show_on_reg INT2  DEFAULT '0' NOT NULL,
    field_hide INT2  DEFAULT '0' NOT NULL,
+   field_no_view INT2  DEFAULT '0' NOT NULL,
    field_active INT2  DEFAULT '0' NOT NULL,
    field_order INT2  DEFAULT '0' NOT NULL,
    PRIMARY KEY (field_id),
@@ -678,6 +679,7 @@ CREATE TABLE phpbb_profile_fields (
   CHECK (field_required>=0),
   CHECK (field_show_on_reg>=0),
   CHECK (field_hide>=0),
+  CHECK (field_no_view>=0),
   CHECK (field_active>=0),
   CHECK (field_order>=0)
 );
@@ -1083,11 +1085,13 @@ SELECT SETVAL('phpbb_topics_topic_id_seq',(select case when max(topic_id)>0 then
 CREATE TABLE phpbb_topics_marking (
    user_id INT4  DEFAULT '0' NOT NULL,
    topic_id INT4  DEFAULT '0' NOT NULL,
+   forum_id INT4  DEFAULT '0' NOT NULL,
    mark_type INT2 DEFAULT '0' NOT NULL,
    mark_time INT4 DEFAULT '0' NOT NULL,
    PRIMARY KEY (user_id,topic_id),
   CHECK (user_id>=0),
-  CHECK (topic_id>=0)
+  CHECK (topic_id>=0),
+  CHECK (forum_id>=0)
 );
 
 /* Table: phpbb_topics_watch */

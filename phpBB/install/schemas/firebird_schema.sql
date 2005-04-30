@@ -419,6 +419,7 @@ CREATE TABLE phpbb_profile_fields (
   field_required INTEGER DEFAULT 0  NOT NULL,
   field_show_on_reg INTEGER DEFAULT 0  NOT NULL,
   field_hide INTEGER DEFAULT 0  NOT NULL,
+  field_no_view INTEGER DEFAULT 0  NOT NULL,
   field_active INTEGER DEFAULT 0  NOT NULL,
   field_order INTEGER DEFAULT 0  NOT NULL
 );;
@@ -696,6 +697,7 @@ CREATE TABLE phpbb_topics (
 CREATE TABLE phpbb_topics_marking (
   user_id INTEGER DEFAULT 0  NOT NULL,
   topic_id INTEGER DEFAULT 0  NOT NULL,
+  forum_id INTEGER DEFAULT 0  NOT NULL,
   mark_type INTEGER DEFAULT 0  NOT NULL,
   mark_time INTEGER DEFAULT 0  NOT NULL
 );;

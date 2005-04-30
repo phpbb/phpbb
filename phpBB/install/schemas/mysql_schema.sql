@@ -493,6 +493,7 @@ CREATE TABLE phpbb_profile_fields (
    field_required tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    field_show_on_reg tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    field_hide tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+   field_no_view tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    field_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
    field_order tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    PRIMARY KEY (field_id),
@@ -804,8 +805,9 @@ CREATE TABLE phpbb_topics (
 
 # Table: 'phpbb_topic_marking'
 CREATE TABLE phpbb_topics_marking (
-   user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
-   topic_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    mark_type tinyint(4) DEFAULT '0' NOT NULL,
    mark_time int(11) DEFAULT '0' NOT NULL,
    PRIMARY KEY (user_id, topic_id)
