@@ -305,6 +305,7 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 
 			'FORUM_ID'			=> $row['forum_id'],
 			'FORUM_FOLDER_IMG'	=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $folder_alt . '" />' : $user->img($folder_image, $folder_alt),
+			'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : $user->img($folder_image, $folder_alt, false, '', 'src'),
 			'FORUM_NAME'		=> $row['forum_name'],
 			'FORUM_DESC'		=> $row['forum_desc'],
 			$l_post_click_count	=> $post_click_count,

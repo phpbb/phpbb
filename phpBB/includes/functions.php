@@ -107,8 +107,8 @@ function gen_rand_string($num_chars)
 {
 	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
-	list($usec, $sec) = explode(' ', microtime());
-	mt_srand($sec * $usec);
+	list($sec, $usec) = explode(' ', microtime());
+	mt_srand((float) $sec + ((float) $usec * 100000));
 
 	$max_chars = sizeof($chars) - 1;
 	$rand_str = '';
@@ -118,6 +118,16 @@ function gen_rand_string($num_chars)
 	}
 
 	return $rand_str;
+}
+
+/**
+* Return unique id
+*/
+function unique_id()
+{
+	list($sec, $usec) = explode(' ', microtime());
+	mt_srand((float) $sec + ((float) $usec * 100000));
+	return uniqid(mt_rand(), true);
 }
 
 /**
@@ -671,6 +681,12 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 						WHERE user_id = " . $user->data['user_id'] . '
 							AND forum_id IN (' . implode(', ', $sql_update) . ')';
 					$db->sql_query($sql);
+
+					$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
+						WHERE user_id = ' . $user->data['user_id'] . '
+							AND forum_id IN (' . implode(', ', $sql_update) . ')
+							AND mark_type = ' . TRACK_NORMAL;
+					$db->sql_query($sql);
 				}
 
 				if ($sql_insert = array_diff($forum_id, $sql_update))
@@ -686,6 +702,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 								break;
 
 							case 'mysql4':
+							case 'mysqli':
 							case 'mssql':
 							case 'sqlite':
 								$sql .= (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ", $forum_id, $current_time";
@@ -703,6 +720,12 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 							$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . " (user_id, forum_id, mark_time) $sql";
 							$db->sql_query($sql);
 						}
+
+						$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
+							WHERE user_id = ' . $user->data['user_id'] . '
+								AND forum_id = ' . $forum_id . '
+								AND mark_type = ' . TRACK_NORMAL;
+						$db->sql_query($sql);
 					}
 				}
 				unset($sql_update);
@@ -735,29 +758,33 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 		
 			$forum_id =	(int) $forum_id[0];
 
-			// Mark a topic as read
+			/// Mark a topic as read
 			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
 			{
-				$track_type = ($type == TRACK_POSTED ? ', mark_type = ' . $type : '');
+				$track_type = ($type == TRACK_POSTED) ? ', mark_type = ' . $type : '';
 				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
-					SET mark_time = $current_time $track_type
+					SET forum_id = $forum_id, mark_time = $current_time $track_type
 					WHERE topic_id = $topic_id
-						AND user_id = " . $user->data['user_id'] . "
+						AND user_id = {$user->data['user_id']}
 						AND mark_time < $current_time";
 				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
 				{
-					$type = (!isset($type)) ? TRACK_NORMAL : $type;
-
 					$db->sql_return_on_error(true);
 
-					$sql = 'INSERT INTO ' . TOPICS_TRACK_TABLE . ' (user_id, topic_id, mark_type, mark_time)
-						VALUES (' . $user->data['user_id'] . ", $topic_id, $type, $current_time)";
-					$db->sql_query($sql);
+					$sql_ary = array(
+						'user_id'		=> $user->data['user_id'],
+						'topic_id'		=> $topic_id,
+						'forum_id'		=> $forum_id,
+						'mark_type'		=> $type,
+						'mark_time'		=> $current_time
+					);
+					
+					$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
 					$db->sql_return_on_error(false);
 				}
 			}
-
+			
 			if (!$config['load_db_lastread'])
 			{
 				$tracking = array();
@@ -1182,10 +1209,15 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		$session_id = request_var('sess', '');
 		$confirm_key = request_var('confirm_key', '');
 
-		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || $confirm_key != $user->data['user_last_confirm_key'])
+		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || !$confirm_key || !$user->data['user_last_confirm_key'] || $confirm_key != $user->data['user_last_confirm_key'])
 		{
 			return false;
 		}
+
+		// Reset user_last_confirm_key
+		$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = ''
+			WHERE user_id = " . $user->data['user_id'];
+		$db->sql_query($sql);
 
 		return true;
 	}
@@ -1531,7 +1563,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime, $display_header, $show_prev_info;
+	global $phpEx, $phpbb_root_path, $starttime, $display_header, $msg_title;
 
 	switch ($errno)
 	{
@@ -1539,7 +1571,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_WARNING:
 			if (defined('DEBUG_EXTRA'))
 			{
-				// Remove me
 				if (!strstr($errfile, 'cache') && !strstr($errfile, 'template.php'))
 				{
 					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
@@ -1609,10 +1640,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				);
 
 				$template->assign_vars(array(
-					'MESSAGE_TITLE'	=> (isset($msg_title)) ? $msg_title : $user->lang['INFORMATION'],
+					'MESSAGE_TITLE'	=> $msg_title,
 					'MESSAGE_TEXT'	=> $msg_text)
 				);
 
+				// We do not want the cron script to be called on error messages
+				define('IN_CRON', true);
 				page_footer();
 			}
 			exit;
@@ -1863,9 +1896,10 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
-		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
-		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
+		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox",
+		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=popup",
+		'U_JS_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
 		'U_VIEWONLINE' 			=> "{$phpbb_root_path}viewonline.$phpEx$SID",
 		'U_MEMBERSLIST'			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
@@ -1963,8 +1997,35 @@ function page_footer()
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? "adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? "{$phpbb_root_path}adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
 	);
+
+	// Call cron-type script
+	if (!defined('IN_CRON'))
+	{
+		$cron_type = '';
+
+		if (time() - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		{
+			// Process email queue
+			$cron_type = 'queue';
+		}
+		else if (method_exists($cache, 'tidy') && time() - $config['cache_gc'] > $config['cache_last_gc'])
+		{
+			// Tidy the cache
+			$cron_type = 'tidy_cache';
+		}
+		else if (time() - (7 * 24 * 3600) > $config['database_last_gc'])
+		{
+			// Tidy some table rows every week
+			$cron_type = 'tidy_database';
+		}
+
+		if ($cron_type)
+		{
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . $phpbb_root_path . 'cron.' . $phpEx . '?cron_type=' . $cron_type . '" width="1" height="1" />');
+		}
+	}
 
 	$template->display('body');
 

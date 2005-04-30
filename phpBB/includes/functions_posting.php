@@ -70,7 +70,7 @@ function generate_smilies($mode, $forum_id)
 			'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
 			'SMILEY_WIDTH' 	=> $row['smiley_width'],
 			'SMILEY_HEIGHT' => $row['smiley_height'],
-			'SMILEY_DESC' 	=> $row['smiley'])
+			'SMILEY_DESC' 	=> $row['emotion'])
 		);
 	}
 	$db->sql_freeresult($result);

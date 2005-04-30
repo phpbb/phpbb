@@ -302,7 +302,8 @@ class session
 		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			$db->sql_return_on_error(false);
-			$this->session_id = md5(uniqid($this->ip));
+	
+			$this->session_id = md5(unique_id());
 
 			$sql_ary['session_id'] = (string) $this->session_id;
 
@@ -389,6 +390,7 @@ class session
 		switch (SQL_LAYER)
 		{
 			case 'mysql4':
+			case 'mysqli':
 				// Firstly, delete guest sessions
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 					WHERE session_user_id = ' . ANONYMOUS . '
@@ -585,12 +587,27 @@ class user extends session
 		}
 
 		// TODO: DISTINCT making problems with DBMS not able to distinct TEXT fields
-		$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
-			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
-			WHERE s.style_id IN ($style, " . $config['default_style'] . ')
-				AND t.template_id = s.template_id
-				AND c.theme_id = s.theme_id
-				AND i.imageset_id = s.imageset_id';
+		switch (SQL_LAYER)
+		{
+			case 'mssql':
+			case 'mssql-odbc':
+				$sql = 'SELECT s.style_id, t.*, c.*, i.*
+					FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
+						AND t.template_id = s.template_id
+						AND c.theme_id = s.theme_id
+						AND i.imageset_id = s.imageset_id';
+				break;
+
+			default:
+				$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
+					FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
+						AND t.template_id = s.template_id
+						AND c.theme_id = s.theme_id
+						AND i.imageset_id = s.imageset_id';
+				break;
+		}
 		$result = $db->sql_query($sql, 3600);
 
 		if (!($row = $db->sql_fetchrow($result)))
@@ -794,8 +811,6 @@ class user extends session
 			return;
 		}
 
-		// TODO: think about adding this to the session code too?
-		// Grabbing all user specific options (all without the need of special complicate adding to the sql query) might be useful...
 		$sql = 'SELECT * FROM ' . PROFILE_DATA_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query_limit($sql, 1);
@@ -940,7 +955,7 @@ class auth
 			$this->acl_clear_prefetch();
 			$this->acl_cache($userdata);
 		}
-		else if (!$userdata['user_permissions'])
+		else if (!trim($userdata['user_permissions']))
 		{
 			$this->acl_cache($userdata);
 		}

@@ -501,6 +501,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					break;
 
 				case 'mysql4':
+				case 'mysqli':
 				case 'mssql':
 				case 'sqlite':
 					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason'";
@@ -1249,6 +1250,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 				break;
 
 			case 'mysql4':
+			case 'mysqli':
 			case 'mssql':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 

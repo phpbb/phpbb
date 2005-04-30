@@ -183,8 +183,9 @@ class bbcode_firstpass extends bbcode
 			'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
 			'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 			'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
+			'#&\#([0-9]+);#',
 		);
-		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;');
+		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;', '&amp;#\1;');
 
 		$out = '';
 
@@ -385,6 +386,7 @@ class bbcode_firstpass extends bbcode
 
 		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
 		$in = preg_replace(array('#\[quote(=?.*?)\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
+		$in = preg_replace(array('#\[quote(=?.*?)\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
 
 		$in = substr(str_replace('\"', '"', $in), 1);
 		$close_tags = $error_ary = array();
@@ -543,7 +545,7 @@ class bbcode_firstpass extends bbcode
 	function validate_url($var1, $var2)
 	{
 		global $config;
-
+		
 		$url = ($var1) ? stripslashes($var1) : stripslashes($var2);
 		$valid = false;
 
@@ -1293,6 +1295,7 @@ class fulltext_search
 						break;
 
 					case 'mysql4':
+					case 'mysqli':
 					case 'mssql':
 					case 'sqlite':
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));

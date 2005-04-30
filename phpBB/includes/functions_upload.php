@@ -51,7 +51,7 @@ class filespec
 
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$this->realname = $this->uploadname = trim(basename($upload_ary['name']));
+		$this->realname = $this->uploadname = trim(htmlspecialchars(basename($upload_ary['name'])));
 		$this->mimetype = $upload_ary['type'];
 
 		// Opera adds the name to the mime type
@@ -87,12 +87,16 @@ class filespec
 			case 'real':
 				// Replace any chars which may cause us problems with _
 				$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
-				$this->realname = $prefix . str_replace($bad_chars, '_', strtolower($this->realname)) . '_.' . $this->extension;
+
+				$this->realname = rawurlencode(str_replace($bad_chars, '_', strtolower($this->realname)));
+				$this->realname = preg_replace("/%(\w{2})/", '_', $this->realname);
+
+				$this->realname = $prefix . $this->realname . '_.' . $this->extension;
 				break;
 
 			case 'unique':
 			default:
-				$this->realname = $prefix . uniqid(rand()) . '.' . $this->extension;
+				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;
 		}
 	}
 
@@ -557,11 +561,15 @@ class fileupload
 
 	function valid_dimensions(&$file)
 	{
+		if (!$this->max_width && !$this->max_height && !$this->min_width && !$this->min_height)
+		{
+			return true;
+		}
+		
 		if (($file->get('width') > $this->max_width && $this->max_width) || 
 			($file->get('height') > $this->max_height && $this->max_height) || 
 			($file->get('width') < $this->min_width && $this->min_width) ||
-			($file->get('height') < $this->min_height && $this->min_height) || 
-			!$file->get('width') || !$file->get('height'))
+			($file->get('height') < $this->min_height && $this->min_height))
 		{
 			return false;
 		}

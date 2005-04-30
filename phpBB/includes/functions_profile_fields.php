@@ -18,18 +18,21 @@ class custom_profile
 	var $profile_cache = array();
 	var $options_lang = array();
 
-	// Build language options cache, useful for viewtopic display
+	/**
+	* Build profile cache, used for display
+	*/
 	function build_cache()
 	{
-		global $db, $user;
+		global $db, $user, $auth;
 
 		$this->profile_cache = array();
 		
+		// Display hidden/no_view fields for admin/moderator
 		$sql = 'SELECT l.*, f.*
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
 			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
-				AND f.field_active = 1
-				AND f.field_hide = 0
+				AND f.field_active = 1 ' .
+				((!$auth->acl_gets('a_', 'm_')) ? '	AND f.field_hide = 0 AND f.field_no_view = 0 ' : '') . '
 				AND l.field_id = f.field_id 
 			GROUP BY f.field_id
 			ORDER BY f.field_order';
@@ -42,7 +45,9 @@ class custom_profile
 		$db->sql_freeresult($result);
 	}
 
-	// Get language entries for options and store them here for later use
+	/**
+	* Get language entries for options and store them here for later use
+	*/
 	function get_option_lang($field_id, $lang_id, $field_type, $preview)
 	{
 		global $db;
@@ -74,7 +79,9 @@ class custom_profile
 		}
 	}
 
-	// Functions performing operations on register/profile/profile admin
+	/**
+	* Submit profile field
+	*/
 	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
 	{
 		global $auth, $db, $user;
@@ -152,8 +159,9 @@ class custom_profile
 		$db->sql_freeresult($result);
 	}
 	
-	// Assign fields to template, mode can be profile (for profile change) or register (for registration)
-	// function generate_profile_fields($mode, $lang_id, $cp_error)
+	/**
+	* Assign fields to template, mode can be profile (for profile change) or register (for registration)
+	*/
 	function generate_profile_fields($mode, $lang_id)
 	{
 		global $db, $template, $auth;
@@ -181,8 +189,10 @@ class custom_profile
 		$db->sql_freeresult($result);
 	}
 
-	// Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
-	// This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
+	/**
+	* Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
+	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
+	*/
 	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
 	{
 		global $db;
@@ -243,9 +253,10 @@ class custom_profile
 		{
 			// $profile_row == $user_fields[$row['user_id']];
 			$tpl_fields = array();
+			$tpl_fields['row'] = $tpl_fields['blockrow'] = array();
 			foreach ($profile_row as $ident => $ident_ary)
 			{
-				$tpl_fields += array(
+				$tpl_fields['row'] += array(
 					'PROFILE_' . strtoupper($ident) . '_VALUE'	=> $this->get_profile_value($ident_ary),
 					'PROFILE_' . strtoupper($ident) . '_TYPE'	=> $ident_ary['data']['field_type'],
 					'PROFILE_' . strtoupper($ident) . '_NAME'	=> $ident_ary['data']['lang_name'],
@@ -253,13 +264,21 @@ class custom_profile
 
 					'S_PROFILE_' . strtoupper($ident)			=> true
 				);
+
+				$tpl_fields['blockrow'][] = array(
+					'PROFILE_FIELD_VALUE'	=> $this->get_profile_value($ident_ary),
+					'PROFILE_FIELD_TYPE'	=> $ident_ary['data']['field_type'],
+					'PROFILE_FIELD_NAME'	=> $ident_ary['data']['lang_name'],
+					'PROFILE_FIELD_EXPLAIN'	=> $ident_ary['data']['lang_explain'],
+
+					'S_PROFILE_' . strtoupper($ident)		=> true
+				);
 			}
 		
 			return $tpl_fields;
 		}
 	}
 
-	
 	// VALIDATE Function - validate entered data
 	function validate_profile_field($field_type, &$field_value, $field_data)
 	{

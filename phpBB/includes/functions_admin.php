@@ -667,6 +667,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 	switch (SQL_LAYER)
 	{
 		case 'mysql4':
+		case 'mysqli':
 			$sql = 'DELETE t.*
 				FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . ' t2
 				WHERE t.topic_moved_id = t2.topic_id
@@ -789,6 +790,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			switch (SQL_LAYER)
 			{
 				case 'mysql4':
+				case 'mysqli':
 					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 						USING ' . TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
 						WHERE t1.topic_moved_id = t2.topic_id
@@ -825,6 +827,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			switch (SQL_LAYER)
 			{
 				case 'mysql4':
+				case 'mysqli':
 					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 						SET t.topic_approved = p.post_approved
 						$where_sql_and t.topic_first_post_id = p.post_id";
@@ -1686,6 +1689,7 @@ function cache_moderators()
 				break;
 
 			case 'mysql4':
+			case 'mysqli':
 			case 'mssql':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
@@ -2002,6 +2006,7 @@ if (class_exists('auth'))
 								break;
 
 							case 'mysql4':
+							case 'mysqli':
 							case 'mssql':
 							case 'sqlite':
 								$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
@@ -2144,6 +2149,7 @@ if (class_exists('auth'))
 							break;
 
 						case 'mysql4':
+						case 'mysqli':
 						case 'mssql':
 						case 'sqlite':
 							$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
@@ -2250,6 +2256,27 @@ function update_post_information($type, $ids)
 			WHERE {$type}_id = $update_id";
 		$db->sql_query($sql);
 	}
+}
+
+/**
+* Tidy topic tracking tables
+* Removes all tracking rows older than 6 months, including mark_posted informations
+*/
+function tidy_database()
+{
+	global $db;
+
+	$remove_date = time() - (3 * 62 * 24 * 3600);
+
+	$sql = 'DELETE FROM ' . FORUMS_TRACK_TABLE . '
+		WHERE mark_time < ' . $remove_date;
+	$db->sql_query($sql);
+
+	$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
+		WHERE mark_time < ' . $remove_date;
+	$db->sql_query($sql);
+
+	set_config('database_last_gc', time(), true);
 }
 
 ?>
