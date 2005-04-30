@@ -82,6 +82,10 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 		'TOTAL'					=> $forum_topics)
 	);
 
+	// Grab icons
+	$icons = array();
+	obtain_icons($icons);
+
 	$topic_rows = array();
 
 	$sql = 'SELECT t.*
@@ -125,25 +129,30 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 
 		if ($row['topic_status'] == ITEM_LOCKED)
 		{
-			$folder_img = $user->img('folder_locked', 'VIEW_TOPIC_LOCKED');
+			$folder_img = 'folder_locked';
+			$folder_alt = 'VIEW_TOPIC_LOCKED';
 		}
 		else
 		{
 			if ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL)
 			{
-				$folder_img = $user->img('folder_announce', 'VIEW_TOPIC_ANNOUNCEMENT');
+				$folder_img = 'folder_announce';
+				$folder_alt = 'VIEW_TOPIC_ANNOUNCEMENT';
 			}
 			else if ($row['topic_type'] == POST_STICKY)
 			{
-				$folder_img = $user->img('folder_sticky', 'VIEW_TOPIC_STICKY');
+				$folder_img = 'folder_sticky';
+				$folder_alt = 'VIEW_TOPIC_STICKY';
 			}
 			else if ($row['topic_status'] == ITEM_MOVED)
 			{
-				$folder_img = $user->img('folder_moved', 'VIEW_TOPIC_MOVED');
+				$folder_img = 'folder_moved';
+				$folder_alt = 'VIEW_TOPIC_MOVED';
 			}
 			else
 			{
-				$folder_img = $user->img('folder', 'NO_NEW_POSTS');
+				$folder_img = 'folder';
+				$folder_alt = 'NO_NEW_POSTS';
 			}
 		}
 
@@ -179,8 +188,13 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 			'U_MCP_QUEUE'		=> $url . '&amp;i=queue&amp;mode=approve_details&amp;t=' . $row['topic_id'],
 			'U_MCP_REPORT'		=> "mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
 
-			'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
-			'TOPIC_FOLDER_IMG'	=>	$folder_img,
+			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
+			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
+			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
+			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
+
 			'TOPIC_TYPE'		=>	$topic_type,
 			'TOPIC_TITLE'		=>	$topic_title,
 			'REPLIES'			=>	$row['topic_replies'],

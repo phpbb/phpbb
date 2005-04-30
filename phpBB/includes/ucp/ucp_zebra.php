@@ -121,6 +121,7 @@ class ucp_zebra extends module
 									break;
 
 								case 'mysql4':
+								case 'mysqli':
 								case 'mssql':
 								case 'sqlite':
 									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 

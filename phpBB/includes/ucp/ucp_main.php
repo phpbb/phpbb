@@ -389,6 +389,7 @@ class ucp_main extends module
 					$template->assign_block_vars('forumrow', array(
 						'FORUM_ID'			=> $forum_id, 
 						'FORUM_FOLDER_IMG'	=> $user->img($folder_image, $folder_alt),
+						'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 						'FORUM_NAME'		=> $row['forum_name'],
 						'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 						'LAST_POST_TIME'	=> $last_post_time,
@@ -487,8 +488,11 @@ class ucp_main extends module
 						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 						'NEWEST_POST_IMG' 	=> $newest_post_img,
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
-						'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
-						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', sprintf($user->lang['TOTAL_ATTACHMENTS'], $row['topic_attachment'])) : '',
+						'TOPIC_FOLDER_IMG_SRC' 	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+						'TOPIC_ICON_IMG'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
+						'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
+						'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
+						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 						'S_TOPIC_TYPE'			=> $row['topic_type'],
 						'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
