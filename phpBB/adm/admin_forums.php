@@ -1420,6 +1420,7 @@ function delete_forum_content($forum_id)
 	switch (SQL_LAYER)
 	{
 		case 'mysql4':
+		case 'mysqli':
 			// Select then delete all attachments
 			$sql = 'SELECT a.topic_id
 				FROM ' . POSTS_TABLE . ' p, ' . ATTACHMENTS_TABLE . " a

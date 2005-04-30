@@ -10,18 +10,8 @@
 
 /**
 */
-
-// TODO:
-//	* new auth?
-//	* add ability to change uninstalled language packs
-//	* add ability to create new language pack from existing one
-//	* add documentation/help
-//	* Ability to add/remove entries to/from help files?
-//  * Extend help entries to textarea
-
 if (!empty($setmodules))
 {
-	// New auth for language dependent settings?
 	if (!$auth->acl_get('a_server'))
 	{
 		return;
@@ -42,7 +32,7 @@ include($phpbb_root_path . 'includes/functions_user.'.$phpEx);
 // Do we have general permissions?
 if (!$auth->acl_get('a_server'))
 {
-	trigger_error($user->lang['NO_ADMIN']);
+	trigger_error('NO_ADMIN');
 }
 
 // Check and set some common vars
@@ -69,57 +59,37 @@ $safe_mode	= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on'
 
 $language_files = array('common', 'groups', 'mcp', 'memberlist', 'posting', 'search', 'ucp', 'viewforum', 'viewtopic', 'admin', 'help_bbcode', 'help_faq');
 
+$language_file_header = '<?php
+/** 
+*
+* {FILENAME} [{LANG_NAME}]
+*
+* @package phpBB3
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @author {CHANGED} - {AUTHOR}
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
+
+// DEVELOPERS PLEASE NOTE
+//
+// Placeholders can now contain order information, e.g. instead of
+// \'Page %s of %s\' you can (and should) write \'Page %1$s of %2$s\', this allows
+// translators to re-order the output of data while ensuring it remains correct
+//
+// You do not need this where single placeholders are used, e.g. \'Message %d\' is fine
+// equally where a string contains only two placeholders which are used to wrap text
+// in a url you again do not need to specify an order e.g., \'Click %sHERE%s\' is fine
+
+/**
+*/
+';
+
 if (!$mode)
 {
 	trigger_error('NO_MODE');
 }
-
-$user->lang += array(
-	'LANGUAGE_PACKS_EXPLAIN'	=> 'Here you are able to install/remove language packs',
-	'LANGUAGE_PACK_NAME'		=> 'Name',
-	'LANGUAGE_PACK_LOCALNAME'	=> 'Local name',
-	'LANGUAGE_PACK_ISO'			=> 'ISO',
-	'LANGUAGE_PACK_USED_BY'		=> 'Used by',
-	'INSTALLED_LANGUAGE_PACKS'	=> 'Installed language packs',
-	'UNINSTALLED_LANGUAGE_PACKS'=> 'Uninstalled language packs',
-	'NO_UNINSTALLED_LANGUAGE_PACKS'	=> 'No uninstalled language packs',
-	'NO_LANG_ID'				=> 'You haven\'t specified a language pack',
-	'NO_REMOVE_DEFAULT_LANG'	=> 'You are not able to remove the default language pack.<br />If you want to remove this language pack, change your boards default language first.',
-	'LANGUAGE_PACK_DELETED'		=> 'The language pack <b>%s</b> has been removed successfully. All users using this language have been resetted to the boards default language.',
-	'LANGUAGE_PACK_NOT_EXIST'	=> 'The selected language pack does not exist.',
-	'LANGUAGE_PACK_ALREADY_INSTALLED'	=> 'This language pack is already installed.',
-	'INVALID_LANGUAGE_PACK'		=> 'The selected language pack seems to be not valid. Please verify the language pack and upload it again if necessary.',
-	'LANGUAGE_PACK_INSTALLED'	=> 'The language pack <b>%s</b> has been successfully installed.',
-	'LANGUAGE_PACK_DETAILS'		=> 'Language Pack Details',
-	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid',
-	'LANGUAGE_DETAILS_UPDATED'	=> 'Language details successfully updated',
-
-	'LANG_ENGLISH_NAME'			=> 'English name',
-	'LANG_LOCAL_NAME'			=> 'Local name',
-	'LANG_ISO_CODE'				=> 'ISO Code',
-	'LANG_AUTHOR'				=> 'Language Pack Author',
-
-	'MISSING_LANGUAGE_FILE'		=> 'Missing Language File: <span style="color:red">%s</span>',
-	'THOSE_MISSING_LANG_FILES'	=> 'The following language files are missing from the %s language folder',
-	'MISSING_LANG_VARIABLES'	=> 'Missing Language Variables',
-	'THOSE_MISSING_LANG_VARIABLES'	=> 'The following language variables are missing from the <b>%s</b> language pack',
-
-	'LANGUAGE_KEY'				=> 'Language Key',
-	'LANGUAGE_VARIABLE'			=> 'Language Variable',
-	'LANGUAGE_FILES'			=> 'Language Files',
-	'HELP_FILES'				=> 'Help Files',
-	'EMAIL_TEMPLATES'			=> 'Email Templates',
-
-	'LANGUAGE_ENTRIES'			=> 'Language Entries',
-	'LANGUAGE_ENTRIES_EXPLAIN'	=> 'Here you are able to change existing language pack entries or not already translated ones.',
-	'REMOVE_FROM_STORAGE_FOLDER'=> 'Remove from storage folder',
-	'FILE_CONTENTS'				=> 'File Contents',
-	'FILE_FROM_STORAGE'			=> 'File from storage folder',
-	'SUBMIT_AND_DOWNLOAD'		=> 'Submit and Download File',
-	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download format',
-	'DOWNLOAD_AS'				=> 'Download as',
-	'DOWNLOAD'					=> 'Download',
-);
 
 switch ($action)
 {
@@ -199,29 +169,8 @@ switch ($action)
 		}
 		else if (strpos($cur_file, 'help_') === 0)
 		{
-			$header = '<?php
-// -------------------------------------------------------------
-//
-// FILENAME  : ' . $cur_file . ' [ ' . $row['lang_english_name'] . ' ]
-// CHANGED   : ' . date('Y-m-d', time()) . '
-// COPYRIGHT : ' . $row['lang_author'] . '
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
-
-// DEVELOPERS PLEASE NOTE
-//
-// Placeholders can now contain order information, e.g. instead of
-// \'Page %s of %s\' you can (and should) write \'Page %1$s of %2$s\', this allows
-// translators to re-order the output of data while ensuring it remains correct
-//
-// You do not need this where single placeholders are used, e.g. \'Message %d\' is fine
-// equally where a string contains only two placeholders which are used to wrap text
-// in a url you again do not need to specify an order e.g., \'Click %sHERE%s\' is fine
-
-$help = array(
-';
+			$header = str_replace(array('{FILENAME}', '{LANG_NAME}', '{CHANGED}', '{AUTHOR}'), array($cur_file, $row['lang_english_name'], date('Y-m-d', time()), $row['lang_author']), $language_file_header);
+			$header .= '$help = array(' . "\n";
 			fwrite($fp, $header);
 
 			foreach ($_POST['entry'] as $key => $value)
@@ -250,32 +199,15 @@ $help = array(
 		}
 		else
 		{
-			$header = '<?php
-// -------------------------------------------------------------
-//
-// FILENAME  : ' . $cur_file . ' [ ' . $row['lang_english_name'] . ' ]
-// CHANGED   : ' . date('Y-m-d', time()) . '
-// COPYRIGHT : ' . $row['lang_author'] . '
-// WWW       : http://www.phpbb.com/
-// LICENCE   : GPL vs2.0 [ see /docs/COPYING ]
-//
-// -------------------------------------------------------------
-
-// DO NOT CHANGE
+			$header = str_replace(array('{FILENAME}', '{LANG_NAME}', '{CHANGED}', '{AUTHOR}'), array($cur_file, $row['lang_english_name'], date('Y-m-d', time()), $row['lang_author']), $language_file_header);
+			$header .= '
+/**
+* DO NOT CHANGE
+*/
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
 }
-
-// DEVELOPERS PLEASE NOTE
-//
-// Placeholders can now contain order information, e.g. instead of
-// \'Page %s of %s\' you can (and should) write \'Page %1$s of %2$s\', this allows
-// translators to re-order the output of data while ensuring it remains correct
-//
-// You do not need this where single placeholders are used, e.g. \'Message %d\' is fine
-// equally where a string contains only two placeholders which are used to wrap text
-// in a url you again do not need to specify an order e.g., \'Click %sHERE%s\' is fine
 
 $lang += array(
 ';
@@ -428,9 +360,9 @@ $lang += array(
 			// More missing files... for example email templates?
 			foreach ($email_templates as $file)
 			{
-				if (!file_exists(get_filename($lang_iso, "email/$file.$phpEx")))
+				if (!file_exists(get_filename($lang_iso, "email/$file")))
 				{
-					$missing_files[] = get_filename("email/$file.$phpEx");
+					$missing_files[] = get_filename($lang_iso, "email/$file");
 				}
 			}
 
@@ -593,17 +525,18 @@ $lang += array(
 <?php
 		if (!$is_email_file)
 		{
+			$function = ($is_help_file) ? 'print_help_entries' : 'print_language_entries';
 			if (isset($missing_vars[$cur_file]) && sizeof($missing_vars[$cur_file]))
 			{
-				print_language_entries($missing_vars[$cur_file], '* ');
+				$function($missing_vars[$cur_file], '* ');
 			}
-			print_language_entries($lang);
+			$function($lang);
 		}
 		else
 		{
 ?>
 			<tr>
-				<td class="row1" colspan="2" align="center"><textarea name="entry" cols="80" rows="20" class="text" style="width:90%"><?php echo $lang; ?></textarea></td>
+				<td class="row1" colspan="2" align="center"><textarea name="entry" cols="80" rows="20" class="post" style="width:90%"><?php echo $lang; ?></textarea></td>
 			</tr>
 <?php
 		}
@@ -835,7 +768,7 @@ $lang += array(
 		break;
 
 	default:
-		// Output list of themes
+		// Output list of language packs
 		adm_page_header($user->lang['LANGUAGE_PACKS']);
 ?>
 <h1><?php echo $user->lang['LANGUAGE_PACKS']; ?></h1>
@@ -967,6 +900,9 @@ exit;
 //
 // FUNCTIONS
 
+/**
+* Compare two language files
+*/
 function compare_language_files($source_lang, $dest_lang, $file_var)
 {
 	global $phpbb_root_path, $phpEx;
@@ -1003,6 +939,9 @@ function compare_language_files($source_lang, $dest_lang, $file_var)
 	return $return_ary;
 }
 
+/**
+* Print language entries
+*/
 function print_language_entries(&$lang_ary, $key_prefix = '', $input_field = true)
 {
 	foreach ($lang_ary as $key => $value)
@@ -1031,13 +970,54 @@ function print_language_entries(&$lang_ary, $key_prefix = '', $input_field = tru
 		else
 		{
 ?>
-			<?php if ($input_field) { ?><input type="text" class="text" name="entry[<?php echo $key; ?>]" value="<?php echo htmlspecialchars($value); ?>" style="width:99%" /><?php } else { ?><b><?php echo htmlspecialchars($value); ?></b><?php } ?></td>
+			<?php if ($input_field) { ?><input type="text" class="post" name="entry[<?php echo $key; ?>]" value="<?php echo htmlspecialchars($value); ?>" style="width:99%" /><?php } else { ?><b><?php echo htmlspecialchars($value); ?></b><?php } ?></td>
 		</tr>
 <?php
 		}
 	}
 }
 
+/**
+* Print help entries
+*/
+function print_help_entries(&$lang_ary, $key_prefix = '', $text_field = true)
+{
+	foreach ($lang_ary as $key => $value)
+	{
+?>
+		<tr>
+			<td class="row1" width="10%" nowrap="nowrap"><?php echo $key_prefix; ?><b><?php echo $key; ?></b></td>
+			<td class="row2">
+<?php
+		if (is_array($value))
+		{
+?>
+			&nbsp;</td>
+		</tr>
+<?php
+			foreach ($value as $_key => $_value)
+			{
+?>
+		<tr>
+			<td class="row1" width="10%" nowrap="nowrap"><?php echo $key_prefix; ?><b><?php echo $key . ' :: ' . $_key; ?></b></td>
+			<td class="row2"><?php if ($text_field) { ?><textarea class="post" name="entry[<?php echo $key; ?>][<?php echo $_key; ?>]" cols="80" rows="5" class="post" style="width:90%"><?php echo htmlspecialchars($_value); ?></textarea><?php } else { ?><b><?php echo htmlspecialchars($_value); ?></b><?php } ?></td>
+		</tr>
+<?php
+			}
+		}
+		else
+		{
+?>
+			<?php if ($text_field) { ?><textarea type="text" class="post" name="entry[<?php echo $key; ?>]" cols="80" rows="5" style="width:90%"><?php echo htmlspecialchars($value); ?></textarea><?php } else { ?><b><?php echo htmlspecialchars($value); ?></b><?php } ?></td>
+		</tr>
+<?php
+		}
+	}
+}
+
+/**
+* Get filename/location of language/help/email file
+*/
 function get_filename($lang_iso, $file, $check_store = false)
 {
 	global $phpbb_root_path, $safe_mode;

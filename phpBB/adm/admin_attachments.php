@@ -225,6 +225,8 @@ if ($submit && $mode == 'extensions')
 	{
 		$notify[] = $user->lang['EXTENSIONS_UPDATED'];
 	}
+	
+	$cache->destroy('extensions');
 }
 
 

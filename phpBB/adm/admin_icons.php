@@ -220,7 +220,7 @@ switch ($action)
 
 ?>
 		<td class="<?php echo $row_class; ?>"><input class="post" type="text" name="code[<?php echo $img; ?>]" value="<?php echo (!empty($img_row['code'])) ? $img_row['code'] : '' ?>" size="10" /></td>
-		<td class="<?php echo $row_class; ?>"><input class="post" type="text" name="emotion[<?php echo $img; ?>]" value="<?php echo (!empty($img_row['smiley'])) ? $img_row['smiley'] : '' ?>" size="10" /></td>
+		<td class="<?php echo $row_class; ?>"><input class="post" type="text" name="emotion[<?php echo $img; ?>]" value="<?php echo (!empty($img_row['emotion'])) ? $img_row['emotion'] : '' ?>" size="10" /></td>
 <?php
 
 	}
@@ -308,7 +308,7 @@ switch ($action)
 				if ($mode == 'smilies')
 				{
 					$img_sql = array_merge($img_sql, array(
-						'smiley'	=>	$image_emotion[$image],
+						'emotion'	=>	$image_emotion[$image],
 						'code'		=>	$image_code[$image])
 					);
 				}
@@ -467,7 +467,7 @@ switch ($action)
 						if ($mode == 'smilies')
 						{
 							$sql = array_merge($sql, array(
-								'smiley'	=>	$emotion
+								'emotion'	=>	$emotion
 							));
 						}
 
@@ -489,7 +489,7 @@ switch ($action)
 						{
 							$sql = array_merge($sql, array(
 								'code'		=>	$code,
-								'smiley'	=>	$emotion
+								'emotion'	=>	$emotion
 							));
 						}
 						$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql));
@@ -582,7 +582,7 @@ switch ($action)
 			$pak .= "'" . addslashes($row[$fields . '_width']) . "', ";
 			if ($mode == 'smilies')
 			{
-				$pak .= "'" . addslashes($row['smiley']) . "', ";
+				$pak .= "'" . addslashes($row['emotion']) . "', ";
 				$pak .= "'" . addslashes($row['code']) . "', ";
 			}
 			$pak .= "\n";
@@ -745,7 +745,7 @@ switch ($action)
 			{
 ?>
 				<td class="<?php echo $row_class; ?>" align="center"><?php echo htmlspecialchars($row['code']); ?></td>
-				<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['smiley']; ?></td>
+				<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['emotion']; ?></td>
 <?php
 			}
 ?>
