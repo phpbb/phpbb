@@ -170,7 +170,13 @@
 					<!-- IF postrow.POSTER_POSTS --><br /><b>{L_JOINED}:</b> {postrow.POSTER_JOINED}<!-- ENDIF -->
 					<!-- IF postrow.POSTER_POSTS --><br /><b>{L_POSTS}:</b> {postrow.POSTER_POSTS}<!-- ENDIF -->
 					<!-- IF postrow.POSTER_FROM --><br /><b>{L_LOCATION}:</b> {postrow.POSTER_FROM}<!-- ENDIF -->
-					<!-- IF postrow.S_PROFILE_FIELD_1 --><br /><b>{postrow.PROFILE_FIELD_1_NAME}:</b> {postrow.PROFILE_FIELD_1_VALUE}<!-- ENDIF -->
+					<!-- IF postrow.S_PROFILE_FIELD1 -->
+					<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
+						<br /><b>{postrow.PROFILE_FIELD1_NAME}:</b> {postrow.PROFILE_FIELD1_VALUE}
+					<!-- ENDIF -->
+					<!-- BEGIN custom_fields -->
+						<br /><b>{postrow.custom_fields.PROFILE_FIELD_NAME}:</b> {postrow.custom_fields.PROFILE_FIELD_VALUE}
+					<!-- END custom_fields -->
 					</span>
 
 				</td>

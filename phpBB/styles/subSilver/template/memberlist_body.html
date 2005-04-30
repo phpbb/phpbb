@@ -48,8 +48,11 @@
 				<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_PM --><a href="{memberrow.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
 				<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_EMAIL --><a href="{memberrow.U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF -->&nbsp;</td>
 				<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_WWW --><a href="{memberrow.U_WWW}" target="_blank">{WWW_IMG}</a><!-- ENDIF -->&nbsp;</td>
+				<!-- IF memberrow.S_PROFILE_FIELD1 -->
+					<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
+					<td class="gen" align="center">&nbsp;{memberrow.PROFILE_FIELD1_VALUE}</td>
+				<!-- ENDIF -->
 				<!-- IF S_SEARCH_USER --><td align="center"><input type="checkbox" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
-
 			</tr>
 
 			<!-- BEGINELSE -->

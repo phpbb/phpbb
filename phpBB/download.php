@@ -204,14 +204,13 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		$attachment['mimetype'] = ($browser_agent == 'ie' || $browser_agent == 'opera') ? 'application/octetstream' : 'application/octet-stream';
 	}
 
-	if ($config['gzip_compress'])
+	if (@ob_get_length())
 	{
 		@ob_end_clean();
 	}
 	
 	// Now the tricky part... let's dance
 	header('Pragma: public');
-//	header('Content-Transfer-Encoding: none');
 
 	// Send out the Headers
 	header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');

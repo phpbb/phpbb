@@ -542,6 +542,7 @@ if ($submit || $preview || $refresh)
 		switch (SQL_LAYER)
 		{
 			case 'mysql4':
+			case 'mysqli':
 				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . ', ' . POLL_VOTES_TABLE . "
 					WHERE topic_id = $topic_id";
 				$db->sql_query($sql);
@@ -1360,7 +1361,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_text' 		=> $data['message'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
-				'post_attachment'	=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0, // sizeof($data['filename_data']['physical_filename'])
+				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked']
@@ -1412,7 +1413,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
-				'post_attachment'	=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked'])
@@ -1440,7 +1441,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_first_poster_name' => (!$user->data['is_registered'] && $username) ? stripslashes($username) : $user->data['username'],
 				'topic_type'		=> $topic_type,
 				'topic_time_limit'	=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'topic_attachment'	=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0
+				'topic_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1493,7 +1494,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'poll_length'				=> ($poll['poll_options']) ? ($poll['poll_length'] * 86400) : 0,
 				'poll_vote_change'			=> $poll['poll_vote_change'],
 
-				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0) : $data['topic_attachment']
+				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0) : $data['topic_attachment']
 			);
 			break;
 	}

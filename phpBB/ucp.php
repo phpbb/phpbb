@@ -350,7 +350,7 @@ while ($row = $db->sql_fetchrow($result))
 	$which = (time() - $update_time < $row['online_time']) ? 'online' : 'offline';
 
 	$template->assign_block_vars("friends_{$which}", array(
-		'U_PROFILE'	=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
+		'U_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
 
 		'USER_ID'	=> $row['user_id'],
 		'USERNAME'	=> $row['username'])

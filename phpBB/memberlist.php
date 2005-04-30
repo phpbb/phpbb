@@ -38,7 +38,7 @@ switch ($mode)
 		{
 			if ($user->data['user_id'] != ANONYMOUS)
 			{
-				trigger_error($user->lang['NO_VIEW_USERS']);
+				trigger_error('NO_VIEW_USERS');
 			}
 
 			login_box('', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
@@ -138,7 +138,7 @@ switch ($mode)
 
 		if (!($row = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_USER_DATA']);
+			trigger_error('NO_USER_DATA');
 		}
 		$db->sql_freeresult($result);
 
@@ -207,7 +207,7 @@ switch ($mode)
 
 		if ($user_id == ANONYMOUS)
 		{
-			trigger_error($user->lang['NO_USER']);
+			trigger_error('NO_USER');
 		}
 
 		// Do the SQL thang
@@ -233,7 +233,7 @@ switch ($mode)
 
 		if (!($member = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_USER']);
+			trigger_error('NO_USER');
 		}
 		$db->sql_freeresult($result);
 
@@ -386,13 +386,7 @@ switch ($mode)
 			include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 			$cp = new custom_profile();
 			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
-
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
-
-			if (sizeof($profile_fields))
-			{
-				$template->assign_vars($profile_fields);
-			}
 		}
 
 		$template->assign_vars(array(
@@ -422,13 +416,26 @@ switch ($mode)
 
 			'S_PROFILE_ACTION'	=> "memberlist.$phpEx$SID&amp;mode=group",
 			'S_GROUP_OPTIONS'	=> $group_options,
-			'S_CUSTOM_FIELDS'	=> (sizeof($profile_fields)) ? true : false,
+			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 
 			'U_ADD_FRIEND'		=> "ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']),
 			'U_ADD_FOE'			=> "ucp.$phpEx$SID&amp;i=zebra&amp;mode=foes&amp;add=" . urlencode($member['username']),
 			'U_ACTIVE_FORUM'	=> "viewforum.$phpEx$SID&amp;f=$active_f_id",
 			'U_ACTIVE_TOPIC'	=> "viewtopic.$phpEx$SID&amp;t=$active_t_id",)
 		);
+
+		if (isset($profile_fields['row']) && sizeof($profile_fields['row']))
+		{
+			$template->assign_vars($profile_fields['row']);
+		}
+
+		if (isset($profile_fields['blockrow']) && sizeof($profile_fields['blockrow']))
+		{
+			foreach ($profile_fields['blockrow'] as $field_data)
+			{
+				$template->assign_block_vars('custom_fields', $field_data);
+			}
+		}
 		break;
 
 	case 'email':
@@ -436,25 +443,25 @@ switch ($mode)
 		$page_title = $user->lang['SEND_EMAIL'];
 		$template_html = 'memberlist_email.html';
 
-		if (empty($config['email_enable']))
+		if (!$config['email_enable'])
 		{
-			trigger_error($user->lang['EMAIL_DISABLED']);
+			trigger_error('EMAIL_DISABLED');
 		}
 
-		if (($user_id == ANONYMOUS || empty($config['board_email_form'])) && !$topic_id)
+		if (($user_id == ANONYMOUS || !$config['board_email_form']) && !$topic_id)
 		{
-			trigger_error($user->lang['NO_EMAIL']);
+			trigger_error('NO_EMAIL');
 		}
 
 		if (!$auth->acl_get('u_sendemail'))
 		{
-			trigger_error($user->lang['NO_EMAIL']);
+			trigger_error('NO_EMAIL');
 		}
 
 		// Are we trying to abuse the facility?
 		if (time() - $user->data['user_emailtime'] < $config['flood_interval'])
 		{
-			trigger_error($lang['FLOOD_EMAIL_LIMIT']);
+			trigger_error('FLOOD_EMAIL_LIMIT');
 		}
 
 		$name		= strip_tags(request_var('name', ''));
@@ -477,14 +484,14 @@ switch ($mode)
 
 			if (!($row = $db->sql_fetchrow($result)))
 			{
-				trigger_error($user->lang['NO_USER']);
+				trigger_error('NO_USER');
 			}
 			$db->sql_freeresult($result);
 
 			// Can we send email to this user?
-			if (empty($row['user_allow_viewemail']) && !$auth->acl_get('a_user'))
+			if (!$row['user_allow_viewemail'] && !$auth->acl_get('a_user'))
 			{
-				trigger_error($user->lang['NO_EMAIL']);
+				trigger_error('NO_EMAIL');
 			}
 		}
 		else
@@ -496,18 +503,18 @@ switch ($mode)
 
 			if (!($row = $db->sql_fetchrow($result)))
 			{
-				trigger_error($user->lang['NO_TOPIC']);
+				trigger_error('NO_TOPIC');
 			}
 			$db->sql_freeresult($result);
 
 			if (!$auth->acl_get('f_read', $row['forum_id']))
 			{
-				trigger_error($user->lang['NO_FORUM_READ']);
+				trigger_error('NO_FORUM_READ');
 			}
 
 			if (!$auth->acl_get('f_email', $row['forum_id']))
 			{
-				trigger_error($user->lang['NO_EMAIL']);
+				trigger_error('NO_EMAIL');
 			}
 		}
 
@@ -579,8 +586,8 @@ switch ($mode)
 				$messenger->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],
 					'BOARD_EMAIL'	=> $config['board_contact'],
-					'FROM_USERNAME' => $user->data['username'],
-					'TO_USERNAME'	=> ($topic_id) ? $name : $row['username'],
+					'FROM_USERNAME' => stripslashes($user->data['username']),
+					'TO_USERNAME'	=> ($topic_id) ? stripslashes($name) : stripslashes($row['username']),
 					'MESSAGE'		=> $message,
 					'TOPIC_NAME'	=> ($topic_id) ? strtr($row['topic_title'], array_flip(get_html_translation_table(HTML_ENTITIES))) : '',
 
@@ -603,18 +610,19 @@ switch ($mode)
 				'NAME'			=> htmlspecialchars($name),
 				'TOPIC_TITLE'	=> $row['topic_title'],
 
-				'U_TOPIC'	=> "viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . "&amp;t=topic_id",
+				'U_TOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$row['forum_id']}&amp;t=$topic_id",
 
 				'S_LANG_OPTIONS'=> ($topic_id) ? language_select($email_lang) : '')
 			);
 		}
+
 		$template->assign_vars(array(
 			'USERNAME'		=> (!$topic_id) ? addslashes($row['username']) : '',
 			'ERROR_MESSAGE'	=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 			'L_EMAIL_BODY_EXPLAIN'	=> (!$topic_id) ? $user->lang['EMAIL_BODY_EXPLAIN'] : $user->lang['EMAIL_TOPIC_EXPLAIN'],
 
-			'S_POST_ACTION' => (!$topic_id) ? "memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : "memberlist.$phpEx$SID&amp;mode=email&amp;f=$forum_id&amp;t=$topic_id",
+			'S_POST_ACTION' => (!$topic_id) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;f=$forum_id&amp;t=$topic_id",
 			'S_SEND_USER'	=> (!$topic_id) ? true : false)
 		);
 		break;
@@ -744,7 +752,7 @@ switch ($mode)
 
 			if (!extract($db->sql_fetchrow($result)))
 			{
-				trigger_error($user->lang['NO_GROUP']);
+				trigger_error('NO_GROUP');
 			}
 			$db->sql_freeresult($result);
 
@@ -801,7 +809,7 @@ switch ($mode)
 				'AVATAR_IMG'	=> $avatar_img,
 				'RANK_IMG'		=> $rank_img,
 
-				'U_PM'			=> ($auth->acl_get('u_sendpm') && $group_receive_pm && $config['allow_mass_pm']) ? "ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;g=$group_id" : '',)
+				'U_PM'			=> ($auth->acl_get('u_sendpm') && $group_receive_pm && $config['allow_mass_pm']) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;g=$group_id" : '',)
 			);
 
 			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
@@ -827,12 +835,8 @@ switch ($mode)
 			$total_users = $config['num_users'];
 		}
 
-
-
-
-
 		// Pagination string
-		$pagination_url = "memberlist.$phpEx$SID&amp;mode=$mode";
+		$pagination_url = "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=$mode";
 
 		// Build a relevant pagination_url
 		$global_var = ($submit) ? '_POST' : '_GET';
@@ -844,9 +848,6 @@ switch ($mode)
 			}
 			$pagination_url .= '&amp;' . $key . '=' . urlencode(htmlspecialchars($var));
 		}
-
-
-
 
 		// Some search user specific data
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
@@ -872,7 +873,7 @@ switch ($mode)
 //				'S_USERNAME_OPTIONS'	=> $username_list,
 				'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
-				'S_SEARCH_ACTION' 		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field")
+				'S_SEARCH_ACTION' 		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field")
 			);
 		}
 
@@ -898,60 +899,95 @@ switch ($mode)
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-		if ($row = $db->sql_fetchrow($result))
+		$id_cache = array();
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$i = 0;
-			do
+			$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : '';
+
+			$id_cache[$row['user_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+			
+		// Load custom profile fields
+		if ($config['load_cpf_memberlist'])
+		{
+			include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+			$cp = new custom_profile();
+
+			// Grab all profile fields from users in id cache for later use - similar to the poster cache
+			$profile_fields_cache = $cp->generate_profile_fields_template('grab', array_keys($id_cache));
+		}
+		
+		$i = 0;
+		foreach ($id_cache as $user_id => $row)
+		{
+			$cp_row = array();
+			if ($config['load_cpf_memberlist'])
 			{
-				$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : '';
-
-				$template->assign_block_vars('memberrow', array_merge(show_profile($row), array(
-					'ROW_NUMBER'	=> $i + ($start + 1),
-
-					'U_VIEWPROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id']))
-				);
-
-				$i++;
+				$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$user_id]) : array();
 			}
-			while ($row = $db->sql_fetchrow($result));
-	}
 
-	// Generate page
-	$template->assign_vars(array(
-		'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
-		'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start),
-		'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
+			$memberrow = array_merge(show_profile($row), array(
+				'ROW_NUMBER'		=> $i + ($start + 1),
+				'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
+				'U_VIEWPROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id")
+			);
 
-		'PROFILE_IMG'	=> $user->img('btn_profile', $user->lang['PROFILE']),
-		'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']),
-		'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
-		'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
-		'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
-		'AIM_IMG'		=> $user->img('btn_aim', $user->lang['AIM']),
-		'MSN_IMG'		=> $user->img('btn_msnm', $user->lang['MSNM']),
-		'YIM_IMG'		=> $user->img('btn_yim', $user->lang['YIM']),
-		'JABBER_IMG'	=> $user->img('btn_jabber', $user->lang['JABBER']),
-		'SEARCH_IMG'	=> $user->img('btn_search', $user->lang['SEARCH']),
+			if (isset($cp_row['row']) && sizeof($cp_row['row']))
+			{
+				$memberrow = array_merge($memberrow, $cp_row['row']);
+			}
 
-		'U_FIND_MEMBER'		=> (!empty($config['load_search']) || $auth->acl_get('a_')) ? "memberlist.$phpEx$SID&amp;mode=searchuser" : '',
-		'U_SORT_USERNAME'	=> $pagination_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_FROM'		=> $pagination_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_JOINED'		=> $pagination_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_POSTS'		=> $pagination_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_EMAIL'		=> $pagination_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_WEBSITE'	=> $pagination_url . '&amp;sk=f&amp;sd=' . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_ICQ'		=> $pagination_url . '&amp;sk=g&amp;sd=' . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_AIM'		=> $pagination_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_MSN'		=> $pagination_url . '&amp;sk=i&amp;sd=' . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_YIM'		=> $pagination_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_ACTIVE'		=> $pagination_url . '&amp;sk=k&amp;sd=' . (($sort_key == 'k' && $sort_dir == 'a') ? 'd' : 'a'),
-		'U_SORT_RANK'		=> $pagination_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'),
+			$template->assign_block_vars('memberrow', $memberrow);
 
-		'S_SHOW_GROUP'		=> ($mode == 'group') ? true : false,
-		'S_MODE_SELECT'		=> $s_sort_key,
-		'S_ORDER_SELECT'	=> $s_sort_dir,
-		'S_MODE_ACTION'		=> $pagination_url . "&amp;form=$form")
-	);
+			if (isset($cp_row['blockrow']) && sizeof($cp_row['blockrow']))
+			{
+				foreach ($cp_row['blockrow'] as $field_data)
+				{
+					$template->assign_block_vars('memberrow.custom_fields', $field_data);
+				}
+			}
+
+			$i++;
+			unset($id_cache[$user_id]);
+		}
+	
+		// Generate page
+		$template->assign_vars(array(
+			'PAGINATION' 	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),
+			'PAGE_NUMBER' 	=> on_page($total_users, $config['topics_per_page'], $start),
+			'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
+
+			'PROFILE_IMG'	=> $user->img('btn_profile', $user->lang['PROFILE']),
+			'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']),
+			'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
+			'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
+			'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
+			'AIM_IMG'		=> $user->img('btn_aim', $user->lang['AIM']),
+			'MSN_IMG'		=> $user->img('btn_msnm', $user->lang['MSNM']),
+			'YIM_IMG'		=> $user->img('btn_yim', $user->lang['YIM']),
+			'JABBER_IMG'	=> $user->img('btn_jabber', $user->lang['JABBER']),
+			'SEARCH_IMG'	=> $user->img('btn_search', $user->lang['SEARCH']),
+
+			'U_FIND_MEMBER'		=> (!empty($config['load_search']) || $auth->acl_get('a_')) ? "memberlist.$phpEx$SID&amp;mode=searchuser" : '',
+			'U_SORT_USERNAME'	=> $pagination_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_FROM'		=> $pagination_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_JOINED'		=> $pagination_url . '&amp;sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_POSTS'		=> $pagination_url . '&amp;sk=d&amp;sd=' . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_EMAIL'		=> $pagination_url . '&amp;sk=e&amp;sd=' . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_WEBSITE'	=> $pagination_url . '&amp;sk=f&amp;sd=' . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_ICQ'		=> $pagination_url . '&amp;sk=g&amp;sd=' . (($sort_key == 'g' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_AIM'		=> $pagination_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_MSN'		=> $pagination_url . '&amp;sk=i&amp;sd=' . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_YIM'		=> $pagination_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_ACTIVE'		=> $pagination_url . '&amp;sk=k&amp;sd=' . (($sort_key == 'k' && $sort_dir == 'a') ? 'd' : 'a'),
+			'U_SORT_RANK'		=> $pagination_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'),
+
+			'S_SHOW_GROUP'		=> ($mode == 'group') ? true : false,
+			'S_MODE_SELECT'		=> $s_sort_key,
+			'S_ORDER_SELECT'	=> $s_sort_dir,
+			'S_MODE_ACTION'		=> $pagination_url . "&amp;form=$form")
+		);
 }
 
 
@@ -1022,7 +1058,7 @@ function show_profile($data)
 
 		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']),
 		'RANK_IMG'		=> $rank_img,
-		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&img=5" width="18" height="18" border="0" />' : '',
+		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
 
 		'U_PROFILE'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;show_results=posts" : '',

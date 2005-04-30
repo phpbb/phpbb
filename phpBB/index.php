@@ -43,7 +43,7 @@ $result = $db->sql_query($sql);
 $legend = '';
 while ($row = $db->sql_fetchrow($result))
 {
-	$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="memberlist.' . $phpEx . $SID . '&amp;mode=group&amp;g=' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+	$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . "{$phpbb_root_path}memberlist.$phpEx$SID" . '&amp;mode=group&amp;g=' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
 }
 $db->sql_freeresult($result);
 
@@ -62,7 +62,7 @@ if ($config['load_birthdays'])
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$user_colour = ($row['user_colour']) ? ' style="color:#' . $row['user_colour'] .'"' : '';
-		$birthday_list .= (($birthday_list != '') ? ', ' : '') . '<a' . $user_colour . " href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
+		$birthday_list .= (($birthday_list != '') ? ', ' : '') . '<a' . $user_colour . " href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>';
 
 		if ($age = (int)substr($row['user_birthday'], -4))
 		{
@@ -77,7 +77,7 @@ $template->assign_vars(array(
 	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
 	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
 	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
-	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], "<a href=\"memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'),
+	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$newest_uid \">", $newest_user, '</a>'),
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> $birthday_list,
 
@@ -85,10 +85,10 @@ $template->assign_vars(array(
 	'FORUM_NEW_IMG'		=>	$user->img('forum_new', 'NEW_POSTS'),
 	'FORUM_LOCKED_IMG'	=>	$user->img('forum_locked', 'NO_NEW_POSTS_LOCKED'),
 
-	'S_LOGIN_ACTION'			=> "ucp.$phpEx$SID&amp;mode=login",
+	'S_LOGIN_ACTION'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login",
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 
-	'U_MARK_FORUMS' => "index.$phpEx$SID&amp;mark=forums")
+	'U_MARK_FORUMS' => "{$phpbb_root_path}index.$phpEx$SID&amp;mark=forums")
 );
 
 // Output page
