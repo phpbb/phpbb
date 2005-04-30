@@ -2113,13 +2113,22 @@ $lang += array(
 	'DISPLAY_AT_REGISTRATION'	=> 'Display at registration screen',
 	'HIDE_PROFILE_FIELD'		=> 'Hide Profile Field',
 	'HIDE_PROFILE_FIELD_EXPLAIN'=> 'Only Administrators and Moderators are able to see/fill out this profile field',
+	'EXCLUDE_FROM_VIEW'			=> 'Do not display profile field',
+	'EXCLUDE_FROM_VIEW_EXPLAIN'	=> 'The profile field will not be shown on viewtopic/viewprofile/memberlist/etc.',
 
 	'ADDED_PROFILE_FIELD'		=> 'Successfully added custom profile field',
 	'CREATE_NEW_FIELD'			=> 'Create New Field',
-	'DELETED_PROFILE_FIELD'		=> 'Successfully deleted profile field.',
+	'REMOVED_PROFILE_FIELD'		=> 'Successfully removed profile field.',
 	'CONFIRM_DELETE_PROFILE_FIELD'	=> 'Are you sure you want to delete this profile field?',
 	'PROFILE_FIELD_ACTIVATED'	=> 'Profile field successfully activated',
 	'PROFILE_FIELD_DEACTIVATED'	=> 'Profile field successfully deactivated',
+	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field',
+
+	'LOG_CREATE_PROFILE_FIELD'		=> '<b>Profile field added</b><br />&#187; %s',
+	'LOG_EDIT_PROFILE_FIELD'		=> '<b>Profile field changed</b><br />&#187; %s',
+	'LOG_ACTIVATE_PROFILE_FIELD'	=> '<b>Profile field activated</b><br />&#187; %s',
+	'LOG_DEACTIVATE_PROFILE_FIELD'	=> '<b>Profile field deactivated</b><br />&#187; %s',
+	'LOG_REMOVED_PROFILE_FIELD'		=> '<b>Profile field removed</b><br />&#187; %s',
 
 	'CHARS_ANY'		=> 'Any character',
 	'NUMBERS_ONLY'	=> 'Only numbers (0-9)',
@@ -2158,6 +2167,58 @@ $lang += array(
 
 	'DEFAULT_ISO_LANGUAGE'	=> 'Default Language [%s]',
 	'ISO_LANGUAGE'			=> 'Language [%s]',
+
+	'NO_FIELD_ID'			=> 'No field id specified',
+	'FIELD_NOT_FOUND'		=> 'Profile field not found',
+	'NO_FIELD_ENTRIES'		=> 'No Entries defined',
+);
+
+// Language Packs
+$lang += array(
+	'LANGUAGE_PACKS_EXPLAIN'	=> 'Here you are able to install/remove language packs',
+	'LANGUAGE_PACK_NAME'		=> 'Name',
+	'LANGUAGE_PACK_LOCALNAME'	=> 'Local name',
+	'LANGUAGE_PACK_ISO'			=> 'ISO',
+	'LANGUAGE_PACK_USED_BY'		=> 'Used by',
+	'INSTALLED_LANGUAGE_PACKS'	=> 'Installed language packs',
+	'UNINSTALLED_LANGUAGE_PACKS'=> 'Uninstalled language packs',
+	'NO_UNINSTALLED_LANGUAGE_PACKS'	=> 'No uninstalled language packs',
+	'NO_LANG_ID'				=> 'You haven\'t specified a language pack',
+	'NO_REMOVE_DEFAULT_LANG'	=> 'You are not able to remove the default language pack.<br />If you want to remove this language pack, change your boards default language first.',
+	'LANGUAGE_PACK_DELETED'		=> 'The language pack <b>%s</b> has been removed successfully. All users using this language have been resetted to the boards default language.',
+	'LANGUAGE_PACK_NOT_EXIST'	=> 'The selected language pack does not exist.',
+	'LANGUAGE_PACK_ALREADY_INSTALLED'	=> 'This language pack is already installed.',
+	'INVALID_LANGUAGE_PACK'		=> 'The selected language pack seems to be not valid. Please verify the language pack and upload it again if necessary.',
+	'LANGUAGE_PACK_INSTALLED'	=> 'The language pack <b>%s</b> has been successfully installed.',
+	'LANGUAGE_PACK_DETAILS'		=> 'Language Pack Details',
+	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid',
+	'LANGUAGE_DETAILS_UPDATED'	=> 'Language details successfully updated',
+
+	'LANG_ENGLISH_NAME'			=> 'English name',
+	'LANG_LOCAL_NAME'			=> 'Local name',
+	'LANG_ISO_CODE'				=> 'ISO Code',
+	'LANG_AUTHOR'				=> 'Language Pack Author',
+
+	'MISSING_LANGUAGE_FILE'		=> 'Missing Language File: <span style="color:red">%s</span>',
+	'THOSE_MISSING_LANG_FILES'	=> 'The following language files are missing from the %s language folder',
+	'MISSING_LANG_VARIABLES'	=> 'Missing Language Variables',
+	'THOSE_MISSING_LANG_VARIABLES'	=> 'The following language variables are missing from the <b>%s</b> language pack',
+
+	'LANGUAGE_KEY'				=> 'Language Key',
+	'LANGUAGE_VARIABLE'			=> 'Language Variable',
+	'LANGUAGE_FILES'			=> 'Language Files',
+	'HELP_FILES'				=> 'Help Files',
+	'EMAIL_TEMPLATES'			=> 'Email Templates',
+
+	'LANGUAGE_ENTRIES'			=> 'Language Entries',
+	'LANGUAGE_ENTRIES_EXPLAIN'	=> 'Here you are able to change existing language pack entries or not already translated ones.<br /><b>Note:</b> Once you changed a language file, the changes will be stored within a seperate folder for you to download. The changes will not be seen by your users until you replace the original language files at your webspace (by uploading them).',
+	'REMOVE_FROM_STORAGE_FOLDER'=> 'Remove from storage folder',
+	'FILE_CONTENTS'				=> 'File Contents',
+	'FILE_FROM_STORAGE'			=> 'File from storage folder',
+	'SUBMIT_AND_DOWNLOAD'		=> 'Submit and Download File',
+	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download format',
+	'DOWNLOAD_AS'				=> 'Download as',
+	'DOWNLOAD'					=> 'Download',
 );
 
 ?>

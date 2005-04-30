@@ -71,7 +71,7 @@ $lang += array(
 	'BOOKMARKS_REMOVED'			=> 'Bookmarks removed successfully',
 
 	'CANNOT_EDIT_MESSAGE_TIME'	=> 'You can no longer edit or delete that message',
-	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages can not be moved to the folder which will be removed.',
+	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages can not be moved to the folder you want to remove.',
 	'CANNOT_RENAME_FOLDER'		=> 'This folder can not be renamed.',
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder can not be removed.',
 	'CHANGE_PASSWORD'			=> 'Change password',

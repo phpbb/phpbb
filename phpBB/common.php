@@ -36,6 +36,12 @@ if (@ini_get('register_globals'))
 	}
 }
 
+if (defined('IN_CRON'))
+{
+	chdir($phpbb_root_path);
+	$phpbb_root_path = getcwd() . '/';
+}
+
 require($phpbb_root_path . 'config.'.$phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
@@ -289,24 +295,6 @@ else
 
 	$cache->put('config', $cached_config);
 	unset($cached_config);
-}
-
-// Tidy the cache
-if (method_exists($cache, 'tidy') && time() - $config['cache_gc'] > $config['cache_last_gc'])
-{
-	$cache->tidy();
-	set_config('cache_last_gc', time(), TRUE);
-}
-
-// Handle email/cron queue.
-if (time() - $config['queue_interval'] >= $config['last_queue_run'] && !defined('IN_ADMIN'))
-{
-	if (file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
-	{
-		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-		$queue = new queue();
-		$queue->process();
-	}
 }
 
 // Warn about install/ directory
