@@ -104,6 +104,8 @@ class acm
 				}
 			}
 		}
+		
+		set_config('cache_last_gc', time(), true);
 	}
 
 	function get($var_name)
@@ -299,4 +301,5 @@ class acm
 		return array_shift($this->sql_rowset[$query_id]);
 	}
 }
+
 ?>

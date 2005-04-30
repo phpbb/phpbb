@@ -100,6 +100,7 @@ class acm
 			{
 				case 'mysql':
 				case 'mysql4':
+				case 'mysqli':
 					$sql = 'INSERT INTO ' . CACHE_TABLE . ' (var_name, var_expires, var_data)
 						VALUES (' . implode('), (', $insert) . ')';
 					$db->sql_query($sql);
@@ -123,6 +124,8 @@ class acm
 		$sql = 'DELETE FROM ' . CACHE_TABLE . '
 			WHERE var_expires < ' . time();
 		$db->sql_query($sql);
+
+		set_config('cache_last_gc', time(), true);
 	}
 
 	function get($var_name)
@@ -179,6 +182,7 @@ class acm
 			{
 				case 'mysql':
 				case 'mysql4':
+				case 'mysqli':
 					$INSERT = 'REPLACE';
 				break;
 			
@@ -219,4 +223,5 @@ class acm
 		return isset($this->vars[$var_name]);
 	}
 }
+
 ?>
