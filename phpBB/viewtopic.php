@@ -44,72 +44,67 @@ if (!$topic_id && !$post_id)
 }
 
 // Find topic id if user requested a newer or older topic
-$unread_post_id = '';
+$unread_post_id = 0;
 if ($view && !$post_id)
 {
+	if (!$forum_id)
+	{
+		$sql = 'SELECT forum_id FROM ' . TOPICS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$db->sql_query_limit($sql, 1);
+		$result = $db->sql_query($sql);
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$forum_id = $row['forum_id'];
+		}
+		else
+		{
+			trigger_error('NO_TOPIC');
+		}
+		$db->sql_freeresult($result);
+	}
+
 	if ($view == 'unread')
 	{
 		if ($user->data['is_registered'])
 		{
-			if ($config['load_db_lastread'])
-			{
-				switch (SQL_LAYER)
-				{
-					case 'oracle':
-						break;
-
-					default:
-						$sql_lastread = 'LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . '
-							AND tt.topic_id = p.topic_id)';
-						$sql_unread_time = ' tt.mark_time OR tt.mark_time IS NULL';
-				}
-			}
-			else
-			{
-				$sql_lastread = '';
-				$sql_unread_time = 0;
-				if (isset($_COOKIE[$config['cookie_name'] . '_track']))
-				{
-					$tracking_topics = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
-					if (isset($tracking_topics[$forum_id]))
-					{
-						$sql_unread_time = base_convert(max($tracking_topics[$forum_id]), 36, 10);
-						$sql_unread_time = max($sql_unread_time, $user->data['session_last_visit']);
-					}
-				}
-			}
-
-			$sql = 'SELECT p.post_id
-				FROM (' . POSTS_TABLE . " p
-				$sql_lastread, " . TOPICS_TABLE . " t)
-				WHERE t.topic_id = $topic_id
-					AND p.topic_id = t.topic_id
-					" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
-					AND (p.post_time > $sql_unread_time
-						OR p.post_id = t.topic_last_post_id)
-				ORDER BY p.post_time ASC";
-			$result = $db->sql_query_limit($sql, 1);
-
-			if (!($row = $db->sql_fetchrow($result)))
-			{
-				// Setup user environment so we can process lang string
-				$user->setup('viewtopic');
-
-				meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
-				$message = $user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
-				trigger_error($message);
-			}
-			$db->sql_freeresult($result);
-
-			$unread_post_id = $post_id = $row['post_id'];
+			$topic_last_read = get_topic_last_read($topic_id, $forum_id);
 		}
+		else
+		{
+			$topic_last_read = 0;
+		}
+
+		$sql = 'SELECT p.post_id, p.topic_id, p.forum_id
+			FROM (' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t)
+			WHERE t.topic_id = $topic_id
+				AND p.topic_id = t.topic_id
+				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
+				AND (p.post_time > $topic_last_read
+					OR p.post_id = t.topic_last_post_id)
+			ORDER BY p.post_time ASC";
+		$result = $db->sql_query_limit($sql, 1);
+
+		if (!($row = $db->sql_fetchrow($result)))
+		{
+			// Setup user environment so we can process lang string
+			$user->setup('viewtopic');
+
+			meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
+			$message = $user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
+			trigger_error($message);
+		}
+		$db->sql_freeresult($result);
+
+		$unread_post_id = $post_id = $row['post_id'];
+		$topic_id = $row['topic_id'];
 	}
 	else if ($view == 'next' || $view == 'previous')
 	{
 		$sql_condition = ($view == 'next') ? '>' : '<';
 		$sql_ordering = ($view == 'next') ? 'ASC' : 'DESC';
 
-		$sql = 'SELECT t.topic_id
+		$sql = 'SELECT t.topic_id, t.forum_id
 			FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . " t2
 			WHERE t2.topic_id = $topic_id
 				AND t.forum_id = t2.forum_id
@@ -126,7 +121,27 @@ if ($view && !$post_id)
 		else
 		{
 			$topic_id = $row['topic_id'];
+	
+			// Check for global announcement correctness?
+			if (!$row['forum_id'] && !$forum_id)
+			{
+				trigger_error('NO_TOPIC');
+			}
+			else if ($row['forum_id'])
+			{
+				$forum_id = $row['forum_id'];
+			}
 		}
+	}
+
+	// Check for global announcement correctness?
+	if ((!$row || !$row['forum_id']) && !$forum_id)
+	{
+		trigger_error('NO_TOPIC');
+	}
+	else if ($row['forum_id'])
+	{
+		$forum_id = $row['forum_id'];
 	}
 }
 
@@ -157,6 +172,9 @@ if ($user->data['is_registered'])
 	switch (SQL_LAYER)
 	{
 		case 'oracle':
+		case 'postgres':
+		case 'mssql':
+		case 'mssql-odbc':
 			// TODO
 			break;
 
@@ -199,33 +217,9 @@ extract($topic_data);
 $topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_replies_real : $topic_replies;
 unset($topic_replies_real);
 
-if ($user->data['is_registered'])
+if ($user->data['is_registered'] && !isset($topic_last_read))
 {
-	if ($config['load_db_lastread'])
-	{
-		$sql = 'SELECT mark_time
-			FROM ' . TOPICS_TRACK_TABLE . '
-			WHERE user_id = ' . $user->data['user_id'] . "
-				AND topic_id = $topic_id";
-		$result = $db->sql_query($sql);
-		$topic_last_read = (int) $db->sql_fetchfield('mark_time', 0, $result);
-		$db->sql_freeresult($result);
-	}
-	else
-	{
-		$topic_last_read = 0;
-		if (isset($_COOKIE[$config['cookie_name'] . '_track']))
-		{
-			$tracking_topics = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
-
-			if (isset($tracking_topics[$forum_id]))
-			{
-				$topic_last_read = base_convert(max($tracking_topics[$forum_id]), 36, 10);
-				$topic_last_read = max($topic_last_read, $user->data['session_last_visit']);
-			}
-			unset($tracking_topics);
-		}
-	}
+	$topic_last_read = get_topic_last_read($topic_id, $forum_id);
 }
 else
 {
@@ -882,7 +876,7 @@ while ($row = $db->sql_fetchrow($result))
 				'avatar'		=> '',
 
 				'online'		=> false,
-				'profile'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id",
+				'profile'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id",
 				'www'			=> $row['user_website'],
 				'aim'			=> ($row['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id" : '',
 				'msn'			=> ($row['user_msnm']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id" : '',
@@ -1157,12 +1151,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
 		// via php.net's annotated manual
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . $highlight_match . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . str_replace('\\', '\\\\', $highlight_match) . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
 	if ($row['enable_html'] && $auth->acl_get('f_html', $forum_id))
 	{
-		// Remove Comments from post content?
+		// Remove Comments from post content
 		$message = preg_replace('#<!\-\-(.*?)\-\->#is', '', $message);
 	}
 
@@ -1290,16 +1284,24 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
 		'S_UNREAD_POST'		=> ($user->data['is_registered'] && $row['post_time'] > $user->data['user_lastvisit'] && $row['post_time'] > $topic_last_read) ? true : false,
 		'S_FIRST_UNREAD'	=> ($unread_post_id == $row['post_id']) ? true : false,
-		'S_CUSTOM_FIELDS'	=> (sizeof($cp_row)) ? true : false
+		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false
 	);
 
-	if (sizeof($cp_row))
+	if (isset($cp_row['row']) && sizeof($cp_row['row']))
 	{
-		$postrow = array_merge($postrow, $cp_row);
+		$postrow = array_merge($postrow, $cp_row['row']);
 	}
 
 	// Dump vars into template
 	$template->assign_block_vars('postrow', $postrow);
+
+	if (isset($cp_row['blockrow']) && sizeof($cp_row['blockrow']))
+	{
+		foreach ($cp_row['blockrow'] as $field_data)
+		{
+			$template->assign_block_vars('postrow.custom_fields', $field_data);
+		}
+	}
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
@@ -1358,5 +1360,57 @@ $template->set_filenames(array(
 make_jumpbox('viewforum.'.$phpEx, $forum_id);
 
 page_footer();
+
+
+// FUNCTIONS
+
+function get_topic_last_read($topic_id, $forum_id)
+{
+	global $config, $user, $db;
+
+	$topic_last_read = 0;
+
+	if ($config['load_db_lastread'])
+	{
+		$sql = 'SELECT mark_time
+			FROM ' . TOPICS_TRACK_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . "
+			AND topic_id = $topic_id";
+		$result = $db->sql_query($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$topic_last_read = ($row) ? min($row['mark_time'], $user->data['session_last_visit']) : $user->data['session_last_visit'];
+
+		if (!$row)
+		{
+			$sql = 'SELECT mark_time
+				FROM ' . FORUMS_TRACK_TABLE . '
+				WHERE user_id = ' . $user->data['user_id'] . "
+				AND forum_id = $forum_id";
+			$result = $db->sql_query($sql);
+			$forum_mark_time = (int) $db->sql_fetchfield('mark_time', 0, $result);
+			$db->sql_freeresult($result);
+
+			$topic_last_read = ($forum_mark_time) ? min($topic_last_read, $forum_mark_time) : $topic_last_read;
+		}
+	}
+	else
+	{
+		$topic_last_read = 0;
+		if (isset($_COOKIE[$config['cookie_name'] . '_track']))
+		{
+			$tracking_topics = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
+			if (isset($tracking_topics[$forum_id]))
+			{
+				$topic_last_read = base_convert(max($tracking_topics[$forum_id]), 36, 10);
+				$topic_last_read = max($topic_last_read, $user->data['session_last_visit']);
+			}
+			unset($tracking_topics);
+		}
+	}
+
+	return $topic_last_read;
+}
 
 ?>
