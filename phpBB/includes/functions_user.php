@@ -1077,7 +1077,7 @@ function group_create($group_id, $type, $name, $desc)
 			'group_type'			=> (int) $type,
 		);
 
-		$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int', 'group_receive_pm' => 'int', 'group_message_limit' => 'int');
+		$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
 
 		$i = 4;
 		foreach ($attribute_ary as $attribute => $type)
@@ -1087,6 +1087,19 @@ function group_create($group_id, $type, $name, $desc)
 				settype($value, $type);
 
 				$sql_ary[$attribute] = $$attribute = $value;
+			}
+			$i++;
+		}
+
+		$group_only_ary = array('group_receive_pm' => 'int', 'group_message_limit' => 'int');
+
+		foreach ($group_only_ary as $attribute => $type)
+		{
+			if (func_num_args() > $i && ($value = func_get_arg($i)) !== false)
+			{
+				settype($value, $type);
+
+				$sql_ary[$attribute] = $value;
 			}
 			$i++;
 		}

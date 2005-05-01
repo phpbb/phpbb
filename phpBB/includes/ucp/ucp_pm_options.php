@@ -185,8 +185,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			{
 				// Move Messages
 				case 1:
-					$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
-					$num_moved = move_pm($user->data['user_id'], $message_limit, $msg_ids, $move_to, $remove_folder_id);
+					$num_moved = move_pm($user->data['user_id'], $user->data['message_limit'], $msg_ids, $move_to, $remove_folder_id);
 					
 					// Something went wrong, only partially moved?
 					if ($num_moved != $folder_row['pm_count'])
@@ -320,7 +319,6 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 	
 	$folder = array();
-	$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
 
 	$sql = 'SELECT COUNT(msg_id) as num_messages
 		FROM ' . PRIVMSGS_TO_TABLE . '
@@ -332,7 +330,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	
 	$folder[PRIVMSGS_INBOX] = array(
 		'folder_name'	=> $user->lang['PM_INBOX'], 
-		'message_status'=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $message_limit)
+		'message_status'=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
 	);
 
 	$sql = 'SELECT folder_id, folder_name, pm_count 
@@ -346,7 +344,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
 			'folder_name'	=> $row['folder_name'], 
-			'message_status'=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $message_limit)
+			'message_status'=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
 		);
 	}
 	$db->sql_freeresult($result);

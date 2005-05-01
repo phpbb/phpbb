@@ -187,10 +187,8 @@ function clean_sentbox($num_sentbox_messages)
 {
 	global $db, $user, $config;
 
-	$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
-
 	// Check Message Limit - 
-	if ($message_limit && $num_sentbox_messages > $message_limit)
+	if ($user->data['message_limit'] && $num_sentbox_messages > $user->data['message_limit'])
 	{
 		// Delete old messages
 		$sql = 'SELECT t.msg_id
@@ -199,7 +197,7 @@ function clean_sentbox($num_sentbox_messages)
 				AND t.user_id = ' . $user->data['user_id'] . '
 				AND t.folder_id = ' . PRIVMSGS_SENTBOX . '
 			ORDER BY p.message_time ASC';
-		$result = $db->sql_query_limit($sql, ($num_sentbox_messages - $message_limit));
+		$result = $db->sql_query_limit($sql, ($num_sentbox_messages - $user->data['message_limit']));
 
 		$delete_ids = array();
 		while ($row = $db->sql_fetchrow($result))
@@ -441,7 +439,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	{
 		// Determine Full Folder Action - we need the move to folder id later eventually
 		$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? ($config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
-
+		
 		$sql = 'SELECT folder_id, pm_count 
 			FROM ' . PRIVMSGS_FOLDER_TABLE . '
 			WHERE folder_id IN (' . implode(', ', array_keys($move_into_folder)) . (($full_folder_action >= 0) ? ', ' . $full_folder_action : '') . ")
@@ -471,18 +469,17 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	// Here we have ideally only one folder to move into
 	foreach ($move_into_folder as $folder_id => $msg_ary)
 	{
-		$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
 		$dest_folder = $folder_id;
 		$full_folder_action = FULL_FOLDER_NONE;
 
 		// Check Message Limit - we calculate with the complete array, most of the time it is one message
 		// But we are making sure that the other way around works too (more messages in queue than allowed to be stored)
-		if ($message_limit && $folder[$folder_id] && ($folder[$folder_id] + sizeof($msg_ary)) > $message_limit)
+		if ($user->data['message_limit'] && $folder[$folder_id] && ($folder[$folder_id] + sizeof($msg_ary)) > $user->data['message_limit'])
 		{
 			$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? ($config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
 
 			// If destination folder itself is full...
-			if ($full_folder_action >= 0 && ($folder[$full_folder_action] + sizeof($msg_ary)) > $message_limit)
+			if ($full_folder_action >= 0 && ($folder[$full_folder_action] + sizeof($msg_ary)) > $user->data['message_limit'])
 			{
 				$full_folder_action = $config['full_folder_action'] - (FULL_FOLDER_NONE*(-1));
 			}
@@ -501,7 +498,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 						AND t.user_id = $user_id
 						AND t.folder_id = $dest_folder
 					ORDER BY p.message_time ASC";
-				$result = $db->sql_query_limit($sql, (($folder[$dest_folder] + sizeof($msg_ary)) - $message_limit));
+				$result = $db->sql_query_limit($sql, (($folder[$dest_folder] + sizeof($msg_ary)) - $user->data['message_limit']));
 
 				$delete_ids = array();
 				while ($row = $db->sql_fetchrow($result))
@@ -513,7 +510,18 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			}
 		}
 		
-		if ($full_folder_action < 0)
+		// 
+		if ($full_folder_action == FULL_FOLDER_HOLD)
+		{
+			$num_not_moved += sizeof($msg_ary);
+			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
+				SET folder_id = ' . PRIVMSGS_HOLD_BOX . '
+				WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
+					AND user_id = $user_id
+					AND msg_id IN (" . implode(', ', $msg_ary) . ')';
+			$db->sql_query($sql);
+		}
+		else
 		{
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . " 
 				SET folder_id = $dest_folder, new = 0
@@ -535,16 +543,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			{
 				$num_new += $db->sql_affectedrows();
 			}
-		}
-		else
-		{
-			$num_not_moved += sizeof($msg_ary);
-			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
-				SET folder_id = ' . PRIVMSGS_HOLD_BOX . '
-				WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
-					AND user_id = $user_id
-					AND msg_id IN (" . implode(', ', $msg_ary) . ')';
-			$db->sql_query($sql);
 		}
 	}
 
@@ -742,8 +740,12 @@ function handle_mark_actions($user_id, $mark_action)
 			if (confirm_box(true))
 			{
 				delete_pm($user_id, $msg_ids, $cur_folder_id);
-				// TODO: meta blabla
-				trigger_error('MESSAGE_DELETED');
+				
+				$success_msg = (sizeof($msg_ids) == 1) ? 'MESSAGE_DELETED' : 'MESSAGES_DELETED';
+				$redirect = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=$cur_folder_id";
+
+				meta_refresh(3, $redirect);
+				trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $redirect . '">', '</a>'));
 			}
 			else
 			{
@@ -1068,14 +1070,12 @@ function get_folder_status($folder_id, $folder)
 	}
 	$return = array();
 
-	$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
-
 	$return = array(
 		'folder_name'	=> $folder['folder_name'], 
 		'cur'			=> $folder['num_messages'],
-		'remaining'		=> $message_limit - $folder['num_messages'],
-		'max'			=> $message_limit,
-		'percent'		=> ($message_limit > 0) ? round(($folder['num_messages'] / $message_limit) * 100) : 100
+		'remaining'		=> $user->data['message_limit'] - $folder['num_messages'],
+		'max'			=> $user->data['message_limit'],
+		'percent'		=> ($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100
 	);
 
 	$return['message'] = sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']);
@@ -1182,7 +1182,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'message_text' 		=> $data['message'],
 				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
@@ -1203,7 +1203,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'message_text' 		=> $data['message'],
 				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid']
 			);
@@ -1250,7 +1250,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . ' 
-			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1
+			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1, user_last_privmsg = ' . time() . '
 			WHERE user_id IN (' . implode(', ', array_keys($recipients)) . ')';
 		$db->sql_query($sql);
 

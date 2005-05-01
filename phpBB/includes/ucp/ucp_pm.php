@@ -132,8 +132,10 @@ class ucp_pm extends module
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
 				$result = $db->sql_query($sql);
-				$user->data['group_message_limit'] = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
+				$message_limit = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
 				$db->sql_freeresult($result);
+
+				$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
 
 				get_folder($user->data['user_id'], $folder);
 
@@ -156,9 +158,11 @@ class ucp_pm extends module
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
 				$result = $db->sql_query($sql);
-				$user->data['group_message_limit'] = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
+				$message_limit = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
 				$db->sql_freeresult($result);
-			
+
+				$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+
 				if ($folder_specified)
 				{
 					$folder_id = $folder_specified;
@@ -188,13 +192,11 @@ class ucp_pm extends module
 				// Move PM
 				if (isset($_REQUEST['move_pm']))
 				{
-					$message_limit = (!$user->data['group_message_limit']) ? $config['pm_max_msgs'] : $user->data['group_message_limit'];
-
 					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
 					$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
 					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 
-					if (move_pm($user->data['user_id'], $message_limit, $move_msg_ids, $dest_folder, $cur_folder_id))
+					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
 					{
 						// Return to folder view if single message moved
 						if ($action == 'view_message')
@@ -219,7 +221,7 @@ class ucp_pm extends module
 					place_pm_into_folder($global_privmsgs_rules, request_var('release', 0));
 					$num_not_moved = $user->data['user_new_privmsg'];
 				}
-		
+
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX && $mode != 'unread')
 				{
 					$folder_id = PRIVMSGS_INBOX;
