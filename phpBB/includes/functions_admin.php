@@ -1492,9 +1492,9 @@ function remove_comments(&$output)
 	$linecount = sizeof($lines);
 
 	$in_comment = false;
-	for($i = 0; $i < $linecount; $i++)
+	for ($i = 0; $i < $linecount; $i++)
 	{
-		if (preg_match('#^\/\*#', preg_quote($lines[$i])))
+		if (trim($lines[$i]) == '/*')
 		{
 			$in_comment = true;
 		}
@@ -1504,7 +1504,7 @@ function remove_comments(&$output)
 			$output .= $lines[$i] . "\n";
 		}
 
-		if (preg_match('#\*\/$#', preg_quote($lines[$i])))
+		if (trim($lines[$i]) == '*/')
 		{
 			$in_comment = false;
 		}

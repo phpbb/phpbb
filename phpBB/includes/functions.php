@@ -1117,6 +1117,36 @@ function obtain_attach_extensions(&$extensions, $forum_id = false)
 }
 
 /**
+* Obtain active bots
+*/
+function obtain_bots(&$bots)
+{
+	global $db, $cache;
+
+	if ($cache->exists('bots'))
+	{
+		$bots = $cache->get('bots');
+	}
+	else
+	{
+		$sql = 'SELECT user_id, bot_agent, bot_ip 
+			FROM ' . BOTS_TABLE . '
+			WHERE bot_active = 1';
+		$result = $db->sql_query($sql);
+		
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$bots[] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		$cache->put('bots', $bots);
+	}
+	
+	return;
+}
+
+/**
 * Generate board url
 */
 function generate_board_url()

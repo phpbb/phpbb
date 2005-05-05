@@ -169,22 +169,11 @@ $order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, t.topic_id, t.topic_title, 
 
 if ($user->data['is_registered'])
 {
-	switch (SQL_LAYER)
-	{
-		case 'oracle':
-		case 'postgres':
-		case 'mssql':
-		case 'mssql-odbc':
-			// TODO
-			break;
-
-		default:
-			$extra_fields .= ', tw.notify_status' . (($config['allow_bookmarks']) ? ', bm.order_id as bookmarked' : '');
-			$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON (tw.user_id = ' . $user->data['user_id'] . '
-				AND t.topic_id = tw.topic_id)';
-			$join_sql_table .= ($config['allow_bookmarks']) ? ' LEFT JOIN ' . BOOKMARKS_TABLE . ' bm ON (bm.user_id = ' . $user->data['user_id'] . '
-				AND t.topic_id = bm.topic_id)' : '';
-	}
+	$extra_fields .= ', tw.notify_status' . (($config['allow_bookmarks']) ? ', bm.order_id as bookmarked' : '');
+	$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON (tw.user_id = ' . $user->data['user_id'] . '
+		AND t.topic_id = tw.topic_id)';
+	$join_sql_table .= ($config['allow_bookmarks']) ? ' LEFT JOIN ' . BOOKMARKS_TABLE . ' bm ON (bm.user_id = ' . $user->data['user_id'] . '
+		AND t.topic_id = bm.topic_id)' : '';
 }
 
 // Join to forum table on topic forum_id unless topic forum_id is zero
@@ -743,8 +732,8 @@ if (empty($post_list))
 }
 
 $sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
-	FROM ((' . POSTS_TABLE . ' p
-	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . ' u)
+	FROM (' . POSTS_TABLE . ' p
+	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . ' u
 	WHERE p.post_id IN (' . implode(', ', $post_list) . ')
 		AND u.user_id = p.poster_id';
 $result = $db->sql_query($sql);
@@ -951,7 +940,6 @@ while ($row = $db->sql_fetchrow($result))
 		}
 	}
 }
-while ($row = $db->sql_fetchrow($result));
 $db->sql_freeresult($result);
 
 // Load custom profile fields
@@ -1376,7 +1364,7 @@ function get_topic_last_read($topic_id, $forum_id)
 			FROM ' . TOPICS_TRACK_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'] . "
 			AND topic_id = $topic_id";
-		$result = $db->sql_query($sql, 1);
+		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 

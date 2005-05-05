@@ -59,6 +59,8 @@ switch ($action)
 				WHERE bot_id $id";
 			$db->sql_query($sql);
 		}
+
+		$cache->destroy('bots');
 		break;
 
 	case 'deactivate':
@@ -70,6 +72,8 @@ switch ($action)
 				WHERE bot_id $id";
 			$db->sql_query($sql);
 		}
+
+		$cache->destroy('bots');
 		break;
 
 	case 'delete':
@@ -105,6 +109,8 @@ switch ($action)
 
 			$db->sql_transaction('commit');
 
+			$cache->destroy('bots');
+
 			add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
 			trigger_error($user->lang['BOT_DELETED']);
 		}
@@ -125,6 +131,7 @@ switch ($action)
 			{
 				$error[] = $user->lang['ERR_BOT_NO_MATCHES'];
 			}
+	
 			if ($bot_ip && !preg_match('#^[\d\.,:]+$#', $bot_ip))
 			{
 				if (!$ip_list = gethostbynamel($bot_ip))
@@ -218,6 +225,8 @@ switch ($action)
 
 				$db->sql_transaction('commit');
 
+				$cache->destroy('bots');
+		
 				add_log('admin', 'LOG_BOT_' . $log, $bot_name);
 				trigger_error($user->lang['BOT_' . $log]);
 			}
@@ -345,6 +354,7 @@ $sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit
 	ORDER BY u.user_lastvisit DESC';
 $result = $db->sql_query($sql);
 
+$row_class = '';
 while ($row = $db->sql_fetchrow($result))
 {
 	$row_class = ($row_class == 'row1') ? 'row2' : 'row1';

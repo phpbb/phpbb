@@ -148,10 +148,18 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	include_once($phpbb_root_path . 'includes/functions_upload.php');
 	$upload = new fileupload();
 	
-	$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
+	if (!$local)
+	{
+		$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
+	}
+	else
+	{
+		$filedata['post_attach'] = true;
+	}
 
 	if (!$filedata['post_attach'])
 	{
+		$filedata['error'][] = 'No filedata found';
 		return $filedata;
 	}
 

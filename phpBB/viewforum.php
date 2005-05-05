@@ -45,37 +45,23 @@ if (!$user->data['is_registered'])
 }
 else
 {
-	switch (SQL_LAYER)
+	if ($config['load_db_lastread'])
 	{
-		case 'oracle':
-			if ($config['load_db_lastread'])
-			{
-			}
-			else
-			{
-			}
-			break;
-
-		default:
-			if ($config['load_db_lastread'])
-			{
-				$sql_lastread = 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
-					AND ft.forum_id = f.forum_id)';
-				$lastread_select = ', ft.mark_time ';
-			}
-			else
-			{
-				$sql_lastread = $lastread_select = '';
-
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
-			}
-
-			$sql_from = ($sql_lastread) ? '((' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . ")) $sql_lastread)" : '(' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . '))';
-
-			$sql = "SELECT f.*, fw.notify_status $lastread_select
-				FROM $sql_from
-				WHERE f.forum_id = $forum_id";
+		$sql_lastread = 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
+			AND ft.forum_id = f.forum_id)';
+		$lastread_select = ', ft.mark_time ';
 	}
+	else
+	{
+		$sql_lastread = $lastread_select = '';
+		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+	}
+
+	$sql_from = ($sql_lastread) ? '((' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . ")) $sql_lastread)" : '(' . FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . '))';
+
+	$sql = "SELECT f.*, fw.notify_status $lastread_select
+		FROM $sql_from
+		WHERE f.forum_id = $forum_id";
 }
 $result = $db->sql_query($sql);
 
@@ -301,15 +287,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	// Grab all topic data
 	$rowset = $announcement_list = $topic_list = array();
 
-	switch (SQL_LAYER)
-	{
-		case 'oracle':
-			break;
-
-		default:
-			$sql_from = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['is_registered']) ? '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))' : TOPICS_TABLE . ' t ';
-	}
-
+	$sql_from = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['is_registered']) ? '(' . TOPICS_TABLE . ' t LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . '))' : TOPICS_TABLE . ' t ';
 	$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 	$sql_select = (($config['load_db_lastread'] || $config['load_db_track']) && $user->data['is_registered']) ? ', tt.mark_type, tt.mark_time' : '';
 
@@ -355,10 +333,9 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 	}
 
 	// Obtain other topics
-//	$sql_rownum = (SQL_LAYER != 'oracle') ? '' : ', ROWNUM rnum ';
-	$sql_rownum = '';
 	$sql_where = ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? "= $forum_id" : 'IN (' . implode(', ', $active_forum_ary['forum_id']) . ')';
-	$sql = "SELECT t.* $sql_select$sql_rownum
+
+	$sql = "SELECT t.* $sql_select
 		FROM $sql_from
 		WHERE t.forum_id $sql_where
 			AND t.topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")

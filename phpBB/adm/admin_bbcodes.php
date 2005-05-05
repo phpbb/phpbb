@@ -31,19 +31,19 @@ require('pagestart.' . $phpEx);
 // Do we have general permissions?
 if (!$auth->acl_get('a_bbcode'))
 {
-	trigger_error($user->lang['NO_ADMIN']);
+	trigger_error('NO_ADMIN');
 }
 
 // Set up general vars
-$mode = (!empty($_REQUEST['mode'])) ? $_REQUEST['mode'] : '';
-$bbcode_id = (!empty($_REQUEST['bbcode'])) ? intval($_REQUEST['bbcode']) : 0;
+$mode = request_var('mode', '');
+$bbcode_id = request_var('bbcode', 0);
 
 // Set up mode-specific vars
 switch ($mode)
 {
 	case 'add':
 		$bbcode_match = $bbcode_tpl = '';
-	break;
+		break;
 
 	case 'edit':
 		$sql = 'SELECT bbcode_match, bbcode_tpl
@@ -54,10 +54,11 @@ switch ($mode)
 		{
 			trigger_error('BBCODE_NOT_EXIST');
 		}
+		$db->sql_freeresult($result);
 
 		$bbcode_match = $row['bbcode_match'];
 		$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
-	break;
+		break;
 
 	case 'modify':
 		$sql = 'SELECT bbcode_id
@@ -68,13 +69,14 @@ switch ($mode)
 		{
 			trigger_error('BBCODE_NOT_EXIST');
 		}
+		$db->sql_freeresult($result);
 
 		// No break here
 
 	case 'create':
 		$bbcode_match = htmlspecialchars(stripslashes($_POST['bbcode_match']));
 		$bbcode_tpl = stripslashes($_POST['bbcode_tpl']);
-	break;
+		break;
 }
 
 // Do major work
@@ -164,7 +166,7 @@ switch ($mode)
 <?php
 
 		adm_page_footer();
-	break;
+		break;
 
 	case 'modify':
 	case 'create':
@@ -173,13 +175,13 @@ switch ($mode)
 		$data = build_regexp($bbcode_match, $bbcode_tpl);
 
 		$sql_ary = array(
-			'bbcode_tag'					=>	$data['bbcode_tag'],
-			'bbcode_match'				=>	$bbcode_match,
-			'bbcode_tpl'					=>	$bbcode_tpl,
-			'first_pass_match'			=>	$data['first_pass_match'],
-			'first_pass_replace'		=>	$data['first_pass_replace'],
-			'second_pass_match'	=>	$data['second_pass_match'],
-			'second_pass_replace'	=>	$data['second_pass_replace']
+			'bbcode_tag'				=> $data['bbcode_tag'],
+			'bbcode_match'				=> $bbcode_match,
+			'bbcode_tpl'				=> $bbcode_tpl,
+			'first_pass_match'			=> $data['first_pass_match'],
+			'first_pass_replace'		=> $data['first_pass_replace'],
+			'second_pass_match'			=> $data['second_pass_match'],
+			'second_pass_replace'		=> $data['second_pass_replace']
 		);
 
 		if ($mode == 'create')
@@ -193,10 +195,12 @@ switch ($mode)
 				HAVING MIN(b2.bbcode_id) > b1.bbcode_id + 1
 				ORDER BY b1.bbcode_id ASC';
 			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			 if ($row = $db->sql_fetchrow($result))
+			if ($row)
 			{
-				 $bbcode_id = $row['bbcode_id'] + 1;
+				$bbcode_id = $row['bbcode_id'] + 1;
 			}
 			else
 			{
@@ -204,6 +208,7 @@ switch ($mode)
 					FROM ' . BBCODES_TABLE;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
 				if (empty($row['min_id']) || $row['min_id'] >= NUM_CORE_BBCODES)
 				{
@@ -236,7 +241,7 @@ switch ($mode)
 		add_log('admin', $log_action, $data['bbcode_tag']);
 
 		trigger_error($lang);
-	break;
+		break;
 
 	case 'delete':
 		$sql = 'SELECT bbcode_tag
@@ -249,6 +254,7 @@ switch ($mode)
 			$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 			add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
 		}
+		$db->sql_freeresult($result);
 
 		// No break here
 
@@ -287,6 +293,7 @@ switch ($mode)
 			</tr>
 <?php
 		}
+		$db->sql_freeresult($result);
 
 ?>
 
@@ -414,13 +421,14 @@ function build_regexp($msg_bbcode, $msg_html)
 	$sp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_replace);
 
 	return array(
-		'bbcode_tag'					=>	$bbcode_tag,
-		'first_pass_match'			=>	$fp_match,
-		'first_pass_replace'		=>	$fp_replace,
-		'second_pass_match'	=>	$sp_match,
-		'second_pass_replace'	=>	$sp_replace
+		'bbcode_tag'				=> $bbcode_tag,
+		'first_pass_match'			=> $fp_match,
+		'first_pass_replace'		=> $fp_replace,
+		'second_pass_match'			=> $sp_match,
+		'second_pass_replace'		=> $sp_replace
 	);
 }
 // End Functions
 // -----------------------------
+
 ?>

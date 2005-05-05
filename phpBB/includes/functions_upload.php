@@ -56,6 +56,12 @@ class filespec
 
 		// Opera adds the name to the mime type
 		$this->mimetype	= (strpos($this->mimetype, '; name') !== false) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
+
+		if (!$this->mimetype)
+		{
+			$this->mimetype = 'application/octetstream';
+		}
+		
 		$this->extension = array_pop(explode('.', strtolower($this->realname)));
 
 		// Try to get real filesize from temporary folder (not always working) ;)
@@ -122,7 +128,12 @@ class filespec
 
 	function is_uploaded()
 	{
-		return (file_exists($this->filename) && is_uploaded_file($this->filename)) ? true : false;
+		if (!$this->local && !is_uploaded_file($this->filename))
+		{
+			return false;
+		}
+
+		return (file_exists($this->filename)) ? true : false;
 	}
 
 	function remove()
@@ -394,8 +405,64 @@ class fileupload
 	}
 
 	// Move file from another location to phpBB
-	function local_upload($source_file)
+	function local_upload($source_file, $filedata = false)
 	{
+		global $user;
+
+		$form_name = 'local';
+
+		$_FILES[$form_name]['local_mode'] = true;
+		$_FILES[$form_name]['tmp_name'] = $source_file;
+
+		if ($filedata === false)
+		{
+			$_FILES[$form_name]['name'] = basename($source_file);
+			$_FILES[$form_name]['size'] = 0;
+			$_FILES[$form_name]['type'] = '';
+		}
+		else
+		{
+			$_FILES[$form_name]['name'] = $filedata['realname'];
+			$_FILES[$form_name]['size'] = $filedata['size'];
+			$_FILES[$form_name]['type'] = $filedata['type'];
+		}		
+
+		$file = new filespec($_FILES[$form_name], $this);
+
+		if ($file->init_error)
+		{
+			$file->error[] = '';
+			return $file;
+		}
+			
+		if (isset($_FILES[$form_name]['error']))
+		{
+			$error = $this->assign_internal_error($_FILES[$form_name]['error']);
+
+			if ($error !== false)
+			{
+				$file->error[] = $error;
+				return $file;
+			}
+		}
+
+		// PHP Upload filesize exceeded
+		if ($file->get('filename') == 'none')
+		{
+			$file->error[] = (@ini_get('upload_max_filesize') == '') ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+			return $file;
+		}
+
+		// Not correctly uploaded
+		if (!$file->is_uploaded())
+		{
+			$file->error[] = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+			return $file;
+		}
+
+		$this->common_checks($file);
+
+		return $file;
 	}
 
 	/**

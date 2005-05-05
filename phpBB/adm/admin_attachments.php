@@ -62,7 +62,6 @@ switch ($mode)
 
 if ($mode == 'attach')
 {
-
 	$config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
 	foreach ($config_sizes as $cfg_key => $var)
 	{
@@ -271,7 +270,7 @@ if ($submit && $mode == 'ext_groups')
 	{
 		$sql = 'SELECT group_id 
 			FROM ' . EXTENSION_GROUPS_TABLE . "
-			WHERE LOWER(group_name) = '" . strtolower($new_group_name) . "'";
+			WHERE LOWER(group_name) = '" . $db->sql_escape(strtolower($new_group_name)) . "'";
 		$result = $db->sql_query($sql);
 		if ($db->sql_fetchrow($result))
 		{
@@ -286,8 +285,8 @@ if ($submit && $mode == 'ext_groups')
 		$upload_icon	= request_var('upload_icon', 'no_image');
 		$size_select	= request_var('size_select', 'b');
 		$forum_select	= request_var('forum_select', false);
-		$allowed_forums	= isset($_REQUEST['allowed_forums']) ? array_map('intval', array_values($_REQUEST['allowed_forums'])) : array();
-		$allow_in_pm	= isset($_REQUEST['allow_in_pm']) ? true : false;
+		$allowed_forums	= isset($_POST['allowed_forums']) ? array_map('intval', array_values($_POST['allowed_forums'])) : array();
+		$allow_in_pm	= isset($_POST['allow_in_pm']) ? true : false;
 		$max_filesize	= request_var('max_filesize', 0);
 		$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 
@@ -304,7 +303,7 @@ if ($submit && $mode == 'ext_groups')
 		$group_ary = array(
 			'group_name'	=> $group_name,
 			'cat_id'		=> request_var('special_category', ATTACHMENT_CATEGORY_NONE),
-			'allow_group'	=> (isset($_REQUEST['allow_group'])) ? 1 : 0,
+			'allow_group'	=> (isset($_POST['allow_group'])) ? 1 : 0,
 			'download_mode'	=> request_var('download_mode', INLINE_LINK),
 			'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
 			'max_filesize'	=> $max_filesize,
@@ -362,8 +361,8 @@ if ($submit && $mode == 'ext_groups')
 
 if ($submit && $mode == 'orphan')
 {
-	$delete_files = (isset($_REQUEST['delete'])) ? array_keys(request_var('delete', '')) : array();
-	$add_files = (isset($_REQUEST['add'])) ? array_keys(request_var('add', '')) : array();
+	$delete_files = (isset($_POST['delete'])) ? array_keys(request_var('delete', '')) : array();
+	$add_files = (isset($_POST['add'])) ? array_keys(request_var('add', '')) : array();
 	$post_ids = request_var('post_id', 0);
 
 	foreach ($delete_files as $delete)
@@ -722,10 +721,10 @@ if ($mode == 'ext_groups')
 
 	$action = request_var('action', 'show');
 	$group_id = request_var('g', 0);
-	$action = (isset($_REQUEST['add'])) ? 'add' : $action;
+	$action = (isset($_POST['add'])) ? 'add' : $action;
 	$action = (($action == 'add' || $action == 'edit') && $submit && !sizeof($error)) ? 'show' : $action;
 
-	if (isset($_REQUEST['select_mode']))
+	if (isset($_POST['select_mode']))
 	{
 		$action = 'show';
 	}
@@ -746,7 +745,8 @@ if ($mode == 'ext_groups')
 				WHERE group_id = $group_id";
 			$result = $db->sql_query($sql);
 			$group_name = $db->sql_fetchfield('group_name', 0, $result);
-		
+			$db->sql_freeresult($result);
+
 			$sql = 'DELETE 
 				FROM ' . EXTENSION_GROUPS_TABLE . " 
 				WHERE group_id = $group_id";
@@ -1131,7 +1131,7 @@ if ($mode == 'extensions')
 		<th>&nbsp;<?php echo $user->lang['ADD_EXTENSION']; ?>&nbsp;</th>
 	</tr>
 	<tr>
-		<td class="row1" align="center" valign="middle"><input type="text" size="20" maxlength="100" name="add_extension" class="post" value="<?php echo $add_extension; ?>" /></td>
+		<td class="row1" align="center" valign="middle"><input type="text" size="20" maxlength="100" name="add_extension" class="post" value="<?php echo (isset($add_extension)) ? $add_extension : ''; ?>" /></td>
 		<td class="row2" align="center" valign="middle"><?php echo (($submit) ? group_select('add_group_select', $add_extension_group) : group_select('add_group_select')) ?></td>
 		<td class="row1" align="center" valign="middle"><input type="checkbox" name="add_extension_check" /></td>
 	</tr>
@@ -1279,7 +1279,7 @@ function marklist(match, name, status)
 adm_page_footer();
 
 // Build Select for category items
-function category_select($select_name, $group_id = FALSE)
+function category_select($select_name, $group_id = false)
 {
 	global $db, $user;
 
@@ -1294,7 +1294,7 @@ function category_select($select_name, $group_id = FALSE)
 	{
 		$sql = 'SELECT cat_id
 			FROM ' . EXTENSION_GROUPS_TABLE . '
-			WHERE group_id = ' . intval($group_id);
+			WHERE group_id = ' . (int) $group_id;
 		$result = $db->sql_query($sql);
 		
 		$cat_type = (!($row = $db->sql_fetchrow($result))) ? ATTACHMENT_CATEGORY_NONE : $row['cat_id'];
@@ -1320,7 +1320,7 @@ function category_select($select_name, $group_id = FALSE)
 }
 
 // Extension group select
-function group_select($select_name, $default_group = '-1')
+function group_select($select_name, $default_group = false)
 {
 	global $db, $user;
 		
@@ -1342,9 +1342,9 @@ function group_select($select_name, $default_group = '-1')
 	$row['group_name'] = $user->lang['NOT_ASSIGNED'];
 	$group_name[] = $row;
 	
-	for ($i = 0; $i < count($group_name); $i++)
+	for ($i = 0; $i < sizeof($group_name); $i++)
 	{
-		if ($default_group == '-1')
+		if ($default_group === false)
 		{
 			$selected = ($i == 0) ? ' selected="selected"' : '';
 		}
@@ -1375,7 +1375,7 @@ function download_select($select_name, $group_id = false)
 	{
 		$sql = "SELECT download_mode
 			FROM " . EXTENSION_GROUPS_TABLE . "
-			WHERE group_id = " . intval($group_id);
+			WHERE group_id = " . (int) $group_id;
 		$result = $db->sql_query($sql);
 		
 		$download_mode = (!($row = $db->sql_fetchrow($result))) ? INLINE_LINK : $row['download_mode'];
@@ -1400,7 +1400,7 @@ function download_select($select_name, $group_id = false)
 	return $group_select;
 }
 
-/* Upload already uploaded file... huh? are you kidding?
+// Upload already uploaded file... huh? are you kidding?
 function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 {
 	global $message_parser, $db, $user, $phpbb_root_path;
@@ -1410,7 +1410,7 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 	$message_parser->filename_data['filecomment'] = '';
 	$message_parser->filename_data['filename'] = $phpbb_root_path . $upload_dir . '/' . basename($filename);
 
-	$filedata = upload_attachment($forum_id, $filename, true, $phpbb_root_path . $upload_dir . '/' . basename($filename));
+	$filedata = upload_attachment('local', $forum_id, true, $phpbb_root_path . $upload_dir . '/' . basename($filename));
 
 	if ($filedata['post_attach'] && !sizeof($filedata['error']))
 	{
@@ -1460,7 +1460,6 @@ function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 		echo '<span style="color:red">' . sprintf($user->lang['ADMIN_UPLOAD_ERROR'], implode("<br />\t", $filedata['error'])) . '</span><br /><br />';
 	}
 }
-*/
 
 // Search Imagick
 function search_imagemagick()

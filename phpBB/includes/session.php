@@ -138,12 +138,10 @@ class session
 		$bot = false;
 
 		// Pull bot information from DB and loop through it
-		$sql = 'SELECT user_id, bot_agent, bot_ip 
-			FROM ' . BOTS_TABLE . '
-			WHERE bot_active = 1';
-		$result = $db->sql_query($sql);
+		$active_bots = array();
+		obtain_bots($active_bots);
 
-		while ($row = $db->sql_fetchrow($result))
+		foreach ($active_bots as $row)
 		{
 			if ($row['bot_agent'] && preg_match('#' . preg_quote($row['bot_agent'], '#') . '#i', $this->browser))
 			{
@@ -168,7 +166,6 @@ class session
 				break;
 			}
 		}
-		$db->sql_freeresult($result);
 
 		// Garbage collection ... remove old sessions updating user information
 		// if necessary. It means (potentially) 11 queries but only infrequently
@@ -586,7 +583,7 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 		}
 
-		// TODO: DISTINCT making problems with DBMS not able to distinct TEXT fields
+		// TODO: DISTINCT making problems with DBMS not able to distinct TEXT fields, test grouping
 		switch (SQL_LAYER)
 		{
 			case 'mssql':
@@ -596,16 +593,18 @@ class user extends session
 					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
 						AND t.template_id = s.template_id
 						AND c.theme_id = s.theme_id
-						AND i.imageset_id = s.imageset_id';
+						AND i.imageset_id = s.imageset_id
+					GROUP BY s.style_id';
 				break;
 
 			default:
-				$sql = 'SELECT DISTINCT s.style_id, t.*, c.*, i.*
+				$sql = 'SELECT s.style_id, t.*, c.*, i.*
 					FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
 					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
 						AND t.template_id = s.template_id
 						AND c.theme_id = s.theme_id
-						AND i.imageset_id = s.imageset_id';
+						AND i.imageset_id = s.imageset_id
+					GROUP BY s.style_id';
 				break;
 		}
 		$result = $db->sql_query($sql, 3600);

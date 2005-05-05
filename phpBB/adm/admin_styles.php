@@ -3051,7 +3051,7 @@ function install($type, $action, $id)
 	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang[$l_type . '_NAME']; ?>:</b></td>
 		<td class="row2"><?php
-		$style_name = 'proSilver';
+		$style_name = 'subSilver2';
 		$style_copyright = '(c) 2004 Tom Beddard';
 	echo ($action == 'add') ? '<input class="post" type="text" name="name" maxlength="30" size="30" value="' . $name . '" />' : '<b>' . ${$type . '_name'} . '</b>';
 
