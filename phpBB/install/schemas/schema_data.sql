@@ -1,5 +1,5 @@
 #
-# Basic DB data for phpBB2 devel
+# Basic DB Data for phpBB 3.x - (c) phpBB Group, 2005
 #
 # $Id$
 #

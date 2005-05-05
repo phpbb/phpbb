@@ -337,8 +337,10 @@ class sql_db
 					}
 				}
 			}
+
 			return $result;
 		}
+
 		return false;
 	}
 

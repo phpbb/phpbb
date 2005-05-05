@@ -1,5 +1,5 @@
 /*
- phpBB2 Oracle 8i DB schema - (c) 2001 The phpBB Group
+ Oracle Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
 */
@@ -14,23 +14,27 @@
 */
 
 /*
-CREATE TABLESPACE phpbb
-	DATAFILE 'E:/web/Oracle8i/ORADATA/phpbb01.dbf'
+CREATE TABLESPACE "PHPBB"
+	LOGGING 
+	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora' 
 	SIZE 10M
 	AUTOEXTEND ON NEXT 10M
 	MAXSIZE 100M;
 
-CREATE USER phpbb
-	IDENTIFIED BY phpbb_password
-	DEFAULT TABLESPACE phpbb
-	TEMPORARY TABLESPACE temp;
+CREATE USER "PHPBB" 
+	PROFILE "DEFAULT" 
+	IDENTIFIED BY "phpbb_password" 
+	DEFAULT TABLESPACE "PHPBB" 
+	QUOTA UNLIMITED ON "PHPBB" 
+	ACCOUNT UNLOCK;
 
-GRANT CREATE SESSION TO phpbb;
-GRANT CREATE TABLE TO phpbb;
-GRANT CREATE SEQUENCE TO phpbb;
-GRANT CREATE TRIGGER TO phpbb;
-
-ALTER USER phpbb QUOTA unlimited ON phpbb;
+GRANT ANALYZE ANY TO "PHPBB";
+GRANT CREATE SEQUENCE TO "PHPBB";
+GRANT CREATE SESSION TO "PHPBB";
+GRANT CREATE TABLE TO "PHPBB";
+GRANT CREATE TRIGGER TO "PHPBB";
+GRANT CREATE VIEW TO "PHPBB";
+GRANT "CONNECT" TO "PHPBB";
 
 COMMIT;
 DISCONNECT;
@@ -38,694 +42,1697 @@ DISCONNECT;
 CONNECT phpbb/phpbb_password;
 */
 
+CREATE TABLE phpbb_attachments (
+  attach_id number(8) NOT NULL,
+  post_msg_id number(8) DEFAULT '0' NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  in_message number(1) DEFAULT '0' NOT NULL,
+  poster_id number(8) DEFAULT '0' NOT NULL,
+  physical_filename varchar2(255),
+  real_filename varchar2(255),
+  download_count number(8) DEFAULT '0' NOT NULL,
+  comment_ varchar2(255),
+  extension varchar2(100),
+  mimetype varchar2(100),
+  filesize number(20) NOT NULL,
+  filetime number(11) DEFAULT '0' NOT NULL,
+  thumbnail number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_attachments PRIMARY KEY (attach_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_attachments_attach_id
+/
 
-CREATE SEQUENCE phpbb_banlist_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_categories_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_config_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_disallow_id_seq  increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_forums_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_posts_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_privmsgs_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_ranks_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_smilies_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_themes_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_topics_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_users_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_words_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_groups_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_forum_prune_id_seq increment by 1 start with 2 minvalue 0;
-CREATE SEQUENCE phpbb_vote_desc_id_seq increment by 1 start with 2 minvalue 0;
+CREATE OR REPLACE TRIGGER ai_phpbb_attachments_attach_id
+BEFORE INSERT ON phpbb_attachments
+FOR EACH ROW WHEN (
+ new.attach_id IS NULL OR new.attach_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_attachments_attach_id.nextval
+ INTO :new.attach_id
+ FROM dual;
+END;
+/
 
+CREATE INDEX filetime on phpbb_attachments (filetime)
+/
+CREATE INDEX post_msg_id on phpbb_attachments (post_msg_id)
+/
+CREATE INDEX topic_id on phpbb_attachments (topic_id)
+/
+CREATE INDEX poster_id on phpbb_attachments (poster_id)
+/
+CREATE INDEX physical_filename on phpbb_attachments (physical_filename)
+/
+CREATE INDEX filesize on phpbb_attachments (filesize)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_auth_access
--------------------------------------------------------- */
-CREATE TABLE phpbb_auth_access (
-   group_id number(4) DEFAULT '0' NOT NULL,
-   forum_id number(4) DEFAULT '0' NOT NULL,
-   auth_view number(4) DEFAULT '0' NOT NULL,
-   auth_read number(4) DEFAULT '0' NOT NULL,
-   auth_post number(4) DEFAULT '0' NOT NULL,
-   auth_reply number(4) DEFAULT '0' NOT NULL,
-   auth_edit number(4) DEFAULT '0' NOT NULL,
-   auth_delete number(4) DEFAULT '0' NOT NULL,
-   auth_announce number(4) DEFAULT '0' NOT NULL,
-   auth_sticky number(4) DEFAULT '0' NOT NULL,
-   auth_pollcreate number(4) DEFAULT '0' NOT NULL,
-   auth_attachments number(4) DEFAULT '0' NOT NULL,
-   auth_vote number(4) DEFAULT '0' NOT NULL,
-   auth_mod number(4) DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_auth_access_pkey PRIMARY KEY (group_id)
-);
-CREATE  INDEX group_phpbb_auth_access_index ON phpbb_auth_access (forum_id);
+/*
+ Table: phpbb_auth_groups
+*/
+CREATE TABLE phpbb_auth_groups (
+  group_id number(8) DEFAULT '0' NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  auth_option_id number(5) DEFAULT '0' NOT NULL,
+  auth_setting number(4) DEFAULT '0' NOT NULL
+)
+/
 
+CREATE INDEX group_id on phpbb_auth_groups (group_id)
+/
+CREATE INDEX auth_option_id on phpbb_auth_groups (auth_option_id)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_groups
--------------------------------------------------------- */
-CREATE TABLE phpbb_groups (
-   group_id number(4) NOT NULL,
-   group_name varchar(40) NOT NULL,
-   group_type number(2) DEFAULT '1' NOT NULL,
-   group_description varchar(255) NOT NULL,
-   group_moderator number(4) DEFAULT '0' NOT NULL,
-   group_single_user number(4) DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_groups_pkey PRIMARY KEY (group_id)
-);
+/*
+ Table: phpbb_auth_options
+*/
+CREATE TABLE phpbb_auth_options (
+  auth_option_id number(5) NOT NULL,
+  auth_option varchar2(20),
+  is_global number(1) DEFAULT '0' NOT NULL,
+  is_local number(1) DEFAULT '0' NOT NULL,
+  founder_only number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_auth_options PRIMARY KEY (auth_option_id)
+)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_banlist
--------------------------------------------------------- */
+CREATE SEQUENCE sq_phpbb_auth_options_auth_opt
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_auth_options_auth_opt
+BEFORE INSERT ON phpbb_auth_options
+FOR EACH ROW WHEN (
+ new.auth_option_id IS NULL OR new.auth_option_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_auth_options_auth_opt.nextval
+ INTO :new.auth_option_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX auth_option on phpbb_auth_options (auth_option)
+/
+
+/*
+ Table: phpbb_auth_presets
+*/
+CREATE TABLE phpbb_auth_presets (
+  preset_id number(4) NOT NULL,
+  preset_name varchar2(50) DEFAULT '',
+  preset_user_id number(5) DEFAULT '0' NOT NULL,
+  preset_type varchar2(2) DEFAULT '',
+  preset_data clob DEFAULT '',
+  CONSTRAINT pk_phpbb_auth_presets PRIMARY KEY (preset_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_auth_presets_preset_i
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_auth_presets_preset_i
+BEFORE INSERT ON phpbb_auth_presets
+FOR EACH ROW WHEN (
+ new.preset_id IS NULL OR new.preset_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_auth_presets_preset_i.nextval
+ INTO :new.preset_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX preset_type on phpbb_auth_presets (preset_type)
+/
+
+/*
+ Table: phpbb_auth_users
+*/
+CREATE TABLE phpbb_auth_users (
+  user_id number(8) DEFAULT '0' NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  auth_option_id number(5) DEFAULT '0' NOT NULL,
+  auth_setting number(4) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX user_id on phpbb_auth_users (user_id)
+/
+CREATE INDEX auth_option_id02 on phpbb_auth_users (auth_option_id)
+/
+
+/*
+ Table: phpbb_banlist
+*/
 CREATE TABLE phpbb_banlist (
-   ban_id number(4) NOT NULL,
-   ban_userid number(4),
-   ban_ip char(8),
-   ban_email varchar(255),
-   CONSTRAINT phpbb_banlist_pkey PRIMARY KEY (ban_id)
-);
-CREATE  INDEX ban_userid_phpbb_banlist_index ON phpbb_banlist (ban_userid);
+  ban_id number(8) NOT NULL,
+  ban_userid number(8) DEFAULT '0' NOT NULL,
+  ban_ip varchar2(40) DEFAULT '',
+  ban_email varchar2(50) DEFAULT '',
+  ban_start number(11) DEFAULT '0' NOT NULL,
+  ban_end number(11) DEFAULT '0' NOT NULL,
+  ban_exclude number(1) DEFAULT '0' NOT NULL,
+  ban_reason varchar2(255) DEFAULT '',
+  ban_give_reason varchar2(255) DEFAULT '',
+  CONSTRAINT pk_phpbb_banlist PRIMARY KEY (ban_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_banlist_ban_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_categories
--------------------------------------------------------- */
-CREATE TABLE phpbb_categories (
-   cat_id number(4) NOT NULL,
-   cat_title varchar(100),
-   cat_order number(4),
-   CONSTRAINT phpbb_categories_pkey PRIMARY KEY (cat_id)
-);
+CREATE OR REPLACE TRIGGER ai_phpbb_banlist_ban_id
+BEFORE INSERT ON phpbb_banlist
+FOR EACH ROW WHEN (
+ new.ban_id IS NULL OR new.ban_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_banlist_ban_id.nextval
+ INTO :new.ban_id
+ FROM dual;
+END;
+/
 
+/*
+ Table: phpbb_bbcodes
+*/
+CREATE TABLE phpbb_bbcodes (
+  bbcode_id number(3) DEFAULT '0' NOT NULL,
+  bbcode_tag varchar2(16) DEFAULT '',
+  bbcode_match varchar2(255) DEFAULT '',
+  bbcode_tpl clob DEFAULT '',
+  first_pass_match varchar2(255) DEFAULT '',
+  first_pass_replace varchar2(255) DEFAULT '',
+  second_pass_match varchar2(255) DEFAULT '',
+  second_pass_replace clob DEFAULT '',
+  CONSTRAINT pk_phpbb_bbcodes PRIMARY KEY (bbcode_id)
+)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_config
--------------------------------------------------------- */
+/*
+ Table: phpbb_bookmarks
+*/
+CREATE TABLE phpbb_bookmarks (
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  order_id number(8) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX order_id on phpbb_bookmarks (order_id)
+/
+CREATE INDEX topic_user_id on phpbb_bookmarks (topic_id, user_id)
+/
+
+/*
+ Table: phpbb_bots
+*/
+CREATE TABLE phpbb_bots (
+  bot_id number(3) NOT NULL,
+  bot_active number(1) DEFAULT '1' NOT NULL,
+  bot_name varchar2(255) DEFAULT '',
+  user_id number(8) DEFAULT '0' NOT NULL,
+  bot_agent varchar2(255) DEFAULT '',
+  bot_ip varchar2(255) DEFAULT '',
+  CONSTRAINT pk_phpbb_bots PRIMARY KEY (bot_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_bots_bot_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_bots_bot_id
+BEFORE INSERT ON phpbb_bots
+FOR EACH ROW WHEN (
+ new.bot_id IS NULL OR new.bot_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_bots_bot_id.nextval
+ INTO :new.bot_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX bot_active on phpbb_bots (bot_active)
+/
+
+/*
+ Table: phpbb_cache
+*/
+CREATE TABLE phpbb_cache (
+  var_name varchar2(255) DEFAULT '',
+  var_expires number(10) DEFAULT '0' NOT NULL,
+  var_data clob,
+  CONSTRAINT pk_phpbb_cache PRIMARY KEY (var_name)
+)
+/
+
+/*
+ Table: phpbb_config
+*/
 CREATE TABLE phpbb_config (
-   config_name varchar(255) NOT NULL,
-   config_value varchar(255),
-   CONSTRAINT phpbb_config_pkey PRIMARY KEY (config_name)
-);
+  config_name varchar2(255),
+  config_value varchar2(255),
+  is_dynamic number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_config PRIMARY KEY (config_name)
+)
+/
 
+CREATE INDEX is_dynamic on phpbb_config (is_dynamic)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_disallow
--------------------------------------------------------- */
+/*
+ Table: phpbb_confirm
+*/
+CREATE TABLE phpbb_confirm (
+  confirm_id varchar2(32) DEFAULT '',
+  session_id varchar2(32) DEFAULT '',
+  code varchar2(6) DEFAULT '',
+  CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
+)
+/
+
+/*
+ Table: phpbb_disallow
+*/
 CREATE TABLE phpbb_disallow (
-   disallow_id number(4) NOT NULL,
-   disallow_username varchar(25),
-   CONSTRAINT phpbb_disallow_pkey PRIMARY KEY (disallow_id)
-);
+  disallow_id number(8) NOT NULL,
+  disallow_username varchar2(30) DEFAULT '',
+  CONSTRAINT pk_phpbb_disallow PRIMARY KEY (disallow_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_disallow_disallow_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_forums
--------------------------------------------------------- */
+CREATE OR REPLACE TRIGGER ai_phpbb_disallow_disallow_id
+BEFORE INSERT ON phpbb_disallow
+FOR EACH ROW WHEN (
+ new.disallow_id IS NULL OR new.disallow_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_disallow_disallow_id.nextval
+ INTO :new.disallow_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_drafts
+*/
+CREATE TABLE phpbb_drafts (
+  draft_id number(8) NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  save_time number(11) DEFAULT '0' NOT NULL,
+  draft_subject varchar2(60),
+  draft_message clob DEFAULT '',
+  CONSTRAINT pk_phpbb_drafts PRIMARY KEY (draft_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_drafts_draft_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_drafts_draft_id
+BEFORE INSERT ON phpbb_drafts
+FOR EACH ROW WHEN (
+ new.draft_id IS NULL OR new.draft_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_drafts_draft_id.nextval
+ INTO :new.draft_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX save_time on phpbb_drafts (save_time)
+/
+
+/*
+ Table: phpbb_extensions
+*/
+CREATE TABLE phpbb_extensions (
+  extension_id number(8) NOT NULL,
+  group_id number(8) DEFAULT '0' NOT NULL,
+  extension varchar2(100) DEFAULT '',
+  CONSTRAINT pk_phpbb_extensions PRIMARY KEY (extension_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_extensions_extension_
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_extensions_extension_
+BEFORE INSERT ON phpbb_extensions
+FOR EACH ROW WHEN (
+ new.extension_id IS NULL OR new.extension_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_extensions_extension_.nextval
+ INTO :new.extension_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_extension_groups
+*/
+CREATE TABLE phpbb_extension_groups (
+  group_id number(8) NOT NULL,
+  group_name varchar2(20),
+  cat_id number(2) DEFAULT '0' NOT NULL,
+  allow_group number(1) DEFAULT '0' NOT NULL,
+  download_mode number(1) DEFAULT '1' NOT NULL,
+  upload_icon varchar2(100) DEFAULT '',
+  max_filesize number(20) DEFAULT '0' NOT NULL,
+  allowed_forums clob,
+  allow_in_pm number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_extension_groups PRIMARY KEY (group_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_extension_groups_grou
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_extension_groups_grou
+BEFORE INSERT ON phpbb_extension_groups
+FOR EACH ROW WHEN (
+ new.group_id IS NULL OR new.group_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_extension_groups_grou.nextval
+ INTO :new.group_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_forums
+*/
 CREATE TABLE phpbb_forums (
-   forum_id number(4) NOT NULL,
-   cat_id number(4),
-   forum_name varchar(150),
-   forum_desc varchar(2000),
-   forum_status number(4) DEFAULT '0' NOT NULL,
-   forum_order number(4) DEFAULT '1' NOT NULL,
-   forum_posts number(4) DEFAULT '0' NOT NULL,
-   forum_topics number(4) DEFAULT '0' NOT NULL,
-   forum_last_post_id number(4) DEFAULT '0' NOT NULL,
-   prune_enable number(4) DEFAULT '0' NOT NULL,
-   prune_next number(4),
-   auth_view number(4) DEFAULT '0' NOT NULL,
-   auth_read number(4) DEFAULT '0' NOT NULL,
-   auth_post number(4) DEFAULT '0' NOT NULL,
-   auth_reply number(4) DEFAULT '0' NOT NULL,
-   auth_edit number(4) DEFAULT '0' NOT NULL,
-   auth_delete number(4) DEFAULT '0' NOT NULL,
-   auth_announce number(4) DEFAULT '0' NOT NULL,
-   auth_sticky number(4) DEFAULT '0' NOT NULL,
-   auth_pollcreate number(4) DEFAULT '0' NOT NULL,
-   auth_vote number(4) DEFAULT '0' NOT NULL,
-   auth_attachments number(4) DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_forums_pkey PRIMARY KEY (forum_id)
-);
-CREATE  INDEX cat_id_phpbb_forums_index ON phpbb_forums (cat_id);
-CREATE  INDEX forums_order_phpbb_forums ON phpbb_forums (forum_order);
+  forum_id number(5) NOT NULL,
+  parent_id number(5) NOT NULL,
+  left_id number(5) NOT NULL,
+  right_id number(5) NOT NULL,
+  forum_parents clob,
+  forum_name varchar2(150),
+  forum_desc clob,
+  forum_link varchar2(200) DEFAULT '',
+  forum_password varchar2(32) DEFAULT '',
+  forum_style number(4),
+  forum_image varchar2(50) DEFAULT '',
+  forum_rules clob DEFAULT '',
+  forum_rules_link varchar2(200) DEFAULT '',
+  forum_rules_flags number(4) DEFAULT '0' NOT NULL,
+  forum_rules_bbcode_bitfield number(11) DEFAULT '0' NOT NULL,
+  forum_rules_bbcode_uid varchar2(5) DEFAULT '',
+  forum_topics_per_page number(4) DEFAULT '0' NOT NULL,
+  forum_type number(4) DEFAULT '0' NOT NULL,
+  forum_status number(4) DEFAULT '0' NOT NULL,
+  forum_posts number(8) DEFAULT '0' NOT NULL,
+  forum_topics number(8) DEFAULT '0' NOT NULL,
+  forum_topics_real number(8) DEFAULT '0' NOT NULL,
+  forum_last_post_id number(8) DEFAULT '0' NOT NULL,
+  forum_last_poster_id number(8) DEFAULT '0' NOT NULL,
+  forum_last_post_time number(11) DEFAULT '0' NOT NULL,
+  forum_last_poster_name varchar2(30),
+  forum_flags number(4) DEFAULT '0' NOT NULL,
+  display_on_index number(1) DEFAULT '1' NOT NULL,
+  enable_indexing number(1) DEFAULT '1' NOT NULL,
+  enable_icons number(1) DEFAULT '1' NOT NULL,
+  enable_prune number(1) DEFAULT '0' NOT NULL,
+  prune_next number(11),
+  prune_days number(4) NOT NULL,
+  prune_viewed number(4) NOT NULL,
+  prune_freq number(4) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_forums PRIMARY KEY (forum_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_forums_forum_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_forum_prune
--------------------------------------------------------- */
-CREATE TABLE phpbb_forum_prune (
-   prune_id number(4) NOT NULL,
-   forum_id number(4) NOT NULL,
-   prune_days number(4) NOT NULL,
-   prune_freq number(4) NOT NULL,
-   CONSTRAINT phpbb_forum_prune_pkey PRIMARY KEY (prune_id)
-);
-CREATE  INDEX forum_id_phpbb_forum_prune ON phpbb_forum_prune (forum_id);
+CREATE OR REPLACE TRIGGER ai_phpbb_forums_forum_id
+BEFORE INSERT ON phpbb_forums
+FOR EACH ROW WHEN (
+ new.forum_id IS NULL OR new.forum_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_forums_forum_id.nextval
+ INTO :new.forum_id
+ FROM dual;
+END;
+/
 
+CREATE INDEX left_right_id on phpbb_forums (left_id, right_id)
+/
+CREATE INDEX forum_last_post_id on phpbb_forums (forum_last_post_id)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_posts
--------------------------------------------------------- */
+/*
+ Table: phpbb_forum_access
+*/
+CREATE TABLE phpbb_forum_access (
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  session_id varchar2(32) DEFAULT '',
+  CONSTRAINT pk_phpbb_forum_access PRIMARY KEY (forum_id, user_id, session_id)
+)
+/
+
+/*
+ Table: phpbb_forums_marking
+*/
+CREATE TABLE phpbb_forums_marking (
+  user_id number(9) DEFAULT '0' NOT NULL,
+  forum_id number(9) DEFAULT '0' NOT NULL,
+  mark_time number(11) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_forums_marking PRIMARY KEY (user_id, forum_id)
+)
+/
+
+/*
+ Table: phpbb_forums_watch
+*/
+CREATE TABLE phpbb_forums_watch (
+  forum_id number(5) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  notify_status number(1) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX forum_id on phpbb_forums_watch (forum_id)
+/
+CREATE INDEX user_id02 on phpbb_forums_watch (user_id)
+/
+CREATE INDEX notify_status on phpbb_forums_watch (notify_status)
+/
+
+/*
+ Table: phpbb_groups
+*/
+CREATE TABLE phpbb_groups (
+  group_id number(8) NOT NULL,
+  group_type number(4) DEFAULT '1' NOT NULL,
+  group_name varchar2(40) DEFAULT '',
+  group_display number(1) DEFAULT '0' NOT NULL,
+  group_avatar varchar2(100) DEFAULT '',
+  group_avatar_type number(4) DEFAULT '0' NOT NULL,
+  group_avatar_width number(4) DEFAULT '0' NOT NULL,
+  group_avatar_height number(4) DEFAULT '0' NOT NULL,
+  group_rank number(5) DEFAULT '1' NOT NULL,
+  group_colour varchar2(6) DEFAULT '',
+  group_sig_chars number(8) DEFAULT '0' NOT NULL,
+  group_receive_pm number(1) DEFAULT '0' NOT NULL,
+  group_message_limit number(8) DEFAULT '0' NOT NULL,
+  group_chgpass number(6) DEFAULT '0' NOT NULL,
+  group_description varchar2(255) DEFAULT '',
+  group_legend number(1) DEFAULT '1' NOT NULL,
+  CONSTRAINT pk_phpbb_groups PRIMARY KEY (group_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_groups_group_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_groups_group_id
+BEFORE INSERT ON phpbb_groups
+FOR EACH ROW WHEN (
+ new.group_id IS NULL OR new.group_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_groups_group_id.nextval
+ INTO :new.group_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX group_legend on phpbb_groups (group_legend)
+/
+
+/*
+ Table: phpbb_icons
+*/
+CREATE TABLE phpbb_icons (
+  icons_id number(4) NOT NULL,
+  icons_url varchar2(50),
+  icons_width number(4) NOT NULL,
+  icons_height number(4) NOT NULL,
+  icons_order number(4) NOT NULL,
+  display_on_posting number(1) DEFAULT '1' NOT NULL,
+  CONSTRAINT pk_phpbb_icons PRIMARY KEY (icons_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_icons_icons_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_icons_icons_id
+BEFORE INSERT ON phpbb_icons
+FOR EACH ROW WHEN (
+ new.icons_id IS NULL OR new.icons_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_icons_icons_id.nextval
+ INTO :new.icons_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_lang
+*/
+CREATE TABLE phpbb_lang (
+  lang_id number(4) NOT NULL,
+  lang_iso varchar2(5),
+  lang_dir varchar2(30),
+  lang_english_name varchar2(30),
+  lang_local_name varchar2(100),
+  lang_author varchar2(100),
+  CONSTRAINT pk_phpbb_lang PRIMARY KEY (lang_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_lang_lang_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_lang_lang_id
+BEFORE INSERT ON phpbb_lang
+FOR EACH ROW WHEN (
+ new.lang_id IS NULL OR new.lang_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_lang_lang_id.nextval
+ INTO :new.lang_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_log
+*/
+CREATE TABLE phpbb_log (
+  log_id number(8) NOT NULL,
+  log_type number(4) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  reportee_id number(8) DEFAULT '0' NOT NULL,
+  log_ip varchar2(40),
+  log_time number(11) NOT NULL,
+  log_operation clob,
+  log_data clob,
+  CONSTRAINT pk_phpbb_log PRIMARY KEY (log_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_log_log_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_log_log_id
+BEFORE INSERT ON phpbb_log
+FOR EACH ROW WHEN (
+ new.log_id IS NULL OR new.log_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_log_log_id.nextval
+ INTO :new.log_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX log_type on phpbb_log (log_type)
+/
+CREATE INDEX forum_id02 on phpbb_log (forum_id)
+/
+CREATE INDEX topic_id02 on phpbb_log (topic_id)
+/
+CREATE INDEX reportee_id on phpbb_log (reportee_id)
+/
+CREATE INDEX user_id03 on phpbb_log (user_id)
+/
+
+/*
+ Table: phpbb_moderator_cache
+*/
+CREATE TABLE phpbb_moderator_cache (
+  forum_id number(8) NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  username varchar2(30) DEFAULT '',
+  group_id number(8) DEFAULT '0' NOT NULL,
+  groupname varchar2(30) DEFAULT '',
+  display_on_index number(1) DEFAULT '1' NOT NULL
+)
+/
+
+CREATE INDEX display_on_index on phpbb_moderator_cache (display_on_index)
+/
+CREATE INDEX forum_id03 on phpbb_moderator_cache (forum_id)
+/
+
+/*
+ Table: phpbb_modules
+*/
+CREATE TABLE phpbb_modules (
+  module_id number(8) NOT NULL,
+  module_type varchar2(3) DEFAULT '',
+  module_title varchar2(50) DEFAULT '',
+  module_filename varchar2(50) DEFAULT '',
+  module_order number(4) DEFAULT '0' NOT NULL,
+  module_enabled number(1) DEFAULT '1' NOT NULL,
+  module_subs clob,
+  module_acl varchar2(255) DEFAULT '',
+  CONSTRAINT pk_phpbb_modules PRIMARY KEY (module_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_modules_module_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_modules_module_id
+BEFORE INSERT ON phpbb_modules
+FOR EACH ROW WHEN (
+ new.module_id IS NULL OR new.module_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_modules_module_id.nextval
+ INTO :new.module_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX module_type on phpbb_modules (module_type, module_enabled)
+/
+
+/*
+ Table: phpbb_poll_results
+*/
+CREATE TABLE phpbb_poll_results (
+  poll_option_id number(4) DEFAULT '0' NOT NULL,
+  topic_id number(8) NOT NULL,
+  poll_option_text varchar2(255),
+  poll_option_total number(8) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX poll_option_id on phpbb_poll_results (poll_option_id)
+/
+CREATE INDEX topic_id03 on phpbb_poll_results (topic_id)
+/
+
+/*
+ Table: phpbb_poll_voters
+*/
+CREATE TABLE phpbb_poll_voters (
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  poll_option_id number(4) DEFAULT '0' NOT NULL,
+  vote_user_id number(8) DEFAULT '0' NOT NULL,
+  vote_user_ip varchar2(40)
+)
+/
+
+CREATE INDEX topic_id04 on phpbb_poll_voters (topic_id)
+/
+CREATE INDEX vote_user_id on phpbb_poll_voters (vote_user_id)
+/
+CREATE INDEX vote_user_ip on phpbb_poll_voters (vote_user_ip)
+/
+
+/*
+ Table: phpbb_posts
+*/
 CREATE TABLE phpbb_posts (
-   post_id number(4) NOT NULL,
-   topic_id number(4) DEFAULT '0' NOT NULL,
-   forum_id number(4) DEFAULT '0' NOT NULL,
-   poster_id number(4) DEFAULT '0' NOT NULL,
-   post_time number(11) DEFAULT '0' NOT NULL,
-   post_username varchar(30),
-   poster_ip char(8) DEFAULT '' NOT NULL,
-   enable_bbcode number(4) DEFAULT '1' NOT NULL,
-   enable_html number(4) DEFAULT '0' NOT NULL,
-   enable_smilies number(4) DEFAULT '1' NOT NULL,
-   enable_sig number(4) DEFAULT '1' NOT NULL,
-   post_edit_time number(11),
-   post_edit_count number(4) DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_posts_pkey PRIMARY KEY (post_id)
-);
-CREATE  INDEX forum_id_phpbb_posts_index ON phpbb_posts (forum_id);
-CREATE  INDEX post_time_phpbb_posts_index ON phpbb_posts (post_time);
-CREATE  INDEX poster_id_phpbb_posts_index ON phpbb_posts (poster_id);
-CREATE  INDEX topic_id_phpbb_posts_index ON phpbb_posts (topic_id);
+  post_id number(8) NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  forum_id number(5) DEFAULT '0' NOT NULL,
+  poster_id number(8) DEFAULT '0' NOT NULL,
+  icon_id number(4) DEFAULT '1' NOT NULL,
+  poster_ip varchar2(40),
+  post_time number(11) DEFAULT '0' NOT NULL,
+  post_approved number(1) DEFAULT '1' NOT NULL,
+  post_reported number(1) DEFAULT '0' NOT NULL,
+  enable_bbcode number(1) DEFAULT '1' NOT NULL,
+  enable_html number(1) DEFAULT '0' NOT NULL,
+  enable_smilies number(1) DEFAULT '1' NOT NULL,
+  enable_magic_url number(1) DEFAULT '1' NOT NULL,
+  enable_sig number(1) DEFAULT '1' NOT NULL,
+  post_username varchar2(30),
+  post_subject varchar2(60),
+  post_text clob,
+  post_checksum varchar2(32),
+  post_encoding varchar2(11) DEFAULT 'iso-8859-15',
+  post_attachment number(1) DEFAULT '0' NOT NULL,
+  bbcode_bitfield number(11) DEFAULT '0' NOT NULL,
+  bbcode_uid varchar2(5) DEFAULT '',
+  post_edit_time number(11) DEFAULT '0' NOT NULL,
+  post_edit_reason varchar2(100),
+  post_edit_user number(8) DEFAULT '0' NOT NULL,
+  post_edit_count number(5) DEFAULT '0' NOT NULL,
+  post_edit_locked number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_posts PRIMARY KEY (post_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_posts_post_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_posts_text
--------------------------------------------------------- */
-CREATE TABLE phpbb_posts_text (
-   post_id number(4) DEFAULT '0' NOT NULL,
-   bbcode_uid varchar(10) DEFAULT '',
-   post_subject varchar(255),
-   post_text varchar(2000),
-   CONSTRAINT phpbb_posts_text_pkey PRIMARY KEY (post_id)
-);
+CREATE OR REPLACE TRIGGER ai_phpbb_posts_post_id
+BEFORE INSERT ON phpbb_posts
+FOR EACH ROW WHEN (
+ new.post_id IS NULL OR new.post_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_posts_post_id.nextval
+ INTO :new.post_id
+ FROM dual;
+END;
+/
 
+CREATE INDEX forum_id04 on phpbb_posts (forum_id)
+/
+CREATE INDEX topic_id05 on phpbb_posts (topic_id)
+/
+CREATE INDEX poster_ip on phpbb_posts (poster_ip)
+/
+CREATE INDEX poster_id02 on phpbb_posts (poster_id)
+/
+CREATE INDEX post_approved on phpbb_posts (post_approved)
+/
+CREATE INDEX post_time on phpbb_posts (post_time)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_privmsgs
--------------------------------------------------------- */
+/*
+ Table: phpbb_privmsgs
+*/
 CREATE TABLE phpbb_privmsgs (
-   privmsgs_id number(4) NOT NULL,
-   privmsgs_type number(4) DEFAULT '0' NOT NULL,
-   privmsgs_subject varchar(255) DEFAULT '0' NOT NULL,
-   privmsgs_from_userid number(4) DEFAULT '0' NOT NULL,
-   privmsgs_to_userid number(4) DEFAULT '0' NOT NULL,
-   privmsgs_date number(4) DEFAULT '0' NOT NULL,
-   privmsgs_ip char(8) NOT NULL,
-   privmsgs_enable_bbcode number(1) DEFAULT '1' NOT NULL,
-   privmsgs_enable_html number(1) DEFAULT '0' NOT NULL,
-   privmsgs_enable_smilies number(1) DEFAULT '1' NOT NULL, 
-   privmsgs_attach_sig number(1) DEFAULT '1' NOT NULL, 
-   CONSTRAINT phpbb_privmsgs_pkey PRIMARY KEY (privmsgs_id)
-);
-CREATE  INDEX privmsgs_from_userid_index ON phpbb_privmsgs (privmsgs_from_userid);
-CREATE  INDEX privmsgs_to_userid_index ON phpbb_privmsgs (privmsgs_to_userid);
+  msg_id number(8) NOT NULL,
+  root_level number(8) DEFAULT '0' NOT NULL,
+  author_id number(8) DEFAULT '0' NOT NULL,
+  icon_id number(4) DEFAULT '1' NOT NULL,
+  author_ip varchar2(40) DEFAULT '',
+  message_time number(11) DEFAULT '0' NOT NULL,
+  message_reported number(1) DEFAULT '0' NOT NULL,
+  enable_bbcode number(1) DEFAULT '1' NOT NULL,
+  enable_html number(1) DEFAULT '0' NOT NULL,
+  enable_smilies number(1) DEFAULT '1' NOT NULL,
+  enable_magic_url number(1) DEFAULT '1' NOT NULL,
+  enable_sig number(1) DEFAULT '1' NOT NULL,
+  message_subject varchar2(60),
+  message_text clob,
+  message_edit_reason varchar2(100),
+  message_edit_user number(8) DEFAULT '0' NOT NULL,
+  message_checksum varchar2(32) DEFAULT '',
+  message_encoding varchar2(11) DEFAULT 'iso-8859-15',
+  message_attachment number(1) DEFAULT '0' NOT NULL,
+  bbcode_bitfield number(11) DEFAULT '0' NOT NULL,
+  bbcode_uid varchar2(5) DEFAULT '',
+  message_edit_time number(11) DEFAULT '0' NOT NULL,
+  message_edit_count number(5) DEFAULT '0' NOT NULL,
+  to_address clob,
+  bcc_address clob,
+  CONSTRAINT pk_phpbb_privmsgs PRIMARY KEY (msg_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_privmsgs_msg_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_privmsgs_text
--------------------------------------------------------- */
-CREATE TABLE phpbb_privmsgs_text (
-   privmsgs_text_id number(4) DEFAULT '0' NOT NULL,
-   privmsgs_bbcode_uid char(10) DEFAULT '0' NOT NULL,
-   privmsgs_text varchar(2000),
-   CONSTRAINT phpbb_privmsgs_text_pkey PRIMARY KEY (privmsgs_text_id)
-);
+CREATE OR REPLACE TRIGGER ai_phpbb_privmsgs_msg_id
+BEFORE INSERT ON phpbb_privmsgs
+FOR EACH ROW WHEN (
+ new.msg_id IS NULL OR new.msg_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_privmsgs_msg_id.nextval
+ INTO :new.msg_id
+ FROM dual;
+END;
+/
 
+CREATE INDEX author_ip on phpbb_privmsgs (author_ip)
+/
+CREATE INDEX message_time on phpbb_privmsgs (message_time)
+/
+CREATE INDEX author_id on phpbb_privmsgs (author_id)
+/
+CREATE INDEX root_level on phpbb_privmsgs (root_level)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_ranks
--------------------------------------------------------- */
+/*
+ Table: phpbb_privmsgs_folder
+*/
+CREATE TABLE phpbb_privmsgs_folder (
+  folder_id number(8) NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  folder_name varchar2(40) DEFAULT '',
+  pm_count number(8) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_privmsgs_folder PRIMARY KEY (folder_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_privmsgs_folder_folde
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_privmsgs_folder_folde
+BEFORE INSERT ON phpbb_privmsgs_folder
+FOR EACH ROW WHEN (
+ new.folder_id IS NULL OR new.folder_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_privmsgs_folder_folde.nextval
+ INTO :new.folder_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX user_id04 on phpbb_privmsgs_folder (user_id)
+/
+
+/*
+ Table: phpbb_privmsgs_rules
+*/
+CREATE TABLE phpbb_privmsgs_rules (
+  rule_id number(8) NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  rule_check number(4) DEFAULT '0' NOT NULL,
+  rule_connection number(4) DEFAULT '0' NOT NULL,
+  rule_string varchar2(255) DEFAULT '',
+  rule_user_id number(8) DEFAULT '0' NOT NULL,
+  rule_group_id number(8) DEFAULT '0' NOT NULL,
+  rule_action number(4) DEFAULT '0' NOT NULL,
+  rule_folder_id number(8) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_privmsgs_rules PRIMARY KEY (rule_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_privmsgs_rules_rule_i
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_privmsgs_rules_rule_i
+BEFORE INSERT ON phpbb_privmsgs_rules
+FOR EACH ROW WHEN (
+ new.rule_id IS NULL OR new.rule_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_privmsgs_rules_rule_i.nextval
+ INTO :new.rule_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_privmsgs_to
+*/
+CREATE TABLE phpbb_privmsgs_to (
+  msg_id number(8) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  author_id number(8) DEFAULT '0' NOT NULL,
+  deleted number(1) DEFAULT '0' NOT NULL,
+  new number(1) DEFAULT '1' NOT NULL,
+  unread number(1) DEFAULT '1' NOT NULL,
+  replied number(1) DEFAULT '0' NOT NULL,
+  marked number(1) DEFAULT '0' NOT NULL,
+  forwarded number(1) DEFAULT '0' NOT NULL,
+  folder_id number(10) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX msg_id on phpbb_privmsgs_to (msg_id)
+/
+CREATE INDEX user_id05 on phpbb_privmsgs_to (user_id, folder_id)
+/
+
+/*
+ Table: phpbb_profile_fields
+*/
+CREATE TABLE phpbb_profile_fields (
+  field_id number(8) NOT NULL,
+  field_name varchar2(50) DEFAULT '',
+  field_desc varchar2(255) DEFAULT '',
+  field_type number(8) NOT NULL,
+  field_ident varchar2(20) DEFAULT '',
+  field_length varchar2(20) DEFAULT '',
+  field_minlen varchar2(255) DEFAULT '',
+  field_maxlen varchar2(255) DEFAULT '',
+  field_novalue varchar2(255) DEFAULT '',
+  field_default_value varchar2(255) DEFAULT '0',
+  field_validation varchar2(20) DEFAULT '',
+  field_required number(1) DEFAULT '0' NOT NULL,
+  field_show_on_reg number(1) DEFAULT '0' NOT NULL,
+  field_hide number(1) DEFAULT '0' NOT NULL,
+  field_no_view number(1) DEFAULT '0' NOT NULL,
+  field_active number(1) DEFAULT '0' NOT NULL,
+  field_order number(4) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_profile_fields PRIMARY KEY (field_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_profile_fields_field_
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_profile_fields_field_
+BEFORE INSERT ON phpbb_profile_fields
+FOR EACH ROW WHEN (
+ new.field_id IS NULL OR new.field_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_profile_fields_field_.nextval
+ INTO :new.field_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX field_type on phpbb_profile_fields (field_type)
+/
+CREATE INDEX field_order on phpbb_profile_fields (field_order)
+/
+
+/*
+ Table: phpbb_profile_fields_data
+*/
+CREATE TABLE phpbb_profile_fields_data (
+  user_id number(8) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_profile_fields_data PRIMARY KEY (user_id)
+)
+/
+
+/*
+ Table: phpbb_profile_fields_lang
+*/
+CREATE TABLE phpbb_profile_fields_lang (
+  field_id number(8) DEFAULT '0' NOT NULL,
+  lang_id number(8) DEFAULT '0' NOT NULL,
+  option_id number(8) DEFAULT '0' NOT NULL,
+  field_type number(4) DEFAULT '0' NOT NULL,
+  value varchar2(255) DEFAULT '',
+  CONSTRAINT pk_phpbb_profile_fields_lang PRIMARY KEY (field_id, lang_id, option_id)
+)
+/
+
+/*
+ Table: phpbb_profile_lang
+*/
+CREATE TABLE phpbb_profile_lang (
+  field_id number(8) DEFAULT '0' NOT NULL,
+  lang_id number(4) DEFAULT '0' NOT NULL,
+  lang_name varchar2(255) DEFAULT '',
+  lang_explain clob,
+  lang_default_value varchar2(255) DEFAULT '',
+  CONSTRAINT pk_phpbb_profile_lang PRIMARY KEY (field_id, lang_id)
+)
+/
+
+/*
+ Table: phpbb_ranks
+*/
 CREATE TABLE phpbb_ranks (
-   rank_id number(4) NOT NULL,
-   rank_title varchar(50) DEFAULT '' NOT NULL,
-   rank_min number(4) DEFAULT '0' NOT NULL,
-   rank_special number(4) DEFAULT '0',
-   rank_image varchar(255),
-   CONSTRAINT phpbb_ranks_pkey PRIMARY KEY (rank_id)
-);
-CREATE  INDEX rank_max_phpbb_ranks_index ON phpbb_ranks (rank_max);
-CREATE  INDEX rank_min_phpbb_ranks_index ON phpbb_ranks (rank_min);
+  rank_id number(5) NOT NULL,
+  rank_title varchar2(50),
+  rank_min number(8) DEFAULT '0' NOT NULL,
+  rank_special number(1) DEFAULT '0',
+  rank_image varchar2(100),
+  CONSTRAINT pk_phpbb_ranks PRIMARY KEY (rank_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_ranks_rank_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_session
--------------------------------------------------------- */
+CREATE OR REPLACE TRIGGER ai_phpbb_ranks_rank_id
+BEFORE INSERT ON phpbb_ranks
+FOR EACH ROW WHEN (
+ new.rank_id IS NULL OR new.rank_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_ranks_rank_id.nextval
+ INTO :new.rank_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_reports_reasons
+*/
+CREATE TABLE phpbb_reports_reasons (
+  reason_id number(6) NOT NULL,
+  reason_priority number(4) DEFAULT '0' NOT NULL,
+  reason_name varchar2(255) DEFAULT '',
+  reason_description clob,
+  CONSTRAINT pk_phpbb_reports_reasons PRIMARY KEY (reason_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_reports_reasons_reaso
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_reports_reasons_reaso
+BEFORE INSERT ON phpbb_reports_reasons
+FOR EACH ROW WHEN (
+ new.reason_id IS NULL OR new.reason_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_reports_reasons_reaso.nextval
+ INTO :new.reason_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_reports
+*/
+CREATE TABLE phpbb_reports (
+  report_id number(5) NOT NULL,
+  reason_id number(5) DEFAULT '0' NOT NULL,
+  post_id number(8) DEFAULT '0' NOT NULL,
+  msg_id number(8) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  user_notify number(1) DEFAULT '0' NOT NULL,
+  report_time number(10) DEFAULT '0' NOT NULL,
+  report_text clob,
+  CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_reports_report_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_reports_report_id
+BEFORE INSERT ON phpbb_reports
+FOR EACH ROW WHEN (
+ new.report_id IS NULL OR new.report_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_reports_report_id.nextval
+ INTO :new.report_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_search_results
+*/
+CREATE TABLE phpbb_search_results (
+  search_id number(11) DEFAULT '0' NOT NULL,
+  session_id varchar2(32) DEFAULT '',
+  search_time number(11) DEFAULT '0' NOT NULL,
+  search_array clob,
+  CONSTRAINT pk_phpbb_search_results PRIMARY KEY (search_id)
+)
+/
+
+CREATE INDEX session_id on phpbb_search_results (session_id)
+/
+
+/*
+ Table: phpbb_search_wordlist
+*/
+CREATE TABLE phpbb_search_wordlist (
+  word_text varchar2(50) DEFAULT '',
+  word_id number(8) NOT NULL,
+  word_common number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_search_wordlist PRIMARY KEY (word_text)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_search_wordlist_word_
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_search_wordlist_word_
+BEFORE INSERT ON phpbb_search_wordlist
+FOR EACH ROW WHEN (
+ new.word_id IS NULL OR new.word_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_search_wordlist_word_.nextval
+ INTO :new.word_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX word_id on phpbb_search_wordlist (word_id)
+/
+
+/*
+ Table: phpbb_search_wordmatch
+*/
+CREATE TABLE phpbb_search_wordmatch (
+  post_id number(8) DEFAULT '0' NOT NULL,
+  word_id number(8) DEFAULT '0' NOT NULL,
+  title_match number(1) DEFAULT '0' NOT NULL
+)
+/
+
+CREATE INDEX word_id02 on phpbb_search_wordmatch (word_id)
+/
+
+/*
+ Table: phpbb_sessions
+*/
 CREATE TABLE phpbb_sessions (
-   session_id char(32) DEFAULT '0' NOT NULL,
-   session_user_id number(11) DEFAULT '0' NOT NULL,
-   session_start number(11) DEFAULT '0' NOT NULL,
-   session_time number(11) DEFAULT '0' NOT NULL,
-   session_last_visit number(11) DEFAULT '0' NOT NULL,
-   session_ip char(8) DEFAULT '0' NOT NULL,
-   session_page number(11) DEFAULT '0' NOT NULL,
-   session_logged_in number(11) DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_sessions_pkey PRIMARY KEY (session_id)
-);
-CREATE INDEX session_id_ip_user_id ON phpbb_sessions (session_id, session_ip, session_user_id);
+  session_id varchar2(32) DEFAULT '',
+  session_user_id number(8) DEFAULT '0' NOT NULL,
+  session_last_visit number(11) DEFAULT '0' NOT NULL,
+  session_start number(11) DEFAULT '0' NOT NULL,
+  session_time number(11) DEFAULT '0' NOT NULL,
+  session_ip varchar2(40) DEFAULT '0',
+  session_browser varchar2(100) DEFAULT '',
+  session_page varchar2(100) DEFAULT '',
+  session_viewonline number(1) DEFAULT '1' NOT NULL,
+  session_admin number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_sessions PRIMARY KEY (session_id)
+)
+/
 
+CREATE INDEX session_time on phpbb_sessions (session_time)
+/
+CREATE INDEX session_user_id on phpbb_sessions (session_user_id)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_smilies
--------------------------------------------------------- */
+/*
+ Table: phpbb_sitelist
+*/
+CREATE TABLE phpbb_sitelist (
+  site_id number(8) NOT NULL,
+  site_ip varchar2(40) DEFAULT '',
+  site_hostname varchar2(255) DEFAULT '',
+  ip_exclude number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_sitelist PRIMARY KEY (site_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_sitelist_site_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_sitelist_site_id
+BEFORE INSERT ON phpbb_sitelist
+FOR EACH ROW WHEN (
+ new.site_id IS NULL OR new.site_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_sitelist_site_id.nextval
+ INTO :new.site_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_smilies
+*/
 CREATE TABLE phpbb_smilies (
-   smilies_id number(4) NOT NULL,
-   code varchar(50),
-   smile_url varchar(100),
-   emoticon varchar(75),
-   CONSTRAINT phpbb_smilies_pkey PRIMARY KEY (smilies_id)
-);
+  smiley_id number(4) NOT NULL,
+  code varchar2(10),
+  emotion varchar2(50),
+  smiley_url varchar2(50),
+  smiley_width number(4) NOT NULL,
+  smiley_height number(4) NOT NULL,
+  smiley_order number(4) NOT NULL,
+  display_on_posting number(1) DEFAULT '1' NOT NULL,
+  CONSTRAINT pk_phpbb_smilies PRIMARY KEY (smiley_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_smilies_smiley_id
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_themes
--------------------------------------------------------- */
-CREATE TABLE phpbb_themes (
-   themes_id number(4) NOT NULL,
-   style_name varchar(30),
-   template_name varchar(30) DEFAULT '' NOT NULL,
-   head_stylesheet varchar(100),
-   body_background varchar(100),
-   body_bgcolor char(6),
-   body_text char(6),
-   body_link char(6),
-   body_vlink char(6),
-   body_alink char(6),
-   body_hlink char(6),
-   tr_color1 char(6),
-   tr_color2 char(6),
-   tr_color3 char(6),
-   tr_class1 varchar(25),
-   tr_class2 varchar(25),
-   tr_class3 varchar(25),
-   th_color1 char(6),
-   th_color2 char(6),
-   th_color3 char(6),
-   th_class1 varchar(25),
-   th_class2 varchar(25),
-   th_class3 varchar(25),
-   td_color1 char(6),
-   td_color2 char(6),
-   td_color3 char(6),
-   td_class1 varchar(25),
-   td_class2 varchar(25),
-   td_class3 varchar(25),
-   fontface1 varchar(25),
-   fontface2 varchar(25),
-   fontface3 varchar(25),
-   fontsize1 number(4),
-   fontsize2 number(4),
-   fontsize3 number(4),
-   fontcolor1 char(6),
-   fontcolor2 char(6),
-   fontcolor3 char(6),
-   span_class1 varchar(25),
-   span_class2 varchar(25),
-   span_class3 varchar(25),
-   CONSTRAINT phpbb_themes_pkey PRIMARY KEY (themes_id)
-);
+CREATE OR REPLACE TRIGGER ai_phpbb_smilies_smiley_id
+BEFORE INSERT ON phpbb_smilies
+FOR EACH ROW WHEN (
+ new.smiley_id IS NULL OR new.smiley_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_smilies_smiley_id.nextval
+ INTO :new.smiley_id
+ FROM dual;
+END;
+/
 
+/*
+ Table: phpbb_styles
+*/
+CREATE TABLE phpbb_styles (
+  style_id number(4) NOT NULL,
+  style_name varchar2(30) DEFAULT '',
+  style_copyright varchar2(50) DEFAULT '',
+  style_active number(1) DEFAULT '1' NOT NULL,
+  template_id number(4) NOT NULL,
+  theme_id number(4) NOT NULL,
+  imageset_id number(4) NOT NULL,
+  CONSTRAINT pk_phpbb_styles PRIMARY KEY (style_id),
+  CONSTRAINT u_style_name UNIQUE (style_name)
+)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_themes_name
--------------------------------------------------------- */
-CREATE TABLE phpbb_themes_name (
-   themes_id number(4) DEFAULT '0' NOT NULL,
-   tr_color1_name varchar(50),
-   tr_color2_name varchar(50),
-   tr_color3_name varchar(50),
-   tr_class1_name varchar(50),
-   tr_class2_name varchar(50),
-   tr_class3_name varchar(50),
-   th_color1_name varchar(50),
-   th_color2_name varchar(50),
-   th_color3_name varchar(50),
-   th_class1_name varchar(50),
-   th_class2_name varchar(50),
-   th_class3_name varchar(50),
-   td_color1_name varchar(50),
-   td_color2_name varchar(50),
-   td_color3_name varchar(50),
-   td_class1_name varchar(50),
-   td_class2_name varchar(50),
-   td_class3_name varchar(50),
-   fontface1_name varchar(50),
-   fontface2_name varchar(50),
-   fontface3_name varchar(50),
-   fontsize1_name varchar(50),
-   fontsize2_name varchar(50),
-   fontsize3_name varchar(50),
-   fontcolor1_name varchar(50),
-   fontcolor2_name varchar(50),
-   fontcolor3_name varchar(50),
-   span_class1_name varchar(50),
-   span_class2_name varchar(50),
-   span_class3_name varchar(50),
-   CONSTRAINT phpbb_themes_name_pkey PRIMARY KEY (themes_id)
-);
+CREATE SEQUENCE sq_phpbb_styles_style_id
+/
 
+CREATE OR REPLACE TRIGGER ai_phpbb_styles_style_id
+BEFORE INSERT ON phpbb_styles
+FOR EACH ROW WHEN (
+ new.style_id IS NULL OR new.style_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_styles_style_id.nextval
+ INTO :new.style_id
+ FROM dual;
+END;
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_topics
--------------------------------------------------------- */
+CREATE INDEX i_phpbb_styles on phpbb_styles (template_id)
+/
+CREATE INDEX i_phpbb_styles02 on phpbb_styles (theme_id)
+/
+CREATE INDEX i_phpbb_styles03 on phpbb_styles (imageset_id)
+/
+
+/*
+ Table: phpbb_styles_template
+*/
+CREATE TABLE phpbb_styles_template (
+  template_id number(4) NOT NULL,
+  template_name varchar2(30),
+  template_copyright varchar2(50),
+  template_path varchar2(30),
+  bbcode_bitfield number(11) DEFAULT '0' NOT NULL,
+  template_storedb number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_styles_template PRIMARY KEY (template_id),
+  CONSTRAINT u_template_name UNIQUE (template_name)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_styles_template_templ
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_styles_template_templ
+BEFORE INSERT ON phpbb_styles_template
+FOR EACH ROW WHEN (
+ new.template_id IS NULL OR new.template_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_styles_template_templ.nextval
+ INTO :new.template_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_styles_template_data
+*/
+CREATE TABLE phpbb_styles_template_data (
+  template_id number(4) NOT NULL,
+  template_filename varchar2(50) DEFAULT '',
+  template_included clob,
+  template_mtime number(11) DEFAULT '0' NOT NULL,
+  template_data clob
+)
+/
+
+CREATE INDEX i_phpbb_styles_template_data on phpbb_styles_template_data (template_id)
+/
+CREATE INDEX i_phpbb_styles_template_data02 on phpbb_styles_template_data (template_filename)
+/
+
+/*
+ Table: phpbb_styles_theme
+*/
+CREATE TABLE phpbb_styles_theme (
+  theme_id number(4) NOT NULL,
+  theme_name varchar2(30) DEFAULT '',
+  theme_copyright varchar2(50) DEFAULT '',
+  theme_path varchar2(30) DEFAULT '',
+  theme_storedb number(1) DEFAULT '0' NOT NULL,
+  theme_mtime number(11) DEFAULT '0' NOT NULL,
+  theme_data clob DEFAULT '',
+  CONSTRAINT pk_phpbb_styles_theme PRIMARY KEY (theme_id),
+  CONSTRAINT u_theme_name UNIQUE (theme_name)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_styles_theme_theme_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_styles_theme_theme_id
+BEFORE INSERT ON phpbb_styles_theme
+FOR EACH ROW WHEN (
+ new.theme_id IS NULL OR new.theme_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_styles_theme_theme_id.nextval
+ INTO :new.theme_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_styles_imageset
+*/
+CREATE TABLE phpbb_styles_imageset (
+  imageset_id number(4) NOT NULL,
+  imageset_name varchar2(30) DEFAULT '',
+  imageset_copyright varchar2(50) DEFAULT '',
+  imageset_path varchar2(30) DEFAULT '',
+  site_logo varchar2(200) DEFAULT '',
+  btn_post varchar2(200) DEFAULT '',
+  btn_post_pm varchar2(200) DEFAULT '',
+  btn_reply varchar2(200) DEFAULT '',
+  btn_reply_pm varchar2(200) DEFAULT '',
+  btn_locked varchar2(200) DEFAULT '',
+  btn_profile varchar2(200) DEFAULT '',
+  btn_pm varchar2(200) DEFAULT '',
+  btn_delete varchar2(200) DEFAULT '',
+  btn_info varchar2(200) DEFAULT '',
+  btn_quote varchar2(200) DEFAULT '',
+  btn_search varchar2(200) DEFAULT '',
+  btn_edit varchar2(200) DEFAULT '',
+  btn_report varchar2(200) DEFAULT '',
+  btn_email varchar2(200) DEFAULT '',
+  btn_www varchar2(200) DEFAULT '',
+  btn_icq varchar2(200) DEFAULT '',
+  btn_aim varchar2(200) DEFAULT '',
+  btn_yim varchar2(200) DEFAULT '',
+  btn_msnm varchar2(200) DEFAULT '',
+  btn_jabber varchar2(200) DEFAULT '',
+  btn_online varchar2(200) DEFAULT '',
+  btn_offline varchar2(200) DEFAULT '',
+  btn_friend varchar2(200) DEFAULT '',
+  btn_foe varchar2(200) DEFAULT '',
+  icon_unapproved varchar2(200) DEFAULT '',
+  icon_reported varchar2(200) DEFAULT '',
+  icon_attach varchar2(200) DEFAULT '',
+  icon_post varchar2(200) DEFAULT '',
+  icon_post_new varchar2(200) DEFAULT '',
+  icon_post_latest varchar2(200) DEFAULT '',
+  icon_post_newest varchar2(200) DEFAULT '',
+  forum varchar2(200) DEFAULT '',
+  forum_new varchar2(200) DEFAULT '',
+  forum_locked varchar2(200) DEFAULT '',
+  forum_link varchar2(200) DEFAULT '',
+  sub_forum varchar2(200) DEFAULT '',
+  sub_forum_new varchar2(200) DEFAULT '',
+  folder varchar2(200) DEFAULT '',
+  folder_moved varchar2(200) DEFAULT '',
+  folder_posted varchar2(200) DEFAULT '',
+  folder_new varchar2(200) DEFAULT '',
+  folder_new_posted varchar2(200) DEFAULT '',
+  folder_hot varchar2(200) DEFAULT '',
+  folder_hot_posted varchar2(200) DEFAULT '',
+  folder_hot_new varchar2(200) DEFAULT '',
+  folder_hot_new_posted varchar2(200) DEFAULT '',
+  folder_locked varchar2(200) DEFAULT '',
+  folder_locked_posted varchar2(200) DEFAULT '',
+  folder_locked_new varchar2(200) DEFAULT '',
+  folder_locked_new_posted varchar2(200) DEFAULT '',
+  folder_sticky varchar2(200) DEFAULT '',
+  folder_sticky_posted varchar2(200) DEFAULT '',
+  folder_sticky_new varchar2(200) DEFAULT '',
+  folder_sticky_new_posted varchar2(200) DEFAULT '',
+  folder_announce varchar2(200) DEFAULT '',
+  folder_announce_posted varchar2(200) DEFAULT '',
+  folder_announce_new varchar2(200) DEFAULT '',
+  folder_announce_new_posted varchar2(200) DEFAULT '',
+  folder_global varchar2(200) DEFAULT '',
+  folder_global_posted varchar2(200) DEFAULT '',
+  folder_global_new varchar2(200) DEFAULT '',
+  folder_global_new_posted varchar2(200) DEFAULT '',
+  poll_left varchar2(200) DEFAULT '',
+  poll_center varchar2(200) DEFAULT '',
+  poll_right varchar2(200) DEFAULT '',
+  attach_progress_bar varchar2(200) DEFAULT '',
+  user_icon1 varchar2(200) DEFAULT '',
+  user_icon2 varchar2(200) DEFAULT '',
+  user_icon3 varchar2(200) DEFAULT '',
+  user_icon4 varchar2(200) DEFAULT '',
+  user_icon5 varchar2(200) DEFAULT '',
+  user_icon6 varchar2(200) DEFAULT '',
+  user_icon7 varchar2(200) DEFAULT '',
+  user_icon8 varchar2(200) DEFAULT '',
+  user_icon9 varchar2(200) DEFAULT '',
+  user_icon10 varchar2(200) DEFAULT '',
+  CONSTRAINT pk_phpbb_styles_imageset PRIMARY KEY (imageset_id),
+  CONSTRAINT u_imageset_name UNIQUE (imageset_name)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_styles_imageset_image
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_styles_imageset_image
+BEFORE INSERT ON phpbb_styles_imageset
+FOR EACH ROW WHEN (
+ new.imageset_id IS NULL OR new.imageset_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_styles_imageset_image.nextval
+ INTO :new.imageset_id
+ FROM dual;
+END;
+/
+
+/*
+ Table: phpbb_topics
+*/
 CREATE TABLE phpbb_topics (
-   topic_id number(4) NOT NULL,
-   topic_title varchar(100) DEFAULT '' NOT NULL,
-   topic_poster number(4) DEFAULT '0' NOT NULL,
-   topic_time number(11) DEFAULT '0' NOT NULL,
-   topic_views number(4) DEFAULT '0' NOT NULL,
-   topic_replies number(4) DEFAULT '0' NOT NULL,
-   forum_id number(4) DEFAULT '0' NOT NULL,
-   topic_status number(4) DEFAULT '0' NOT NULL,
-	topic_vote number(4) DEFAULT '0' NOT NULL,
-   topic_type number(4) DEFAULT '0' NOT NULL,
-	topic_moved_id number(4),
-   topic_last_post_id number(4) DEFAULT '0' NOT NULL,
-   CONSTRAINT phpbb_topics_pkey PRIMARY KEY (topic_id)
-);
-CREATE  INDEX phpbb_topics_index ON phpbb_topics (forum_id, topic_id);
-CREATE  INDEX forum_id_phpbb_topics_index ON phpbb_topics (forum_id);
+  topic_id number(8) NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  icon_id number(4) DEFAULT '1' NOT NULL,
+  topic_attachment number(1) DEFAULT '0' NOT NULL,
+  topic_approved number(1) DEFAULT '1' NOT NULL,
+  topic_reported number(1) DEFAULT '0' NOT NULL,
+  topic_title varchar2(60),
+  topic_poster number(8) DEFAULT '0' NOT NULL,
+  topic_time number(11) DEFAULT '0' NOT NULL,
+  topic_time_limit number(11) DEFAULT '0' NOT NULL,
+  topic_views number(8) DEFAULT '0' NOT NULL,
+  topic_replies number(8) DEFAULT '0' NOT NULL,
+  topic_replies_real number(8) DEFAULT '0' NOT NULL,
+  topic_status number(3) DEFAULT '0' NOT NULL,
+  topic_type number(3) DEFAULT '0' NOT NULL,
+  topic_first_post_id number(8) DEFAULT '0' NOT NULL,
+  topic_first_poster_name varchar2(30),
+  topic_last_post_id number(8) DEFAULT '0' NOT NULL,
+  topic_last_poster_id number(8) DEFAULT '0' NOT NULL,
+  topic_last_poster_name varchar2(30),
+  topic_last_post_time number(11) DEFAULT '0' NOT NULL,
+  topic_last_view_time number(11) DEFAULT '0' NOT NULL,
+  topic_moved_id number(8) DEFAULT '0' NOT NULL,
+  topic_bumped number(1) DEFAULT '0' NOT NULL,
+  topic_bumper number(8) DEFAULT '0' NOT NULL,
+  poll_title varchar2(255),
+  poll_start number(11) DEFAULT '0' NOT NULL,
+  poll_length number(11) DEFAULT '0' NOT NULL,
+  poll_max_options number(4) DEFAULT '1' NOT NULL,
+  poll_last_vote number(11) DEFAULT '0',
+  poll_vote_change number(1) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_topics PRIMARY KEY (topic_id)
+)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_topics_watch
--------------------------------------------------------- */
+CREATE SEQUENCE sq_phpbb_topics_topic_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_topics_topic_id
+BEFORE INSERT ON phpbb_topics
+FOR EACH ROW WHEN (
+ new.topic_id IS NULL OR new.topic_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_topics_topic_id.nextval
+ INTO :new.topic_id
+ FROM dual;
+END;
+/
+
+CREATE INDEX forum_id05 on phpbb_topics (forum_id)
+/
+CREATE INDEX forum_id_type on phpbb_topics (forum_id, topic_type)
+/
+CREATE INDEX topic_last_post_time on phpbb_topics (topic_last_post_time)
+/
+
+/*
+ Table: phpbb_topics_marking
+*/
+CREATE TABLE phpbb_topics_marking (
+  user_id number(8) DEFAULT '0' NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
+  mark_type number(4) DEFAULT '0' NOT NULL,
+  mark_time number(11) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_topics_marking PRIMARY KEY (user_id, topic_id)
+)
+/
+
+/*
+ Table: phpbb_topics_watch
+*/
 CREATE TABLE phpbb_topics_watch (
-  topic_id number(4),
-  user_id number(4),
-  notify_status number(4) DEFAULT '0' NOT NULL
-);
-CREATE  INDEX phpbb_topics_watch_index ON phpbb_topics_watch (topic_id, user_id);
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  notify_status number(1) DEFAULT '0' NOT NULL
+)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_user_group
--------------------------------------------------------- */
+CREATE INDEX topic_id06 on phpbb_topics_watch (topic_id)
+/
+CREATE INDEX user_id06 on phpbb_topics_watch (user_id)
+/
+CREATE INDEX notify_status02 on phpbb_topics_watch (notify_status)
+/
+
+/*
+ Table: phpbb_user_group
+*/
 CREATE TABLE phpbb_user_group (
-   group_id number(4) DEFAULT '0' NOT NULL,
-   user_id number(4) DEFAULT '0' NOT NULL,
-   user_pending number(4)
-);
-CREATE  INDEX group_id_phpbb_user_group ON phpbb_user_group (group_id);
-CREATE  INDEX user_id_phpbb_user_group_index ON phpbb_user_group (user_id);
+  group_id number(8) DEFAULT '0' NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  group_leader number(1) DEFAULT '0' NOT NULL,
+  user_pending number(1)
+)
+/
 
+CREATE INDEX group_id02 on phpbb_user_group (group_id)
+/
+CREATE INDEX user_id07 on phpbb_user_group (user_id)
+/
+CREATE INDEX group_leader on phpbb_user_group (group_leader)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_users
--------------------------------------------------------- */
+/*
+ Table: phpbb_users
+*/
 CREATE TABLE phpbb_users (
-   user_id number(4) NOT NULL,
-   user_active number(4),
-   username varchar(25) DEFAULT '' NOT NULL,
-   user_regdate number(11) DEFAULT '0' NOT NULL,
-   user_password varchar(32) DEFAULT '' NOT NULL,
-   user_autologin_key varchar(32),
-   user_email varchar(255),
-   user_icq varchar(15),
-   user_website varchar(100),
-   user_occ varchar(100),
-   user_from varchar(100),
-   user_interests varchar(255),
-   user_sig varchar(2000),
-   user_sig_bbcode_uid char(10),
-   user_style number(4),
-   user_aim varchar(255),
-   user_yim varchar(255),
-   user_msnm varchar(255),
-   user_posts number(4) DEFAULT '0' NOT NULL,
-   user_viewemail number(4),
-   user_attachsig number(4),
-   user_allowhtml number(4) DEFAULT '1',
-   user_allowbbcode number(4) DEFAULT '1',
-   user_allowsmile number(4) DEFAULT '1',
-   user_allow_pm number(4) DEFAULT '1' NOT NULL,
-   user_allowavatar number(4) DEFAULT '1' NOT NULL,
-   user_allow_viewonline number(4) DEFAULT '1' NOT NULL,
-   user_rank number(4) DEFAULT '0',
-   user_avatar varchar(100),
-   user_level number(4) DEFAULT '1',
-   user_lang varchar(255),
-   user_timezone number(4) DEFAULT '0' NOT NULL,
-   user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
-   user_notify_pm number(4) DEFAULT '1' NOT NULL,
-   user_notify number(4),
-   user_actkey varchar(32),
-   user_newpasswd varchar(32),
-   CONSTRAINT phpbb_users_pkey PRIMARY KEY (user_id)
-);
+  user_id number(8) NOT NULL,
+  user_type number(1) DEFAULT '0' NOT NULL,
+  group_id number(8) DEFAULT '3' NOT NULL,
+  user_permissions clob DEFAULT '',
+  user_ip varchar2(40) DEFAULT '',
+  user_regdate number(11) DEFAULT '0' NOT NULL,
+  username varchar2(30) DEFAULT '',
+  user_password varchar2(32) DEFAULT '',
+  user_passchg number(11) DEFAULT '0' NOT NULL,
+  user_email varchar2(60) DEFAULT '',
+  user_email_hash number(20) DEFAULT '0' NOT NULL,
+  user_birthday varchar2(10) DEFAULT '',
+  user_lastvisit number(11) DEFAULT '0' NOT NULL,
+  user_lastpost_time number(11) DEFAULT '0' NOT NULL,
+  user_lastpage varchar2(100) DEFAULT '',
+  user_last_confirm_key varchar2(10) DEFAULT '',
+  user_warnings number(4) DEFAULT '0' NOT NULL,
+  user_posts number(8) DEFAULT '0' NOT NULL,
+  user_lang varchar2(30) DEFAULT '',
+  user_timezone number(5, 2) DEFAULT '1' NOT NULL,
+  user_dst number(1) DEFAULT '0' NOT NULL,
+  user_dateformat varchar2(15) DEFAULT 'd M Y H:i',
+  user_style number(4) DEFAULT '0' NOT NULL,
+  user_rank number(11) DEFAULT '0',
+  user_colour varchar2(6) DEFAULT '',
+  user_new_privmsg number(4) DEFAULT '0' NOT NULL,
+  user_unread_privmsg number(4) DEFAULT '0' NOT NULL,
+  user_last_privmsg number(11) DEFAULT '0' NOT NULL,
+  user_message_rules number(1) DEFAULT '0' NOT NULL,
+  user_full_folder number(11) DEFAULT '1' NOT NULL,
+  user_emailtime number(11) DEFAULT '0' NOT NULL,
+  user_topic_show_days number(4) DEFAULT '0' NOT NULL,
+  user_topic_sortby_type varchar2(1) DEFAULT '',
+  user_topic_sortby_dir varchar2(1) DEFAULT '',
+  user_post_show_days number(4) DEFAULT '0' NOT NULL,
+  user_post_sortby_type varchar2(1) DEFAULT '',
+  user_post_sortby_dir varchar2(1) DEFAULT '',
+  user_notify number(1) DEFAULT '0' NOT NULL,
+  user_notify_pm number(1) DEFAULT '1' NOT NULL,
+  user_notify_type number(4) DEFAULT '0' NOT NULL,
+  user_allow_pm number(1) DEFAULT '1' NOT NULL,
+  user_allow_email number(1) DEFAULT '1' NOT NULL,
+  user_allow_viewonline number(1) DEFAULT '1' NOT NULL,
+  user_allow_viewemail number(1) DEFAULT '1' NOT NULL,
+  user_allow_massemail number(1) DEFAULT '1' NOT NULL,
+  user_options number(11) DEFAULT '893' NOT NULL,
+  user_avatar varchar2(100) DEFAULT '',
+  user_avatar_type number(2) DEFAULT '0' NOT NULL,
+  user_avatar_width number(4) DEFAULT '0' NOT NULL,
+  user_avatar_height number(4) DEFAULT '0' NOT NULL,
+  user_sig clob DEFAULT '',
+  user_sig_bbcode_uid varchar2(5) DEFAULT '',
+  user_sig_bbcode_bitfield number(11) DEFAULT '0' NOT NULL,
+  user_from varchar2(100) DEFAULT '',
+  user_icq varchar2(15) DEFAULT '',
+  user_aim varchar2(255) DEFAULT '',
+  user_yim varchar2(255) DEFAULT '',
+  user_msnm varchar2(255) DEFAULT '',
+  user_jabber varchar2(255) DEFAULT '',
+  user_website varchar2(100) DEFAULT '',
+  user_occ varchar2(255) DEFAULT '',
+  user_interests varchar2(255) DEFAULT '',
+  user_actkey varchar2(32) DEFAULT '',
+  user_newpasswd varchar2(32) DEFAULT '',
+  CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id)
+)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_vote_desc
--------------------------------------------------------- */
-CREATE TABLE phpbb_vote_desc (
-  vote_id number(4) NOT NULL,
-  topic_id number(4) DEFAULT '0' NOT NULL,
-  vote_text varchar2(4000) NOT NULL,
-  vote_start number(4) DEFAULT '0' NOT NULL,
-  vote_length number(4) DEFAULT '0' NOT NULL,
-  CONSTRAINT phpbb_vote_dsc_pkey PRIMARY KEY (vote_id)
-);
-CREATE INDEX topic_id_phpbb_vote_desc_index ON phpbb_vote_desc (topic_id);
+CREATE SEQUENCE sq_phpbb_users_user_id
+/
 
-/* --------------------------------------------------------
- Table structure for table phpbb_vote_results
--------------------------------------------------------- */
-CREATE TABLE phpbb_vote_results (
-  vote_id number(4) DEFAULT '0' NOT NULL,
-  vote_option_id number(4) DEFAULT '0' NOT NULL,
-  vote_option_text varchar(255) NOT NULL,
-  vote_result number(4) DEFAULT '0' NOT NULL
-);
-CREATE INDEX option_id_vote_results_index ON phpbb_vote_results (vote_option_id);
+CREATE OR REPLACE TRIGGER ai_phpbb_users_user_id
+BEFORE INSERT ON phpbb_users
+FOR EACH ROW WHEN (
+ new.user_id IS NULL OR new.user_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_users_user_id.nextval
+ INTO :new.user_id
+ FROM dual;
+END;
+/
 
-/* --------------------------------------------------------
- Table structure for table phpbb_vote_voters
--------------------------------------------------------- */
-CREATE TABLE phpbb_vote_voters (
-  vote_id number(4) DEFAULT '0' NOT NULL,
-  vote_user_id number(4) DEFAULT '0' NOT NULL,
-  vote_user_ip char(8) NOT NULL
-);
-CREATE INDEX vote_id_vote_voters_index ON phpbb_vote_voters (vote_id);
-CREATE INDEX vote_user_id_vote_voters_index ON phpbb_vote_voters (vote_user_id);
-CREATE INDEX vote_user_ip_vote_voters_index ON phpbb_vote_voters (vote_user_ip);
+CREATE INDEX user_birthday on phpbb_users (user_birthday)
+/
+CREATE INDEX user_email_hash on phpbb_users (user_email_hash)
+/
+CREATE INDEX username on phpbb_users (username)
+/
 
-/* --------------------------------------------------------
-  Table structure for table phpbb_words
--------------------------------------------------------- */
+/*
+ Table: phpbb_words
+*/
 CREATE TABLE phpbb_words (
-   word_id number(4) NOT NULL,
-   word varchar(100) DEFAULT '' NOT NULL,
-   replacement varchar(100) DEFAULT '' NOT NULL,
-   CONSTRAINT phpbb_words_pkey PRIMARY KEY (word_id)
-);
+  word_id number(8) NOT NULL,
+  word varchar2(100),
+  replacement varchar2(100),
+  CONSTRAINT pk_phpbb_words PRIMARY KEY (word_id)
+)
+/
 
+CREATE SEQUENCE sq_phpbb_words_word_id
+/
 
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_groups
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_PHPBB_GROUPS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "GROUP_ID" ON "PHPBB"."PHPBB_GROUPS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
+CREATE OR REPLACE TRIGGER ai_phpbb_words_word_id
+BEFORE INSERT ON phpbb_words
+FOR EACH ROW WHEN (
+ new.word_id IS NULL OR new.word_id = 0
+)
 BEGIN
-SELECT PHPBB_GROUPS_ID_SEQ.NEXTVAL
-INTO :NEW.group_id
-FROM DUAL;
+ SELECT sq_phpbb_words_word_id.nextval
+ INTO :new.word_id
+ FROM dual;
 END;
 /
 
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_banlist
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_PHPBB_BANLIST_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "BAN_ID" ON "PHPBB"."PHPBB_BANLIST"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_BANLIST_ID_SEQ.NEXTVAL
-INTO :NEW.ban_id
-FROM DUAL;
-END;
+/*
+ Table: phpbb_zebra
+*/
+CREATE TABLE phpbb_zebra (
+  user_id number(8) DEFAULT '0' NOT NULL,
+  zebra_id number(8) DEFAULT '0' NOT NULL,
+  friend number(1) DEFAULT '0' NOT NULL,
+  foe number(1) DEFAULT '0' NOT NULL
+)
 /
 
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_categories
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_CATEGORIES_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "CAT_ID" ON "PHPBB"."PHPBB_CATEGORIES"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_CATEGORIES_ID_SEQ.NEXTVAL
-INTO :NEW.cat_id
-FROM DUAL;
-END;
+CREATE INDEX user_id08 on phpbb_zebra (user_id)
+/
+CREATE INDEX zebra_id on phpbb_zebra (zebra_id)
 /
 
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_disallow
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_DISALLOW_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "DISALLOW_ID" ON "PHPBB"."PHPBB_DISALLOW"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_DISALLOW_ID_SEQ.NEXTVAL
-INTO :NEW.disallow_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_forums
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_FORUMS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "FORUM_ID" ON "PHPBB"."PHPBB_FORUMS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_FORUMS_ID_SEQ.NEXTVAL
-INTO :NEW.forum_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_forum_prune
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_FORUM_PRUNE_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "PRUNE_ID" ON "PHPBB"."PHPBB_FORUM_PRUNE"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_FORUM_PRUNE_ID_SEQ.NEXTVAL
-INTO :NEW.prune_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_posts
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_POSTS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "POST_ID" ON "PHPBB"."PHPBB_POSTS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_POSTS_ID_SEQ.NEXTVAL
-INTO :NEW.post_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_privmsgs
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_PRIVMSGS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "PRIVMSGS_ID" ON "PHPBB"."PHPBB_PRIVMSGS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_PRIVMSGS_ID_SEQ.NEXTVAL
-INTO :NEW.privmsgs_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_ranks
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_RANK_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "RANK_ID" ON "PHPBB"."PHPBB_RANKS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_RANKS_ID_SEQ.NEXTVAL
-INTO :NEW.rank_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_smilies
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_SMILIES_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "SMILIES_ID" ON "PHPBB"."PHPBB_SMILIES"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_SMILIES_ID_SEQ.NEXTVAL
-INTO :NEW.smilies_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_themes
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_THEMES_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "THEMES_ID" ON "PHPBB"."PHPBB_THEMES"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_THEMES_ID_SEQ.NEXTVAL
-INTO :NEW.themes_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_topics
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_TOPICS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "TOPIC_ID" ON "PHPBB"."PHPBB_TOPICS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_TOPICS_ID_SEQ.NEXTVAL
-INTO :NEW.topic_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_users
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_USERS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "USER_ID" ON "PHPBB"."PHPBB_USERS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_USERS_ID_SEQ.NEXTVAL
-INTO :NEW.user_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_vote_desc
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_VOTE_DESC_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "VOTE_ID" ON "PHPBB"."PHPBB_VOTE_DESC"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_VOTE_DESC_ID_SEQ.NEXTVAL
-INTO :NEW.vote_id
-FROM DUAL;
-END;
-/
-
-/* --------------------------------------------------------
-  Trigger structure for table phpbb_words
--------------------------------------------------------- */
-CREATE OR REPLACE TRIGGER "PHPBB"."SET_WORDS_ID_SEQ"
-BEFORE INSERT OR UPDATE OF "WORD_ID" ON "PHPBB"."PHPBB_WORDS"
-REFERENCING OLD AS OLD NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT PHPBB_WORDS_ID_SEQ.NEXTVAL
-INTO :NEW.word_id
-FROM DUAL;
-END;
-/
-
-COMMIT;

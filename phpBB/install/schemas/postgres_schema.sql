@@ -1,6 +1,5 @@
 /*
- phpBB2 PostgreSQL DB schema - phpBB group 2001
-
+ PostgreSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
 */

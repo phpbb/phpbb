@@ -123,8 +123,8 @@ $available_dbms = array(
 	'oracle'	=>	array(
 		'LABEL'			=> 'Oracle',
 		'SCHEMA'		=> 'oracle',
-		'MODULE'		=> 'oracle', 
-		'DELIM'			=> '',
+		'MODULE'		=> 'oci8', 
+		'DELIM'			=> '/',
 		'COMMENTS'		=> 'remove_comments'
 	),
 	'postgres' => array(
@@ -1050,7 +1050,6 @@ if ($stage == 3)
 		// NOTE: trigger_error does not work here.
 		$db->return_on_error = true;
 
-
 		// Ok we have the db info go ahead and read in the relevant schema
 		// and work on building the table
 		$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
@@ -1075,7 +1074,6 @@ if ($stage == 3)
 			}
 		}
 		unset($sql_query);
-
 
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = fread(fopen('schemas/schema_data.sql', 'r'), filesize('schemas/schema_data.sql'));
@@ -1403,6 +1401,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 			case 'mysql':
 			case 'mysql4':
 			case 'mysqli':
+			case 'sqlite':
 				$sql = "SHOW TABLES";
 				$field = "Tables_in_{$dbname}";
 				break;
@@ -1430,6 +1429,11 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 						AND rdb$system_flag = 0';
 				$field = 'rdb$relation_name';
 				break;
+
+			case 'oracle':
+				$sql = 'SELECT table_name FROM USER_TABLES';
+				$field = 'table_name';
+				break;
 		}
 		$result = $db->sql_query($sql);
 
@@ -1442,7 +1446,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 			{
 				// All phpBB installations will at least have config else it won't
 				// work
-				if (in_array($row[$field], $table_ary))
+				if (in_array(strtolower($row[$field]), $table_ary))
 				{
 					$error['db'][] = $lang['INST_ERR_PREFIX'];
 					break;

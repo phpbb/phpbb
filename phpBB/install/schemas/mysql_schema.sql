@@ -1,5 +1,5 @@
 #
-# phpbb - MySQL schema - phpBB 2.2 (c) phpBB Group, 2003
+# MySQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 #
 # $Id$
 #
@@ -594,7 +594,7 @@ CREATE TABLE phpbb_sessions (
    session_start int(11) DEFAULT '0' NOT NULL,
    session_time int(11) DEFAULT '0' NOT NULL,
    session_ip varchar(40) DEFAULT '0' NOT NULL,
-   session_browser varchar(100) DEFAULT '' NULL,
+   session_browser varchar(100) DEFAULT '' NOT NULL,
    session_page varchar(100) DEFAULT '' NOT NULL,
    session_viewonline tinyint(1) DEFAULT '1' NOT NULL,
    session_admin tinyint(1) DEFAULT '0' NOT NULL,

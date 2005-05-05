@@ -1,8 +1,8 @@
 /*
 
-  mssql_schema.sql for phpBB2 (c) 2001, phpBB Group 
+MSSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
- $Id$
+$Id$
 
 */
 

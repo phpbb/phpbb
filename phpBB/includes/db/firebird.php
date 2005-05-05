@@ -228,7 +228,7 @@ class sql_db
 	//         don't want this here by a middle Milestone
 	function sql_numrows($query_id = false)
 	{
-		return FALSE;
+		return false;
 	}
 
 	function sql_affectedrows()
@@ -332,6 +332,7 @@ class sql_db
 					}
 				}
 			}
+
 			return $result;
 		}
 		else
