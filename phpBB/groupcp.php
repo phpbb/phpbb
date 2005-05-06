@@ -337,7 +337,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 				message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
 			}
 
-			if ( !($row = $db->sql_fetchrow($result)) )
+			if ( !($row = $db->sql_fetchrow($result)) || $row['is_auth_mod'] == 0 )
 			{
 				$sql = "UPDATE " . USERS_TABLE . " 
 					SET user_level = " . USER . " 

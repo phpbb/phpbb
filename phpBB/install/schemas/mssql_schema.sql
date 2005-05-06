@@ -190,7 +190,8 @@ CREATE TABLE [phpbb_sessions] (
 	[session_time] [int] NULL ,
 	[session_ip] [char] (8) NOT NULL ,
 	[session_page] [int] NULL ,
-	[session_logged_in] [smallint] NULL
+	[session_logged_in] [smallint] NULL,
+	[session_admin] [smallint] NULL
 ) ON [PRIMARY]
 GO
 

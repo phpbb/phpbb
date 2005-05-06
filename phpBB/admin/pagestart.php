@@ -59,6 +59,11 @@ if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 	redirect("index.$phpEx?sid=" . $userdata['session_id']);
 }
 
+if (!$userdata['session_admin'])
+{
+	redirect(append_sid("login.$phpEx?redirect=admin/&admin=1", true));
+}
+
 if (empty($no_page_header))
 {
 	// Not including the pageheader can be neccesarry if META tags are

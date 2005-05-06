@@ -59,7 +59,7 @@ include($phpbb_root_path . 'includes/db.'.$phpEx);
 //
 //
 //
-$updates_to_version = '.0.14';
+$updates_to_version = '.0.15';
 //
 //
 //
@@ -515,6 +515,45 @@ switch ($row['config_value'])
 				break;
 		}
 
+	case '.0.5':
+	case '.0.6':
+	case '.0.7':
+	case '.0.8':
+	case '.0.9':
+	case '.0.10':
+	case '.0.11':
+	case '.0.12':
+	case '.0.13':
+	case '.0.14':
+
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
+					ADD COLUMN session_admin tinyint(2) DEFAULT '0' NOT NULL";
+				break;
+
+			case 'postgresql':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
+					ADD COLUMN session_admin int2";
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
+					ALTER COLUMN session_admin SET DEFAULT '0'";
+				break;
+
+			case 'mssql-odbc':
+			case 'mssql':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . " ADD
+					session_admin smallint NOT NULL,
+					CONSTRAINT [DF_" . $table_prefix . "sessions_session_admin] DEFAULT (0) FOR [session_admin]";
+				break;
+
+			case 'msaccess':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . " ADD
+					session_admin smallint NOT NULL";
+				break;
+		}
+
 		break;
 }
 
@@ -913,6 +952,10 @@ switch ($row['config_value'])
 	case '.0.14':
 
 		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_allowhtml = 1 WHERE user_id = ' . ANONYMOUS;
+		_sql($sql, $errored, $error_ary);
+
+		// We reset those having autologin enabled and forcing the re-assignment of a session id
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
 		_sql($sql, $errored, $error_ary);
 
 		break;

@@ -447,6 +447,9 @@ else if ( $mode != "" )
 			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
 			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
 			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
+			$smile_code = trim($smile_code);
+			$smile_url = trim($smile_url);
+			$smile_emotion = trim($smile_emotion);
 
 			// If no code was entered complain ...
 			if ($smile_code == '' || $smile_url == '')

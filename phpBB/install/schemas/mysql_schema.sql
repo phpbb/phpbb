@@ -305,6 +305,7 @@ CREATE TABLE phpbb_sessions (
    session_ip char(8) DEFAULT '0' NOT NULL,
    session_page int(11) DEFAULT '0' NOT NULL,
    session_logged_in tinyint(1) DEFAULT '0' NOT NULL,
+   session_admin tinyint(2) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
    KEY session_user_id (session_user_id),
    KEY session_id_ip_user_id (session_id, session_ip, session_user_id)

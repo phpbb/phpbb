@@ -52,7 +52,7 @@ else
 
 if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($HTTP_POST_VARS['logout']) || isset($HTTP_GET_VARS['logout']) )
 {
-	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && !$userdata['session_logged_in'] )
+	if( ( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) ) && (!$userdata['session_logged_in'] || isset($HTTP_POST_VARS['admin'])) )
 	{
 		$username = isset($HTTP_POST_VARS['username']) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
@@ -77,7 +77,8 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				{
 					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
 
-					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin);
+					$admin = (isset($HTTP_POST_VARS['admin'])) ? 1 : 0;
+					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
 
 					if( $session_id )
 					{
@@ -158,7 +159,7 @@ else
 	// Do a full login page dohickey if
 	// user not already logged in
 	//
-	if( !$userdata['session_logged_in'] )
+	if( !$userdata['session_logged_in'] || (isset($HTTP_GET_VARS['admin']) && $userdata['session_logged_in'] && $userdata['user_level'] == ADMIN))
 	{
 		$page_title = $lang['Login'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -207,12 +208,13 @@ else
 		$username = ( $userdata['user_id'] != ANONYMOUS ) ? $userdata['username'] : '';
 
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
+		$s_hidden_fields .= (isset($HTTP_GET_VARS['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
 
 		make_jumpbox('viewforum.'.$phpEx, $forum_id);
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
-			'L_ENTER_PASSWORD' => $lang['Enter_password'],
+			'L_ENTER_PASSWORD' => (isset($HTTP_GET_VARS['admin'])) ? $lang['Admin_reauthenticate'] : $lang['Enter_password'],
 			'L_SEND_PASSWORD' => $lang['Forgotten_password'],
 
 			'U_SEND_PASSWORD' => append_sid("profile.$phpEx?mode=sendpassword"),

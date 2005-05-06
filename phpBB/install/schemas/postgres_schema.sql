@@ -289,6 +289,7 @@ CREATE TABLE phpbb_sessions (
    session_ip char(8) DEFAULT '0' NOT NULL,
    session_page int4 DEFAULT '0' NOT NULL,
    session_logged_in int2 DEFAULT '0' NOT NULL,
+   session_admin int2 DEFAULT '0' NOT NULL,
    CONSTRAINT phpbb_session_pkey PRIMARY KEY (session_id)
 );
 CREATE INDEX session_user_id_phpbb_sessions_index ON phpbb_sessions (session_user_id);

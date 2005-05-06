@@ -1018,6 +1018,8 @@ $lang['Critical_Error'] = 'Critical Error';
 $lang['An_error_occured'] = 'An Error Occurred';
 $lang['A_critical_error'] = 'A Critical Error Occurred';
 
+$lang['Admin_reauthenticate'] = 'To administer the board you must re-authenticate yourself.';
+
 //
 // That's all, Folks!
 // -------------------------------------------------
