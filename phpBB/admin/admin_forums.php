@@ -233,6 +233,7 @@ if( isset($HTTP_POST_VARS['addforum']) || isset($HTTP_POST_VARS['addcategory']) 
 	if( $mode == "addforum" )
 	{
 		list($cat_id) = each($HTTP_POST_VARS['addforum']);
+		$cat_id = intval($cat_id);
 		// 
 		// stripslashes needs to be run on this because slashes are added when the forum name is posted
 		//

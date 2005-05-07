@@ -124,6 +124,8 @@ function bbencode_second_pass($text, $uid)
 {
 	global $lang, $bbcode_tpl;
 
+	$text = preg_replace('#(script|about|applet|activex|chrome):#is', "\\1&#058;", $text);
+
 	// pad it with a space so we can distinguish between FALSE and matching the 1st char (index 0).
 	// This is important; bbencode_quote(), bbencode_list(), and bbencode_code() all depend on it.
 	$text = " " . $text;
@@ -194,7 +196,7 @@ function bbencode_second_pass($text, $uid)
 
 	// [img]image_url_here[/img] code..
 	// This one gets first-passed..
-	$patterns[] = "#\[img:$uid\](.*?)\[/img:$uid\]#si";
+	$patterns[] = "#\[img:$uid\]([^?].*?)\[/img:$uid\]#i";
 	$replacements[] = $bbcode_tpl['img'];
 
 	// matches a [url]xxxx://www.phpbb.com[/url] code..
@@ -206,11 +208,11 @@ function bbencode_second_pass($text, $uid)
 	$replacements[] = $bbcode_tpl['url2'];
 
 	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
-	$patterns[] = "#\[url=([\w]+?://[^ \"\n\r\t<]*?)\](.*?)\[/url\]#is";
+	$patterns[] = "#\[url=([\w]+?://[^ \"\n\r\t<]*?)\]([^?].*?)\[/url\]#i";
 	$replacements[] = $bbcode_tpl['url3'];
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
-	$patterns[] = "#\[url=((www|ftp)\.[^ \"\n\r\t<]*?)\](.*?)\[/url\]#is";
+	$patterns[] = "#\[url=((www|ftp)\.[^ \"\n\r\t<]*?)\]([^?].*?)\[/url\]#i";
 	$replacements[] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..
@@ -614,6 +616,7 @@ function bbencode_second_pass_code($text, $uid, $bbcode_tpl)
  */
 function make_clickable($text)
 {
+	$text = preg_replace('#(script|about|applet|activex|chrome):#is', "\\1&#058;", $text);
 
 	// pad it with a space so we can match things at the start of the 1st line.
 	$ret = ' ' . $text;
