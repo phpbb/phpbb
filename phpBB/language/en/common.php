@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang += array(
-	'ENCODING'		=> 'iso-8859-15',
+	'ENCODING'		=> 'iso-8859-1',
 	'DIRECTION'		=> 'ltr',
 	'LEFT'			=> 'left',
 	'RIGHT'			=> 'right',
