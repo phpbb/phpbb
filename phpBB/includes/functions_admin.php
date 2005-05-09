@@ -439,7 +439,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(POSTS_TABLE, RATINGS_TABLE, REPORTS_TABLE, SEARCH_MATCH_TABLE);
+	$table_ary = array(POSTS_TABLE, REPORTS_TABLE, SEARCH_MATCH_TABLE);
 
 	foreach ($table_ary as $table)
 	{
