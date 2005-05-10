@@ -374,6 +374,7 @@ class fileupload
 			return $file;
 		}
 			
+		// Error array filled?
 		if (isset($_FILES[$form_name]['error']))
 		{
 			$error = $this->assign_internal_error($_FILES[$form_name]['error']);
@@ -383,6 +384,13 @@ class fileupload
 				$file->error[] = $error;
 				return $file;
 			}
+		}
+
+		// Check if empty file got uploaded (not catched by is_uploaded_file)
+		if (isset($_FILES[$form_name]['size']) && $_FILES[$form_name]['size'] == 0)
+		{
+			$file->error[] = $user->lang[$this->error_prefix . 'EMPTY_FILEUPLOAD'];
+			return $file;
 		}
 
 		// PHP Upload filesize exceeded
