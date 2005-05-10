@@ -101,13 +101,13 @@ class bbcode_firstpass extends bbcode
 			'code'		=>	array('bbcode_id' => 8, 'regexp' => array('#\[code(?:=([a-z]+))?\](.+\[/code\])#ise' => "\$this->bbcode_code('\$1', '\$2')")),
 			'quote'		=>	array('bbcode_id' => 0, 'regexp' => array('#\[quote(?:=&quot;(.*?)&quot;)?\](.+)\[/quote\]#ise' => "\$this->bbcode_quote('\$0')")),
 			'attachment'=>	array('bbcode_id' => 12, 'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#ise' => "\$this->bbcode_attachment('\$1', '\$2')")),
-			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#is' => '[b:' . $this->bbcode_uid . ']$1[/b:' . $this->bbcode_uid . ']')),
-			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#is' => '[i:' . $this->bbcode_uid . ']$1[/i:' . $this->bbcode_uid . ']')),
+			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#ise' => "\$this->bbcode_strong('\$1')")),
+			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
 			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
 			'img'		=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#ie' => "\$this->bbcode_img('\$1\$2')")),
-			'size'		=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => '[size=$1:' . $this->bbcode_uid . ']$2[/size:' . $this->bbcode_uid . ']')),
-			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => '[color=$1:' . $this->bbcode_uid . ']$2[/color:' . $this->bbcode_uid . ']')),
-			'u'			=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => '[u:' . $this->bbcode_uid . ']$1[/u:' . $this->bbcode_uid . ']')),
+			'size'		=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => "\$this->bbcode_size('\$1', '\$2')")),
+			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => "\$this->bbcode_color('\$1', '\$2')")),
+			'u'			=>	array('bbcode_id' => 7, 'regexp' => array('#\[u\](.*?)\[/u\]#is' => "\$this->bbcode_underline('\$1')")),
 			'list'		=>	array('bbcode_id' => 9, 'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_parse_list('\$0')")),
 			'email'		=>	array('bbcode_id' => 10, 'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
 			'flash'		=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ie' => "\$this->bbcode_flash('\$1', '\$2', '\$3')"))
@@ -133,14 +133,81 @@ class bbcode_firstpass extends bbcode
 		foreach ($rowset as $row)
 		{
 			$this->bbcodes[$row['bbcode_tag']] = array(
-				'bbcode_id'	=>	intval($row['bbcode_id']),
-				'regexp'	=>	array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
+				'bbcode_id'	=> intval($row['bbcode_id']),
+				'regexp'	=> array($row['first_pass_match'] => str_replace('$uid', $this->bbcode_uid, $row['first_pass_replace']))
 			);
 		}
 	}
 
+	function bbcode_size($stx, $in)
+	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
+		return '[size' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/size:' . $this->bbcode_uid . ']';
+	}
+
+	function bbcode_color($stx, $in)
+	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
+		return '[color=' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/color:' . $this->bbcode_uid . ']';
+	}
+	
+	function bbcode_underline($in)
+	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
+		return '[u:' . $this->bbcode_uid . ']' . $in . '[/u:' . $this->bbcode_uid . ']';
+	}
+
+	function bbcode_strong($in)
+	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
+		return '[b:' . $this->bbcode_uid . ']' . $in . '[/b:' . $this->bbcode_uid . ']';
+	}
+	
+	function bbcode_italic($in)
+	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
+		return '[i:' . $this->bbcode_uid . ']' . $in . '[/i:' . $this->bbcode_uid . ']';
+	}
+
 	function bbcode_img($in)
 	{
+		$in = trim($in);
+		
+		if (!$in)
+		{
+			return '';
+		}
+
 		$this->parsed_items['img']++;
 
 		$out = '[img:' . $this->bbcode_uid . ']' . $in . '[/img:' . $this->bbcode_uid . ']';
@@ -149,6 +216,13 @@ class bbcode_firstpass extends bbcode
 
 	function bbcode_flash($width, $height, $in)
 	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
 		$this->parsed_items['flash']++;
 	
 		$out = '[flash=' . $width . ',' . $height . ':' . $this->bbcode_uid . ']' . $in . '[/flash:' . $this->bbcode_uid . ']';
@@ -158,6 +232,13 @@ class bbcode_firstpass extends bbcode
 	// Hardcode inline attachments [ia]
 	function bbcode_attachment($stx, $in)
 	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+
 		$this->parsed_items['attachment']++;
 
 		$out = '[attachment=' . $stx . ':' . $this->bbcode_uid . ']<!-- ia' . $stx . ' -->' . $in . '<!-- ia' . $stx . ' -->[/attachment:' . $this->bbcode_uid . ']';
@@ -167,12 +248,17 @@ class bbcode_firstpass extends bbcode
 	// Expects the argument to start right after the opening [code] tag and to end with [/code]
 	function bbcode_code($stx, $in)
 	{
-		$this->parsed_items['code']++;
-		
 		// when using the /e modifier, preg_replace slashes double-quotes but does not
 		// seem to slash anything else
-		$in = str_replace("\r\n", "\n", str_replace('\"', '"', $in));
+		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
+		if (!$in)
+		{
+			return '';
+		}
+
+		$this->parsed_items['code']++;
+		
 		// We remove the hardcoded elements from the code block here because it is not used in code blocks
 		// Having it here saves us one preg_replace per message containing [code] blocks
 		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
@@ -291,6 +377,13 @@ class bbcode_firstpass extends bbcode
 	// Expects the argument to start with a tag
 	function bbcode_parse_list($in)
 	{
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+		
 		$in = str_replace('\"', '"', $in);
 		$out = '[';
 
@@ -381,6 +474,13 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
+		$in = trim($in);
+
+		if (!$in)
+		{
+			return '';
+		}
+		
 		$tok = ']';
 		$out = '[';
 
@@ -546,8 +646,16 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config;
 		
+		$var1 = trim($var1);
+		$var2 = trim($var2);
+
 		$url = ($var1) ? stripslashes($var1) : stripslashes($var2);
 		$valid = false;
+
+		if (!$url || ($var1 && !$var2))
+		{
+			return '';
+		}
 
 		$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
 		$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
@@ -631,8 +739,8 @@ class parse_message extends bbcode_firstpass
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
 		// Transform \r\n and \r into \n
-		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#");
-		$replace = array("\n", '', "\n\n");
+		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#", '#(script|about|applet|activex|chrome):#i');
+		$replace = array("\n", '', "\n\n", "\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely, even allows empty messsages.
@@ -914,9 +1022,6 @@ class parse_message extends bbcode_firstpass
 		$cfg = array();
 		$cfg['max_attachments'] = ($is_message) ? $config['max_attachments_pm'] : $config['max_attachments'];
 		$forum_id = ($is_message) ? 0 : $forum_id;
-
-		include_once($phpbb_root_path . 'includes/functions_upload.php');
-		$upload = new fileupload('ATTACHMENT_');
 
 		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $upload_file)
 		{
