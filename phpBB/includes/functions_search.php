@@ -3,7 +3,7 @@
 *                              functions_search.php
 *                              -------------------
 *     begin                : Wed Sep 05 2001
-*     copyright            : (C) 2001 The phpBB Group
+*     copyright            : (C) 2002 The phpBB Group
 *     email                : support@phpbb.com
 *
 *     $Id$
@@ -21,9 +21,8 @@
 
 function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 {
-	// Weird, $init_match doesn't work with static when double quotes (") are used...
 	static $drop_char_match =   array('^', '$', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '-', '~', '+', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '#', '\'', ';', '!');
-	static $drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ',   ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' ');
+	static $drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', '',  ' ',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' , ' ', ' ', ' ', ' ',  ' ', ' ');
 
 	$entry = ' ' . strip_tags(strtolower($entry)) . ' ';
 
@@ -42,12 +41,9 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	}
 	else if ( $mode == 'search' ) 
 	{
-		$entry = str_replace('+', ' and ', $entry);
-		$entry = str_replace('-', ' not ', $entry);
+		$entry = str_replace(' +', ' and ', $entry);
+		$entry = str_replace(' -', ' not ', $entry);
 	}
-
-	// Replace numbers on their own
-	$entry = preg_replace('/\b[0-9]+\b/', ' ', $entry); 
 
 	//
 	// Filter out strange characters like ^, $, &, change "it's" to "its"
@@ -61,8 +57,8 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	{
 		$entry = str_replace('*', ' ', $entry);
 
-		// 'words' that consist of <=3 or >=25 characters are removed.
-		$entry = preg_replace('/\b([a-z0-9]{1,3}|[a-z0-9]{20,})\b/',' ', $entry); 
+		// 'words' that consist of <3 or >20 characters are removed.
+		$entry = preg_replace('/[ ]([\S]{1,2}|[\S]{21,})[ ]/',' ', $entry);
 	}
 
 	if ( !empty($stopword_list) )
@@ -73,7 +69,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 
 			if ( $mode == 'post' || ( $stopword != 'not' && $stopword != 'and' && $stopword != 'or' ) )
 			{
-				$entry =  preg_replace('#\b' . preg_quote($stopword) . '\b#', ' ', $entry);
+				$entry = str_replace(' ' . trim($stopword) . ' ', ' ', $entry);
 			}
 		}
 	}
@@ -85,7 +81,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 			list($replace_synonym, $match_synonym) = split(' ', trim(strtolower($synonym_list[$j])));
 			if ( $mode == 'post' || ( $match_synonym != 'not' && $match_synonym != 'and' && $match_synonym != 'or' ) )
 			{
-				$entry =  preg_replace('#\b' . trim($match_synonym) . '\b#', ' ' . trim($replace_synonym) . ' ', $entry);
+				$entry =  str_replace(' ' . trim($match_synonym) . ' ', ' ' . trim($replace_synonym) . ' ', $entry);
 			}
 		}
 	}
@@ -95,28 +91,29 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 
 function split_words(&$entry, $mode = 'post')
 {
-	if ( $mode == 'post' )
-	{
-		preg_match_all("/\b(\w[\w']*\w+|\w+?)\b/", $entry, $split_entries);
-	}
-	else
-	{
-		preg_match_all('/(\*?[a-z0-9]+\*?)|\b([a-z0-9]+)\b/', $entry, $split_entries);
-	}
+	// If you experience problems with the new method, uncomment this block.
+/*	
+	$rex = ( $mode == 'post' ) ? "/\b([\w±µ-ÿ][\w±µ-ÿ']*[\w±µ-ÿ]+|[\w±µ-ÿ]+?)\b/" : '/(\*?[a-z0-9±µ-ÿ]+\*?)|\b([a-z0-9±µ-ÿ]+)\b/';
+	preg_match_all($rex, $entry, $split_entries);
 
 	return $split_entries[1];
+*/
+	// Trim 1+ spaces to one space and split this trimmed string into words.
+	return explode(' ', trim(preg_replace('#\s+#', ' ', $entry)));
 }
 
-function add_search_words($post_id, $post_text, $post_title = '')
+function add_search_words($mode, $post_id, $post_text, $post_title = '')
 {
 	global $db, $phpbb_root_path, $board_config, $lang;
 
-	$stopwords_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
+	$stopword_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_stopwords.txt"); 
 	$synonym_array = @file($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . "/search_synonyms.txt"); 
 
 	$search_raw_words = array();
 	$search_raw_words['text'] = split_words(clean_words('post', $post_text, $stopword_array, $synonym_array));
 	$search_raw_words['title'] = split_words(clean_words('post', $post_title, $stopword_array, $synonym_array));
+
+	@set_time_limit(0);
 
 	$word = array();
 	$word_insert_sql = array();
@@ -198,14 +195,15 @@ function add_search_words($post_id, $post_text, $post_title = '')
 				{
 					case 'mysql':
 					case 'mysql4':
-						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\')';
+						$value_sql .= ( ( $value_sql != '' ) ? ', ' : '' ) . '(\'' . $word[$i] . '\', 0)';
 						break;
 					case 'mssql':
-						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "'";
+					case 'mssql-odbc':
+						$value_sql .= ( ( $value_sql != '' ) ? ' UNION ALL ' : '' ) . "SELECT '" . $word[$i] . "', 0";
 						break;
 					default:
-						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
-							VALUES ('" . $word[$i] . "')"; 
+						$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
+							VALUES ('" . $word[$i] . "', 0)"; 
 						if( !$db->sql_query($sql) )
 						{
 							message_die(GENERAL_ERROR, 'Could not insert new word', '', __LINE__, __FILE__, $sql);
@@ -221,11 +219,12 @@ function add_search_words($post_id, $post_text, $post_title = '')
 			{
 				case 'mysql':
 				case 'mysql4':
-					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text) 
+					$sql = "INSERT IGNORE INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						VALUES $value_sql"; 
 					break;
 				case 'mssql':
-					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text) 
+				case 'mssql-odbc':
+					$sql = "INSERT INTO " . SEARCH_WORD_TABLE . " (word_text, word_common) 
 						$value_sql"; 
 					break;
 			}
@@ -254,9 +253,9 @@ function add_search_words($post_id, $post_text, $post_title = '')
 		}
 	}
 
-	if ( $mode == 'single' )
+	if ($mode == 'single')
 	{
-		remove_common('single', 0.4, $word);
+		remove_common('single', 4/10, $word);
 	}
 
 	return;
@@ -269,7 +268,8 @@ function remove_common($mode, $fraction, $word_id_list = array())
 {
 	global $db;
 
-	$sql = ( $mode == 'global' ) ? "SELECT COUNT(post_id) AS total_posts FROM " . SEARCH_MATCH_TABLE . " GROUP BY post_id" : "SELECT SUM(forum_posts) AS total_posts FROM " . FORUMS_TABLE;
+	$sql = "SELECT COUNT(post_id) AS total_posts 
+		FROM " . POSTS_TABLE;
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Could not obtain post count', '', __LINE__, __FILE__, $sql);
@@ -335,7 +335,7 @@ function remove_common($mode, $fraction, $word_id_list = array())
 		}
 	}
 
-	return $word_count;
+	return;
 }
 
 function remove_search_post($post_id_sql)
@@ -428,16 +428,18 @@ function remove_search_post($post_id_sql)
 function username_search($search_match)
 {
 	global $db, $board_config, $template, $lang, $images, $theme, $phpEx, $phpbb_root_path;
-	global $starttime;
+	global $starttime, $gen_simple_header;
+	
+	$gen_simple_header = TRUE;
 
 	$username_list = '';
 	if ( !empty($search_match) )
 	{
-		$username_search = preg_replace('/\*/', '%', trim(strip_tags($search_match)));
+		$username_search = preg_replace('/\*/', '%', phpbb_clean_username($search_match));
 
 		$sql = "SELECT username 
 			FROM " . USERS_TABLE . " 
-			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' 
+			WHERE username LIKE '" . str_replace("\'", "''", $username_search) . "' AND user_id <> " . ANONYMOUS . "
 			ORDER BY username";
 		if ( !($result = $db->sql_query($sql)) )
 		{
@@ -459,7 +461,6 @@ function username_search($search_match)
 		$db->sql_freeresult($result);
 	}
 
-	$gen_simple_header = TRUE;
 	$page_title = $lang['Search'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -468,7 +469,7 @@ function username_search($search_match)
 	);
 
 	$template->assign_vars(array(
-		'USERNAME' => ( !empty($search_match) ) ? $search_match : '', 
+		'USERNAME' => (!empty($search_match)) ? phpbb_clean_username($search_match) : '', 
 
 		'L_CLOSE_WINDOW' => $lang['Close_window'], 
 		'L_SEARCH_USERNAME' => $lang['Find_username'], 
