@@ -543,7 +543,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 		{
 			$sql = "UPDATE " . USERS_TABLE . " 
 				SET user_level = " . USER . " 
-				WHERE user_id IN (" . implode(', ', $group_user) . ")";
+				WHERE user_id IN (" . implode(', ', $group_user) . ") AND user_level = " . MOD;
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
