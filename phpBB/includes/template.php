@@ -694,37 +694,37 @@ class template
 	//
 	function compile_tag_if($tag_args, $elseif)
 	{
-        /* Tokenize args for 'if' tag. */
-        preg_match_all('/(?:
-                         "[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
-                         \'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
-                         [(),]                                  |
-                         [^\s(),]+)/x', $tag_args, $match);
+		/* Tokenize args for 'if' tag. */
+		preg_match_all('/(?:
+						"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
+						\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
+						[(),]                                  |
+						[^\s(),]+)/x', $tag_args, $match);
 
-        $tokens = $match[0];
-        $is_arg_stack = array();
+		$tokens = $match[0];
+		$is_arg_stack = array();
 
-        for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
+		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
 		{
 			$token = &$tokens[$i];
 
 			switch ($token)
 			{
-                case '!':
-                case '%':
-                case '!==':
-                case '==':
-                case '===':
-                case '>':
-                case '<':
-                case '!=':
-                case '<>':
-                case '<<':
-                case '>>':
-                case '<=':
-                case '>=':
-                case '&&':
-                case '||':
+				case '!':
+				case '%':
+				case '!==':
+				case '==':
+				case '===':
+				case '>':
+				case '<':
+				case '!=':
+				case '<>':
+				case '<<':
+				case '>>':
+				case '<=':
+				case '>=':
+				case '&&':
+				case '||':
 				case '|':
 				case '^':
 				case '&':
@@ -801,8 +801,8 @@ class template
 						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[3]) . '[\'' . $varrefs[4] . '\']' : (($varrefs[3]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[4] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[4] . '\']');
 					}
 					break;
-            }
-        }
+			}
+		}
 
 		return (($elseif) ? '} elseif (' : 'if (') . (implode(' ', $tokens) . ') { ');
 	}
@@ -850,12 +850,12 @@ class template
 
 	function compile_tag_include($tag_args)
 	{
-        return "\$this->_tpl_include('$tag_args');";
+		return "\$this->_tpl_include('$tag_args');";
 	}
 
 	function compile_tag_include_php($tag_args)
 	{
-        return "include('" . $this->root . '/' . $tag_args . "');";
+		return "include('" . $this->root . '/' . $tag_args . "');";
 	}
 
 	// This is from Smarty

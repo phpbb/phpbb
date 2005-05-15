@@ -103,7 +103,7 @@ class bbcode_firstpass extends bbcode
 			'attachment'=>	array('bbcode_id' => 12, 'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#ise' => "\$this->bbcode_attachment('\$1', '\$2')")),
 			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#ise' => "\$this->bbcode_strong('\$1')")),
 			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
-			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url=?(.*?)?\](.*?)\[/url\]#ise' => "\$this->validate_url('\$1', '\$2')")),
+			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#ie' => "\$this->validate_url('\$2', '\$3')")),
 			'img'		=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#ie' => "\$this->bbcode_img('\$1\$2')")),
 			'size'		=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#is' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!is' => "\$this->bbcode_color('\$1', '\$2')")),
@@ -113,7 +113,7 @@ class bbcode_firstpass extends bbcode
 			'flash'		=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ie' => "\$this->bbcode_flash('\$1', '\$2', '\$3')"))
 		);
 
-		$this->parsed_items = array('code' => 0, 'quote' => 0, 'attachment' => 0, 'url' => 0, 'email' => 0, 'img' => 0, 'flash' => 0);
+		$this->parsed_items = array('code' => 0, 'quote' => 0, 'attachment' => 0, 'b' => 0, 'i' => 0, 'url' => 0, 'img' => 0, 'size' => 0, 'color' => 0, 'u' => 0, 'list' => 0, 'email' => 0, 'flash' => 0);
 
 		if (!is_array($rowset))
 		{
@@ -139,23 +139,33 @@ class bbcode_firstpass extends bbcode
 		}
 	}
 
-	function bbcode_size($stx, $in)
+	function check_bbcode($bbcode, &$in)
 	{
 		$in = trim($in);
 
 		if (!$in)
 		{
+			return false;
+		}
+		
+		$this->parsed_items[$bbcode]++;
+
+		return true;
+	}
+
+	function bbcode_size($stx, $in)
+	{
+		if (!$this->check_bbcode('size', $in))
+		{
 			return '';
 		}
-
+		
 		return '[size' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/size:' . $this->bbcode_uid . ']';
 	}
 
 	function bbcode_color($stx, $in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('color', $in))
 		{
 			return '';
 		}
@@ -165,9 +175,7 @@ class bbcode_firstpass extends bbcode
 	
 	function bbcode_underline($in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('u', $in))
 		{
 			return '';
 		}
@@ -177,9 +185,7 @@ class bbcode_firstpass extends bbcode
 
 	function bbcode_strong($in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('b', $in))
 		{
 			return '';
 		}
@@ -189,9 +195,7 @@ class bbcode_firstpass extends bbcode
 	
 	function bbcode_italic($in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('i', $in))
 		{
 			return '';
 		}
@@ -201,48 +205,33 @@ class bbcode_firstpass extends bbcode
 
 	function bbcode_img($in)
 	{
-		$in = trim($in);
-		
-		if (!$in)
+		if (!$this->check_bbcode('img', $in))
 		{
 			return '';
 		}
 
-		$this->parsed_items['img']++;
-
-		$out = '[img:' . $this->bbcode_uid . ']' . $in . '[/img:' . $this->bbcode_uid . ']';
-		return $out;
+		return '[img:' . $this->bbcode_uid . ']' . $in . '[/img:' . $this->bbcode_uid . ']';
 	}
 
 	function bbcode_flash($width, $height, $in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('flash', $in))
 		{
 			return '';
 		}
-
-		$this->parsed_items['flash']++;
 	
-		$out = '[flash=' . $width . ',' . $height . ':' . $this->bbcode_uid . ']' . $in . '[/flash:' . $this->bbcode_uid . ']';
-		return $out;
+		return '[flash=' . $width . ',' . $height . ':' . $this->bbcode_uid . ']' . $in . '[/flash:' . $this->bbcode_uid . ']';
 	}
 
 	// Hardcode inline attachments [ia]
 	function bbcode_attachment($stx, $in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('attachment', $in))
 		{
 			return '';
 		}
 
-		$this->parsed_items['attachment']++;
-
-		$out = '[attachment=' . $stx . ':' . $this->bbcode_uid . ']<!-- ia' . $stx . ' -->' . $in . '<!-- ia' . $stx . ' -->[/attachment:' . $this->bbcode_uid . ']';
-		return $out;
+		return '[attachment=' . $stx . ':' . $this->bbcode_uid . ']<!-- ia' . $stx . ' -->' . $in . '<!-- ia' . $stx . ' -->[/attachment:' . $this->bbcode_uid . ']';
 	}
 
 	// Expects the argument to start right after the opening [code] tag and to end with [/code]
@@ -377,9 +366,7 @@ class bbcode_firstpass extends bbcode
 	// Expects the argument to start with a tag
 	function bbcode_parse_list($in)
 	{
-		$in = trim($in);
-
-		if (!$in)
+		if (!$this->check_bbcode('list', $in))
 		{
 			return '';
 		}
@@ -639,6 +626,7 @@ class bbcode_firstpass extends bbcode
 		{
 			$retval = '[email:' . $this->bbcode_uid . ']' . $email . '[/email:' . $this->bbcode_uid . ']';
 		}
+
 		return $retval;
 	}
 
@@ -677,7 +665,7 @@ class bbcode_firstpass extends bbcode
 				$url = 'http://' . $url;
 			}
 
-			return ($var1) ? '[url=' . $url . ':' . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']'; 
+			return ($var1) ? '[url=' . str_replace(array(']', '['), array('&#93;', '&#91;'), $url) . ':' . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']'; 
 		}
 
 		return '[url' . (($var1) ? '=' . stripslashes($var1) : '') . ']' . stripslashes($var2) . '[/url]';
@@ -1098,7 +1086,7 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($edit_comment)
 				{
-					$actual_comment_list = request_var('comment_list', '');
+					$actual_comment_list = request_var('comment_list', array(''));
 
 					foreach ($actual_comment_list as $index => $entry)
 					{
@@ -1161,7 +1149,7 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($type == 's')
 				{
-					$this->attachment_data[$pos][$var] = htmlspecialchars(trim(stripslashes(preg_replace(array("#[ \xFF]{2,}#s", "#[\r\n]{2,}#s"), array(' ', "\n"), $this->attachment_data[$pos][$var]))));
+					$this->attachment_data[$pos][$var] = trim(htmlspecialchars(str_replace(array("\r\n", "\r", '\xFF'), array("\n", "\n", ' '), stripslashes($this->attachment_data[$pos][$var]))));
 				}
 				else
 				{

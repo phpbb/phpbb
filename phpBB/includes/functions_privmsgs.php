@@ -325,7 +325,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		$row['friend']	= (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['friend'] : 0;
 		$row['foe']		= (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['foe'] : 0;
 		$row['user_in_group'] = $user->data['group_id'];
-						
+
 		// Check Rule - this should be very quick since we have all informations we need
 		$is_match = false;
 		foreach ($user_rules as $rule_row)
