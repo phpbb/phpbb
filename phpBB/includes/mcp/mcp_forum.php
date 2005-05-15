@@ -25,16 +25,16 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 
 	$forum_id = $forum_info['forum_id'];
 	$start = request_var('start', 0);
-	$topic_id_list = request_var('topic_id_list', 0);
-	$post_id_list = request_var('post_id_list', 0);
+	$topic_id_list = request_var('topic_id_list', array(0));
+	$post_id_list = request_var('post_id_list', array(0));
 	$topic_id = request_var('t', 0);
 
 	// Resync Topics
 	if ($action == 'resync')
 	{
-		$topic_ids = get_array('topic_id_list', 0);
+		$topic_ids = request_var('topic_id_list', array(0));
 
-		if (!$topic_ids)
+		if (!sizeof($topic_ids))
 		{
 			$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
 		}
@@ -45,7 +45,7 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 	}
 
 	$selected_ids = '';
-	if ($post_id_list)
+	if (sizeof($post_id_list))
 	{
 		foreach ($post_id_list as $num => $post_id)
 		{

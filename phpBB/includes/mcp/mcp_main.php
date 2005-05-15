@@ -33,9 +33,9 @@ class mcp_main extends module
 		{
 			case 'lock':
 			case 'unlock':
-				$topic_ids = get_array((!$quickmod) ? 'topic_id_list' : 't', 0);
+				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 		
-				if (!$topic_ids)
+				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
@@ -46,9 +46,9 @@ class mcp_main extends module
 			case 'lock_post':
 			case 'unlock_post':
 
-				$post_ids = get_array((!$quickmod) ? 'post_id_list' : 'p', 0);
-		
-				if (!$post_ids)
+				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
+
+				if (!sizeof($post_ids))
 				{
 					trigger_error('NO_POST_SELECTED');
 				}
@@ -61,9 +61,9 @@ class mcp_main extends module
 			case 'make_global':
 			case 'make_normal':
 				
-				$topic_ids = get_array((!$quickmod) ? 'topic_id_list' : 't', 0);
+				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 		
-				if (!$topic_ids)
+				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
@@ -75,9 +75,9 @@ class mcp_main extends module
 			case 'move':
 				$user->add_lang('viewtopic');
 
-				$topic_ids = get_array((!$quickmod) ? 'topic_id_list' : 't', 0);
+				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 		
-				if (!$topic_ids)
+				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
@@ -89,9 +89,9 @@ class mcp_main extends module
 			case 'fork':
 				$user->add_lang('viewtopic');
 
-				$topic_ids = get_array((!$quickmod) ? 'topic_id_list' : 't', 0);
+				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 		
-				if (!$topic_ids)
+				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
@@ -103,9 +103,9 @@ class mcp_main extends module
 			case 'delete_topic':
 				$user->add_lang('viewtopic');
 
-				$topic_ids = get_array((!$quickmod) ? 'topic_id_list' : 't', 0);
+				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 		
-				if (!$topic_ids)
+				if (!sizeof($topic_ids))
 				{
 					trigger_error('NO_TOPIC_SELECTED');
 				}
@@ -116,9 +116,9 @@ class mcp_main extends module
 			case 'delete_post':
 				$user->add_lang('posting');
 
-				$post_ids = get_array((!$quickmod) ? 'post_id_list' : 'p', 0);
-		
-				if (!$post_ids)
+				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
+
+				if (!sizeof($post_ids))
 				{
 					trigger_error('NO_POST_SELECTED');
 				}

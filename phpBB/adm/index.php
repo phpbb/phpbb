@@ -129,7 +129,7 @@ else if ($pane == 'left')
 elseif ($pane == 'right')
 {
 	$action = request_var('action', '');
-	$mark	= (isset($_REQUEST['mark'])) ? implode(', ', request_var('mark', 0)) : '';
+	$mark	= (isset($_REQUEST['mark'])) ? implode(', ', request_var('mark', array(0))) : '';
 
 	if ($mark)
 	{
@@ -142,16 +142,37 @@ elseif ($pane == 'right')
 					trigger_error($user->lang['NO_ADMIN']);
 				}
 
-				$sql = ($action == 'activate') ? 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)" : 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
-				$db->sql_query($sql);
+				$sql = 'SELECT username 
+					FROM ' . USERS_TABLE . "
+					WHERE user_id IN ($mark)";
+				$result = $db->sql_query($sql);
+				
+				$user_affected = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$user_affected[] = $row['username'];
+				}
+				$db->sql_freeresult($result);
 
-				if (!$delete)
+				if ($action == 'activate')
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)"
+					$db->sql_query($sql);
+				}
+				else if ($action == 'delete')
+				{
+					$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " WHERE user_id IN ($mark)";
+					$db->sql_query($sql);
+					$sql = 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
+					$db->sql_query($sql);
+				}
+
+				if ($action != 'delete')
 				{
 					set_config('num_users', $config['num_users'] + $db->sql_affectedrows(), true);
 				}
 
-				$log_action = ($activate) ? 'log_index_activate' : 'log_index_delete';
-				add_log('admin', $log_action, $db->sql_affectedrows());
+				add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
 				break;
 
 			case 'remind':
@@ -617,7 +638,7 @@ elseif ($pane == 'right')
 
 			}
 
-?><option value="delete"><?php echo $user->lang['DELETE']; ?></option> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
+?><option value="delete"><?php echo $user->lang['DELETE']; ?></option></select> <input class="btnlite" type="submit" name="submit" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
 	</tr>
 <?php
 

@@ -333,10 +333,9 @@ function compose_pm($id, $mode, $action)
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
-		$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
+		$subject = request_var('subject', '', true);
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
-		$message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
-		$message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message);
+		$message = request_var('message', '', true);
 
 		if ($subject && $message)
 		{

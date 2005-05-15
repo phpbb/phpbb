@@ -326,11 +326,13 @@ if (!$user->data['is_registered'])
 
 $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
 $action = request_var('action', '');
+$action_ary = request_var('action', array('' => 0));
 
-if (is_array($action))
+if (sizeof($action_ary))
 {
 	list($action, ) = each($action);
 }
+unset($action_ary);
 
 if ($action == 'merge_select')
 {
@@ -437,33 +439,6 @@ switch ($mode)
 
 //
 // LITTLE HELPER
-
-/**
-* request_var, the array way
-*/
-function get_array($var, $default_value)
-{
-	$ids = request_var($var, $default_value);
-
-	if (!is_array($ids))
-	{
-		if (!$ids)
-		{
-			return $default_value;
-		}
-
-		$ids = array($ids);
-	}
-
-	$ids = array_unique($ids);
-
-	if (sizeof($ids) == 1 && !$ids[0])
-	{
-		return $default_value;
-	}
-
-	return $ids;
-}
 
 /**
 * Build simple hidden fields from array

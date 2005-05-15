@@ -31,9 +31,9 @@ class mcp_queue extends module
 				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
-				$post_id_list = get_array('post_id_list', 0);
+				$post_id_list = request_var('post_id_list', array(0));
 
-				if (!$post_id_list)
+				if (!sizeof($post_id_list))
 				{
 					trigger_error('NO_POST_SELECTED');
 				}

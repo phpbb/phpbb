@@ -418,7 +418,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$rule_option	= request_var('rule_option', 0);
 	$cond_option	= request_var('cond_option', '');
 	$action_option	= request_var('action_option', '');
-	$back = (isset($_REQUEST['back'])) ? request_var('back', '') : array();
+	$back = (isset($_REQUEST['back'])) ? request_var('back', array('' => 0)) : array();
 
 	if (sizeof($back))
 	{
@@ -576,7 +576,7 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 */
 function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
-	global $db, $template;
+	global $db, $template, $auth;
 	
 	$template->assign_vars(array(
 		'S_COND_DEFINED'	=> true,
@@ -657,15 +657,35 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			$rule_group_id = request_var('rule_group_id', 0);
 			$rule_string = request_var('rule_string', '');
 
+			$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
+			$sql = 'SELECT group_id, group_name, group_type
+				FROM ' . GROUPS_TABLE . "
+				WHERE group_type $sql_and
+				ORDER BY group_type DESC, group_name";
+			$result = $db->sql_query($sql);
+
+			$s_group_options = '';
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($rule_group_id && ($row['group_id'] == $rule_group_id))
+				{
+					$rule_string = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
+				}
+
+				$s_selected = ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
+				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			}
+			$db->sql_freeresult($result);
+
 			$template->assign_vars(array(
 				'S_GROUP_CONDITION'	=> true,
+				'S_GROUP_OPTIONS'	=> $s_group_options,
 				'CURRENT_STRING'	=> $rule_string,
 				'CURRENT_USER_ID'	=> 0,
 				'CURRENT_GROUP_ID'	=> $rule_group_id)
 			);
 
 			$current_value = $rule_string;
-
 			break;
 
 		default:

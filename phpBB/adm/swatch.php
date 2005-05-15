@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<title>phpBB 2.2 Color Swatch</title>
+<title>phpBB3 Color Swatch</title>
 <style type="text/css">
 
 td {
@@ -37,17 +37,17 @@ td {
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '" onmouseover="this.className=\'over\'" onmouseout="this.className=\'out\'">');
-				document.write('<a href="javascript:cell(\'' + color + '\');"><img src="../images/spacer.gif" width="15" height="12" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
-				document.writeln('</td>');
+				document.write('<a href="javascript:cell(\'' + color + '\');"><img src="../images/spacer.gif" width="15" height="12" border="0" alt="#' + color + '" title="#' + color + '" \/><\/a>');
+				document.writeln('<\/td>');
 			}
 		}
-		document.writeln('</tr>');
+		document.writeln('<\/tr>');
 	}
-	document.writeln('</table>');
+	document.writeln('<\/table>');
 
 function cell(color)
 {
-	opener.document.forms['<?php echo htmlspecialchars(addslashes($_GET['form'])); ?>'].<?php echo htmlspecialchars(addslashes($_GET['name'])); ?>.value = '#' + color;
+	opener.document.forms['<?php echo htmlspecialchars(addslashes($_GET['form'])); ?>'].<?php echo htmlspecialchars(addslashes($_GET['name'])); ?>.value = color;
 }
 //-->
 </script>

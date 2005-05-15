@@ -687,9 +687,8 @@ class ucp_main extends module
 
 				if ($submit && $edit)
 				{
-					$draft_subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', request_var('subject', ''));
-					$draft_message = (isset($_POST['message'])) ? htmlspecialchars(trim(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message']))) : '';
-					$draft_message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $draft_message);
+					$draft_subject = request_var('subject', '', true);
+					$draft_message = request_var('message', '', true);
 
 					if ($draft_message && $draft_subject)
 					{

@@ -186,7 +186,7 @@ switch ($mode)
 
 		if ($mode == 'create')
 		{
-			// TODO: look for SQL incompatibilities
+			/* TODO: look for SQL incompatibilities
 			// NOTE: I'm sure there was another simpler (and obvious) way of finding a suitable bbcode_id
 			$sql = 'SELECT b1.bbcode_id
 				FROM ' . BBCODES_TABLE . ' b1, ' . BBCODES_TABLE . ' b2
@@ -195,6 +195,12 @@ switch ($mode)
 				HAVING MIN(b2.bbcode_id) > b1.bbcode_id + 1
 				ORDER BY b1.bbcode_id ASC';
 			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+*/
+			$sql = 'SELECT MAX(bbcode_id) as bbcode_id
+				FROM ' . BBCODES_TABLE;
+			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
@@ -327,7 +333,7 @@ function build_regexp($msg_bbcode, $msg_html)
 
 	$tokens = array(
 		'URL'	 => array(
-			'!([a-z0-9]+://)?(.*?[^ \t\n\r<"]*)!ise'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
+			'!([a-z0-9]+://)?([^?].*?[^ \t\n\r<"]*)!ie'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
 		),
 		'LOCAL_URL'	 => array(
 			'!([^:]+/[^ \t\n\r<"]*)!'	=>	'$1'

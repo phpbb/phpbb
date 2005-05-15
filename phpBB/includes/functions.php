@@ -19,7 +19,6 @@ function set_var(&$result, $var, $type, $multibyte = false)
 	if ($type == 'string')
 	{
 		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", '\xFF'), array("\n", "\n", ' '), $result)));
-//		$result = preg_replace("#\n{3,}#", "\n\n", $result);
 		$result = (STRIP) ? stripslashes($result) : $result;
 		if ($multibyte)
 		{
@@ -35,39 +34,52 @@ function set_var(&$result, $var, $type, $multibyte = false)
 */
 function request_var($var_name, $default, $multibyte = false)
 {
-	if (!isset($_REQUEST[$var_name]))
+	if (!isset($_REQUEST[$var_name]) || (is_array($_REQUEST[$var_name]) && !is_array($default)) || (is_array($default) && !is_array($_REQUEST[$var_name])))
 	{
-		return $default;
+		return (is_array($default)) ? array() : $default;
+	}
+
+	$var = $_REQUEST[$var_name];
+	if (!is_array($default))
+	{
+		$type = gettype($default);
 	}
 	else
 	{
-		$var = $_REQUEST[$var_name];
-		$type = gettype($default);
+		list($key_type, $type) = each($default);
+		$type = gettype($type);
+		$key_type = gettype($key_type);
+	}
 
-		if (is_array($var))
+	if (is_array($var))
+	{
+		$_var = $var;
+		$var = array();
+
+		foreach ($_var as $k => $v)
 		{
-			foreach ($var as $k => $v)
+			if (is_array($v))
 			{
-				if (is_array($v))
+				foreach ($v as $_k => $_v)
 				{
-					foreach ($v as $_k => $_v)
-					{
-						set_var($var[$k][$_k], $_v, $type, $multibyte);
-					}
-				}
-				else
-				{
-					set_var($var[$k], $v, $type, $multibyte);
+					set_var($k, $k, $key_type);
+					set_var($_k, $_k, $key_type);
+					set_var($var[$k][$_k], $_v, $type, $multibyte);
 				}
 			}
+			else
+			{
+				set_var($k, $k, $key_type);
+				set_var($var[$k], $v, $type, $multibyte);
+			}
 		}
-		else
-		{
-			set_var($var, $var, $type, $multibyte);
-		}
-
-		return $var;
 	}
+	else
+	{
+		set_var($var, $var, $type, $multibyte);
+	}
+		
+	return $var;
 }
 
 /**

@@ -46,7 +46,7 @@
 			<!-- ELSEIF S_USER_CONDITION -->
 				<input type="text" class="post" name="rule_string" value="{CURRENT_STRING}" maxlength="50" size="20" />&nbsp;<span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;">{L_FIND_USERNAME}</a> ]</span>
 			<!-- ELSEIF S_GROUP_CONDITION -->
-				SELECT GROUP
+				<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><!-- IF S_GROUP_OPTIONS --><select name="rule_group_id">{S_GROUP_OPTIONS}</select><!-- ELSE -->{L_NO_GROUPS}<!-- ENDIF -->
 			<!-- ENDIF -->
 		<!-- ELSE -->
 			<b class="gen">{COND_CURRENT}</b>

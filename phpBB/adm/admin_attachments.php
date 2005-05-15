@@ -361,8 +361,8 @@ if ($submit && $mode == 'ext_groups')
 
 if ($submit && $mode == 'orphan')
 {
-	$delete_files = (isset($_POST['delete'])) ? array_keys(request_var('delete', '')) : array();
-	$add_files = (isset($_POST['add'])) ? array_keys(request_var('add', '')) : array();
+	$delete_files = (isset($_POST['delete'])) ? array_keys(request_var('delete', array('' => 0))) : array();
+	$add_files = (isset($_POST['add'])) ? array_keys(request_var('add', array('' => 0))) : array();
 	$post_ids = request_var('post_id', 0);
 
 	foreach ($delete_files as $delete)

@@ -34,8 +34,7 @@ function mcp_topic_view($id, $mode, $action, $url)
 	$start = request_var('start', 0);
 	$to_topic_id = request_var('to_topic_id', 0);
 	$to_forum_id = request_var('to_forum_id', 0);
-
-	$post_id_list = get_array('post_id_list', 0);
+	$post_id_list = request_var('post_id_list', array(0));
 
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
@@ -218,10 +217,10 @@ function split_topic($mode, $topic_id, $to_forum_id, $subject)
 {
 	global $db, $template, $user, $phpEx, $SID, $phpbb_root_path, $auth;
 
-	$post_id_list	= get_array('post_id_list', 0);
+	$post_id_list	= request_var('post_id_list', array(0));
 	$start			= request_var('start', 0);
 		
-	if (!$post_id_list)
+	if (!sizeof($post_id_list))
 	{
 		trigger_error('NO_POST_SELECTED');
 	}
@@ -414,10 +413,10 @@ function merge_posts($topic_id, $to_topic_id)
 
 	$topic_data = $topic_data[$to_topic_id];
 
-	$post_id_list	= get_array('post_id_list', 0);
+	$post_id_list	= request_var('post_id_list', array(0));
 	$start			= request_var('start', 0);
 		
-	if (!$post_id_list)
+	if (!sizeof($post_id_list))
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
 		return;

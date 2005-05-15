@@ -136,8 +136,8 @@ $lang += array(
 
 	'CONFIRM_OPERATION'	=> 'Are you sure you wish to carry out this operation?',
 
-	'log_index_activate'	=> '<b>Activated inactive users</b><br />&#187; %s users',
-	'log_index_delete'		=> '<b>Deleted inactive users</b><br />&#187; %s',
+	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
+	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
 
 	'LOG_USER_INACTIVE'		=> '<b>User deactivated</b><br />&#187; %s',
