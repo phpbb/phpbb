@@ -156,7 +156,7 @@ elseif ($pane == 'right')
 
 				if ($action == 'activate')
 				{
-					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)"
+					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)";
 					$db->sql_query($sql);
 				}
 				else if ($action == 'delete')
