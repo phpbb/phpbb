@@ -58,6 +58,10 @@ $lang += array(
 	'FIND_USERNAME_EXPLAIN'	=> 'Use this form to search for specific members. You do not need to fill out all fields. To match partial data use * as a wildcard. When entering dates use the format yyyy-mm-dd, e.g. 2002-01-01. Use the mark checkboxes to select one or more usernames (several usernames may be accepted depending on the form itself). Alternatively you can mark the users required and click the Insert Marked button.',
 	'FLOOD_EMAIL_LIMIT'		=> 'You cannot send another email at this time. Please try again later.',
 
+	'GROUP_LEADER'			=> 'Group leader',
+
+	'HIDE_MEMBER_SEARCH'	=> 'Hide member search',
+
 	'ICQ'					=> 'ICQ',
 	'IM_ADD_CONTACT'		=> 'Add Contact',
 	'IM_AIM'				=> 'Please note that you need AOL Instant Messenger installed to use this.',
@@ -106,6 +110,7 @@ $lang += array(
 	'SORT_LAST_ACTIVE'		=> 'Last active',
 	'SORT_POST_COUNT'		=> 'Post count',
 
+	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
 	'USER_FORUM'			=> 'Forum statistics',
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Forum presence',

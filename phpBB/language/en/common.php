@@ -99,6 +99,7 @@ $lang += array(
 	'DELETE_MARKED'			=> 'Delete Marked',
 	'DESCENDING'			=> 'Descending',
 	'DISABLED'				=> 'Disabled',
+	'DISPLAY'				=> 'Display',
 	'DISPLAY_GUESTS'		=> 'Display Guests',
 	'DISPLAY_MESSAGES'		=> 'Display messages from previous',
 	'DISPLAY_POSTS'			=> 'Display posts from previous',

@@ -107,12 +107,12 @@ $lang += array(
 	'BAN_EMAILS'	=> 'Ban Emails',
 	'BAN_IPS'		=> 'Ban IPs',
 	'BAN_USERS'		=> 'Ban Usernames',
-	'DISALLOW'		=> 'Disallow names',
+	'DISALLOW'		=> 'Disallow Names',
 	'RANKS'			=> 'Ranks',
-	'PRUNE_USERS'	=> 'Prune users',
+	'PRUNE_USERS'	=> 'Prune Users',
 	'BOTS'			=> 'Manage Bots',
-	'GROUP_MANAGE'	=> 'Manage groups',
-	'CUSTOM_PROFILE_FIELDS'	=> 'Profile fields',
+	'GROUP_MANAGE'	=> 'Manage Groups',
+	'CUSTOM_PROFILE_FIELDS'	=> 'Profile Fields',
 
 	'LANGUAGE_CAT'		=> 'Language',
 	'LANGUAGE_PACKS'	=> 'Language Packs',
@@ -1217,6 +1217,9 @@ $lang += array(
 	'GROUP_PENDING'			=> 'Pending Members',
 	'GROUPS_NO_MEMBERS'		=> 'This group has no members',
 	'GROUPS_NO_MODS'		=> 'No group leaders defined',
+
+	'NO_USERS'				=> 'The requested users do not exist',
+
 	'SELECT_OPTION'	=> 'Select option',
 	'GROUP_DEFAULT'	=> 'Default',
 	'GROUP_APPROVE'	=> 'Approve',
@@ -1252,6 +1255,9 @@ $lang += array(
 	'GROUP_AVATAR_EXPLAIN'	=> 'This image will be displayed in the Group Control Panel.',
 	'GROUP_UPDATED'			=> 'Group preferences updated successfully.',
 	'GROUP_CREATED'			=> 'Group has been created successfully',
+	'GROUP_RECEIVE_PM'		=> 'Group able to receive private messages',
+	'GROUP_MESSAGE_LIMIT'	=> 'Group private message limit per folder',
+	'GROUP_MESSAGE_LIMIT_EXPLAIN'	=> 'This setting overrides the per-user folder message limit. A value of 0 means the user default limit will be used.',
 
 	'GROUP_SETTINGS_SAVE'		=> 'Groupwide settings',
 	'GROUP_SETTINGS'			=> 'Set user preferences',

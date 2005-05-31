@@ -42,7 +42,7 @@ $mode		= request_var('mode', '');
 $action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
 $group_id	= request_var('g', 0);
 $mark_ary	= request_var('mark', array(0));
-$name_ary	= request_var('usernames', array('' => 0));
+$name_ary	= request_var('usernames', '');
 $leader		= request_var('leader', 0);
 $default	= request_var('default', 0);
 $start		= request_var('start', 0);
@@ -235,6 +235,9 @@ function marklist(match, status)
 					trigger_error($user->lang['NO_GROUP']);
 				}
 
+				$error = array();
+				$user->add_lang('ucp');
+				
 				// Did we submit?
 				if ($update)
 				{
@@ -250,6 +253,8 @@ function marklist(match, status)
 					$delete				= request_var('delete', '');
 					$receive_pm			= isset($_REQUEST['group_receive_pm']) ? 1 : 0;
 					$message_limit		= request_var('group_message_limit', 0);
+
+					$avatar = '';
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
@@ -361,6 +366,8 @@ function marklist(match, status)
 					$avatar_img = '<img src="images/no_avatar.gif" alt="" />';
 				}
 
+				$display_gallery = (isset($_POST['displaygallery'])) ? true : false;
+
 ?>
 
 <script language="javascript" type="text/javascript">
@@ -375,7 +382,9 @@ function swatch()
 //-->
 </script>
 
-<form name="settings" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;g=$group_id"; ?>"<?php echo ($can_upload) ? ' enctype="multipart/form-data"' : ''; ?>><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="settings" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;g=$group_id"; ?>"<?php echo ($can_upload) ? ' enctype="multipart/form-data"' : ''; ?>>
+
+	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['GROUP_DETAILS']; ?></th>
 	</tr>
@@ -439,7 +448,7 @@ function swatch()
 		<td class="row1" nowrap="nowrap"><input type="checkbox" name="group_receive_pm"<?php echo ($group_receive_pm) ? ' checked="checked"' : ''; ?> /></td>
 	</tr>
 	<tr>
-		<td class="row2"><b><?php echo $user->lang['GROUP_MESSAGE_LIMIT']; ?>:</b></td>
+		<td class="row2"><b><?php echo $user->lang['GROUP_MESSAGE_LIMIT']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['GROUP_MESSAGE_LIMIT_EXPLAIN']; ?></span></td>
 		<td class="row1" nowrap="nowrap"><input class="post" type="text" maxlength="4" size="4" name="group_message_limit" value="<?php echo $group_message_limit; ?>" /></td>
 	</tr>
 	<tr>
@@ -470,7 +479,7 @@ function swatch()
 	</tr>
 	<tr> 
 		<td class="row2" width="35%"><b><?php echo $user->lang['UPLOAD_AVATAR_URL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_AVATAR_URL_EXPLAIN']; ?></span></td>
-		<td class="row1"><input class="post" type="text" name="uploadurl" size="40" value="<?php echo $avatar_url; ?>" /></td>
+		<td class="row1"><input class="post" type="text" name="uploadurl" size="40" value="" /></td>
 	</tr>
 <?php
 
@@ -479,7 +488,7 @@ function swatch()
 ?>
 	<tr> 
 		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_AVATAR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_AVATAR_EXPLAIN']; ?></span></td>
-		<td class="row1"><input class="post" type="text" name="remotelink" size="40" value="<?php echo $avatar_url; ?>" /></td>
+		<td class="row1"><input class="post" type="text" name="remotelink" size="40" value="" /></td>
 	</tr>
 	<tr> 
 		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_SIZE_EXPLAIN']; ?></span></td>
@@ -488,7 +497,7 @@ function swatch()
 <?php
 
 			// Do we have a gallery?
-			if ($config['null'] && !$display_gallery)
+			if ($config['allow_avatar_local'] && !$display_gallery)
 			{
 
 ?>
@@ -500,7 +509,7 @@ function swatch()
 			}
 
 			// Do we want to display it?
-			if ($config['null'] && $display_gallery)
+			if ($config['allow_avatar_local'] && $display_gallery)
 			{
 
 ?>
@@ -536,7 +545,9 @@ function swatch()
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" /> &nbsp; <input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
 	</tr>
-</table></form>
+	</table>
+</form>
+
 <?php
 
 				adm_page_footer();
@@ -556,10 +567,12 @@ function swatch()
 
 <p><?php echo $user->lang['GROUP_MEMBERS_EXPLAIN']; ?></p>
 
-<form name="list" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;g=$group_id"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form name="list" method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;g=$group_id"; ?>">
+
+	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th width="55%"><?php echo $user->lang['USERNAME']; ?></th>
-		<th width="3%" nowrap="nowrap"><?php echo $user->lang['DEFAULT']; ?></th>
+		<th width="3%" nowrap="nowrap"><?php echo $user->lang['GROUP_DEFAULT']; ?></th>
 		<th width="20%"><?php echo $user->lang['JOINED']; ?></th>
 		<th width="20%"><?php echo $user->lang['POSTS']; ?></th>
 		<th width="2%"><?php echo $user->lang['MARK']; ?></th>
@@ -627,6 +640,7 @@ function swatch()
 
 					if (sizeof($group_data['leader']))
 					{
+						$row_class = '';
 						foreach ($group_data['leader'] as $row)
 						{
 							$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
@@ -664,6 +678,7 @@ function swatch()
 				{
 					$pending = $group_data['member'][0]['user_pending'];
 
+					$row_class = '';
 					foreach ($group_data['member'] as $row)
 					{
 						if ($pending)
@@ -680,12 +695,12 @@ function swatch()
 						$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
-	<tr>
-		<td class="<?php echo $row_class; ?>"><a href="<?php echo "admin_users.$phpEx$SID&amp;mode=edit&amp;u=" . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['group_id'] == $group_id) ? $user->lang['YES'] : $user->lang['NO']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo ($row['user_regdate']) ? $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '-'; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><?php echo $row['user_posts']; ?></td>
-		<td class="<?php echo $row_class; ?>" align="center"><input class="checkbox" type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" /></td>
+	<tr class="<?php echo $row_class; ?>">
+		<td><a href="<?php echo "admin_users.$phpEx$SID&amp;mode=edit&amp;u=" . $row['user_id']; ?>"><?php echo $row['username']; ?></a></td>
+		<td align="center"><?php echo ($row['group_id'] == $group_id) ? $user->lang['YES'] : $user->lang['NO']; ?></td>
+		<td align="center"><?php echo ($row['user_regdate']) ? $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '-'; ?></td>
+		<td align="center"><?php echo $row['user_posts']; ?></td>
+		<td align="center"><input class="checkbox" type="checkbox" name="mark[]" value="<?php echo $row['user_id']; ?>" /></td>
 	</tr>
 <?php
 
@@ -715,19 +730,22 @@ function swatch()
 	</tr>
 </table>
 
-<table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+	<table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
 		<td valign="top"><?php echo on_page($total_members, $config['topics_per_page'], $start); ?></td>
-		<td align="right"><b><span class="gensmall"><a href="javascript:marklist('list', true);" class="gensmall"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('list', false);" class="gensmall"><?php echo $user->lang['UNMARK_ALL']; ?></a></span></b>&nbsp;<br /><span class="nav"><?php echo generate_pagination("admin_groups.$phpEx$SID&amp;action=list&amp;mode=member&amp;g=$group_id", $total_members, $config['topics_per_page'], $start); ?></span></td>
+		<td align="right">
+			<b class="gensmall"><a href="javascript:marklist('list', true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('list', false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br />
+			<span class="nav"><?php echo generate_pagination("admin_groups.$phpEx$SID&amp;action=$action&amp;mode=$mode&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true); ?></span>
+		</td>
 	</tr>
-</table>
+	</table>
 
 
 <h1><?php echo $user->lang['ADD_USERS']; ?></h1>
 
 <p><?php echo $user->lang['ADD_USERS_EXPLAIN']; ?></p>
 
-<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th colspan="2"><?php echo $user->lang['ADD_USERS']; ?></th>
 	</tr>
@@ -740,13 +758,13 @@ function swatch()
 		<td class="row2"><input type="radio" name="default" value="1" /> <?php echo $user->lang['YES']; ?> &nbsp; <input type="radio" name="default" value="0" checked="checked" /> <?php echo $user->lang['NO']; ?></td>
 	</tr>
 	<tr>
-		<td class="row1"><b><?php echo $user->lang['USERNAME']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['USERNAMES_EXPLAIN']; ?><br />[ <a href="<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mod&amp;field=usernames"; ?>"><?php echo $user->lang['FIND_USERNAME']; ?></a> ]</span></td>
+		<td class="row1"><b><?php echo $user->lang['USERNAME']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['USERNAMES_EXPLAIN']; ?><br />[ <a href="<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=list&amp;field=usernames"; ?>" target="usersearch"><?php echo $user->lang['FIND_USERNAME']; ?></a> ]</span></td>
 		<td class="row2"><textarea name="usernames" cols="40" rows="5"></textarea></td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addusers" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
-</table>
+	</table>
 
 </form>
 
@@ -758,7 +776,7 @@ function swatch()
 
 ?>
 
-<h1><?php echo $user->lang['MANAGE']; ?></h1>
+<h1><?php echo $user->lang['GROUP_MANAGE']; ?></h1>
 
 <p><?php echo $user->lang['GROUP_MANAGE_EXPLAIN']; ?></p>
 
@@ -766,7 +784,9 @@ function swatch()
 
 <p><?php echo $user->lang['USER_DEF_GROUPS_EXPLAIN']; ?></p>
 
-<form method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode"; ?>"><table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+<form method="post" action="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode"; ?>">
+
+	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th width="95%"><?php echo $user->lang['MANAGE']; ?></th>
 		<th nowrap="nowrap"><?php echo $user->lang['TOTAL_MEMBERS']; ?></th>
@@ -806,13 +826,13 @@ function swatch()
 	<tr>
 		<td class="cat" colspan="5" align="right"><?php echo $user->lang['CREATE_GROUP']; ?>: <input class="post" type="text" name="group_name" maxlength="30" /> <input class="btnmain" type="submit" name="add" value="<?php echo $user->lang['SUBMIT']; ?>" /></td>
 	</tr>
-</table>
+	</table>
 
 <h1><?php echo $user->lang['SPECIAL_GROUPS']; ?></h1>
 
 <p><?php echo $user->lang['SPECIAL_GROUPS_EXPLAIN']; ?></p>
 
-<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
+	<table class="bg" width="95%" cellspacing="1" cellpadding="4" border="0" align="center">
 	<tr>
 		<th width="95%"><?php echo $user->lang['MANAGE']; ?></th>
 		<th><?php echo $user->lang['TOTAL_MEMBERS']; ?></th>
@@ -822,6 +842,7 @@ function swatch()
 
 					}
 
+					$row_class = '';
 					foreach ($row_ary as $row)
 					{
 						$row_class = ($row_class != 'row1') ? 'row1' : 'row2';
@@ -830,12 +851,12 @@ function swatch()
 						$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 
 ?>
-	<tr>
-		<td width="95%" class="<?php echo $row_class; ?>"><a href="admin_groups.<?php echo "$phpEx$SID&amp;mode=$mode&amp;action=list&amp;g=$group_id"; ?>"><?php echo $group_name;?></a></td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<?php echo $row['total_members']; ?>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=default&amp;g=$group_id"; ?>">Default<?php echo $user->lang['']; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;g=$group_id"; ?>"><?php echo $user->lang['EDIT']; ?></a>&nbsp;</td>
-		<td class="<?php echo $row_class; ?>" align="center" nowrap="nowrap">&nbsp;<?php 
+	<tr class="<?php echo $row_class; ?>">
+		<td width="95%"><a href="admin_groups.<?php echo "$phpEx$SID&amp;mode=$mode&amp;action=list&amp;g=$group_id"; ?>"><?php echo $group_name; ?></a></td>
+		<td align="center" nowrap="nowrap">&nbsp;<?php echo $row['total_members']; ?>&nbsp;</td>
+		<td align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=default&amp;g=$group_id"; ?>"><?php echo $user->lang['GROUP_DEFAULT']; ?></a>&nbsp;</td>
+		<td align="center" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=edit&amp;g=$group_id"; ?>"><?php echo $user->lang['EDIT']; ?></a>&nbsp;</td>
+		<td align="center" nowrap="nowrap">&nbsp;<?php 
 	
 						echo ($row['group_type'] != GROUP_SPECIAL) ? "<a href=\"admin_groups.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;g=$group_id\">" . $user->lang['DELETE'] . '</a>' : $user->lang['DELETE'];
 
@@ -850,7 +871,8 @@ function swatch()
 	<tr>
 		<td class="cat" colspan="5">&nbsp;</td>
 	</tr>
-</table></form>
+	</table>
+</form>
 
 <?php
 

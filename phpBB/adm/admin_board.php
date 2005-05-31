@@ -238,7 +238,7 @@ if (isset($display_vars['lang']))
 }
 
 $new = $config;
-$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', '') : $new;
+$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : $new;
 
 // We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 foreach ($display_vars['vars'] as $config_name => $null)

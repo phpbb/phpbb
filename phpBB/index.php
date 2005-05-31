@@ -37,7 +37,8 @@ $l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OT
 // Grab group details for legend display
 $sql = 'SELECT group_id, group_name, group_colour, group_type
 	FROM ' . GROUPS_TABLE . '
-	WHERE group_legend = 1';
+	WHERE group_legend = 1
+		AND group_type <> ' . GROUP_HIDDEN;
 $result = $db->sql_query($sql);
 
 $legend = '';
