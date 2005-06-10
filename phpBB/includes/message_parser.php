@@ -472,8 +472,8 @@ class bbcode_firstpass extends bbcode
 		$out = '[';
 
 		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
-		$in = preg_replace(array('#\[quote(=?.*?)\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
-		$in = preg_replace(array('#\[quote(=?.*?)\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
+		$in = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
+		$in = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
 
 		$in = substr(str_replace('\"', '"', $in), 1);
 		$close_tags = $error_ary = array();
