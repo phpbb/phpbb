@@ -1267,7 +1267,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			case 'mssql':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-					" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
+					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
 				$db->sql_query($sql);
 				break;
 
@@ -1677,26 +1677,58 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 }
 
 /**
-* Obtain either the members of a specified group or the groups to
-* which the specified users are members
+* Obtain either the members of a specified group, the groups the specified user is subscribed to
+* or checking if a specified user is in a specified group
+*
+* Note: Extend select statement as needed
+* Note2: Never use this more than once... first group your users/groups
 */
-function group_memberships($group_id = false, $user_id_ary = false)
+function group_memberships($group_id_ary = false, $user_id_ary = false, $return_bool = false)
 {
 	global $db;
 
-	if (!$group_id && !$user_id_ary)
+	if (!$group_id_ary && !$user_id_ary)
 	{
 		return true;
 	}
 
-	if ($group_id)
+	$sql = 'SELECT group_id, user_id
+		FROM ' . USER_GROUP_TABLE . '
+		WHERE ';
+
+	if ($group_id_ary && $user_id_ary)
 	{
+		$sql .= " group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary") . "
+				AND user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
+	}
+	else if ($group_id)
+	{
+		$sql .= " group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary");
 	}
 	else if ($user_id_ary)
 	{
+		$sql .= " user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
+	}
+	
+	$result = ($return_bool) ? $db->sql_query_limit($sql, 1) : $db->sql_query($sql);
+	
+	$row = $db->sql_fetchrow($result);
+
+	if ($return_bool)
+	{
+		$db->sql_freeresult($result);
+		return ($row) ? true : false;
 	}
 
-	return false;
+	$result = array();
+
+	do
+	{
+		$result[] = $row;
+	}
+	while ($row = $db->sql_fetchrow($result));
+	
+	return $result;
 }
 
 ?>

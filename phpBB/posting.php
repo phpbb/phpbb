@@ -335,30 +335,34 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 	if (confirm_box(true))
 	{
 		$data = array(
-			'topic_first_post_id' => $topic_first_post_id,
-			'topic_last_post_id' => $topic_last_post_id,
-			'topic_approved' => $topic_approved,
-			'topic_type' => $topic_type,
-			'post_approved' => $post_approved,
-			'post_time' => $post_time,
-			'poster_id' => $poster_id
+			'topic_first_post_id'	=> $topic_first_post_id,
+			'topic_last_post_id'	=> $topic_last_post_id,
+			'topic_approved'		=> $topic_approved,
+			'topic_type'			=> $topic_type,
+			'post_approved'			=> $post_approved,
+			'post_time'				=> $post_time,
+			'poster_id'				=> $poster_id
 		);
 
 		$next_post_id = delete_post($mode, $post_id, $topic_id, $forum_id, $data);
 
 		if ($topic_first_post_id == $topic_last_post_id)
 		{
-			$meta_info = "viewforum.$phpEx$SID&amp;f=$forum_id";
+			add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $topic_title);
+
+			$meta_info = "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id";
 			$message = $user->lang['POST_DELETED'];
 		}
 		else
 		{
-			$meta_info = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id";
-			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id\">", '</a>');
+			add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_POST', $post_subject);
+
+			$meta_info = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id";
+			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id\">", '</a>');
 		}
 
 		meta_refresh(3, $meta_info);
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id\">", '</a>');
 		trigger_error($message);
 	}
 	else
