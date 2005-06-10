@@ -200,6 +200,7 @@ $lang += array(
 	'LOGOUT_USER'		=> 'Logout [ %s ]',
 	'LOG_ADMIN_AUTH_FAIL'	=> '<b>Failed administration login attempt</b>',
 	'LOG_ADMIN_AUTH_SUCCESS'=> '<b>Sucessful administration login</b>',
+	'LOG_DELETE_POST'	=> '<b>Deleted post</b><br />&#187; %s',
 	'LOG_DELETE_TOPIC'	=> '<b>Deleted topic</b><br />&#187; %s',
 	'LOG_EMAIL_ERROR'	=> '<b>Email error<br />&#187; %s',
 	'LOG_JABBER_ERROR'	=> '<b>Jabber error<br />&#187; %s',
