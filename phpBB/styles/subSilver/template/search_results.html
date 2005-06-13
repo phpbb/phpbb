@@ -9,7 +9,7 @@
 		<td colspan="2"><span class="titles">{SEARCH_MATCHES}</span><br /></td>
 	</tr>
 	<tr>
-		<td class="genmed">{L_SEARCHED_FOR}: <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a><!-- IF IGNORED_WORDS --> {L_IGNORED_TERMS}: <b>{IGNORED_WORDS}</b><!-- ENDIF --></td>
+		<td class="genmed"><!-- IF SEARCH_WORDS -->{L_SEARCHED_FOR}: <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a><!-- ENDIF --><!-- IF IGNORED_WORDS --> {L_IGNORED_TERMS}: <b>{IGNORED_WORDS}</b><!-- ENDIF --></td>
 		<td align="right"><span class="genmed">{L_SEARCH_IN_RESULTS}: </span><input type="text" name="search_keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
 	</tr>
 </table>
@@ -58,9 +58,13 @@
 			</p>
 		</td>
 	</tr>
+	<!-- BEGINELSE -->
+	<tr valign="middle">
+		<td colspan="7" class="row3" align="center">{L_NO_SEARCH_RESULTS}</td>
+	</tr>
 	<!-- END searchresults -->
 	<tr>
-		<td class="cat" colspan="7" valign="middle" align="center"><span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
+		<td class="cat" colspan="7" valign="middle" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></td>
 	</tr>
 	</table>
 
@@ -98,6 +102,10 @@
 	<tr>
 		<td class="spacer" colspan="2"><img src="images/spacer.gif" height="1" alt="" /></td>
 	</tr>
+	<!-- BEGINELSE -->
+	<tr valign="middle">
+		<td colspan="2" class="row3" align="center">{L_NO_SEARCH_RESULTS}</td>
+	</tr>
 	<!-- END searchresults -->
 	<tr>
 		<td class="cat" colspan="2" align="center"><span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
@@ -107,7 +115,7 @@
 
 </form>
 
-<div class="nav" style="float:left">{PAGE_NUMBER}&nbsp;[ {TOTAL_MATCHES} ]</div><div class="nav" style="float:right"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></div>
+<div class="nav" style="float:left"><!-- IF PAGINATION -->{PAGE_NUMBER}&nbsp;[ {TOTAL_MATCHES} ]<!-- ENDIF -->&nbsp;</div><div class="nav" style="float:right"><!-- IF PAGINATION --><b><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></div>
 
 <br clear="all" /><br />
 

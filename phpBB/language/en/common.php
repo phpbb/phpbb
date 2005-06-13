@@ -333,6 +333,7 @@ $lang += array(
 	'SEARCH'			=> 'Search',
 	'SEARCHING_FORUMS'	=> 'Searching forums',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a forum for destination',
+	'SEARCH_ACTIVE_TOPICS'	=> 'View active topics',
 	'SEARCH_FOR'		=> 'Search for',
 	'SEARCH_NEW'		=> 'View new posts',
 	'SEARCH_SELF'		=> 'View your posts',

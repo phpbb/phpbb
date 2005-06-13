@@ -1956,9 +1956,11 @@ function page_header($page_title = '')
 		'U_SEARCH_SELF'			=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=egosearch",
 		'U_SEARCH_NEW' 			=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=newposts",
 		'U_SEARCH_UNANSWERED'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=unanswered",
+		'U_SEARCH_ACTIVE_TOPICS'=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=active_topics",
 		'U_DELETE_COOKIES'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=delete_cookies",
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
+		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_USER_PM_POPUP' 		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->data['user_lang'],
 		'S_USER_BROWSER' 		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
