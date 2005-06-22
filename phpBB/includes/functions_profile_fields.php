@@ -153,7 +153,11 @@ class custom_profile
 						}
 						break;
 				}
-				$cp_error[] = $error;
+				
+				if ($error != '')
+				{
+					$cp_error[] = $error;
+				}
 			}
 		}
 		$db->sql_freeresult($result);
