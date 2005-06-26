@@ -40,7 +40,7 @@ init_userprefs($userdata);
 
 if (!$userdata['session_logged_in'])
 {
-	redirect(append_sid("login.$phpEx?redirect=admin/", true));
+	redirect(append_sid("login.$phpEx?redirect=admin/index.$phpEx", true));
 }
 else if ($userdata['user_level'] != ADMIN)
 {
@@ -61,7 +61,7 @@ if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 
 if (!$userdata['session_admin'])
 {
-	redirect(append_sid("login.$phpEx?redirect=admin/&admin=1", true));
+	redirect(append_sid("login.$phpEx?redirect=admin/index.$phpEx&admin=1", true));
 }
 
 if (empty($no_page_header))
