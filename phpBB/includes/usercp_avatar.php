@@ -199,7 +199,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 		return;
 	}
 
-	if ( $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
+	if ( $width > 0 && $height > 0 && $width <= $board_config['avatar_max_width'] && $height <= $board_config['avatar_max_height'] )
 	{
 		$new_filename = uniqid(rand()) . $imgtype;
 

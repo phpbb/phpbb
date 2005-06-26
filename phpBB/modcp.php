@@ -463,6 +463,20 @@ switch( $mode )
 			$new_forum_id = intval($HTTP_POST_VARS['new_forum']);
 			$old_forum_id = $forum_id;
 
+			$sql = 'SELECT forum_id FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $new_forum_id;
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not select from forums table', '', __LINE__, __FILE__, $sql);
+			}
+			
+			if (!$db->sql_fetchrow($result))
+			{
+				message_die(GENERAL_MESSAGE, 'New forum does not exist');
+			}
+
+			$db->sql_freeresult($result);
+
 			if ( $new_forum_id != $old_forum_id )
 			{
 				$topics = ( isset($HTTP_POST_VARS['topic_id_list']) ) ?  $HTTP_POST_VARS['topic_id_list'] : array($topic_id);
@@ -756,6 +770,20 @@ switch( $mode )
 				$new_forum_id = intval($HTTP_POST_VARS['new_forum_id']);
 				$topic_time = time();
 				
+				$sql = 'SELECT forum_id FROM ' . FORUMS_TABLE . '
+					WHERE forum_id = ' . $new_forum_id;
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(GENERAL_ERROR, 'Could not select from forums table', '', __LINE__, __FILE__, $sql);
+				}
+			
+				if (!$db->sql_fetchrow($result))
+				{
+					message_die(GENERAL_MESSAGE, 'New forum does not exist');
+				}
+
+				$db->sql_freeresult($result);
+
 				$sql  = "INSERT INTO " . TOPICS_TABLE . " (topic_title, topic_poster, topic_time, forum_id, topic_status, topic_type)
 					VALUES ('" . str_replace("\'", "''", $post_subject) . "', $first_poster, " . $topic_time . ", $new_forum_id, " . TOPIC_UNLOCKED . ", " . POST_NORMAL . ")";
 				if (!($db->sql_query($sql, BEGIN_TRANSACTION)))

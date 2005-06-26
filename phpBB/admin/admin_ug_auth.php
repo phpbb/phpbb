@@ -806,7 +806,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 		$i++;
 	}
-	@reset($auth_user);
+//	@reset($auth_user);
 	
 	if ( $mode == 'user' )
 	{

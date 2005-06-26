@@ -208,11 +208,11 @@ function bbencode_second_pass($text, $uid)
 	$replacements[] = $bbcode_tpl['url2'];
 
 	// [url=xxxx://www.phpbb.com]phpBB[/url] code..
-	$patterns[] = "#\[url=([\w]+?://[^ \"\n\r\t<]*?)\]([^?].*?)\[/url\]#i";
+	$patterns[] = "#\[url=([\w]+?://[^ \"\n\r\t<]*?)\]([^?\n\r\t].*?)\[/url\]#is";
 	$replacements[] = $bbcode_tpl['url3'];
 
 	// [url=www.phpbb.com]phpBB[/url] code.. (no xxxx:// prefix).
-	$patterns[] = "#\[url=((www|ftp)\.[^ \"\n\r\t<]*?)\]([^?].*?)\[/url\]#i";
+	$patterns[] = "#\[url=((www|ftp)\.[^ \"\n\r\t<]*?)\]([^?\n\r\t].*?)\[/url\]#is";
 	$replacements[] = $bbcode_tpl['url4'];
 
 	// [email]user@domain.tld[/email] code..

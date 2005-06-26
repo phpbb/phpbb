@@ -454,7 +454,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	{
 		$avatar_sql = user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 	}
-
+	else
 	if ( ( !empty($user_avatar_upload) || !empty($user_avatar_name) ) && $board_config['allow_avatar_upload'] )
 	{
 		if ( !empty($user_avatar_upload) )
