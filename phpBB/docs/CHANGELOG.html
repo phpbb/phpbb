@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>phpBB 2.0.15 :: Changelog</title>
+<title>phpBB 2.0.16 :: Changelog</title>
 <link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
 <style type="text/css">
 <!--
@@ -24,7 +24,7 @@ p,ul,td {font-size:10pt;}
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB 2 : Creating Communities" vspace="1" /></a></td>
-		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.15 CHANGELOG</span></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.16 CHANGELOG</span></td>
 	</tr>
 </table>
 
@@ -32,6 +32,7 @@ p,ul,td {font-size:10pt;}
 <ol>
 <li><a href="#changelog">Changelog</a></li>
 <ol type="i">
+	<li><a href="#2015">Changes since 2.0.15</a></li>
 	<li><a href="#2014">Changes since 2.0.14</a></li>
 	<li><a href="#2013">Changes since 2.0.13</a></li>
 	<li><a href="#2012">Changes since 2.0.12</a></li>
@@ -60,7 +61,19 @@ p,ul,td {font-size:10pt;}
 
 <p>This is a non-exhaustive (but still near complete) changelog for phpBB 2.0.x including beta and release candidate versions. Our thanks to all those people who've contributed bug reports and code fixes.</p>
 
-<a name="2014"></a><h3 class="h3">l.i. Changes since 2.0.14</h3>
+<a name="2015"></a><h3 class="h3">l.i. Changes since 2.0.15</h3>
+
+<ul>
+<li>Fixed critical issue with highlighting - <b>Discovered and fix provided by Ron van Daal</b></li>
+<li>Url descriptions able to be wrapped over more than one line again</li>
+<li>Fixed bug with eAccelerator in admin_ug_auth.php</li>
+<li>Check new_forum_id for existence in modcp.php - <b>alessnet</b></li>
+<li>Prevent uploading avatars with no dimensions - <b>Xpert</b></li>
+<li>Fixed bug in usercp_register.php, forcing avatar file removal without updating avatar informations within the database - <b>HenkPoley</b></li>
+<li>Fixed bug in admin re-authentication redirect for servers not having index.php as one of their default files set</li>
+</ul>
+
+<a name="2014"></a><h3 class="h3">l.ii. Changes since 2.0.14</h3>
 
 <ul>
 <li>Fixed moderator status removal in groupcp.php</li>
@@ -82,7 +95,7 @@ p,ul,td {font-size:10pt;}
 <li>Empty url/img bbcodes no longer get parsed</li>
 </ul>
 
-<a name="2013"></a><h3 class="h3">l.ii. Changes since 2.0.13</h3>
+<a name="2013"></a><h3 class="h3">l.iii. Changes since 2.0.13</h3>
 
 <ul>
 <li>Hardened author and keyword search a bit to not allow very server intensive searches</li>
@@ -99,7 +112,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed case-sensitivity issues in postgres7.php - <b>R45</b></li>
 </ul>
 
-<a name="2012"></a><h3 class="h3">l.iii. Changes since 2.0.12</h3>
+<a name="2012"></a><h3 class="h3">l.iv. Changes since 2.0.12</h3>
 
 <ul>
 <li>Ommitted preg_replace warning in viewtopic due to improper working of preg_quote in PHP - originally reported by matrix_killer, fix submitted by another party</li>
@@ -107,7 +120,7 @@ p,ul,td {font-size:10pt;}
 <li>Minimum requirements raised to PHP 4.0.3 or above due to fixing vulnerability issues breaking PHP3 compatibility.</li>
 </ul>
 
-<a name="2011"></a><h3 class="h3">l.iv. Changes since 2.0.11</h3>
+<a name="2011"></a><h3 class="h3">l.v. Changes since 2.0.11</h3>
 
 <ul>
 <li>Added confirm table to admin_db_utilities.php</li>
@@ -122,7 +135,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed path disclosure bug in viewtopic.php caused by a PHP 4.3.10 bug - <b>matrix_killer</b></li>
 </ul>
 
-<a name="2010"></a><h3 class="h3">l.v. Changes since 2.0.10</h3>
+<a name="2010"></a><h3 class="h3">l.vi. Changes since 2.0.10</h3>
 
 <ul>
 <li>Fixed vulnerability in highlighting code (<b>very high severity, please update your installation as soon as possible</b>)</li>
@@ -133,7 +146,7 @@ p,ul,td {font-size:10pt;}
 <li>Added visual confirmation mod to code base</li>
 </ul>
 
-<a name="209"></a><h3 class="h3">l.vi. Changes since 2.0.9</h3>
+<a name="209"></a><h3 class="h3">l.vii. Changes since 2.0.9</h3>
 
 <ul>
 <li>Fixed deleting of styles in admin_styles.php</li>
@@ -146,7 +159,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed visual confirmation code. The image was not created due to a wrong regular expression.</li>
 </ul>
 
-<a name="208"></a><h3 class="h3">l.vii. Changes since 2.0.8</h3>
+<a name="208"></a><h3 class="h3">l.viii. Changes since 2.0.8</h3>
 
 <ul>
 <li>Fixed one vulnerability in admin_board.php - <b>Xore</b></li>
@@ -165,7 +178,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed problem with SID not delivered to next page in groupcp.php</li>
 </ul>
 
-<a name="207"></a><h3 class="h3">l.viii. Changes since 2.0.7</h3>
+<a name="207"></a><h3 class="h3">l.ix. Changes since 2.0.7</h3>
 
 <ul>
 <li>Fixed several vulnerabilities in admin pages</li>
@@ -177,7 +190,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed sql injection vulnerability in privmsg - 2.0.8a</li>
 </ul>
 
-<a name="206"></a><h3 class="h3">1.ix. Changes since 2.0.6</h3>
+<a name="206"></a><h3 class="h3">1.x. Changes since 2.0.6</h3>
 
 <ul>
 <li>Fixed several vulnerabilities in modcp - <b>Robert Lavierck</b></li>
@@ -191,7 +204,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed potential vulnerability in avatar gallery</li>
 </ul>
 
-<a name="205"></a><h3 class="h3">1.x. Changes since 2.0.5</h3>
+<a name="205"></a><h3 class="h3">1.xi. Changes since 2.0.5</h3>
 
 <ul>
 <li>Fixed various email issues</li>
@@ -207,7 +220,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed sql injection with reset date format field in profile - <b>tendor</b></li>
 </ul>
 
-<a name="204"></a><h3 class="h3">1.xi. Changes since 2.0.4</h3>
+<a name="204"></a><h3 class="h3">1.xii. Changes since 2.0.4</h3>
 
 <ul>
 <li>Removed user facing session_id checks</li>
@@ -279,7 +292,7 @@ p,ul,td {font-size:10pt;}
 <li>Default English support for visual confirmation - translators are encouraged to support this</li>
 </ul>
 
-<a name="203"></a><h3 class="h3">1.xii. Changes since 2.0.3</h3>
+<a name="203"></a><h3 class="h3">1.xiii. Changes since 2.0.3</h3>
 
 <ul>
 <li>Fixed cross-browser scripting issue with highlight param</li>
@@ -406,7 +419,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed potential SQL vulnerability with marking of private messages - <b>Ulf Harnhammar</b></li>
 </ul>
 
-<a name="202"></a><h3 class="h3">1.xiii. Changes since 2.0.2</h3>
+<a name="202"></a><h3 class="h3">1.xiv. Changes since 2.0.2</h3>
 
 <ul>
 <li>Fixed potential cross-site scripting vulnerability with avatars - <b>Showscout</b></li>
@@ -415,7 +428,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed (hopefully) issue with MS Access and multiple pages</li>
 </ul>
 
-<a name="201"></a><h3 class="h3">1.xiv. Changes since 2.0.1</h3>
+<a name="201"></a><h3 class="h3">1.xv. Changes since 2.0.1</h3>
 
 <ul>
 <li>Fixed missing "username" lang variable in user admin template</li>
@@ -450,7 +463,7 @@ p,ul,td {font-size:10pt;}
 <li>Fix emailer to allow sending emails with language-specific character sets</li>
 </ul>
 
-<a name="200"></a><h3 class="h3">1.xv. Changes since 2.0.0</h3>
+<a name="200"></a><h3 class="h3">1.xvi. Changes since 2.0.0</h3>
 
 <ul>
 <li>Fixed delete image bug for normal users</li>
@@ -507,7 +520,7 @@ p,ul,td {font-size:10pt;}
 <li>Added database closure to admin frameset page</li>
 </ul>
 
-<a name="final"></a><h3 class="h3">1.xvi. Changes since RC-4</h3>
+<a name="final"></a><h3 class="h3">1.xvii. Changes since RC-4</h3>
 
 <ul>
 <li>Fixed improper report of general error when posting messages containing errors</li>
@@ -537,7 +550,7 @@ p,ul,td {font-size:10pt;}
 <li>Fixed various remaining usergroup display issues</li>
 </ul>
 
-<a name="rc4"></a><h3 class="h3">1.xvii. Changes since RC-3</h3>
+<a name="rc4"></a><h3 class="h3">1.xviii. Changes since RC-3</h3>
 
 <ul>
 <li>Addressed serious security issue with included files</li>
@@ -568,7 +581,7 @@ p,ul,td {font-size:10pt;}
 <li>Fix (hopefully) remaining ICQ overlay issue with view profile in subSilver</li>
 </ul>
 
-<a name="rc3"></a><h3 class="h3">1.xviii. Changes since RC-2</h3>
+<a name="rc3"></a><h3 class="h3">1.xix. Changes since RC-2</h3>
 
 <ul>
 <li>Fixed infamous install parse error</li>
@@ -601,7 +614,7 @@ p,ul,td {font-size:10pt;}
 <li>Hidden usergroups are now completely hidden from view</li>
 </ul>
 
-<a name="rc2"></a><h3 class="h3">1.xix. Changes since RC-1</h3>
+<a name="rc2"></a><h3 class="h3">1.xx. Changes since RC-1</h3>
 
 <ul>
 <li>Fixed numerous PostgreSQL related issues</li>
@@ -621,7 +634,7 @@ p,ul,td {font-size:10pt;}
 <li>Various other fixes and updates</li>
 </ul>
 
-<a name="rc1"></a><h3 class="h3">1.xx. Changes since RC-1 (pre)</h3>
+<a name="rc1"></a><h3 class="h3">1.xxi. Changes since RC-1 (pre)</h3>
 
 <ul>
 <li>Upgrade script completed for initial fully functional release</li>
