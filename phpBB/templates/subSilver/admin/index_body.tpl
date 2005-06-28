@@ -77,3 +77,9 @@
 </table>
 
 <br />
+
+<h1>{L_VERSION_INFORMATION}</h1>
+
+{VERSION_INFO}
+
+<br />
