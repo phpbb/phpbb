@@ -1139,7 +1139,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
 		// via php.net's annotated manual
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . str_replace('\\', '\\\\', $highlight_match) . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
+		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . str_replace('\\', '\\\\', addslashes($highlight_match)) . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
 	}
 
 	if ($row['enable_html'] && $auth->acl_get('f_html', $forum_id))
