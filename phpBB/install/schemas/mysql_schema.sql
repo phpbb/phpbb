@@ -331,6 +331,23 @@ CREATE TABLE phpbb_moderator_cache (
 );
 
 # Table: 'phpbb_modules'
+#CREATE TABLE phpbb_modules (
+#  module_id smallint(5) unsigned NOT NULL auto_increment,
+#  module_enabled tinyint(1) NOT NULL default '1',
+#  module_type varchar(4) NOT NULL default '',
+#  module_cat tinyint(4) NOT NULL default '0',
+#  parent_id smallint(5) unsigned NOT NULL default '0',
+#  left_id smallint(5) unsigned NOT NULL default '0',
+#  right_id smallint(5) unsigned NOT NULL default '0',
+#  module_filename varchar(150) NOT NULL default '',
+#  module_name varchar(150) NOT NULL default '',
+#  module_mode varchar(255) NOT NULL default '',
+#  module_auth varchar(255) NOT NULL default '',
+#  PRIMARY KEY  (module_id),
+#  KEY left_id (left_id),
+#  KEY module_type (module_type)
+#);
+
 CREATE TABLE phpbb_modules (
   module_id mediumint(8) NOT NULL auto_increment,
   module_type char(3) DEFAULT '' NOT NULL,
@@ -601,6 +618,16 @@ CREATE TABLE phpbb_sessions (
    PRIMARY KEY (session_id),
    KEY session_time (session_time),
    KEY session_user_id (session_user_id)
+);
+
+# Table: 'phpbb_sessions_keys'
+CREATE TABLE phpbb_sessions_keys (
+  key_id varchar(32) DEFAULT '' NOT NULL,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  last_ip varchar(40) DEFAULT '' NOT NULL,
+  last_login int(11) DEFAULT '0' NOT NULL,
+  PRIMARY KEY  (key_id,user_id),
+  KEY last_login (last_login)
 );
 
 # Table: 'phpbb_sitelist'
@@ -903,8 +930,19 @@ CREATE TABLE phpbb_users (
    PRIMARY KEY (user_id),
    KEY user_birthday (user_birthday(6)),
    KEY user_email_hash (user_email_hash),
+   KEY user_type (user_type),
    KEY username (username)
 );
+
+# Table: 'phpbb_users_passwd'
+CREATE TABLE phpbb_users_passwd (
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  passwd_time int(11) DEFAULT '0' NOT NULL, 
+  passwd varchar(32) DEFAULT '' NOT NULL,
+  PRIMARY KEY  (user_id),
+  KEY passwd_set (passwd_set)
+);
+
 
 # Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
