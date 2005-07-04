@@ -940,7 +940,7 @@ CREATE TABLE phpbb_users_passwd (
   passwd_time int(11) DEFAULT '0' NOT NULL, 
   passwd varchar(32) DEFAULT '' NOT NULL,
   PRIMARY KEY  (user_id),
-  KEY passwd_set (passwd_set)
+  KEY passwd_time (passwd_time)
 );
 
 
