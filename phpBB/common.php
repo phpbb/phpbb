@@ -8,9 +8,6 @@
 *
 */
 
-/**
-*/
-
 // Remove the following line to enable this software, be sure you note what it
 // says before continuing
 die('This software is unsupported in any and all respects. By removing this notice (found in common.php) you are noting your acceptance of this. Do not ask support questions of any kind for this release at either area51.phpbb.com or www.phpbb.com. Support for this version will appear when the beta cycle begins');
@@ -93,6 +90,8 @@ define('USER_NORMAL', 0);
 define('USER_INACTIVE', 1);
 define('USER_IGNORE', 2);
 define('USER_FOUNDER', 3);
+//define('USER_BOT', 2);
+//define('USER_GUEST', 4);
 
 // ACL
 define('ACL_NO', 0);
@@ -224,6 +223,7 @@ define('SEARCH_TABLE', $table_prefix.'search_results');
 define('SEARCH_WORD_TABLE', $table_prefix.'search_wordlist');
 define('SEARCH_MATCH_TABLE', $table_prefix.'search_wordmatch');
 define('SESSIONS_TABLE', $table_prefix.'sessions');
+define('SESSIONS_KEYS_TABLE', $table_prefix.'sessions_keys');
 define('SITELIST_TABLE', $table_prefix.'sitelist');
 define('SMILIES_TABLE', $table_prefix.'smilies');
 define('STYLES_TABLE', $table_prefix.'styles');
@@ -236,6 +236,7 @@ define('TOPICS_TRACK_TABLE', $table_prefix.'topics_marking');
 define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
+define('USERS_TABLE', $table_prefix.'users_passwd');
 define('USERS_NOTES_TABLE', $table_prefix.'users_notes');
 define('WORDS_TABLE', $table_prefix.'words');
 define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');

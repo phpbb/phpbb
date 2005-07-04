@@ -274,7 +274,7 @@ switch ($mode)
 	case 'logout':
 		if ($user->data['user_id'] != ANONYMOUS)
 		{
-			$user->destroy();
+			$user->session_kill();
 		}
 
 		meta_refresh(3, "index.$phpEx$SID");

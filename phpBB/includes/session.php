@@ -9,60 +9,64 @@
 */
 
 /**
-* @package phpBB3
 * Session class
 */
 class session
 {
 	var $session_id = '';
-	var $data = array();
+	var $cookie_data = array();
 	var $browser = '';
 	var $ip = '';
 	var $page = '';
 	var $current_page_filename = '';
 	var $load;
+	var $time_now = 0;
 
-	// Called at each page start ... checks for, updates and/or creates a session
+	/**
+	* Start session management
+	*
+	* This is where all session activity begins. We gather various pieces of
+	* information from the client and server. We test to see if a session already
+	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a 
+	* new one ... pretty logical heh? We also examine the system load (if we're
+	* running on a system which makes such information readily available) and
+	* halt if it's above an admin definable limit.
+	*
+	* @todo Review page discovery code
+	* @todo Review IP grab, getenv still valid? Need feedback from community
+	* @todo Introduce further user types, bot, guest
+	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
+	* @todo Look at enforcing IP check for bots if admin desires
+	*/
+	//function session_begin()
 	function start()
 	{
 		global $phpEx, $SID, $db, $config;
 
-		$current_time = time();
+		$this->time_now = time();
+		
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
+
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
 		$this->page = preg_replace('#^.*?\/?(\/adm\/)?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*&?(.*?)$#i', '\1\2\3', $this->page);
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
-
+		
+		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
-			$sessiondata = (!empty($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : array();
+			$this->cookie_data = (!empty($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : array();
 			$this->session_id = request_var($config['cookie_name'] . '_sid', '');
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
 		{
-			$sessiondata = array();
 			$this->session_id = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
 
+		// @todo .. finish this!
 		// Obtain users IP
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? $_SERVER['REMOTE_ADDR'] : getenv('REMOTE_ADDR');
-
-		if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
-		{
-			$private_ip = array('#^0\.#', '#^127\.0\.0\.1#', '#^192\.168\.#', '#^172\.16\.#', '#^10\.#', '#^224\.#', '#^240\.#');
-			foreach (explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']) as $x_ip)
-			{
-				if (preg_match('#([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)#', $x_ip, $ip_list))
-				{
-					if (($this->ip = trim(preg_replace($private_ip, $this->ip, $ip_list[1]))) == trim($ip_list[1]))
-					{
-						break;
-					}
-				}
-			}
-		}
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : htmlspecialchars(getenv('REMOTE_ADDR'));
 
 		// Load limit check (if applicable)
 		if (@file_exists('/proc/loadavg'))
@@ -77,8 +81,8 @@ class session
 				}
 			}
 		}
-
-		// session_id exists so go ahead and attempt to grab all data in preparation
+		
+		// Is session_id is set or session_id is set and matches the url param if required
 		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id == $_GET['sid'])))
 		{
 			$sql = 'SELECT u.*, s.*
@@ -93,7 +97,10 @@ class session
 			// Did the session exist in the DB?
 			if (isset($this->data['user_id']))
 			{
-				// Validate IP length according to admin ... has no effect on IPv6
+				// Validate IP length according to admin ... enforces an IP
+				// check on bots if admin requires this
+//				$quadcheck = ($config['ip_check_bot'] && $user->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
+				
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
@@ -103,58 +110,82 @@ class session
 				if ($u_ip == $s_ip && $s_browser == $u_browser)
 				{
 					// Only update session DB a minute or so after last update or if page changes
-					if ($current_time - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page)
+					if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page)
 					{
 						$sql = 'UPDATE ' . SESSIONS_TABLE . "
-							SET session_time = $current_time, session_page = '" . $db->sql_escape($this->page) . "'
+							SET session_time = $this->time_now, session_page = '" . $db->sql_escape($this->page) . "'
 							WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 						$db->sql_query($sql);
 					}
 					
+				
+					// Ultimately to be removed
 					$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 					$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
-
+					
+					
 					return true;
 				}
 			}
 		}
 
-		// If we reach here then no (valid) session exists. So we'll create a new one,
-		// using the cookie user_id if available to pull basic user prefs.
-		$autologin = (isset($sessiondata['autologinid'])) ? $sessiondata['autologinid'] : '';
-		$user_id = (isset($sessiondata['userid'])) ? intval($sessiondata['userid']) : ANONYMOUS;
-
-		return $this->create($user_id, $autologin);
+		// If we reach here then no (valid) session exists. So we'll create a new one
+		return $this->session_create();
 	}
-
-	// Create a new session
-	function create(&$user_id, &$autologin, $set_autologin = false, $viewonline = 1, $admin = 0)
+	
+	
+	/**
+	* Create a new session
+	*
+	* If upon trying to start a session we discover there is nothing existing we
+	* jump here. Additionally this method is called directly during login to regenerate
+	* the session for the specific user. In this method we carry out a number of tasks;
+	* garbage collection, (search)bot checking, banned user comparison. Basically
+	* though this method will result in a new session for a specific user.
+	*/
+	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
 		global $SID, $db, $config;
 
-		$sessiondata = array();
-		$current_time = time();
-		$current_user = $user_id;
-		$bot = false;
+		$this->data = array();
+		
+		// Garbage collection ... remove old sessions updating user information
+		// if necessary. It means (potentially) 11 queries but only infrequently
+		if ($this->time_now > $config['session_last_gc'] + $config['session_gc'])
+		{
+			$this->session_gc();
+		}
+		
+		// Do we allow autologin on this board? No? Then override anything
+		// that may be requested here
+		if (!$config['allow_autologin'])
+		{
+			$this->cookie_data['k'] = $persist_login = false;
+		}
 
-		// Pull bot information from DB and loop through it
+		/**
+		* Here we do a bot check, oh er saucy! No, not that kind of bot
+		* check. We loop through the list of bots defined by the admin and
+		* see if we have any useragent and/or IP matches. If we do, this is a
+		* bot, act accordingly
+		*/		
+		$bot = false;
 		$active_bots = array();
 		obtain_bots($active_bots);
-
 		foreach ($active_bots as $row)
 		{
 			if ($row['bot_agent'] && preg_match('#' . preg_quote($row['bot_agent'], '#') . '#i', $this->browser))
 			{
 				$bot = $row['user_id'];
 			}
-
+			
 			if ($row['bot_ip'] && (!$row['bot_agent'] || !$bot))
 			{
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
 				{
 					if (strpos($this->ip, $bot_ip) === 0)
 					{
-						$bot = $row['user_id'];
+						$bot = (int) $row['user_id'];
 						break;
 					}
 				}
@@ -162,225 +193,230 @@ class session
 
 			if ($bot)
 			{
-				$user_id = $bot;
 				break;
 			}
 		}
-
-		// Garbage collection ... remove old sessions updating user information
-		// if necessary. It means (potentially) 11 queries but only infrequently
-		if ($current_time > $config['session_last_gc'] + $config['session_gc'])
+		
+		// If we're presented with an autologin key we'll join against it.
+		// Else if we've been passed a user_id we'll grab data based on that
+		if ($this->cookie_data['k'] && $this->cookie_data['u'])
 		{
-			$this->gc($current_time);
+			$sql = 'SELECT u.* 
+				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
+				WHERE u.user_id = ' . $db->sql_escape($this->cookie_data['u']) . '
+					AND u.user_type <> ' . USER_INACTIVE . "
+					AND k.user_id = u.user_id
+					AND k.key_id = '" . $db->sql_escape($this->cookie_data['k']) . "'";
+			$result = $db->sql_query($sql);
+
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 		}
-
-		// Grab user data ... join on session if it exists for session time
-		$sql = 'SELECT u.*, s.session_time, s.session_id
-			FROM (' . USERS_TABLE . ' u
-			LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
-			WHERE u.user_id = $user_id
-			ORDER BY s.session_time DESC";
-		$result = $db->sql_query_limit($sql, 1);
-		$this->data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		// Check autologin request, is it valid?
-		if ($this->data === false || ($this->data['user_password'] !== $autologin && !$set_autologin) || ($this->data['user_type'] == USER_INACTIVE && !$bot))
+		else if ($user_id !== false)
 		{
-			$autologin = '';
-			$this->data['user_id'] = $user_id = ANONYMOUS;
+			$this->cookie_data['k'] = '';
+			$this->cookie_data['u'] = $user_id;
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . ANONYMOUS;
+				WHERE user_id = ' . $this->cookie_data['u'] . '
+					AND user_type <> ' . USER_INACTIVE;
 			$result = $db->sql_query($sql);
-	
+
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-
-			$this->data['session_time'] = 0;
 		}
 
-		// If we're a bot then we'll re-use an existing id if available
-		if ($bot && $this->data['session_id'])
+		// If no data was returned one or more of the following occured:
+		// Key didn't match one in the DB
+		// User does not exist
+		// User is inactive
+		// User is bot
+		if (!sizeof($this->data))
 		{
-			$this->session_id = $this->data['session_id'];
+			$this->cookie_data['k'] = '';
+			$this->cookie_data['u'] = ($bot) ? $bot : ANONYMOUS;
+
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $this->cookie_data['u'];
+			$result = $db->sql_query($sql);
+
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 		}
 
-		if (!$this->data['session_time'] && $config['active_sessions'])
+		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			// Limit sessions in 1 minute period
-			$sql = 'SELECT COUNT(*) AS sessions
+			$sql = 'SELECT session_time, session_id
 				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time >= ' . ($current_time - 60);
-			$result = $db->sql_query($sql);
+				WHERE session_user_id = ' . $db->sql_escape($this->data['user_id']) . '
+				ORDER BY session_time DESC';
+			$result = $db->sql_query_limit($sql, 1);
 
-			$row = $db->sql_fetchrow($result);
+			if ($sdata = $db->sql_fetchrow($result))
+			{
+				$this->data = array_merge($sdata, $this->data);
+				unset($sdata);
+				
+				$this->session_id = $this->data['session_id'];
+	  		}
 			$db->sql_freeresult($result);
 
-			if (intval($row['sessions']) > intval($config['active_sessions']))
-			{
-				trigger_error('BOARD_UNAVAILABLE');
-			}
+			$this->data['session_last_visit'] = ($this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
 		}
-
-		// Is user banned? Are they excluded?
-		if ($this->data['user_type'] != USER_FOUNDER && !$bot)
+		else
 		{
-			$banned = false;
-
-			$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
-				FROM ' . BANLIST_TABLE . '
-				WHERE ban_end >= ' . time() . '
-					OR ban_end = 0';
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				do
-				{
-					if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $this->data['user_id']) ||
-						(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $this->ip)) ||
-						(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $this->data['user_email'])))
-					{
-						if (!empty($row['ban_exclude']))
-						{
-							$banned = false;
-							break;
-						}
-						else
-						{
-							$banned = true;
-						}
-					}
-				}
-				while ($row = $db->sql_fetchrow($result));
-			}
-			$db->sql_freeresult($result);
-
-			if ($banned)
-			{
-				// Initiate environment ... since it won't be set at this stage
-				$this->setup();
-
-				// Determine which message to output
-				$till_date = (!empty($row['ban_end'])) ? $this->format_date($row['ban_end']) : '';
-				$message = (!empty($row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
-
-				$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
-				// More internal HTML ... :D
-				$message .= (!empty($row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $row['ban_show_reason']) : '';
-				trigger_error($message);
-			}
+			$this->data['session_last_visit'] = time();
 		}
 
-		// Is there an existing session? If so, grab last visit time from that
-		$this->data['session_last_visit'] = ($this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
-		$this->data['is_registered'] = (!$bot && $user_id != ANONYMOUS) ? true : false;
+		// At this stage we should have a filled data array, defined cookie u and k data.
+		// data array should contain recent session info if we're a real user and a recent
+		// session exists in which case session_id will also be set
+
+		// Is user banned? Are they excluded? Won't return on ban, exists within method
+		// @todo Change to !$this->data['user_type'] & USER_FOUNDER && !$this->data['user_type'] & USER_BOT in time
+		if ($this->data['user_type'] != USER_FOUNDER)
+		{
+			$this->check_ban();
+		}
+		
+		//
+		// Do away with ultimately?
+		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS) ? true : false;
 		$this->data['is_bot'] = ($bot) ? true : false;
-
+		//
+		//
+		
 		// Create or update the session
-		$db->sql_return_on_error(true);
-
 		$sql_ary = array(
-			'session_user_id'		=> (int) $user_id,
-			'session_start'			=> (int) $current_time,
+			'session_user_id'		=> (int) $this->data['user_id'],
+			'session_start'			=> (int) $this->time_now,
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
-			'session_time'			=> (int) $current_time,
+			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) $this->browser,
 			'session_page'			=> (string) $this->page,
 			'session_ip'			=> (string) $this->ip,
-			'session_viewonline'	=> (int) $viewonline,
-			'session_admin'			=> (int) $admin,
+            'session_admin'         => ($set_admin) ? 1 : 0,
+            'session_viewonline'    => ($viewonline) ? 1 : 0,
 		);
+
+		$db->sql_return_on_error(true);
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-		if ($this->session_id == '' || !$db->sql_query($sql) || !$db->sql_affectedrows())
+		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
-			$db->sql_return_on_error(false);
+			// Limit new sessions in 1 minute period (if required)
+			if (!$this->data['session_time'] && $config['active_sessions'])
+			{
+				$sql = 'SELECT COUNT(*) AS sessions
+					FROM ' . SESSIONS_TABLE . '
+					WHERE session_time >= ' . ($this->time_now - 60);
+				$result = $db->sql_query($sql);
 	
-			$this->session_id = md5(unique_id());
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+	
+				if ((int) $row['sessions'] > (int) $config['active_sessions'])
+				{
+					trigger_error('BOARD_UNAVAILABLE');
+				}
+			}
+			
+			$this->session_id = $this->data['session_id'] = md5(unique_id());
 
 			$sql_ary['session_id'] = (string) $this->session_id;
 
 			$db->sql_query('INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 		}
-
 		$db->sql_return_on_error(false);
 
+		// Regenerate autologin/persistent login key
+		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
+		if ((!empty($this->cookie_data['k']) || $persist_login) && $this->data['user_id'] != ANONYMOUS)
+		{
+			$this->set_login_key();
+		}
+		
+		$SID = '?sid=';
 		if (!$bot)
 		{
-			$this->data['session_id'] = $this->session_id;
-
-			// Don't set cookies if we're an admin re-authenticating
-			if (!$admin || ($admin && $current_user == ANONYMOUS))
-			{
-				$sessiondata['userid'] = $user_id;
-				$sessiondata['autologinid'] = ($autologin && $user_id != ANONYMOUS) ? $autologin : '';
-
-				$this->set_cookie('data', serialize($sessiondata), $current_time + 31536000);
-				$this->set_cookie('sid', $this->session_id, 0);
-			}
+			$this->set_cookie('data', serialize($this->cookie_data), $this->time_now + 31536000);
+			$this->set_cookie('sid', $this->session_id, 0);
 
 			$SID = '?sid=' . $this->session_id;
 
 			if ($this->data['user_id'] != ANONYMOUS)
 			{
-				// Trigger EVT_NEW_SESSION
+//				global $evt;
+//				$evt->trigger(EVT_NEW_SESSION, $this->data);
 			}
 		}
-		else
-		{
-			$SID = '?sid=';
-		}
-
+		
 		return true;
 	}
-
-	// Destroy a session
-	function destroy()
+	
+	/**
+	* Kills a session
+	*
+	* This method does what it says on the tin. It will delete a pre-existing session.
+	* It resets cookie information (destroying any autologin key within that cookie data)
+	* and update the users information from the relevant session data. It will then
+	* grab guest user information.
+	*/
+	function session_kill()
 	{
 		global $SID, $db, $config;
-
-		$current_time = time();
-
-		$this->set_cookie('data', '', $current_time - 31536000);
-		$this->set_cookie('sid', '', $current_time - 31536000);
-		$SID = '?sid=';
-
-		// Delete existing session, update last visit info first!
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_lastvisit = ' . $this->data['session_time'] . '
-			WHERE user_id = ' . $this->data['user_id'];
-		$db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
 				AND session_user_id = " . $this->data['user_id'];
 		$db->sql_query($sql);
 
-		// Reset some basic data immediately
-		$this->data['user_id'] = ANONYMOUS;
+		if ($this->data['user_id'] != ANONYMOUS)
+		{
+			// Delete existing session, update last visit info first!
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . $this->data['session_time'] . '
+				WHERE user_id = ' . $this->data['user_id'];
+			$db->sql_query($sql);
 
-		$sql = 'SELECT *
-			FROM ' . USERS_TABLE . '
-			WHERE user_id = ' . ANONYMOUS;
-		$result = $db->sql_query($sql);
-	
-		$this->data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$this->session_id = $this->data['session_id'] = '';
-		$this->data['session_time'] = $this->data['session_admin'] = 0;
+			// Reset the data array
+			$this->data = array();			
+			
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . ANONYMOUS;
+			$result = $db->sql_query($sql);
+		
+			$this->data = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+		
+		$this->set_cookie('data', '', $this->time_now - 31536000);
+		$this->set_cookie('sid', '', $this->time_now - 31536000);
+		
+		$SID = '?sid=';
+		$this->session_id = '';
 
 		// Trigger EVENT_END_SESSION
 
 		return true;
 	}
 
-	// Garbage collection
-	function gc(&$current_time)
+
+	/**
+	* Session garbage collection
+	*
+	* This looks a lot more complex than it really is. Effectively we are
+	* deleting any sessions older than an admin definable limit. Due to the
+	* way in which we maintain session data we have to ensure we update user
+	* data before those sessions are destroyed. In addition this method
+	* removes autologin key information that is older than an admin defined
+	* limit.
+	*/
+	function session_gc()
 	{
 		global $db, $config;
 
@@ -391,7 +427,7 @@ class session
 				// Firstly, delete guest sessions
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 					WHERE session_user_id = ' . ANONYMOUS . '
-						AND session_time < ' . ($current_time - $config['session_length']);
+						AND session_time < ' . ($this->time_now - $config['session_length']);
 				$db->sql_query($sql);
 
 				// Keep only the most recent session for each user
@@ -411,16 +447,16 @@ class session
 				// Update last visit time
 				$sql = 'UPDATE ' . USERS_TABLE. ' u, ' . SESSIONS_TABLE . ' s
 					SET u.user_lastvisit = s.session_time, u.user_lastpage = s.session_page
-					WHERE s.session_time < ' . ($current_time - $config['session_length']) . '
+					WHERE s.session_time < ' . ($this->time_now - $config['session_length']) . '
 						AND u.user_id = s.session_user_id';
 				$db->sql_query($sql);
 
 				// Delete everything else now
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . ($current_time - $config['session_length']);
+					WHERE session_time < ' . ($this->time_now - $config['session_length']);
 				$db->sql_query($sql);
 
-				set_config('session_last_gc', $current_time);
+				set_config('session_last_gc', $this->time_now);
 				break;
 
 			default:
@@ -428,7 +464,7 @@ class session
 				// Get expired sessions, only most recent for each user
 				$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
 					FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . ($current_time - $config['session_length']) . '
+					WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
 					GROUP BY session_user_id, session_page';
 				$result = $db->sql_query_limit($sql, 5);
 
@@ -457,7 +493,7 @@ class session
 					// Delete expired sessions
 					$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 						WHERE session_user_id IN ($del_user_id)
-							AND session_time < " . ($current_time - $config['session_length']);
+							AND session_time < " . ($this->time_now - $config['session_length']);
 					$db->sql_query($sql);
 				}
 
@@ -465,34 +501,168 @@ class session
 				{
 					// Less than 5 sessions, update gc timer ... else we want gc
 					// called again to delete other sessions
-					set_config('session_last_gc', $current_time);
+					set_config('session_last_gc', $this->time_now);
 				}
 				break;
+		}
+		
+		// Now we'll clean autologin keys which have expired, i.e.
+		// where users have not logged in for an admin defined number
+		// of days
+		if ($config['allow_autologin'] && $config['max_autologin_time'])
+		{
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' 
+				WHERE last_login < ' . (time() - ($config['max_autologin_time'] * 86400));
+			$db->sql_query($sql);
 		}
 
 		return;
 	}
 
-	// Set a cookie
+
+	/**
+	* Sets a cookie
+	*
+	* Sets a cookie of the given name with the specified data for the given length of time.
+	*/
 	function set_cookie($name, $cookiedata, $cookietime)
 	{
 		global $config;
 
-		if ($config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1')
+		setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path']);
+	}
+
+	/**
+	* Check for banned user
+	*
+	* Checks whether the supplied user is banned by id, ip or email. If no parameters
+	* are passed to the method pre-existing session data is used. This routine does 
+	* not return on finding a banned user, it outputs a relevant message and stops 
+	* execution.
+	*/
+	function check_ban($user_id = false, $user_ip = false, $user_email = false)
+	{
+		global $config, $db;
+		
+		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
+		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
+		$user_email = ($user_email === false) ? $this->data['user_email'] : $user_email;
+		
+		$banned = false;
+
+		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
+			FROM ' . BANLIST_TABLE . '
+			WHERE ban_end >= ' . time() . '
+				OR ban_end = 0';
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
 		{
-			setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path']);
+			do
+			{
+				if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
+					(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip)) ||
+					(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
+				{
+					if (!empty($row['ban_exclude']))
+					{
+						$banned = false;
+						break;
+					}
+					else
+					{
+						$banned = true;
+					}
+				}
+			}
+			while ($row = $db->sql_fetchrow($result));
 		}
-		else
+		$db->sql_freeresult($result);
+
+		if ($banned)
 		{
-			setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
+			// Initiate environment ... since it won't be set at this stage
+			$this->setup();
+
+			// Determine which message to output
+			$till_date = (!empty($row['ban_end'])) ? $this->format_date($row['ban_end']) : '';
+			$message = (!empty($row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+
+			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
+			// More internal HTML ...
+			$message .= (!empty($row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $row['ban_show_reason']) : '';
+			trigger_error($message);
 		}
+		
+		return false;
+	}
+	
+	/**
+	* Set/Update a persistent login key
+	*
+	* This method creates or updates a persistent session key. When a user makes
+	* use of persistent (formerly auto-) logins a key is generated and stored in the
+	* DB. When they revisit with the same key it's automatically updated in both the
+	* DB and cookie. Multiple keys may exist for each user representing different
+	* browsers or locations. As with _any_ non-secure-socket no passphrase login this
+	* remains vulnerable to exploit. However, by rotating the keys and seperating them
+	* from the password hash it's more secure than 2.0.x. Don't be surprised to see
+	* this backported!
+	*/
+	function set_login_key($user_id = false, $key = false, $user_ip = false)
+	{
+		global $config, $db;
+		
+		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
+		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
+		$key = ($key === false) ? ((!empty($this->cookie_data['k'])) ? true : false) : $key;
+		
+		$sql_ary = array(
+			'key_id'		=> (string) md5(unique_id()),
+			'last_ip'		=> (string) $this->ip,
+			'last_login'	=> (int) time()
+		);
+		if (!$key)
+		{
+			$sql_ary += array(
+				'user_id'	=> (int) $user_id
+			);
+		}
+		
+		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $db->sql_escape($user_id) . ' AND key_id = "' . $db->sql_escape($key) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+		
+		$this->cookie_data['k'] = $sql_ary['key_id'];
+		unset($sql_ary);
+		
+		return false;
+	}
+	
+	/**
+	* Remove stale login keys
+	*
+	* @private
+	*/
+	function tidy_login_keys()
+	{
+		global $config, $db;
+		
+		if (!empty($config['max_autologin_time']))
+		{
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
+			$db->sql_query($sql);
+		}
+		
+		return false;
 	}
 }
 
 /**
-* @package phpBB3
-* Contains (at present) basic user methods such as configuration
-* creating date/time ... keep this?
+* Base user class
+*
+* This is the overarching class which contains (through session extend)
+* all methods utilised for user functionality during a session.
 */
 class user extends session
 {
@@ -633,7 +803,7 @@ class user extends session
 		if (!$this->theme['primary']['theme_storedb'] && $this->theme['primary']['parse_css_file'])
 		{
 			$this->theme['primary']['theme_storedb'] = 1;
-			
+
 			$sql_ary = array(
 				'theme_data'	=> implode('', file("{$phpbb_root_path}styles/" . $this->theme['primary']['theme_path'] . '/theme/stylesheet.css')),
 				'theme_mtime'	=> time(),
@@ -642,7 +812,7 @@ class user extends session
 
 			$db->sql_query('UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE theme_id = ' . $style);
-			
+
 			unset($sql_ary);
 		}
 
@@ -765,7 +935,7 @@ class user extends session
 		{
 			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
 		}
-		
+
 		if ($gmepoch > $midnight && !$forcedate)
 		{
 			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
@@ -913,11 +1083,19 @@ class user extends session
 	}
 }
 
-/**
-* @package phpBB3
-* Will be keeping my eye of 'other products' to ensure these things don't
-* mysteriously appear elsewhere, think up your own solutions!
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 class auth
 {
 	var $founder = false;
@@ -1082,7 +1260,7 @@ class auth
 	function acl_cache(&$userdata)
 	{
 		global $db;
-
+		
 		$hold_ary = $this->acl_raw_data($userdata['user_id'], false, false);
 		$hold_ary = $hold_ary[$userdata['user_id']];
 
@@ -1205,9 +1383,9 @@ class auth
 	{
 		global $db;
 
-		$sql_group = ($group_id) ? ((!is_array($group_id)) ? "group_id = $group_id" : 'group_id IN (' . implode(', ', $group_id) . ')') : '';
-		$sql_forum = ($forum_id) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
-		$sql_opts = ($opts) ? ((!is_array($opts)) ? "AND ao.auth_option = '$opts'" : 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')') : '';
+		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : 'group_id IN (' . implode(', ', $group_id) . ')') : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_opts = ($opts !== false) ? ((!is_array($opts)) ? "AND ao.auth_option = '$opts'" : 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')') : '';
 
 		$hold_ary = array();
 
@@ -1235,7 +1413,7 @@ class auth
 	{
 		global $db;
 
-		$where_sql = ($user_id) ? ' WHERE user_id ' . ((is_array($user_id)) ? ' IN (' . implode(', ', array_map('intval', $user_id)) . ')' : " = $user_id") : '';
+		$where_sql = ($user_id !== false) ? ' WHERE user_id ' . ((is_array($user_id)) ? ' IN (' . implode(', ', array_map('intval', $user_id)) . ')' : " = $user_id") : '';
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_permissions = ''
@@ -1245,6 +1423,25 @@ class auth
 		return;
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
@@ -1268,9 +1465,7 @@ class auth
 					return $login;
 				}
 
-				$autologin = (!empty($autologin)) ? md5($password) : '';
-
-				return $user->create($login['user_id'], $autologin, true, $viewonline, $admin);
+				return $user->session_create($login['user_id'], $admin, $autologin, $viewonline);
 			}
 		}
 
