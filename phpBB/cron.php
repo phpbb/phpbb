@@ -64,7 +64,7 @@ switch ($cron_type)
 	case 'tidy_login_keys':
 		if ($use_shutdown_function)
 		{
-			register_shutdown_function(array(&$user, 'tidy_login_keys');
+			register_shutdown_function(array(&$user, 'tidy_login_keys'));
 		}
 		else
 		{
