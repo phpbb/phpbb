@@ -60,6 +60,16 @@ switch ($cron_type)
 			tidy_database();
 		}
 		break;
+		
+	case 'tidy_login_keys':
+		if ($use_shutdown_function)
+		{
+			register_shutdown_function(array(&$user, 'tidy_login_keys');
+		}
+		else
+		{
+			$user->tidy_login_keys();
+		}
 }
 
 // Output transparent gif
