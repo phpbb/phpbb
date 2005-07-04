@@ -518,6 +518,14 @@ CREATE TABLE [phpbb_sessions] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_sessions_keys] (
+	[key_id] [varchar] (32) NOT NULL ,
+	[user_id] [int] NOT NULL ,
+	[last_ip] [varchar] (100) NOT NULL ,
+	[last_login] [int] NOT NULL
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_sitelist] (
 	[site_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[site_ip] [varchar] (40) NOT NULL ,
@@ -791,6 +799,13 @@ CREATE TABLE [phpbb_users] (
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_users_passwd] (
+	[user_id] [int] NOT NULL ,
+	[passwd_time] [int] NOT NULL ,
+	[passwd] [varchar] (32) NOT NULL 
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_words] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word] [varchar] (100) NOT NULL ,
@@ -1058,6 +1073,14 @@ ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [phpbb_sessions_keys] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_sessions_keys] PRIMARY KEY  CLUSTERED 
+	(
+		[key_id],
+		[user_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [phpbb_sitelist] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_sitelist] PRIMARY KEY  CLUSTERED 
 	(
@@ -1117,6 +1140,13 @@ GO
 
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_users] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_users_passwd] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_users_passwd] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id]
 	)  ON [PRIMARY] 
@@ -1448,6 +1478,13 @@ ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD
 	CONSTRAINT [DF_sessio_session_admin] DEFAULT (0) FOR [session_admin]
 GO
 
+ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD 
+	CONSTRAINT [DF_sessik_key_id] DEFAULT ('0') FOR [key_id],
+	CONSTRAINT [DF_sessik_user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_sessik_last_ip] DEFAULT ('0') FOR [last_ip],
+	CONSTRAINT [DF_sessik_last_login] DEFAULT (0) FOR [last_login]
+GO
+
 ALTER TABLE [phpbb_sitelist] WITH NOCHECK ADD 
 	CONSTRAINT [DF_siteli_ip_exclude] DEFAULT (0) FOR [ip_exclude]
 GO
@@ -1566,6 +1603,12 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_users__user_avatar_width] DEFAULT (0) FOR [user_avatar_width],
 	CONSTRAINT [DF_users__user_avatar_height] DEFAULT (0) FOR [user_avatar_height],
 	CONSTRAINT [DF_users__user_sig_bbcode_bitf] DEFAULT (0) FOR [user_sig_bbcode_bitfield]
+GO
+
+ALTER TABLE [phpbb_users_passwd] WITH NOCHECK ADD 
+	CONSTRAINT [DF_users_pwd_user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_users_pwd_passwd_time] DEFAULT (0) FOR [passwd_time],
+	CONSTRAINT [DF_users_pwd_passwd] DEFAULT ('0') FOR [passwd]
 GO
 
 ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 
@@ -1743,6 +1786,9 @@ GO
 CREATE  INDEX [session_user_id] ON [phpbb_sessions]([session_user_id]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [last_login] ON [phpbb_sessions_keys]([last_login]) ON [PRIMARY]
+GO
+
 CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
 GO
 
@@ -1804,6 +1850,9 @@ CREATE  INDEX [user_email_hash] ON [phpbb_users]([user_email_hash]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [username] ON [phpbb_users]([username]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [passwd_time] ON [phpbb_users_passwd]([passwd_time]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_zebra]([user_id]) ON [PRIMARY]

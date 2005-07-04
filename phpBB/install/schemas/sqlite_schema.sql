@@ -605,6 +605,17 @@ CREATE TABLE phpbb_sessions (
 CREATE INDEX session_time_phpbb_sessions on phpbb_sessions (session_time);
 CREATE INDEX session_user_id_phpbb_sessions on phpbb_sessions (session_user_id);
 
+# Table: phpbb_sessions_keys
+CREATE TABLE phpbb_sessions_keys (
+  key_id varchar(32) NOT NULL DEFAULT '',
+  user_id mediumint(8) NOT NULL DEFAULT '0',
+  last_ip varchar(40) NOT NULL DEFAULT '',
+  last_login int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY  (key_id,user_id)
+);
+
+CREATE INDEX last_login_phpbb_sessions_keys on phpbb_sessions_keys (last_login);
+
 # Table: phpbb_sitelist
 CREATE TABLE phpbb_sitelist (
   site_id INTEGER PRIMARY KEY NOT NULL,
@@ -908,6 +919,15 @@ CREATE TABLE phpbb_users (
 CREATE INDEX user_birthday_phpbb_users on phpbb_users (user_birthday);
 CREATE INDEX user_email_hash_phpbb_users on phpbb_users (user_email_hash);
 CREATE INDEX username_phpbb_users on phpbb_users (username);
+
+# Table: phpbb_users_passwd
+CREATE TABLE phpbb_users_passwd (
+  user_id INTEGER PRIMARY KEY NOT NULL,
+  passwd_time int(11) NOT NULL DEFAULT '0', 
+  passwd varchar(32) NOT NULL DEFAULT '',
+);
+
+CREATE INDEX passwd_time_phpbb_users_passwd on phpbb_users_passwd (passwd_time);
 
 # Table: phpbb_words
 CREATE TABLE phpbb_words (

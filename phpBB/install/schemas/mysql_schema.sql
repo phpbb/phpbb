@@ -943,7 +943,6 @@ CREATE TABLE phpbb_users_passwd (
   KEY passwd_time (passwd_time)
 );
 
-
 # Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
    word_id mediumint(8) UNSIGNED NOT NULL auto_increment,

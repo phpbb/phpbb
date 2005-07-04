@@ -512,6 +512,14 @@ CREATE TABLE phpbb_sessions (
   session_admin INTEGER DEFAULT 0  NOT NULL
 );;
 
+# phpbb_sessions_keys
+CREATE TABLE phpbb_sessions_keys (
+  key_id VARCHAR(32) NOT NULL,
+  user_id INTEGER DEFAULT 0  NOT NULL,
+  last_ip VARCHAR(40) DEFAULT '0'  NOT NULL,
+  last_login INTEGER DEFAULT 0  NOT NULL
+);;
+
 # phpbb_sitelist
 CREATE TABLE phpbb_sitelist (
   site_id INTEGER NOT NULL,
@@ -785,6 +793,13 @@ CREATE TABLE phpbb_users (
   user_interests VARCHAR(255) NOT NULL,
   user_actkey VARCHAR(32) NOT NULL,
   user_newpasswd VARCHAR(32) NOT NULL
+);;
+
+# phpbb_users_passwd
+CREATE TABLE phpbb_users_passwd (
+  user_id INTEGER NOT NULL,
+  passwd_time INTEGER NOT NULL,
+  passwd VARCHAR(32) NOT NULL
 );;
 
 # phpbb_words
@@ -1413,6 +1428,27 @@ ON phpbb_zebra(
 CREATE INDEX zebra_id81
 ON phpbb_zebra(
   zebra_id
+);;
+
+ALTER TABLE phpbb_sessions_keys
+ADD PRIMARY KEY (
+  key_id,
+  user_id
+);;
+
+CREATE INDEX last_login82
+ON phpbb_sessions_keys(
+  last_login
+);;
+
+ALTER TABLE phpbb_users_passwd
+ADD PRIMARY KEY (
+  user_id
+);;
+
+CREATE INDEX passwd_time83
+ON phpbb_users_passwd(
+  passwd_time
 );;
 
 CREATE GENERATOR G_phpbb_attachmentsattach_idGen;;

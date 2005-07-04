@@ -1213,6 +1213,21 @@ CREATE INDEX session_user_id on phpbb_sessions (session_user_id)
 /
 
 /*
+ Table: phpbb_sessions_keys
+*/
+CREATE TABLE phpbb_sessions_keys (
+  key_id varchar2(32) DEFAULT '',
+  user_id number(8) DEFAULT '0' NOT NULL,
+  last_ip varchar2(40) DEFAULT '0',
+  last_login number(11) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_sessions_keys PRIMARY KEY (key_id,user_id)
+)
+/
+
+CREATE INDEX last_login on phpbb_sessions_keys (last_login)
+/
+
+/*
  Table: phpbb_sitelist
 */
 CREATE TABLE phpbb_sitelist (
@@ -1692,6 +1707,20 @@ CREATE INDEX user_birthday on phpbb_users (user_birthday)
 CREATE INDEX user_email_hash on phpbb_users (user_email_hash)
 /
 CREATE INDEX username on phpbb_users (username)
+/
+
+/*
+ Table: phpbb_users_passwd
+*/
+CREATE TABLE phpbb_users_passwd (
+  user_id number(8) NOT NULL,
+  passwd_time number(11) DEFAULT '0' NOT NULL,
+  passwd varchar2(32),
+  CONSTRAINT pk_phpbb_users_passwd PRIMARY KEY (user_id)
+)
+/
+
+CREATE INDEX passwd_time on phpbb_users_passwd (passwd_time)
 /
 
 /*

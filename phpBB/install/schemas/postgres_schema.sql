@@ -824,6 +824,17 @@ CREATE TABLE phpbb_sessions (
 CREATE INDEX session_time_phpbb_sessions_index ON phpbb_sessions (session_time);
 CREATE INDEX session_user_id_phpbb_sessions_index ON phpbb_sessions (session_user_id);
 
+/* Table: phpbb_sessions_keys */
+CREATE TABLE phpbb_sessions_keys (
+  key_id varchar(32) DEFAULT '' NOT NULL,
+  user_id INT4 DEFAULT '0' NOT NULL,
+  last_ip varchar(40) DEFAULT '0' NOT NULL,
+  last_login INT4 DEFAULT '0' NOT NULL,
+  PRIMARY KEY  (key_id,user_id)
+);
+
+CREATE INDEX last_login_phpbb_sessions_keys_index ON phpbb_sessions_keys (last_login);
+
 /* Table: phpbb_sitelist */
 CREATE SEQUENCE phpbb_sitelist_site_id_seq;
 
@@ -1200,6 +1211,16 @@ CREATE INDEX user_email_hash_phpbb_users_index ON phpbb_users (user_email_hash);
 CREATE INDEX username_phpbb_users_index ON phpbb_users (username);
 
 SELECT SETVAL('phpbb_users_user_id_seq',(select case when max(user_id)>0 then max(user_id)+1 else 1 end from phpbb_users));
+
+/* Table: phpbb_users_passwd */
+CREATE TABLE phpbb_users_passwd (
+  user_id INT4 DEFAULT '0' NOT NULL,
+  passwd_time INT4 DEFAULT '0' NOT NULL, 
+  passwd varchar(32) DEFAULT '' NOT NULL,
+  PRIMARY KEY (user_id),
+);
+
+CREATE INDEX passwd_time_phpbb_users_passwd_index ON phpbb_users_passwd (passwd_time);
 
 /* Table: phpbb_words */
 CREATE SEQUENCE phpbb_words_word_id_seq;
