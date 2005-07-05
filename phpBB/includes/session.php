@@ -54,7 +54,11 @@ class session
 		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
 		{
-			$this->cookie_data = (!empty($_COOKIE[$config['cookie_name'] . '_data'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_data'])) : array();
+			// Santise k? Is there a need? It's escaped for DB entry in relevant location
+			// and isn't used directly anywhere else (nor should it!)
+			$this->cookie_data['u'] = (!empty($_COOKIE[$config['cookie_name'] . '_u'])) ? (int) $_COOKIE[$config['cookie_name'] . '_u'] : 0;
+			$this->cookie_data['k'] = (!empty($_COOKIE[$config['cookie_name'] . '_k'])) ? (string) $_COOKIE[$config['cookie_name'] . '_k'] : '';
+			
 			$this->session_id = request_var($config['cookie_name'] . '_sid', '');
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
@@ -342,7 +346,10 @@ class session
 		$SID = '?sid=';
 		if (!$bot)
 		{
-			$this->set_cookie('data', serialize($this->cookie_data), $this->time_now + 31536000);
+			$cookie_expire = ($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000;
+			
+			$this->set_cookie('u', $this->cookie_data['u'], $this->time_now + $cookie_expire);
+			$this->set_cookie('k', $this->cookie_data['k'], $this->time_now + $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, 0);
 
 			$SID = '?sid=' . $this->session_id;
@@ -352,6 +359,7 @@ class session
 //				global $evt;
 //				$evt->trigger(EVT_NEW_SESSION, $this->data);
 			}
+			unset($cookie_expire);
 		}
 		
 		return true;
@@ -394,7 +402,8 @@ class session
 			$db->sql_freeresult($result);
 		}
 		
-		$this->set_cookie('data', '', $this->time_now - 31536000);
+		$this->set_cookie('u', '', $this->time_now - 31536000);
+		$this->set_cookie('k', '', $this->time_now - 31536000);
 		$this->set_cookie('sid', '', $this->time_now - 31536000);
 		
 		$SID = '?sid=';
@@ -657,6 +666,7 @@ class session
 		return false;
 	}
 }
+
 
 /**
 * Base user class
@@ -1084,18 +1094,6 @@ class user extends session
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 class auth
 {
 	var $founder = false;
@@ -1423,25 +1421,7 @@ class auth
 		return;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// @todo replace this with a new system
 	// Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
