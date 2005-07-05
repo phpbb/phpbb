@@ -379,17 +379,25 @@ class session
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
-				AND session_user_id = " . $this->data['user_id'];
+				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			// Delete existing session, update last visit info first!
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . $this->data['session_time'] . '
-				WHERE user_id = ' . $this->data['user_id'];
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 
+			if (!empty($this->cookie_data['k']))
+			{
+				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE user_id = ' . (int) $this->data['user_id'] . "
+						AND key_id = '" . $db->sql_escape($this->cookie_data['k']) . "'";
+				$db->sql_query($sql);
+			}
+			
 			// Reset the data array
 			$this->data = array();			
 			
@@ -400,6 +408,7 @@ class session
 		
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+			
 		}
 		
 		$this->set_cookie('u', '', $this->time_now - 31536000);
@@ -413,7 +422,6 @@ class session
 
 		return true;
 	}
-
 
 	/**
 	* Session garbage collection
@@ -436,7 +444,7 @@ class session
 				// Firstly, delete guest sessions
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 					WHERE session_user_id = ' . ANONYMOUS . '
-						AND session_time < ' . ($this->time_now - $config['session_length']);
+						AND session_time < ' . (int) ($this->time_now - $config['session_length']);
 				$db->sql_query($sql);
 
 				// Keep only the most recent session for each user
@@ -456,13 +464,13 @@ class session
 				// Update last visit time
 				$sql = 'UPDATE ' . USERS_TABLE. ' u, ' . SESSIONS_TABLE . ' s
 					SET u.user_lastvisit = s.session_time, u.user_lastpage = s.session_page
-					WHERE s.session_time < ' . ($this->time_now - $config['session_length']) . '
+					WHERE s.session_time < ' . (int) ($this->time_now - $config['session_length']) . '
 						AND u.user_id = s.session_user_id';
 				$db->sql_query($sql);
 
 				// Delete everything else now
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . ($this->time_now - $config['session_length']);
+					WHERE session_time < ' . (int) ($this->time_now - $config['session_length']);
 				$db->sql_query($sql);
 
 				set_config('session_last_gc', $this->time_now);
@@ -491,7 +499,7 @@ class session
 							$db->sql_query($sql);
 						}
 
-						$del_user_id .= (($del_user_id != '') ? ', ' : '') . $row['session_user_id'];
+						$del_user_id .= (($del_user_id != '') ? ', ' : '') . (int) $row['session_user_id'];
 						$del_sessions++;
 					}
 					while ($row = $db->sql_fetchrow($result));
@@ -521,13 +529,12 @@ class session
 		if ($config['allow_autologin'] && $config['max_autologin_time'])
 		{
 			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' 
-				WHERE last_login < ' . (time() - ($config['max_autologin_time'] * 86400));
+				WHERE last_login < ' . (time() - ((int) $config['max_autologin_time'] * 86400));
 			$db->sql_query($sql);
 		}
 
 		return;
 	}
-
 
 	/**
 	* Sets a cookie
