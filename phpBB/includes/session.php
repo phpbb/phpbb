@@ -33,10 +33,8 @@ class session
 	* halt if it's above an admin definable limit.
 	*
 	* @todo Review page discovery code
-	* @todo Review IP grab, getenv still valid? Need feedback from community
 	* @todo Introduce further user types, bot, guest
 	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
-	* @todo Look at enforcing IP check for bots if admin desires
 	*/
 	//function session_begin()
 	function start()
@@ -45,11 +43,8 @@ class session
 
 		$this->time_now = time();
 		
-		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : $_ENV['HTTP_USER_AGENT'];
-
-		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : $_ENV['REQUEST_URI'];
-		$this->page = preg_replace('#^.*?\/?(\/adm\/)?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*&?(.*?)$#i', '\1\2\3', $this->page);
-		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
+		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#' . preg_quote($config['script_path'], '#') . '/?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*(.*?)$#i', '\1\2', $_SERVER['REQUEST_URI']) . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
 		
 		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
@@ -68,11 +63,11 @@ class session
 			$this->session_id = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
-
-		// @todo .. finish this!
-		// Obtain users IP
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : htmlspecialchars(getenv('REMOTE_ADDR'));
-
+		
+		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
+		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+		
 		// Load limit check (if applicable)
 		if (@file_exists('/proc/loadavg'))
 		{
@@ -123,11 +118,9 @@ class session
 						$db->sql_query($sql);
 					}
 					
-				
 					// Ultimately to be removed
 					$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 					$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
-					
 					
 					return true;
 				}
@@ -137,7 +130,6 @@ class session
 		// If we reach here then no (valid) session exists. So we'll create a new one
 		return $this->session_create();
 	}
-	
 	
 	/**
 	* Create a new session
@@ -208,7 +200,7 @@ class session
 		{
 			$sql = 'SELECT u.* 
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
-				WHERE u.user_id = ' . $db->sql_escape($this->cookie_data['u']) . '
+				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
 					AND u.user_type <> ' . USER_INACTIVE . "
 					AND k.user_id = u.user_id
 					AND k.key_id = '" . $db->sql_escape($this->cookie_data['k']) . "'";
@@ -224,7 +216,7 @@ class session
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $this->cookie_data['u'] . '
+				WHERE user_id = ' . (int) $this->cookie_data['u'] . '
 					AND user_type <> ' . USER_INACTIVE;
 			$result = $db->sql_query($sql);
 
@@ -244,7 +236,7 @@ class session
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $this->cookie_data['u'];
+				WHERE user_id = ' . (int) $this->cookie_data['u'];
 			$result = $db->sql_query($sql);
 
 			$this->data = $db->sql_fetchrow($result);
@@ -255,7 +247,7 @@ class session
 		{
 			$sql = 'SELECT session_time, session_id
 				FROM ' . SESSIONS_TABLE . '
-				WHERE session_user_id = ' . $db->sql_escape($this->data['user_id']) . '
+				WHERE session_user_id = ' . (int) $this->data['user_id'] . '
 				ORDER BY session_time DESC';
 			$result = $db->sql_query_limit($sql, 1);
 
