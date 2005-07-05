@@ -52,14 +52,15 @@ class session
 		$this->page .= (isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '';
 		
 		$this->cookie_data = array();
-		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_data']))
+		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
-			// Santise k? Is there a need? It's escaped for DB entry in relevant location
-			// and isn't used directly anywhere else (nor should it!)
-			$this->cookie_data['u'] = (!empty($_COOKIE[$config['cookie_name'] . '_u'])) ? (int) $_COOKIE[$config['cookie_name'] . '_u'] : 0;
-			$this->cookie_data['k'] = (!empty($_COOKIE[$config['cookie_name'] . '_k'])) ? (string) $_COOKIE[$config['cookie_name'] . '_k'] : '';
+			// Switch to request_var ... can this cause issues, can a _GET/_POST param
+			// be used to poison this? Not sure that it makes any difference in terms of
+			// the end result, be it a cookie or param.
+			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0);
+			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '');
+			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '');
 			
-			$this->session_id = request_var($config['cookie_name'] . '_sid', '');
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 		}
 		else
