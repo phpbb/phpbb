@@ -301,7 +301,8 @@ switch ($mode)
 				}
 			}
 			$user->set_cookie('track', '', $set_time);
-			$user->set_cookie('data', '', $set_time);
+			$user->set_cookie('u', '', $set_time);
+			$user->set_cookie('k', '', $set_time);
 			$user->set_cookie('sid', '', $set_time);
 
 			// We destroy the session here, the user will be logged out nevertheless
