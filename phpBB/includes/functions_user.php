@@ -1257,11 +1257,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		switch (SQL_LAYER)
 		{
 			case 'mysql':
-				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
-				$db->sql_query($sql);
-				break;
-
 			case 'mysql4':
 			case 'mysqli':
 			case 'mssql':
