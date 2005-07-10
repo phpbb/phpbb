@@ -1445,7 +1445,7 @@ function delete_forum_content($forum_id)
 				REPORTS_TABLE				=>	're.post_id',
 				TOPICS_WATCH_TABLE		=>	'tw.topic_id',
 				TOPICS_TRACK_TABLE		=>	'tt.topic_id',
-				POLL_OPTIONS_TABLE		=>	'po.post_id',
+				POLL_OPTIONS_TABLE		=>	'po.topic_id',
 				POLL_VOTES_TABLE			=>	'pv.post_id'
 			);
 
