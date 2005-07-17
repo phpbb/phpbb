@@ -32,7 +32,6 @@ class session
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
 	*
-	* @todo Review page discovery code
 	* @todo Introduce further user types, bot, guest
 	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
@@ -339,10 +338,10 @@ class session
 		$SID = '?sid=';
 		if (!$bot)
 		{
-			$cookie_expire = ($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000;
+			$cookie_expire = $this->time_now + (($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000);
 			
-			$this->set_cookie('u', $this->cookie_data['u'], $this->time_now + $cookie_expire);
-			$this->set_cookie('k', $this->cookie_data['k'], $this->time_now + $cookie_expire);
+			$this->set_cookie('u', $this->cookie_data['u'], $cookie_expire);
+			$this->set_cookie('k', $this->cookie_data['k'], $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, 0);
 
 			$SID = '?sid=' . $this->session_id;
@@ -404,9 +403,11 @@ class session
 			
 		}
 		
-		$this->set_cookie('u', '', $this->time_now - 31536000);
-		$this->set_cookie('k', '', $this->time_now - 31536000);
-		$this->set_cookie('sid', '', $this->time_now - 31536000);
+		$cookie_expire = $this->time_now - 31536000;
+		$this->set_cookie('u', '', $cookie_expire);
+		$this->set_cookie('k', '', $cookie_expire);
+		$this->set_cookie('sid', '', $cookie_expire);
+		unset($cookie_expire);
 		
 		$SID = '?sid=';
 		$this->session_id = '';
@@ -514,16 +515,6 @@ class session
 					set_config('session_last_gc', $this->time_now);
 				}
 				break;
-		}
-		
-		// Now we'll clean autologin keys which have expired, i.e.
-		// where users have not logged in for an admin defined number
-		// of days
-		if ($config['allow_autologin'] && $config['max_autologin_time'])
-		{
-			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' 
-				WHERE last_login < ' . (time() - ((int) $config['max_autologin_time'] * 86400));
-			$db->sql_query($sql);
 		}
 
 		return;
