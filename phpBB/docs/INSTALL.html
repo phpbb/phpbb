@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html">
 <meta http-equiv="Content-Style-Type" content="text/css">
-<title>phpBB 2.0.16 :: Install</title>
+<title>phpBB 2.0.x :: Install</title>
 <link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css">
 <style type="text/css">
 <!--
@@ -24,7 +24,7 @@ p,ul,td {font-size:10pt;}
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB 2 : Creating Communities" vspace="1" /></a></td>
-		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.16 INSTALL</span></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.x INSTALL</span></td>
 	</tr>
 </table>
 
@@ -33,7 +33,7 @@ p,ul,td {font-size:10pt;}
 
 <p>Please note these instructions are not fully comprehensive, a more thorough userguide will be available on the phpBB website in the near future. However, this document will walk you through the basics on installing the forum software.</p>
 
-<p>A basic overview of running phpBB 2.0.16 can be found in the accompanying <a href="README.html">README</a> documentation. Please ensure you read that document in addition to this! For more detailed information on using phpBB 2 you should read <a href="http://www.phpbb.com/support/guide/" target="_new">Userguide</a> now available online.</p>
+<p>A basic overview of running phpBB 2.0.x can be found in the accompanying <a href="README.html">README</a> documentation. Please ensure you read that document in addition to this! For more detailed information on using phpBB 2 you should read <a href="http://www.phpbb.com/support/guide/" target="_new">Userguide</a> now available online.</p>
 
 <ol>
 <li><a href="#quickinstall">Quick Install</a></li>
@@ -194,7 +194,7 @@ p,ul,td {font-size:10pt;}
 
 <a name="#upgradeSTABLE_files"></a><h3 class="h3">7.ii. Changed files only</h3>
 
-<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have 2.0.15 you should select the phpBB-2.0.15_to_2.0.16.zip/tar.gz file.</p>
+<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have 2.0.16 you should select the phpBB-2.0.16_to_2.0.17.zip/tar.gz file.</p>
 
 <p>The directory structure has been preserved enabling you (if you wish) to simply upload the contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any Mods these files will overwrite the originals possibly destroying them in the process. You will need to re-add Mods to any affected file before uploading.</p>
 
@@ -204,7 +204,7 @@ p,ul,td {font-size:10pt;}
 
 <p>The patch file is probably the best solution for those with many Mods or other changes who do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <b>patch</b> application.</p>
 
-<p>A number of patch files are provided to allow you to upgrade from previous stable releases. Select the correct patch, e.g. if your current version is 2.0.15 you need the phpBB-2.0.15_to_2.0.16.patch. Place the correct patch in the parent directory containing the phpBB 2 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <b>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</b> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB2, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+<p>A number of patch files are provided to allow you to upgrade from previous stable releases. Select the correct patch, e.g. if your current version is 2.0.16 you need the phpBB-2.0.16_to_2.0.17.patch. Place the correct patch in the parent directory containing the phpBB 2 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <b>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</b> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB2, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
 <p>If you do get failures you should look at using the <a href="#upgradeSTABLE_files">Changed files only</a> package to replace the files which failed to patch, please note that you will need to manually re-add any Mods to these particular files. Alternatively if you know how you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 

@@ -86,6 +86,8 @@ function user_avatar_gallery($mode, &$error, &$error_msg, $avatar_filename)
 
 function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 {
+	global $lang;
+
 	if ( !preg_match('#^(http)|(ftp):\/\/#i', $avatar_filename) )
 	{
 		$avatar_filename = 'http://' . $avatar_filename;

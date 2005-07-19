@@ -86,7 +86,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			$row = $db->sql_fetchrow($result);
 			
 			$sql = "UPDATE " . POSTS_TABLE . "
-				SET poster_id = " . DELETED . ", post_username = '$username' 
+				SET poster_id = " . DELETED . ", post_username = '" . str_replace("\\'", "''", addslashes($this_userdata['username'])) . "' 
 				WHERE poster_id = $user_id";
 			if( !$db->sql_query($sql) )
 			{

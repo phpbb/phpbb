@@ -117,7 +117,7 @@ function get_userdata($user, $force_str = false)
 {
 	global $db;
 
-	if (intval($user) == 0 || $force_str)
+	if (!is_numeric($user) || $force_str)
 	{
 		$user = phpbb_clean_username($user);
 	}
@@ -578,7 +578,7 @@ function message_die($msg_code, $msg_text = '', $msg_title = '', $err_line = '',
 		die("message_die() was called multiple times. This isn't supposed to happen. Was message_die() used in page_tail.php?");
 	}
 	
-	define(HAS_DIED, 1);
+	define('HAS_DIED', 1);
 	
 
 	$sql_store = $sql;

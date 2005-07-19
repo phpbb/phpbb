@@ -59,7 +59,7 @@ include($phpbb_root_path . 'includes/db.'.$phpEx);
 //
 //
 //
-$updates_to_version = '.0.16';
+$updates_to_version = '.0.17';
 //
 //
 //

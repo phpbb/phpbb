@@ -414,6 +414,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u  
 			WHERE ug.group_id = aa.group_id 
 				AND u.user_id = ug.user_id 
+				AND ug.user_pending = 0
 				AND u.user_level NOT IN (" . MOD . ", " . ADMIN . ") 
 			GROUP BY u.user_id 
 			HAVING SUM(aa.auth_mod) > 0";
@@ -568,9 +569,10 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	//
 	// Front end
 	//
-	$sql = "SELECT * 
-		FROM " . FORUMS_TABLE . " f
-		ORDER BY forum_order";
+	$sql = "SELECT f.* 
+		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
+		WHERE f.cat_id = c.cat_id
+		ORDER BY c.cat_order, f.forum_order ASC";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
@@ -603,7 +605,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		}
 	}
 
-	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug WHERE ";
+	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user, ug.user_pending FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug WHERE ";
 	$sql .= ( $mode == 'user' ) ? "u.user_id = $user_id AND ug.user_id = u.user_id AND g.group_id = ug.group_id" : "g.group_id = $group_id AND ug.group_id = g.group_id AND u.user_id = ug.user_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -831,12 +833,19 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 	if( count($name) )
 	{
-		$t_usergroup_list = '';
+		$t_usergroup_list = $t_pending_list = '';
 		for($i = 0; $i < count($ug_info); $i++)
 		{
 			$ug = ( $mode == 'user' ) ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
 
-			$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			if (!$ug_info[$i]['user_pending'])
+			{
+				$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			}
+			else
+			{
+				$t_pending_list .= ( ( $t_pending_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			}
 		}
 	}
 	else
@@ -899,7 +908,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 		$template->assign_vars(array(
 			'USERNAME' => $t_groupname,
-			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list)
+			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list)
 		);
 	}
 

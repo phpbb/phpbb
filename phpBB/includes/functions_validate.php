@@ -30,11 +30,9 @@ function validate_username($username)
 	global $db, $lang, $userdata;
 
 	// Remove doubled up spaces
-	$username = preg_replace('#\s+#', ' ', $username); 
-	// Limit username length
-	$username = substr(str_replace("\'", "'", $username), 0, 25);
-	$username = str_replace("'", "''", $username);
-
+	$username = preg_replace('#\s+#', ' ', trim($username)); 
+	$username = phpbb_clean_username($username);
+	
 	$sql = "SELECT username 
 		FROM " . USERS_TABLE . " 
 		WHERE LOWER(username) = '" . strtolower($username) . "'";

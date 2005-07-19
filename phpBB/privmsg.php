@@ -698,46 +698,56 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 	}
 	else if ( $confirm )
 	{
-		if ( $delete_all )
+		$delete_sql_id = '';
+
+		if (!$delete_all)
 		{
-			switch($folder)
+			for ($i = 0; $i < count($mark_list); $i++)
 			{
-				case 'inbox':
-					$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
-					privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-					break;
-
-				case 'outbox':
-					$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
-					break;
-
-				case 'sentbox':
-					$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
-					break;
-
-				case 'savebox':
-					$delete_type = "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
-					OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
-						AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
-					break;
+				$delete_sql_id .= (($delete_sql_id != '') ? ', ' : '') . intval($mark_list[$i]);
 			}
-
-			$sql = "SELECT privmsgs_id
-				FROM " . PRIVMSGS_TABLE . "
-				WHERE $delete_type";
-			if ( !($result = $db->sql_query($sql)) )
-			{
-				message_die(GENERAL_ERROR, 'Could not obtain id list to delete all messages', '', __LINE__, __FILE__, $sql);
-			}
-
-			while ( $row = $db->sql_fetchrow($result) )
-			{
-				$mark_list[] = $row['privmsgs_id'];
-			}
-
-			unset($delete_type);
+			$delete_sql_id = "AND privmsgs_id IN ($delete_sql_id)";
 		}
+
+		switch($folder)
+		{
+			case 'inbox':
+				$delete_type = "privmsgs_to_userid = " . $userdata['user_id'] . " AND (
+				privmsgs_type = " . PRIVMSGS_READ_MAIL . " OR privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+				break;
+
+			case 'outbox':
+				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND ( privmsgs_type = " . PRIVMSGS_NEW_MAIL . " OR privmsgs_type = " . PRIVMSGS_UNREAD_MAIL . " )";
+				break;
+
+			case 'sentbox':
+				$delete_type = "privmsgs_from_userid = " . $userdata['user_id'] . " AND privmsgs_type = " . PRIVMSGS_SENT_MAIL;
+				break;
+
+			case 'savebox':
+				$delete_type = "( ( privmsgs_from_userid = " . $userdata['user_id'] . " 
+					AND privmsgs_type = " . PRIVMSGS_SAVED_OUT_MAIL . " ) 
+				OR ( privmsgs_to_userid = " . $userdata['user_id'] . " 
+					AND privmsgs_type = " . PRIVMSGS_SAVED_IN_MAIL . " ) )";
+				break;
+		}
+
+		$sql = "SELECT privmsgs_id
+			FROM " . PRIVMSGS_TABLE . "
+			WHERE $delete_type $delete_sql_id";
+
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Could not obtain id list to delete messages', '', __LINE__, __FILE__, $sql);
+		}
+
+		$mark_list = array();
+		while ( $row = $db->sql_fetchrow($result) )
+		{
+			$mark_list[] = $row['privmsgs_id'];
+		}
+
+		unset($delete_type);
 
 		if ( count($mark_list) )
 		{
@@ -1494,6 +1504,10 @@ else if ( $submit || $refresh || $mode != '' )
 				$mode = 'reply';
 			}
 		}
+		else
+		{
+			$privmsg_subject = $privmsg_message = '';
+		}
 	}
 
 	//
@@ -2019,6 +2033,10 @@ if ( $folder != 'outbox' )
 			$l_box_size_status = '';
 			break;
 	}
+}
+else
+{
+	$inbox_limit_img_length = $inbox_limit_pct = $l_box_size_status = '';
 }
 
 //
