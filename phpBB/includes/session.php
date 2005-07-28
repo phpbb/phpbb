@@ -222,13 +222,17 @@ class session
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
-
+/*		echo "<br />$sql";
+		echo "<br />$user_id :: " . sizeof($this->data) . " :: " . (int) is_array($this->data) . " :: " . $db->sql_numrows();
+		print_r($this->cookie_data);
+		print_r($this->data);*/
+		
 		// If no data was returned one or more of the following occured:
 		// Key didn't match one in the DB
 		// User does not exist
 		// User is inactive
 		// User is bot
-		if (!sizeof($this->data))
+		if (!sizeof($this->data) || !is_array($this->data))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = ($bot) ? $bot : ANONYMOUS;
@@ -242,6 +246,11 @@ class session
 			$db->sql_freeresult($result);
 		}
 
+/*		echo "<br />$sql";
+		echo "<br />$user_id :: " . sizeof($this->data) . " :: " . (int) is_array($this->data) . " :: " . $db->sql_numrows();
+		print_r($this->cookie_data);
+		print_r($this->data);*/
+		
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$sql = 'SELECT session_time, session_id
@@ -254,7 +263,6 @@ class session
 			{
 				$this->data = array_merge($sdata, $this->data);
 				unset($sdata);
-				
 				$this->session_id = $this->data['session_id'];
 	  		}
 			$db->sql_freeresult($result);
@@ -615,7 +623,7 @@ class session
 		
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
-		$key = ($key === false) ? ((!empty($this->cookie_data['k'])) ? true : false) : $key;
+		$key = ($key === false) ? ((!empty($this->cookie_data['k'])) ? $this->cookie_data['k'] : false) : $key;
 		
 		$sql_ary = array(
 			'key_id'		=> (string) md5(unique_id()),
@@ -629,7 +637,7 @@ class session
 			);
 		}
 		
-		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $db->sql_escape($user_id) . ' AND key_id = "' . $db->sql_escape($key) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . ' AND key_id = "' . $db->sql_escape($key) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 		
 		$this->cookie_data['k'] = $sql_ary['key_id'];
@@ -1095,7 +1103,7 @@ class auth
 	function acl(&$userdata)
 	{
 		global $db, $cache;
-
+		
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
 			$sql = 'SELECT auth_option, is_global, is_local
@@ -1435,7 +1443,7 @@ class auth
 					// TODO: Login Attempt++
 					return $login;
 				}
-
+				
 				return $user->session_create($login['user_id'], $admin, $autologin, $viewonline);
 			}
 		}
