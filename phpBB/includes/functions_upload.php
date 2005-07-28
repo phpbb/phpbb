@@ -505,7 +505,7 @@ class fileupload
 
 		$host = $url['host'];
 		$path = dirname($url['path']);
-		$port = (!empty($url['port'])) ? $url['port'] : 80;
+		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
 			
 		$upload_ary['type'] = 'application/octet-stream';
 		$upload_ary['name'] = basename($url['path']) . '.' . array_pop(explode('.', $url['path']));
@@ -542,7 +542,7 @@ class fileupload
 				{
 					if (strpos($line, 'Content-Type: ') !== false)
 					{
-						$upload_ary['type'] = rtrim(str_ireplace('Content-Type: ', '', $line));
+						$upload_ary['type'] = rtrim(str_replace('Content-Type: ', '', $line));
 					}
 				}
 			}
