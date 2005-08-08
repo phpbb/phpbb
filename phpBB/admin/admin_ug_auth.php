@@ -36,9 +36,9 @@ if( !empty($setmodules) )
 //
 $no_page_header = TRUE;
 
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 $params = array('mode' => 'mode', 'user_id' => POST_USERS_URL, 'group_id' => POST_GROUPS_URL, 'adv' => 'adv');
 
@@ -53,6 +53,11 @@ while( list($var, $param) = @each($params) )
 		$$var = "";
 	}
 }
+
+$user_id = intval($user_id);
+$group_id = intval($group_id);
+$adv = intval($adv);
+$mode = htmlspecialchars($mode);
 
 //
 // Start program - define vars
@@ -409,6 +414,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . USERS_TABLE . " u  
 			WHERE ug.group_id = aa.group_id 
 				AND u.user_id = ug.user_id 
+				AND ug.user_pending = 0
 				AND u.user_level NOT IN (" . MOD . ", " . ADMIN . ") 
 			GROUP BY u.user_id 
 			HAVING SUM(aa.auth_mod) > 0";
@@ -503,6 +509,48 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 			}
 		}
 
+		$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
+			WHERE group_id = $group_id";
+		$result = $db->sql_query($sql);
+
+		$group_user = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$group_user[$row['user_id']] = $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql = "SELECT ug.user_id, COUNT(auth_mod) AS is_auth_mod 
+			FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug 
+			WHERE ug.user_id IN (" . implode(', ', $group_user) . ") 
+				AND aa.group_id = ug.group_id 
+				AND aa.auth_mod = 1
+			GROUP BY ug.user_id";
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Could not obtain moderator status', '', __LINE__, __FILE__, $sql);
+		}
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['is_auth_mod'])
+			{
+				unset($group_user[$row['user_id']]);
+			}
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($group_user))
+		{
+			$sql = "UPDATE " . USERS_TABLE . " 
+				SET user_level = " . USER . " 
+				WHERE user_id IN (" . implode(', ', $group_user) . ") AND user_level = " . MOD;
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(GENERAL_ERROR, 'Could not update user level', '', __LINE__, __FILE__, $sql);
+			}
+		}
+
 		message_die(GENERAL_MESSAGE, $message);
 	}
 }
@@ -510,7 +558,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 {
 	if ( isset($HTTP_POST_VARS['username']) )
 	{
-		$this_userdata = get_userdata($HTTP_POST_VARS['username']);
+		$this_userdata = get_userdata($HTTP_POST_VARS['username'], true);
 		if ( !is_array($this_userdata) )
 		{
 			message_die(GENERAL_MESSAGE, $lang['No_such_user']);
@@ -521,9 +569,10 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	//
 	// Front end
 	//
-	$sql = "SELECT * 
-		FROM " . FORUMS_TABLE . " f
-		ORDER BY forum_order";
+	$sql = "SELECT f.* 
+		FROM " . FORUMS_TABLE . " f, " . CATEGORIES_TABLE . " c
+		WHERE f.cat_id = c.cat_id
+		ORDER BY c.cat_order, f.forum_order ASC";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
@@ -556,7 +605,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		}
 	}
 
-	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug WHERE ";
+	$sql = "SELECT u.user_id, u.username, u.user_level, g.group_id, g.group_name, g.group_single_user, ug.user_pending FROM " . USERS_TABLE . " u, " . GROUPS_TABLE . " g, " . USER_GROUP_TABLE . " ug WHERE ";
 	$sql .= ( $mode == 'user' ) ? "u.user_id = $user_id AND ug.user_id = u.user_id AND g.group_id = ug.group_id" : "g.group_id = $group_id AND ug.group_id = g.group_id AND u.user_id = ug.user_id";
 	if ( !($result = $db->sql_query($sql)) )
 	{
@@ -759,7 +808,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 		$i++;
 	}
-	@reset($auth_user);
+//	@reset($auth_user);
 	
 	if ( $mode == 'user' )
 	{
@@ -784,10 +833,19 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 	if( count($name) )
 	{
-		$t_usergroup_list = '';
+		$t_usergroup_list = $t_pending_list = '';
 		for($i = 0; $i < count($ug_info); $i++)
 		{
-			$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$mode&amp;" . POST_GROUPS_URL . "=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			$ug = ( $mode == 'user' ) ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
+
+			if (!$ug_info[$i]['user_pending'])
+			{
+				$t_usergroup_list .= ( ( $t_usergroup_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			}
+			else
+			{
+				$t_pending_list .= ( ( $t_pending_list != '' ) ? ', ' : '' ) . '<a href="' . append_sid("admin_ug_auth.$phpEx?mode=$ug=" . $id[$i]) . '">' . $name[$i] . '</a>';
+			}
 		}
 	}
 	else
@@ -819,7 +877,7 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 	//
 	// Dump in the page header ...
 	//
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		"body" => 'admin/auth_ug_body.tpl')
@@ -850,20 +908,20 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 
 		$template->assign_vars(array(
 			'USERNAME' => $t_groupname,
-			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list)
+			'GROUP_MEMBERSHIP' => $lang['Usergroup_members'] . ' : ' . $t_usergroup_list . '<br />' . $lang['Pending_members'] . ' : ' . $t_pending_list)
 		);
 	}
 
 	$template->assign_vars(array(
 		'L_USER_OR_GROUPNAME' => ( $mode == 'user' ) ? $lang['Username'] : $lang['Group_name'],
-		'L_USER_OR_GROUP' => ( $mode == 'user' ) ? $lang['User'] : $lang['Group'],
 
 		'L_AUTH_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
 		'L_AUTH_EXPLAIN' => ( $mode == 'user' ) ? $lang['User_auth_explain'] : $lang['Group_auth_explain'],
 		'L_MODERATOR_STATUS' => $lang['Moderator_status'],
 		'L_PERMISSIONS' => $lang['Permissions'],
 		'L_SUBMIT' => $lang['Submit'],
-		'L_RESET' => $lang['Reset'],
+		'L_RESET' => $lang['Reset'], 
+		'L_FORUM' => $lang['Forum'], 
 
 		'U_USER_OR_GROUP' => append_sid("admin_ug_auth.$phpEx"),
 		'U_SWITCH_MODE' => $u_switch_mode,
@@ -878,7 +936,7 @@ else
 	//
 	// Select a user/group
 	//
-	include('page_header_admin.'.$phpEx);
+	include('./page_header_admin.'.$phpEx);
 
 	$template->set_filenames(array(
 		'body' => ( $mode == 'user' ) ? 'admin/user_select_body.tpl' : 'admin/auth_select_body.tpl')
@@ -920,7 +978,7 @@ else
 
 	$s_hidden_fields = '<input type="hidden" name="mode" value="' . $mode . '" />';
 
-	$l_type = ( $mode == 'user' ) ? "USER" : "AUTH";
+	$l_type = ( $mode == 'user' ) ? 'USER' : 'AUTH';
 
 	$template->assign_vars(array(
 		'L_' . $l_type . '_TITLE' => ( $mode == 'user' ) ? $lang['Auth_Control_User'] : $lang['Auth_Control_Group'],
@@ -936,6 +994,6 @@ else
 
 $template->pparse('body');
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>
