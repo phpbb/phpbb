@@ -113,7 +113,7 @@ $available_dbms = array(
 		'DELIM'			=> 'GO',
 		'COMMENTS'		=> 'remove_comments'
 	),
-	'mssql-odbc'=>	array(
+	'mssql_odbc'=>	array(
 		'LABEL'			=> 'MS SQL Server [ ODBC ]',
 		'SCHEMA'		=> 'mssql',
 		'MODULE'		=> 'odbc', 
@@ -1040,7 +1040,7 @@ if ($stage == 3)
 	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate the database
-	$db = new sql_db();
+	$db = new $sql_db();
 	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
 	// We ship the Access schema complete, we don't need to create tables nor
@@ -1082,7 +1082,7 @@ if ($stage == 3)
 		switch ($dbms)
 		{
 			case 'mssql':
-			case 'mssql-odbc':
+			case 'mssql_odbc':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2', $sql_query);
 				break;
 
@@ -1385,7 +1385,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate it and set return on error true
-	$db = new sql_db();
+	$db = new $sql_db();
 	$db->sql_return_on_error(true);
 
 	// Try and connect ...
@@ -1407,7 +1407,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 				break;
 
 			case 'mssql':
-			case 'mssql-odbc':
+			case 'mssql_odbc':
 				$sql = "SELECT name 
 					FROM sysobjects 
 					WHERE type='U'";

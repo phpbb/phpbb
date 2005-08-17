@@ -48,6 +48,8 @@ $lang += array(
 	'ACCOUNT_NOT_ACTIVATED'	=> 'Your account has not been activated yet',
 	'ACP'					=> 'Administration Control Panel',
 	'ACTIVE_ERROR'			=> 'You have specified an inactive username. Please activate your account and try again. If you continue to have problems please contact a board administrator.',
+	'ADMINISTRATOR'			=> 'Administrator',
+	'ADMINISTRATORS'		=> 'Administrators',
 	'ALLOWED'				=> 'Allowed',
 	'ALL_FORUMS'			=> 'All Forums',
 	'ALL_MESSAGES'			=> 'All Messages',
@@ -124,6 +126,7 @@ $lang += array(
 	'FOLDER'				=> 'Folder',
 	'FORGOT_PASS'			=> 'I forgot my password',
 	'FORUM'					=> 'Forum',
+	'FORUMS'				=> 'Forums',
 	'FORUMS_MARKED'			=> 'All forums have been marked read',
 	'FORUM_INDEX'			=> 'Board Index',
 	'FORUM_LOCATION'		=> 'Forum Location',
@@ -134,6 +137,7 @@ $lang += array(
 
 	'GO'					=> 'Go',
 	'GOTO_PAGE'				=> 'Goto page',
+	'GROUP'					=> 'Group',
 	'GROUP_ERR_DESC_LONG'	=> 'Group description too long.',
 	'GROUP_ERR_TYPE'		=> 'Inappropriate group type specified.',
 	'GROUP_ERR_USERNAME'	=> 'No group name specified.',
@@ -360,6 +364,7 @@ $lang += array(
 	'SUBMIT'			=> 'Submit',
 
 	'TERMS_USE'			=> 'Terms of Use',
+	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
 
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',

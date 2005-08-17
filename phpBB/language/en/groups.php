@@ -29,7 +29,13 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang += array(
+	'ALREADY_DEFAULT_GROUP'	=> 'The selected group is already your default group',
+	'ALREADY_IN_GROUP'		=> 'You are already a member of the selected group',
+
+	'CHANGED_DEFAULT_GROUP'	=> 'Successfully changed default group',
+	
 	'GROUP_AVATAR'		=> 'Group avatar', 
+	'GROUP_CHANGE_DEFAULT'	=> 'Are you sure you want to change your default membership to the group "%s"?',
 	'GROUP_CLOSED'		=> 'Closed',
 	'GROUP_DESC'		=> 'Group description',
 	'GROUP_HIDDEN'		=> 'Hidden',
@@ -45,9 +51,16 @@ $lang += array(
 	'GROUP_IS_FREE'		=> 'This is a freely open group, all new members are welcome.', 
 	'GROUP_IS_SPECIAL'	=> 'This is a special group, special groups are managed by the board administrators.', 
 
+	'LOG_USER_GROUP_CHANGE'	=> '<b>User changed default group</b><br />&#187; %s',
 	'LOGIN_EXPLAIN_GROUP'	=> 'You need to login to view group details',
 	
-	'REMOVE_SELECTED'	=> 'Remove selected',
+	'NOT_MEMBER_OF_GROUP'	=> 'The requested operation cannot be taken because you are not a member of the selected group',
+
+	'PRIMARY_GROUP'		=> 'Primary group',
+
+	'REMOVE_SELECTED'		=> 'Remove selected',
+
+	'USER_GROUP_CHANGE'		=> 'From "%1$s" group to "%2$s"',
 );
 
 ?>

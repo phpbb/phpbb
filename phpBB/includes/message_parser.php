@@ -940,7 +940,7 @@ class parse_message extends bbcode_firstpass
 			switch (SQL_LAYER)
 			{
 				case 'mssql':
-				case 'mssql-odbc':
+				case 'mssql_odbc':
 					$sql = 'SELECT * 
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';
