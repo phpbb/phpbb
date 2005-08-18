@@ -1225,10 +1225,10 @@ function meta_refresh($time, $url)
 /**
 * Build Confirm box
 */
-function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html')
+function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db;
-	global $SID, $phpEx;
+	global $SID, $phpEx, $phpbb_root_path;
 
 	if (isset($_POST['cancel']))
 	{
@@ -1268,12 +1268,14 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" /><input type="hidden" name="sess" value="' . $user->session_id . '" /><input type="hidden" name="sid" value="' . $SID . '" />';
+	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="sess" value="' . $user->session_id . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $SID . '" />';
 
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
 
-	page_header($user->lang[$title]);
+	page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
 
 	$template->set_filenames(array(
 		'body' => $html_body)
@@ -1287,12 +1289,13 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	// re-add $SID
-	$u_action = (strpos($user->page, ".{$phpEx}?") !== false) ? str_replace(".{$phpEx}?", ".$phpEx$SID&", $user->page) . '&' : $user->page . '?';
+	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . $user->page;
+	$u_action = (strpos($use_page, ".{$phpEx}?") !== false) ? str_replace(".{$phpEx}?", ".$phpEx$SID&", $use_page) . '&' : $use_page . '?';
 	$u_action .= 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
-		'MESSAGE_TITLE'		=> $user->lang[$title],
-		'MESSAGE_TEXT'		=> $user->lang[$title . '_CONFIRM'],
+		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
+		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
 
 		'YES_VALUE'			=> $user->lang['YES'],
 		'S_CONFIRM_ACTION'	=> $u_action,
@@ -1597,6 +1600,31 @@ function extension_allowed($forum_id, $extension, &$extensions)
 	}
 
 	return false;
+}
+
+/**
+* Build simple hidden fields from array
+*/
+function build_hidden_fields($field_ary)
+{
+	$s_hidden_fields = '';
+
+	foreach ($field_ary as $name => $vars)
+	{
+		if (is_array($vars))
+		{
+			foreach ($vars as $key => $value)
+			{
+				$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . $value . '" />';
+			}
+		}
+		else
+		{
+			$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $vars . '" />';
+		}
+	}
+
+	return $s_hidden_fields;
 }
 
 /**
@@ -1944,8 +1972,8 @@ function page_header($page_title = '')
 		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=popup",
 		'U_JS_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&mode=popup",
 		'U_MEMBERLIST' 			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
-		'U_VIEWONLINE' 			=> "{$phpbb_root_path}viewonline.$phpEx$SID",
 		'U_MEMBERSLIST'			=> "{$phpbb_root_path}memberlist.$phpEx$SID",
+		'U_VIEWONLINE' 			=> "{$phpbb_root_path}viewonline.$phpEx$SID",
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX' 				=> "{$phpbb_root_path}index.$phpEx$SID",
 		'U_SEARCH' 				=> "{$phpbb_root_path}search.$phpEx$SID",
@@ -1958,6 +1986,7 @@ function page_header($page_title = '')
 		'U_SEARCH_UNANSWERED'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=unanswered",
 		'U_SEARCH_ACTIVE_TOPICS'=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=active_topics",
 		'U_DELETE_COOKIES'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=delete_cookies",
+		'U_TEAM'				=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=leaders",
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
