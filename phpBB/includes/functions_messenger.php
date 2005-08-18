@@ -239,7 +239,9 @@ class messenger
 	//
 	function save_queue()
 	{
-		if ($config['email_package_size'] && $this->use_queue)
+		global $config;
+
+		if ($config['email_package_size'] && $this->use_queue && !empty($this->queue))
 		{
 			$this->queue->save();
 		}
