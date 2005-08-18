@@ -43,8 +43,8 @@ class session
 		$this->time_now = time();
 		
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#' . preg_quote($config['script_path'], '#') . '/?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*(.*?)$#i', '\1\2', $_SERVER['REQUEST_URI']) . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
-		
+		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#/?' . preg_quote($config['script_path'], '#') . '/?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*(.*?)$#i', '\1\2', $_SERVER['REQUEST_URI']) . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
+
 		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
@@ -82,7 +82,7 @@ class session
 		}
 		
 		// Is session_id is set or session_id is set and matches the url param if required
-		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id == $_GET['sid'])))
+		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id === $_GET['sid'])))
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
@@ -195,7 +195,7 @@ class session
 		
 		// If we're presented with an autologin key we'll join against it.
 		// Else if we've been passed a user_id we'll grab data based on that
-		if ($this->cookie_data['k'] && $this->cookie_data['u'])
+		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'])
 		{
 			$sql = 'SELECT u.* 
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
@@ -267,7 +267,7 @@ class session
 	  		}
 			$db->sql_freeresult($result);
 
-			$this->data['session_last_visit'] = ($this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
+			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
 		}
 		else
 		{
@@ -301,8 +301,8 @@ class session
 			'session_browser'		=> (string) $this->browser,
 			'session_page'			=> (string) $this->page,
 			'session_ip'			=> (string) $this->ip,
-            'session_admin'         => ($set_admin) ? 1 : 0,
-            'session_viewonline'    => ($viewonline) ? 1 : 0,
+			'session_admin'			=> ($set_admin) ? 1 : 0,
+			'session_viewonline'	=> ($viewonline) ? 1 : 0,
 		);
 
 		$db->sql_return_on_error(true);
@@ -312,7 +312,7 @@ class session
 		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			// Limit new sessions in 1 minute period (if required)
-			if (!$this->data['session_time'] && $config['active_sessions'])
+			if ((!isset($this->data['session_time']) || !$this->data['session_time']) && $config['active_sessions'])
 			{
 				$sql = 'SELECT COUNT(*) AS sessions
 					FROM ' . SESSIONS_TABLE . '
@@ -766,7 +766,7 @@ class user extends session
 		switch (SQL_LAYER)
 		{
 			case 'mssql':
-			case 'mssql-odbc':
+			case 'mssql_odbc':
 				$sql = 'SELECT s.style_id, t.*, c.*, i.*
 					FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
 					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
