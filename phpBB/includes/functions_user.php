@@ -256,7 +256,7 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 		'user_type'		=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL
 	);
 
-	if ($group_id == $group_id_ary[$group_name])
+	if ($new_group_id == $group_id_ary[$group_name])
 	{
 		$sql_ary['group_id'] = $new_group_id;
 	}
@@ -1211,7 +1211,7 @@ function group_delete($group_id, $group_name = false)
 /**
 * Add user(s) to group
 */
-function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0)
+function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0)
 {
 	global $db, $auth;
 
@@ -1243,7 +1243,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	// Do all the users exist in this group?
 	$add_id_ary = array_diff($user_id_ary, $add_id_ary);
-	unset($id_ary);
 
 	// If we have no users 
 	if (!sizeof($add_id_ary) && !sizeof($update_id_ary))
@@ -1261,16 +1260,16 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			case 'mysqli':
 			case 'mssql':
 			case 'sqlite':
-				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader) 
-					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader)",  $add_id_ary));
+				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending) 
+					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader, $pending)",  $add_id_ary));
 				$db->sql_query($sql);
 				break;
 
 			default:
 				foreach ($add_id_ary as $user_id)
 				{
-					$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader)
-						VALUES ($user_id, $group_id, $leader)";
+					$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
+						VALUES ($user_id, $group_id, $leader, $pending)";
 					$db->sql_query($sql);
 				}
 				break;
@@ -1329,6 +1328,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			{
 				trigger_error("Could not obtain group attributes for group_id $group_id", E_USER_ERROR);
 			}
+			$db->sql_freeresult($result);
 
 			if (!$group_avatar_width)
 			{
@@ -1382,6 +1382,8 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		{
 			trigger_error("Could not obtain name of group $group_id", E_USER_ERROR);
 		}
+
+		$db->sql_freeresult($result);
 	}
 
 	if (!function_exists('add_log'))
@@ -1394,8 +1396,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	unset($username_ary);
-	unset($user_id_ary);
+	unset($username_ary, $user_id_ary);
 
 	return false;
 }
@@ -1435,8 +1436,21 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	}
 	$db->sql_freeresult($result);
 
+	// Get users default groups - we only need to reset default group membership if the group from which the user gets removed is set as default
+	$sql = 'SELECT user_id, group_id
+		FROM ' . USERS_TABLE . '
+		WHERE user_id IN (' . implode(', ', $user_id_ary) . ")";
+	$result = $db->sql_query($sql);
+	
+	$default_groups = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$default_groups[$row['user_id']] = $row['group_id'];
+	}
+	$db->sql_freeresult($result);
+	
 	// What special group memberships exist for these users?
-	$sql = 'SELECT g.group_id, g.group_name, ug.user_id 
+	$sql = 'SELECT g.group_id, g.group_name, ug.user_id
 		FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g 
 		WHERE ug.user_id IN (' . implode(', ', $user_id_ary) . ") 
 			AND g.group_id = ug.group_id
@@ -1448,7 +1462,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$temp_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (!isset($temp_ary[$row['user_id']]) || array_search($row['group_name'], $group_order) < $temp_ary[$row['user_id']])
+		if ($default_groups[$row['user_id']] == $group_id && (!isset($temp_ary[$row['user_id']]) || array_search($row['group_name'], $group_order) < $temp_ary[$row['user_id']]))
 		{
 			$temp_ary[$row['user_id']] = $row['group_id'];
 		}
@@ -1464,7 +1478,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	foreach ($special_group_data as $gid => $default_data_ary)
 	{
-		if ($sql_where = implode(', ', $sql_where_ary[$gid]))
+		if (isset($sql_where_ary[$gid]) && $sql_where = implode(', ', $sql_where_ary[$gid]))
 		{
 			$sql_set = '';
 			foreach ($special_group_data[$gid] as $attribute => $value)
@@ -1675,8 +1689,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 * Obtain either the members of a specified group, the groups the specified user is subscribed to
 * or checking if a specified user is in a specified group
 *
-* Note: Extend select statement as needed
-* Note2: Never use this more than once... first group your users/groups
+* Note: Never use this more than once... first group your users/groups
 */
 function group_memberships($group_id_ary = false, $user_id_ary = false, $return_bool = false)
 {
@@ -1687,26 +1700,26 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 		return true;
 	}
 
-	$sql = 'SELECT group_id, user_id
-		FROM ' . USER_GROUP_TABLE . '
-		WHERE ';
+	$sql = 'SELECT ug.*, u.username, u.user_email
+		FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
+		WHERE ug.user_id = u.user_id AND ';
 
 	if ($group_id_ary && $user_id_ary)
 	{
-		$sql .= " group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary") . "
-				AND user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
+		$sql .= " ug.group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary") . "
+				AND ug.user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
 	}
 	else if ($group_id)
 	{
-		$sql .= " group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary");
+		$sql .= " ug.group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary");
 	}
 	else if ($user_id_ary)
 	{
-		$sql .= " user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
+		$sql .= " ug.user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
 	}
 	
 	$result = ($return_bool) ? $db->sql_query_limit($sql, 1) : $db->sql_query($sql);
-	
+
 	$row = $db->sql_fetchrow($result);
 
 	if ($return_bool)
@@ -1715,15 +1728,22 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 		return ($row) ? true : false;
 	}
 
-	$result = array();
+	if (!$row)
+	{
+		return false;
+	}
+
+	$return = array();
 
 	do
 	{
-		$result[] = $row;
+		$return[] = $row;
 	}
 	while ($row = $db->sql_fetchrow($result));
-	
-	return $result;
+
+	$db->sql_freeresult($result);
+
+	return $return;
 }
 
 ?>
