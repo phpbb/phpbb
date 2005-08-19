@@ -39,7 +39,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
 
-	$db = new sql_db();
+	$db = new $sql_db();
 	$cache = new acm();
 
 	// Connect to DB

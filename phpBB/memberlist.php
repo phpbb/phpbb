@@ -67,7 +67,7 @@ switch ($mode)
 
 		$user->add_lang('groups');
 		
-		$page_title = $user->lang['TEAM'];
+		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
 		$user_ary = $auth->acl_get_list(false, array('a_', 'm_'), false);
@@ -151,7 +151,7 @@ switch ($mode)
 				'RANK_IMG'		=> $rank_img,
 
 				'U_GROUP'		=> $u_group,
-				'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
+				'U_VIEWPROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}",
 				'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '')
 			);
 		}
@@ -194,7 +194,7 @@ switch ($mode)
 				$lang = 'JABBER';
 				$sql_field = 'user_jabber';
 				$s_select = (@extension_loaded('xml')) ? 'S_SEND_JABBER' : 'S_NO_SEND_JABBER';
-				$s_action = "memberlist.$phpEx$SID&amp;mode=contact&amp;action=$action&amp;u=$user_id";
+				$s_action = "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=$action&amp;u=$user_id";
 				break;
 
 			default:
@@ -219,7 +219,7 @@ switch ($mode)
 		switch ($action)
 		{
 			case 'icq':
-				$presence_img = '<img src="http://web.icq.com/whitepages/online?icq=' . $row[$sql_field] . '&amp;img=5" width="18" height="18" border="0" alt="" />';
+				$presence_img = '<img src="http://web.icq.com/whitepages/online?icq=' . $row[$sql_field] . '&amp;img=5" width="18" height="18" alt="" />';
 				break;
 
 			case 'jabber':
@@ -742,6 +742,7 @@ switch ($mode)
 			$yahoo		= request_var('yahoo', '');
 			$msn		= request_var('msn', '');
 			$jabber		= request_var('jabber', '');
+			$search_group_id	= request_var('search_group_id', 0);
 
 			$joined_select	= request_var('joined_select', 'lt');
 			$active_select	= request_var('active_select', 'lt');
@@ -786,6 +787,12 @@ switch ($mode)
 			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
+			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id " : '';
+			
+			if ($search_group_id)
+			{
+				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
+			}
 
 			if ($ipdomain && $auth->acl_get('m_ip'))
 			{
@@ -829,7 +836,7 @@ switch ($mode)
 		{
 			$sql_where = " AND u.username LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
 		}
-
+		
 		// Are we looking at a usergroup? If so, fetch additional info
 		// and further restrict the user info query
 		if ($mode == 'group')
@@ -850,13 +857,13 @@ switch ($mode)
 			switch ($group_row['group_type'])
 			{
 				case GROUP_OPEN:
-					$group_row['group_type'] = 'OPEN';
+					$group_row['l_group_type'] = 'OPEN';
 					break;
 				case GROUP_CLOSED:
-					$group_row['group_type'] = 'CLOSED';
+					$group_row['l_group_type'] = 'CLOSED';
 					break;
 				case GROUP_HIDDEN:
-					$group_row['group_type'] = 'HIDDEN';
+					$group_row['l_group_type'] = 'HIDDEN';
 
 					// Check for membership or special permissions
 					if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $group_row['user_id'] != $user->data['user_id'])
@@ -865,10 +872,10 @@ switch ($mode)
 					}
 					break;
 				case GROUP_SPECIAL:
-					$group_row['group_type'] = 'SPECIAL';
+					$group_row['l_group_type'] = 'SPECIAL';
 					break;
 				case GROUP_FREE:
-					$group_row['group_type'] = 'FREE';
+					$group_row['l_group_type'] = 'FREE';
 					break;
 			}
 
@@ -903,9 +910,9 @@ switch ($mode)
 
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> $group_row['group_description'],
-				'GROUP_NAME'	=> $group_row['group_name'],
+				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 				'GROUP_COLOR'	=> $group_row['group_colour'],
-				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['group_type']],
+				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
 				'GROUP_RANK'	=> $rank_title,
 
 				'AVATAR_IMG'	=> $avatar_img,
@@ -968,6 +975,21 @@ switch ($mode)
 		// Some search user specific data
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
+			$group_selected = request_var('search_group_id', 0);
+			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
+
+			$sql = 'SELECT group_id, group_name, group_type
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_type <> ' . GROUP_HIDDEN . '
+				ORDER BY group_name ASC';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			}
+			$db->sql_freeresult($result);
+
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
@@ -988,6 +1010,7 @@ switch ($mode)
 				'S_SORT_OPTIONS' 		=> $s_sort_key,
 				'S_JOINED_TIME_OPTIONS' => $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS' => $s_find_active_time,
+				'S_GROUP_SELECT'		=> $s_group_select,
 				'S_SEARCH_ACTION' 		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=$form&amp;field=$field")
 			);
 		}
@@ -1193,17 +1216,17 @@ function show_profile($data)
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
 
 		'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
-		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;show_results=posts" : '',
-		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '',
+		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;show_results=posts" : '',
+		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
-		'U_ICQ'			=> ($data['user_icq']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
-		'U_AIM'			=> ($data['user_aim']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
+		'U_ICQ'			=> ($data['user_icq']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$user_id" : '',
+		'U_AIM'			=> ($data['user_aim']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$user_id" : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&.src=pg' : '',
-		'U_MSN'			=> ($data['user_msnm']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$user_id" : '',
-		'U_JABBER'		=> ($data['user_jabber']) ? "memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
+		'U_MSN'			=> ($data['user_msnm']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$user_id" : '',
+		'U_JABBER'		=> ($data['user_jabber']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
 
-		'S_ONLINE'	=> (intval($data['session_time']) >= time() - 300) ? true : false
+		'S_ONLINE'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? true : false
 	);
 }
 

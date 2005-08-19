@@ -330,7 +330,11 @@ if ($mode == 'edit')
 // Delete triggered ?
 if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id) && $post_id == $topic_last_post_id) || $auth->acl_get('m_delete', $forum_id)))
 {
-	$s_hidden_fields = '<input type="hidden" name="p" value="' . $post_id . '" /><input type="hidden" name="f" value="' . $forum_id . '" /><input type="hidden" name="mode" value="delete" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		'p'		=> $post_id,
+		'f'		=> $forum_id,
+		'mode'	=> 'delete')
+	);
 
 	if (confirm_box(true))
 	{

@@ -306,7 +306,7 @@ switch ($mode)
 			$user->set_cookie('sid', '', $set_time);
 
 			// We destroy the session here, the user will be logged out nevertheless
-			$user->destroy();
+			$user->session_kill();
 
 			meta_refresh(3, "{$phpbb_root_path}index.$phpEx$SID");
 
