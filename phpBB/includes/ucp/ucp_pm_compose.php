@@ -244,8 +244,6 @@ function compose_pm($id, $mode, $action)
 		// Folder id has been determined by the SQL Statement
 		// $folder_id = request_var('f', PRIVMSGS_NO_BOX);
 
-		$s_hidden_fields = '<input type="hidden" name="p" value="' . $msg_id . '" /><input type="hidden" name="f" value="' . $folder_id . '" /><input type="hidden" name="action" value="delete" />';
-
 		// Do we need to confirm ?
 		if (confirm_box(true))
 		{
@@ -261,8 +259,14 @@ function compose_pm($id, $mode, $action)
 		}
 		else
 		{
+			$s_hidden_fields = array(
+				'p'		=> $msg_id,
+				'f'		=> $folder_id,
+				'action'=> 'delete'
+			);
+
 			// "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose"
-			confirm_box(false, 'DELETE_MESSAGE', $s_hidden_fields);
+			confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 		}
 	}
 

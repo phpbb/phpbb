@@ -3,79 +3,83 @@
 <!-- $Id$ -->
 
 <table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th colspan="2">{L_USERGROUPS}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="2"><span class="genmed">{L_GROUPS_EXPLAIN}</span></td>
-	</tr>
+<tr>
+	<th colspan="2">{L_USERGROUPS}</th>
+</tr>
+<tr>
+	<td class="row3" colspan="2"><span class="genmed">{L_GROUPS_EXPLAIN}</span></td>
+</tr>
 
-	<tr>
-		<th>{L_GROUP_DETAILS}</td>
-		<th>{L_MARK}</td>
-	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="right"><span class="genmed">Select: </span><select name="g"></select> <input class="btnmain" type="submit" value="{L_GO}" />&nbsp;</td>
-	</tr>
-	<tr>
-		<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_LEADER}</b></td>
-	</tr>
-	<!-- BEGIN leader -->
-	<tr>
-		<td class="<!-- IF leader.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->"><b class="genmed"><a href="{leader.U_VIEW_GROUP}">{leader.GROUP_NAME}</a></b><!-- IF leader.GROUP_DESC --><p class="forumdesc">{leader.GROUP_DESC}</p><!-- ENDIF --></td>
-		<td class="<!-- IF leader.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->" align="center"><!-- IF leader.GROUP_TYPE --><input type="checkbox" name="leader[{leader.GROUP_ID}]" /><!-- ENDIF --></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr>
-		<td class="row2" colspan="2" align="center"><b class="genmed">{L_NO_LEADERS}</b></td>
-	</tr>
-	<!-- END leader -->
+<tr>
+	<th>{L_GROUP_DETAILS}</td>
+	<th>{L_MARK}</td>
+</tr>
+<tr>
+	<td class="cat" colspan="2" align="right"><span class="genmed">{L_SELECT}: </span><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnmain" type="submit" value="{L_GO}" />&nbsp;</td>
+</tr>
+<tr>
+	<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_LEADER}</b></td>
+</tr>
+<!-- BEGIN leader -->
+	<!-- IF leader.S_ROW_COUNT is odd --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-	<tr>
-		<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_MEMBER_DEFAULT}</b></td>
-	</tr>
-	<!-- BEGIN member -->
-	<tr>
-		<td class="<!-- IF member.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->"><b class="genmed"><a href="{member.U_VIEW_GROUP}">{member.GROUP_NAME}</a></b><!-- IF member.GROUP_DESC --><p class="forumdesc">{member.GROUP_DESC}</p><!-- ENDIF --></td>
-		<td class="<!-- IF member.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->" align="center"><!-- IF member.GROUP_TYPE --><input type="checkbox" name="member[{member.GROUP_ID}]" /><!-- ENDIF --></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr>
-		<td class="row2" colspan="2" align="center"><span class="genmed">{L_NO_MEMBERS}</span></td>
-	</tr>
-	<!-- END member -->
+	<td><b class="genmed"><a href="{leader.U_VIEW_GROUP}">{leader.GROUP_NAME}</a></b><!-- IF leader.GROUP_DESC --><p class="forumdesc">{leader.GROUP_DESC}</p><!-- ENDIF --></td>
+	<td><!-- IF leader.GROUP_TYPE --><input type="checkbox" name="leader[{leader.GROUP_ID}]" /><!-- ENDIF --></td>
+</tr>
+<!-- BEGINELSE -->
+<tr>
+	<td class="row2" colspan="2" align="center"><b class="genmed">{L_NO_LEADERS}</b></td>
+</tr>
+<!-- END leader -->
 
-	<tr>
-		<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_MEMBER_NOT_DEFAULT}</b></td>
-	</tr>
-	<!-- BEGIN pending -->
-	<tr>
-		<td class="<!-- IF pending.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->"><b class="genmed"><a href="{pending.U_VIEW_GROUP}">{pending.GROUP_NAME}</a></b><!-- IF pending.GROUP_DESC --><p class="forumdesc">{pending.GROUP_DESC}</p><!-- ENDIF --></td>
-		<td class="<!-- IF pending.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->" align="center"><!-- IF pending.GROUP_TYPE --><input type="checkbox" name="pending[{pending.GROUP_ID}]" /><!-- ENDIF --></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr>
-		<td class="row2" colspan="2" align="center"><span class="genmed">{L_NO_PENDING}</span></td>
-	</tr>
-	<!-- END pending -->
+<tr>
+	<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_MEMBER_DEFAULT}</b></td>
+</tr>
+<!-- BEGIN member -->
+	<!-- IF member.S_ROW_COUNT is odd --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-	<tr>
-		<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_PENDING}</b></td>
-	</tr>
-	<!-- BEGIN nonmember -->
-	<tr>
-		<td class="<!-- IF nonmember.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->"><b class="genmed"><a href="{nonmember.U_VIEW_GROUP}">{nonmember.GROUP_NAME}</a></b><!-- IF nonmember.GROUP_DESC --><p class="forumdesc">{nonmember.GROUP_DESC}</p><!-- ENDIF --></td>
-		<td class="<!-- IF nonmember.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->" align="center"><!-- IF nonmember.GROUP_TYPE --><input type="checkbox" name="nonmember[{nonmember.GROUP_ID}]" /><!-- ENDIF --></td>
-	</tr>
-	<!-- BEGINELSE -->
-	<tr>
-		<td class="row2" colspan="2" align="center"><span class="genmed">{L_NO_PENDING}<}</span></td>
-	</tr>
-	<!-- END nonmember -->
+	<td><b class="genmed"><a href="{member.U_VIEW_GROUP}">{member.GROUP_NAME}</a></b><!-- IF member.GROUP_DESC --><p class="forumdesc">{member.GROUP_DESC}</p><!-- ENDIF --></td>
+	<td align="center"><!-- IF member.GROUP_TYPE --><input type="checkbox" name="member[{member.GROUP_ID}]" /><!-- ENDIF --></td>
+</tr>
+<!-- BEGINELSE -->
+<tr>
+	<td class="row2" colspan="2" align="center"><span class="genmed">{L_NO_MEMBERS}</span></td>
+</tr>
+<!-- END member -->
 
-	<tr>
-		<td class="cat" colspan="2" align="right"><input class="btnmain" type="submit" value="{L_SUBMIT}" />&nbsp;</td>
-	</tr>
+<tr>
+	<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_MEMBER_NOT_DEFAULT}</b></td>
+</tr>
+<!-- BEGIN pending -->
+	<!-- IF pending.S_ROW_COUNT is odd --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+	<td><b class="genmed"><a href="{pending.U_VIEW_GROUP}">{pending.GROUP_NAME}</a></b><!-- IF pending.GROUP_DESC --><p class="forumdesc">{pending.GROUP_DESC}</p><!-- ENDIF --></td>
+	<td align="center"><!-- IF pending.GROUP_TYPE --><input type="checkbox" name="pending[{pending.GROUP_ID}]" /><!-- ENDIF --></td>
+</tr>
+<!-- BEGINELSE -->
+<tr>
+	<td class="row2" colspan="2" align="center"><span class="genmed">{L_NO_PENDING}</span></td>
+</tr>
+<!-- END pending -->
+
+<tr>
+	<td class="row3" colspan="2"><b class="gensmall">{L_GROUP_PENDING}</b></td>
+</tr>
+<!-- BEGIN nonmember -->
+	<!-- IF nonmember.S_ROW_COUNT is odd --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+	<td><b class="genmed"><a href="{nonmember.U_VIEW_GROUP}">{nonmember.GROUP_NAME}</a></b><!-- IF nonmember.GROUP_DESC --><p class="forumdesc">{nonmember.GROUP_DESC}</p><!-- ENDIF --></td>
+	<td align="center"><!-- IF nonmember.GROUP_TYPE --><input type="checkbox" name="nonmember[{nonmember.GROUP_ID}]" /><!-- ENDIF --></td>
+</tr>
+<!-- BEGINELSE -->
+<tr>
+	<td class="row2" colspan="2" align="center"><span class="genmed">{L_NO_PENDING}</span></td>
+</tr>
+<!-- END nonmember -->
+
+<tr>
+	<td class="cat" colspan="2" align="right"><input class="btnmain" type="submit" value="{L_SUBMIT}" />&nbsp;</td>
+</tr>
 
 </table>
 

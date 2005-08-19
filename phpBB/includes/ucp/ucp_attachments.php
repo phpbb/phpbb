@@ -26,10 +26,11 @@ class ucp_attachments extends module
 		
 		if ($delete && sizeof($delete_ids))
 		{
-			$s_hidden_fields = '<input type="hidden" name="delete" value="1" />';
+			$s_hidden_fields = array('delete' => 1);
+
 			foreach ($delete_ids as $attachment_id)
 			{
-				$s_hidden_fields .= '<input type="hidden" name="attachment[' . $attachment_id . ']" value="1" />';
+				$s_hidden_fields['attachment'][$attachment_id] = 1;
 			}
 
 			if (confirm_box(true))
@@ -44,7 +45,7 @@ class ucp_attachments extends module
 			}
 			else
 			{
-				confirm_box(false, (sizeof($delete_ids) == 1) ? 'DELETE_ATTACHMENT' : 'DELETE_ATTACHMENTS', $s_hidden_fields);
+				confirm_box(false, (sizeof($delete_ids) == 1) ? 'DELETE_ATTACHMENT' : 'DELETE_ATTACHMENTS', build_hidden_fields($s_hidden_fields));
 			}
 		}
 		

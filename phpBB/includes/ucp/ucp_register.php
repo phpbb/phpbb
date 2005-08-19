@@ -372,8 +372,11 @@ class ucp_register extends module
 			}
 		}
 
-		$s_hidden_fields = '<input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="change_lang" value="0" />';
+		$s_hidden_fields = build_hidden_fields(array(
+			'agreed'	=> 'true', 
+			'coppa'		=> $coppa,
+			'change_lang'	=> 0)
+		);
 
 		$confirm_image = '';
 		// Visual Confirmation - Show images

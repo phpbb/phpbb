@@ -142,6 +142,7 @@ $lang += array(
 
 	'LOG_USER_INACTIVE'		=> '<b>User deactivated</b><br />&#187; %s',
 	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s',
+	'LOG_USER_GROUP_CHANGE'	=> '<b>User changed default group</b><br />&#187; %s',
 
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
 

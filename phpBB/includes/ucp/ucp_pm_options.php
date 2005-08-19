@@ -158,10 +158,12 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			trigger_error('CANNOT_REMOVE_FOLDER');
 		}
 
-		$s_hidden_fields = '<input type="hidden" name="remove_folder_id" value="' . $remove_folder_id . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="remove_action" value="' . $remove_action . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="move_to" value="' . $move_to . '" />';
-		$s_hidden_fields .= '<input type="hidden" name="remove_folder" value="1" />';
+		$s_hidden_fields = array(
+			'remove_folder_id'	=> $remove_folder_id,
+			'remove_action'		=> $remove_action,
+			'move_to'			=> $move_to,
+			'remove_folder'		=> 1
+		);
 
 		// Do we need to confirm?
 		if (confirm_box(true))
@@ -226,7 +228,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		}
 		else
 		{
-			confirm_box(false, 'REMOVE_FOLDER', $s_hidden_fields);
+			confirm_box(false, 'REMOVE_FOLDER', build_hidden_fields($s_hidden_fields));
 		}
 	}
 
@@ -295,8 +297,6 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			redirect("{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode");
 		}
 
-		$s_hidden_fields = '<input type="hidden" name="delete_rule[' . $delete_id . ']" value="1" />';
-
 		// Do we need to confirm?
 		if (confirm_box(true))
 		{
@@ -314,7 +314,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		}
 		else
 		{
-			confirm_box(false, 'DELETE_RULE', $s_hidden_fields);
+			confirm_box(false, 'DELETE_RULE', build_hidden_fields(array('delete_rule' => array($delete_id => 1))));
 		}
 	}
 	
