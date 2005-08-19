@@ -432,7 +432,7 @@ function compose_pm($id, $mode, $action)
 		$message_md5 = md5($message_parser->message);
 
 		// Check checksum ... don't re-parse message if the same
-		$update_message = ($action != 'edit' || $message_md5 != $post_checksum || $status_switch || $preview) ? true : false;
+		$update_message = ($action != 'edit' || $message_md5 != $message_checksum || $status_switch || $preview) ? true : false;
 
 		if ($update_message)
 		{

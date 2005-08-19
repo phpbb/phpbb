@@ -206,6 +206,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 	if ($type != 'folder')
 	{
 		$folder_sql = ($type == 'unread') ? 't.unread = 1' : 't.new = 1';
+		$folder_sql .= ' AND t.folder_id NOT IN (' . PRIVMSGS_HOLD_BOX . ', ' . PRIVMSGS_NO_BOX . ')';
 		$folder_id = PRIVMSGS_INBOX;
 	}
 	else

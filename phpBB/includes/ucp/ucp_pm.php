@@ -187,6 +187,13 @@ class ucp_pm extends module
 					trigger_error('NO_AUTH_READ_MESSAGE');
 				}
 
+				// Do not allow hold messages to be seen
+				if ($folder_id == PRIVMSGS_HOLD_BOX)
+				{
+					trigger_error('NO_AUTH_READ_HOLD_MESSAGE');
+				}
+
+
 				// First Handle Mark actions and moving messages
 
 				// Move PM
