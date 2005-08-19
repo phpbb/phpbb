@@ -441,31 +441,6 @@ switch ($mode)
 // LITTLE HELPER
 
 /**
-* Build simple hidden fields from array
-*/
-function build_hidden_fields($field_ary)
-{
-	$s_hidden_fields = '';
-
-	foreach ($field_ary as $name => $vars)
-	{
-		if (is_array($vars))
-		{
-			foreach ($vars as $key => $value)
-			{
-				$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . $value . '" />';
-			}
-		}
-		else
-		{
-			$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $vars . '" />';
-		}
-	}
-
-	return $s_hidden_fields;
-}
-
-/**
 * Get simple topic data
 */
 function get_topic_data($topic_ids, $acl_list = false)
