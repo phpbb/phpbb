@@ -1268,9 +1268,11 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="user_id" value="' . $user->data['user_id'] . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="sess" value="' . $user->session_id . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $SID . '" />';
+	$s_hidden_fields = build_hidden_fields(array(
+		'user_id'	=> $user->data['user_id'],
+		'sess'		=> $user->session_id,
+		'sid'		=> $SID)
+	);
 
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
@@ -1372,8 +1374,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$redirect = htmlspecialchars($split_page[0][1] . '.' . $phpEx . $SID . ((!empty($split_page[0][2])) ? '&' . $split_page[0][2] : ''));
 	}
 
-	$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $redirect . '" />';
-	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $SID . '" />';
+	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $SID));
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,

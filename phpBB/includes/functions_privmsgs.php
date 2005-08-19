@@ -717,26 +717,7 @@ function handle_mark_actions($user_id, $mark_action)
 			break;
 
 		case 'delete_marked':
-			$hidden_fields = array('cur_folder_id' => $cur_folder_id, 'mark_option' => 'delete_marked', 'submit_mark' => true);
-			$hidden_fields['marked_msg_id'] = $msg_ids;
-			$s_hidden_fields = '';
 
-			foreach ($hidden_fields as $key => $var)
-			{
-				if (is_array($var))
-				{
-					foreach ($var as $_key => $_var)
-					{
-						$s_hidden_fields .= '<input type="hidden" name="' . $key . '[' . $_key . ']" value="' . $_var . '" />';
-					}
-				}
-				else
-				{
-					$s_hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . $var . '" />';
-				}
-			}
-			unset($hidden_fields);
-			
 			if (confirm_box(true))
 			{
 				delete_pm($user_id, $msg_ids, $cur_folder_id);
@@ -749,7 +730,14 @@ function handle_mark_actions($user_id, $mark_action)
 			}
 			else
 			{
-				confirm_box(false, 'DELETE_MARKED_PM', $s_hidden_fields);
+				$s_hidden_fields = array(
+					'cur_folder_id'	=> $cur_folder_id, 
+					'mark_option'	=> 'delete_marked',
+					'submit_mark'	=> true,
+					'marked_msg_id'	=> $msg_ids
+				);
+
+				confirm_box(false, 'DELETE_MARKED_PM', build_hidden_fields($s_hidden_fields));
 			}
 
 			break;
