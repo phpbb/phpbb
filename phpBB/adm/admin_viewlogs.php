@@ -43,7 +43,7 @@ $forum_id	= request_var('f', 0);
 $start		= request_var('start', 0);
 $deletemark = (isset($_POST['delmarked'])) ? true : false;
 $deleteall	= (isset($_POST['delall'])) ? true : false;
-$marked		= request_var('mark', 0);
+$marked		= request_var('mark', array(0));
 
 // Sort keys
 $sort_days	= request_var('st', 0);

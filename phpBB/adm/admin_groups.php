@@ -604,7 +604,7 @@ function swatch()
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 					WHERE ug.group_id = $group_id 
 						AND u.user_id = ug.user_id 
-					ORDER BY ug.group_leader DESC, ug.user_pending DESC, u.username 
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username 
 					LIMIT $start, " . $config['topics_per_page'];
 				$result = $db->sql_query($sql);
 
@@ -674,25 +674,25 @@ function swatch()
 		<td class="row3" colspan="5"><b><?php echo $user->lang['GROUP_APPROVED']; ?></b></td>
 	</tr>
 <?php
+
 				if (sizeof($group_data['member']))
 				{
-					$pending = $group_data['member'][0]['user_pending'];
-
 					$row_class = '';
+					$pending = false;
+
 					foreach ($group_data['member'] as $row)
 					{
-						if ($pending)
-						{
+						$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
+						if ($row['user_pending'] && !$pending)
+						{
 ?>
 	<tr>
 		<td class="row3" colspan="5"><b><?php echo $user->lang['GROUP_PENDING']; ?></b></td>
 	</tr>
 <?php
-
+							$pending = true;
 						}
-
-						$row_class = ($row_class == 'row1') ? 'row2' : 'row1';
 
 ?>
 	<tr class="<?php echo $row_class; ?>">

@@ -156,8 +156,13 @@ elseif ($pane == 'right')
 
 				if ($action == 'activate')
 				{
-					$sql = 'UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_NORMAL . " WHERE user_id IN ($mark)";
-					$db->sql_query($sql);
+					include($phpbb_root_path . 'includes/functions_user.php');
+					$mark_ary = explode(', ', $mark);
+
+					foreach ($mark_ary as $user_id)
+					{
+						user_active_flip($user_id, USER_INACTIVE);
+					}
 				}
 				else if ($action == 'delete')
 				{
@@ -165,6 +170,8 @@ elseif ($pane == 'right')
 					$db->sql_query($sql);
 					$sql = 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
 					$db->sql_query($sql);
+	
+					add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
 				}
 
 				if ($action != 'delete')
@@ -172,7 +179,6 @@ elseif ($pane == 'right')
 					set_config('num_users', $config['num_users'] + $db->sql_affectedrows(), true);
 				}
 
-				add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
 				break;
 
 			case 'remind':

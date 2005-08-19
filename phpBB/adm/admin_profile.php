@@ -401,7 +401,7 @@ if ($mode == 'create' || $mode == 'edit')
 			continue;
 		}
 
-		$s_hidden_fields .= build_hidden_fields($key_ary);
+		$s_hidden_fields .= build_hidden_keys($key_ary);
 	}
 
 	if (!sizeof($error))
@@ -1294,7 +1294,7 @@ function update_insert($table, $sql_ary, $where_fields)
 	}
 }
 
-function build_hidden_fields($key_ary)
+function build_hidden_keys($key_ary)
 {
 	$hidden_fields = '';
 
