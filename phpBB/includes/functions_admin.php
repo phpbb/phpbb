@@ -30,9 +30,10 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 
 	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
-	$sql = "SELECT forum_id, forum_name
-		FROM " . FORUMS_TABLE . " 
-		ORDER BY cat_order, forum_order";
+	$sql = 'SELECT f.forum_id, f.forum_name
+		FROM ' . CATEGORIES_TABLE . ' c, ' . FORUMS_TABLE . ' f
+		WHERE f.cat_id = c.cat_id 
+		ORDER BY c.cat_order, f.forum_order';
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Couldn not obtain forums information', '', __LINE__, __FILE__, $sql);
