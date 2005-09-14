@@ -254,7 +254,6 @@ $template->assign_vars(array(
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
 	"CONFIRM_ENABLE" => $confirm_yes,
 	"CONFIRM_DISABLE" => $confirm_no,
-	"ACTIVATION_NONE_CHECKED" => $activation_none,
 	"BOARD_EMAIL_FORM_ENABLE" => $board_email_form_yes, 
 	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"MAX_POLL_OPTIONS" => $new['max_poll_options'], 

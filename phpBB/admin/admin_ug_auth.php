@@ -251,9 +251,10 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 				}
 			}
 
-			$sql = "SELECT * 
-				FROM " . FORUMS_TABLE . " f
-				ORDER BY forum_order";
+			$sql = 'SELECT f.* 
+				FROM ' . FORUMS_TABLE . ' f, ' . CATEGORIES_TABLE . ' c
+				WHERE f.cat_id = c.cat_id
+				ORDER BY c.cat_order, f.forum_order';
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, "Couldn't obtain forum information", "", __LINE__, __FILE__, $sql);
@@ -831,9 +832,9 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 		}
 	}
 
+	$t_usergroup_list = $t_pending_list = '';
 	if( count($name) )
 	{
-		$t_usergroup_list = $t_pending_list = '';
 		for($i = 0; $i < count($ug_info); $i++)
 		{
 			$ug = ( $mode == 'user' ) ? 'group&amp;' . POST_GROUPS_URL : 'user&amp;' . POST_USERS_URL;
@@ -848,10 +849,9 @@ else if ( ( $mode == 'user' && ( isset($HTTP_POST_VARS['username']) || $user_id 
 			}
 		}
 	}
-	else
-	{
-		$t_usergroup_list = $lang['None'];
-	}
+
+	$t_usergroup_list = ($t_usergroup_list == '') ? $lang['None'] : $t_usergroup_list;
+	$t_pending_list = ($t_pending_list == '') ? $lang['None'] : $t_pending_list;
 
 	$s_column_span = 2; // Two columns always present
 	if( !$adv )

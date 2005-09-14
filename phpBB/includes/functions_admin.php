@@ -32,7 +32,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 
 	$sql = "SELECT forum_id, forum_name
 		FROM " . FORUMS_TABLE . " 
-		ORDER BY cat_id, forum_order";
+		ORDER BY cat_order, forum_order";
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Couldn not obtain forums information', '', __LINE__, __FILE__, $sql);
@@ -140,10 +140,45 @@ function sync($type, $id = false)
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$sql = ( $row['total_posts'] ) ? "UPDATE " . TOPICS_TABLE . " SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " WHERE topic_id = $id" : "DELETE FROM " . TOPICS_TABLE . " WHERE topic_id = $id";
-				if ( !$db->sql_query($sql) )
+				if ($row['total_posts'])
 				{
-					message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
+					// Correct the details of this topic
+					$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+						SET topic_replies = ' . ($row['total_posts'] - 1) . ', topic_first_post_id = ' . $row['first_post'] . ', topic_last_post_id = ' . $row['last_post'] . "
+						WHERE topic_id = $id";
+
+					if (!$db->sql_query($sql))
+					{
+						message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
+					}
+				}
+				else
+				{
+					// There are no replies to this topic
+					// Check if it is a move stub
+					$sql = 'SELECT topic_moved_id 
+						FROM ' . TOPICS_TABLE . " 
+						WHERE topic_id = $id";
+
+					if (!($result = $db->sql_query($sql)))
+					{
+						message_die(GENERAL_ERROR, 'Could not get topic ID', '', __LINE__, __FILE__, $sql);
+					}
+
+					if ($row = $db->sql_fetchrow($result))
+					{
+						if (!$row['topic_moved_id'])
+						{
+							$sql = 'DELETE FROM ' . TOPICS_TABLE . " WHERE topic_id = $id";
+			
+							if (!$db->sql_query($sql))
+							{
+								message_die(GENERAL_ERROR, 'Could not remove topic', '', __LINE__, __FILE__, $sql);
+							}
+						}
+					}
+
+					$db->sql_freeresult($result);
 				}
 			}
 			break;

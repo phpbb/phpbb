@@ -89,7 +89,7 @@ function clean_words($mode, &$entry, &$stopword_list, &$synonym_list)
 	return $entry;
 }
 
-function split_words(&$entry, $mode = 'post')
+function split_words($entry, $mode = 'post')
 {
 	// If you experience problems with the new method, uncomment this block.
 /*	

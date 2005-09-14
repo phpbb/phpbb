@@ -410,7 +410,7 @@ else if ( $mode != "" )
 			// If no code was entered complain ...
 			if ($smile_code == '' || $smile_url == '')
 			{
-				message_die(MESSAGE, $lang['Fields_empty']);
+				message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 			}
 
 			//
@@ -454,7 +454,7 @@ else if ( $mode != "" )
 			// If no code was entered complain ...
 			if ($smile_code == '' || $smile_url == '')
 			{
-				message_die(MESSAGE, $lang['Fields_empty']);
+				message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 			}
 
 			//

@@ -61,7 +61,7 @@ else
 // Memberlist sorting
 //
 $mode_types_text = array($lang['Sort_Joined'], $lang['Sort_Username'], $lang['Sort_Location'], $lang['Sort_Posts'], $lang['Sort_Email'],  $lang['Sort_Website'], $lang['Sort_Top_Ten']);
-$mode_types = array('joindate', 'username', 'location', 'posts', 'email', 'website', 'topten');
+$mode_types = array('joined', 'username', 'location', 'posts', 'email', 'website', 'topten');
 
 $select_sort_mode = '<select name="mode">';
 for($i = 0; $i < count($mode_types_text); $i++)

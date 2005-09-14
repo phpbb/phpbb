@@ -25,6 +25,8 @@ if ( !defined('IN_PHPBB') )
 	die('Hacking attempt');
 }
 
+global $do_gzip_compress;
+
 //
 // Show the overall footer.
 //
@@ -35,7 +37,7 @@ $template->set_filenames(array(
 );
 
 $template->assign_vars(array(
-	'TRANSLATION_INFO' => ( isset($lang['TRANSLATION_INFO']) ) ? $lang['TRANSLATION_INFO'] : '',
+	'TRANSLATION_INFO' => (isset($lang['TRANSLATION_INFO'])) ? $lang['TRANSLATION_INFO'] : ((isset($lang['TRANSLATION'])) ? $lang['TRANSLATION'] : ''),
 	'ADMIN_LINK' => $admin_link)
 );
 

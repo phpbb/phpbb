@@ -119,7 +119,10 @@ if( !($result = $db->sql_query($sql)) )
 }
 
 $category_rows = array();
-while( $category_rows[] = $db->sql_fetchrow($result) );
+while ($row = $db->sql_fetchrow($result))
+{
+	$category_rows[] = $row;
+}
 $db->sql_freeresult($result);
 
 if( ( $total_categories = count($category_rows) ) )

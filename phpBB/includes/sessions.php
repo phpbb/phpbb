@@ -415,7 +415,7 @@ function append_sid($url, $non_html_amp = false)
 
 	if ( !empty($SID) && !preg_match('#sid=#', $url) )
 	{
-		$url .= ( ( strpos($url, '?') != false ) ?  ( ( $non_html_amp ) ? '&' : '&amp;' ) : '?' ) . $SID;
+		$url .= ( ( strpos($url, '?') !== false ) ?  ( ( $non_html_amp ) ? '&' : '&amp;' ) : '?' ) . $SID;
 	}
 
 	return $url;

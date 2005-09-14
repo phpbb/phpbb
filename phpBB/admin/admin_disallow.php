@@ -45,7 +45,7 @@ if( isset($HTTP_POST_VARS['add_name']) )
 
 	if ($disallowed_user == '')
 	{
-		message_die(MESSAGE, $lang['Fields_empty']);
+		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
 	}
 	if( !validate_username($disallowed_user) )
 	{

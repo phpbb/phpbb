@@ -47,9 +47,16 @@ if ( $row = $db->sql_fetchrow($result) )
 	}
 	else if ((trim($row['user_actkey']) == trim($HTTP_GET_VARS['act_key'])) && (trim($row['user_actkey']) != ''))
 	{
-		if (intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $userdata['user_level'] != ADMIN)
+		if (intval($board_config['require_activation']) == USER_ACTIVATION_ADMIN && $row['user_newpasswd'] == '')
 		{
-			message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
+			if (!$userdata['session_logged_in'])
+			{
+				redirect(append_sid('login.' . $phpEx . '?redirect=profile.' . $phpEx . '&mode=activate&' . POST_USERS_URL . '=' . $row['user_id'] . '&act_key=' . trim($HTTP_GET_VARS['act_key'])));
+			}
+			else if ($userdata['user_level'] != ADMIN)
+			{
+				message_die(GENERAL_MESSAGE, $lang['Not_Authorised']);
+			}
 		}
 
 		$sql_update_pass = ( $row['user_newpasswd'] != '' ) ? ", user_password = '" . str_replace("\'", "''", $row['user_newpasswd']) . "', user_newpasswd = ''" : '';

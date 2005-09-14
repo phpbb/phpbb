@@ -530,7 +530,6 @@ $lang['Email_address'] = 'E-mail address';
 $lang['Email'] = 'E-mail';
 $lang['Send_private_message'] = 'Send private message';
 $lang['Hidden_email'] = '[ Hidden ]';
-$lang['Search_user_posts'] = 'Search for posts by this user';
 $lang['Interests'] = 'Interests';
 $lang['Occupation'] = 'Occupation'; 
 $lang['Poster_rank'] = 'Poster rank';

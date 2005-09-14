@@ -1319,7 +1319,7 @@ else if ( $submit || $refresh || $mode != '' )
 				$emailer->set_subject($lang['Notification_subject']);
 					
 				$emailer->assign_vars(array(
-					'USERNAME' => $to_username, 
+					'USERNAME' => stripslashes($to_username), 
 					'SITENAME' => $board_config['sitename'],
 					'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '', 
 
