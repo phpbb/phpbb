@@ -829,9 +829,9 @@ else
 		$coppa = FALSE;
 	}
 
-	if ( !isset($user_template) )
+	if ( !isset($user_style) )
 	{
-		$selected_template = $board_config['system_template'];
+		$user_style = $board_config['default_style'];
 	}
 
 	$avatar_img = '';
