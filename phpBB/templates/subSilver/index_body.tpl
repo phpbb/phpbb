@@ -41,7 +41,11 @@
 
 <table width="100%" cellspacing="0" border="0" align="center" cellpadding="2">
   <tr> 
-	<td align="left"><span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span></td>
+ 	<td align="left">
+ 	<!-- BEGIN switch_user_logged_in -->
+ 		<span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span>
+ 	<!-- END switch_user_logged_in -->
+ 	</td>
 	<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
   </tr>
 </table>
