@@ -1218,6 +1218,7 @@ else
 		//
 		// Load and process templates
 		//
+		$page_title = $lang['Group_Control_Panel'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
 		$template->set_filenames(array(
