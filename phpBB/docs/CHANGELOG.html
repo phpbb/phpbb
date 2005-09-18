@@ -67,9 +67,11 @@ p,ul,td {font-size:10pt;}
 <ul>
 <li>[Fix] incorrect handling of password resets if admin activation is enabled (Bug #88)</li>
 <li>[Fix] retrieving category rows in index.php (Bug #90)</li>
+<li>[Fix] Improved index performance by determining the permissions before iterating through all forums (Bug #91)</li>
 <li>[Fix] wrong topic redirection after login redirect (Bug #94)</li>
 <li>[Fix] improved handling of username lists in admin_ug_auth.php (Bug #98)</li>
 <li>[Fix] incorrect removal of bbcode_uid values if bbcode has been turned off (Bug #100)</li>
+<li>[Fix] correctly preview signature if editing other users posts (Bug #101)</li>
 <li>[Fix] incorrect alt tag on generated search images in viewtopic.php and usercp_viewprofile.php (Bug #102)</li>
 <li>[Fix] consistent forum ordering in all dropdown boxes (Bug #106)</li>
 <li>[Fix] correctly get compression status in page_tail.php and page_footer_admin.php (Bug #117)</li>
@@ -83,9 +85,11 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] removed unset variable from smilies popup window title (Bug #224)</li>
 <li>[Fix] removed duplicate template assignment from admin_board.php (Bug #226)</li>
 <li>[Fix] incorrect search link for guest posts in modcp.php (Bug #254)</li>
+<li>[Fix] all users removed from topics watch table on special occassions (Bug #271)</li>
 <li>[Fix] correctly check returned value from strpos in append_sid function (Bug #275)</li>
 <li>[Fix] correctly display username in private message notification (Bug #278)</li>
 <li>[Fix] fixed "var-by-ref" errors (Bug #322)</li>
+<li>[Fix] added timout of 10 seconds to version check (Bug #348)</li>
 
 <a name="2016"></a><h3 class="h3">l.ii. Changes since 2.0.16</h3>
 

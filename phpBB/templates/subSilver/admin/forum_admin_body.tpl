@@ -13,7 +13,7 @@
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_EDIT}">{L_EDIT}</a></span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_DELETE}">{L_DELETE}</a></span></td>
 		<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="{catrow.U_CAT_MOVE_UP}">{L_MOVE_UP}</a> <a href="{catrow.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
-		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp</span></td>
+		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp;</span></td>
 	</tr>
 	<!-- BEGIN forumrow -->
 	<tr> 

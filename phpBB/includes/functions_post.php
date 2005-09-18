@@ -578,16 +578,7 @@ function user_notification($mode, &$post_data, &$topic_title, &$forum_id, &$topi
 
 	$current_time = time();
 
-	if ($mode == 'delete')
-	{
-		$delete_sql = (!$post_data['first_post'] && !$post_data['last_post']) ? " AND user_id = " . $userdata['user_id'] : '';
-		$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " WHERE topic_id = $topic_id" . $delete_sql;
-		if (!$db->sql_query($sql))
-		{
-			message_die(GENERAL_ERROR, 'Could not change topic notify data', '', __LINE__, __FILE__, $sql);
-		}
-	}
-	else 
+	if ($mode != 'delete')
 	{
 		if ($mode == 'reply')
 		{

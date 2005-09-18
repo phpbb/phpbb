@@ -297,6 +297,19 @@ if( ( $total_categories = count($category_rows) ) )
 	);
 
 	//
+	// Let's decide which categories we should display
+	//
+	$display_categories = array();
+
+	for ($i = 0; $i < $total_forums; $i++ )
+	{
+		if ($is_auth_ary[$forum_data[$i]['forum_id']]['auth_view'])
+		{
+			$display_categories[$forum_data[$i]['cat_id']] = true;
+		}
+	}
+
+	//
 	// Okay, let's build the index
 	//
 	for($i = 0; $i < $total_categories; $i++)
@@ -304,22 +317,10 @@ if( ( $total_categories = count($category_rows) ) )
 		$cat_id = $category_rows[$i]['cat_id'];
 
 		//
-		// Should we display this category/forum set?
-		//
-		$display_forums = false;
-		for($j = 0; $j < $total_forums; $j++)
-		{
-			if ( $is_auth_ary[$forum_data[$j]['forum_id']]['auth_view'] && $forum_data[$j]['cat_id'] == $cat_id )
-			{
-				$display_forums = true;
-			}
-		}
-
-		//
 		// Yes, we should, so first dump out the category
 		// title, then, if appropriate the forum list
 		//
-		if ( $display_forums )
+		if (isset($display_categories[$cat_id]) && $display_categories[$cat_id])
 		{
 			$template->assign_block_vars('catrow', array(
 				'CAT_ID' => $cat_id,

@@ -567,7 +567,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 	$errno = 0;
 	$errstr = $version_info = '';
 
-	if ($fsock = @fsockopen('www.phpbb.com', 80, $errno, $errstr))
+	if ($fsock = @fsockopen('www.phpbb.com', 80, $errno, $errstr, 10))
 	{
 		@fputs($fsock, "GET /updatecheck/20x.txt HTTP/1.1\r\n");
 		@fputs($fsock, "HOST: www.phpbb.com\r\n");
@@ -602,7 +602,7 @@ elseif( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'right' )
 		else
 		{
 			$version_info = '<p style="color:red">' . $lang['Version_not_up_to_date'];
-			$version_info .= '<br />' . sprintf($lang['Latest_version_info'], $latest_version) . sprintf($lang['Current_version_info'], '2' . $board_config['version']) . '</p>';
+			$version_info .= '<br />' . sprintf($lang['Latest_version_info'], $latest_version) . ' ' . sprintf($lang['Current_version_info'], '2' . $board_config['version']) . '</p>';
 		}
 	}
 	else
