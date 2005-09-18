@@ -210,7 +210,7 @@ else
 		$s_hidden_fields = '<input type="hidden" name="redirect" value="' . $forward_page . '" />';
 		$s_hidden_fields .= (isset($HTTP_GET_VARS['admin'])) ? '<input type="hidden" name="admin" value="1" />' : '';
 
-		make_jumpbox('viewforum.'.$phpEx, $forum_id);
+		make_jumpbox('viewforum.'.$phpEx);
 		$template->assign_vars(array(
 			'USERNAME' => $username,
 
