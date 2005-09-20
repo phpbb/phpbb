@@ -853,7 +853,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			$user_cache[$poster_id] = array(
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
-				'posts'			=> (!empty($row['user_posts'])) ? $row['user_posts'] : '',
+				'posts'			=> $row['user_posts'],
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 
 				'sig'					=> $user_sig,
