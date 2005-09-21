@@ -152,7 +152,7 @@ switch ($mode)
 
 				'U_GROUP'		=> $u_group,
 				'U_VIEWPROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}",
-				'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '')
+				'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u={$row['user_id']}" : '')
 			);
 		}
 		$db->sql_freeresult($result);
