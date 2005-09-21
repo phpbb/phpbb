@@ -165,6 +165,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', 'A _little_ text to describe your forum');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', 'yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
@@ -284,6 +286,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendemail', 1
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_readpm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendpm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendim', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_ignoreflood', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_hideonline', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewonline', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_viewprofile', 1);
