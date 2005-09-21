@@ -580,6 +580,8 @@ class session
 					else
 					{
 						$banned = true;
+						$ban_row = $row;
+						// Don't break. Check if there is an exclude rule for this user
 					}
 				}
 			}
@@ -593,12 +595,13 @@ class session
 			$this->setup();
 
 			// Determine which message to output
-			$till_date = (!empty($row['ban_end'])) ? $this->format_date($row['ban_end']) : '';
-			$message = (!empty($row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+			$till_date = (!empty($ban_row['ban_end'])) ? $this->format_date($ban_row['ban_end']) : '';
+			$message = (!empty($ban_row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
 			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
 			// More internal HTML ...
-			$message .= (!empty($row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $row['ban_show_reason']) : '';
+			// TODO: 'ban_show_reason' isn't used in the admin yet.
+			$message .= (!empty($ban_row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_show_reason']) : '';
 			trigger_error($message);
 		}
 		
