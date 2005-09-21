@@ -594,6 +594,11 @@ class session
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
 
+			// Logout the user, banned users are unable to use the normal 'logout' link
+			if ($this->data['user_id'] != ANONYMOUS)
+			{  
+				$this->session_kill();
+			}                                                                                                                             
 			// Determine which message to output
 			$till_date = (!empty($ban_row['ban_end'])) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = (!empty($ban_row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
