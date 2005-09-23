@@ -532,22 +532,56 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				include($phpbb_root_path . 'includes/emailer.'.$phpEx);
 				$emailer = new emailer($board_config['smtp_delivery']);
 
-				$emailer->from($board_config['board_email']);
-				$emailer->replyto($board_config['board_email']);
-
-				$emailer->use_template('user_activate', stripslashes($user_lang));
-				$emailer->email_address($email);
-				$emailer->set_subject($lang['Reactivate']);
-
-				$emailer->assign_vars(array(
-					'SITENAME' => $board_config['sitename'],
-					'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
-					'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
-
-					'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
-				);
-				$emailer->send();
-				$emailer->reset();
+ 				if ( $board_config['require_activation'] != USER_ACTIVATION_ADMIN )
+ 				{
+ 					$emailer->from($board_config['board_email']);
+ 					$emailer->replyto($board_config['board_email']);
+ 
+ 					$emailer->use_template('user_activate', stripslashes($user_lang));
+ 					$emailer->email_address($email);
+ 					$emailer->set_subject($lang['Reactivate']);
+  
+ 					$emailer->assign_vars(array(
+ 						'SITENAME' => $board_config['sitename'],
+ 						'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
+ 						'EMAIL_SIG' => (!empty($board_config['board_email_sig'])) ? str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']) : '',
+  
+ 						'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
+ 					);
+ 					$emailer->send();
+ 					$emailer->reset();
+ 				}
+ 				else if ( $board_config['require_activation'] == USER_ACTIVATION_ADMIN )
+ 				{
+ 					$sql = 'SELECT user_email, user_lang 
+ 						FROM ' . USERS_TABLE . '
+ 						WHERE user_level = ' . ADMIN;
+ 					
+ 					if ( !($result = $db->sql_query($sql)) )
+ 					{
+ 						message_die(GENERAL_ERROR, 'Could not select Administrators', '', __LINE__, __FILE__, $sql);
+ 					}
+ 					
+ 					while ($row = $db->sql_fetchrow($result))
+ 					{
+ 						$emailer->from($board_config['board_email']);
+ 						$emailer->replyto($board_config['board_email']);
+ 						
+ 						$emailer->email_address(trim($row['user_email']));
+ 						$emailer->use_template("admin_activate", $row['user_lang']);
+ 						$emailer->set_subject($lang['Reactivate']);
+ 
+ 						$emailer->assign_vars(array(
+ 							'USERNAME' => preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, substr(str_replace("\'", "'", $username), 0, 25)),
+ 							'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $board_config['board_email_sig']),
+ 
+ 							'U_ACTIVATE' => $server_url . '?mode=activate&' . POST_USERS_URL . '=' . $user_id . '&act_key=' . $user_actkey)
+ 						);
+ 						$emailer->send();
+ 						$emailer->reset();
+ 					}
+ 					$db->sql_freeresult($result);
+ 				}
 
 				$message = $lang['Profile_updated_inactive'] . '<br /><br />' . sprintf($lang['Click_return_index'],  '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
 			}
