@@ -218,7 +218,7 @@ function marklist(match, status)
 				$name_ary = array_unique(explode("\n", $name_ary));
 
 				// Add user/s to group
-				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0))
+				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height))
 				{
 					trigger_error($user->lang[$error]);
 				}
