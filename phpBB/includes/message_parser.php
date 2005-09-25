@@ -141,7 +141,7 @@ class bbcode_firstpass extends bbcode
 
 	function check_bbcode($bbcode, &$in)
 	{
-		$in = trim($in);
+		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
 		{
@@ -987,7 +987,6 @@ class parse_message extends bbcode_firstpass
 					return;
 				}
 			}
-
 			$this->message = trim(preg_replace($match, $replace, $this->message));
 		}
 	}
