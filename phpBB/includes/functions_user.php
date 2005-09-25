@@ -145,26 +145,29 @@ function user_delete($mode, $user_id)
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'SELECT topic_id, topic_replies, topic_replies_real 
-				FROM ' . TOPICS_TABLE . ' 
-				WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
-			$result = $db->sql_query($sql);
-
-			$del_topic_ary = array();
-			while ($row = $db->sql_fetchrow($result))
+			if (sizeof($topic_id_ary))
 			{
-				if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+				$sql = 'SELECT topic_id, topic_replies, topic_replies_real 
+					FROM ' . TOPICS_TABLE . ' 
+					WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+				$result = $db->sql_query($sql);
+
+				$del_topic_ary = array();
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$del_topic_ary[] = $row['topic_id'];
+					if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
+					{
+						$del_topic_ary[] = $row['topic_id'];
+					}
 				}
-			}
-			$db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 
-			if (sizeof($del_topic_ary))
-			{
-				$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
-					WHERE topic_id IN (' . implode(', ', $del_topic_ary) . ')';
-				$db->sql_query($sql);
+				if (sizeof($del_topic_ary))
+				{
+					$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+						WHERE topic_id IN (' . implode(', ', $del_topic_ary) . ')';
+					$db->sql_query($sql);
+				}
 			}
 
 			// Delete posts, attachments, etc.
@@ -188,9 +191,8 @@ function user_delete($mode, $user_id)
 		$sql = 'SELECT user_id, username 
 			FROM ' . USERS_TABLE . ' 
 			WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-			ORDER BY user_id DESC
-			LIMIT 1';
-		$result = $db->sql_query($sql);
+			ORDER BY user_id DESC';
+		$result = $db->sql_query_limit($sql, 1);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -284,8 +286,7 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 			FROM ' . USERS_TABLE . " 
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
-		
-		extract($db->sql_fetchrow($result));
+		$username = $db->sql_fetchfield('username', 0, $result);
 		$db->sql_freeresult($result);
 	}
 
@@ -303,9 +304,9 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	global $db, $user, $auth;
 
 	// Delete stale bans
-	$sql = "DELETE FROM " . BANLIST_TABLE . "
-		WHERE ban_end < " . time() . "
-			AND ban_end <> 0";
+	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
+		WHERE ban_end < ' . time() . '
+			AND ban_end <> 0';
 	$db->sql_query($sql);
 
 	$ban_list = (!is_array($ban)) ? array_unique(explode("\n", $ban)) : $ban;
@@ -497,20 +498,21 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			switch (SQL_LAYER)
 			{
 				case 'mysql':
-					$sql .= (($sql != '') ? ', ' : '') . "($ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
+					$sql .= (($sql != '') ? ', ' : '') . "($ban_entry, $current_time, $ban_end, $ban_exclude, '" . $db->sql_escape($ban_reason) . "')";
 					break;
 
 				case 'mysql4':
 				case 'mysqli':
 				case 'mssql':
 				case 'sqlite':
-					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason'";
+					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '" . $db->sql_escape($ban_reason) . "'";
 					break;
 
 				default:
 					$sql = 'INSERT INTO ' . BANLIST_TABLE . " ($type, ban_start, ban_end, ban_exclude, ban_reason)
-						VALUES ($ban_entry, $current_time, $ban_end, $ban_exclude, '$ban_reason')";
+						VALUES ($ban_entry, $current_time, $ban_end, $ban_exclude, '" . $db->sql_escape($ban_reason) . "')";
 					$db->sql_query($sql);
+					$sql = '';
 			}
 		}
 
@@ -541,6 +543,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$result = $db->sql_query($sql);
 
 					$sql_in = array();
+					$sql = '';
 					if ($row = $db->sql_fetchrow($result))
 					{
 						do
@@ -550,6 +553,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						while ($row = $db->sql_fetchrow($result));
 
 						$sql = 'WHERE session_user_id IN (' . str_replace('*', '%', implode(', ', $sql_in)) . ")";
+					}
+					else
+					{
+						trigger_error('NO_EMAIL_TO_BAN');
 					}
 					break;
 			}
@@ -584,9 +591,9 @@ function user_unban($mode, $ban)
 	global $db, $user, $auth;
 
 	// Delete stale bans
-	$sql = "DELETE FROM " . BANLIST_TABLE . "
-		WHERE ban_end < " . time() . "
-			AND ban_end <> 0";
+	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
+		WHERE ban_end < ' . time() . '
+			AND ban_end <> 0';
 	$db->sql_query($sql);
 
 	$unban_sql = implode(', ', $ban);
@@ -594,6 +601,7 @@ function user_unban($mode, $ban)
 	if ($unban_sql)
 	{
 		$l_unban_list = '';
+
 		// Grab details of bans for logging information later
 		switch ($mode)
 		{
@@ -989,7 +997,8 @@ function avatar_upload($data, &$error)
 */
 function avatar_gallery($category, &$error)
 {
-	global $config, $phpbb_root_path, $user;
+	global $user, $cache;
+	global $config, $phpbb_root_path;
 
 	$path = $phpbb_root_path . $config['avatar_gallery_path'];
 
@@ -1042,16 +1051,30 @@ function avatar_gallery($category, &$error)
 //
 // Usergroup functions
 //
-
+	
 /**
 * Add or edit a group. If we're editing a group we only update user
 * parameters such as rank, etc. if they are changed
 */
-function group_create($group_id, $type, $name, $desc)
+function group_create($group_id, $type, $name, $desc, $group_attributes)
 {
 	global $phpbb_root_path, $config, $db, $user, $file_upload;
 
 	$error = array();
+	$attribute_ary = array(
+		'group_colour'			=> 'string', 
+		'group_rank'			=> 'int', 
+		'group_avatar'			=> 'string', 
+		'group_avatar_type'		=> 'int', 
+		'group_avatar_width'	=> 'int', 
+		'group_avatar_height'	=> 'int',
+
+		'group_receive_pm'		=> 'int',
+		'group_message_limit'	=> 'int',
+	);
+
+	// Those are group-only attributes
+	$group_only_ary = array('group_receive_pm', 'group_message_limit');
 
 	// Check data
 	if (!strlen($name) || strlen($name) > 40)
@@ -1077,42 +1100,31 @@ function group_create($group_id, $type, $name, $desc)
 			'group_type'			=> (int) $type,
 		);
 
-		$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
-
-		$i = 4;
-		foreach ($attribute_ary as $attribute => $type)
+		if (sizeof($group_attributes))
 		{
-			if (func_num_args() > $i && ($value = func_get_arg($i)) !== false)
+			foreach ($attribute_ary as $attribute => $type)
 			{
-				settype($value, $type);
-
-				$sql_ary[$attribute] = $$attribute = $value;
+				if (isset($group_attributes[$attribute]))
+				{
+					settype($group_attributes[$attribute], $type);
+					$sql_ary[$attribute] = $group_attributes[$attribute];
+				}
 			}
-			$i++;
-		}
-
-		$group_only_ary = array('group_receive_pm' => 'int', 'group_message_limit' => 'int');
-
-		foreach ($group_only_ary as $attribute => $type)
-		{
-			if (func_num_args() > $i && ($value = func_get_arg($i)) !== false)
-			{
-				settype($value, $type);
-
-				$sql_ary[$attribute] = $value;
-			}
-			$i++;
 		}
 
 		$sql = ($group_id) ? 'UPDATE ' . GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "	WHERE group_id = $group_id" : 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
+		// Set user attributes
 		$sql_ary = array();
-		foreach ($attribute_ary as $attribute => $type)
+		if (sizeof($group_attributes))
 		{
-			if (isset($$attribute))
+			foreach ($attribute_ary as $attribute => $type)
 			{
-				$sql_ary[str_replace('group', 'user', $attribute)] = $$attribute;
+				if (isset($group_attributes[$attribute]) && !in_array($attribute, $group_only_ary))
+				{
+					$sql_ary[str_replace('group', 'user', $attribute)] = $group_attributes[$attribute];
+				}
 			}
 		}
 
@@ -1149,11 +1161,7 @@ function group_delete($group_id, $group_name = false)
 			FROM ' . GROUPS_TABLE . " 
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
-
-		if (!extract($db->sql_fetchrow($result)))
-		{
-			trigger_error("Could not obtain name of group $group_id", E_USER_ERROR);
-		}
+		$group_name = $db->sql_fetchfield('group_name', 0, $result);
 		$db->sql_freeresult($result);
 	}
 
@@ -1167,9 +1175,8 @@ function group_delete($group_id, $group_name = false)
 		$sql = 'SELECT u.user_id, u.username
 			FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . " u
 			WHERE ug.group_id = $group_id
-				AND u.user_id = ug.user_id 
-			LIMIT $start, 200";
-		$result = $db->sql_query($sql);
+				AND u.user_id = ug.user_id";
+		$result = $db->sql_query_limit($sql, 200, $start);
 
 		if ($row = $db->sql_fetchrow($result))
 		{
@@ -1211,7 +1218,7 @@ function group_delete($group_id, $group_name = false)
 /**
 * Add user(s) to group
 */
-function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0)
+function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
 	global $db, $auth;
 
@@ -1300,72 +1307,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if ($default)
 	{
-		$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
-
-		// Were group attributes passed to the function? If not we need to obtain them
-		if (func_num_args() > 6)
-		{
-			$i = 6;
-			foreach ($attribute_ary as $attribute => $type)
-			{
-				if (func_num_args() > $i && ($value = func_get_arg($i)) !== false)
-				{
-					settype($value, $type);
-
-					$sql_ary[$attribute] = $$attribute = $value;
-				}
-				$i++;
-			}
-		}
-		else
-		{
-			$sql = 'SELECT group_colour, group_rank, group_avatar, group_avatar_type, group_avatar_width, group_avatar_height  
-				FROM ' . GROUPS_TABLE . " 
-				WHERE group_id = $group_id";
-			$result = $db->sql_query($sql);
-
-			if (!extract($db->sql_fetchrow($result)))
-			{
-				trigger_error("Could not obtain group attributes for group_id $group_id", E_USER_ERROR);
-			}
-			$db->sql_freeresult($result);
-
-			if (!$group_avatar_width)
-			{
-				unset($group_avatar_width);
-			}
-			if (!$group_avatar_height)
-			{
-				unset($group_avatar_height);
-			}
-		}
-
-		$sql_set = '';
-		foreach ($attribute_ary as $attribute => $type)
-		{
-			if (isset($$attribute))
-			{
-				$field = str_replace('group_', 'user_', $attribute);
-
-				switch ($type)
-				{
-					case 'int':
-						$sql_set .= ", $field = " . (int) $$attribute;
-						break;
-					case 'double':
-						$sql_set .= ", $field = " . (double) $$attribute;
-						break;
-					case 'string':
-						$sql_set .= ", $field = '" . (string) $db->sql_escape($$attribute) . "'";
-						break;
-				}
-			}
-		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET group_id = $group_id$sql_set  
-			WHERE user_id IN (" . implode(', ', $user_id_ary) . ')';
-		$db->sql_query($sql);
+		group_set_user_default($group_id, $user_id_ary, $group_attributes);
 	}
 
 	// Clear permissions cache of relevant users
@@ -1412,8 +1354,6 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$group_order = array('ADMINISTRATORS', 'SUPER_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
 
-	$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
-
 	// We need both username and user_id info
 	user_get_id_name($user_id_ary, $username_ary);
 
@@ -1427,12 +1367,14 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		$group_order_id[$row['group_name']] = $row['group_id'];
 
-		$special_group_data[$row['group_id']]['group_colour']			= $row['group_colour'];
-		$special_group_data[$row['group_id']]['group_rank']				= $row['group_rank'];
-		$special_group_data[$row['group_id']]['group_avatar']			= $row['group_avatar'];
-		$special_group_data[$row['group_id']]['group_avatar_type']		= $row['group_avatar_type'];
-		$special_group_data[$row['group_id']]['group_avatar_width']		= $row['group_avatar_width'];
-		$special_group_data[$row['group_id']]['group_avatar_height']	= $row['group_avatar_height'];
+		$special_group_data[$row['group_id']] = array(
+			'user_colour'		=> $row['group_colour'],
+			'user_rank'			=> $row['group_rank'],
+			'user_avatar'		=> $row['group_avatar'],
+			'user_avatar_type'	=> $row['group_avatar_type'],
+			'user_avatar_width'	=> $row['group_avatar_width'],
+			'user_avatar_height'=> $row['group_avatar_height'],
+		);
 	}
 	$db->sql_freeresult($result);
 
@@ -1478,31 +1420,12 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	foreach ($special_group_data as $gid => $default_data_ary)
 	{
-		if (isset($sql_where_ary[$gid]) && $sql_where = implode(', ', $sql_where_ary[$gid]))
+		if (isset($sql_where_ary[$gid]) && sizeof($sql_whery_ary[$gid]))
 		{
-			$sql_set = '';
-			foreach ($special_group_data[$gid] as $attribute => $value)
-			{
-				$field = str_replace('group_', 'user_', $attribute);
+			$special_group_data[$gid]['group_id'] = $gid;
 
-				switch ($attribute_ary[$attribute])
-				{
-					case 'int':
-						$sql_set .= ", $field = " . (int) $value;
-						break;
-					case 'double':
-						$sql_set .= ", $field = " . (double) $value;
-						break;
-					case 'string':
-						$sql_set .= ", $field = '" . $db->sql_escape($value) . "'";
-						break;
-				}
-			}
-
-			// Set new default
-			$sql = 'UPDATE ' . USERS_TABLE . " 
-				SET group_id = $gid$sql_set 
-				WHERE user_id IN (" . implode(', ', $sql_where_ary[$gid]) . ')';
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $special_group_data[$gid]) . '
+				WHERE user_id IN (' . implode(', ', $sql_where_ary[$gid]) . ')';
 			$db->sql_query($sql);
 		}
 	}
@@ -1512,7 +1435,6 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		WHERE group_id = $group_id
 			AND user_id IN (" . implode(', ', $user_id_ary) . ')';
 	$db->sql_query($sql);
-	unset($default_ary);
 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
@@ -1523,11 +1445,8 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 			FROM ' . GROUPS_TABLE . " 
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
-
-		if (!extract($db->sql_fetchrow($result)))
-		{
-			trigger_error("Could not obtain name of group $group_id", E_USER_ERROR);
-		}
+		$group_name = $db->sql_fetchfield('group_name', 0, $result);
+		$db->sql_freeresult($result);
 	}
 
 	if (!function_exists('add_log'))
@@ -1540,8 +1459,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	unset($username_ary);
-	unset($user_id_ary);
+	unset($username_ary, $user_id_ary);
 
 	return false;
 }
@@ -1549,7 +1467,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 /**
 * This is used to promote (to leader), demote or set as default a member/s
 */
-function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
+function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
 	global $db, $auth;
 
@@ -1567,7 +1485,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			$db->sql_query($sql);
 
 			$log = ($action == 'promote') ? 'LOG_GROUP_PROMOTED' : 'LOG_GROUP_DEMOTED';
-			break;
+		break;
 
 		case 'approve':
 			$sql = 'UPDATE ' . USER_GROUP_TABLE . " 
@@ -1577,80 +1495,10 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			$db->sql_query($sql);
 
 			$log = 'LOG_GROUP_APPROVE';
-			break;
+		break;
 
 		case 'default':
-			$attribute_ary = array('group_colour' => 'string', 'group_rank' => 'int', 'group_avatar' => 'string', 'group_avatar_type' => 'int', 'group_avatar_width' => 'int', 'group_avatar_height' => 'int');
-
-			// Were group attributes passed to the function? If not we need
-			// to obtain them
-			if (func_num_args() > 5)
-			{
-				$i = 5;
-				foreach ($attribute_ary as $attribute => $type)
-				{
-					if (func_num_args() > $i && ($value = func_get_arg($i)) !== false)
-					{
-						settype($value, $type);
-
-						$sql_ary[$attribute] = $$attribute = $value;
-					}
-					$i++;
-				}
-			}
-			else
-			{
-				$sql = 'SELECT group_colour, group_rank, group_avatar, group_avatar_type, group_avatar_width, group_avatar_height 
-					FROM ' . GROUPS_TABLE . " 
-					WHERE group_id = $group_id";
-				$result = $db->sql_query($sql);
-
-				if (!extract($db->sql_fetchrow($result)))
-				{
-					return 'NO_GROUP';
-				}
-				$db->sql_freeresult($result);
-
-				if (!$group_avatar_width)
-				{
-					unset($group_avatar_width);
-				}
-				if (!$group_avatar_height)
-				{
-					unset($group_avatar_height);
-				}
-			}
-
-			// FAILURE HERE when grabbing data from DB and checking "isset" ... will
-			// be true for all similar functionality
-
-			$sql_set = '';
-			foreach ($attribute_ary as $attribute => $type)
-			{
-				if (isset($$attribute))
-				{
-					$field = str_replace('group_', 'user_', $attribute);
-
-					switch ($type)
-					{
-						case 'int':
-							$sql_set .= ", $field = " . (int) $$attribute;
-							break;
-						case 'double':
-							$sql_set .= ", $field = " . (double) $$attribute;
-							break;
-						case 'string':
-							$sql_set .= ", $field = '" . (string) $db->sql_escape($$attribute) . "'";
-							break;
-					}
-				}
-			}
-
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET group_id = $group_id$sql_set  
-				WHERE user_id IN (" . implode(', ', $user_id_ary) . ')';
-			$db->sql_query($sql);
-
+			group_set_user_default($group_id, $user_id_ary, $group_attributes);
 			$log = 'LOG_GROUP_DEFAULTS';
 			break;
 	}
@@ -1670,19 +1518,65 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			FROM ' . GROUPS_TABLE . " 
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
-
-		if (!extract($db->sql_fetchrow($result)))
-		{
-			trigger_error("Could not obtain name of group $group_id", E_USER_ERROR);
-		}
+		$group_name = $db->sql_fetchfield('group_name', 0, $result);
+		$db->sql_freeresult($result);
 	}
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	unset($username_ary);
-	unset($user_id_ary);
+	unset($username_ary, $user_id_ary);
 
 	return false;
+}
+
+/**
+* Set users default group
+*/
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false)
+{
+	global $db;
+
+	if (!$user_id_ary)
+	{
+		return;
+	}
+
+	$attribute_ary = array(
+		'group_colour'			=> 'string',
+		'group_rank'			=> 'int', 
+		'group_avatar'			=> 'string',
+		'group_avatar_type'		=> 'int',
+		'group_avatar_width'	=> 'int',
+		'group_avatar_height'	=> 'int',
+	);
+
+	$sql_ary = array(
+		'group_id'		=> $group_id
+	);
+
+	// Were group attributes passed to the function? If not we need to obtain them
+	if ($group_attributes === false)
+	{
+		$sql = 'SELECT ' . implode(', ', array_keys($attribute_ary)) . '
+			FROM ' . GROUPS_TABLE . " 
+			WHERE group_id = $group_id";
+		$result = $db->sql_query($sql);
+		$group_attributes = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+	}
+			
+	foreach ($attribute_ary as $attribute => $type)
+	{
+		if (isset($group_attributes[$attribute]))
+		{
+			settype($group_attributes[$attribute], $type);
+			$sql_ary[str_replace('group_', 'user_', $attribute)] = $group_attributes[$attribute];
+		}
+	}
+			
+	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+		WHERE user_id IN (' . implode(', ', $user_id_ary) . ')';
+	$db->sql_query($sql);
 }
 
 /**

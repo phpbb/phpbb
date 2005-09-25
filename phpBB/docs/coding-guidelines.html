@@ -758,7 +758,7 @@ $start = request_var('start', '0');
 	<p>Sessions should be initiated on each page, as near the top as possible using the following code:</p>
 
 	<blockquote><pre>
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup();
 	</pre></blockquote>

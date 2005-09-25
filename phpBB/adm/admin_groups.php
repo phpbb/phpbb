@@ -52,8 +52,7 @@ $cancel		= (isset($_POST['cancel'])) ? true : false;
 
 // Clear some vars
 $can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
-
-$group_type = $group_name = $group_desc = $group_colour = $group_rank = $group_avatar = false;
+$group_row = array();
 
 // Grab basic data for group, if group_id is set and exists
 if ($group_id)
@@ -62,12 +61,13 @@ if ($group_id)
 		FROM ' . GROUPS_TABLE . " 
 		WHERE group_id = $group_id";
 	$result = $db->sql_query($sql);
+	$group_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if (!extract($db->sql_fetchrow($result)))
+	if (!$group_row)
 	{
 		trigger_error($user->lang['NO_GROUP']);
 	}
-	$db->sql_freeresult($result);
 }
 
 switch ($mode)
@@ -79,7 +79,7 @@ switch ($mode)
 		// Common javascript
 ?>
 
-<script language="Javascript" type="text/javascript">
+<script language="javascript" type="text/javascript">
 <!--
 function marklist(match, status)
 {
@@ -105,23 +105,26 @@ function marklist(match, status)
 				{
 					trigger_error($user->lang['NO_GROUP']);
 				}
-
-				group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
+				
+				group_user_attributes($action, $group_id, $mark_ary, false, ($group_id) ? $group_row['group_name'] : false);
 
 				switch ($action)
 				{
 					case 'demote':
 						$message = 'GROUP_MODS_DEMOTED';
-						break;
+					break;
+				
 					case 'promote':
 						$message = 'GROUP_MODS_PROMOTED';
-						break;
+					break;
+					
 					case 'approve':
 						$message = 'USERS_APPROVED';
-						break;
+					break;
 				}
+
 				trigger_error($user->lang[$message]);
-				break;
+			break;
 
 			case 'default':
 				if (!$group_id)
@@ -137,9 +140,8 @@ function marklist(match, status)
 						$sql = 'SELECT user_id 
 							FROM ' . USER_GROUP_TABLE . "
 							WHERE group_id = $group_id 
-							ORDER BY user_id 
-							LIMIT $start, 200";
-						$result = $db->sql_query($sql);
+							ORDER BY user_id";
+						$result = $db->sql_query_limit($sql, 200, $start);
 
 						$mark_ary = array();
 						if ($row = $db->sql_fetchrow($result))
@@ -150,7 +152,7 @@ function marklist(match, status)
 							}
 							while ($row = $db->sql_fetchrow($result));
 
-							group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height);
+							group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 
 							$start = (sizeof($user_id_ary) < 200) ? 0 : $start + 200;
 						}
@@ -164,11 +166,11 @@ function marklist(match, status)
 				}
 				else
 				{
-					group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height);
+					group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 				}
 
 				trigger_error($user->lang['GROUP_DEFS_UPDATED']);
-				break;
+			break;
 
 			case 'deleteusers':
 			case 'delete':
@@ -186,12 +188,12 @@ function marklist(match, status)
 					switch ($action)
 					{
 						case 'delete':
-							$error = group_delete($group_id, $group_name);
-							break;
+							$error = group_delete($group_id, $group_row['group_name']);
+						break;
 
 						case 'deleteusers':
-							$error = group_user_del($group_id, $mark_ary, false, $group_name);
-							break;
+							$error = group_user_del($group_id, $mark_ary, false, $group_row['group_name']);
+						break;
 					}
 
 					if ($error)
@@ -202,7 +204,7 @@ function marklist(match, status)
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
 					trigger_error($user->lang[$message]);
 				}
-				break;
+			break;
 
 			case 'addusers':
 				if (!$group_id)
@@ -218,17 +220,19 @@ function marklist(match, status)
 				$name_ary = array_unique(explode("\n", $name_ary));
 
 				// Add user/s to group
-				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height))
+				if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, $leader, $group_row))
 				{
 					trigger_error($user->lang[$error]);
 				}
 
 				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
 				trigger_error($user->lang[$message]);
-				break;
+			break;
 
 			case 'edit':
 			case 'add':
+
+				$data = $submit_ary = array();
 
 				if ($action == 'edit' && !$group_id)
 				{
@@ -243,16 +247,18 @@ function marklist(match, status)
 				{
 					$group_name	= request_var('group_name', '');
 					$group_desc	= request_var('group_description', '');
-					$group_type	= request_var('group_type', 0);
-
-					$colour		= request_var('group_colour', '');
-					$rank		= request_var('group_rank', 0);
+					$group_type	= request_var('group_type', GROUP_FREE);
 
 					$data['uploadurl']	= request_var('uploadurl', '');
 					$data['remotelink'] = request_var('remotelink', '');
 					$delete				= request_var('delete', '');
-					$receive_pm			= isset($_REQUEST['group_receive_pm']) ? 1 : 0;
-					$message_limit		= request_var('group_message_limit', 0);
+
+					$submit_ary = array(
+						'colour'		=> request_var('group_colour', ''),
+						'rank'			=> request_var('group_rank', 0),
+						'receive_pm'	=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
+						'message_limit'	=> request_var('group_message_limit', 0)
+					);
 
 					$avatar = '';
 
@@ -275,34 +281,42 @@ function marklist(match, status)
 
 							if ((!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl']) && $can_upload)
 							{
-								list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_upload($data, $error);
+								list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_upload($data, $error);
 							}
 							else if ($data['remotelink'])
 							{
-								list($avatar_type, $avatar, $avatar_width, $avatar_height) = avatar_remote($data, $error);
+								list($submit_ary['avatar_type'], $submit_ary['avatar'], $submit_ary['avatar_width'], $submit_ary['avatar_height']) = avatar_remote($data, $error);
 							}
 						}
 					}
 					else if ($delete)
 					{
-						$avatar = '';
-						$avatar_type = $avatar_width = $avatar_height = 0;
+						$submit_ary['avatar'] = '';
+						$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
 					}
 
-					if (($avatar && $group_avatar != $avatar) || $delete)
+					if (($submit_ary['avatar'] && (!isset($group_row['group_avatar']) || $group_row['group_avatar'] != $submit_ary['avatar'])) || $delete)
 					{
-						avatar_delete($group_avatar);
+						if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
+						{
+							avatar_delete($group_row['group_avatar']);
+						}
 					}
 
 					// Only set the rank, colour, etc. if it's changed or if we're adding a new
 					// group. This prevents existing group members being updated if no changes 
 					// were made.
+					
+					$group_attributes = array();
 					foreach (array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'message_limit') as $test)
 					{
-						${'group_' . $test} = ($action == 'add' || (isset($$test) && $$test != ${'group_' . $test})) ? $$test : false;
+						if ($action == 'add' || (isset($group_row['group_' . $test]) && $group_row['group_' . $test] != $submit_ary[$test]))
+						{
+							$group_attributes[$test] = $group_row['group_' . $test] = $submit_ary[$test];
+						}
 					}
 
-					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_colour, $group_rank, $group_avatar, $group_avatar_type, $group_avatar_width, $group_avatar_height, $group_receive_pm, $group_message_limit)))
+					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_attributes)))
 					{
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($message);
@@ -311,8 +325,14 @@ function marklist(match, status)
 				else if (!$group_id)
 				{
 					$group_name = request_var('group_name', '');
-					$group_description = $group_colour = $group_avatar = '';
-					$group_type = GROUP_FREE;
+					$group_description = '';
+					$group_type = GROUP_OPEN;
+				}
+				else
+				{
+					$group_name = $group_row['group_name'];
+					$group_description = $group_row['group_description'];
+					$group_type = $group_row['group_type'];
 				}
 
 ?>
@@ -322,7 +342,6 @@ function marklist(match, status)
 <p><?php echo $user->lang['GROUP_EDIT_EXPLAIN']; ?></p>
 
 <?php 
-
 				$sql = 'SELECT * 
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
@@ -346,9 +365,9 @@ function marklist(match, status)
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-				if ($group_avatar)
+				if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 				{
-					switch ($group_avatar_type)
+					switch ($group_row['group_avatar_type'])
 					{
 						case AVATAR_UPLOAD:
 							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
@@ -357,9 +376,9 @@ function marklist(match, status)
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 							break;
 					}
-					$avatar_img .= $group_avatar;
+					$avatar_img .= $group_row['group_avatar'];
 
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_avatar_width . '" height="' . $group_avatar_height . '" border="0" alt="" />';
+					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
 				}
 				else
 				{
@@ -409,7 +428,7 @@ function swatch()
 				if ($group_type != GROUP_SPECIAL)
 				{
 		
-?><input class="post" type="text" name="group_name" value="<?php echo (!empty($group_name)) ? $group_name : ''; ?>" size="40" maxlength="40" /><?php
+?><input class="post" type="text" name="group_name" value="<?php echo ($group_name) ? $group_name : ''; ?>" size="40" maxlength="40" /><?php
 			
 				}
 				else
@@ -423,7 +442,7 @@ function swatch()
 	</tr>
 	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_DESC']; ?>:</b></td>
-		<td class="row1"><input class="post" type="text" name="group_description" value="<?php echo (!empty($group_description)) ? $group_description : ''; ?>" size="40" maxlength="255" /></td>
+		<td class="row1"><input class="post" type="text" name="group_description" value="<?php echo ($group_description) ? $group_description : ''; ?>" size="40" maxlength="255" /></td>
 	</tr>
 <?php
 
@@ -445,15 +464,15 @@ function swatch()
 	</tr>
 	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_RECEIVE_PM']; ?>:</b></td>
-		<td class="row1" nowrap="nowrap"><input type="checkbox" name="group_receive_pm"<?php echo ($group_receive_pm) ? ' checked="checked"' : ''; ?> /></td>
+		<td class="row1" nowrap="nowrap"><input type="checkbox" name="group_receive_pm"<?php echo (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : ''; ?> /></td>
 	</tr>
 	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_MESSAGE_LIMIT']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['GROUP_MESSAGE_LIMIT_EXPLAIN']; ?></span></td>
-		<td class="row1" nowrap="nowrap"><input class="post" type="text" maxlength="4" size="4" name="group_message_limit" value="<?php echo $group_message_limit; ?>" /></td>
+		<td class="row1" nowrap="nowrap"><input class="post" type="text" maxlength="4" size="4" name="group_message_limit" value="<?php echo (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0; ?>" /></td>
 	</tr>
 	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_COLOR']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['GROUP_COLOR_EXPLAIN']; ?></span></td>
-		<td class="row1" nowrap="nowrap"><input class="post" type="text" name="group_colour" value="<?php echo (!empty($group_colour)) ? $group_colour : ''; ?>" size="6" maxlength="6" /> &nbsp; [ <a href="<?php echo "swatch.$phpEx"; ?>" onclick="swatch();return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a> ]</td>
+		<td class="row1" nowrap="nowrap"><input class="post" type="text" name="group_colour" value="<?php echo (isset($group_row['group_colour'])) ? $group_row['group_colour'] : ''; ?>" size="6" maxlength="6" /> &nbsp; [ <a href="<?php echo "swatch.$phpEx"; ?>" onclick="swatch();return false" target="_swatch"><?php echo $user->lang['COLOUR_SWATCH']; ?></a> ]</td>
 	</tr>
 	<tr>
 		<td class="row2"><b><?php echo $user->lang['GROUP_RANK']; ?>:</b></td>
@@ -492,7 +511,7 @@ function swatch()
 	</tr>
 	<tr> 
 		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row1"><input class="post" type="text" name="width" size="3" value="<?php echo $group_avatar_width; ?>" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="<?php echo $group_avatar_height; ?>" /> <span class="gen">px</span></td>
+		<td class="row1"><input class="post" type="text" name="width" size="3" value="<?php echo (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : ''; ?>" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="<?php echo (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : ''; ?>" /> <span class="gen">px</span></td>
 	</tr>
 <?php
 
@@ -520,8 +539,9 @@ function swatch()
 		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed"><?php echo $user->lang['AVATAR_CATEGORY']; ?>: </span><select name="avatarcat">{S_CAT_OPTIONS}</select>&nbsp; <span class="genmed"><?php echo $user->lang['AVATAR_PAGE']; ?>: </span><select name="avatarpage">{S_PAGE_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="avatargallery" /></td>
 	</tr>
 	<tr> 
-		<td class="row1" colspan="2" align="center"><table cellspacing="1" cellpadding="4" border="0">
-		
+		<td class="row1" colspan="2" align="center">
+
+			<table cellspacing="1" cellpadding="4" border="0">
 			<!-- BEGIN avatar_row -->
 			<tr> 
 				<!-- BEGIN avatar_column -->
@@ -534,8 +554,9 @@ function swatch()
 				<!-- END avatar_option_column -->
 			</tr>
 			<!-- END avatar_row -->
-
-		</table></td>
+			</table>
+		
+		</td>
 	</tr>
 <?php
 
@@ -551,7 +572,7 @@ function swatch()
 <?php
 
 				adm_page_footer();
-				break;
+			break;
 		}
 
 		if ($mode == 'list' || $group_id)
@@ -604,9 +625,8 @@ function swatch()
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 					WHERE ug.group_id = $group_id 
 						AND u.user_id = ug.user_id 
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username 
-					LIMIT $start, " . $config['topics_per_page'];
-				$result = $db->sql_query($sql);
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username ";
+				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$leader = $member = 0;
 				$group_data = array();
@@ -629,7 +649,7 @@ function swatch()
 				}
 				$db->sql_freeresult($result);
 
-				if ($group_type != GROUP_SPECIAL)
+				if ($group_row['group_type'] != GROUP_SPECIAL)
 				{
 
 ?>
@@ -719,16 +739,19 @@ function swatch()
 
 ?>
 	<tr>
-		<td class="cat" colspan="5" align="right"><select name="action"><option class="sep" value=""><?php echo $user->lang['SELECT_OPTION']; ?></option><?php
+		<td class="cat" colspan="5" align="right">
+			<select name="action"><option class="sep" value=""><?php echo $user->lang['SELECT_OPTION']; ?></option><?php
 
 				foreach (array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE') as $option => $lang)
 				{
 					echo '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
 				}
 
-?></select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;</td>
+?>
+			</select> <input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;
+		</td>
 	</tr>
-</table>
+	</table>
 
 	<table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
 	<tr>
@@ -877,7 +900,7 @@ function swatch()
 <?php
 
 		adm_page_footer();
-		break;
+	break;
 
 	// Setting groupwide preferences
 	case 'prefs':
@@ -922,7 +945,7 @@ function swatch()
 <?php
 
 		adm_page_footer();
-		break;
+	break;
 
 	default:
 		trigger_error($user->lang['NO_MODE']);
