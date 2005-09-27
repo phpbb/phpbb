@@ -27,7 +27,8 @@ define('SMTP_INCLUDED', 1);
 // using SMTP Extensions
 //
 function server_parse($socket, $response, $line = __LINE__) 
-{ 
+{
+	$server_response = '';
 	while (substr($server_response, 3, 1) != ' ') 
 	{
 		if (!($server_response = fgets($socket, 256))) 
