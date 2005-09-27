@@ -185,7 +185,7 @@ include($phpbb_root_path . 'config.'.$phpEx);
 
 if( !defined("PHPBB_INSTALLED") )
 {
-	header("Location: install/install.$phpEx");
+	header('Location: ' . $phpbb_root_path . 'install/install.' . $phpEx);
 	exit;
 }
 
