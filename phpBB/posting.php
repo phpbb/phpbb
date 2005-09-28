@@ -318,7 +318,7 @@ if ( $result = $db->sql_query($sql) )
 		$post_data['has_poll'] = false;
 		$post_data['edit_poll'] = false;
 	}
-	if ( $mode = 'poll_delete' && !isset($poll_id) )
+	if ( $mode == 'poll_delete' && !isset($poll_id) )
 	{
 		message_die(GENERAL_MESSAGE, $lang['No_such_post']);
 	}
