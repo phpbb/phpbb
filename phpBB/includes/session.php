@@ -9,6 +9,7 @@
 */
 
 /**
+* @package phpBB3
 * Session class
 */
 class session
@@ -35,15 +36,18 @@ class session
 	* @todo Introduce further user types, bot, guest
 	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
-	//function session_begin()
-	function start()
+	function session_begin()
 	{
 		global $phpEx, $SID, $db, $config;
 
 		$this->time_now = time();
 		
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#/?' . preg_quote($config['script_path'], '#') . '/?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*(.*?)$#i', '\1\2', $_SERVER['REQUEST_URI']) . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
+//		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#/?' . preg_quote($config['script_path'], '#') . '/?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*(.*?)$#i', '\1\2', $_SERVER['REQUEST_URI']) . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
+
+		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
+		$sid = substr($this->page, strpos($this->page, 'sid='), 36);
+		$this->page = str_replace(array('/' . $config['script_path'] . '/', (strlen($sid) == 36 && strpos($sid, '&') === false) ? $sid : 'sid='), '', $this->page);
 
 		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
@@ -98,7 +102,7 @@ class session
 			{
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
-//				$quadcheck = ($config['ip_check_bot'] && $user->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
+//				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
 				
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
@@ -141,7 +145,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $db, $config;
+		global $SID, $db, $config, $cache;
 
 		$this->data = array();
 		
@@ -167,10 +171,12 @@ class session
 		*/		
 		$bot = false;
 		$active_bots = array();
-		obtain_bots($active_bots);
+		$cache->obtain_bots($active_bots);
+
 		foreach ($active_bots as $row)
 		{
-			if ($row['bot_agent'] && preg_match('#' . preg_quote($row['bot_agent'], '#') . '#i', $this->browser))
+//			if ($row['bot_agent'] && preg_match('#' . preg_quote($row['bot_agent'], '#') . '#i', $this->browser))
+			if ($row['bot_agent'] && strpos($this->browser, $row['bot_agent']) !== false)
 			{
 				$bot = $row['user_id'];
 			}
@@ -683,6 +689,7 @@ class session
 
 
 /**
+* @package phpBB3
 * Base user class
 *
 * This is the overarching class which contains (through session extend)
@@ -860,7 +867,7 @@ class user extends session
 		{
 			global $SID;
 
-			if (!preg_match('#' . preg_quote("ucp.$phpEx$SID") . '&i\=[a-z0-9]+?&mode\=reg_details#', $_SERVER['REQUEST_URI']))
+			if (strpos($this->page, 'mode=reg_details') !== false && strpos($this->page, "ucp.$phpEx") !== false)
 			{
 				redirect("ucp.$phpEx$SID&i=profile&mode=reg_details");
 			}
@@ -997,9 +1004,9 @@ class user extends session
 	// Get profile fields for user
 	function get_profile_fields($user_id)
 	{
-		global $user, $db;
+		global $db;
 
-		if (isset($user->profile_fields))
+		if (isset($this->profile_fields))
 		{
 			return;
 		}
@@ -1008,7 +1015,7 @@ class user extends session
 			WHERE user_id = $user_id";
 		$result = $db->sql_query_limit($sql, 1);
 
-		$user->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
+		$this->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
 		$db->sql_freeresult($result);
 	}
 
