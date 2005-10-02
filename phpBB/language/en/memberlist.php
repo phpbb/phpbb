@@ -115,7 +115,7 @@ $lang += array(
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Forum presence',
 
-	'VIEWING_PROFILE'		=> 'Profile view',
+	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VISITED'				=> 'Last visited',
 
 	'WWW'					=> 'Website',
