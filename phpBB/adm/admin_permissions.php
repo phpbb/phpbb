@@ -354,7 +354,7 @@ switch ($submit)
 	case 'presetsave':
 
 		$holding_ary = array();
-		foreach ($auth_settings as $option => $setting)
+		foreach ($auth_settings[$which_mode] as $option => $setting)
 		{
 			switch ($setting)
 			{
@@ -705,7 +705,23 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 			$sql = 'SELECT user_id AS id, username AS name 
 				FROM ' . USERS_TABLE . ' 
 				WHERE ';
-			$sql .= ($submit == 'add_options') ? ' username IN (' . implode(', ', array_unique(preg_replace('#^[\s]*?(.*?)[\s]*?$#', "'\\1'", explode("\n", $ug_data[0])))) . ')' : ' user_id ' . ((is_array($ug_data)) ? 'IN (' . implode(', ', $ug_data) . ')' : '= ' . $ug_data);
+			
+			if ($submit == 'add_options')
+			{
+				$_ug_data = explode("\r\n", $ug_data[0]);
+				
+				$_u_sql = '';
+				foreach ($_ug_data as $_u_name)
+				{
+					$_u_sql .= (($_u_sql) ? ', ' : '') . "'" . $db->sql_escape($_u_name) . "'";
+				}
+				$sql .= ' username IN (' . $_u_sql . ')';
+			}
+			else
+			{
+				$sql .= ' user_id ' . ((is_array($ug_data)) ? 'IN (' . implode(', ', $ug_data) . ')' : '= ' . $ug_data);
+			}
+			
 			break;
 
 		case 'group':
@@ -818,8 +834,8 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 			$preset_update_options .= '<option value="' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
 			$preset_options .= '<option value="preset_' . $row['preset_id'] . '">' . $row['preset_name'] . '</option>';
 
-			$preset_data = unserialize($row['preset_data']);
-			
+			$preset_data = unserialize(stripslashes($row['preset_data']));
+
 			foreach ($preset_data as $preset_type => $preset_type_ary)
 			{
 				$holding[$preset_type] = '';
@@ -830,7 +846,7 @@ if (in_array($submit, array('add_options', 'edit_options', 'presetsave', 'preset
 			}
 
 			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new Array();" . "\n";
-			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new preset_obj('" . $holding['allow'] . "', '" . $holding['deny'] . "', '" . $holding['inherit'] . "');\n";
+			$preset_js .= "\tpresets['preset_" . $row['preset_id'] . "'] = new preset_obj('" . $holding['yes'] . "', '" . $holding['no'] . "', '" . $holding['inherit'] . "');\n";
 		}
 		while ($row = $db->sql_fetchrow($result));
 	}

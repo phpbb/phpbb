@@ -21,7 +21,7 @@ require($phpbb_root_path . 'common.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup('admin');
 // End session management
