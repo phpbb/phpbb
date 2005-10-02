@@ -3,7 +3,7 @@
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
+* @copyright (c) 2005 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
 */
@@ -13,8 +13,6 @@
 *
 * Template class.
 *
-* Nathan Codding - Original version design and implementation
-* Crimsonbane - Initial caching proposal and work
 * psoTFX - Completion of file caching, decompilation routines and implementation of
 * conditionals/keywords and associated changes
 *
@@ -455,6 +453,11 @@ class template
 	{
 		global $config;
 
+		if ($echo_var)
+		{
+			global $$echo_var;
+		}
+
 		// Remove any "loose" php ... we want to give admins the ability
 		// to switch on/off PHP for a given template. Allowing unchecked
 		// php is a no-no. There is a potential issue here in that non-php
@@ -487,6 +490,11 @@ class template
 
 		for ($curr_tb = 0, $tb_size = sizeof($text_blocks); $curr_tb < $tb_size; $curr_tb++)
 		{
+			if (!isset($blocks[1][$curr_tb]))
+			{
+				$blocks[1][$curr_tb] = '';
+			}
+
 			switch ($blocks[1][$curr_tb])
 			{
 				case 'BEGIN':
@@ -613,7 +621,7 @@ class template
 
 			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
 		}
-
+		
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['.'][0]['\\1']; ?>", $text_blocks);
 		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['DEFINE']['.']['\\1']; ?>", $text_blocks);
 
@@ -824,7 +832,13 @@ class template
 		// Are we a string?
 		if ($match[5] && $match[7])
 		{
-			$match[6] = "'" . addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[6])) . "'";
+			$match[6] = addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[6]));
+
+			// Compile reference, we allow template variables in defines...
+			$match[6] = $this->compile($match[6]);
+
+			// Now replace the php code
+			$match[6] = "'" . str_replace(array('<?php echo ', '; ?>'), array("' . ", " . '"), $match[6]) . "'";
 		}
 		else
 		{
@@ -935,7 +949,7 @@ class template
 	function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
 	{
 		// Strip the trailing period.
-		$namespace = substr($namespace, 0, strlen($namespace) - 1);
+		$namespace = substr($namespace, 0, -1);
 
 		// Get a reference to the data block for this namespace.
 		$varref = $this->generate_block_data_ref($namespace, true, $defop);
