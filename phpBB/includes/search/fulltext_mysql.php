@@ -16,6 +16,9 @@
 class fulltext_mysql
 {
 	var $version = 4;
+	var $split_words = array();
+	var $common_words = array();
+	var $old_split_words = array();
 
 	function fulltext_mysql(&$error)
 	{
@@ -29,7 +32,8 @@ class fulltext_mysql
 
 		$error = (!preg_match('#^4|5|6#s', $version)) ? true : false;
 	}
-	function search($type, &$fields, &$fid_ary, &$keywords, &$author, &$pid_ary)
+
+	function search($type, &$fields, &$terms, &$fid_ary, &$keywords, &$author, &$pid_ary, $sort_days)
 	{
 		global $phpbb_root_path, $phpEx, $config, $db, $user, $SID;
 
@@ -38,9 +42,9 @@ class fulltext_mysql
 		{
 			$author = ($author) ? ' AND ' . $author : '';
 
-			$split_words = $stopped_words = $smllrg_words = array();
+			$this->split_words = $this->common_words = array();
 			$drop_char_match =   array('^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*');
-			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ');
+			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ');
 
 			if ($fp = @fopen($user->lang_path . '/search_stopwords.txt', 'rb'))
 			{
@@ -57,7 +61,7 @@ class fulltext_mysql
 			fclose($fp);
 
 			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#');
-			$replace	= array(' +',         ' |',        ' -',         ' +',   ' -',  ' |');
+			$replace	= array(' +', ' |', ' -', ' +', ' -', ' |');
 
 			$keywords = preg_replace($match, $replace, $keywords);
 
@@ -76,30 +80,34 @@ class fulltext_mysql
 			$keywords = str_replace($drop_char_match, $drop_char_replace, $keywords);
 
 			// Split words
-			$split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
+			$this->split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
 
 			if (sizeof($stopwords))
 			{
-				$stopped_words = array_intersect($split_words, $stopwords);
-				$split_words = array_diff($split_words, $stopwords);
+				$this->common_words = array_intersect($this->split_words, $stopwords);
+				$this->split_words = array_diff($this->split_words, $stopwords);
 			}
 
 			if (sizeof($replace_synonym))
 			{
-				$split_words = str_replace($replace_synonym, $match_synonym, $split_words);
+				$this->split_words = str_replace($replace_synonym, $match_synonym, $this->split_words);
 			}
 		}
 
-		if (isset($old_split_words) && sizeof($old_split_words))
+		if ($this->old_split_words && sizeof($this->old_split_words))
 		{
-			$split_words = (sizeof($split_words)) ? array_diff($split_words, $old_split_words) : $old_split_words;
+			$this->split_words = (sizeof($this->split_words)) ? array_diff($this->split_words, $this->old_split_words) : $this->old_split_words;
 		}
 
-		if (sizeof($split_words))
+		if (sizeof($this->split_words))
 		{
 			// Build some display specific variable strings
 			$sql_select = ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
 			$sql_from = ($type == 'posts') ? '' : TOPICS_TABLE . ' t, ';
+			$sql_fora = (sizeof($fid_ary)) ? ' AND p.forum_id IN (' . implode(',', $fid_ary) . ')' : '';
+			$sql_author = ($author) ? 'AND p.poster_id = ' . $author : '';
+			$sql_time = ($sort_days) ? 'AND p.post_time >= ' . ($current_time - ($sort_days * 86400)) : '';
+			$sql_topic = ($type == 'posts') ? '' : 'AND t.topic_id = p.topic_id';
 
 			switch ($fields)
 			{
@@ -110,26 +118,34 @@ class fulltext_mysql
 					$sql_match = 'p.post_text';
 					break;
 				default:
-					$sql_match = 'p.post_text,p.post_subject';
+					$sql_match = 'p.post_text, p.post_subject';
 			}
 
-			$sql_topic = ($type == 'posts') ? '' : 'AND t.topic_id = p.topic_id';
 			// Are we searching within an existing search set? Yes, then include the old ids
 			$sql_find_in = (sizeof($pid_ary)) ? 'AND ' . (($type == 'topics') ? 't.topic_id' : 'p.post_id') . ' IN (' . implode(', ', $pid_ary) . ')' : '';
-			$sql_fora = (sizeof($fid_ary)) ? ' AND p.forum_id IN (' . implode(',', $fid_ary) . ')' : '';
-			$sql_author = ($author) ? 'AND p.poster_id = ' . $author : '';
-			$sql_time = ($sort_days) ? 'AND p.post_time >= ' . ($current_time - ($sort_days * 86400)) : '';
+
+			$words = array();
+			if ($terms == 'all')
+			{
+				foreach ($this->split_words as $id => $word)
+				{
+					$words[] = (strpos($word, '+') === 0) ? $word : '+' . $word;
+				}
+			}
+			else
+			{
+				$words = $this->split_words;
+			}
 
 			$sql = "SELECT $sql_select
 				FROM $sql_from" . POSTS_TABLE . " p
-				WHERE MATCH ($sql_match) AGAINST ('+" . implode(' ', $split_words) . "' IN BOOLEAN MODE)
+				WHERE MATCH ($sql_match) AGAINST ('" . implode(' ', $words) . "' IN BOOLEAN MODE)
 					$sql_topic
 					$sql_find_in
 					$sql_fora
 					$sql_author
-					$sql_time
-				LIMIT 1000";
-			$result = $db->sql_query($sql);
+					$sql_time";
+			$result = $db->sql_query_limit($sql, 1000);
 
 			if ($db->sql_numrows() > 999)
 			{
@@ -160,8 +176,7 @@ class fulltext_mysql
 				$sql = 'SELECT p.post_id
 					FROM ' . POSTS_TABLE . " p
 					WHERE $sql_author
-						$sql_fora
-					LIMIT 1000";
+						$sql_fora";
 				$field = 'post_id';
 			}
 			else
@@ -171,11 +186,10 @@ class fulltext_mysql
 					WHERE $sql_author
 						$sql_fora
 						AND t.topic_id = p.topic_id
-					GROUP BY t.topic_id
-					LIMIT 1000";
+					GROUP BY t.topic_id";
 				$field = 'topic_id';
 			}
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query_limit($sql, 1000);
 
 			while ($row = $db->sql_fetchrow($result))
 			{

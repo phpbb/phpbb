@@ -15,23 +15,25 @@
 */
 class fulltext_phpbb
 {
+	var $split_words = array();
+	var $common_words = array();
+	var $old_split_words = array();
+
 	function fulltext_phpbb(&$error)
 	{
 		$error = false;
 	}
 
-	function search($type, &$fields, &$fid_ary, &$keywords, &$author, &$pid_ary)
+	function search($type, &$fields, &$terms, &$fid_ary, &$keywords, &$author, &$pid_ary, $sort_days)
 	{
-//		$type, &$keywords, &$sql_author, &$sql_forums, &$search_fields, &$pid_ary, &$sql_in)
 		global $phpbb_root_path, $phpEx, $config, $db, $user, $SID;
 
 		// Are we looking for words
 		if ($keywords)
 		{
-			// TODO
-			$sql_author = ($sql_author) ? ' AND ' . $sql_author : '';
+			$author = ($author) ? ' AND ' . $author : '';
 
-			$split_words = $stopped_words = $smllrg_words = array();
+			$this->split_words = $this->common_words = array();
 			$drop_char_match =   array('-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*');
 			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ');
 
@@ -50,7 +52,7 @@ class fulltext_phpbb
 			fclose($fp);
 
 			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#');
-			$replace	= array(' + ',        ' | ',       ' - ',        ' + ',  ' - ', ' | ');
+			$replace	= array(' + ', ' | ', ' - ', ' + ', ' - ', ' | ');
 
 			$keywords = preg_replace($match, $replace, $keywords);
 
@@ -69,30 +71,30 @@ class fulltext_phpbb
 			$keywords = str_replace($drop_char_match, $drop_char_replace, $keywords);
 
 			// Split words
-			$split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
+			$this->split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
 
 			if (sizeof($stopwords))
 			{
-				$stopped_words = array_intersect($split_words, $stopwords);
-				$split_words = array_diff($split_words, $stopwords);
+				$this->common_words = array_intersect($this->split_words, $stopwords);
+				$this->split_words = array_diff($this->split_words, $stopwords);
 			}
 
 			if (sizeof($replace_synonym))
 			{
-				$split_words = str_replace($replace_synonym, $match_synonym, $split_words);
+				$this->split_words = str_replace($replace_synonym, $match_synonym, $this->split_words);
 			}
 		}
 
-		if (isset($old_split_words) && sizeof($old_split_words))
+		if ($this->old_split_words && sizeof($this->old_split_words))
 		{
-			$split_words = (sizeof($split_words)) ? array_diff($split_words, $old_split_words) : $old_split_words;
+			$this->split_words = (sizeof($this->split_words)) ? array_diff($this->split_words, $this->old_split_words) : $this->old_split_words;
 		}
 
-		if (sizeof($split_words))
+		if (sizeof($this->split_words))
 		{
-			$bool = ($search_terms == 'all') ? 'AND' : 'OR';
+			$bool = ($terms == 'all') ? 'AND' : 'OR';
 			$sql_words = '';
-			foreach ($split_words as $word)
+			foreach ($this->split_words as $word)
 			{
 				switch ($word)
 				{
@@ -106,13 +108,22 @@ class fulltext_phpbb
 						$bool = 'OR';
 						continue;
 					default:
-						$bool = ($search_terms != 'all') ? 'OR' : $bool;
+						$bool = ($terms != 'all') ? 'OR' : $bool;
 						$sql_words[$bool][] = "'" . preg_replace('#\*+#', '%', trim($word)) . "'";
-						$bool = ($search_terms == 'all') ? 'AND' : 'OR';
+						$bool = ($terms == 'all') ? 'AND' : 'OR';
 				}
 			}
 
-			switch ($search_fields)
+			// Build some display specific variable strings
+			$sql_author = ($author) ? 'AND p.poster_id = ' . $author : '';
+			$sql_fora = (sizeof($fid_ary)) ? ' AND p.forum_id IN (' . implode(',', $fid_ary) . ')' : '';
+			$sql_time = ($sort_days) ? 'AND p.post_time >= ' . ($current_time - ($sort_days * 86400)) : '';
+			$sql_select = ($type == 'posts') ? 'm.post_id' : 'DISTINCT t.topic_id';
+			$sql_from = ($type == 'posts') ? '' : TOPICS_TABLE . ' t, ';
+			$sql_topic = ($type == 'posts') ? '' : 'AND t.topic_id = p.topic_id';
+			$field = ($type == 'posts') ? 'm.post_id' : 't.topic_id';
+
+			switch ($fields)
 			{
 				case 'titleonly':
 					$sql_match = ' AND m.title_match = 1';
@@ -124,15 +135,8 @@ class fulltext_phpbb
 					$sql_match = '';
 			}
 
-			// Build some display specific variable strings
-			$sql_select = ($type == 'posts') ? 'm.post_id' : 'DISTINCT t.topic_id';
-			$sql_from = ($type == 'posts') ? '' : TOPICS_TABLE . ' t, ';
-			$sql_topic = ($type == 'posts') ? '' : 'AND t.topic_id = p.topic_id';
-			$sql_time = ($sort_days) ? 'AND p.post_time >= ' . ($current_time - ($sort_days * 86400)) : '';
-			$field = ($type == 'posts') ? 'm.post_id' : 't.topic_id';
-
 			// Are we searching within an existing search set? Yes, then include the old ids
-			$sql_find_in = ($sql_in) ? 'AND ' . $sql_in : '';
+			$sql_find_in = (sizeof($pid_ary)) ? 'AND ' . (($type == 'topics') ? 't.topic_id' : 'm.post_id') . ' IN (' . implode(', ', $pid_ary) . ')' : '';
 
 			$result_ary = array();
 			foreach (array('AND', 'OR', 'NOT') as $bool)
@@ -161,18 +165,18 @@ class fulltext_phpbb
 										AND w.word_common <> 1
 										AND p.post_id = m.post_id
 										$sql_topic
-										$sql_forums
+										$sql_fora
 										$sql_author
 										$sql_and
 										$sql_time
 										$sql_match
 										$sql_find_in";
-								$result = $db->sql_query($sql);
+								$result = $db->sql_query_limit($sql, 1000);
 
-/*								if ($db->sql_numrows() > 999)
+								if ($db->sql_numrows() > 999)
 								{
 									trigger_error($user->lang['TOO_MANY_SEARCH_RESULTS']);
-								}*/
+								}
 
 								if (!($row = $db->sql_fetchrow($result)) && $bool == 'AND')
 								{
@@ -213,7 +217,7 @@ class fulltext_phpbb
 							}
 							$sql_where = ($sql_in) ? (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
 
-							$sql_and = (sizeof($result_ary['AND'])) ? "AND $field IN (" . implode(', ', $result_ary['AND']) . ')' : '';
+							$sql_and = (isset($result_ary['AND']) && sizeof($result_ary['AND'])) ? "AND $field IN (" . implode(', ', $result_ary['AND']) . ')' : '';
 							$sql = "SELECT $sql_select
 								FROM $sql_from" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
 								WHERE ($sql_where)
@@ -221,13 +225,13 @@ class fulltext_phpbb
 									AND w.word_common <> 1
 									AND p.post_id = m.post_id
 									$sql_topic
-									$sql_forums
+									$sql_fora
 									$sql_author
 									$sql_and
 									$sql_time
 									$sql_match
 									$sql_find_in";
-							$result = $db->sql_query($sql);
+							$result = $db->sql_query_limit($sql, 1000);
 
 							while ($row = $db->sql_fetchrow($result))
 							{
@@ -277,14 +281,17 @@ class fulltext_phpbb
 			}
 			$db->sql_freeresult($result);
 		}
-		else if ($sql_author)
+		else if ($author)
 		{
+			$sql_author = ($author) ? 'p.poster_id = ' . $author : '';
+			$sql_fora = (sizeof($fid_ary)) ? ' AND p.forum_id IN (' . implode(',', $fid_ary) . ')' : '';
+
 			if ($type == 'posts')
 			{
 				$sql = 'SELECT p.post_id
 					FROM ' . POSTS_TABLE . " p
 					WHERE $sql_author
-						$sql_forums";
+						$sql_fora";
 				$field = 'post_id';
 			}
 			else
@@ -292,12 +299,12 @@ class fulltext_phpbb
 				$sql = 'SELECT t.topic_id
 					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 					WHERE $sql_author
-						$sql_forums
+						$sql_fora
 						AND t.topic_id = p.topic_id
 					GROUP BY t.topic_id";
 				$field = 'topic_id';
 			}
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query_limit($sql, 1000);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
