@@ -337,6 +337,123 @@ function display_forums($root_data = '', $display_moderators = TRUE)
 }
 
 /**
+* Create forum rules for given forum
+*/
+function generate_forum_rules(&$forum_data)
+{
+	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
+	{
+		return;
+	}
+
+	global $template, $phpbb_root_path, $phpEx;
+
+	if ($forum_data['forum_rules'])
+	{
+		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		$bbcode = new bbcode($forum_data['forum_rules_bbcode_bitfield']);
+
+		$bbcode->bbcode_second_pass($forum_data['forum_rules'], $forum_data['forum_rules_bbcode_uid']);
+
+		$forum_data['forum_rules'] = smiley_text($forum_data['forum_rules'], !($forum_data['forum_rules_flags'] & 2));
+		$forum_data['forum_rules'] = str_replace("\n", '<br />', censor_text($forum_data['forum_rules']));
+		unset($bbcode);
+	}
+
+	$template->assign_vars(array(
+		'S_FORUM_RULES'	=> true,
+		'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
+		'FORUM_RULES'	=> $forum_data['forum_rules'])
+	);
+}
+
+/**
+* Create forum navigation links for given forum, create parent
+* list if currently null, assign basic forum info to template
+*/
+function generate_forum_nav(&$forum_data)
+{
+	global $db, $user, $template, $phpEx, $SID, $phpbb_root_path;
+
+	// Get forum parents
+	$forum_parents = get_forum_parents($forum_data);
+
+	// Build navigation links
+	foreach ($forum_parents as $parent_forum_id => $parent_data)
+	{
+		list($parent_name, $parent_type) = array_values($parent_data);
+
+		$template->assign_block_vars('navlinks', array(
+			'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
+			'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
+			'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
+			'FORUM_NAME'	=> $parent_name,
+			'FORUM_ID'		=> $parent_forum_id,
+			'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$parent_forum_id")
+		);
+	}
+
+	$template->assign_block_vars('navlinks', array(
+		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
+		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
+		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+		'FORUM_NAME'	=> $forum_data['forum_name'],
+		'FORUM_ID'		=> $forum_data['forum_id'],
+		'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
+	);
+
+	$template->assign_vars(array(
+		'FORUM_ID' 		=> $forum_data['forum_id'],
+		'FORUM_NAME'	=> $forum_data['forum_name'],
+		'FORUM_DESC'	=> strip_tags($forum_data['forum_desc']))
+	);
+
+	return;
+}
+
+/**
+* Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
+*/
+function get_forum_parents(&$forum_data)
+{
+	global $db;
+
+	$forum_parents = array();
+
+	if ($forum_data['parent_id'] > 0)
+	{
+		if ($forum_data['forum_parents'] == '')
+		{
+			$sql = 'SELECT forum_id, forum_name, forum_type
+				FROM ' . FORUMS_TABLE . '
+				WHERE left_id < ' . $forum_data['left_id'] . '
+					AND right_id > ' . $forum_data['right_id'] . '
+				ORDER BY left_id ASC';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_parents[$row['forum_id']] = array($row['forum_name'], (int) $row['forum_type']);
+			}
+			$db->sql_freeresult($result);
+
+			$forum_data['forum_parents'] = serialize($forum_parents);
+
+			$sql = 'UPDATE ' . FORUMS_TABLE . "
+				SET forum_parents = '" . $db->sql_escape($forum_data['forum_parents']) . "'
+				WHERE parent_id = " . $forum_data['parent_id'];
+			$db->sql_query($sql);
+		}
+		else
+		{
+			$forum_parents = unserialize($forum_data['forum_parents']);
+		}
+	}
+
+	return $forum_parents;
+}
+
+/**
 * Get topic author
 */
 function topic_topic_author(&$topic_row)
@@ -385,6 +502,67 @@ function topic_generate_pagination($replies, $url)
 	}
 
 	return $pagination;
+}
+
+/**
+* Obtain list of moderators of each forum
+*/
+function get_moderators(&$forum_moderators, $forum_id = false)
+{
+	global $config, $template, $db, $phpEx, $SID;
+
+	// Have we disabled the display of moderators? If so, then return
+	// from whence we came ...
+	if (empty($config['load_moderators']))
+	{
+		return;
+	}
+
+	if (!empty($forum_id) && is_array($forum_id))
+	{
+		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
+	}
+	else
+	{
+		$forum_sql = ($forum_id) ? 'AND forum_id = ' . $forum_id : '';
+	}
+
+	$sql = 'SELECT *
+		FROM ' . MODERATOR_TABLE . "
+		WHERE display_on_index = 1
+			$forum_sql";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=group&amp;g=' . $row['group_id'] . '">' . $row['groupname'] . '</a>';
+	}
+	$db->sql_freeresult($result);
+
+	return;
+}
+
+/**
+* User authorisation levels output
+*/
+function gen_forum_auth_level($mode, $forum_id)
+{
+	global $SID, $template, $auth, $user;
+
+	$rules = array(
+		($auth->acl_get('f_post', $forum_id)) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
+		($auth->acl_get('f_reply', $forum_id)) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
+		($auth->acl_gets('f_edit', 'm_edit', $forum_id)) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
+		($auth->acl_gets('f_delete', 'm_delete', $forum_id)) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach', $forum_id)) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
+	);
+
+	foreach ($rules as $rule)
+	{
+		$template->assign_block_vars('rules', array('RULE' => $rule));
+	}
+
+	return;
 }
 
 /**
@@ -487,8 +665,8 @@ function topic_status(&$topic_row, $replies, $mark_time_topic, $mark_time_forum,
 */
 function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
 {
-	global $extensions, $template, $cache, $attachment_tpl;
-	global $config, $user, $phpbb_root_path, $phpEx, $SID;
+	global $template, $cache, $user;
+	global $attachment_tpl, $extensions, $config, $phpbb_root_path, $phpEx, $SID;
 
 //	$starttime = explode(' ', microtime());
 //	$starttime = $starttime[1] + $starttime[0];
@@ -541,7 +719,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 	if (empty($extensions) || !is_array($extensions))
 	{
 		$extensions = array();
-		obtain_attach_extensions($extensions);
+		$cache->obtain_attach_extensions($extensions);
 	}
 
 	foreach ($attachment_data as $attachment)

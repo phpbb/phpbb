@@ -273,9 +273,24 @@ class cache extends acm
 		}
 		else
 		{
-			$sql = 'SELECT user_id, bot_agent, bot_ip 
-				FROM ' . BOTS_TABLE . '
-				WHERE bot_active = 1';
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$sql = 'SELECT user_id, bot_agent, bot_ip 
+						FROM ' . BOTS_TABLE . '
+						WHERE bot_active = 1
+					ORDER BY LEN(bot_agent) DESC';
+				break;
+	
+				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...
+				default:
+					$sql = 'SELECT user_id, bot_agent, bot_ip 
+						FROM ' . BOTS_TABLE . '
+						WHERE bot_active = 1
+					ORDER BY LENGTH(bot_agent) DESC';
+				break;
+			}
 			$result = $db->sql_query($sql);
 		
 			while ($row = $db->sql_fetchrow($result))

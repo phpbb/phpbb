@@ -9,7 +9,11 @@
 */
 
 /**
+* set_var
+*
 * Set variable, used by {@link request_var the request_var function}
+*
+* @private
 */
 function set_var(&$result, $var, $type, $multibyte = false)
 {
@@ -157,184 +161,6 @@ function get_userdata($user)
 	$result = $db->sql_query($sql);
 
 	return ($row = $db->sql_fetchrow($result)) ? $row : false;
-}
-
-/**
-* Create forum rules for given forum
-*/
-function generate_forum_rules(&$forum_data)
-{
-	if (!$forum_data['forum_rules'] && !$forum_data['forum_rules_link'])
-	{
-		return;
-	}
-
-	global $template, $phpbb_root_path, $phpEx;
-
-	if ($forum_data['forum_rules'])
-	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($forum_data['forum_rules_bbcode_bitfield']);
-
-		$bbcode->bbcode_second_pass($forum_data['forum_rules'], $forum_data['forum_rules_bbcode_uid']);
-
-		$forum_data['forum_rules'] = smiley_text($forum_data['forum_rules'], !($forum_data['forum_rules_flags'] & 2));
-		$forum_data['forum_rules'] = str_replace("\n", '<br />', censor_text($forum_data['forum_rules']));
-		unset($bbcode);
-	}
-
-	$template->assign_vars(array(
-		'S_FORUM_RULES'	=> true,
-		'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
-		'FORUM_RULES'	=> $forum_data['forum_rules'])
-	);
-}
-
-/**
-* Create forum navigation links for given forum, create parent
-* list if currently null, assign basic forum info to template
-*/
-function generate_forum_nav(&$forum_data)
-{
-	global $db, $user, $template, $phpEx, $SID, $phpbb_root_path;
-
-	// Get forum parents
-	$forum_parents = get_forum_parents($forum_data);
-
-	// Build navigation links
-	foreach ($forum_parents as $parent_forum_id => $parent_data)
-	{
-		list($parent_name, $parent_type) = array_values($parent_data);
-
-		$template->assign_block_vars('navlinks', array(
-			'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
-			'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
-			'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
-			'FORUM_NAME'	=> $parent_name,
-			'FORUM_ID'		=> $parent_forum_id,
-			'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$parent_forum_id")
-		);
-	}
-
-	$template->assign_block_vars('navlinks', array(
-		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
-		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
-		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
-		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_ID'		=> $forum_data['forum_id'],
-		'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
-	);
-
-	$template->assign_vars(array(
-		'FORUM_ID' 		=> $forum_data['forum_id'],
-		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> strip_tags($forum_data['forum_desc']))
-	);
-
-	return;
-}
-
-/**
-* Returns forum parents as an array. Get them from forum_data if available, or update the database otherwise
-*/
-function get_forum_parents(&$forum_data)
-{
-	global $db;
-
-	$forum_parents = array();
-
-	if ($forum_data['parent_id'] > 0)
-	{
-		if ($forum_data['forum_parents'] == '')
-		{
-			$sql = 'SELECT forum_id, forum_name, forum_type
-				FROM ' . FORUMS_TABLE . '
-				WHERE left_id < ' . $forum_data['left_id'] . '
-					AND right_id > ' . $forum_data['right_id'] . '
-				ORDER BY left_id ASC';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$forum_parents[$row['forum_id']] = array($row['forum_name'], (int) $row['forum_type']);
-			}
-			$db->sql_freeresult($result);
-
-			$forum_data['forum_parents'] = serialize($forum_parents);
-
-			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_parents = '" . $db->sql_escape($forum_data['forum_parents']) . "'
-				WHERE parent_id = " . $forum_data['parent_id'];
-			$db->sql_query($sql);
-		}
-		else
-		{
-			$forum_parents = unserialize($forum_data['forum_parents']);
-		}
-	}
-
-	return $forum_parents;
-}
-
-/**
-* Obtain list of moderators of each forum
-*/
-function get_moderators(&$forum_moderators, $forum_id = false)
-{
-	global $config, $template, $db, $phpEx, $SID;
-
-	// Have we disabled the display of moderators? If so, then return
-	// from whence we came ...
-	if (empty($config['load_moderators']))
-	{
-		return;
-	}
-
-	if (!empty($forum_id) && is_array($forum_id))
-	{
-		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
-	}
-	else
-	{
-		$forum_sql = ($forum_id) ? 'AND forum_id = ' . $forum_id : '';
-	}
-
-	$sql = 'SELECT *
-		FROM ' . MODERATOR_TABLE . "
-		WHERE display_on_index = 1
-			$forum_sql";
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="memberlist.' . $phpEx . $SID . '&amp;mode=group&amp;g=' . $row['group_id'] . '">' . $row['groupname'] . '</a>';
-	}
-	$db->sql_freeresult($result);
-
-	return;
-}
-
-/**
-* User authorisation levels output
-*/
-function gen_forum_auth_level($mode, $forum_id)
-{
-	global $SID, $template, $auth, $user;
-
-	$rules = array(
-		($auth->acl_get('f_post', $forum_id)) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
-		($auth->acl_get('f_reply', $forum_id)) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
-		($auth->acl_gets('f_edit', 'm_edit', $forum_id)) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($auth->acl_gets('f_delete', 'm_delete', $forum_id)) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
-		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach', $forum_id)) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
-	);
-
-	foreach ($rules as $rule)
-	{
-		$template->assign_block_vars('rules', array('RULE' => $rule));
-	}
-
-	return;
 }
 
 /**
@@ -932,233 +758,6 @@ function on_page($num_items, $per_page, $start)
 }
 
 /**
-* Obtain list of naughty words and build preg style replacement arrays for use by the
-* calling script
-*/
-function obtain_word_list(&$censors)
-{
-	global $db, $cache, $user;
-
-	if (!$user->optionget('viewcensors') && $config['allow_nocensors'])
-	{
-		return;
-	}
-
-	if ($cache->exists('word_censors'))
-	{
-		$censors = $cache->get('word_censors');
-	}
-	else
-	{
-		$sql = 'SELECT word, replacement
-			FROM  ' . WORDS_TABLE;
-		$result = $db->sql_query($sql);
-
-		$censors = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
-			$censors['replace'][] = $row['replacement'];
-		}
-		$db->sql_freeresult($result);
-
-		$cache->put('word_censors', $censors);
-	}
-
-	return true;
-}
-
-/**
-* Obtain currently listed icons
-*/
-function obtain_icons(&$icons)
-{
-	global $db, $cache;
-
-	if ($cache->exists('icons'))
-	{
-		$icons = $cache->get('icons');
-	}
-	else
-	{
-		// Topic icons
-		$sql = 'SELECT *
-			FROM ' . ICONS_TABLE . '
-			ORDER BY icons_order';
-		$result = $db->sql_query($sql);
-
-		$icons = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$icons[$row['icons_id']]['img'] = $row['icons_url'];
-			$icons[$row['icons_id']]['width'] = (int) $row['icons_width'];
-			$icons[$row['icons_id']]['height'] = (int) $row['icons_height'];
-			$icons[$row['icons_id']]['display'] = (bool) $row['display_on_posting'];
-		}
-		$db->sql_freeresult($result);
-
-		$cache->put('icons', $icons);
-	}
-
-	return;
-}
-
-/**
-* Obtain ranks
-*/
-function obtain_ranks(&$ranks)
-{
-	global $db, $cache;
-
-	if ($cache->exists('ranks'))
-	{
-		$ranks = $cache->get('ranks');
-	}
-	else
-	{
-		$sql = 'SELECT *
-			FROM ' . RANKS_TABLE . '
-			ORDER BY rank_min DESC';
-		$result = $db->sql_query($sql);
-
-		$ranks = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['rank_special'])
-			{
-				$ranks['special'][$row['rank_id']] = array(
-					'rank_title'	=>	$row['rank_title'],
-					'rank_image'	=>	$row['rank_image']
-				);
-			}
-			else
-			{
-				$ranks['normal'][] = array(
-					'rank_title'	=>	$row['rank_title'],
-					'rank_min'		=>	$row['rank_min'],
-					'rank_image'	=>	$row['rank_image']
-				);
-			}
-		}
-		$db->sql_freeresult($result);
-
-		$cache->put('ranks', $ranks);
-	}
-}
-
-/**
-* Obtain allowed extensions
-*/
-function obtain_attach_extensions(&$extensions, $forum_id = false)
-{
-	global $db, $cache;
-
-	if ($cache->exists('extensions'))
-	{
-		$extensions = $cache->get('extensions');
-	}
-	else
-	{
-		// The rule is to only allow those extensions defined. ;)
-		$sql = 'SELECT e.extension, g.*
-			FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
-			WHERE e.group_id = g.group_id
-				AND g.allow_group = 1';
-		$result = $db->sql_query($sql);
-
-		$extensions = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$extension = strtolower(trim($row['extension']));
-
-			$extensions[$extension]['display_cat']		= (int) $row['cat_id'];
-			$extensions[$extension]['download_mode']	= (int) $row['download_mode'];
-			$extensions[$extension]['upload_icon']		= trim($row['upload_icon']);
-			$extensions[$extension]['max_filesize']		= (int) $row['max_filesize'];
-
-			$allowed_forums = ($row['allowed_forums']) ? unserialize(trim($row['allowed_forums'])) : array();
-
-			if ($row['allow_in_pm'])
-			{
-				$allowed_forums = array_merge($allowed_forums, array(0));
-			}
-
-			// Store allowed extensions forum wise
-			$extensions['_allowed_'][$extension] = (!sizeof($allowed_forums)) ? 0 : $allowed_forums;
-		}
-		$db->sql_freeresult($result);
-
-		$cache->put('extensions', $extensions);
-	}
-
-	if ($forum_id !== false)
-	{
-		$return = array();
-
-		foreach ($extensions['_allowed_'] as $extension => $check)
-		{
-			$allowed = false;
-
-			if (is_array($check))
-			{
-				// Check for private messaging
-				if (sizeof($check) == 1 && $check[0] == 0)
-				{
-					$allowed = true;
-					continue;
-				}
-
-				$allowed = (!in_array($forum_id, $check)) ? false : true;
-			}
-			else
-			{
-				$allowed = ($forum_id == 0) ? false : true;
-			}
-			
-			if ($allowed)
-			{
-				$return['_allowed_'][$extension] = 0;
-				$return[$extension] = $extensions[$extension];
-			}
-		}
-
-		$extensions = $return;
-	}
-
-	return;
-}
-
-/**
-* Obtain active bots
-*/
-function obtain_bots(&$bots)
-{
-	global $db, $cache;
-
-	if ($cache->exists('bots'))
-	{
-		$bots = $cache->get('bots');
-	}
-	else
-	{
-		$sql = 'SELECT user_id, bot_agent, bot_ip 
-			FROM ' . BOTS_TABLE . '
-			WHERE bot_active = 1';
-		$result = $db->sql_query($sql);
-		
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$bots[] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		$cache->put('bots', $bots);
-	}
-	
-	return;
-}
-
-/**
 * Generate board url
 */
 function generate_board_url()
@@ -1502,7 +1101,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 */
 function censor_text($text)
 {
-	global $censors, $user;
+	global $censors, $user, $cache;
 
 	if (!isset($censors))
 	{
@@ -1511,7 +1110,7 @@ function censor_text($text)
 		// TODO: For ANONYMOUS, this option should be enabled by default
 		if ($user->optionget('viewcensors'))
 		{
-			obtain_word_list($censors);
+			$cache->obtain_word_list($censors);
 		}
 	}
 
@@ -1574,8 +1173,10 @@ function extension_allowed($forum_id, $extension, &$extensions)
 {
 	if (!sizeof($extensions))
 	{
+		global $cache;
+	
 		$extensions = array();
-		obtain_attach_extensions($extensions);
+		$cache->obtain_attach_extensions($extensions);
 	}
 
 	if (!isset($extensions['_allowed_'][$extension]))
@@ -1674,9 +1275,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			break;
 
 		case E_USER_NOTICE:
+
+			define('IN_ERROR_HANDLER', true);
+		
 			if (empty($user->data))
 			{
-				$user->start();
+				$user->session_begin();
 			}
 			if (empty($user->lang))
 			{
@@ -1685,7 +1289,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('IN_ADMIN') && $user->data['session_admin'])
+				if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 				{
 					adm_page_header('', '', false);
 				}
@@ -1699,7 +1303,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
 
-			if (defined('IN_ADMIN') && $user->data['session_admin'])
+			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 			{
 				adm_page_message($msg_title, $msg_text, $display_header);
 				adm_page_footer();
@@ -1907,8 +1511,8 @@ function page_header($page_title = '')
 	$l_privmsgs_text = $l_privmsgs_text_unread = '';
 	$s_privmsg_new = false;
 
-	// Obtain number of new private messages if user is logged in
-	if ($user->data['is_registered'])
+	// Obtain number of new private messages if user is logged in, not if in trigger_error
+	if (!defined('IN_ERROR_HANDLER') && $user->data['is_registered'])
 	{
 		if ($user->data['user_new_privmsg'])
 		{
@@ -1967,7 +1571,7 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view_messages'),
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view'),
 		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox",
 		'U_JS_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
 		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=popup",
