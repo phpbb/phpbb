@@ -228,7 +228,7 @@ class messenger
 		global $user, $phpEx, $phpbb_root_path;
 
 		// Session doesn't exist, create it
-		$user->start();
+		$user->session_begin();
 
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 		add_log('critical', 'LOG_' . $type . '_ERROR', $msg);
@@ -472,7 +472,12 @@ class queue
 
 		foreach ($this->queue_data as $object => $data_ary)
 		{
-			@set_time_limit(60);
+			@set_time_limit(0);
+
+			if (!isset($data_ary['package_size']))
+			{
+				$data_ary['package_size'] = 0;
+			}
 
 			$package_size = $data_ary['package_size'];
 			$num_items = (sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
@@ -798,7 +803,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	// We try to send messages even if a few people do not seem to have valid email addresses, but if no one has, we have to exit here.
 	if (!$rcpt)
 	{
-		$user->start();
+		$user->session_begin();
 		$err_msg .= '<br /><br />' . sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address));
 		$smtp->close_session();
 		return false;

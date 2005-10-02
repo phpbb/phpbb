@@ -140,7 +140,8 @@ function update_last_post_information($type, $id)
 */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false)
 {
-	global $auth, $user, $config, $db, $phpbb_root_path;
+	global $auth, $user, $config, $db, $cache;
+	global $phpbb_root_path;
 
 	$filedata = array();
 	$filedata['error'] = array();
@@ -164,18 +165,11 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	$extensions = array();
-	obtain_attach_extensions($extensions, $forum_id);
+	$cache->obtain_attach_extensions($extensions, $forum_id);
 
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
-	if ($local)
-	{
-		$file = $upload->local_upload($local_storage);
-	}
-	else
-	{
-		$file = $upload->form_upload($form_name);
-	}
+	$file = ($local) ? $upload->local_upload($local_storage) : $upload->form_upload($form_name);
 
 	if ($file->init_error)
 	{
@@ -475,11 +469,11 @@ function decode_message(&$message, $bbcode_uid = '')
 */
 function posting_gen_topic_icons($mode, $icon_id)
 {
-	global $phpbb_root_path, $config, $template;
+	global $phpbb_root_path, $config, $template, $cache;
 
 	// Grab icons
 	$icons = array();
-	obtain_icons($icons);
+	$cache->obtain_icons($icons);
 
 	if (!$icon_id)
 	{

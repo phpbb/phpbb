@@ -11,9 +11,6 @@
 /**
 */
 
-// Define Rule processing schema
-// NOTE: might change
-
 /*
 	Ability to simply add own rules by doing three things:
 		1) Add an appropiate constant
@@ -1080,7 +1077,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
 {
-	global $db, $auth, $user, $config, $phpEx, $SID, $template;
+	global $db, $auth, $config, $phpEx, $SID, $template, $user;
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -1150,16 +1147,17 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 			// Set message_replied switch for this user
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 				SET replied = 1
-				WHERE user_id = ' . $user->data['user_id'] . '
+				WHERE user_id = ' . $data['from_user_id'] . '
 					AND msg_id = ' . $data['reply_from_msg_id'];
 
 		case 'forward':
 		case 'post':
+		case 'quotepost':
 			$sql_data = array(
 				'root_level'		=> $root_level,
-				'author_id'			=> (int) $user->data['user_id'],
+				'author_id'			=> $data['from_user_id'],
 				'icon_id'			=> $data['icon_id'], 
-				'author_ip' 		=> $user->ip,
+				'author_ip' 		=> $data['from_user_ip'],
 				'message_time'		=> $current_time,
 				'enable_bbcode' 	=> $data['enable_bbcode'],
 				'enable_html' 		=> $data['enable_html'],
@@ -1200,7 +1198,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 
 	if (sizeof($sql_data))
 	{
-		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'forward')
+		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward')
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
 			$data['msg_id'] = $db->sql_nextid();
@@ -1224,17 +1222,37 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		}
 		unset($sql);
 
+		$sql_ary = array();
 		foreach ($recipients as $user_id => $type)
 		{
-			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql_ary[] = array(
 				'msg_id'	=> $data['msg_id'],
 				'user_id'	=> $user_id,
-				'author_id'	=> $user->data['user_id'],
+				'author_id'	=> $data['from_user_id'],
 				'folder_id'	=> PRIVMSGS_NO_BOX,
 				'new'		=> 1,
 				'unread'	=> 1,
 				'forwarded'	=> ($mode == 'forward') ? 1 : 0))
 			);
+		}
+
+		if (sizeof($sql_ary))
+		{
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary);
+				break;
+
+				default:
+					foreach ($sql_ary as $ary)
+					{
+						$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+					}
+				break;
+			}
 		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -1247,8 +1265,8 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'msg_id'	=> (int) $data['msg_id'],
-				'user_id'	=> (int) $user->data['user_id'],
-				'author_id'	=> (int) $user->data['user_id'],
+				'user_id'	=> (int) $data['from_user_id'],
+				'author_id'	=> (int) $data['from_user_id'],
 				'folder_id'	=> PRIVMSGS_OUTBOX,
 				'new'		=> 0,
 				'unread'	=> 0,
@@ -1260,18 +1278,18 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	}
 
 	// Set user last post time
-	if ($mode == 'reply' || $mode == 'quote' || $mode == 'forward' || $mode == 'post')
+	if ($mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward' || $mode == 'post')
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_lastpost_time = $current_time
-			WHERE user_id = " . $user->data['user_id'];
+			WHERE user_id = " . $data['from_user_id'];
 		$db->sql_query($sql);
 	}
 
 	$db->sql_transaction();
 
 	// Submit Attachments
-	if (sizeof($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit', 'forward')))
+	if (sizeof($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
 	{
 		$space_taken = $files_added = 0;
 
@@ -1292,7 +1310,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 					'post_msg_id'		=> $data['msg_id'],
 					'topic_id'			=> 0,
 					'in_message'		=> 1,
-					'poster_id'			=> $user->data['user_id'],
+					'poster_id'			=> $data['from_user_id'],
 					'physical_filename'	=> basename($attach_row['physical_filename']),
 					'real_filename'		=> basename($attach_row['real_filename']),
 					'comment'			=> $attach_row['comment'],
@@ -1335,14 +1353,14 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	{
 		$sql = 'DELETE FROM ' . DRAFTS_TABLE . " 
 			WHERE draft_id = $draft_id 
-				AND user_id = " . $user->data['user_id'];
+				AND user_id = " . $data['from_user_id'];
 		$db->sql_query($sql);
 	}
 
 	// Send Notifications
 	if ($mode != 'edit')
 	{
-		pm_notification($mode, stripslashes($user->data['username']), $recipients, stripslashes($subject), stripslashes($data['message']));
+		pm_notification($mode, stripslashes($data['from_username']), $recipients, stripslashes($subject), stripslashes($data['message']));
 	}
 
 	return $data['msg_id'];
