@@ -30,7 +30,6 @@ function compose_pm($id, $mode, $action)
 	$to_user_id		= request_var('u', 0);
 	$to_group_id	= request_var('g', 0);
 	$msg_id			= request_var('p', 0);
-	$quote_post		= request_var('q', 0);
 	$draft_id		= request_var('d', 0);
 	$lastclick		= request_var('lastclick', 0);
 
@@ -61,7 +60,7 @@ function compose_pm($id, $mode, $action)
 	// Was cancel pressed? If so then redirect to the appropriate page
 	if ($cancel || ($current_time - $lastclick < 2 && $submit))
 	{
-		$redirect = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=view_messages&amp;action=view_message" . (($msg_id) ? "&amp;p=$msg_id" : '');
+		$redirect = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=view&amp;action=view_message" . (($msg_id) ? "&amp;p=$msg_id" : '');
 		redirect($redirect);
 	}
 
@@ -81,6 +80,7 @@ function compose_pm($id, $mode, $action)
 		case 'reply':
 		case 'quote':
 		case 'forward':
+		case 'quotepost':
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
@@ -91,7 +91,7 @@ function compose_pm($id, $mode, $action)
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 
-			if ($quote_post)
+			if ($mode == 'quotepost')
 			{
 				$sql = 'SELECT p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_html, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
@@ -180,7 +180,7 @@ function compose_pm($id, $mode, $action)
 			trigger_error('NO_AUTHOR');
 		}
 
-		if (($action == 'reply' || $action == 'quote') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+		if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 		{
 			$address_list = array('u' => array($author_id => 'to'));
 		}
@@ -236,7 +236,6 @@ function compose_pm($id, $mode, $action)
 
 	$s_action = "{$phpbb_root_path}ucp.$phpEx?sid={$user->session_id}&amp;i=$id&amp;mode=$mode&amp;action=$action";
 	$s_action .= ($msg_id) ? "&amp;p=$msg_id" : '';
-	$s_action .= ($quote_post) ? "&amp;q=1" : '';
 
 	// Delete triggered ?
 	if ($action == 'delete')
@@ -296,7 +295,7 @@ function compose_pm($id, $mode, $action)
 		$db->sql_freeresult($result);
 	}
 	
-	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
+	if (!in_array($action, array('quote', 'quotepost', 'edit', 'delete', 'forward')))
 	{
 		$enable_sig		= ($config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
 		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
@@ -499,7 +498,7 @@ function compose_pm($id, $mode, $action)
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data, $update_message);
 
-			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view_messages&amp;action=view_message&amp;p=" . $msg_id;
+			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view&amp;p=" . $msg_id;
 			$return_folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=outbox";
 			meta_refresh(3, $return_message_url);
 
@@ -563,16 +562,16 @@ function compose_pm($id, $mode, $action)
 	}
 
 	// Decode text for message display
-	$bbcode_uid = (($action == 'quote' || $action == 'forward')&& !$preview && !$refresh && !sizeof($error)) ? $bbcode_uid : $message_parser->bbcode_uid;
+	$bbcode_uid = (($action == 'quote' || $action == 'forward' || $action == 'quotepost') && !$preview && !$refresh && !sizeof($error)) ? $bbcode_uid : $message_parser->bbcode_uid;
 
 	$message_parser->decode_message($bbcode_uid);
 
-	if ($action == 'quote' && !$preview && !$refresh)
+	if (($action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
 		$message_parser->message = '[quote="' . $quote_username . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 	}
 	
-	if (($action == 'reply' || $action == 'quote') && !$preview && !$refresh)
+	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
 		$message_subject = ((!preg_match('/^Re:/', $message_subject)) ? 'Re: ' : '') . censor_text($message_subject);
 	}
@@ -694,23 +693,27 @@ function compose_pm($id, $mode, $action)
 	{
 		case 'post':
 			$page_title = $user->lang['POST_NEW_PM'];
-			break;
+		break;
 
 		case 'quote':
 			$page_title = $user->lang['POST_QUOTE_PM'];
-			break;
+		break;
+
+		case 'quotepost':
+			$page_title = $user->lang['POST_PM_POST'];
+		break;
 
 		case 'reply':
 			$page_title = $user->lang['POST_REPLY_PM'];
-			break;
+		break;
 
 		case 'edit':
 			$page_title = $user->lang['POST_EDIT_PM'];
-			break;
+		break;
 
 		case 'forward':
 			$page_title = $user->lang['POST_FORWARD_PM'];
-			break;
+		break;
 
 		default:
 			trigger_error('NO_ACTION_MODE');

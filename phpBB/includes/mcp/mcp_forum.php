@@ -13,9 +13,8 @@
 */
 function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 {
+	global $template, $db, $user, $auth, $cache;
 	global $SID, $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth;
-	global $_POST, $_REQUEST;
 
 	if ($action == 'merge_select')
 	{
@@ -84,7 +83,7 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 
 	// Grab icons
 	$icons = array();
-	obtain_icons($icons);
+	$cache->obtain_icons($icons);
 
 	$topic_rows = array();
 

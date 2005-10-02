@@ -13,7 +13,8 @@
 */
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
-	global $phpbb_root_path, $phpEx, $SID, $user, $template, $auth, $config, $db;
+	global $user, $template, $auth, $db, $cache;
+	global $phpbb_root_path, $phpEx, $SID, $config;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
@@ -35,7 +36,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	// Grab icons
 	$icons = array();
-	obtain_icons($icons);
+	$cache->obtain_icons($icons);
 
 	// Instantiate BBCode if need be
 	if ($message_row['bbcode_bitfield'])
@@ -369,7 +370,8 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 */
 function get_user_informations($user_id, $user_row)
 {
-	global $config, $db, $auth, $user, $phpbb_root_path, $phpEx, $SID;
+	global $db, $auth, $user, $cache;
+	global $phpbb_root_path, $phpEx, $SID, $config;
 
 	if (!$user_id)
 	{
@@ -383,7 +385,7 @@ function get_user_informations($user_id, $user_row)
 
 	// Grab ranks
 	$ranks = array();
-	obtain_ranks($ranks);
+	$cache->obtain_ranks($ranks);
 
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
