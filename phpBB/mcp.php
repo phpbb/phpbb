@@ -284,7 +284,7 @@ class module
 */
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup('mcp');
 

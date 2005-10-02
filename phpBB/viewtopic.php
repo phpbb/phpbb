@@ -14,9 +14,10 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 
 // Initial var setup
@@ -381,17 +382,17 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 
 // Grab ranks
 $ranks = array();
-obtain_ranks($ranks);
+$cache->obtain_ranks($ranks);
 
 // Grab icons
 $icons = array();
-obtain_icons($icons);
+$cache->obtain_icons($icons);
 
 // Grab extensions
 $extensions = array();
 if ($topic_attachment)
 {
-	obtain_attach_extensions($extensions);
+	$cache->obtain_attach_extensions($extensions);
 }
 
 // Forum rules listing
@@ -974,8 +975,6 @@ if (sizeof($attach_list))
 {
 	if ($auth->acl_gets('f_download', 'u_download', $forum_id))
 	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id IN (' . implode(', ', $attach_list) . ')
@@ -1247,7 +1246,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'U_PROFILE' 		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH' 			=> $user_cache[$poster_id]['search'],
-		'U_PM' 				=> ($poster_id != ANONYMOUS) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;action=quote&amp;q=1&amp;p=" . $row['post_id'] : '',
+		'U_PM' 				=> ($poster_id != ANONYMOUS) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;action=quotepost&amp;p=" . $row['post_id'] : '',
 		'U_EMAIL' 			=> $user_cache[$poster_id]['email'],
 		'U_WWW' 			=> $user_cache[$poster_id]['www'],
 		'U_ICQ' 			=> $user_cache[$poster_id]['icq'],

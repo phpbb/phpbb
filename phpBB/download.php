@@ -21,7 +21,7 @@ $download_id = request_var('id', 0);
 $thumbnail = request_var('t', false);
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewtopic');
 

@@ -16,7 +16,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
@@ -56,7 +56,7 @@ $sort_dir = request_var('sd', 'a');
 
 // Grab rank information for later
 $ranks = array();
-obtain_ranks($ranks);
+$cache->obtain_ranks($ranks);
 
 
 // What do you want to do today? ... oops, I think that line is taken ...
@@ -275,9 +275,6 @@ switch ($mode)
 
 	case 'viewprofile':
 		// Display a profile
-		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $row['username']);
-		$template_html = 'memberlist_view.html';
-
 		if ($user_id == ANONYMOUS)
 		{
 			trigger_error('NO_USER');
@@ -509,7 +506,12 @@ switch ($mode)
 				$template->assign_block_vars('custom_fields', $field_data);
 			}
 		}
-		break;
+
+		// Now generate page tilte
+		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $member['username']);
+		$template_html = 'memberlist_view.html';
+
+	break;
 
 	case 'email':
 		// Send an email
@@ -1135,7 +1137,6 @@ switch ($mode)
 			'S_MODE_ACTION'		=> $pagination_url . "&amp;form=$form")
 		);
 }
-
 
 // Output the page
 page_header($page_title);

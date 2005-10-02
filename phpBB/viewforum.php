@@ -17,7 +17,7 @@ include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 
 // Start initial var setup
@@ -282,7 +282,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 
 	// Grab icons
 	$icons = array();
-	obtain_icons($icons);
+	$cache->obtain_icons($icons);
 
 	// Grab all topic data
 	$rowset = $announcement_list = $topic_list = array();

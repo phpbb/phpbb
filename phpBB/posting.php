@@ -16,11 +16,12 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 
 
@@ -915,7 +916,6 @@ if (!sizeof($error) && $preview)
 	// Attachment Preview
 	if (sizeof($message_parser->attachment_data))
 	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		$extensions = $update_count = array();
 
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
@@ -1631,15 +1631,18 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_freeresult($result);
 		}
 
+		$sql_insert_ary = array()
 		for ($i = 0, $size = sizeof($poll['poll_options']); $i < $size; $i++)
 		{
 			if (trim($poll['poll_options'][$i]))
 			{
 				if (!$cur_poll_options[$i])
 				{
-					$sql = 'INSERT INTO ' . POLL_OPTIONS_TABLE . "  (poll_option_id, topic_id, poll_option_text)
-						VALUES ($i, " . $data['topic_id'] . ", '" . $db->sql_escape($poll['poll_options'][$i]) . "')";
-					$db->sql_query($sql);
+					$sql_insert_ary[] = array(
+						'poll_option_id'	=> (int) $i,
+						'topic_id'			=> (int) $data['topic_id'],
+						'poll_option_text'	=> (string) $poll['poll_options'][$i]
+					);
 				}
 				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
 				{
@@ -1649,6 +1652,25 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 							AND topic_id = " . $data['topic_id'];
 					$db->sql_query($sql);
 				}
+			}
+		}
+
+		if (sizeof($sql_insert_ary))
+		{
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_insert_ary);
+				break;
+
+				default:
+					foreach ($sql_insert_ary as $ary)
+					{
+						$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_insert_ary));
+					}
+				break;
 			}
 		}
 
