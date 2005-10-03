@@ -1631,7 +1631,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_freeresult($result);
 		}
 
-		$sql_insert_ary = array()
+		$sql_insert_ary = array();
 		for ($i = 0, $size = sizeof($poll['poll_options']); $i < $size; $i++)
 		{
 			if (trim($poll['poll_options'][$i]))
