@@ -1225,7 +1225,7 @@ if ($stage == 4)
 	}
 	$db->sql_freeresult($result);
 
-	$user->start();
+	$user->session_begin();
 	$auth->login($admin_name, $admin_pass1);
 
 	inst_page_header();

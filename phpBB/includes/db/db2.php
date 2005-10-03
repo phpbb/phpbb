@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package dbal_db2
+* @package dbal
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -17,10 +17,10 @@ if(!defined("SQL_LAYER"))
 define("SQL_LAYER","db2");
 
 /**
-* @package dbal_db2
-* DB2 Database Abstraction Layer
+* @package dbal
+* DB2 Database Abstraction Layer - not finished yet
 */
-class sql_db
+class dbal_db2 extends dbal
 {
 
 	var $db_connect_id;

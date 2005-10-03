@@ -353,6 +353,10 @@ $lang += array(
 	'UCP_PROFILE_REG_DETAILS'	=> 'Registration details',
 	'UCP_PROFILE_SIGNATURE'		=> 'Your signature',
 
+	'UCP_USERGROUPS'			=> 'Usergroups',
+	'UCP_USERGROUPS_MEMBER'		=> 'Memberships',
+	'UCP_USERGROUPS_MANAGE'		=> 'Manage groups',
+
 	'UCP_REGISTER_DISABLE'		=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'				=> 'Send password',
 	'UCP_RESEND'				=> 'Send activation email',

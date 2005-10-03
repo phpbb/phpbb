@@ -14,9 +14,10 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_display.'.$phpEx);
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup('mcp');
 
@@ -380,8 +381,11 @@ function report_notification($notify_user, $report_post, $report_data)
 			
 			// do not put in reporters outbox
 			submit_pm('post', $report_data['subject'], '', array(), array(), array(
-				'address_list'	=> array('u' => array($user_id => 'to')),
-				'icon_id'		=> 0,
+				'address_list'		=> array('u' => array($user_id => 'to')),
+				'from_user_id'		=> $user->data['user_id'],
+				'from_user_ip'		=> $user->ip,
+				'from_usernae'		=> $user->data['username'],
+				'icon_id'			=> 0,
 				'enable_bbcode' 	=> 0,
 				'enable_html' 		=> 0,
 				'enable_smilies' 	=> 0,
@@ -392,7 +396,7 @@ function report_notification($notify_user, $report_post, $report_data)
 				'bbcode_uid'		=> 0,
 				'attachment_data'	=> array(),
 				'filename_data'		=> array(),
-				'message'			=> $messenger->msg				
+				'message'			=> $messenger->msg
 				), true, false);
 		}
 	}
