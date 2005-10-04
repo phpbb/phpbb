@@ -52,19 +52,20 @@ class p_master
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
 		
-		$sql_and = '';
 		if (file_exists($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx))
 		{
 			include($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx);
 		}
 
+		/**
+		* @todo cache, see above. ;)
+		*/
 		$sql = 'SELECT *
 			FROM ' . MODULES_TABLE . "
 			WHERE module_class = '" . $db->sql_escape($p_class) . "'
 				AND module_enabled = 1
-				$sql_and
 			ORDER BY left_id ASC";
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query($sql, 3600);
 
 		$right = $depth = $i = 0;
 		$depth_ary = array();
