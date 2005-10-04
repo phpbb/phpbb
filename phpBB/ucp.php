@@ -13,13 +13,13 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . '/includes/functions_user.'.$phpEx);
+require($phpbb_root_path . 'common.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_user.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_module.'.$phpEx);
 
 // Basic parameter data
+$id 	= request_var('i', '');
 $mode	= request_var('mode', '');
-$module = request_var('i', '');
 
 if ($mode == 'login' || $mode == 'logout')
 {
@@ -27,225 +27,31 @@ if ($mode == 'login' || $mode == 'logout')
 }
 
 // Start session management
-$user->start();
+$user->session_begin();
 $auth->acl($user->data);
 $user->setup('ucp');
 
-$ucp = new module();
-
-/**
-* @package ucp
-* UCP Module
-*/
-class module
-{
-	var $id = 0;
-	var $type;
-	var $name;
-	var $mode;
-
-	// Private methods, should not be overwritten
-	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
-	{
-		global $template, $auth, $db, $user, $config;
-
-		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
-			FROM ' . MODULES_TABLE . "
-			WHERE module_type = '{$module_type}'
-				AND module_enabled = 1
-			ORDER BY module_order ASC";
-		$result = $db->sql_query($sql);
-
-		$i = 0;
-		while ($row = $db->sql_fetchrow($result))
-		{
-			// Authorisation is required for the basic module
-			if ($row['module_acl'])
-			{
-				$is_auth = false;
-				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1")', '(int) $config["\\1"]'), trim($row['module_acl'])) . ');');
-
-				// The user is not authorised to use this module, skip it
-				if (!$is_auth)
-				{
-					continue;
-				}
-			}
-
-			$selected = ($row['module_filename'] == $selected_mod || $row['module_id'] == $selected_mod || (!$selected_mod && !$i)) ?  true : false;
-
-			// Get the localised lang string if available, or make up our own otherwise
-			$module_lang = strtoupper($module_type) . '_' . $row['module_title'];
-			$template->assign_block_vars($module_type . '_section', array(
-				'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
-				'S_SELECTED'	=> $selected,
-				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
-			);
-
-			if ($selected)
-			{
-				$module_id = $row['module_id'];
-				$module_name = $row['module_filename'];
-
-				if ($row['module_subs'])
-				{
-					$j = 0;
-					$submodules_ary = explode("\n", $row['module_subs']);
-					foreach ($submodules_ary as $submodule)
-					{
-						if (!trim($submodule))
-						{
-							continue;
-						}
-
-						$submodule = explode(',', trim($submodule));
-						$submodule_title = array_shift($submodule);
-
-						$is_auth = true;
-						foreach ($submodule as $auth_option)
-						{
-							eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1")', '(int) $config["\\1"]'), trim($auth_option)) . ');');
-
-							if (!$is_auth)
-							{
-								break;
-							}
-						}
-
-						if (!$is_auth)
-						{
-							continue;
-						}
-
-						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
-
-						// Get the localised lang string if available, or make up our own otherwise
-						$module_lang = strtoupper($module_type . '_' . $module_name . '_' . $submodule_title);
-
-						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
-							'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($module_lang))),
-							'S_SELECTED'	=> $selected,
-							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title
-						));
-
-						if ($selected)
-						{
-							$this->mode = $submodule_title;
-						}
-
-						$j++;
-					}
-				}
-			}
-
-			$i++;
-		}
-		$db->sql_freeresult($result);
-
-		if (!isset($module_id) || !$module_id)
-		{
-			trigger_error('MODULE_NOT_EXIST');
-		}
-
-		$this->type = $module_type;
-		$this->id = $module_id;
-		$this->name = $module_name;
-	}
-
-	function load($type = false, $name = false, $mode = false, $run = true)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		if ($type)
-		{
-			$this->type = $type;
-		}
-
-		if ($name)
-		{
-			$this->name = $name;
-		}
-
-		if (!class_exists($this->type . '_' . $this->name))
-		{
-			require_once($phpbb_root_path . "includes/{$this->type}/{$this->type}_{$this->name}.$phpEx");
-
-			if ($run)
-			{
-				if (!isset($this->mode))
-				{
-					$this->mode = $mode;
-				}
-
-				eval("\$this->module = new {$this->type}_{$this->name}(\$this->id, \$this->mode);");
-				if (method_exists($this->module, 'init'))
-				{
-					$this->module->init();
-				}
-			}
-		}
-	}
-
-	// Displays the appropriate template with the given title
-	function display($page_title, $tpl_name)
-	{
-		global $template;
-
-		page_header($page_title);
-
-		$template->set_filenames(array(
-			'body' => $tpl_name)
-		);
-
-		page_footer();
-	}
-
-
-	// Public methods to be overwritten by modules
-	function module()
-	{
-		// Module name
-		// Module filename
-		// Module description
-		// Module version
-		// Module compatibility
-		return false;
-	}
-
-	function init()
-	{
-		return false;
-	}
-
-	function install()
-	{
-		return false;
-	}
-
-	function uninstall()
-	{
-		return false;
-	}
-}
+$module = new p_master();
 
 // Basic "global" modes
 switch ($mode)
 {
 	case 'activate':
-		$ucp->load('ucp', 'activate');
-		$ucp->module->ucp_activate();
+		$module->load('ucp', 'activate');
+		$module->display($user->lang['UCP_ACTIVATE']);
 		redirect("index.$phpEx$SID");
-		break;
+
+	break;
 
 	case 'resend_act':
-		$ucp->load('ucp', 'resend');
-		$ucp->module->ucp_resend();
-		break;
+		$module->load('ucp', 'resend');
+		$module->display($user->lang['UCP_RESEND']);
+	break;
 
 	case 'sendpassword':
-		$ucp->load('ucp', 'remind');
-		$ucp->module->ucp_remind();
-		break;
+		$module->load('ucp', 'remind');
+		$module->display($user->lang['UCP_REMIND']);
+	break;
 
 	case 'register':
 		if ($user->data['is_registered'] || isset($_REQUEST['not_agreed']))
@@ -253,14 +59,15 @@ switch ($mode)
 			redirect("index.$phpEx$SID");
 		}
 
-		$ucp->load('ucp', 'register');
-		$ucp->module->ucp_register();
-		break;
+		$module->load('ucp', 'register');
+		$module->display($user->lang['UCP_REGISTER']);
+	break;
 
 	case 'confirm':
-		$ucp->load('ucp', 'confirm');
-		$ucp->module->ucp_confirm();
-		break;
+
+		$module->load('ucp', 'confirm');
+		exit;
+	break;
 
 	case 'login':
 		if ($user->data['is_registered'])
@@ -279,7 +86,7 @@ switch ($mode)
 
 		meta_refresh(3, "index.$phpEx$SID");
 
-		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . "index.$phpEx$SID" . '">', '</a> ');
+		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . "{$phpbb_root_path}index.$phpEx$SID" . '">', '</a> ');
 		trigger_error($message);
 		break;
 
@@ -320,7 +127,6 @@ switch ($mode)
 		redirect("index.$phpEx$SID");
 		break;
 }
-
 
 // Only registered users can go beyond this point
 if (!$user->data['is_registered'])
@@ -388,9 +194,34 @@ if ($mode == 'compose' && request_var('action', '') != 'edit')
 }
 
 // Instantiate module system and generate list of available modules
-$ucp->create('ucp', "ucp.$phpEx$SID", $module, $mode);
+$module->list_modules('ucp');
+
+// Select the active module
+$module->set_active($id, $mode);
 
 // Load and execute the relevant module
-$ucp->load();
+$module->load_active();
+
+// Assign data to the template engine for the list of modules
+$module->assign_tpl_vars("ucp.$phpEx$SID");
+
+// Generate the page
+page_header($user->lang['UCP_MAIN']);
+
+$template->set_filenames(array(
+	'body' => $module->get_tpl_name())
+);
+
+page_footer();
+
+/* Language override function for 'main' module
+function main($mode, $langname)
+{
+	if ($mode == 'front')
+	{
+		return 'Frontpanel';
+	}
+}
+*/
 
 ?>

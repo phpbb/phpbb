@@ -20,9 +20,9 @@
 * released or distributed in any way under a licence other
 * than the GPL. We will be watching ... ;)
 */
-class ucp_confirm extends module 
+class ucp_confirm
 {
-	function ucp_confirm($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 

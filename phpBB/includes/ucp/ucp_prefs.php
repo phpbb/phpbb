@@ -13,9 +13,9 @@
 * ucp_prefs
 * Changing user preferences
 */
-class ucp_prefs extends module
+class ucp_prefs
 {
-	function ucp_prefs($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -413,7 +413,7 @@ class ucp_prefs extends module
 			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_PROFILE'], 'ucp_prefs_' . $mode . '.html');
+		$this->tpl_name = 'ucp_prefs_' . $mode;
 	}
 }
 

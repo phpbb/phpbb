@@ -13,9 +13,9 @@
 * ucp_profile
 * Changing profile settings
 */
-class ucp_profile extends module
+class ucp_profile
 {
-	function ucp_profile($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -649,7 +649,8 @@ class ucp_profile extends module
 			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_PROFILE'], 'ucp_profile_' . $mode . '.html');
+		// Set desired template
+		$this->tpl_name = 'ucp_profile_' . $mode;
 	}
 }
 

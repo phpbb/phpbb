@@ -13,9 +13,9 @@
 * ucp_register
 * Board registration
 */
-class ucp_register extends module
+class ucp_register
 {
-	function ucp_register($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -78,7 +78,8 @@ class ucp_register extends module
 				);
 			}
 
-			$this->display($user->lang['REGISTER'], 'ucp_agreement.html');
+			$this->tpl_name = 'ucp_agreement';
+			return;
 		}
 
 		$var_ary = array(
@@ -480,7 +481,7 @@ class ucp_register extends module
 		$cp->generate_profile_fields('register', $user->get_iso_lang_id());
 
 		//
-		$this->display($user->lang['REGISTER'], 'ucp_register.html');
+		$this->tpl_name = 'ucp_register';
 	}
 }
 

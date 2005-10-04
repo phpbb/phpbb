@@ -241,7 +241,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		FROM ' . PRIVMSGS_TABLE . ' p, ' . PRIVMSGS_TO_TABLE . ' t, ' . USERS_TABLE . ' u
 		WHERE t.msg_id = p.msg_id
 			AND p.author_id = u.user_id
-			AND t.folder_id <> ' . PRIVMSGS_NO_BOX . "
+			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ")
 			AND t.user_id = $user_id";
 
 	if (!$message_row['root_level'])

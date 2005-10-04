@@ -345,7 +345,7 @@ $lang += array(
 	'UCP_PM_OPTIONS'			=> 'Options',
 	'UCP_PM_POPUP'				=> 'Private Messages',
 	'UCP_PM_UNREAD'				=> 'Unread Messages',
-	'UCP_PM_VIEW_MESSAGES'		=> 'View Messages',
+	'UCP_PM_VIEW'				=> 'View Messages',
 
 	'UCP_PROFILE'				=> 'Profile',
 	'UCP_PROFILE_AVATAR'		=> 'Your avatar',

@@ -13,9 +13,9 @@
 * ucp_remind
 * Sending password reminders
 */
-class ucp_remind extends module 
+class ucp_remind
 {
-	function ucp_remind($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -95,7 +95,7 @@ class ucp_remind extends module
 			'EMAIL'		=> $email)
 		);
 
-		$this->display($user->lang['UCP_REMIND'], 'ucp_remind.html');
+		$this->tpl_name = 'ucp_remind';
 	}
 }
 

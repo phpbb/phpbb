@@ -12,9 +12,9 @@
 * @package ucp
 * ucp_groups
 */
-class ucp_groups extends module
+class ucp_groups
 {
-	function ucp_groups($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -367,7 +367,7 @@ class ucp_groups extends module
 				break;
 		}
 
-		$this->display($user->lang['UCP_GROUPS_' . strtoupper($mode)], 'ucp_groups_' . $mode . '.html');
+		$this->tpl_name = 'ucp_groups_' . $mode;
 	}
 }
 

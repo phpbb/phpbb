@@ -13,9 +13,9 @@
 * ucp_activate
 * User activation
 */
-class ucp_activate extends module 
+class ucp_activate
 {
-	function ucp_activate($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 

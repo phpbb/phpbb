@@ -51,24 +51,25 @@
 	<tr>
 		<th>{L_OPTIONS}</th>
 	</tr>
-	<!-- BEGIN ucp_section -->
+	
+	<!-- BEGIN l_block1 -->
 	<tr>
-		<!-- IF ucp_section.S_SELECTED -->
-		<td class="row1"><b class="nav">{ucp_section.L_TITLE}</b>
+		<!-- IF l_block1.S_SELECTED -->
+		<td class="row1"><b class="nav">{l_block1.L_TITLE}</b>
 
 			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
-			<!-- BEGIN ucp_subsection -->
-			<li>&#187; <!-- IF ucp_section.ucp_subsection.S_SELECTED --><b>{ucp_section.ucp_subsection.L_TITLE}</b><!-- ELSE --><a href="{ucp_section.ucp_subsection.U_TITLE}">{ucp_section.ucp_subsection.L_TITLE}</a><!-- ENDIF --></li>
-			<!-- END ucp_subsection -->
+			<!-- BEGIN l_block2 -->
+			<li>&#187; <!-- IF l_block1.l_block2.S_SELECTED --><b>{l_block1.l_block2.L_TITLE}</b><!-- ELSE --><a href="{l_block1.l_block2.U_TITLE}">{l_block1.l_block2.L_TITLE}</a><!-- ENDIF --></li>
+			<!-- END l_block2 -->
 			</ul>
-
 		<!-- ELSE -->
-		<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{ucp_section.U_TITLE}'"><a class="nav" href="{ucp_section.U_TITLE}">{ucp_section.L_TITLE}</a>
+		<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{l_block1.U_TITLE}'"><a class="nav" href="{l_block1.U_TITLE}">{l_block1.L_TITLE}</a>
 		<!-- ENDIF -->
 		</td>
 	</tr>
-	<!-- END ucp_section -->
-</table>
+	<!-- END l_block1 -->
+
+	</table>
 
 <div style="padding: 2px;"></div>
 

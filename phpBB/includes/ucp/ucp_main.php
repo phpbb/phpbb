@@ -13,9 +13,16 @@
 * ucp_main
 * UCP Front Panel
 */
-class ucp_main extends module  
+class ucp_main
 {
-	function ucp_main($id, $mode)
+	var $p_master;
+	
+	function ucp_main(&$p_master)
+	{
+		$this->p_master = &$p_master;
+	}
+
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -653,9 +660,8 @@ class ucp_main extends module
 				break;
 
 			case 'drafts':
-				global $ucp;
 				
-				$pm_drafts = ($ucp->name == 'pm') ? true : false;
+				$pm_drafts = ($this->p_master->p_name == 'pm') ? true : false;
 
 				$user->add_lang('posting');
 
@@ -820,7 +826,7 @@ class ucp_main extends module
 					$template->assign_var('S_DRAFT_ROWS', $row_count);
 				}
 
-				break;
+			break;
 		}
 
 
@@ -832,27 +838,8 @@ class ucp_main extends module
 			'S_UCP_ACTION'		=> $phpbb_root_path . "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_MAIN'], 'ucp_main_' . $mode . '.html');
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-
-	function module()
-	{
-		$details = array(
-			'name'			=> 'UCP - Main',
-			'description'	=> 'Front end for User Control Panel', 
-			'filename'		=> 'main',
-			'version'		=> '1.0.0', 
-			'phpbbversion'	=> '2.2.0'
-		);
-		return $details;
+		// Set desired template
+		$this->tpl_name = 'ucp_main_' . $mode;
 	}
 }
 

@@ -13,16 +13,19 @@
 * ucp_attachments
 * User attachments
 */
-class ucp_attachments extends module
+class ucp_attachments
 {
-	function ucp_attachments($id, $mode)
+	function main($id, $mode)
 	{
 		global $template, $user, $db, $config, $phpEx, $phpbb_root_path, $SID;
 
-		$start	= request_var('start', 0);
-		$delete = (isset($_POST['delete'])) ? true : false;
-		$confirm = (isset($_POST['confirm'])) ? true : false;
-		$delete_ids = isset($_REQUEST['attachment']) ? array_keys(array_map('intval', $_REQUEST['attachment'])) : array();
+		$start		= request_var('start', 0);
+		$sort_key	= request_var('sk', 'a');
+		$sort_dir	= request_var('sd', 'a');
+
+		$delete		= (isset($_POST['delete'])) ? true : false;
+		$confirm	= (isset($_POST['confirm'])) ? true : false;
+		$delete_ids	= isset($_REQUEST['attachment']) ? array_keys(array_map('intval', $_REQUEST['attachment'])) : array();
 		
 		if ($delete && sizeof($delete_ids))
 		{
@@ -49,9 +52,6 @@ class ucp_attachments extends module
 			}
 		}
 		
-		$sort_key = request_var('sk', 'a');
-		$sort_dir = request_var('sd', 'a');
-
 		// Select box eventually
 		$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
 		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
@@ -72,7 +72,7 @@ class ucp_attachments extends module
 			$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
 
-		$order_by = $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+		$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 		
 		$sql = 'SELECT COUNT(*) as num_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -104,7 +104,7 @@ class ucp_attachments extends module
 				}
 				else
 				{
-					$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_msg_id'] . '#' . $row['post_msg_id'];
+					$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}";
 				}
 
 				$template->assign_block_vars('attachrow', array(
@@ -155,7 +155,7 @@ class ucp_attachments extends module
 			'S_ORDER_SELECT'		=> $s_sort_dir)
 		);
 
-		$this->display($user->lang['UCP_ATTACHMENTS'], 'ucp_attachments.html');
+		$this->tpl_name = 'ucp_attachments';
 	}
 }
 

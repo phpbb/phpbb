@@ -12,9 +12,9 @@
 * @package ucp
 * ucp_zebra
 */
-class ucp_zebra extends module
+class ucp_zebra
 {
-	function ucp_zebra($id, $mode)
+	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
@@ -125,7 +125,7 @@ class ucp_zebra extends module
 								case 'mssql':
 								case 'sqlite':
 									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
-										" . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
+										VALUES " . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
 									$db->sql_query($sql);
 									break;
 
@@ -201,7 +201,7 @@ class ucp_zebra extends module
 			'S_UCP_ACTION'			=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
-		$this->display($user->lang['UCP_ZEBRA'], 'ucp_zebra_' . $mode . '.html');
+		$this->tpl_name = 'ucp_zebra_' . $mode;
 	}
 }
 

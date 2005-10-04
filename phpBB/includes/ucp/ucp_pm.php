@@ -1,6 +1,5 @@
 <?php
-/** 
-*
+/**
 * @package ucp
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
@@ -8,9 +7,8 @@
 *
 */
 
-/**
+/** 
 * @package ucp
-* ucp_pm
 *
 * Private Message Class
 *
@@ -19,8 +17,8 @@
 *
 *
 *	Display Unread Messages - mode=unread
-*	Display Messages (default to inbox) - mode=view_messages
-*	Display single message - mode=view_messages&action=view_message&p=[msg_id] or &p=[msg_id] (short linkage)
+*	Display Messages (default to inbox) - mode=view
+*	Display single message - mode=view&p=[msg_id] or &p=[msg_id] (short linkage)
 *
 *	if the folder id with (&f=[folder_id]) is used when displaying messages, one query will be saved. If it is not used, phpBB needs to grab
 *	the folder id first in order to display the input boxes and folder names and such things. ;) phpBB always checks this against the database to make
@@ -29,19 +27,14 @@
 *	Composing Messages (mode=compose):
 *		To specific user (u=[user_id])
 *		To specific group (g=[group_id])
-*		Quoting a post (action=quote&q=1&p=[post_id])
+*		Quoting a post (action=quotepost&p=[post_id])
 *		Quoting a PM (action=quote&p=[msg_id])
 *		Forwarding a PM (action=forward&p=[msg_id])
 *
-*
-* @todo Review of post when replying/quoting
-* @todo Report PM
-* @todo Check Permissions (compose message - to user/group)
-*
 */
-class ucp_pm extends module
+class ucp_pm
 {
-	function ucp_pm($id, $mode)
+	function main($id, $mode)
 	{
 		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $SID, $config;
 		
@@ -73,21 +66,20 @@ class ucp_pm extends module
 
 		if (!$folder_specified)
 		{
-			$mode = (!$mode) ? request_var('mode', 'view_messages') : $mode;
+			$mode = (!$mode) ? request_var('mode', 'view') : $mode;
 		}
 		else
 		{
-			$mode = 'view_messages';
+			$mode = 'view';
 		}
 
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 
-		$tpl_file = 'ucp_pm_' . $mode . '.html';
 		switch ($mode)
 		{
 			// New private messages popup
 			case 'popup':
-			
+
 				$l_new_message = '';
 				if ($user->data['is_registered'])
 				{
@@ -109,7 +101,7 @@ class ucp_pm extends module
 				);
 
 				break;
-			
+
 			// Compose message
 			case 'compose':
 				$action = request_var('action', 'post');
@@ -123,10 +115,10 @@ class ucp_pm extends module
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.'.$phpEx);
 				compose_pm($id, $mode, $action);
-			
-				$tpl_file = 'posting_body.html';
+
+				$tpl_file = 'posting_body';
 				break;
-			
+
 			case 'options':
 				$sql = 'SELECT group_message_limit
 					FROM ' . GROUPS_TABLE . '
@@ -141,18 +133,28 @@ class ucp_pm extends module
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.'.$phpEx);
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
+
+				$tpl_file = 'ucp_pm_options';
 				break;
 
 			case 'drafts':
 				get_folder($user->data['user_id'], $folder);
+				$this->p_name = 'pm';
+				
+				// Call another module... please do not try this at home... Hoochie Coochie Man
 				include($phpbb_root_path . 'includes/ucp/ucp_main.'.$phpEx);
-				$module = new ucp_main($id, $mode);
+
+				$module = new ucp_main($this);
+				$module->main($id, $mode);
+				$this->tpl_name = $module->tpl_name;
+				
 				unset($module);
-				exit;
-				break;
+				return;
+
+			break;
 
 			case 'unread':
-			case 'view_messages':
+			case 'view':
 
 				$sql = 'SELECT group_message_limit
 					FROM ' . GROUPS_TABLE . '
@@ -176,8 +178,9 @@ class ucp_pm extends module
 
 				$msg_id = request_var('p', 0);
 				$view	= request_var('view', '');
-				
-				if ($msg_id && $action == 'view_folder')
+
+//				if ($msg_id && $action == 'view_folder')
+				if ($msg_id)
 				{
 					$action = 'view_message';
 				}
@@ -243,15 +246,15 @@ class ucp_pm extends module
 					if (!($row = $db->sql_fetchrow($result)))
 					{
 						trigger_error('NO_MESSAGE');
-					}					
+					}
 					$folder_id = (int) $row['folder_id'];
 				}
-			
+
 				$message_row = array();
-				if ($mode == 'view_messages' && $action == 'view_message' && $msg_id)
+				if ($mode == 'view' && $action == 'view_message' && $msg_id)
 				{
 					// Get Message user want to see
-					
+
 					if ($view == 'next' || $view == 'previous')
 					{
 						$sql_condition = ($view == 'next') ? '>' : '<';
@@ -277,7 +280,7 @@ class ucp_pm extends module
 							$msg_id = $row['msg_id'];
 						}
 					}
-	
+
 					$sql = 'SELECT t.*, p.*, u.*
 						FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
 						WHERE t.user_id = ' . $user->data['user_id'] . "
@@ -295,7 +298,7 @@ class ucp_pm extends module
 					// Update unread status
 					update_unread_status($message_row['unread'], $message_row['msg_id'], $user->data['user_id'], $folder_id);
 				}
-			
+
 				get_folder($user->data['user_id'], $folder, $folder_id);
 
 				$s_folder_options = $s_to_folder_options = '';
@@ -307,11 +310,11 @@ class ucp_pm extends module
 					$s_folder_options .= $option;
 				}
 				clean_sentbox($folder[PRIVMSGS_SENTBOX]['num_messages']);
-	
+
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);
-				$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id";
-				
+				$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode";
+
 				$template->assign_vars(array(
 					'CUR_FOLDER_ID'			=> $folder_id,
 					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
@@ -321,9 +324,9 @@ class ucp_pm extends module
 
 					'S_FOLDER_OPTIONS'		=> $s_folder_options,
 					'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,
-					'S_FOLDER_ACTION'		=> "$url&amp;mode=view_messages&amp;action=view_folder",
-					'S_PM_ACTION'			=> "$url&amp;mode=$mode&amp;action=$action",
-					
+					'S_FOLDER_ACTION'		=> "$url&amp;action=view_folder",
+					'S_PM_ACTION'			=> "$url&amp;action=$action",
+
 					'U_INBOX'				=> "$url&amp;folder=inbox",
 					'U_OUTBOX'				=> "$url&amp;folder=outbox",
 					'U_SENTBOX'				=> "$url&amp;folder=sentbox",
@@ -332,20 +335,20 @@ class ucp_pm extends module
 					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,
 					'S_IN_SENTBOX'			=> ($folder_id == PRIVMSGS_SENTBOX) ? true : false,
-					
+
 					'FOLDER_STATUS'			=> $folder_status['message'],
 					'FOLDER_MAX_MESSAGES'	=> $folder_status['max'],
 					'FOLDER_CUR_MESSAGES'	=> $folder_status['cur'],
 					'FOLDER_REMAINING_MESSAGES'	=> $folder_status['remaining'],
 					'FOLDER_PERCENT'		=> $folder_status['percent'])
 				);
-			
+
 				if ($mode == 'unread' || $action == 'view_folder')
 				{
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.'.$phpEx);
 					view_folder($id, $mode, $folder_id, $folder, (($mode == 'unread') ? 'unread' : 'folder'));
 
-					$tpl_file = 'ucp_pm_viewfolder.html';
+					$tpl_file = 'ucp_pm_viewfolder';
 				}
 				else if ($action == 'view_message')
 				{
@@ -353,7 +356,7 @@ class ucp_pm extends module
 						'S_VIEW_MESSAGE'=> true,
 						'MSG_ID'		=> $msg_id)
 					);
-				
+
 					if (!$msg_id)
 					{
 						trigger_error('NO_MESSAGE');
@@ -362,21 +365,22 @@ class ucp_pm extends module
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.'.$phpEx);
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 
-					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print.html' : 'ucp_pm_viewmessage.html';
+					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';
 				}
-				
+
 				break;
 
 			default:
 				trigger_error('NO_ACTION_MODE');
 		}
 
-		$template->assign_vars(array( 
+		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_PM_' . strtoupper($mode)],
 			'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode" . ((isset($action)) ? "&amp;action=$action" : ''))
 		);
 
-		$this->display($user->lang['UCP_PM'], $tpl_file);
+		// Set desired template
+		$this->tpl_name = $tpl_file;
 	}
 }
 
