@@ -384,7 +384,7 @@ function report_notification($notify_user, $report_post, $report_data)
 				'address_list'		=> array('u' => array($user_id => 'to')),
 				'from_user_id'		=> $user->data['user_id'],
 				'from_user_ip'		=> $user->ip,
-				'from_usernae'		=> $user->data['username'],
+				'from_username'		=> $user->data['username'],
 				'icon_id'			=> 0,
 				'enable_bbcode' 	=> 0,
 				'enable_html' 		=> 0,

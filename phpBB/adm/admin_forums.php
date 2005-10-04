@@ -1575,65 +1575,6 @@ function delete_forum_content($forum_id)
 	$db->sql_transaction('commit');
 }
 
-function recalc_btree()
-{
-	global $db;
-
-	$sql = 'SELECT forum_id, parent_id, left_id, right_id 
-		FROM ' . FORUMS_TABLE . '
-		ORDER BY parent_id ASC';
-	$f_result = $db->sql_query($sql);
-
-	while ($forum_data = $db->sql_fetchrow($f_result))
-	{
-		if ($forum_data['parent_id'])
-		{
-			$sql = 'SELECT left_id, right_id
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $forum_data['parent_id'];
-			$result = $db->sql_query($sql);
-
-			if (!$row = $db->sql_fetchrow($result))
-			{
-				$sql = 'UPDATE ' . FORUMS_TABLE . ' SET parent_id = 0 WHERE forum_id = ' . $forum_data['forum_id'];
-				$db->sql_query($sql);
-			}
-			$db->sql_freeresult($result);
-
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET left_id = left_id + 2, right_id = right_id + 2
-				WHERE left_id > ' . $row['right_id'];
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET right_id = right_id + 2
-				WHERE ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
-			$db->sql_query($sql);
-
-			$forum_data['left_id'] = $row['right_id'];
-			$forum_data['right_id'] = $row['right_id'] + 1;
-		}
-		else
-		{
-			$sql = 'SELECT MAX(right_id) AS right_id
-				FROM ' . FORUMS_TABLE;
-			$result = $db->sql_query($sql);
-
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$forum_data['left_id'] = $row['right_id'] + 1;
-			$forum_data['right_id'] = $row['right_id'] + 2;
-		}
-	
-		$sql = 'UPDATE ' . FORUMS_TABLE . '
-			SET left_id = ' . $forum_data['left_id'] . ', right_id = ' . $forum_data['right_id'] . '
-			WHERE forum_id = ' . $forum_data['forum_id'];
-		$db->sql_query($sql);
-	}
-	$db->sql_freeresult($f_result);
-}
-
 //
 // End function block
 // ------------------

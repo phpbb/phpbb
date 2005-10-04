@@ -1619,7 +1619,7 @@ function page_header($page_title = '')
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['theme_id'],
+		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['style_id'],
 		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'],
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);

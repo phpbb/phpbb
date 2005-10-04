@@ -16,7 +16,7 @@ class acm
 {
 	var $vars = array();
 	var $var_expires = array();
-	var $is_modified = FALSE;
+	var $is_modified = false;
 
 	var $sql_rowset = array();
 
@@ -65,7 +65,7 @@ class acm
 			fclose($fp);
 		}
 
-		$this->is_modified = FALSE;
+		$this->is_modified = false;
 	}
 
 	function tidy()
@@ -80,7 +80,7 @@ class acm
 				continue;
 			}
 
-			$expired = TRUE;
+			$expired = true;
 			include($this->cache_dir . $entry);
 			if ($expired)
 			{

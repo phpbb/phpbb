@@ -37,10 +37,11 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 {
 	// Include files
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
+	require($phpbb_root_path . 'includes/acm/acm_main.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
 
 	$db = new $sql_db();
-	$cache = new acm();
+	$cache = new cache();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
@@ -65,7 +66,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
 				AND i.imageset_id = s.imageset_id";
-		$result2 = $db->sql_query($sql, 300);
+		$result2 = $db->sql_query($sql);
 
 		if (!($theme = $db->sql_fetchrow($result2)))
 		{

@@ -9,6 +9,79 @@
 */
 
 /**
+* Recalculate Binary Tree
+*/
+function recalc_btree($sql_id, $sql_table)
+{
+	global $db;
+
+	/* Init table, id's, etc...
+	$sql_id = 'module_id'; // 'forum_id'
+	$sql_table = MODULES_TABLE; // FORUMS_TABLE
+	*/
+
+	if (!$sql_id || !$sql_table)
+	{
+		return;
+	}
+
+	$sql = "SELECT $sql_id, parent_id, left_id, right_id 
+		FROM $sql_table
+		ORDER BY left_id ASC, parent_id ASC, $sql_id ASC";
+	$f_result = $db->sql_query($sql);
+
+	while ($item_data = $db->sql_fetchrow($f_result))
+	{
+		if ($item_data['parent_id'])
+		{
+			$sql = "SELECT left_id, right_id
+				FROM $sql_table
+				WHERE $sql_id = {$item_data['parent_id']}";
+			$result = $db->sql_query($sql);
+
+			if (!$row = $db->sql_fetchrow($result))
+			{
+				$sql = "UPDATE $sql_table SET parent_id = 0 WHERE $sql_id = " . $item_data[$sql_id];
+				$db->sql_query($sql);
+			}
+			$db->sql_freeresult($result);
+
+			$sql = "UPDATE $sql_table
+				SET left_id = left_id + 2, right_id = right_id + 2
+				WHERE left_id > {$row['right_id']}";
+			$db->sql_query($sql);
+
+			$sql = "UPDATE $sql_table
+				SET right_id = right_id + 2
+				WHERE {$row['left_id']} BETWEEN left_id AND right_id";
+			$db->sql_query($sql);
+
+			$item_data['left_id'] = $row['right_id'];
+			$item_data['right_id'] = $row['right_id'] + 1;
+		}
+		else
+		{
+			$sql = "SELECT MAX(right_id) AS right_id
+				FROM $sql_table";
+			$result = $db->sql_query($sql);
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$item_data['left_id'] = $row['right_id'] + 1;
+			$item_data['right_id'] = $row['right_id'] + 2;
+		}
+	
+		$sql = "UPDATE $sql_table
+			SET left_id = {$item_data['left_id']}, right_id = {$item_data['right_id']}
+			WHERE $sql_id = " . $item_data[$sql_id];
+		$db->sql_query($sql);
+	}
+	
+	$db->sql_freeresult($f_result);
+}
+
+/**
 * Simple version of jumpbox, just lists authed forums
 */
 function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true)

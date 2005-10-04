@@ -842,7 +842,7 @@ class user extends session
 			);
 
 			$db->sql_query('UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE theme_id = ' . $style);
+				WHERE theme_id = ' . $this->theme['primary']['theme_id']);
 
 			unset($sql_ary);
 		}

@@ -1232,7 +1232,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'folder_id'	=> PRIVMSGS_NO_BOX,
 				'new'		=> 1,
 				'unread'	=> 1,
-				'forwarded'	=> ($mode == 'forward') ? 1 : 0))
+				'forwarded'	=> ($mode == 'forward') ? 1 : 0
 			);
 		}
 
@@ -1243,7 +1243,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary);
+					$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
 				break;
 
 				default:
