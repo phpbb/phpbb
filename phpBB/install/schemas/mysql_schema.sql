@@ -331,34 +331,20 @@ CREATE TABLE phpbb_moderator_cache (
 );
 
 # Table: 'phpbb_modules'
-#CREATE TABLE phpbb_modules (
-#  module_id smallint(5) unsigned NOT NULL auto_increment,
-#  module_enabled tinyint(1) NOT NULL default '1',
-#  module_type varchar(4) NOT NULL default '',
-#  module_cat tinyint(4) NOT NULL default '0',
-#  parent_id smallint(5) unsigned NOT NULL default '0',
-#  left_id smallint(5) unsigned NOT NULL default '0',
-#  right_id smallint(5) unsigned NOT NULL default '0',
-#  module_filename varchar(150) NOT NULL default '',
-#  module_name varchar(150) NOT NULL default '',
-#  module_mode varchar(255) NOT NULL default '',
-#  module_auth varchar(255) NOT NULL default '',
-#  PRIMARY KEY  (module_id),
-#  KEY left_id (left_id),
-#  KEY module_type (module_type)
-#);
-
 CREATE TABLE phpbb_modules (
-  module_id mediumint(8) NOT NULL auto_increment,
-  module_type char(3) DEFAULT '' NOT NULL,
-  module_title varchar(50) DEFAULT '' NOT NULL,
-  module_filename varchar(50) DEFAULT '' NOT NULL,
-  module_order mediumint(4) DEFAULT '0' NOT NULL,
-  module_enabled tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-  module_subs text NOT NULL,
-  module_acl varchar(255) DEFAULT '' NOT NULL,
-  PRIMARY KEY (module_id),
-  KEY module_type (module_type,module_enabled)
+  module_id smallint(5) unsigned NOT NULL auto_increment,
+  module_enabled tinyint(1) NOT NULL default '1',
+  module_name varchar(20) NOT NULL default '',
+  module_class varchar(4) NOT NULL default '',
+  parent_id smallint(5) unsigned NOT NULL default '0',
+  left_id smallint(5) unsigned NOT NULL default '0',
+  right_id smallint(5) unsigned NOT NULL default '0',
+  module_langname varchar(50) NOT NULL default '',
+  module_mode varchar(255) NOT NULL default '',
+  module_auth varchar(255) NOT NULL default '',
+  PRIMARY KEY  (module_id),
+  KEY left_id (left_id),
+  KEY module_enabled (module_enabled)
 );
 
 # Table: 'phpbb_poll_results'

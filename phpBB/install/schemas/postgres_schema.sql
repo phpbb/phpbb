@@ -457,18 +457,21 @@ CREATE SEQUENCE phpbb_modules_module_id_seq;
 
 CREATE TABLE phpbb_modules (
   module_id INT4 DEFAULT nextval('phpbb_modules_module_id_seq'),
-  module_type varchar(3) DEFAULT '' NOT NULL,
-  module_title varchar(50) DEFAULT '' NOT NULL,
-  module_filename varchar(50) DEFAULT '' NOT NULL,
-  module_order INT4 DEFAULT '0' NOT NULL,
   module_enabled INT2  DEFAULT '1' NOT NULL,
-  module_subs TEXT DEFAULT '' NOT NULL,
-  module_acl varchar(255) DEFAULT '' NOT NULL,
+  module_name varchar(20) DEFAULT '' NOT NULL,
+  module_class varchar(4) DEFAULT '' NOT NULL,
+  parent_id INT4 DEFAULT '0' NOT NULL,
+  left_id INT4 DEFAULT '0' NOT NULL,
+  right_id INT4 DEFAULT '0' NOT NULL,
+  module_langname varchar(50) DEFAULT '' NOT NULL,
+  module_mode varchar(255) DEFAULT '' NOT NULL,
+  module_auth varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (module_id),
   CHECK (module_enabled>=0)
 );
 
-CREATE INDEX module_type_phpbb_modules_index ON phpbb_modules (module_type,module_enabled);
+CREATE INDEX module_enabled_phpbb_modules_index ON phpbb_modules (module_enabled);
+CREATE INDEX left_id_phpbb_modules_index ON phpbb_modules (left_id);
 
 SELECT SETVAL('phpbb_modules_module_id_seq',(select case when max(module_id)>0 then max(module_id)+1 else 1 end from phpbb_modules));
 

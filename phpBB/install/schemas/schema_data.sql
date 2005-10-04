@@ -429,14 +429,41 @@ INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip
 # MSSQL IDENTITY phpbb_modules OFF #
 
 # -- Modules
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'MAIN', 'main', 1, 1, 'front\r\nsubscribed\r\nbookmarks,cfg_allow_bookmarks\r\ndrafts', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PM', 'pm', 2, 1, 'view_messages\r\ncompose\r\nunread\r\ndrafts\r\noptions', 'cfg_allow_privmsg');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PROFILE', 'profile', 3, 1, 'profile_info\r\nreg_details\r\nsignature\r\navatar', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'PREFS', 'prefs', 4, 1, 'personal\r\nview\r\npost', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ZEBRA', 'zebra', 5, 1, 'friends\r\nfoes', '');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('ucp', 'ATTACHMENTS', 'attachments', 6, 1, '', 'acl_u_attach && cfg_allow_attachments');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'MAIN', 'main', 1, 1, 'front\r\nforum_view\r\ntopic_view\r\npost_details', 'acl_m_');
-INSERT INTO phpbb_modules (module_type, module_title, module_filename, module_order, module_enabled, module_subs, module_acl) VALUES ('mcp', 'QUEUE', 'queue', 2, 1, 'unapproved_topics\r\nunapproved_posts\r\nreports', 'acl_m_approve');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (13, 1, '', 'ucp', 0, 19, 28, 'UCP_MAIN', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (14, 1, 'main', 'ucp', 13, 20, 21, 'UCP_MAIN_FRONT', 'front', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (15, 1, 'main', 'ucp', 13, 22, 23, 'UCP_MAIN_SUBSCRIBED', 'subscribed', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (16, 1, 'main', 'ucp', 13, 24, 25, 'UCP_MAIN_BOOKMARKS', 'bookmarks', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (17, 1, 'main', 'ucp', 13, 26, 27, 'UCP_MAIN_DRAFTS', 'drafts', '');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (18, 1, '', 'ucp', 0, 29, 38, 'UCP_PROFILE', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (19, 1, 'profile', 'ucp', 18, 30, 31, 'UCP_PROFILE_REG_DETAILS', 'reg_details', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (20, 1, 'profile', 'ucp', 18, 32, 33, 'UCP_PROFILE_PROFILE_INFO', 'profile_info', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (21, 1, 'profile', 'ucp', 18, 34, 35, 'UCP_PROFILE_SIGNATURE', 'signature', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (22, 1, 'profile', 'ucp', 18, 36, 37, 'UCP_PROFILE_AVATAR', 'avatar', '');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (23, 1, '', 'ucp', 0, 39, 46, 'UCP_PREFS', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (24, 1, 'prefs', 'ucp', 23, 40, 41, 'UCP_PREFS_PERSONAL', 'personal', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (25, 1, 'prefs', 'ucp', 23, 42, 43, 'UCP_PREFS_VIEW', 'view', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (26, 1, 'prefs', 'ucp', 23, 44, 45, 'UCP_PREFS_POST', 'post', '');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (27, 1, '', 'ucp', 0, 47, 58, 'UCP_PM', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (28, 1, 'pm', 'ucp', 27, 48, 49, 'UCP_PM_VIEW', 'view', 'cfg_allow_privmsg');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (29, 1, 'pm', 'ucp', 27, 50, 51, 'UCP_PM_COMPOSE', 'compose', 'cfg_allow_privmsg');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (30, 1, 'pm', 'ucp', 27, 52, 53, 'UCP_PM_UNREAD', 'unread', 'cfg_allow_privmsg');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (31, 1, 'pm', 'ucp', 27, 54, 55, 'UCP_PM_DRAFTS', 'drafts', 'cfg_allow_privmsg');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (32, 1, 'pm', 'ucp', 27, 56, 57, 'UCP_PM_OPTIONS', 'options', 'cfg_allow_privmsg');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (33, 1, '', 'ucp', 0, 59, 64, 'UCP_USERGROUPS', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (34, 1, 'groups', 'ucp', 33, 60, 61, 'UCP_USERGROUPS_MEMBER', 'membership', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (35, 1, 'groups', 'ucp', 33, 62, 63, 'UCP_USERGROUPS_MANAGE', 'manage', '');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (36, 1, '', 'ucp', 0, 65, 68, 'UCP_ATTACHMENTS', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (37, 1, 'attachments', 'ucp', 36, 66, 67, 'UCP_ATTACHMENTS', 'default', '');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (38, 1, '', 'ucp', 0, 69, 74, 'UCP_ZEBRA', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (39, 1, 'zebra', 'ucp', 38, 70, 71, 'UCP_ZEBRA_FRIENDS', 'friends', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (40, 1, 'zebra', 'ucp', 38, 72, 73, 'UCP_ZEBRA_FOES', 'foes', '');
+
 
 # MSSQL IDENTITY phpbb_modules OFF #
 

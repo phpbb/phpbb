@@ -699,13 +699,15 @@ CREATE INDEX forum_id03 on phpbb_moderator_cache (forum_id)
 */
 CREATE TABLE phpbb_modules (
   module_id number(8) NOT NULL,
-  module_type varchar2(3) DEFAULT '',
-  module_title varchar2(50) DEFAULT '',
-  module_filename varchar2(50) DEFAULT '',
-  module_order number(4) DEFAULT '0' NOT NULL,
   module_enabled number(1) DEFAULT '1' NOT NULL,
-  module_subs clob,
-  module_acl varchar2(255) DEFAULT '',
+  module_name varchar2(20) DEFAULT '' NOT NULL,
+  module_class varchar2(4) DEFAULT '' NOT NULL,
+  parent_id number(5) DEFAULT '0' NOT NULL,
+  left_id number(5) DEFAULT '0' NOT NULL,
+  right_id number(5) DEFAULT '0' NOT NULL,
+  module_langname varchar2(50) DEFAULT '' NOT NULL,
+  module_mode varchar2(255) DEFAULT '' NOT NULL,
+  module_auth varchar2(255) DEFAULT '' NOT NULL,
   CONSTRAINT pk_phpbb_modules PRIMARY KEY (module_id)
 )
 /
@@ -725,7 +727,9 @@ BEGIN
 END;
 /
 
-CREATE INDEX module_type on phpbb_modules (module_type, module_enabled)
+CREATE INDEX module_enabled on phpbb_modules (module_enabled)
+/
+CREATE INDEX module_left_id on phpbb_modules (left_id)
 /
 
 /*

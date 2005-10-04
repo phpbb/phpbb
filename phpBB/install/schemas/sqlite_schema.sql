@@ -334,16 +334,19 @@ CREATE INDEX forum_id_phpbb_moderator_cache on phpbb_moderator_cache (forum_id);
 # Table: phpbb_modules
 CREATE TABLE phpbb_modules (
   module_id INTEGER PRIMARY KEY NOT NULL,
-  module_type char(3) NOT NULL DEFAULT '',
-  module_title varchar(50) NOT NULL DEFAULT '',
-  module_filename varchar(50) NOT NULL DEFAULT '',
-  module_order mediumint(4) NOT NULL DEFAULT '0',
   module_enabled tinyint(1) NOT NULL DEFAULT '1',
-  module_subs text(65535) NOT NULL,
-  module_acl varchar(255) NOT NULL DEFAULT ''
+  module_name varchar(20) NOT NULL DEFAULT '',
+  module_class varchar(4) NOT NULL DEFAULT '',
+  parent_id smallint(5) NOT NULL DEFAULT '0',
+  left_id smallint(5) NOT NULL DEFAULT '0',
+  right_id smallint(5) NOT NULL DEFAULT '0',
+  module_langname varchar(50) NOT NULL DEFAULT '',
+  module_mode varchar(255) NOT NULL DEFAULT '',
+  module_auth varchar(255) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX module_type_phpbb_modules on phpbb_modules (module_type, module_enabled);
+CREATE INDEX module_enabled_phpbb_modules on phpbb_modules (module_enabled);
+CREATE INDEX left_id_phpbb_modules on phpbb_modules (left_id);
 
 # Table: phpbb_poll_results
 CREATE TABLE phpbb_poll_results (

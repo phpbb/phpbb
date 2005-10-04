@@ -283,13 +283,15 @@ CREATE TABLE phpbb_moderator_cache (
 # phpbb_modules
 CREATE TABLE phpbb_modules (
   module_id INTEGER NOT NULL,
-  module_type VARCHAR(3) NOT NULL,
-  module_title VARCHAR(50) NOT NULL,
-  module_filename VARCHAR(50) NOT NULL,
-  module_order INTEGER DEFAULT 0  NOT NULL,
   module_enabled INTEGER DEFAULT 1  NOT NULL,
-  module_subs BLOB SUB_TYPE TEXT NOT NULL,
-  module_acl VARCHAR(255) NOT NULL
+  module_name VARCHAR(20) NOT NULL,
+  module_class VARCHAR(4) NOT NULL,
+  parent_id INTEGER NOT NULL,
+  left_id INTEGER NOT NULL,
+  right_id INTEGER NOT NULL,
+  module_langname VARCHAR(50) NOT NULL,
+  module_mode VARCHAR(255) NOT NULL,
+  module_auth VARCHAR(255) NOT NULL,
 );;
 
 # phpbb_poll_results
@@ -1073,10 +1075,14 @@ ADD PRIMARY KEY (
   module_id
 );;
 
-CREATE INDEX module_type31
+CREATE INDEX module_enabled31
 ON phpbb_modules(
-  module_type,
   module_enabled
+);;
+
+CREATE INDEX left_id31_2
+ON phpbb_modules(
+  left_id
 );;
 
 CREATE INDEX poll_option_id32

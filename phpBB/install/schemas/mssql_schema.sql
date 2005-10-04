@@ -288,13 +288,15 @@ GO
 
 CREATE TABLE [phpbb_modules] (
 	[module_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[module_type] [varchar] (3) NOT NULL ,
-	[module_title] [varchar] (50) NOT NULL ,
-	[module_filename] [varchar] (50) NOT NULL ,
-	[module_order] [int] NOT NULL ,
 	[module_enabled] [int] NOT NULL ,
-	[module_subs] [text] NOT NULL ,
-	[module_acl] [varchar] (255) NOT NULL 
+	[module_name] [varchar] (20) NOT NULL ,
+	[module_class] [varchar] (4) NOT NULL ,
+	[parent_id] [int] NOT NULL ,
+	[left_id] [int] NOT NULL ,
+	[right_id] [int] NOT NULL ,
+	[module_langname] [varchar] (50) NOT NULL ,
+	[module_mode] [varchar] (255) NOT NULL ,
+	[module_auth] [varchar] (255) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1323,7 +1325,6 @@ ALTER TABLE [phpbb_moderator_cache] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_modules] WITH NOCHECK ADD 
-	CONSTRAINT [DF_module_module_order] DEFAULT (0) FOR [module_order],
 	CONSTRAINT [DF_module_module_enabled] DEFAULT (1) FOR [module_enabled]
 GO
 
@@ -1712,7 +1713,10 @@ GO
 CREATE  INDEX [forum_id] ON [phpbb_moderator_cache]([forum_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [module_type] ON [phpbb_modules]([module_type], [module_enabled]) ON [PRIMARY]
+CREATE  INDEX [module_enabled] ON [phpbb_modules]([module_enabled]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [module_left_id] ON [phpbb_modules]([left_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [poll_option_id] ON [phpbb_poll_results]([poll_option_id]) ON [PRIMARY]
