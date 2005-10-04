@@ -582,6 +582,7 @@ switch( $mode )
 				"L_SIMPLE_NAME" => $lang['Simple_name'],
 				"L_VALUE" => $lang['Value'],
 				"L_STYLESHEET" => $lang['Stylesheet'],
+				"L_STYLESHEET_EXPLAIN" => $lang['Stylesheet_explain'],
 				"L_BACKGROUND_IMAGE" => $lang['Background_image'],
 				"L_BACKGROUND_COLOR" => $lang['Background_color'],
 				"L_BODY_TEXT_COLOR" => $lang['Text_color'],

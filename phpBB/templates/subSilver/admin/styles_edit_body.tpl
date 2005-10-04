@@ -21,7 +21,7 @@
 		<th>{L_SIMPLE_NAME}</th>
 	</tr>
 	<tr>
-		<td class="row1">{L_STYLESHEET}:<br /><span class="gensmall">Filename for CSS stylesheet to use for this theme.</span></td>
+		<td class="row1">{L_STYLESHEET}:<br /><span class="gensmall">{L_STYLESHEET_EXPLAIN}</span></td>
 		<td class="row2"><input class="post" type="text" size="25" maxlength="100" name="head_stylesheet" value="{HEAD_STYLESHEET}"></td>
 		<td class="row2">&nbsp;</td>		
 	</tr>

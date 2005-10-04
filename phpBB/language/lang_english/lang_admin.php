@@ -621,6 +621,7 @@ $lang['Value'] = 'Value';
 $lang['Save_Settings'] = 'Save Settings';
 
 $lang['Stylesheet'] = 'CSS Stylesheet';
+$lang['Stylesheet_explain'] = 'Filename for CSS stylesheet to use for this theme.';
 $lang['Background_image'] = 'Background Image';
 $lang['Background_color'] = 'Background Colour';
 $lang['Theme_name'] = 'Theme Name';
