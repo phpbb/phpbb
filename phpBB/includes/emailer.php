@@ -164,7 +164,7 @@ class emailer
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : 'No Subject');
-			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
+			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
@@ -174,7 +174,7 @@ class emailer
 		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
 		{
 			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . phpbb_preg_quote($match[1], '#');
+			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
@@ -261,7 +261,7 @@ class emailer
 		$str = chunk_split(base64_encode($str), $length, $spacer);
 
 		// remove trailing spacer and add start and end delimiters
-		$str = preg_replace('#' . phpbb_preg_quote($spacer, '#') . '$#', '', $str);
+		$str = preg_replace('#' . preg_quote($spacer, '#') . '$#', '', $str);
 
 		return $start . $str . $end;
 	}

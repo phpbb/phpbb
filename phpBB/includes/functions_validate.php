@@ -70,7 +70,7 @@ function validate_username($username)
 		{
 			do
 			{
-				if (preg_match("#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($row['disallow_username'], '#')) . ")\b#i", $username))
+				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['disallow_username'], '#')) . ")\b#i", $username))
 				{
 					$db->sql_freeresult($result);
 					return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
@@ -89,7 +89,7 @@ function validate_username($username)
 		{
 			do
 			{
-				if (preg_match("#\b(" . str_replace("\*", ".*?", phpbb_preg_quote($row['word'], '#')) . ")\b#i", $username))
+				if (preg_match("#\b(" . str_replace("\*", ".*?", preg_quote($row['word'], '#')) . ")\b#i", $username))
 				{
 					$db->sql_freeresult($result);
 					return array('error' => true, 'error_msg' => $lang['Username_disallowed']);
