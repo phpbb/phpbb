@@ -274,7 +274,6 @@ $lang['Oldest_First'] = 'Oldest First';
 $lang['Back_to_top'] = 'Back to top';
 
 $lang['Read_profile'] = 'View user\'s profile'; 
-$lang['Send_email'] = 'Send e-mail to user';
 $lang['Visit_website'] = 'Visit poster\'s website';
 $lang['ICQ_status'] = 'ICQ Status';
 $lang['Edit_delete_post'] = 'Edit/Delete this post';
@@ -367,7 +366,6 @@ $lang['Smilies_are_OFF'] = 'Smilies are <u>OFF</u>';
 
 $lang['Attach_signature'] = 'Attach signature (signatures can be changed in profile)';
 $lang['Notify'] = 'Notify me when a reply is posted';
-$lang['Delete_post'] = 'Delete this post';
 
 $lang['Stored'] = 'Your message has been entered successfully.';
 $lang['Deleted'] = 'Your message has been deleted successfully.';
@@ -527,7 +525,6 @@ $lang['Website'] = 'Website';
 $lang['Location'] = 'Location';
 $lang['Contact'] = 'Contact';
 $lang['Email_address'] = 'E-mail address';
-$lang['Email'] = 'E-mail';
 $lang['Send_private_message'] = 'Send private message';
 $lang['Hidden_email'] = '[ Hidden ]';
 $lang['Interests'] = 'Interests';
@@ -603,7 +600,6 @@ $lang['Profile_updated_inactive'] = 'Your profile has been updated. However, you
 $lang['Password_mismatch'] = 'The passwords you entered did not match.';
 $lang['Current_password_mismatch'] = 'The current password you supplied does not match that stored in the database.';
 $lang['Password_long'] = 'Your password must be no more than 32 characters.';
-$lang['Too_many_registers'] = 'You have made too many registration attempts. Please try again later.';
 $lang['Username_taken'] = 'Sorry, but this username has already been taken.';
 $lang['Username_invalid'] = 'Sorry, but this username contains an invalid character such as \'.';
 $lang['Username_disallowed'] = 'Sorry, but this username has been disallowed.';
