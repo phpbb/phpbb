@@ -33,7 +33,7 @@
 	<!-- BEGIN switch_mod_option -->
 	<tr> 
 		<td class="row1" width="20%"><span class="gen">{L_GROUP_TYPE}:</span></td>
-		<td class="row2"><span class="gen"><span class="gen"><input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN} &nbsp;&nbsp; <input class="mainoption" type="submit" name="groupstatus" value="{L_UPDATE}" /></span></td>
+		<td class="row2"><span class="gen"><input type="radio" name="group_type" value="{S_GROUP_OPEN_TYPE}" {S_GROUP_OPEN_CHECKED} /> {L_GROUP_OPEN} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_CLOSED_TYPE}" {S_GROUP_CLOSED_CHECKED} />	{L_GROUP_CLOSED} &nbsp;&nbsp;<input type="radio" name="group_type" value="{S_GROUP_HIDDEN_TYPE}" {S_GROUP_HIDDEN_CHECKED} />	{L_GROUP_HIDDEN} &nbsp;&nbsp; <input class="mainoption" type="submit" name="groupstatus" value="{L_UPDATE}" /></span></td>
 	</tr>
 	<!-- END switch_mod_option -->
 </table>
@@ -99,8 +99,8 @@
 
 	<!-- BEGIN switch_mod_option -->
 	<tr>
-		<td class="catBottom" colspan="8" align="right"><span class="cattitle">
-			<input type="submit" name="remove" value="{L_REMOVE_SELECTED}" class="mainoption" />
+		<td class="catBottom" colspan="8" align="right">
+			<span class="cattitle"><input type="submit" name="remove" value="{L_REMOVE_SELECTED}" class="mainoption" /></span>
 		</td>
 	</tr>
 	<!-- END switch_mod_option -->

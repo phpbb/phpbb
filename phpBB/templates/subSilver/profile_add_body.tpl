@@ -77,55 +77,55 @@
 	<tr> 
 	  <td class="row1"><span class="gen">{L_ICQ_NUMBER}:</span></td>
 	  <td class="row2"> 
-		<input type="text" name="icq" class="post"style="width: 100px"  size="10" maxlength="15" value="{ICQ}" />
+		<input type="text" name="icq" class="post" style="width: 100px"  size="10" maxlength="15" value="{ICQ}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_AIM}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 150px"  name="aim" size="20" maxlength="255" value="{AIM}" />
+		<input type="text" class="post" style="width: 150px"  name="aim" size="20" maxlength="255" value="{AIM}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_MESSENGER}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 150px"  name="msn" size="20" maxlength="255" value="{MSN}" />
+		<input type="text" class="post" style="width: 150px"  name="msn" size="20" maxlength="255" value="{MSN}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_YAHOO}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 150px"  name="yim" size="20" maxlength="255" value="{YIM}" />
+		<input type="text" class="post" style="width: 150px"  name="yim" size="20" maxlength="255" value="{YIM}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_WEBSITE}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 200px"  name="website" size="25" maxlength="255" value="{WEBSITE}" />
+		<input type="text" class="post" style="width: 200px"  name="website" size="25" maxlength="255" value="{WEBSITE}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_LOCATION}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 200px"  name="location" size="25" maxlength="100" value="{LOCATION}" />
+		<input type="text" class="post" style="width: 200px"  name="location" size="25" maxlength="100" value="{LOCATION}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_OCCUPATION}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 200px"  name="occupation" size="25" maxlength="100" value="{OCCUPATION}" />
+		<input type="text" class="post" style="width: 200px"  name="occupation" size="25" maxlength="100" value="{OCCUPATION}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_INTERESTS}:</span></td>
 	  <td class="row2"> 
-		<input type="text" class="post"style="width: 200px"  name="interests" size="35" maxlength="150" value="{INTERESTS}" />
+		<input type="text" class="post" style="width: 200px"  name="interests" size="35" maxlength="150" value="{INTERESTS}" />
 	  </td>
 	</tr>
 	<tr> 
 	  <td class="row1"><span class="gen">{L_SIGNATURE}:</span><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}<br /><br />{HTML_STATUS}<br />{BBCODE_STATUS}<br />{SMILIES_STATUS}</span></td>
 	  <td class="row2"> 
-		<textarea name="signature"style="width: 300px"  rows="6" cols="30" class="post">{SIGNATURE}</textarea>
+		<textarea name="signature" style="width: 300px" rows="6" cols="30" class="post">{SIGNATURE}</textarea>
 	  </td>
 	</tr>
 	<tr> 
