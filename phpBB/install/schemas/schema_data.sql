@@ -126,7 +126,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_upd', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time','14');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize_pm', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '3');
@@ -165,8 +165,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', 'A _little_ text to describe your forum');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', 'yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
