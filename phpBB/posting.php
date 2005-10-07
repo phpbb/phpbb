@@ -1662,7 +1662,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_insert_ary);
+					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_insert_ary));
 				break;
 
 				default:

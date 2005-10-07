@@ -11,6 +11,7 @@
 /**
 * @package dbal
 * Database Abstraction Layer
+* Minimum Requirement PHP 4.3.3
 */
 class dbal
 {
@@ -43,6 +44,56 @@ class dbal
 	function sql_num_queries()
 	{
 		return $this->num_queries;
+	}
+
+	/**
+	* DBAL garbage collection, close sql connection
+	*/
+	function sql_close()
+	{
+		if (!$this->db_connect_id)
+		{
+			return false;
+		}
+
+		if ($this->transaction)
+		{
+			$this->sql_transaction('commit');
+		}
+
+		if (sizeof($this->open_queries))
+		{
+			foreach ($this->open_queries as $i_query_id => $query_id)
+			{
+				$this->sql_freeresult($query_id);
+			}
+		}
+		
+		return $this->_sql_close();
+	}
+
+	/**
+	* Fetch all rows
+	*/
+	function sql_fetchrowset($query_id = false)
+	{
+		if (!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($query_id)
+		{
+			$result = array();
+			while ($row = $this->sql_fetchrow($query_id))
+			{
+				$result[] = $row;
+			}
+
+			return $result;
+		}
+		
+		return false;
 	}
 
 	/**
@@ -136,7 +187,7 @@ class dbal
 	*/
 	function sql_error($sql = '')
 	{
-		$error = $this->db_sql_error();
+		$error = $this->_sql_error();
 
 		if (!$this->return_on_error)
 		{
@@ -245,7 +296,73 @@ class dbal
 				$this->sql_report .= '</p>';
 
 				$this->sql_time += $endtime - $this->curtime;
-				break;
+			break;
+
+			case 'start':
+				$this->query_hold = $query;
+				$this->html_hold = '';
+			
+				$this->_sql_report($mode, $query);
+
+				$this->curtime = explode(' ', microtime());
+				$this->curtime = $this->curtime[0] + $this->curtime[1];
+
+			break;
+			
+			case 'add_select_row':
+
+				$html_table = func_get_arg(2);
+				$row = func_get_arg(3);
+				
+				if (!$html_table && sizeof($row))
+				{
+					$html_table = true;
+					$this->html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>';
+								
+					foreach (array_keys($row) as $val)
+					{
+						$this->html_hold .= '<th nowrap="nowrap">' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</th>';
+					}
+					$this->html_hold .= '</tr>';
+				}
+				$this->html_hold .= '<tr>';
+
+				$class = 'row1';
+				foreach (array_values($row) as $val)
+				{
+					$class = ($class == 'row1') ? 'row2' : 'row1';
+					$this->html_hold .= '<td class="' . $class . '">' . (($val) ? $val : '&nbsp;') . '</td>';
+				}
+				$this->html_hold .= '</tr>';
+			
+				return $html_table;
+
+			break;
+
+			case 'fromcache':
+
+				$this->_sql_report($mode, $query);
+
+				$this->cache_num_queries++;
+
+			break;
+
+			case 'record_fromcache':
+
+				$endtime = func_get_arg(2);
+				$splittime = func_get_arg(3);
+
+				$time_cache = $endtime - $this->curtime;
+				$time_db = $splittime - $endtime;
+				$color = ($time_db > $time_cache) ? 'green' : 'red';
+
+				$this->sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query results obtained from the cache</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table><p align="center">';
+				$this->sql_report .= 'Before: ' . sprintf('%.5f', $this->curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p>';
+
+				// Pad the start time to not interfere with page timing
+				$starttime += $time_db;
+
+			break;
 
 			default:
 			
