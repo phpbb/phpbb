@@ -297,7 +297,7 @@ CREATE TABLE [phpbb_modules] (
 	[module_langname] [varchar] (50) NOT NULL ,
 	[module_mode] [varchar] (255) NOT NULL ,
 	[module_auth] [varchar] (255) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_poll_results] (

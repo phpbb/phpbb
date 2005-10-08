@@ -190,9 +190,10 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 
 	$start = request_var('start', 0);
 
-	$sort_days	= request_var('st', ((!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0));
-	$sort_key	= request_var('sk', ((!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'));
-	$sort_dir	= request_var('sd', ((!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'd'));
+	// Additional vars later, pm ordering is mostly different from post ordering. :/
+	$sort_days	= request_var('st', 0);
+	$sort_key	= request_var('sk', 't');
+	$sort_dir	= request_var('sd', 'd');
 
 	// PM ordering options
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);

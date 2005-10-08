@@ -11,7 +11,6 @@
 /**
 * @package dbal
 * Database Abstraction Layer
-* Minimum Requirement PHP 4.3.3
 */
 class dbal
 {
