@@ -25,6 +25,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/session.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
+include($phpbb_root_path . 'includes/acm/acm_main.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Be paranoid with passed vars
@@ -41,7 +42,7 @@ define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 // Instantiate classes for future use
 $user = new user();
 $auth = new auth();
-$cache = new acm();
+$cache = new cache();
 
 
 // Try opening config file
