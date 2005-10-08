@@ -196,6 +196,9 @@ include($phpbb_root_path . 'includes/auth.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/db.'.$phpEx);
 
+// We do not need this any longer, unset for safety purposes
+unset($dbpasswd);
+
 //
 // Obtain and encode users IP
 //
