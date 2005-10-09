@@ -75,6 +75,19 @@ class template
 		return true;
 	}
 
+	function set_custom_template($template_path, $template_name, $static_lang = false)
+	{
+		global $phpbb_root_path;
+
+		$this->tpl = 'primary';
+		$this->root = $template_path;
+		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . $template_name . '_';
+		
+		$this->static_lang = $static_lang;
+
+		return true;
+	}
+
 	// Sets the template filenames for handles. $filename_array
 	// should be a hash of handle => filename pairs.
 	function set_filenames($filename_array)

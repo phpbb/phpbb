@@ -214,14 +214,4 @@ $template->set_filenames(array(
 
 page_footer();
 
-/* Language override function for 'main' module
-function main($mode, $langname)
-{
-	if ($mode == 'front')
-	{
-		return 'Frontpanel';
-	}
-}
-*/
-
 ?>

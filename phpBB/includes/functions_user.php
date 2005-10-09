@@ -504,6 +504,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				case 'mysql4':
 				case 'mysqli':
 				case 'mssql':
+				case 'mssql_odbc':
 				case 'sqlite':
 					$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT $ban_entry, $current_time, $ban_end, $ban_exclude, '" . $db->sql_escape($ban_reason) . "'";
 					break;
@@ -1266,6 +1267,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			case 'mysql4':
 			case 'mysqli':
 			case 'mssql':
+			case 'mssql_odbc':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending) 
 					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader, $pending)",  $add_id_ary));

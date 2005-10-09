@@ -1389,6 +1389,7 @@ class fulltext_search
 					case 'mysql4':
 					case 'mysqli':
 					case 'mssql':
+					case 'mssql_odbc':
 					case 'sqlite':
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
 						$db->sql_query($sql);

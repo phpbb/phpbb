@@ -35,13 +35,14 @@ $lang += array(
 	'NO_ADMIN'				=> 'You are not authorised to administer this board.',
 	'NO_FRAMES'				=> 'Sorry, your browser does not support frames.',
 
-	'ADMIN_TITLE'	=> 'Administration Panel',
+	'ADMIN_PANEL'	=> 'Administration Control Panel',
 	'ADMIN'			=> 'Administration',
 
 	'RETURN_TO'		=> 'Return to ...',
 	'FORUM_INDEX'	=> 'Forum Index',
 	'ADMIN_INDEX'	=> 'Admin Index',
 
+	'ACP_MAIN'				=> 'Admin index',
 	'ACP_INDEX'				=> 'Admin index',
 
 	'ACP_CAT_GENERAL'		=> 'General',
@@ -54,7 +55,7 @@ $lang += array(
 	'ACP_CAT_USERGROUP'		=> 'Users &amp; Groups',
 	'ACP_USERS_MANAGE'		=> 'Edit user data',
 	
-
+	'LOGGED_IN_AS'			=> 'You are logged in as:',
 
 	'DB_CAT'		=> 'Database',
 	'DB_BACKUP'		=> 'Backup Database',

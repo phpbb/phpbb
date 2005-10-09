@@ -28,6 +28,7 @@ class dbal
 	var $sql_report = '';
 	var $cache_num_queries = 0;
 	
+	var $dbname = '';
 	
 	/**
 	* return on error or display error message
@@ -99,6 +100,7 @@ class dbal
 	* Build sql statement from array for insert/update/select statements
 	*
 	* Idea for this from Ikonboard
+	* Possible query values: INSERT, INSERT_SELECT, MULTI_INSERT, UPDATE, SELECT
 	*/
 	function sql_build_array($query, $assoc_ary = false)
 	{
@@ -109,7 +111,7 @@ class dbal
 
 		$fields = array();
 		$values = array();
-		if ($query == 'INSERT')
+		if ($query == 'INSERT' || $query == 'INSERT_SELECT')
 		{
 			foreach ($assoc_ary as $key => $var)
 			{
@@ -119,9 +121,13 @@ class dbal
 				{
 					$values[] = 'NULL';
 				}
-				elseif (is_string($var))
+				else if (is_string($var))
 				{
 					$values[] = "'" . $this->sql_escape($var) . "'";
+				}
+				else if (is_array($var) && is_string($var[0]))
+				{
+					$values[] = $var[0];
 				}
 				else
 				{
@@ -129,7 +135,7 @@ class dbal
 				}
 			}
 
-			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			$query = ($query == 'INSERT') ? ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')' : ' (' . implode(', ', $fields) . ') SELECT ' . implode(', ', $values) . ' ';
 		}
 		else if ($query == 'MULTI_INSERT')
 		{

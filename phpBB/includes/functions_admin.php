@@ -892,7 +892,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 						$db->sql_query($sql);
 						unset($topic_id_ary);
 					}
-					$db->sql_freeresult($result);					
+					$db->sql_freeresult($result);
 			}
 			break;
 
@@ -1764,6 +1764,7 @@ function cache_moderators()
 			case 'mysql4':
 			case 'mysqli':
 			case 'mssql':
+			case 'mssql_odbc':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
 					 ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \1',  $m_sql));
@@ -2081,6 +2082,7 @@ if (class_exists('auth'))
 							case 'mysql4':
 							case 'mysqli':
 							case 'mssql':
+							case 'mssql_odbc':
 							case 'sqlite':
 								$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
 								break;
@@ -2224,6 +2226,7 @@ if (class_exists('auth'))
 						case 'mysql4':
 						case 'mysqli':
 						case 'mssql':
+						case 'mssql_odbc':
 						case 'sqlite':
 							$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
 							break;

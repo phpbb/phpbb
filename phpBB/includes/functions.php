@@ -542,6 +542,7 @@ function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
 							case 'mysql4':
 							case 'mysqli':
 							case 'mssql':
+							case 'mssql_odbc':
 							case 'sqlite':
 								$sql .= (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ", $forum_id, $current_time";
 								break;

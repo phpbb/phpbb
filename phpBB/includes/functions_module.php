@@ -47,7 +47,10 @@ class p_master
 		global $auth, $db, $user;
 		global $config, $phpbb_root_path, $phpEx;
 
-		$active = $category = false;
+		$get_cache_data = true;
+
+		// Empty cached contents
+		$this->module_cache = array();
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
@@ -55,22 +58,52 @@ class p_master
 		if (file_exists($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx))
 		{
 			include($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx);
+			$get_cache_data = false;
 		}
 
-		/**
-		* @todo cache, see above. ;)
-		*/
-		$sql = 'SELECT *
-			FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($p_class) . "'
-				AND module_enabled = 1
-			ORDER BY left_id ASC";
-		$result = $db->sql_query($sql, 3600);
+		if ($get_cache_data)
+		{
+			global $cache;
+			
+			// Get active modules
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = '" . $db->sql_escape($p_class) . "'
+					AND module_enabled = 1
+				ORDER BY left_id ASC";
+			$result = $db->sql_query($sql);
+			
+			$this->module_cache['modules'] = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$this->module_cache['modules'][] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			// Get module parents
+			$this->module_cache['parents'] = array();
+			foreach ($this->module_cache['modules'] as $row)
+			{
+				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id']);
+			}
+
+			$file = '<?php $this->module_cache=' . $cache->format_array($this->module_cache) . "; ?>";
+
+			if ($fp = @fopen($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx, 'wb'))
+			{
+				@flock($fp, LOCK_EX);
+				fwrite($fp, $file);
+				@flock($fp, LOCK_UN);
+				fclose($fp);
+			}
+
+			unset($file);
+		}
 
 		$right = $depth = $i = 0;
 		$depth_ary = array();
 
-		while ($row = $db->sql_fetchrow($result))
+		foreach ($this->module_cache['modules'] as $row)
 		{
 			// Authorisation is required ... not authed, skip
 			if ($row['module_auth'])
@@ -108,21 +141,29 @@ class p_master
 
 			$right = $row['right_id'];
 
-			$this->module_ary[$i]['depth']		= $depth;
+			$module_data = array(
+				'depth'		=> $depth,
 
-			$this->module_ary[$i]['id'] 		= (int) $row['module_id'];
-			$this->module_ary[$i]['parent'] 	= (int) $row['parent_id'];
-			$this->module_ary[$i]['cat'] 		= ($row['right_id'] > $row['left_id'] + 1) ? true : false;
+				'id'		=> (int) $row['module_id'],
+				'parent'	=> (int) $row['parent_id'],
+				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
 
-			$this->module_ary[$i]['name']		= (string) $row['module_name'];
-			$this->module_ary[$i]['mode']		= (string) $row['module_mode'];
+				'name'		=> (string) $row['module_name'],
+				'mode'		=> (string) $row['module_mode'],
+				
+				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : ucfirst(str_replace('_', ' ', strtolower($row['module_langname'])))),
+				'langname'	=> $row['module_langname'],
 
-			$this->module_ary[$i]['lang'] 		= (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : ucfirst(str_replace('_', ' ', strtolower($row['module_langname']))));
-			$this->module_ary[$i]['langname']	= $row['module_langname'];
+				'left'		=> $row['left_id'],
+				'right'		=> $row['right_id'],
+			);
+
+			$this->module_ary[$i] = $module_data;
 
 			$i++;
 		}
-		$db->sql_freeresult($result);
+
+		unset($this->module_cache['modules']);
 	}
 
 	function set_active($id = false, $mode = false)
@@ -145,15 +186,18 @@ class p_master
 				$this->p_parent	= $itep_ary['parent'];
 				$this->p_name	= $itep_ary['name'];
 				$this->p_mode 	= $itep_ary['mode'];
+				$this->p_left	= $itep_ary['left'];
+				$this->p_right	= $itep_ary['right'];
+
+				$this->module_cache['parents'] = $this->module_cache['parents'][$this->p_id];
 
 				break;
 			}
-			else if ($itep_ary['cat'] && $itep_ary['id'] == $id)
+			else if (($itep_ary['cat'] && $itep_ary['id'] == $id) || ($itep_ary['parent'] === $category && $itep_ary['cat']))
 			{
 				$category = $itep_ary['id'];
 			}
 		}
-		
 	}
 
 	/**
@@ -202,9 +246,37 @@ class p_master
 		}
 	}
 
+	function get_parents($parent_id, $left_id, $right_id)
+	{
+		global $db;
+
+		$parents = array();
+
+		if ($parent_id > 0)
+		{
+			$sql = 'SELECT module_id, parent_id
+				FROM ' . MODULES_TABLE . '
+				WHERE left_id < ' . $left_id . '
+					AND right_id > ' . $right_id . '
+				ORDER BY left_id ASC';
+			$result = $db->sql_query($sql);
+
+			$parents = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$parents[$row['module_id']] = $row['parent_id'];
+			}
+			$db->sql_freeresult($result);		
+		}
+
+		return $parents;
+	}
+	
 	function assign_tpl_vars($module_url)
 	{
-		global $template;
+		global $template, $db;
+
+		$parents = $this->module_cache['parents'];
 
 		$current_padding = $current_depth = 0;
 		$linear_offset 	= 'l_block1';
@@ -233,22 +305,26 @@ class p_master
 			}
 
 			// Only output a categories items if it's currently selected
-			if (!$depth || ($depth && $itep_ary['parent'] == $this->p_parent))
+			if (!$depth || ($depth && (in_array($itep_ary['parent'], array_values($parents)) || $itep_ary['parent'] == $this->p_parent)))
 			{
 				$use_tabular_offset = (!$depth) ? 't_block1' : $tabular_offset;
-
-				$template->assign_block_vars($use_tabular_offset, array(
+				
+				$tpl_ary = array(
 					'L_TITLE'		=> $itep_ary['lang'],
-					'S_SELECTED'	=> ($itep_ary['id'] == $this->p_parent || $itep_ary['id'] == $this->p_id) ? true : false,
+					'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($parents)) || $itep_ary['id'] == $this->p_id) ? true : false,
 					'U_TITLE'		=> $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode'])
-				));
+				);
+
+				$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($itep_ary, CASE_UPPER)));
 			}
 
-			$template->assign_block_vars($linear_offset, array(
+			$tpl_ary = array(
 				'L_TITLE'		=> $itep_ary['lang'],
-				'S_SELECTED'	=> ($itep_ary['id'] == $this->p_parent || $itep_ary['id'] == $this->p_id) ? true : false,
+				'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($parents)) || $itep_ary['id'] == $this->p_id) ? true : false,
 				'U_TITLE'		=> $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode'])
-			));
+			);
+
+			$template->assign_block_vars($linear_offset, array_merge($tpl_ary, array_change_key_case($itep_ary, CASE_UPPER)));
 
 			$current_depth = $depth;
 		}

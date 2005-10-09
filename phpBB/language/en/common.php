@@ -201,6 +201,7 @@ $lang += array(
 	'LOGIN_FORUM'		=> 'To view or post in this forum you must enter a password.',
 	'LOGIN_INFO'		=> 'In order to login you must be registered. Registering takes only a few seconds but gives you increased capabilies. The board administrator may also grant additional permissions to registered users. Before you login please ensure you are familiar with our terms of use and related policies. Please ensure you read any forum rules as you navigate around the board.',
 	'LOGIN_VIEWFORUM'	=> 'The board administrator requires you to be registered and logged in to view this forum.',
+	'LOGOUT'			=> 'Logout',
 	'LOGOUT_USER'		=> 'Logout [ %s ]',
 	'LOG_ADMIN_AUTH_FAIL'	=> '<b>Failed administration login attempt</b>',
 	'LOG_ADMIN_AUTH_SUCCESS'=> '<b>Sucessful administration login</b>',
