@@ -821,8 +821,16 @@ CREATE TABLE phpbb_topics_marking (
    user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   mark_type tinyint(4) DEFAULT '0' NOT NULL,
    mark_time int(11) DEFAULT '0' NOT NULL,
+   PRIMARY KEY (user_id, topic_id),
+   KEY forum_id (forum_id)
+);
+
+# Table: 'phpbb_topic_posted'
+CREATE TABLE phpbb_topics_posted (
+   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+   topic_posted tinyint(4) DEFAULT '0' NOT NULL,
    PRIMARY KEY (user_id, topic_id)
 );
 
@@ -862,6 +870,7 @@ CREATE TABLE phpbb_users (
    user_email_hash bigint(20) DEFAULT '0' NOT NULL,
    user_birthday varchar(10) DEFAULT '' NOT NULL,
    user_lastvisit int(11) DEFAULT '0' NOT NULL,
+   user_lastmark int(11) DEFAULT '0' NOT NULL,
    user_lastpost_time int(11) DEFAULT '0' NOT NULL,
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_last_confirm_key varchar(10) DEFAULT '' NOT NULL,

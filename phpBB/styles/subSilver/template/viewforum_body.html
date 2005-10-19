@@ -48,7 +48,7 @@
 				<!-- IF topicrow.S_TOPIC_REPORTED -->
 					<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 				<!-- ENDIF -->
-				<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+				<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
 				<!-- IF topicrow.PAGINATION -->
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 				<!-- ENDIF -->
@@ -59,7 +59,7 @@
 			<td class="row1" width="120" align="center">
 				<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 				<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
-					<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 				</p>
 			</td>
 		</tr>
@@ -167,7 +167,7 @@
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
 						<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 					<!-- ENDIF -->
-					<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+					<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
 					<!-- IF topicrow.PAGINATION -->
 						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 					<!-- ENDIF -->
@@ -178,7 +178,7 @@
 				<td class="row1" width="120" align="center">
 					<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 					<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
-						<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+						<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 					</p>
 				</td>
 			</tr>

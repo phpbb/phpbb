@@ -160,7 +160,7 @@ class dbal_firebird extends dbal
 		}
 		else
 		{
-			return ($this->query_result) ? true : false;
+			return false; //($this->query_result) ? true : false;
 		}
 	}
 

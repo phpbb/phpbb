@@ -245,6 +245,7 @@ class ucp_register
 					'user_actkey'		=> $user_actkey,
 					'user_ip'			=> $user->ip,
 					'user_regdate'		=> time(),
+					'user_lastmark'		=> time(),
 				);
 
 				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);

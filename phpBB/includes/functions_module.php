@@ -105,7 +105,11 @@ class p_master
 
 		foreach ($this->module_cache['modules'] as $row)
 		{
-			// Authorisation is required ... not authed, skip
+			/**
+			* Authorisation is required ... not authed, skip
+			* @todo implement $this->is_module_id
+			* @todo put in seperate method for authentication
+			*/
 			if ($row['module_auth'])
 			{
 				$is_auth = false;
@@ -141,7 +145,7 @@ class p_master
 
 			$right = $row['right_id'];
 
-			$module_data = array(
+			$this->module_ary[$i] = array(
 				'depth'		=> $depth,
 
 				'id'		=> (int) $row['module_id'],
@@ -151,14 +155,12 @@ class p_master
 				'name'		=> (string) $row['module_name'],
 				'mode'		=> (string) $row['module_mode'],
 				
-				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : ucfirst(str_replace('_', ' ', strtolower($row['module_langname'])))),
+				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
 
 				'left'		=> $row['left_id'],
 				'right'		=> $row['right_id'],
 			);
-
-			$this->module_ary[$i] = $module_data;
 
 			$i++;
 		}
@@ -274,9 +276,7 @@ class p_master
 	
 	function assign_tpl_vars($module_url)
 	{
-		global $template, $db;
-
-		$parents = $this->module_cache['parents'];
+		global $template;
 
 		$current_padding = $current_depth = 0;
 		$linear_offset 	= 'l_block1';
@@ -305,13 +305,13 @@ class p_master
 			}
 
 			// Only output a categories items if it's currently selected
-			if (!$depth || ($depth && (in_array($itep_ary['parent'], array_values($parents)) || $itep_ary['parent'] == $this->p_parent)))
+			if (!$depth || ($depth && (in_array($itep_ary['parent'], array_values($this->module_cache['parents'])) || $itep_ary['parent'] == $this->p_parent)))
 			{
 				$use_tabular_offset = (!$depth) ? 't_block1' : $tabular_offset;
 				
 				$tpl_ary = array(
 					'L_TITLE'		=> $itep_ary['lang'],
-					'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($parents)) || $itep_ary['id'] == $this->p_id) ? true : false,
+					'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,
 					'U_TITLE'		=> $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode'])
 				);
 
@@ -320,7 +320,7 @@ class p_master
 
 			$tpl_ary = array(
 				'L_TITLE'		=> $itep_ary['lang'],
-				'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($parents)) || $itep_ary['id'] == $this->p_id) ? true : false,
+				'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,
 				'U_TITLE'		=> $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode'])
 			);
 

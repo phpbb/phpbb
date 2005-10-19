@@ -1578,9 +1578,22 @@ CREATE TABLE phpbb_topics_marking (
   user_id number(8) DEFAULT '0' NOT NULL,
   topic_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
-  mark_type number(4) DEFAULT '0' NOT NULL,
   mark_time number(11) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_topics_marking PRIMARY KEY (user_id, topic_id)
+)
+/
+
+CREATE INDEX forum_id06 on phpbb_topics_marking (forum_id)
+/
+
+/*
+ Table: phpbb_topics_posted
+*/
+CREATE TABLE phpbb_topics_posted (
+  user_id number(8) DEFAULT '0' NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
+  topic_posted number(4) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_topics_posted PRIMARY KEY (user_id, topic_id)
 )
 /
 
@@ -1636,6 +1649,7 @@ CREATE TABLE phpbb_users (
   user_email_hash number(20) DEFAULT '0' NOT NULL,
   user_birthday varchar2(10) DEFAULT '',
   user_lastvisit number(11) DEFAULT '0' NOT NULL,
+  user_lastmark number(11) DEFAULT '0' NOT NULL,
   user_lastpost_time number(11) DEFAULT '0' NOT NULL,
   user_lastpage varchar2(100) DEFAULT '',
   user_last_confirm_key varchar2(10) DEFAULT '',

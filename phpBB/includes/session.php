@@ -43,8 +43,6 @@ class session
 		$this->time_now = time();
 		
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
-//		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#/?' . preg_quote($config['script_path'], '#') . '/?([a-z]+?\.' . $phpEx . '\?)sid=[a-z0-9]*(.*?)$#i', '\1\2', $_SERVER['REQUEST_URI']) . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
-
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
 		$sid = substr($this->page, strpos($this->page, 'sid='), 36);
 		$this->page = str_replace(array('/' . $config['script_path'] . '/', (strlen($sid) == 36 && strpos($sid, '&') === false) ? $sid : 'sid='), '', $this->page);
@@ -175,8 +173,7 @@ class session
 
 		foreach ($active_bots as $row)
 		{
-//			if ($row['bot_agent'] && preg_match('#' . preg_quote($row['bot_agent'], '#') . '#i', $this->browser))
-			if ($row['bot_agent'] && strpos($this->browser, $row['bot_agent']) !== false)
+			if ($row['bot_agent'] && strpos(strtolower($this->browser), strtolower($row['bot_agent'])) !== false)
 			{
 				$bot = $row['user_id'];
 			}
@@ -270,7 +267,7 @@ class session
 				$this->data = array_merge($sdata, $this->data);
 				unset($sdata);
 				$this->session_id = $this->data['session_id'];
-	  		}
+			}
 			$db->sql_freeresult($result);
 
 			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
@@ -440,11 +437,18 @@ class session
 	* data before those sessions are destroyed. In addition this method
 	* removes autologin key information that is older than an admin defined
 	* limit.
+	*
+	* @todo add to cron
 	*/
 	function session_gc()
 	{
 		global $db, $config;
 
+		if (!$this->time_now)
+		{
+			$this->time_now = time();
+		}
+		
 		switch (SQL_LAYER)
 		{
 			case 'mysql4':
@@ -531,6 +535,13 @@ class session
 				break;
 		}
 
+		if (!empty($config['max_autologin_time']))
+		{
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
+			$db->sql_query($sql);
+		}
+
 		return;
 	}
 
@@ -611,7 +622,7 @@ class session
 			if ($this->data['user_id'] != ANONYMOUS)
 			{  
 				$this->session_kill();
-			}                                                                                                                             
+			}
 			// Determine which message to output
 			$till_date = (!empty($ban_row['ban_end'])) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = (!empty($ban_row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
@@ -663,25 +674,6 @@ class session
 		
 		$this->cookie_data['k'] = $sql_ary['key_id'];
 		unset($sql_ary);
-		
-		return false;
-	}
-	
-	/**
-	* Remove stale login keys
-	*
-	* @private
-	*/
-	function tidy_login_keys()
-	{
-		global $config, $db;
-		
-		if (!empty($config['max_autologin_time']))
-		{
-			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
-			$db->sql_query($sql);
-		}
 		
 		return false;
 	}

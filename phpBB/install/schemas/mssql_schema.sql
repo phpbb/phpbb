@@ -713,8 +713,14 @@ CREATE TABLE [phpbb_topics_marking] (
 	[user_id] [int] NOT NULL ,
 	[topic_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
-	[mark_type] [int] NOT NULL ,
 	[mark_time] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [phpbb_topics_posted] (
+	[user_id] [int] NOT NULL ,
+	[topic_id] [int] NOT NULL ,
+	[topic_posted] [int] NOT NULL
 ) ON [PRIMARY]
 GO
 
@@ -747,6 +753,7 @@ CREATE TABLE [phpbb_users] (
 	[user_email_hash] [float] NOT NULL ,
 	[user_birthday] [varchar] (10) NOT NULL ,
 	[user_lastvisit] [int] NOT NULL ,
+	[user_lastmark] [int] NOT NULL ,
 	[user_lastpost_time] [int] NOT NULL ,
 	[user_lastpage] [varchar] (100) NOT NULL ,
 	[user_last_confirm_key] [varchar] (10) NOT NULL ,
@@ -1134,6 +1141,14 @@ GO
 
 ALTER TABLE [phpbb_topics_marking] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_topics_marking] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[topic_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_topics_posted] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_topics_posted] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[topic_id]
@@ -1552,8 +1567,13 @@ ALTER TABLE [phpbb_topics_marking] WITH NOCHECK ADD
 	CONSTRAINT [DF_tmarki_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_tmarki_topic_id] DEFAULT (0) FOR [topic_id],
 	CONSTRAINT [DF_tmarki_forum_id] DEFAULT (0) FOR [forum_id],
-	CONSTRAINT [DF_tmarki_mark_type] DEFAULT (0) FOR [mark_type],
 	CONSTRAINT [DF_tmarki_mark_time] DEFAULT (0) FOR [mark_time]
+GO
+
+ALTER TABLE [phpbb_topics_posted] WITH NOCHECK ADD 
+	CONSTRAINT [DF_tposte_user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_tposte_topic_id] DEFAULT (0) FOR [topic_id],
+	CONSTRAINT [DF_tposte_topic_posted] DEFAULT (0) FOR [topic_posted]
 GO
 
 ALTER TABLE [phpbb_topics_watch] WITH NOCHECK ADD 
@@ -1575,6 +1595,7 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_users__user_passchg] DEFAULT (0) FOR [user_passchg],
 	CONSTRAINT [DF_users__user_email_hash] DEFAULT (0) FOR [user_email_hash],
 	CONSTRAINT [DF_users__user_lastvisit] DEFAULT (0) FOR [user_lastvisit],
+	CONSTRAINT [DF_users__user_lastmark] DEFAULT (0) FOR [user_lastmark],
 	CONSTRAINT [DF_users__user_lastpost_time] DEFAULT (0) FOR [user_lastpost_time],
 	CONSTRAINT [DF_users__user_warnings] DEFAULT (0) FOR [user_warnings],
 	CONSTRAINT [DF_users__user_posts] DEFAULT (0) FOR [user_posts],
@@ -1831,6 +1852,9 @@ CREATE  INDEX [forum_id_type] ON [phpbb_topics]([forum_id], [topic_type]) ON [PR
 GO
 
 CREATE  INDEX [topic_last_post_time] ON [phpbb_topics]([topic_last_post_time]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [forum_id] ON [phpbb_topics_marking]([forum_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [topic_id] ON [phpbb_topics_watch]([topic_id]) ON [PRIMARY]

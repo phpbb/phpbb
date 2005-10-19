@@ -66,7 +66,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db;
+	global $config, $db, $cache;
 
 	$update_ary = array(
 		FORUMS_TABLE	=> array('forum_last_poster_name'), 
@@ -176,7 +176,7 @@ function user_delete($mode, $user_id)
 			break;
 	}
 
-	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, FORUMS_TRACK_TABLE);
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE);
 
 	foreach ($table_ary as $table)
 	{

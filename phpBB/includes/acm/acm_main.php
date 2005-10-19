@@ -65,7 +65,7 @@ class cache extends acm
 	*/
 	function obtain_word_list(&$censors)
 	{
-		global $db, $user;
+		global $config, $user, $db;
 
 		if (!$user->optionget('viewcensors') && $config['allow_nocensors'])
 		{
@@ -101,14 +101,14 @@ class cache extends acm
 	*/
 	function obtain_icons(&$icons)
 	{
-		global $db;
-
 		if ($this->exists('icons'))
 		{
 			$icons = $this->get('icons');
 		}
 		else
 		{
+			global $db;
+	
 			// Topic icons
 			$sql = 'SELECT *
 				FROM ' . ICONS_TABLE . '
@@ -136,14 +136,14 @@ class cache extends acm
 	*/
 	function obtain_ranks(&$ranks)
 	{
-		global $db;
-
 		if ($this->exists('ranks'))
 		{
 			$ranks = $this->get('ranks');
 		}
 		else
 		{
+			global $db;
+	
 			$sql = 'SELECT *
 				FROM ' . RANKS_TABLE . '
 				ORDER BY rank_min DESC';
@@ -181,14 +181,14 @@ class cache extends acm
 	*/
 	function obtain_attach_extensions(&$extensions, $forum_id = false)
 	{
-		global $db;
-
-		if ($this->exists('extensions'))
+		if ($this->exists('_extensions'))
 		{
-			$extensions = $this->get('extensions');
+			$extensions = $this->get('_extensions');
 		}
 		else
 		{
+			global $db;
+	
 			// The rule is to only allow those extensions defined. ;)
 			$sql = 'SELECT e.extension, g.*
 				FROM ' . EXTENSIONS_TABLE . ' e, ' . EXTENSION_GROUPS_TABLE . ' g
@@ -220,7 +220,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('extensions', $extensions);
+			$this->put('_extensions', $extensions);
 		}
 
 		if ($forum_id !== false)
@@ -265,14 +265,14 @@ class cache extends acm
 	*/
 	function obtain_bots(&$bots)
 	{
-		global $db;
-
 		if ($this->exists('bots'))
 		{
 			$bots = $this->get('bots');
 		}
 		else
 		{
+			global $db;
+	
 			switch (SQL_LAYER)
 			{
 				case 'mssql':

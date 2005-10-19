@@ -473,196 +473,419 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 }
 
 /**
-* Marks a topic or form as read
+* Marks a topic/forum as read
+* Marks a topic as posted to
 */
-function markread($mode, $forum_id = 0, $topic_id = 0, $marktime = false)
+function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
 {
-	global $config, $db, $user;
-
-	if (!$user->data['is_registered'])
+	global $db, $user, $config;
+	
+	if ($mode == 'all')
 	{
-		return;
-	}
-
-	if (!is_array($forum_id))
-	{
-		$forum_id = array($forum_id);
-	}
-
-	// Default tracking type
-	$type = TRACK_NORMAL;
-	$current_time = ($marktime) ? $marktime : time();
-	$topic_id = (int) $topic_id;
-
-	switch ($mode)
-	{
-		case 'mark':
-			if ($config['load_db_lastread'])
+		if ($forum_id === false || !sizeof($forum_id))
+		{
+			if ($config['load_db_lastread'] && $user->data['is_registered'])
 			{
-				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TRACK_TABLE . '
-					WHERE user_id = ' . $user->data['user_id'] . '
-						AND forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
-				$result = $db->sql_query($sql);
-
-				$sql_update = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$sql_update[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($sql_update))
-				{
-					$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . "
-						SET mark_time = $current_time
-						WHERE user_id = " . $user->data['user_id'] . '
-							AND forum_id IN (' . implode(', ', $sql_update) . ')';
-					$db->sql_query($sql);
-
-					$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
-						WHERE user_id = ' . $user->data['user_id'] . '
-							AND forum_id IN (' . implode(', ', $sql_update) . ')
-							AND mark_type = ' . TRACK_NORMAL;
-					$db->sql_query($sql);
-				}
-
-				if ($sql_insert = array_diff($forum_id, $sql_update))
-				{
-					foreach ($sql_insert as $forum_id)
-					{
-						$sql = '';
-						switch (SQL_LAYER)
-						{
-							case 'mysql':
-								$sql .= (($sql != '') ? ', ' : '') . '(' . $user->data['user_id'] . ", $forum_id, $current_time)";
-								$sql = 'VALUES ' . $sql;
-								break;
-
-							case 'mysql4':
-							case 'mysqli':
-							case 'mssql':
-							case 'mssql_odbc':
-							case 'sqlite':
-								$sql .= (($sql != '') ? ' UNION ALL ' : '') . ' SELECT ' . $user->data['user_id'] . ", $forum_id, $current_time";
-								break;
-
-							default:
-								$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . ' (user_id, forum_id, mark_time)
-									VALUES (' . $user->data['user_id'] . ", $forum_id, $current_time)";
-								$db->sql_query($sql);
-								$sql = '';
-						}
-
-						if ($sql)
-						{
-							$sql = 'INSERT INTO ' . FORUMS_TRACK_TABLE . " (user_id, forum_id, mark_time) $sql";
-							$db->sql_query($sql);
-						}
-
-						$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
-							WHERE user_id = ' . $user->data['user_id'] . '
-								AND forum_id = ' . $forum_id . '
-								AND mark_type = ' . TRACK_NORMAL;
-						$db->sql_query($sql);
-					}
-				}
-				unset($sql_update);
-				unset($sql_insert);
+				// Mark all forums read (index page)
+				$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
+				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
+				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
 			}
 			else
 			{
 				$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 
-				foreach ($forum_id as $f_id)
-				{
-					unset($tracking[$f_id]);
-					$tracking[$f_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
-				}
-
+				unset($tracking['tf']);
+				unset($tracking['t']);
+				unset($tracking['f']);
+				$tracking['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
+	
 				$user->set_cookie('track', serialize($tracking), time() + 31536000);
 				unset($tracking);
 			}
-			break;
-
-		case 'post':
-			// Mark a topic as read and mark it as a topic where the user has made a post.
-			$type = TRACK_POSTED;
-
-		case 'topic':
-			if (!isset($type))
-			{
-				$type = TRACK_NORMAL;
-			}
+		}
 		
-			$forum_id =	(int) $forum_id[0];
+		return;
+	}
+	else if ($mode == 'topics')
+	{
+		// Mark all topics in forums read
+		if (!is_array($forum_id))
+		{
+			$forum_id = array($forum_id);
+		}
 
-			/// Mark a topic as read
-			if ($config['load_db_lastread'] || ($config['load_db_track'] && $type == TRACK_POSTED))
+		// Add 0 to forums array to mark global announcements correctly
+		$forum_id[] = 0;
+
+		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		{
+			$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . " 
+				WHERE user_id = {$user->data['user_id']}
+					AND forum_id IN (" . implode(', ', $forum_id) . ")");
+
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TRACK_TABLE . "
+				WHERE user_id = {$user->data['user_id']}
+					AND forum_id IN (" . implode(', ', $forum_id) . ')';
+			$result = $db->sql_query($sql);
+
+			$sql_update = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$track_type = ($type == TRACK_POSTED) ? ', mark_type = ' . $type : '';
-				$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . "
-					SET forum_id = $forum_id, mark_time = $current_time $track_type
-					WHERE topic_id = $topic_id
-						AND user_id = {$user->data['user_id']}
-						AND mark_time < $current_time";
-				if (!$db->sql_query($sql) || !$db->sql_affectedrows())
+				$sql_update[] = $row['forum_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_update))
+			{
+				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
+					SET mark_time = ' . time() . "
+					WHERE user_id = {$user->data['user_id']}
+						AND forum_id IN (" . implode(', ', $sql_update) . ')';
+				$db->sql_query($sql);
+			}
+
+			if ($sql_insert = array_diff($forum_id, $sql_update))
+			{
+				$sql_ary = array();
+				foreach ($sql_insert as $f_id)
 				{
-					$db->sql_return_on_error(true);
-
-					$sql_ary = array(
-						'user_id'		=> $user->data['user_id'],
-						'topic_id'		=> $topic_id,
-						'forum_id'		=> $forum_id,
-						'mark_type'		=> $type,
-						'mark_time'		=> $current_time
+					$sql_ary[] = array(
+						'user_id'	=> $user->data['user_id'],
+						'forum_id'	=> $f_id,
+						'mark_time'	=> time()
 					);
-					
-					$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-
-					$db->sql_return_on_error(false);
 				}
+
+				if (sizeof($sql_ary))
+				{
+					$db->sql_query('INSERT INTO ' . FORUMS_TRACK_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+				}
+			}
+		}
+		else
+		{
+			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+
+			foreach ($forum_id as $f_id)
+			{
+				$topic_ids36 = (isset($tracking['tf'][$f_id])) ? $tracking['tf'][$f_id] : array();
+
+				unset($tracking['tf'][$f_id]);
+				foreach ($topic_ids36 as $topic_id36)
+				{
+					unset($tracking['t'][$topic_id36]);
+				}
+				unset($tracking['f'][$f_id]);
+				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
+			}
+
+			$user->set_cookie('track', serialize($tracking), time() + 31536000);
+			unset($tracking);
+		}
+
+		return;
+	}
+	else if ($mode == 'topic')
+	{
+		if ($topic_id === false || $forum_id === false)
+		{
+			return;
+		}
+
+		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		{
+			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . '
+				SET mark_time = ' . (($post_time) ? $post_time : time()) . "
+				WHERE user_id = {$user->data['user_id']}
+					AND topic_id = $topic_id";
+			$db->sql_query($sql);
+
+			// insert row
+			if (!$db->sql_affectedrows())
+			{
+				$db->sql_return_on_error(true);
+
+				$sql_ary = array(
+					'user_id'		=> $user->data['user_id'],
+					'topic_id'		=> $topic_id,
+					'forum_id'		=> (int) $forum_id,
+					'mark_time'		=> ($post_time) ? $post_time : time(),
+				);
+
+				$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+
+				$db->sql_return_on_error(false);
+			}
+		}
+		else
+		{
+			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+
+			$topic_id36 = base_convert($topic_id, 10, 36);
+
+			if (!isset($tracking['t'][$topic_id36]))
+			{
+				$tracking['tf'][$forum_id][$topic_id36] = true;
 			}
 			
-			if (!$config['load_db_lastread'])
-			{
-				$tracking = array();
-				if (isset($_COOKIE[$config['cookie_name'] . '_track']))
-				{
-					$tracking = unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track']));
+			$post_time = ($post_time) ? $post_time : time();
+			$tracking['t'][$topic_id36] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
-					// If the cookie grows larger than 2000 characters we will remove
-					// the smallest value
-					if (strlen($_COOKIE[$config['cookie_name'] . '_track']) > 2000)
+			// If the cookie grows larger than 5000 characters we will remove the smallest value
+			if (isset($_COOKIE[$config['cookie_name'] . '_track']) && strlen($_COOKIE[$config['cookie_name'] . '_track']) > 5000)
+			{
+//				echo 'Cookie grown too large' . print_r($tracking, true);
+
+				$min_value = min($tracking['t']);
+				$m_tkey = array_search($min_value, $t_ary);
+				unset($tracking['t'][$m_tkey]);
+				
+				foreach ($tracking['tf'] as $f_id => $topic_id_ary)
+				{
+					if (in_array($m_tkey, array_keys($topic_id_ary)))
 					{
-						foreach ($tracking as $f => $t_ary)
-						{
-							if (!isset($m_value) || min($t_ary) < $m_value)
-							{
-								$m_value = min($t_ary);
-								$m_tkey = array_search($m_value, $t_ary);
-								$m_fkey = $f;
-							}
-						}
-						unset($tracking[$m_fkey][$m_tkey]);
+						unset($tracking['tf'][$f_id][$m_tkey]);
+						break;
 					}
 				}
-
-				if (isset($tracking[$forum_id]) && base_convert($tracking[$forum_id][0], 36, 10) < $current_time)
-				{
-					$tracking[$forum_id][base_convert($topic_id, 10, 36)] = base_convert($current_time - $config['board_startdate'], 10, 36);
-
-					$user->set_cookie('track', serialize($tracking), time() + 31536000);
-				}
-				else if (!isset($tracking[$forum_id]))
-				{
-					$tracking[$forum_id][0] = base_convert($current_time - $config['board_startdate'], 10, 36);
-					$user->set_cookie('track', serialize($tracking), time() + 31536000);
-				}
-				unset($tracking);
 			}
-			break;
+		
+			$user->set_cookie('track', serialize($tracking), time() + 31536000);
+		}
+
+		return;
 	}
+	else if ($mode == 'post')
+	{
+		if ($topic_id === false)
+		{
+			return;
+		}
+
+		$db->sql_return_on_error(true);
+
+		$sql_ary = array(
+			'user_id'		=> $user->data['user_id'],
+			'topic_id'		=> $topic_id,
+			'topic_posted'	=> 1
+		);
+
+		$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+	
+		$db->sql_return_on_error(false);
+		
+		return;
+	}
+}
+
+/**
+* Get topic tracking info by using already fetched info
+*/
+function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
+{
+	global $config, $user;
+
+	$last_read = array();
+
+	if (!is_array($topic_ids))
+	{
+		$topic_ids = array($topic_ids);
+	}
+
+	foreach ($topic_ids as $topic_id)
+	{
+		if (!empty($rowset[$topic_id]['mark_time']))
+		{
+			$last_read[$topic_id] = $rowset[$topic_id]['mark_time'];
+		}
+	}
+
+	$topic_ids = array_diff($topic_ids, array_keys($last_read));
+
+	if (sizeof($topic_ids))
+	{
+		$mark_time = array();
+
+		// Get global announcement info
+		if ($global_announce_list && sizeof($global_announce_list))
+		{
+			if (!isset($forum_mark_time[0]))
+			{
+				global $db;
+
+				$sql = 'SELECT mark_time
+					FROM ' . FORUMS_TRACK_TABLE . "
+					WHERE user_id = {$user->data['user_id']}
+						AND forum_id = 0";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row)
+				{
+					$mark_time[0] = $row['mark_time'];
+				}
+			}
+			else
+			{
+				if ($forum_mark_time[0] !== false)
+				{
+					$mark_time[0] = $forum_mark_time[0];
+				}
+			}
+		}
+
+		if (!empty($forum_mark_time[$forum_id]) && $forum_mark_time[$forum_id] !== false)
+		{
+			$mark_time[$forum_id] = $forum_mark_time[$forum_id];
+		}
+			
+		$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user->data['user_lastmark'];
+
+		foreach ($topic_ids as $topic_id)
+		{
+			if ($global_announce_list && isset($global_announce_list[$topic_id]))
+			{
+				$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
+			}
+			else
+			{
+				$last_read[$topic_id] = $user_lastmark;
+			}
+		}
+	}
+
+	return $last_read;
+}
+
+/**
+* Get topic tracking info from db (for cookie based tracking only this function is used)
+*/
+function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
+{
+	global $config, $user;
+	
+	$last_read = array();
+
+	if (!is_array($topic_ids))
+	{
+		$topic_ids = array($topic_ids);
+	}
+
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		global $db;
+
+		$sql = 'SELECT topic_id, mark_time
+			FROM ' . TOPICS_TRACK_TABLE . "
+			WHERE user_id = {$user->data['user_id']}
+				AND topic_id IN (" . implode(', ', $topic_ids) . ")";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$last_read[$row['topic_id']] = $row['mark_time'];
+		}
+		$db->sql_freeresult($result);
+	
+		$topic_ids = array_diff($topic_ids, array_keys($last_read));
+
+		if (sizeof($topic_ids))
+		{
+			$sql = 'SELECT forum_id, mark_time 
+				FROM ' . FORUMS_TRACK_TABLE . "
+				WHERE user_id = {$user->data['user_id']}
+					AND forum_id " . 
+						(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
+			$result = $db->sql_query($sql);
+		
+			$mark_time = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$mark_time[$row['forum_id']] = $row['mark_time'];
+			}
+			$db->sql_freeresult($result);
+
+			$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user->data['user_lastmark'];
+
+			foreach ($topic_ids as $topic_id)
+			{
+				if ($global_announce_list && isset($global_announce_list[$topic_id]))
+				{
+					$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
+				}
+				else
+				{
+					$last_read[$topic_id] = $user_lastmark;
+				}
+			}
+		}
+	}
+	else
+	{
+		global $tracking_topics;
+
+		if (!isset($tracking_topics) || !sizeof($tracking_topics))
+		{
+			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+		}
+
+		if (!$user->data['is_registered'])
+		{
+			$user_lastmark = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+		}
+		else
+		{
+			$user_lastmark = $user->data['user_lastmark'];
+		}
+
+		foreach ($topic_ids as $topic_id)
+		{
+			$topic_id36 = base_convert($topic_id, 10, 36);
+
+			if (isset($tracking_topics['t'][$topic_id36]))
+			{
+				$last_read[$topic_id] = base_convert($tracking_topics['t'][$topic_id36], 36, 10) + $config['board_startdate'];
+			}
+		}
+
+		$topic_ids = array_diff($topic_ids, array_keys($last_read));
+
+		if (sizeof($topic_ids))
+		{
+			$mark_time = array();
+			if ($global_announce_list && sizeof($global_announce_list))
+			{
+				if (isset($tracking_topics['f'][0]))
+				{
+					$mark_time[0] = base_convert($tracking_topics['f'][0], 36, 10) + $config['board_startdate'];
+				}
+			}
+
+			if (isset($tracking_topics['f'][$forum_id]))
+			{
+				$mark_time[$forum_id] = base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'];
+			}
+
+			$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user_lastmark;
+
+			foreach ($topic_ids as $topic_id)
+			{
+				if ($global_announce_list && isset($global_announce_list[$topic_id]))
+				{
+					$last_read[$topic_id] = (isset($mark_time[0])) ? $mark_time[0] : $user_lastmark;
+				}
+				else
+				{
+					$last_read[$topic_id] = $user_lastmark;
+				}
+			}
+		}
+	}
+
+	return $last_read;
 }
 
 /**
@@ -877,7 +1100,14 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
 
-	page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	{
+		adm_page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+	}
+	else
+	{
+		page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+	}
 
 	$template->set_filenames(array(
 		'body' => $html_body)
@@ -908,7 +1138,14 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		WHERE user_id = " . $user->data['user_id'];
 	$db->sql_query($sql);
 
-	page_footer();
+	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	{
+		adm_page_footer();
+	}
+	else
+	{
+		page_footer();
+	}
 }
 
 /**
@@ -1292,11 +1529,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 				{
-					adm_page_header('', '', false);
+					// adm_page_header('', '', false);
+					adm_page_header('');
 				}
 				else
 				{
-					page_header();
+					page_header('');
 				}
 			}
 
@@ -1304,26 +1542,19 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
 
-			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
-			{
-				adm_page_message($msg_title, $msg_text, $display_header);
-				adm_page_footer();
-			}
-			else
-			{
-				$template->set_filenames(array(
-					'body' => 'message_body.html')
-				);
+			$template->set_filenames(array(
+				'body' => 'message_body.html')
+			);
 
-				$template->assign_vars(array(
-					'MESSAGE_TITLE'	=> $msg_title,
-					'MESSAGE_TEXT'	=> $msg_text)
-				);
+			$template->assign_vars(array(
+				'MESSAGE_TITLE'	=> $msg_title,
+				'MESSAGE_TEXT'	=> $msg_text)
+			);
 
-				// We do not want the cron script to be called on error messages
-				define('IN_CRON', true);
-				page_footer();
-			}
+			// We do not want the cron script to be called on error messages
+			define('IN_CRON', true);
+			page_footer();
+
 			exit;
 			break;
 	}
@@ -1700,6 +1931,14 @@ function page_footer()
 			// Tidy some table rows every week
 			$cron_type = 'tidy_database';
 		}
+/**
+* @todo add session garbage collection
+
+		else if (time() - $config['session_gc'] > $config['session_last_gc'])
+		{
+			$cron_type = 'tidy_sessions';
+		}
+*/
 
 		if ($cron_type)
 		{

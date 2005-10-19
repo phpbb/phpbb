@@ -6,6 +6,7 @@
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* @todo add show_active flag (& 16)
 */
 
 /**
@@ -1445,6 +1446,7 @@ function delete_forum_content($forum_id)
 				REPORTS_TABLE				=>	're.post_id',
 				TOPICS_WATCH_TABLE		=>	'tw.topic_id',
 				TOPICS_TRACK_TABLE		=>	'tt.topic_id',
+				TOPICS_POSTED_TABLE		=>	'tp.topic_id',
 				POLL_OPTIONS_TABLE		=>	'po.topic_id',
 				POLL_VOTES_TABLE			=>	'pv.post_id'
 			);
@@ -1515,6 +1517,7 @@ function delete_forum_content($forum_id)
 				'topic_id'	=>	array(
 					TOPICS_WATCH_TABLE,
 					TOPICS_TRACK_TABLE,
+					TOPICS_POSTED_TABLE,
 					POLL_OPTIONS_TABLE,
 					POLL_VOTES_TABLE
 				)

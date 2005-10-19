@@ -1094,17 +1094,28 @@ CREATE INDEX topic_last_post_time_phpbb_topics_index ON phpbb_topics (topic_last
 
 SELECT SETVAL('phpbb_topics_topic_id_seq',(select case when max(topic_id)>0 then max(topic_id)+1 else 1 end from phpbb_topics));
 
-/* Table: phpbb_topic_marking */
+/* Table: phpbb_topics_marking */
 CREATE TABLE phpbb_topics_marking (
    user_id INT4  DEFAULT '0' NOT NULL,
    topic_id INT4  DEFAULT '0' NOT NULL,
    forum_id INT4  DEFAULT '0' NOT NULL,
-   mark_type INT2 DEFAULT '0' NOT NULL,
    mark_time INT4 DEFAULT '0' NOT NULL,
    PRIMARY KEY (user_id,topic_id),
   CHECK (user_id>=0),
   CHECK (topic_id>=0),
   CHECK (forum_id>=0)
+);
+
+CREATE INDEX forum_id_phpbb_topics_marking_index ON phpbb_topics_marking (forum_id);
+
+/* Table: phpbb_topics_posted */
+CREATE TABLE phpbb_topics_posted (
+   user_id INT4  DEFAULT '0' NOT NULL,
+   topic_id INT4  DEFAULT '0' NOT NULL,
+   topic_posted INT2  DEFAULT '0' NOT NULL,
+   PRIMARY KEY (user_id,topic_id),
+  CHECK (user_id>=0),
+  CHECK (topic_id>=0)
 );
 
 /* Table: phpbb_topics_watch */
@@ -1147,6 +1158,7 @@ CREATE TABLE phpbb_users (
    user_email_hash INT8 DEFAULT '0' NOT NULL,
    user_birthday varchar(10) DEFAULT '' NOT NULL,
    user_lastvisit INT4 DEFAULT '0' NOT NULL,
+   user_lastmark INT4 DEFAULT '0' NOT NULL,
    user_lastpost_time INT4 DEFAULT '0' NOT NULL,
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_last_confirm_key varchar(10) DEFAULT '' NOT NULL,

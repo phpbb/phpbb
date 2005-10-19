@@ -36,7 +36,7 @@ $search_fields	= request_var('search_fields', 'all');
 $search_child	= request_var('search_child', true);
 
 $return_chars	= request_var('return_chars', 200);
-$search_forum	= request_var('search_forum', 0);
+$search_forum	= request_var('search_forum', array(0));
 
 $sort_days	= request_var('st', 0);
 $sort_key	= request_var('sk', 't');
@@ -251,7 +251,7 @@ if ($keywords || $author || $search_id || $search_session_id)
 	/**
 	* @todo add to config
 	*/
-	$config['search_type'] = 'mysql';
+	$config['search_type'] = 'phpbb';
 
 	// Select which method we'll use to obtain the post_id information
 	$smid = '';
@@ -468,7 +468,7 @@ if ($keywords || $author || $search_id || $search_session_id)
 				$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 				$folder_img = $folder_alt = $topic_type = '';
-				topic_status($row, $replies, time(), time(), $folder_img, $folder_alt, $topic_type);
+				topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
 
 				$tpl_ary = array(
 					'TOPIC_AUTHOR' 		=> topic_topic_author($row),

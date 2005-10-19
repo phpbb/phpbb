@@ -1843,9 +1843,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$db->sql_query($sql);
 	}
 
-	// Mark this topic as read and posted to.
-	$mark_mode = ($mode == 'post' || $mode == 'reply' || $mode == 'quote') ? 'post' : 'topic';
-	markread($mark_mode, $data['forum_id'], $data['topic_id'], $data['post_time']);
+	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
+	{
+		// Mark this topic as posted to
+		markread('post', $data['forum_id'], $data['topic_id'], $data['post_time']);
+	}
+
+	// Mark this topic as read
+	markread('topic', $data['forum_id'], $data['topic_id'], $data['post_time']);
 
 	// Send Notifications
 	if ($mode != 'edit' && $mode != 'delete' && (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')))

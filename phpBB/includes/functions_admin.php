@@ -11,7 +11,7 @@
 /**
 * Recalculate Binary Tree
 */
-function recalc_btree($sql_id, $sql_table)
+function recalc_btree($sql_id, $sql_table, $module_class = '')
 {
 	global $db;
 
@@ -25,8 +25,29 @@ function recalc_btree($sql_id, $sql_table)
 		return;
 	}
 
+	$sql_where = ($module_class) ? " WHERE module_class = '" . $db->sql_escape($module_class) . "'" : ' WHERE 1 ';
+
+	// Reset to minimum possible left and right id
+	$sql = "SELECT MIN(left_id) as min_left_id, MIN(right_id) as min_right_id
+		FROM $sql_table
+		$sql_where";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$substract = (int) (min($row['min_left_id'], $row['min_right_id']) - 1);
+
+	if ($substract > 0)
+	{
+		$sql = "UPDATE $sql_table 
+			SET left_id = left_id - $substract, right_id = right_id - $substract
+			$sql_where";
+		$db->sql_query($sql);
+	}
+
 	$sql = "SELECT $sql_id, parent_id, left_id, right_id 
 		FROM $sql_table
+		$sql_where
 		ORDER BY left_id ASC, parent_id ASC, $sql_id ASC";
 	$f_result = $db->sql_query($sql);
 
@@ -36,7 +57,8 @@ function recalc_btree($sql_id, $sql_table)
 		{
 			$sql = "SELECT left_id, right_id
 				FROM $sql_table
-				WHERE $sql_id = {$item_data['parent_id']}";
+				$sql_where
+					AND $sql_id = {$item_data['parent_id']}";
 			$result = $db->sql_query($sql);
 
 			if (!$row = $db->sql_fetchrow($result))
@@ -48,12 +70,14 @@ function recalc_btree($sql_id, $sql_table)
 
 			$sql = "UPDATE $sql_table
 				SET left_id = left_id + 2, right_id = right_id + 2
-				WHERE left_id > {$row['right_id']}";
+				$sql_where
+					AND left_id > {$row['right_id']}";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE $sql_table
 				SET right_id = right_id + 2
-				WHERE {$row['left_id']} BETWEEN left_id AND right_id";
+				$sql_where
+					AND {$row['left_id']} BETWEEN left_id AND right_id";
 			$db->sql_query($sql);
 
 			$item_data['left_id'] = $row['right_id'];
@@ -62,7 +86,8 @@ function recalc_btree($sql_id, $sql_table)
 		else
 		{
 			$sql = "SELECT MAX(right_id) AS right_id
-				FROM $sql_table";
+				FROM $sql_table
+				$sql_where";
 			$result = $db->sql_query($sql);
 
 			$row = $db->sql_fetchrow($result);
@@ -450,7 +475,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(TOPICS_TRACK_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
+	$table_ary = array(TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table 
@@ -2335,13 +2360,13 @@ function update_post_information($type, $ids)
 }
 
 /**
-* Tidy topic tracking tables
+* Tidy database
 * Removes all tracking rows older than 6 months, including mark_posted informations
 */
 function tidy_database()
 {
 	global $db;
-
+/*
 	$remove_date = time() - (3 * 62 * 24 * 3600);
 
 	$sql = 'DELETE FROM ' . FORUMS_TRACK_TABLE . '
@@ -2351,7 +2376,7 @@ function tidy_database()
 	$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
 		WHERE mark_time < ' . $remove_date;
 	$db->sql_query($sql);
-
+*/
 	set_config('database_last_gc', time(), true);
 }
 

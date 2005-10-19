@@ -708,8 +708,14 @@ CREATE TABLE phpbb_topics_marking (
   user_id INTEGER DEFAULT 0  NOT NULL,
   topic_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
-  mark_type INTEGER DEFAULT 0  NOT NULL,
   mark_time INTEGER DEFAULT 0  NOT NULL
+);;
+
+# phpbb_topics_posted
+CREATE TABLE phpbb_topics_posted (
+  user_id INTEGER DEFAULT 0  NOT NULL,
+  topic_id INTEGER DEFAULT 0  NOT NULL,
+  topic_posted INTEGER DEFAULT 0  NOT NULL
 );;
 
 # phpbb_topics_watch
@@ -742,6 +748,7 @@ CREATE TABLE phpbb_users (
   user_email_hash DOUBLE PRECISION DEFAULT 0  NOT NULL,
   user_birthday VARCHAR(10) NOT NULL,
   user_lastvisit INTEGER DEFAULT 0  NOT NULL,
+  user_lastmark INTEGER DEFAULT 0  NOT NULL,
   user_lastpost_time INTEGER DEFAULT 0  NOT NULL,
   user_lastpage VARCHAR(100) NOT NULL,
   user_last_confirm_key VARCHAR(10) NOT NULL,
@@ -1371,6 +1378,17 @@ ON phpbb_topics(
 );;
 
 ALTER TABLE phpbb_topics_marking
+ADD PRIMARY KEY (
+  user_id,
+  topic_id
+);;
+
+CREATE INDEX forum_idtp
+ON phpbb_topics_marking(
+  forum_id
+);;
+
+ALTER TABLE phpbb_topics_posted
 ADD PRIMARY KEY (
   user_id,
   topic_id
