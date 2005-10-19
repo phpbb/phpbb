@@ -821,6 +821,11 @@ class template
 					{
 						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[3]) . '[\'' . $varrefs[4] . '\']' : (($varrefs[3]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[4] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[4] . '\']');
 					}
+					else if (preg_match('#^\.((([a-z0-9\-_]+)?\.?)+?)$#s', $token, $varrefs))
+					{
+						$token = 'sizeof(' . $this->generate_block_data_ref($varrefs[1], false) . ')';
+					}
+
 					break;
 			}
 		}
