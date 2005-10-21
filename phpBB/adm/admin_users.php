@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -109,21 +109,36 @@ if ($username || $user_id)
 {
 	$session_time = 0;
 	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
-	$sql = ($action == 'overview') ? 'SELECT u.*, s.session_time, s.session_page, s.session_ip FROM (' . USERS_TABLE . ' u LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id) WHERE u.$sql_where ORDER BY s.session_time DESC" : 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
+	if ($action == 'overview')
+	{
+		$sql = '
+			SELECT
+				u.*,
+				s.session_time, s.session_page, s.session_ip
+			FROM (' .
+				USERS_TABLE . ' u
+				LEFT JOIN ' . SESSIONS_TABLE . " s ON s.session_user_id = u.user_id)
+			WHERE u.$sql_where
+			ORDER BY s.session_time DESC";
+	}
+	else
+	{
+		$sql = 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
+	}
 	$result = $db->sql_query($sql);
 
-	if (!extract($db->sql_fetchrow($result)))
+	if (!$userrow = $db->sql_fetchrow($result))
 	{
 		trigger_error($user->lang['NO_USER']);
 	}
 	$db->sql_freeresult($result);
 
-	if ($session_time > $user_lastvisit)
+	if ($userrow['session_time'] > $userrow['user_lastvisit'])
 	{
-		$user_lastvisit = $session_time;
-		$user_lastpage = $session_page;
+		$userrow['user_lastvisit'] = $userrow['session_time'];
+		$userrow['user_lastpage'] = $userrow['session_page'];
 	}
-	
+
 	$user_password = '';
 }
 
@@ -147,6 +162,9 @@ if ($username || $user_id)
 		$selected = ($mode == $value) ? ' selected="selected"' : '';
 		$form_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
 	}
+
+	// Make sure $user_id is available.
+	$user_id = $userrow['user_id'];
 
 	$pagination = '';
 
@@ -212,7 +230,8 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 
 			if ($submit)
 			{
-				if ($delete && $user_type != USER_FOUNDER)
+				// You can't delete the founder
+				if ($delete && $userrow['user_type'] != USER_FOUNDER)
 				{
 					if (!$auth->acl_get('a_userdel'))
 					{
@@ -223,17 +242,17 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 					{
 						adm_page_confirm($user->lang['CONFIRM'], $user->lang['CONFIRM_OPERATION']);
 					}
-					else if (!$cancel) 
+					else if (!$cancel)
 					{
 						user_delete($deletetype, $user_id);
 
-						add_log('admin', 'LOG_USER_DELETED', $username);
+						add_log('admin', 'LOG_USER_DELETED', $userrow['username']);
 						trigger_error($user->lang['USER_DELETED']);
 					}
 				}
 
 				// Handle quicktool actions
-				if ($quicktools && $user_type != USER_FOUNDER)
+				if ($quicktools && $userrow['user_type'] != USER_FOUNDER)
 				{
 					switch ($quicktools)
 					{
@@ -245,22 +264,22 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 							switch ($quicktools)
 							{
 								case 'banuser':
-									$ban[] = $username;
+									$ban[] = $userrow['username'];
 									$reason = 'USER_ADMIN_BAN_NAME_REASON';
 									$log = 'LOG_BAN_USERNAME_USER';
 									break;
 
 								case 'banemail':
-									$ban[] = $user_email;
+									$ban[] = $userrow['user_email'];
 									$reason = 'USER_ADMIN_BAN_EMAIL_REASON';
 									$log = 'LOG_BAN_EMAIL_USER';
 									break;
 
 								case 'banip':
-									$ban[] = $user_ip;
+									$ban[] = $userrow['user_ip'];
 
-									$sql = 'SELECT DISTINCT poster_ip 
-										FROM ' . POSTS_TABLE . " 
+									$sql = 'SELECT DISTINCT poster_ip
+										FROM ' . POSTS_TABLE . "
 										WHERE poster_id = $user_id";
 									$result = $db->sql_query($sql);
 
@@ -294,7 +313,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 								$key_len = ($key_len > 6) ? $key_len : 6;
 								$user_actkey = substr($user_actkey, 0, $key_len);
 
-								user_active_flip($user_id, $user_type, $user_actkey, $username);
+								user_active_flip($user_id, $userrow['user_type'], $user_actkey, $userrow['username']);
 
 								$messenger = new messenger();
 
@@ -302,7 +321,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 								$messenger->subject();
 
 								$messenger->replyto($config['board_contact']);
-								$messenger->to($user_email, $username);
+								$messenger->to($userrow['user_email'], $userrow['username']);
 
 								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
 								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
@@ -322,7 +341,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 								$messenger->send(NOTIFY_EMAIL);
 								$messenger->save_queue();
 
-								add_log('admin', 'LOG_USER_REACTIVATE', $username);
+								add_log('admin', 'LOG_USER_REACTIVATE', $userrow['username']);
 								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
 
 								trigger_error($user->lang['USER_ADMIN_REACTIVATE']);
@@ -332,12 +351,12 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 
 						case 'active':
 
-							user_active_flip($user_id, $user_type, false, $username);
+							user_active_flip($user_id, $userrow['user_type'], false, $userrow['username']);
 
 							$message = ($user_type == USER_NORMAL) ? 'USER_ADMIN_INACTIVE' : 'USER_ADMIN_ACTIVE';
 							$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
 
-							add_log('admin', $log, $username);
+							add_log('admin', $log, $userrow['username']);
 							add_log('user', $user_id, $log . '_USER');
 
 							trigger_error($user->lang[$message]);
@@ -359,10 +378,10 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 		<th align="center"><?php echo $user->lang['USER_ADMIN_MOVE_POSTS']; ?></th>
 	</tr>
 	<tr>
-		<td class="row2" align="center" valign="middle"><?php echo $user->lang['MOVE_POSTS_EXPLAIN']; ?><br /><br /><select name="new_f"><?php 
-	
+		<td class="row2" align="center" valign="middle"><?php echo $user->lang['MOVE_POSTS_EXPLAIN']; ?><br /><br /><select name="new_f"><?php
+
 							echo make_forum_select(false, false, false, true);
-			
+
 ?></select>&nbsp;</td>
 	</tr>
 	<tr>
@@ -380,8 +399,8 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 								$topic_id_ary = array();
 								$forum_id_ary = array($new_forum_id);
 
-								$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts 
-									FROM ' . POSTS_TABLE . " 
+								$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
+									FROM ' . POSTS_TABLE . "
 									WHERE poster_id = $user_id
 										AND forum_id <> $new_forum_id
 									GROUP BY topic_id";
@@ -393,8 +412,8 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 								}
 								$db->sql_freeresult($result);
 
-								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real 
-									FROM ' . TOPICS_TABLE . ' 
+								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real
+									FROM ' . TOPICS_TABLE . '
 									WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
 								$result = $db->sql_query($sql);
 
@@ -433,9 +452,9 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 											'topic_time'				=> time(),
 											'forum_id' 					=> $new_forum_id,
 											'icon_id'					=> 0,
-											'topic_approved'			=> 1, 
+											'topic_approved'			=> 1,
 											'topic_title' 				=> $post_ary['title'],
-											'topic_first_poster_name'	=> $username,
+											'topic_first_poster_name'	=> $userrow['username'],
 											'topic_type'				=> POST_NORMAL,
 											'topic_time_limit'			=> 0,
 											'topic_attachment'			=> $post_ary['attach'],)
@@ -446,7 +465,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 
 										// Move posts
 										$sql = 'UPDATE ' . POSTS_TABLE . "
-											SET forum_id = $new_forum_id, topic_id = $new_topic_id 
+											SET forum_id = $new_forum_id, topic_id = $new_topic_id
 											WHERE topic_id = $topic_id
 												AND poster_id = $user_id";
 										$db->sql_query($sql);
@@ -476,53 +495,61 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 					}
 
 					$sql = 'SELECT forum_name
-						FROM ' . TOPICS_TABLE . " 
+						FROM ' . TOPICS_TABLE . "
 						WHERE topic_id = $new_forum_id";
 					$result = $db->sql_query($sql);
 
-					extract($db->sql_fetchrow($result));
+					$forum_info = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
-					add_log('admin', 'LOG_USER_MOVE_POSTS', $forum_name, $username);
-					add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_name);
+					add_log('admin', 'LOG_USER_MOVE_POSTS', $forum_info['forum_name'], $userrow['username']);
+					add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
 
 					trigger_error($user->lang['USER_ADMIN_MOVE']);
 				}
 
 				// Handle registration info updates
 				$var_ary = array(
-					'username'			=> (string) $username, 
-					'user_founder'		=> (int) $user_founder, 
-					'user_type'			=> (int) $user_type, 
-					'user_email'		=> (string) $user_email, 
+					'username'			=> (string) $userrow['username'],
+					'user_type'			=> (int) $userrow['user_founder'],
+					'user_email'		=> (string) $userrow['user_email'],
 					'email_confirm'		=> (string) '',
-					'user_password'		=> (string) '', 
-					'password_confirm'	=> (string) '', 
-					'user_warnings'		=> (int) $user_warnings, 
+					'user_password'		=> (string) '',
+					'password_confirm'	=> (string) '',
+					'user_warnings'		=> (int) $userrow['user_warnings'],
 				);
 
+				// Get the data from the form. Use data from the database if no info is provided
 				foreach ($var_ary as $var => $default)
 				{
 					$data[$var] = request_var($var, $default);
 				}
 
+				// Validation data
 				$var_ary = array(
-					'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']), 
-					'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']), 
-					'user_email'		=> array(
-						array('string', false, 6, 60), 
-						array('email', $email)), 
-					'email_confirm'		=> array('string', true, 6, 60), 
-					'user_warnings'		=> array('num', 0, $config['max_warnings']), 
+					'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+					'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+					'user_warnings'		=> array('num', 0, $config['max_warnings']),
 				);
 
 				// Check username if altered
-				if ($username != $data['username'])
+				if ($data['username'] != $userrow['username'])
 				{
 					$var_ary += array(
 						'username'			=> array(
-							array('string', false, $config['min_name_chars'], $config['max_name_chars']), 
-							array('username', $username)),
+							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+							array('username', $userrow['username'])),
+					);
+				}
+
+				// Check email if altered
+				if ($data['user_email'] != $userrow['user_email'])
+				{
+					$var_ary += array(
+						'user_email'		=> array(
+							array('string', false, 6, 60),
+							array('email', $userrow['user_email'])),
+						'email_confirm'		=> array('string', true, 6, 60)
 					);
 				}
 
@@ -533,40 +560,38 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 					$error[] = 'NEW_PASSWORD_ERROR';
 				}
 
-				if ($user_email != $data['user_email'] && $data['email_confirm'] != $data['user_email'])
+				if ($data['user_email'] != $userrow['user_email'] && $data['email_confirm'] != $data['user_email'])
 				{
 					$error[] = 'NEW_EMAIL_ERROR';
 				}
 
 				// Which updates do we need to do?
 				$update_warning = ($user_warnings != $data['user_warnings']) ? true : false;
-				$update_username = ($username != $data['username']) ? $username : false;
+				$update_username = ($username != $data['username']) ? $data['username'] : false;
 				$update_password = ($user_password != $data['user_password']) ? true : false;
-
-				extract($data);
-				unset($data);
 
 				if (!sizeof($error))
 				{
 					$sql_ary = array(
-						'username'			=> $username, 
-						'user_founder'		=> $user_founder, 
-						'user_email'		=> $user_email, 
-						'user_email_hash'	=> crc32(strtolower($user_email)) . strlen($user_email), 
-						'user_warnings'		=> $user_warnings, 
+						'username'			=> $data['username'],
+						// TODO: check if this user is allowed to change user_type
+						'user_type'		=> $data['user_founder'],
+						'user_email'		=> $data['user_email'],
+						'user_email_hash'	=> crc32(strtolower($data['user_email'])) . strlen($data['user_email']),
+						'user_warnings'		=> $data['user_warnings'],
 					);
 
 					if ($update_password)
 					{
 						$sql_ary += array(
-							'user_password' => md5($user_password),
+							'user_password' => md5($data['user_password']),
 							'user_passchg'	=> time(),
 						);
 					}
 
-					$sql = 'UPDATE ' . USERS_TABLE . ' 
-						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
-						WHERE user_id = ' . $user->data['user_id'];
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = ' . $user_id;
 					$db->sql_query($sql);
 
 					// TODO
@@ -576,7 +601,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 
 					if ($update_username)
 					{
-						user_update_name($update_username, $username);
+						user_update_name($update_username, $userrow['username']);
 					}
 
 					trigger_error($user->lang['USER_OVERVIEW_UPDATED']);
@@ -585,12 +610,11 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 				// Replace "error" strings with their real, localised form
 				$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 			}
-
 			$colspan = 2;
 
 			$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
 			$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_type == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
-			if ($config['email_enable']) 
+			if ($config['email_enable'])
 			{
 				$quick_tool_ary['reactivate'] = 'FORCE';
 			}
@@ -601,39 +625,47 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 				$options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
 			}
 
-			$user_founder_yes = ($user_type == USER_FOUNDER) ? ' checked="checked"' : '';
-			$user_founder_no = ($user_type != USER_FOUNDER) ? ' checked="checked"' : (($user->data['user_type'] != USER_FOUNDER) ? ' disabled="disabled"' : '');
+			$user_founder_yes = ($userrow['user_type'] == USER_FOUNDER) ? ' checked="checked"' : '';
+			$user_founder_no = ($userrow['user_type'] != USER_FOUNDER) ? ' checked="checked"' : (($user->data['user_type'] != USER_FOUNDER) ? ' disabled="disabled"' : '');
 
-?>	
+			foreach($error as $error_msg)
+			{
+?>
+			<tr>
+				<td colspan="2"><?php echo $error_msg;?></td>
+			</tr>
+<?php
+			}
+
+?>
 			<tr>
 				<th colspan="2"><?php echo $user->lang['USER_ADMIN_OVERVIEW']; ?></th>
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><?php echo $user->lang['USERNAME']; ?>: <br /><span class="gensmall"><?php echo sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']); ?></span></td>
-				<td class="row2"><input class="post" type="text" name="username" value="<?php echo $username; ?>" maxlength="60" /></td>
+				<td class="row2"><input class="post" type="text" name="username" value="<?php echo $userrow['username']; ?>" maxlength="60" /></td>
 			</tr>
 			<tr>
 				<td class="row1"><?php echo $user->lang['REGISTERED']; ?>: </td>
-				<td class="row2"><strong><?php echo $user->format_date($user_regdate); ?></strong></td>
+				<td class="row2"><strong><?php echo $user->format_date($userrow['user_regdate']); ?></strong></td>
 			</tr>
 <?php
 
-			if ($user_ip)
+			if ($userrow['user_ip'])
 			{
 
 ?>
 			<tr>
 				<td class="row1"><?php echo $user->lang['REGISTERED_IP']; ?>: </td>
-				<td class="row2"><strong><?php echo "<a href=\"admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;ip=" . ((!$ip || $ip == 'ip') ? 'hostname' : 'ip') . '">' . (($ip == 'hostname') ? gethostbyaddr($user_ip) : $user_ip) . "</a> [ <a href=\"admin_users.$phpEx$SID&amp;action=whois&amp;ip=$user_ip\" onclick=\"window.open('admin_users.$phpEx$SID&amp;action=whois&amp;ip=$user_ip', '', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=600');return false;\">" . $user->lang['WHOIS'] . '</a> ]'; ?></strong></td>
+				<td class="row2"><strong><?php echo "<a href=\"admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;ip=" . ((!$ip || $ip == 'ip') ? 'hostname' : 'ip') . '">' . (($ip == 'hostname') ? gethostbyaddr($user_ip) : $user_ip) . "</a> [ <a href=\"admin_users.$phpEx$SID&amp;action=whois&amp;ip=" . $userrow['user_ip'] . "\" onclick=\"window.open('admin_users.$phpEx$SID&amp;action=whois&amp;ip=" . $userrow['user_ip'] . "', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=600');return false;\">" . $user->lang['WHOIS'] . '</a> ]'; ?></strong></td>
 			</tr>
 <?php
-						
+
 			}
-			
 ?>
 			<tr>
 				<td class="row1" width="40%"><?php echo $user->lang['LAST_ACTIVE']; ?>: </td>
-				<td class="row2"><strong><?php echo $user->format_date($user_lastvisit); ?></strong></td>
+				<td class="row2"><strong><?php echo $user->format_date($userrow['user_lastvisit']); ?></strong></td>
 			</tr>
 			<tr>
 				<td class="row1"><?php echo $user->lang['FOUNDER']; ?>: <br /><span class="gensmall"><?php echo $user->lang['FOUNDER_EXPLAIN']; ?></span></td>
@@ -641,7 +673,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 			</tr>
 			<tr>
 				<td class="row1"><?php echo $user->lang['EMAIL']; ?>: </td>
-				<td class="row2"><input class="post" type="text" name="user_email" value="<?php echo $user_email; ?>" maxlength="60" /></td>
+				<td class="row2"><input class="post" type="text" name="user_email" value="<?php echo $userrow['user_email']; ?>" maxlength="60" /></td>
 			</tr>
 			<tr>
 				<td class="row1"><?php echo $user->lang['CONFIRM_EMAIL']; ?>: <br /><span class="gensmall"><?php echo $user->lang['CONFIRM_EMAIL_EXPLAIN']; ?></span></td>
@@ -657,7 +689,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 			</tr>
 <?php
 
-			if ($user_type != USER_FOUNDER)
+			if ($userrow['user_type'] != USER_FOUNDER)
 			{
 
 ?>
@@ -666,7 +698,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 			</tr>
 			<tr>
 				<td class="row1"><?php echo $user->lang['WARNINGS']; ?>: <br /><span class="gensmall"><?php echo $user->lang['WARNINGS_EXPLAIN']; ?></span></td>
-				<td class="row2"><input class="post" type="text" name="warnings" size="2" maxlength="2" value="<?php echo $user->data['user_warnings']; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="warnings" size="2" maxlength="2" value="<?php echo $userrow['user_warnings']; ?>" /></td>
 			</tr>
 			<tr>
 				<td class="row1"><?php echo $user->lang['QUICK_TOOLS']; ?>: </td>
@@ -707,7 +739,7 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 					}
 
 					$sql = 'DELETE FROM ' . LOG_TABLE . '
-						WHERE log_type = ' . LOG_USERS . " 
+						WHERE log_type = ' . LOG_USERS . "
 							$where_sql";
 					$db->sql_query($sql);
 
@@ -780,14 +812,14 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 ?>
 			<tr>
 				<td class="cat" colspan="2" align="right"><?php
-	
+
 			if ($auth->acl_get('a_clearlogs'))
 			{
 
 ?><input class="btnlite" type="submit" name="delmarked" value="<?php echo $user->lang['DELETE_MARKED']; ?>" />&nbsp; <input class="btnlite" type="submit" name="delall" value="<?php echo $user->lang['DELETE_ALL']; ?>" /><?php
-	
+
 			}
-			
+
 ?>&nbsp;</td>
 			</tr>
 		</table></td>
@@ -795,8 +827,8 @@ e_help = "<?php echo $user->lang['BBCODE_E_HELP']; ?>";
 	<tr>
 		<td class="nav"><div style="float:left;"><?php echo on_page($log_count, $config['topics_per_page'], $start); ?></div><div  style="float:right;"><b><a href="javascript:marklist('admin', true);"><?php echo $user->lang['MARK_ALL']; ?></a> :: <a href="javascript:marklist('admin', false);"><?php echo $user->lang['UNMARK_ALL']; ?></a></b>&nbsp;<br /><br /><?php
 
-			echo generate_pagination("admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start); 
-	
+			echo generate_pagination("admin_users.$phpEx$SID&amp;action=$action&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start);
+
 ?></div></td>
 	</tr>
 </table>
@@ -841,12 +873,12 @@ function marklist(match, status)
 			if ($submit)
 			{
 				$var_ary = array(
-					'icq'			=> (string) '', 
-					'aim'			=> (string) '', 
-					'msn'			=> (string) '', 
-					'yim'			=> (string) '', 
-					'jabber'		=> (string) '', 
-					'website'		=> (string) '', 
+					'icq'			=> (string) '',
+					'aim'			=> (string) '',
+					'msn'			=> (string) '',
+					'yim'			=> (string) '',
+					'jabber'		=> (string) '',
+					'website'		=> (string) '',
 					'location'		=> (string) '',
 					'occupation'	=> (string) '',
 					'interests'		=> (string) '',
@@ -862,28 +894,26 @@ function marklist(match, status)
 
 				$var_ary = array(
 					'icq'			=> array(
-						array('string', true, 3, 15), 
-						array('match', true, '#^[0-9]+$#i')), 
-					'aim'			=> array('string', true, 5, 255), 
-					'msn'			=> array('string', true, 5, 255), 
+						array('string', true, 3, 15),
+						array('match', true, '#^[0-9]+$#i')),
+					'aim'			=> array('string', true, 5, 255),
+					'msn'			=> array('string', true, 5, 255),
 					'jabber'		=> array(
-						array('string', true, 5, 255), 
+						array('string', true, 5, 255),
 						array('match', true, '#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#i')),
-					'yim'			=> array('string', true, 5, 255), 
+					'yim'			=> array('string', true, 5, 255),
 					'website'		=> array(
-						array('string', true, 12, 255), 
-						array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')), 
-					'location'		=> array('string', true, 2, 255), 
-					'occupation'	=> array('string', true, 2, 500), 
-					'interests'		=> array('string', true, 2, 500), 
+						array('string', true, 12, 255),
+						array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
+					'location'		=> array('string', true, 2, 255),
+					'occupation'	=> array('string', true, 2, 500),
+					'interests'		=> array('string', true, 2, 500),
 					'bday_day'		=> array('num', true, 1, 31),
 					'bday_month'	=> array('num', true, 1, 12),
 					'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
 				);
 
 				$error = validate_data($data, $var_ary);
-				extract($data);
-				unset($data);
 
 				// validate custom profile fields
 	//			$cp->submit_cp_field('profile', $cp_data, $cp_error);
@@ -891,19 +921,19 @@ function marklist(match, status)
 				if (!sizeof($error) && !sizeof($cp_error))
 				{
 					$sql_ary = array(
-						'user_icq'		=> $icq,
-						'user_aim'		=> $aim,
-						'user_msnm'		=> $msn,
-						'user_yim'		=> $yim,
-						'user_jabber'	=> $jabber,
-						'user_website'	=> $website,
-						'user_from'		=> $location,
-						'user_occ'		=> $occupation,
-						'user_interests'=> $interests,
-						'user_birthday'	=> sprintf('%2d-%2d-%4d', $bday_day, $bday_month, $bday_year),
+						'user_icq'		=> $data['icq'],
+						'user_aim'		=> $data['aim'],
+						'user_msnm'		=> $data['msn'],
+						'user_yim'		=> $data['yim'],
+						'user_jabber'	=> $data['jabber'],
+						'user_website'	=> $data['website'],
+						'user_from'		=> $data['location'],
+						'user_occ'		=> $data['occupation'],
+						'user_interests'=> $data['interests'],
+						'user_birthday'	=> sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']),
 					);
 
-					$sql = 'UPDATE ' . USERS_TABLE . ' 
+					$sql = 'UPDATE ' . USERS_TABLE . '
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
@@ -940,31 +970,31 @@ function marklist(match, status)
 
 			$cp_data = $cp_error = array();
 
-			if (!isset($bday_day))
+			if (!isset($userrow['bday_day']))
 			{
-				list($bday_day, $bday_month, $bday_year) = explode('-', $user_birthday);
+				list($userrow['bday_day'], $userrow['bday_month'], $userrow['bday_year']) = explode('-', $userrow['user_birthday']);
 			}
 
 			$s_birthday_day_options = '<option value="0"' . ((!$bday_day) ? ' selected="selected"' : '') . '>--</option>';
 			for ($i = 1; $i < 32; $i++)
 			{
-				$selected = ($i == $bday_day) ? ' selected="selected"' : '';
+				$selected = ($i == $userrow['bday_day']) ? ' selected="selected"' : '';
 				$s_birthday_day_options .= "<option value=\"$i\"$selected>$i</option>";
 			}
 
-			$s_birthday_month_options = '<option value="0"' . ((!$bday_month) ? ' selected="selected"' : '') . '>--</option>';
+			$s_birthday_month_options = '<option value="0"' . ((!$userrow['bday_month']) ? ' selected="selected"' : '') . '>--</option>';
 			for ($i = 1; $i < 13; $i++)
 			{
-				$selected = ($i == $bday_month) ? ' selected="selected"' : '';
+				$selected = ($i == $userrow['bday_month']) ? ' selected="selected"' : '';
 				$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
 			}
 			$s_birthday_year_options = '';
 
 			$now = getdate();
-			$s_birthday_year_options = '<option value="0"' . ((!$bday_year) ? ' selected="selected"' : '') . '>--</option>';
+			$s_birthday_year_options = '<option value="0"' . ((!$userrow['bday_year']) ? ' selected="selected"' : '') . '>--</option>';
 			for ($i = $now['year'] - 100; $i < $now['year']; $i++)
 			{
-				$selected = ($i == $bday_year) ? ' selected="selected"' : '';
+				$selected = ($i == $userrow['bday_year']) ? ' selected="selected"' : '';
 				$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
 			}
 			unset($now);
@@ -978,43 +1008,43 @@ function marklist(match, status)
 			<tr>
 				<th colspan="2"><?php echo $user->lang['USER_ADMIN_SIG']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1" width="40%"><b><?php echo $user->lang['UCP_ICQ']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="icq" size="30" maxlength="15" value="<?php echo $user_icq; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="icq" size="30" maxlength="15" value="<?php echo $userrow['user_icq']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['UCP_AIM']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="aim" size="30" maxlength="255" value="<?php echo $user_aim; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="aim" size="30" maxlength="255" value="<?php echo $userrow['user_aim']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['UCP_MSNM']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="msn" size="30" maxlength="255" value="<?php echo $user_msnm; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="msn" size="30" maxlength="255" value="<?php echo $userrow['user_msnm']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['UCP_YIM']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="yim" size="30" maxlength="255" value="<?php echo $user_yim; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="yim" size="30" maxlength="255" value="<?php echo $userrow['user_yim']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['UCP_JABBER']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="<?php echo $user_jabber; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="jabber" size="30" maxlength="255" value="<?php echo $userrow['user_jabber']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['WEBSITE']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="website" size="30" maxlength="255" value="<?php echo $user_website; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="website" size="30" maxlength="255" value="<?php echo $userrow['user_website']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['LOCATION']; ?>: </b></td>
-				<td class="row2"><input class="post" type="text" name="location" size="30" maxlength="100" value="<?php echo $user_location; ?>" /></td>
+				<td class="row2"><input class="post" type="text" name="location" size="30" maxlength="100" value="<?php echo $userrow['user_from']; ?>" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['OCCUPATION']; ?>: </b></td>
-				<td class="row2"><textarea class="post" name="occ" rows="3" cols="30"><?php echo $user_occ; ?></textarea></td>
+				<td class="row2"><textarea class="post" name="occupation" rows="3" cols="30"><?php echo $userrow['user_occ']; ?></textarea></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['INTERESTS']; ?>: </b></td>
-				<td class="row2"><textarea class="post" name="interests" rows="3" cols="30"><?php echo $user_interests; ?></textarea></td>
+				<td class="row2"><textarea class="post" name="interests" rows="3" cols="30"><?php echo $userrow['user_interests']; ?></textarea></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['BIRTHDAY']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['BIRTHDAY_EXPLAIN']; ?></span></td>
 				<td class="row2"><span class="genmed"><?php echo $user->lang['DAY']; ?>:</span> <select name="bday_day"><?php echo $s_birthday_day_options; ?></select> <span class="genmed"><?php echo $user->lang['MONTH']; ?>:</span> <select name="bday_month"><?php echo $s_birthday_month_options; ?></select> <span class="genmed"><?php echo $user->lang['YEAR']; ?>:</span> <select name="bday_year"><?php echo $s_birthday_year_options; ?></select></td>
 			</tr>
@@ -1031,34 +1061,34 @@ function marklist(match, status)
 			if ($submit)
 			{
 				$var_ary = array(
-					'user_dateformat'		=> (string) $config['default_dateformat'], 
-					'user_lang'				=> (string) $config['default_lang'], 
+					'user_dateformat'		=> (string) $config['default_dateformat'],
+					'user_lang'				=> (string) $config['default_lang'],
 					'user_tz'				=> (float) $config['board_timezone'],
-					'user_style'			=> (int) $config['default_style'], 
-					'user_dst'				=> (bool) $config['board_dst'], 
-					'user_allow_viewemail'	=> false, 
-					'user_allow_massemail'	=> true, 
-					'user_allow_viewonline'	=> true, 
-					'user_notify_type'		=> 0, 
-					'user_notify_pm'		=> true, 
-					'user_allow_pm'			=> true, 
-					'user_notify'			=> false, 
+					'user_style'			=> (int) $config['default_style'],
+					'user_dst'				=> (bool) $config['board_dst'],
+					'user_allow_viewemail'	=> false,
+					'user_allow_massemail'	=> true,
+					'user_allow_viewonline'	=> true,
+					'user_notify_type'		=> 0,
+					'user_notify_pm'		=> true,
+					'user_allow_pm'			=> true,
+					'user_notify'			=> false,
 
-					'sk'		=> (string) 't', 
-					'sd'		=> (string) 'd', 
+					'sk'		=> (string) 't',
+					'sd'		=> (string) 'd',
 					'st'		=> 0,
 
-					'popuppm'		=> false, 
-					'viewimg'		=> true, 
-					'viewflash'		=> false, 
-					'viewsmilies'	=> true, 
-					'viewsigs'		=> true, 
-					'viewavatars'	=> true, 
-					'viewcensors'	=> false, 
-					'bbcode'		=> true, 
-					'html'			=> false, 
+					'popuppm'		=> false,
+					'viewimg'		=> true,
+					'viewflash'		=> false,
+					'viewsmilies'	=> true,
+					'viewsigs'		=> true,
+					'viewavatars'	=> true,
+					'viewcensors'	=> false,
+					'bbcode'		=> true,
+					'html'			=> false,
 					'smilies'		=> true,
-					'attachsig'		=> true, 
+					'attachsig'		=> true,
 				);
 
 				foreach ($var_ary as $var => $default)
@@ -1067,17 +1097,15 @@ function marklist(match, status)
 				}
 
 				$var_ary = array(
-					'user_dateformat'	=> array('string', false, 3, 15), 
+					'user_dateformat'	=> array('string', false, 3, 15),
 					'user_lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
 					'user_tz'			=> array('num', false, -13, 13),
 
-					'sk'	=> array('string', false, 1, 1), 
-					'sd'	=> array('string', false, 1, 1), 
+					'sk'	=> array('string', false, 1, 1),
+					'sd'	=> array('string', false, 1, 1),
 				);
 
 				$error = validate_data($data, $var_ary);
-				extract($data);
-				unset($data);
 
 				// Set the popuppm option
 				$option_ary = array('popuppm', 'viewimg', 'viewflash', 'viewsmilies', 'viewsigs', 'viewavatars', 'viewcensors', 'bbcode', 'html', 'smilies', 'attachsig');
@@ -1090,25 +1118,25 @@ function marklist(match, status)
 				if (!sizeof($error))
 				{
 					$sql_ary = array(
-						'user_allow_pm'			=> $user_allow_pm, 
-						'user_allow_viewemail'	=> $user_allow_viewemail, 
-						'user_allow_massemail'	=> $user_allow_massemail, 
-						'user_allow_viewonline'	=> $user_allow_viewonline, 
-						'user_notify_type'		=> $user_notify_type, 
-						'user_notify_pm'		=> $user_notify_pm,
-						'user_options'			=> $user_options, 
-						'user_notify'			=> $user_notify,
-						'user_dst'				=> $user_dst,
-						'user_dateformat'		=> $user_dateformat,
-						'user_lang'				=> $user_lang,
-						'user_timezone'			=> $user_tz,
-						'user_style'			=> $user_style,
-						'user_sortby_type'		=> $sk,
-						'user_sortby_dir'		=> $sd,
-						'user_show_days'		=> $st, 
+						'user_allow_pm'			=> $data['user_allow_pm'],
+						'user_allow_viewemail'	=> $data['user_allow_viewemail'],
+						'user_allow_massemail'	=> $data['user_allow_massemail'],
+						'user_allow_viewonline'	=> $data['user_allow_viewonline'],
+						'user_notify_type'		=> $data['user_notify_type'],
+						'user_notify_pm'		=> $data['user_notify_pm'],
+						'user_options'			=> $data['user_options'],
+						'user_notify'			=> $data['user_notify'],
+						'user_dst'				=> $data['user_dst'],
+						'user_dateformat'		=> $data['user_dateformat'],
+						'user_lang'				=> $data['user_lang'],
+						'user_timezone'			=> $data['user_tz'],
+						'user_style'			=> $data['user_style'],
+						'user_sortby_type'		=> $data['sk'],
+						'user_sortby_dir'		=> $data['sd'],
+						'user_show_days'		=> $data['st'],
 					);
 
-					$sql = 'UPDATE ' . USERS_TABLE . ' 
+					$sql = 'UPDATE ' . USERS_TABLE . '
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
@@ -1127,8 +1155,8 @@ function marklist(match, status)
 
 			foreach ($option_ary as $option)
 			{
-				${$option . '_yes'} = ($$option) ? ' checked="checked"' : '';
-				${$option . '_no'} = (!$$option) ? ' checked="checked"' : '';
+				${$option . '_yes'} = ($userrow[$option]) ? ' checked="checked"' : '';
+				${$option . '_no'} = (!$userrow[$option]) ? ' checked="checked"' : '';
 			}
 			unset($option_ary);
 
@@ -1136,13 +1164,13 @@ function marklist(match, status)
 
 			foreach ($option_ary as $option)
 			{
-				${$option . '_yes'} = ($user->optionget($option, $user_options)) ? ' checked="checked"' : '';
-				${$option . '_no'} = (!$user->optionget($option, $user_options)) ? ' checked="checked"' : '';
+				${$option . '_yes'} = ($user->optionget($userrow[$option], $user_options)) ? ' checked="checked"' : '';
+				${$option . '_no'} = (!$user->optionget($userrow[$option], $user_options)) ? ' checked="checked"' : '';
 			}
 
-			$notify_email	= ($user_notify_type == NOTIFY_EMAIL) ? ' checked="checked"' : '';
-			$notify_im		= ($user_notify_type == NOTIFY_IM) ? ' checked="checked"' : '';
-			$notify_both	= ($user_notify_type == NOTIFY_BOTH) ? ' checked="checked"' : '';
+			$notify_email	= ($userrow['user_notify_type'] == NOTIFY_EMAIL) ? ' checked="checked"' : '';
+			$notify_im		= ($userrow['user_notify_type'] == NOTIFY_IM) ? ' checked="checked"' : '';
+			$notify_both	= ($userrow['user_notify_type'] == NOTIFY_BOTH) ? ' checked="checked"' : '';
 
 			// Topic ordering display
 			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
@@ -1151,33 +1179,33 @@ function marklist(match, status)
 			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 			$s_limit_days = $s_sort_key = $s_sort_dir = '';
-			gen_sort_selects($limit_days, $sort_by_text, $user_show_days, $user_sortby_type, $user_sortby_dir, $s_limit_days, $s_sort_key, $s_sort_dir);
+			gen_sort_selects($limit_days, $sort_by_text, $userrow['user_show_days'], $userrow['user_sortby_type'], $userrow['user_sortby_dir'], $s_limit_days, $s_sort_key, $s_sort_dir);
 
 ?>
 			<tr>
 				<th colspan="2"><?php echo $user->lang['USER_ADMIN_PREFS']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1" width="40%"><b><?php echo $user->lang['VIEW_IMAGES']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewimg" value="1"<?php echo $viewimg_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewimg" value="0"<?php echo $viewimg_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_FLASH']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewflash" value="1"<?php echo $viewflash_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewflash" value="0"<?php echo $viewflash_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_SMILIES']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewsmilies" value="1"<?php echo $viewsmilies_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewsmilies" value="0"<?php echo $viewsmilies_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_SIGS']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewsigs" value="1"<?php echo $viewsigs_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewsigs" value="0"<?php echo $viewsigs_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_AVATARS']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewavatars" value="1"<?php echo $viewavatars_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewavatars" value="0"<?php echo $viewavatars_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['DISABLE_CENSORS']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="viewcensors" value="1"<?php echo $viewcensors_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="viewcensors" value="0"<?php echo $viewcensors_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
@@ -1185,91 +1213,91 @@ function marklist(match, status)
 				<td class="row1"><b><?php echo $user->lang['MINIMUM_KARMA']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['MINIMUM_KARMA_EXPLAIN']; ?></span></td>
 				<td class="row2"><select name="user_min_karma">{S_MIN_KARMA_OPTIONS}</select></td>
 			</tr-->
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_TOPICS_DAYS']; ?>:</b></td>
 				<td class="row2"><?php echo $s_limit_days; ?></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_TOPICS_KEY']; ?>:</b></td>
 				<td class="row2"><?php echo $s_sort_key; ?></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['VIEW_TOPICS_DIR']; ?>:</b></td>
 				<td class="row2"><?php echo $s_sort_dir; ?></td>
 			</tr>
 			<tr>
 				<th colspan="2"><?php echo $user->lang['USER_POSTING_PREFS']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['DEFAULT_BBCODE']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="bbcode" value="1"<?php echo $bbcode_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="bbcode" value="0"<?php echo $bbcode_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['DEFAULT_HTML']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="html" value="1"<?php echo $html_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="html" value="0"<?php echo $html_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['DEFAULT_SMILIES']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="smilies" value="1"<?php echo $smilies_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="smilies" value="0"<?php echo $smilies_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['DEFAULT_ADD_SIG']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="attachsig" value="1"<?php echo $attachsig_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="attachsig" value="0"<?php echo $attachsig_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['DEFAULT_NOTIFY']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_notify" value="1"<?php echo $user_notify_yes; ?> /><span class="gen"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify" value="0"<?php echo $user_notify_no; ?> /><span class="gen"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
 			<tr>
 				<th colspan="2"></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['SHOW_EMAIL']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_allow_viewemail" value="1"<?php echo $user_allow_viewemail_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_viewemail" value="0"<?php echo $user_allow_viewemail_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['ADMIN_EMAIL']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_allow_massemail" value="1"<?php echo $user_allow_massemail_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_massemail" value="0"<?php echo $user_allow_massemail_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['ALLOW_PM']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['ALLOW_PM_EXPLAIN']; ?></span></td>
 				<td class="row2"><input type="radio" name="user_allow_pm" value="1"<?php echo $user_allow_pm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_pm" value="0"<?php echo $user_allow_pm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['HIDE_ONLINE']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_allow_viewonline" value="0"<?php echo $user_allow_viewonline_no; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_allow_viewonline" value="1"<?php echo $user_allow_viewonline_yes; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['NOTIFY_METHOD']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['NOTIFY_METHOD_EXPLAIN']; ?></span></td>
 				<td class="row2"><input type="radio" name="user_notify_type" value="0"<?php echo $notify_email; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_EMAIL']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_type" value="1"<?php echo $notify_im; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_IM']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_type" value="2"<?php echo $notify_both; ?> /><span class="genmed"><?php echo $user->lang['NOTIFY_METHOD_BOTH']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['NOTIFY_ON_PM']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_notify_pm" value="1"<?php echo $user_notify_pm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_notify_pm" value="0"<?php echo $user_notify_pm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['POPUP_ON_PM']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="popuppm" value="1"<?php echo $popuppm_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="popuppm" value="0"<?php echo $popuppm_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['BOARD_LANGUAGE']; ?>:</b></td>
-				<td class="row2"><select name="user_lang"><?php echo language_select($user_lang); ?></select></td>
+				<td class="row2"><select name="user_lang"><?php echo language_select($userrow['user_lang']); ?></select></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['BOARD_STYLE']; ?>:</b></td>
-				<td class="row2"><select name="user_style"><?php echo style_select($user_style); ?></select></td>
+				<td class="row2"><select name="user_style"><?php echo style_select($userrow['user_style']); ?></select></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['BOARD_TIMEZONE']; ?>:</b></td>
-				<td class="row2"><select name="user_tz"><?php echo tz_select($user_timezone); ?></select></td>
+				<td class="row2"><select name="user_tz"><?php echo tz_select($userrow['user_timezone']); ?></select></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['BOARD_DST']; ?>:</b></td>
 				<td class="row2"><input type="radio" name="user_dst" value="1"<?php echo $user_dst_yes; ?> /><span class="genmed"><?php echo $user->lang['YES']; ?></span>&nbsp;&nbsp;<input type="radio" name="user_dst" value="0"<?php echo $user_dst_no; ?> /><span class="genmed"><?php echo $user->lang['NO']; ?></span></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1"><b><?php echo $user->lang['BOARD_DATE_FORMAT']; ?>:</b><br /><span class="gensmall"><?php echo $user->lang['BOARD_DATE_FORMAT_EXPLAIN']; ?></span></td>
-				<td class="row2"><input type="text" name="user_dateformat" value="<?php echo $user_dateformat; ?>" maxlength="14" class="post" /></td>
+				<td class="row2"><input type="text" name="user_dateformat" value="<?php echo $userrow['user_dateformat']; ?>" maxlength="14" class="post" /></td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="<?php echo $user->lang['SUBMIT']; ?>" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="<?php echo $user->lang['RESET']; ?>" /></td>
@@ -1285,10 +1313,10 @@ function marklist(match, status)
 			if ($submit)
 			{
 				$var_ary = array(
-					'uploadurl'		=> (string) '', 
-					'remotelink'	=> (string) '', 
+					'uploadurl'		=> (string) '',
+					'remotelink'	=> (string) '',
 					'width'			=> (string) '',
-					'height'		=> (string) '', 
+					'height'		=> (string) '',
 				);
 
 				foreach ($var_ary as $var => $default)
@@ -1297,10 +1325,10 @@ function marklist(match, status)
 				}
 
 				$var_ary = array(
-					'uploadurl'		=> array('string', true, 5, 255), 
-					'remotelink'	=> array('string', true, 5, 255), 
-					'width'			=> array('string', true, 1, 3), 
-					'height'		=> array('string', true, 1, 3), 
+					'uploadurl'		=> array('string', true, 5, 255),
+					'remotelink'	=> array('string', true, 5, 255),
+					'width'			=> array('string', true, 1, 3),
+					'height'		=> array('string', true, 1, 3),
 				);
 
 				$error = validate_data($data, $var_ary);
@@ -1329,14 +1357,14 @@ function marklist(match, status)
 					if (sizeof($data))
 					{
 						$sql_ary = array(
-							'user_avatar'			=> $filename, 
-							'user_avatar_type'		=> $type, 
-							'user_avatar_width'		=> $width, 
-							'user_avatar_height'	=> $height, 
+							'user_avatar'			=> $filename,
+							'user_avatar_type'		=> $type,
+							'user_avatar_width'		=> $width,
+							'user_avatar_height'	=> $height,
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 							WHERE user_id = $user_id";
 						$db->sql_query($sql);
 
@@ -1349,9 +1377,6 @@ function marklist(match, status)
 
 					trigger_error($message);
 				}
-
-				extract($data);
-				unset($data);
 			}
 
 			$colspan = 2;
@@ -1361,9 +1386,9 @@ function marklist(match, status)
 
 			// Generate users avatar
 			$avatar_img = '';
-			if ($user_avatar)
+			if ($userrow['user_avatar'])
 			{
-				switch ($user_avatar_type)
+				switch ($userrow['user_avatar_type'])
 				{
 					case AVATAR_UPLOAD:
 						$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
@@ -1372,9 +1397,9 @@ function marklist(match, status)
 						$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 						break;
 				}
-				$avatar_img .= $user_avatar;
+				$avatar_img .= $userrow['user_avatar'];
 
-				$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_avatar_width . '" height="' . $user_avatar_height . '" border="0" alt="" />';
+				$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" border="0" alt="" />';
 			}
 			else
 			{
@@ -1385,7 +1410,7 @@ function marklist(match, status)
 			<tr>
 				<th colspan="<?php echo $colspan; ?>"><?php echo $user->lang['USER_ADMIN_AVATAR']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row2" width="35%"><b><?php echo $user->lang['CURRENT_IMAGE']; ?>: </b><br /><span class="gensmall"><?php echo sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)); ?></span></td>
 				<td class="row1" align="center"><br /><?php echo $avatar_img; ?><br /><br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall"><?php echo $user->lang['DELETE_AVATAR']; ?></span></td>
 			</tr>
@@ -1396,26 +1421,26 @@ function marklist(match, status)
 			{
 
 ?>
-	<tr> 
+	<tr>
 		<td class="row2" width="35%"><b><?php echo $user->lang['UPLOAD_AVATAR_FILE']; ?>: </b></td>
 		<td class="row1"><input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $config['avatar_max_filesize']; ?>" /><input class="post" type="file" name="uploadfile" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row2" width="35%"><b><?php echo $user->lang['UPLOAD_AVATAR_URL']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['UPLOAD_AVATAR_URL_EXPLAIN']; ?></span></td>
-		<td class="row1"><input class="post" type="text" name="uploadurl" size="40" value="<?php echo $avatar_url; ?>" /></td>
+		<td class="row1"><input class="post" type="text" name="uploadurl" size="40" value="<?php echo $userrow['user_avatar']; ?>" /></td>
 	</tr>
 <?php
 
 			}
 
 ?>
-	<tr> 
+	<tr>
 		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_AVATAR']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_AVATAR_EXPLAIN']; ?></span></td>
-		<td class="row1"><input class="post" type="text" name="remotelink" size="40" value="<?php echo $avatar_url; ?>" /></td>
+		<td class="row1"><input class="post" type="text" name="remotelink" size="40" value="<?php echo $userrow['user_avatar']; ?>" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row2" width="35%"><b><?php echo $user->lang['LINK_REMOTE_SIZE']; ?>: </b><br /><span class="gensmall"><?php echo $user->lang['LINK_REMOTE_SIZE_EXPLAIN']; ?></span></td>
-		<td class="row1"><input class="post" type="text" name="width" size="3" value="<?php echo $user_avatar_width; ?>" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="<?php echo $user_avatar_height; ?>" /> <span class="gen">px</span></td>
+		<td class="row1"><input class="post" type="text" name="width" size="3" value="<?php echo $userrow['user_avatar_width']; ?>" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="<?php echo $userrow['user_avatar_height']; ?>" /> <span class="gen">px</span></td>
 	</tr>
 <?php
 
@@ -1424,7 +1449,7 @@ function marklist(match, status)
 			{
 
 ?>
-	<tr> 
+	<tr>
 		<td class="row2" width="35%"><b><?php echo $user->lang['AVATAR_GALLERY']; ?>: </b></td>
 		<td class="row1"><input class="btnlite" type="submit" name="displaygallery" value="<?php echo $user->lang['DISPLAY_GALLERY']; ?>" /></td>
 	</tr>
@@ -1436,17 +1461,17 @@ function marklist(match, status)
 			{
 
 ?>
-	<tr> 
+	<tr>
 		<th colspan="2"><?php echo $user->lang['AVATAR_GALLERY']; ?></th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed"><?php echo $user->lang['AVATAR_CATEGORY']; ?>: </span><select name="avatarcat">{S_CAT_OPTIONS}</select>&nbsp; <span class="genmed"><?php echo $user->lang['AVATAR_PAGE']; ?>: </span><select name="avatarpage">{S_PAGE_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" value="<?php echo $user->lang['GO']; ?>" name="avatargallery" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" colspan="2" align="center"><table cellspacing="1" cellpadding="4" border="0">
-		
+
 			<!-- BEGIN avatar_row -->
-			<tr> 
+			<tr>
 				<!-- BEGIN avatar_column -->
 				<td class="row1" align="center"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
 				<!-- END avatar_column -->
@@ -1478,39 +1503,39 @@ function marklist(match, status)
 			if ($submit || $preview)
 			{
 				$var_ary = array(
-					'enable_html'		=> (bool) $config['allow_html'], 
-					'enable_bbcode'		=> (bool) $config['allow_bbcode'], 
+					'enable_html'		=> (bool) $config['allow_html'],
+					'enable_bbcode'		=> (bool) $config['allow_bbcode'],
 					'enable_smilies'	=> (bool) $config['allow_smilies'],
-					'enable_urls'		=> true,  
-					'signature'			=> (string) $user_sig, 
+					'enable_urls'		=> true,
+					'signature'			=> (string) $user_sig,
 
 				);
 
 				foreach ($var_ary as $var => $default)
 				{
-					$$var = request_var($var, $default);
+					$data[$var] = request_var($var, $default);
 				}
 
 				// NOTE: allow_img and allow_flash do not exist in config table
-				$img_status = ($config['allow_img']) ? true : false; 
-				$flash_status = ($config['allow_flash']) ? true : false; 
+				$img_status = ($config['allow_img']) ? true : false;
+				$flash_status = ($config['allow_flash']) ? true : false;
 
 				include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
-				$message_parser = new parse_message($signature);
+				$message_parser = new parse_message($data['signature']);
 
 				// Allowing Quote BBCode
-				$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
+				$message_parser->parse($data['enable_html'], $data['enable_bbcode'], $data['enable_urls'], $data['enable_smilies'], $img_status, $flash_status, true);
 
 				if ($submit)
 				{
 					$sql_ary = array(
-						'user_sig'					=> (string) $message_parser->message, 
-						'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+						'user_sig'					=> (string) $message_parser->message,
+						'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 						'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
 					);
 
-					$sql = 'UPDATE ' . USERS_TABLE . ' 
-						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
 
@@ -1527,17 +1552,17 @@ function marklist(match, status)
 			if ($preview)
 			{
 				// Now parse it for displaying
-				$signature_preview = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+				$signature_preview = $message_parser->format_display($data['enable_html'], $data['enable_bbcode'], $data['enable_urls'], $data['enable_smilies'], false);
 				unset($message_parser);
 			}
 
-			decode_message($user_sig, $user_sig_bbcode_uid);
+			decode_message($userrow['user_sig'], $userrow['user_sig_bbcode_uid']);
 
 ?>
 			<tr>
 				<th colspan="<?php echo $colspan; ?>"><?php echo $user->lang['USER_ADMIN_SIG']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1" width="40%"><b class="genmed"><?php echo $user->lang['SIGNATURE']; ?>: </b></td>
 				<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
 					<tr align="center" valign="middle">
@@ -1569,7 +1594,7 @@ function marklist(match, status)
 						<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="<?php echo $user->lang['STYLES_TIP']; ?>" /></td>
 					</tr>
 					<tr>
-						<td colspan="9"><textarea name="signature" rows="6" cols="60" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);"><?php echo $user_sig; ?></textarea></td>
+						<td colspan="9"><textarea name="signature" rows="6" cols="60" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);"><?php echo $userrow['user_sig']; ?></textarea></td>
 					</tr>
 					<tr>
 						<td colspan="9"><table cellspacing="0" cellpadding="0" border="0">
@@ -1607,7 +1632,7 @@ function marklist(match, status)
 
 			if ($config['allow_html'])
 			{
-			
+
 ?>
 					<tr>
 						<td><input type="checkbox" name="disable_html" /></td>
@@ -1619,7 +1644,7 @@ function marklist(match, status)
 
 			if ($config['allow_bbcode'])
 			{
-			
+
 ?>
 					<tr>
 						<td><input type="checkbox" name="disable_bbcode" /></td>
@@ -1631,7 +1656,7 @@ function marklist(match, status)
 
 			if ($config['allow_smilies'])
 			{
-			
+
 ?>
 					<tr>
 						<td><input type="checkbox" name="disable_smilies" /></td>
@@ -1640,7 +1665,7 @@ function marklist(match, status)
 <?php
 
 			}
-			
+
 ?>
 					<tr>
 						<td><input type="checkbox" name="disable_magic_url" /></td>
@@ -1655,18 +1680,18 @@ function marklist(match, status)
 
 			if ($signature_preview)
 			{
-			
+
 ?>
 			<tr>
 				<th colspan="2" valign="middle"><?php echo $user->lang['ADMIN_SIGNATURE_PREVIEW']; ?></th>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="row1" colspan="2"><div class="postdetails" style="padding: 6px;"><?php echo $signature_preview; ?></div></td>
 			</tr>
 <?php
 
 			}
-			
+
 ?>
 <?php
 
@@ -1692,7 +1717,7 @@ function marklist(match, status)
 					{
 						adm_page_confirm($user->lang['CONFIRM'], $user->lang['CONFIRM_OPERATION']);
 					}
-					else if (!$cancel) 
+					else if (!$cancel)
 					{
 						if (!$gid)
 						{
@@ -1730,13 +1755,13 @@ function marklist(match, status)
 			</tr>
 <?php
 
-			$sql = 'SELECT ug.group_leader, g.* 
-				FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug 
+			$sql = 'SELECT ug.group_leader, g.*
+				FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
 				WHERE ug.user_id = $user_id
 					AND g.group_id = ug.group_id
 				ORDER BY g.group_type DESC, ug.user_pending ASC, g.group_name";
 			$result = $db->sql_query($sql);
-	
+
 			$i = 0;
 			$group_data = $id_ary = array();
 			while ($row = $db->sql_fetchrow($result))
@@ -1754,8 +1779,8 @@ function marklist(match, status)
 			$db->sql_freeresult($result);
 
 			// Select box for other groups
-			$sql = 'SELECT group_id, group_name, group_type 
-				FROM ' . GROUPS_TABLE . ' 
+			$sql = 'SELECT group_id, group_name, group_type
+				FROM ' . GROUPS_TABLE . '
 				WHERE group_id NOT IN (' . implode(', ', $id_ary) . ')
 				ORDER BY group_type DESC, group_name ASC';
 			$result = $db->sql_query($sql);
@@ -1788,29 +1813,29 @@ function marklist(match, status)
 ?>
 			<tr>
 				<td class="<?php echo $row_class; ?>"><a href="<?php echo "admin_groups.$phpEx$SID&amp;mode=manage&amp;action=edit&amp;g=" . $data['group_id']; ?>"><?php echo ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name']; ?></a></td>
-				<td class="<?php echo $row_class; ?>" width="10%" nowrap="nowrap">&nbsp;<?php 
+				<td class="<?php echo $row_class; ?>" width="10%" nowrap="nowrap">&nbsp;<?php
 
 					if ($group_id != $data['group_id'])
 					{
 
 ?><a href="<?php echo "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id']; ?>"><?php echo $user->lang['GROUP_DEFAULT']; ?></a><?php
-	
+
 					}
 					else
 					{
 						echo $user->lang['GROUP_DEFAULT'];
 					}
-					
+
 ?>&nbsp;</td>
 				<td class="<?php echo $row_class; ?>" width="10%" nowrap="nowrap">&nbsp;<?php
-	
+
 					if ($group_type != 'special')
 					{
 
 ?><a href="<?php echo "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=" . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id']; ?>"><?php echo ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE']; ?></a>&nbsp;<?php
-	
+
 					}
-					
+
 ?></td>
 				<td class="<?php echo $row_class; ?>" width="10%" nowrap="nowrap">&nbsp;<a href="<?php echo "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id']; ?>"><?php echo $user->lang['GROUP_DELETE']; ?></a>&nbsp;</td>
 			</tr>
@@ -1840,7 +1865,7 @@ function marklist(match, status)
 				{
 					adm_page_confirm($user->lang['CONFIRM'], $user->lang['CONFIRM_OPERATION']);
 				}
-				else if (!$cancel) 
+				else if (!$cancel)
 				{
 					$sql = 'SELECT real_filename
 						FROM ' . ATTACHMENTS_TABLE . '
@@ -1865,14 +1890,14 @@ function marklist(match, status)
 			}
 
 			$colspan = 6;
-	
+
 			$uri = "admin_users.$phpEx$SID&amp;mode=$mode&amp;action=$action&amp;u=$user_id";
 
 			$sk_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
 			$sk_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
 			$sd_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
-	
+
 			$s_sort_key = '';
 			foreach ($sk_text as $key => $value)
 			{
@@ -1888,7 +1913,7 @@ function marklist(match, status)
 			}
 
 			$order_by = $sk_sql[$sk] . '  ' . (($sd == 'a') ? 'ASC' : 'DESC');
-	
+
 			$sql = 'SELECT COUNT(*) as num_attachments
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE poster_id = $user_id";
@@ -1938,11 +1963,11 @@ function marklist(match, status)
 <?php
 
 					$row_count++;
-				} 
+				}
 				while ($row = $db->sql_fetchrow($result));
 			}
 			$db->sql_freeresult($result);
-			
+
 			$pagination = generate_pagination("$uri&amp;sk=$sk&amp;sd=$sd", $num_attachments, $config['topics_per_page'], $start);
 
 ?>
@@ -2005,7 +2030,7 @@ if (!$auth->acl_get('a_user'))
 	<tr>
 		<th colspan="2"align="center"><?php echo $user->lang['SELECT_USER']; ?></th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1" width="40%"><b><?php echo $user->lang['FIND_USERNAME']; ?>: </b><br /><span class="gensmall">[ <a href="<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"; ?>" onclick="window.open('<?php echo "../memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username"?>', '_phpbbsearch', 'HEIGHT=500,resizable=yes,scrollbars=yes,WIDTH=740');return false;"><?php echo $user->lang['FIND_USERNAME']; ?></a> ]</span></td>
 		<td class="row2"><input type="text" class="post" name="username" maxlength="50" size="20" /></td>
 	</tr>
