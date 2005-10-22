@@ -1,5 +1,5 @@
-<html>
-<head dir="{S_CONTENT_DIRECTION}">
+<html dir="{S_CONTENT_DIRECTION}">
+<head>
 <title>phpBB Administration</title>
 <meta http-equiv="Content-Type" content="text/html;">
 </head>
