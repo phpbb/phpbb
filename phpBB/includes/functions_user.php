@@ -905,13 +905,41 @@ function validate_email($email)
 		FROM ' . BANLIST_TABLE;
 	$result = $db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	// TODO: This is a duplication of code from session->check_ban()
+	$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
+		FROM ' . BANLIST_TABLE . '
+		WHERE ban_end >= ' . time() . '
+			OR ban_end = 0';
+	$result = $db->sql_query($sql);
+
+	if ($row = $db->sql_fetchrow($result))
 	{
-		if (preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $email))
+		do
 		{
-			return 'EMAIL_BANNED';
+			if (!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $email))
+			{
+				if (!empty($row['ban_exclude']))
+				{
+					$banned = false;
+					break;
+				}
+				else
+				{
+					$banned = true;
+					$ban_row = $row;
+					// Don't break. Check if there is an exclude rule for this user
+				}
+			}
 		}
+		while ($row = $db->sql_fetchrow($result));
 	}
+	$db->sql_freeresult($result);
+
+	if ($banned == true)
+	{
+		return 'EMAIL_BANNED';
+	}
+
 	$db->sql_freeresult($result);
 
 	if (!$config['allow_emailreuse'])
