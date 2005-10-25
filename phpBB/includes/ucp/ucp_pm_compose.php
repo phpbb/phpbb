@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -16,7 +16,7 @@ function compose_pm($id, $mode, $action)
 {
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config, $SID;
-	
+
 	include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 	include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
@@ -130,7 +130,7 @@ function compose_pm($id, $mode, $action)
 			{
 				trigger_error('NO_AUTH_DELETE_MESSAGE');
 			}
-		
+
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
@@ -171,7 +171,7 @@ function compose_pm($id, $mode, $action)
 
 		extract($row);
 		$db->sql_freeresult($result);
-		
+
 		$msg_id = (int) $msg_id;
 		$enable_urls = $enable_magic_url;
 
@@ -227,7 +227,7 @@ function compose_pm($id, $mode, $action)
 	}
 
 
-	
+
 	$message_parser = new parse_message();
 
 	$message_subject = (isset($message_subject)) ? $message_subject : '';
@@ -247,7 +247,7 @@ function compose_pm($id, $mode, $action)
 		if (confirm_box(true))
 		{
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
-						
+
 			// TODO - jump to next message in "history"?
 			$meta_info = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=$folder_id";
 			$message = $user->lang['MESSAGE_DELETED'];
@@ -291,10 +291,10 @@ function compose_pm($id, $mode, $action)
 		$result = $db->sql_query($sql);
 
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
-		
+
 		$db->sql_freeresult($result);
 	}
-	
+
 	if (!in_array($action, array('quote', 'quotepost', 'edit', 'delete', 'forward')))
 	{
 		$enable_sig		= ($config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
@@ -311,7 +311,7 @@ function compose_pm($id, $mode, $action)
 		$sql = 'SELECT draft_id
 			FROM ' . DRAFTS_TABLE . '
 			WHERE (forum_id = 0 AND topic_id = 0)
-				AND user_id = ' . $user->data['user_id'] . 
+				AND user_id = ' . $user->data['user_id'] .
 				(($draft_id) ? " AND draft_id <> $draft_id" : '');
 		$result = $db->sql_query_limit($sql, 1);
 
@@ -350,7 +350,7 @@ function compose_pm($id, $mode, $action)
 				'draft_subject' => $subject,
 				'draft_message' => $message));
 			$db->sql_query($sql);
-	
+
 			meta_refresh(3, "ucp.$phpEx$SID&i=pm&mode=$mode");
 
 			$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode\">", '</a>');
@@ -365,14 +365,14 @@ function compose_pm($id, $mode, $action)
 	// Load Draft
 	if ($draft_id && $auth->acl_get('u_savedrafts'))
 	{
-		$sql = 'SELECT draft_subject, draft_message 
-			FROM ' . DRAFTS_TABLE . " 
+		$sql = 'SELECT draft_subject, draft_message
+			FROM ' . DRAFTS_TABLE . "
 			WHERE draft_id = $draft_id
 				AND topic_id = 0
 				AND forum_id = 0
 				AND user_id = " . $user->data['user_id'];
 		$result = $db->sql_query_limit($sql, 1);
-	
+
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$_REQUEST['subject'] = $row['draft_subject'];
@@ -402,7 +402,7 @@ function compose_pm($id, $mode, $action)
 		}
 		$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $subject);
 
-	
+
 		$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
 		$message_parser->message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message_parser->message);
 
@@ -477,6 +477,8 @@ function compose_pm($id, $mode, $action)
 		{
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
+				'from_user_id'			=> $user->data['user_id'],
+				'from_user_ip'			=> $user->data['user_ip'],
 				'reply_from_root_level'	=> (isset($root_level)) ? (int) $root_level : 0,
 				'reply_from_msg_id'		=> (int) $msg_id,
 				'icon_id'				=> (int) $icon_id,
@@ -494,7 +496,7 @@ function compose_pm($id, $mode, $action)
 				'address_list'			=> $address_list
 			);
 			unset($message_parser);
-			
+
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data, $update_message);
 
@@ -504,7 +506,7 @@ function compose_pm($id, $mode, $action)
 
 			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
 			trigger_error($message);
-		}	
+		}
 
 		$message_subject = stripslashes($subject);
 	}
@@ -541,7 +543,7 @@ function compose_pm($id, $mode, $action)
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 			$extensions = $update_count = array();
-					
+
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
 			display_attachments(0, 'attachment', $message_parser->attachment_data, $update_count, true);
 		}
@@ -552,11 +554,11 @@ function compose_pm($id, $mode, $action)
 		{
 			$template->assign_vars(array(
 				'PREVIEW_SUBJECT'		=> $preview_subject,
-				'PREVIEW_MESSAGE'		=> $preview_message, 
-				'PREVIEW_SIGNATURE'		=> $preview_signature, 
-		
+				'PREVIEW_MESSAGE'		=> $preview_message,
+				'PREVIEW_SIGNATURE'		=> $preview_signature,
+
 				'S_DISPLAY_PREVIEW'		=> true)
-			);				
+			);
 		}
 		unset($message_text);
 	}
@@ -570,7 +572,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$message_parser->message = '[quote="' . $quote_username . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 	}
-	
+
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
 		$message_subject = ((!preg_match('/^Re:/', $message_subject)) ? 'Re: ' : '') . censor_text($message_subject);
@@ -607,7 +609,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$s_pm_icons = posting_gen_topic_icons($action, $icon_id);
 	}
-	
+
 	// Generate inline attachment select box
 	posting_gen_inline_attachments($attachment_data);
 
@@ -619,15 +621,15 @@ function compose_pm($id, $mode, $action)
 		$result = array();
 		if (isset($address_list['u']) && sizeof($address_list['u']))
 		{
-			$result['u'] = $db->sql_query('SELECT user_id as id, username as name, user_colour as colour 
-				FROM ' . USERS_TABLE . ' 
+			$result['u'] = $db->sql_query('SELECT user_id as id, username as name, user_colour as colour
+				FROM ' . USERS_TABLE . '
 				WHERE user_id IN (' . implode(', ', array_map('intval', array_keys($address_list['u']))) . ')');
 		}
-		
+
 		if (isset($address_list['g']) && sizeof($address_list['g']))
 		{
-			$result['g'] = $db->sql_query('SELECT group_id as id, group_name as name, group_colour as colour 
-				FROM ' . GROUPS_TABLE . ' 
+			$result['g'] = $db->sql_query('SELECT group_id as id, group_name as name, group_colour as colour
+				FROM ' . GROUPS_TABLE . '
 				WHERE group_receive_pm = 1 AND group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')');
 		}
 
@@ -659,7 +661,7 @@ function compose_pm($id, $mode, $action)
 				$field = ($field == 'to') ? 'to' : 'bcc';
 				$type = ($type == 'u') ? 'u' : 'g';
 				$id = (int) $id;
-				
+
 				$template->assign_block_vars($field . '_recipient', array(
 					'NAME'		=> ${$type}[$id]['name'],
 					'IS_GROUP'	=> ($type == 'g'),
@@ -728,7 +730,7 @@ function compose_pm($id, $mode, $action)
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(
 		'L_POST_A'				=> $page_title,
-		'L_ICON'				=> $user->lang['PM_ICON'], 
+		'L_ICON'				=> $user->lang['PM_ICON'],
 		'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
@@ -739,7 +741,7 @@ function compose_pm($id, $mode, $action)
 		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 		'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['PM']),
-		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '', 
+		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 		'S_EDIT_POST'			=> ($action == 'edit'),
 		'S_SHOW_PM_ICONS'		=> $s_pm_icons,
@@ -804,7 +806,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 				$address_list['g'][$group_id] = $type;
 			}
 		}
-		
+
 		// Build usernames to add
 		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '')) : array();
 		$username_list = request_var('username_list', '');
@@ -818,7 +820,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		{
 			$user_id_ary = array();
 			user_get_id_name($user_id_ary, $usernames);
-			
+
 			if (sizeof($user_id_ary))
 			{
 				foreach ($user_id_ary as $user_id)
