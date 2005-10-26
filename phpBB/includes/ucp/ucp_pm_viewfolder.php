@@ -271,7 +271,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 	}
 
 	$template->assign_vars(array(
-		'PAGINATION'	=> generate_pagination("$url&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param", $pm_count, $config['topics_per_page'], $start),
+		'PAGINATION'	=> generate_pagination("$url&amp;i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param", $pm_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
