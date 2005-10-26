@@ -81,6 +81,12 @@ function compose_pm($id, $mode, $action)
 		case 'quote':
 		case 'forward':
 		case 'quotepost':
+			if ($submit)
+			{
+				// We don't need to retrieve the post text again when the user is submitting.
+				break;
+			}
+			
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
@@ -581,7 +587,7 @@ function compose_pm($id, $mode, $action)
 		if ($action == 'quotepost')
 		{
 			$post_id = request_var('p', 0);
-			$message_link = "[url={$config['script_path']}viewtopic.$phpEx?p={$post_id}#{$post_id}]{$message_subject}[/url]\n";
+			$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#{$post_id}]{$message_subject}[/url]\n";
 		}
 		else 
 		{
