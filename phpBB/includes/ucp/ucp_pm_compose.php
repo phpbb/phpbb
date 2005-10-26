@@ -91,7 +91,7 @@ function compose_pm($id, $mode, $action)
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
 
-			if ($mode == 'quotepost')
+			if ($action == 'quotepost')
 			{
 				$sql = 'SELECT p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_html, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
@@ -164,38 +164,46 @@ function compose_pm($id, $mode, $action)
 	{
 		$result = $db->sql_query_limit($sql, 1);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!($post = $db->sql_fetchrow($result)))
 		{
 			trigger_error('NO_MESSAGE');
 		}
 
-		extract($row);
 		$db->sql_freeresult($result);
 
-		$msg_id = (int) $msg_id;
-		$enable_urls = $enable_magic_url;
+		$msg_id = (int) $post['msg_id'];
+		$enable_urls = $post['enable_magic_url'];
 
-		if (!$author_id && $msg_id)
+		$message_attachment = $post['message_attachement'];
+		$message_text = $post['message_text'];
+		$message_subject = $post['message_subject'];
+		$quote_username = $post['quote_username'];
+
+		$message_time = $post['message_time'];
+		$icon_id = $post['icon_id'];
+		$folder_id = $post['folder_id'];
+
+		if (!$post['author_id'] && $msg_id)
 		{
 			trigger_error('NO_AUTHOR');
 		}
 
 		if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 		{
-			$address_list = array('u' => array($author_id => 'to'));
+			$address_list = array('u' => array($post['author_id'] => 'to'));
 		}
 		else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 		{
 			// Rebuild TO and BCC Header
-			$address_list = rebuild_header(array('to' => $to_address, 'bcc' => $bcc_address));
+			$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
 		}
 
-		$check_value = (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+		$check_value = (($post['enable_html']+1) << 16) + (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
 	}
 	else
 	{
 		$message_attachment = 0;
-		$message_text = $subject = '';
+		$message_text = $message_subject = '';
 
 		if ($to_user_id && $action == 'post')
 		{
@@ -230,8 +238,7 @@ function compose_pm($id, $mode, $action)
 
 	$message_parser = new parse_message();
 
-	$message_subject = (isset($message_subject)) ? $message_subject : '';
-	$message_parser->message = ($action == 'reply') ? '' : ((isset($message_text)) ? $message_text : '');
+	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
 	$s_action = "{$phpbb_root_path}ucp.$phpEx?sid={$user->session_id}&amp;i=$id&amp;mode=$mode&amp;action=$action";
@@ -571,7 +578,16 @@ function compose_pm($id, $mode, $action)
 
 	if (($action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
-		$message_parser->message = '[quote="' . $quote_username . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+		if ($action == 'quotepost')
+		{
+			$post_id = request_var('p', 0);
+			$message_link = "[url={$config['script_path']}viewtopic.$phpEx?p={$post_id}#{$post_id}]{$message_subject}[/url]\n";
+		}
+		else 
+		{
+			$message_link = '';
+		}
+		$message_parser->message = $message_link . '[quote="' . $quote_username . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 	}
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
