@@ -295,6 +295,17 @@ CREATE TABLE phpbb_sessions (
 CREATE INDEX session_user_id_phpbb_sessions_index ON phpbb_sessions (session_user_id);
 CREATE INDEX session_id_ip_user_id_phpbb_sessions_index ON phpbb_sessions (session_id, session_ip, session_user_id);
 
+/* --------------------------------------------------------
+  Table structure for table phpbb_sessions_keys
+-------------------------------------------------------- */
+CREATE TABLE phpbb_sessions_keys (
+  key_id char(32) DEFAULT '0' NOT NULL,
+  user_id int4 DEFAULT '0' NOT NULL,
+  last_ip char(8) DEFAULT '0' NOT NULL,
+  last_login int4 DEFAULT '0' NOT NULL,
+  CONSTRAINT phpbb_sessions_keys_pkey PRIMARY KEY (key_id, user_id)
+);
+CREATE INDEX last_login_phpbb_sessions_keys_index ON phpbb_sessions_keys (last_login);
 
 /* --------------------------------------------------------
   Table structure for table phpbb_smilies
@@ -489,10 +500,10 @@ CREATE TABLE phpbb_users (
    user_rank int4 DEFAULT '0',
    user_avatar varchar(100),
    user_avatar_type int2 DEFAULT '0' NOT NULL,
-   user_level int4 DEFAULT '1',
+   user_level int4 DEFAULT '0',
    user_lang varchar(255),
    user_timezone decimal(5) DEFAULT '0' NOT NULL,
-   user_dateformat varchar(14) DEFAULT 'd M Y H:m' NOT NULL,
+   user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_notify_pm int2 DEFAULT '0' NOT NULL,
    user_popup_pm int2 DEFAULT '0' NOT NULL,
    user_notify int2,

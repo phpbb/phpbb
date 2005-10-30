@@ -254,6 +254,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		$user_dateformat = ( $HTTP_POST_VARS['dateformat'] ) ? trim( $HTTP_POST_VARS['dateformat'] ) : $board_config['default_dateformat'];
 
 		$user_avatar_local = ( isset( $HTTP_POST_VARS['avatarselect'] ) && !empty($HTTP_POST_VARS['submitavatar'] ) && $board_config['allow_avatar_local'] ) ? $HTTP_POST_VARS['avatarselect'] : ( ( isset( $HTTP_POST_VARS['avatarlocal'] )  ) ? $HTTP_POST_VARS['avatarlocal'] : '' );
+		$user_avatar_category = ( isset($HTTP_POST_VARS['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($HTTP_POST_VARS['avatarcatname']) : '' ;
 
 		$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim( $HTTP_POST_VARS['avatarremoteurl'] ) : '';
 		$user_avatar_url = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim( $HTTP_POST_VARS['avatarurl'] ) : '';
@@ -293,7 +294,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 
 			if ( !isset($HTTP_POST_VARS['cancelavatar'])) 
 			{
-				$user_avatar = $user_avatar_local;
+				$user_avatar = $user_avatar_category . '/' . $user_avatar_local;
 				$user_avatar_type = USER_AVATAR_GALLERY;
 			}
 		}
@@ -645,7 +646,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		}
 		else if( $user_avatar_local != "" && $avatar_sql == "" && !$error )
 		{
-			$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", $user_avatar_local) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
+			$avatar_sql = ", user_avatar = '" . str_replace("\'", "''", phpbb_ltrim(basename($user_avatar_category), "'") . '/' . phpbb_ltrim(basename($user_avatar_local), "'")) . "', user_avatar_type = " . USER_AVATAR_GALLERY;
 		}
 	
 		//
@@ -822,7 +823,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 					{
 						if( preg_match("/(\.gif$|\.png$|\.jpg)$/is", $sub_file) )
 						{
-							$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $file . "/" . $sub_file;
+							$avatar_images[$file][$avatar_row_count][$avatar_col_count] = $sub_file;
 
 							$avatar_col_count++;
 							if( $avatar_col_count == 5 )
@@ -867,7 +868,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 				for($j = 0; $j < count($avatar_images[$category][$i]); $j++)
 				{
 					$template->assign_block_vars("avatar_row.avatar_column", array(
-						"AVATAR_IMAGE" => "../" . $board_config['avatar_gallery_path'] . "/" . $avatar_images[$category][$i][$j])
+						"AVATAR_IMAGE" => "../" . $board_config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_images[$category][$i][$j])
 					);
 
 					$template->assign_block_vars("avatar_row.avatar_option_column", array(
@@ -878,7 +879,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 
 			$coppa = ( ( !$HTTP_POST_VARS['coppa'] && !$HTTP_GET_VARS['coppa'] ) || $mode == "register") ? 0 : TRUE;
 
-			$s_hidden_fields = '<input type="hidden" name="mode" value="edit" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" />';
+			$s_hidden_fields = '<input type="hidden" name="mode" value="edit" /><input type="hidden" name="agreed" value="true" /><input type="hidden" name="coppa" value="' . $coppa . '" /><input type="hidden" name="avatarcatname" value="' . $category . '" />';
 			$s_hidden_fields .= '<input type="hidden" name="id" value="' . $user_id . '" />';
 
 			$s_hidden_fields .= '<input type="hidden" name="username" value="' . str_replace("\"", "&quot;", $username) . '" />';
@@ -934,7 +935,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 
 		if( !empty($user_avatar_local) )
 		{
-			$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" />';
+			$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" /><input type="hidden" name="avatarcatname" value="' . $user_avatar_category . '" />';
 		}
 
 		if( $user_avatar_type )

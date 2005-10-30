@@ -78,10 +78,39 @@ function get_db_stat($mode)
 function phpbb_clean_username($username)
 {
 	$username = substr(htmlspecialchars(str_replace("\'", "'", trim($username))), 0, 25);
-	$username = phpbb_rtrim($username, "\\");	
+	$username = phpbb_rtrim($username, "\\");
 	$username = str_replace("'", "\'", $username);
 
 	return $username;
+}
+
+/**
+* This function is a wrapper for ltrim, as charlist is only supported in php >= 4.1.0
+* Added in phpBB 2.0.18
+*/
+function phpbb_ltrim($str, $charlist = false)
+{
+	if ($charlist === false)
+	{
+		return ltrim($str);
+	}
+	
+	$php_version = explode('.', PHP_VERSION);
+
+	// php version < 4.1.0
+	if ((int) $php_version[0] < 4 || ((int) $php_version[0] == 4 && (int) $php_version[1] < 1))
+	{
+		while ($str{0} == $charlist)
+		{
+			$str = substr($str, 1);
+		}
+	}
+	else
+	{
+		$str = ltrim($str, $charlist);
+	}
+
+	return $str;
 }
 
 // added at phpBB 2.0.12 to fix a bug in PHP 4.3.10 (only supporting charlist in php >= 4.1.0)

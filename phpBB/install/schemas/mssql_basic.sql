@@ -42,6 +42,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_savebox_privms
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig','Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email','youraddress@yourdomain.com');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host','');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_username','');
@@ -69,7 +71,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_date
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.17');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.18');
 
 /*
   -- Categories

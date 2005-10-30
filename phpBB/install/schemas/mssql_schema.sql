@@ -195,6 +195,14 @@ CREATE TABLE [phpbb_sessions] (
 ) ON [PRIMARY]
 GO
 
+CREATE TABLE [phpbb_sessions_keys] (
+  [key_id] [char] (32) NOT NULL ,
+  [user_id] [int] NOT NULL ,
+  [last_ip] [char] (8) NOT NULL ,
+  [last_login] [int] NOT NULL
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [phpbb_smilies] (
 	[smilies_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[code] [varchar] (10) NOT NULL ,
@@ -616,6 +624,7 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users_user_allow_viewonline] DEFAULT (1) FOR [user_allow_viewonline],
 	CONSTRAINT [DF_phpbb_users_user_notify_pm] DEFAULT (0) FOR [user_notify_pm],
 	CONSTRAINT [DF_phpbb_users_user_popup_pm] DEFAULT (1) FOR [user_popup_pm],
+	CONSTRAINT [DF_phpbb_users_user_dateformat] DEFAULT('d M Y H:i') FOR [user_dateformat],
 	CONSTRAINT [DF_phpbb_users_user_avatar_type] DEFAULT (0) FOR [user_avatar_type]
 GO
 
@@ -665,6 +674,12 @@ GO
 GO
 
  CREATE  INDEX [IX_phpbb_sessions] ON [phpbb_sessions]([session_id], [session_user_id], [session_ip], [session_logged_in]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_sessions_keys] ON [phpbb_sessions_keys]([key_id], [user_id]) ON [PRIMARY]
+GO
+
+ CREATE  INDEX [IX_phpbb_sessions_keys] ON [phpbb_sessions_keys]([last_login]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_topics] ON [phpbb_topics]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]

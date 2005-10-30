@@ -28,9 +28,11 @@
 			  <input type="password" class="post" name="password" size="25" maxlength="32" />
 			</td>
 		  </tr>
+		  <!-- BEGIN switch_allow_autologin -->
 		  <tr align="center"> 
 			<td colspan="2"><span class="gen">{L_AUTO_LOGIN}: <input type="checkbox" name="autologin" /></span></td>
 		  </tr>
+		  <!-- END switch_allow_autologin -->
 		  <tr align="center"> 
 			<td colspan="2">{S_HIDDEN_FIELDS}<input type="submit" name="login" class="mainoption" value="{L_LOGIN}" /></td>
 		  </tr>

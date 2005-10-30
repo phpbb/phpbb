@@ -119,10 +119,7 @@ if( !($result = $db->sql_query($sql)) )
 }
 
 $category_rows = array();
-while ($row = $db->sql_fetchrow($result))
-{
-	$category_rows[] = $row;
-}
+while( $category_rows[] = $db->sql_fetchrow($result) );
 $db->sql_freeresult($result);
 
 if( ( $total_categories = count($category_rows) ) )
@@ -186,8 +183,14 @@ if( ( $total_categories = count($category_rows) ) )
 	// Obtain a list of topic ids which contain
 	// posts made since user last visited
 	//
-	if ( $userdata['session_logged_in'] )
+	if ($userdata['session_logged_in'])
 	{
+		// 60 days limit
+		if ($userdata['user_lastvisit'] < (time() - 5184000))
+		{
+			$userdata['user_lastvisit'] = time() - 5184000;
+		}
+
 		$sql = "SELECT t.forum_id, t.topic_id, p.post_time 
 			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
 			WHERE p.post_id = t.topic_last_post_id 
@@ -297,19 +300,6 @@ if( ( $total_categories = count($category_rows) ) )
 	);
 
 	//
-	// Let's decide which categories we should display
-	//
-	$display_categories = array();
-
-	for ($i = 0; $i < $total_forums; $i++ )
-	{
-		if ($is_auth_ary[$forum_data[$i]['forum_id']]['auth_view'])
-		{
-			$display_categories[$forum_data[$i]['cat_id']] = true;
-		}
-	}
-
-	//
 	// Okay, let's build the index
 	//
 	for($i = 0; $i < $total_categories; $i++)
@@ -317,10 +307,22 @@ if( ( $total_categories = count($category_rows) ) )
 		$cat_id = $category_rows[$i]['cat_id'];
 
 		//
+		// Should we display this category/forum set?
+		//
+		$display_forums = false;
+		for($j = 0; $j < $total_forums; $j++)
+		{
+			if ( $is_auth_ary[$forum_data[$j]['forum_id']]['auth_view'] && $forum_data[$j]['cat_id'] == $cat_id )
+			{
+				$display_forums = true;
+			}
+		}
+
+		//
 		// Yes, we should, so first dump out the category
 		// title, then, if appropriate the forum list
 		//
-		if (isset($display_categories[$cat_id]) && $display_categories[$cat_id])
+		if ( $display_forums )
 		{
 			$template->assign_block_vars('catrow', array(
 				'CAT_ID' => $cat_id,

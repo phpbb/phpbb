@@ -24,6 +24,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_local
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_remote','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_avatar_upload','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_autologin','1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page','50');
@@ -62,7 +64,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_date
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.myserver.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.17');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.18');
 
 
 # -- Categories

@@ -100,6 +100,9 @@ $activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "c
 $confirm_yes = ($new['enable_confirm']) ? 'checked="checked"' : '';
 $confirm_no = (!$new['enable_confirm']) ? 'checked="checked"' : '';
 
+$allow_autologin_yes = ($new['allow_autologin']) ? 'checked="checked"' : '';
+$allow_autologin_no = (!$new['allow_autologin']) ? 'checked="checked"' : '';
+
 $board_email_form_yes = ( $new['board_email_form'] ) ? "checked=\"checked\"" : "";
 $board_email_form_no = ( !$new['board_email_form'] ) ? "checked=\"checked\"" : "";
 
@@ -165,6 +168,10 @@ $template->assign_vars(array(
 	"L_ADMIN" => $lang['Acc_Admin'], 
 	"L_VISUAL_CONFIRM" => $lang['Visual_confirm'], 
 	"L_VISUAL_CONFIRM_EXPLAIN" => $lang['Visual_confirm_explain'], 
+	"L_ALLOW_AUTOLOGIN" => $lang['Allow_autologin'],
+	"L_ALLOW_AUTOLOGIN_EXPLAIN" => $lang['Allow_autologin_explain'],
+	"L_AUTOLOGIN_TIME" => $lang['Autologin_time'],
+	"L_AUTOLOGIN_TIME_EXPLAIN" => $lang['Autologin_time_explain'],
 	"L_COOKIE_SETTINGS" => $lang['Cookie_settings'], 
 	"L_COOKIE_SETTINGS_EXPLAIN" => $lang['Cookie_settings_explain'], 
 	"L_COOKIE_DOMAIN" => $lang['Cookie_domain'],
@@ -254,6 +261,9 @@ $template->assign_vars(array(
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
 	"CONFIRM_ENABLE" => $confirm_yes,
 	"CONFIRM_DISABLE" => $confirm_no,
+	'ALLOW_AUTOLOGIN_YES' => $allow_autologin_yes,
+	'ALLOW_AUTOLOGIN_NO' => $allow_autologin_no,
+	'AUTOLOGIN_TIME' => (int) $new['max_autologin_time'],
 	"BOARD_EMAIL_FORM_ENABLE" => $board_email_form_yes, 
 	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"MAX_POLL_OPTIONS" => $new['max_poll_options'], 

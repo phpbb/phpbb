@@ -335,6 +335,12 @@ $lang['Session_length'] = 'Session length [ seconds ]';
 $lang['Visual_confirm'] = 'Enable Visual Confirmation';
 $lang['Visual_confirm_explain'] = 'Requires users enter a code defined by an image when registering.';
 
+// Autologin Keys - added 2.0.18
+$lang['Allow_autologin'] = 'Allow automatic logins';
+$lang['Allow_autologin_explain'] = 'Determines whether users are allowed to select to be automatically logged in when visiting the forum';
+$lang['Autologin_time'] = 'Automatic login key expiry';
+$lang['Autologin_time_explain'] = 'How long a autologin key is valid for in days if the user does not visit the board. Set to zero to disable expiry.';
+
 //
 // Forum Management
 //

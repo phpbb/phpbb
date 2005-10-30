@@ -81,8 +81,10 @@
 		<input class="post" type="text" name="username" size="10" />
 		&nbsp;&nbsp;&nbsp;{L_PASSWORD}: 
 		<input class="post" type="password" name="password" size="10" maxlength="32" />
+		<!-- BEGIN switch_allow_autologin -->
 		&nbsp;&nbsp; &nbsp;&nbsp;{L_AUTO_LOGIN} 
 		<input class="text" type="checkbox" name="autologin" />
+		<!-- END switch_allow_autologin -->
 		&nbsp;&nbsp;&nbsp; 
 		<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" />
 		</span> </td>

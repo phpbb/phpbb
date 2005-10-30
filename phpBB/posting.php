@@ -59,11 +59,13 @@ while( list($var, $param) = @each($params) )
 }
 
 $refresh = $preview || $poll_add || $poll_edit || $poll_delete;
+$orig_word = $replacement_word = array();
 
 //
 // Set topic type
 //
 $topic_type = ( !empty($HTTP_POST_VARS['topictype']) ) ? intval($HTTP_POST_VARS['topictype']) : POST_NORMAL;
+$topic_type = ( in_array($topic_type, array(POST_NORMAL, POST_STICKY, POST_ANNOUNCE)) ) ? $topic_type : POST_NORMAL;
 
 //
 // If the mode is set to topic review then output
@@ -189,7 +191,7 @@ switch ( $mode )
 			message_die(GENERAL_MESSAGE, $lang['No_topic_id']);
 		}
 
-		$sql = "SELECT f.*, t.topic_status, t.topic_title  
+		$sql = "SELECT f.*, t.topic_status, t.topic_title, t.topic_type  
 			FROM " . FORUMS_TABLE . " f, " . TOPICS_TABLE . " t
 			WHERE t.topic_id = $topic_id
 				AND f.forum_id = t.forum_id";
@@ -311,6 +313,10 @@ if ( $result = $db->sql_query($sql) )
 		if ( $mode == 'quote' )
 		{
 			$topic_id = $post_info['topic_id'];
+		}
+		if ( $mode == 'newtopic' )
+		{
+			$post_data['topic_type'] = POST_NORMAL;
 		}
 
 		$post_data['first_post'] = ( $mode == 'newtopic' ) ? true : 0;

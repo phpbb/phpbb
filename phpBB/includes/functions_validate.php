@@ -32,13 +32,13 @@ function validate_username($username)
 	// Remove doubled up spaces
 	$username = preg_replace('#\s+#', ' ', trim($username)); 
 	$username = phpbb_clean_username($username);
-	
+
 	$sql = "SELECT username 
-		FROM " . USERS_TABLE . " 
+		FROM " . USERS_TABLE . "
 		WHERE LOWER(username) = '" . strtolower($username) . "'";
 	if ($result = $db->sql_query($sql))
 	{
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
 			if (($userdata['session_logged_in'] && $row['username'] != $userdata['username']) || !$userdata['session_logged_in'])
 			{
