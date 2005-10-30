@@ -68,7 +68,7 @@ p,ul,td {font-size:10pt;}
 <ul>
 <li>[Fix] incorrect handling of password resets if admin activation is enabled (Bug #88)</li>
 <li>[Fix] retrieving category rows in index.php (Bug #90)</li>
-<li>[Fix] Improved index performance by determining the permissions before iterating through all forums (Bug #91)</li>
+<li>[Fix] improved index performance by determining the permissions before iterating through all forums (Bug #91)</li>
 <li>[Fix] wrong topic redirection after login redirect (Bug #94)</li>
 <li>[Fix] improved handling of username lists in admin_ug_auth.php (Bug #98)</li>
 <li>[Fix] incorrect removal of bbcode_uid values if bbcode has been turned off (Bug #100)</li>
@@ -84,6 +84,7 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] use GENERAL_MESSAGE constant in message_die instead of MESSAGE (Bug #176)</li>
 <li>[Fix] incorrect handling of move stubs (Bug #179)</li>
 <li>[Fix] wrong mode_type in memberlist (Bug #187)</li>
+<li>[Fix] SQL errors when setting maximum PMs to 0 (Bug #188)</li>
 <li>[Fix] removed unused variable from topic_notify email template (Bug #210)</li>
 <li>[Fix] removed unset variable from smilies popup window title (Bug #224)</li>
 <li>[Fix] removed duplicate template assignment from admin_board.php (Bug #226)</li>
@@ -94,8 +95,23 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] fixed "var-by-ref" errors (Bug #322)</li>
 <li>[Fix] changed redirection to installation (Bug #325)</li>
 <li>[Fix] added timout of 10 seconds to version check (Bug #348)</li>
+<li>[Fix] fixed user_level default in postgresql schema file (Bug #444)</li>
 <li>[Fix] multiple minor HTML issues with subSilver</li>
-<li>[Change] Deprecated the use of some PHP 3 compatability functions in favour of the native equivalents</li>
+<li>[Change] deprecated the use of some PHP 3 compatability functions in favour of the native equivalents</li>
+<li>[Change] added 60 days limit for grabbing unread topics in index.php</li>
+
+<li>[Sec] backport of session keys system from olympus</li>
+<li>[Sec] fixed email bans to use the same pattern as email validation and allow wildcard domain bans</li>
+<li>[Sec] fixed validation of topic type when posting</li>
+<li>[Sec] unset database password once it is no longer needed</li>
+<li>[Sec] fixed potential to select images outside the specified path as avatars or smilies</li>
+<li>[Sec] fix globals de-registration code for PHP5 - (Stefan Esser/Matt Kavanagh)</li>
+<li>[Sec] changed avatar gallery code sections to prevent possible injection points (AnthraX101)</li>
+<li>[Sec] signature field is not properly sanitised for user input when an error occurs while accessing the avatar gallery (AnthraX101)</li>
+<li>[Sec] check to_username and ownership when editing a PM (AnthraX101)</li>
+<li>[Sec] fixed ability to edit PM's you did not send (depablo84)</li>
+<li>[Sec] compare imagetype on avatar uploading to match the file extension from uploaded file</li>
+</ul>
 
 <a name="2016"></a><h3 class="h3">l.ii. Changes since 2.0.16</h3>
 
