@@ -73,6 +73,7 @@ function show_coppa()
 // ---------------------------------------
 
 $error = FALSE;
+$error_msg = '';
 $page_title = ( $mode == 'editprofile' ) ? $lang['Edit_profile'] : $lang['Register'];
 
 if ( $mode == 'register' && !isset($HTTP_POST_VARS['agreed']) && !isset($HTTP_GET_VARS['agreed']) )
@@ -192,6 +193,7 @@ if (
 	$user_dateformat = ( !empty($HTTP_POST_VARS['dateformat']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['dateformat'])) : $board_config['default_dateformat'];
 
 	$user_avatar_local = ( isset($HTTP_POST_VARS['avatarselect']) && !empty($HTTP_POST_VARS['submitavatar']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($HTTP_POST_VARS['avatarselect']) : ( ( isset($HTTP_POST_VARS['avatarlocal'])  ) ? htmlspecialchars($HTTP_POST_VARS['avatarlocal']) : '' );
+	$user_avatar_category = ( isset($HTTP_POST_VARS['avatarcatname']) && $board_config['allow_avatar_local'] ) ? htmlspecialchars($HTTP_POST_VARS['avatarcatname']) : '' ;
 
 	$user_avatar_remoteurl = ( !empty($HTTP_POST_VARS['avatarremoteurl']) ) ? trim(htmlspecialchars($HTTP_POST_VARS['avatarremoteurl'])) : '';
 	$user_avatar_upload = ( !empty($HTTP_POST_VARS['avatarurl']) ) ? trim($HTTP_POST_VARS['avatarurl']) : ( ( $HTTP_POST_FILES['avatar']['tmp_name'] != "none") ? $HTTP_POST_FILES['avatar']['tmp_name'] : '' );
@@ -219,14 +221,14 @@ if (
 		$location = stripslashes($location);
 		$occupation = stripslashes($occupation);
 		$interests = stripslashes($interests);
-		$signature = stripslashes($signature);
+		$signature = htmlspecialchars(stripslashes($signature));
 
 		$user_lang = stripslashes($user_lang);
 		$user_dateformat = stripslashes($user_dateformat);
 
 		if ( !isset($HTTP_POST_VARS['cancelavatar']))
 		{
-			$user_avatar = $user_avatar_local;
+			$user_avatar = $user_avatar_category . '/' . $user_avatar_local;
 			$user_avatar_type = USER_AVATAR_GALLERY;
 		}
 	}
@@ -436,7 +438,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 			$error_msg .= ( ( isset($error_msg) ) ? '<br />' : '' ) . $lang['Signature_too_long'];
 		}
 
-		if ( $signature_bbcode_uid == '' )
+		if ( !isset($signature_bbcode_uid) || $signature_bbcode_uid == '' )
 		{
 			$signature_bbcode_uid = ( $allowbbcode ) ? make_bbcode_uid() : '';
 		}
@@ -472,19 +474,13 @@ if ( isset($HTTP_POST_VARS['submit']) )
 	}
 	else if ( $user_avatar_remoteurl != '' && $board_config['allow_avatar_remote'] )
 	{
-		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
-		{
-			@unlink(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']));
-		}
+		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
 		$avatar_sql = user_avatar_url($mode, $error, $error_msg, $user_avatar_remoteurl);
 	}
 	else if ( $user_avatar_local != '' && $board_config['allow_avatar_local'] )
 	{
-		if ( @file_exists(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar'])) )
-		{
-			@unlink(@phpbb_realpath('./' . $board_config['avatar_path'] . '/' . $userdata['user_avatar']));
-		}
-		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local);
+		user_avatar_delete($userdata['user_avatar_type'], $userdata['user_avatar']);
+		$avatar_sql = user_avatar_gallery($mode, $error, $error_msg, $user_avatar_local, $user_avatar_category);
 	}
 
 	if ( !$error )
@@ -898,7 +894,7 @@ else
 
 	if ( !empty($user_avatar_local) )
 	{
-		$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" />';
+		$s_hidden_fields .= '<input type="hidden" name="avatarlocal" value="' . $user_avatar_local . '" /><input type="hidden" name="avatarcatname" value="' . $user_avatar_category . '" />';
 	}
 
 	$html_status =  ( $userdata['user_allowhtml'] && $board_config['allow_html'] ) ? $lang['HTML_is_ON'] : $lang['HTML_is_OFF'];
