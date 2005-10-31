@@ -33,17 +33,20 @@ if( !empty($setmodules) )
 //
 // Include required files, get $phpEx and check permissions
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 if( isset($HTTP_POST_VARS['add_name']) )
 {
 	include($phpbb_root_path . 'includes/functions_validate.'.$phpEx);
 
-	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? $HTTP_POST_VARS['disallowed_user'] : $HTTP_GET_VARS['disallowed_user'];
-	$disallowed_user = preg_replace( '/\*/', '%', $disallowed_user );
+	$disallowed_user = ( isset($HTTP_POST_VARS['disallowed_user']) ) ? trim($HTTP_POST_VARS['disallowed_user']) : trim($HTTP_GET_VARS['disallowed_user']);
 
+	if ($disallowed_user == '')
+	{
+		message_die(GENERAL_MESSAGE, $lang['Fields_empty']);
+	}
 	if( !validate_username($disallowed_user) )
 	{
 		$message = $lang['Disallowed_already'];
@@ -110,8 +113,6 @@ else
 	$user = array();
 	for( $i = 0; $i < count($disallowed); $i++ )
 	{
-		$disallowed[$i]['disallow_username'] = preg_replace('/%/', '*', $disallowed[$i]['disallow_username']);
-
 		$disallow_select .= '<option value="' . $disallowed[$i]['disallow_id'] . '">' . $disallowed[$i]['disallow_username'] . '</option>';
 	}
 }
@@ -139,5 +140,7 @@ $template->assign_vars(array(
 );
 
 $template->pparse("body");
+
+include('./page_footer_admin.'.$phpEx);
 
 ?>

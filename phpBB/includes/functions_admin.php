@@ -24,15 +24,16 @@
 //
 // Simple version of jumpbox, just lists authed forums
 //
-function make_forum_select($box_name, $ignore_forum = false)
+function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 {
 	global $db, $userdata;
 
 	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
-	$sql = "SELECT forum_id, forum_name
-		FROM " . FORUMS_TABLE . " 
-		ORDER BY cat_id, forum_order";
+	$sql = 'SELECT f.forum_id, f.forum_name
+		FROM ' . CATEGORIES_TABLE . ' c, ' . FORUMS_TABLE . ' f
+		WHERE f.cat_id = c.cat_id 
+		ORDER BY c.cat_order, f.forum_order';
 	if ( !($result = $db->sql_query($sql)) )
 	{
 		message_die(GENERAL_ERROR, 'Couldn not obtain forums information', '', __LINE__, __FILE__, $sql);
@@ -43,7 +44,8 @@ function make_forum_select($box_name, $ignore_forum = false)
 	{
 		if ( $is_auth_ary[$row['forum_id']]['auth_read'] && $ignore_forum != $row['forum_id'] )
 		{
-			$forum_list .= '<option value="' . $row['forum_id'] . '">' . $row['forum_name'] . '</option>';
+			$selected = ( $select_forum == $row['forum_id'] ) ? ' selected="selected"' : '';
+			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected .'>' . $row['forum_name'] . '</option>';
 		}
 	}
 
@@ -55,7 +57,7 @@ function make_forum_select($box_name, $ignore_forum = false)
 //
 // Synchronise functions for forums/topics
 //
-function sync($type, $id)
+function sync($type, $id = false)
 {
 	global $db;
 
@@ -64,7 +66,7 @@ function sync($type, $id)
 		case 'all forums':
 			$sql = "SELECT forum_id
 				FROM " . FORUMS_TABLE;
-			if ( !$result = $db->sql_query($sql) )
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get forum IDs', '', __LINE__, __FILE__, $sql);
 			}
@@ -78,7 +80,7 @@ function sync($type, $id)
 		case 'all topics':
 			$sql = "SELECT topic_id
 				FROM " . TOPICS_TABLE;
-			if ( !$result = $db->sql_query($sql) )
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get topic ID', '', __LINE__, __FILE__, $sql);
 			}
@@ -90,12 +92,10 @@ function sync($type, $id)
 			break;
 
 	  	case 'forum':
-			$sql = "SELECT MAX(p.post_id) AS last_post, COUNT(p.post_id) AS total 
-				FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE  . " t 
-				WHERE p.forum_id = $id 
-					AND t.topic_id = p.topic_id 
-					AND t.topic_status <> " . TOPIC_MOVED;
-			if ( !$result = $db->sql_query($sql) )
+			$sql = "SELECT MAX(post_id) AS last_post, COUNT(post_id) AS total 
+				FROM " . POSTS_TABLE . "  
+				WHERE forum_id = $id";
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
 			}
@@ -113,9 +113,8 @@ function sync($type, $id)
 
 			$sql = "SELECT COUNT(topic_id) AS total
 				FROM " . TOPICS_TABLE . "
-				WHERE forum_id = $id 
-					AND topic_status <> " . TOPIC_MOVED;
-			if ( !$result = $db->sql_query($sql) )
+				WHERE forum_id = $id";
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get topic count', '', __LINE__, __FILE__, $sql);
 			}
@@ -135,22 +134,54 @@ function sync($type, $id)
 			$sql = "SELECT MAX(post_id) AS last_post, MIN(post_id) AS first_post, COUNT(post_id) AS total_posts
 				FROM " . POSTS_TABLE . "
 				WHERE topic_id = $id";
-			if ( !$result = $db->sql_query($sql) )
+			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not get post ID', '', __LINE__, __FILE__, $sql);
 			}
 
 			if ( $row = $db->sql_fetchrow($result) )
 			{
-				$sql = "UPDATE " . TOPICS_TABLE . "
-					SET topic_replies = " . ( $row['total_posts'] - 1 ) . ", topic_first_post_id = " . $row['first_post'] . ", topic_last_post_id = " . $row['last_post'] . " 
-					WHERE topic_id = $id";
-				if ( !$db->sql_query($sql) )
+				if ($row['total_posts'])
 				{
-					message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
+					// Correct the details of this topic
+					$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+						SET topic_replies = ' . ($row['total_posts'] - 1) . ', topic_first_post_id = ' . $row['first_post'] . ', topic_last_post_id = ' . $row['last_post'] . "
+						WHERE topic_id = $id";
+
+					if (!$db->sql_query($sql))
+					{
+						message_die(GENERAL_ERROR, 'Could not update topic', '', __LINE__, __FILE__, $sql);
+					}
+				}
+				else
+				{
+					// There are no replies to this topic
+					// Check if it is a move stub
+					$sql = 'SELECT topic_moved_id 
+						FROM ' . TOPICS_TABLE . " 
+						WHERE topic_id = $id";
+
+					if (!($result = $db->sql_query($sql)))
+					{
+						message_die(GENERAL_ERROR, 'Could not get topic ID', '', __LINE__, __FILE__, $sql);
+					}
+
+					if ($row = $db->sql_fetchrow($result))
+					{
+						if (!$row['topic_moved_id'])
+						{
+							$sql = 'DELETE FROM ' . TOPICS_TABLE . " WHERE topic_id = $id";
+			
+							if (!$db->sql_query($sql))
+							{
+								message_die(GENERAL_ERROR, 'Could not remove topic', '', __LINE__, __FILE__, $sql);
+							}
+						}
+					}
+
+					$db->sql_freeresult($result);
 				}
 			}
-
 			break;
 	}
 	
