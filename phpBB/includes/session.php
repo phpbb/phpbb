@@ -205,7 +205,7 @@ class session
 				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
 					AND u.user_type <> ' . USER_INACTIVE . "
 					AND k.user_id = u.user_id
-					AND k.key_id = '" . $db->sql_escape($this->cookie_data['k']) . "'";
+					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
 			$result = $db->sql_query($sql);
 
 			$this->data = $db->sql_fetchrow($result);
@@ -657,8 +657,9 @@ class session
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
 		$key = ($key === false) ? ((!empty($this->cookie_data['k'])) ? $this->cookie_data['k'] : false) : $key;
 		
+		$key_id = unique_id(hexdec(substr($this->session_id, 0, 8)));
 		$sql_ary = array(
-			'key_id'		=> (string) md5(unique_id()),
+			'key_id'		=> (string) md5($key_id),
 			'last_ip'		=> (string) $this->ip,
 			'last_login'	=> (int) time()
 		);
@@ -672,8 +673,9 @@ class session
 		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . ' AND key_id = "' . $db->sql_escape($key) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 		
-		$this->cookie_data['k'] = $sql_ary['key_id'];
+		$this->cookie_data['k'] = $key_id;
 		unset($sql_ary);
+		unset($key_id)
 		
 		return false;
 	}

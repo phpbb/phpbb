@@ -138,11 +138,12 @@ function gen_rand_string($num_chars)
 
 /**
 * Return unique id
+* @param $extra additional entropy for call to mt_srand
 */
-function unique_id()
+function unique_id($extra = 0)
 {
 	list($sec, $usec) = explode(' ', microtime());
-	mt_srand((float) $sec + ((float) $usec * 100000));
+	mt_srand((float) $extra + (float) $sec + ((float) $usec * 100000));
 	return uniqid(mt_rand(), true);
 }
 
