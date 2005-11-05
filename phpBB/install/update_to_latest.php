@@ -570,7 +570,7 @@ switch ($row['config_value'])
 				$sql[] = 'CREATE TABLE [' . $table_prefix . 'sessions_keys] ([key_id] [char] (32) NOT NULL , [user_id] [int] NOT NULL , [last_ip] [char] (8) NOT NULL , [last_login] [int] NOT NULL) ON [PRIMARY]';
 
 				$sql[] = 'CREATE INDEX [IX_' . $table_prefix . 'sessions_keys] ON [' . $table_prefix . 'sessions_keys]([key_id], [user_id]) ON [PRIMARY]';
-				$sql[] = 'CREATE  INDEX [IX_' . $table_prefix . 'sessions_keys] ON [' . $table_prefix . 'sessions_keys]([last_login]) ON [PRIMARY]';
+				$sql[] = 'CREATE  INDEX [IX_' . $table_prefix . 'sessions_keys_1] ON [' . $table_prefix . 'sessions_keys]([last_login]) ON [PRIMARY]';
 				break;
 
 			case 'msaccess':

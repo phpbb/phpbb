@@ -679,7 +679,7 @@ GO
  CREATE  INDEX [IX_phpbb_sessions_keys] ON [phpbb_sessions_keys]([key_id], [user_id]) ON [PRIMARY]
 GO
 
- CREATE  INDEX [IX_phpbb_sessions_keys] ON [phpbb_sessions_keys]([last_login]) ON [PRIMARY]
+ CREATE  INDEX [IX_phpbb_sessions_keys_1] ON [phpbb_sessions_keys]([last_login]) ON [PRIMARY]
 GO
 
  CREATE  INDEX [IX_phpbb_topics] ON [phpbb_topics]([forum_id], [topic_type], [topic_first_post_id], [topic_last_post_id]) ON [PRIMARY]
