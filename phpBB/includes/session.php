@@ -675,7 +675,7 @@ class session
 		
 		$this->cookie_data['k'] = $key_id;
 		unset($sql_ary);
-		unset($key_id)
+		unset($key_id);
 		
 		return false;
 	}
