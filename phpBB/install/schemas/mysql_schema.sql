@@ -194,7 +194,7 @@ CREATE TABLE phpbb_posts (
 #
 CREATE TABLE phpbb_posts_text (
    post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   bbcode_uid char(10) NOT NULL,
+   bbcode_uid char(10) DEFAULT '' NOT NULL,
    post_subject char(60),
    post_text text,
    PRIMARY KEY (post_id)
