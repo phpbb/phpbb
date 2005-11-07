@@ -381,7 +381,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				}
 				else
 				{
-					trigger_error($user->lang['NO_USERS'] . $sql);
+					trigger_error($user->lang['NO_USERS']);
 				}
 			}
 			break;
