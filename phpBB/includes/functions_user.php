@@ -341,7 +341,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$ban_end = 0;
 	}
 
-	$banlist = array();
+	$banlist_ary = array();
 
 	switch ($mode)
 	{
@@ -351,27 +351,37 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			if (in_array('*', $ban_list))
 			{
 				// Ban all users (it's a good thing that you can exclude people)
-				$banlist[] = '*';
+				$banlist_ary[] = '*';
 			}
 			else
 			{
-				// Select the relevant user_ids. The array_diff thingy is there to add quotes around usernames and remove empty elements.
+				// Select the relevant user_ids.
+				$sql_usernames = array();
+				foreach($ban_list as $username)
+				{
+					$username = trim($username);
+					if ($username != '')
+					{
+						$sql_usernames[] = "'" . $db->sql_escape($username) . "'";
+					}
+				}
+				$sql_usernames = implode(', ', $sql_usernames);
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
-					WHERE username IN (' . implode(', ', array_diff(preg_replace('#^[\s]*(.*?)[\s]*$#', "'" . $db->sql_escape("\\1") . "'", $ban_list), array("''"))) . ')';
+					WHERE username IN (' . $sql_usernames . ')';
 				$result = $db->sql_query($sql);
 
 				if ($row = $db->sql_fetchrow($result))
 				{
 					do
 					{
-						$banlist[] = $row['user_id'];
+						$banlist_ary[] = $row['user_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 				}
 				else
 				{
-					trigger_error($user->lang['NO_USERS']);
+					trigger_error($user->lang['NO_USERS'] . $sql);
 				}
 			}
 			break;
@@ -398,7 +408,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 							$ip_2_counter = 256;
 							$ip_2_fragment = 256;
 
-							$banlist[] = "$ip_1_counter.*";
+							$banlist_ary[] = "$ip_1_counter.*";
 						}
 
 						while ($ip_2_counter <= $ip_2_end)
@@ -411,7 +421,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 								$ip_3_counter = 256;
 								$ip_3_fragment = 256;
 
-								$banlist[] = "$ip_1_counter.$ip_2_counter.*";
+								$banlist_ary[] = "$ip_1_counter.$ip_2_counter.*";
 							}
 
 							while ($ip_3_counter <= $ip_3_end)
@@ -424,12 +434,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 									$ip_4_counter = 256;
 									$ip_4_fragment = 256;
 
-									$banlist[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.*";
+									$banlist_ary[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.*";
 								}
 
 								while ($ip_4_counter <= $ip_4_end)
 								{
-									$banlist[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter";
+									$banlist_ary[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter";
 									$ip_4_counter++;
 								}
 								$ip_3_counter++;
@@ -448,19 +458,19 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					{
 						if (!empty($ip))
 						{
-							$banlist[] = $ip;
+							$banlist_ary[] = $ip;
 						}
 					}
 				}
 				else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($ban_item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($ban_item)))
 				{
 					// Normal IP address
-					$banlist[] = trim($ban_item);
+					$banlist_ary[] = trim($ban_item);
 				}
 				else if (preg_match('#^\*$#', trim($ban_item)))
 				{
 					// Ban all IPs
-					$banlist[] = "*";
+					$banlist_ary[] = "*";
 				}
 				else
 				{
@@ -476,7 +486,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			{
 				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', trim($ban_item)))
 				{
-					$banlist[] = trim($ban_item);
+					$banlist_ary[] = trim($ban_item);
 				}
 			}
 
@@ -497,36 +507,36 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 	if ($row = $db->sql_fetchrow($result))
 	{
-		$banlist_tmp = array();
+		$banlist_ary_tmp = array();
 		do
 		{
 			switch ($mode)
 			{
 				case 'user':
-					$banlist_tmp[] = $row['ban_userid'];
+					$banlist_ary_tmp[] = $row['ban_userid'];
 					break;
 
 				case 'ip':
-					$banlist_tmp[] = $row['ban_ip'];
+					$banlist_ary_tmp[] = $row['ban_ip'];
 					break;
 
 				case 'email':
-					$banlist_tmp[] = $row['ban_email'];
+					$banlist_ary_tmp[] = $row['ban_email'];
 					break;
 			}
 		}
 		while ($row = $db->sql_fetchrow($result));
 
-		$banlist = array_unique(array_diff($banlist, $banlist_tmp));
-		unset($banlist_tmp);
+		$banlist_ary = array_unique(array_diff($banlist_ary, $banlist_ary_tmp));
+		unset($banlist_ary_tmp);
 	}
 
 	// We have some entities to ban
-	if (sizeof($banlist))
+	if (sizeof($banlist_ary))
 	{
 		$sql = '';
 		$sql_ary = array();
-		foreach ($banlist as $ban_entry)
+		foreach ($banlist_ary as $ban_entry)
 		{
 			$sql_ary[] = array(
 				$type => $ban_entry,
@@ -549,28 +559,28 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			switch ($mode)
 			{
 				case 'user':
-					$sql_where = 'WHERE session_user_id IN (' . implode(', ', $banlist) . ')';
+					$sql_where = 'WHERE session_user_id IN (' . implode(', ', $banlist_ary) . ')';
 					break;
 
 				case 'ip':
-					$banlist_sql = array();
-					foreach($banlist as $ban_entry)
+					$banlist_ary_sql = array();
+					foreach($banlist_ary as $ban_entry)
 					{
-						$banlist_sql[] = "'" . $db->sql_escape($ban_entry) . "'";
+						$banlist_ary_sql[] = "'" . $db->sql_escape($ban_entry) . "'";
 					}
-					$sql_where = 'WHERE session_ip IN (' . implode(', ', $banlist_sql) . ')';
+					$sql_where = 'WHERE session_ip IN (' . implode(', ', $banlist_ary_sql) . ')';
 					break;
 
 				case 'email':
-					$banlist_sql = array();
-					foreach($banlist as $ban_entry)
+					$banlist_ary_sql = array();
+					foreach($banlist_ary as $ban_entry)
 					{
-						$banlist_sql[] = "'" . $db->sql_escape(str_replace('*', '%', $ban_entry)) . "'";
+						$banlist_ary_sql[] = "'" . $db->sql_escape(str_replace('*', '%', $ban_entry)) . "'";
 					}
 
 					$sql = 'SELECT user_id
 						FROM ' . USERS_TABLE . '
-						WHERE user_email IN (' . implode(', ', $banlist_sql) . ')';
+						WHERE user_email IN (' . implode(', ', $banlist_ary_sql) . ')';
 					$result = $db->sql_query($sql);
 
 					$sql_in = array();
