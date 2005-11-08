@@ -24,8 +24,6 @@ if (!defined('SQL_LAYER'))
 */
 class dbal_mysqli extends dbal
 {
-	var $indexed = 0;
-
 	/**
 	* Connect to server
 	*/
@@ -119,12 +117,7 @@ class dbal_mysqli extends dbal
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
-				}
-				else if (strpos($query, 'SELECT') !== false && $this->query_result)
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
 			}
 			else if (defined('DEBUG_EXTRA'))
@@ -264,9 +257,9 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($this->open_queries[(int) $query_id]))
+		// Make sure it is not a cached query
+		if (is_object($this->query_result))
 		{
-			unset($this->open_queries[(int) $query_id]);
 			return @mysqli_free_result($query_id);
 		}
 
