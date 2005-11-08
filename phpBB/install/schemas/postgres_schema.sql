@@ -457,7 +457,8 @@ CREATE SEQUENCE phpbb_modules_module_id_seq;
 
 CREATE TABLE phpbb_modules (
   module_id INT4 DEFAULT nextval('phpbb_modules_module_id_seq'),
-  module_enabled INT2  DEFAULT '1' NOT NULL,
+  module_enabled INT2 DEFAULT '1' NOT NULL,
+  module_display INT2 DEFAULT '1' NOT NULL,
   module_name varchar(20) DEFAULT '' NOT NULL,
   module_class varchar(4) DEFAULT '' NOT NULL,
   parent_id INT4 DEFAULT '0' NOT NULL,

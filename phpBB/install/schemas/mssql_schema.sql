@@ -289,6 +289,7 @@ GO
 CREATE TABLE [phpbb_modules] (
 	[module_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[module_enabled] [int] NOT NULL ,
+	[module_display] [int] NOT NULL ,
 	[module_name] [varchar] (20) NOT NULL ,
 	[module_class] [varchar] (4) NOT NULL ,
 	[parent_id] [int] NOT NULL ,
@@ -1341,6 +1342,10 @@ GO
 
 ALTER TABLE [phpbb_modules] WITH NOCHECK ADD 
 	CONSTRAINT [DF_module_module_enabled] DEFAULT (1) FOR [module_enabled]
+GO
+
+ALTER TABLE [phpbb_modules] WITH NOCHECK ADD
+	CONSTRAINT [DF_module_module_display] DEFAULT (1) FOR [module_display]
 GO
 
 ALTER TABLE [phpbb_poll_results] WITH NOCHECK ADD 

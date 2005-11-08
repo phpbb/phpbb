@@ -335,6 +335,7 @@ CREATE INDEX forum_id_phpbb_moderator_cache on phpbb_moderator_cache (forum_id);
 CREATE TABLE phpbb_modules (
   module_id INTEGER PRIMARY KEY NOT NULL,
   module_enabled tinyint(1) NOT NULL DEFAULT '1',
+  module_display tinyint(1) NOT NULL DEFAULT '1',
   module_name varchar(20) NOT NULL DEFAULT '',
   module_class varchar(4) NOT NULL DEFAULT '',
   parent_id smallint(5) NOT NULL DEFAULT '0',

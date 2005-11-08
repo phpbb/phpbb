@@ -334,6 +334,7 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE TABLE phpbb_modules (
   module_id smallint(5) unsigned NOT NULL auto_increment,
   module_enabled tinyint(1) NOT NULL default '1',
+  module_display tinyint(1) NOT NULL default '1',
   module_name varchar(20) NOT NULL default '',
   module_class varchar(4) NOT NULL default '',
   parent_id smallint(5) unsigned NOT NULL default '0',

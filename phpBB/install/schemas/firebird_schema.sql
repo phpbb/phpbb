@@ -284,6 +284,7 @@ CREATE TABLE phpbb_moderator_cache (
 CREATE TABLE phpbb_modules (
   module_id INTEGER NOT NULL,
   module_enabled INTEGER DEFAULT 1  NOT NULL,
+  module_display INTEGER DEFAULT 1  NOT NULL,
   module_name VARCHAR(20) NOT NULL,
   module_class VARCHAR(4) NOT NULL,
   parent_id INTEGER NOT NULL,

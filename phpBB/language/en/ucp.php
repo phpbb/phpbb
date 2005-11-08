@@ -264,6 +264,7 @@ $lang += array(
 	'POST_FORWARD_PM'			=> 'Forward message',
 	'POST_NEW_PM'				=> 'Post message',
 	'POST_PM_LOCKED'			=> 'Private Messaging is locked',
+	'POST_PM_POST'				=> 'Quote post',
 	'POST_QUOTE_PM'				=> 'Quote message',
 	'POST_REPLY_PM'				=> 'Reply to message',
 	'PRINT_PM'					=> 'Print View',
@@ -344,6 +345,7 @@ $lang += array(
 	'UCP_PM_DRAFTS'				=> 'PM Drafts',
 	'UCP_PM_OPTIONS'			=> 'Options',
 	'UCP_PM_POPUP'				=> 'Private Messages',
+	'UCP_PM_POPUP_TITLE'		=> 'Private Message Popup',
 	'UCP_PM_UNREAD'				=> 'Unread Messages',
 	'UCP_PM_VIEW'				=> 'View Messages',
 

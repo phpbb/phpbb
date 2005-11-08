@@ -700,6 +700,7 @@ CREATE INDEX forum_id03 on phpbb_moderator_cache (forum_id)
 CREATE TABLE phpbb_modules (
   module_id number(8) NOT NULL,
   module_enabled number(1) DEFAULT '1' NOT NULL,
+  module_display number(1) DEFAULT '1' NOT NULL,
   module_name varchar2(20) DEFAULT '' NOT NULL,
   module_class varchar2(4) DEFAULT '' NOT NULL,
   parent_id number(5) DEFAULT '0' NOT NULL,

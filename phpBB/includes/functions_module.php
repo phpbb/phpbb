@@ -154,6 +154,7 @@ class p_master
 
 				'name'		=> (string) $row['module_name'],
 				'mode'		=> (string) $row['module_mode'],
+				'display'	=> (int) $row['module_display'],
 				
 				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
@@ -242,7 +243,7 @@ class p_master
 
 			// Execute the main method for the new instance, we send the module
 			// id and mode as parameters
-			$this->module->main($this->p_id, $this->p_mode);
+			$this->module->main(($this->p_name) ? $this->p_name : $this->p_id, $this->p_mode);
 
 			return;
 		}
@@ -288,6 +289,11 @@ class p_master
 		//    and a linear list for subcategories/items
 		foreach ($this->module_ary as $row_id => $itep_ary)
 		{
+			if (!$itep_ary['display'])
+			{
+				continue;
+			}
+
 			$depth = $itep_ary['depth'];
 
 			if ($depth > $current_depth)
@@ -304,6 +310,8 @@ class p_master
 				}
 			}
 
+			$u_title = $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode']);
+			
 			// Only output a categories items if it's currently selected
 			if (!$depth || ($depth && (in_array($itep_ary['parent'], array_values($this->module_cache['parents'])) || $itep_ary['parent'] == $this->p_parent)))
 			{
@@ -312,7 +320,7 @@ class p_master
 				$tpl_ary = array(
 					'L_TITLE'		=> $itep_ary['lang'],
 					'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,
-					'U_TITLE'		=> $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode'])
+					'U_TITLE'		=> $u_title
 				);
 
 				$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($itep_ary, CASE_UPPER)));
@@ -321,7 +329,7 @@ class p_master
 			$tpl_ary = array(
 				'L_TITLE'		=> $itep_ary['lang'],
 				'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,
-				'U_TITLE'		=> $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode'])
+				'U_TITLE'		=> $u_title
 			);
 
 			$template->assign_block_vars($linear_offset, array_merge($tpl_ary, array_change_key_case($itep_ary, CASE_UPPER)));
