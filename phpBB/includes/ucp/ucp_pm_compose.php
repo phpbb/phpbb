@@ -99,7 +99,7 @@ function compose_pm($id, $mode, $action)
 
 			if ($action == 'quotepost')
 			{
-				$sql = 'SELECT p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_html, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
+				$sql = 'SELECT p.post_id as msg_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_html, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 					WHERE p.post_id = $msg_id
 						AND t.topic_id = p.topic_id
@@ -179,15 +179,17 @@ function compose_pm($id, $mode, $action)
 
 		$msg_id = (int) $post['msg_id'];
 		$enable_urls = $post['enable_magic_url'];
+		$enable_sig = (isset($post['enable_sig'])) ? $post['enable_sig'] : 0;
 
-		$message_attachment = $post['message_attachement'];
+		$message_attachment = (isset($post['message_attachement'])) ? $post['message_attachement'] : 0;
 		$message_text = $post['message_text'];
 		$message_subject = $post['message_subject'];
 		$quote_username = $post['quote_username'];
 
 		$message_time = $post['message_time'];
-		$icon_id = $post['icon_id'];
-		$folder_id = $post['folder_id'];
+		$icon_id = (isset($post['icon_id'])) ? $post['icon_id'] : 0;
+		$folder_id = (isset($post['folder_id'])) ? $post['folder_id'] : 0;
+		$bbcode_uid = $post['bbcode_uid'];
 
 		if (!$post['author_id'] && $msg_id)
 		{
@@ -204,7 +206,14 @@ function compose_pm($id, $mode, $action)
 			$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
 		}
 
-		$check_value = (($post['enable_html']+1) << 16) + (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
+		if ($action == 'quotepost')
+		{
+			$check_value = 0;
+		}
+		else
+		{
+			$check_value = (($post['enable_html']+1) << 16) + (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
+		}
 	}
 	else
 	{
@@ -308,7 +317,7 @@ function compose_pm($id, $mode, $action)
 		$db->sql_freeresult($result);
 	}
 
-	if (!in_array($action, array('quote', 'quotepost', 'edit', 'delete', 'forward')))
+	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
 	{
 		$enable_sig		= ($config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
 		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
@@ -578,7 +587,7 @@ function compose_pm($id, $mode, $action)
 	}
 
 	// Decode text for message display
-	$bbcode_uid = (($action == 'quote' || $action == 'forward' || $action == 'quotepost') && !$preview && !$refresh && !sizeof($error)) ? $bbcode_uid : $message_parser->bbcode_uid;
+	$bbcode_uid = (($action == 'quote' || $action == 'forward') && !$preview && !$refresh && !sizeof($error)) ? $bbcode_uid : $message_parser->bbcode_uid;
 
 	$message_parser->decode_message($bbcode_uid);
 
@@ -603,7 +612,7 @@ function compose_pm($id, $mode, $action)
 
 	if ($action == 'forward' && !$preview && !$refresh)
 	{
-		$fwd_to_field = write_pm_addresses(array('to' => $to_address), 0, true);
+		$fwd_to_field = write_pm_addresses(array('to' => $post['to_address']), 0, true);
 
 		$forward_text = array();
 		$forward_text[] = $user->lang['FWD_ORIGINAL_MESSAGE'];
@@ -612,7 +621,7 @@ function compose_pm($id, $mode, $action)
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
-		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx$SID&mode=viewprofile&u={$author_id}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
+		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx$SID&mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
 	}
 

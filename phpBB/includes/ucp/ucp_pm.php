@@ -99,7 +99,8 @@ class ucp_pm
 					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;i=pm&amp;folder=inbox" onclick="jump_to_inbox();return false;" target="_new">', '</a>'),
 					'U_INBOX'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox")
 				);
-
+				
+				$tpl_file = 'ucp_pm_popup';
 				break;
 
 			// Compose message
@@ -155,7 +156,7 @@ class ucp_pm
 
 			case 'unread':
 			case 'view':
-
+				
 				$sql = 'SELECT group_message_limit
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
@@ -251,7 +252,7 @@ class ucp_pm
 				}
 
 				$message_row = array();
-				if ($mode == 'view' && $action == 'view_message' && $msg_id)
+				if ($action == 'view_message' && $msg_id)
 				{
 					// Get Message user want to see
 
@@ -381,6 +382,37 @@ class ucp_pm
 
 		// Set desired template
 		$this->tpl_name = $tpl_file;
+	}
+}
+
+/**
+* @package module_install
+*/
+class ucp_pm_info
+{
+	function module()
+	{
+		return array(
+			'filename'	=> 'ucp_pm',
+			'title'		=> 'UCP_PM',
+			'version'	=> '1.0.0',
+			'modes'		=> array(
+				'view'		=> array('title' => 'UCP_PM_VIEW', 'auth' => 'cfg_allow_privmsg'),
+				'compose'	=> array('title' => 'UCP_PM_COMPOSE', 'auth' => 'cfg_allow_privmsg'),
+				'unread'	=> array('title' => 'UCP_PM_UNREAD', 'auth' => 'cfg_allow_privmsg'),
+				'drafts'	=> array('title' => 'UCP_PM_DRAFTS', 'auth' => 'cfg_allow_privmsg'),
+				'options'	=> array('title' => 'UCP_PM_OPTIONS', 'auth' => 'cfg_allow_privmsg'),
+				'popup'		=> array('title' => 'UCP_PM_POPUP_TITLE', 'auth' => 'cfg_allow_privmsg', 'display' => 0),
+			),
+		);
+	}
+
+	function install()
+	{
+	}
+
+	function uninstall()
+	{
 	}
 }
 

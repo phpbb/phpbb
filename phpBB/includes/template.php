@@ -275,10 +275,10 @@ class template
 				$str = &$str[sizeof($str) - 1];
 			}
 
-			$vararray['S_ROW_COUNT'] = sizeof($str[$blocks[$blockcount]]);
+			$vararray['S_ROW_COUNT'] = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
 			
 			// Assign S_FIRST_ROW
-			if (sizeof($str[$blocks[$blockcount]]) == 0)
+			if (!isset($str[$blocks[$blockcount]]) || sizeof($str[$blocks[$blockcount]]) == 0)
 			{
 				$vararray['S_FIRST_ROW'] = true;
 			}
@@ -286,7 +286,7 @@ class template
 			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
 			// This is much more clever than going through the complete template data on display (phew)
 			$vararray['S_LAST_ROW'] = true;
-			if (sizeof($str[$blocks[$blockcount]]) > 0)
+			if (isset($str[$blocks[$blockcount]]) && sizeof($str[$blocks[$blockcount]]) > 0)
 			{
 				unset($str[$blocks[$blockcount]][sizeof($str[$blocks[$blockcount]]) - 1]['S_LAST_ROW']);
 			}
@@ -299,17 +299,17 @@ class template
 		else
 		{
 			// Top-level block.
-			$vararray['S_ROW_COUNT'] = sizeof($this->_tpldata[$blockname]);
+			$vararray['S_ROW_COUNT'] = (isset($this->_tpldata[$blockname])) ? sizeof($this->_tpldata[$blockname]) : 0;
 
 			// Assign S_FIRST_ROW
-			if (sizeof($this->_tpldata[$blockname]) == 0)
+			if (!isset($this->_tpldata[$blockname]) || sizeof($this->_tpldata[$blockname]) == 0)
 			{
 				$vararray['S_FIRST_ROW'] = true;
 			}
 
 			// We always assign S_LAST_ROW and remove the entry before
 			$vararray['S_LAST_ROW'] = true;
-			if (sizeof($this->_tpldata[$blockname]) > 0)
+			if (isset($this->_tpldata[$blockname]) && sizeof($this->_tpldata[$blockname]) > 0)
 			{
 				unset($this->_tpldata[$blockname][sizeof($this->_tpldata[$blockname]) - 1]['S_LAST_ROW']);
 			}
@@ -635,8 +635,8 @@ class template
 			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
 		}
 		
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['.'][0]['\\1']; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*?)\}#is', "<?php echo \$this->_tpldata['DEFINE']['.']['\\1']; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo (isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*?)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return;
 	}
@@ -709,13 +709,13 @@ class template
 		return $tag_template_php;
 	}
 
-	//
-	// Compile IF tags - much of this is from Smarty with
-	// some adaptions for our block level methods
-	//
+	/**
+	* Compile IF tags - much of this is from Smarty with
+	* some adaptions for our block level methods
+	*/
 	function compile_tag_if($tag_args, $elseif)
 	{
-		/* Tokenize args for 'if' tag. */
+		// Tokenize args for 'if' tag.
 		preg_match_all('/(?:
 						"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
 						\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
@@ -823,7 +823,8 @@ class template
 					}
 					else if (preg_match('#^\.((([a-z0-9\-_]+)?\.?)+?)$#s', $token, $varrefs))
 					{
-						$token = 'sizeof(' . $this->generate_block_data_ref($varrefs[1], false) . ')';
+						$_tok = $this->generate_block_data_ref($varrefs[1], false);
+						$token = "(isset($_tok) && sizeof($_tok))";
 					}
 
 					break;

@@ -1744,8 +1744,8 @@ function page_header($page_title = '')
 	$l_privmsgs_text = $l_privmsgs_text_unread = '';
 	$s_privmsg_new = false;
 
-	// Obtain number of new private messages if user is logged in, not if in trigger_error
-	if (!defined('IN_ERROR_HANDLER') && $user->data['is_registered'])
+	// Obtain number of new private messages if user is logged in
+	if ($user->data['is_registered'])
 	{
 		if ($user->data['user_new_privmsg'])
 		{

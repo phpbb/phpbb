@@ -341,7 +341,7 @@ if ($stage == 0)
 
 	$php_version = phpversion();
 
-	if (version_compare($php_version, '4.1.0') < 0)
+	if (version_compare($php_version, '4.3.3') < 0)
 	{
 		$passed['db'] = false;
 		echo '<b style="color:red">' . $lang['NO'] . '</b>';
