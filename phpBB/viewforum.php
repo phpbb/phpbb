@@ -258,7 +258,7 @@ if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16)
 		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false,
 		'S_SEARCHBOX_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_forum[]=$forum_id",
 
-		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;mode=forum_view" : '',
+		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;i=main&amp;mode=forum_view" : '',
 		'U_POST_NEW_TOPIC'	=> "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
 		'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;$u_sort_param&amp;start=$start",
 		'U_MARK_TOPICS' 	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
