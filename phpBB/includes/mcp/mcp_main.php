@@ -13,10 +13,17 @@
 * mcp_main
 * Handling mcp actions
 */
-class mcp_main extends module
+class mcp_main
 {
 
-	function mcp_main($id, $mode, $url)
+	var $p_master;
+	
+	function mcp_main(&$p_master)
+	{
+		$this->p_master = &$p_master;
+	}
+
+	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
 		global $config, $phpbb_root_path, $phpEx, $SID;
@@ -131,7 +138,7 @@ class mcp_main extends module
 
 				mcp_front_view($id, $mode, $action, $url);
 
-				$this->display($user->lang['MCP'], 'mcp_front.html');
+				$this->tpl_name = 'mcp_front';
 				break;
 
 			case 'forum_view':
@@ -153,7 +160,7 @@ class mcp_main extends module
 
 				mcp_forum_view($id, $mode, $action, $url, $forum_info);
 				
-				$this->display($user->lang['MCP'], 'mcp_forum.html');
+				$this->tpl_name = 'mcp_forum';
 				break;
 
 			case 'topic_view':
@@ -161,7 +168,7 @@ class mcp_main extends module
 				
 				mcp_topic_view($id, $mode, $action, $url);
 				
-				$this->display($user->lang['MCP'], 'mcp_topic.html');
+				$this->tpl_name = 'mcp_topic';
 				break;
 				
 			case 'post_details':
@@ -169,7 +176,7 @@ class mcp_main extends module
 				
 				mcp_post_details($id, $mode, $action, $url);
 				
-				$this->display($user->lang['MCP'], 'mcp_post.html');
+				$this->tpl_name = 'mcp_post';
 				break;			
 
 			default:

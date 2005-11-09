@@ -40,23 +40,22 @@ function marklist(form_name, status)
 				<tr>
 					<th>{L_OPTIONS}</th>
 				</tr>
-				<!-- BEGIN mcp_section -->
+				<!-- BEGIN l_block1 -->
 				<tr>
-					<!-- IF mcp_section.S_SELECTED -->
-					<td class="row1"><b class="nav">{mcp_section.L_TITLE}</b>
+					<!-- IF l_block1.S_SELECTED -->
+					<td class="row1"><b class="nav">{l_block1.L_TITLE}</b>
 
 						<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
-						<!-- BEGIN mcp_subsection -->
-						<li>&#187; <!-- IF mcp_section.mcp_subsection.S_SELECTED --><b>{mcp_section.mcp_subsection.L_TITLE}<!-- IF mcp_section.mcp_subsection.ADD_ITEM --> ({mcp_section.mcp_subsection.ADD_ITEM})<!-- ENDIF --></b><!-- ELSE --><a href="{mcp_section.mcp_subsection.U_TITLE}">{mcp_section.mcp_subsection.L_TITLE}<!-- IF mcp_section.mcp_subsection.ADD_ITEM --> ({mcp_section.mcp_subsection.ADD_ITEM})<!-- ENDIF --></a><!-- ENDIF --></li>
-						<!-- END mcp_subsection -->
+						<!-- BEGIN l_block2 -->
+						<li>&#187; <!-- IF l_block1.l_block2.S_SELECTED --><b>{l_block1.l_block2.L_TITLE}</b><!-- ELSE --><a href="{l_block1.l_block2.U_TITLE}">{l_block1.l_block2.L_TITLE}</a><!-- ENDIF --></li>
+						<!-- END l_block2 -->
 						</ul>
-
 					<!-- ELSE -->
-					<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{mcp_section.U_TITLE}'"><a class="nav" href="{mcp_section.U_TITLE}">{mcp_section.L_TITLE}</a>
+					<td class="row2" nowrap="nowrap" onmouseover="this.className='row1'" onmouseout="this.className='row2'" onclick="location.href='{l_block1.U_TITLE}'"><a class="nav" href="{l_block1.U_TITLE}">{l_block1.L_TITLE}</a>
 					<!-- ENDIF -->
 					</td>
 				</tr>
-				<!-- END mcp_section -->
+				<!-- END l_block1 -->
 			</table>
 
 		</td>

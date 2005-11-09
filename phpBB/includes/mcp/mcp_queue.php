@@ -13,10 +13,17 @@
 * mcp_queue
 * Handling the moderation queue
 */
-class mcp_queue extends module
+class mcp_queue
 {
 
-	function mcp_queue($id, $mode, $url)
+	var $p_master;
+	
+	function mcp_main(&$p_master)
+	{
+		$this->p_master = &$p_master;
+	}
+
+	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
 		global $config, $phpbb_root_path, $phpEx, $SID;
@@ -122,7 +129,7 @@ class mcp_queue extends module
 					'POST_ID'				=> $post_info['post_id'])
 				);
 
-				$this->display($user->lang['MCP_QUEUE'], 'mcp_post.html');
+				$this->tpl_name = 'mcp_post';
 
 				break;
 
@@ -278,7 +285,7 @@ class mcp_queue extends module
 					'S_FORUM_OPTIONS'		=> $forum_options)
 				);
 
-				$this->display($user->lang['MCP_QUEUE'], 'mcp_queue.html');
+				$this->tpl_name = 'mcp_queue';
 				break;
 		}
 	}
