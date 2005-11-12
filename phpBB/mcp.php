@@ -16,267 +16,168 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+require($phpbb_root_path . 'includes/functions_module.'.$phpEx);
 
 /**
 * @package mcp
 * MCP Module
 */
-class module
+class mcp extends p_master
 {
-	var $id = 0;
-	var $type;
-	var $name;
-	var $mode;
-	var $url;
-
-	// Private methods, should not be overwritten
-	function create($module_type, $module_url, $post_id, $topic_id, $forum_id, $selected_mod = false, $selected_submod = false)
+	/**
+	* List modules
+	*
+	* This creates a list, stored in $this->module_ary of all available
+	* modules for the given class (ucp, mcp and acp). Additionally
+	* $this->module_y_ary is created with indentation information for
+	* displaying the module list appropriately. Only modules for which
+	* the user has access rights are included in these lists.
+	*
+	* The mcp performs additional checks on the modules loaded to ensure
+	* that only relevant links are presented
+	*
+	* @final
+	*/
+	function list_modules($p_class, $forum_id = 0, $topic_id = 0, $post_id = 0)
 	{
-		global $template, $auth, $db, $user, $config;
-		global $phpbb_root_path, $phpEx;
+		global $auth, $db, $user;
+		global $config, $phpbb_root_path, $phpEx;
 
-		$sql = 'SELECT module_id, module_title, module_filename, module_subs, module_acl
-			FROM ' . MODULES_TABLE . "
-			WHERE module_type = '{$module_type}'
-				AND module_enabled = 1
-			ORDER BY module_order ASC";
-		$result = $db->sql_query($sql);
+		$get_cache_data = true;
 
-		$i = 0;
-		while ($row = $db->sql_fetchrow($result))
+		// Empty cached contents
+		$this->module_cache = array();
+
+		// Sanitise for future path use, it's escaped as appropriate for queries
+		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
+		
+		if (file_exists($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx))
 		{
-			// Authorisation is required for the basic module
-			if ($row['module_acl'])
+			include($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx);
+			$get_cache_data = false;
+		}
+
+		if ($get_cache_data)
+		{
+			global $cache;
+			
+			// Get active modules
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = '" . $db->sql_escape($p_class) . "'
+					AND module_enabled = 1
+				ORDER BY left_id ASC";
+			$result = $db->sql_query($sql);
+			
+			$this->module_cache['modules'] = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$this->module_cache['modules'][] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			// Get module parents
+			$this->module_cache['parents'] = array();
+			foreach ($this->module_cache['modules'] as $row)
+			{
+				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id']);
+			}
+
+			$file = '<?php $this->module_cache=' . $cache->format_array($this->module_cache) . "; ?>";
+
+			if ($fp = @fopen($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx, 'wb'))
+			{
+				@flock($fp, LOCK_EX);
+				fwrite($fp, $file);
+				@flock($fp, LOCK_UN);
+				fclose($fp);
+			}
+
+			unset($file);
+		}
+
+		$right = $depth = $i = 0;
+		$depth_ary = array();
+
+		foreach ($this->module_cache['modules'] as $row)
+		{
+			/**
+			* Authorisation is required ... not authed, skip
+			* @todo implement $this->is_module_id
+			* @todo put in seperate method for authentication
+			*/
+			if ($row['module_auth'])
 			{
 				$is_auth = false;
-				eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1", ' . $forum_id . ')', '(int) $config["\\1"]'), trim($row['module_acl'])) . ');');
-
-				// The user is not authorised to use this module, skip it
+				eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#e', '#\$id#', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1"\\2)', '$this->acl_forup_id', '(int) $config["\\1"]'), trim($row['module_auth'])) . ');');
 				if (!$is_auth)
 				{
 					continue;
 				}
 			}
 
-			$selected = ($row['module_filename'] == $selected_mod || $row['module_id'] == $selected_mod || (!$selected_mod && !$i)) ?  true : false;
-
-			// Get the localised lang string if available, or make up our own otherwise
-			$module_lang = strtoupper($module_type) . '_' . $row['module_title'];
-			$template->assign_block_vars($module_type . '_section', array(
-				'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($row['module_title']))),
-				'S_SELECTED'	=> $selected,
-				'U_TITLE'		=> $module_url . '&amp;i=' . $row['module_id'])
-			);
-
-			if ($selected)
+			// Category with no members, ignore
+			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
 			{
-				$module_id = $row['module_id'];
-				$module_name = $row['module_filename'];
+				continue;
+			}
 
-				if ($row['module_subs'])
+			// Ignore those rows we don't have enough information to access
+			if (($row['module_mode'] == 'post_details' && !$post_id) ||
+				($row['module_mode'] == 'topic_view' && !$topic_id) ||
+				($row['module_mode'] == 'forum_view' && !$forum_id))
+			{
+				continue;
+			}
+
+			$url_extra = '';
+			$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
+			$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
+			$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+
+			if ($row['left_id'] < $right)
+			{
+				$depth++;
+				$depth_ary[$row['parent_id']] = $depth;
+			}
+			else if ($row['left_id'] > $right + 1)
+			{
+				if (!isset($depth_ary[$row['parent_id']]))
 				{
-					$j = 0;
-					$submodules_ary = explode("\n", $row['module_subs']);
-					foreach ($submodules_ary as $submodule)
-					{
-						if (!trim($submodule))
-						{
-							continue;
-						}
-
-						$submodule = explode(',', trim($submodule));
-						$submodule_title = array_shift($submodule);
-
-						$is_auth = true;
-						foreach ($submodule as $auth_option)
-						{
-							eval('$is_auth = (' . preg_replace(array('#acl_([a-z_]+)#e', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1", ' . $forum_id . ')', '(int) $config["\\1"]'), trim($auth_option)) . ');');
-
-							if (!$is_auth)
-							{
-								break;
-							}
-						}
-
-						if (!$is_auth)
-						{
-							continue;
-						}
-
-						// Only show those rows we are able to access
-						if (($submodule_title == 'post_details' && !$post_id) ||
-							($submodule_title == 'topic_view' && !$topic_id) ||
-							($submodule_title == 'forum_view' && !$forum_id))
-						{
-							continue;
-						}
-
-						$suffix = ($post_id) ? "&amp;p=$post_id" : '';
-						$suffix .= ($topic_id) ? "&amp;t=$topic_id" : '';
-						$suffix .= ($forum_id) ? "&amp;f=$forum_id" : '';
-
-						$selected = ($submodule_title == $selected_submod || (!$selected_submod && !$j)) ? true : false;
-
-						// Get the localised lang string if available, or make up our own otherwise
-						$module_lang = strtoupper($module_type . '_' . $module_name . '_' . $submodule_title);
-
-						$template->assign_block_vars("{$module_type}_section.{$module_type}_subsection", array(
-							'L_TITLE'		=> (isset($user->lang[$module_lang])) ? $user->lang[$module_lang] : ucfirst(str_replace('_', ' ', strtolower($module_lang))),
-							'S_SELECTED'	=> $selected,
-							'ADD_ITEM'		=> $this->add_menu_item($row['module_filename'], $submodule_title),
-							'U_TITLE'		=> $module_url . '&amp;i=' . $module_id . '&amp;mode=' . $submodule_title . $suffix)
-						);
-
-						if ($selected)
-						{
-							$this->mode = $submodule_title;
-						}
-
-						$j++;
-					}
+					$depth = 0;
+				}
+				else
+				{
+					$depth = $depth_ary[$row['parent_id']];
 				}
 			}
+
+			$right = $row['right_id'];
+
+			$this->module_ary[$i] = array(
+				'depth'		=> $depth,
+
+				'id'		=> (int) $row['module_id'],
+				'parent'	=> (int) $row['parent_id'],
+				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
+
+				'name'		=> (string) $row['module_name'],
+				'mode'		=> (string) $row['module_mode'],
+				'display'	=> (int) $row['module_display'],
+				
+				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
+				'langname'	=> $row['module_langname'],
+
+				'url_extra'	=> $url_extra,
+
+				'left'		=> $row['left_id'],
+				'right'		=> $row['right_id'],
+			);
 
 			$i++;
 		}
-		$db->sql_freeresult($result);
 
-		if (!$module_id)
-		{
-			trigger_error('MODULE_NOT_EXIST');
-		}
-
-		$this->type = $module_type;
-		$this->id = $module_id;
-		$this->name = $module_name;
-		$this->url = "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}";
-		$this->url .= ($post_id) ? "&amp;p=$post_id" : '';
-		$this->url .= ($topic_id) ? "&amp;t=$topic_id" : '';
-		$this->url .= ($forum_id) ? "&amp;f=$forum_id" : '';
-	}
-
-	function load($type = false, $name = false, $mode = false, $run = true)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		if ($type)
-		{
-			$this->type = $type;
-		}
-
-		if ($name)
-		{
-			$this->name = $name;
-		}
-
-		if (!class_exists($this->type . '_' . $this->name))
-		{
-			require_once($phpbb_root_path . "includes/{$this->type}/{$this->type}_{$this->name}.$phpEx");
-
-			if ($run)
-			{
-				if (!isset($this->mode))
-				{
-					$this->mode = $mode;
-				}
-
-				eval("\$this->module = new {$this->type}_{$this->name}(\$this->id, \$this->mode, \$this->url);");
-				if (method_exists($this->module, 'init'))
-				{
-					$this->module->init();
-				}
-			}
-		}
-	}
-
-	// Displays the appropriate template with the given title
-	function display($page_title, $tpl_name)
-	{
-		global $template;
-
-		page_header($page_title);
-
-		$template->set_filenames(array(
-			'body' => $tpl_name)
-		);
-
-		page_footer();
-	}
-
-	// Add Item to Submodule Title
-	function add_menu_item($module_name, $mode)
-	{
-		global $db, $user, $auth;
-
-		if ($module_name != 'queue')
-		{
-			return '';
-		}
-
-		$forum_id = request_var('f', 0);
-		if ($forum_id && $auth->acl_get('m_approve', $forum_id))
-		{
-			$forum_list = array($forum_id);
-		}
-		else
-		{
-			$forum_list = get_forum_list('m_approve');
-		}
-
-		switch ($mode)
-		{
-			case 'unapproved_topics':
-
-				$sql = 'SELECT COUNT(*) AS total
-					FROM ' . TOPICS_TABLE . '
-					WHERE forum_id IN (' . implode(', ', $forum_list) . ')
-						AND topic_approved = 0';
-				$result = $db->sql_query($sql);
-				$total_topics = $db->sql_fetchfield('total', 0, $result);
-
-				return ($total_topics) ? $total_topics : $user->lang['NONE'];
-				break;
-
-			case 'unapproved_posts':
-
-				$sql = 'SELECT COUNT(*) AS total
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-						WHERE p.forum_id IN (' . implode(', ', $forum_list) . ')
-							AND p.post_approved = 0
-							AND t.topic_id = p.topic_id
-							AND t.topic_first_post_id <> p.post_id';
-				$result = $db->sql_query($sql);
-				$total_posts = $db->sql_fetchfield('total', 0, $result);
-
-				return ($total_posts) ? $total_posts : $user->lang['NONE'];
-				break;
-		}
-	}
-
-	// Public methods to be overwritten by modules
-	function module()
-	{
-		// Module name
-		// Module filename
-		// Module description
-		// Module version
-		// Module compatibility
-		return false;
-	}
-
-	function init()
-	{
-		return false;
-	}
-
-	function install()
-	{
-		return false;
-	}
-
-	function uninstall()
-	{
-		return false;
+		unset($this->module_cache['modules']);
 	}
 }
 
@@ -288,12 +189,12 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('mcp');
 
-$mcp = new module();
+$module = new mcp();
 
 // Basic parameter data
 $mode	= request_var('mode', '');
 $mode2	= (isset($_REQUEST['quick'])) ? request_var('mode2', '') : '';
-$module = request_var('i', '');
+$id = request_var('i', '');
 
 if (is_array($mode))
 {
@@ -310,7 +211,7 @@ if ($mode2)
 // Make sure we are using the correct module
 if ($mode == 'approve' || $mode == 'disapprove')
 {
-	$module = 'queue';
+	$id = 'queue';
 }
 
 // Only Moderators can go beyond this point
@@ -402,11 +303,26 @@ if (!$quickmod)
 	}
 
 	// Instantiate module system and generate list of available modules
-	$mcp->create('mcp', "mcp.$phpEx$SID", $post_id, $topic_id, $forum_id, $module, $mode);
+	$module->list_modules('mcp', $forum_id, $topic_id, $post_id);
+
+	// Select the active module
+	$module->set_active($id, $mode);
 
 	// Load and execute the relevant module
-	$mcp->load('mcp', false, $mode);
-	exit;
+	$module->load_active();
+
+	// Assign data to the template engine for the list of modules
+	$module->assign_tpl_vars("mcp.$phpEx$SID");
+
+	// Generate the page
+	page_header($user->lang['MCP_MAIN']);
+
+	$template->set_filenames(array(
+		'body' => $module->get_tpl_name())
+	);
+
+	page_footer();
+
 }
 
 switch ($mode)
@@ -415,26 +331,25 @@ switch ($mode)
 	case 'unlock':
 	case 'lock_post':
 	case 'unlock_post':
-		$mcp->load('mcp', 'main', $mode);
+		$module->load('mcp', 'main', $mode);
 		break;
 	case 'make_sticky':
 	case 'make_announce':
 	case 'make_global':
 	case 'make_normal':
-		$mcp->load('mcp', 'main', $mode);
+		$module->load('mcp', 'main', $mode);
 		break;
 	case 'fork':
 	case 'move':
-		$mcp->load('mcp', 'main', $mode);
+		$module->load('mcp', 'main', $mode);
 		break;
 	case 'delete_post':
 	case 'delete_topic':
-		$mcp->load('mcp', 'main', $mode);
+		$module->load('mcp', 'main', $mode);
 		break;
 	default:
 		trigger_error("$mode not allowed as quickmod");
 }
-
 
 
 //
