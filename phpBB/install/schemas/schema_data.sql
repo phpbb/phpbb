@@ -462,6 +462,17 @@ INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class,
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (39, 1, 'zebra', 'ucp', 38, 70, 71, 'UCP_ZEBRA_FRIENDS', 'friends', '');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (40, 1, 'zebra', 'ucp', 38, 72, 73, 'UCP_ZEBRA_FOES', 'foes', '');
 
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (50, 1, 1, '', 'mcp', 0, 74, 83, 'MCP_MAIN', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (51, 1, 1, 'main', 'mcp', 50, 75, 76, 'MCP_MAIN_FRONT', 'front', 'acl_m_');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (52, 1, 1, 'main', 'mcp', 50, 77, 78, 'MCP_MAIN_FORUM_VIEW', 'forum_view', 'acl_m_');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (53, 1, 1, 'main', 'mcp', 50, 79, 80, 'MCP_MAIN_TOPIC_VIEW', 'topic_view', 'acl_m_');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (54, 1, 1, 'main', 'mcp', 50, 81, 82, 'MCP_MAIN_POST_DETAILS', 'post_details', 'acl_m_');
+
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (55, 1, 1, '', 'mcp', 0, 84, 91, 'MCP_QUEUE', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (56, 1, 1, 'queue', 'mcp', 55, 85, 86, 'MCP_QUEUE_UNAPPROVED_TOPICS', 'unapproved_topics', 'acl_m_approve');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (57, 1, 1, 'queue', 'mcp', 55, 87, 88, 'MCP_QUEUE_UNAPPROVED_POSTS', 'unapproved_posts', 'acl_m_approve');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (58, 1, 1, 'queue', 'mcp', 55, 89, 90, 'MCP_QUEUE_REPORTS', 'reports', 'acl_m_approve');
+
 
 # MSSQL IDENTITY phpbb_modules OFF #
 
