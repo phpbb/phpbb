@@ -18,13 +18,13 @@ class ucp_zebra
 	{
 		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
 
-		$submit	= (!empty($_POST['submit']) || !empty($_GET['add'])) ? true : false;
+		$submit	= (isset($_POST['submit']) || isset($_GET['add'])) ? true : false;
 		$s_hidden_fields = '';
 
 		if ($submit)
 		{
 			$var_ary = array(
-				'usernames'	=> 0,
+				'usernames'	=> array(0),
 				'add'		=> '', 
 			);
 
@@ -77,7 +77,7 @@ class ucp_zebra
 
 				if ($add)
 				{
-					$sql = 'SELECT user_id    
+					$sql = 'SELECT user_id
 						FROM ' . USERS_TABLE . ' 
 						WHERE username IN (' . $add . ')';
 					$result = $db->sql_query($sql);
@@ -193,16 +193,43 @@ class ucp_zebra
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array( 
-			'L_TITLE'	=> $user->lang['UCP_ZEBRA_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . strtoupper($mode)],
 
-			'U_SEARCH_USER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=ucp&amp;field=add", 
+			'U_SEARCH_USER'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=ucp&amp;field=add", 
 
 			'S_USERNAME_OPTIONS'	=> $s_username_options,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
-			'S_UCP_ACTION'			=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_UCP_ACTION'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
 		);
 
 		$this->tpl_name = 'ucp_zebra_' . $mode;
+	}
+}
+
+/**
+* @package module_install
+*/
+class ucp_zebra_info
+{
+	function module()
+	{
+		return array(
+			'filename'	=> 'ucp_zebra',
+			'title'		=> 'UCP_ZEBRA',
+			'version'	=> '1.0.0',
+			'modes'		=> array(
+				'friends'		=> array('title' => 'UCP_ZEBRA_FRIENDS', 'auth' => ''),
+				'foes'			=> array('title' => 'UCP_ZEBRA_FOES', 'auth' => ''),
+			),
+		);
+	}
+
+	function install()
+	{
+	}
+
+	function uninstall()
+	{
 	}
 }
 

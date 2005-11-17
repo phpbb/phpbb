@@ -103,7 +103,6 @@ $lang += array(
 	'SEARCH_USER_POSTS'		=> 'Search users posts',
 	'SELECT_MARKED'			=> 'Select Marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
-	'SEND_EMAIL'			=> 'Email',
 	'SEND_IM'				=> 'Instant Messaging',
 	'SEND_MESSAGE'			=> 'Message',
 	'SORT_EMAIL'			=> 'Email',

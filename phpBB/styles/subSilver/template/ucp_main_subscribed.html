@@ -60,7 +60,7 @@
 
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<td style="padding: 4px;" width="100%" valign="top">
-			<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br />
+			<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{topicrow.NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br />
 			<!-- IF topicrow.PAGINATION -->
 				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 			<!-- ENDIF -->
@@ -83,6 +83,6 @@
 	</tr>
 </table>
 
-<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b></div>
+<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></b></div>
 
 <!-- INCLUDE ucp_footer.html -->

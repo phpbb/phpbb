@@ -159,4 +159,30 @@ class ucp_attachments
 	}
 }
 
+/**
+* @package module_install
+*/
+class ucp_attachments_info
+{
+	function module()
+	{
+		return array(
+			'filename'	=> 'ucp_attachments',
+			'title'		=> 'UCP_ATTACHMENTS',
+			'version'	=> '1.0.0',
+			'modes'		=> array(
+				'attachments'	=> array('title' => 'UCP_ATTACHMENTS', 'auth' => 'acl_u_attach'),
+			),
+		);
+	}
+
+	function install()
+	{
+	}
+
+	function uninstall()
+	{
+	}
+}
+
 ?>

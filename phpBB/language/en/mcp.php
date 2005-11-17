@@ -189,7 +189,6 @@ $lang += array(
 	'REPORT_MESSAGE_EXPLAIN'=> 'Use this form to report the selected message to the board administrators. Reporting should generally be used only if the message breaks forum rules.',
 	'REPORT_NOTIFY'			=> 'Notify me',
 	'REPORT_NOTIFY_EXPLAIN'	=> 'Informs you when your report is dealt with',
-	'REPORT_POST'			=> 'Report this post',
 	'REPORT_POST_EXPLAIN'	=> 'Use this form to report the selected post to the forum moderators and board administrators. Reporting should generally be used only if the post breaks forum rules.',
 	'REPORT_TOTAL'			=> 'In total there is <b>1</b> report to review',
 	'RESYNC'				=> 'Resync',

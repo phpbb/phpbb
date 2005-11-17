@@ -1745,7 +1745,7 @@ function page_header($page_title = '')
 	$s_privmsg_new = false;
 
 	// Obtain number of new private messages if user is logged in
-	if ($user->data['is_registered'])
+	if (isset($user->data['is_registered']) && $user->data['is_registered'])
 	{
 		if ($user->data['user_new_privmsg'])
 		{

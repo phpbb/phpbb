@@ -46,7 +46,6 @@ $lang += array(
 	'NO_NEW_POSTS_LOCKED'	=> 'No new posts [ Locked ]',
 
 	'POST_FORUM_LOCKED'		=> 'Forum is locked',
-	'POST_NEW_TOPIC'		=> 'Post new topic',
 
 	'TOPICS_MARKED'			=> 'The topics for this forum have now been marked read',
 

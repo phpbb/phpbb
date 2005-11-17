@@ -126,6 +126,26 @@ class ucp_prefs
 				$style = (isset($style)) ? $style : $user->data['user_style'];
 				$tz = (isset($tz)) ? $tz : $user->data['user_timezone'];
 
+				$dateformat_options = '';
+
+				foreach ($user->lang['dateformats'] as $format => $null)
+				{
+					$dateformat_options .= '<option value="' . $format . '"' . (($format == $dateformat) ? ' selected="selected"' : '') . '>';
+					$dateformat_options .= $user->format_date(time(), $format, true) . ((strpos($format, '|') !== false) ? ' [' . $user->lang['RELATIVE_DAYS'] . ']' : '');
+					$dateformat_options .= '</option>';
+				}
+
+				$s_custom = false;
+
+				$dateformat_options .= '<option value="custom"';
+				if (!in_array($dateformat, array_keys($user->lang['dateformats'])))
+				{
+					$dateformat_options .= ' selected="selected"';
+					$s_custom = true;
+				}
+				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+
+
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
@@ -150,6 +170,9 @@ class ucp_prefs
 					'NOTIFY_BOTH'		=> ($notifymethod == NOTIFY_BOTH) ? 'checked="checked"' : '',
 
 					'DATE_FORMAT'		=> $dateformat,
+					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
+					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
+					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 
 					'S_LANG_OPTIONS'	=> language_select($lang),
 					'S_STYLE_OPTIONS'	=> style_select($style),
@@ -414,6 +437,34 @@ class ucp_prefs
 		);
 
 		$this->tpl_name = 'ucp_prefs_' . $mode;
+	}
+}
+
+/**
+* @package module_install
+*/
+class ucp_prefs_info
+{
+	function module()
+	{
+		return array(
+			'filename'	=> 'ucp_prefs',
+			'title'		=> 'UCP_PREFS',
+			'version'	=> '1.0.0',
+			'modes'		=> array(
+				'personal'	=> array('title' => 'UCP_PREFS_PERSONAL', 'auth' => ''),
+				'view'		=> array('title' => 'UCP_PREFS_VIEW', 'auth' => ''),
+				'post'		=> array('title' => 'UCP_PREFS_POST', 'auth' => ''),
+			),
+		);
+	}
+
+	function install()
+	{
+	}
+
+	function uninstall()
+	{
 	}
 }
 

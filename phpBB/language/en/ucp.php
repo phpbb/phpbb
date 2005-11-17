@@ -94,6 +94,7 @@ $lang += array(
 	'CURRENT_PASSWORD'			=> 'Current password',
 	'CURRENT_PASSWORD_EXPLAIN'	=> 'You must confirm your current password if you wish to change it, alter your email address or username.',
 	'CUR_PASSWORD_ERROR'		=> 'The current password you entered is incorrect.',
+	'CUSTOM_DATEFORMAT'			=> 'Custom...',
 
 	'DEFAULT_ACTION'			=> 'Default Action',
 	'DEFAULT_ACTION_EXPLAIN'	=> 'This Action will be triggered if none of the above is applicable',
@@ -275,6 +276,7 @@ $lang += array(
 	'RECIPIENT'					=> 'Recipient',
 	'RECIPIENTS'				=> 'Recipients',
 	'REGISTRATION'				=> 'Registration',
+	'RELATIVE_DAYS'				=> 'Relative days',
 	'RELEASE_MESSAGES'			=> 'Click %sHere%s to release the on-hold messages, they will be re-sorted into the appropiate folder if enough space is made available.',
 	'REMOVE_ADDRESS'			=> 'Remove address',
 	'REMOVE_SELECTED_BOOKMARKS'	=> 'Remove selected bookmarks',
@@ -317,6 +319,7 @@ $lang += array(
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',
 
 	'UCP'						=> 'User Control Panel',
+	'UCP_ACTIVATE'				=> 'Activate account',
 	'UCP_ADMIN_ACTIVATE'		=> 'Please note that you will need to enter a valid email address before your account is activated. The administrator will review your account and if approved you will an email at the address you specified.',
 	'UCP_AIM'					=> 'AOL Instant Messenger',
 	'UCP_ATTACHMENTS'			=> 'Attachments',
@@ -445,8 +448,6 @@ $lang += array(
 	),
 
 
-	'UCP_GROUPS_MEMBERSHIP'	=> 'Memberships',
-	'UCP_GROUPS_MANAGE'		=> 'Manage groups',
 	'GROUPS_EXPLAIN'		=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you extra rights to view content or increase your capabilities in other areas.',
 	'GROUP_LEADER'		=> 'Leaderships',
 	'GROUP_MEMBER'		=> 'Memberships',

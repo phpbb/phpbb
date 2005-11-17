@@ -2360,6 +2360,84 @@ function update_post_information($type, $ids)
 }
 
 /**
+* Get database size
+* Currently only mysql and mssql are supported
+*/
+function get_database_size()
+{
+	global $db, $user, $table_prefix;
+	
+	// This code is heavily influenced by a similar routine
+	// in phpMyAdmin 2.2.0
+	if (preg_match('#^mysql#', SQL_LAYER))
+	{
+		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$version = $row['mysql_version'];
+
+			if (preg_match('#^(3\.23|4\.|5\.)#', $version))
+			{
+				$db_name = (preg_match('#^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)#', $version)) ? "`{$db->dbname}`" : $db->dbname;
+
+				$sql = "SHOW TABLE STATUS
+					FROM " . $db_name;
+				$result = $db->sql_query($sql);
+
+				$dbsize = 0;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && $row['Engine'] == 'MyISAM'))
+					{
+						if ($table_prefix != '')
+						{
+							if (strstr($row['Name'], $table_prefix))
+							{
+								$dbsize += $row['Data_length'] + $row['Index_length'];
+							}
+						}
+						else
+						{
+							$dbsize += $row['Data_length'] + $row['Index_length'];
+						}
+					}
+				}
+				$db->sql_freeresult($result);
+			}
+			else
+			{
+				$dbsize = $user->lang['NOT_AVAILABLE'];
+			}
+		}
+		else
+		{
+			$dbsize = $user->lang['NOT_AVAILABLE'];
+		}
+	}
+	else if (preg_match('#^mssql#', SQL_LAYER))
+	{
+		$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
+			FROM sysfiles';
+		$result = $db->sql_query($sql);
+
+		$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['NOT_AVAILABLE'];
+		$db->sql_freeresult($result);
+	}
+	else
+	{
+		$dbsize = $user->lang['NOT_AVAILABLE'];
+	}
+
+	if (is_int($dbsize))
+	{
+		$dbsize = ($dbsize >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($dbsize / 1048576)) : (($dbsize >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($dbsize / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $dbsize));
+	}
+
+	return $dbsize;
+}
+
+/**
 * Tidy database
 * Removes all tracking rows older than 6 months, including mark_posted informations
 */

@@ -23,24 +23,23 @@
 
 		<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<td class="row1" width="100%">
-			<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p></td>
-		<!-- td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR}</p></td -->
+			<p class="topictitle"><!-- IF topicrow.S_UNREAD --><a href="{topicrow.U_NEWEST_POST}">{topicrow.NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p>
+		</td>
 		<td class="row1" width="120" align="center" nowrap="nowrap">
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 			<p class="topicdetails">
-			<!-- IF forumrow.U_LAST_POSTER -->
-				<a href="{forumrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
+			<!-- IF topicrow.U_LAST_POST_AUTHOR -->
+				<a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a>
 			<!-- ELSE -->
 				{topicrow.LAST_POST_AUTHOR}
 			<!-- ENDIF -->
-			<a href="{forumrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+			<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
 			</p>
 		</td>
-
 	</tr>
 	<!-- BEGINELSE -->
 	<tr class="row1">
-		<td align="center"><b class="gen">{L_NO_IMPORTANT_NEWS}</b></td>
+		<td align="center" colspan="3"><b class="gen">{L_NO_IMPORTANT_NEWS}</b></td>
 	</tr>
 	<!-- END topicrow -->
 

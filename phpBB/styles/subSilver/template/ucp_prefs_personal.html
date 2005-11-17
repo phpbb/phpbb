@@ -2,6 +2,18 @@
 
 <!-- $Id$ -->
 
+<script type="text/javascript">
+<!--
+// Set display of page element
+// s[-1,0,1] = hide,toggle display,show
+function dE(n,s){
+	var e = document.getElementById(n);
+	if(!s) s = (e.style.display=='') ? -1:1;
+	e.style.display = (s==1) ? 'block':'none';
+}
+//-->
+</script>
+
 <table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th colspan="2" valign="middle">{L_TITLE}</th>
@@ -65,7 +77,12 @@
 	</tr>
 	<tr> 
 		<td class="row1" width="50%"><b class="genmed">{L_BOARD_DATE_FORMAT}:</b><br /><span class="gensmall">{L_BOARD_DATE_FORMAT_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" name="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" /></td>
+		<td class="row2">
+			<select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = '{DEFAULT_DATEFORMAT}'; } else { document.getElementById('dateformat').value = this.value; }">
+				{S_DATEFORMAT_OPTIONS}
+			</select>
+			<div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" style="margin-top: 3px;" /></div>
+		</td>
 	</tr>
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>

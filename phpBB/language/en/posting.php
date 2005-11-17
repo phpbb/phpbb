@@ -71,7 +71,6 @@ $lang += array(
 	'DELETE_MESSAGE'			=> 'Delete Message',
 	'DELETE_MESSAGE_CONFIRM'	=> 'Are you sure you want to delete this message?',
 	'DELETE_OWN_POSTS'			=> 'Sorry but you can only delete your own posts.',
-	'DELETE_POST'				=> 'Delete Post',
 	'DELETE_POST_CONFIRM'		=> 'Are you sure you want to delete this message?',
 	'DELETE_POST_WARN'			=> 'Once deleted the post cannot be recovered',
 	'DISABLE_BBCODE'			=> 'Disable BBCode',
@@ -83,7 +82,6 @@ $lang += array(
 	'DRAFT_SAVED'				=> 'Draft successfully saved.',
 	'DRAFT_TITLE'				=> 'Draft Title',
 
-	'EDIT_POST'					=> 'Edit Post',
 	'EDIT_REASON'				=> 'Reason for editing this post',
 	'EMPTY_FILEUPLOAD'			=> 'The uploaded file is empty',
 	'EMPTY_MESSAGE'				=> 'You must enter a message when posting.',
