@@ -145,6 +145,8 @@ class p_master
 
 			$right = $row['right_id'];
 
+			$url_func = $row['module_name'] . '_' . $row['module_mode'] . '_url';
+
 			$this->module_ary[$i] = array(
 				'depth'		=> $depth,
 
@@ -155,6 +157,8 @@ class p_master
 				'name'		=> (string) $row['module_name'],
 				'mode'		=> (string) $row['module_mode'],
 				'display'	=> (int) $row['module_display'],
+
+				'url_extra'	=> (function_exists($url_func)) ? $url_func() : '',
 				
 				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
@@ -373,6 +377,21 @@ class p_master
 		);
 
 		page_footer();
+	}
+
+	/**
+	* Toggle whether this module will be displayed or not
+	*/
+	function set_display($id, $display = true)
+	{
+		foreach ($this->module_ary as $row_id => $itep_ary)
+		{
+			if ($itep_ary['mode'] === $id || $itep_ary['id'] === (int) $id)
+			{
+				$this->module_ary[$row_id]['display'] = (int) $display;
+				break;
+			}
+		}
 	}
 }
 

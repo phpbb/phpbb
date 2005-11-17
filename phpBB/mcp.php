@@ -19,169 +19,6 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_module.'.$phpEx);
 
 /**
-* @package mcp
-* MCP Module
-*/
-class mcp extends p_master
-{
-	/**
-	* List modules
-	*
-	* This creates a list, stored in $this->module_ary of all available
-	* modules for the given class (ucp, mcp and acp). Additionally
-	* $this->module_y_ary is created with indentation information for
-	* displaying the module list appropriately. Only modules for which
-	* the user has access rights are included in these lists.
-	*
-	* The mcp performs additional checks on the modules loaded to ensure
-	* that only relevant links are presented
-	*
-	* @final
-	*/
-	function list_modules($p_class, $forum_id = 0, $topic_id = 0, $post_id = 0)
-	{
-		global $auth, $db, $user;
-		global $config, $phpbb_root_path, $phpEx;
-
-		$get_cache_data = true;
-
-		// Empty cached contents
-		$this->module_cache = array();
-
-		// Sanitise for future path use, it's escaped as appropriate for queries
-		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
-		
-		if (file_exists($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx))
-		{
-			include($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx);
-			$get_cache_data = false;
-		}
-
-		if ($get_cache_data)
-		{
-			global $cache;
-			
-			// Get active modules
-			$sql = 'SELECT *
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = '" . $db->sql_escape($p_class) . "'
-					AND module_enabled = 1
-				ORDER BY left_id ASC";
-			$result = $db->sql_query($sql);
-			
-			$this->module_cache['modules'] = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$this->module_cache['modules'][] = $row;
-			}
-			$db->sql_freeresult($result);
-
-			// Get module parents
-			$this->module_cache['parents'] = array();
-			foreach ($this->module_cache['modules'] as $row)
-			{
-				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id']);
-			}
-
-			$file = '<?php $this->module_cache=' . $cache->format_array($this->module_cache) . "; ?>";
-
-			if ($fp = @fopen($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx, 'wb'))
-			{
-				@flock($fp, LOCK_EX);
-				fwrite($fp, $file);
-				@flock($fp, LOCK_UN);
-				fclose($fp);
-			}
-
-			unset($file);
-		}
-
-		$right = $depth = $i = 0;
-		$depth_ary = array();
-
-		foreach ($this->module_cache['modules'] as $row)
-		{
-			/**
-			* Authorisation is required ... not authed, skip
-			* @todo implement $this->is_module_id
-			* @todo put in seperate method for authentication
-			*/
-			if ($row['module_auth'])
-			{
-				$is_auth = false;
-				eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#e', '#\$id#', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1"\\2)', '$this->acl_forup_id', '(int) $config["\\1"]'), trim($row['module_auth'])) . ');');
-				if (!$is_auth)
-				{
-					continue;
-				}
-			}
-
-			// Category with no members, ignore
-			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
-			{
-				continue;
-			}
-
-			// Ignore those rows we don't have enough information to access
-			if (($row['module_mode'] == 'post_details' && !$post_id) ||
-				($row['module_mode'] == 'topic_view' && !$topic_id) ||
-				($row['module_mode'] == 'forum_view' && !$forum_id))
-			{
-				continue;
-			}
-
-			$url_extra = '';
-			$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
-			$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
-			$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
-
-			if ($row['left_id'] < $right)
-			{
-				$depth++;
-				$depth_ary[$row['parent_id']] = $depth;
-			}
-			else if ($row['left_id'] > $right + 1)
-			{
-				if (!isset($depth_ary[$row['parent_id']]))
-				{
-					$depth = 0;
-				}
-				else
-				{
-					$depth = $depth_ary[$row['parent_id']];
-				}
-			}
-
-			$right = $row['right_id'];
-
-			$this->module_ary[$i] = array(
-				'depth'		=> $depth,
-
-				'id'		=> (int) $row['module_id'],
-				'parent'	=> (int) $row['parent_id'],
-				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
-
-				'name'		=> (string) $row['module_name'],
-				'mode'		=> (string) $row['module_mode'],
-				'display'	=> (int) $row['module_display'],
-				
-				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
-				'langname'	=> $row['module_langname'],
-
-				'url_extra'	=> $url_extra,
-
-				'left'		=> $row['left_id'],
-				'right'		=> $row['right_id'],
-			);
-
-			$i++;
-		}
-
-		unset($this->module_cache['modules']);
-	}
-}
-
-/**
 */
 
 // Start session management
@@ -189,7 +26,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('mcp');
 
-$module = new mcp();
+$module = new p_master();
 
 // Basic parameter data
 $mode	= request_var('mode', '');
@@ -303,10 +140,24 @@ if (!$quickmod)
 	}
 
 	// Instantiate module system and generate list of available modules
-	$module->list_modules('mcp', $forum_id, $topic_id, $post_id);
+	$module->list_modules('mcp');
 
 	// Select the active module
 	$module->set_active($id, $mode);
+
+	// Hide some of the options if we don't have the relevant information to use them
+	if (!$post_id)
+	{
+		$module->set_display('post_details', false);
+	}
+	if (!$topic_id)
+	{
+		$module->set_display('topic_view', false);
+	}
+	if (!$forum_id)
+	{
+		$module->set_display('forum_view', false);
+	}
 
 	// Load and execute the relevant module
 	$module->load_active();
@@ -351,6 +202,30 @@ switch ($mode)
 		trigger_error("$mode not allowed as quickmod");
 }
 
+/**
+* Functions used to generate additional URL paramters
+*/
+function main_forum_view_url()
+{
+	return extra_url();
+}
+function main_topic_view_url()
+{
+	return extra_url();
+}
+function main_post_details_url()
+{
+	return extra_url();
+}
+function extra_url()
+{
+	global $forum_id, $topic_id, $post_id;
+	$url_extra = '';
+	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
+	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
+	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+	return $url_extra;
+}
 
 //
 // LITTLE HELPER
