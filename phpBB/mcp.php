@@ -29,20 +29,21 @@ $user->setup('mcp');
 $module = new p_master();
 
 // Basic parameter data
-$mode	= request_var('mode', '');
-$mode2	= (isset($_REQUEST['quick'])) ? request_var('mode2', '') : '';
 $id = request_var('i', '');
 
-if (is_array($mode))
+if (is_array($_REQUEST['mode']))
 {
-	list($mode, ) = each($mode);
+	list($mode, ) = each(request_var('mode', array(''));
+}
+else
+{
+	$mode = request_var('mode', '');
 }
 
-if ($mode2)
+if (isset($_REQUEST['quick']))
 {
-	$mode = $mode2;
+	$mode = request_var('mode2', '');
 	$action = '';
-	unset($mode2);
 }
 
 // Make sure we are using the correct module

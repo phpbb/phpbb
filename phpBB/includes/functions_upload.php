@@ -62,7 +62,7 @@ class filespec
 			$this->mimetype = 'application/octetstream';
 		}
 		
-		$this->extension = array_pop(explode('.', strtolower($this->realname)));
+		$this->extension = strtolower($this->get_extension($this->realname));
 
 		// Try to get real filesize from temporary folder (not always working) ;)
 		$this->filesize = (@filesize($this->filename)) ? @filesize($this->filename) : $this->filesize;
@@ -142,6 +142,20 @@ class filespec
 		{
 			@unlink($this->destination_file);
 		}
+	}
+
+	/**
+	* Get file extension
+	*/
+	function get_extension($filename)
+	{
+		if (strpos($filename, '.') === false)
+		{
+			return '';
+		}
+
+		$filename = explode('.', $filename);
+		return array_pop($filename);
 	}
 
 	/**
@@ -508,7 +522,11 @@ class fileupload
 		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
 			
 		$upload_ary['type'] = 'application/octet-stream';
-		$upload_ary['name'] = basename($url['path']) . '.' . array_pop(explode('.', $url['path']));
+		
+		$url['path'] = explode('.', $url['path']);
+		$ext = array_pop($url['path']);
+		
+		$upload_ary['name'] = basename($url['path']) . (($ext) ? '.' . $ext : '');
 		$filename = $url['path'];
 		$filesize = 0;
 

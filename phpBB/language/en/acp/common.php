@@ -147,6 +147,14 @@ $lang += array(
 
 // Log
 $lang += array(
+	'LOG_BOT_ADDED'		=> '<b>New bot added</b><br />&#187; %s',
+	'LOG_BOT_DELETE'	=> '<b>Deleted bot</b><br />&#187; %s',
+	'LOG_BOT_UPDATED'	=> '<b>Existing bot updated</b><br />&#187; %s',
+
+	'LOG_JAB_CHANGED'	=> '<b>Jabber account changed</b>',
+	'LOG_JAB_PASSCHG'	=> '<b>Jabber password changed</b>',
+	'LOG_JAB_REGISTER'	=> '<b>Jabber account registered</b>',
+
 	'LOG_MODULE_DISABLE'	=> '<b>Module disabled</b>',
 	'LOG_MODULE_ENABLE'		=> '<b>Module enabled</b>',
 	'LOG_MODULE_MOVE_DOWN'	=> '<b>Module moved down</b><br />&#187; %s',

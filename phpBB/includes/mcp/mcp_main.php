@@ -812,7 +812,10 @@ function mcp_fork_topic($topic_ids)
 			$new_topic_id = $db->sql_nextid();
 			$new_topic_id_list[$topic_id] = $new_topic_id;
 
-			markread('topic', $to_forum_id, $new_topic_id);
+			/**
+			* @todo enable
+			* markread('topic', $to_forum_id, $new_topic_id);
+			*/
 
 			if ($topic_row['poll_start'])
 			{
@@ -979,10 +982,10 @@ class mcp_main_info
 			'title'		=> 'MCP_MAIN',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'front'			=> array('title' => 'MCP_MAIN_FRONT', 'auth' => 'acl_m'),
-				'forum_view'	=> array('title' => 'MCP_MAIN_FORUM_VIEW', 'auth' => 'acl_m'),
-				'topic_view'	=> array('title' => 'MCP_MAIN_TOPIC_VIEW', 'auth' => 'acl_m'),
-				'post_details'	=> array('title' => 'MCP_MAIN_POST_DETAILS', 'auth' => 'acl_m'),
+				'front'			=> array('title' => 'MCP_MAIN_FRONT', 'auth' => 'acl_m_'),
+				'forum_view'	=> array('title' => 'MCP_MAIN_FORUM_VIEW', 'auth' => 'acl_m_'),
+				'topic_view'	=> array('title' => 'MCP_MAIN_TOPIC_VIEW', 'auth' => 'acl_m_'),
+				'post_details'	=> array('title' => 'MCP_MAIN_POST_DETAILS', 'auth' => 'acl_m_'),
 			),
 		);
 	}
