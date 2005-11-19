@@ -33,7 +33,7 @@ $id = request_var('i', '');
 
 if (is_array($_REQUEST['mode']))
 {
-	list($mode, ) = each(request_var('mode', array(''));
+	list($mode, ) = each(request_var('mode', array('')));
 }
 else
 {
