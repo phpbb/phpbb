@@ -282,12 +282,13 @@ class acp_board
 
 		if ($submit)
 		{
-			add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
+			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
 
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($u_action));
 		}
 
 		$this->tpl_name = 'acp_board';
+		$this->page_title = $display_vars['title'];
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$display_vars['title']],
@@ -526,7 +527,7 @@ class acp_board_info
 	{
 		return array(
 			'filename'	=> 'acp_board',
-			'title'		=> 'Board Management',
+			'title'		=> 'ACP_BOARD_MANAGEMENT',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'auth'		=> array('title' => 'ACP_AUTH_SETTINGS', 'auth' => 'acl_a_server'),

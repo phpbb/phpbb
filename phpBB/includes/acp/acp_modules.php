@@ -23,7 +23,7 @@
 */
 class acp_modules
 {
-	var $mode = '';
+	var $module_class = '';
 
 	function main($id, $mode)
 	{
@@ -44,6 +44,8 @@ class acp_modules
 		{
 			$user->add_lang('ucp');
 		}
+
+		$this->page_title = strtoupper($this->module_class);
 
 		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 		$parent_id = request_var('parent_id', 0);
@@ -590,6 +592,8 @@ class acp_modules
 				}
 			}
 			closedir($dh);
+
+			ksort($fileinfo);
 		}
 		else
 		{
@@ -988,7 +992,7 @@ class acp_modules_info
 			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules'),
-				'ucp'		=> array('title' => 'USER_CONTROL_PANEL', 'auth' => 'acl_a_modules'),
+				'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules'),
 				'mcp'		=> array('title' => 'MCP', 'auth' => 'acl_a_modules'),
 			),
 		);

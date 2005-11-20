@@ -831,7 +831,7 @@ class template
 			}
 		}
 
-		return (($elseif) ? '} elseif (' : 'if (') . (implode(' ', $tokens) . ') { ');
+		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $tokens) . ') { ');
 	}
 
 	function compile_tag_define($tag_args, $op)

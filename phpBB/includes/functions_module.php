@@ -352,6 +352,16 @@ class p_master
 	}
 
 	/**
+	* Returns the desired page title
+	*/
+	function get_page_title()
+	{
+		global $user;
+
+		return (isset($user->lang[$this->module->page_title])) ? $user->lang[$this->module->page_title] : $this->module->page_title;
+	}
+
+	/**
 	* Load module as the current active one without the need for registering it
 	*/
 	function load($class, $name, $mode = false)

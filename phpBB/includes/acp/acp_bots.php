@@ -32,6 +32,7 @@ class acp_bots
 
 		$user->add_lang('acp/bots');
 		$this->tpl_name = 'acp_bots';
+		$this->page_title = 'ACP_BOTS';
 
 		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 

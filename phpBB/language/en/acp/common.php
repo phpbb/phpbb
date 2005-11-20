@@ -34,13 +34,17 @@ $lang += array(
 	'ACP_ATTACHMENT_SETTINGS'	=> 'Attachment Settings',
 	'ACP_AUTH_SETTINGS'			=> 'Authentication',
 	'ACP_AVATAR_SETTINGS'		=> 'Avatar Settings',
+	'ACP_BBCODES'				=> 'BBCodes',
 	'ACP_BOARD_DEFAULTS'		=> 'Board Defaults',
+	'ACP_BOARD_MANAGEMENT'		=> 'Board Management',
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
 	'ACP_CAT_GENERAL'			=> 'General',
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie Settings',
 	'ACP_EMAIL_SETTINGS'		=> 'Email Settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage Extension Groups',
+	'ACP_ICONS'					=> 'Topic Icons',
+	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
 	'ACP_JABBER_SETTINGS'		=> 'Jabber Settings',
 	'ACP_LOAD_SETTINGS'			=> 'Load Settings',
 	'ACP_MAIN'					=> 'Admin index',
@@ -51,9 +55,12 @@ $lang += array(
 	'ACP_PHP_INFO'				=> 'PHP Information',
 	'ACP_POSTING'				=> 'Posting',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
+	'ACP_SMILIES'				=> 'Smilies',
+	'ACP_WORDS'					=> 'Word Censoring',
 
 	'ACTION'				=> 'Action',
 	'ACTIVATE'				=> 'Activate',
+	'ADD'					=> 'Add',
 	'ADMIN'					=> 'Administration',
 	'ADMIN_INDEX'			=> 'Admin Index',
 	'ADMIN_PANEL'			=> 'Administration Control Panel',
@@ -63,7 +70,9 @@ $lang += array(
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully',
 
 	'DEACTIVATE'			=> 'Deactivate',
+	'DIMENSIONS'			=> 'Dimensions',
 	'DISABLE'				=> 'Disable',
+	'DISPLAY'				=> 'Display',
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
@@ -84,14 +93,17 @@ $lang += array(
 	'MOVE_DOWN'				=> 'Move Down',
 	'MOVE_UP'				=> 'Move Up',
 
+	'NOTIFY'				=> 'Notification',
 	'NO_ADMIN'				=> 'You are not authorised to administer this board.',
 
 	'OFF'					=> 'OFF',
 	'ON'					=> 'ON',
 
 	'REMIND'				=> 'Remind',
+	'REORDER'				=> 'Reorder',
 	'RETURN_TO'				=> 'Return to ...',
 
+	'UCP'					=> 'User Control Panel',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 );
 
@@ -147,9 +159,30 @@ $lang += array(
 
 // Log
 $lang += array(
+	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_ADD'	=> '<b>Added extension group</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_EDIT'	=> '<b>Edited extension group</b><br />&#187; %s',
+	'LOG_ATTACH_EXTGROUP_DEL'	=> '<b>Removed extension group</b><br />&#187; %s',
+	'LOG_ATTACH_FILEUPLOAD'		=> '<b>Orphan File uploaded to Post Number %1$d - %2$s</b>',
+	'LOG_ATTACH_ORPHAN_DEL'		=> '<b>Orphan Files deleted</b><br />&#187; %s',
+
+	'LOG_BBCODE_ADD'		=> '<b>Added new BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_EDIT'		=> '<b>Edited BBCode</b><br />&#187; %s',
+	'LOG_BBCODE_DELETE'		=> '<b>Deleted BBCode</b><br />&#187; %s',
+
 	'LOG_BOT_ADDED'		=> '<b>New bot added</b><br />&#187; %s',
 	'LOG_BOT_DELETE'	=> '<b>Deleted bot</b><br />&#187; %s',
 	'LOG_BOT_UPDATED'	=> '<b>Existing bot updated</b><br />&#187; %s',
+
+	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<b>Exluded ip/hostname from download list</b><br />&#187; %s',
+	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
+	'LOG_DOWNLOAD_REMOVE_IP'	=> '<b>Removed ip/hostname from download list</b><br />&#187; %s',
+
+	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
+	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
+	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
 
 	'LOG_JAB_CHANGED'	=> '<b>Jabber account changed</b>',
 	'LOG_JAB_PASSCHG'	=> '<b>Jabber password changed</b>',
@@ -168,33 +201,21 @@ $lang += array(
 	'LOG_RESYNC_POSTCOUNTS'	=> '<b>User postcounts synced</b>',
 	'LOG_RESYNC_STATS'		=> '<b>Post, topic and user stats reset</b>',
 
-	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
-	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
-	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
+	'LOG_CONFIG_ATTACH'		=> '<b>Altered attachment settings</b>',
+	'LOG_CONFIG_AUTH'		=> '<b>Altered authentication settings</b>',
+	'LOG_CONFIG_AVATAR'		=> '<b>Altered avatar settings</b>',
+	'LOG_CONFIG_COOKIE'		=> '<b>Altered cookie settings</b>',
+	'LOG_CONFIG_DEFAULT'	=> '<b>Altered board defaults</b>',
+	'LOG_CONFIG_EMAIL'		=> '<b>Altered email settings</b>',
+	'LOG_CONFIG_LOAD'		=> '<b>Altered load settings</b>',
+	'LOG_CONFIG_MESSAGE'	=> '<b>Altered private message settings</b>',
+	'LOG_CONFIG_SERVER'		=> '<b>Altered server settings</b>',
+	'LOG_CONFIG_SETTINGS'	=> '<b>Altered board settings</b>',
 
-	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<b>Exluded ip/hostname from download list</b><br />&#187; %s',
-	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
-	'LOG_DOWNLOAD_REMOVE_IP'	=> '<b>Removed ip/hostname from download list</b><br />&#187; %s',
+	'LOG_WORD_ADD'			=> '<b>Added word censor</b><br />&#187; %s',
+	'LOG_WORD_DELETE'		=> '<b>Deleted word censor</b><br />&#187; %s',
+	'LOG_WORD_EDIT'			=> '<b>Edited word censor</b><br />&#187; %s',
 
-	'LOG_SERVER_CONFIG'		=> '<b>Altered server settings</b>',
-	'LOG_DEFAULT_CONFIG'	=> '<b>Altered board defaults</b>',
-	'LOG_SETTINGS_CONFIG'	=> '<b>Altered board settings</b>',
-	'LOG_COOKIE_CONFIG'		=> '<b>Altered cookie settings</b>',
-	'LOG_EMAIL_CONFIG'		=> '<b>Altered email settings</b>',
-	'LOG_AVATAR_CONFIG'		=> '<b>Altered avatar settings</b>',
-	'LOG_AUTH_CONFIG'		=> '<b>Altered authentication settings</b>',
-	'LOG_LOAD_CONFIG'		=> '<b>Altered load settings</b>',
-	'LOG_MESSAGE_CONFIG'	=> '<b>Altered private message settings</b>',
-
-	'LOG_ATTACH_CONFIG'			=> '<b>Altered attachment settings</b>',
-	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',
-	'LOG_ATTACH_EXTGROUP_ADD'	=> '<b>Added extension group</b><br />&#187; %s',
-	'LOG_ATTACH_EXTGROUP_EDIT'	=> '<b>Edited extension group</b><br />&#187; %s',
-	'LOG_ATTACH_EXTGROUP_DEL'	=> '<b>Removed extension group</b><br />&#187; %s',
-	'LOG_ATTACH_FILEUPLOAD'		=> '<b>Orphan File uploaded to Post Number %1$d - %2$s</b>',
-	'LOG_ATTACH_ORPHAN_DEL'		=> '<b>Orphan Files deleted</b><br />&#187; %s',
 );
 
 ?>

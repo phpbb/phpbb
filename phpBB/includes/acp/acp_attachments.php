@@ -49,6 +49,7 @@ class acp_attachments
 		}
 
 		$this->tpl_name = 'acp_attachments';
+		$this->page_title = $l_title;
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$l_title],
@@ -117,7 +118,7 @@ class acp_attachments
 
 				if ($submit)
 				{
-					add_log('admin', 'LOG_' . strtoupper($mode) . '_CONFIG');
+					add_log('admin', 'LOG_CONFIG_ATTACH');
 
 					// Check Settings
 					$this->test_upload($error, $new['upload_path'], false);
@@ -1077,7 +1078,7 @@ class acp_attachments
 			);
 
 			$message_parser->filename_data['filecomment'] = '';
-			$filedata['post_attach'] = FALSE;
+			$filedata['post_attach'] = false;
 
 			// Submit Attachment
 			$attach_sql = $message_parser->attachment_data;

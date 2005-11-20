@@ -33,7 +33,8 @@ class acp_jabber
 
 		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 		$this->tpl_name = 'acp_jabber';
-		
+		$this->page_title = 'ACP_JABBER_SETTINGS';
+
 		$jab_enable		= request_var('jab_enable', $config['jab_enable']);
 		$jab_host		= request_var('jab_host', $config['jab_host']);
 		$jab_port		= request_var('jab_port', $config['jab_port']);

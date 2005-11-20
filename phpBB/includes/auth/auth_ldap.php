@@ -71,24 +71,31 @@ function admin_ldap(&$new)
 {
 	global $user;
 
-?>
-	<tr>
-		<td class="row1"><?php echo $user->lang['LDAP_SERVER']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_SERVER_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="40" name="ldap_server" value="<?php echo $new['ldap_server']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $user->lang['LDAP_DN']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_DN_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="40" name="ldap_base_dn" value="<?php echo $new['ldap_base_dn']; ?>" /></td>
-	</tr>
-	<tr>
-		<td class="row1"><?php echo $user->lang['LDAP_UID']; ?>:<br /><span class="gensmall"><?php echo $user->lang['LDAP_UID_EXPLAIN']; ?></span></td>
-		<td class="row2"><input type="text" size="40" name="ldap_uid" value="<?php echo $new['ldap_uid']; ?>" /></td>
-	</tr>
-<?php
+	/**
+	* @todo Using same approach with cfg_build_template?
+	*/
+
+	$tpl = '
+
+	<dl>
+		<dt><label for="ldap_server">' . $user->lang['LDAP_SERVER'] . ':</label><br /><span>' . $user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_server" size="40" name="ldap_server" value="' . $new['ldap_server'] . '" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . ':</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_dn" size="40" name="ldap_base_dn" value="' . $new['ldap_base_dn'] . '" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="ldap_uid">' . $user->lang['LDAP_UID'] . ':</label><br /><span>' . $user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_uid" size="40" name="ldap_uid" value="' . $new['ldap_uid'] . '" /></dd>
+	</dl>
+	';
 
 	// These are fields required in the config table
-	return array('ldap_server', 'ldap_base_dn', 'ldap_uid');
-
+	return array(
+		'tpl'		=> $tpl,
+		'config'	=> array('ldap_server', 'ldap_base_dn', 'ldap_uid')
+	);
 }
 
 /**

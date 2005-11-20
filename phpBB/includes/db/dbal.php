@@ -149,7 +149,7 @@ class dbal
 					{
 						$values[] = 'NULL';
 					}
-					elseif (is_string($var))
+					else if (is_string($var))
 					{
 						$values[] = "'" . $this->sql_escape($var) . "'";
 					}
@@ -172,7 +172,7 @@ class dbal
 				{
 					$values[] = "$key = NULL";
 				}
-				elseif (is_string($var))
+				else if (is_string($var))
 				{
 					$values[] = "$key = '" . $this->sql_escape($var) . "'";
 				}

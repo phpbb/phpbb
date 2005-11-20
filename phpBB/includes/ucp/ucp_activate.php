@@ -106,7 +106,7 @@ class ucp_activate
 		{
 			set_config('newest_user_id', $row['user_id']);
 			set_config('newest_username', $row['username']);
-			set_config('num_users', $config['num_users'] + 1, TRUE);
+			set_config('num_users', $config['num_users'] + 1, true);
 		}
 
 		meta_refresh(3, "{$phpbb_root_path}index.$phpEx$SID");

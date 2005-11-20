@@ -377,6 +377,7 @@ class acp_main
 		}
 		
 		$this->tpl_name = 'acp_main';
+		$this->page_title = 'ACP_MAIN';
 	}
 }
 
@@ -389,10 +390,10 @@ class acp_main_info
 	{
 		return array(
 			'filename'	=> 'acp_main',
-			'title'		=> 'ACP Index',
+			'title'		=> 'ACP_INDEX',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'main'		=> array('title' => 'Index', 'auth' => ''),
+				'main'		=> array('title' => 'ACP_INDEX', 'auth' => ''),
 			),
 		);
 	}

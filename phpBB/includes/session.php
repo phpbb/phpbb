@@ -463,7 +463,7 @@ class session
 				// Note: if the user is currently browsing the board, his
 				// last_visit field won't be updated, which I believe should be
 				// the normal behavior anyway
-				$db->sql_return_on_error(TRUE);
+				$db->sql_return_on_error(true);
 
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
 					USING ' . SESSIONS_TABLE . ' s1, ' . SESSIONS_TABLE . ' s2
@@ -471,7 +471,7 @@ class session
 						AND s1.session_time < s2.session_time';
 				$db->sql_query($sql);
 
-				$db->sql_return_on_error(FALSE);
+				$db->sql_return_on_error(false);
 
 				// Update last visit time
 				$sql = 'UPDATE ' . USERS_TABLE. ' u, ' . SESSIONS_TABLE . ' s
@@ -756,7 +756,7 @@ class user extends session
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
-		if ((@include $this->lang_path . "common.$phpEx") === FALSE)
+		if ((@include $this->lang_path . "common.$phpEx") === false)
 		{
 			die("Language file " . $this->lang_path . "common.$phpEx" . " couldn't be opened.");
 		}
