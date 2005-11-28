@@ -183,26 +183,6 @@ class mcp_main
 				trigger_error("Unknown mode: $mode");
 		}
 	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-
-	function module()
-	{
-		$details = array(
-			'name'			=> 'MCP - Main',
-			'description'	=> 'Front end for Moderator Control Panel', 
-			'filename'		=> 'main',
-			'version'		=> '0.1.0', 
-			'phpbbversion'	=> '2.2.0'
-		);
-		return $details;
-	}
 }
 
 /**

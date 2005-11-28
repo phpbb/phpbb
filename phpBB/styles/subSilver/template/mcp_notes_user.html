@@ -1,0 +1,86 @@
+<!-- INCLUDE mcp_header.html -->
+
+	<!-- $Id$ -->
+
+	<form method="post" name="mcp" action="{U_POST_ACTION}">
+	
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" height="28" align="center">{USERNAME}</th>
+	</tr>
+	<tr> 
+		<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
+			<tr>
+				<td class="gen" align="center"><!-- IF USER_COLOR --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
+			</tr>
+			<!-- IF RANK -->
+			<tr>
+				<td class="postdetails" align="center">{RANK}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF RANK_IMG -->
+			<tr>
+				<td align="center">{RANK_IMG}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF AVATAR_IMG -->
+			<tr>
+				<td align="center">{AVATAR_IMG}</td>
+			</tr>
+			<!-- ENDIF -->
+		</table></td>
+		<td class="row1"><table width="100%" cellspacing="1" cellpadding="2" border="0">
+			<tr> 
+				<td class="gen" align="right" nowrap="nowrap">{L_JOINED}: </td>
+				<td width="100%"><b class="gen">{JOINED}</b></td>
+			</tr>
+			<tr> 
+				<td class="gen" align="right" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
+				<td><b class="gen">{POSTS}</b></td>
+			</tr>
+		</table></td>
+	</tr>
+	</table>
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" height="28" align="center">{L_FEEDBACK}</th>
+	</tr>
+	<!-- IF S_USER_NOTES -->
+		<!-- BEGIN usernotes -->
+		<!-- IF usernotes.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td<!-- IF not S_CLEAR_ALLOWED --> colspan="2"<!-- ENDIF -->><span class="gensmall">{L_REPORT_BY}: <b>{usernotes.REPORT_BY}</b> {L_ON} {usernotes.REPORT_AT}</span><hr /><span class="gen">{usernotes.ACTION}</span></td>
+			<!-- IF S_CLEAR_ALLOWED --><td width="5%" align="center"><input type="checkbox" name="marknote[]" value="{usernotes.ID}" /></td><!-- ENDIF -->
+		</tr>
+		<!-- END usernotes -->
+		<!-- IF S_CLEAR_ALLOWED -->
+		<tr>
+			<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />&nbsp; <input class="btnlite" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" /></td>
+		</tr>
+		<!-- ENDIF -->
+	<!-- ELSE -->
+		<tr>
+			<td class="row1" colspan="2" align="center">{L_NO_USER_NOTES}</td>
+		</tr>
+	<!-- ENDIF -->
+	</table>
+	<br clear="all" />
+	
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" height="28" align="center">{L_ADD_FEEDBACK}</th>
+	</tr>
+	<tr>
+		<td class="row3" align="center" colspan="2"><span class="genmed">{L_ADD_FEEDBACK_EXPLAIN}</span></td>
+	<tr>
+		<td colspan="2" class="row1" align="center"><textarea name="usernote" rows="10" cols="76"></textarea></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
+	</tr>
+	</table>
+
+	</form>
+
+	<br clear="all" /><br />
+
+<!-- INCLUDE mcp_footer.html -->

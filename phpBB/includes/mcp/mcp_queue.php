@@ -289,26 +289,6 @@ class mcp_queue
 				break;
 		}
 	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-
-	function module()
-	{
-		$details = array(
-			'name'			=> 'MCP - Queue',
-			'description'	=> 'Module for management of items waiting for approval', 
-			'filename'		=> 'queue',
-			'version'		=> '0.1.0', 
-			'phpbbversion'	=> '2.2.0'
-		);
-		return $details;
-	}
 }
 
 // Approve Post/Topic

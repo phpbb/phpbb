@@ -99,6 +99,9 @@ if (!$quickmod)
 	$post_id = request_var('p', 0);
 	$topic_id = request_var('t', 0);
 	$forum_id = request_var('f', 0);
+	$user_id = request_var('u', 0);
+	$username = request_var('username', '');
+
 
 	if ($post_id)
 	{
@@ -150,6 +153,7 @@ if (!$quickmod)
 	if (!$post_id)
 	{
 		$module->set_display('post_details', false);
+		$module->set_display('post', false);
 	}
 	if (!$topic_id)
 	{
@@ -158,6 +162,10 @@ if (!$quickmod)
 	if (!$forum_id)
 	{
 		$module->set_display('forum_view', false);
+	}
+	if (!$user_id && $username == '')
+	{
+		$module->set_display('user_notes', false);
 	}
 
 	// Load and execute the relevant module
