@@ -25,6 +25,7 @@ class acp_bbcodes
 		$bbcode_id = request_var('bbcode', 0);
 
 		$this->tpl_name = 'acp_bbcodes';
+		$this->page_title = 'ACP_BBCODES';
 
 		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 

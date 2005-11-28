@@ -294,20 +294,21 @@ class ucp_main
 
 				if ($config['load_db_lastread'])
 				{
-					$sql_from = '(' . FORUMS_TABLE . ' f  LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id))';
+					$sql_join = ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
 					$lastread_select = ', ft.mark_time ';
 				}
 				else
 				{
-					$sql_from = FORUMS_TABLE . ' f ';
+					$sql_join = '';
 					$lastread_select = '';
 
 					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 				}
 
 				$sql = "SELECT f.*$lastread_select 
-					FROM $sql_from, " . FORUMS_WATCH_TABLE . ' fw
-					WHERE fw.user_id = ' . $user->data['user_id'] . ' 
+					FROM (" . FORUMS_TABLE . ' f, ' . FORUMS_WATCH_TABLE . " fw)
+					$sql_join
+					WHERE fw.user_id = " . $user->data['user_id'] . ' 
 						AND f.forum_id = fw.forum_id 
 					ORDER BY left_id';
 				$result = $db->sql_query($sql);
@@ -390,30 +391,29 @@ class ucp_main
 					);
 				}
 				
-				$sql_f_tracking = ($config['load_db_lastread']) ? 'LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . ')' : '';
+				$sql_join = ($config['load_db_lastread']) ? ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . ')' : '';
 				$sql_f_select = ($config['load_db_lastread']) ? ', ft.mark_time AS forum_mark_time' : '';
-
-				$sql_from = TOPICS_TABLE . ' t';
 				$sql_t_select = '';
 
 				if ($config['load_db_track'])
 				{
-					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id 
+					$sql_join .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id 
 						AND tp.user_id = ' . $user->data['user_id'] . ')';
 					$sql_t_select .= ', tp.topic_posted';
 				}
 
 				if ($config['load_db_lastread'])
 				{
-					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id
+					$sql_join .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id
 						AND tt.user_id = ' . $user->data['user_id'] . ')';
 					$sql_t_select .= ', tt.mark_time';
 				}
 
 
 				$sql = "SELECT t.* $sql_f_select $sql_t_select 
-					FROM $sql_from $sql_f_tracking, " . TOPICS_WATCH_TABLE . ' tw
-					WHERE tw.user_id = ' . $user->data['user_id'] . '
+					FROM (" . TOPICS_TABLE . ' t, ' . TOPICS_WATCH_TABLE . " tw
+					$sql_join
+					WHERE tw.user_id = " . $user->data['user_id'] . '
 						AND t.topic_id = tw.topic_id 
 					ORDER BY t.topic_last_post_time DESC';
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -590,8 +590,8 @@ class ucp_main
 				// But since bookmarks are sensible to the user, they should not be deleted without notice.
 				$sql = 'SELECT b.order_id, b.topic_id as b_topic_id, t.*, f.forum_name
 					FROM ' . BOOKMARKS_TABLE . ' b
-						LEFT JOIN ' . TOPICS_TABLE . ' t ON b.topic_id = t.topic_id
-						LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
+						LEFT JOIN ' . TOPICS_TABLE . ' t ON (b.topic_id = t.topic_id)
+						LEFT JOIN ' . FORUMS_TABLE . ' f ON (t.forum_id = f.forum_id)
 					WHERE b.user_id = ' . $user->data['user_id'] . '
 					ORDER BY b.order_id ASC';
 				$result = $db->sql_query($sql);

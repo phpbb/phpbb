@@ -1406,7 +1406,7 @@ class acp_attachments_info
 	{
 		return array(
 			'filename'	=> 'acp_attachments',
-			'title'		=> 'Attachments',
+			'title'		=> 'ACP_ATTACHMENTS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'attach'		=> array('title' => 'ACP_ATTACHMENT_SETTINGS', 'auth' => 'acl_a_attach'),

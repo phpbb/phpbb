@@ -94,14 +94,14 @@ $available_dbms = array(
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysqli'	=> array(
-		'LABEL'			=> 'MySQL 4.1.x (MySQLi)',
+		'LABEL'			=> 'MySQL 4.1.x/5.x (MySQLi)',
 		'SCHEMA'		=> 'mysql',
-		'MODULE'		=> 'mysqli', 
+		'MODULE'		=> 'mysqli',
 		'DELIM'			=> ';',
 		'COMMENTS'		=> 'remove_remarks'
 	),
 	'mysql4'	=> array(
-		'LABEL'			=> 'MySQL 4',
+		'LABEL'			=> 'MySQL 4.x/5.x',
 		'SCHEMA'		=> 'mysql',
 		'MODULE'		=> 'mysql', 
 		'DELIM'			=> ';',

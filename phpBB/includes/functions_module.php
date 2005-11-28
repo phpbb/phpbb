@@ -358,6 +358,11 @@ class p_master
 	{
 		global $user;
 
+		if (!isset($this->module->page_title))
+		{
+			return '';
+		}
+
 		return (isset($user->lang[$this->module->page_title])) ? $user->lang[$this->module->page_title] : $this->module->page_title;
 	}
 

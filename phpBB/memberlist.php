@@ -102,7 +102,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id
-			FROM ' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g
+			FROM (' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g)
 			LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.group_id = g.group_id AND ug.user_id = ' . $user->data['user_id'] . ')
 			WHERE u.user_id IN (' . implode(', ', $admin_id_ary + $mod_id_ary) . ')
 				AND u.group_id = g.group_id
@@ -294,7 +294,7 @@ switch ($mode)
 			$group_options .= '<option value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
 
-		// We left join on the session table to see if the user is currently online
+		// 
 		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id

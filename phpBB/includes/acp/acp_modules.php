@@ -716,8 +716,8 @@ class acp_modules
 		$rows = array();
 
 		$sql = 'SELECT m2.*
-			FROM (' . MODULES_TABLE . ' m1
-			LEFT JOIN ' . MODULES_TABLE . " m2 ON $condition)
+			FROM ' . MODULES_TABLE . ' m1
+			LEFT JOIN ' . MODULES_TABLE . " m2 ON ($condition)
 			WHERE m1.module_class = '" . $db->sql_escape($this->module_class) . "'
 				AND m2.module_class = '" . $db->sql_escape($this->module_class) . "'
 				AND m1.module_id = $module_id

@@ -201,7 +201,7 @@ function size_select($select_name, $size_compare)
 /**
 * Obtain authed forums list
 */
-function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = FALSE, $no_cache = FALSE)
+function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = false, $no_cache = false)
 {
 	global $db, $auth;
 	static $forum_rows;
@@ -242,7 +242,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = TRUE, $postable_only = 
 /**
 * Get forum branch
 */
-function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = TRUE)
+function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = true)
 {
 	global $db;
 
@@ -263,8 +263,8 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 	$rows = array();
 
 	$sql = 'SELECT f2.*
-		FROM (' . FORUMS_TABLE . ' f1
-		LEFT JOIN ' . FORUMS_TABLE . " f2 ON $condition)
+		FROM ' . FORUMS_TABLE . ' f1
+		LEFT JOIN ' . FORUMS_TABLE . " f2 ON ($condition)
 		WHERE f1.forum_id = $forum_id
 		ORDER BY f2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
 	$result = $db->sql_query($sql);
@@ -431,7 +431,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 /**
 * Remove topic(s)
 */
-function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
+function delete_topics($where_type, $where_ids, $auto_sync = true)
 {
 	global $db;
 	$forum_ids = $topic_ids = array();
@@ -502,7 +502,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = TRUE)
 /**
 * Remove post(s)
 */
-function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
+function delete_posts($where_type, $where_ids, $auto_sync = true)
 {
 	global $db;
 
@@ -567,7 +567,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = TRUE)
 * ids => (post_ids, topic_ids, attach_ids, user_ids)
 * resync => set this to false if you are deleting posts or topics...
 */
-function delete_attachments($mode, $ids, $resync = TRUE)
+function delete_attachments($mode, $ids, $resync = true)
 {
 	global $db, $config;
 
@@ -758,7 +758,7 @@ function delete_attachments($mode, $ids, $resync = TRUE)
 /**
 * Remove topic shadows
 */
-function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
+function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 {
 	$where = (is_array($forum_id)) ? 'AND t.forum_id IN (' . implode(', ', $forum_id) . ')' : (($forum_id) ? "AND t.forum_id = $forum_id" : '');
 
@@ -799,7 +799,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = TRUE)
 	if ($auto_sync)
 	{
 		$where_type = ($forum_id) ? 'forum_id' : '';
-		sync('forum', $where_type, $forum_id, TRUE);
+		sync('forum', $where_type, $forum_id, true);
 	}
 }
 
@@ -831,7 +831,7 @@ function phpbb_unlink($filename, $mode = 'file')
 * - post_attachement	Same as post_reported, thanks to a quick Search/Replace
 * - topic_attachement	Same as topic_reported, thanks to a quick Search/Replace
 */
-function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE, $sync_extra = FALSE)
+function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false, $sync_extra = false)
 {
 	global $db;
 
@@ -839,7 +839,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 	{
 		$where_ids = array_unique($where_ids);
 	}
-	elseif ($where_type != 'range')
+	else if ($where_type != 'range')
 	{
 		$where_ids = ($where_ids) ? array($where_ids) : array();
 	}
@@ -851,7 +851,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			$where_sql = '';
 			$where_sql_and = 'WHERE';
 		}
-		elseif ($where_type == 'range')
+		else if ($where_type == 'range')
 		{
 			// Only check a range of topics/forums. For instance: 'topic_id BETWEEN 1 AND 60'
 			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
@@ -1346,14 +1346,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			// Now we delete empty topics and orphan posts
 			if (sizeof($delete_posts))
 			{
-				delete_posts('topic_id', array_keys($delete_posts), FALSE);
+				delete_posts('topic_id', array_keys($delete_posts), false);
 				unset($delete_posts);
 			}
 
 			if (!sizeof($topic_data))
 			{
 				// If we get there, topic ids were invalid or topics did not contain any posts
-				delete_topics($where_type, $where_ids, TRUE);
+				delete_topics($where_type, $where_ids, true);
 				return;
 			}
 			if (sizeof($delete_topics))
@@ -1365,7 +1365,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 					$delete_topic_ids[] = $topic_id;
 				}
 
-				delete_topics('topic_id', $delete_topic_ids, FALSE);
+				delete_topics('topic_id', $delete_topic_ids, false);
 				unset($delete_topics, $delete_topic_ids);
 			}
 
@@ -1472,11 +1472,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = FALSE,
 			unset($topic_data);
 
 			// if some topics have been resync'ed then resync parent forums
-         // except when we're only syncing a range, we don't want to sync forums during
-         // batch processing.
+			// except when we're only syncing a range, we don't want to sync forums during
+			// batch processing.
 			if ($resync_parents && sizeof($resync_forums) && $where_type != 'range')
 			{
-				sync('forum', 'forum_id', $resync_forums, TRUE);
+				sync('forum', 'forum_id', $resync_forums, true);
 			}
 			break;
 	}
@@ -1636,9 +1636,8 @@ function split_sql_file($sql, $delimiter)
 	// we don't actually care about the matches preg gives us.
 	$matches = array();
 
-	// this is faster than calling count($oktens) every time thru the loop.
-	$token_count = sizeof($tokens);
-	for ($i = 0; $i < $token_count; $i++)
+	// this is faster than calling sizeof($oktens) every time thru the loop.
+	for ($i = 0, $token_count = sizeof($tokens); $i < $token_count; $i++)
 	{
 		// Don't wanna add an empty string as the last thing in the array.
 		if ($i != $token_count - 1)

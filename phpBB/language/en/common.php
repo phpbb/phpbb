@@ -181,6 +181,7 @@ $lang += array(
 	'JOINED'				=> 'Joined',
 	'JUMP_PAGE'				=> 'Enter the page number you wish to goto',
 	'JUMP_TO'				=> 'Jump to',
+	'JUMP_TO_PAGE'			=> 'Click to jump to page...',
 
 	'KB'				=> 'KB',
 

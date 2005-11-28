@@ -103,7 +103,7 @@ class bbcode_firstpass extends bbcode
 			'attachment'=>	array('bbcode_id' => 12, 'regexp' => array('#\[attachment=([0-9]+)\](.*?)\[/attachment\]#ise' => "\$this->bbcode_attachment('\$1', '\$2')")),
 			'b'			=>	array('bbcode_id' => 1, 'regexp' => array('#\[b\](.*?)\[/b\]#ise' => "\$this->bbcode_strong('\$1')")),
 			'i'			=>	array('bbcode_id' => 2, 'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
-			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#ie' => "\$this->validate_url('\$2', '\$3')")),
+			'url'		=>	array('bbcode_id' => 3, 'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#iUe' => "\$this->validate_url('\$2', '\$3')")),
 			'img'		=>	array('bbcode_id' => 4, 'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#ie' => "\$this->bbcode_img('\$1\$2')")),
 			'size'		=>	array('bbcode_id' => 5, 'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'		=>	array('bbcode_id' => 6, 'regexp' => array('!\[color=(#[0-9A-F]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
@@ -419,7 +419,7 @@ class bbcode_firstpass extends bbcode
 					$out .= array_pop($list_end_tags) . ']';
 					$tok = '[';
 				}
-				elseif (preg_match('#list(=?(?:[0-9]|[a-z]|))#i', $buffer, $m))
+				else if (preg_match('#list(=?(?:[0-9]|[a-z]|))#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
 					if (!$m[1] || preg_match('/^(disc|square|circle)$/i', $m[1]))
@@ -505,7 +505,7 @@ class bbcode_firstpass extends bbcode
 					$tok = '[';
 					$buffer = '';
 				}
-				elseif (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
+				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
 				{
 					$this->parsed_items['quote']++;
 
@@ -565,7 +565,7 @@ class bbcode_firstpass extends bbcode
 					$tok = '[';
 					$buffer = '';
 				}
-				elseif (preg_match('#^quote=&quot;(.*?)#is', $buffer, $m))
+				else if (preg_match('#^quote=&quot;(.*?)#is', $buffer, $m))
 				{
 					// the buffer holds an invalid opening tag
 					$buffer .= ']';
@@ -1508,7 +1508,7 @@ class fulltext_search
 		// Remove words with no matches ... this is a potentially nasty query
 		$sql = 'SELECT w.word_id
 			FROM ' . SEARCH_WORD_TABLE . ' w
-			LEFT JOIN ' . SEARCH_MATCH_TABLE . ' m ON w.word_id = m.word_id
+			LEFT JOIN ' . SEARCH_MATCH_TABLE . ' m ON (w.word_id = m.word_id)
 			WHERE w.word_common = 0 AND m.word_id IS NULL
 			GROUP BY m.word_id';
 		$result = $db->sql_query($sql);

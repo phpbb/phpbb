@@ -120,6 +120,11 @@ class dbal_postgres extends dbal
 		{
 			global $cache;
 
+			if (strpos($query, 'SELECT') === 0 && strpos($query, 'FROM (') !== false)
+			{
+				$query = preg_replace('#FROM \((.+)\) #', 'FROM \1 ', $query);
+			}
+
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
 			{

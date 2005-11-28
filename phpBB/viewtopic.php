@@ -72,7 +72,7 @@ if ($view && !$post_id)
 		$topic_last_read = (isset($topic_tracking_info[$topic_id])) ? $topic_tracking_info[$topic_id] : 0;
 
 		$sql = 'SELECT p.post_id, p.topic_id, p.forum_id
-			FROM (' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t)
+			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 			WHERE t.topic_id = $topic_id
 				AND p.topic_id = t.topic_id
 				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
@@ -146,6 +146,7 @@ if ($view && !$post_id)
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 $join_sql_table = '';
+$select_sql = 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_flags, f.forum_rules_bbcode_uid, f.forum_rules_bbcode_bitfield';
 
 if (!$post_id)
 {
@@ -163,7 +164,7 @@ else
 	}
 }
 $extra_fields = (!$post_id)  ? '' : ', COUNT(p2.post_id) AS prev_posts';
-$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, t.topic_id, t.topic_title, t.topic_status, t.topic_replies, t.topic_time, t.topic_type, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_id, f.forum_style, f.forum_password ORDER BY p.post_id ASC';
+$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, ' . $select_sql . ' ORDER BY p.post_id ASC';
 
 if ($user->data['is_registered'])
 {
@@ -189,19 +190,18 @@ if ($user->data['is_registered'])
 	}
 }
 
-$join_sql_table .= (!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2 ';
-
 // Join to forum table on topic forum_id unless topic forum_id is zero
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = 'SELECT t.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_flags, f.forum_rules_bbcode_uid, f.forum_rules_bbcode_bitfield' . $extra_fields . '
-	FROM ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t' . $join_sql_table . "
+$sql = "SELECT $select_sql $extra_fields
+	FROM (" . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t' . ((!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2') . ') ' . 
+	$join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
 			" . ((!$forum_id) ? '' : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . "
 			)
-		$order_sql";
+	$order_sql";
 $result = $db->sql_query($sql);
 
 if (!($topic_data = $db->sql_fetchrow($result)))
@@ -757,8 +757,8 @@ if (!sizeof($post_list))
 $max_post_time = 0;
 
 $sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, z.friend, z.foe, p.*
-	FROM (' . POSTS_TABLE . ' p
-	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)), ' . USERS_TABLE . ' u
+	FROM (' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u)
+	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)
 	WHERE p.post_id IN (' . implode(', ', $post_list) . ')
 		AND u.user_id = p.poster_id';
 $result = $db->sql_query($sql);
@@ -1131,7 +1131,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', censor_text($user_cache[$poster_id]['sig']));
-		$user_cache[$poster_id]['sig_parsed'] = TRUE;
+		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
 
 	// Parse the message and subject
@@ -1302,9 +1302,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'POST_ID'			=> $row['post_id'],
 
-		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? TRUE : FALSE,
-		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? FALSE : TRUE,
-		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? TRUE : FALSE,
+		'S_HAS_ATTACHMENTS' => (!empty($attachments[$row['post_id']])) ? true : false,
+		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
+		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_', $forum_id)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
 		'S_UNREAD_POST'		=> $post_unread,

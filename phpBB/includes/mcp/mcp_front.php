@@ -118,8 +118,8 @@ function mcp_front_view($id, $mode, $action, $url)
 		if ($total)
 		{
 			$sql = 'SELECT r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name
-				FROM ' . REPORTS_TABLE . ' r, ' . REASONS_TABLE . ' rr,' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
-				LEFT JOIN ' . FORUMS_TABLE . ' f ON f.forum_id = p.forum_id
+				FROM (' . REPORTS_TABLE . ' r, ' . REASONS_TABLE . ' rr,' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u)
+				LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = p.forum_id)
 				WHERE r.post_id = p.post_id
 					AND r.reason_id = rr.reason_id
 					AND p.topic_id = t.topic_id

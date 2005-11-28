@@ -30,6 +30,7 @@ if (empty($lang) || !is_array($lang))
 
 // Common
 $lang += array(
+	'ACP_ADMIN_LOGS'			=> 'Admin Log',
 	'ACP_ATTACHMENTS'			=> 'Attachments',
 	'ACP_ATTACHMENT_SETTINGS'	=> 'Attachment Settings',
 	'ACP_AUTH_SETTINGS'			=> 'Authentication',
@@ -40,20 +41,32 @@ $lang += array(
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
 	'ACP_CAT_GENERAL'			=> 'General',
+	'ACP_CAT_MAINTANENCE'		=> 'Maintanence',
+	'ACP_CAT_POSTING'			=> 'Posting',
+	'ACP_CAT_SYSTEM'			=> 'System',
+	'ACP_CAT_USERGROUP'			=> 'Users and Groups',
+	'ACP_CLIENT_COMMUNICATION'	=> 'Client Communication',
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie Settings',
+	'ACP_CRITICAL_LOGS'			=> 'Error Log',
 	'ACP_EMAIL_SETTINGS'		=> 'Email Settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage Extension Groups',
+	'ACP_FORUM_LOGS'			=> 'Forum Logs',
+	'ACP_GENERAL_CONFIGURATION'	=> 'General Configuration',
 	'ACP_ICONS'					=> 'Topic Icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
+	'ACP_INDEX'					=> 'Admin index',
 	'ACP_JABBER_SETTINGS'		=> 'Jabber Settings',
 	'ACP_LOAD_SETTINGS'			=> 'Load Settings',
+	'ACP_LOGGING'				=> 'Logging',
 	'ACP_MAIN'					=> 'Admin index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage Extensions',
+	'ACP_MESSAGES'				=> 'Messages',
 	'ACP_MESSAGE_SETTINGS'		=> 'Message Settings',
 	'ACP_MODULE_MANAGEMENT'		=> 'Module Management',
+	'ACP_MOD_LOGS'				=> 'Moderator Log',
 	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphan Attachments',
 	'ACP_PHP_INFO'				=> 'PHP Information',
-	'ACP_POSTING'				=> 'Posting',
+	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
 	'ACP_SMILIES'				=> 'Smilies',
 	'ACP_WORDS'					=> 'Word Censoring',
@@ -110,6 +123,22 @@ $lang += array(
 // PHP info
 $lang += array(
 	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.',
+);
+
+// Logs
+$lang += array(
+	'ACP_ADMIN_LOGS_EXPLAIN'	=> 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'ACP_CRITICAL_LOGS_EXPLAIN'	=> 'This lists the actions carried out by the board itself. These log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'ACP_MOD_LOGS_EXPLAIN'		=> 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'ALL_ENTRIES'				=> 'All entries',
+
+	'DISPLAY_LOG'	=> 'Display entries from previous',
+
+	'NO_ENTRIES'	=> 'No log entries for this period',
+
+	'SORT_IP'		=> 'IP address',
+	'SORT_DATE'		=> 'Date',
+	'SORT_ACTION'	=> 'Log action',
 );
 
 // Index page
@@ -216,6 +245,9 @@ $lang += array(
 	'LOG_WORD_DELETE'		=> '<b>Deleted word censor</b><br />&#187; %s',
 	'LOG_WORD_EDIT'			=> '<b>Edited word censor</b><br />&#187; %s',
 
+	'LOG_ADMIN_CLEAR'		=> '<b>Cleared admin log</b>',
+	'LOG_MOD_CLEAR'			=> '<b>Cleared moderator log</b>',
+	'LOG_CRITICAL_CLEAR'	=> '<b>Cleared error log</b>',
 );
 
 ?>

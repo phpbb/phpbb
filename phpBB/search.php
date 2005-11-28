@@ -82,9 +82,9 @@ if ($keywords || $author || $search_id || $search_session_id)
 	// Which forums can we view?
 	$sql_where = (sizeof($search_forum) && !$search_child) ? 'WHERE f.forum_id IN (' . implode(', ', $search_forum) . ')' : '';
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
-		FROM (' . FORUMS_TABLE . ' f
+		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
-			AND fa.session_id = '" . $db->sql_escape($user->data['session_id']) . "'))
+			AND fa.session_id = '" . $db->sql_escape($user->data['session_id']) . "')
 		$sql_where
 		ORDER BY f.left_id";
 	$result = $db->sql_query($sql);
@@ -583,9 +583,9 @@ if ($keywords || $author || $search_id || $search_session_id)
 // Search forum
 $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, fa.user_id
-	FROM (' . FORUMS_TABLE . ' f
+	FROM ' . FORUMS_TABLE . ' f
 	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
-		AND fa.session_id = '" . $db->sql_escape($user->data['session_id']) . "'))
+		AND fa.session_id = '" . $db->sql_escape($user->data['session_id']) . "')
 	ORDER BY f.left_id ASC";
 $result = $db->sql_query($sql);
 

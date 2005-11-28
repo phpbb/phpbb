@@ -20,7 +20,10 @@ if (!defined('SQL_LAYER'))
 /**
 * @package dbal
 * MySQL4 Database Abstraction Layer
-* Minimum Requirement is 4.0+ (4.1+ compatible)
+* Compatible with:
+* MySQL 4.0+
+* MySQL 4.1+
+* MySQL 5.0+
 */
 class dbal_mysql4 extends dbal
 {

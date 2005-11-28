@@ -20,7 +20,8 @@ if (!defined('SQL_LAYER'))
 /**
 * @package dbal
 * MySQLi Database Abstraction Layer
-* Minimum Requirement is MySQL 4.1+ and the mysqli-extension
+* mysqli-extension has to be compiled with:
+* MySQL 4.1+ or MySQL 5.0+
 */
 class dbal_mysqli extends dbal
 {
