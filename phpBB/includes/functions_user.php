@@ -871,7 +871,7 @@ function validate_username($username)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (preg_match('#' . str_replace('*', '.*?', preg_quote($row['disallow_username'], '#')) . '#i', $username))
+		if (preg_match('#^' . str_replace('*', '.*?', preg_quote($row['disallow_username'], '$#')) . '#i', $username))
 		{
 			return 'USERNAME_DISALLOWED';
 		}
