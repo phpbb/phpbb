@@ -666,7 +666,8 @@ function compose_pm($id, $mode, $action)
 		}
 
 		$u = $g = array();
-		foreach (array('u', 'g') as $type)
+		$_types = array('u', 'g');
+		foreach ($_types as $type)
 		{
 			if (isset($result[$type]) && $result[$type])
 			{

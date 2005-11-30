@@ -60,7 +60,7 @@ class acp_logs
 					$where_sql";
 				$db->sql_query($sql);
 
-				add_log('admin', 'LOG_' . strtoupper($mode) . '_CLEAR');
+				add_log('admin', 'LOG_CLEAR_' . strtoupper($mode));
 			}
 		}
 
@@ -117,7 +117,8 @@ class acp_logs
 		{
 			$data = array();
 				
-			foreach (array('viewtopic', 'viewlogs', 'viewforum') as $check)
+			$checks = array('viewtopic', 'viewlogs', 'viewforum');
+			foreach ($checks as $check)
 			{
 				if (isset($row[$check]) && $row[$check])
 				{

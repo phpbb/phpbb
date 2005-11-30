@@ -354,7 +354,7 @@ function tz_select($default = '')
 	global $sys_timezone, $user;
 
 	$tz_select = '';
-	foreach ($user->lang['tz']['zones'] as $offset => $zone)
+	foreach ($user->lang['tz_zones'] as $offset => $zone)
 	{
 		if (is_numeric($offset))
 		{
@@ -380,7 +380,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 	// Is user watching this thread?
 	if ($user_id != ANONYMOUS)
 	{
-		$can_watch = TRUE;
+		$can_watch = true;
 
 		if ($notify_status == 'unset')
 		{
@@ -415,7 +415,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 			}
 			else
 			{
-				$is_watching = TRUE;
+				$is_watching = true;
 
 				if ($notify_status)
 				{
@@ -433,7 +433,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 			{
 				if ($_GET['watch'] == $mode)
 				{
-					$is_watching = TRUE;
+					$is_watching = true;
 
 					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
 						VALUES ($user_id, $match_id, 0)";
@@ -977,7 +977,9 @@ function on_page($num_items, $per_page, $start)
 
 	$on_page = floor($start / $per_page) + 1;
 
-	$template->assign_var('ON_PAGE', $on_page);
+	$template->assign_vars(array(
+		'ON_PAGE'	=> $on_page)
+	);
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
@@ -1121,10 +1123,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	// re-add $SID
-	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . $user->page;
-	$u_action = (strpos($use_page, ".{$phpEx}?") !== false) ? str_replace(".{$phpEx}?", ".$phpEx$SID&", $use_page) . '&' : $use_page . '?';
-	$u_action .= 'confirm_key=' . $confirm_key;
+	// re-add $SID / transform & to &amp; for user->page (user->page is always using &
+	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page);
+	$u_action = (strpos($use_page, ".{$phpEx}?") !== false) ? str_replace(".{$phpEx}?", ".$phpEx$SID&amp;", $use_page) : $use_page . '?';
+	$u_action .= '&amp;confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
 		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
@@ -1162,7 +1164,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	{
 		$username	= request_var('username', '');
 		$password	= request_var('password', '');
-		$autologin	= (!empty($_POST['autologin'])) ? TRUE : FALSE;
+		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 
@@ -1568,7 +1570,7 @@ function page_header($page_title = '')
 {
 	global $db, $config, $template, $SID, $user, $auth, $phpEx, $phpbb_root_path;
 
-	define('HEADER_INC', TRUE);
+	define('HEADER_INC', true);
 
 	// gzip_compression
 	if ($config['gzip_compress'])
@@ -1695,8 +1697,8 @@ function page_header($page_title = '')
 
 		if ($total_online_users > $config['record_online_users'])
 		{
-			set_config('record_online_users', $total_online_users, TRUE);
-			set_config('record_online_date', time(), TRUE);
+			set_config('record_online_users', $total_online_users, true);
+			set_config('record_online_date', time(), true);
 		}
 
 		// Build online listing

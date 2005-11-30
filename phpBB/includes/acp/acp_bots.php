@@ -92,7 +92,8 @@ class acp_bots
 						WHERE bot_id $sql_id";
 					$db->sql_query($sql);
 
-					foreach (array(USERS_TABLE, USER_GROUP_TABLE) as $table)
+					$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
+					foreach ($_tables as $table)
 					{
 						$sql = "DELETE FROM $table
 							WHERE user_id IN (" . implode(', ', $user_id_ary) . ')';
@@ -250,7 +251,8 @@ class acp_bots
 				}
 
 				$s_active_options = '';
-				foreach (array('0' => 'NO', '1' => 'YES') as $value => $lang)
+				$_options = array('0' => 'NO', '1' => 'YES');
+				foreach ($_options as $value => $lang)
 				{
 					$selected = ($bot_row['bot_active'] == $value) ? ' selected="selected"' : '';
 					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
@@ -285,7 +287,8 @@ class acp_bots
 		}
 
 		$s_options = '';
-		foreach (array('activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE') as $value => $lang)
+		$_options = array('activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE');
+		foreach ($_options as $value => $lang)
 		{
 			$s_options .= '<option value="' . $value . '">' . $user->lang[$lang] . '</option>';
 		}

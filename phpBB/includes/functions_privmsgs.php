@@ -126,7 +126,9 @@ function get_folder($user_id, &$folder, $folder_id = false)
 	$db->sql_freeresult($result);
 
 	// Make sure the default boxes are defined
-	foreach (array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX) as $default_folder)
+	$available_folder = array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX);
+
+	foreach ($available_folder as $default_folder)
 	{
 		if (!isset($num_messages[$default_folder]))
 		{
@@ -904,8 +906,9 @@ function rebuild_header($check_ary)
 		{
 			${$type}[] = (int) $match[2][$id];
 		}
-
-		foreach (array('u', 'g') as $type)
+		
+		$_types = array('u', 'g');
+		foreach ($_types as $type)
 		{
 			if (sizeof($$type))
 			{
@@ -1098,7 +1101,8 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	{
 		// Build Recipient List
 		// u|g => array($user_id => 'to'|'bcc')
-		foreach (array('u', 'g') as $ug_type)
+		$_types = array('u', 'g');
+		foreach ($_types as $ug_type)
 		{
 			if (isset($data['address_list'][$ug_type]) && sizeof($data['address_list'][$ug_type]))
 			{

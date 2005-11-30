@@ -300,6 +300,11 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 	// Add closing / if present
 	$dir = ($dir && substr($dir, -1) != '/') ? $dir . '/' : $dir;
 
+	if (!is_dir($rootdir . $dir))
+	{
+		return false;
+	}
+
 	$dh = opendir($rootdir . $dir);
 	while (($fname = readdir($dh)) !== false)
 	{

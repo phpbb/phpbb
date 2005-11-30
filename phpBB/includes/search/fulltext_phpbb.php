@@ -139,7 +139,8 @@ class fulltext_phpbb
 			$sql_find_in = (sizeof($pid_ary)) ? 'AND ' . (($type == 'topics') ? 't.topic_id' : 'm.post_id') . ' IN (' . implode(', ', $pid_ary) . ')' : '';
 
 			$result_ary = array();
-			foreach (array('AND', 'OR', 'NOT') as $bool)
+			$_bool = array('AND', 'OR', 'NOT');
+			foreach ($_bool as $bool)
 			{
 				if (isset($sql_words[$bool]) && is_array($sql_words[$bool]))
 				{

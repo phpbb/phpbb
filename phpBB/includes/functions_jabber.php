@@ -163,7 +163,7 @@ class jabber
 					//EVENT: Disconnected
 				}
 
-				$this->returned_keep_alive = FALSE;
+				$this->returned_keep_alive = false;
 				$this->keep_alive_id = 'keep_alive_' . time();
 				$this->send_packet("<iq id='{$this->keep_alive_id}'/>", 'cruise_control');
 				$this->last_ping_time = date('H:i');
@@ -190,12 +190,12 @@ class jabber
 				// auth_0k
 				return $this->_sendauth_ok($packet['iq']['#']['query'][0]['#']['token'][0]['#'], $packet['iq']['#']['query'][0]['#']['sequence'][0]['#']);
 			}
-			elseif (@function_exists('mhash') && isset($packet['iq']['#']['query'][0]['#']['digest']))
+			else if (@function_exists('mhash') && isset($packet['iq']['#']['query'][0]['#']['digest']))
 			{
 				// digest
 				return $this->_sendauth_digest();
 			}
-			elseif ($packet['iq']['#']['query'][0]['#']['password'])
+			else if ($packet['iq']['#']['query'][0]['#']['password'])
 			{
 				// plain text
 				return $this->_sendauth_plaintext();
@@ -231,7 +231,7 @@ class jabber
 				$return_code = (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#'])) ? 1 : 2;
 				$this->jid = ($this->resource) ? "{$this->username}@{$this->server}/{$this->resource}" : "{$this->username}@{$this->server}";
 			}
-			elseif ($this->get_info_from_iq_type($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
+			else if ($this->get_info_from_iq_type($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
 			{
 				// "conflict" error, i.e. already registered
 				if ($packet['iq']['#']['error'][0]['@']['code'] == '409')
@@ -271,7 +271,7 @@ class jabber
 			{
 				$return_code = (isset($packet['iq']['#']['query'][0]['#']['registered'][0]['#'])) ? 1 : 2;
 			}
-			elseif ($this->get_info_from_iq_type($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
+			else if ($this->get_info_from_iq_type($packet) == 'error' && isset($packet['iq']['#']['error'][0]['#']))
 			{
 				// "conflict" error, i.e. already registered
 				if ($packet['iq']['#']['error'][0]['@']['code'] == '409')
@@ -357,7 +357,7 @@ class jabber
 					$return_code = 2;
 				}
 			}
-			elseif ($this->get_info_from_iq_type($packet) == 'error')
+			else if ($this->get_info_from_iq_type($packet) == 'error')
 			{
 				if (isset($packet['iq']['#']['error'][0]['#']))
 				{
@@ -508,13 +508,13 @@ class jabber
 			$type		= ($type != '') ? $type : 'normal';
 			$funcmeth	= "handler_message_$type";
 		}
-		elseif ($packet_type == 'iq')
+		else if ($packet_type == 'iq')
 		{
 			$namespace	= $packet['iq']['#']['query'][0]['@']['xmlns'];
 			$namespace	= str_replace(':', '_', $namespace);
 			$funcmeth	= "handler_iq_$namespace";
 		}
-		elseif ($packet_type == 'presence')
+		else if ($packet_type == 'presence')
 		{
 			$type		= $packet['presence']['@']['type'];
 			$type		= ($type != '') ? $type : 'available';
@@ -527,7 +527,7 @@ class jabber
 			{
 				call_user_func($funcmeth, $packet);
 			}
-			elseif (method_exists($this, $funcmeth))
+			else if (method_exists($this, $funcmeth))
 			{
 				call_user_func(array(&$this, $funcmeth), $packet);
 			}
@@ -995,11 +995,11 @@ class make_xml extends jabber
 					$text .= ">\n";
 
 				}
-				elseif ($key == '#')
+				else if ($key == '#')
 				{
 					$text .= htmlspecialchars($value);
 				}
-				elseif (is_array($value))
+				else if (is_array($value))
 				{
 					for ($a = 0, $size = sizeof($value); $a < $size; $a++)
 					{

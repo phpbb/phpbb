@@ -202,7 +202,7 @@ function user_delete($mode, $user_id)
 		$db->freeresult($result);
 	}
 
-	set_config('num_users', $config['num_users'] - 1, TRUE);
+	set_config('num_users', $config['num_users'] - 1, true);
 
 	$db->sql_transaction('commit');
 

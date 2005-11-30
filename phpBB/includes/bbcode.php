@@ -323,7 +323,7 @@ class bbcode
 					}
 					else
 					{
-						$this->bbcode_cache[$bbcode_id] = FALSE;
+						$this->bbcode_cache[$bbcode_id] = false;
 					}
 			}
 		}
@@ -349,7 +349,7 @@ class bbcode
 
 		if ($bbcode_id != -1 && !($this->template_bitfield & (1 << $bbcode_id)))
 		{
-			return (isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : FALSE;
+			return (isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : false;
 		}
 
 		if (empty($this->bbcode_template))
@@ -375,7 +375,7 @@ class bbcode
 			eval($tpl);
 		}
 
-		return (isset($this->bbcode_template[$tpl_name])) ? $this->bbcode_template[$tpl_name] : ((isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : FALSE);
+		return (isset($this->bbcode_template[$tpl_name])) ? $this->bbcode_template[$tpl_name] : ((isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : false);
 	}
 	
 	function bbcode_tpl_replace($tpl_name, $tpl)
@@ -410,37 +410,37 @@ class bbcode
 			$type = 'default';
 			$start = 0;
 		}
-		elseif ($type == 'i')
+		else if ($type == 'i')
 		{
 			$tpl = 'olist_open';
 			$type = 'lower-roman';
 			$start = 1;
 		}
-		elseif ($type == 'I')
+		else if ($type == 'I')
 		{
 			$tpl = 'olist_open';
 			$type = 'upper-roman';
 			$start = 1;
 		}
-		elseif (preg_match('#^(disc|circle|square)$#i', $type))
+		else if (preg_match('#^(disc|circle|square)$#i', $type))
 		{
 			$tpl = 'ulist_open';
 			$type = strtolower($type);
 			$start = 1;
 		}
-		elseif (preg_match('#^[a-z]$#', $type))
+		else if (preg_match('#^[a-z]$#', $type))
 		{
 			$tpl = 'olist_open';
 			$type = 'lower-alpha';
 			$start = ord($type) - 96;
 		}
-		elseif (preg_match('#[A-Z]#', $type))
+		else if (preg_match('#[A-Z]#', $type))
 		{
 			$tpl = 'olist_open';
 			$type = 'upper-alpha';
 			$start = ord($type) - 64;
 		}
-		elseif (is_numeric($type))
+		else if (is_numeric($type))
 		{
 			$tpl = 'olist_open';
 			$type = 'arabic-numbers';

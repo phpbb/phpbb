@@ -74,7 +74,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 			foreach ($folder_info['rowset'] as $message_id => $row)
 			{
 				$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
-				foreach (array('u', 'g') as $save)
+				$_save = array('u', 'g');
+				foreach ($_save as $save)
 				{
 					if (isset($address[$message_id][$save]) && sizeof($address[$message_id][$save]))
 					{
@@ -86,7 +87,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				}
 			}
 
-			foreach (array('u', 'g') as $ug_type)
+			$_types = array('u', 'g');
+			foreach ($_types as $ug_type)
 			{
 				if (isset($recipient_list[$ug_type]) && sizeof($recipient_list[$ug_type]))
 				{

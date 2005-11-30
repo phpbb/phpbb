@@ -15,14 +15,14 @@
 class compress 
 {
 	var $fp = 0;
-	
+
 	function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
 	{
 		global $phpbb_root_path;
 
 		$skip_files = explode(',', $skip_files);
 
-		// Remove rm prefix from src path 
+		// Remove rm prefix from src path
 		$src_path = ($src_rm_prefix) ? preg_replace('#^(' . preg_quote($src_rm_prefix) . ')#', '', $src) : $src;
 		// Add src prefix
 		$src_path = ($src_add_prefix) ? ($src_add_prefix . ((substr($src_add_prefix, -1) != '/') ? '/' : '') . $src_path) : $src_path;
@@ -82,6 +82,12 @@ class compress
 		return true;
 	}
 
+	function add_custom_file($src, $filename)
+	{
+		$this->data($filename, implode('', file($src)));
+		return true;
+	}
+	
 	function add_data($src, $name)
 	{
 		$this->data($name, $src);
@@ -91,12 +97,13 @@ class compress
 	function methods()
 	{
 		$methods = array('tar');
+		$available_methods = array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib');
 
-		foreach (array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib') as $type => $module)
+		foreach ($available_methods as $type => $module)
 		{
 			if (!@extension_loaded($module))
 			{
-				break;
+				continue;
 			}
 			$methods[] = $type;
 		}
@@ -312,7 +319,7 @@ class compress_zip extends compress
 		unset($data);
 
 		// If we didn't compress set method to store, else deflate
-		$c_method = ($c_len == $unc_len) ? "\x00\x00" : "\x08\x00"; 
+		$c_method = ($c_len == $unc_len) ? "\x00\x00" : "\x08\x00";
 
 		// Are we a file or a directory? Set archive for file
 		$attrib = ($is_dir) ? 16 : 32;
@@ -348,7 +355,7 @@ class compress_zip extends compress
 		$cdrec .= "\x00\x00";               // version made by
 		$cdrec .= "$var_ext\x00";           // version needed to extract
 		$cdrec .= "\x00\x00";               // gen purpose bit flag
-		$cdrec .= $c_method;				// compression method 
+		$cdrec .= $c_method;				// compression method
 		$cdrec .= $hexdtime;                // last mod time & date
 		$cdrec .= pack('V', $crc);          // crc32
 		$cdrec .= pack('V', $c_len);        // compressed filesize
@@ -372,7 +379,7 @@ class compress_zip extends compress
 	{
 		$ctrldir = implode('', $this->ctrl_dir);
 
-		return $ctrldir . $this->eof_cdh . 
+		return $ctrldir . $this->eof_cdh .
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries "on this disk"
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries overall
 			pack('V', strlen($ctrldir)) .			// size of central dir
@@ -548,7 +555,7 @@ class compress_tar extends compress
 		$header .= pack("a8", sprintf("%07o", 0));
 		$header .= pack("a8", sprintf("%07o", 0));
 		$header .= pack("a12", sprintf("%011o", $filesize));
-		$header .= pack("a12", sprintf("%011o", $mtime));
+		$header .= pack("A12", sprintf("%011o", $mtime)); // From a12 to A12
 		$header .= '        ';
 		$header .= pack("a", $typeflag);
 		$header .= pack("a100", '');
@@ -581,7 +588,12 @@ class compress_tar extends compress
 	function open()
 	{
 		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
-		return $this->fp = @$fzopen($this->file, $this->mode . 'b');
+		$this->fp = @$fzopen($this->file, $this->mode . 'b' . (($fzopen == 'gzopen') ? '9' : ''));
+
+		if (!$this->fp)
+		{
+			trigger_error('Unable to open file ' . $this->file . ' [' . $fzopen . ' - ' . $this->mode . 'b]');
+		}
 	}
 
 	function download($filename)
@@ -601,7 +613,7 @@ class compress_tar extends compress
 			case 'tar.bz2':
 				$mimetype = 'application/x-bzip2';
 				break;
-			
+
 			default:
 				$mimetype = 'application/octet-stream';
 				break;

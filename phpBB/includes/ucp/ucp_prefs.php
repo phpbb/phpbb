@@ -279,7 +279,8 @@ class ucp_prefs
 				$sort_by_post_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
 				$sort_by_post_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 
-				foreach (array('topic', 'post') as $sort_option)
+				$_options = array('topic', 'post');
+				foreach ($_options as $sort_option)
 				{
 					${'s_limit_' . $sort_option . '_days'} = '<select name="' . $sort_option . '_st">';
 					foreach (${'limit_' . $sort_option . '_days'} as $day => $text)

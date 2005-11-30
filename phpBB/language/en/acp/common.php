@@ -52,10 +52,13 @@ $lang += array(
 	'ACP_EXTENSION_GROUPS'		=> 'Manage Extension Groups',
 	'ACP_FORUM_LOGS'			=> 'Forum Logs',
 	'ACP_GENERAL_CONFIGURATION'	=> 'General Configuration',
+	'ACP_GENERAL_TASKS'			=> 'General Tasks',
 	'ACP_ICONS'					=> 'Topic Icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
 	'ACP_INDEX'					=> 'Admin index',
 	'ACP_JABBER_SETTINGS'		=> 'Jabber Settings',
+	'ACP_LANGUAGE'				=> 'Language Management',
+	'ACP_LANGUAGE_PACKS'		=> 'Language Packs',
 	'ACP_LOAD_SETTINGS'			=> 'Load Settings',
 	'ACP_LOGGING'				=> 'Logging',
 	'ACP_MAIN'					=> 'Admin index',
@@ -86,6 +89,8 @@ $lang += array(
 	'DIMENSIONS'			=> 'Dimensions',
 	'DISABLE'				=> 'Disable',
 	'DISPLAY'				=> 'Display',
+	'DOWNLOAD'				=> 'Download',
+	'DOWNLOAD_AS'			=> 'Download as',
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
@@ -95,6 +100,7 @@ $lang += array(
 	'GENERAL_OPTIONS'		=> 'General Options',
 	'GENERAL_SETTINGS'		=> 'General Settings',
 
+	'INSTALL'				=> 'Install',
 	'IP'					=> 'User IP',
 	'IP_HOSTNAME'			=> 'IP addresses or hostnames',
 
@@ -205,6 +211,21 @@ $lang += array(
 	'LOG_BOT_DELETE'	=> '<b>Deleted bot</b><br />&#187; %s',
 	'LOG_BOT_UPDATED'	=> '<b>Existing bot updated</b><br />&#187; %s',
 
+	'LOG_CLEAR_ADMIN'		=> '<b>Cleared admin log</b>',
+	'LOG_CLEAR_MODE'		=> '<b>Cleared moderator log</b>',
+	'LOG_CLEAR_CRITICAL'	=> '<b>Cleared error log</b>',
+
+	'LOG_CONFIG_ATTACH'		=> '<b>Altered attachment settings</b>',
+	'LOG_CONFIG_AUTH'		=> '<b>Altered authentication settings</b>',
+	'LOG_CONFIG_AVATAR'		=> '<b>Altered avatar settings</b>',
+	'LOG_CONFIG_COOKIE'		=> '<b>Altered cookie settings</b>',
+	'LOG_CONFIG_DEFAULT'	=> '<b>Altered board defaults</b>',
+	'LOG_CONFIG_EMAIL'		=> '<b>Altered email settings</b>',
+	'LOG_CONFIG_LOAD'		=> '<b>Altered load settings</b>',
+	'LOG_CONFIG_MESSAGE'	=> '<b>Altered private message settings</b>',
+	'LOG_CONFIG_SERVER'		=> '<b>Altered server settings</b>',
+	'LOG_CONFIG_SETTINGS'	=> '<b>Altered board settings</b>',
+
 	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<b>Exluded ip/hostname from download list</b><br />&#187; %s',
 	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<b>Removed ip/hostname from download list</b><br />&#187; %s',
@@ -216,6 +237,10 @@ $lang += array(
 	'LOG_JAB_CHANGED'	=> '<b>Jabber account changed</b>',
 	'LOG_JAB_PASSCHG'	=> '<b>Jabber password changed</b>',
 	'LOG_JAB_REGISTER'	=> '<b>Jabber account registered</b>',
+
+	'LOG_LANGUAGE_PACK_DELETED'		=> '<b>Deleted language pack</b><br />&#187; %s',
+	'LOG_LANGUAGE_PACK_INSTALLED'	=> '<b>Installed language pack</b><br />&#187; %s',
+	'LOG_LANGUAGE_PACK_UPDATED'		=> '<b>Updated language pack details</b><br />&#187; %s',
 
 	'LOG_MODULE_DISABLE'	=> '<b>Module disabled</b>',
 	'LOG_MODULE_ENABLE'		=> '<b>Module enabled</b>',
@@ -230,24 +255,10 @@ $lang += array(
 	'LOG_RESYNC_POSTCOUNTS'	=> '<b>User postcounts synced</b>',
 	'LOG_RESYNC_STATS'		=> '<b>Post, topic and user stats reset</b>',
 
-	'LOG_CONFIG_ATTACH'		=> '<b>Altered attachment settings</b>',
-	'LOG_CONFIG_AUTH'		=> '<b>Altered authentication settings</b>',
-	'LOG_CONFIG_AVATAR'		=> '<b>Altered avatar settings</b>',
-	'LOG_CONFIG_COOKIE'		=> '<b>Altered cookie settings</b>',
-	'LOG_CONFIG_DEFAULT'	=> '<b>Altered board defaults</b>',
-	'LOG_CONFIG_EMAIL'		=> '<b>Altered email settings</b>',
-	'LOG_CONFIG_LOAD'		=> '<b>Altered load settings</b>',
-	'LOG_CONFIG_MESSAGE'	=> '<b>Altered private message settings</b>',
-	'LOG_CONFIG_SERVER'		=> '<b>Altered server settings</b>',
-	'LOG_CONFIG_SETTINGS'	=> '<b>Altered board settings</b>',
-
 	'LOG_WORD_ADD'			=> '<b>Added word censor</b><br />&#187; %s',
 	'LOG_WORD_DELETE'		=> '<b>Deleted word censor</b><br />&#187; %s',
 	'LOG_WORD_EDIT'			=> '<b>Edited word censor</b><br />&#187; %s',
 
-	'LOG_ADMIN_CLEAR'		=> '<b>Cleared admin log</b>',
-	'LOG_MOD_CLEAR'			=> '<b>Cleared moderator log</b>',
-	'LOG_CRITICAL_CLEAR'	=> '<b>Cleared error log</b>',
 );
 
 ?>

@@ -640,13 +640,13 @@ class queue
 			{
 				$lines[] = "'$k'=>" . $this->format_array($v);
 			}
-			elseif (is_int($v))
+			else if (is_int($v))
 			{
 				$lines[] = "'$k'=>$v";
 			}
-			elseif (is_bool($v))
+			else if (is_bool($v))
 			{
-				$lines[] = "'$k'=>" . (($v) ? 'TRUE' : 'FALSE');
+				$lines[] = "'$k'=>" . (($v) ? 'true' : 'false');
 			}
 			else
 			{
