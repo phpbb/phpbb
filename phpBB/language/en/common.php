@@ -316,6 +316,7 @@ $lang += array(
 	'REPLY_WITH_QUOTE'			=> 'Reply with quote',
 	'REPLYING_GLOBAL_ANNOUNCE'	=> 'Replying to global announcement',
 	'REPLYING_MESSAGE'			=> 'Replying to message in %s',
+	'REPORT_BY'					=> 'Report by',
 	'REPORT_POST'				=> 'Report this post',
 	'RESEND_ACTIVATION'			=> 'Resend activation email',
 	'RESET'						=> 'Reset',

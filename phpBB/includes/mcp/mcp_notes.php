@@ -208,12 +208,12 @@ function mcp_notes_user_view($id, $mode, $action)
 		}
 	}
 
-	$pagination = generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start);
-
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id",
 		'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,
-		'PAGINATION'		=> $pagination,
+		'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
+		'PAGINATION'		=> generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
+		'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 		'USERNAME'			=> $userrow['username'],
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',

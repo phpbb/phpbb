@@ -78,6 +78,8 @@ $lang += array(
 	'LATEST_REPORTED'		=> 'Latest 5 reports',
 	'LATEST_UNAPPROVED'		=> 'Latest 5 posts awaiting for approval',
 	'LEAVE_SHADOW'			=> 'Leave shadow topic in place',
+	'LIST_REPORT'			=> '1 Report',
+	'LIST_REPORTS'			=> '%d Reports',
 	'LOCK'					=> 'Lock',
 	'LOCK_POST_POST'		=> 'Lock Post',
 	'LOCK_POST_POST_CONFIRM'=> 'Are you sure you want to prevent editing this post?',
@@ -128,6 +130,10 @@ $lang += array(
 	'MCP_MAKE_NORMAL_CONFIRM'		=> 'Are you sure you want to revert this topic?',
 	'MCP_MAKE_NORMALS'				=> 'Make Standard Topics',
 	'MCP_MAKE_NORMALS_CONFIRM'		=> 'Are you sure you want to revert the selected topics?',
+
+	'MCP_NOTES'						=> 'User Notes',
+	'MCP_NOTES_FRONT'				=> 'Front Page',
+	'MCP_NOTES_USER'				=> 'User Details',
 
 	'MCP_QUEUE'				=> 'Moderation Queue',
 	'MCP_QUEUE_REPORTS'		=> 'Reports',
@@ -198,6 +204,7 @@ $lang += array(
 
 	'SELECT_ACTION'			=> 'Select desired action',
 	'SELECT_TOPIC'			=> 'Select topic',
+	'SELECT_USER'			=> 'Select user',
 	'SORT_ACTION'			=> 'Log action',
 	'SORT_DATE'				=> 'Date',
 	'SORT_IP'				=> 'IP address',
