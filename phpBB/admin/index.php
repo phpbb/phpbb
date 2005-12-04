@@ -60,7 +60,7 @@ if( isset($HTTP_GET_VARS['pane']) && $HTTP_GET_VARS['pane'] == 'left' )
 	{
 		if( preg_match("/^admin_.*?\." . $phpEx . "$/", $file) )
 		{
-			include($file);
+			include('./' . $file);
 		}
 	}
 
