@@ -132,7 +132,7 @@ class acm
 			if ($fp = @fopen($this->cache_dir . 'data' . $var_name . ".$phpEx", 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? TRUE : FALSE;\nif (\$expired) { return; }\n\n\$data = unserialize('" . str_replace("'", "\\'", str_replace('\\', '\\\\', serialize($var))) . "');\n?>");
+				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = unserialize('" . str_replace("'", "\\'", str_replace('\\', '\\\\', serialize($var))) . "');\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 			}
@@ -141,7 +141,7 @@ class acm
 		{
 			$this->vars[$var_name] = $var;
 			$this->var_expires[$var_name] = time() + $ttl;
-			$this->is_modified = TRUE;
+			$this->is_modified = true;
 		}
 	}
 
@@ -172,13 +172,13 @@ class acm
 			}
 			@closedir($dir);
 		}
-		elseif ($var_name{0} == '_')
+		else if ($var_name{0} == '_')
 		{
 			@unlink($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
-		elseif (isset($this->vars[$var_name]))
+		else if (isset($this->vars[$var_name]))
 		{
-			$this->is_modified = TRUE;
+			$this->is_modified = true;
 			unset($this->vars[$var_name]);
 			unset($this->var_expires[$var_name]);
 		}
@@ -216,13 +216,13 @@ class acm
 			{
 				$lines[] = "'$k'=>" . $this->format_array($v);
 			}
-			elseif (is_int($v))
+			else if (is_int($v))
 			{
 				$lines[] = "'$k'=>$v";
 			}
-			elseif (is_bool($v))
+			else if (is_bool($v))
 			{
-				$lines[] = "'$k'=>" . (($v) ? 'TRUE' : 'FALSE');
+				$lines[] = "'$k'=>" . (($v) ? 'true' : 'false');
 			}
 			else
 			{
@@ -249,12 +249,12 @@ class acm
 
 		if (!isset($expired))
 		{
-			return FALSE;
+			return false;
 		}
-		elseif ($expired)
+		else if ($expired)
 		{
 			unlink($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
-			return FALSE;
+			return false;
 		}
 
 		return $query_id;
@@ -283,7 +283,7 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? TRUE : FALSE;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
+			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 

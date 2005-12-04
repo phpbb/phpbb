@@ -159,7 +159,7 @@ class acm
 			if (empty($this->var_ready[$var_name]))
 			{
 				$this->vars[$var_name] = unserialize($this->vars[$var_name]);
-				$this->var_ready[$var_name] = TRUE;
+				$this->var_ready[$var_name] = true;
 			}
 
 			return $this->vars[$var_name];

@@ -53,6 +53,9 @@ $lang += array(
 	'ACP_FORUM_LOGS'			=> 'Forum Logs',
 	'ACP_GENERAL_CONFIGURATION'	=> 'General Configuration',
 	'ACP_GENERAL_TASKS'			=> 'General Tasks',
+	'ACP_GROUPS'				=> 'Groups',
+	'ACP_GROUPS_MANAGE'			=> 'Manage Groups',
+	'ACP_GROUPS_MANAGEMENT'		=> 'Group Management',
 	'ACP_ICONS'					=> 'Topic Icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
 	'ACP_INDEX'					=> 'Admin index',
@@ -83,7 +86,9 @@ $lang += array(
 
 	'BACK'					=> 'Back',
 
+	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully',
+	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
 
 	'DEACTIVATE'			=> 'Deactivate',
 	'DIMENSIONS'			=> 'Dimensions',
@@ -109,6 +114,7 @@ $lang += array(
 	'LOGIN_ADMIN_CONFIRM'	=> 'To administer the board you must re-authenticate yourself.',
 	'LOGIN_ADMIN_SUCCESS'	=> 'You have successfully authenticated and will now be redirected to the Administration Control Panel',
 
+	'MANAGE'				=> 'Manage',
 	'MOVE_DOWN'				=> 'Move Down',
 	'MOVE_UP'				=> 'Move Up',
 
@@ -122,7 +128,10 @@ $lang += array(
 	'REORDER'				=> 'Reorder',
 	'RETURN_TO'				=> 'Return to ...',
 
+	'SELECT_OPTION'			=> 'Select option',
+
 	'UCP'					=> 'User Control Panel',
+	'USERNAMES_EXPLAIN'		=> 'Place each username on a seperate line',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 );
 
@@ -229,6 +238,17 @@ $lang += array(
 	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<b>Exluded ip/hostname from download list</b><br />&#187; %s',
 	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<b>Removed ip/hostname from download list</b><br />&#187; %s',
+
+	'LOG_GROUP_CREATED'		=> '<b>New usergroup created</b><br />&#187; %s',
+	'LOG_GROUP_DEFAULTS'	=> '<b>Group made default for members</b><br />&#187; %s',
+	'LOG_GROUP_DELETE'		=> '<b>Usergroup deleted</b><br />&#187; %s',
+	'LOG_GROUP_DEMOTED'		=> '<b>Leaders demoted in usergroup</b> %s<br />&#187; %s',
+	'LOG_GROUP_PROMOTED'	=> '<b>Members promoted to leader in usergroup</b> %s<br />&#187; %s',
+	'LOG_GROUP_REMOVE'		=> '<b>Members removed from usergroup</b> %s<br />&#187; %s',
+	'LOG_GROUP_UPDATED'		=> '<b>Usergroup details updated</b><br />&#187; %s',
+	'LOG_MODS_ADDED'		=> '<b>Added new leaders to usergroup</b> %s<br />&#187; %s',
+	'LOG_USERS_APPROVED'	=> '<b>Users approved in usergroup</b> %s<br />&#187; %s',
+	'LOG_USERS_ADDED'		=> '<b>Added new members to usergroup</b> %s<br />&#187; %s',
 
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',

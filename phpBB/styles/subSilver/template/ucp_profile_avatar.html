@@ -40,15 +40,15 @@
 	<!-- IF S_GALLERY_AVATAR -->
 	<tr> 
 		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_GALLERY}: </b></td>
-		<td class="row2"><input class="btnlite" type="submit" name="displaygallery" value="{L_DISPLAY_GALLERY}" /></td>
+		<td class="row2"><input class="btnlite" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></td>
 	</tr>
 	<!-- ENDIF -->
-	<!-- IF S_DISPLAY_GALLERY -->
+	<!-- IF S_IN_AVATAR_GALLERY -->
 	<tr> 
 		<th colspan="2">{L_AVATAR_GALLERY}</th>
 	</tr>
 	<tr> 
-		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}: </span><select name="category">{S_CAT_OPTIONS}</select>&nbsp; <span class="genmed">{L_AVATAR_PAGE}: </span><select name="page">{S_PAGE_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="displaygallery" /></td>
+		<td class="cat" colspan="2" align="center" valign="middle"><span class="genmed">{L_AVATAR_CATEGORY}: </span><select name="category">{S_CAT_OPTIONS}</select>&nbsp; <input class="btnlite" type="submit" value="{L_GO}" name="display_gallery" /></td>
 	</tr>
 	<tr> 
 		<td class="row1" colspan="2" align="center"><table cellspacing="1" cellpadding="4" border="0">
@@ -61,7 +61,7 @@
 			</tr>
 			<tr>
 				<!-- BEGIN avatar_option_column -->
-				<td class="row2" align="center"><input type="radio" name="avatarselect" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+				<td class="row2" align="center"><input type="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
 				<!-- END avatar_option_column -->
 			</tr>
 			<!-- END avatar_row -->
@@ -70,7 +70,7 @@
 	</tr>
 	<!-- ENDIF -->
 	<tr>
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<!-- IF S_DISPLAY_GALLERY --><input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" /><!-- ELSE --><input class="btnlite" type="reset" value="{L_RESET}" name="reset" /><!-- ENDIF --></td>
+		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<!-- IF S_IN_AVATAR_GALLERY --><input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" /><!-- ELSE --><input class="btnlite" type="reset" value="{L_RESET}" name="reset" /><!-- ENDIF --></td>
 	</tr>
 </table>
 

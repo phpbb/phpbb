@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* acp_modules [English]
+* posting [English]
 *
 * @package language
 * @version $Id$

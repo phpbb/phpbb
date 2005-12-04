@@ -49,7 +49,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 		return 'NO_USERS';
 	}
 
-	$id_ary = $username_ary = array();
+	$user_id_ary = $username_ary = array();
 	do
 	{
 		$username_ary[$row['user_id']] = $row['username'];
@@ -1061,57 +1061,98 @@ function avatar_upload($data, &$error)
 /**
 * Avatar Gallery
 */
-function avatar_gallery($category, &$error)
+function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
 {
-	global $user, $cache;
+	global $user, $cache, $template;
 	global $config, $phpbb_root_path;
+
+	$avatar_list = array();
 
 	$path = $phpbb_root_path . $config['avatar_gallery_path'];
 
 	if (!file_exists($path) || !is_dir($path))
 	{
-		return array($user->lang['NONE'] => array());
+		$avatar_list = array($user->lang['NONE'] => array());
 	}
-
-	// To be replaced with SQL ... before M3 completion
-	$dp = @opendir($path);
-
-	$data = array();
-	$avatar_row_count = $avatar_col_count = 0;
-	while ($file = readdir($dp))
+	else
 	{
-		if ($file{0} != '.' && is_dir("$path/$file"))
+		// Collect images
+		$dp = @opendir($path);
+
+		while ($file = readdir($dp))
 		{
-			$dp2 = @opendir("$path/$file");
-
-			while ($sub_file = readdir($dp2))
+			if ($file{0} != '.' && is_dir("$path/$file"))
 			{
-				if (preg_match('#\.(gif$|png$|jpg|jpeg)$#i', $sub_file))
+				$avatar_row_count = $avatar_col_count = 0;
+	
+				$dp2 = @opendir("$path/$file");
+				while ($sub_file = readdir($dp2))
 				{
-					$data[$file][$avatar_row_count][$avatar_col_count]['file'] = "$file/$sub_file";
-					$data[$file][$avatar_row_count][$avatar_col_count]['name'] = ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file)));
-
-					$avatar_col_count++;
-					if ($avatar_col_count == 4)
+					if (preg_match('#\.(gif$|png$|jpg|jpeg)$#i', $sub_file))
 					{
-						$avatar_row_count++;
-						$avatar_col_count = 0;
+						$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
+							'file'		=> "$file/$sub_file",
+							'filename'	=> $sub_file,
+							'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
+						);
+
+						$avatar_col_count++;
+						if ($avatar_col_count == $items_per_column)
+						{
+							$avatar_row_count++;
+							$avatar_col_count = 0;
+						}
 					}
 				}
+				closedir($dp2);
 			}
-			closedir($dp2);
+		}
+		closedir($dp);
+	}
+
+	if (!sizeof($avatar_list))
+	{
+		$avatar_list = array($user->lang['NONE'] => array());
+	}
+
+	@ksort($avatar_list);
+
+	$category = (!$category) ? key($avatar_list) : $category;
+	$avatar_categories = array_keys($avatar_list);
+
+	$s_category_options = '';
+	foreach ($avatar_categories as $cat)
+	{
+		$s_category_options .= '<option value="' . $cat . '"' . (($cat == $category) ? ' selected="selected"' : '') . '>' . $cat . '</option>';
+	}
+
+	$template->assign_vars(array(
+		'S_IN_AVATAR_GALLERY'	=> true,
+		'S_CAT_OPTIONS'			=> $s_category_options)
+	);
+
+	$avatar_list = $avatar_list[$category];
+
+	foreach ($avatar_list as $avatar_row_ary)
+	{
+		$template->assign_block_vars($block_var, array());
+
+		foreach ($avatar_row_ary as $avatar_col_ary)
+		{
+			$template->assign_block_vars($block_var . '.avatar_column', array(
+				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
+				'AVATAR_NAME'	=> $avatar_col_ary['name'],
+				'AVATAR_FILE'	=> $avatar_col_ary['filename'])
+			);
+
+			$template->assign_block_vars($block_var . '.avatar_option_column', array(
+				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
+				'S_OPTIONS_AVATAR'	=> $avatar_col_ary['filename'])
+			);
 		}
 	}
-	closedir($dp);
 
-	if (!sizeof($data))
-	{
-		return array($user->lang['NONE'] => array());
-	}
-
-	@ksort($data);
-
-	return $data;
+	return $avatar_list;
 }
 
 //
@@ -1350,7 +1391,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 	}
 
-	$usernames = array();
 	if (sizeof($update_id_ary))
 	{
 		$sql = 'UPDATE ' . USER_GROUP_TABLE . '
@@ -1358,18 +1398,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			WHERE user_id IN (' . implode(', ', $update_id_ary) . ")
 				AND group_id = $group_id";
 		$db->sql_query($sql);
-
-		foreach ($update_id_ary as $id)
-		{
-			$usernames[] = $username_ary[$id];
-		}
-	}
-	else
-	{
-		foreach ($add_id_ary as $id)
-		{
-			$usernames[] = $username_ary[$id];
-		}
 	}
 
 	if ($default)

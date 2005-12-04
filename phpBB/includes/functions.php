@@ -1476,7 +1476,7 @@ function build_hidden_fields($field_ary)
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime, $display_header, $msg_title;
+	global $phpEx, $phpbb_root_path, $starttime, $msg_title;
 
 	switch ($errno)
 	{
@@ -1528,22 +1528,20 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$user->setup();
 			}
 
+			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
+			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+
 			if (!defined('HEADER_INC'))
 			{
 				if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 				{
-					// adm_page_header('', '', false);
-					adm_page_header('');
+					adm_page_header($msg_title);
 				}
 				else
 				{
-					page_header('');
+					page_header($msg_title);
 				}
 			}
-
-			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
-			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
-			$display_header = (!isset($display_header)) ? false : (bool) $display_header;
 
 			$template->set_filenames(array(
 				'body' => 'message_body.html')
@@ -1556,7 +1554,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
-			page_footer();
+			
+			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+			{
+				adm_page_footer();
+			}
+			else
+			{
+				page_footer();
+			}
 
 			exit;
 			break;
@@ -1570,6 +1576,11 @@ function page_header($page_title = '')
 {
 	global $db, $config, $template, $SID, $user, $auth, $phpEx, $phpbb_root_path;
 
+	if (defined('HEADER_INC'))
+	{
+		return;
+	}
+	
 	define('HEADER_INC', true);
 
 	// gzip_compression

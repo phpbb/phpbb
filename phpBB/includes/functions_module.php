@@ -382,16 +382,30 @@ class p_master
 	*/
 	function display($page_title)
 	{
-		global $template;
+		global $template, $user;
 
 		// Generate the page
-		page_header($page_title);
+		if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+		{
+			adm_page_header($page_title);
+		}
+		else
+		{
+			page_header($page_title);
+		}
 
 		$template->set_filenames(array(
 			'body' => $this->get_tpl_name())
 		);
 
-		page_footer();
+		if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+		{
+			adm_page_footer();
+		}
+		else
+		{
+			page_footer();
+		}
 	}
 
 	/**
