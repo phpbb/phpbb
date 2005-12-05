@@ -34,12 +34,14 @@ $lang += array(
 	'ACP_ATTACHMENTS'			=> 'Attachments',
 	'ACP_ATTACHMENT_SETTINGS'	=> 'Attachment Settings',
 	'ACP_AUTH_SETTINGS'			=> 'Authentication',
+	'ACP_AUTOMATION'			=> 'Automation',
 	'ACP_AVATAR_SETTINGS'		=> 'Avatar Settings',
 	'ACP_BBCODES'				=> 'BBCodes',
 	'ACP_BOARD_DEFAULTS'		=> 'Board Defaults',
 	'ACP_BOARD_MANAGEMENT'		=> 'Board Management',
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
+	'ACP_CAT_DOT_MODS'			=> '.Mods',
 	'ACP_CAT_GENERAL'			=> 'General',
 	'ACP_CAT_MAINTANENCE'		=> 'Maintanence',
 	'ACP_CAT_POSTING'			=> 'Posting',
@@ -66,6 +68,7 @@ $lang += array(
 	'ACP_LOGGING'				=> 'Logging',
 	'ACP_MAIN'					=> 'Admin index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage Extensions',
+	'ACP_MASS_EMAIL'			=> 'Mass Email',
 	'ACP_MESSAGES'				=> 'Messages',
 	'ACP_MESSAGE_SETTINGS'		=> 'Message Settings',
 	'ACP_MODULE_MANAGEMENT'		=> 'Module Management',
@@ -239,6 +242,9 @@ $lang += array(
 	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<b>Removed ip/hostname from download list</b><br />&#187; %s',
 
+	'LOG_ERROR_JABBER'		=> '<b>Jabber Error</b><br />&#187; %s',
+	'LOG_ERROR_EMAIL'		=> '<b>Email Error</b><br />&#187; %s',
+	
 	'LOG_GROUP_CREATED'		=> '<b>New usergroup created</b><br />&#187; %s',
 	'LOG_GROUP_DEFAULTS'	=> '<b>Group made default for members</b><br />&#187; %s',
 	'LOG_GROUP_DELETE'		=> '<b>Usergroup deleted</b><br />&#187; %s',
@@ -261,6 +267,8 @@ $lang += array(
 	'LOG_LANGUAGE_PACK_DELETED'		=> '<b>Deleted language pack</b><br />&#187; %s',
 	'LOG_LANGUAGE_PACK_INSTALLED'	=> '<b>Installed language pack</b><br />&#187; %s',
 	'LOG_LANGUAGE_PACK_UPDATED'		=> '<b>Updated language pack details</b><br />&#187; %s',
+
+	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
 
 	'LOG_MODULE_DISABLE'	=> '<b>Module disabled</b>',
 	'LOG_MODULE_ENABLE'		=> '<b>Module enabled</b>',

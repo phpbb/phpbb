@@ -231,7 +231,7 @@ class messenger
 		$user->session_begin();
 
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-		add_log('critical', 'LOG_' . $type . '_ERROR', $msg);
+		add_log('critical', 'LOG_ERROR_' . $type, $msg);
 	}
 
 	//
@@ -544,7 +544,7 @@ class queue
 							@unlink($this->cache_file . '.lock');
 
 							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
-							messenger::error('MAIL', $message);
+							messenger::error('EMAIL', $message);
 							continue 3;
 						}
 						break;

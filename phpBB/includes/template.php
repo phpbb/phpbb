@@ -160,8 +160,7 @@ class template
 	{
 		ob_start();
 		$this->display($handle, $include_once);
-		$contents = ob_get_contents();
-		ob_end_clean();
+		$contents = ob_get_clean();
 
 		if ($return_content)
 		{
