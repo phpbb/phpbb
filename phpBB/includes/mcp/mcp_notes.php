@@ -219,7 +219,7 @@ function mcp_notes_user_view($id, $mode, $action)
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
 		'RANK_TITLE'		=> $rank_title,
 		'JOINED'			=> $user->format_date($userrow['user_regdate'], $user->lang['DATE_FORMAT']),
-		'POSTS'				=> ($data['user_posts']) ? $data['user_posts'] : 0,
+		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 
 		'AVATAR_IMG'		=> $avatar_img,
 		'RANK_IMG'			=> $rank_img,
