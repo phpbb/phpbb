@@ -588,28 +588,24 @@ class session
 				OR ban_end = 0';
 		$result = $db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			do
+			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
+				(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip)) ||
+				(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
 			{
-				if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
-					(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip)) ||
-					(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
+				if (!empty($row['ban_exclude']))
 				{
-					if (!empty($row['ban_exclude']))
-					{
-						$banned = false;
-						break;
-					}
-					else
-					{
-						$banned = true;
-						$ban_row = $row;
-						// Don't break. Check if there is an exclude rule for this user
-					}
+					$banned = false;
+					break;
+				}
+				else
+				{
+					$banned = true;
+					$ban_row = $row;
+					// Don't break. Check if there is an exclude rule for this user
 				}
 			}
-			while ($row = $db->sql_fetchrow($result));
 		}
 		$db->sql_freeresult($result);
 
@@ -620,17 +616,15 @@ class session
 
 			// Logout the user, banned users are unable to use the normal 'logout' link
 			if ($this->data['user_id'] != ANONYMOUS)
-			{  
+			{
 				$this->session_kill();
 			}
 			// Determine which message to output
-			$till_date = (!empty($ban_row['ban_end'])) ? $this->format_date($ban_row['ban_end']) : '';
-			$message = (!empty($ban_row['ban_end'])) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
+			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
 			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
-			// More internal HTML ...
-			// TODO: 'ban_show_reason' isn't used in the admin yet.
-			$message .= (!empty($ban_row['ban_show_reason'])) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_show_reason']) : '';
+			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
 			trigger_error($message);
 		}
 		

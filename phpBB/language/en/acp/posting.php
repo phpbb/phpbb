@@ -164,4 +164,40 @@ $lang += array(
 	'WORD_UPDATED'		=> 'The selected word censor has been successfully updated',
 );
 
+// Ranks
+$lang += array(
+	'ACP_RANKS_EXPLAIN'		=> 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility.',
+	'ADD_RANK'				=> 'Add new rank',
+
+	'MUST_SELECT_RANK'		=> 'You must select a rank.',
+	
+	'NO_ASSIGNED_RANK'		=> 'No special rank assigned.',
+	'NO_RANK_TITLE'			=> 'You haven\'t specified a title for the rank.',
+	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts.',
+
+	'RANK_ADDED'			=> 'The rank was successfully added.',
+	'RANK_IMAGE'			=> 'Rank Image',
+	'RANK_IMAGE_EXPLAIN'	=> 'Use this to define a small image associated with the rank. The path is relative to the root phpBB2 directory.',
+	'RANK_MINIMUM'			=> 'Minimum Posts',
+	'RANK_REMOVED'			=> 'The rank was successfully deleted.',
+	'RANK_SPECIAL'			=> 'Set as Special Rank',
+	'RANK_TITLE'			=> 'Rank Title',
+	'RANK_UPDATED'			=> 'The rank was successfully updated.',
+);
+
+// Disallow Usernames
+$lang += array(
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
+	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character',
+	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
+
+	'DELETE_DISALLOW_EXPLAIN'	=> 'You can remove a disallowed username by selecting the username from this list and clicking submit',
+	'DELETE_DISALLOW_TITLE'		=> 'Remove a Disallowed Username',
+	'DISALLOWED_ALREADY'		=> 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present.',
+	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed',
+	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added',
+
+	'NO_DISALLOWED'		=> 'No Disallowed Usernames',
+);
+
 ?>

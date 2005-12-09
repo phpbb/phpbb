@@ -303,12 +303,12 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
  * @param string $mode Type of ban. One of the following: user, ip, email
  * @param mixed $ban Banned entity. Either string or array with usernames, ips or email addresses
  * @param int $ban_len Ban length in minutes
- * @param string $ban_len_other Ban length as a date (Y-m-d)
+ * @param string $ban_len_other Ban length as a date (YYYY-MM-DD)
  * @param boolean $ban_exclude Exclude these entities from banning?
  * @param string $ban_reason String describing the reason for this ban
  * @return boolean
  */
-function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason)
+function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
 	global $db, $user, $auth;
 
@@ -362,10 +362,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$username = trim($username);
 					if ($username != '')
 					{
-						$sql_usernames[] = "'" . $db->sql_escape($username) . "'";
+						$sql_usernames[] = "'" . $username . "'";
 					}
 				}
 				$sql_usernames = implode(', ', $sql_usernames);
+
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
 					WHERE username IN (' . $sql_usernames . ')';
@@ -383,6 +384,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				{
 					trigger_error($user->lang['NO_USERS']);
 				}
+				$db->sql_freeresult($result);
 			}
 			break;
 
@@ -492,8 +494,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 			if (sizeof($ban_list) == 0)
 			{
-				// TODO: translate this
-				trigger_error('No valid email addresses found');
+				trigger_error('NO_EMAILS_DEFINED');
 			}
 			break;
 	}
@@ -539,17 +540,19 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		foreach ($banlist_ary as $ban_entry)
 		{
 			$sql_ary[] = array(
-				$type => $ban_entry,
-				'ban_start' => $current_time,
-				'ban_end' => $ban_end,
-				'ban_exclude' => $ban_exclude,
-				'ban_reason' => $ban_reason);
+				$type				=> $ban_entry,
+				'ban_start'			=> $current_time,
+				'ban_end'			=> $ban_end,
+				'ban_exclude'		=> $ban_exclude,
+				'ban_reason'		=> $ban_reason,
+				'ban_give_reason'	=> $ban_give_reason,
+			);
 		}
 		$sql = $db->sql_build_array('MULTI_INSERT', $sql_ary);
 
 		if ($sql)
 		{
-			$sql = 'INSERT INTO ' . BANLIST_TABLE . $sql;
+			$sql = 'INSERT INTO ' . BANLIST_TABLE . ' ' . $sql;
 			$db->sql_query($sql);
 		}
 
@@ -635,7 +638,12 @@ function user_unban($mode, $ban)
 			AND ban_end <> 0';
 	$db->sql_query($sql);
 
-	$unban_sql = implode(', ', $ban);
+	if (!is_array($ban))
+	{
+		$ban = array($ban);
+	}
+	
+	$unban_sql = implode(', ', array_map('intval', $ban));
 
 	if ($unban_sql)
 	{
@@ -663,15 +671,16 @@ function user_unban($mode, $ban)
 		}
 		$result = $db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . BANLIST_TABLE . "
-			WHERE ban_id IN ($unban_sql)";
-		$db->sql_query($sql);
-
 		$l_unban_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$l_unban_list .= (($l_unban_list != '') ? ', ' : '') . $row['unban_info'];
 		}
+		$db->sql_freeresult($result);
+
+		$sql = 'DELETE FROM ' . BANLIST_TABLE . "
+			WHERE ban_id IN ($unban_sql)";
+		$db->sql_query($sql);
 
 		if (!function_exists('add_log'))
 		{
@@ -871,7 +880,7 @@ function validate_username($username)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (preg_match('#^' . str_replace('*', '.*?', preg_quote($row['disallow_username'], '$#')) . '#i', $username))
+		if (preg_match('#^' . str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')) . '#i', $username))
 		{
 			return 'USERNAME_DISALLOWED';
 		}

@@ -1202,7 +1202,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (!$redirect)
 	{
 		$split_page = array();
-		preg_match_all('#^.*?([a-z]+?)\.' . $phpEx . '\?(.*?)$#i', $user->page, $split_page, PREG_SET_ORDER);
+		preg_match_all('#^.*?([a-z_-]+?)\.' . $phpEx . '?(.*?)$#i', $user->page, $split_page, PREG_SET_ORDER);
 
 		// No script name set? Assume index
 		if (empty($split_page[0][1]))

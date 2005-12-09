@@ -259,6 +259,7 @@ $lang += array(
 	'NO_TOPICS'			=> 'There are no topics or posts in this forum.',
 	'NO_UNREAD_PM'		=> '<b>0</b> unread messages',
 	'NO_USER'			=> 'The requested user does not exist.',
+	'NO_USERS'			=> 'The requested users do not exist',
 
 	'OCCUPATION'				=> 'Occupation',
 	'OFFLINE'					=> 'Offline',
