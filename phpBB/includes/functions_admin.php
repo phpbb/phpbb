@@ -1501,6 +1501,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_ANNOUNCE;
 	}
+
 	if (!($prune_flags & 8))
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_STICKY;
@@ -1510,6 +1511,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	{
 		$sql_and .= " AND topic_last_post_time < $prune_date";
 	}
+
 	if ($prune_mode == 'viewed')
 	{
 		$sql_and .= " AND topic_last_view_time < $prune_date";

@@ -214,18 +214,21 @@ switch ($mode)
 /**
 * Functions used to generate additional URL paramters
 */
-function main_forum_view_url()
+function _module_main_forum_view_url()
 {
 	return extra_url();
 }
-function main_topic_view_url()
+
+function _module_main_topic_view_url()
 {
 	return extra_url();
 }
-function main_post_details_url()
+
+function _module_main_post_details_url()
 {
 	return extra_url();
 }
+
 function extra_url()
 {
 	global $forum_id, $topic_id, $post_id;
@@ -235,9 +238,6 @@ function extra_url()
 	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
 	return $url_extra;
 }
-
-//
-// LITTLE HELPER
 
 /**
 * Get simple topic data

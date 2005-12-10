@@ -59,6 +59,7 @@ $lang += array(
 	'ACP_CLIENT_COMMUNICATION'	=> 'Client Communication',
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie Settings',
 	'ACP_CRITICAL_LOGS'			=> 'Error Log',
+	'ACP_CUSTOM_PROFILE_FIELDS'	=> 'Custom Profile Fields',
 	'ACP_DISALLOW'				=> 'Disallow',
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow Usernames',
 	'ACP_EMAIL_SETTINGS'		=> 'Email Settings',
@@ -88,6 +89,9 @@ $lang += array(
 	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphan Attachments',
 	'ACP_PERMISSION_SETTINGS'	=> 'Permission Settings',
 	'ACP_PHP_INFO'				=> 'PHP Information',
+	'ACP_PRUNE_FORUMS'			=> 'Prune Forums',
+	'ACP_PRUNE_USERS'			=> 'Prune Users',
+	'ACP_PRUNING'				=> 'Pruning',
 	'ACP_RANKS'					=> 'Ranks',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
@@ -132,6 +136,7 @@ $lang += array(
 	'LOGIN_ADMIN'			=> 'To administer the board you must be an authenticated user.',
 	'LOGIN_ADMIN_CONFIRM'	=> 'To administer the board you must re-authenticate yourself.',
 	'LOGIN_ADMIN_SUCCESS'	=> 'You have successfully authenticated and will now be redirected to the Administration Control Panel',
+	'LOOK_UP_FORUM'			=> 'Select a Forum',
 
 	'MANAGE'				=> 'Manage',
 	'MOVE_DOWN'				=> 'Move Down',
@@ -154,6 +159,8 @@ $lang += array(
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a seperate line',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
+
+	'WARNING'				=> 'Warning',
 );
 
 // PHP info
@@ -308,6 +315,18 @@ $lang += array(
 	'LOG_MODULE_REMOVED'	=> '<b>Module removed</b><br />&#187; %s',
 	'LOG_MODULE_ADD'		=> '<b>Module added</b><br />&#187; %s',
 	'LOG_MODULE_EDIT'		=> '<b>Module edited</b><br />&#187; %s',
+
+	'LOG_PROFILE_FIELD_ACTIVATE'	=> '<b>Profile field activated</b><br />&#187; %s',
+	'LOG_PROFILE_FIELD_CREATE'		=> '<b>Profile field added</b><br />&#187; %s',
+	'LOG_PROFILE_FIELD_DEACTIVATE'	=> '<b>Profile field deactivated</b><br />&#187; %s',
+	'LOG_PROFILE_FIELD_EDIT'		=> '<b>Profile field changed</b><br />&#187; %s',
+	'LOG_PROFILE_FIELD_REMOVED'		=> '<b>Profile field removed</b><br />&#187; %s',
+
+	'LOG_PRUNE'					=> '<b>Pruned forums</b><br />&#187; %s',
+	'LOG_AUTO_PRUNE'			=> '<b>Auto-pruned forums</b><br />&#187; %s',
+	'LOG_PRUNE_USER_DEAC'		=> '<b>Users deactivated</b><br />&#187; %s',
+	'LOG_PRUNE_USER_DEL_DEL'	=> '<b>Users pruned and posts deleted</b><br />&#187; %s',
+	'LOG_PRUNE_USER_DEL_ANON'	=> '<b>Users pruned and posts retained</b><br />&#187; %s',
 
 	'LOG_RESET_DATE'		=> '<b>Board start date reset</b>',
 	'LOG_RESET_ONLINE'		=> '<b>Most users online reset</b>',

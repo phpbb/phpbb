@@ -145,7 +145,9 @@ class p_master
 
 			$right = $row['right_id'];
 
-			$url_func = $row['module_name'] . '_' . $row['module_mode'] . '_url';
+			// We need to prefix the functions to not create a naming conflict
+			$url_func = '_module_' . $row['module_name'] . '_' . $row['module_mode'] . '_url';
+			$lang_func = '_module_' . $row['module_name'];
 
 			$this->module_ary[$i] = array(
 				'depth'		=> $depth,
@@ -160,7 +162,7 @@ class p_master
 
 				'url_extra'	=> (function_exists($url_func)) ? $url_func() : '',
 				
-				'lang'		=> (function_exists($row['module_name'])) ? $row['module_name']($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
+				'lang'		=> ($row['module_name'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
 
 				'left'		=> $row['left_id'],
