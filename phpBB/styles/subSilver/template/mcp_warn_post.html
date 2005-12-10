@@ -1,0 +1,58 @@
+<!-- INCLUDE mcp_header.html -->
+
+	<!-- $Id$ -->
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" height="28" align="center">{L_POST}</th>
+	</tr>
+	<tr> 
+		<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
+			<tr>
+				<td class="gen" align="center"><!-- IF USER_COLOR --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
+			</tr>
+			<!-- IF RANK -->
+			<tr>
+				<td class="postdetails" align="center">{RANK}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF RANK_IMG -->
+			<tr>
+				<td align="center">{RANK_IMG}</td>
+			</tr>
+			<!-- ENDIF -->
+			<!-- IF AVATAR_IMG -->
+			<tr>
+				<td align="center">{AVATAR_IMG}</td>
+			</tr>
+			<!-- ENDIF -->
+		</table></td>
+		<td class="row1">
+			<span class="gen">{POST}</span>
+		</td>
+	</tr>
+	</table>
+
+	<br clear="all" /><br />
+
+	<form method="post" name="mcp" action="{U_POST_ACTION}">
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th height="28" align="center">{L_ADD_WARNING}</th>
+	</tr>
+	<tr>
+		<td class="row3" align="center"><span class="genmed">{L_ADD_WARNING_EXPLAIN}</span></td>
+	<tr>
+		<td class="row1" align="center"><textarea name="warning" rows="10" cols="76"></textarea></td>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><input type="checkbox" name="notify_user" checked="checked" /><span class="genmed">{L_NOTIFY_USER_WARN}</span></td>
+	</tr>
+	<tr>
+		<td class="cat" align="center"><input class="btnmain" type="submit" name="action[add_warning]" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
+	</tr>
+	</table>
+	</form>
+
+	<br clear="all" /><br />
+
+<!-- INCLUDE mcp_footer.html -->

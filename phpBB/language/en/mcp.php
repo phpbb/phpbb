@@ -31,9 +31,12 @@ if (empty($lang) || !is_array($lang))
 $lang += array(
 	'ACTION'				=> 'Action',
 	'ADD_FEEDBACK'			=> 'Add feedback', 
-	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text, HTML, BBCode, etc. are not permitted.', 
+	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.', 
+	'ADD_WARNING'			=> 'Add warning', 
+	'ADD_WARNING_EXPLAIN'	=> 'To send a warning to this user please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.', 
 	'ALL_ENTRIES'			=> 'All entries',
 	'ALREADY_REPORTED'		=> 'This post has already been reported',
+	'ALREADY_WARNED'		=> 'A warning has already been issued for this post',
 	'APPROVE'				=> 'Approve',
 	'APPROVE_POST'			=> 'Approve Post',
 	'APPROVE_POST_CONFIRM'	=> 'Are you sure you want to approve this post?',
@@ -41,6 +44,7 @@ $lang += array(
 	'APPROVE_POSTS_CONFIRM'	=> 'Are you sure you want to approve the selected posts?',
 
 	'CANNOT_MOVE_SAME_FORUM'=> 'You cannot move a topic to the forum it\'s already in',
+	'CANNOT_WARN_ANONYMOUS'	=> 'You cannot warn an guest user',
 	'CAN_LEAVE_BLANK'		=> 'This can be left blank.',
 	'CHANGE_POSTER'			=> 'Change poster',
 
@@ -143,7 +147,11 @@ $lang += array(
 	'MCP_VIEW_LOGS'			=> 'View logs',
 	'MCP_VIEW_RECENT'		=> 'View recent (%s)',
 	'MCP_VIEW_USER'			=> 'View warnings for a specific user',
-	'MCP_WARNINGS'			=> 'Warnings',
+	'MCP_WARN'				=> 'Warnings',
+	'MCP_WARN_FRONT'		=> 'Front Page',
+	'MCP_WARN_LIST'			=> 'List warnings',
+	'MCP_WARN_POST'			=> 'Warn for specific post',
+	'MCP_WARN_USER'			=> 'Warn User',
 	'MERGE_POSTS'			=> 'Merge posts',
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to merge the selected posts?',
 	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on the "Select" button to search for one',
@@ -157,9 +165,11 @@ $lang += array(
 
 	'NOTIFY_POSTER_APPROVAL'=> 'Notify poster about approval?',
 	'NOTIFY_POSTER_DISAPPROVAL' => 'Notify poster about disapproval?',
+	'NOTIFY_USER_WARN'		=> 'Notify user about warning?',
 	'NOT_MODERATOR'			=> 'You are not a moderator of this forum',
 	'NO_DESTINATION_FORUM'	=> 'Please select a forum for destination',
 	'NO_ENTRIES'			=> 'No log entries for this period',
+	'NO_FEEDBACK'			=> 'No feedback exists for this user',
 	'NO_FINAL_TOPIC_SELECTED'	=> 'You have to select a destination topic for merging posts',
 	'NO_MATCHES_FOUND'		=> 'No matches found',
 	'NO_POST_SELECTED'		=> 'You must select at least one post to perform this action',
@@ -258,6 +268,7 @@ $lang += array(
 	'USER_CANNOT_POST'		=> 'You cannot post in this forum',
 	'USER_CANNOT_REPORT'	=> 'You cannot report posts in this forum',
 	'USER_FEEDBACK_ADDED'	=> 'User feedback added successfully',
+	'USER_WARNING_ADDED'	=> 'User warned successfully',
 
 	'VIEW_DETAILS'			=> 'View Details',
 

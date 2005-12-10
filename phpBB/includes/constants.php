@@ -176,6 +176,7 @@ define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
 define('USERS_PASSWD_TABLE', $table_prefix.'users_passwd');
 define('USERS_NOTES_TABLE', $table_prefix.'users_notes');
+define('WARNINGS_TABLE', $table_prefix.'warnings');
 define('WORDS_TABLE', $table_prefix.'words');
 define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
 define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');

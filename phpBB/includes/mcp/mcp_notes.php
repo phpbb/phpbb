@@ -220,6 +220,7 @@ function mcp_notes_user_view($id, $mode, $action)
 		'RANK_TITLE'		=> $rank_title,
 		'JOINED'			=> $user->format_date($userrow['user_regdate'], $user->lang['DATE_FORMAT']),
 		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
+		'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
 
 		'AVATAR_IMG'		=> $avatar_img,
 		'RANK_IMG'			=> $rank_img,

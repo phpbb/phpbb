@@ -215,6 +215,7 @@ $lang += array(
 	'LOG_ME_IN'				=> 'Log me on automatically each visit',
 	'LOG_USER_FEEDBACK'		=> '<b>Added user feedback</b><br />&#187; %s',
 	'LOG_USER_GENERAL'		=> '%s',
+	'LOG_USER_WARNING'		=> '<b>Added user warning</b><br />&#187;%s',
 
 	'MARK'				=> 'Mark',
 	'MARK_ALL'			=> 'Mark all',
@@ -429,6 +430,7 @@ $lang += array(
 	'VIEW_BOOKMARKS'			=> 'View bookmarks',
 	'VIEW_LATEST_POST'			=> 'View latest post',
 	'VIEW_NEWEST_POST'			=> 'View newest post',
+	'VIEW_NOTES'				=> 'View user notes',
 	'VIEW_ONLINE_TIME'			=> 'This data is based on users active over the past %d minute',
 	'VIEW_ONLINE_TIMES'			=> 'This data is based on users active over the past %d minutes',
 	'VIEW_TOPIC'				=> 'View topic',
@@ -439,6 +441,8 @@ $lang += array(
 	'VIEW_TOPIC_POLL'			=> 'Poll: ',
 	'VIEW_TOPIC_STICKY'			=> 'Sticky: ',
 
+	'WARNINGS'			=> 'Warnings',
+	'WARN_USER'			=> 'Warn user',
 	'WELCOME_SUBJECT'	=> 'Welcome to %s Forums',
 	'WEBSITE'			=> 'Website',
 	'WHOIS'				=> 'Whois',

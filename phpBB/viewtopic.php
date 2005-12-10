@@ -484,6 +484,7 @@ $template->assign_vars(array(
 	'REPORT_IMG'		=> $user->img('btn_report', 'REPORT_POST'),
 	'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED'),
 	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED'),
+	'WARN_IMG'			=> $user->img('btn_report', 'WARN_USER'),
 
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
@@ -1299,6 +1300,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
+		'U_WARN'			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_post&amp;p=" . $row['post_id'] : '',
 
 		'POST_ID'			=> $row['post_id'],
 
