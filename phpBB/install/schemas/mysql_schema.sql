@@ -876,6 +876,7 @@ CREATE TABLE phpbb_users (
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_last_confirm_key varchar(10) DEFAULT '' NOT NULL,
    user_warnings tinyint(4) DEFAULT '0' NOT NULL,
+   user_last_warning int(11) DEFAULT '0' NOT NULL,
    user_posts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    user_lang varchar(30) DEFAULT '' NOT NULL,
    user_timezone decimal(5,2) DEFAULT '0.0' NOT NULL,
@@ -937,6 +938,16 @@ CREATE TABLE phpbb_users_passwd (
   passwd varchar(32) DEFAULT '' NOT NULL,
   PRIMARY KEY  (user_id),
   KEY passwd_time (passwd_time)
+);
+
+# Table: 'phpbb_warnings'
+CREATE TABLE phpbb_warnings (
+  warning_id mediumint(8) unsigned NOT NULL auto_increment,
+  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  log_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  warning_time int(11) DEFAULT '0' NOT NULL,
+  PRIMARY KEY  (`warning_id`)
 );
 
 # Table: 'phpbb_words'
