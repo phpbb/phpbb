@@ -390,9 +390,9 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 		{
 			if( $this_userdata['user_avatar_type'] == USER_AVATAR_UPLOAD && $this_userdata['user_avatar'] != "" )
 			{
-				if( @file_exists(@phpbb_realpath("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) )
+				if( @file_exists(@phpbb_realpath('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar'])) )
 				{
-					@unlink("./" . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
+					@unlink('./../' . $board_config['avatar_path'] . "/" . $this_userdata['user_avatar']);
 				}
 			}
 			$avatar_sql = ", user_avatar = '', user_avatar_type = " . USER_AVATAR_NONE;
