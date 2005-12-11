@@ -60,7 +60,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 
 	if ($user = $db->sql_fetchrow($result))
 	{
-		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_mtime, i.imageset_path, t.template_path
+		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.imageset_path, t.template_path
 			FROM {$table_prefix}styles s, {$table_prefix}styles_template t, {$table_prefix}styles_theme c, {$table_prefix}styles_imageset i
 			WHERE s.style_id = $id
 				AND t.template_id = s.template_id
@@ -84,7 +84,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
-
+		
 		// Parse Theme Data
 		$replace = array(
 			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
