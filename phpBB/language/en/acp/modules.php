@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_MODULE_MANAGEMENT_EXPLAIN'	=> 'Here you are able to manage all kind of modules. Please note that if you place the same module under different categories, the category selected will be the first one found within the tree.',
 	'ADD_MODULE'					=> 'Add module',
 	'ADD_MODULE_CONFIRM'			=> 'Are you sure you want to add the selected module with the selected mode?',
@@ -70,6 +70,6 @@ $lang += array(
 	'PARENT_NO_EXIST'		=> 'Parent does not exist',
 
 	'SELECT_MODULE'			=> 'Select a module',
-);
+));
 
 ?>

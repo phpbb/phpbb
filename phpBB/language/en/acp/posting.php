@@ -30,7 +30,7 @@ if (empty($lang) || !is_array($lang))
 
 // BBCodes 
 // Note to translators: you can translate everything but what's between { and }
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. Additionnally, you can save users from typing sometimes very long HTML code by providing them a single BBCode as replacement. From this page you can add, remove and edit custom BBCodes',
 	'ADD_BBCODE'				=> 'Add a new BBCode',
 
@@ -63,10 +63,10 @@ $lang += array(
 		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',
 		'COLOR'			=> 'A HTML color, can be either in the numeric form #FF1234 or an english name such as "blue"'
 	)
-);
+));
 
 // Smilies and topic icons
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_ICONS_EXPLAIN'		=> 'From this page you can add, remove and edit the icons users may add to their topics or posts. These icons are generally displayed next to topic titles on the forum listing, or the post subjects in topic listings. You can also install and create new packages of icons.',
 	'ACP_SMILIES_EXPLAIN'	=> 'Smilies or emoticons are typically small, sometimes animated images used to convey an emotion or feeling. From this page you can add, remove and edit the emoticons users can use in their posts and private messages. You can also install and create new packages of smilies.',
 	'ADD_SMILIES'			=> 'Add multiple smilies',
@@ -142,10 +142,10 @@ $lang += array(
 	'SMILIES_WIDTH'				=> 'Smiley width',
 
 	'WRONG_PAK_TYPE'	=> 'The specified package does not contain the appropriate data.',
-);
+));
 
 // Word censors
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_WORDS_EXPLAIN'		=> 'From this control panel you can add, edit, and remove words that will be automatically censored on your forums. In addition people will not be allowed to register with usernames containing these words. Wildcards (*) are accepted in the word field, eg. *test* will match detestable, test* would match testing, *test would match detest.',
 	'ADD_WORD'				=> 'Add new word',
 
@@ -162,10 +162,10 @@ $lang += array(
 	'WORD_ADDED'		=> 'The word censor has been successfully added',
 	'WORD_REMOVED'		=> 'The selected word censor has been successfully removed',
 	'WORD_UPDATED'		=> 'The selected word censor has been successfully updated',
-);
+));
 
 // Ranks
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_RANKS_EXPLAIN'		=> 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility.',
 	'ADD_RANK'				=> 'Add new rank',
 
@@ -183,10 +183,10 @@ $lang += array(
 	'RANK_SPECIAL'			=> 'Set as Special Rank',
 	'RANK_TITLE'			=> 'Rank Title',
 	'RANK_UPDATED'			=> 'The rank was successfully updated.',
-);
+));
 
 // Disallow Usernames
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
 	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
@@ -198,6 +198,6 @@ $lang += array(
 	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added',
 
 	'NO_DISALLOWED'		=> 'No Disallowed Usernames',
-);
+));
 
 ?>

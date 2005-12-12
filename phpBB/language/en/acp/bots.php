@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 // Bot settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'BOTS'				=> 'Manage Bots',
 	'BOTS_EXPLAIN'		=> 'Bots or crawlers are automated agents most commonly used by search engines to update their databases. Since they rarely make proper use of sessions they can distort visitor counts, increase load and sometimes fail to index sites correctly. Here you can define a special type of user to overcome these problems.',
 	'BOT_ACTIVATE'		=> 'Activate',
@@ -60,6 +60,6 @@ $lang += array(
 	'ERR_BOT_NO_MATCHES'	=> 'You must supply at least one of an agent or IP for this bot match.',
 
 	'NO_BOT'	=> 'Found no bot with the specified ID',
-);
+));
 
 ?>

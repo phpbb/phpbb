@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 // Jabber settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use Jabber for instant messaging and board notices. Jabber is an opensource protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, do not stop the script till completed!',
 
 	'JAB_ENABLE'			=> 'Enable Jabber',
@@ -53,10 +53,10 @@ $lang += array(
 	'ERR_JAB_REGISTER'		=> 'An error occured trying to register this account, %s',
 	'ERR_JAB_PASSCHG'		=> 'Could not change password',
 	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s',
-);
+));
 
 // Message Settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_MESSAGE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for private messaging',
 
 	'BOXES_MAX'					=> 'Max private message folders',
@@ -82,11 +82,11 @@ $lang += array(
 	'ALLOW_FLASH_PM'	=> 'Allow use of FLASH BBCode Tag',
 	'ALLOW_SIG_PM'		=> 'Allow signature in private messages',
 	'ALLOW_QUOTE_PM'	=> 'Allow quotes in private messages',
-	'ENABLE_PM_ICONS'	=> 'Enable use of topic icons in private messages'
-);
+	'ENABLE_PM_ICONS'	=> 'Enable use of topic icons in private messages',
+));
 
 // Cookie settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_COOKIE_SETTINGS_EXPLAIN'	=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
 
 	'COOKIE_DOMAIN'			=> 'Cookie domain',
@@ -94,10 +94,10 @@ $lang += array(
 	'COOKIE_PATH'			=> 'Cookie path',
 	'COOKIE_SECURE'			=> 'Cookie secure',
 	'COOKIE_SECURE_EXPLAIN' => 'If your server is running via SSL set this to enabled else leave as disabled',
-);
+));
 
 // Avatar settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 	'ALLOW_LOCAL'				=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'				=> 'Enable remote avatars',
@@ -113,10 +113,10 @@ $lang += array(
 	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/avatars/upload',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar Gallery Path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery',
-);
+));
 
 // Server settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 	'PATH_SETTINGS'				=> 'Path Settings',
 	'SERVER_NAME'				=> 'Domain Name',
@@ -141,10 +141,10 @@ $lang += array(
 	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/upload_icons',
 	'RANKS_PATH'				=> 'Rank image storage path',
 	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/ranks',
-);
+));
 
 // Load settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS_EXPLAIN'		=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
 	'LIMIT_LOAD'				=> 'Limit system load',
 	'LIMIT_LOAD_EXPLAIN'		=> 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
@@ -175,10 +175,10 @@ $lang += array(
 	'YES_SEARCH_PHRASE_EXPLAIN'	=> 'Searching for phrases requires additional processing.',
 	'RECOMPILE_TEMPLATES'		=> 'Recompile stale templates',
 	'RECOMPILE_TEMPLATES_EXPLAIN'=> 'Check for updated template files on filesystem and recompile.',
-);
+));
 
 // Email settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
 	'ENABLE_EMAIL'				=> 'Enable board-wide emails',
 	'ENABLE_EMAIL_EXPLAIN'		=> 'If this is set to disabled no emails will be sent by the board at all.',
@@ -214,10 +214,10 @@ $lang += array(
 	'SMTP_USERNAME_EXPLAIN'		=> 'Only enter a username if your smtp server requires it.',
 	'SMTP_PASSWORD'				=> 'SMTP Password',
 	'SMTP_PASSWORD_EXPLAIN'		=> 'Only enter a password if your smtp server requires it.',
-);
+));
 
 // Board settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
 	'SITE_NAME'					=> 'Site name',
 	'SITE_DESC'					=> 'Site description',
@@ -297,10 +297,10 @@ $lang += array(
 	'COPPA'						=> 'Coppa',
 	'REGISTRATION'				=> 'User Registration',
 	'POSTING'					=> 'Posting',
-);
+));
 
 // Auth settings
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
 	'AUTH_METHOD'			=> 'Select an authentication method',
 	'LDAP_SERVER'			=> 'LDAP server name',
@@ -309,10 +309,10 @@ $lang += array(
 	'LDAP_DN_EXPLAIN'		=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
 	'LDAP_UID'				=> 'LDAP uid',
 	'LDAP_UID_EXPLAIN'		=> 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
-);
+));
 
 // Board defaults
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_BOARD_DEFAULTS_EXPLAIN'	=> 'These settings allow you to define a number of default or global settings used by the board. For example, to disable the use of HTML across the entire board alter the relevant setting below. This data is also used for new user registrations and (where relevant) guest users. Please note that registered users can override some of these options with their own settings.',
 	'DEFAULT_STYLE'				=> 'Default Style',
 	'OVERRIDE_STYLE'			=> 'Override user style',
@@ -341,7 +341,7 @@ $lang += array(
 	'ALLOW_NO_CENSORS'			=> 'Allow Disable of Censors',
 	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'User can disable word censoring.',
 	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
-	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks'
-);
+	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks',
+));
 
 ?>

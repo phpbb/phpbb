@@ -859,6 +859,9 @@ class acp_modules
 		return array();
 	}
 
+	/**
+	* Move module around the tree
+	*/
 	function move_module($from_module_id, $to_parent_id)
 	{
 		global $db;
@@ -939,6 +942,9 @@ class acp_modules
 		$db->sql_query($sql);
 	}
 
+	/**
+	* Remove module from tree
+	*/
 	function delete_module($module_id)
 	{
 		global $db, $user;

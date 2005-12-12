@@ -3,7 +3,7 @@
 *
 * ucp [English]
 *
-* @package phpBB3
+* @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -27,7 +27,7 @@ if (empty($lang) || !is_array($lang))
 // You do not need this where single placeholders are used, e.g. 'Message %d' is fine
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACCOUNT_ACTIVE'			=> 'Your account has now been activated. Thank you for registering',
 	'ACCOUNT_ACTIVE_ADMIN'		=> 'The account has now been activated',
 	'ACCOUNT_ADDED'				=> 'Thank you for registering, your account has been created. You may now login with your username and password',
@@ -464,6 +464,6 @@ $lang += array(
 	'QUIT_MARKED'	=> 'Quit marked',
 	'JOIN_ALL'		=> 'Join all',
 	'JOIN_MARKED'	=> 'Join marked',
-);
+));
 
 ?>

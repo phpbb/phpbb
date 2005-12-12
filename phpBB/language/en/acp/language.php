@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_FILES'						=> 'Admin Language Files',
 	'ACP_LANGUAGE_PACKS_EXPLAIN'	=> 'Here you are able to install/remove language packs',
 
@@ -81,6 +81,6 @@ $lang += array(
 	'UNINSTALLED_LANGUAGE_PACKS'	=> 'Uninstalled language packs',
 
 	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid',
-);
+));
 
 ?>

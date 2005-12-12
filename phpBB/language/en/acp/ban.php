@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 // Banning
-$lang += array(
+$lang = array_merge($lang, array(
 	'1_HOUR'		=> '1 Hour',
 	'30_MINS'		=> '30 Minutes',
 	'6_HOURS'		=> '6 Hours',
@@ -65,6 +65,6 @@ $lang += array(
 	'USER_NO_BANNED'			=> 'No banned usernames',
 	'USER_UNBAN'				=> 'Un-ban or Un-exclude usernames',
 	'USER_UNBAN_EXPLAIN'		=> 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users have a grey background.',
-);
+));
 
 ?>

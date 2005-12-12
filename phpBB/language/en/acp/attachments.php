@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_ATTACHMENT_SETTINGS_EXPLAIN'	=> 'Here you can configure the Main Settings for Attachments and the associated Special Categories.',
 	'ACP_EXTENSION_GROUPS_EXPLAIN'		=> 'Here you can add, delete and modify your Extension Groups, you can disable Extension Groups, assign a special Category to them, change the download mechanism and you can define an Upload Icon which will be displayed in front of an Attachment belonging to the Group.',
 	'ACP_MANAGE_EXTENSIONS_EXPLAIN'		=> 'Here you can manage your allowed extensions. To activate your Extensions, please refer to the extension groups management panel. We strongly recommend not to allow scripting extensions (such as php, php3, php4, phtml, pl, cgi, asp, aspx...)',
@@ -139,7 +139,6 @@ $lang += array(
 	'UPLOAD_DIR_EXPLAIN'			=> 'Storage Path for Attachments.',
 	'UPLOAD_ICON'					=> 'Upload Icon',
 	'UPLOAD_NOT_DIR'				=> 'The upload location you specified does not appear to be a directory.',
-
-);
+));
 
 ?>

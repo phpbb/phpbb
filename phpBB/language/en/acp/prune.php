@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 // User pruning
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_PRUNE_USERS_EXPLAIN'	=> 'Here you can delete (or deactivate) users from you board. This can be done in a variety of ways; by post count, last activity, etc. Each of these criteria can be combined, i.e. you can prune users last active before 2002-01-01 with fewer than 10 posts. Alternatively you can enter a list of users directly into the text box, any criteria entered will be ignored. Take care with this facility! Once a user is deleted there is no way back.',
 
 	'DEACTIVATE'				=> 'Deactivate',
@@ -47,10 +47,10 @@ $lang += array(
 
 	'USER_DEACTIVATE_SUCCESS'	=> 'The selected users have been deactivated successfully',
 	'USER_DELETE_SUCCESS'		=> 'The selected users have been deleted successfully',
-);
+));
 
 // Forum Pruning
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_PRUNE_FORUMS_EXPLAIN'	=> 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
 
 	'FORUM_PRUNE'		=> 'Forum Prune',
@@ -72,6 +72,6 @@ $lang += array(
 	'PRUNE_SUCCESS'					=> 'Pruning of forums was successful',
 
 	'TOPICS_PRUNED'		=> 'Topics pruned',
-);
+));
 
 ?>

@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administer all your usergroups, you can delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
 	'ADD_USERS'						=> 'Add Users',
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a seperate line.',
@@ -104,8 +104,6 @@ $lang += array(
 	'USER_GROUP_DEFAULT'			=> 'Set as default group',
 	'USER_GROUP_DEFAULT_EXPLAIN'	=> 'Saying yes here will set this group as the default group for the added users',
 	'USER_GROUP_LEADER'				=> 'Set as group leader',
-);
-
-//	'FORCE_COLOR'			=> 'Force update',
+));
 
 ?>

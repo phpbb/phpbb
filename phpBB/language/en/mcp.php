@@ -3,7 +3,7 @@
 *
 * mcp [English]
 *
-* @package phpBB3
+* @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACTION'				=> 'Action',
 	'ADD_FEEDBACK'			=> 'Add feedback', 
 	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.', 
@@ -287,7 +287,7 @@ $lang += array(
 			'OFF_TOPIC'	=> 'The reported post is off topic',
 			'OTHER'		=> 'The reported post does not fit into any other category, please use the description field'
 		)
-	)
-);
+	),
+));
 
 ?>

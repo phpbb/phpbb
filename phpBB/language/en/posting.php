@@ -3,7 +3,7 @@
 *
 * posting [English]
 *
-* @package phpBB3
+* @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ADD_ATTACHMENT'			=> 'Add an Attachment',
 	'ADD_ATTACHMENT_EXPLAIN'	=> 'If you wish to attach one or more files enter the details below',
 	'ADD_FILE'					=> 'Add File',
@@ -189,6 +189,6 @@ $lang += array(
 
 	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1d %2s',
 	'WRONG_SIZE'				=> 'The image must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high.',
-);
+));
 
 ?>

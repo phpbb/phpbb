@@ -3,7 +3,7 @@
 *
 * groups [English]
 *
-* @package phpBB3
+* @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ALREADY_DEFAULT_GROUP'	=> 'The selected group is already your default group',
 	'ALREADY_IN_GROUP'		=> 'You are already a member of the selected group',
 
@@ -76,6 +76,6 @@ $lang += array(
 	'USER_GROUP_DEMOTE'			=> 'Demote leadership',
 	'USER_GROUP_DEMOTE_CONFIRM'	=> 'Are you sure you want to demote as group leader from the selected group?',
 	'USER_GROUP_DEMOTED'		=> 'Successfully demoted your leadership.',
-);
+));
 
 ?>

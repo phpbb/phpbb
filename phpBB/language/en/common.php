@@ -3,7 +3,7 @@
 *
 * common [English]
 *
-* @package phpBB3
+* @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ENCODING'		=> 'iso-8859-1',
 	'DIRECTION'		=> 'ltr',
 	'LEFT'			=> 'left',
@@ -210,8 +210,6 @@ $lang += array(
 	'LOG_ADMIN_AUTH_SUCCESS'=> '<b>Sucessful administration login</b>',
 	'LOG_DELETE_POST'		=> '<b>Deleted post</b><br />&#187; %s',
 	'LOG_DELETE_TOPIC'		=> '<b>Deleted topic</b><br />&#187; %s',
-	'LOG_EMAIL_ERROR'		=> '<b>Email error<br />&#187; %s',
-	'LOG_JABBER_ERROR'		=> '<b>Jabber error<br />&#187; %s',
 	'LOG_ME_IN'				=> 'Log me on automatically each visit',
 	'LOG_USER_FEEDBACK'		=> '<b>Added user feedback</b><br />&#187; %s',
 	'LOG_USER_GENERAL'		=> '%s',
@@ -584,6 +582,6 @@ $lang += array(
 		'F j, Y, g:i a'			=> 'January 10, 2005, 5:57 pm'
 	),
 
-);
+));
 
 ?>

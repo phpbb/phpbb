@@ -3,7 +3,7 @@
 *
 * viewtopic [English]
 *
-* @package phpBB3
+* @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -28,7 +28,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang += array(
+$lang = array_merge($lang, array(
 	'ATTACHMENT'			=> 'Attachment',
 
 	'BOOKMARK_ADDED'		=> 'Bookmarked Topic successfully.',
@@ -104,6 +104,6 @@ $lang += array(
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast',
 
 	'WROTE'					=> 'wrote',
-);
+));
 
 ?>

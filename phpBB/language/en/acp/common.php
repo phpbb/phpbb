@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 // Common
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_ADMIN_LOGS'			=> 'Admin Log',
 	'ACP_ATTACHMENTS'			=> 'Attachments',
 	'ACP_ATTACHMENT_SETTINGS'	=> 'Attachment Settings',
@@ -65,6 +65,7 @@ $lang += array(
 	'ACP_EMAIL_SETTINGS'		=> 'Email Settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage Extension Groups',
 	'ACP_FORUM_LOGS'			=> 'Forum Logs',
+	'ACP_FORUM_MANAGEMENT'		=> 'Forum Management',
 	'ACP_GENERAL_CONFIGURATION'	=> 'General Configuration',
 	'ACP_GENERAL_TASKS'			=> 'General Tasks',
 	'ACP_GROUPS'				=> 'Groups',
@@ -80,6 +81,7 @@ $lang += array(
 	'ACP_LOGGING'				=> 'Logging',
 	'ACP_MAIN'					=> 'Admin index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage Extensions',
+	'ACP_MANAGE_FORUMS'			=> 'Manage Forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage Ranks',
 	'ACP_MASS_EMAIL'			=> 'Mass Email',
 	'ACP_MESSAGES'				=> 'Messages',
@@ -161,15 +163,15 @@ $lang += array(
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
 	'WARNING'				=> 'Warning',
-);
+));
 
 // PHP info
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.',
-);
+));
 
 // Logs
-$lang += array(
+$lang = array_merge($lang, array(
 	'ACP_ADMIN_LOGS_EXPLAIN'	=> 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'ACP_CRITICAL_LOGS_EXPLAIN'	=> 'This lists the actions carried out by the board itself. These log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'ACP_MOD_LOGS_EXPLAIN'		=> 'This lists the actions carried out by board moderators, select a forum from the drop down list. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
@@ -182,10 +184,10 @@ $lang += array(
 	'SORT_IP'		=> 'IP address',
 	'SORT_DATE'		=> 'Date',
 	'SORT_ACTION'	=> 'Log action',
-);
+));
 
 // Index page
-$lang += array(
+$lang = array_merge($lang, array(
 	'ADMIN_INTRO'				=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
 	'ADMIN_LOG'					=> 'Logged administrator actions',
 	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item to the left.',
@@ -227,10 +229,10 @@ $lang += array(
 	'VALUE'				=> 'Value',
 
 	'WELCOME_PHPBB'			=> 'Welcome to phpBB',
-);
+));
 
 // Log
-$lang += array(
+$lang = array_merge($lang, array(
 	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',
@@ -283,6 +285,20 @@ $lang += array(
 	'LOG_ERROR_JABBER'		=> '<b>Jabber Error</b><br />&#187; %s',
 	'LOG_ERROR_EMAIL'		=> '<b>Email Error</b><br />&#187; %s',
 	
+	'LOG_FORUM_ADD'							=> '<b>Created new forum</b><br />&#187; %s',
+	'LOG_FORUM_EDIT'						=> '<b>Edited forum details</b><br />&#187; %s',
+	'LOG_FORUM_MOVE_DOWN'					=> '<b>Moved forum</b> %s <b>below</b> %s',
+	'LOG_FORUM_MOVE_UP'						=> '<b>Moved forum</b> %s <b>above</b> %s',
+	'LOG_FORUM_SYNC'						=> '<b>Re-synchronised forum</b><br />&#187; %s',
+	'LOG_FORUM_DEL_POSTS'					=> '<b>Deleted forum and its messages</b><br />&#187; %s',
+	'LOG_FORUM_DEL_FORUMS'					=> '<b>Deleted forum and its subforums</b><br />&#187; %s',
+	'LOG_FORUM_DEL_POSTS_MOVE_FORUMS'		=> '<b>Deleted forum and its messages, moved subforums</b> to %s<br />&#187; %s',
+	'LOG_FORUM_DEL_MOVE_POSTS_FORUMS'		=> '<b>Deleted forum and its subforums, moved messages</b> to %s<br />&#187; %s',
+	'LOG_FORUM_DEL_MOVE_POSTS'				=> '<b>Deleted forum and moved posts </b> to %s<br />&#187; %s',
+	'LOG_FORUM_DEL_MOVE_FORUMS'				=> '<b>Deleted forum and moved subforums</b> to %s<br />&#187; %s',
+	'LOG_FORUM_DEL_POSTS_FORUMS'			=> '<b>Deleted forum, its messages and subforums</b><br />&#187; %s',
+	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %s <b>and subforums</b> to %s<br />&#187; %s',
+
 	'LOG_GROUP_CREATED'		=> '<b>New usergroup created</b><br />&#187; %s',
 	'LOG_GROUP_DEFAULTS'	=> '<b>Group made default for members</b><br />&#187; %s',
 	'LOG_GROUP_DELETE'		=> '<b>Usergroup deleted</b><br />&#187; %s',
@@ -336,7 +352,6 @@ $lang += array(
 	'LOG_WORD_ADD'			=> '<b>Added word censor</b><br />&#187; %s',
 	'LOG_WORD_DELETE'		=> '<b>Deleted word censor</b><br />&#187; %s',
 	'LOG_WORD_EDIT'			=> '<b>Edited word censor</b><br />&#187; %s',
-
-);
+));
 
 ?>

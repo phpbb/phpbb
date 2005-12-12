@@ -29,7 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 // Custom profile fields
-$lang += array(
+$lang = array_merge($lang, array(
 	'ADDED_PROFILE_FIELD'	=> 'Successfully added custom profile field',
 	'ALPHA_ONLY'			=> 'Alphanumeric only',
 	'ALPHA_SPACERS'			=> 'Alphanumeric and spacers',
@@ -133,6 +133,6 @@ $lang += array(
 
 	'UPDATE_PREVIEW'	=> 'Update Preview',
 	'USER_FIELD_NAME'	=> 'Field Name presented to the user',
-);
+));
 
 ?>

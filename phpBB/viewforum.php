@@ -133,8 +133,8 @@ else
 	get_moderators($moderators, $forum_id);
 }
 
-// Output forum listing if it is postable
-if ($forum_data['forum_type'] == FORUM_POST || ($forum_data['forum_flags'] & 16))
+// Output forum listing if it is postable or active topics
+if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16) && $forum_data['forum_type'] == FORUM_CAT))
 {
 	// Handle marking posts
 	if ($mark_read == 'topics')
