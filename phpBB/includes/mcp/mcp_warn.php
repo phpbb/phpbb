@@ -100,33 +100,31 @@ function mcp_warn_front_view($id, $mode)
 	// Obtain a list of the 5 naughtiest users....
 	// These are the 5 users with the highest warning count
 
-	$sql = 'SELECT user_id, username, user_warnings
-		FROM ' . USERS_TABLE . '
-		WHERE user_warnings > 0
-		ORDER BY user_warnings DESC LIMIT 5';
-	$result = $db->sql_query($sql);
+	$highest = array();
+	$count = 0;
 
-	while ($row = $db->sql_fetchrow($result))
+	view_warned_users($highest, $count, 5);
+
+	foreach ($highest as $row)
 	{
 		$template->assign_block_vars('highest', array(
 			'U_NOTES'		=> 'mcp.' . $phpEx . $SID . '&amp;i=notes&amp;mode=user_notes&amp;u=' . $row['user_id'],
 			'U_USER'		=> 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
 
 			'USERNAME'		=> $row['username'],
-			'WARNING_TIME'	=> $user->format_date($row['user_warning_time']), // TODO: Need to obtain the time of the last warning. Probably store this in the USERS_TABLE rather than join the WARNINGS_TABLE for efficiency
+			'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
 			'WARNINGS'		=> $row['user_warnings'],
 			)
 		);
 	}
-	$db->sql_freeresult($result);
 
 	// And now the 5 most recent users to get in trouble
 
 	$sql = 'SELECT u.user_id, u.username, u.user_warnings, w.warning_time
 		FROM ' . USERS_TABLE . ' u, ' . WARNINGS_TABLE . ' w
 		WHERE u.user_id = w.user_id
-		ORDER BY w.warning_time DESC LIMIT 5';
-	$result = $db->sql_query($sql);
+		ORDER BY w.warning_time DESC';
+	$result = $db->sql_query_limit($sql, 5);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -362,6 +360,10 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 
 	$db->sql_query('INSERT INTO ' . WARNINGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
-	$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_warnings = user_warnings + 1 WHERE user_id = ' . $userrow['user_id']);
+	$sql = 'UPDATE ' . USERS_TABLE . ' 
+		SET user_warnings = user_warnings + 1,
+			user_last_warning = ' . time() . '
+		WHERE user_id = ' . $userrow['user_id'];
+	$db->sql_query($sql);
 }
 ?>
