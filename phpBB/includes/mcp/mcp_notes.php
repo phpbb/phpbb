@@ -94,7 +94,7 @@ function mcp_notes_user_view($id, $mode, $action)
 	$username = request_var('username', '');
 	$start = request_var('start', 0);
 	$st	= request_var('st', 0);
-	$sk	= request_var('sk', 'a');
+	$sk	= request_var('sk', 'b');
 	$sd	= request_var('sd', 'd');
 
 	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
@@ -211,6 +211,10 @@ function mcp_notes_user_view($id, $mode, $action)
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id",
 		'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,
+		'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
+		'S_SELECT_SORT_KEY' 	=> $s_sort_key,
+		'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
+
 		'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
 		'PAGINATION'		=> generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
 		'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
