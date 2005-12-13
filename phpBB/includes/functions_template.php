@@ -32,7 +32,7 @@ class template_compile
 	/**
 	* constuctor
 	*/
-	function template_compile($template)
+	function template_compile(&$template)
 	{
 		$this->template = &$template;
 	}

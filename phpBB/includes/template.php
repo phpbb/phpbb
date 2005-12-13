@@ -229,12 +229,12 @@ class template
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
 						{
-							$this->_tpl_load_file($handle);
+							$compile->_tpl_load_file($handle);
 						}
 						else
 						{
 							$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
-							$this->_tpl_load_file($row['template_filename']);
+							$compile->_tpl_load_file($row['template_filename']);
 							unset($this->compiled_code[$row['template_filename']]);
 							unset($this->files[$row['template_filename']]);
 						}
@@ -242,8 +242,8 @@ class template
 
 					if ($row['template_filename'] == $this->filename[$handle])
 					{
-						$this->compiled_code[$handle] = $this->compile(trim($row['template_data']));
-						$this->compile_write($handle, $this->compiled_code[$handle]);
+						$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
+						$compile->compile_write($handle, $this->compiled_code[$handle]);
 					}
 					else
 					{
@@ -251,7 +251,7 @@ class template
 						if (!file_exists($this->cachepath . $row['template_filename'] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx))
 						{
 							$this->filename[$row['template_filename']] = $row['template_filename'];
-							$this->compile_write($row['template_filename'], $this->compile(trim($row['template_data'])));
+							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
 							unset($this->filename[$row['template_filename']]);
 						}
 					}
