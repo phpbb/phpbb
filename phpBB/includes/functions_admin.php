@@ -2010,14 +2010,15 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 /**
 * Lists warned users
 */
-function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $sort_by = 'user_warnings DESC')
+function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_warnings DESC')
 {
 	global $db;
 
-	$sql = 'SELECT user_id, username, user_warnings
-		FROM ' . USERS_TABLE . "
+	$sql = 'SELECT user_id, username, user_warnings, user_last_warning
+		FROM ' . USERS_TABLE . '
 		WHERE user_warnings > 0
-		ORDER BY	$sort_by";
+		' . (($limit_days) ? "AND user_last_warning >= $limit_days" : '') . "
+		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
 
 	$users = $db->sql_fetchrowset($result);
@@ -2025,14 +2026,15 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $sort
 
 	$sql = 'SELECT count(user_id) AS user_count
 		FROM ' . USERS_TABLE . '
-		WHERE user_warnings > 0';
+		WHERE user_warnings > 0
+		' . (($limit_days) ? "AND user_last_warning >= $limit_days" : '');
 
 	$result = $db->sql_query($sql);
 
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$user_count =  $row['user_count'];
+	$user_count = $row['user_count'];
 
 	return;
 }

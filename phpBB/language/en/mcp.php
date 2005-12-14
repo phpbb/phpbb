@@ -272,6 +272,8 @@ $lang = array_merge($lang, array(
 
 	'VIEW_DETAILS'			=> 'View Details',
 
+	'WARNED_USERS'			=> 'Warned Users',
+
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s',
 
 	'report_reasons'		=> array(

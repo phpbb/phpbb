@@ -41,6 +41,10 @@ class mcp_warn
 				mcp_warn_front_view($id, $mode);
 				$this->tpl_name = 'mcp_warn_front';
 				break;
+			case 'list':
+				mcp_warn_list_view($id, $mode, $action);
+				$this->tpl_name = 'mcp_warn_list';
+				break;
 			case 'warn_post':
 				mcp_warn_post_view($id, $mode, $action);
 				$this->tpl_name = 'mcp_warn_post';
@@ -139,6 +143,65 @@ function mcp_warn_front_view($id, $mode)
 		);
 	}
 	$db->sql_freeresult($result);
+}
+
+/**
+* Lists all users with warnings
+*/
+function mcp_warn_list_view($id, $mode, $action)
+{
+	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $template, $db, $user, $auth;
+
+	$user->add_lang('memberlist');
+
+	$start = request_var('start', 0);
+	$st	= request_var('st', 0);
+	$sk	= request_var('sk', 'b');
+	$sd	= request_var('sd', 'd');
+
+	$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
+	$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_WARNINGS']);
+	$sort_by_sql = array('a' => 'username', 'b' => 'user_last_warning', 'c' => 'user_warnings');
+
+	$s_limit_days = $s_sort_key = $s_sort_dir = '';
+	gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir);
+
+	// Define where and sort sql for use in displaying logs
+	$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
+	$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
+
+	$users = array();
+	$user_count = 0;
+
+	view_warned_users($users, $user_count, $config['topics_per_page'], $start, $sql_where, $sql_sort);
+
+	foreach ($users as $row)
+	{
+		$template->assign_block_vars('user', array(
+			'U_NOTES'		=> 'mcp.' . $phpEx . $SID . '&amp;i=notes&amp;mode=user_notes&amp;u=' . $row['user_id'],
+			'U_USER'		=> 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
+
+			'USERNAME'		=> $row['username'],
+			'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
+			'WARNINGS'		=> $row['user_warnings'],
+			)
+		);
+	}
+
+	$template->assign_vars(array(
+		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode",
+		'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,
+		'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
+		'S_SELECT_SORT_KEY' 	=> $s_sort_key,
+		'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
+
+		'PAGE_NUMBER'		=> on_page($user_count, $config['topic_per_page'], $start),
+		'PAGINATION'		=> generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $user_count, $config['topics_per_page'], $start),
+		'TOTAL_USERS'		=> ($user_count == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $user_count),
+		)
+	);
+
 }
 
 /**
