@@ -13,6 +13,8 @@
 */
 class acp_board
 {
+	var $new_config = array();
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template;
@@ -355,7 +357,7 @@ class acp_board
 					$method = 'admin_' . $method;
 					if (function_exists($method))
 					{
-						if ($fields = $method($new))
+						if ($fields = $method($this->new_config))
 						{
 							// Check if we need to create config fields for this plugin
 							foreach ($fields['config'] as $field)
@@ -382,7 +384,7 @@ class acp_board
 
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $new, $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx;
 
 		$auth_plugins = array();
 
@@ -451,9 +453,9 @@ class acp_board
 
 	function username_length($value, $key = '')
 	{
-		global $new, $user;
+		global $user;
 
-		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_name_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_name_chars]" value="' . $new['max_name_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
+		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_name_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_name_chars]" value="' . $this->new_config['max_name_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
 	}
 
 	function select_username_chars($selected_value, $key)
@@ -473,9 +475,9 @@ class acp_board
 
 	function password_length($value, $key)
 	{
-		global $new, $user;
+		global $user;
 
-		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_pass_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_pass_chars]" value="' . $new['max_pass_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
+		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_pass_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_pass_chars]" value="' . $this->new_config['max_pass_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
 	}
 
 	function select_password_chars($selected_value, $key)
@@ -495,14 +497,14 @@ class acp_board
 
 	function bump_interval($value, $key)
 	{
-		global $new, $user;
+		global $user;
 
 		$s_bump_type = '';
 		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
 		foreach ($types as $type => $lang)
 		{
-			$selected = ($new['bump_type'] == $type) ? 'selected="selected" ' : '';
-			$s_bump_type .= '<option value="' . $type . '" ' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$selected = ($this->new_config['bump_type'] == $type) ? ' selected="selected"' : '';
+			$s_bump_type .= '<option value="' . $type . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
 		}
 
 		return '<input id="' . $key . '" type="text" size="3" maxlength="4" name="config[bump_interval]" value="' . $value . '" />&nbsp;<select name="config[bump_type]">' . $s_bump_type . '</select>';
@@ -510,11 +512,11 @@ class acp_board
 
 	function board_disable($value, $key)
 	{
-		global $new, $user;
+		global $user;
 
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
-		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $new['board_disable_msg'] . '" />';
+		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
 	}
 }
 
