@@ -340,9 +340,6 @@ class compress_zip extends compress
 		$fr .= $name;
 		$fr .= $zdata;
 		unset($zdata);
-		$fr .= pack('V', $crc);			// crc32 4bytes
-		$fr .= pack('V', $c_len);		// compressed filesize 4bytes
-		$fr .= pack('V', $unc_len);		// uncompressed filesize 4bytes
 
 		$this->datasec_len += strlen($fr);
 
