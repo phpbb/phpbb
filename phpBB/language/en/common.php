@@ -362,6 +362,7 @@ $lang = array_merge($lang, array(
 	'SORT_TOPIC_TITLE'			=> 'Topic Title',
 	'SORT_USERNAME'				=> 'Username',
 	'SPLIT_TOPIC'				=> 'Split Topic',
+	'SQL_ERROR_OCCURRED'		=> 'An sql error occurred while fetching this page. Please contact an administrator if this problem persist.',
 	'STATISTICS'				=> 'Statistics',
 	'START_WATCHING_FORUM'		=> 'Subscribe Forum',
 	'START_WATCHING_TOPIC'		=> 'Subscribe Topic',
