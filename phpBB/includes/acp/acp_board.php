@@ -38,7 +38,7 @@ class acp_board
 						'cookie_secure'	=> array('lang' => 'COOKIE_SECURE',	'type' => 'radio:disabled_enabled', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'avatar':
 				$display_vars = array(
@@ -57,7 +57,7 @@ class acp_board
 						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'type' => 'text:20:255', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'settings':
 				$display_vars = array(
@@ -99,7 +99,7 @@ class acp_board
 						'max_quote_depth'	=> array('lang' => 'QUOTE_DEPTH_LIMIT',	'type' => 'text:4:4', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'default':
 				$display_vars = array(
@@ -129,7 +129,7 @@ class acp_board
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'load':
 				$display_vars = array(
@@ -158,7 +158,7 @@ class acp_board
 						'load_tplcompile'	=> array('lang' => 'RECOMPILE_TEMPLATES', 'type' => 'radio:yes_no', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'auth':
 				$display_vars = array(
@@ -168,28 +168,30 @@ class acp_board
 						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'type' => 'select', 'method' => 'select_auth_method', 'explain' => false)
 					)
 				);
-				break;
+			break;
 
 			case 'server':
 				$display_vars = array(
 					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> array(
-						'legend1'			=> 'ACP_SERVER_SETTINGS',
-						'server_name'		=> array('lang' => 'SERVER_NAME',	'type' => 'text:40:255', 'explain' => true),
-						'server_port'		=> array('lang' => 'SERVER_PORT',	'type' => 'text:5:5', 'explain' => true),
-						'script_path'		=> array('lang' => 'SCRIPT_PATH',	'type' => 'text::255', 'explain' => true),
-						'ip_check'			=> array('lang' => 'IP_VALID',		'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
-						'browser_check'		=> array('lang' => 'BROWSER_VALID',	'type' => 'radio:yes_no', 'explain' => true),
-						'gzip_compress'		=> array('lang' => 'ENABLE_GZIP',	'type' => 'radio:yes_no', 'explain' => false),
+						'legend1'				=> 'ACP_SERVER_SETTINGS',
+						'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
+						'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
+						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'type' => 'text::255', 'explain' => true),
+						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',	'type' => 'radio:yes_no', 'explain' => true),
+						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',	'type' => 'text:5:5', 'explain' => true),
+						'ip_check'				=> array('lang' => 'IP_VALID',			'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
+						'browser_check'			=> array('lang' => 'BROWSER_VALID',		'type' => 'radio:yes_no', 'explain' => true),
+						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'type' => 'radio:yes_no', 'explain' => false),
 
-						'legend2'			=> 'PATH_SETTINGS',
-						'smilies_path'		=> array('lang' => 'SMILIES_PATH',	'type' => 'text:20:255', 'explain' => true),
-						'icons_path'		=> array('lang' => 'ICONS_PATH',	'type' => 'text:20:255', 'explain' => true),
-						'upload_icons_path'	=> array('lang' => 'UPLOAD_ICONS_PATH', 'type' => 'text:20:255', 'explain' => true),
-						'ranks_path'		=> array('lang' => 'RANKS_PATH',	'type' => 'text:20:255', 'explain' => true)
+						'legend2'				=> 'PATH_SETTINGS',
+						'smilies_path'			=> array('lang' => 'SMILIES_PATH',		'type' => 'text:20:255', 'explain' => true),
+						'icons_path'			=> array('lang' => 'ICONS_PATH',		'type' => 'text:20:255', 'explain' => true),
+						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'type' => 'text:20:255', 'explain' => true),
+						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'type' => 'text:20:255', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'email':
 				$display_vars = array(
@@ -213,7 +215,7 @@ class acp_board
 						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'type' => 'password:25:255', 'explain' => true)
 					)
 				);
-				break;
+			break;
 
 			case 'message':
 				$display_vars = array(
@@ -244,7 +246,7 @@ class acp_board
 						'enable_pm_icons'		=> array('lang' => 'ENABLE_PM_ICONS',		'type' => 'radio:yes_no', 'explain' => false)
 					)
 				);
-				break;
+			break;
 			
 			default:
 				trigger_error('NO_MODE');
