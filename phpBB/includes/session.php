@@ -341,7 +341,7 @@ class session
 
 		// Regenerate autologin/persistent login key
 		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
-		if ((!empty($this->cookie_data['k']) || $persist_login) && $this->data['user_id'] != ANONYMOUS)
+		if (($this->cookie_data['k'] || $persist_login) && $this->data['user_id'] != ANONYMOUS)
 		{
 			$this->set_login_key();
 		}
@@ -353,7 +353,7 @@ class session
 			
 			$this->set_cookie('u', $this->cookie_data['u'], $cookie_expire);
 			$this->set_cookie('k', $this->cookie_data['k'], $cookie_expire);
-			$this->set_cookie('sid', $this->session_id, 0);
+			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
 			$SID = '?sid=' . $this->session_id;
 
@@ -393,11 +393,11 @@ class session
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 
-			if (!empty($this->cookie_data['k']))
+			if ($this->cookie_data['k'])
 			{
 				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 					WHERE user_id = ' . (int) $this->data['user_id'] . "
-						AND key_id = '" . $db->sql_escape($this->cookie_data['k']) . "'";
+						AND key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
 				$db->sql_query($sql);
 			}
 			
@@ -535,7 +535,7 @@ class session
 				break;
 		}
 
-		if (!empty($config['max_autologin_time']))
+		if ($config['max_autologin_time'])
 		{
 			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
@@ -649,14 +649,16 @@ class session
 		
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
-		$key = ($key === false) ? ((!empty($this->cookie_data['k'])) ? $this->cookie_data['k'] : false) : $key;
+		$key = ($key === false) ? (($this->cookie_data['k']) ? $this->cookie_data['k'] : false) : $key;
 		
 		$key_id = unique_id(hexdec(substr($this->session_id, 0, 8)));
+		
 		$sql_ary = array(
 			'key_id'		=> (string) md5($key_id),
 			'last_ip'		=> (string) $this->ip,
 			'last_login'	=> (int) time()
 		);
+
 		if (!$key)
 		{
 			$sql_ary += array(
@@ -668,8 +670,7 @@ class session
 		$db->sql_query($sql);
 		
 		$this->cookie_data['k'] = $key_id;
-		unset($sql_ary);
-		unset($key_id);
+		unset($sql_ary, $key_id);
 		
 		return false;
 	}
