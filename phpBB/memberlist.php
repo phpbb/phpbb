@@ -295,7 +295,7 @@ switch ($mode)
 		}
 
 		// 
-		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
+		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_allow_viewonline, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
@@ -307,7 +307,7 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT MAX(session_time) AS session_time
+		$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 			FROM ' . SESSIONS_TABLE . "
 			WHERE session_user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -316,6 +316,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
+		$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
 		unset($row);
 
 		// Obtain list of forums where this users post count is incremented
@@ -1201,6 +1202,9 @@ function show_profile($data)
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
+	$update_time = $config['load_online_time'] * 60;
+	$online = (time() - $update_time < $data['session_time'] && (($data['session_viewonline'] && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+
 	// Dump it out to the template
 	// TODO
 	// Add permission check for IM clients
@@ -1212,7 +1216,7 @@ function show_profile($data)
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 
-		'ONLINE_IMG'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? $user->img('btn_online', $user->lang['USER_ONLINE']) : $user->img('btn_offline', $user->lang['USER_ONLINE']),
+		'ONLINE_IMG'	=> ($poster_id == ANONYMOUS) ? '' : (($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
 		'RANK_IMG'		=> $rank_img,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
 
@@ -1226,6 +1230,8 @@ function show_profile($data)
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&.src=pg' : '',
 		'U_MSN'			=> ($data['user_msnm']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$user_id" : '',
 		'U_JABBER'		=> ($data['user_jabber']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$user_id" : '',
+
+		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 
 		'S_ONLINE'	=> (intval($data['session_time']) >= time() - ($config['load_online_time'] * 60)) ? true : false
 	);
