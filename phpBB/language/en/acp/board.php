@@ -145,7 +145,8 @@ $lang = array_merge($lang, array(
 
 // Load settings
 $lang = array_merge($lang, array(
-	'ACP_LOAD_SETTINGS_EXPLAIN'		=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
+	'SEARCH_SETTINGS'			=> 'Search Settings',
+	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
 	'LIMIT_LOAD'				=> 'Limit system load',
 	'LIMIT_LOAD_EXPLAIN'		=> 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
 	'LIMIT_SESSIONS'			=> 'Limit sessions',
@@ -167,14 +168,20 @@ $lang = array_merge($lang, array(
 	'YES_BIRTHDAYS'				=> 'Enable birthday listing',
 	'YES_MODERATORS'			=> 'Enable display of Moderators',
 	'YES_JUMPBOX'				=> 'Enable display of Jumpbox',
-	'YES_SEARCH'				=> 'Enable search facilities',
-	'YES_SEARCH_EXPLAIN'		=> 'User and backend search functions including fulltext updates when posting.',
-	'YES_SEARCH_UPDATE'			=> 'Enable fulltext updating',
-	'YES_SEARCH_UPDATE_EXPLAIN'	=> 'Updating of fulltext indexes when posting, overriden if search is disabled.',
-	'YES_SEARCH_PHRASE'			=> 'Enable phrase searching',
-	'YES_SEARCH_PHRASE_EXPLAIN'	=> 'Searching for phrases requires additional processing.',
 	'RECOMPILE_TEMPLATES'		=> 'Recompile stale templates',
 	'RECOMPILE_TEMPLATES_EXPLAIN'=> 'Check for updated template files on filesystem and recompile.',
+	'YES_SEARCH'				=> 'Enable search facilities',
+	'YES_SEARCH_EXPLAIN'		=> 'User and backend search functions including fulltext updates when posting.',
+	'SEARCH_INTERVAL'			=> 'Search Flood Interval',
+	'SEARCH_INTERVAL_EXPLAIN'	=> 'Number of seconds users must wait between searches.',
+	'SEARCH_TYPE'				=> 'Search Backend',
+	'SEARCH_TYPE_EXPLAIN'		=> 'phpBB allows you to choose the backend that is used for searching text in post contents. By default the search  will use phpBB\'s own fulltext search.',
+	'YES_SEARCH_UPDATE'			=> 'Enable fulltext updating',
+	'YES_SEARCH_UPDATE_EXPLAIN'	=> 'Updating of fulltext indexes when posting, overriden if search is disabled.',
+	'MIN_SEARCH_CHARS'			=> 'Min characters indexed by search',
+	'MIN_SEARCH_CHARS_EXPLAIN'	=> 'Words with at least this many characters will be indexed for searching.',
+	'MAX_SEARCH_CHARS'			=> 'Max characters indexed by search',
+	'MAX_SEARCH_CHARS_EXPLAIN'	=> 'Words with no more than this many characters will be indexed for searching.'
 ));
 
 // Email settings
@@ -284,12 +291,6 @@ $lang = array_merge($lang, array(
 	'FLOOD_INTERVAL_EXPLAIN'	=> 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.',
 	'BUMP_INTERVAL'				=> 'Bump Interval',
 	'BUMP_INTERVAL_EXPLAIN'		=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',
-	'SEARCH_INTERVAL'			=> 'Search Flood Interval',
-	'SEARCH_INTERVAL_EXPLAIN'	=> 'Number of seconds users must wait between searches.',
-	'MIN_SEARCH_CHARS'			=> 'Min characters indexed by search',
-	'MIN_SEARCH_CHARS_EXPLAIN'	=> 'Words with at least this many characters will be indexed for searching.',
-	'MAX_SEARCH_CHARS'			=> 'Max characters indexed by search',
-	'MAX_SEARCH_CHARS_EXPLAIN'	=> 'Words with no more than this many characters will be indexed for searching.',
 	'TOPICS_PER_PAGE'			=> 'Topics Per Page',
 	'POSTS_PER_PAGE'			=> 'Posts Per Page',
 	'HOT_THRESHOLD'				=> 'Posts for Popular Threshold',

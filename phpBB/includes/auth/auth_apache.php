@@ -25,12 +25,12 @@ function login_apache(&$username, &$password)
 {
 	global $db;
 
-	$php_auth_user = (!empty($_SERVER['PHP_AUTH_USER'])) ? $_SERVER['PHP_AUTH_USER'] : $_GET['PHP_AUTH_USER'];
-	$php_auth_pw = (!empty($_SERVER['PHP_AUTH_PW'])) ? $_SERVER['PHP_AUTH_PW'] : $_GET['PHP_AUTH_PW'];
+	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
+	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
 
-	if ($php_auth_user && $php_auth_pw)
+	if ((!empty($php_auth_user)) && (!empty($php_auth_pw)))
 	{
-		$sql = ' user_id, username, user_password, user_passchg, user_email, user_type 
+		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type 
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($username) . "'";
 		$result = $db->sql_query($sql);

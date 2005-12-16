@@ -139,9 +139,6 @@ class acp_board
 						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'type' => 'text:4:4', 'explain' => true),
 						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'type' => 'text:5:5', 'explain' => true),
 						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'type' => 'text:4:4', 'explain' => true),
-						'search_interval'	=> array('lang' => 'SEARCH_INTERVAL',	'type' => 'text:3:4', 'explain' => true),
-						'min_search_chars'	=> array('lang' => 'MIN_SEARCH_CHARS',	'type' => 'text:3:3', 'explain' => true),
-						'max_search_chars'	=> array('lang' => 'MAX_SEARCH_CHARS',	'type' => 'text:3:3', 'explain' => true),
 						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'type' => 'text:4:3', 'explain' => true),
 
 						'legend2'			=> 'GENERAL_OPTIONS',
@@ -152,10 +149,15 @@ class acp_board
 						'load_birthdays'	=> array('lang' => 'YES_BIRTHDAYS',		'type' => 'radio:yes_no', 'explain' => false),
 						'load_moderators'	=> array('lang' => 'YES_MODERATORS',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_jumpbox'		=> array('lang' => 'YES_JUMPBOX',		'type' => 'radio:yes_no', 'explain' => false),
+						'load_tplcompile'	=> array('lang' => 'RECOMPILE_TEMPLATES', 'type' => 'radio:yes_no', 'explain' => true),
+
+						'legend3'			=> 'SEARCH_SETTINGS',
 						'load_search'		=> array('lang' => 'YES_SEARCH',		'type' => 'radio:yes_no', 'explain' => true),
+						'search_interval'	=> array('lang' => 'SEARCH_INTERVAL',	'type' => 'text:3:4', 'explain' => true),
+						'search_type'		=> array('lang' => 'SEARCH_TYPE',		'type' => 'select', 'method' => 'select_search_type', 'explain' => true),
 						'load_search_upd'	=> array('lang' => 'YES_SEARCH_UPDATE',	'type' => 'radio:yes_no', 'explain' => true),
-			//			'load_search_phr'	=> array('lang' => 'YES_SEARCH_PHRASE',	'type' => 'radio:yes_no', 'explain' => true),
-						'load_tplcompile'	=> array('lang' => 'RECOMPILE_TEMPLATES', 'type' => 'radio:yes_no', 'explain' => true)
+						'min_search_chars'	=> array('lang' => 'MIN_SEARCH_CHARS',	'type' => 'text:3:3', 'explain' => true),
+						'max_search_chars'	=> array('lang' => 'MAX_SEARCH_CHARS',	'type' => 'text:3:3', 'explain' => true)
 					)
 				);
 			break;
@@ -284,6 +286,61 @@ class acp_board
 			}
 		}
 
+		if ($mode == 'auth')
+		{
+			// Retrieve a list of auth plugins and check their config values
+			$auth_plugins = array();
+
+			$dp = opendir($phpbb_root_path . 'includes/auth');
+			while ($file = readdir($dp))
+			{
+				if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+				{
+					$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+				}
+			}
+
+			sort($auth_plugins);
+
+			foreach ($auth_plugins as $method)
+			{
+				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				{
+					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+
+					$method = 'admin_' . $method;
+					if (function_exists($method))
+					{
+						if ($fields = $method($this->new_config))
+						{
+							// Check if we need to create config fields for this plugin and save config when submit was pressed
+							foreach ($fields['config'] as $field)
+							{
+								if (!isset($config[$field]))
+								{
+									set_config($field, '');
+								}
+
+								if (!isset($cfg_array[$field]) || strpos($field, 'legend') !== false)
+								{
+									continue;
+								}
+
+								$config_value = $cfg_array[$field];
+								$this->new_config[$field] = $config_value;
+
+								if ($submit)
+								{
+									set_config($field, $config_value);
+								}
+							}
+						}
+						unset($fields);
+					}
+				}
+			}
+		}
+
 		if ($submit)
 		{
 			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
@@ -336,40 +393,15 @@ class acp_board
 		if ($mode == 'auth')
 		{
 			$template->assign_var('S_AUTH', true);
-			
-			$auth_plugins = array();
-
-			$dp = opendir($phpbb_root_path . 'includes/auth');
-			while ($file = readdir($dp))
-			{
-				if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-				{
-					$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
-				}
-			}
-
-			sort($auth_plugins);
 
 			foreach ($auth_plugins as $method)
 			{
 				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
 					$method = 'admin_' . $method;
 					if (function_exists($method))
 					{
-						if ($fields = $method($this->new_config))
-						{
-							// Check if we need to create config fields for this plugin
-							foreach ($fields['config'] as $field)
-							{
-								if (!isset($config[$field]))
-								{
-									set_config($field, '');
-								}
-							}
-						}
+						$fields = $method($this->new_config);
 
 						if ($fields['tpl'])
 						{
@@ -519,6 +551,33 @@ class acp_board
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
+	}
+
+	function select_search_type($selected_type, $key = '')
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$search_plugins = array();
+
+		$dp = opendir($phpbb_root_path . 'includes/search');
+		while ($file = readdir($dp))
+		{
+			if (preg_match('#\.' . $phpEx . '$#', $file))
+			{
+				$search_plugins[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
+			}
+		}
+
+		sort($search_plugins);
+
+		$search_select = '';
+		foreach ($search_plugins as $type)
+		{
+			$selected = ($selected_type == $type) ? ' selected="selected"' : '';
+			$search_select .= '<option value="' . $type . '"' . $selected . '>' . ucfirst(strtolower(str_replace('_', ' ', $type))) . '</option>';
+		}
+
+		return $search_select;
 	}
 }
 

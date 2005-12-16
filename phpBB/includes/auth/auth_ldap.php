@@ -36,6 +36,8 @@ function login_ldap(&$username, &$password)
 		return 'Could not connect to LDAP server';
 	}
 
+	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+
 	$search = @ldap_search($ldap, $config['ldap_base_dn'], $config['ldap_uid'] . '=' . $username, array($config['ldap_uid']));
 	$result = @ldap_get_entries($ldap, $search);
 
@@ -79,15 +81,15 @@ function admin_ldap(&$new)
 
 	<dl>
 		<dt><label for="ldap_server">' . $user->lang['LDAP_SERVER'] . ':</label><br /><span>' . $user->lang['LDAP_SERVER_EXPLAIN'] . '</span></dt>
-		<dd><input type="text" id="ldap_server" size="40" name="ldap_server" value="' . $new['ldap_server'] . '" /></dd>
+		<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . ':</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
-		<dd><input type="text" id="ldap_dn" size="40" name="ldap_base_dn" value="' . $new['ldap_base_dn'] . '" /></dd>
+		<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="ldap_uid">' . $user->lang['LDAP_UID'] . ':</label><br /><span>' . $user->lang['LDAP_UID_EXPLAIN'] . '</span></dt>
-		<dd><input type="text" id="ldap_uid" size="40" name="ldap_uid" value="' . $new['ldap_uid'] . '" /></dd>
+		<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_uid]" value="' . $new['ldap_uid'] . '" /></dd>
 	</dl>
 	';
 
