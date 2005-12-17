@@ -106,7 +106,7 @@ page_header($l_title);
 $template->set_filenames(array(
 	'body' => 'faq_body.html')
 );
-make_jumpbox('viewforum.'.$phpEx, $forum_id);
+make_jumpbox('viewforum.'.$phpEx);
 
 page_footer();
 
