@@ -1878,7 +1878,7 @@ function page_header($page_title = '')
 		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
 	);
 
-	if (!empty($config['send_encoding']))
+	if ($config['send_encoding'])
 	{
 		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
 	}
