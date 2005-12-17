@@ -184,6 +184,7 @@ class acp_board
 						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',	'type' => 'text:5:5', 'explain' => true),
 						'ip_check'				=> array('lang' => 'IP_VALID',			'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
 						'browser_check'			=> array('lang' => 'BROWSER_VALID',		'type' => 'radio:yes_no', 'explain' => true),
+						'send_encoding'		=> array('lang' => 'SEND_ENCODING', 'type' => 'radio:yes_no', 'explain' => true),
 						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'type' => 'radio:yes_no', 'explain' => false),
 
 						'legend2'				=> 'PATH_SETTINGS',

@@ -162,6 +162,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'ful
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('send_encoding', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
