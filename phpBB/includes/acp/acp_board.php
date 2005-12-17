@@ -278,7 +278,8 @@ class acp_board
 
 			if ($config_name == 'email_function_name')
 			{
-				$this->new_config['email_function_name'] = (empty($this->new_config['email_function_name']) || !function_exists($this->new_config['email_function_name'])) ? 'mail' : str_replace(array('(', ')'), array('', ''), trim($this->new_config['email_function_name']));
+				$this->new_config['email_function_name'] = trim(str_replace(array('(', ')'), array('', ''), $this->new_config['email_function_name']));
+				$this->new_config['email_function_name'] = (empty($this->new_config['email_function_name']) || !function_exists($this->new_config['email_function_name'])) ? 'mail' : $this->new_config['email_function_name'];
 			}
 
 			if ($submit)
