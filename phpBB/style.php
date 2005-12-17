@@ -42,7 +42,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 
 	$db = new $sql_db();
 	$cache = new cache();
-
+	
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
 	{
@@ -57,7 +57,7 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 		WHERE s.session_id = '" . ((!get_magic_quotes_gpc()) ? $db->sql_escape($sid) : $sid) . "'
 			AND s.session_user_id = u.user_id";
 	$result = $db->sql_query($sql);
-
+	
 	if ($user = $db->sql_fetchrow($result))
 	{
 		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.imageset_path, t.template_path
@@ -73,11 +73,24 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 			exit;
 		}
 		$db->sql_freeresult($result2);
-
-		if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+		
+		$force_load = true;	// Ideally this needs to be based on $config['load_tplcompile']
+		
+		if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css')  || $force_load)
 		{
 			$theme['theme_data'] = implode('', file("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'));
-
+			
+			// Match CSS imports
+			preg_match_all('/@import url\(\"(.*)\"\);/i', $theme['theme_data'], $matches);
+			
+			if ($matches)
+			{
+				foreach ($matches[0] as $idx => $match)
+				{
+					$theme['theme_data'] = str_replace($match, load_css_file( $matches[1][$idx] ), $theme['theme_data']);
+				}
+			}
+			
 			$db->sql_query("UPDATE {$table_prefix}styles_theme SET theme_data = '" . $db->sql_escape($theme['theme_data']) . "', theme_mtime = " . time() . "
 				WHERE theme_id = $id");
 		}
@@ -85,14 +98,15 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
 		
+		
 		// Parse Theme Data
 		$replace = array(
 			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
-			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
-			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
+			'{T_TEMPLATE_PATH}'		=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
+			'{T_IMAGESET_PATH}'		=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
 			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user['user_lang'],
 			'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
-			'{S_USER_LANG}'				=> $user['user_lang']
+			'{S_USER_LANG}'			=> $user['user_lang']
 		);
 
 		$theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $theme['theme_data']);
@@ -107,5 +121,25 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 	}
 	$db->sql_close();
 }
+
+function load_css_file($filename)
+{
+	global $phpbb_root_path, $theme;
+	
+	$handle = "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/' . $filename;
+	
+	if ($fp = @fopen($handle, 'r'))
+	{
+		$content = trim(@fread($fp, filesize($handle)));
+		@fclose($fp);
+	}
+	else
+	{
+		$content = '';
+	}
+	
+	return $content;
+}
+
 
 ?>
