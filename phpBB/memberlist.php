@@ -295,7 +295,7 @@ switch ($mode)
 		}
 
 		// 
-		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_allow_viewonline, user_posts, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
+		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_allow_viewonline, user_posts, user_warnings, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
@@ -1215,6 +1215,7 @@ function show_profile($data)
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
+  		'WARNINGS'		=> ($data['user_warnings']) ? $data['user_warnings'] : 0,
 
 		'ONLINE_IMG'	=> ($poster_id == ANONYMOUS) ? '' : (($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
 		'RANK_IMG'		=> $rank_img,
@@ -1222,6 +1223,8 @@ function show_profile($data)
 
 		'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;search_author=" . urlencode($username) . "&amp;show_results=posts" : '',
+		'U_NOTES'		=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=$user_id" : '',
+		'U_WARN'		=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=$user_id" : '',
 		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',

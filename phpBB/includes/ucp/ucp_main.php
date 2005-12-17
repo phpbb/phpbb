@@ -229,6 +229,7 @@ class ucp_main
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
 					'JOINED'			=> $user->format_date($user->data['user_regdate'], $user->lang['DATE_FORMAT']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
+					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
 					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),

@@ -48,11 +48,17 @@
 					</tr>
 					<tr> 
 						<td class="gen" align="right" nowrap="nowrap">{L_VISITED}: </td>
-						<td width="100%"><b class="gen">{VISITED}</td>
+						<td width="100%"><b class="gen">{VISITED}</b></td>
 					</tr>
+					<!-- IF U_NOTES -->
+					<tr>
+						<td class="gen" align="right" valign="top" nowrap="nowrap">{L_WARNINGS}: </td>
+						<td width="100%"><b class="gen">{WARNINGS}</b><br /><span class="genmed">[ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_WARN}">{L_WARN_USER}</a> ]</td>
+					</tr>
+					<!-- ENDIF -->
 					<tr> 
 						<td class="gen" align="right" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
-						<td><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}<b><!-- ENDIF --></td>
+						<td><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}</b><!-- ENDIF --></td>
 					</tr>
 					<tr>
 						<td class="gen" align="right" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
