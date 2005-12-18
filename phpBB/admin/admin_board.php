@@ -16,7 +16,7 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['General']['Configuration'] = "$file";
+	$module['General']['Configuration'] = $file;
 	return;
 }
 

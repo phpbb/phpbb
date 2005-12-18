@@ -27,7 +27,7 @@ if( !empty($setmodules) )
 	$file = basename(__FILE__);
 	$module['Styles']['Add_new'] = "$file?mode=addnew";
 	$module['Styles']['Create_new'] = "$file?mode=create";
-	$module['Styles']['Manage'] = "$file";
+	$module['Styles']['Manage'] = $file;
 	$module['Styles']['Export'] = "$file?mode=export";
 	return;
 }
