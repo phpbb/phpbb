@@ -52,8 +52,7 @@ class compress
 
 			if ($src_path)
 			{
-				$mtime = (file_exists("$phpbb_root_path$src_path")) ? filemtime("$phpbb_root_path$src_path") : time();
-				$this->data($src_path, '', $mtime, true);
+				$this->data($src_path, '', $mtime, true, stat("$phpbb_root_path$src_path"));
 			}
 
 			foreach ($filelist as $path => $file_ary)
@@ -64,7 +63,7 @@ class compress
 					$path = (substr($path, 0, 1) == '/') ? substr($path, 1) : $path;
 					$path = ($path && substr($path, -1) != '/') ? $path . '/' : $path;
 
-					$this->data("$src_path$path", '', filemtime("$phpbb_root_path$src_path$path"), true);
+					$this->data("$src_path$path", '', true, stat("$phpbb_root_path$src_path$path"));
 				}
 
 				foreach ($file_ary as $file)
@@ -74,7 +73,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", implode('', file("$phpbb_root_path$src_path$path$file")), filemtime("$phpbb_root_path$src_path$path$file"), false);
+					$this->data("$src_path$path$file", implode('', file("$phpbb_root_path$src_path$path$file")), false, stat("$phpbb_root_path$src_path$path$file"));
 				}
 			}
 
@@ -84,13 +83,17 @@ class compress
 
 	function add_custom_file($src, $filename)
 	{
-		$this->data($filename, implode('', file($src)));
+		$this->data($filename, implode('', file($src)), false, stat($src));
 		return true;
 	}
 	
 	function add_data($src, $name)
 	{
-		$this->data($name, $src);
+		$stat[2] = 436; //384
+		$stat[4] = $stat[5] = 0;
+		$stat[7] = strlen($src);
+		$stat[9] = time();
+		$this->data($name, $src, false, $stat);
 		return true;
 	}
 
@@ -118,7 +121,9 @@ class compress
 * Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
 * Marc Delisle, http://www.phpmyadmin.net/
 *
-* Modified extensively by psoTFX, © phpBB Group, 2003
+* Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
+*
+* Modified extensively by psoTFX and DavidMJ, © phpBB Group, 2003
 *
 * Based on work by Eric Mueller and Denis125
 * Official ZIP file format: http://www.pkware.com/appnote.txt
@@ -152,127 +157,129 @@ class compress_zip extends compress
 	}
 
 	function extract($dst)
-	{
-		$header = $data = '';
-		$seek_ary = $mkdir_ary = array();
-		$j = 0;
+	{		
+		// Loop the file, looking for files and folders
+		$ddTry = false;
+		fseek($this->fp, 0);
 
-		fseek($this->fp, -14, SEEK_END);
-		$tmp = unpack("ventries/vtotentries/Vctsize/Vctpos", fread($this->fp, 12));
-		$entries = (int) trim($tmp['entries']);
-		$totentries = (int) trim($tmp['totentries']);
-		$ctsize = (int) trim($tmp['ctsize']);
-		$ctpos = (int) trim($tmp['ctpos']);
-
-		fseek($this->fp, $ctpos);
-
-		// First scan entries, pull out position of data, length, etc.
-		// and directory structure
-		for ($i = 0; $i < $entries; $i++)
+		while (true)
 		{
-			$buffer = fread($this->fp, 46);
-
-			$tmp = unpack("vc_method/Vmtime/Vcrc/Vc_size/Vuc_size/vstrlen", substr($buffer, 10, 20));
-			$c_method = (int) trim($tmp['c_method']);
-			$crc = (int) trim($tmp['crc']);
-			$strlen = (int) trim($tmp['strlen']);
-			$uc_size = (int) trim($tmp['uc_size']);
-			$c_size = (int) trim($tmp['c_size']);
-
-			$tmp = unpack("Vattrib/Voffset", substr($buffer, 38, 8));
-			$attrib = (int) trim($tmp['attrib']);
-			$offset = (int) trim($tmp['offset']);
-
-			$filename =  fread($this->fp, $strlen);
-
-			if ($attrib == 16 || $attrib == 0x41FF0010 || (!$uc_size && !$crc))
+			// Check if the signature is valid...
+			$signature = fread($this->fp, 4);
+			if (feof($this->fp))
 			{
-				$mkdir_ary[] = "$dst$filename";
+				break;
 			}
-			else
+
+			switch ($signature)
 			{
-				$seek_ary[$j]['c_method'] = $c_method;
-				$seek_ary[$j]['crc'] = $crc;
-				$seek_ary[$j]['strlen'] = $strlen;
-				$seek_ary[$j]['uc_size'] = $uc_size;
-				$seek_ary[$j]['c_size'] = $c_size;
+				// 'Local File Header'
+				case "\x50\x4b\x03\x04":
+					// Get information about the zipped file but skip all the junk we don't need
+					fread($this->fp, 4);
+					$file['c_method']	= unpack("v", fread($this->fp, 2)); // compression method
+					fread($this->fp, 8);
+					$file['c_size']		= unpack("V", fread($this->fp, 4)); // compressed size
+					$file['uc_size']	= unpack("V", fread($this->fp, 4)); // uncompressed size
+					$file_name_length	= unpack("v", fread($this->fp, 2)); // filename length
+					$extra_field_length	= unpack("v", fread($this->fp, 2)); // extra field length
+					$file_name			= fread($this->fp, $file_name_length[1]); // filename
+					fread($this->fp, $extra_field_length[1]);
+					$file['offset']		= ftell($this->fp);
 
-				$seek_ary[$j]['offset'] = $offset;
-				$seek_ary[$j]['filename'] = "$dst$filename";
+					// Bypass the whole compressed contents, and look for the next file
+					fseek($this->fp, $file['c_size'][1], SEEK_CUR);
 
-				$j++;
+					// Mount file table
+					$seek_ary[$file_name] = array(
+						'c_method'	=> $file['c_method'][1],
+						'c_size'	=> $file['c_size'][1],
+						'uc_size'	=> $file['uc_size'][1],
+						'offset'	=> $file['offset']
+					);
+					break;
+				case "\x50\x4b\x01\x02":
+					fread($this->fp, 24);
+					fread($this->fp, 12 + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))));
+					break;
+				// We safely end the loop as we are totally finished with looking for files and folders
+				case "\x50\x4b\x05\x06":
+					break 2;
+				// Look for the next signature...
+				case 'PK00':
+					continue 2;
+				// We have encountered a header that is weird. Lets look for better data...
+				default:
+					if(!$ddTry)
+					{
+						// Unexpected header. Trying to detect wrong placed 'Data Descriptor';
+						$ddTry = true;
+						fseek($this->fp, 8, SEEK_CUR); // Jump over 'crc-32'(4) 'compressed-size'(4), 'uncompressed-size'(4)
+						continue 2;
+					}
+					trigger_error("Unexpected header, ending loop");
+					break 2;
 			}
+			$ddTry = false;
 		}
-
-		// Create directory structure on fs
-		if (is_array($mkdir_ary))
+		if (sizeof($seek_ary))
 		{
-			sort($mkdir_ary);
-			foreach ($mkdir_ary as $dir)
+			foreach ($seek_ary as $filename => $trash)
 			{
-				if (!@mkdir($dir, 0777))
+				$dirname = dirname($filename);
+				
+				if (!is_dir("$dst$dirname"))
 				{
-					trigger_error("Could not create directory $dir");
-				}
-				@chmod("$dir", 0777);
-			}
-		}
-
-		// Extract files
-		foreach ($seek_ary as $seek)
-		{
-			$filename = $seek['filename'];
-
-//			fseek($this->fp, $seek['offset'] + 8); // To grab file header info
-//			fseek($this->fp, $seek['offset'] + 30 + $tmp['strlen'] + $tmp['c_size']); // To grab file header info2
-
-			// Jump to data
-			fseek($this->fp, $seek['offset'] + 30 + $seek['strlen']);
-
-			// Was data compressed? If so we have to fudge a solution thanks
-			// to some "issues" with gzuncompress. Else we just write out the
-			// data
-			if ($seek['c_method'] == 8)
-			{
-				// Temp gzip file -> .gz header -> data -> gz footer
-				if (!($fp = fopen($filename . '.gz', 'wb')))
-				{
-					trigger_error("Could not open temporary $filename.gz");
-				}
-				fwrite($fp, pack('va1a1Va1a1', 0x8b1f, chr(0x08), chr(0x00), time(), chr(0x00), chr(3)));
-				fwrite($fp, fread($this->fp, $seek['c_size']));
-				fwrite($fp, pack("VV", $seek['crc'], $seek['uc_size']));
-				fclose($fp);
-
-				if (!($fp = fopen($filename, 'wb')))
-				{
-					trigger_error("Could not create $filename");
-				}
-				@chmod($filename, 0777);
-
-				if (!($gzfp = gzopen($filename . '.gz', 'rb')))
-				{
-					die("Could not open temporary $filename.gz");
+					$str = '';
+					$folders = explode('/', $dirname);
+					// Create and folders and subfolders if they do not exist
+					foreach ($folders as $folder)
+					{
+						$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+						if(!is_dir("$dst$str"))
+						{
+							if (!@mkdir("$dst$str", 0777))
+							{
+								trigger_error("Could not create directory $dir");
+							}
+							@chmod("$dir", 0777);
+						}
+					}
 				}
 
-				while ($buffer = gzread($gzfp, 1024))
+				if(substr($filename, -1, 1) == '/')
 				{
-					fwrite($fp, $buffer);
+					continue;
 				}
-				gzclose($gzfp);
-				fclose($fp);
-				unlink($filename . '.gz');
-			}
-			else
-			{
-				if (!($fp = fopen($filename, 'wb')))
-				{
-					trigger_error("Could not create $filename");
-				}
-				@chmod($filename, 0777);
 
-				fwrite($fp, fread($this->fp, $seek['uc_size']));
-				fclose($fp);
+				$target_filename = "$dst$filename";
+				$fdetails = &$seek_ary[$filename];
+
+				if(!$fdetails['uc_size'])
+				{
+					$fp = fopen($target_filename, "w");
+					fwrite($fp, '');
+					fclose($fp);
+				}
+				
+				fseek($this->fp, $fdetails['offset']);
+				$mode = $fdetails['c_method'];
+				$content = fread($this->fp, $fdetails['c_size']);
+				switch($mode)
+				{
+					case 0:
+						// Not compressed
+						$fp = fopen($target_filename, "w");
+						fwrite($fp, $content);
+						fclose($fp);
+						break;
+					case 8:
+						// Deflate
+						$fp = fopen($target_filename, "w");
+						fwrite($fp, gzinflate($content, $fdetails['uc_size']));
+						fclose($fp);
+						break;
+				}
 			}
 		}
 	}
@@ -288,11 +295,11 @@ class compress_zip extends compress
 	}
 
 	// Create the structures ... note we assume version made by is MSDOS
-	function data($name, $data, $mtime = false, $is_dir = false)
+	function data($name, $data, $is_dir = false, $stat)
 	{
 		$name = str_replace('\\', '/', $name);
 
-		$dtime = dechex($this->unix_to_dos_time($mtime));
+		$dtime = dechex($this->unix_to_dos_time($stat[9]));
 		$hexdtime = '\x' . $dtime[6] . $dtime[7] . '\x' . $dtime[4] . $dtime[5] . '\x' . $dtime[2] . $dtime[3] . '\x' . $dtime[0] . $dtime[1];
 		eval('$hexdtime = "' . $hexdtime . '";');
 
@@ -471,11 +478,20 @@ class compress_tar extends compress
 			sort($mkdir_ary);
 			foreach ($mkdir_ary as $dir)
 			{
-				if (!@mkdir($dir, 0777))
+				$folders = explode('/', $dir);
+				foreach ($folders as $folder)
 				{
-					trigger_error("Could not create directory $dir");
+					$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+					if(!is_dir($str))
+					{
+						if (!@mkdir($str, 0777))
+						{
+							trigger_error("Could not create directory $folder");
+						}
+						@chmod("$str", 0777);
+					}
 				}
-				@chmod("$dir", 0777);
+				unset($str);
 			}
 		}
 
@@ -505,14 +521,14 @@ class compress_tar extends compress
 				$tmp = unpack("Atype", substr($buffer, 156, 1));
 				$filetype = (int) trim($tmp['type']);
 
-				if ($filetype == 0 || $filetype == "\0")
-				{
-					$tmp = unpack("A12size", substr($buffer, 124, 12));
-					$filesize = octdec((int) trim($tmp['size']));
+				$tmp = unpack("A12size", substr($buffer, 124, 12));
+				$filesize = octdec((int) trim($tmp['size']));
 
+				if ($filesize != 0 && ($filetype == 0 || $filetype == "\0"))
+				{
 					if (!($fp = fopen("$dst$filename", 'wb')))
 					{
-						trigger_error("Could create file $filename");
+						trigger_error("Couldn't create file $filename");
 					}
 					@chmod("$dst$filename", 0777);
 
@@ -524,7 +540,7 @@ class compress_tar extends compress
 			$size += 512;
 			$length = ($size > $filesize) ? 512 - ($size - $filesize) : 512;
 
-			$tmp = unpack("A512data", $buffer);
+			$tmp = unpack("a512data", $buffer);
 
 			fwrite($fp, (string) $tmp['data'], $length);
 			unset($buffer);
@@ -533,33 +549,38 @@ class compress_tar extends compress
 
 	function close()
 	{
+		$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
+		if ($this->wrote) $fzwrite($this->fp, pack("a1024", ""));
 		$fzclose($this->fp);
 	}
 
-	function data($name, $data, $mtime = false, $is_dir = false)
+	function data($name, $data, $is_dir = false, $stat)
 	{
+		$this->wrote = true;
 		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
-		$mode = ($is_dir) ? '493' : '436';
-		$mtime = (!$mtime) ? time() : $mtime;
-		$filesize = ($is_dir) ? 0 : strlen($data);
 		$typeflag = ($is_dir) ? '5' : '';
 
+		// This is the header data, it contains all the info we know about the file or folder that we are about to archive
 		$header = '';
 		$header .= pack("a100", $name);
-		$header .= pack("a8", sprintf("%07o", $mode));
-		$header .= pack("a8", sprintf("%07o", 0));
-		$header .= pack("a8", sprintf("%07o", 0));
-		$header .= pack("a12", sprintf("%011o", $filesize));
-		$header .= pack("A12", sprintf("%011o", $mtime)); // From a12 to A12
-		$header .= '        ';
-		$header .= pack("a", $typeflag);
+		$header .= pack("a8", sprintf("%07o", $stat[2]));
+		$header .= pack("a8", sprintf("%07o", $stat[4]));
+		$header .= pack("a8", sprintf("%07o", $stat[5]));
+		$header .= pack("a12", sprintf("%011o", $stat[7]));
+		$header .= pack("a12", sprintf("%011o", $stat[9]));
+		$header .= pack("a8", '        ');
+		$header .= pack("a1", $typeflag);
 		$header .= pack("a100", '');
-		$header .= 'ustar';
-		$header .= pack("x");
-		$header .= '00';
-		$header .= pack("x247");
+		$header .= pack("a6", 'ustar');
+		$header .= pack("a2", '00');
+		$header .= pack("a32", 'Unknown');
+		$header .= pack("a32", 'Unknown');
+		$header .= pack("a8", '');
+		$header .= pack("a8", '');
+		$header .= pack("a155", '');
+		$header .= pack("a12", '');
 
 		// Checksum
 		$checksum = 0;
@@ -568,18 +589,19 @@ class compress_tar extends compress
 			$b = unpack("c1char", substr($header, $i, 1));
 			$checksum += $b['char'];
 		}
-		$header = substr_replace($header, pack("a8",sprintf("%07o", $checksum)), 148, 8);
+		$header = substr_replace($header, pack("a8", sprintf("%07o", $checksum)), 148, 8);
 
 		$fzwrite($this->fp, $header);
 
-		$i = 0;
-		// Read the data 512 bytes at a time and write it out
-		while ($buffer = substr($data, $i, 512))
+		if ($stat[7] !== 0 && !$is_dir)
 		{
-			$fzwrite($this->fp, pack("a512", $buffer));
-			$i += 512;
+			$fzwrite($this->fp, $data);
+			unset($data);
+			if ($stat[7] % 512 > 0)
+			{
+				$fzwrite($this->fp, str_repeat("\0", 512 - $stat[7] % 512));
+			}
 		}
-		unset($data);
 	}
 
 	function open()
