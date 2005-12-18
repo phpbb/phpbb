@@ -1217,7 +1217,7 @@ function show_profile($data)
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
   		'WARNINGS'		=> ($data['user_warnings']) ? $data['user_warnings'] : 0,
 
-		'ONLINE_IMG'	=> ($user_id == ANONYMOUS) ? '' : (($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
+		'ONLINE_IMG'	=> ($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE'),
 		'RANK_IMG'		=> $rank_img,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
 
