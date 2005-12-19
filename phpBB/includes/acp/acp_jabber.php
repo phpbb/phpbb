@@ -52,6 +52,9 @@ class acp_jabber
 		$jabber->password	= $jab_password;
 		$jabber->resource	= $jab_resource;
 
+		$message = $user->lang['JAB_SETTINGS_CHANGED'];
+		$log = 'JAB_SETTINGS_CHANGED';
+
 		// Are changing (or initialising) a new host or username? If so run some checks and 
 		// try to create account if it doesn't exist
 		if ($jab_enable)

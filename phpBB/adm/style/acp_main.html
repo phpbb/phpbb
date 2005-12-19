@@ -1,0 +1,155 @@
+<!-- INCLUDE overall_header.html -->
+
+<script type="text/javascript">
+<!--
+	function marklist(status)
+	{
+		for (i = 0; i < document.inactive.length; i++)
+		{
+			document.inactive.elements[i].checked = status;
+		}
+	}
+//-->
+</script>
+
+<a name="maincontent"></a><h1>{L_WELCOME_PHPBB}</h1>
+
+<p>{L_ADMIN_INTRO}</p>
+
+<table cellspacing="1">
+	<caption>{L_FORUM_STATS}</caption>
+	<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
+	<thead>
+		<tr>
+			<th>{L_STATISTIC}</th>
+			<th>{L_VALUE}</th>
+			<th>{L_STATISTIC}</th>
+			<th>{L_VALUE}</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>{L_NUMBER_POSTS}: </td>
+			<td><b>{TOTAL_POSTS}</b></td>
+			<td>{L_POSTS_PER_DAY}: </td>
+			<td><b>{POSTS_PER_DAY}</b></td>
+		</tr>
+		<tr>
+			<td>{L_NUMBER_TOPICS}: </td>
+			<td><b>{TOTAL_TOPICS}</b></td>
+			<td>{L_TOPICS_PER_DAY}: </td>
+			<td><b>{TOPICS_PER_DAY}</b></td>
+		</tr>
+		<tr>
+			<td>{L_NUMBER_USERS}: </td>
+			<td><b>{TOTAL_USERS}</b></td>
+			<td>{L_USERS_PER_DAY}: </td>
+			<td><b>{USERS_PER_DAY}</b></td>
+		</tr>
+		<tr>
+			<td>{L_NUMBER_FILES}: </td>
+			<td><b>{TOTAL_FILES}</b></td>
+			<td>{L_FILES_PER_DAY}: </td>
+			<td><b>{FILES_PER_DAY}</b></td>
+		</tr>
+		<tr>
+			<td>{L_BOARD_STARTED}: </td>
+			<td><b>{START_DATE}</b></td>
+			<td>{L_AVATAR_DIR_SIZE}: </td>
+			<td><b>{AVATAR_DIR_SIZE}</b></td>
+		</tr>
+		<tr>
+			<td>{L_DATABASE_SIZE}: </td>
+			<td><b>{DBSIZE}</b></td>
+			<td>{L_UPLOAD_DIR_SIZE}: </td>
+			<td><b>{UPLOAD_DIR_SIZE}</b></td>
+		</tr>
+		<tr>
+			<td>{L_GZIP_COMPRESSION}: </td>
+			<td><b>{GZIP_COMPRESSION}</b></td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</tbody>
+</table>
+
+<form id="stats" method="post" action="{U_ACTION}">
+<fieldset class="quick">
+	<select name="action">{S_ACTION_OPTIONS}</select>
+
+	<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+</fieldset>
+</form>
+
+
+<h2>{L_ADMIN_LOG}</h2>
+
+<p>{L_ADMIN_LOG_INDEX_EXPLAIN}</p>
+
+<table cellspacing="1">
+<thead>
+<tr>
+	<th>{L_USERNAME}</th>
+	<th>{L_IP}</th>
+	<th>{L_TIME}</th>
+	<th>{L_ACTION}</th>
+</tr>
+</thead>
+<tbody>
+<!-- BEGIN log -->
+	<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+		<td>{log.USERNAME}</td>
+		<td style="text-align: center;">{log.IP}</td>
+		<td style="text-align: center;">{log.DATE}</td>
+		<td>{log.ACTION}</td>
+	</tr>
+<!-- END log -->
+</tbody>
+</table>
+
+<!-- IF S_INACTIVE_USERS -->
+	<h2>{L_INACTIVE_USERS}</h2>
+
+	<p>{L_INACTIVE_USERS_EXPLAIN}</p>
+
+	<form id="inactive" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+	<thead>
+		<tr>
+			<th>{L_USERNAME}</th>
+			<th>{L_JOINED}</th>
+			<th>{L_MARK}</th>
+		</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN inactive -->
+		<!-- IF inactive.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+			<td><a href="{inactive.U_USER_ADMIN}">{inactive.USERNAME}</a></td>
+			<td>{inactive.DATE}</td>
+			<td>&nbsp;<input type="checkbox" name="mark[]" value="{inactive.USER_ID}" />&nbsp;</td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr>
+			<td colspan="3" style="text-align: center;">{L_NO_INACTIVE_USERS}</td>
+		</tr>
+	<!-- END inactive -->
+	</tbody>
+	</table>
+
+	<!-- IF .inactive -->
+		<fieldset class="quick">
+			<p><a href="javascript:marklist(true);">Mark all</a> &bull; <a href="javascript:marklist(false);">Unmark all</a></p>
+			<select name="action">{S_INACTIVE_OPTIONS}</select>
+
+			<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+		</fieldset>
+	<!-- ENDIF -->
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

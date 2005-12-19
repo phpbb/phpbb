@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<!-- IF META -->{META}<!-- ENDIF -->
+<title>{PAGE_TITLE}</title>
+
+<link href="style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+
+<script type="text/javascript">
+<!--
+var jump_page = '{L_JUMP_PAGE}:';
+var on_page = '{ON_PAGE}';
+var per_page = '{PER_PAGE}';
+var base_url = '{BASE_URL}';
+
+// Jump to page
+function jumpto()
+{
+	var page = prompt(jump_page, on_page);
+
+	if (page !== null && !isNaN(page) && page > 0)	
+	{
+		document.location.href = base_url.replace('&amp;', '&') + '&start=' + ((page - 1) * per_page);
+	}
+}
+
+// Set display of page element
+// s[-1,0,1] = hide,toggle display,show
+function dE(n,s)
+{
+	var e = document.getElementById(n);
+	if(!s) s = (e.style.display=='') ? -1:1;
+	e.style.display = (s==1) ? 'block':'none';
+}
+
+function marklist(match, status)
+{
+	doc = document.getElementById(match);
+	for (i = 0; i < doc.length; i++)
+	{
+		doc.elements[i].checked = status;
+	}
+}
+
+<!-- IF S_INCLUDE_SWATCH -->
+	function swatch()
+	{
+		window.open('{U_SWATCH}', '_swatch', 'height=115, resizable=yes, scrollbars=no, width=636');
+		return false;
+	}
+<!-- ENDIF -->
+
+//-->
+</script>
+</head>
+
+<body>
+
+<div id="page-body" style="padding: 0 10px;">

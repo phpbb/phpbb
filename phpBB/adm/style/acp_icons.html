@@ -1,0 +1,165 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_EDIT -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<form id="acp_icons" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th colspan="{COLSPAN}">{L_CONFIG}</th>
+	</tr>
+	<tr class="row3">
+		<td>{L_URL}</td>
+		<td>{L_LOCATION}</td>
+	<!-- IF S_SMILIES -->
+		<td>{L_SMILIES_CODE}</td>
+		<td>{L_SMILIES_EMOTION}</td>
+	<!-- ENDIF -->
+		<td>{L_WIDTH}</td>
+		<td>{L_HEIGHT}</td>
+		<td>{L_DISPLAY_ON_POSTING}</td>
+	<!-- IF ID or S_ADD -->
+		<td>{L_ORDER}</td>
+	<!-- ENDIF -->
+	<!-- IF S_ADD -->
+		<td>{L_ADD}</td>
+	<!-- ENDIF -->
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN items -->
+		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+	
+		<td style="text-align: center;"><img src="{items.IMG_SRC}" alt="" title="" /><input type="hidden" name="image[{items.IMG}]" value="1" /></td>
+		<td style="vertical-align: top;">[{items.IMG}]</td>
+		<!-- IF S_SMILIES -->
+			<td><input class="post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" /></td>
+			<td><input class="post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="10" /></td>
+		<!-- ENDIF -->
+		<td><input class="post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
+		<td><input class="post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
+		<td>
+			<input type="checkbox" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} />
+			<!-- IF items.S_ID -->
+				<input type="hidden" name="id[{items.IMG}]" value="{items.ID}" />
+			<!-- ENDIF -->
+		</td>
+		<!-- IF ID or S_ADD -->
+			<td><select name="order[{items.IMG}]">{S_ORDER_LIST}</select></td>
+		<!-- ENDIF -->	
+		<!-- IF S_ADD -->
+			<td><input type="checkbox" name="add_img[{items.IMG}]" value="1" /></td>
+		<!-- ENDIF -->
+		</tr>
+	<!-- END items -->
+	</tbody>
+	</table>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_CHOOSE_PAK -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<form id="acp_icons" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_IMPORT}</legend>
+	
+	<!-- IF not S_PAK_OPTIONS -->
+		<p>{L_NO_PAK_OPTIONS}</p>
+	</fieldset>
+
+	<!-- ELSE -->
+		<dl>
+			<dt><label for="pak">{L_SELECT_PACKAGE}</label></dt>
+			<dd><select id="pak" name="pak">{S_PAK_OPTIONS}</select></dd>
+		</dl>
+			<dt><label for="current">{L_CURRENT}</label><br /><span>{L_CURRENT_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="current" name="current" value="keep" checked="checked" /> {L_KEEP_ALL}&nbsp; &nbsp;<input type="radio" name="current" value="replace" /> {L_REPLACE_MATCHES}&nbsp; &nbsp;<input type="radio" name="current" value="delete" /> {L_DELETE_ALL}&nbsp;</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" id="import" name="import" value="{L_IMPORT_SUBMIT}" />
+	</fieldset>
+	<!-- ENDIF -->
+
+	</form>
+
+<!-- ELSE -->
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<!-- IF NOTICE -->
+		<div class="successbox">
+			<h3>{L_NOTIFY}</h3>
+			<p>{NOTICE}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<div style="text-align: right;"><a href="{U_IMPORT}">{L_IMPORT}</a> | <a href="{U_EXPORT}">{L_EXPORT}</a></div>
+
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_TITLE}</th>
+		<!-- IF S_SMILIES -->
+		<th>{L_CODE}</th>
+		<th>{L_EMOTION}</th>
+		<!-- ENDIF -->
+		<th>{L_ACTION}</th>
+		<th>{L_REORDER}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN items -->
+		<!-- IF items.S_SPACER -->
+			<tr>
+				<td class="row3" colspan="{COLSPAN}" style="text-align: center;">{L_NOT_DISPLAYED}</td>
+			</tr>
+		<!-- ENDIF -->
+		<!-- IF items.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td style="text-align: center;"><img src="{items.IMG_SRC}" width="{items.WIDTH}" height="{items.HEIGHT}" alt="{items.ALT_TEXT}" title="{items.ALT_TEXT}" /></td>
+			<!-- IF S_SMILIES -->
+				<td style="text-align: center;">{items.CODE}</td>
+				<td style="text-align: center;">{items.EMOTION}</td>
+			<!-- ENDIF -->
+			<td style="text-align: center;"><a href="{items.U_EDIT}">{L_EDIT}</a> | <a href="{items.U_DELETE}">{L_DELETE}</a></td>
+			<td style="text-align: center;"><a href="{items.U_MOVE_UP}">{L_MOVE_UP}</a> <br /> <a href="{items.MOVE_DOWN}">{L_MOVE_DOWN}</a></td>
+		</tr>
+	<!-- END items -->
+	</tbody>
+	</table>
+
+	<form id="acp_icons" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		<input class="button2" name="add" type="submit" value="{L_ICON_ADD}" />&nbsp; &nbsp;<input class="button2" type="submit" name="edit" value="{L_ICON_EDIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

@@ -1868,7 +1868,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 	$topic_id_list = $is_auth = $is_mod = array();
 
-	$profile_url = (defined('IN_ADMIN')) ? "admin_users.$phpEx$SID" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
+	$profile_url = (defined('IN_ADMIN')) ? "index.$phpEx$SID&amp;i=users&amp;mode=overview" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
 
 	switch ($mode)
 	{

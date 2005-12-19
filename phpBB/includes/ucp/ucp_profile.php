@@ -522,7 +522,8 @@ class ucp_profile
 						}
 						else if ($delete && $auth->acl_get('u_chgavatar'))
 						{
-							$type = $filename = $width = $height = '';
+							$filename = '';
+							$type = $width = $height = 0;
 						}
 					}
 

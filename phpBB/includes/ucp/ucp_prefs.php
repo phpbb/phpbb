@@ -169,7 +169,7 @@ class ucp_prefs
 					'NOTIFY_IM'			=> ($notifymethod == NOTIFY_IM) ? 'checked="checked"' : '',
 					'NOTIFY_BOTH'		=> ($notifymethod == NOTIFY_BOTH) ? 'checked="checked"' : '',
 
-					'DATE_FORMAT'		=> $dateformat,
+					'DATE_FORMAT'			=> $dateformat,
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
@@ -256,7 +256,7 @@ class ucp_prefs
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				$topic_sk = (isset($topic_sk)) ? $topic_sk : ((!empty($user->data['user_tpic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't');
+				$topic_sk = (isset($topic_sk)) ? $topic_sk : ((!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't');
 				$post_sk = (isset($post_sk)) ? $post_sk : ((!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't');
 
 				$topic_sd = (isset($topic_sd)) ? $topic_sd : ((!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd');

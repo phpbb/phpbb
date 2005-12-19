@@ -1,0 +1,794 @@
+/* phpBB 3.0 Admin Style Sheet
+-------------------------------------------------
+	Author: subBlue  (http://www.subBlue.com/)
+	(c) 2005 phpBB Group
+-------------------------------------------------*/
+
+
+
+/* General markup styles
+---------------------------------------- */
+* {
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+}
+
+body, div, p, th, td, li, dd {
+	font-size: x-small;
+	voice-family: "\"}\"" inherit;
+	font-size: small
+}
+
+html>body, html>div, html>p, html>th, html>td, html>li, html>dd	{
+	font-size: small
+}
+
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;;
+	color: #000;
+	background-image: url(../images/bg_header.jpg);
+	background-repeat: repeat-x;
+	background-color: #E4EDF0;
+	margin: 0;
+}
+
+/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-ie browsers */
+html {
+	height: 100%;
+	margin-bottom: 1px;
+}
+
+img {
+	border: 0;
+}
+
+/* Adjust */
+#page-header h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;;
+	font-size: 170%;
+	font-weight: normal;
+	color: #12749B;
+}
+
+#content h1 {
+	font: bold 18pt 'Trebuchet MS', Verdana, sans-serif;
+	text-decoration: none; 
+	line-height: 120%; 
+	margin-bottom: 0px;
+}
+
+h2, caption {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	text-decoration: none; 
+	line-height: 120%; 
+	text-align: left;
+	margin-top: 25px;
+}
+
+p {
+	margin-bottom: 0.7em;
+	line-height: 140%;
+	font-size: 90%;
+}
+
+hr {
+	border: 0 none;
+	border-top: 1px solid #999999;
+	margin-bottom: 5px;
+	padding-bottom: 5px;
+	height: 1px;
+}
+
+.small { 
+	font-size: 85%; 
+}
+
+/* General links  */
+a:link, a:active, a:visited { 
+	color: #006699; 
+	text-decoration: none; 
+}
+
+a:hover { 
+	color: #DD6900; 
+	text-decoration: underline; 
+}
+
+/* Main blocks
+---------------------------------------- */
+#page-header {
+	clear: both;
+	text-align: right;
+	font-size: 85%;
+	height: 60px;
+	
+	padding-right: 20px;
+}
+
+#page-header p {
+	font-size: 100%;
+}
+
+#page-body {
+	clear: both;
+	min-width: 700px;
+}
+
+#page-footer {
+	clear: both;
+	font-size: 75%;
+	text-align: center;
+}
+
+#logo {
+	float: left;
+	width: auto;
+	margin-left: 4px;
+	margin-bottom: 5px;
+}
+
+#content {
+	padding: 30px 10px 10px 10px;
+}
+
+#main {
+	float:left;
+	width: 76%;
+	margin-left: 3%;
+	min-height: 350px;
+}
+
+* html #main { 
+	height: 350px; 
+}
+
+
+/* Tabbed menu
+   Based on: http://www.alistapart.com/articles/slidingdoors2/
+----------------------------------------*/
+#tabs {
+	line-height: normal;
+	margin-left: 27px;
+	margin-bottom: -5px;
+	min-width: 600px;
+}
+
+* html #tabs {
+	width: 700px;
+}
+
+#tabs ul {
+	list-style: none;
+}
+
+#tabs li {
+	display: inline;
+	font-size: 85%;
+	font-weight: bold;
+	text-transform: capitalize;
+}
+
+#tabs a {
+	float: left;
+	background-color: #C7D0D7;
+	margin-right: 2px;
+	padding-left: 7px;
+	text-decoration: none;
+	font-size: 100%;
+	position: relative;
+	border: solid 1px  #A9B8C2;
+	background-image: url(../images/cellpic1.gif);
+}
+
+#tabs a span {
+	float: left;
+	display: block;
+	padding: 7px 10px 4px 4px;
+	color: #006699;
+	white-space: nowrap;
+	font-family: Arial, Helvetica, sans-serif;
+	text-transform: uppercase;
+	font-weight: bold;
+	
+}
+
+/* Commented Backslash Hack hides rule from IE5-Mac \*/
+#tabs a span { float:none; }
+/* End hack */
+
+#tabs a:hover {
+	background-color: #EFEFEF;
+}
+
+#tabs #activetab a {
+	border: solid 1px  #A9B8C2;
+	border-bottom: 1px solid #FFF;
+	background-color: #fff;
+	background-image: none;
+}
+
+#tabs #activetab a span {
+	padding-bottom: 4px;
+	background-color: #fff;
+	color: #006699;
+}
+
+#tabs #activetab a:hover {
+	color: #FFA34F;
+}
+
+
+/* box
+---------------------------------------- */
+.box {
+	margin: 4px 20px;
+	padding: 1px;
+	min-width: 550px;
+	background-color: #FFFFFF;
+	border: solid 1px  #A9B8C2;
+}
+
+.innerbox {
+	background-color: #FFFFFF;
+}
+
+/* Sub-navigation Menu
+---------------------------------------- */
+#menu {
+	float: left;
+	width: 20%;
+	font-size: 100%;
+	padding: 0;
+	
+}
+
+#menu p {
+	font-size: 85%;
+}
+
+#menu ul {
+	margin:0;
+	padding:0;
+	list-style:none;
+	background-color: #ECECEC;
+	border: solid 1px  #A9B8C2;
+}
+
+/* Default list state */
+#menu li {
+	margin: 1px 0;
+	padding: 0; margin: 0;
+	font-size: 10px;
+	font-weight: bold;
+	display: inline;
+}
+
+/* Link styles for the sub-section links */
+#menu li a, #menu li a:link, #menu li a:active, #menu li a:visited {
+	display: block;
+	padding: 2px 2px 2px 10px;
+	margin: 1px 0;
+	text-decoration:none;
+	font-weight: normal;
+	color: #006699;
+	font-weight: bold;
+}
+
+#menu li a:active {
+	color: #000;
+	
+}
+
+
+#menu li a:hover {
+	text-decoration: underline;
+	color: #DD6900;
+}
+
+#menu li.header {
+	display: block;
+	font-weight: bold;
+	color: #115098;
+	padding: 5px 0;
+	font-size: 11px;
+	font-family: Verdana;
+	text-align: center;	
+	color: #FFA34F; 
+	font-weight: bold; background-color: #006699; 
+	background-image: url("../images/cellpic3.gif");
+	background-repeat: repeat-x;
+}
+
+#menu li#activemenu a, #menu li#activemenu a:link, #menu li#activemenu a:active, #menu li#activemenu a:visited {
+	text-decoration: none;
+	font-weight: bold;
+	color: #000;
+}
+
+#menu li#activemenu a:hover {
+	text-decoration: none;
+	color: #000;
+}
+
+
+/* Table styles
+---------------------------------------- */
+
+table {
+	width: 100%;
+	background-color: #ACBBC6
+}
+
+th, td { 
+	font:	normal 8pt Verdana, Arial, Helvetica, sans-serif;
+}
+
+th	{
+	height:				25px;
+	background-color:	#006699;
+	color:				#FFA34F;
+	font-weight:		bold;
+	font-size:			11px;
+	background-image: url("../images/cellpic3.gif") !important;
+}
+
+td {
+	text-align: left;
+	font-size: 85%;
+	padding: 4px;
+	line-height: 120%;
+}
+
+.row1 { background-color: #EFEFEF; }
+.row2 { background-color: #DEE3E7; }
+.row3 { background-color: #D1D7DC; }
+.col1 { background-color: #DEE3E7; }
+.col2 { background-color: #EFEFEF; }
+
+.spacer {
+	background-color: #D1D7DC;
+	height: 1px;
+	line-height: 1px;
+}
+
+/* General form styles
+----------------------------------------*/
+fieldset { 
+	margin: 15px 0;
+	padding: 10px; 
+	border-top: 1px solid #D7D7D7;
+	border-right: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	border-left: 1px solid #D7D7D7;
+	background-color: #ECECEC;
+	position: relative;
+}
+
+* html fieldset { 
+	padding: 0 10px 5px 10px; 
+}
+
+fieldset p {
+	font-size: 85% !important;
+}
+
+legend {
+	padding: 1px 0; 
+	font-family: arial,Verdana,Sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #006699;
+	position: relative;
+	text-transform: capitalize;
+	line-height: 100%;
+	top: 0em;
+	vertical-align:middle;
+}
+
+/* Hide from macIE \*/
+legend { top: -1.2em; }
+/* end */
+
+* html legend { 
+	margin-bottom: -10px; 
+	margin-left: -7px; 
+}
+
+input {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 90%;
+	font-weight: normal;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+optgroup, select {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 85%;
+	font-weight: normal;
+	font-style: normal;
+	cursor: pointer;
+	vertical-align: middle;
+	width: auto;
+}
+
+optgroup {
+	font-size: 100%;
+	font-weight: bold;
+}
+
+.sep {
+	color: white;
+	background-color: #006699;
+}
+
+textarea {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 85%;
+	width: 60%;
+	padding: 2px;
+}
+
+label {
+	cursor:pointer;
+	font-size: 85%;
+	padding-right: 5px;
+}
+
+label input {
+	font-size: 100%;
+	vertical-align: middle;
+}
+
+label img {
+	vertical-align: middle;
+}
+
+fieldset.quick {
+	margin: 0 0 5px 0;
+	padding: 5px 0 0 0; 
+	border: none;
+	background-color: transparent;
+	text-align: right;
+}
+
+fieldset.nobg {
+	margin: 15px 0 0 0;
+	padding: 0;
+	border: none;
+	background-color: transparent;
+}
+
+fieldset.display-options {
+	margin: 15px 0 2px 0;
+	padding: 0 0 4px 0;
+	border: none;
+	background-color: transparent;
+	text-align: center;
+	font-size: 75%;
+}
+
+fieldset.display-options select, fieldset.display-options input, fieldset.display-options label {
+	font-size: 100%;
+	vertical-align: middle;
+}
+
+select option.disabled {
+	background-color: #bbb;
+	color: #fff;
+}
+
+/* Definition list layout for forms
+   Other general def. list properties defined in prosilver_main.css
+---------------------------------------- */
+dl {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 100%;
+}
+
+dt {
+	float: left;
+	width: auto;
+}
+
+dd { color: #000; }
+dd + dd { margin-top: 4px; }
+dt span { padding-right: 5px; }
+
+dt label {
+	font-size: 100%;
+	text-align: left;
+	font-weight: bold;
+}
+
+dd label {
+	font-size: 100%;
+	white-space: nowrap;
+	
+	margin-right: 10px;
+}
+
+html>body dd label input { vertical-align: text-bottom; }	/* Tweak for Moz to align checkboxes/radio buttons nicely */
+dd input, dd textarea { font-size: 90%; }
+
+dd select {
+	width: auto;
+	font-size: 100%;
+}
+
+dd textarea {
+	width: 90%;
+}
+
+fieldset dl {
+	font-size: 85%;
+	margin-bottom: 10px;
+}
+
+fieldset dt {
+	width: 45%;
+	text-align: left;
+	border-right: 1px solid #CCC;
+	padding-top: 3px;
+}
+
+fieldset dd {
+	margin-left: 45%;
+	padding-left: 5px;
+	font-size: 100% !important;
+	border-left: 1px solid #CCC;
+	vertical-align: top;
+}
+
+dd.full {
+	margin-left: 0;
+	border: 0;
+	padding-left: 0;
+	padding-top: 3px;
+	text-align: center;
+	width: 95%;
+}
+
+/* Hover highlights for form rows */
+fieldset dl:hover dt {
+	border-right-color: #ccc;
+}
+
+fieldset dl:hover dd {
+	border-left-color: #ccc;
+}
+
+fieldset dl dd label:hover {
+	color: #ccc;
+}
+
+/* Submit button fieldset
+---------------------------------------- */
+fieldset.submit-buttons {
+	text-align: center;
+	background-image: url(../images/cellpic1.gif);
+	margin: 0;
+	padding: 4px;
+	border: solid 1px #A9B8C2;
+	margin-top: -1px;
+}
+
+fieldset.submit-buttons input {
+	padding: 3px 2px;
+}
+
+/* Input field styles
+---------------------------------------- */
+.inputbox {
+	border-left: 1px solid #AFAEAA;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #D5D5C8;
+	border-bottom: 1px solid #D5D5C8;
+	background-color: #E3DFD8;
+	color: #111111;
+	font-size: 100%;
+	padding:2px;
+	cursor: text;
+	width: 75%;
+}
+
+select.inputbox {
+	cursor: pointer;
+	padding: 0;
+	width: auto;
+}
+
+.inputbox:hover {
+	border-left: 1px solid #AFAEAA;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #AFAEAA;
+	border-bottom: 1px solid #AFAEAA;
+	background-color: #E9E9E2;
+}
+
+.inputbox:focus {
+	border: 1px solid #BC2A4D;
+	background-color: #E9E9E2;
+	color: #BC2A4D;
+}
+
+input.full, textarea.full { width: 99%; }
+* html input.full, * html textarea.full { width: 95%; }
+input.medium { width: 50%; }
+input.narrow { width: 25%; }
+input.tiny { width: 10%; }
+input.autowidth { width: auto !important; }
+.box2 .inputbox { background-color: #E9E9E9; }
+
+/* Pagination
+---------------------------------------- */
+.pagination {
+	height: 1%; /* IE tweak (holly hack) */
+	width: auto;
+	text-align: right;
+	margin-top: 5px;
+	font-size: 85%;
+	padding-bottom: 2px;
+}
+
+.pagination strong, .pagination b {
+	font-weight: normal;
+}
+
+.pagination span strong {
+	padding: 0 2px;
+	margin: 0 2px;
+	font-weight: normal;
+	color: #FFFFFF;
+	background: #069;
+	border: 1px solid #069;
+}
+
+.pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
+	font-weight: normal;
+	text-decoration: none;
+	color: #5C758C;
+	margin: 0 2px;
+	padding: 0 2px;
+	background: #ECEDEE;
+	border: 1px solid #B4BAC0;
+}
+
+.pagination span a:hover {
+	border-color: #069;
+	background: #069;
+	color: #FFF;
+	text-decoration: none;
+}
+
+.pagination img {
+	vertical-align: middle;
+}
+
+/* Form button styles
+---------------------------------------- */
+a.button1, input.button1, input.button3, 
+a.button2, input.button2  {
+	width: auto !important;
+	padding: 1px 3px;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	color: #000;
+	font-size: 85%;
+	background: #FAFAFA;
+}
+
+a.button1, input.button1 {
+	font-weight: bold;
+	border: 1px solid #666666; 
+}
+
+/* Alternative button */
+a.button2, input.button2 {
+	border: 1px solid #666666;
+}
+
+/* <a> button in the style of the form buttons */
+a.button1, a.button1:link, a.button1:visited, a.button1:active,
+a.button2, a.button2:link, a.button2:visited, a.button2:active {
+	text-decoration: none;
+	color: #000000;
+	padding: 4px 8px;
+}
+
+/* Success highlighting
+---------------------------------------- */
+.success {
+	color: #282 !important;
+}
+
+.successbox {
+	padding: 0px;
+	margin: 37px 0;
+	font-size: 100%;
+	background-color: #ECECEC;
+	color: #282;
+	text-align: center;
+	font-weight: bold;
+}
+
+* html .sucessbox { height: 1%; } /* Pixel shift fix for IE */
+
+.successbox h3 {
+	font-size: 11px;
+	color: #FFA34F; 
+	font-weight: bold; 
+	background-color: #006699; 
+	background-image: url('../images/cellpic3.gif');
+	background-repeat: repeat-x;
+	padding: 5px 0;
+}
+
+.successbox p {
+	margin: 20px;
+	font-size: 12px;
+}
+
+.successbox a:link, .errorbox a:active, .errorbox a:visited {
+	text-decoration: none;
+}
+
+.successbox a:hover {
+	text-decoration: none;
+}
+
+/* Error highlighting
+---------------------------------------- */
+.error {
+	color: #BC2A4D !important;
+}
+
+.errorbox {
+	padding: 0px;
+	margin: 37px 0;
+	font-size: 100%;
+	background-color: #ECECEC;
+	color: #BC2A4D;
+	text-align: center;
+	font-weight: bold;
+}
+
+* html .errorbox { height: 1%; } /* Pixel shift fix for IE */
+
+.errorbox h3 {
+	font-size: 11px;
+	color: #FFA34F; 
+	font-weight: bold; 
+	background-color: #006699; 
+	background-image: url('../images/cellpic3.gif');
+	background-repeat: repeat-x;
+	padding: 5px 0;
+}
+
+.errorbox p {
+	margin: 20px;
+	font-size: 12px;
+}
+
+.errorbox a:link, .errorbox a:active, .errorbox a:visited {
+	text-decoration: none;
+}
+
+.errorbox a:hover {
+	text-decoration: none;
+}
+
+/* Nice method for clearing floated blocks without having to insert any extra markup
+   From http://www.positioniseverything.net/easyclearing.html */
+.clearfix:after, #tabs:after, .row:after, #content:after, fieldset dl:after, #page-body:after {
+	content: "."; 
+	display: block; 
+	height: 0; 
+	clear: both; 
+	visibility: hidden;
+}
+/* Hide from Mac IE, Windows IE uses this as it doesn't support the :after method above \*/
+* html .clearfix, * html #tabs, * html .row, * html #content, * html fieldset dl, #page-body {
+	height: 1%;
+}
+/* End hide */

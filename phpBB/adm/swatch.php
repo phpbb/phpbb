@@ -1,10 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+<head>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
 <title>phpBB3 Color Swatch</title>
+
 <style type="text/css">
+<!--
+body {
+	background-color: #404040;
+	color: #fff;
+}
 
 td {
-	border: solid 1px #333333; 
+	border: solid 1px #333; 
 }
 
 .over { 
@@ -15,9 +24,17 @@ td {
 	border-color: #333333; 
 }
 
+img {
+	border: 0;
+}
+
+//-->
 </style>
-<body bgcolor="#404040" text="#FFFFFF">
-<script language="javascript" type="text/javascript">
+</head>
+
+<body>
+
+<script type="text/javascript">
 <!--
 	var r = 0, g = 0, b = 0;
 	var numberList = new Array(6);
@@ -37,7 +54,7 @@ td {
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '" onmouseover="this.className=\'over\'" onmouseout="this.className=\'out\'">');
-				document.write('<a href="javascript:cell(\'' + color + '\');"><img src="../images/spacer.gif" width="15" height="12" border="0" alt="#' + color + '" title="#' + color + '" \/><\/a>');
+				document.write('<a href="javascript:cell(\'' + color + '\');"><img src="./images/spacer.gif" width="15" height="12" alt="#' + color + '" title="#' + color + '" \/><\/a>');
 				document.writeln('<\/td>');
 			}
 		}

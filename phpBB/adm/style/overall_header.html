@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<!-- IF META -->{META}<!-- ENDIF -->
+<title>{PAGE_TITLE}</title>
+
+<link href="style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+
+<script type="text/javascript">
+<!--
+var jump_page = '{L_JUMP_PAGE}:';
+var on_page = '{ON_PAGE}';
+var per_page = '{PER_PAGE}';
+var base_url = '{BASE_URL}';
+
+// Jump to page
+function jumpto()
+{
+	var page = prompt(jump_page, on_page);
+
+	if (page !== null && !isNaN(page) && page > 0)	
+	{
+		document.location.href = base_url.replace('&amp;', '&') + '&start=' + ((page - 1) * per_page);
+	}
+}
+
+// Set display of page element
+// s[-1,0,1] = hide,toggle display,show
+function dE(n,s)
+{
+	var e = document.getElementById(n);
+	if(!s) s = (e.style.display=='') ? -1:1;
+	e.style.display = (s==1) ? 'block':'none';
+}
+
+function marklist(match, status)
+{
+	doc = document.getElementById(match);
+	for (i = 0; i < doc.length; i++)
+	{
+		doc.elements[i].checked = status;
+	}
+}
+
+<!-- IF S_INCLUDE_SWATCH -->
+	function swatch()
+	{
+		window.open('{U_SWATCH}', '_swatch', 'height=115, resizable=yes, scrollbars=no, width=636');
+		return false;
+	}
+<!-- ENDIF -->
+
+//-->
+</script>
+</head>
+
+<body>
+<div id="page-header">
+	<a href="{U_INDEX}" title="{L_FORUM_INDEX}"><img src="{ROOT_PATH}images/logo.gif" id="logo" alt="phpBB Creating Communities" /></a>
+	<h1>{L_ADMIN_PANEL}</h1>
+	<p><a href="{U_ADM_INDEX}">{L_ADMIN_INDEX}</a> &bull; <a href="{U_INDEX}">{L_FORUM_INDEX}</a></p>
+</div>
+
+<div id="page-body">
+	<div id="tabs">
+		<ul>
+		<!-- BEGIN t_block1 -->
+			<li<!-- IF t_block1.S_SELECTED --> id="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
+		<!-- END t_block1 -->
+		</ul>
+	</div>
+
+	<div class="box"><div class="innerbox">
+		<div class="corner1"></div><div class="corner2"></div>
+			<div id="content">
+				<div id="menu">
+					<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;]</p>
+					<ul>
+					<!-- BEGIN l_block1 -->
+						<!-- IF l_block1.S_SELECTED -->
+
+					<!-- BEGIN l_block2 -->
+						<!-- IF .l_block1.l_block2.l_block3 -->
+						<li class="header">{l_block1.l_block2.L_TITLE}</li>
+						<!-- ENDIF -->
+
+						<!-- BEGIN l_block3 -->
+							<li<!-- IF l_block1.l_block2.l_block3.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.l_block2.l_block3.U_TITLE}"><span>{l_block1.l_block2.l_block3.L_TITLE}</span></a></li>
+						<!-- END l_block3 -->
+					<!-- END l_block2 -->
+					
+						<!-- ENDIF -->
+					<!-- END l_block1 -->
+					</ul>
+				</div>
+
+				<div id="main">
+
+				<!-- Start page content -->

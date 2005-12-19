@@ -47,13 +47,13 @@ class acp_logs
 				$sql_in = array();
 				foreach ($marked as $mark)
 				{
-					$sql_in[] =  $mark;
+					$sql_in[] = $mark;
 				}
 				$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
 				unset($sql_in);
 			}
 
-			if ($where_sql)
+			if ($where_sql || $deleteall)
 			{
 				$sql = 'DELETE FROM ' . LOG_TABLE . "
 					WHERE log_type = {$this->log_type}

@@ -402,7 +402,7 @@ class ucp_pm_info
 				'unread'	=> array('title' => 'UCP_PM_UNREAD', 'auth' => 'cfg_allow_privmsg'),
 				'drafts'	=> array('title' => 'UCP_PM_DRAFTS', 'auth' => 'cfg_allow_privmsg'),
 				'options'	=> array('title' => 'UCP_PM_OPTIONS', 'auth' => 'cfg_allow_privmsg'),
-				'popup'		=> array('title' => 'UCP_PM_POPUP_TITLE', 'auth' => 'cfg_allow_privmsg', 'display' => 0),
+				'popup'		=> array('title' => 'UCP_PM_POPUP_TITLE', 'auth' => 'cfg_allow_privmsg', 'display' => false),
 			),
 		);
 	}

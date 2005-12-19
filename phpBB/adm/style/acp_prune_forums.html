@@ -1,0 +1,103 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_PRUNED -->
+
+	<h1>{L_FORUM_PRUNE}</h1>
+
+	<p>{L_PRUNE_SUCCESS}</p>
+
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_FORUM}</th>
+		<th>{L_TOPICS_PRUNED}</th>
+		<th>{L_POSTS_PRUNED}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN pruned -->
+		<!-- IF pruned.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td style="text-align: center;">{pruned.FORUM_NAME}</td>
+		<td style="text-align: center;">{pruned.NUM_TOPICS}</td>
+		<td style="text-align: center;">{pruned.NUM_POSTS}</td>
+	</tr>
+	<!-- BEGINELSE -->
+		<tr>
+			<td class="row3" style="text-align: center;">{L_NO_PRUNE}</td>
+		</tr>
+	<!-- END pruned -->
+	</tbody>
+	</table>
+
+<!-- ELSEIF S_SELECT_FORUM -->
+
+	<h1>{L_ACP_PRUNE_FORUMS}</h1>
+
+	<p>{L_ACP_PRUNE_FORUMS_EXPLAIN}</p>
+
+	<form id="acp_prune" method="post" action="{U_ACTION}">
+	
+	<fieldset>
+		<legend>{L_SELECT_FORUM}</legend>
+	<dl>
+		<dd class="full"><select name="f[]" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></dd>
+	</dl>
+	</fieldset>
+	
+	<fieldset class="quick">
+		<input class="button1" type="submit" value="{L_LOOK_UP_FORUM}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSE -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_ACP_PRUNE_FORUMS}</h1>
+
+	<p>{L_ACP_PRUNE_FORUMS_EXPLAIN}</p>
+
+	<h2>{L_FORUM}</h2>
+
+	<p>{L_SELECTED_FORUMS}: {FORUM_LIST}</p>
+
+	<form id="acp_prune" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_FORUM_PRUNE}</legend>
+	<dl>
+		<dt><label for="prune_days">{L_PRUNE_NOT_POSTED}:</label></dt>
+		<dd><input type="text" id="prune_days" name="prune_days" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="prune_vieweddays">{L_PRUNE_NOT_VIEWED}:</label></dt>
+		<dd><input type="text" id="prune_vieweddays" name="prune_vieweddays" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="polls">{L_PRUNE_OLD_POLLS}:</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
+		<dd><input type="radio" name="prune_old_polls" value="1" /> {L_YES} &nbsp; <input type="radio" id="polls" name="prune_old_polls" value="0" checked="checked" /> {L_NO}</dd>
+	</dl>
+	<dl>
+		<dt><label for="announce">{L_PRUNE_ANNOUNCEMENTS}:</label></dt>
+		<dd><input type="radio" name="prune_announce" value="1" /> {L_YES} &nbsp; <input type="radio" id="announce" name="prune_announce" value="0" checked="checked" /> {L_NO}</dd>
+	</dl>
+	<dl>
+		<dt><label for="sticky">{L_PRUNE_STICKY}:</label></dt>
+		<dd><input type="radio" name="prune_sticky" value="1" /> {L_YES} &nbsp; <input type="radio" id="sticky" name="prune_sticky" value="0" checked="checked" /> {L_NO}</dd>
+	</dl>
+	</fieldset>
+	
+	<fieldset class="quick">
+		{S_HIDDEN_FIELDS}
+
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

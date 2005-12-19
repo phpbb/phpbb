@@ -1,0 +1,442 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_SELECT_USER -->
+
+	<h1>{L_USER_ADMIN}</h1>
+
+	<p>{L_USER_ADMIN_EXPLAIN}</p>
+
+	<form id="select_user" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_SELECT_USER}</legend>
+	<dl>
+		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
+		<dd><input class="medium" type="text" id="username" name="username" /></dd>
+		<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input type="submit" name="submituser" value="{L_SUBMIT}" class="button1" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_SELECT_FORUM -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_USER_ADMIN}</h1>
+
+	<p>{L_USER_ADMIN_EXPLAIN}</p>
+
+	<form id="select_forum" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_USER_ADMIN_MOVE_POSTS}</legend>
+	<dl>
+		<dt><label for="new_forum">{L_USER_ADMIN_MOVE_POSTS}</label><br /><span>{L_MOVE_POSTS_EXPLAIN}</span></dt>
+		<dd><select id="new_forum" name="new_f">{S_FORUM_OPTIONS}</select></dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input type="submit" name="update" value="{L_SUBMIT}" class="button1" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSE -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_USER_ADMIN}</h1>
+
+	<p>{L_USER_ADMIN_EXPLAIN}</p>
+
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<form id="mode_select" method="post" action="{U_MODE_SELECT}">
+
+	<fieldset class="quick">
+		{L_SELECT_FORM}: <select name="mode" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_FORM_OPTIONS}</select>
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- IF S_OVERVIEW -->
+
+	<form id="user_overview" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_ACP_USER_OVERVIEW}</legend>
+	<dl>
+		<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
+		<dd><input type="text" id="user" name="user" value="{USER}" /></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_REGISTERED}:</label></dt>
+		<dd><strong>{USER_REGISTERED}</strong></dd>
+	</dl>
+	<!-- IF S_USER_IP -->
+	<dl>
+		<dt><label>{L_REGISTERED_IP}:</label></dt>
+		<dd><a href="{U_SHOW_IP}">{REGISTERED_IP}</a></dd>
+		<dd>[ <a href="#" onclick="window.open('{U_WHOIS}', '_whois', 'height=500, resizable=yes, scrollbars=yes, width=700'); return false;">{L_WHOIS}</a> ]</strong></dd>
+	</dl>
+	<!-- ENDIF -->
+	<dl>
+		<dt><label>{L_LAST_ACTIVE}:</label></dt>
+		<dd><strong>{USER_LASTACTIVE}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label for="user_founder">{L_FOUNDER}:</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
+		<dd><input type="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp; <input type="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_NO}&nbsp;</dd>
+	</dl>
+	<dl>
+		<dt><label for="user_email">{L_EMAIL}:</label></dt>
+		<dd><input class="medium" type="text" id="user_email" name="user_email" value="{USER_EMAIL}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label><br /><span>{L_CONFIRM_EMAIL_EXPLAIN}</span></dt>
+		<dd><input class="medium" type="text" id="email_confirm" name="email_confirm" value="" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="user_password">{L_NEW_PASSWORD}:</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
+		<dd><input type="password" id="user_password" name="user_password" value="" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}:</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
+		<dd><input type="password" id="password_confirm" name="password_confirm" value="" /></dd>
+	</dl>
+	<!-- IF not S_USER_FOUNDER or S_FOUNDER -->
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_USER_TOOLS}</legend>
+	<dl>
+		<dt><label for="warnings">{L_WARNINGS}:</label><br /><span>{L_WARNINGS_EXPLAIN}</span></dt>
+		<dd><input type="text" id="warnings" name="warnings" value="{USER_WARNINGS}" size="2" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="quicktools">{L_QUICK_TOOLS}:</label></dt>
+		<dd><select id="quicktools" name="action">{S_ACTION_OPTIONS}</select></dd>
+	</dl>
+	<dl>
+		<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
+		<dd><input type="checkbox" name="delete" value="1" /></dd>
+		<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
+	</dl>
+	<!-- ENDIF -->
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_FEEDBACK -->
+
+	<form id="list" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick" style="float: left;">
+		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+
+	<div class="clearfix"></div>
+
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+		<!-- IF PAGINATION -->
+			<a href="javascript:jumpto();" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+		<!-- ELSE -->
+			{S_ON_PAGE}
+		<!-- ENDIF -->
+	</div>
+	<!-- ENDIF -->
+
+	<!-- IF .log -->
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_REPORT_BY}</th>
+		<th>{L_IP}</th>
+		<th>{L_TIME}</th>
+		<th>{L_ACTION}</th>
+		<th>{L_MARK}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN log -->
+		<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+			<td>{log.USERNAME}</td>
+			<td style="text-align: center;">{log.IP}</td>
+			<td style="text-align: center;">{log.DATE}</td>
+			<td>
+				{log.ACTION}
+				<!-- IF log.DATA --><br />&#187; <span class="gensmall">[ {log.DATA} ]</span><!-- ENDIF -->
+			</td>
+			<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{log.ID}" /></td>
+		</tr>
+	<!-- END log -->
+	</tbody>
+	</table>
+	<!-- ELSE -->
+		<div class="errorbox">
+			<p>{L_NO_ENTRIES}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF S_CLEARLOGS -->
+		<fieldset class="quick">
+			<b class="small"><a href="#" onclick="marklist('list', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', false);">{L_UNMARK_ALL}</a></b><br />
+			<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />&nbsp;
+			<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
+		</fieldset>
+	<!-- ENDIF -->
+
+	<h1>{L_ADD_FEEDBACK}</h1>
+
+	<p>{L_ADD_FEEDBACK_EXPLAIN}</p>
+
+	<fieldset>
+		<legend>{L_ACP_USER_FEEDBACK}</legend>
+		<dl>
+			<dd class="full"><textarea name="message" id="message" rows="10" cols="76"></textarea></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_PROFILE -->
+
+	<form id="user_profile" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_USER_PROFILE}</legend>
+	<dl>
+		<dt><label for="icq">{L_UCP_ICQ}:</label></dt>
+		<dd><input type="text" id="icq" name="icq" value="{ICQ}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="aim">{L_UCP_AIM}:</label></dt>
+		<dd><input type="text" id="aim" name="aim" value="{AIM}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="msn">{L_UCP_MSNM}:</label></dt>
+		<dd><input type="text" id="msn" name="msn" value="{MSN}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="yim">{L_UCP_YIM}:</label></dt>
+		<dd><input type="text" id="yim" name="yim" value="{YIM}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="jabber">{L_UCP_JABBER}:</label></dt>
+		<dd><input type="text" id="jabber" name="jabber" value="{JABBER}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="website">{L_WEBSITE}:</label></dt>
+		<dd><input type="text" id="website" name="website" value="{WEBSITE}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="location">{L_LOCATION}:</label></dt>
+		<dd><input type="text" id="location" name="location" value="{LOCATION}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="occupation">{L_OCCUPATION}:</label></dt>
+		<dd><textarea id="occupation" name="occupation" rows="3" cols="30">{OCCUPATION}</textarea></dd>
+	</dl>
+	<dl>
+		<dt><label for="interests">{L_INTERESTS}:</label></dt>
+		<dd><textarea id="interests" name="interests" rows="3" cols="30">{INTERESTS}</textarea></dd>
+	</dl>
+	<dl> 
+		<dt><label for="birthday">{L_BIRTHDAY}:</label><br /><span>{L_BIRTHDAY_EXPLAIN}</span></dt>
+		<dd>{L_DAY}: <select id="birthday" name="bday_day">{S_BIRTHDAY_DAY_OPTIONS}</select> {L_MONTH}: <select name="bday_month">{S_BIRTHDAY_MONTH_OPTIONS}</select> {L_YEAR}: <select name="bday_year">{S_BIRTHDAY_YEAR_OPTIONS}</select></dd>
+	</dl>
+	</fieldset>
+
+	<!-- IF .profile_fields -->
+		<fieldset>
+			<legend>{L_USER_CUSTOM_PROFILE_FIELDS}</legend>
+		<!-- BEGIN profile_fields -->
+		<dl> 
+			<dt><label>{profile_fields.LANG_NAME}:</label><!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd>{profile_fields.FIELD}</dd>
+			<!-- IF profile_fields.ERROR -->
+				<dd><span class="small" style="color: red;">{profile_fields.ERROR}</span></dd>
+			<!-- ENDIF -->
+		</dl>
+		<!-- END profile_fields -->
+		</fieldset>
+	<!-- ENDIF -->
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_PREFS -->
+
+	<form id="user_prefs" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_UCP_PREFS_PERSONAL}</legend>
+	<dl> 
+		<dt><label for="viewemail">{L_SHOW_EMAIL}:</label></dt>
+		<dd><input type="radio" name="viewemail" value="1"<!-- IF VIEW_EMAIL --> id="viewemail" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="viewemail" value="0"<!-- IF not VIEW_EMAIL --> id="viewemail" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="massemail">{L_ADMIN_EMAIL}:</label></dt>
+		<dd><input type="radio" name="massemail" value="1"<!-- IF MASS_EMAIL --> id="massemail" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="massemail" value="0"<!-- IF not MASS_EMAIL --> id="massemail" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="allowpm">{L_ALLOW_PM}:</label><br /><span>{L_ALLOW_PM_EXPLAIN}</span></dt>
+		<dd><input type="radio" name="allowpm" value="1"<!-- IF ALLOW_PM --> id="allowpm" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="allowpm" value="0"<!-- IF not ALLOW_PM --> id="allowpm" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="hideonline">{L_HIDE_ONLINE}:</label></dt>
+		<dd><input type="radio" name="hideonline" value="1"<!-- IF HIDE_ONLINE --> id="hideonline" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="hideonline" value="0"<!-- IF not HIDE_ONLINE --> id="hideonline" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="notifymethod">{L_NOTIFY_METHOD}:</label><br /><span>{L_NOTIFY_METHOD_EXPLAIN}</span></dt>
+		<dd><input type="radio" name="notifymethod" value="0"<!-- IF NOTIFY_EMAIL --> id="notifymethod" checked="checked"<!-- ENDIF --> />&nbsp; {L_NOTIFY_METHOD_EMAIL} &nbsp;<input type="radio" name="notifymethod" value="1"<!-- IF NOTIFY_IM --> id="notifymethod" checked="checked"<!-- ENDIF --><!-- IF S_JABBER_DISABLED --> disabled="disabled"<!-- ENDIF --> />&nbsp; {L_NOTIFY_METHOD_IM} &nbsp;<input type="radio" name="notifymethod" value="2"<!-- IF NOTIFY_BOTH --> id="notifymethod" checked="checked"<!-- ENDIF --> />&nbsp; {L_NOTIFY_METHOD_BOTH}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="notifypm">{L_NOTIFY_ON_PM}:</label></dt>
+		<dd><input type="radio" name="notifypm" value="1"<!-- IF NOTIFY_PM --> id="notifypm" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="notifypm" value="0"<!-- IF not NOTIFY_PM --> id="notifypm" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="popuppm">{L_POPUP_ON_PM}:</label></dt>
+		<dd><input type="radio" name="popuppm" value="1"<!-- IF POPUP_PM --> id="popuppm" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="popuppm" value="0"<!-- IF not POPUP_PM --> id="popuppm" checked="checked"<!-- ENDIF --> />{L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="report_pm_notify">{L_REPORT_PM_NOTIFY}:</label><br /><span>{L_REPORT_PM_NOTIFY_EXPLAIN}</span></dt>
+		<dd><input type="radio" name="report_pm_notify" value="1"<!-- IF REPORT_PM_NOTIFY --> id="report_pm_notify" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="report_pm_notify" value="0"<!-- IF not REPORT_PM_NOTIFY --> id="report_pm_notify" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="lang">{L_BOARD_LANGUAGE}:</label></dt>
+		<dd><select id="lang" name="lang">{S_LANG_OPTIONS}</select></dd>
+	</dl>
+	<dl> 
+		<dt><label for="style">{L_BOARD_STYLE}:</label></dt>
+		<dd><select id="style" name="style">{S_STYLE_OPTIONS}</select></dd>
+	</dl>
+	<dl> 
+		<dt><label for="tz">{L_BOARD_TIMEZONE}:</label></dt>
+		<dd><select id="tz" name="tz">{S_TZ_OPTIONS}</select></dd>
+	</dl>
+	<dl> 
+		<dt><label for="dst">{L_BOARD_DST}:</label></dt>
+		<dd><input type="radio" name="dst" value="1"<!-- IF DST --> id="dst" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="dst" value="0"<!-- IF not DST --> id="dst" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="dateoptions">{L_BOARD_DATE_FORMAT}:</label><br /><span>{L_BOARD_DATE_FORMAT_EXPLAIN}</span></dt>
+		<dd><select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = '{DEFAULT_DATEFORMAT}'; } else { document.getElementById('dateformat').value = this.value; }">{S_DATEFORMAT_OPTIONS}</select></dd>
+		<dd><div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" /></div></dd>
+	</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_UCP_PREFS_POST}</legend>
+	<dl> 
+		<dt><label for="bbcode">{L_DEFAULT_BBCODE}:</label></dt>
+		<dd><input type="radio" name="bbcode" value="1"<!-- IF BBCODE --> id="bbcode" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="bbcode" value="0"<!-- IF not BBCODE --> id="bbcode" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="html">{L_DEFAULT_HTML}:</label></dt>
+		<dd><input type="radio" name="html" value="1"<!-- IF HTML --> id="html" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="html" value="0"<!-- IF HTML --> id="html" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="smilies">{L_DEFAULT_SMILIES}:</label></dt>
+		<dd><input type="radio" name="smilies" value="1"<!-- IF SMILIES --> id="smilies" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="smilies" value="0"<!-- IF not SMILIES --> id="smilies" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="sig">{L_DEFAULT_ADD_SIG}:</label></dt>
+		<dd><input type="radio" name="sig" value="1"<!-- IF ATTACH_SIG --> id="sig" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="sig" value="0"<!-- IF not ATTACH_SIG --> id="sig" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="notify">{L_DEFAULT_NOTIFY}:</label></dt>
+		<dd><input type="radio" name="notify" value="1"<!-- IF NOTIFY --> id="notify" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="notify" value="0"<!-- IF not NOTIFY --> id="notify" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_UCP_PREFS_VIEW}</legend>
+	<dl> 
+		<dt><label for="view_images">{L_VIEW_IMAGES}:</label></dt>
+		<dd><input type="radio" name="view_images" value="1"<!-- IF VIEW_IMAGES --> id="view_images" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="view_images" value="0"<!-- IF not VIEW_IMAGES --> id="view_images" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="view_flash">{L_VIEW_FLASH}:</label></dt>
+		<dd><input type="radio" name="view_flash" value="1"<!-- IF VIEW_FLASH --> id="view_flash" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="view_flash" value="0"<!-- IF not VIEW_FLASH --> id="view_flash" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="view_smilies">{L_VIEW_SMILIES}:</label></dt>
+		<dd><input type="radio" name="view_smilies" value="1"<!-- IF VIEW_SMILIES --> id="view_smilies" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="view_smilies" value="0"<!-- IF not VIEW_SMILIES --> id="view_smilies" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="view_sigs">{L_VIEW_SIGS}:</label></dt>
+		<dd><input type="radio" name="view_sigs" value="1"<!-- IF VIEW_SIGS --> id="view_sigs" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="view_sigs" value="0"<!-- IF not VIEW_SIGS --> id="view_sigss" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="view_avatars">{L_VIEW_AVATARS}:</label></dt>
+		<dd><input type="radio" name="view_avatars" value="1"<!-- IF VIEW_AVATARS --> id="view_avatars" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="view_avatars" value="0"<!-- IF not VIEW_AVATARS --> id="view_avatars" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label for="view_wordcensor">{L_DISABLE_CENSORS}:</label></dt>
+		<dd><input type="radio" name="view_wordcensor" value="1"<!-- IF VIEW_WORDCENSOR --> id="view_wordcensor" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="view_wordcensor" value="0"<!-- IF not VIEW_WORDCENSOR --> id="view_wordcensor" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl> 
+		<dt><label>{L_VIEW_TOPICS_DAYS}:</label></dt>
+		<dd>{S_TOPIC_SORT_DAYS}</dd>
+	</dl>
+	<dl> 
+		<dt><label>{L_VIEW_TOPICS_KEY}:</label></dt>
+		<dd>{S_TOPIC_SORT_KEY}</dd>
+	</dl>
+	<dl> 
+		<dt><label>{L_VIEW_TOPICS_DIR}:</label></dt>
+		<dd>{S_TOPIC_SORT_DIR}</dd>
+	</dl>
+	<dl> 
+		<dt><label>{L_VIEW_POSTS_DAYS}:</label></dt>
+		<dd>{S_POST_SORT_DAYS}</dd>
+	</dl>
+	<dl> 
+		<dt><label>{L_VIEW_POSTS_KEY}:</label></dt>
+		<dd>{S_POST_SORT_KEY}</dd>
+	</dl>
+	<dl> 
+		<dt><label>{L_VIEW_POSTS_DIR}:</label></dt>
+		<dd>{S_POST_SORT_DIR}</dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

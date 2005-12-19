@@ -49,6 +49,8 @@ $lang = array_merge($lang, array(
 	'EDIT_MODULE'			=> 'Edit module',
 	'EDIT_MODULE_EXPLAIN'	=> 'Here you are able to enter module specific settings',
 
+	'HIDDEN_MODULE'			=> 'Hidden Module',
+
 	'MODULE'					=> 'Module',
 	'MODULE_ADDED'				=> 'Module successfully added',
 	'MODULE_DELETED'			=> 'Module successfully removed',

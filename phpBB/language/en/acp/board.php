@@ -48,6 +48,7 @@ $lang = array_merge($lang, array(
 	'JAB_PASS_CHANGED'		=> 'Jabber password changed successfully',
 	'JAB_REGISTERED'		=> 'New account registered successfully',
 	'JAB_CHANGED'			=> 'Jabber account changed successfully',
+	'JAB_SETTINGS_CHANGED'	=> 'Jabber settings changed successfully',
 
 	'ERR_JAB_USERNAME'		=> 'The username specified already exists, please choose an alternative.',
 	'ERR_JAB_REGISTER'		=> 'An error occured trying to register this account, %s',

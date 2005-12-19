@@ -80,8 +80,8 @@ function user_update_name($old_name, $new_name)
 		foreach ($field_ary as $field)
 		{
 			$sql = "UPDATE $table
-				SET $field = '$new_name'
-				WHERE $field = '$old_name'";
+				SET $field = '" . $db->sql_escape($new_name) . "'
+				WHERE $field = '" . $db->sql_escape($old_name) . "'";
 			$db->sql_query($sql);
 		}
 	}
@@ -277,10 +277,10 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 	if (!function_exists('add_log'))
 	{
 		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	}
 
-	if (!$username)
+	if ($username === false)
 	{
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . "
@@ -295,7 +295,6 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 
 	return false;
 }
-
 
 /**
  * Add a ban or ban exclusion to the banlist. Bans either a user, an IP or an email address
@@ -357,12 +356,13 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			{
 				// Select the relevant user_ids.
 				$sql_usernames = array();
-				foreach($ban_list as $username)
+
+				foreach ($ban_list as $username)
 				{
 					$username = trim($username);
 					if ($username != '')
 					{
-						$sql_usernames[] = "'" . $username . "'";
+						$sql_usernames[] = "'" . $db->sql_escape($username) . "'";
 					}
 				}
 				$sql_usernames = implode(', ', $sql_usernames);
@@ -386,7 +386,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				}
 				$db->sql_freeresult($result);
 			}
-			break;
+		break;
 
 		case 'ip':
 			$type = 'ban_ip';
@@ -458,7 +458,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 					foreach ($ip_ary as $ip)
 					{
-						if (!empty($ip))
+						if ($ip)
 						{
 							$banlist_ary[] = $ip;
 						}
@@ -479,7 +479,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					trigger_error('NO_IPS_DEFINED');
 				}
 			}
-			break;
+		break;
 
 		case 'email':
 			$type = 'ban_email';
@@ -496,7 +496,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			{
 				trigger_error('NO_EMAILS_DEFINED');
 			}
-			break;
+		break;
+
+		default:
+			trigger_error('NO_MODE');
+		break;
 	}
 
 	// Fetch currently set bans of the specified type and exclude state. Prevent duplicate bans.
@@ -515,15 +519,15 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			{
 				case 'user':
 					$banlist_ary_tmp[] = $row['ban_userid'];
-					break;
+				break;
 
 				case 'ip':
 					$banlist_ary_tmp[] = $row['ban_ip'];
-					break;
+				break;
 
 				case 'email':
 					$banlist_ary_tmp[] = $row['ban_email'];
-					break;
+				break;
 			}
 		}
 		while ($row = $db->sql_fetchrow($result));
@@ -531,12 +535,14 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$banlist_ary = array_unique(array_diff($banlist_ary, $banlist_ary_tmp));
 		unset($banlist_ary_tmp);
 	}
+	$db->sql_freeresult($result);
 
 	// We have some entities to ban
 	if (sizeof($banlist_ary))
 	{
 		$sql = '';
 		$sql_ary = array();
+
 		foreach ($banlist_ary as $ban_entry)
 		{
 			$sql_ary[] = array(
@@ -563,20 +569,22 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			{
 				case 'user':
 					$sql_where = 'WHERE session_user_id IN (' . implode(', ', $banlist_ary) . ')';
-					break;
+				break;
 
 				case 'ip':
 					$banlist_ary_sql = array();
-					foreach($banlist_ary as $ban_entry)
+
+					foreach ($banlist_ary as $ban_entry)
 					{
 						$banlist_ary_sql[] = "'" . $db->sql_escape($ban_entry) . "'";
 					}
 					$sql_where = 'WHERE session_ip IN (' . implode(', ', $banlist_ary_sql) . ')';
-					break;
+				break;
 
 				case 'email':
 					$banlist_ary_sql = array();
-					foreach($banlist_ary as $ban_entry)
+
+					foreach ($banlist_ary as $ban_entry)
 					{
 						$banlist_ary_sql[] = "'" . $db->sql_escape(str_replace('*', '%', $ban_entry)) . "'";
 					}
@@ -588,6 +596,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 					$sql_in = array();
 					$sql = '';
+
 					if ($row = $db->sql_fetchrow($result))
 					{
 						do
@@ -598,10 +607,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 						$sql_where = 'WHERE session_user_id IN (' . implode(', ', $sql_in) . ")";
 					}
-					break;
+					$db->sql_freeresult($result);
+				break;
 			}
 
-			if (isset($sql_where))
+			if (isset($sql_where) && $sql_where)
 			{
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 					$sql_where";
@@ -612,7 +622,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		if (!function_exists('add_log'))
 		{
 			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 
 		// Update log
@@ -655,19 +665,19 @@ function user_unban($mode, $ban)
 					FROM ' . USERS_TABLE . ' u, ' . BANLIST_TABLE . " b
 					WHERE b.ban_id IN ($unban_sql)
 						AND u.user_id = b.ban_userid";
-				break;
+			break;
 
 			case 'email':
 				$sql = 'SELECT ban_email AS unban_info
 					FROM ' . BANLIST_TABLE . "
 					WHERE ban_id IN ($unban_sql)";
-				break;
+			break;
 
 			case 'ip':
 				$sql = 'SELECT ban_ip AS unban_info
 					FROM ' . BANLIST_TABLE . "
 					WHERE ban_id IN ($unban_sql)";
-				break;
+			break;
 		}
 		$result = $db->sql_query($sql);
 
@@ -685,14 +695,13 @@ function user_unban($mode, $ban)
 		if (!function_exists('add_log'))
 		{
 			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 
 		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
 
 	return false;
-
 }
 
 /**
@@ -985,9 +994,9 @@ function avatar_delete($id)
 {
 	global $phpbb_root_path, $config, $db, $user;
 
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $id))
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . basename($id)))
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $id);
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . basename($id));
 	}
 
 	return false;

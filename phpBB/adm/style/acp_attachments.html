@@ -1,0 +1,421 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_TITLE}</h1>
+
+<p>{L_TITLE_EXPLAIN}</p>
+
+<!-- IF S_WARNING -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{WARNING_MSG}</p>
+	</div>
+<!-- ENDIF -->
+	
+<!-- IF S_NOTIFY -->
+	<div class="successbox">
+		<h3>{L_NOTIFY}</h3>
+		<p>{NOTIFY_MSG}</p>
+	</div>
+<!-- ENDIF -->
+
+<!-- IF S_UPLOADING_FILES -->
+	<h2>{L_UPLOADING_FILES}</h2>
+
+	<!-- BEGIN upload -->
+		:: {upload.FILE_INFO}<br />
+		<!-- IF upload.S_DENIED --><span class="error">{upload.DENIED}</span><!-- ELSEIF upload.ERROR_MSG --><span class="error">{upload.ERROR_MSG}</span><!-- ELSE --><span class="success">{L_SUCCESSFULLY_UPLOADED}</span><!-- ENDIF -->
+		<br /><br />
+	<!-- END upload -->
+
+<!-- ENDIF -->
+
+<!-- IF S_ATTACHMENT_SETTINGS -->
+
+	<form id="attachsettings" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_ACP_ATTACHMENT_SETTINGS}</legend>
+		<dl>
+			<dt><label for="upload_dir">{L_UPLOAD_DIR}:</label><br /><span>{L_UPLOAD_DIR_EXPLAIN}</span></dt>
+			<dd><input type="text" id="upload_dir" size="25" maxlength="100" name="upload_path" value="{UPLOAD_PATH}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="display_order">{L_DISPLAY_ORDER}:</label><br /><span>{L_DISPLAY_ORDER_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="display_order" name="display_order" value="0"<!-- IF not DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> /> {L_DESCENDING} &nbsp; <input type="radio" name="display_order" value="1"<!-- IF DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> /> {L_ASCENDING}</dd>
+		</dl>
+		<dl>
+			<dt><label for="attach_quota">{L_ATTACH_QUOTA}:</label><br /><span>{L_ATTACH_QUOTA_EXPLAIN}</span></dt>
+			<dd><input type="text" id="attach_quota" size="8" maxlength="15" name="attachment_quota" value="{ATTACHMENT_QUOTA}" /> {S_QUOTA_SELECT}</dd>
+		</dl>
+		<dl>
+			<dt><label for="max_filesize">{L_ATTACH_MAX_FILESIZE}:</label><br /><span>{L_ATTACH_MAX_FILESIZE_EXPLAIN}</span></dt>
+			<dd><input type="text" id="max_filesize" size="8" maxlength="15" name="max_filesize" value="{MAX_FILESIZE}" /> {S_MAX_FILESIZE_SELECT}</dd>
+		</dl>
+		<dl>
+			<dt><label for="max_pm_filesize">{L_ATTACH_MAX_PM_FILESIZE}:</label><br /><span>{L_ATTACH_MAX_PM_FILESIZE_EXPLAIN}</span></dt>
+			<dd><input type="text" id="max_pm_filesize" size="8" maxlength="15" name="max_filesize_pm" value="{MAX_PM_FILESIZE}" /> {S_MAX_PM_FILESIZE_SELECT}</dd>
+		</dl>
+		<dl>
+			<dt><label for="max_attachments">{L_MAX_ATTACHMENTS}:</label></dt>
+			<dd><input type="text" id="max_attachments" size="3" maxlength="3" name="max_attachments" value="{MAX_ATTACHMENTS}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="max_attachments_pm">{L_MAX_ATTACHMENTS_PM}:</label></dt>
+			<dd><input type="text" id="max_attachments_pm" size="3" maxlength="3" name="max_attachments_pm" value="{MAX_ATTACHMENTS_PM}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="secure_downloads">{L_SECURE_DOWNLOADS}:</label><br /><span>{L_SECURE_DOWNLOADS_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="secure_downloads" name="secure_downloads" value="1"<!-- IF SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_downloads" value="0"<!-- IF not SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+		<dl>
+			<dt><label for="allow_deny">{L_SECURE_ALLOW_DENY}:</label><br /><span>{L_SECURE_ALLOW_DENY_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="allow_deny" name="secure_allow_deny" value="1"<!-- IF SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> /> {L_ORDER_ALLOW_DENY}&nbsp;&nbsp;<input type="radio" name="secure_allow_deny" value="0"<!-- IF not SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> /> {L_ORDER_DENY_ALLOW}</dd>
+		</dl>
+		<dl>
+			<dt><label for="referer">{L_SECURE_EMPTY_REFERER}:</label><br /><span>{L_SECURE_EMPTY_REFERER_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="referer" name="secure_allow_empty_referer" value="1"<!-- IF ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_allow_empty_referer" value="0"<!-- IF not ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_SETTINGS_CAT_IMAGES} [{L_ASSIGNED_GROUP}: {ASSIGNED_GROUPS}]</legend>
+		<dl>
+			<dt><label for="display_inlined">{L_DISPLAY_INLINED}:</label><br /><span>{L_DISPLAY_INLINED_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="display_inlined" name="img_display_inlined" value="1"<!-- IF DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0"<!-- IF not DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+	<!-- IF S_THUMBNAIL_SUPPORT -->
+		<dl>
+			<dt><label for="create_thumbnail">{L_CREATE_THUMBNAIL}:</label><br /><span>{L_CREATE_THUMBNAIL_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="create_thumbnail" name="img_create_thumbnail" value="1"<!-- IF CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0"<!-- IF not CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+		<dl>
+			<dt><label for="thumb_filesize">{L_MIN_THUMB_FILESIZE}:</label><br /><span>{L_MIN_THUMB_FILESIZE_EXPLAIN}</span></dt>
+			<dd><input type="text" id="thumb_filesize" size="7" maxlength="15" name="img_min_thumb_filesize" value="{MIN_THUMB_FILESIZE}" /> {L_BYTES}</dd>
+		</dl>
+	<!-- ENDIF -->
+		<dl>
+			<dt><label for="imagick_path">{L_IMAGICK_PATH}:</label><br /><span>{L_IMAGICK_PATH_EXPLAIN}</span></dt>
+			<dd><input type="text" id="imagick_path" size="20" maxlength="200" name="img_imagick" value="{IMG_IMAGICK}" />&nbsp;&nbsp;<span>[ <a href="{U_SEARCH_IMAGICK}">{L_SEARCH_IMAGICK}</a> ]</span></dd>
+		</dl>
+		<dl>
+			<dt><label for="image_size">{L_MAX_IMAGE_SIZE}:</label><br /><span>{L_MAX_IMAGE_SIZE_EXPLAIN}</span></dt>
+			<dd><input type="text" id="image_size" size="3" maxlength="4" name="img_max_width" value="{MAX_WIDTH}" /> px X <input type="text" size="3" maxlength="4" name="img_max_height" value="{MAX_HEIGHT}" /> px</dd>
+		</dl>
+		<dl>
+			<dt><label for="link_size">{L_IMAGE_LINK_SIZE}:</label><br /><span>{L_IMAGE_LINK_SIZE_EXPLAIN}</span></dt>
+			<dd><input type="text" id="link_size" size="3" maxlength="4" name="img_link_width" value="{LINK_WIDTH}" /> px X <input type="text" size="3" maxlength="4" name="img_link_height" value="{LINK_HEIGHT}" /> px</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</fieldset>
+
+	<!-- IF not S_SECURE_DOWNLOADS -->
+	<div class="errorbox">
+		<p>{L_SECURE_DOWNLOAD_NOTICE}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_SECURE_TITLE}</legend>
+		<p>{L_DOWNLOAD_ADD_IPS_EXPLAIN}</p>
+		<dl>
+			<dt><label for="ip_hostname">{L_IP_HOSTNAME}:</label></dt>
+			<dd><textarea id="ip_hostname" cols="40" rows="3" name="ips"></textarea></dd>
+		</dl>
+		<dl>
+			<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
+			<dd><input type="radio" id="exclude" name="ipexclude" value="1" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" /> {L_NO}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" id="securesubmit" name="securesubmit" value="{L_SUBMIT}" />
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_REMOVE_IPS}</legend>
+	<!-- IF S_DEFINED_IPS -->
+		<p>{L_DOWNLOAD_REMOVE_IPS_EXPLAIN}</p>
+		<dl>
+			<dt><label for="remove_ip_hostname">{L_IP_HOSTNAME}:</label></dt>
+			<dd><select name="unip[]" id="remove_ip_hostname" multiple="multiple" size="10">{DEFINED_IPS}</select></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" id="unsecuresubmit" name="unsecuresubmit" value="{L_SUBMIT}" />
+	</fieldset>
+
+	<!-- ELSE -->
+		<p>{L_NO_IPS_DEFINED}</p>
+	<!-- ENDIF -->
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_EXTENSION_GROUPS -->
+
+	<!-- IF S_EDIT_GROUP -->
+		<script type="text/javascript" defer="defer">
+		<!--
+
+			function update_image(newimage)
+			{
+				if (newimage == 'no_image')
+				{
+					document.image_upload_icon.src = "{PHPBB_ROOT_PATH}images/spacer.gif";
+				}
+				else
+				{
+					document.image_upload_icon.src = "{PHPBB_ROOT_PATH}{IMG_PATH}/" + newimage;
+				}
+			}
+
+			function show_extensions(elem)
+			{
+				var str = '';
+
+				for (i = 0; i < elem.length; i++)
+				{
+					var element = elem.options[i];
+					if (element.selected)
+					{
+						if (str)
+						{
+							str = str + ', ';
+						}
+
+						str = str + element.innerHTML;
+					}
+				}
+
+				if (document.all)
+				{
+					document.all.ext.innerText = str;
+				}
+				else if (document.getElementById('ext').textContent)
+				{
+					document.getElementById('ext').textContent = str;
+				}
+				else if (document.getElementById('ext').firstChild.nodeValue)
+				{
+					document.getElementById('ext').firstChild.nodeValue = str;
+				}
+			}
+
+		//-->
+		</script>
+
+		<form id="extgroups" method="post" action="{U_ACTION}">
+		<fieldset>
+			<input type="hidden" name="action" value="{ACTION}" />
+			<input type="hidden" name="g" value="{GROUP_ID}" />
+
+			<legend>{L_LEGEND}</legend>
+			<dl>
+				<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
+				<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="category">{L_SPECIAL_CATEGORY}:</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
+				<dd>{S_CATEGORY_SELECT}</dd>
+			</dl>
+			<dl>
+				<dt><label for="allowed">{L_ALLOWED}:</label></dt>
+				<dd><input type="checkbox" id="allowed" name="allow_group" value="{GROUP_ID}"<!-- IF ALLOW_GROUP --> cecked="checked"<!-- ENDIF --> /></dd>
+			</dl>
+			<dl>
+				<dt><label for="allow_in_pm">{L_ALLOW_IN_PM}:</label></dt>
+				<dd><input type="checkbox" id="allow_in_pm" name="allow_in_pm" value="1"<!-- IF ALLOW_IN_PM --> checked="checked"<!-- ENDIF --> /></dd>
+			</dl>
+			<dl>
+				<dt><label for="download_mode">{L_DOWNLOAD_MODE}:</label><br /><span>{L_DOWNLOAD_MODE_EXPLAIN}</span></dt>
+				<dd>{S_DOWNLOAD_SELECT}</dd>
+			</dl>
+			<dl>
+				<dt><label for="upload_icon">{L_UPLOAD_ICON}:</label></dt>
+				<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
+						<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}
+				</select></dd>
+				<dd>&nbsp;<img <!-- IF S_NO_IMAGE -->src="{PHPBB_ROOT_PATH}images/spacer.gif"<!-- ELSE -->src="{UPLOAD_ICON_SRC}"<!-- ENDIF --> name="image_upload_icon" alt="" title="" />&nbsp;</dd>
+			</dl>
+			<dl>
+				<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>
+				<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> {S_EXT_GROUP_SIZE}</dd>
+			</dl>
+			<dl>
+				<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}:</label></dt>
+				<dd><div id="ext">{ASSIGNED_EXTENSIONS}</div> <span>[<a href="{U_EXTENSIONS}">{L_GO_TO_EXTENSIONS}</a> ]</span></dd>
+				<dd><select name="extensions[]" id="assigned_extensions" class="narrow" onchange="show_extensions(this);" multiple="multiple" size="8">{S_EXTENSION_OPTIONS}</select></dd>
+			</dl>
+			<dl>
+				<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
+				<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
+				<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		</fieldset>
+
+		</form>
+	<!-- ELSE -->
+
+		<table cellspacing="1">
+			<col class="row1" /><col class="row1" /><col class="row2" />
+		<thead>
+		<tr>
+			<th>{L_EXTENSION_GROUP}</th>
+			<th>{L_SPECIAL_CATEGORY}</th>
+			<th>{L_OPTIONS}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- BEGIN groups -->
+			<!-- IF groups.S_ADD_SPACER -->
+			<tr>
+				<td class="spacer" colspan="3">&nbsp;</td>
+			</tr>
+			<!-- ENDIF -->
+			<tr>
+				<td><a href="{groups.U_EDIT}">{groups.GROUP_NAME}</a></td>
+				<td>{groups.CATEGORY}</td>
+				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{L_EDIT}</a> | <a href="{groups.U_DELETE}">{L_DELETE}</a> | <a href="{groups.U_ACT_DEACT}">{groups.L_ACT_DEACT}</a>&nbsp;</td>
+			</tr>
+		<!-- END groups -->
+		</tbody>
+		</table>
+
+		<form id="extgroups" method="post" action="{U_ACTION}">
+			<fieldset class="quick">
+				{L_CREATE_GROUP}: <input type="text" name="group_name" maxlength="30" /> 
+				<input class="button2" name="add" type="submit" value="{L_SUBMIT}" />
+			</fieldset>
+		</form>
+
+	<!-- ENDIF -->
+
+<!-- ELSEIF S_EXTENSIONS -->
+
+	<form id="add_ext" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_ADD_EXTENSION}</legend>
+		<dl>
+			<dt><label for="add_extension">{L_EXTENSION}</label></dt>
+			<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
+			<dd>{GROUP_SELECT_OPTIONS}</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input type="submit" id="add_extension_check" name="add_extension_check" class="button2" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+	
+	<br />
+
+	<form id="change_ext" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+		<col class="row1" /><col class="row1" /><col class="row2" />
+	<thead>
+	<tr>
+		<th>{L_EXTENSION}</th>
+		<th>{L_EXTENSION_GROUP}</th>
+		<th>{L_DELETE}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN extensions -->
+		<!-- IF extensions.S_SPACER -->
+		<tr>
+			<td class="spacer" colspan="3">&nbsp;</td>
+		</tr>
+		<!-- ENDIF -->
+		<tr> 
+			<input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" />
+			<td><b>{extensions.EXTENSION}</b></td>
+			<td>{extensions.GROUP_OPTIONS}</td>
+			<td><input type="checkbox" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /></td>
+		</tr>
+	<!-- END extensions -->
+	</tbody>
+	</table>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</fieldset>
+	
+	</form>
+
+<!-- ELSEIF S_ORPHAN -->
+
+	<script type="text/javascript">
+	<!--
+	function marklist(match, name, status)
+	{
+		var object = document.getElementById(match);
+
+		var len = object.length;
+
+		for (i = 0; i < len; i++)
+		{
+			result = eval('object.elements[' + i + '].name.search(/' + name + '.+/)');
+			if (result != -1)
+				object.elements[i].checked = status;
+		}
+	}
+	//-->
+	</script>
+
+	<form id="orphan" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_FILENAME}</th>
+		<th>{L_FILESIZE}</th>
+		<th>{L_ATTACH_POST_ID}</th>
+		<th>{L_ATTACH_TO_POST}</th>
+		<th>{L_DELETE}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN orphan -->
+		<!-- IF orphan.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td><a href="{orphan.U_FILE}" rel="file">{orphan.FILE}</a></td>
+			<td>{orphan.FILESIZE}</td>
+			<td><b>ID: </b><input type="text" name="post_id[{orphan.FILE}]" size="7" maxlength="10" value="{orphan.POST_IDS}" /></td>
+			<td><input type="checkbox" name="add[{orphan.FILE}]" /></td>
+			<td><input type="checkbox" name="delete[{orphan.FILE}]" /></td>
+		</tr>
+	<!-- END orphan -->
+	<tr>
+		<td colspan="3">&nbsp;</td>
+		<td class="small"><a href="javascript:marklist('attachments', 'add', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('attachments', 'add', false);">{L_UNMARK_ALL}</a></td>
+		<td class="small"><a href="javascript:marklist('attachments', 'delete', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('attachments', 'delete', false);">{L_UNMARK_ALL}</a></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

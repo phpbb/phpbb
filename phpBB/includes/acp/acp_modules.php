@@ -474,6 +474,7 @@ class acp_modules
 					'MODULE_IMAGE'		=> $module_image,
 					'MODULE_TITLE'		=> $langname,
 					'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
+					'MODULE_DISPLAYED'	=> ($row['module_display']) ? true : false,
 
 					'U_MODULE'			=> $u_action . '&amp;parent_id=' . $row['module_id'],
 					'U_MOVE_UP'			=> $url . '&amp;action=move_up',
