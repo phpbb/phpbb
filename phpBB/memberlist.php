@@ -137,7 +137,7 @@ switch ($mode)
 			}
 
 			$rank_title = $rank_img = '';
-			get_user_rank($row['user_rank'], $row['user_posts'], $rank_title, $rank_img);
+			get_user_rank($row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
 			$template->assign_block_vars($which_row, array(
 				'USER_ID'		=> $row['user_id'],
@@ -149,6 +149,7 @@ switch ($mode)
 				'GROUP_COLOR'	=> $row['group_colour'],
 
 				'RANK_IMG'		=> $rank_img,
+				'RANK_IMG_SRC'	=> $rank_img_src,
 
 				'U_GROUP'		=> $u_group,
 				'U_VIEWPROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}",
@@ -899,16 +900,18 @@ switch ($mode)
 				$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" border="0" alt="" />';
 			}
 
-			$rank_title = $rank_img = '';
+			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'] != -1)
 			{
 				$rank_title = $ranks['special'][$group_row['group_rank']]['rank_title'];
 				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
+				$rank_img_src = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] : '';
 			}
 			else if ($group_row['group_rank'] == -1)
 			{
 				$rank_title = '';
 				$rank_img = '';
+				$rank_img_src = '';
 			}
 
 			$template->assign_vars(array(
@@ -920,6 +923,7 @@ switch ($mode)
 
 				'AVATAR_IMG'	=> $avatar_img,
 				'RANK_IMG'		=> $rank_img,
+				'RANK_IMG_SRC'	=> $rank_img_src,
 
 				'U_PM'			=> ($auth->acl_get('u_sendpm') && $group_row['group_receive_pm'] && $config['allow_mass_pm']) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;g=$group_id" : '',)
 			);
@@ -1152,7 +1156,7 @@ page_footer();
 /**
 * Get user rank title and image
 */
-function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img)
+function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
 	global $ranks, $config;
 
@@ -1160,6 +1164,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img)
 	{
 		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
 		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
+		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
 	}
 	else
 	{
@@ -1171,6 +1176,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img)
 				{
 					$rank_title = $rank['rank_title'];
 					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$rank_img_src = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
 					break;
 				}
 			}
@@ -1188,8 +1194,8 @@ function show_profile($data)
 	$username = $data['username'];
 	$user_id = $data['user_id'];
 
-	$rank_title = $rank_img = '';
-	get_user_rank($data['user_rank'], $data['user_posts'], $rank_title, $rank_img);
+	$rank_title = $rank_img = $rank_img_src = '';
+	get_user_rank($data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
 	
 	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
@@ -1203,7 +1209,7 @@ function show_profile($data)
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
 	$update_time = $config['load_online_time'] * 60;
-	$online = (time() - $update_time < $data['session_time'] && (($data['session_viewonline'] && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+	$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
 
 	// Dump it out to the template
 	// TODO
@@ -1215,10 +1221,11 @@ function show_profile($data)
 		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
-  		'WARNINGS'		=> ($data['user_warnings']) ? $data['user_warnings'] : 0,
+  		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
 		'ONLINE_IMG'	=> ($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE'),
 		'RANK_IMG'		=> $rank_img,
+		'RANK_IMG_SRC'	=> $rank_img_src,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
 
 		'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",

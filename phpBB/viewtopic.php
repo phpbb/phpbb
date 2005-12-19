@@ -882,11 +882,11 @@ while ($row = $db->sql_fetchrow($result))
 			}
 
 			$id_cache[] = $poster_id;
-
+			
 			$user_cache[$poster_id] = array(
 				'joined'		=> $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']),
 				'posts'			=> $row['user_posts'],
-				'warnings'		=> $row['user_warnings'],
+				'warnings'		=> (isset($row['user_warnings'])) ? $row['user_warnings'] : 0,
 				'from'			=> (!empty($row['user_from'])) ? $row['user_from'] : '',
 
 				'sig'					=> $user_sig,
@@ -929,6 +929,7 @@ while ($row = $db->sql_fetchrow($result))
 			{
 				$user_cache[$poster_id]['rank_title'] = (isset($ranks['special'][$row['user_rank']])) ? $ranks['special'][$row['user_rank']]['rank_title'] : '';
 				$user_cache[$poster_id]['rank_image'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$row['user_rank']]['rank_title'] . '" /><br />' : '';
+				$user_cache[$poster_id]['rank_image_src'] = (!empty($ranks['special'][$row['user_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$row['user_rank']]['rank_image'] : '';
 			}
 			else
 			{
@@ -940,6 +941,7 @@ while ($row = $db->sql_fetchrow($result))
 						{
 							$user_cache[$poster_id]['rank_title'] = $rank['rank_title'];
 							$user_cache[$poster_id]['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+							$user_cache[$poster_id]['rank_image_src'] = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
 							break;
 						}
 					}
@@ -948,6 +950,7 @@ while ($row = $db->sql_fetchrow($result))
 				{
 					$user_cache[$poster_id]['rank_title'] = '';
 					$user_cache[$poster_id]['rank_image'] = '';
+					$user_cache[$poster_id]['rank_image_src'] = '';
 				}
 			}
 
@@ -1259,6 +1262,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_NAME' 	=> $row['poster'],
 		'POSTER_RANK' 	=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMAGE' 	=> $user_cache[$poster_id]['rank_image'],
+		'RANK_IMAGE_SRC' => $user_cache[$poster_id]['rank_image_src'],
 		'POSTER_JOINED' => $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS' 	=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM' 	=> $user_cache[$poster_id]['from'],
