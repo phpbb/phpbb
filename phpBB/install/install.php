@@ -196,7 +196,7 @@ if (!$language)
 }
 
 include($phpbb_root_path . 'language/' . $language . '/common.'.$phpEx);
-include($phpbb_root_path . 'language/' . $language . '/admin.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/install.'.$phpEx);
 
 
 // Here we do a number of tests and where appropriate reset the installation level
@@ -1323,7 +1323,7 @@ function inst_page_footer()
 
 ?>
 
-<div class="copyright" align="center">Powered by phpBB 2.2 &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
+<div class="copyright" align="center">Powered by phpBB &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
 
 		<br clear="all" /></td>
 	</tr>
