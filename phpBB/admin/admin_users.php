@@ -177,6 +177,20 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 				message_die(GENERAL_ERROR, 'Could not delete user from banlist table', '', __LINE__, __FILE__, $sql);
 			}
 
+			$sql = "DELETE FROM " . SESSIONS_TABLE . "
+				WHERE session_user_id = $user_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete sessions for this user', '', __LINE__, __FILE__, $sql);
+			}
+			
+			$sql = "DELETE FROM " . SESSIONS_KEYS_TABLE . "
+				WHERE user_id = $user_id";
+			if ( !$db->sql_query($sql) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete auto-login keys for this user', '', __LINE__, __FILE__, $sql);
+			}
+
 			$sql = "SELECT privmsgs_id
 				FROM " . PRIVMSGS_TABLE . "
 				WHERE privmsgs_from_userid = $user_id 
@@ -217,7 +231,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 			message_die(GENERAL_MESSAGE, $message);
 		}
 
-		$username = ( !empty($HTTP_POST_VARS['username']) ) ? trim(strip_tags(htmlspecialchars($HTTP_POST_VARS['username']))) : '';
+		$username = ( !empty($HTTP_POST_VARS['username']) ) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
 		$email = ( !empty($HTTP_POST_VARS['email']) ) ? trim(strip_tags(htmlspecialchars( $HTTP_POST_VARS['email'] ) )) : '';
 
 		$password = ( !empty($HTTP_POST_VARS['password']) ) ? trim(strip_tags(htmlspecialchars( $HTTP_POST_VARS['password'] ) )) : '';
