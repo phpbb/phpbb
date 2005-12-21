@@ -1558,6 +1558,146 @@ class acp_users
 				);
 
 			break;
+		
+			case 'groups':
+
+				$user->add_lang('groups');
+				$group_id = request_var('g', 0);
+
+				switch ($action)
+				{
+					case 'demote':
+					case 'promote':
+					case 'default':
+						group_user_attributes($action, $group_id, $user_id);
+
+						if ($action == 'default')
+						{
+							$user_row['group_id'] = $group_id;
+						}
+					break;
+
+					case 'delete':
+
+						if (confirm_box(true))
+						{
+							if (!$group_id)
+							{
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action . '&amp;u=' . $user_id));
+							}
+
+							if ($error = group_user_del($group_id, $user_id))
+							{
+								trigger_error($user->lang[$error] . adm_back_link($u_action . '&amp;u=' . $user_id));
+							}
+						
+							$error = array();
+						}
+						else
+						{
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								'u'				=> $user_id,
+								'i'				=> $id,
+								'mode'			=> $mode,
+								'action'		=> $action,
+								'g'				=> $group_id))
+							);
+						}
+	
+					break;
+				}
+
+				// Add user to group?
+				if ($submit)
+				{
+					if (!$group_id)
+					{
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action . '&amp;u=' . $user_id));
+					}
+
+					// Add user/s to group
+					if ($error = group_user_add($group_id, $user_id))
+					{
+						trigger_error($user->lang[$error] . adm_back_link($u_action . '&amp;u=' . $user_id));
+					}
+
+					$error = array();
+				}
+
+
+				$sql = 'SELECT ug.*, g.*
+					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
+					WHERE ug.user_id = $user_id
+						AND g.group_id = ug.group_id
+					ORDER BY g.group_type DESC, ug.user_pending ASC, g.group_name";
+				$result = $db->sql_query($sql);
+
+				$i = 0;
+				$group_data = $id_ary = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : (($row['user_pending']) ? 'pending' : 'normal');
+
+					$group_data[$type][$i]['group_id']		= $row['group_id'];
+					$group_data[$type][$i]['group_name']	= $row['group_name'];
+					$group_data[$type][$i]['group_leader']	= ($row['group_leader']) ? 1 : 0;
+
+					$id_ary[] = $row['group_id'];
+
+					$i++;
+				}
+				$db->sql_freeresult($result);
+
+				// Select box for other groups
+				$sql = 'SELECT group_id, group_name, group_type
+					FROM ' . GROUPS_TABLE . '
+					WHERE group_id NOT IN (' . implode(', ', $id_ary) . ')
+					ORDER BY group_type DESC, group_name ASC';
+				$result = $db->sql_query($sql);
+
+				$s_group_options = '';
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				}
+				$db->sql_freeresult($result);
+
+				$current_type = '';
+				foreach ($group_data as $group_type => $data_ary)
+				{
+					if ($current_type != $group_type)
+					{
+						$template->assign_block_vars('group', array(
+							'S_NEW_GROUP_TYPE'		=> true,
+							'GROUP_TYPE'			=> $user->lang['USER_GROUP_' . strtoupper($group_type)])
+						);
+					}
+
+					foreach ($data_ary as $data)
+					{
+						$template->assign_block_vars('group', array(
+							'U_EDIT_GROUP'		=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;back_link=acp_users_groups',
+							'U_DEFAULT'			=> $u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_DEMOTE_PROMOTE'	=> $u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_DELETE'			=> $u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
+
+							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name'],
+							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE'],
+
+							'S_NO_DEFAULT'		=> ($user_row['group_id'] != $data['group_id']) ? true : false,
+							'S_SPECIAL_GROUP'	=> ($group_type == 'special') ? true : false,
+							)
+						);
+					}
+				}
+
+				$template->assign_vars(array(
+					'S_GROUPS'			=> true,
+					'S_GROUP_OPTIONS'	=> $s_group_options)
+				);
+
+			break;
+
 		}
 
 		// Assign general variables

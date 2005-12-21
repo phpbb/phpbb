@@ -600,6 +600,34 @@
 
 	</form>
 
+<!-- ELSEIF S_GROUPS -->
+
+	<form id="user_groups" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+	<tbody>
+	<!-- BEGIN group -->
+		<!-- IF group.S_NEW_GROUP_TYPE -->
+		<tr>
+			<td class="row3" colspan="4"><b>{group.GROUP_TYPE}</b></td>
+		</tr>
+		<!-- ELSE -->
+			<!-- IF group.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td><a href="{group.U_EDIT_GROUP}">{group.GROUP_NAME}</a></td>
+			<td><!-- IF group.S_NO_DEFAULT --><a href="{group.U_DEFAULT}">{L_GROUP_DEFAULT}</a><!-- ELSE -->{L_GROUP_DEFAULT}<!-- ENDIF --></td>
+			<td><!-- IF not group.S_SPECIAL_GROUP --><a href="{group.U_DEMOTE_PROMOTE}">{group.L_DEMOTE_PROMOTE}</a><!-- ENDIF --></td>
+			<td><a href="{group.U_DELETE}">{L_GROUP_DELETE}</a></td>
+		<!-- ENDIF -->
+	<!-- END group -->
+	</tbody>
+	</table>
+
+	<fieldset class="quick">
+		{L_USER_GROUP_ADD}: <select name="g">{S_GROUP_OPTIONS}</select> <input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
 <!-- ELSEIF S_ATTACHMENTS -->
 
 	<form id="user_attachments" method="post" action="{U_ACTION}">

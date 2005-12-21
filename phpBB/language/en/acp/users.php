@@ -43,6 +43,11 @@ $lang = array_merge($lang, array(
 	'FOUNDER'						=> 'Founder',
 	'FOUNDER_EXPLAIN'				=> 'Founders can never be banned, deleted or altered by non-founder members',
 
+	'GROUP_DEFAULT'					=> 'Default',
+	'GROUP_DELETE'					=> 'Delete',
+	'GROUP_DEMOTE'					=> 'Demote',
+	'GROUP_PROMOTE'					=> 'Promote',
+
 	'IP_WHOIS_FOR'			=> 'IP whois for %s',
 
 	'LAST_ACTIVE'			=> 'Last active',
@@ -82,6 +87,10 @@ $lang = array_merge($lang, array(
 	'USER_AVATAR_UPDATED'			=> 'Successfully updated user avatars details',
 	'USER_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
 	'USER_DELETED'					=> 'User deleted successfully',
+	'USER_GROUP_ADD'				=> 'Add user to group',
+	'USER_GROUP_NORMAL'				=> 'Normal groups user is a member of',
+	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',
+	'USER_GROUP_SPECIAL'			=> 'Special groups user is a member of',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated',
 	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user',
 	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum',

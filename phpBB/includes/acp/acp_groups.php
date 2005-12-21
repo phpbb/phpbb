@@ -385,6 +385,19 @@ class acp_groups
 					avatar_gallery($category, $avatar_select, 4);
 				}
 
+				$back_link = request_var('back_link', '');
+
+				switch ($back_link)
+				{
+					case 'acp_users_groups':
+						$u_back = $phpbb_admin_path . "index.$phpEx$SID&amp;i=users&amp;mode=groups&amp;u=" . request_var('u', 0);
+					break;
+
+					default:
+						$u_back = $u_action;
+					break;
+				}
+
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_INCLUDE_SWATCH'	=> true,
@@ -416,7 +429,7 @@ class acp_groups
 					'GROUP_CLOSED'		=> $type_closed,
 					'GROUP_HIDDEN'		=> $type_hidden,
 
-					'U_BACK'			=> $u_action,
+					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=settings&name=group_colour",
 					'U_ACTION'			=> "{$u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
