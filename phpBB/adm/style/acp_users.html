@@ -437,6 +437,224 @@
 
 	</form>
 
+<!-- ELSEIF S_AVATAR -->
+
+	<form id="avatar_settings" method="post" action="{U_ACTION}"<!-- IF S_CAN_UPLOAD --> enctype="multipart/form-data"<!-- ENDIF -->>
+
+	<fieldset>
+		<legend>{L_ACP_USER_AVATAR}</legend>
+		<dl>
+			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+			<dd>{AVATAR_IMAGE}</dd>
+			<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
+		</dl>
+	<!-- IF not S_IN_AVATAR_GALLERY -->
+		<!-- IF S_CAN_UPLOAD -->
+			<dl> 
+				<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
+				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
+				<dd><input name="uploadurl" type="text" id="uploadurl" value="" /></dd>
+			</dl>
+		<!-- ENDIF -->
+			<dl>
+				<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
+				<dd><input name="remotelink" type="text" id="remotelink" value="" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></dt>
+				<dd><input name="width" type="text" id="width" size="3" value="{USER_AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{USER_AVATAR_HEIGHT}" /> <span>px</span></dd>
+			</dl>
+		<!-- IF S_DISPLAY_GALLERY -->
+			<dl> 
+				<dt><label>{L_AVATAR_GALLERY}:</label></dt>
+				<dd><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></dd>
+			</dl>
+		<!-- ENDIF -->
+	<!-- ELSE -->
+		</fieldset>
+
+		<fieldset>
+			<legend>{L_AVATAR_GALLERY}</legend>
+			<dl>
+				<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
+				<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
+			</dl>
+			<dl>
+				<table cellspacing="1">
+				<!-- BEGIN avatar_row -->
+				<tr> 
+					<!-- BEGIN avatar_column -->
+						<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
+					<!-- END avatar_column -->
+				</tr>
+				<tr>
+					<!-- BEGIN avatar_option_column -->
+						<td class="row2" style="text-align: center;"><input type="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+					<!-- END avatar_option_column -->
+				</tr>
+				<!-- END avatar_row -->
+				</table>
+			</dl>
+		</fieldset>
+		
+		<fieldset class="quick" style="margin-top: -15px;">
+			<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
+		</fieldset>
+	
+	<!-- ENDIF -->
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_SIGNATURE -->
+
+	<script type="text/javascript">
+	<!--
+
+	var form_name = 'user_signature';
+	var text_name = 'signature';
+
+	// Define the bbCode tags
+	bbcode = new Array();
+	bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+	imageTag = false;
+
+	// Helpline messages
+	b_help = "{L_BBCODE_B_HELP}";
+	i_help = "{L_BBCODE_I_HELP}";
+	u_help = "{L_BBCODE_U_HELP}";
+	q_help = "{L_BBCODE_Q_HELP}";
+	c_help = "{L_BBCODE_C_HELP}";
+	l_help = "{L_BBCODE_L_HELP}";
+	o_help = "{L_BBCODE_O_HELP}";
+	p_help = "{L_BBCODE_P_HELP}";
+	w_help = "{L_BBCODE_W_HELP}";
+	a_help = "{L_BBCODE_A_HELP}";
+	s_help = "{L_BBCODE_S_HELP}";
+	f_help = "{L_BBCODE_F_HELP}";
+	e_help = "{L_BBCODE_E_HELP}";
+
+	//-->
+	</script>
+	<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
+
+	<form id="user_signature" method="post" action="{U_ACTION}">
+
+	<!-- IF SIGNATURE_PREVIEW -->
+	<fieldset>
+		<legend>{L_ADMIN_SIG_PREVIEW}</legend>
+		<p>{SIGNATURE_PREVIEW}</p>
+	</fieldset>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_SIGNATURE}</legend>
+		<p>{L_SIGNATURE_EXPLAIN}</p>
+		<div id="format-buttons">
+			<input class="button2" type="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" />
+			<input class="button2" type="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" onmouseover="helpline('i')" />
+			<input class="button2" type="button" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" onmouseover="helpline('u')" />
+			<input class="button2" type="button" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" />
+			<input class="button2" type="button" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" />
+			<input class="button2" type="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" />
+			<input class="button2" type="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
+			<input class="button2" type="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" />
+			<input class="button2" type="button" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
+			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+				<option value="7">{L_FONT_TINY}</option>
+				<option value="9">{L_FONT_SMALL}</option>
+				<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+				<option value="18">{L_FONT_LARGE}</option>
+				<option  value="24">{L_FONT_HUGE}</option>
+			</select>
+			<a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a>
+		</div>
+		<p><input type="text" name="helpbox" value="{L_STYLES_TIP}" class="full" style="border: 0; background: none;" /></p>
+		<dl>
+			<dt style="width: 110px;"><script type="text/javascript"><!-- 
+				colorPalette('v', 17, 5); 
+				//--></script>
+			</dt>
+			<dd style="text-align: left; margin-left: 110px;"><textarea name="signature" rows="10" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
+			<dd style="text-align: left; margin-left: 110px;">
+				<!-- IF S_HTML_ALLOWED --><input type="checkbox" name="disable_html"{S_HTML_CHECKED} />&nbsp; {L_DISABLE_HTML} &nbsp;<!-- ENDIF -->
+				<!-- IF S_BBCODE_ALLOWED --><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;<!-- ENDIF -->
+				<!-- IF S_SMILIES_ALLOWED --><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;<!-- ENDIF -->
+				<input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
+				<br /><br /><strong>{L_OPTIONS}: </strong>{HTML_STATUS} :: {BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {SMILIES_STATUS}
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_ATTACHMENTS -->
+
+	<form id="user_attachments" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick" style="float: left;">
+		{L_SORT_BY}: <select name="sk">{S_SORT_KEY}</select> <select name="sd">{S_SORT_DIR}</select>
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+
+	<div class="pagination" style="float: right;">
+		<!-- IF PAGINATION -->
+			<a href="javascript:jumpto();" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+		<!-- ELSE -->
+			{S_ON_PAGE}
+		<!-- ENDIF -->
+	</div>
+
+	<div class="clearfix"></div>
+
+	<!-- IF .attach -->
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_FILENAME}</th>
+		<th>{L_POST_TIME}</th>
+		<th>{L_FILESIZE}</th>
+		<th>{L_DOWNLOADS}</th>
+		<th>{L_DELETE}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN attach -->
+		<!-- IF attach.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td><a href="{attach.U_DOWNLOAD}">{attach.REAL_FILENAME}</a><br /><span class="small"><!-- IF attach.S_IN_MESSAGE --><b>{L_PM}: </b><!-- ELSE --><b>{L_TOPIC}: </b><!-- ENDIF --><a href="{attach.U_VIEW_TOPIC}">{attach.TOPIC_TITLE}</a></span></td>
+		<td>{attach.POST_TIME}</td>
+		<td>{attach.SIZE}</td>
+		<td>{attach.DOWNLOAD_COUNT}</td>
+		<td><input type="checkbox" name="mark[]" value="{attach.ATTACH_ID}" /></td>
+	</tr>
+	<!-- END attach -->
+	</tbody>
+	</table>
+	<!-- ELSE -->
+	<div class="errorbox">
+		<p>{L_NO_ENTRIES}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<fieldset class="quick">
+		<b class="small"><a href="#" onclick="marklist('user_attachments', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('user_attachments', false);">{L_UNMARK_ALL}</a></b><br />
+		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
+	</fieldset>
+
+	</form>
+
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

@@ -352,6 +352,25 @@ td {
 	line-height: 1px;
 }
 
+table.type2 {
+	border: none;
+	background: none;
+	padding: 0;
+	width: 0;
+}
+
+table.type2 th {
+	background: none;
+	border-top: none;
+	text-align: center;
+	color: #FFA34F;
+	padding: 2px 0;
+}
+
+table.type2 td {
+	padding: 0;
+}
+
 /* General form styles
 ----------------------------------------*/
 fieldset { 
@@ -776,6 +795,17 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 
 .errorbox a:hover {
 	text-decoration: none;
+}
+
+/*
+ Format Buttons for signature editor
+*/
+#format-buttons {
+	margin: 15px 0 2px 0;
+}
+
+#format-buttons input, #format-buttons select {
+	vertical-align: middle;
 }
 
 /* Nice method for clearing floated blocks without having to insert any extra markup

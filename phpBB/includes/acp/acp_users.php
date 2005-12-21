@@ -560,7 +560,7 @@ class acp_users
 					unset($data['user']);
 
 					/**
-					* $config['max_warnings'] does not exist yet
+					* @todo $config['max_warnings'] does not exist yet
 					*/
 					// Validation data
 					$var_ary = array(
@@ -1200,6 +1200,362 @@ class acp_users
 					)
 				);
 
+			break;
+
+			case 'avatar':
+
+				$avatar_select = basename(request_var('avatar_select', ''));
+				$category = basename(request_var('category', ''));
+
+				$data = array();
+
+				if ($submit)
+				{
+					$delete = request_var('delete', '');
+
+					$var_ary = array(
+						'uploadurl'		=> (string) '',
+						'remotelink'	=> (string) '',
+						'width'			=> (string) '',
+						'height'		=> (string) '',
+					);
+
+					foreach ($var_ary as $var => $default)
+					{
+						$data[$var] = request_var($var, $default);
+					}
+
+					$var_ary = array(
+						'uploadurl'		=> array('string', true, 5, 255),
+						'remotelink'	=> array('string', true, 5, 255),
+						'width'			=> array('string', true, 1, 3),
+						'height'		=> array('string', true, 1, 3),
+					);
+
+					$error = validate_data($data, $var_ary);
+
+					if (!sizeof($error))
+					{
+						$data['user_id'] = $user_id;
+
+						if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
+						{
+							list($type, $filename, $width, $height) = avatar_upload($data, $error);
+						}
+						else if ($data['remotelink'] && $config['allow_avatar_remote'])
+						{
+							list($type, $filename, $width, $height) = avatar_remote($data, $error);
+						}
+						else if ($avatar_select && $config['allow_avatar_local'])
+						{
+							$type = AVATAR_GALLERY;
+							$filename = $avatar_select;
+							
+							// check avatar gallery
+							if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
+							{
+								$type = $width = $height = 0;
+								$filename = '';
+							}
+							else
+							{
+								list($width, $height) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $filename);
+								$filename = $category . '/' . $filename;
+							}
+						}
+						else if ($delete)
+						{
+							$filename = '';
+							$type = $width = $height = 0;
+						}
+					}
+
+					if (!sizeof($error))
+					{
+						// Do we actually have any data to update?
+						if (sizeof($data))
+						{
+							$sql_ary = array(
+								'user_avatar'			=> $filename,
+								'user_avatar_type'		=> $type,
+								'user_avatar_width'		=> $width,
+								'user_avatar_height'	=> $height,
+							);
+
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE user_id = ' . $user_id;
+							$db->sql_query($sql);
+
+							// Delete old avatar if present
+							if ($user_row['user_avatar'] && $filename != $user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
+							{
+								avatar_delete($user_row['user_avatar']);
+							}
+						}
+
+						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($u_action));
+					}
+
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+				}
+
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+
+				// Generate users avatar
+				if ($user_row['user_avatar'])
+				{
+					switch ($user_row['user_avatar_type'])
+					{
+						case AVATAR_UPLOAD:
+							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
+						break;
+				
+						case AVATAR_GALLERY:
+							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
+						break;
+					}
+					$avatar_img .= $user_row['user_avatar'];
+
+					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
+				}
+				else
+				{
+					$avatar_img = '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
+				}
+
+				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
+
+				if ($config['allow_avatar_local'] && $display_gallery)
+				{
+					avatar_gallery($category, $avatar_select, 4);
+				}
+
+				$template->assign_vars(array(
+					'S_AVATAR'			=> true,
+					'S_CAN_UPLOAD'		=> $can_upload,
+					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
+					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
+
+					'AVATAR_IMAGE'			=> $avatar_img,
+					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
+					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
+					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
+
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
+				);
+
+			break;
+
+			case 'sig':
+			
+				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+
+				$enable_html	= ($config['allow_sig_html']) ? request_var('enable_html', false) : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
+				$enable_urls	= request_var('enable_urls', true);
+				$signature		= request_var('signature', $user_row['user_sig']);
+				
+				$preview		= (isset($_POST['preview'])) ? true : false;
+
+				if ($submit || $preview)
+				{
+					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+					$message_parser = new parse_message($signature);
+
+					// Allowing Quote BBCode
+					$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
+						
+					if (sizeof($message_parser->warn_msg))
+					{
+						$error[] = implode('<br />', $message_parser->warn_msg);
+					}
+						
+					if (!sizeof($error) && $submit)
+					{
+						$sql_ary = array(
+							'user_sig'					=> (string) $message_parser->message, 
+							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+							'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
+						);
+
+						$sql = 'UPDATE ' . USERS_TABLE . ' 
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+							WHERE user_id = ' . $user_id;
+						$db->sql_query($sql);
+
+						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($u_action));
+					}
+	
+					// Replace "error" strings with their real, localised form
+					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+				}
+				
+				$signature_preview = '';
+				
+				if ($preview)
+				{
+					// Now parse it for displaying
+					$signature_preview = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+					unset($message_parser);
+				}
+
+				decode_message($signature, $user_row['user_sig_bbcode_uid']);
+
+				$template->assign_vars(array(
+					'S_SIGNATURE'		=> true,
+
+					'SIGNATURE'			=> $signature,
+					'SIGNATURE_PREVIEW'	=> $signature_preview,
+
+					'S_HTML_CHECKED' 		=> (!$enable_html) ? 'checked="checked"' : '',
+					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? 'checked="checked"' : '',
+					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
+					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
+
+					'HTML_STATUS'			=> ($config['allow_sig_html']) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . $phpbb_root_path . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
+					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
+					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
+
+					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+
+					'S_HTML_ALLOWED'		=> $config['allow_sig_html'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
+					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
+				);
+
+			break;
+
+			case 'attach':
+
+				$start		= request_var('start', 0);
+				$deletemark = (isset($_POST['delmarked'])) ? true : false;
+				$marked		= request_var('mark', array(0));
+
+				// Sort keys
+				$sort_key	= request_var('sk', 'a');
+				$sort_dir	= request_var('sd', 'd');
+
+				if ($deletemark && sizeof($marked))
+				{
+					if (confirm_box(true))
+					{
+						$sql = 'SELECT real_filename
+							FROM ' . ATTACHMENTS_TABLE . '
+							WHERE attach_id IN (' . implode(', ', $marked) . ')';
+						$result = $db->sql_query($sql);
+
+						$log_attachments = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$log_attachments[] = $row['real_filename'];
+						}
+						$db->sql_freeresult($result);
+
+						delete_attachments('attach', $marked);
+
+						$log = (sizeof($log_attachments) == 1) ? 'ATTACHMENT_DELETED' : 'ATTACHMENTS_DELETED';
+						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
+
+						add_log('admin', $log, implode(', ', $log_attachments));
+						trigger_error($message . adm_back_link($u_action));
+					}
+					else
+					{
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							'u'				=> $user_id,
+							'i'				=> $id,
+							'mode'			=> $mode,
+							'action'		=> $action,
+							'deletemark'	=> true,
+							'mark'			=> $marked))
+						);
+					}
+				}
+
+				$sk_text = array('a' => $user->lang['SORT_FILENAME'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
+				$sk_sql = array('a' => 'a.real_filename', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
+
+				$sd_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+
+				$s_sort_key = '';
+				foreach ($sk_text as $key => $value)
+				{
+					$selected = ($sort_key == $key) ? ' selected="selected"' : '';
+					$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+				}
+
+				$s_sort_dir = '';
+				foreach ($sd_text as $key => $value)
+				{
+					$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
+					$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
+				}
+
+				$order_by = $sk_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+
+				$sql = 'SELECT COUNT(*) as num_attachments
+					FROM ' . ATTACHMENTS_TABLE . "
+					WHERE poster_id = $user_id";
+				$result = $db->sql_query_limit($sql, 1);
+				$num_attachments = (int) $db->sql_fetchfield('num_attachments', false, $result);
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
+					FROM ' . ATTACHMENTS_TABLE . ' a 
+						LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id
+							AND a.in_message = 0)
+						LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id
+							AND a.in_message = 1)
+					WHERE a.poster_id = ' . $user_id . "
+					ORDER BY $order_by";
+				$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if ($row['in_message'])
+					{
+						$view_topic = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;p={$row['post_msg_id']}";
+					}
+					else
+					{
+						$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}";
+					}
+
+					$template->assign_block_vars('attach', array(
+						'REAL_FILENAME'		=> $row['real_filename'],
+						'COMMENT'			=> nl2br($row['comment']),
+						'EXTENSION'			=> $row['extension'],
+						'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
+						'DOWNLOAD_COUNT'	=> $row['download_count'],
+						'POST_TIME'			=> $user->format_date($row['filetime']),
+						'TOPIC_TITLE'		=> ($row['in_message']) ? $row['message_title'] : $row['topic_title'],
+
+						'ATTACH_ID'			=> $row['attach_id'],
+						'POST_ID'			=> $row['post_msg_id'],
+						'TOPIC_ID'			=> $row['topic_id'],
+				
+						'S_IN_MESSAGE'		=> $row['in_message'],
+
+						'U_DOWNLOAD'		=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'],
+						'U_VIEW_TOPIC'		=> $view_topic)
+					);
+				}
+				$db->sql_freeresult($result);
+		
+				$template->assign_vars(array(
+					'S_ATTACHMENTS'		=> true,
+					'S_ON_PAGE'			=> on_page($num_attachments, $config['topics_per_page'], $start),
+					'S_SORT_KEY'		=> $s_sort_key,
+					'S_SORT_DIR'		=> $s_sort_dir,
+
+					'PAGINATION'		=> generate_pagination($u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
+				);
 
 			break;
 		}

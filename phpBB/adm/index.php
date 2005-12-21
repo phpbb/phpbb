@@ -57,6 +57,7 @@ $user->theme['primary']['pagination_sep'] = '';
 
 // Set custom template for admin area
 $template->set_custom_template($phpbb_admin_path . 'style', 'admin');
+$template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 
 // Instantiate new module
 $module = new p_master();

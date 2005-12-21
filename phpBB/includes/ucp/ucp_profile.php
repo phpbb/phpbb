@@ -512,7 +512,8 @@ class ucp_profile
 							// check avatar gallery
 							if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
 							{
-								$type = $filename = $width = $height = '';
+								$filename = '';
+								$type = $width = $height = 0;
 							}
 							else
 							{

@@ -29,6 +29,8 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
+	
 	'BAN_SUCCESSFULL'		=> 'Ban entered successfully',
 
 	'CONFIRM_EMAIL_EXPLAIN'	=> 'You only need to specify this if you are changing the users email address.',
@@ -77,6 +79,7 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_MOVE_POSTS'			=> 'Move all posts',
 	'USER_ADMIN_SIG_REMOVED'		=> 'Successfully removed signature from user account',
 	'USER_ATTACHMENTS_REMOVED'		=> 'Successfully removed all attachments made by this user',
+	'USER_AVATAR_UPDATED'			=> 'Successfully updated user avatars details',
 	'USER_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
 	'USER_DELETED'					=> 'User deleted successfully',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated',
@@ -85,6 +88,7 @@ $lang = array_merge($lang, array(
 	'USER_PREFS_UPDATED'			=> 'User preferences updated',
 	'USER_PROFILE'					=> 'User Profile',
 	'USER_PROFILE_UPDATED'			=> 'User profile updated',
+	'USER_SIG_UPDATED'				=> 'User signature successfully updated',
 	'USER_TOOLS'					=> 'Basic tools',
 
 	'WARNINGS'				=> 'Warnings',
