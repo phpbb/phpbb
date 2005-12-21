@@ -69,11 +69,13 @@ p,ul,td {font-size:10pt;}
 <ul>
 <li>[Fix] corrected index on session keys table under MS SQL</li>
 <li>[Fix] added session keys table to backup</li>
+<li>[Fix] delete session keys entries when deleting user</li>
 <li>[Fix] changes to support MySQL 5.0</li>
 <li>[Fix] changes to some of the admin files to improve efficiency and remove a potential error condition when building the menu (cxib)</li>
 <li>[Fix] change truncation of username length in usercp_register.php - BFUK</li>
 <li>[Fix] incorrect path to avatars in admin_users.php (Bug #667)</li>
 <li>[Fix] fixed get_userdata to support correct sql escaping (non-mysql dbs) - jarnaez</li>
+<li>[Sec] fixed XSS issue in IE within the url bbcode</li>
 </ul>
 
 
