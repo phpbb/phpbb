@@ -121,7 +121,7 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <b>%s</b> has been deactivated and can no longer be displayed',
 
 	'FAQ'					=> 'FAQ',
-	'FAQ_DESC'				=> 'Frequently Asked Questions',
+	'FAQ_EXPLAIN'			=> 'Frequently Asked Questions',
 	'FILENAME'				=> 'Filename',
 	'FILESIZE'				=> 'Filesize',
 	'FILE_COMMENT'			=> 'File comment',
@@ -223,7 +223,7 @@ $lang = array_merge($lang, array(
 	'MB'				=> 'MB',
 	'MCP'				=> 'Moderator Control Panel',
 	'MEMBERLIST'		=> 'Members',
-	'MEMBERLIST_DESC'	=> 'View complete list of members',
+	'MEMBERLIST_EXPLAIN'	=> 'View complete list of members',
 	'MERGE_TOPIC'		=> 'Merge Topic',
 	'MESSAGE'			=> 'Message',
 	'MESSAGE_BODY'		=> 'Message body',
@@ -346,7 +346,7 @@ $lang = array_merge($lang, array(
 
 	'SEARCH'					=> 'Search',
 	'SEARCH_ADV'				=> 'Advanced Search',
-	'SEARCH_DESC'			=> 'Enter search keywords',
+	'SEARCH_KEYWORDS'			=> 'Enter search keywords',
 	'SEARCHING_FORUMS'			=> 'Searching forums',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a forum for destination',
 	'SEARCH_ACTIVE_TOPICS'		=> 'View active topics',
