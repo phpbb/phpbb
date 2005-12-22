@@ -343,8 +343,7 @@ class cache extends acm
 
 				$this->put('_' . $key . '_cfg', $parsed_array);
 			}
-
-			$parsed_items[$key] = &$parsed_array;
+			$parsed_items[$key] = $parsed_array;
 		}
 
 		return $parsed_items;
