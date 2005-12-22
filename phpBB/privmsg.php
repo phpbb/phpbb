@@ -35,8 +35,8 @@ if ( !empty($board_config['privmsg_disable']) )
 	message_die(GENERAL_MESSAGE, 'PM_disabled');
 }
 
-$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#');
-$html_entities_replace = array('&amp;', '&lt;', '&gt;');
+$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#');
+$html_entities_replace = array('&amp;', '&lt;', '&gt;', '&quot;');
 
 //
 // Parameters
