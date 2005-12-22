@@ -25,8 +25,8 @@ if (!defined('IN_PHPBB'))
 	die('Hacking attempt');
 }
 
-$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#');
-$html_entities_replace = array('&amp;', '&lt;', '&gt;');
+$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#', '#"#');
+$html_entities_replace = array('&amp;', '&lt;', '&gt;', '&quot;');
 
 $unhtml_specialchars_match = array('#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#');
 $unhtml_specialchars_replace = array('>', '<', '"', '&');

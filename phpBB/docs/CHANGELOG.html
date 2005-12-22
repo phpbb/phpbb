@@ -75,7 +75,8 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] change truncation of username length in usercp_register.php - BFUK</li>
 <li>[Fix] incorrect path to avatars in admin_users.php (Bug #667)</li>
 <li>[Fix] fixed get_userdata to support correct sql escaping (non-mysql dbs) - jarnaez</li>
-<li>[Sec] fixed XSS issue in IE within the url bbcode</li>
+<li>[Sec] fixed XSS issue (only valid for Internet Explorer) within the url bbcode</li>
+<li>[Sec] fixed XSS issue (only valid for Internet Explorer) if html tags are allowed and enabled</li>
 </ul>
 
 
