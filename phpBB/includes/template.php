@@ -38,7 +38,6 @@ class template
 	var $_tpldata = array();
 
 	// Root dir and hash of filenames for each template handle.
-	var $tpl = '';
 	var $root = '';
 	var $cachepath = '';
 	var $files = array();
@@ -61,17 +60,10 @@ class template
 	{
 		global $phpbb_root_path, $config, $user;
 
-		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template'))
+		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template'))
 		{
-			$this->tpl = 'primary';
-			$this->root = $phpbb_root_path . 'styles/' . $user->theme['primary']['template_path']. '/template';
-			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['primary']['template_path'] . '_';
-		}
-		else
-		{
-			$this->tpl = 'secondary';
-			$this->root = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path']. '/template';
-			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['secondary']['template_path'] . '_';
+			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path']. '/template';
+			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['template_path'] . '_';
 		}
 
 		$this->static_lang = $static_lang;
@@ -87,7 +79,6 @@ class template
 	{
 		global $phpbb_root_path;
 
-		$this->tpl = 'primary';
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . $template_name . '_';
 		
@@ -207,16 +198,10 @@ class template
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		if (!file_exists($this->files[$handle]) && !empty($user->theme['secondary']))
-		{
-			$this->tpl = 'secondary';
-			$this->files[$handle] = $phpbb_root_path . 'styles/' . $user->theme['secondary']['template_path'] . '/template/' . $this->filename[$handle];
-		}
-
-		if ($user->theme[$this->tpl]['template_storedb'])
+		if ($user->theme['template_storedb'])
 		{
 			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '
-				WHERE template_id = ' . $user->theme[$this->tpl]['template_id'] . "
+				WHERE template_id = ' . $user->theme['template_id'] . "
 					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
 						OR template_included LIKE '%" . $db->sql_escape($this->filename[$handle]) . ":%')";
 			$result = $db->sql_query($sql);
@@ -225,7 +210,7 @@ class template
 			{
 				do
 				{
-					if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme[$this->tpl]['template_path'] . '/template/' . $row['template_filename']))
+					if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
 						{

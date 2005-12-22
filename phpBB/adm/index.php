@@ -53,7 +53,8 @@ $file_uploads 	= (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads'
 $module_id		= request_var('i', '');
 $mode			= request_var('mode', '');
 
-$user->theme['primary']['pagination_sep'] = '';
+// Force pagination seperation for admin style
+$user->theme['pagination_sep'] = '';
 
 // Set custom template for admin area
 $template->set_custom_template($phpbb_admin_path . 'style', 'admin');

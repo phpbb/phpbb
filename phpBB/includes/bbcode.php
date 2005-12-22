@@ -103,20 +103,8 @@ class bbcode
 
 		if (empty($this->template_filename))
 		{
-			$style = 'primary';
-			if (!empty($user->theme['secondary']))
-			{
-				// If the primary style has custom templates for BBCodes then we'll make sure
-				// the bbcode.html file is present, otherwise we'll use the secondary style
-
-				if ($this->bbcode_bitfield & $user->theme['primary']['bbcode_bitfield'])
-				{
-					$style = (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/bbcode.html')) ? 'primary' : 'secondary';
-				}
-			}
-
-			$this->template_bitfield = $user->theme[$style]['bbcode_bitfield'];
-			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme[$style]['template_path'] . '/template/bbcode.html';
+			$this->template_bitfield = $user->theme['bbcode_bitfield'];
+			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
 		}
 
 		$sql = '';

@@ -305,6 +305,51 @@ class cache extends acm
 		return;
 	}
 
+	/**
+	* Obtain cfg file data
+	*/
+	function obtain_cfg_items($theme)
+	{
+		global $config, $phpbb_root_path;
+
+		$parsed_items = array(
+			'theme'		=> array(),
+			'template'	=> array(),
+			'imageset'	=> array()
+		);
+
+		foreach ($parsed_items as $key => $parsed_array)
+		{
+			$parsed_array = ($this->exists('_' . $key . '_cfg')) ? $this->get('_' . $key . '_cfg') : array();
+
+			$reparse = false;
+			$filename = $phpbb_root_path . 'styles/' . $theme[$key . '_path'] . '/' . $key . '/' . $key . '.cfg';
+		
+			if (!file_exists($filename))
+			{
+				continue;
+			}
+
+			if (!isset($parsed_array[$theme[$key . '_id']]) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
+			{
+				$reparse = true;
+			}
+		
+			// Re-parse cfg file
+			if ($reparse)
+			{
+				$parsed_array = parse_cfg_file($filename);
+				$parsed_array['filetime'] = @filemtime($filename);
+
+				$this->put('_' . $key . '_cfg', $parsed_array);
+			}
+
+			$parsed_items[$key] = &$parsed_array;
+		}
+
+		return $parsed_items;
+	}
+
 }
 
 ?>

@@ -702,7 +702,7 @@ class user extends session
 
 	function setup($lang_set = false, $style = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path;
+		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -773,72 +773,62 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 		}
 
-		// TODO: DISTINCT making problems with DBMS not able to distinct TEXT fields, test grouping
-		switch (SQL_LAYER)
-		{
-			case 'mssql':
-			case 'mssql_odbc':
-				$sql = 'SELECT s.style_id, t.*, c.*, i.*
-					FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
-					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
-						AND t.template_id = s.template_id
-						AND c.theme_id = s.theme_id
-						AND i.imageset_id = s.imageset_id
-					GROUP BY s.style_id';
-				break;
-
-			default:
-				$sql = 'SELECT s.style_id, t.*, c.*, i.*
-					FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
-					WHERE s.style_id IN ($style, " . $config['default_style'] . ')
-						AND t.template_id = s.template_id
-						AND c.theme_id = s.theme_id
-						AND i.imageset_id = s.imageset_id
-					GROUP BY s.style_id';
-				break;
-		}
+		$sql = 'SELECT s.style_id, t.*, c.*, i.*
+			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+			WHERE s.style_id = $style
+				AND t.template_id = s.template_id
+				AND c.theme_id = s.theme_id
+				AND i.imageset_id = s.imageset_id";
 		$result = $db->sql_query($sql, 3600);
+		$this->theme = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!$this->theme)
 		{
 			trigger_error('Could not get style data');
 		}
 
-		$this->theme = ($row2 = $db->sql_fetchrow($result)) ? array(
-			($style == $row['style_id']) ? 'primary' : 'secondary'	=> $row,
-			($style == $row2['style_id']) ? 'primary' : 'secondary'	=> $row2) : array('primary'	=> $row);
-		$db->sql_freeresult($result);
+		// Now parse the cfg file and cache it
+		$parsed_items = $cache->obtain_cfg_items($this->theme);
+		
+		// We are only interested in the theme configuration for now
+		$parsed_items = $parsed_items['theme'];
 
-		unset($row);
-		unset($row2);
+		$check_for = array(
+			'parse_css_file'	=> (int) 0,
+			'pagination_sep'	=> (string) ', '
+		);
 
-		// Add to template database
-		foreach (array_keys($this->theme) as $style_priority)
+		foreach ($check_for as $key => $default_value)
 		{
-			$this->theme[$style_priority]['pagination_sep'] = ', ';
+			$this->theme[$key] = (isset($parsed_items[$key]) && $parsed_items[$key]) ? $parsed_items[$key] : $default_value;
+			settype($this->theme[$key], gettype($default_value));
+
+			if (is_string($default_value))
+			{
+				$this->theme[$key] = htmlspecialchars($this->theme[$key]);
+			}
 		}
 
-		// TEMP
-		$this->theme['primary']['parse_css_file'] = false;
-		if (!$this->theme['primary']['theme_storedb'] && $this->theme['primary']['parse_css_file'])
+		if (!$this->theme['theme_storedb'] && $this->theme['parse_css_file'])
 		{
-			$this->theme['primary']['theme_storedb'] = 1;
+			$this->theme['theme_storedb'] = 1;
 
 			$sql_ary = array(
-				'theme_data'	=> implode('', file("{$phpbb_root_path}styles/" . $this->theme['primary']['theme_path'] . '/theme/stylesheet.css')),
+				'theme_data'	=> implode('', file("{$phpbb_root_path}styles/" . $this->theme['theme_path'] . '/theme/stylesheet.css')),
 				'theme_mtime'	=> time(),
 				'theme_storedb'	=> 1
 			);
 
 			$db->sql_query('UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE theme_id = ' . $this->theme['primary']['theme_id']);
+				WHERE theme_id = ' . $this->theme['theme_id']);
 
 			unset($sql_ary);
 		}
 
 		$template->set_template();
 
-		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		// Is board disabled and user not an admin or moderator?
 		// TODO
@@ -1015,7 +1005,7 @@ class user extends session
 
 		if (empty($imgs[$img . $suffix]) || $width !== false)
 		{
-			if (!isset($this->theme['primary'][$img]) || !$this->theme['primary'][$img])
+			if (!isset($this->theme[$img]) || !$this->theme[$img])
 			{
 				// Do not fill the image to let designers decide what to do if the image is empty
 				$imgs[$img . $suffix] = '';
@@ -1024,11 +1014,11 @@ class user extends session
 
 			if ($width === false)
 			{
-				list($imgsrc, $height, $width) = explode('*', $this->theme['primary'][$img]);
+				list($imgsrc, $height, $width) = explode('*', $this->theme[$img]);
 			}
 			else
 			{
-				list($imgsrc, $height) = explode('*', $this->theme['primary'][$img]);
+				list($imgsrc, $height) = explode('*', $this->theme[$img]);
 			}
 
 			if ($suffix !== '')
@@ -1036,7 +1026,7 @@ class user extends session
 				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
 			}
 
-			$imgs[$img . $suffix]['src'] = $phpbb_root_path . 'styles/' . $this->theme['primary']['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
+			$imgs[$img . $suffix]['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
 			$imgs[$img . $suffix]['width'] = $width;
 			$imgs[$img . $suffix]['height'] = $height;
 		}

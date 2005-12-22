@@ -507,7 +507,7 @@ function topic_generate_pagination($replies, $url)
 			}
 			else if ($times < $total_pages)
 			{
-				$pagination .= $user->theme['primary']['pagination_sep'];
+				$pagination .= $user->theme['pagination_sep'];
 			}
 			$times++;
 		}
@@ -674,15 +674,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		{
 			$attachment_tpl = array();
 
-			// Generate Template
-			$style = 'primary';
-
-			if (!empty($user->theme['secondary']))
-			{
-				$style = (file_exists($phpbb_root_path . 'styles/' . $user->theme['primary']['template_path'] . '/template/attachment.html')) ? 'primary' : 'secondary';
-			}
-
-			$template_filename = $phpbb_root_path . 'styles/' . $user->theme[$style]['template_path'] . '/template/attachment.html';
+			$template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/attachment.html';
 			if (!($fp = @fopen($template_filename, 'rb')))
 			{
 				trigger_error('Could not load template file "' . $template_filename . '"');

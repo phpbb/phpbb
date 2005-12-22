@@ -102,11 +102,11 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 		// Parse Theme Data
 		$replace = array(
 			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
-			'{T_TEMPLATE_PATH}'		=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
-			'{T_IMAGESET_PATH}'		=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
+			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
+			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
 			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user['user_lang'],
 			'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
-			'{S_USER_LANG}'			=> $user['user_lang']
+			'{S_USER_LANG}'				=> $user['user_lang']
 		);
 
 		$theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $theme['theme_data']);

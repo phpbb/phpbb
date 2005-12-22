@@ -897,7 +897,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 {
 	global $template, $user;
 
-	$seperator = $user->theme['primary']['pagination_sep'];
+	$seperator = $user->theme['pagination_sep'];
 
 	$total_pages = ceil($num_items/$per_page);
 
@@ -1479,6 +1479,47 @@ function build_hidden_fields($field_ary)
 }
 
 /**
+* Parse cfg file
+*/
+function parse_cfg_file($filename)
+{
+	$parsed_items = array();
+
+	$lines = file($filename);
+
+	foreach ($lines as $line)
+	{
+		$line = trim($line);
+
+		if (!$line || $line{0} == '#' || ($delim_pos = strpos($line, '=')) === false)
+		{
+			continue;
+		}
+
+		// Determine first occurrence, since in values the equal sign is allowed
+		$key = strtolower(trim(substr($line, 0, $delim_pos)));
+		$value = trim(substr($line, $delim_pos + 1));
+
+		if (in_array($value, array('off', 'false', '0')))
+		{
+			$value = false;
+		}
+		else if (in_array($value, array('on', 'true', '1')))
+		{
+			$value = true;
+		}
+		else if (($value{0} == "'" && $value{sizeof($value)-1} == "'") || ($value{0} == '"' && $value{sizeof($value)-1} == '"'))
+		{
+			$value = substr($value, 1, sizeof($value)-2);
+		}
+	
+		$parsed_items[$key] = $value;
+	}
+	
+	return $parsed_items;
+}
+
+/**
 * Error and message handler, call with trigger_error if reqd
 */
 function msg_handler($errno, $msg_text, $errfile, $errline)
@@ -1863,19 +1904,19 @@ function page_header($page_title = '')
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 
-		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['template_path'] . '/template',
-		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset',
-		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['primary']['imageset_path'] . '/imageset/' . $user->data['user_lang'],
+		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
+		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
+		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['primary']['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['primary']['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['primary']['style_id'],
-		'T_STYLESHEET_NAME'		=> $user->theme['primary']['theme_name'],
-		'T_THEME_DATA'			=> (!$user->theme['primary']['theme_storedb']) ? '' : $user->theme['primary']['theme_data'])
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'],
+		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+		'T_THEME_DATA'			=> (!$user->theme['theme_storedb']) ? '' : $user->theme['theme_data'])
 	);
 
 	if ($config['send_encoding'])
