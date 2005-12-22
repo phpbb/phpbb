@@ -801,7 +801,7 @@ class user extends session
 
 		foreach ($check_for as $key => $default_value)
 		{
-			$this->theme[$key] = (isset($parsed_items[$key]) && $parsed_items[$key]) ? $parsed_items[$key] : $default_value;
+			$this->theme[$key] = (isset($parsed_items[$key])) ? $parsed_items[$key] : $default_value;
 			settype($this->theme[$key], gettype($default_value));
 
 			if (is_string($default_value))
