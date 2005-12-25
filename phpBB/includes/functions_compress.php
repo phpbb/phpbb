@@ -159,7 +159,7 @@ class compress_zip extends compress
 	function extract($dst)
 	{		
 		// Loop the file, looking for files and folders
-		$ddTry = false;
+		$dd_try = false;
 		fseek($this->fp, 0);
 
 		while (true)
@@ -197,31 +197,36 @@ class compress_zip extends compress
 						'uc_size'	=> $file['uc_size'][1],
 						'offset'	=> $file['offset']
 					);
-					break;
+				break;
+
 				case "\x50\x4b\x01\x02":
 					fread($this->fp, 24);
 					fread($this->fp, 12 + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))));
-					break;
+				break;
+				
 				// We safely end the loop as we are totally finished with looking for files and folders
 				case "\x50\x4b\x05\x06":
-					break 2;
+				break 2;
+				
 				// Look for the next signature...
 				case 'PK00':
-					continue 2;
+				continue 2;
+				
 				// We have encountered a header that is weird. Lets look for better data...
 				default:
-					if(!$ddTry)
+					if (!$dd_try)
 					{
 						// Unexpected header. Trying to detect wrong placed 'Data Descriptor';
-						$ddTry = true;
+						$dd_try = true;
 						fseek($this->fp, 8, SEEK_CUR); // Jump over 'crc-32'(4) 'compressed-size'(4), 'uncompressed-size'(4)
 						continue 2;
 					}
 					trigger_error("Unexpected header, ending loop");
 					break 2;
 			}
-			$ddTry = false;
+			$dd_try = false;
 		}
+		
 		if (sizeof($seek_ary))
 		{
 			foreach ($seek_ary as $filename => $trash)
@@ -232,10 +237,12 @@ class compress_zip extends compress
 				{
 					$str = '';
 					$folders = explode('/', $dirname);
+
 					// Create and folders and subfolders if they do not exist
 					foreach ($folders as $folder)
 					{
 						$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+					
 						if(!is_dir("$dst$str"))
 						{
 							if (!@mkdir("$dst$str", 0777))
@@ -247,7 +254,7 @@ class compress_zip extends compress
 					}
 				}
 
-				if(substr($filename, -1, 1) == '/')
+				if (substr($filename, -1, 1) == '/')
 				{
 					continue;
 				}
@@ -255,7 +262,7 @@ class compress_zip extends compress
 				$target_filename = "$dst$filename";
 				$fdetails = &$seek_ary[$filename];
 
-				if(!$fdetails['uc_size'])
+				if (!$fdetails['uc_size'])
 				{
 					$fp = fopen($target_filename, "w");
 					fwrite($fp, '');
@@ -265,20 +272,22 @@ class compress_zip extends compress
 				fseek($this->fp, $fdetails['offset']);
 				$mode = $fdetails['c_method'];
 				$content = fread($this->fp, $fdetails['c_size']);
-				switch($mode)
+
+				switch ($mode)
 				{
 					case 0:
 						// Not compressed
 						$fp = fopen($target_filename, "w");
 						fwrite($fp, $content);
 						fclose($fp);
-						break;
+					break;
+				
 					case 8:
 						// Deflate
 						$fp = fopen($target_filename, "w");
 						fwrite($fp, gzinflate($content, $fdetails['uc_size']));
 						fclose($fp);
-						break;
+					break;
 				}
 			}
 		}
@@ -623,19 +632,19 @@ class compress_tar extends compress
 		{
 			case 'tar':
 				$mimetype = 'application/x-tar';
-				break;
+			break;
 
 			case 'tar.gz':
 				$mimetype = 'application/x-gzip';
-				break;
+			break;
 
 			case 'tar.bz2':
 				$mimetype = 'application/x-bzip2';
-				break;
+			break;
 
 			default:
 				$mimetype = 'application/octet-stream';
-				break;
+			break;
 		}
 
 		header('Pragma: no-cache');
