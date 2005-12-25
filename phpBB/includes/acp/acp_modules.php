@@ -573,7 +573,7 @@ class acp_modules
 			while ($file = readdir($dh))
 			{
 				// Is module?
-				if (strpos($file, $this->module_class . '_') === 0)
+				if (preg_match('/^' . $this->module_class . '_.+\.' . $phpEx . '$/', $file))
 				{
 					$class = str_replace(".$phpEx", '', $file) . '_info';
 

@@ -69,7 +69,6 @@ class p_master
 			$sql = 'SELECT *
 				FROM ' . MODULES_TABLE . "
 				WHERE module_class = '" . $db->sql_escape($p_class) . "'
-					AND module_enabled = 1
 				ORDER BY left_id ASC";
 			$result = $db->sql_query($sql);
 			
@@ -101,7 +100,7 @@ class p_master
 		}
 
 		$right = $depth = $i = 0;
-		$depth_ary = array();
+		$depth_ary = $disable = array();
 
 		foreach ($this->module_cache['modules'] as $row)
 		{
@@ -124,6 +123,30 @@ class p_master
 			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
 			{
 				continue;
+			}
+
+			// Not enabled?
+			if (!$row['module_enabled'])
+			{
+				// If category is disabled then disable every child too
+				if (!$row['module_name'])
+				{
+					$disable['left_id'] = $row['left_id'];
+					$disable['right_id'] = $row['right_id'];
+				}
+				
+				continue;
+			}
+			
+			if (sizeof($disable))
+			{
+				if ($row['left_id'] > $disable['left_id'] && $row['left_id'] < $disable['right_id'] && 
+					$row['right_id'] > $disable['left_id'] && $row['right_id'] < $disable['right_id'])
+				{
+					continue;
+				}
+
+				$disable = array();
 			}
 
 			if ($row['left_id'] < $right)
