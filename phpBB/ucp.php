@@ -60,7 +60,7 @@ switch ($mode)
 		}
 
 		$module->load('ucp', 'register');
-		$module->display($user->lang['UCP_REGISTER']);
+		$module->display($user->lang['REGISTER']);
 	break;
 
 	case 'confirm':

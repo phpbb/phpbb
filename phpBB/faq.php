@@ -89,13 +89,13 @@ for ($i = 0, $size = sizeof($help_block); $i < $size; $i++)
 				'FAQ_QUESTION' => $help_block[$i][$j]['question'],
 				'FAQ_ANSWER' => $help_block[$i][$j]['answer'],
 
-				'U_FAQ_ID' => $help_block[$i][$j]['id'])
+				'U_FAQ_ID' => 'f'.$help_block[$i][$j]['id'])
 			);
 
 			$template->assign_block_vars('faq_block_link.faq_row_link', array(
 				'FAQ_LINK' => $help_block[$i][$j]['question'],
 
-				'U_FAQ_LINK' => '#' . $help_block[$i][$j]['id'])
+				'U_FAQ_LINK' => '#f' . $help_block[$i][$j]['id'])
 			);
 		}
 	}
