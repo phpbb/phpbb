@@ -1233,7 +1233,7 @@ CREATE TABLE phpbb_users_passwd (
   user_id INT4 DEFAULT '0' NOT NULL,
   passwd_time INT4 DEFAULT '0' NOT NULL, 
   passwd varchar(32) DEFAULT '' NOT NULL,
-  PRIMARY KEY (user_id),
+  PRIMARY KEY (user_id)
 );
 
 CREATE INDEX passwd_time_phpbb_users_passwd_index ON phpbb_users_passwd (passwd_time);
