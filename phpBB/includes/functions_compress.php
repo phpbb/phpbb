@@ -52,7 +52,7 @@ class compress
 
 			if ($src_path)
 			{
-				$this->data($src_path, '', true, stat("$phpbb_root_path$src_path"));
+				$this->data($src_path, '', true, stat("$phpbb_root_path$src"));
 			}
 
 			foreach ($filelist as $path => $file_ary)
@@ -63,7 +63,7 @@ class compress
 					$path = (substr($path, 0, 1) == '/') ? substr($path, 1) : $path;
 					$path = ($path && substr($path, -1) != '/') ? $path . '/' : $path;
 
-					$this->data("$src_path$path", '', true, stat("$phpbb_root_path$src_path$path"));
+					$this->data("$src_path$path", '', true, stat("$phpbb_root_path$src$path"));
 				}
 
 				foreach ($file_ary as $file)
@@ -73,7 +73,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", implode('', file("$phpbb_root_path$src_path$path$file")), false, stat("$phpbb_root_path$src_path$path$file"));
+					$this->data("$src_path$path$file", implode('', file("$phpbb_root_path$src$path$file")), false, stat("$phpbb_root_path$src$path$file"));
 				}
 			}
 
@@ -243,7 +243,7 @@ class compress_zip extends compress
 					{
 						$str = (!empty($str)) ? $str . '/' . $folder : $folder;
 					
-						if(!is_dir("$dst$str"))
+						if (!is_dir("$dst$str"))
 						{
 							if (!@mkdir("$dst$str", 0777))
 							{
