@@ -352,7 +352,7 @@ class template
 	* alter_block_array('loop', $vararray, 2); // Insert vararray at position 2
 	* alter_block_array('loop', $vararray, array('KEY' => 'value')); // Insert vararray at the position where the key 'KEY' has the value of 'value' 
 	* alter_block_array('loop', $vararray, false); // Insert vararray at first position
-	* alter_block_array('loop', $vararray, true); //Insert vararray at last position (assign_block_vars equivalence)
+	* alter_block_array('loop', $vararray, true); // Insert vararray at last position (assign_block_vars equivalence)
 	*
 	* alter_block_array('loop', $vararray, 2, 'change'); // Change/Merge vararray with existing array at position 2
 	* alter_block_array('loop', $vararray, array('KEY' => 'value'), 'change'); // Change/Merge vararray with existing array at the position where the key 'KEY' has the value of 'value' 
@@ -395,7 +395,7 @@ class template
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
-			$key = ($key === false) ? 0 : sizeof($this->_tpldata[$blockname])-1;
+			$key = ($key === false) ? 0 : sizeof($this->_tpldata[$blockname]);
 		}
 
 		// Get correct position if array given
@@ -425,11 +425,18 @@ class template
 		if ($mode == 'insert')
 		{
 			// Make sure we are not exceeding the last iteration
-			if ($key > sizeof($this->_tpldata[$blockname]))
+			if ($key >= sizeof($this->_tpldata[$blockname]))
 			{
 				$key = sizeof($this->_tpldata[$blockname]);
+				unset($this->_tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
+				$vararray['S_LAST_ROW'] = true;
 			}
-						
+			else if ($key === 0)
+			{
+				unset($this->_tpldata[$blockname][0]['S_FIRST_ROW']);
+				$vararray['S_FIRST_ROW'] = true;
+			}
+
 			// Re-position template blocks
 			for ($i = sizeof($this->_tpldata[$blockname]); $i > $key; $i--)
 			{
@@ -447,6 +454,11 @@ class template
 		// Which block to change?
 		if ($mode == 'change')
 		{
+			if ($key == sizeof($this->_tpldata[$blockname]))
+			{
+				$key--;
+			}
+
 			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], &$vararray);
 			return true;
 		}
