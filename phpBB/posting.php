@@ -1070,7 +1070,7 @@ $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_up
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
 	'L_POST_A'				=> $page_title,
-	'L_ICON'				=> ($mode == 'reply' || $mode == 'quote') ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
+	'L_ICON'				=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $topic_first_post_id)) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
 	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 	'FORUM_NAME' 			=> $forum_name,
