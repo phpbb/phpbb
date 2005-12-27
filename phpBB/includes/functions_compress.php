@@ -39,7 +39,7 @@ class compress
 			$data = fread($fp, filesize("$phpbb_root_path$src"));
 			fclose($fp);
 
-			$this->data($src_path, $data, filemtime("$phpbb_root_path$src"), false);
+			$this->data($src_path, $data, false, stat("$phpbb_root_path$src"));
 		}
 		else if (is_dir($phpbb_root_path . $src))
 		{
@@ -52,7 +52,7 @@ class compress
 
 			if ($src_path)
 			{
-				$this->data($src_path, '', $mtime, true, stat("$phpbb_root_path$src_path"));
+				$this->data($src_path, '', true, stat("$phpbb_root_path$src_path"));
 			}
 
 			foreach ($filelist as $path => $file_ary)
