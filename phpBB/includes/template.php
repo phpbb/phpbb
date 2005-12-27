@@ -99,7 +99,6 @@ class template
 			return false;
 		}
 
-		$template_names = '';
 		foreach ($filename_array as $handle => $filename)
 		{
 			if (empty($filename))
