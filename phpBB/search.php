@@ -528,9 +528,7 @@ if ($keywords || $author || $search_id || $search_session_id)
 
 				if ($hilit)
 				{
-					// This was shamelessly 'borrowed' from volker at multiartstudio dot de
-					// via php.net's annotated manual
-					$row['post_text'] = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . str_replace('\\', '\\\\', $hilit) . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $row['post_text'] . '<'), 1, -1));
+					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">\1</span>', $row['post_text']);
 				}
 
 				$row['post_text'] = smiley_text($row['post_text']);

@@ -1171,9 +1171,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
-		// This was shamelessly 'borrowed' from volker at multiartstudio dot de
-		// via php.net's annotated manual
-		$message = str_replace('\"', '"', substr(preg_replace('#(\>(((?>([^><]+|(?R)))*)\<))#se', "preg_replace('#\b(" . str_replace('\\', '\\\\', addslashes($highlight_match)) . ")\b#i', '<span class=\"posthilit\">\\\\1</span>', '\\0')", '>' . $message . '<'), 1, -1));
+		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">\1</span>', $message);
 	}
 
 	if ($row['enable_html'] && $auth->acl_get('f_html', $forum_id))
