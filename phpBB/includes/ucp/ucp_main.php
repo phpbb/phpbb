@@ -413,7 +413,7 @@ class ucp_main
 
 				$sql = "SELECT t.* $sql_f_select $sql_t_select 
 					FROM (" . TOPICS_TABLE . ' t, ' . TOPICS_WATCH_TABLE . " tw
-					$sql_join
+					$sql_join )
 					WHERE tw.user_id = " . $user->data['user_id'] . '
 						AND t.topic_id = tw.topic_id 
 					ORDER BY t.topic_last_post_time DESC';
