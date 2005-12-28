@@ -193,7 +193,6 @@ class template_compile
 		for ($i = 0, $size = sizeof($text_blocks); $i < $size; $i++)
 		{
 			$trim_check_text = trim($text_blocks[$i]);
-			$trim_check_block = trim($compile_blocks[$i]);
 			$template_php .= (!$no_echo) ? ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 

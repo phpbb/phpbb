@@ -44,6 +44,10 @@ class acp_modules
 		{
 			$user->add_lang('ucp');
 		}
+		else if ($this->module_class == 'mcp')
+		{
+			$user->add_lang('mcp');
+		}
 
 		$this->page_title = strtoupper($this->module_class);
 

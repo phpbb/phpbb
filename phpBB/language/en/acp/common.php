@@ -73,6 +73,7 @@ $lang = array_merge($lang, array(
 	'ACP_GROUPS_MANAGEMENT'		=> 'Group Management',
 	'ACP_ICONS'					=> 'Topic Icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
+	'ACP_IMAGESETS'				=> 'Imagesets',
 	'ACP_INDEX'					=> 'Admin index',
 	'ACP_JABBER_SETTINGS'		=> 'Jabber Settings',
 	'ACP_LANGUAGE'				=> 'Language Management',
@@ -99,7 +100,11 @@ $lang = array_merge($lang, array(
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
 	'ACP_SMILIES'				=> 'Smilies',
+	'ACP_STYLE_COMPONENTS'		=> 'Style Components',
 	'ACP_STYLE_MANAGEMENT'		=> 'Style Management',
+	'ACP_STYLES'				=> 'Styles',
+	'ACP_TEMPLATES'				=> 'Templates',
+	'ACP_THEMES'				=> 'Themes',
 	'ACP_USER_ATTACH'			=> 'Attachments',
 	'ACP_USER_AVATAR'			=> 'Avatar',
 	'ACP_USER_FEEDBACK'			=> 'Feedback',
@@ -126,15 +131,19 @@ $lang = array_merge($lang, array(
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully',
 	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
 
-	'DEACTIVATE'			=> 'Deactivate',
-	'DIMENSIONS'			=> 'Dimensions',
-	'DISABLE'				=> 'Disable',
-	'DISPLAY'				=> 'Display',
-	'DOWNLOAD'				=> 'Download',
-	'DOWNLOAD_AS'			=> 'Download as',
+	'DEACTIVATE'				=> 'Deactivate',
+	'DIMENSIONS'				=> 'Dimensions',
+	'DISABLE'					=> 'Disable',
+	'DISPLAY'					=> 'Display',
+	'DOWNLOAD'					=> 'Download',
+	'DOWNLOAD_AS'				=> 'Download as',
+	'DOWNLOAD_STORE'			=> 'Download or Store file',
+	'DOWNLOAD_STORE_EXPLAIN'	=> 'You may directly download the file or save it in your store/ folder.',
 
 	'EDIT'					=> 'Edit',
 	'ENABLE'				=> 'Enable',
+	'EXPORT_DOWNLOAD'		=> 'Download',
+	'EXPORT_STORE'			=> 'Store',
 
 	'FORUM_INDEX'			=> 'Forum Index',
 
@@ -322,6 +331,10 @@ $lang = array_merge($lang, array(
 	'LOG_USERS_APPROVED'	=> '<b>Users approved in usergroup</b> %s<br />&#187; %s',
 	'LOG_USERS_ADDED'		=> '<b>Added new members to usergroup</b> %s<br />&#187; %s',
 
+	'LOG_IMAGESET_DELETE'		=> '<b>Deleted imageset</b><br />&#187; %s',
+	'LOG_IMAGESET_EDIT_DETAILS'	=> '<b>Edited imageset details</b><br />&#187; %s',
+	'LOG_IMAGESET_EXPORT'		=> '<b>Exported imageset</b><br />&#187; %s',
+
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
@@ -361,6 +374,18 @@ $lang = array_merge($lang, array(
 	'LOG_RESET_ONLINE'		=> '<b>Most users online reset</b>',
 	'LOG_RESYNC_POSTCOUNTS'	=> '<b>User postcounts synced</b>',
 	'LOG_RESYNC_STATS'		=> '<b>Post, topic and user stats reset</b>',
+
+	'LOG_STYLE_DELETE'			=> '<b>Deleted style</b><br />&#187; %s',
+	'LOG_STYLE_EDIT_DETAILS'	=> '<b>Edited style</b><br />&#187; %s',
+	'LOG_STYLE_EXPORT'			=> '<b>Exported style</b><br />&#187; %s',
+
+	'LOG_TEMPLATE_DELETE'		=> '<b>Deleted template set</b><br />&#187; %s',
+	'LOG_TEMPLATE_EDIT_DETAILS'	=> '<b>Edited template details</b><br />&#187; %s',
+	'LOG_TEMPLATE_EXPORT'		=> '<b>Exported template set</b><br />&#187; %s',
+	
+	'LOG_THEME_DELETE'			=> '<b>Theme deleted</b><br />&#187; %s',
+	'LOG_THEME_EDIT_DETAILS'	=> '<b>Edited theme details</b><br />&#187; %s',
+	'LOG_THEME_EXPORT'			=> '<b>Exported theme</b><br />&#187; %s',
 
 	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s',
 	'LOG_USER_BAN_USER'		=> '<b>Banned User via user management</b> for reason "<i>%s</i>"<br />&#187; %s',

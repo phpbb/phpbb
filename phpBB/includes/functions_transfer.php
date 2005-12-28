@@ -55,7 +55,7 @@ class transfer
 		// temporary files or have write access on a folder within phpBB
 		// like the cache folder.  If the user can't do either, then
 		// he/she needs to use the fsock ftp method
-		$temp_name = tempnam($this->tmp_path, 'ftp_');
+		$temp_name = tempnam($this->tmp_path, 'transfer_');
 		@unlink($temp_name);
 
 		$fp = @fopen($temp_name, 'w');
@@ -182,6 +182,21 @@ class transfer
 	function close_session()
 	{
 		return $this->_close();
+	}
+
+	/**
+	* Determine methods able to be used
+	*/
+	function methods()
+	{
+		$methods = array();
+
+		if (@extension_loaded('ftp'))
+		{
+			$methods[] = 'ftp';
+		}
+
+		return $methods;
 	}
 }
 

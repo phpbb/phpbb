@@ -1204,7 +1204,7 @@ CREATE TABLE phpbb_sessions (
   session_start number(11) DEFAULT '0' NOT NULL,
   session_time number(11) DEFAULT '0' NOT NULL,
   session_ip varchar2(40) DEFAULT '0',
-  session_browser varchar2(100) DEFAULT '',
+  session_browser varchar2(150) DEFAULT '',
   session_page varchar2(100) DEFAULT '',
   session_viewonline number(1) DEFAULT '1' NOT NULL,
   session_admin number(1) DEFAULT '0' NOT NULL,

@@ -509,7 +509,7 @@ CREATE TABLE phpbb_sessions (
   session_start INTEGER DEFAULT 0  NOT NULL,
   session_time INTEGER DEFAULT 0  NOT NULL,
   session_ip VARCHAR(40) DEFAULT '0'  NOT NULL,
-  session_browser VARCHAR(100),
+  session_browser VARCHAR(150),
   session_page VARCHAR(100) NOT NULL,
   session_viewonline INTEGER DEFAULT 1  NOT NULL,
   session_admin INTEGER DEFAULT 0  NOT NULL

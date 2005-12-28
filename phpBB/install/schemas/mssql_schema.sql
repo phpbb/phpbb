@@ -514,7 +514,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_start] [int] NOT NULL ,
 	[session_time] [int] NOT NULL ,
 	[session_ip] [varchar] (40) NOT NULL ,
-	[session_browser] [varchar] (100) NULL ,
+	[session_browser] [varchar] (150) NULL ,
 	[session_page] [varchar] (100) NOT NULL ,
 	[session_viewonline] [int] NOT NULL ,
 	[session_admin] [int] NOT NULL 

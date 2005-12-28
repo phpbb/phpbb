@@ -1,0 +1,218 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_DELETE -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+	
+	<fieldset>
+		<legend>{L_TITLE}</legend>
+	<dl>
+		<dt><label>{L_NAME}:</label></dt>
+		<dd><b>{NAME}</b></dd>
+	</dl>
+	<dl>
+		<dt><label for="new_id">{L_REPLACE}:</label><br /><span>{L_REPLACE_EXPLAIN}</span></dt>
+		<dd><select name="new_id">{S_REPLACE_OPTIONS}</select></dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_EXPORT -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<!-- IF S_ERROR_MSG -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+	
+	<fieldset>
+		<legend>{L_TITLE}</legend>
+	<dl>
+		<dt><label>{L_NAME}:</label></dt>
+		<dd><b>{NAME}</b></dd>
+	</dl>
+	<!-- IF S_STYLE -->
+	<dl>
+		<dt><label for="inc_template">{L_INCLUDE_TEMPLATE}:</label></dt>
+		<dd><input type="radio" id="inc_template" name="inc_template" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" name="inc_template" value="0" />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl>
+		<dt><label for="inc_theme">{L_INCLUDE_THEME}:</label></dt>
+		<dd><input type="radio" id="inc_theme" name="inc_theme" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" name="inc_theme" value="0" />&nbsp; {L_NO}</dd>
+	</dl>
+	<dl>
+		<dt><label for="inc_imageset">{L_INCLUDE_IMAGESET}:</label></dt>
+		<dd><input type="radio" id="inc_imageset" name="inc_imageset" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" name="inc_imageset" value="0" />&nbsp; {L_NO}</dd>
+	</dl>
+	<!-- ENDIF -->
+	<dl>
+		<dt><label for="store">{L_DOWNLOAD_STORE}:</label><br /><span>{L_DOWNLOAD_STORE_EXPLAIN}</span></dt>
+		<dd><input type="radio" id="store" name="store" value="1" checked="checked" />&nbsp; {L_EXPORT_STORE} &nbsp;<input type="radio" name="store" value="0" />&nbsp; {L_EXPORT_DOWNLOAD}</dd>
+	</dl>
+	<dl>
+		<dt><label for="format">{L_ARCHIVE_FORMAT}:</label></dt>
+		<dd>{FORMAT_BUTTONS}</dd>
+	</dl>
+	</fieldset>
+	
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_FRONTEND -->
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<!-- IF S_STYLE --> <!-- DEFINE $COLSPAN = 4 --> <!-- ELSE --> <!-- DEFINE $COLSPAN = 3 --> <!-- ENDIF -->
+	
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+	
+	<table cellspacing="1">
+		<col class="row1" /><!-- IF S_STYLE --><col class="row1" /><!-- ENDIF --><col class="row2" />
+	<thead>
+	<tr>
+		<th>{L_NAME}</th>
+		<!-- IF S_STYLE --><th>{L_STYLE_USED_BY}</th><!-- ENDIF -->
+		<th>{L_OPTIONS}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td class="row3" colspan="{$COLSPAN}"><b>{L_INSTALLED}</b></td>
+	</tr>
+	<!-- BEGIN installed -->
+	<tr>
+		<td><a href="{installed.U_EDIT}">{installed.NAME}</a><!-- IF installed.S_DEFAULT_STYLE --> *<!-- ENDIF --></td>
+		<!-- IF S_STYLE -->
+			<td style="text-align: center;">{installed.STYLE_COUNT}</td>
+		<!-- ENDIF -->
+		<td style="text-align: center;">
+			<!-- IF S_STYLE -->
+				<a href="{installed.U_STYLE_ACT_DEACT}">{installed.L_STYLE_ACT_DEACT}</a> |
+			<!-- ENDIF -->
+			{installed.S_OPTIONS} | <a href="{installed.U_PREVIEW}" target="_preview">{L_PREVIEW}</a>
+		</td>
+	<!-- END installed -->
+	<tr>
+		<td class="row3" colspan="{$COLSPAN}"><b>{L_UNINSTALLED}</b></td>
+	</tr>
+	<!-- IF not .uninstalled -->
+	<tr>
+		<td class="row1" colspan="{$COLSPAN}" style="text-align: center;">{L_NO_UNINSTALLED}</td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- BEGIN uninstalled -->
+	<tr>
+		<td<!-- IF S_STYLE --> colspan="2"<!-- ENDIF -->>{uninstalled.NAME}<br /><b class="small">{L_COPYRIGHT}: {uninstalled.COPYRIGHT}</b></td>
+		<td style="text-align: center;"><a href="{uninstalled.U_INSTALL}">{L_INSTALL}</a></td>
+	</tr>
+	<!-- END uninstalled -->
+	</tbody>
+	</table>
+
+	<fieldset class="quick">
+		{L_CREATE}: <input type="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_DETAILS -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<!-- IF S_ERROR_MSG -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_TITLE}</legend>
+	<dl>
+		<dt><label for="name">{L_NAME}:</label></dt>
+		<dd><input type="text" id="name" name="name" value="{NAME}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="copyright">{L_COPYRIGHT}:</label></dt>
+		<dd><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /></dd>
+	</dl>
+	<!-- IF S_STYLE -->
+		<dl>
+			<dt><label for="template_id">{L_STYLE_TEMPLATE}:</label></dt>
+			<dd><select id="template_id" name="template_id">{S_TEMPLATE_OPTIONS}</select></dd>
+		</dl>
+		<dl>
+			<dt><label for="theme_id">{L_STYLE_THEME}:</label></dt>
+			<dd><select id="theme_id" name="theme_id">{S_THEME_OPTIONS}</select></dd>
+		</dl>
+		<dl>
+			<dt><label for="imageset_id">{L_STYLE_IMAGESET}:</label></dt>
+			<dd><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select></dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_TEMPLATE or S_THEME -->
+		<dl>
+			<dt><label for="store_db">{L_LOCATION}:</label><br /><span>{L_LOCATION_EXPLAIN}</span></dt>
+			<dd><input type="radio" name="store_db" value="0"<!-- IF not S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> />&nbsp; {L_STORE_FILESYSTEM} &nbsp;<input type="radio" name="store_db" value="1"<!-- IF S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> />&nbsp; {L_STORE_DATABASE}</dd>
+		</dl>
+	<!-- ENDIF -->
+	<!-- IF S_STYLE -->
+		</fieldset>
+
+		<fieldset>
+			<legend>{L_OPTIONS}</legend>
+		<dl>
+			<dt><label for="style_active">{L_STYLE_ACTIVE}:</label></dt>
+			<dd><input type="radio" name="style_active" value="1"<!-- IF S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="style_active" value="0"<!-- IF not S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+		</dl>
+		<!-- IF not S_STYLE_DEFAULT -->
+			<dl>
+				<dt><label for="style_default">{L_STYLE_DEFAULT}:</label></dt>
+				<dd><input type="radio" name="style_default" value="1" />&nbsp; {L_YES} &nbsp;<input type="radio" id="style_default" name="style_default" value="0" checked="checked" />&nbsp; {L_NO}</dd>
+			</dl>
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

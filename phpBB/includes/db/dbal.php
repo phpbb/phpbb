@@ -255,7 +255,7 @@ class dbal
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
 				echo '
-					<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'adm/subSilver.css" type="text/css">
+					<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'adm/style/sql_report.css" type="text/css">
 					<style type="text/css">	th { background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic3.gif\') }	td.cat	{ background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic1.gif\') } </style>
 					<title>Explain</title></head><body>
 					<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>

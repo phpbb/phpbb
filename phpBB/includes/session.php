@@ -105,8 +105,8 @@ class session
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
-				$s_browser = ($config['browser_check']) ? $this->data['session_browser'] : '';
-				$u_browser = ($config['browser_check']) ? $this->browser : '';
+				$s_browser = ($config['browser_check']) ? substr($this->data['session_browser'], 0, 149) : '';
+				$u_browser = ($config['browser_check']) ? substr($this->browser, 0, 149) : '';
 
 				if ($u_ip == $s_ip && $s_browser == $u_browser)
 				{
@@ -312,6 +312,7 @@ class session
 
 		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+
 		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
 			// Limit new sessions in 1 minute period (if required)
@@ -666,7 +667,7 @@ class session
 			);
 		}
 		
-		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . ' AND key_id = "' . $db->sql_escape($key) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . ' AND key_id = "' . $db->sql_escape(md5($key)) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 		
 		$this->cookie_data['k'] = $key_id;

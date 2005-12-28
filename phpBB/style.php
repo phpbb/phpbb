@@ -28,12 +28,21 @@ if (!empty($load_extensions))
 	}
 }
 
+
+$sid = (isset($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
+$id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
+
+if (!preg_match('/^[A-Za-z0-9]*$/', $sid)) 
+{
+	$sid = '';
+}
+
 // This is a simple script to grab and output the requested CSS data stored in the DB
 // We include a session_id check to try and limit 3rd party linking ... unless they
 // happen to have a current session it will output nothing. We will also cache the
 // resulting CSS data for five minutes ... anything to reduce the load on the SQL
 // server a little
-if (!empty($_GET['id']) && !empty($_GET['sid']))
+if ($id && $sid)
 {
 	// Include files
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
@@ -49,16 +58,15 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 		exit;
 	}
 
-	$sid = htmlspecialchars($_GET['sid']);
-	$id = intval($_GET['id']);
-
 	$sql = "SELECT s.session_id, u.user_lang
 		FROM {$table_prefix}sessions s, {$table_prefix}users u
-		WHERE s.session_id = '" . ((!get_magic_quotes_gpc()) ? $db->sql_escape($sid) : $sid) . "'
+		WHERE s.session_id = '" . $db->sql_escape($sid) . "'
 			AND s.session_user_id = u.user_id";
 	$result = $db->sql_query($sql);
+	$user = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 	
-	if ($user = $db->sql_fetchrow($result))
+	if ($user)
 	{
 		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.imageset_path, t.template_path
 			FROM {$table_prefix}styles s, {$table_prefix}styles_template t, {$table_prefix}styles_theme c, {$table_prefix}styles_imageset i
@@ -66,13 +74,14 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
 				AND i.imageset_id = s.imageset_id";
-		$result2 = $db->sql_query($sql, 300);
+		$result = $db->sql_query($sql, 300);
+		$theme = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($theme = $db->sql_fetchrow($result2)))
+		if (!$theme)
 		{
 			exit;
 		}
-		$db->sql_freeresult($result2);
 		
 		$force_load = true;	// Ideally this needs to be based on $config['load_tplcompile']
 		
@@ -81,23 +90,25 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 			$theme['theme_data'] = implode('', file("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'));
 			
 			// Match CSS imports
+			$matches = array();
 			preg_match_all('/@import url\(\"(.*)\"\);/i', $theme['theme_data'], $matches);
 			
-			if ($matches)
+			if (sizeof($matches))
 			{
 				foreach ($matches[0] as $idx => $match)
 				{
-					$theme['theme_data'] = str_replace($match, load_css_file( $matches[1][$idx] ), $theme['theme_data']);
+					$theme['theme_data'] = str_replace($match, load_css_file($matches[1][$idx]), $theme['theme_data']);
 				}
 			}
 			
-			$db->sql_query("UPDATE {$table_prefix}styles_theme SET theme_data = '" . $db->sql_escape($theme['theme_data']) . "', theme_mtime = " . time() . "
-				WHERE theme_id = $id");
+			$sql = "UPDATE {$table_prefix}styles_theme 
+				SET theme_data = '" . $db->sql_escape($theme['theme_data']) . "', theme_mtime = " . time() . "
+				WHERE theme_id = $id";
+			$db->sql_query($sql);
 		}
 
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
-		
 		
 		// Parse Theme Data
 		$replace = array(
@@ -113,7 +124,6 @@ if (!empty($_GET['id']) && !empty($_GET['sid']))
 
 		echo $theme['theme_data'];
 	}
-	$db->sql_freeresult($result);
 
 	if (!empty($cache))
 	{

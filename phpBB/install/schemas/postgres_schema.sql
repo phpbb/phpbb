@@ -817,7 +817,7 @@ CREATE TABLE phpbb_sessions (
    session_start INT4 DEFAULT '0' NOT NULL,
    session_time INT4 DEFAULT '0' NOT NULL,
    session_ip varchar(40) DEFAULT '0' NOT NULL,
-   session_browser varchar(100) DEFAULT '' NULL,
+   session_browser varchar(150) DEFAULT '' NULL,
    session_page varchar(100) DEFAULT '' NOT NULL,
    session_viewonline INT2 DEFAULT '1' NOT NULL,
    session_admin INT2 DEFAULT '0' NOT NULL,

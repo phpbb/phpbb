@@ -1,0 +1,130 @@
+/*
+	$Id$	
+
+	    The original "subSilver" theme for phpBB2
+	Created by subBlue design :: http://www.subBlue.com
+	  Updated for phpBB 2.2 by psoTFX :: phpBB Group
+	        Copyright (c) 2002 phpBB Group
+*/
+
+body {
+	background-color:	white;
+	font-family:		Verdana, Arial, Helvetica, sans-serif;
+	margin:				0;
+	border:				0;
+	padding:			0;
+}
+
+p {
+	font-size:	8pt;
+}
+
+.maintitle, h1 {
+	font:			bold 18pt 'Trebuchet MS', Verdana, sans-serif;
+	text-decoration:none; 
+	line-height:	120%; 
+}
+
+h2 {
+	font:			bold 12pt Arial, Helvetica, sans-serif;
+	text-decoration:none; 
+	line-height:	120%; 
+}
+
+.maintitle {
+	color:	#12749B
+}
+
+/*
+	Anchors
+*/
+a:link, a:active, a:visited { color: #006699; text-decoration: none; }
+a:hover { color: #DD6900; text-decoration: underline; }
+
+a.nav { color: #006699; text-decoration: none; }
+a.nav:hover { text-decoration: underline; }
+
+a.th:link { color: #FFA34F; text-decoration: none; }
+a.th:active { color: #FFA34F; text-decoration: none; }
+a.th:visited { color: #FFA34F; text-decoration: none; }
+a.th:hover {  color: #FFA34F; text-decoration: underline; }
+
+/*
+	Non-tag specific
+*/
+.gen, .gensmall {
+	color:	black;
+}
+.gen {
+	font-size:	8pt;
+}
+.gensmall {
+	font-size:	7pt;
+}
+.nav {
+	color:	black;
+	font:	bold 7pt;
+}
+
+.error { color: #FF0000 }
+
+/*
+	Tables
+*/
+table.bg {
+	background-color: #ACBBC6
+}
+
+th, td { 
+	font:	normal 8pt Verdana, Arial, Helvetica, sans-serif;
+}
+
+th	{
+	height:				25px;
+	background-color:	#006699;
+	color:				#FFA34F;
+	font-weight:		bold;
+	font-size:			11px;
+}
+
+td.cat {
+	height:				28px;
+	background-color:	#D1D7DC; 
+}
+
+.row1 {
+	background-color:	#EFEFEF;
+}
+.row2 {
+	background-color:	#DEE3E7;
+}
+.row3 {
+	background-color:	#D1D7DC;
+}
+
+/*
+	Misc
+*/
+hr	{ 
+	height:				0px; 
+	border:				solid #D1D7DC 0px; 
+	border-top-width:	1px;
+}
+
+/*
+	Forms
+*/
+input {
+	text-indent: 2px;
+}
+
+textarea, select {
+	border: 1px solid; 
+}
+
+input, textarea, select {
+	color:			black;
+	font:			normal 8pt Verdana, Arial, Helvetica, sans-serif;
+	border-color:	black;
+}
+

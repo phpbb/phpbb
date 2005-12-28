@@ -642,7 +642,7 @@ class acp_language
 
 				if (!in_array($use_method, $methods))
 				{
-					$use_method = '';
+					$use_method = 'tar';
 				}
 
 				// Let the user decide in which format he wants to have the pack

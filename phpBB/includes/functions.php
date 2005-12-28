@@ -1481,11 +1481,14 @@ function build_hidden_fields($field_ary)
 /**
 * Parse cfg file
 */
-function parse_cfg_file($filename)
+function parse_cfg_file($filename, $lines = false)
 {
 	$parsed_items = array();
 
-	$lines = file($filename);
+	if ($lines === false)
+	{
+		$lines = file($filename);
+	}
 
 	foreach ($lines as $line)
 	{
