@@ -138,7 +138,7 @@ function adm_page_header($page_title)
 
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $SID, $user, $auth, $starttime, $phpbb_root_path, $phpEx;
+	global $db, $config, $template, $SID, $user, $auth, $starttime, $phpbb_root_path, $phpEx, $cache;
 
 	// Output page creation time
 	if (defined('DEBUG'))
