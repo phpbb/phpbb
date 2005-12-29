@@ -488,6 +488,8 @@ CREATE TABLE phpbb_users (
    user_new_privmsg int2 DEFAULT '0' NOT NULL,
    user_unread_privmsg int2 DEFAULT '0' NOT NULL,
    user_last_privmsg int4 DEFAULT '0' NOT NULL,
+   user_login_tries int2 DEFAULT '0' NOT NULL,
+   user_last_login_try int4 DEFAULT '0' NOT NULL,
    user_emailtime int4,
    user_viewemail int2,
    user_attachsig int2,

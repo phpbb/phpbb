@@ -744,6 +744,14 @@ $lang['Mailing_list_subscribe_reminder'] = 'For the latest information on update
 $lang['Version_information'] = 'Version Information';
 
 //
+// Login attempts configuration
+//
+$lang['Max_login_attempts'] = 'Allowed login attempts';
+$lang['Max_login_attempts_explain'] = 'The number of allowed board login attempts.';
+$lang['Login_reset_time'] = 'Login lock time';
+$lang['Login_reset_time_explain'] = 'Time in minutes the user have to wait until he is allowed to login again after exceeding the number of allowed login attempts.';
+
+//
 // That's all Folks!
 // -------------------------------------------------
 

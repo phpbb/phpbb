@@ -584,6 +584,48 @@ switch ($row['config_value'])
 				break;
 		}
 
+	case '.0.18':
+
+		// Add login columns to user table
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = "ALTER TABLE " . USERS_TABLE . "
+					ADD COLUMN user_login_tries smallint(5) UNSIGNED DEFAULT '0' NOT NULL";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . "
+					ADD COLUMN user_last_login_try int(11) DEFAULT '0' NOT NULL";
+				break;
+
+			case 'postgresql':
+				$sql[] = "ALTER TABLE " . USERS_TABLE . "
+					ADD COLUMN user_login_tries int2";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . "
+					ALTER COLUMN user_login_tries SET DEFAULT '0'";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . "
+					ADD COLUMN user_last_login_try int4";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . "
+					ALTER COLUMN user_last_login_try SET DEFAULT '0'";
+				break;
+
+			case 'mssql-odbc':
+			case 'mssql':
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD
+					user_login_tries smallint NOT NULL,
+					CONSTRAINT [DF_" . $table_prefix . "users_user_login_tries] DEFAULT (0) FOR [user_login_tries]";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD
+					user_last_login_try int NOT NULL,
+					CONSTRAINT [DF_" . $table_prefix . "users_user_last_login_try] DEFAULT (0) FOR [user_last_login_try]";
+				break;
+
+			case 'msaccess':
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD
+					user_login_tries smallint NOT NULL";
+				$sql[] = "ALTER TABLE " . USERS_TABLE . " ADD
+					user_last_login_try int NOT NULL";
+				break;
+		}
+
 		break;
 }
 
@@ -1002,6 +1044,17 @@ switch ($row['config_value'])
 		// We reset those having autologin enabled and forcing the re-assignment of a session id
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
 		_sql($sql, $errored, $error_ary);
+
+	case '.0.18':
+
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
+			VALUES ('max_login_attempts', '5')";
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
+			VALUES ('login_reset_time', '30')";
+		_sql($sql, $errored, $error_ary);
+
 		break;
 
 	default:

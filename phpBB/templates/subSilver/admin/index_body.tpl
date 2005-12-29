@@ -43,6 +43,13 @@
 	<td class="row2"><b>{GZIP_COMPRESSION}</b></td>
   </tr>
 </table>
+
+<h1>{L_VERSION_INFORMATION}</h1>
+
+{VERSION_INFO}
+
+<br />
+
 <h1>{L_WHO_IS_ONLINE}</h1>
 
 <table width="100%" cellpadding="4" cellspacing="1" border="0" class="forumline">
@@ -75,11 +82,5 @@
   </tr>
   <!-- END guest_user_row -->
 </table>
-
-<br />
-
-<h1>{L_VERSION_INFORMATION}</h1>
-
-{VERSION_INFO}
 
 <br />

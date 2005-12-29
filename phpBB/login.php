@@ -57,7 +57,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 		$username = isset($HTTP_POST_VARS['username']) ? phpbb_clean_username($HTTP_POST_VARS['username']) : '';
 		$password = isset($HTTP_POST_VARS['password']) ? $HTTP_POST_VARS['password'] : '';
 
-		$sql = "SELECT user_id, username, user_password, user_active, user_level
+		$sql = "SELECT user_id, username, user_password, user_active, user_level, user_login_tries, user_last_login_try
 			FROM " . USERS_TABLE . "
 			WHERE username = '" . str_replace("\\'", "''", $username) . "'";
 		if ( !($result = $db->sql_query($sql)) )
@@ -73,12 +73,29 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			}
 			else
 			{
+				// If the last login is more than x minutes ago, then reset the login tries/time
+				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $row['user_last_login_try'] < (time() - ($board_config['login_reset_time'] * 60)))
+				{
+					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
+					$row['user_last_login_try'] = $row['user_login_tries'] = 0;
+				}
+				
+				// Check to see if user is allowed to login again... if his tries are exceeded
+				if ($row['user_last_login_try'] && $board_config['login_reset_time'] && $board_config['max_login_attempts'] && 
+					$row['user_last_login_try'] >= (time() - ($board_config['login_reset_time'] * 60)) && $row['user_login_tries'] >= $board_config['max_login_attempts'])
+				{
+					message_die(GENERAL_MESSAGE, sprintf($lang['Login_attempts_exceeded'], $board_config['max_login_attempts'], $board_config['login_reset_time']));
+				}
+
 				if( md5($password) == $row['user_password'] && $row['user_active'] )
 				{
 					$autologin = ( isset($HTTP_POST_VARS['autologin']) ) ? TRUE : 0;
 
 					$admin = (isset($HTTP_POST_VARS['admin'])) ? 1 : 0;
 					$session_id = session_begin($row['user_id'], $user_ip, PAGE_INDEX, FALSE, $autologin, $admin);
+
+					// Reset login tries
+					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_tries = 0, user_last_login_try = 0 WHERE user_id = ' . $row['user_id']);
 
 					if( $session_id )
 					{
@@ -92,6 +109,15 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				}
 				else
 				{
+					// Save login tries and last login
+					if ($row['user_id'] != ANONYMOUS)
+					{
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET user_login_tries = user_login_tries + 1, user_last_login_try = ' . time() . '
+							WHERE user_id = ' . $row['user_id'];
+						$db->sql_query($sql);
+					}
+					
 					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
 					$redirect = str_replace('?', '&', $redirect);
 

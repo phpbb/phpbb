@@ -153,18 +153,15 @@ if (@extension_loaded('zlib'))
 }
 else
 {
-	if (!empty($HTTP_GET_VARS['c']))
-	{
-		$_png = define_raw_pngs();
+	$_png = define_raw_pngs();
 
-		$char = substr($code, intval($HTTP_GET_VARS['c']) - 1, 1);
-		header('Content-Type: image/png');
-		header('Cache-control: no-cache, no-store');
-		echo base64_decode($_png[$char]);
+	$char = substr($code, -1);
+	header('Content-Type: image/png');
+	header('Cache-control: no-cache, no-store');
+	echo base64_decode($_png[$char]);
 
-		unset($_png);
-		exit;
-	}
+	unset($_png);
+	exit;
 }
 
 exit;

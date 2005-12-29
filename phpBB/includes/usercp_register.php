@@ -296,6 +296,12 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			if ($row = $db->sql_fetchrow($result))
 			{
+				// Only compare one char if the zlib-extension is not loaded
+				if (!@extension_loaded('zlib'))
+				{
+					$row['code'] = substr($row['code'], -1);
+				}
+
 				if ($row['code'] != $confirm_code)
 				{
 					$error = TRUE;

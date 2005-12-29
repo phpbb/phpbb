@@ -333,7 +333,7 @@ $available_dbms = array(
 		'COMMENTS'		=> 'remove_remarks'
 	), 
 	'mysql4' => array(
-		'LABEL'			=> 'MySQL 4.x',
+		'LABEL'			=> 'MySQL 4.x/5.x',
 		'SCHEMA'		=> 'mysql', 
 		'DELIM'			=> ';', 
 		'DELIM_BASIC'	=> ';',

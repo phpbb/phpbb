@@ -191,6 +191,14 @@ $template->assign_vars(array(
 	"L_MAX_POLL_OPTIONS" => $lang['Max_poll_options'],
 	"L_FLOOD_INTERVAL" => $lang['Flood_Interval'],
 	"L_FLOOD_INTERVAL_EXPLAIN" => $lang['Flood_Interval_explain'], 
+
+	'L_MAX_LOGIN_ATTEMPTS'			=> $lang['Max_login_attempts'],
+	'L_MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> $lang['Max_login_attempts_explain'],
+	'L_LOGIN_RESET_TIME'			=> $lang['Login_reset_time'],
+	'L_LOGIN_RESET_TIME_EXPLAIN'	=> $lang['Login_reset_time_explain'],
+	'MAX_LOGIN_ATTEMPTS'			=> $new['max_login_attempts'],
+	'LOGIN_RESET_TIME'				=> $new['login_reset_time'],
+
 	"L_BOARD_EMAIL_FORM" => $lang['Board_email_form'], 
 	"L_BOARD_EMAIL_FORM_EXPLAIN" => $lang['Board_email_form_explain'], 
 	"L_TOPICS_PER_PAGE" => $lang['Topics_per_page'],

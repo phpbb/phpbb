@@ -492,6 +492,8 @@ CREATE TABLE phpbb_users (
    user_new_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    user_unread_privmsg smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    user_last_privmsg int(11) DEFAULT '0' NOT NULL,
+   user_login_tries smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+   user_last_login_try int(11) DEFAULT '0' NOT NULL,
    user_emailtime int(11),
    user_viewemail tinyint(1),
    user_attachsig tinyint(1),
