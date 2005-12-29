@@ -71,6 +71,23 @@ if (!($forum_data = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
+// Redirect to login upon emailed notification links
+if (isset($_GET['e']) && !$user->data['is_registered'])
+{
+	login_box('', $user->lang['LOGIN_NOTIFY_FORUM']);
+}
+
+// Permissions check
+if (!$auth->acl_get('f_read', $forum_id))
+{
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		trigger_error($user->lang['SORRY_AUTH_READ']);
+	}
+
+	login_box('', $user->lang['LOGIN_VIEWFORUM']);
+}
+
 // Is this forum a link? ... User got here either because the
 // number of clicks is being tracked or they guessed the id
 if ($forum_data['forum_link'])
@@ -95,23 +112,6 @@ $user->setup('viewforum', $forum_data['forum_style']);
 if ($forum_data['forum_password'])
 {
 	login_forum_box($forum_data);
-}
-
-// Redirect to login upon emailed notification links
-if (isset($_GET['e']) && !$user->data['is_registered'])
-{
-	login_box('', $user->lang['LOGIN_NOTIFY_FORUM']);
-}
-
-// Permissions check
-if (!$auth->acl_get('f_read', $forum_id))
-{
-	if ($user->data['user_id'] != ANONYMOUS)
-	{
-		trigger_error($user->lang['SORRY_AUTH_READ']);
-	}
-
-	login_box('', $user->lang['LOGIN_VIEWFORUM']);
 }
 
 // Build navigation links
