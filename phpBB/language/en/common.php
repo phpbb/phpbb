@@ -328,6 +328,7 @@ $lang = array_merge($lang, array(
 	'RETURN_FORUM'				=> 'Click %sHere%s to return to the forum',
 	'RETURN_PAGE'				=> 'Click %sHere%s to return to the previous page',
 	'RETURN_TOPIC'				=> 'Click %sHere%s to return to the topic',
+	'RETURN_TO'					=> 'Return to',
 	'RULES_ATTACH_CAN'			=> 'You <b>can</b> post attachments in this forum',
 	'RULES_ATTACH_CANNOT'		=> 'You <b>cannot</b> post attachments in this forum',
 	'RULES_DELETE_CAN'			=> 'You <b>can</b> delete your posts in this forum',
@@ -347,6 +348,7 @@ $lang = array_merge($lang, array(
 
 	'SEARCH'					=> 'Search',
 	'SEARCH_ADV'				=> 'Advanced Search',
+	'SEARCH_ADV_EXPLAIN'		=> 'View the advanced search options',
 	'SEARCH_KEYWORDS'			=> 'Enter search keywords',
 	'SEARCHING_FORUMS'			=> 'Searching forums',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a forum for destination',
