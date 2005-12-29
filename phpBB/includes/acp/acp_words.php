@@ -125,8 +125,7 @@ class acp_words
 
 				add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
 
-				$message = $user->lang['WORD_REMOVE'];
-				trigger_error($message . adm_back_link($u_action));
+				trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($u_action));
 				
 			break;
 		}
