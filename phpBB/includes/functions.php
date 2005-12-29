@@ -123,9 +123,6 @@ function gen_rand_string($num_chars)
 {
 	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 
-	list($sec, $usec) = explode(' ', microtime());
-	mt_srand((float) $sec + ((float) $usec * 100000));
-
 	$max_chars = sizeof($chars) - 1;
 	$rand_str = '';
 	for ($i = 0; $i < $num_chars; $i++)
