@@ -389,15 +389,15 @@ function bbencode_first_pass_pda($text, $uid, $open_tag, $close_tag, $close_tag_
 				//
 				// We're going to try and catch usernames with "[' characters.
 				//
-				if( preg_match('#\[quote=\\\"#si', $possible_start, $match) && !preg_match('#\[quote=\\\"(.*?)\\\"\]#si', $possible_start) )
+				if( preg_match('#\[quote=\\\&quot;#si', $possible_start, $match) && !preg_match('#\[quote=\\\&quot;(.*?)\\\&quot;\]#si', $possible_start) )
 				{
 					// OK we are in a quote tag that probably contains a ] bracket.
 					// Grab a bit more of the string to hopefully get all of it..
-					if ($close_pos = strpos($text, '"]', $curr_pos + 9))
+					if ($close_pos = strpos($text, '&quot;]', $curr_pos + 14))
 					{
-						if (strpos(substr($text, $curr_pos + 9, $close_pos - ($curr_pos + 9)), '[quote') === false)
+						if (strpos(substr($text, $curr_pos + 14, $close_pos - ($curr_pos + 14)), '[quote') === false)
 						{
-							$possible_start = substr($text, $curr_pos, $close_pos - $curr_pos + 2);
+							$possible_start = substr($text, $curr_pos, $close_pos - $curr_pos + 7);
 						}
 					}
 				}
