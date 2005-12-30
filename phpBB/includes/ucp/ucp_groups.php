@@ -251,6 +251,7 @@ class ucp_groups
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 					WHERE ug.user_id = ' . $user->data['user_id'] . '
 						AND g.group_id = ug.group_id
+					GROUP BY g.group_id
 					ORDER BY g.group_type DESC, g.group_name';
 				$result = $db->sql_query($sql);
 
