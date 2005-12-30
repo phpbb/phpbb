@@ -540,6 +540,7 @@ if ($keywords || $author || $search_id || $search_session_id)
 
 				$tpl_ary = array(
 					'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'], 
+					'U_PROFILE'			=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
 					'POST_SUBJECT'		=> censor_text($row['post_subject']), 
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '', 
 					'MESSAGE' 			=> $row['post_text']
