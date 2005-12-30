@@ -110,7 +110,7 @@ $lang = array_merge($lang, array(
 	'SORT_POST_COUNT'		=> 'Post count',
 
 	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
-	'USER_FORUM'			=> 'Forum statistics',
+	'USER_FORUM'			=> 'User statistics',
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Forum presence',
 
