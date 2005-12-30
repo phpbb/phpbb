@@ -1281,7 +1281,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_ICON_IMG_HEIGHT'	=> (!empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
 		'ICQ_STATUS_IMG'	=> $user_cache[$poster_id]['icq_status_img'],
 		'ONLINE_IMG'		=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
-		'ONLINE_STATUS'	=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
+		'S_ONLINE'	=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
 		'U_EDIT' 			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',
 		'U_QUOTE' 			=> ($auth->acl_get('f_quote', $forum_id)) ? "posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p=" . $row['post_id'] : '',

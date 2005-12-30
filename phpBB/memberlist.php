@@ -1225,7 +1225,7 @@ function show_profile($data)
   		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
 		'ONLINE_IMG'	=> ($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE'),
-		'ONLINE_STATUS'	=> ($online) ? true : false,
+		'S_ONLINE'	=> ($online) ? true : false,
 		'RANK_IMG'		=> $rank_img,
 		'RANK_IMG_SRC'	=> $rank_img_src,
 		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
