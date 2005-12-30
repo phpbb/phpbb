@@ -50,6 +50,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_PM'					=> 'Allow users to send you private messages',
 	'ALLOW_PM_EXPLAIN'			=> 'Note that admins and moderators will always be able to send you messages.',
 	'ALREADY_ACTIVATED'			=> 'You have already activated your account',
+	'ATTACHMENTS_EXPLAIN'		=> 'This is a list of attachements you have made in posts to this forum.',
 	'ATTACHMENTS_DELETED'		=> 'Attachments successfully deleted',
 	'ATTACHMENT_DELETED'		=> 'Attachment successfully deleted',
 	'AVATAR_CATEGORY'			=> 'Category',
@@ -67,6 +68,7 @@ $lang = array_merge($lang, array(
 	'BOARD_STYLE'				=> 'My board style',
 	'BOARD_TIMEZONE'			=> 'My timezone',
 	'BOOKMARKS'					=> 'Bookmarks',
+	'BOOKMARKS_EXPLAIN'			=> 'You can bookmark topics for future reference. Select the checkbox for any bookmark you wish to delete, then press the <em>Remove marked bookmarks</em> button.',
 	'BOOKMARKS_DISABLED'		=> 'Bookmarks are disabled on this board',
 	'BOOKMARKS_REMOVED'			=> 'Bookmarks removed successfully',
 
@@ -405,8 +407,9 @@ $lang = array_merge($lang, array(
 	'VIEW_POSTS_DIR'			=> 'Display post order direction',
 	'VIEW_POSTS_KEY'			=> 'Display posts ordering by',
 
-	'WATCHED_FORUMS'			=> 'Watched Forums',
-	'WATCHED_TOPICS'			=> 'Watched Topics',
+	'WATCHED_EXPLAIN'			=> 'Below is a list of forums and topics you are subscribed to. You will be notified of new posts in either. To unsubscribe mark the forum or topic and then press the <em>Unwatch marked</em> button.',
+	'WATCHED_FORUMS'				=> 'Watched Forums',
+	'WATCHED_TOPICS'				=> 'Watched Topics',
 	'WRONG_ACTIVATION'			=> 'The activation key you supplied does not match any in the database',
 
 	'YOUR_DETAILS'				=> 'Your activity',
