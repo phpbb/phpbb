@@ -220,7 +220,7 @@ while ( $row = $db->sql_fetchrow($result) )
 
 if (file_exists('install') || file_exists('contrib'))
 {
-	message_die(GENERAL_MESSAGE, 'Please ensure both the install/ and contrib/ directories are deleted');
+	message_die(GENERAL_MESSAGE, 'Please_remove_install_contrib');
 }
 
 //

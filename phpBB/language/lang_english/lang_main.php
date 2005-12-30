@@ -1015,6 +1015,7 @@ $lang['A_critical_error'] = 'A Critical Error Occurred';
 
 $lang['Admin_reauthenticate'] = 'To administer the board you must re-authenticate yourself.';
 $lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has been exceeded. You are not allowed to login for the next %s minutes.';
+$lang['Please_remove_install_contrib'] = 'Please ensure both the install/ and contrib/ directories are deleted';
 
 //
 // That's all, Folks!
