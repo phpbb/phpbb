@@ -75,10 +75,16 @@ class p_master
 			$this->module_cache['modules'] = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				// Only add if we are allowed to view this module...
+				if (!$this->module_auth($row['module_auth']))
+				{
+					continue;
+				}
+
 				$this->module_cache['modules'][] = $row;
 			}
 			$db->sql_freeresult($result);
-
+			
 			// Get module parents
 			$this->module_cache['parents'] = array();
 			foreach ($this->module_cache['modules'] as $row)
@@ -102,27 +108,57 @@ class p_master
 		$right = $depth = $i = 0;
 		$depth_ary = $disable = array();
 
-		foreach ($this->module_cache['modules'] as $row)
+		foreach ($this->module_cache['modules'] as $key => $row)
 		{
-			/**
-			* Authorisation is required ... not authed, skip
-			* @todo implement $this->is_module_id
-			* @todo put in seperate method for authentication
-			*/
-			if ($row['module_auth'])
+			// Not allowed to view module?
+			if (!$this->module_auth($row['module_auth']))
 			{
-				$is_auth = false;
-				eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#e', '#\$id#', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1"\\2)', '$this->acl_forup_id', '(int) $config["\\1"]'), trim($row['module_auth'])) . ');');
-				if (!$is_auth)
-				{
-					continue;
-				}
+				continue;
 			}
 
 			// Category with no members, ignore
 			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
 			{
 				continue;
+			}
+
+			// Category with no members on their way down (we have to check every level)
+			if (!$row['module_name'])
+			{
+				$empty_category = true;
+
+				// If we do find members we can add this module to the array
+				$right_id = $row['right_id'];
+				
+				// Get branch (from this module to module with left_id >= right_id)
+				$temp_module_cache = array_slice($this->module_cache['modules'], $key + 1);
+
+				if (!sizeof($temp_module_cache))
+				{
+					continue;
+				}
+
+				foreach ($temp_module_cache as $temp_row)
+				{
+					if ($temp_row['left_id'] >= $right_id)
+					{
+						break;
+					}
+
+					// Module there
+					if ($temp_row['module_name'])
+					{
+						$empty_category = false;
+						break;
+					}
+				}
+
+				unset($temp_module_cache);
+				
+				if ($empty_category)
+				{
+					continue;
+				}
 			}
 
 			// Not enabled?
@@ -198,6 +234,28 @@ class p_master
 		unset($this->module_cache['modules']);
 	}
 
+	/**
+	* Check module authorisation
+	* @todo implement $this->is_module_id
+	*/
+	function module_auth($module_auth)
+	{
+		global $auth, $config;
+		
+		$module_auth = trim($module_auth);
+
+		// Generally allowed to access module if module_auth is empty
+		if (!$module_auth)
+		{
+			return true;
+		}
+
+		$is_auth = false;
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#e', '#\$id#', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1"\\2)', '$this->acl_forup_id', '(int) $config["\\1"]'), trim($module_auth)) . ');');
+		
+		return $is_auth;
+	}
+
 	function set_active($id = false, $mode = false)
 	{
 		$category = false;
@@ -207,7 +265,7 @@ class p_master
 			// If this is a category and the module is the first within it, active
 			// If this is a module and no mode selected, select first mode
 			// If no category or module selected, go active for first module in first category
-			if ( 
+			if (
 				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && $itep_ary['mode'] == $mode && !$itep_ary['cat']) ||
 				($itep_ary['parent'] === $category && !$itep_ary['cat']) ||
 				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && !$mode && !$itep_ary['cat']) ||
