@@ -1162,7 +1162,6 @@ class smtp_class
 		if (!empty($md5_challenge))
 		{
 			$str = '';
-			mt_srand( (double) microtime() * 10000000);
 			for ($i = 0; $i < 32; $i++)
 			{
 				$str .= chr(mt_rand(0, 255));

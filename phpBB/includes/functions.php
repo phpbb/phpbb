@@ -139,7 +139,7 @@ function gen_rand_string($num_chars)
 */
 function unique_id($extra = 0)
 {
-	list($sec, $usec) = explode(' ', microtime());
+	list($usec, $sec) = explode(' ', microtime());
 	mt_srand((float) $extra + (float) $sec + ((float) $usec * 100000));
 	return uniqid(mt_rand(), true);
 }
