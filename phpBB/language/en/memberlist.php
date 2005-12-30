@@ -71,14 +71,15 @@ $lang = array_merge($lang, array(
 	'IM_JABBER'				=> 'Please note that users may have elected to not receive unsolicited instant messages.',
 	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s',
 	'IM_MESSAGE'			=> 'Your Message',
-	'IM_MSN'				=> 'Please note that you need Windows Messenger installed to use this.',
+	'IM_MSNM'				=> 'Please note that you need Windows Messenger installed to use this.',
 	'IM_NAME'				=> 'Your Name',
 	'IM_NO_JABBER'			=> 'Sorry, direct messaging of Jabber users is not supported on this server. You will need a Jabber client installed on your system to contact the recipient above.',
 	'IM_RECIPIENT'			=> 'Recipient',
 	'IM_SEND'				=> 'Send Message',
 	'IM_SEND_MESSAGE'		=> 'Send Message',
 	'IM_SENT_JABBER'		=> 'Your message to %1$s has been sent successfully.',
-
+	'IM_USER'			=> 'Send an instant message',
+	
 	'JABBER'				=> 'Jabber',
 
 	'LAST_ACTIVE'			=> 'Last active',
