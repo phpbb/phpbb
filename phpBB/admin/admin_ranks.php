@@ -8,7 +8,6 @@
  *
  *   $Id$
  *
- *
  ***************************************************************************/
 
 /***************************************************************************
@@ -25,20 +24,21 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['Users']['Ranks'] = "$file";
+	$module['Users']['Ranks'] = $file;
 	return;
 }
 
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else 
 {
@@ -162,8 +162,19 @@ if( $mode != "" )
 			}
 		}
 
-		if( $rank_id )
+		if ($rank_id)
 		{
+			if (!$special_rank)
+			{
+				$sql = "UPDATE " . USERS_TABLE . " 
+					SET user_rank = 0 
+					WHERE user_rank = $rank_id";
+
+				if( !$result = $db->sql_query($sql) ) 
+				{
+					message_die(GENERAL_ERROR, $lang['No_update_ranks'], "", __LINE__, __FILE__, $sql);
+				}
+			}
 			$sql = "UPDATE " . RANKS_TABLE . "
 				SET rank_title = '" . str_replace("\'", "''", $rank_title) . "', rank_special = $special_rank, rank_min = $min_posts, rank_image = '" . str_replace("\'", "''", $rank_image) . "'
 				WHERE rank_id = $rank_id";
@@ -255,7 +266,7 @@ if( $mode != "" )
 		$template->assign_vars(array(
 			"L_RANKS_TITLE" => $lang['Ranks_title'],
 			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK" => $lang['Rank'],
+			"L_RANK" => $lang['Rank_title'],
 			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
 			"L_SPECIAL_RANK" => $lang['Special_rank'],
 			"L_EDIT" => $lang['Edit'],
@@ -360,6 +371,6 @@ else
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>
