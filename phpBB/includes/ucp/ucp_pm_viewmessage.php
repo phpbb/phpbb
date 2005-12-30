@@ -170,6 +170,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_FROM' 		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
+		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
 		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
 		'INFO_IMG' 			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
 		'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_PM']),
@@ -343,7 +344,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'FOLDER'		=> implode(', ', $row['folder']),
 
 			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),
-
+	
 			'U_MSG_ID'		=> $row['msg_id'],
 			'U_VIEW_MESSAGE'=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_AUTHOR_PROFILE' 	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$author_id",

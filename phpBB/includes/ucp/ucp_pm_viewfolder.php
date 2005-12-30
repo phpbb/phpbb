@@ -288,7 +288,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
 
-		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;i=compose&amp;action=post" : '',
+		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;i=pm&amp;mode=compose" : '',
 		'S_PM_ACTION'		=> "$url&amp;i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id")
 	);
 
