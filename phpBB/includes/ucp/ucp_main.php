@@ -127,6 +127,7 @@ class ucp_main
 						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 						'NEWEST_POST_IMG' 	=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
+						'TOPIC_FOLDER_IMG_SRC' => $user->img($folder_img, $folder_alt, false, '', 'src'),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
@@ -601,15 +602,16 @@ class ucp_main
 				{
 					$forum_id = $row['forum_id'];
 					$topic_id = $row['b_topic_id'];
-
+					
 					$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 					
 					// Get folder img, topic status/type related informations
 					$folder_img = $folder_alt = $topic_type = '';
-					$unread_topic = topic_status($row, $replies, time(), time(), $folder_img, $folder_alt, $topic_type);
-
+					$unread_topic = false; // TODO: get proper unread status
+					
+					topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
-
+					
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID' 			=> $forum_id,
 						'TOPIC_ID' 			=> $topic_id,
@@ -628,6 +630,7 @@ class ucp_main
 						'POSTED_AT'			=> $user->format_date($row['topic_time']),
 						
 						'TOPIC_FOLDER_IMG' 	=> $user->img($folder_img, $folder_alt),
+						'TOPIC_FOLDER_IMG_SRC' => $user->img($folder_img, $folder_alt, false, '', 'src'),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 
