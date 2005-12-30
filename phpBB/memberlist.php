@@ -830,7 +830,6 @@ switch ($mode)
 
 		if ($first_char == 'other')
 		{
-			$sql_where = '';
 			for ($i = 65; $i < 91; $i++)
 			{
 				$sql_where .= " AND u.username NOT LIKE '" . chr($i) . "%'";
@@ -838,9 +837,9 @@ switch ($mode)
 		}
 		else if ($first_char)
 		{
-			$sql_where = " AND u.username LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
+			$sql_where .= " AND u.username LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
 		}
-		
+
 		// Are we looking at a usergroup? If so, fetch additional info
 		// and further restrict the user info query
 		if ($mode == 'group')
