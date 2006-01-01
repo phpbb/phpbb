@@ -28,6 +28,9 @@ class dbal
 	var $sql_report = '';
 	var $cache_num_queries = 0;
 	
+	var $persistency = false;
+	var $user = '';
+	var $server = '';
 	var $dbname = '';
 	
 	/**
