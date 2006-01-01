@@ -151,7 +151,7 @@ class dbal_mysql4 extends dbal
 			if ($total == 0)
 			{
 				// Because MySQL 4.1+ no longer supports -1 in LIMIT queries we set it to the maximum value
-				$total = 18446744073709551615;
+				$total = '18446744073709551615';
 			}
 
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
