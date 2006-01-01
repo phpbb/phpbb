@@ -24,7 +24,7 @@ $auth->acl($user->data);
 $forum_id	= request_var('f', 0);
 $topic_id	= request_var('t', 0);
 $post_id	= request_var('p', 0);
-$voted_id	= request_var('vote_id', 0);;
+$voted_id	= request_var('vote_id', array('' => 0));
 
 $start		= request_var('start', 0);
 $view		= request_var('view', '');
@@ -518,7 +518,7 @@ $template->assign_vars(array(
 );
 
 // Does this topic contain a poll?
-if (!empty($poll_start))
+if (!empty($topic_data['poll_start']))
 {
 	$sql = 'SELECT o.*, p.bbcode_bitfield, p.bbcode_uid
 		FROM ' . POLL_OPTIONS_TABLE . ' o, ' . POSTS_TABLE . " p
@@ -563,14 +563,14 @@ if (!empty($poll_start))
 
 	$s_can_vote = (((!sizeof($cur_voted_id) && $auth->acl_get('f_vote', $forum_id)) ||
 		($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change'])) &&
-		(($topic_fata['poll_length'] != 0 && $topic_data['poll_start'] + $topic_data['poll_length'] > time()) || $topic_data['poll_length'] == 0) &&
+		(($topic_data['poll_length'] != 0 && $topic_data['poll_start'] + $topic_data['poll_length'] > time()) || $topic_data['poll_length'] == 0) &&
 		$topic_data['topic_status'] != ITEM_LOCKED &&
 		$topic_data['forum_status'] != ITEM_LOCKED) ? true : false;
 	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($cur_voted_id)) || $view == 'viewpoll') ? true : false;
 
 	if ($update && $s_can_vote)
 	{
-		if (!sizeof($voted_id) || sizeof($voted_id) > $poll_max_options)
+		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'])
 		{
 			meta_refresh(5, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
 
@@ -656,9 +656,9 @@ if (!empty($poll_start))
 			$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', censor_text($poll_info[$i]['poll_option_text']));
 		}
 
-		$poll_bbcode->bbcode_second_pass($poll_title, $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
-		$poll_title = smiley_text($poll_title);
-		$poll_title = str_replace("\n", '<br />', censor_text($poll_title));
+		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
+		$poll_title = smiley_text($topic_data['poll_title']);
+		$poll_title = str_replace("\n", '<br />', censor_text($topic_data['poll_title']));
 
 		unset($poll_bbcode);
 	}
@@ -680,18 +680,18 @@ if (!empty($poll_start))
 	}
 
 	$template->assign_vars(array(
-		'POLL_QUESTION'		=> $poll_title,
+		'POLL_QUESTION'		=> $topic_data['poll_title'],
 		'TOTAL_VOTES' 		=> $poll_total,
 		'POLL_LEFT_CAP_IMG'	=> $user->img('poll_left'),
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
-		'L_MAX_VOTES'		=> ($poll_max_options == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $poll_max_options),
-		'L_POLL_LENGTH'		=> ($poll_length) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_length + $poll_start)) : '',
+		'L_MAX_VOTES'		=> ($topic_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $topic_data['poll_max_options']),
+		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($topic_data['poll_length'] + $topic_data['poll_start'])) : '',
 
 		'S_HAS_POLL'		=> true,
 		'S_CAN_VOTE'		=> $s_can_vote,
 		'S_DISPLAY_RESULTS'	=> $s_display_results,
-		'S_IS_MULTI_CHOICE'	=> ($poll_max_options > 1) ? true : false,
+		'S_IS_MULTI_CHOICE'	=> ($topic_data['poll_max_options'] > 1) ? true : false,
 		'S_POLL_ACTION'		=> $viewtopic_url,
 
 		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
