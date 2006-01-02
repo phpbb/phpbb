@@ -37,7 +37,7 @@ class transfer
 		$this->dir_perms	= 777;
 
 		// We use the store directory as temporary path to circumvent open basedir restrictions
-		$this->tmp_path = $phpbb_root_path . 'store/',
+		$this->tmp_path = $phpbb_root_path . 'store/';
 	}
 	
 	/**
@@ -99,6 +99,8 @@ class transfer
 	{
 		global $phpbb_root_path;
 
+		$dir = str_replace($phpbb_root_path, '', $dir);
+		
 		$dir = explode('/', $dir);
 		$dirs = '';
 
@@ -177,6 +179,14 @@ class transfer
 	}
 
 	/**
+	* Open session
+	*/
+	function open_session()
+	{
+		return $this->_init();
+	}
+
+	/**
 	* Close current session
 	*/
 	function close_session()
@@ -216,7 +226,7 @@ class ftp extends transfer
 		$this->username		= $username;
 		$this->password		= $password;
 		$this->timeout		= $timeout;
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . (substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path;
+		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path);
 
 		return;
 	}
@@ -224,7 +234,7 @@ class ftp extends transfer
 	/**
 	* Init FTP Session
 	*/
-	function init()
+	function _init()
 	{
 		// connect to the server
 		$this->connection = @ftp_connect($this->host, $this->port, $this->timeout);
@@ -246,7 +256,7 @@ class ftp extends transfer
 		// change to the root directory
 		if (!$this->_chdir($this->root_path))
 		{
-			return false;
+			return 'Unable to change directory';
 		}
 
 		return true;
@@ -302,9 +312,12 @@ class ftp extends transfer
 
 		// extension list for files that need to be transfered as binary.
 		// Taken from the old EasyMOD which was taken from the attachment MOD
-		$extensions = array('ace', 'ai', 'aif', 'aifc', 'aiff', 'ar', 'asf', 'asx', 'au', 'avi', 'doc', 'dot', 'gif', 'gtar', 'gz', 'ivf', 'jpeg', 'jpg', 'm3u', 'mid', 'midi', 'mlv', 'mp2', 'mp3', 'mp2v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpv2', 'pdf', 'png', 'ppt', 'ps', 'rar', 'rm', 'rmi', 'snd', 'swf', 'tga', 'tif', 'wav', 'wax', 'wm', 'wma', 'wmv', 'wmx', 'wvx', 'xls', 'zip') ;
-		$is_binary = in_array($file_extension, $extensions);
-		$mode = ($is_binary) ? FTP_BINARY : FTP_ASCII;
+//		$extensions = array('ace', 'ai', 'aif', 'aifc', 'aiff', 'ar', 'asf', 'asx', 'au', 'avi', 'doc', 'dot', 'gif', 'gtar', 'gz', 'ivf', 'jpeg', 'jpg', 'm3u', 'mid', 'midi', 'mlv', 'mp2', 'mp3', 'mp2v', 'mpa', 'mpe', 'mpeg', 'mpg', 'mpv2', 'pdf', 'png', 'ppt', 'ps', 'rar', 'rm', 'rmi', 'snd', 'swf', 'tga', 'tif', 'wav', 'wax', 'wm', 'wma', 'wmv', 'wmx', 'wvx', 'xls', 'zip') ;
+//		$is_binary = in_array($file_extension, $extensions);
+//		$mode = ($is_binary) ? FTP_BINARY : FTP_ASCII;
+
+		// We only use the BINARY file mode to cicumvent rewrite actions from ftp server (mostly linefeeds being replaced)
+		$mode = FTP_BINARY;
 
 		$to_dir = dirname($to_file);
 		$to_file = basename($to_file);
@@ -329,6 +342,11 @@ class ftp extends transfer
 	*/
 	function _close()
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_quit($this->connection);
 	}
 

@@ -9,6 +9,11 @@
 */
 
 /**
+* todo:
+* templates->cache (show template files in cache)
+*/
+
+/**
 * @package acp
 */
 class acp_styles
@@ -102,11 +107,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				}
 			break;
 		
-			case 'add':
 			case 'install':
-				install($mode, $action, $style_id);
+				$this->install($mode, $action);
+				return;
 			break;
 
+			case 'add':
+			break;
+			
 			case 'details':
 				if ($style_id)
 				{
@@ -151,10 +159,98 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			case 'template':
 
+				switch ($action)
+				{
+					// Refresh/Renew template cache
+					case 'refresh':
+
+						$sql = 'SELECT *
+							FROM ' . STYLES_TPL_TABLE . "
+							WHERE template_id = $style_id";
+						$result = $db->sql_query($sql);
+						$template_row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if (!$template_row)
+						{
+							trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action));
+						}
+
+						if ($template_row['template_storedb'] && file_exists("{$phpbb_root_path}styles/{$template_row['template_path']}/template/"))
+						{
+							$filelist = array('/' => array());
+
+							$sql = 'SELECT template_filename, template_mtime 
+								FROM ' . STYLES_TPLDATA_TABLE . "
+								WHERE template_id = $style_id";
+							$result = $db->sql_query($sql);
+
+							while ($row = $db->sql_fetchrow($result))
+							{
+								if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
+								{
+									$filelist['/'][] = $row['template_filename'];
+								}
+							}
+							$db->sql_freeresult($result);
+
+							$this->store_templates('update', $style_id, $template_row['template_path'], $filelist);
+							unset($filelist);
+						}
+	
+					break;
+				}
+
 				$this->frontend('template', array('cache', 'details', 'refresh', 'export', 'delete'));
 			break;
 
 			case 'theme':
+
+				switch ($action)
+				{
+					// Refresh/Renew theme cache
+					case 'refresh':
+	
+						$sql = 'SELECT *
+							FROM ' . STYLES_CSS_TABLE . "
+							WHERE theme_id = $style_id";
+						$result = $db->sql_query($sql);
+						$theme_row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if (!$theme_row)
+						{
+							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action));
+						}
+
+						if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
+						{
+							$theme_data = implode('', file("{$phpbb_root_path}styles/" . $theme_row['theme_path'] . '/theme/stylesheet.css'));
+
+							// Match CSS imports
+							$matches = array();
+							preg_match_all('/@import url\(\"(.*)\"\);/i', $theme_data, $matches);
+				
+							if (sizeof($matches))
+							{
+								foreach ($matches[0] as $idx => $match)
+								{
+									$theme_data = str_replace($match, $this->load_css_file($theme_row['theme_path'], $matches[1][$idx]), $theme_data);
+								}
+							}
+							
+							// Save CSS contents
+							$sql_ary = array(
+								'theme_mtime'	=> @filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
+								'theme_data'	=> $theme_data
+							);
+
+							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								WHERE theme_id = $style_id";
+							$db->sql_query($sql);
+						}
+					break;
+				}
 
 				$this->frontend('theme', array('details', 'refresh', 'export', 'delete'));
 			break;
@@ -783,7 +879,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function details($mode, $style_id)
 	{
-		global $template, $db, $config, $user, $safe_mode, $cache;
+		global $template, $db, $config, $user, $safe_mode, $cache, $phpbb_root_path;
 
 		$update = (isset($_POST['update'])) ? true : false;
 		$l_type = strtoupper($mode);
@@ -871,23 +967,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
 				}
 			}
-/*
-			if (!sizeof($error))
-			{
-				// Check if the name already exist
-				$sql = "SELECT {$mode}_id
-					FROM $sql_from
-					WHERE {$mode}_name = '" . $db->sql_escape($name) . "'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ($row)
-				{
-					$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
-				}
-			}
-*/
 		}
 		
 		if ($update && sizeof($error))
@@ -1106,6 +1185,518 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		return $content;
 	}
 
+	/**
+	* Store template files into db
+	*/
+	function store_templates($mode, $style_id, $path, $filelist)
+	{
+		global $phpbb_root_path, $phpEx, $db;
+
+		$includes = array();
+		foreach ($filelist as $pathfile => $file_ary)
+		{
+			foreach ($file_ary as $file)
+			{
+				if (!($fp = fopen("{$phpbb_root_path}styles/$path$pathfile$file", 'r')))
+				{
+					trigger_error("Could not open {$phpbb_root_path}styles/$path$pathfile$file");
+				}
+				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$path$pathfile$file"));
+				fclose($fp);
+
+				if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
+				{
+					foreach ($matches[1] as $match)
+					{
+						$includes[trim($match)][] = $file;
+					}
+				}
+			}
+		}
+
+		foreach ($filelist as $pathfile => $file_ary)
+		{
+			foreach ($file_ary as $file)
+			{
+				// Skip index.
+				if (strpos($file, 'index.') === 0)
+				{
+					continue;
+				}
+
+				// We could do this using extended inserts ... but that could be one
+				// heck of a lot of data ...
+				$sql_ary = array(
+					'template_id'			=> $style_id,
+					'template_filename'		=> $file,
+					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
+					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$path$pathfile$file"),
+					'template_data'			=> implode('', file("{$phpbb_root_path}styles/$path$pathfile$file")),
+				);
+
+				if ($mode == 'insert')
+				{
+					$sql = 'INSERT INTO ' . STYLES_TPLDATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+				}
+				else
+				{
+					$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
+						WHERE template_id = $style_id 
+							AND template_filename = '" . $db->sql_escape($file) . "'";
+				}
+				$db->sql_query($sql);
+			}
+		}
+	}
+
+	/**
+	* Install Style/Template/Theme/Imageset
+	*/
+	function install($mode, $action)
+	{
+		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+
+		$l_type = strtoupper($mode);
+
+		$error = $installcfg = $style_row = array();
+		$root_path = $cfg_file = '';
+		$element_ary = array('template' => STYLES_TPL_TABLE, 'theme' => STYLES_CSS_TABLE, 'imageset' => STYLES_IMAGE_TABLE);
+
+		$install_path = request_var('path', '');
+		$update = (isset($_POST['update'])) ? true : false;
+
+		// Installing, obtain cfg file contents
+		if ($action == 'install' && $install_path)
+		{
+			$root_path = $phpbb_root_path . 'styles/' . $install_path . '/';
+			$cfg_file = ($mode == 'style') ? "$root_path$mode.cfg" : "$root_path$mode/$mode.cfg";
+
+			if (!file_exists($cfg_file))
+			{
+				$error[] = $user->lang[$l_type . '_ERR_NOT_' . $l_type];
+			}
+			else
+			{
+				$installcfg = parse_cfg_file($cfg_file);
+			}
+		}
+
+		// Installing
+		if (sizeof($installcfg))
+		{
+			$name		= $installcfg['name'];
+			$copyright	= $installcfg['copyright'];
+			$version	= $installcfg['version'];
+
+			$style_row = array(
+				$mode . '_id'			=> 0,
+				$mode . '_name'			=> '',
+				$mode . '_copyright'	=> ''
+			);
+
+			switch ($mode)
+			{
+				case 'style':
+
+					$style_row = array(
+						'style_id'			=> 0,
+						'style_name'		=> $installcfg['name'],
+						'style_copyright'	=> $installcfg['copyright']
+					);
+
+					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : '';
+					$reqd_theme = (isset($installcfg['required_theme'])) ? $installcfg['required_theme'] : '';
+					$reqd_imageset = (isset($installcfg['required_imageset'])) ? $installcfg['required_imageset'] : '';
+
+					// Check to see if each element is already installed, if it is grab the id
+					foreach ($element_ary as $element => $table)
+					{
+						$style_row = array_merge($style_row, array(
+							$element . '_id'			=> 0,
+							$element . '_name'			=> '',
+							$element . '_copyright'		=> '')
+						);
+
+			 			$this->test_installed($element, $error, $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
+					}
+	
+				break;
+
+				case 'template':
+					$this->test_installed('template', $error, $root_path, false, $style_row['template_id'], $style_row['template_name'], $style_row['template_copyright']);
+				break;
+
+				case 'theme':
+					$this->test_installed('theme', $error, $root_path, false, $style_row['theme_id'], $style_row['theme_name'], $style_row['theme_copyright']);
+				break;
+
+				case 'imageset':
+					$this->test_installed('imageset', $error, $root_path, false, $style_row['imageset_id'], $style_row['imageset_name'], $style_row['imageset_copyright']);
+				break;
+			}
+		}
+		else
+		{
+//
+		}
+
+		$style_row['store_db'] = request_var('store_db', 0);
+		$style_row['style_active'] = request_var('style_active', 1);
+		$style_row['style_default'] = request_var('style_default', 0);
+	
+		// User has submitted form and no errors have occured
+		if ($update && !sizeof($error))
+		{
+			$sql_ary = array();
+
+			if ($mode == 'style')
+			{
+				$this->install_style($error, $action, $root_path, $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+			}
+			else
+			{
+				$this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $style_row[$mode . '_copyright'], $style_row['store_db']);
+			}
+
+			if (!sizeof($error))
+			{
+				$cache->destroy('sql', STYLES_TABLE);
+
+				$message = ($style_row['store_db']) ? '_ADDED_DB' : '_ADDED';
+				trigger_error($user->lang[$l_type . $message] . adm_back_link($this->u_action));
+			}
+		}
+
+		$this->page_title = 'INSTALL_' . $l_type;
+
+		$template->assign_vars(array(
+			'S_DETAILS'			=> true,
+			'S_INSTALL'			=> true,
+			'S_ERROR_MSG'		=> (sizeof($error)) ? true : false,
+			'S_STYLE'			=> ($mode == 'style') ? true : false,
+			'S_TEMPLATE'		=> ($mode == 'template') ? true : false,
+			'S_THEME'			=> ($mode == 'theme') ? true : false,
+
+			'S_STORE_DB'			=> (isset($style_row[$mode . '_storedb'])) ? $style_row[$mode . '_storedb'] : 0,
+			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
+			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
+			
+			'U_ACTION'			=> $this->u_action . "&amp;action=$action&amp;path=" . urlencode($install_path),
+			'U_BACK'			=> $this->u_action,
+
+			'L_TITLE'				=> $user->lang[$this->page_title],
+			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
+			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
+			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
+
+			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
+			'NAME'				=> $style_row[$mode . '_name'],
+			'COPYRIGHT'			=> $style_row[$mode . '_copyright'],
+			'TEMPLATE_NAME'		=> ($mode == 'style') ? $style_row['template_name'] : '',
+			'THEME_NAME'		=> ($mode == 'style') ? $style_row['theme_name'] : '',
+			'IMAGESET_NAME'		=> ($mode == 'style') ? $style_row['imageset_name'] : '')
+		);
+	}
+
+	/**
+	* Is this element installed? If not, grab its cfg details
+	*/
+	function test_installed($element, &$error, $root_path, $reqd_name, &$id, &$name, &$copyright)
+	{
+		global $db, $user;
+
+		switch ($element)
+		{
+			case 'template':
+				$sql_from = STYLES_TPL_TABLE;
+			break;
+	
+			case 'theme':
+				$sql_from = STYLES_CSS_TABLE;
+			break;
+
+			case 'imageset':
+				$sql_from = STYLES_IMAGE_TABLE;
+			break;
+		}
+
+		$l_element = strtoupper($element);
+
+		$chk_name = ($reqd_name !== false) ? $reqd_name : $name;
+
+		$sql = "SELECT {$element}_id, {$element}_name  
+			FROM $sql_from
+			WHERE {$element}_name = '" . $db->sql_escape($chk_name) . "'";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$name = $row[$element . '_name'];
+			$id = $row[$element . '_id'];
+		}
+		else
+		{
+			if (!($cfg = @file("$root_path$element/$element.cfg")))
+			{
+				$error[] = sprintf($user->lang['REQUIRES_' . $l_element], $reqd_name);
+				return false;
+			}
+
+			$cfg = parse_cfg_file("$root_path$element/$element.cfg", $cfg);
+			
+			$name = $cfg['name'];
+			$copyright = $cfg['copyright'];
+			$id = 0;
+
+			unset($cfg);
+		}
+		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Install/Add style
+	*/
+	function install_style(&$error, $action, $root_path, &$id, $name, $copyright, $active, $default, &$style_row)
+	{
+		global $config, $db, $user;
+
+		$element_ary = array('template', 'theme', 'imageset');
+		
+		if (!$name)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
+		}
+
+		// Check if the character set is allowed
+		if (!preg_match('/^[a-z0-9_\-\+ ]+$/i', $name))
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_CHARS'];
+		}
+
+		// Check length settings
+		if (strlen($name) > 30)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
+		}
+
+		if (strlen($copyright) > 60)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
+		}
+
+		// Check if the name already exist
+		$sql = 'SELECT style_id
+			FROM ' . STYLES_TABLE . "
+			WHERE style_name = '" . $db->sql_escape($name) . "'";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($row)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
+		}
+
+		if (sizeof($error))
+		{
+			return false;
+		}
+
+		foreach ($element_ary as $element)
+		{
+			// Zero id value ... need to install element ... run usual checks
+			// and do the install if necessary
+			if (!$style_row[$element . '_id'])
+			{
+				$this->install_element($element, $error, $action, $root_path, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
+			}
+		}
+
+		if (!$style_row['template_id'] || !$style_row['theme_id'] || !$style_row['imageset_id'])
+		{
+			$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+		}
+
+		if (sizeof($error))
+		{
+			return false;
+		}
+
+		$db->sql_transaction('begin');
+
+		$sql_ary = array(
+			'style_name'		=> $name, 
+			'style_copyright'	=> $copyright, 
+			'style_active'		=> $active, 
+			'template_id'		=> $style_row['template_id'], 
+			'theme_id'			=> $style_row['theme_id'], 
+			'imageset_id'		=> $style_row['imageset_id'], 
+		);
+
+		$sql = 'INSERT INTO ' . STYLES_TABLE . ' 
+			' .  $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
+		$id = $db->sql_nextid();
+
+		if ($default)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . " 
+				SET user_style = $id 
+				WHERE user_style = " . $config['default_style'];
+			$db->sql_query($sql);
+
+			set_config('default_style', $id);
+		}
+
+		$db->sql_transaction('commit');
+
+		add_log('admin', 'LOG_STYLE_ADD', $name);
+	}
+
+	/**
+	* Install/add an element, doing various checks as we go
+	*/
+	function install_element($mode, &$error, $action, $root_path, &$id, $name, $copyright, $store_db = 0)
+	{
+		global $phpbb_root_path, $db, $user;
+
+		switch ($mode)
+		{
+			case 'template':
+				$sql_from = STYLES_TPL_TABLE;
+			break;
+
+			case 'theme':
+				$sql_from = STYLES_CSS_TABLE;
+			break;
+	
+			case 'imageset':
+				$sql_from = STYLES_IMAGE_TABLE;
+			break;
+		}
+
+		$l_type = strtoupper($mode);
+		$path = str_replace(' ', '_', $name);
+
+		if (!$name)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
+		}
+
+		// Check if the character set is allowed
+		if (!preg_match('/^[a-z0-9_\-\+ ]+$/i', $name))
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_CHARS'];
+		}
+
+		// Check length settings
+		if (strlen($name) > 30)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
+		}
+
+		if (strlen($copyright) > 60)
+		{
+			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
+		}
+
+		// Check if the name already exist
+		$sql = "SELECT {$mode}_id
+			FROM $sql_from
+			WHERE {$mode}_name = '" . $db->sql_escape($name) . "'";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($row)
+		{
+			// If it exist, we just use the stlye on installation
+			if ($action == 'install')
+			{
+				$id = $row[$mode . '_id'];
+				return false;
+			}
+
+			$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
+		}
+
+		if (sizeof($error))
+		{
+			return false;
+		}
+
+		if ($action != 'install')
+		{
+			@mkdir("{$phpbb_root_path}styles/$path", 0777);
+			@chmod("{$phpbb_root_path}styles/$path", 0777);
+		
+			if ($root_path)
+			{
+				$this->copy_files("$root_path$type", filelist("$root_path$type", '', '*'), "$path/$type");
+			}
+		}
+
+		$sql_ary = array(
+			$mode . '_name'			=> $name,
+			$mode . '_copyright'	=> $copyright, 
+			$mode . '_path'			=> $path,
+		);
+
+		if ($mode != 'imageset')
+		{
+			switch ($mode)
+			{
+				case 'template':
+					$sql_ary += array(
+						$mode . '_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/$mode")) ? 1 : 0
+					);
+				break;
+
+				case 'theme':
+					$sql_ary += array(
+						'theme_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db, 
+						'theme_data'	=> ($store_db) ? (($root_path) ? str_replace('./', "styles/$path/theme/", implode('', file("$root_path/$type/stylesheet.css"))) : '') : '', 
+						'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css") : 0
+					);
+				break;
+			}
+		}
+		else
+		{
+			$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+
+			foreach ($cfg_data as $key => $value)
+			{
+				if (strpos($key, 'img_') === 0)
+				{
+					$key = substr($key, 4);
+					$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+				}
+			}
+			unset($cfg_data);
+		}
+
+		$db->sql_transaction('begin');
+
+		$sql = "INSERT INTO $sql_from 
+			" . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
+		$id = $db->sql_nextid();
+
+		if ($mode == 'template' && $store_db) 
+		{
+			$filelist = filelist("{$root_path}template", '', 'html');
+			$this->store_templates('insert', $id, $path, $filelist);
+		}
+
+		$db->sql_transaction('commit');
+
+		$log = ($store_db) ? 'LOG_' . $l_type . '_ADD_DB' : 'LOG_' . $l_type . '_ADD_FS';
+		add_log('admin', $log, $name);
+	}
 }
 
 /**

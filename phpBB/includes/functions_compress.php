@@ -184,7 +184,12 @@ class compress_zip extends compress
 					$file_name_length	= unpack("v", fread($this->fp, 2)); // filename length
 					$extra_field_length	= unpack("v", fread($this->fp, 2)); // extra field length
 					$file_name			= fread($this->fp, $file_name_length[1]); // filename
-					fread($this->fp, $extra_field_length[1]);
+
+					if ($extra_field_length[1])
+					{
+						fread($this->fp, $extra_field_length[1]);
+					}
+
 					$file['offset']		= ftell($this->fp);
 
 					// Bypass the whole compressed contents, and look for the next file
@@ -560,7 +565,12 @@ class compress_tar extends compress
 	{
 		$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
-		if ($this->wrote) $fzwrite($this->fp, pack("a1024", ""));
+
+		if ($this->wrote)
+		{
+			$fzwrite($this->fp, pack("a1024", ""));
+		}
+
 		$fzclose($this->fp);
 	}
 

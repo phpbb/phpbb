@@ -163,24 +163,24 @@
 		<legend>{L_TITLE}</legend>
 	<dl>
 		<dt><label for="name">{L_NAME}:</label></dt>
-		<dd><input type="text" id="name" name="name" value="{NAME}" /></dd>
+		<dd><!-- IF S_INSTALL --><b id="name">{NAME}</b><!-- ELSE --><input type="text" id="name" name="name" value="{NAME}" /><!-- ENDIF --></dd>
 	</dl>
 	<dl>
 		<dt><label for="copyright">{L_COPYRIGHT}:</label></dt>
-		<dd><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /></dd>
+		<dd><!-- IF S_INSTALL --><b id="name">{COPYRIGHT}</b><!-- ELSE --><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
 	</dl>
 	<!-- IF S_STYLE -->
 		<dl>
 			<dt><label for="template_id">{L_STYLE_TEMPLATE}:</label></dt>
-			<dd><select id="template_id" name="template_id">{S_TEMPLATE_OPTIONS}</select></dd>
+			<dd><!-- IF S_INSTALL --><b id="template_id">{TEMPLATE_NAME}</b><!-- ELSE --><select id="template_id" name="template_id">{S_TEMPLATE_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 		<dl>
 			<dt><label for="theme_id">{L_STYLE_THEME}:</label></dt>
-			<dd><select id="theme_id" name="theme_id">{S_THEME_OPTIONS}</select></dd>
+			<dd><!-- IF S_INSTALL --><b id="theme_id">{THEME_NAME}</b><!-- ELSE --><select id="theme_id" name="theme_id">{S_THEME_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 		<dl>
 			<dt><label for="imageset_id">{L_STYLE_IMAGESET}:</label></dt>
-			<dd><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select></dd>
+			<dd><!-- IF S_INSTALL --><b id="imageset_id">{IMAGESET_NAME}</b><!-- ELSE --><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_TEMPLATE or S_THEME -->

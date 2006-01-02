@@ -2476,6 +2476,60 @@ function get_database_size()
 }
 
 /**
+* Retrieve contents from remotely stored file
+*/
+function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 10)
+{
+	global $user;
+
+	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
+	{
+		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
+		@fputs($fsock, "HOST: $host\r\n");
+		@fputs($fsock, "Connection: close\r\n\r\n");
+	
+		$file_info = '';
+		$get_info = false;
+
+		while (!@feof($fsock))
+		{
+			if ($get_info)
+			{
+				$file_info .= @fread($fsock, 1024);
+			}
+			else
+			{
+				$line = @fgets($fsock, 1024);
+				if ($line == "\r\n")
+				{
+					$get_info = true;
+				}
+				else if (strpos($line, '404 Not Found') !== false)
+				{
+					$errstr = $user->lang['FILE_NOT_FOUND'];
+					return false;
+				}
+			}
+		}
+		@fclose($fsock);
+	}
+	else
+	{
+		if ($errstr)
+		{
+			return false;
+		}
+		else
+		{
+			$errstr = 'fsock disabled';
+			return false;
+		}
+	}
+	
+	return $file_info;
+}
+
+/**
 * Tidy database
 * Removes all tracking rows older than 6 months, including mark_posted informations
 */

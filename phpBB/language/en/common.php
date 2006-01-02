@@ -126,6 +126,7 @@ $lang = array_merge($lang, array(
 	'FILENAME'				=> 'Filename',
 	'FILESIZE'				=> 'Filesize',
 	'FILE_COMMENT'			=> 'File comment',
+	'FILE_NOT_FOUND'		=> 'The requested file could not be found',
 	'FIND_USERNAME'			=> 'Find a member',
 	'FOLDER'				=> 'Folder',
 	'FORGOT_PASS'			=> 'I forgot my password',

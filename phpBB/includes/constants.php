@@ -141,7 +141,6 @@ define('FORUMS_ACCESS_TABLE', $table_prefix.'forum_access');
 define('FORUMS_TRACK_TABLE', $table_prefix.'forums_marking');
 define('FORUMS_WATCH_TABLE', $table_prefix.'forums_watch');
 define('GROUPS_TABLE', $table_prefix.'groups');
-define('GROUPS_MODERATOR_TABLE', $table_prefix.'groups_moderator');
 define('ICONS_TABLE', $table_prefix.'icons');
 define('LANG_TABLE', $table_prefix.'lang');
 define('LOG_TABLE', $table_prefix.'log');

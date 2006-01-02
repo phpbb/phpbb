@@ -105,6 +105,7 @@ $lang = array_merge($lang, array(
 	'ACP_STYLES'				=> 'Styles',
 	'ACP_TEMPLATES'				=> 'Templates',
 	'ACP_THEMES'				=> 'Themes',
+	'ACP_UPDATE'				=> 'Updating',
 	'ACP_USER_ATTACH'			=> 'Attachments',
 	'ACP_USER_AVATAR'			=> 'Avatar',
 	'ACP_USER_FEEDBACK'			=> 'Feedback',
@@ -116,6 +117,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_PROFILE'			=> 'Profile',
 	'ACP_USER_SECURITY'			=> 'User Security',
 	'ACP_USER_SIG'				=> 'Signature',
+	'ACP_VERSION_CHECK'			=> 'Check for Updates',
 	'ACP_WORDS'					=> 'Word Censoring',
 
 	'ACTION'				=> 'Action',
@@ -331,6 +333,8 @@ $lang = array_merge($lang, array(
 	'LOG_USERS_APPROVED'	=> '<b>Users approved in usergroup</b> %s<br />&#187; %s',
 	'LOG_USERS_ADDED'		=> '<b>Added new members to usergroup</b> %s<br />&#187; %s',
 
+	'LOG_IMAGESET_ADD_DB'		=> '<b>Added new imageset to database</b><br />&#187; %s',
+	'LOG_IMAGESET_ADD_FS'		=> '<b>Add new imageset on filesystem</b><br />&#187; %s',
 	'LOG_IMAGESET_DELETE'		=> '<b>Deleted imageset</b><br />&#187; %s',
 	'LOG_IMAGESET_EDIT_DETAILS'	=> '<b>Edited imageset details</b><br />&#187; %s',
 	'LOG_IMAGESET_EXPORT'		=> '<b>Exported imageset</b><br />&#187; %s',
@@ -375,14 +379,19 @@ $lang = array_merge($lang, array(
 	'LOG_RESYNC_POSTCOUNTS'	=> '<b>User postcounts synced</b>',
 	'LOG_RESYNC_STATS'		=> '<b>Post, topic and user stats reset</b>',
 
+	'LOG_STYLE_ADD'				=> '<b>Added new style</b><br />&#187; %s',
 	'LOG_STYLE_DELETE'			=> '<b>Deleted style</b><br />&#187; %s',
 	'LOG_STYLE_EDIT_DETAILS'	=> '<b>Edited style</b><br />&#187; %s',
 	'LOG_STYLE_EXPORT'			=> '<b>Exported style</b><br />&#187; %s',
 
+	'LOG_TEMPLATE_ADD_DB'		=> '<b>Added new template set to database</b><br />&#187; %s',
+	'LOG_TEMPLATE_ADD_FS'		=> '<b>Add new template set on filesystem</b><br />&#187; %s',
 	'LOG_TEMPLATE_DELETE'		=> '<b>Deleted template set</b><br />&#187; %s',
 	'LOG_TEMPLATE_EDIT_DETAILS'	=> '<b>Edited template details</b><br />&#187; %s',
 	'LOG_TEMPLATE_EXPORT'		=> '<b>Exported template set</b><br />&#187; %s',
 	
+	'LOG_THEME_ADD_DB'			=> '<b>Added new theme to database</b><br />&#187; %s',
+	'LOG_THEME_ADD_FS'			=> '<b>Add new theme on filesystem</b><br />&#187; %s',
 	'LOG_THEME_DELETE'			=> '<b>Theme deleted</b><br />&#187; %s',
 	'LOG_THEME_EDIT_DETAILS'	=> '<b>Edited theme details</b><br />&#187; %s',
 	'LOG_THEME_EXPORT'			=> '<b>Exported theme</b><br />&#187; %s',

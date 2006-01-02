@@ -1508,6 +1508,10 @@ function parse_cfg_file($filename, $lines = false)
 		{
 			$value = true;
 		}
+		else if (!trim($value))
+		{
+			$value = '';
+		}
 		else if (($value{0} == "'" && $value{sizeof($value)-1} == "'") || ($value{0} == '"' && $value{sizeof($value)-1} == '"'))
 		{
 			$value = substr($value, 1, sizeof($value)-2);

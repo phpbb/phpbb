@@ -299,7 +299,7 @@ class acp_modules
 				$module_data['module_name'] = request_var('module_name', (string) $module_row['module_name']);
 				$module_data['module_enabled'] = request_var('module_enabled', (int) $module_row['module_enabled']);
 				$module_data['module_display'] = request_var('module_display', (int) $module_row['module_display']);
-				$module_data['parent_id'] = request_var('parent_id', (int) $module_row['parent_id']);
+				$module_data['parent_id'] = request_var('module_parent_id', (int) $module_row['parent_id']);
 				$module_data['module_class'] = $this->module_class;
 				$module_data['module_langname'] = request_var('module_langname', (string) $module_row['module_langname']);
 				$module_data['module_mode'] = request_var('module_mode', (string) $module_row['module_mode']);
@@ -385,7 +385,7 @@ class acp_modules
 				$template->assign_vars(array_merge(array(
 					'S_EDIT_MODULE'		=> true,
 					'S_IS_CAT'			=> $is_cat,
-					'S_CAT_OPTIONS'		=> $s_cat_option . $this->make_module_select($parent_id, ($action == 'edit') ? $module_row['module_id'] : false, false, false, false, true),
+					'S_CAT_OPTIONS'		=> $s_cat_option . $this->make_module_select($module_data['parent_id'], ($action == 'edit') ? $module_row['module_id'] : false, false, false, false, true),
 					'S_MODULE_NAMES'	=> $s_name_options,
 					'S_MODULE_MODES'	=> $s_mode_options,
 					'U_BACK'			=> $u_action . '&amp;parent_id=' . $parent_id,
