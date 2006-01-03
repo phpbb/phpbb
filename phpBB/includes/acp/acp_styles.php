@@ -108,11 +108,13 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 		
 			case 'install':
-				$this->install($mode, $action);
+				$this->install($mode);
 				return;
 			break;
 
 			case 'add':
+				$this->add($mode);
+				return;
 			break;
 			
 			case 'details':
@@ -1109,8 +1111,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			trigger_error($user->lang[$l_type . '_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 		}
 
-		$style_options = array();
-
 		if ($mode == 'style')
 		{
 			foreach ($element_ary as $element => $table)
@@ -1252,7 +1252,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Install Style/Template/Theme/Imageset
 	*/
-	function install($mode, $action)
+	function install($mode)
 	{
 		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
 
@@ -1266,7 +1266,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$update = (isset($_POST['update'])) ? true : false;
 
 		// Installing, obtain cfg file contents
-		if ($action == 'install' && $install_path)
+		if ($install_path)
 		{
 			$root_path = $phpbb_root_path . 'styles/' . $install_path . '/';
 			$cfg_file = ($mode == 'style') ? "$root_path$mode.cfg" : "$root_path$mode/$mode.cfg";
@@ -1337,7 +1337,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		else
 		{
-//
+			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action));
 		}
 
 		$style_row['store_db'] = request_var('store_db', 0);
@@ -1347,11 +1347,9 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// User has submitted form and no errors have occured
 		if ($update && !sizeof($error))
 		{
-			$sql_ary = array();
-
 			if ($mode == 'style')
 			{
-				$this->install_style($error, $action, $root_path, $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
 			}
 			else
 			{
@@ -1381,7 +1379,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
 			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
 			
-			'U_ACTION'			=> $this->u_action . "&amp;action=$action&amp;path=" . urlencode($install_path),
+			'U_ACTION'			=> $this->u_action . "&amp;action=install&amp;path=" . urlencode($install_path),
 			'U_BACK'			=> $this->u_action,
 
 			'L_TITLE'				=> $user->lang[$this->page_title],
@@ -1399,6 +1397,160 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		);
 	}
 
+	/**
+	* Add new style
+	*/
+	function add($mode)
+	{
+		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+
+		$l_type = strtoupper($mode);
+		$element_ary = array('template' => STYLES_TPL_TABLE, 'theme' => STYLES_CSS_TABLE, 'imageset' => STYLES_IMAGE_TABLE);
+		$error = array();
+
+		$style_row = array(
+			$mode . '_name'			=> request_var('name', ''),
+			$mode . '_copyright'	=> request_var('copyright', ''),
+			'template_id'			=> 0,
+			'theme_id'				=> 0,
+			'imageset_id'			=> 0,
+			'store_db'				=> request_var('store_db', 0),
+			'style_active'			=> request_var('style_active', 1),
+			'style_default'			=> request_var('style_default', 0),
+		);
+
+		$basis = request_var('basis', 0);
+		$update = (isset($_POST['update'])) ? true : false;
+
+		if ($basis)
+		{
+			switch ($mode)
+			{
+				case 'style':
+					$sql_select = 'template_id, theme_id, imageset_id';
+					$sql_from = STYLES_TABLE;
+				break;
+
+				case 'template':
+					$sql_select = 'template_id';
+					$sql_from = STYLES_TPL_TABLE;
+				break;
+
+				case 'theme':
+					$sql_select = 'theme_id';
+					$sql_from = STYLES_CSS_TABLE;
+				break;
+
+				case 'imageset':
+					$sql_select = 'imageset_id';
+					$sql_from = STYLES_IMAGE_TABLE;
+				break;
+			}
+
+			$sql = "SELECT $sql_select  
+				FROM $sql_from  
+				WHERE {$mode}_id = $basis";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$row) 
+			{
+				$error[] = $user->lang['NO_' . $l_type];
+			}
+
+			if (!sizeof($error))
+			{
+				$style_row['template_id']	= (isset($row['template_id'])) ? $row['template_id'] : $style_row['template_id'];
+				$style_row['theme_id']		= (isset($row['theme_id'])) ? $row['theme_id'] : $style_row['theme_id'];
+				$style_row['imageset_id']	= (isset($row['imageset_id'])) ? $row['imageset_id'] : $style_row['imageset_id'];
+			}
+		}
+
+		if ($update)
+		{
+			$style_row['template_id'] = request_var('template_id', $style_row['template_id']);
+			$style_row['theme_id'] = request_var('theme_id', $style_row['theme_id']);
+			$style_row['imageset_id'] = request_var('imageset_id', $style_row['imageset_id']);
+
+			if ($mode == 'style' && (!$style_row['template_id'] || !$style_row['theme_id'] || !$style_row['imageset_id']))
+			{
+				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+			}
+		}
+
+		// User has submitted form and no errors have occured
+		if ($update && !sizeof($error))
+		{
+			if ($mode == 'style')
+			{
+				$style_row['style_id'] = 0;
+
+				$this->install_style($error, 'add', '', $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+			}
+
+			if (!sizeof($error))
+			{
+				$cache->destroy('sql', STYLES_TABLE);
+
+				$message = ($style_row['store_db']) ? '_ADDED_DB' : '_ADDED';
+				trigger_error($user->lang[$l_type . $message] . adm_back_link($this->u_action));
+			}
+		}
+
+		if ($mode == 'style')
+		{
+			foreach ($element_ary as $element => $table)
+			{
+				$sql = "SELECT {$element}_id, {$element}_name
+					FROM $table 
+					ORDER BY {$element}_id ASC";
+				$result = $db->sql_query($sql);
+
+				${$element . '_options'} = '';
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$selected = ($row[$element . '_id'] == $style_row[$element . '_id']) ? ' selected="selected"' : '';
+					${$element . '_options'} .= '<option value="' . $row[$element . '_id'] . '"' . $selected . '>' . $row[$element . '_name'] . '</option>';
+				}
+				$db->sql_freeresult($result);
+			}
+		}
+
+		$this->page_title = 'ADD_' . $l_type;
+
+		$template->assign_vars(array(
+			'S_DETAILS'			=> true,
+			'S_ADD'				=> true,
+			'S_ERROR_MSG'		=> (sizeof($error)) ? true : false,
+			'S_STYLE'			=> ($mode == 'style') ? true : false,
+			'S_TEMPLATE'		=> ($mode == 'template') ? true : false,
+			'S_THEME'			=> ($mode == 'theme') ? true : false,
+			'S_BASIS'			=> ($basis) ? true : false,
+
+			'S_STORE_DB'			=> (isset($style_row['storedb'])) ? $style_row['storedb'] : 0,
+			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
+			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
+			'S_TEMPLATE_OPTIONS'	=> ($mode == 'style') ? $template_options : '',
+			'S_THEME_OPTIONS'		=> ($mode == 'style') ? $theme_options : '',
+			'S_IMAGESET_OPTIONS'	=> ($mode == 'style') ? $imageset_options : '',
+
+			'U_ACTION'			=> $this->u_action . '&amp;action=add&amp;basis=' . $basis,
+			'U_BACK'			=> $this->u_action,
+
+			'L_TITLE'				=> $user->lang[$this->page_title],
+			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
+			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
+			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
+
+			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
+			'NAME'				=> $style_row[$mode . '_name'],
+			'COPYRIGHT'			=> $style_row[$mode . '_copyright'])
+		);
+
+	}
+		
 	/**
 	* Is this element installed? If not, grab its cfg details
 	*/
@@ -1697,6 +1849,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$log = ($store_db) ? 'LOG_' . $l_type . '_ADD_DB' : 'LOG_' . $l_type . '_ADD_FS';
 		add_log('admin', $log, $name);
 	}
+
 }
 
 /**

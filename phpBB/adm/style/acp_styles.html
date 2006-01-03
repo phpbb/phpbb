@@ -91,8 +91,6 @@
 
 	<!-- IF S_STYLE --> <!-- DEFINE $COLSPAN = 4 --> <!-- ELSE --> <!-- DEFINE $COLSPAN = 3 --> <!-- ENDIF -->
 	
-	<form id="acp_styles" method="post" action="{U_ACTION}">
-	
 	<table cellspacing="1">
 		<col class="row1" /><!-- IF S_STYLE --><col class="row1" /><!-- ENDIF --><col class="row2" />
 	<thead>
@@ -136,9 +134,15 @@
 	</tbody>
 	</table>
 
-	<fieldset class="quick">
-		{L_CREATE}: <input type="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
-	</fieldset>
+	<!-- IF S_STYLE -->
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+
+		<fieldset class="quick">
+			{L_CREATE}: <input type="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
+		</fieldset>
+
+	</form>
+	<!-- ENDIF -->
 
 	</form>
 
@@ -169,7 +173,7 @@
 		<dt><label for="copyright">{L_COPYRIGHT}:</label></dt>
 		<dd><!-- IF S_INSTALL --><b id="name">{COPYRIGHT}</b><!-- ELSE --><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
 	</dl>
-	<!-- IF S_STYLE -->
+	<!-- IF S_STYLE and not S_BASIS -->
 		<dl>
 			<dt><label for="template_id">{L_STYLE_TEMPLATE}:</label></dt>
 			<dd><!-- IF S_INSTALL --><b id="template_id">{TEMPLATE_NAME}</b><!-- ELSE --><select id="template_id" name="template_id">{S_TEMPLATE_OPTIONS}</select><!-- ENDIF --></dd>
