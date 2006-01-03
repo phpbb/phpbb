@@ -153,7 +153,7 @@ if (!$quickmod)
 	if (!$post_id)
 	{
 		$module->set_display('post_details', false);
-		$module->set_display('post', false);
+		$module->set_display('warn_post', false);
 	}
 	if (!$topic_id)
 	{
@@ -166,6 +166,7 @@ if (!$quickmod)
 	if (!$user_id && $username == '')
 	{
 		$module->set_display('user_notes', false);
+		$module->set_display('warn_user', false);
 	}
 
 	// Load and execute the relevant module
