@@ -221,7 +221,7 @@ function h_radio($name, &$input_ary, $input_default = false, $id = false, $key =
 	{
 		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
 		$html .= ($html) ? ' &nbsp; ' : '';
-		$html .= '<input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' /> ' . $user->lang[$title];
+		$html .= '<input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title];
 		$id_assigned = true;
 	}
 
@@ -266,8 +266,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$tpl_type_cond = explode('_', $tpl_type[1]);
 			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-			$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' />&nbsp;' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']);
-			$tpl_yes = '<input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' />&nbsp;' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']);
+			$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']);
+			$tpl_yes = '<input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']);
 
 			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
 			break;
