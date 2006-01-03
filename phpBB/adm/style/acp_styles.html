@@ -56,20 +56,20 @@
 	<!-- IF S_STYLE -->
 	<dl>
 		<dt><label for="inc_template">{L_INCLUDE_TEMPLATE}:</label></dt>
-		<dd><input type="radio" id="inc_template" name="inc_template" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" name="inc_template" value="0" />&nbsp; {L_NO}</dd>
+		<dd><input type="radio" class="radio" id="inc_template" name="inc_template" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="inc_template" value="0" />&nbsp; {L_NO}</dd>
 	</dl>
 	<dl>
 		<dt><label for="inc_theme">{L_INCLUDE_THEME}:</label></dt>
-		<dd><input type="radio" id="inc_theme" name="inc_theme" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" name="inc_theme" value="0" />&nbsp; {L_NO}</dd>
+		<dd><input type="radio" class="radio" id="inc_theme" name="inc_theme" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="inc_theme" value="0" />&nbsp; {L_NO}</dd>
 	</dl>
 	<dl>
 		<dt><label for="inc_imageset">{L_INCLUDE_IMAGESET}:</label></dt>
-		<dd><input type="radio" id="inc_imageset" name="inc_imageset" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" name="inc_imageset" value="0" />&nbsp; {L_NO}</dd>
+		<dd><input type="radio" class="radio" id="inc_imageset" name="inc_imageset" value="1" checked="checked" />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="inc_imageset" value="0" />&nbsp; {L_NO}</dd>
 	</dl>
 	<!-- ENDIF -->
 	<dl>
 		<dt><label for="store">{L_DOWNLOAD_STORE}:</label><br /><span>{L_DOWNLOAD_STORE_EXPLAIN}</span></dt>
-		<dd><input type="radio" id="store" name="store" value="1" checked="checked" />&nbsp; {L_EXPORT_STORE} &nbsp;<input type="radio" name="store" value="0" />&nbsp; {L_EXPORT_DOWNLOAD}</dd>
+		<dd><input type="radio" class="radio" id="store" name="store" value="1" checked="checked" />&nbsp; {L_EXPORT_STORE} &nbsp;<input type="radio" class="radio" name="store" value="0" />&nbsp; {L_EXPORT_DOWNLOAD}</dd>
 	</dl>
 	<dl>
 		<dt><label for="format">{L_ARCHIVE_FORMAT}:</label></dt>
@@ -114,7 +114,7 @@
 			<!-- IF S_STYLE -->
 				<a href="{installed.U_STYLE_ACT_DEACT}">{installed.L_STYLE_ACT_DEACT}</a> |
 			<!-- ENDIF -->
-			{installed.S_OPTIONS} | <a href="{installed.U_PREVIEW}" target="_preview">{L_PREVIEW}</a>
+			{installed.S_OPTIONS} | <a href="{installed.U_PREVIEW}" onclick="this.target='_preview';">{L_PREVIEW}</a>
 		</td>
 	<!-- END installed -->
 	<tr>
@@ -143,8 +143,6 @@
 
 	</form>
 	<!-- ENDIF -->
-
-	</form>
 
 <!-- ELSEIF S_DETAILS -->
 
@@ -190,7 +188,7 @@
 	<!-- IF S_TEMPLATE or S_THEME -->
 		<dl>
 			<dt><label for="store_db">{L_LOCATION}:</label><br /><span>{L_LOCATION_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="store_db" value="0"<!-- IF not S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> />&nbsp; {L_STORE_FILESYSTEM} &nbsp;<input type="radio" name="store_db" value="1"<!-- IF S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> />&nbsp; {L_STORE_DATABASE}</dd>
+			<dd><input type="radio" class="radio" name="store_db" value="0"<!-- IF not S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> />&nbsp; {L_STORE_FILESYSTEM} &nbsp;<input type="radio" class="radio" name="store_db" value="1"<!-- IF S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> />&nbsp; {L_STORE_DATABASE}</dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_STYLE -->
@@ -200,12 +198,12 @@
 			<legend>{L_OPTIONS}</legend>
 		<dl>
 			<dt><label for="style_active">{L_STYLE_ACTIVE}:</label></dt>
-			<dd><input type="radio" name="style_active" value="1"<!-- IF S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" name="style_active" value="0"<!-- IF not S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="style_active" value="1"<!-- IF S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="style_active" value="0"<!-- IF not S_STYLE_ACTIVE --> id="style_active" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
 		</dl>
 		<!-- IF not S_STYLE_DEFAULT -->
 			<dl>
 				<dt><label for="style_default">{L_STYLE_DEFAULT}:</label></dt>
-				<dd><input type="radio" name="style_default" value="1" />&nbsp; {L_YES} &nbsp;<input type="radio" id="style_default" name="style_default" value="0" checked="checked" />&nbsp; {L_NO}</dd>
+				<dd><input type="radio" class="radio" name="style_default" value="1" />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" id="style_default" name="style_default" value="0" checked="checked" />&nbsp; {L_NO}</dd>
 			</dl>
 		<!-- ENDIF -->
 	<!-- ENDIF -->

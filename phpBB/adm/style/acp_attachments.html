@@ -42,7 +42,7 @@
 		</dl>
 		<dl>
 			<dt><label for="display_order">{L_DISPLAY_ORDER}:</label><br /><span>{L_DISPLAY_ORDER_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="display_order" name="display_order" value="0"<!-- IF not DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> /> {L_DESCENDING} &nbsp; <input type="radio" name="display_order" value="1"<!-- IF DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> /> {L_ASCENDING}</dd>
+			<dd><input type="radio" class="radio" id="display_order" name="display_order" value="0"<!-- IF not DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> /> {L_DESCENDING} &nbsp; <input type="radio" name="display_order" value="1"<!-- IF DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> class="radio" /> {L_ASCENDING}</dd>
 		</dl>
 		<dl>
 			<dt><label for="attach_quota">{L_ATTACH_QUOTA}:</label><br /><span>{L_ATTACH_QUOTA_EXPLAIN}</span></dt>
@@ -66,15 +66,15 @@
 		</dl>
 		<dl>
 			<dt><label for="secure_downloads">{L_SECURE_DOWNLOADS}:</label><br /><span>{L_SECURE_DOWNLOADS_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="secure_downloads" name="secure_downloads" value="1"<!-- IF SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_downloads" value="0"<!-- IF not SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" id="secure_downloads" name="secure_downloads" value="1"<!-- IF SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_downloads" value="0"<!-- IF not SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="allow_deny">{L_SECURE_ALLOW_DENY}:</label><br /><span>{L_SECURE_ALLOW_DENY_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="allow_deny" name="secure_allow_deny" value="1"<!-- IF SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> /> {L_ORDER_ALLOW_DENY}&nbsp;&nbsp;<input type="radio" name="secure_allow_deny" value="0"<!-- IF not SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> /> {L_ORDER_DENY_ALLOW}</dd>
+			<dd><input type="radio" id="allow_deny" name="secure_allow_deny" value="1"<!-- IF SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> class="radio" /> {L_ORDER_ALLOW_DENY}&nbsp;&nbsp;<input type="radio" name="secure_allow_deny" value="0"<!-- IF not SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> class="radio" /> {L_ORDER_DENY_ALLOW}</dd>
 		</dl>
 		<dl>
 			<dt><label for="referer">{L_SECURE_EMPTY_REFERER}:</label><br /><span>{L_SECURE_EMPTY_REFERER_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="referer" name="secure_allow_empty_referer" value="1"<!-- IF ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_allow_empty_referer" value="0"<!-- IF not ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" id="referer" name="secure_allow_empty_referer" value="1"<!-- IF ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_allow_empty_referer" value="0"<!-- IF not ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
 		</dl>
 	</fieldset>
 
@@ -82,12 +82,12 @@
 		<legend>{L_SETTINGS_CAT_IMAGES} [{L_ASSIGNED_GROUP}: {ASSIGNED_GROUPS}]</legend>
 		<dl>
 			<dt><label for="display_inlined">{L_DISPLAY_INLINED}:</label><br /><span>{L_DISPLAY_INLINED_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="display_inlined" name="img_display_inlined" value="1"<!-- IF DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0"<!-- IF not DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" id="display_inlined" name="img_display_inlined" value="1"<!-- IF DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0"<!-- IF not DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
 		</dl>
 	<!-- IF S_THUMBNAIL_SUPPORT -->
 		<dl>
 			<dt><label for="create_thumbnail">{L_CREATE_THUMBNAIL}:</label><br /><span>{L_CREATE_THUMBNAIL_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="create_thumbnail" name="img_create_thumbnail" value="1"<!-- IF CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0"<!-- IF not CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" id="create_thumbnail" name="img_create_thumbnail" value="1"<!-- IF CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0"<!-- IF not CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="thumb_filesize">{L_MIN_THUMB_FILESIZE}:</label><br /><span>{L_MIN_THUMB_FILESIZE_EXPLAIN}</span></dt>
@@ -128,7 +128,7 @@
 		</dl>
 		<dl>
 			<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
-			<dd><input type="radio" id="exclude" name="ipexclude" value="1" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" /> {L_NO}</dd>
+			<dd><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
 		</dl>
 	</fieldset>
 
@@ -254,7 +254,7 @@
 			</dl>
 			<dl>
 				<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
+				<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
 				<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
 			</dl>
 		</fieldset>

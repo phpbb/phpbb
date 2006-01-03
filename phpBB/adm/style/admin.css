@@ -1,147 +1,121 @@
-/* phpBB 3.0 Admin Style Sheet
--------------------------------------------------
-	Author: subBlue  (http://www.subBlue.com/)
-	(c) 2005 phpBB Group
--------------------------------------------------*/
-
+/*  phpBB 3.0 Admin Style Sheet
+    --------------------------------------------------------------
+	Original author: Tom Beddard ( http://www.subBlue.com/ )
+	Modified by:     
+	Last update:     $Id$
+	
+	Copyright 2006 phpBB Group ( http://www.phpbb.com/ )
+    --------------------------------------------------------------
+*/
 
 
 /* General markup styles
 ---------------------------------------- */
 * {
+	/* Reset browsers default margin, padding and font sizes */
 	margin: 0;
 	padding: 0;
-	font-size: 100%;
-}
-
-body, div, p, th, td, li, dd {
-	font-size: x-small;
-	voice-family: "\"}\"" inherit;
-	font-size: small
-}
-
-html>body, html>div, html>p, html>th, html>td, html>li, html>dd	{
-	font-size: small
-}
-
-body {
-	font-family: Verdana, Arial, Helvetica, sans-serif;;
-	color: #000;
-	background-image: url(../images/bg_header.jpg);
-	background-repeat: repeat-x;
-	background-color: #E4EDF0;
-	margin: 0;
-}
-
-/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-ie browsers */
+	}
 html {
+	font-size: 100%;
 	height: 100%;
 	margin-bottom: 1px;
-}
-
+	}
+body {
+	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	color: #536482;
+	background: #E4EDF0 url("../images/bg_header.gif") 0 0 repeat-x;
+	font-size: 62.5%;			/* This sets the default font size to be equivalent to 10px */
+	margin: 0;
+	}
 img {
 	border: 0;
-}
-
-/* Adjust */
-#page-header h1 {
-	font-family: Verdana, Arial, Helvetica, sans-serif;;
-	font-size: 170%;
-	font-weight: normal;
-	color: #12749B;
-}
-
-#content h1 {
-	font: bold 18pt 'Trebuchet MS', Verdana, sans-serif;
+	}
+h1 {
+	font: bold 1.8em 'Trebuchet MS', Verdana, sans-serif;
 	text-decoration: none; 
-	line-height: 120%; 
-	margin-bottom: 0px;
-}
-
+	color: #333333;
+	}
 h2, caption {
-	font: bold 12pt Arial, Helvetica, sans-serif;
+	font: bold 1.2em Arial, Helvetica, sans-serif;
 	text-decoration: none; 
 	line-height: 120%; 
 	text-align: left;
 	margin-top: 25px;
-}
-
+	}
 p {
 	margin-bottom: 0.7em;
-	line-height: 140%;
-	font-size: 90%;
-}
-
+	line-height: 1.4em;
+	font-size: 1.1em;
+	}
 hr {
 	border: 0 none;
 	border-top: 1px solid #999999;
 	margin-bottom: 5px;
 	padding-bottom: 5px;
 	height: 1px;
-}
-
+	}
 .small { 
-	font-size: 85%; 
-}
+	font-size: 1em; 
+	}
+
 
 /* General links  */
 a:link, a:active, a:visited { 
 	color: #006699; 
 	text-decoration: none; 
-}
-
+	}
 a:hover { 
 	color: #DD6900; 
 	text-decoration: underline; 
-}
+	}
+
 
 /* Main blocks
 ---------------------------------------- */
+#wrap {
+	padding: 0 20px 15px 20px;
+	min-width: 615px;
+	}
 #page-header {
-	clear: both;
 	text-align: right;
-	font-size: 85%;
-	height: 60px;
-	
-	padding-right: 20px;
-}
-
+	background: url("../images/phpbb_logo.gif") 0 0 no-repeat;
+	height: 84px;
+	}
+#page-header h1 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	font-weight: normal;
+	padding-top: 15px;
+	}
 #page-header p {
-	font-size: 100%;
-}
-
+	font-size: 1.1em;
+	}
 #page-body {
 	clear: both;
-	min-width: 700px;
-}
-
+	}
 #page-footer {
 	clear: both;
-	font-size: 75%;
+	font-size: 1em;
 	text-align: center;
-}
-
-#logo {
-	float: left;
-	width: auto;
-	margin-left: 4px;
-	margin-bottom: 5px;
-}
-
+	}
 #content {
 	padding: 30px 10px 10px 10px;
-}
-
+	}
+#content h1 {
+	line-height: 1.2em; 
+	margin-bottom: 0px;
+	}
 #main {
 	float:left;
 	width: 76%;
 	margin-left: 3%;
 	min-height: 350px;
-}
-
+	}
 * html #main { 
 	height: 350px; 
-}
+	}
 
 
 /* Tabbed menu
@@ -149,89 +123,76 @@ a:hover {
 ----------------------------------------*/
 #tabs {
 	line-height: normal;
-	margin-left: 27px;
-	margin-bottom: -5px;
-	min-width: 600px;
-}
-
-* html #tabs {
-	width: 700px;
-}
-
+	margin: 0 0 -6px 7px;
+	min-width: 570px;
+	}
 #tabs ul {
+	margin:0;
+	padding: 0;
 	list-style: none;
-}
-
+	}
 #tabs li {
 	display: inline;
-	font-size: 85%;
+	margin: 0;
+	padding: 0;
+	font-size: 1em;
 	font-weight: bold;
-	text-transform: capitalize;
-}
-
+	}
 #tabs a {
-	float: left;
-	background-color: #C7D0D7;
-	margin-right: 2px;
-	padding-left: 7px;
+	float:left;
+	background:url("../images/bg_tabs1.gif") no-repeat 0% -35px;
+	margin: 0 1px 0 0;
+	padding: 0 0 0 6px;
 	text-decoration: none;
-	font-size: 100%;
 	position: relative;
-	border: solid 1px  #A9B8C2;
-	background-image: url(../images/cellpic1.gif);
-}
-
+	}
 #tabs a span {
 	float: left;
 	display: block;
-	padding: 7px 10px 4px 4px;
-	color: #006699;
+	background: url("../images/bg_tabs2.gif") no-repeat 100% -35px;
+	padding: 7px 12px 6px 6px;
+	color: #536482;
 	white-space: nowrap;
-	font-family: Arial, Helvetica, sans-serif;
 	text-transform: uppercase;
-	font-weight: bold;
-	
-}
-
+	}
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
 #tabs a span { float:none; }
 /* End hack */
 
-#tabs a:hover {
-	background-color: #EFEFEF;
-}
-
+#tabs a:hover span {
+	color: #DD6900;
+	}
 #tabs #activetab a {
-	border: solid 1px  #A9B8C2;
-	border-bottom: 1px solid #FFF;
-	background-color: #fff;
-	background-image: none;
-}
-
+	background-position: 0 0px;
+	border-bottom: 1px solid #FFFFFF;
+	}
 #tabs #activetab a span {
-	padding-bottom: 4px;
-	background-color: #fff;
-	color: #006699;
-}
+	background-position: 100% 0px;
+	padding-bottom: 7px;
+	color: #333333;
+	}
+#tabs a:hover {
+	background-position: 0 -70px;
+	}
+#tabs a:hover span {
+	background-position:100% -70px;
+	}
+#tabs #activetab a:hover span {
+	color: #333333;
+	}
 
-#tabs #activetab a:hover {
-	color: #FFA34F;
-}
 
-
-/* box
+/* Main Panel
 ---------------------------------------- */
-.box {
-	margin: 4px 20px;
-	padding: 1px;
-	min-width: 550px;
+.panel {
+	margin: 4px 0;
 	background-color: #FFFFFF;
 	border: solid 1px  #A9B8C2;
-}
+	}
+span.corners-top, span.corners-bottom {
+	display: none;
+	}
 
-.innerbox {
-	background-color: #FFFFFF;
-}
 
 /* Sub-navigation Menu
 ---------------------------------------- */
@@ -240,76 +201,58 @@ a:hover {
 	width: 20%;
 	font-size: 100%;
 	padding: 0;
-	
-}
-
+	}
 #menu p {
-	font-size: 85%;
-}
-
+	font-size: 1em;
+	}
 #menu ul {
-	margin:0;
-	padding:0;
-	list-style:none;
-	background-color: #ECECEC;
-	border: solid 1px  #A9B8C2;
-}
+	list-style: none;
+	}
 
 /* Default list state */
 #menu li {
-	margin: 1px 0;
-	padding: 0; margin: 0;
-	font-size: 10px;
+	font-size: 1em;
 	font-weight: bold;
 	display: inline;
-}
+	}
 
 /* Link styles for the sub-section links */
-#menu li a, #menu li a:link, #menu li a:active, #menu li a:visited {
+#menu li a {
 	display: block;
-	padding: 2px 2px 2px 10px;
-	margin: 1px 0;
-	text-decoration:none;
+	padding: 3px 2px 3px 10px;
+	text-decoration: none;
 	font-weight: normal;
 	color: #006699;
 	font-weight: bold;
-}
-
-#menu li a:active {
-	color: #000;
-	
-}
-
-
+	background-color: #ECECEC;
+	border-top: 1px solid #FFFFFF;
+	}
 #menu li a:hover {
-	text-decoration: underline;
-	color: #DD6900;
-}
-
+	text-decoration: none;
+	background-color: #FFA34F;
+	color: #FFFFFF;
+	}
 #menu li.header {
 	display: block;
-	font-weight: bold;
-	color: #115098;
-	padding: 5px 0;
-	font-size: 11px;
+	padding: 5px;
+	font-size: 0.9em;
 	font-family: Verdana;
-	text-align: center;	
 	color: #FFA34F; 
-	font-weight: bold; background-color: #006699; 
-	background-image: url("../images/cellpic3.gif");
-	background-repeat: repeat-x;
-}
-
-#menu li#activemenu a, #menu li#activemenu a:link, #menu li#activemenu a:active, #menu li#activemenu a:visited {
+	font-weight: bold;
+	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
+	margin-top: 5px;
+	text-transform: uppercase;
+	}
+#menu li#activemenu a {
 	text-decoration: none;
 	font-weight: bold;
 	color: #000;
-}
-
+	background-color: #DADFE4;
+	}
 #menu li#activemenu a:hover {
 	text-decoration: none;
 	color: #000;
-}
+	}
 
 
 /* Table styles
@@ -317,28 +260,23 @@ a:hover {
 
 table {
 	width: 100%;
-	background-color: #ACBBC6
-}
-
+	/*background-color: #ACBBC6;*/
+	}
 th, td { 
-	font:	normal 8pt Verdana, Arial, Helvetica, sans-serif;
-}
-
-th	{
-	height:				25px;
-	background-color:	#006699;
-	color:				#FFA34F;
-	font-weight:		bold;
-	font-size:			11px;
-	background-image: url("../images/cellpic3.gif") !important;
-}
-
-td {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 1.1em;
 	text-align: left;
-	font-size: 85%;
+	}
+th	{
+	padding: 6px 4px;
+	color: #FFA34F;
+	font-weight: bold;
+	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
+	}
+td {
 	padding: 4px;
-	line-height: 120%;
-}
+	line-height: 1.2em;
+	}
 
 .row1 { background-color: #EFEFEF; }
 .row2 { background-color: #DEE3E7; }
@@ -350,119 +288,122 @@ td {
 	background-color: #D1D7DC;
 	height: 1px;
 	line-height: 1px;
-}
+	}
 
 table.type2 {
 	border: none;
 	background: none;
 	padding: 0;
 	width: 0;
-}
-
+	}
 table.type2 th {
 	background: none;
 	border-top: none;
 	text-align: center;
 	color: #FFA34F;
 	padding: 2px 0;
-}
-
+	}
 table.type2 td {
 	padding: 0;
-}
+	}
+
 
 /* General form styles
 ----------------------------------------*/
 fieldset { 
 	margin: 15px 0;
 	padding: 10px; 
-	border-top: 1px solid #D7D7D7;
-	border-right: 1px solid #CCCCCC;
-	border-bottom: 1px solid #CCCCCC;
-	border-left: 1px solid #D7D7D7;
+	border-right: 1px solid #AFAEAA;
+	border-bottom: 1px solid #AFAEAA;
+	border-left: 1px solid #D5D5C8;
+	border-top: 1px solid #D5D5C8;
 	background-color: #ECECEC;
 	position: relative;
-}
-
+	}
 * html fieldset { 
 	padding: 0 10px 5px 10px; 
-}
-
+	}
 fieldset p {
-	font-size: 85% !important;
-}
-
+	font-size: 1.1em;
+	}
 legend {
 	padding: 1px 0; 
 	font-family: arial,Verdana,Sans-serif;
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: bold;
 	color: #006699;
 	position: relative;
-	text-transform: capitalize;
+	text-transform: uppercase;
 	line-height: 100%;
 	top: 0em;
 	vertical-align:middle;
-}
-
-/* Hide from macIE \*/
-legend { top: -1.2em; }
-/* end */
-
+	}
 * html legend { 
 	margin-bottom: -10px; 
-	margin-left: -7px; 
-}
+	margin-left: -7px;
+	top: -1.2em;
+	}
 
 input {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 90%;
+	font-size: 100%;
 	font-weight: normal;
-	cursor: pointer;
+	background-color: #FAFAFA;
+	border-left: 1px solid #AFAEAA;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #D5D5C8;
+	border-bottom: 1px solid #D5D5C8;
+	color: #333333;
+	padding: 2px;
+	cursor: text;
 	vertical-align: middle;
-}
-
-optgroup, select {
+	}
+select {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 85%;
+	font-size: 100%;
 	font-weight: normal;
 	font-style: normal;
-	cursor: pointer;
+	cursor: default;
 	vertical-align: middle;
 	width: auto;
-}
-
+	border: 1px solid #666666;
+	padding: 1px;
+	background-color: #FAFAFA;
+	}
 optgroup {
-	font-size: 100%;
 	font-weight: bold;
-}
-
+	}
+option {
+	padding-right: 1em;
+	}
 .sep {
 	color: white;
 	background-color: #006699;
-}
-
+	}
 textarea {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 85%;
+	font-size: 100%;
 	width: 60%;
 	padding: 2px;
-}
-
+	background-color: #FAFAFA;
+	border-left: 1px solid #AFAEAA;
+	border-top: 1px solid #AFAEAA;
+	border-right: 1px solid #D5D5C8;
+	border-bottom: 1px solid #D5D5C8;
+	cursor: text;
+	}
 label {
 	cursor:pointer;
-	font-size: 85%;
+	font-size: 1.1em;
 	padding-right: 5px;
-}
-
+	}
 label input {
 	font-size: 100%;
 	vertical-align: middle;
-}
-
+	}
 label img {
 	vertical-align: middle;
-}
+	}
 
 fieldset.quick {
 	margin: 0 0 5px 0;
@@ -470,96 +411,98 @@ fieldset.quick {
 	border: none;
 	background-color: transparent;
 	text-align: right;
-}
-
+	font-size: 1.1em;
+	}
 fieldset.nobg {
 	margin: 15px 0 0 0;
 	padding: 0;
 	border: none;
 	background-color: transparent;
-}
-
+	font-size: 1.1em;
+	}
 fieldset.display-options {
 	margin: 15px 0 2px 0;
 	padding: 0 0 4px 0;
 	border: none;
 	background-color: transparent;
 	text-align: center;
-	font-size: 75%;
-}
-
+	font-size: 1.1em;
+	}
 fieldset.display-options select, fieldset.display-options input, fieldset.display-options label {
 	font-size: 100%;
 	vertical-align: middle;
-}
-
+	}
 select option.disabled {
 	background-color: #bbb;
 	color: #fff;
-}
+	}
+
+/* Special case inputs */
+select#board_timezone, 
+select#full_folder_action {
+	width: 95%;
+	}
+
 
 /* Definition list layout for forms
    Other general def. list properties defined in prosilver_main.css
 ---------------------------------------- */
 dl {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 100%;
-}
-
+	}
 dt {
 	float: left;
 	width: auto;
-}
+	}
 
 dd { color: #000; }
-dd + dd { margin-top: 4px; }
+dd + dd { padding-top: 5px; }
 dt span { padding-right: 5px; }
 
 dt label {
 	font-size: 100%;
 	text-align: left;
 	font-weight: bold;
-}
-
+	}
 dd label {
-	font-size: 100%;
 	white-space: nowrap;
-	
 	margin-right: 10px;
-}
+	}
 
 html>body dd label input { vertical-align: text-bottom; }	/* Tweak for Moz to align checkboxes/radio buttons nicely */
-dd input, dd textarea { font-size: 90%; }
-
+dd input, 
+dd select {
+	max-width: 100%;
+	}
+dd textarea {
+	width: 100%;
+	}
+input.radio {
+	width: auto !important;
+	background-color: transparent;
+	border: none;
+	cursor: default;
+	}
 dd select {
 	width: auto;
 	font-size: 100%;
-}
-
-dd textarea {
-	width: 90%;
-}
-
+	}
 fieldset dl {
-	font-size: 85%;
 	margin-bottom: 10px;
-}
-
+	font-size: 1.1em;
+	}
 fieldset dt {
 	width: 45%;
 	text-align: left;
 	border-right: 1px solid #CCC;
 	padding-top: 3px;
-}
-
+	}
 fieldset dd {
 	margin-left: 45%;
 	padding-left: 5px;
-	font-size: 100% !important;
 	border-left: 1px solid #CCC;
 	vertical-align: top;
-}
-
+	}
 dd.full {
 	margin-left: 0;
 	border: 0;
@@ -567,35 +510,30 @@ dd.full {
 	padding-top: 3px;
 	text-align: center;
 	width: 95%;
-}
+	}
 
 /* Hover highlights for form rows */
-fieldset dl:hover dt {
-	border-right-color: #ccc;
-}
+fieldset dl:hover dt label {
+	color: #000000;
+	}
+input:focus, textarea:focus {
+	color: #000000;
+	}
 
-fieldset dl:hover dd {
-	border-left-color: #ccc;
-}
-
-fieldset dl dd label:hover {
-	color: #ccc;
-}
 
 /* Submit button fieldset
 ---------------------------------------- */
 fieldset.submit-buttons {
 	text-align: center;
-	background-image: url(../images/cellpic1.gif);
+	background-color: #DADFE4;
 	margin: 0;
 	padding: 4px;
-	border: solid 1px #A9B8C2;
 	margin-top: -1px;
-}
-
+	}
 fieldset.submit-buttons input {
 	padding: 3px 2px;
-}
+	}
+
 
 /* Input field styles
 ---------------------------------------- */
@@ -610,35 +548,36 @@ fieldset.submit-buttons input {
 	padding:2px;
 	cursor: text;
 	width: 75%;
-}
-
+	}
 select.inputbox {
 	cursor: pointer;
 	padding: 0;
 	width: auto;
-}
-
+	}
 .inputbox:hover {
 	border-left: 1px solid #AFAEAA;
 	border-top: 1px solid #AFAEAA;
 	border-right: 1px solid #AFAEAA;
 	border-bottom: 1px solid #AFAEAA;
 	background-color: #E9E9E2;
-}
-
+	}
 .inputbox:focus {
 	border: 1px solid #BC2A4D;
 	background-color: #E9E9E2;
 	color: #BC2A4D;
-}
+	}
 
-input.full, textarea.full { width: 99%; }
+input.full,
+textarea.full {
+	width: 99%;
+	}
 * html input.full, * html textarea.full { width: 95%; }
 input.medium { width: 50%; }
 input.narrow { width: 25%; }
 input.tiny { width: 10%; }
 input.autowidth { width: auto !important; }
 .box2 .inputbox { background-color: #E9E9E9; }
+
 
 /* Pagination
 ---------------------------------------- */
@@ -647,14 +586,13 @@ input.autowidth { width: auto !important; }
 	width: auto;
 	text-align: right;
 	margin-top: 5px;
-	font-size: 85%;
+	font-size: 1em;
 	padding-bottom: 2px;
-}
-
-.pagination strong, .pagination b {
+	}
+.pagination strong,
+.pagination b {
 	font-weight: normal;
-}
-
+	}
 .pagination span strong {
 	padding: 0 2px;
 	margin: 0 2px;
@@ -662,8 +600,7 @@ input.autowidth { width: auto !important; }
 	color: #FFFFFF;
 	background: #069;
 	border: 1px solid #069;
-}
-
+	}
 .pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
 	font-weight: normal;
 	text-decoration: none;
@@ -672,40 +609,36 @@ input.autowidth { width: auto !important; }
 	padding: 0 2px;
 	background: #ECEDEE;
 	border: 1px solid #B4BAC0;
-}
-
+	}
 .pagination span a:hover {
 	border-color: #069;
 	background: #069;
 	color: #FFF;
 	text-decoration: none;
-}
-
+	}
 .pagination img {
 	vertical-align: middle;
-}
+	}
+
 
 /* Form button styles
 ---------------------------------------- */
 a.button1, input.button1, input.button3, 
 a.button2, input.button2  {
 	width: auto !important;
-	padding: 1px 3px;
+	padding: 1px 3px 0 3px;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	color: #000;
-	font-size: 85%;
-	background: #FAFAFA;
-}
-
+	background-color: #EFEFEF;
+	cursor: pointer;
+	}
 a.button1, input.button1 {
 	font-weight: bold;
 	border: 1px solid #666666; 
-}
-
-/* Alternative button */
+	}
 a.button2, input.button2 {
 	border: 1px solid #666666;
-}
+	}
 
 /* <a> button in the style of the form buttons */
 a.button1, a.button1:link, a.button1:visited, a.button1:active,
@@ -713,100 +646,53 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	text-decoration: none;
 	color: #000000;
 	padding: 4px 8px;
-}
+	}
 
-/* Success highlighting
+
+/* Action Highlighting
 ---------------------------------------- */
 .success {
 	color: #282 !important;
-}
-
-.successbox {
-	padding: 0px;
-	margin: 37px 0;
-	font-size: 100%;
-	background-color: #ECECEC;
-	color: #282;
-	text-align: center;
-	font-weight: bold;
-}
-
-* html .sucessbox { height: 1%; } /* Pixel shift fix for IE */
-
-.successbox h3 {
-	font-size: 11px;
-	color: #FFA34F; 
-	font-weight: bold; 
-	background-color: #006699; 
-	background-image: url('../images/cellpic3.gif');
-	background-repeat: repeat-x;
-	padding: 5px 0;
-}
-
-.successbox p {
-	margin: 20px;
-	font-size: 12px;
-}
-
-.successbox a:link, .errorbox a:active, .errorbox a:visited {
-	text-decoration: none;
-}
-
-.successbox a:hover {
-	text-decoration: none;
-}
-
-/* Error highlighting
----------------------------------------- */
+	}
 .error {
 	color: #BC2A4D !important;
-}
-
-.errorbox {
-	padding: 0px;
-	margin: 37px 0;
-	font-size: 100%;
-	background-color: #ECECEC;
-	color: #BC2A4D;
+	}
+.successbox, .errorbox {
+	padding: 10px;
+	margin: 20px 0;
+	color: #1F5B13;
 	text-align: center;
+	}
+.successbox {
+	background-color: #B9DBB3;
+	}
+.errorbox {
+	background-color: #ECECEC;
+	}
+.successbox h3, .errorbox h3 {
 	font-weight: bold;
-}
-
-* html .errorbox { height: 1%; } /* Pixel shift fix for IE */
-
-.errorbox h3 {
-	font-size: 11px;
-	color: #FFA34F; 
-	font-weight: bold; 
-	background-color: #006699; 
-	background-image: url('../images/cellpic3.gif');
-	background-repeat: repeat-x;
-	padding: 5px 0;
-}
-
-.errorbox p {
-	margin: 20px;
-	font-size: 12px;
-}
-
-.errorbox a:link, .errorbox a:active, .errorbox a:visited {
+	font-size: 1.4em;
+	margin-bottom: 0.5em;
+	}
+.successbox p, .errorbox p {
+	font-size: 1.1em;
+	margin-bottom: 0;
+	}
+.successbox a, .errorbox a {
+	font-weight: bold;
 	text-decoration: none;
-}
+	}
 
-.errorbox a:hover {
-	text-decoration: none;
-}
 
 /*
  Format Buttons for signature editor
 */
 #format-buttons {
 	margin: 15px 0 2px 0;
-}
-
+	}
 #format-buttons input, #format-buttons select {
 	vertical-align: middle;
-}
+	}
 
 /* Nice method for clearing floated blocks without having to insert any extra markup
    From http://www.positioniseverything.net/easyclearing.html */

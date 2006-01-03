@@ -15,7 +15,7 @@
 
 <!-- BEGIN bool -->
 	<!-- IF bool.FIELD_LENGTH eq 1 -->
-		<!-- BEGIN options --><input type="radio" name="{bool.FIELD_IDENT}" value="{bool.options.OPTION_ID}"{bool.options.CHECKED} /> {bool.options.VALUE}&nbsp; &nbsp;<!-- END options -->
+		<!-- BEGIN options --><input type="radio" class="radio" name="{bool.FIELD_IDENT}" value="{bool.options.OPTION_ID}"{bool.options.CHECKED} /> {bool.options.VALUE}&nbsp; &nbsp;<!-- END options -->
 	<!-- ELSE -->
 		<input type="checkbox" name="{bool.FIELD_IDENT}"<!-- IF bool.FIELD_VALUE --> checked="checked"<!-- ENDIF --> />
 	<!-- ENDIF -->

@@ -71,8 +71,8 @@
 	<div id="type_actions"<!-- IF S_FORUM_POST --> style="display: none;"<!-- ENDIF -->>
 	<dl>
 		<dt><label for="type_action">{L_DECIDE_MOVE_DELETE_CONTENT}:</label></dt>
-		<dd><input type="radio" id="type_action" name="type_action" value="delete" checked="checked" /> {L_DELETE_ALL_POSTS}</dd>
-		<!-- IF S_MOVE_FORUM_OPTIONS --><dd><input type="radio" name="type_action" value="move" /> {L_MOVE_POSTS_TO} <select name="to_forum_id">{S_MOVE_FORUM_OPTIONS}</select></dd><!-- ENDIF -->
+		<dd><input type="radio" class="radio" id="type_action" name="type_action" value="delete" checked="checked" /> {L_DELETE_ALL_POSTS}</dd>
+		<!-- IF S_MOVE_FORUM_OPTIONS --><dd><input type="radio" class="radio" name="type_action" value="move" /> {L_MOVE_POSTS_TO} <select name="to_forum_id">{S_MOVE_FORUM_OPTIONS}</select></dd><!-- ENDIF -->
 	</dl>
 	</div>
 	<!-- ENDIF -->
@@ -106,7 +106,7 @@
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
 			<dt><label for="display_active">{L_DISPLAY_ACTIVE_TOPICS}:</label><br /><span>{L_DISPLAY_ACTIVE_TOPICS_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="display_active" value="1"<!-- IF S_DISPLAY_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="display_active" value="0"<!-- IF not S_DISPLAY_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="display_active" value="1"<!-- IF S_DISPLAY_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="display_active" value="0"<!-- IF not S_DISPLAY_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		</fieldset>	
 	</div>
@@ -120,25 +120,25 @@
 		</dl>
 		<dl>
 			<dt><label for="enable_indexing">{L_ENABLE_INDEXING}:</label><br /><span>{L_ENABLE_INDEXING_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="enable_indexing" value="1"<!-- IF S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="enable_indexing" value="0"<!-- IF not S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="enable_indexing" value="1"<!-- IF S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="enable_indexing" value="0"<!-- IF not S_ENABLE_INDEXING --> id="enable_indexing" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="enable_icons">{L_ENABLE_TOPIC_ICONS}:</label></dt>
-			<dd><input type="radio" name="enable_icons" value="1"<!-- IF S_TOPIC_ICONS --> id="enable_icons" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="enable_icons" value="0"<!-- IF not S_TOPIC_ICONS --> id="enable_icons" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="enable_icons" value="1"<!-- IF S_TOPIC_ICONS --> id="enable_icons" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="enable_icons" value="0"<!-- IF not S_TOPIC_ICONS --> id="enable_icons" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 	<!-- IF S_SHOW_DISPLAY_ON_INDEX -->
 		<dl>
 			<dt><label for="display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 	<!-- ENDIF -->
 		<dl>
 			<dt><label for="display_recent">{L_ENABLE_RECENT}:</label><br /><span>{L_ENABLE_RECENT_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="display_recent" value="1"<!-- IF S_DISPLAY_ACTIVE_TOPICS --> id="display_recent" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="display_recent" value="0"<!-- IF not S_DISPLAY_ACTIVE_TOPICS --> id="display_recent" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="display_recent" value="1"<!-- IF S_DISPLAY_ACTIVE_TOPICS --> id="display_recent" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="display_recent" value="0"<!-- IF not S_DISPLAY_ACTIVE_TOPICS --> id="display_recent" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="enable_prune">{L_FORUM_AUTO_PRUNE}:</label><br /><span>{L_FORUM_AUTO_PRUNE_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="enable_prune" value="1"<!-- IF S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="enable_prune" value="0"<!-- IF not S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="enable_prune" value="1"<!-- IF S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="enable_prune" value="0"<!-- IF not S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}:</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
@@ -154,15 +154,15 @@
 		</dl>
 		<dl>
 			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}:</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="prune_old_polls" value="1"<!-- IF S_PRUNE_OLD_POLLS --> id="prune_old_polls" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="prune_old_polls" value="0"<!-- IF not S_PRUNE_OLD_POLLS --> id="prune_old_polls" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="prune_old_polls" value="1"<!-- IF S_PRUNE_OLD_POLLS --> id="prune_old_polls" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="prune_old_polls" value="0"<!-- IF not S_PRUNE_OLD_POLLS --> id="prune_old_polls" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_announce">{L_PRUNE_ANNOUNCEMENTS}:</label></dt>
-			<dd><input type="radio" name="prune_announce" value="1"<!-- IF S_PRUNE_ANNOUNCE --> id="prune_announce" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="prune_announce" value="0"<!-- IF not S_PRUNE_ANNOUNCE --> id="prune_announce" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="prune_announce" value="1"<!-- IF S_PRUNE_ANNOUNCE --> id="prune_announce" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="prune_announce" value="0"<!-- IF not S_PRUNE_ANNOUNCE --> id="prune_announce" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_sticky">{L_PRUNE_STICKY}:</label></dt>
-			<dd><input type="radio" name="prune_sticky" value="1"<!-- IF S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="prune_sticky" value="0"<!-- IF not S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="prune_sticky" value="1"<!-- IF S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="prune_sticky" value="0"<!-- IF not S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}:</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
@@ -188,7 +188,7 @@
 		</dl>
 		<dl>
 			<dt><label for="forum_link_track">{L_FORUM_LINK_TRACK}:</label><br /><span>{L_FORUM_LINK_TRACK_EXPLAIN}</span></dt>
-			<dd><input type="radio" name="forum_link_track" value="1"<!-- IF S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="forum_link_track" value="0"<!-- IF not S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="forum_link_track" value="1"<!-- IF S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="forum_link_track" value="0"<!-- IF not S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
 		</fieldset>
 	</div>
@@ -247,18 +247,18 @@
 	<!-- IF S_FORUM_POST -->
 		<dl>
 			<dt><label for="delete_action">{L_ACTION}:</label></dt>
-			<dd><input type="radio" id="delete_action" name="action_posts" value="delete" checked="checked" /> {L_DELETE_ALL_POSTS}</dd>
+			<dd><input type="radio" class="radio" id="delete_action" name="action_posts" value="delete" checked="checked" /> {L_DELETE_ALL_POSTS}</dd>
 			<!-- IF S_MOVE_FORUM_OPTIONS -->
-				<dd><input type="radio" name="action_posts" value="move" /> {L_MOVE_POSTS_TO} <select name="posts_to_id">{S_MOVE_FORUM_OPTIONS}</select></dd>
+				<dd><input type="radio" class="radio" name="action_posts" value="move" /> {L_MOVE_POSTS_TO} <select name="posts_to_id">{S_MOVE_FORUM_OPTIONS}</select></dd>
 			<!-- ENDIF -->
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_HAS_SUBFORUMS -->
 		<dl>
 			<dt><label for="sub_delete_action">{L_ACTION}:</label></dt>
-			<dd><input type="radio" id="sub_delete_action" name="action_subforums" value="delete" checked="checked" /> {L_DELETE_SUBFORUMS}</dd>
+			<dd><input type="radio" class="radio" id="sub_delete_action" name="action_subforums" value="delete" checked="checked" /> {L_DELETE_SUBFORUMS}</dd>
 			<!-- IF S_FORUMS_LIST -->
-				<dd><input type="radio" name="action_subforums" value="move" /> {L_MOVE_SUBFORUMS_TO} <select name="subforums_to_id">{S_FORUMS_LIST}</select></dd>
+				<dd><input type="radio" class="radio" name="action_subforums" value="move" /> {L_MOVE_SUBFORUMS_TO} <select name="subforums_to_id">{S_FORUMS_LIST}</select></dd>
 			<!-- ENDIF -->
 		</dl>
 	<!-- ENDIF -->
@@ -290,31 +290,25 @@
 		</div>
 	<!-- ENDIF -->
 	
-	<table cellspacing="1">
-	<tbody>
-	<tr>
-		<td class="row3">{NAVIGATION}<!-- IF S_NO_FORUMS --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a><!-- IF not S_LINK --> | <a href="{U_SYNC}">{L_RESYNC}</a><!-- ENDIF --->]<!-- ENDIF --></td>
-	</tr>
-	</tbody>
-	</table>
+	<p><strong>{NAVIGATION}<!-- IF S_NO_FORUMS --> [<a href="{U_EDIT}">{L_EDIT}</a> | <a href="{U_DELETE}">{L_DELETE}</a><!-- IF not S_LINK --> | <a href="{U_SYNC}">{L_RESYNC}</a><!-- ENDIF --->]<!-- ENDIF --></strong></p>
 
-<!-- IF .forums -->
+<!-- IF forums -->
 	<table cellspacing="1">
-		<col class="row1" /><col class="row1" /><col class="row2" /><col class="row2" />
+		<col class="row1" /><col class="row1" /><col class="row2" />
 	<tbody>
 	<!-- BEGIN forums -->
 		<tr>
 			<td style="width: 5%;">{forums.FOLDER_IMAGE}</td>
-			<td style="width: 50%; vertical-align: top;">
-				<!-- IF forums.S_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF -->
+			<td>
+				<strong><!-- IF forums.S_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 				<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 				<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
 			</td>
-			<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;"><a href="{forums.U_MOVE_UP}">{L_MOVE_UP}</a><br /><a href="{forums.U_MOVE_DOWN}">{L_MOVE_DOWN}</a></td>
-			<td style="width: 20%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;
-				<a href="{forums.U_EDIT}">{L_EDIT}</a> | <a href="{forums.U_DELETE}">{L_DELETE}</a>
-				<!-- IF not forums.S_LINK --> | <a href="{forums.U_SYNC}">{L_RESYNC}</a><!-- ENDIF -->
-			&nbsp;</td>
+			<td style="width: 15%; text-align: right; white-space: nowrap;"><!-- IF not forums.S_FIRST_ROW --><a href="{forums.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
+				<!-- IF not forums.S_LAST_ROW --><a href="{forums.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
+				<a href="{forums.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT}" title="{L_EDIT}" width="16" height="16" /></a> 
+				<!-- IF not forums.S_LINK --><a href="{forums.U_SYNC}"><img src="images/icon_sync.gif" alt="{L_RESYNC}" title="{L_RESYNC}" width="16" height="16" /></a> <!-- ENDIF -->
+				<a href="{forums.U_DELETE}"><img src="images/icon_delete.gif" alt="{L_DELETE}" title="{L_DELETE}" width="16" height="16" /></a></td>
 		</tr>
 	<!-- END forums -->
 	</tbody>
