@@ -320,6 +320,10 @@ switch ($mode)
 		$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
 		unset($row);
 
+		/**
+		* @todo check for f_read and check the reasoning why $auth2 is not used for determining the active topics
+		*/
+		
 		// Obtain list of forums where this users post count is incremented
 		$auth2 = new auth();
 		$auth2->acl($member);

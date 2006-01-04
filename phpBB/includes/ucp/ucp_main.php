@@ -53,23 +53,15 @@ class ucp_main
 				$folder = 'folder_announce';
 				$folder_new = $folder . '_new';
 
-				// Determine first forum the user is able to read into - for global announcement link
-				$forum_ary = $auth->acl_getf('f_read');
-				$g_forum_id = 0;
-
-				foreach ($forum_ary as $forum_id => $allowed)
-				{
-					if (!$allowed['f_read'])
-					{
-						unset($forum_ary[$forum_id]);
-					}
-				}
+				// Get cleaned up list... return only those forums not having the f_read permission
+				$forum_ary = $auth->acl_getf('!f_read', true);
 				$forum_ary = array_unique(array_keys($forum_ary));
 
+				// Determine first forum the user is able to read into - for global announcement link
 				$sql = 'SELECT forum_id 
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST . '
-						AND forum_id IN (' . implode(', ', $forum_ary) . ')';
+						AND forum_id NOT IN (' . implode(', ', $forum_ary) . ')';
 				$result = $db->sql_query_limit($sql, 1);
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
 				$db->sql_freeresult($result);
@@ -140,19 +132,20 @@ class ucp_main
 					);
 				}
 
-				$post_count_ary = $auth->acl_getf('f_postcount');
+				$post_count_ary = $auth->acl_getf('!f_postcount');
+				$forum_read_ary = $auth->acl_getf('!f_read');
 				
 				$forum_ary = array();
 				foreach ($post_count_ary as $forum_id => $allowed)
 				{
-					if ($allowed['f_read'] && $allowed['f_postcount'])
+					if ($allowed['f_postcount'] || $forum_read_ary[$forum_id]['f_read'])
 					{
 						$forum_ary[] = $forum_id;
 					}
 				}
 
-				$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id IN (' . implode(', ', $forum_ary) . ')' : '';
-				unset($forum_ary, $post_count_ary);
+				$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
+				unset($forum_ary, $post_count_ary, $forum_read_ary);
 
 				if ($post_count_sql)
 				{

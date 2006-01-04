@@ -205,16 +205,17 @@ class acp_main
 				}
 
 				$post_count_ary = $auth->acl_getf('f_postcount');
-
+				$forum_read_ary = $auth->acl_getf('f_read');
+				
 				$forum_ary = array();
 				foreach ($post_count_ary as $forum_id => $allowed)
 				{
-					if ($allowed['f_postcount'])
+					if ($allowed['f_postcount'] && $forum_read_ary[$forum_id]['f_read'])
 					{
 						$forum_ary[] = $forum_id;
 					}
 				}
-			
+
 				if (!sizeof($forum_ary))
 				{
 					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');

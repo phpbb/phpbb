@@ -6,6 +6,7 @@
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* Minimum Requirement: PHP 4.3.3
 */
 
 // Remove the following line to enable this software, be sure you note what it
@@ -77,6 +78,7 @@ require($phpbb_root_path . 'includes/acm/acm_main.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
+require($phpbb_root_path . 'includes/auth.' . $phpEx);
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 

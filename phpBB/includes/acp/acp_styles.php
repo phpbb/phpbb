@@ -1778,7 +1778,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			return false;
 		}
-
+/*
 		if ($action != 'install')
 		{
 			@mkdir("{$phpbb_root_path}styles/$path", 0777);
@@ -1789,7 +1789,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$this->copy_files("$root_path$type", filelist("$root_path$type", '', '*'), "$path/$type");
 			}
 		}
-
+*/
 		$sql_ary = array(
 			$mode . '_name'			=> $name,
 			$mode . '_copyright'	=> $copyright, 
@@ -1809,7 +1809,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				case 'theme':
 					$sql_ary += array(
 						'theme_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db, 
-						'theme_data'	=> ($store_db) ? (($root_path) ? str_replace('./', "styles/$path/theme/", implode('', file("$root_path/$type/stylesheet.css"))) : '') : '', 
+						'theme_data'	=> ($store_db) ? (($root_path) ? str_replace('./', "styles/$path/theme/", implode('', file("$root_path/$mode/stylesheet.css"))) : '') : '', 
 						'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css") : 0
 					);
 				break;
