@@ -84,10 +84,10 @@ if ($id && $sid)
 		}
 		
 		$force_load = true;	// Ideally this needs to be based on $config['load_tplcompile']
-		
+
 		if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css')  || $force_load)
 		{
-			$theme['theme_data'] = implode('', file("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'));
+			$theme['theme_data'] = file_get_contents("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
 			
 			// Match CSS imports
 			$matches = array();
@@ -97,7 +97,7 @@ if ($id && $sid)
 			{
 				foreach ($matches[0] as $idx => $match)
 				{
-					$theme['theme_data'] = str_replace($match, load_css_file($matches[1][$idx]), $theme['theme_data']);
+					$theme['theme_data'] = str_replace($match, file_get_contents("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/' . $matches[1][$idx]), $theme['theme_data']);
 				}
 			}
 			
@@ -131,25 +131,5 @@ if ($id && $sid)
 	}
 	$db->sql_close();
 }
-
-function load_css_file($filename)
-{
-	global $phpbb_root_path, $theme;
-	
-	$handle = "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/' . $filename;
-	
-	if ($fp = @fopen($handle, 'r'))
-	{
-		$content = trim(@fread($fp, filesize($handle)));
-		@fclose($fp);
-	}
-	else
-	{
-		$content = '';
-	}
-	
-	return $content;
-}
-
 
 ?>

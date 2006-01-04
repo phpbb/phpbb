@@ -44,13 +44,12 @@ class template_compile
 	function _tpl_load_file($handle)
 	{
 		// Try and open template for read
-		if (!($fp = @fopen($this->template->files[$handle], 'r')))
+		if (!file_exists($this->template->files[$handle]))
 		{
 			trigger_error("template->_tpl_load_file(): File {$this->template->files[$handle]} does not exist or is empty", E_USER_ERROR);
 		}
 
-		$this->template->compiled_code[$handle] = $this->compile(trim(@fread($fp, filesize($this->template->files[$handle]))));
-		@fclose($fp);
+		$this->template->compiled_code[$handle] = $this->compile(trim(@file_get_contents($this->template->files[$handle])));
 
 		// Actually compile the code now.
 		$this->compile_write($handle, $this->template->compiled_code[$handle]);

@@ -768,23 +768,23 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			switch ($format)
 			{
 				case 'tar':
-					$ext = 'tar';
+					$ext = '.tar';
 					$mimetype = 'x-tar';
 					$compress = 'compress_tar';
 				break;
 
 				case 'zip':
-					$ext = 'zip';
+					$ext = '.zip';
 					$mimetype = 'zip';
 				break;
 
 				case 'tar.gz':
-					$ext = 'tar.gz';
+					$ext = '.tar.gz';
 					$mimetype = 'x-gzip';
 				break;
 
 				case 'tar.bz2':
-					$ext = 'tar.bz2';
+					$ext = '.tar.bz2';
 					$mimetype = 'x-bzip2';
 				break;
 
@@ -800,11 +800,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 				if ($format == 'zip')
 				{
-					$compress = new compress_zip('w', $phpbb_root_path . "store/$path.$ext");
+					$compress = new compress_zip('w', $phpbb_root_path . "store/$path$ext");
 				}
 				else
 				{
-					$compress = new compress_tar('w', $phpbb_root_path . "store/$path.$ext", $ext);
+					$compress = new compress_tar('w', $phpbb_root_path . "store/$path$ext", $ext);
 				}
 				
 				if (sizeof($files))
@@ -830,11 +830,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				if (!$store)
 				{
 					$compress->download($path);
-					@unlink("{$phpbb_root_path}store/$path.$ext");
+					@unlink("{$phpbb_root_path}store/$path$ext");
 					exit;
 				}
 
-				trigger_error(sprintf($user->lang[$l_prefix . '_EXPORTED'], "store/$path.$ext") . adm_back_link($this->u_action));
+				trigger_error(sprintf($user->lang[$l_prefix . '_EXPORTED'], "store/$path$ext") . adm_back_link($this->u_action));
 			}
 		}
 

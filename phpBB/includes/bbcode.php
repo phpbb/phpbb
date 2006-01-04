@@ -342,12 +342,10 @@ class bbcode
 
 		if (empty($this->bbcode_template))
 		{
-			if (!($fp = @fopen($this->template_filename, 'rb')))
+			if (($tpl = file_get_contents($this->template_filename)) === false)
 			{
 				trigger_error('Could not load bbcode template');
 			}
-			$tpl = fread($fp, filesize($this->template_filename));
-			@fclose($fp);
 
 			// replace \ with \\ and then ' with \'.
 			$tpl = str_replace('\\', '\\\\', $tpl);
@@ -355,12 +353,16 @@ class bbcode
 			
 			// strip newlines and indent
 			$tpl = preg_replace("/\n[\n\r\s\t]*/", '', $tpl);
-
+			
 			// Turn template blocks into PHP assignment statements for the values of $bbcode_tpl..
-			$tpl = preg_replace('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#', "\n" . "\$this->bbcode_template['\$1'] = \$this->bbcode_tpl_replace('\$1','\$2');", $tpl);
-
 			$this->bbcode_template = array();
-			eval($tpl);
+
+			$matches = preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (?:.*?) -->#', $tpl, $match);
+
+			for ($i = 0; $i < $matches - 1; $i++)
+			{
+				$this->bbcode_template[$match[1][$i]] = $this->bbcode_tpl_replace($match[1][$i], $match[2][$i]);
+			}
 		}
 
 		return (isset($this->bbcode_template[$tpl_name])) ? $this->bbcode_template[$tpl_name] : ((isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : false);

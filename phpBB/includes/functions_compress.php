@@ -31,15 +31,7 @@ class compress
 
 		if (is_file($phpbb_root_path . $src))
 		{
-			if (!($fp = @fopen("$phpbb_root_path$src", 'rb')))
-			{
-				return false;
-			}
-
-			$data = fread($fp, filesize("$phpbb_root_path$src"));
-			fclose($fp);
-
-			$this->data($src_path, $data, false, stat("$phpbb_root_path$src"));
+			$this->data($src_path, file_get_contents("$phpbb_root_path$src"), false, stat("$phpbb_root_path$src"));
 		}
 		else if (is_dir($phpbb_root_path . $src))
 		{
@@ -73,7 +65,7 @@ class compress
 						continue;
 					}
 
-					$this->data("$src_path$path$file", implode('', file("$phpbb_root_path$src$path$file")), false, stat("$phpbb_root_path$src$path$file"));
+					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), false, stat("$phpbb_root_path$src$path$file"));
 				}
 			}
 
@@ -99,8 +91,8 @@ class compress
 
 	function methods()
 	{
-		$methods = array('tar');
-		$available_methods = array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib');
+		$methods = array('.tar');
+		$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
 
 		foreach ($available_methods as $type => $module)
 		{
@@ -314,8 +306,7 @@ class compress_zip extends compress
 		$name = str_replace('\\', '/', $name);
 
 		$dtime = dechex($this->unix_to_dos_time($stat[9]));
-		$hexdtime = '\x' . $dtime[6] . $dtime[7] . '\x' . $dtime[4] . $dtime[5] . '\x' . $dtime[2] . $dtime[3] . '\x' . $dtime[0] . $dtime[1];
-		eval('$hexdtime = "' . $hexdtime . '";');
+		$hexdtime = pack('H*', $dtime[6] . $dtime[7] . $dtime[4] . $dtime[5] . $dtime[2] . $dtime[3] . $dtime[0] . $dtime[1]);
 
 		if ($is_dir)
 		{
@@ -563,11 +554,11 @@ class compress_tar extends compress
 
 	function close()
 	{
-		$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
 
-		if ($this->wrote)
+		if ($this->wrote) 
 		{
+			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 			$fzwrite($this->fp, pack("a1024", ""));
 		}
 

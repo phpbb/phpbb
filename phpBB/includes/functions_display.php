@@ -675,12 +675,10 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			$attachment_tpl = array();
 
 			$template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/attachment.html';
-			if (!($fp = @fopen($template_filename, 'rb')))
+			if (($attachment_template = file_get_contents($template_filename)) === false)
 			{
 				trigger_error('Could not load template file "' . $template_filename . '"');
 			}
-			$attachment_template = fread($fp, filesize($template_filename));
-			@fclose($fp);
 
 			// replace \ with \\ and then ' with \'.
 			$attachment_template = str_replace('\\', '\\\\', $attachment_template);

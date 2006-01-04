@@ -479,7 +479,7 @@ class acp_language
 				{
 					if ($is_email_file)
 					{
-						$lang = implode('', file($phpbb_root_path . $this->get_filename($lang_iso, $this->language_directory, $this->language_file, $file_from_store)));
+						$lang = file_get_contents($phpbb_root_path . $this->get_filename($lang_iso, $this->language_directory, $this->language_file, $file_from_store));
 					}
 					else
 					{
@@ -627,9 +627,9 @@ class acp_language
 				$db->sql_freeresult($result);
 
 				$use_method = request_var('use_method', '');
-				$methods = array('tar');
+				$methods = array('.tar');
 
-				$available_methods = array('tar.gz' => 'zlib', 'tar.bz2' => 'bz2', 'zip' => 'zlib');
+				$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
 				foreach ($available_methods as $type => $module)
 				{
 					if (!@extension_loaded($module))
@@ -638,11 +638,6 @@ class acp_language
 					}
 		
 					$methods[] = $type;
-				}
-
-				if (!in_array($use_method, $methods))
-				{
-					$use_method = 'tar';
 				}
 
 				// Let the user decide in which format he wants to have the pack
@@ -664,6 +659,11 @@ class acp_language
 					);
 				
 					return;
+				}
+
+				if (!in_array($use_method, $methods))
+				{
+					$use_method = '.tar';
 				}
 
 				include_once($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
