@@ -291,7 +291,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
 			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['forum_last_poster_id']}";
 
-			$last_post_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'];
+			$last_post_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id'] . '#p' . $row['forum_last_post_id'];
 		}
 		else
 		{

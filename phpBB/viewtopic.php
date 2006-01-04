@@ -273,7 +273,7 @@ if (isset($_GET['e']))
 	if ($jump_to > 0)
 	{
 		// We direct the already logged in user to the correct post...
-		redirect($redirect_url . ((!$post_id) ? "&p=$jump_to" : "&p=$post_id") . "#$jump_to");
+		redirect($redirect_url . ((!$post_id) ? "&p=$jump_to" : "&p=$post_id") . "#p$jump_to");
 	}
 }
 
@@ -1105,7 +1105,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true,
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#' . $row['post_id'] . '">', '</a>'))
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
 		);
 
 		continue;
@@ -1120,7 +1120,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		{
 			$template->assign_block_vars('postrow', array(
 				'S_IGNORE_POST'	=> true,
-				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#' . $row['post_id'] . '">', '</a>'))
+				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#p' . $row['post_id'] . '">', '</a>'))
 			);
 
 			continue;
@@ -1303,7 +1303,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_REPORT'			=> "{$phpbb_root_path}report.$phpEx$SID&amp;p=" . $row['post_id'],
 		'U_MCP_REPORT'		=> ($auth->acl_gets('m_', 'a_', 'f_report', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;post_id_list[]=" . $row['post_id'] : '',
-		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#' . $row['post_id'],
+		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
 		'U_NOTES'			=> ($auth->acl_gets('m_', 'a_')) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $poster_id : '',

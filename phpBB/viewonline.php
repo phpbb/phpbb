@@ -310,7 +310,7 @@ $template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
 	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_counter),
 	'LEGEND'		=> $legend,
-	'META'			=> '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '">',
+	'META'			=> '<meta http-equiv="refresh" content="60; url=viewonline.' . $phpEx . $SID . '" />',
 	'PAGINATION'	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($counter, $config['topics_per_page'], $start),
 
