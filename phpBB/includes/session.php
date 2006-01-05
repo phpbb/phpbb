@@ -786,7 +786,7 @@ class user extends session
 
 		if (!$this->theme)
 		{
-			trigger_error('Could not get style data');
+			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
 		// Now parse the cfg file and cache it

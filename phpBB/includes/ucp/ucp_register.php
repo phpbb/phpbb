@@ -240,6 +240,7 @@ class ucp_register
 					'group_id'			=> (int) $group_id,
 					'user_timezone'		=> (float) $tz,
 					'user_lang'			=> $lang,
+					'user_style'		=> $config['default_style'],
 					'user_allow_pm'		=> 1,
 					'user_type'			=> $user_type,
 					'user_actkey'		=> $user_actkey,
