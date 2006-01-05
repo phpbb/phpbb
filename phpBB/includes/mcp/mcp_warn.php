@@ -342,14 +342,15 @@ function mcp_warn_user_view($id, $mode, $action)
 
 	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
 
-	$sql = 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
+/*	$sql = 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
 	$result = $db->sql_query($sql);
 
 	if (!$userrow = $db->sql_fetchrow($result))
 	{
 		trigger_error($user->lang['NO_USER']);
 	}
-	$db->sql_freeresult($result);
+	$db->sql_freeresult($result);*/
+	$userrow = get_userdata($user_id);
 
 	$user_id = $userrow['user_id'];
 
@@ -390,29 +391,38 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 	if ($send_pm)
 	{
 		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+		include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+
+		$userrow['user_lang'] = (file_exists($phpbb_root_path . 'language/' . $userrow['user_lang'] . "/mcp.$phpEx")) ? $userrow['user_lang'] : $config['default_lang'];
+		include($phpbb_root_path . 'language/' . $userrow['user_lang'] . "/mcp.$phpEx");
+
+		$message_parser = new parse_message();
+		$message_parser->message = sprintf($lang['WARNING_PM_BODY'], $warning);
+		$message_md5 = md5($message_parser->message);
+		$message_parser->parse(false, true, true, true, false, false, true);
 
 		$pm_data = array(
 			'from_user_id'			=> $user->data['user_id'],
 			'from_user_ip'			=> $user->data['user_ip'],
 			'from_username'			=> $user->data['username'],
 			'enable_sig'			=> false,
-			'enable_bbcode'			=> false,
+			'enable_bbcode'			=> true,
 			'enable_html' 			=> false,
-			'enable_smilies'		=> false,
+			'enable_smilies'		=> true,
 			'enable_urls'			=> false,
 			'icon_id'				=> 0,
-			'message_md5'			=> 0,
-			'bbcode_bitfield'		=> 0,
-			'bbcode_uid'			=> '',
-			'message'				=> $warning, // TODO: The message sent to the user should either be templated from the language pack or set in the board config
+			'message_md5'			=> (int) $message_md5,
+			'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+			'bbcode_uid'			=> $message_parser->bbcode_uid,
+			'message'				=> $message_parser->message,
 			'address_list'			=> array('u' => array($userrow['user_id'] => 'to')),
 		);
 
-		submit_pm('post', 'Warning Issued', $pm_data, false, false); // TODO: The topic should either be in the language of the recipient or set in the board config
+		submit_pm('post', $lang['WARNING_PM_SUBJECT'], $pm_data, false, false);
 	}
 
 	add_log('admin', 'LOG_USER_WARNING', $userrow['username']);
-	add_log('user', $userrow['user_id'], 'LOG_USER_GENERAL', $warning); // TODO: Need a relevant language entry for this such that it is displayed as a warning in the notes
+	add_log('user', $userrow['user_id'], 'LOG_USER_WARNING_BODY', $warning);
 
 	$sql_ary = array(
 		'user_id'		=> $userrow['user_id'],

@@ -279,6 +279,8 @@ $lang = array_merge($lang, array(
 	'VIEW_DETAILS'			=> 'View Details',
 
 	'WARNED_USERS'			=> 'Warned Users',
+	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
+	'WARNING_PM_SUBJECT'	=> 'Board Warning Issued',
 
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s',
 

@@ -218,6 +218,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_FEEDBACK'		=> '<b>Added user feedback</b><br />&#187; %s',
 	'LOG_USER_GENERAL'		=> '%s',
 	'LOG_USER_WARNING'		=> '<b>Added user warning</b><br />&#187;%s',
+	'LOG_USER_WARNING_BODY'	=> '<b>The following warning was issued to this user</b><br />&#187;%s',
 
 	'MARK'				=> 'Mark',
 	'MARK_ALL'			=> 'Mark all',
