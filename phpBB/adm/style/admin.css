@@ -1,11 +1,10 @@
 /*  phpBB 3.0 Admin Style Sheet
-    --------------------------------------------------------------
-	Original author: Tom Beddard ( http://www.subBlue.com/ )
-	Modified by:     
-	Last update:     $Id$
+    ------------------------------------------------------------------------
+	Original author:	subBlue ( http://www.subBlue.com/ )
+	Official update:	$Id$
 	
 	Copyright 2006 phpBB Group ( http://www.phpbb.com/ )
-    --------------------------------------------------------------
+    ------------------------------------------------------------------------
 */
 
 
@@ -189,7 +188,8 @@ a:hover {
 	background-color: #FFFFFF;
 	border: solid 1px  #A9B8C2;
 	}
-span.corners-top, span.corners-bottom {
+span.corners-top, span.corners-bottom, 
+span.corners-top span, span.corners-bottom span {
 	display: none;
 	}
 
@@ -681,6 +681,26 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 .successbox a, .errorbox a {
 	font-weight: bold;
 	text-decoration: none;
+	}
+
+
+/* Special cases for the error page */
+#errorpage #page-header a {
+	font-weight: bold;
+	line-height: 6em;
+	}
+#errorpage #content {
+	padding-top: 10px;
+	}
+#errorpage #content h1 {
+	color: #DF075C;
+	}
+#errorpage #content h2 {
+	margin-top: 20px;
+	margin-bottom: 5px;
+	border-bottom: 1px solid #CCCCCC;
+	padding-bottom: 5px;
+	color: #333333;
 	}
 
 

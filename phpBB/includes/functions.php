@@ -1041,7 +1041,7 @@ function meta_refresh($time, $url)
 	global $template;
 
 	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '">')
+		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
 	);
 }
 
@@ -1554,17 +1554,41 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				$cache->unload();
 			}
-
+			
 			if (!defined('HEADER_INC'))
 			{
-				echo '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'adm/subSilver.css" type="text/css"><style type="text/css">' . "\n";
-				echo 'th { background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic3.gif\') }' . "\n";
-				echo 'td.cat	{ background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic1.gif\') }' . "\n";
-				echo '</style><title>' . $msg_title . '</title></head><body>';
-				echo '<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr><td><img src="' . $phpbb_root_path . 'adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td><td width="100%" background="' . $phpbb_root_path . 'adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">General Error</span> &nbsp; &nbsp; &nbsp;</td></tr></table>';
+				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+				echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+				echo '<head>';
+				echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+				echo '<title>' . $msg_title . '</title>';
+				echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+				echo '</head>';
+				echo '<body id="errorpage">';
+				echo '<div id="wrap">';
+				echo '	<div id="page-header">';
+				echo '		<a href="' . $phpbb_root_path . '">Return to forum index</a>';
+				echo '	</div>';
+				echo '	<div id="page-body">';
+				echo '		<div class="panel">';
+				echo '			<span class="corners-top"><span></span></span>';
+				echo '			<div id="content">';
+				echo '				<h1>General Error</h1>';
 			}
-			echo '<br clear="all" /><table width="85%" cellspacing="0" cellpadding="0" border="0" align="center"><tr><td><br clear="all" />' . $msg_text . '<hr />Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></td></tr></table><br clear="all" /></body></html>';
-
+			
+			echo '				<h2>' . $msg_text . '</h2>';
+			echo '				<p>Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+			echo '			</div>';
+			echo '			<span class="corners-bottom"><span></span></span>';
+			echo '		</div>';
+			echo '	</div>';
+			echo '	<div id="page-footer">';
+			echo '		Powered by phpBB &copy; '.date('Y').' <a href="http://www.phpbb.com/">phpBB Group</a>';
+			echo '	</div>';
+			echo '</div>';
+			echo '</body>';
+			echo '</html>';
+			
 			exit;
 			break;
 
