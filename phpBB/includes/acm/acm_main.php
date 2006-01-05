@@ -72,11 +72,7 @@ class cache extends acm
 			return false;
 		}
 
-		if ($this->exists('word_censors'))
-		{
-			$censors = $this->get('word_censors');
-		}
-		else
+		if (!($censors = $this->get('word_censors')))
 		{
 			$sql = 'SELECT word, replacement
 				FROM  ' . WORDS_TABLE;
@@ -101,11 +97,7 @@ class cache extends acm
 	*/
 	function obtain_icons(&$icons)
 	{
-		if ($this->exists('icons'))
-		{
-			$icons = $this->get('icons');
-		}
-		else
+		if (!($icons = $this->get('icons')))
 		{
 			global $db;
 	
@@ -136,11 +128,7 @@ class cache extends acm
 	*/
 	function obtain_ranks(&$ranks)
 	{
-		if ($this->exists('ranks'))
-		{
-			$ranks = $this->get('ranks');
-		}
-		else
+		if (!($ranks = $this->get('ranks')))
 		{
 			global $db;
 	
@@ -181,11 +169,7 @@ class cache extends acm
 	*/
 	function obtain_attach_extensions(&$extensions, $forum_id = false)
 	{
-		if ($this->exists('_extensions'))
-		{
-			$extensions = $this->get('_extensions');
-		}
-		else
+		if (!($extensions = $this->get('_extensions')))
 		{
 			global $db;
 	
@@ -265,11 +249,7 @@ class cache extends acm
 	*/
 	function obtain_bots(&$bots)
 	{
-		if ($this->exists('bots'))
-		{
-			$bots = $this->get('bots');
-		}
-		else
+		if (!($bots = $this->get('bots')))
 		{
 			global $db;
 	
@@ -320,7 +300,12 @@ class cache extends acm
 
 		foreach ($parsed_items as $key => $parsed_array)
 		{
-			$parsed_array = ($this->exists('_' . $key . '_cfg')) ? $this->get('_' . $key . '_cfg') : array();
+			$parsed_array = $this->get('_' . $key . '_cfg');
+
+			if (!$parsed_array)
+			{
+				$parsed_array = array();
+			}
 
 			$reparse = false;
 			$filename = $phpbb_root_path . 'styles/' . $theme[$key . '_path'] . '/' . $key . '/' . $key . '.cfg';

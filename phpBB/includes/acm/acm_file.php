@@ -114,12 +114,17 @@ class acm
 		{
 			global $phpEx;
 
+			if (!$this->_exists($var_name))
+			{
+				return false;
+			}
+
 			include($this->cache_dir . 'data' . $var_name . ".$phpEx");
-			return (isset($data)) ? $data : NULL;
+			return (isset($data)) ? $data : false;
 		}
 		else
 		{
-			return ($this->exists($var_name)) ? $this->vars[$var_name] : NULL;
+			return ($this->_exists($var_name)) ? $this->vars[$var_name] : false;
 		}
 	}
 
@@ -184,7 +189,7 @@ class acm
 		}
 	}
 
-	function exists($var_name)
+	function _exists($var_name)
 	{
 		if ($var_name{0} == '_')
 		{

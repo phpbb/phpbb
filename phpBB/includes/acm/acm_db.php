@@ -154,7 +154,7 @@ class acm
 			}
 		}
 
-		if ($this->exists($var_name))
+		if ($this->_exists($var_name))
 		{
 			if (empty($this->var_ready[$var_name]))
 			{
@@ -166,7 +166,7 @@ class acm
 		}
 		else
 		{
-			return NULL;
+			return false;
 		}
 	}
 
@@ -213,7 +213,7 @@ class acm
 		}
 	}
 
-	function exists($var_name)
+	function _exists($var_name)
 	{
 		if (!is_array($this->vars))
 		{

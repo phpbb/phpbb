@@ -666,11 +666,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 	if (!isset($attachment_tpl))
 	{
-		if ($cache->exists('attachment_tpl'))
-		{
-			$attachment_tpl = $cache->get('attachment_tpl');
-		}
-		else
+		if (!($attachment_tpl = $cache->get('attachment_tpl')))
 		{
 			$attachment_tpl = array();
 
