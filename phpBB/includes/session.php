@@ -382,16 +382,21 @@ class session
 		global $SID, $db, $config;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
+				WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
 				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			// Delete existing session, update last visit info first!
+			if ( !isset($this->data['session_time']) )
+			{
+				$this->data['session_time'] = time();
+			}
+			
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-				WHERE user_id = ' . (int) $this->data['user_id'];
+					SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+					WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 
 			if ($this->cookie_data['k'])
