@@ -82,6 +82,7 @@ switch ($mode)
 		if ($user->data['user_id'] != ANONYMOUS)
 		{
 			$user->session_kill();
+			$user->session_begin();
 		}
 
 		meta_refresh(3, "index.$phpEx$SID");
@@ -114,6 +115,7 @@ switch ($mode)
 
 			// We destroy the session here, the user will be logged out nevertheless
 			$user->session_kill();
+			$user->session_begin();
 
 			meta_refresh(3, "{$phpbb_root_path}index.$phpEx$SID");
 
