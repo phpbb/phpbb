@@ -1729,20 +1729,6 @@ CREATE INDEX username on phpbb_users (username)
 /
 
 /*
- Table: phpbb_users_passwd
-*/
-CREATE TABLE phpbb_users_passwd (
-  user_id number(8) NOT NULL,
-  passwd_time number(11) DEFAULT '0' NOT NULL,
-  passwd varchar2(32),
-  CONSTRAINT pk_phpbb_users_passwd PRIMARY KEY (user_id)
-)
-/
-
-CREATE INDEX passwd_time on phpbb_users_passwd (passwd_time)
-/
-
-/*
  Table: phpbb_words
 */
 CREATE TABLE phpbb_words (

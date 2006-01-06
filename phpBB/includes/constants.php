@@ -173,7 +173,6 @@ define('TOPICS_WATCH_TABLE', $table_prefix.'topics_watch');
 define('TOPICS_TRACK_TABLE', $table_prefix.'topics_marking');
 define('USER_GROUP_TABLE', $table_prefix.'user_group');
 define('USERS_TABLE', $table_prefix.'users');
-define('USERS_PASSWD_TABLE', $table_prefix.'users_passwd');
 define('USERS_NOTES_TABLE', $table_prefix.'users_notes');
 define('WARNINGS_TABLE', $table_prefix.'warnings');
 define('WORDS_TABLE', $table_prefix.'words');

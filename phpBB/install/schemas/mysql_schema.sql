@@ -931,15 +931,6 @@ CREATE TABLE phpbb_users (
    KEY username (username)
 );
 
-# Table: 'phpbb_users_passwd'
-CREATE TABLE phpbb_users_passwd (
-  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  passwd_time int(11) DEFAULT '0' NOT NULL, 
-  passwd varchar(32) DEFAULT '' NOT NULL,
-  PRIMARY KEY  (user_id),
-  KEY passwd_time (passwd_time)
-);
-
 # Table: 'phpbb_warnings'
 CREATE TABLE phpbb_warnings (
   warning_id mediumint(8) unsigned NOT NULL auto_increment,

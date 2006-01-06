@@ -805,13 +805,6 @@ CREATE TABLE phpbb_users (
   user_newpasswd VARCHAR(32) NOT NULL
 );;
 
-# phpbb_users_passwd
-CREATE TABLE phpbb_users_passwd (
-  user_id INTEGER NOT NULL,
-  passwd_time INTEGER NOT NULL,
-  passwd VARCHAR(32) NOT NULL
-);;
-
 # phpbb_words
 CREATE TABLE phpbb_words (
   word_id INTEGER NOT NULL,
@@ -1464,16 +1457,6 @@ ADD PRIMARY KEY (
 CREATE INDEX last_login82
 ON phpbb_sessions_keys(
   last_login
-);;
-
-ALTER TABLE phpbb_users_passwd
-ADD PRIMARY KEY (
-  user_id
-);;
-
-CREATE INDEX passwd_time83
-ON phpbb_users_passwd(
-  passwd_time
 );;
 
 CREATE GENERATOR G_phpbb_attachmentsattach_idGen;;

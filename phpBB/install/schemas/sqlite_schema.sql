@@ -934,15 +934,6 @@ CREATE INDEX user_birthday_phpbb_users on phpbb_users (user_birthday);
 CREATE INDEX user_email_hash_phpbb_users on phpbb_users (user_email_hash);
 CREATE INDEX username_phpbb_users on phpbb_users (username);
 
-# Table: phpbb_users_passwd
-CREATE TABLE phpbb_users_passwd (
-  user_id INTEGER PRIMARY KEY NOT NULL,
-  passwd_time int(11) NOT NULL DEFAULT '0', 
-  passwd varchar(32) NOT NULL DEFAULT '',
-);
-
-CREATE INDEX passwd_time_phpbb_users_passwd on phpbb_users_passwd (passwd_time);
-
 # Table: phpbb_words
 CREATE TABLE phpbb_words (
   word_id INTEGER PRIMARY KEY NOT NULL,

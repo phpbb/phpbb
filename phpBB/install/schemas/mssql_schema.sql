@@ -809,13 +809,6 @@ CREATE TABLE [phpbb_users] (
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-CREATE TABLE [phpbb_users_passwd] (
-	[user_id] [int] NOT NULL ,
-	[passwd_time] [int] NOT NULL ,
-	[passwd] [varchar] (32) NOT NULL 
-) ON [PRIMARY]
-GO
-
 CREATE TABLE [phpbb_words] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word] [varchar] (100) NOT NULL ,
@@ -1158,13 +1151,6 @@ GO
 
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_users] PRIMARY KEY  CLUSTERED 
-	(
-		[user_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [phpbb_users_passwd] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_users_passwd] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id]
 	)  ON [PRIMARY] 
@@ -1636,12 +1622,6 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_users__user_sig_bbcode_bitf] DEFAULT (0) FOR [user_sig_bbcode_bitfield]
 GO
 
-ALTER TABLE [phpbb_users_passwd] WITH NOCHECK ADD 
-	CONSTRAINT [DF_users_pwd_user_id] DEFAULT (0) FOR [user_id],
-	CONSTRAINT [DF_users_pwd_passwd_time] DEFAULT (0) FOR [passwd_time],
-	CONSTRAINT [DF_users_pwd_passwd] DEFAULT ('0') FOR [passwd]
-GO
-
 ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 
 	CONSTRAINT [DF_zebra__user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_zebra__zebra_id] DEFAULT (0) FOR [zebra_id],
@@ -1887,9 +1867,6 @@ CREATE  INDEX [user_email_hash] ON [phpbb_users]([user_email_hash]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [username] ON [phpbb_users]([username]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [passwd_time] ON [phpbb_users_passwd]([passwd_time]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_zebra]([user_id]) ON [PRIMARY]

@@ -1228,16 +1228,6 @@ CREATE INDEX username_phpbb_users_index ON phpbb_users (username);
 
 SELECT SETVAL('phpbb_users_user_id_seq',(select case when max(user_id)>0 then max(user_id)+1 else 1 end from phpbb_users));
 
-/* Table: phpbb_users_passwd */
-CREATE TABLE phpbb_users_passwd (
-  user_id INT4 DEFAULT '0' NOT NULL,
-  passwd_time INT4 DEFAULT '0' NOT NULL, 
-  passwd varchar(32) DEFAULT '' NOT NULL,
-  PRIMARY KEY (user_id)
-);
-
-CREATE INDEX passwd_time_phpbb_users_passwd_index ON phpbb_users_passwd (passwd_time);
-
 /* Table: phpbb_words */
 CREATE SEQUENCE phpbb_words_word_id_seq;
 
