@@ -1535,16 +1535,19 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	{
 		case E_NOTICE:
 		case E_WARNING:
+
 			if (defined('DEBUG_EXTRA'))
 			{
-				if (!strstr($errfile, 'cache') && !strstr($errfile, 'template.php'))
+				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.php') === false)
 				{
 					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
 				}
 			}
-			break;
+		
+		break;
 
 		case E_USER_ERROR:
+
 			if (isset($db))
 			{
 				$db->sql_close();
@@ -1583,14 +1586,14 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '		</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
-			echo '		Powered by phpBB &copy; '.date('Y').' <a href="http://www.phpbb.com/">phpBB Group</a>';
+			echo '		Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>';
 			echo '	</div>';
 			echo '</div>';
 			echo '</body>';
 			echo '</html>';
 			
 			exit;
-			break;
+		break;
 
 		case E_USER_NOTICE:
 
@@ -1600,6 +1603,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				$user->session_begin();
 			}
+
 			if (empty($user->lang))
 			{
 				$user->setup();
@@ -1642,7 +1646,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			exit;
-			break;
+		break;
 	}
 }
 
