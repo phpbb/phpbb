@@ -143,6 +143,11 @@ if (!$quickmod)
 		$forum_id = $forum_list[0];
 	}
 
+	if($forum_id)
+	{
+		$module->acl_forup_id = $forum_id;
+	}
+
 	// Instantiate module system and generate list of available modules
 	$module->list_modules('mcp');
 

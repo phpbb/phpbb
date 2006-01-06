@@ -342,14 +342,6 @@ function mcp_warn_user_view($id, $mode, $action)
 
 	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
 
-/*	$sql = 'SELECT * FROM ' . USERS_TABLE . " WHERE $sql_where";
-	$result = $db->sql_query($sql);
-
-	if (!$userrow = $db->sql_fetchrow($result))
-	{
-		trigger_error($user->lang['NO_USER']);
-	}
-	$db->sql_freeresult($result);*/
 	$userrow = get_userdata($user_id);
 
 	$user_id = $userrow['user_id'];
