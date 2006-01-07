@@ -144,6 +144,37 @@ function unique_id($extra = 0)
 	return uniqid(mt_rand(), true);
 }
 
+if (!function_exists('array_combine'))
+{
+	/**
+	* A wrapper for the PHP5 function array_combine()
+	* @param array $keys contains keys for the resulting array
+	* @param array $values contains values for the resulting array
+	*
+	* @return Returns an array by using the values from the keys array as keys and the
+	* 	values from the values array as the corresponding values. Returns false if the
+	* 	number of elements for each array isn't equal or if the arrays are empty.
+	*/
+	function array_combine($keys, $values)
+	{
+		$keys = array_values($keys);
+		$values = array_values($values);
+
+		$n = sizeof($keys);
+		if (!$n || !sizeof($values) || ($n != sizeof($values)))
+		{
+			return false;
+		}
+
+		$combined = array();
+		for ($i = 0; $i < $n; $i++)
+		{
+			$combined[$keys[$i]] = $values[$i];
+		}
+		return $combined;
+	}
+}
+
 /**
 * Get userdata
 * @param mixed $user user id or username
@@ -1953,7 +1984,7 @@ function page_header($page_title = '')
 
 	if ($config['send_encoding'])
 	{
-		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
+		header('Content-type: text/html; charset=' . $user->lang['ENCODING']);
 	}
 	header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
 	header('Expires: 0');
