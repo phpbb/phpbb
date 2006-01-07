@@ -106,6 +106,7 @@ switch ($mode)
 			LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.group_id = g.group_id AND ug.user_id = ' . $user->data['user_id'] . ')
 			WHERE u.user_id IN (' . implode(', ', $admin_id_ary + $mod_id_ary) . ')
 				AND u.group_id = g.group_id
+			GROUP BY u.user_id
 			ORDER BY g.group_name ASC, u.username ASC';
 		$result = $db->sql_query($sql);
 
