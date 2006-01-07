@@ -29,7 +29,7 @@
 				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
 				<p class="forumdesc">{forumrow.FORUM_DESC}</p></td>
 			<!-- IF forumrow.CLICKS -->
-			<td class="row2" colspan="3" align="center"><span class="gensmall">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
+			<td class="row2" colspan="3" align="center"><span class="genmed">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
 			<!-- ENDIF -->
 		</tr>
 		<!-- ELSE -->
@@ -45,12 +45,12 @@
 					<p class="forumdesc"><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}</p>
 				<!-- ENDIF -->
 			</td>
-			<td class="row2" align="center"><p class="gensmall">{forumrow.TOPICS}</p></td>
-			<td class="row2" align="center"><p class="gensmall">{forumrow.POSTS}</p></td>
+			<td class="row2" align="center"><p class="topicdetails">{forumrow.TOPICS}</p></td>
+			<td class="row2" align="center"><p class="topicdetails">{forumrow.POSTS}</p></td>
 			<td class="row2" align="center" nowrap="nowrap">
 				<!-- IF forumrow.LAST_POST_TIME -->
-					<p class="gensmall">{forumrow.LAST_POST_TIME}</p>
-					<p class="gensmall">
+					<p class="topicdetails">{forumrow.LAST_POST_TIME}</p>
+					<p class="topicdetails">
 					<!-- IF forumrow.U_LAST_POSTER -->
 						<a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a>
 					<!-- ELSE -->
@@ -59,7 +59,7 @@
 					<a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 					</p>
 				<!-- ELSE -->
-					<p class="gensmall">{L_NO_POSTS}</p>
+					<p class="topicdetails">{L_NO_POSTS}</p>
 				<!-- ENDIF -->
 			</td>
 		</tr>
@@ -96,7 +96,7 @@
 			<!-- ELSE -->
 			<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
 			<!-- ENDIF -->
-			<td class="row1" width="100%"><span class="gensmall">{TOTAL_USERS_ONLINE}<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}<br /><br />{L_ONLINE_EXPLAIN}</span></td>
+			<td class="row1" width="100%"><span class="genmed">{TOTAL_USERS_ONLINE}<br />{RECORD_USERS}<br /><br />{LOGGED_IN_USER_LIST}<br /><br />{L_ONLINE_EXPLAIN}</span></td>
 		</tr>
 		<!-- IF LEGEND -->
 		<tr>
@@ -115,7 +115,7 @@
 		</tr>
 		<tr>
 			<td class="row1" align="center" valign="middle"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-			<td class="row1" width="100%"><p class="gensmall"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
+			<td class="row1" width="100%"><p class="genmed"><!-- IF BIRTHDAY_LIST -->{L_CONGRATULATIONS}: <b>{BIRTHDAY_LIST}</b><!-- ELSE -->{L_NO_BIRTHDAYS}<!-- ENDIF --></p></td>
 		</tr>
 	</table>
 	<!-- ENDIF -->
@@ -128,7 +128,7 @@
 		</tr>
 		<tr>
 			<td class="row1"><img src="{T_THEME_PATH}/images/whosonline.gif" alt="{L_WHO_IS_ONLINE}" /></td>
-			<td class="row1" width="100%" valign="middle"><p class="gensmall">{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}</p></td>
+			<td class="row1" width="100%" valign="middle"><p class="genmed">{TOTAL_POSTS} | {TOTAL_TOPICS} | {TOTAL_USERS} | {NEWEST_USER}</p></td>
 		</tr>
 	</table>
 
@@ -140,7 +140,7 @@
 			<td class="cat"><h4><a href="{U_LOGIN_LOGOUT}">{L_LOGIN_LOGOUT}</a></h4></td>
 		</tr>
 		<tr>
-			<td class="row1" align="center"><span class="gensmall">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="gensmall">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input class="text" type="checkbox" name="autologin" />&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
+			<td class="row1" align="center"><span class="genmed">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="gensmall">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" />&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input class="text" type="checkbox" name="autologin" />&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
 		</tr>
 	</table></form>
 	<!-- ENDIF -->

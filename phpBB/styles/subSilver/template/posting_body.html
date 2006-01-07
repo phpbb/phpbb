@@ -169,7 +169,7 @@ function checkForm()
 			<td class="row1"><b class="genmed">{L_ICON}:</b></td>
 			<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 				<tr>
-					<td><input type="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+					<td><input type="radio" name="icon" value="0"{S_NO_ICON_CHECKED} class="radio" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} class="radio" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 				</tr>
 			</table></td>
 		</tr>
@@ -213,12 +213,13 @@ function checkForm()
 		<td class="row2" width="78%"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{SUBJECT}" /></td>
 	</tr>
 	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}:</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br /><table width="80%" cellspacing="5" cellpadding="0" border="0" align="center">
+		<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}:</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br />
+		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
 			<tr>
 				<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
 			</tr>
 			<tr>
-				<td align="center"><!-- BEGIN smiley --><a href="javascript:smiley('{smiley.SMILEY_CODE}')"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" border="0" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" onclick="smiley('{smiley.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END smiley --></td>
+				<td align="center"><!-- BEGIN smiley --><a href="javascript:smiley('{smiley.SMILEY_CODE}')" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" border="0" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" onclick="smiley('{smiley.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END smiley --></td>
 			</tr>
 
 			<!-- IF S_SHOW_SMILEY_LINK -->
@@ -228,47 +229,37 @@ function checkForm()
 			<!-- ENDIF -->
 
 		</table></td>
-		<td class="row2" valign="top"><table cellspacing="0" cellpadding="2" border="0">
-			<tr align="center" valign="middle">
-				<td><input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" onmouseover="helpline('i')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" onmouseover="helpline('u')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /></td>
-				<td><input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" /></td>
+		<td class="row2" valign="top"><table cellspacing="0" cellpadding="0" border="0">
+			<tr valign="middle" align="left">
+				<td colspan="2"><input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" />
+				<input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" />
+				<input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" />
+				<input type="button" class="btnbbcode" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" />
+				<input type="button" class="btnbbcode" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" />
+				<input type="button" class="btnbbcode" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" />
+				<input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
+				<input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" />
+				<input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
+				<span class="genmed" style="white-space: nowrap;">{L_FONT_SIZE}: <select class="gensmall" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+						<option value="7">{L_FONT_TINY}</option>
+						<option value="9">{L_FONT_SMALL}</option>
+						<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+						<option value="18">{L_FONT_LARGE}</option>
+						<option  value="24">{L_FONT_HUGE}</option>
+					</select> | 	<a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span>
+				</td>
 			</tr>
 			<tr>
-				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-					<tr>
-						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
-							<option value="7">{L_FONT_TINY}</option>
-							<option value="9">{L_FONT_SMALL}</option>
-							<option value="12" selected="selected">{L_FONT_NORMAL}</option>
-							<option value="18">{L_FONT_LARGE}</option>
-							<option  value="24">{L_FONT_HUGE}</option>
-						</select></td>
-						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
-					</tr>
-				</table></td>
-			</tr>
-			<tr>
-				<td colspan="9" width="450"><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
+				<td><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
 				<td class="genmed" align="center">{L_FONT_COLOR}</td>
 			</tr>
 			<tr>
-				<td colspan="9"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{MESSAGE}</textarea></td>
-				<td width="100%" align="center" valign="top"><table cellspacing="0" cellpadding="0" border="0">
-					<tr>
-						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
+				<td valign="top"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" style="width: 100%;">{MESSAGE}</textarea></td>
+				<td width="80" align="center" valign="top"><script language="javascript" type="text/javascript"><!--
 
-						colorPalette('v', 10, 7)
+						colorPalette('v', 7, 6)
 
 						//--></script></td>
-					</tr>
-				</table></td>
 		 	</tr>
 		</table></td>
 	</tr>
@@ -302,40 +293,40 @@ function checkForm()
 		<td class="row2"><table cellpadding="1">
 			<!-- IF S_HTML_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} /></td>
+					<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} class="radio" /></td>
 					<td class="gen">{L_DISABLE_HTML}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_BBCODE_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
+					<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} class="radio" /></td>
 					<td class="gen">{L_DISABLE_BBCODE}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_SMILIES_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
+					<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} class="radio" /></td>
 					<td class="gen">{L_DISABLE_SMILIES}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<tr>
-				<td><input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
+				<td><input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} class="radio" /></td>
 				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
 			</tr>
 
 			<!-- IF S_SIG_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="attach_sig"{S_SIGNATURE_CHECKED} /></td>
+					<td><input type="checkbox" name="attach_sig"{S_SIGNATURE_CHECKED} class="radio" /></td>
 					<td class="gen">{L_ATTACH_SIG}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_NOTIFY_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="notify"{S_NOTIFY_CHECKED} /></td>
+					<td><input type="checkbox" name="notify"{S_NOTIFY_CHECKED} class="radio" /></td>
 					<td class="gen">{L_NOTIFY_REPLY}</td>
 				</tr>
 			<!-- ENDIF -->
@@ -343,14 +334,14 @@ function checkForm()
 			<!-- IF not S_PRIVMSGS -->
 				<!-- IF S_LOCK_TOPIC_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
+						<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} class="radio" /></td>
 						<td class="gen">{L_LOCK_TOPIC}</td>
 					</tr>
 				<!-- ENDIF -->
 	
 				<!-- IF S_LOCK_POST_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
+						<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} class="radio" /></td>
 						<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
 					</tr>
 				<!-- ENDIF -->

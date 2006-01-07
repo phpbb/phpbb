@@ -10,11 +10,11 @@
 	<form method="post" name="charsearch" action="{S_MODE_ACTION}">
 		<table width="100%" cellspacing="1">
 		<tr>
-			<td align="left"><span class="gensmall">{L_USERNAME_BEGINS_WITH}: </span><select name="first_char" onchange="this.form.submit();">{S_CHAR_OPTIONS}</select>&nbsp;<input type="submit" name="char" value="{L_DISPLAY}" class="btnlite" /></td>
+			<td align="left"><span class="genmed">{L_USERNAME_BEGINS_WITH}: </span><select name="first_char" onchange="this.form.submit();">{S_CHAR_OPTIONS}</select>&nbsp;<input type="submit" name="char" value="{L_DISPLAY}" class="btnlite" /></td>
 	<!-- IF U_FIND_MEMBER and not S_SEARCH_USER -->
-			<td class="gensmall" align="right"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td>
+			<td class="genmed" align="right"><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a></td>
 	<!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_FORM_NAME -->
-			<td class="gensmall" align="right"><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a></td>
+			<td class="genmed" align="right"><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a></td>
 	<!-- ENDIF -->
 		</tr>
 		</table>
@@ -30,7 +30,7 @@
 	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th nowrap="nowrap">#</th>
-		<th nowrap="nowrap" width="25%"><a class="th" href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
+		<th nowrap="nowrap" width="25%" align="left"><a class="th" href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
 		<th nowrap="nowrap" width="15%"><a class="th" href="{U_SORT_JOINED}">{L_JOINED}</a></th>
 		<th nowrap="nowrap" width="10%"><a class="th" href="{U_SORT_POSTS}">{L_POSTS}</a></th>
 		<th nowrap="nowrap" width="15%"><a class="th" href="{U_SORT_RANK}">{L_RANK}</a></th>
@@ -55,8 +55,8 @@
 		<!-- IF memberrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
 
 		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
-		<td class="gen" align="center"><strong><a<!-- IF memberrow.USER_COLOR --> style="color:#{memberrow.USER_COLOR}"<!-- ENDIF --> href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></strong></td>
-		<td class="gensmall" align="center" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
+		<td class="genmed" align="left"><strong><a<!-- IF memberrow.USER_COLOR --> style="color:#{memberrow.USER_COLOR}"<!-- ENDIF --> href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></strong></td>
+		<td class="genmed" align="center" nowrap="nowrap">&nbsp;{memberrow.JOINED}&nbsp;</td>
 		<td class="gen" align="center">{memberrow.POSTS}</td>
 		<td class="gen" align="center">{memberrow.RANK_IMG}</td>
 		<td class="gen" align="center">&nbsp;<!-- IF memberrow.U_PM --><a href="{memberrow.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>

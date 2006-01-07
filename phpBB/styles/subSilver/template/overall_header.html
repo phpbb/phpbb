@@ -1,26 +1,37 @@
-<?xml version="1.0" encoding="{S_CONTENT_ENCODING}"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
+
+<meta http-equiv="content-type" content="text/html; charset={S_CONTENT_ENCODING}" />
+<meta name="resource-type" content="document" />
+<meta name="language" content="{S_USER_LANG}" />
+<meta name="distribution" content="global" />
+<meta name="copyright" content="2002-2006 phpBB Group" />
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
 {META}
-<title>{SITENAME} :: {PAGE_TITLE}</title>
+<title>{SITENAME} &bull; {PAGE_TITLE}</title>
+
+<!--
+	phpBB style name: subsilver
+	Based on style:	 subsilver (the default phpBB 2 style)
+	Original author:	 subBlue ( http://www.subBlue.com/ )
+	Modified by:		 psoTFX ( http://www.phpbb.com )
+	Last update:		 $Id$
+-->
 
 <!-- IF T_STYLESHEET_LINK -->
-	<link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
+<link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
 <!-- ELSE -->
-	<style type="text/css">
-	<!--
-	{T_THEME_DATA}
-	//-->
-	</style>
+<style type="text/css">
+{T_THEME_DATA}
+</style>
 <!-- ENDIF -->
 
 <script language="Javascript" type="text/javascript">
 <!--
-
 <!-- IF S_USER_PM_POPUP -->
 	if ({S_NEW_PM})
 	{
@@ -57,7 +68,7 @@ function jumpto()
 
 	<div id="logodesc"><table width="100%" cellspacing="0">
 		<tr>
-			<td><a href="{U_INDEX}"><img src="{T_THEME_PATH}/images/sitelogo.jpg" border="0" alt="" title="" /></a></td>
+			<td><a href="{U_INDEX}"><img src="{T_THEME_PATH}/images/sitelogo.gif" border="0" alt="" title="" /></a></td>
 			<td width="100%" align="center"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
 		</tr>
 	</table></div>
@@ -87,7 +98,7 @@ function jumpto()
 		<!-- ENDIF -->
 	</p>
 
-	<br clear="all" />
+	<br />
 
 	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
 		<tr>
@@ -98,4 +109,4 @@ function jumpto()
 		</tr>
 	</table>
 
-	<br clear="all" />
+	<br />

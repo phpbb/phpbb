@@ -19,27 +19,45 @@
 		</tr>
 		<!-- ELSEIF forumrow.S_IS_LINK -->
 		<tr>
-			<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-			<td class="row1" height="50"><a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><br />
+			<td class="row1" width="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+			<td class="row1"><a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><br />
 				<table cellspacing="5" cellpadding="0" border="0">
 					<tr>
 						<td><span class="gensmall">{forumrow.FORUM_DESC}</span></td>
 					</tr>
 				</table></td>
-			<td class="row2" colspan="3" align="center" valign="middle" height="50"><!-- IF forumrow.CLICKS --><span class="gensmall">{L_REDIRECTS}: {forumrow.CLICKS}</span><!-- ENDIF --></td>
+			<td class="row2" colspan="3" align="center" valign="middle"><!-- IF forumrow.CLICKS --><span class="genmed">{L_REDIRECTS}: {forumrow.CLICKS}</span><!-- ENDIF --></td>
 		</tr>
 		<!-- ELSE -->
 		<tr>
-			<td class="row1" width="50" height="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
-			<td class="row1" width="100%" height="50" valign="top"><a class="forumlink"  href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a><br />
-				<table cellspacing="5" cellpadding="0" border="0">
-					<tr>
-						<td><span class="gensmall">{forumrow.FORUM_DESC}</span></td>
-					</tr>
-				</table><span class="gensmall"><!-- IF forumrow.MODERATORS --><b>{forumrow.L_MODERATOR_STR}:</b> {forumrow.MODERATORS}<br /><!-- ENDIF --><!-- IF forumrow.SUBFORUMS --><br /><b>{forumrow.L_SUBFORUM_STR}</b> {forumrow.SUBFORUMS}<!-- ENDIF --></span></td>
-			<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.TOPICS}</span></td>
-			<td class="row2" align="center" valign="middle" height="50"><span class="gensmall">{forumrow.POSTS}</span></td>
-			<td class="row2" align="center" valign="middle" height="50" nowrap="nowrap"><span class="gensmall"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POSTER --><a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a><!-- ELSE -->{forumrow.LAST_POSTER}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></span></td>
+			<td class="row1" width="50" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
+			<td class="row1" width="100%">
+				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
+				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
+				<!-- IF forumrow.MODERATORS -->
+					<p class="forumdesc"><strong>{forumrow.L_MODERATOR_STR}:</strong> {forumrow.MODERATORS}</p>
+				<!-- ENDIF -->
+				<!-- IF forumrow.SUBFORUMS -->
+					<p class="forumdesc"><strong>{forumrow.L_SUBFORUM_STR}</strong> {forumrow.SUBFORUMS}</p>
+				<!-- ENDIF -->
+			</td>
+			<td class="row2" align="center"><p class="topicdetails">{forumrow.TOPICS}</p></td>
+			<td class="row2" align="center"><p class="topicdetails">{forumrow.POSTS}</p></td>
+			<td class="row2" align="center" nowrap="nowrap">
+				<!-- IF forumrow.LAST_POST_TIME -->
+					<p class="topicdetails">{forumrow.LAST_POST_TIME}</p>
+					<p class="topicdetails">
+					<!-- IF forumrow.U_LAST_POSTER -->
+						<a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a>
+					<!-- ELSE -->
+						{forumrow.LAST_POSTER}
+					<!-- ENDIF -->
+					<a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a>
+					</p>
+				<!-- ELSE -->
+					<p class="topicdetails">{L_NO_POSTS}</p>
+				<!-- ENDIF -->
+			</td>
 		</tr>
 		<!-- ENDIF -->
 		<!-- END forumrow -->
