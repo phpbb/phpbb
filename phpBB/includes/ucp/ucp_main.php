@@ -60,8 +60,12 @@ class ucp_main
 				// Determine first forum the user is able to read into - for global announcement link
 				$sql = 'SELECT forum_id 
 					FROM ' . FORUMS_TABLE . '
-					WHERE forum_type = ' . FORUM_POST . '
-						AND forum_id NOT IN (' . implode(', ', $forum_ary) . ')';
+					WHERE forum_type = ' . FORUM_POST;
+					
+				if (sizeof($forum_ary))
+				{
+					$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+				}
 				$result = $db->sql_query_limit($sql, 1);
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
 				$db->sql_freeresult($result);
