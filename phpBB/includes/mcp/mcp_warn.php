@@ -69,10 +69,10 @@ class mcp_warn_info
 			'title'		=> 'MCP_WARN',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'front'				=> array('title' => 'MCP_WARN_FRONT', 'auth' => 'acl_m_'),
-				'list'				=> array('title' => 'MCP_WARN_LIST', 'auth' => 'acl_m_'),
-				'warn_user'			=> array('title' => 'MCP_WARN_USER', 'auth' => 'acl_m_'),
-				'warn_post'			=> array('title' => 'MCP_WARN_POST', 'auth' => 'acl_m_'),
+				'front'				=> array('title' => 'MCP_WARN_FRONT', 'auth' => ''),
+				'list'				=> array('title' => 'MCP_WARN_LIST', 'auth' => ''),
+				'warn_user'			=> array('title' => 'MCP_WARN_USER', 'auth' => ''),
+				'warn_post'			=> array('title' => 'MCP_WARN_POST', 'auth' => 'acl_m_,$id'),
 			),
 		);
 	}

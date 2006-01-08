@@ -66,8 +66,8 @@ class mcp_notes_info
 			'title'		=> 'MCP_NOTES',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'front'				=> array('title' => 'MCP_NOTES_FRONT', 'auth' => 'acl_m_'),
-				'user_notes'		=> array('title' => 'MCP_NOTES_USER', 'auth' => 'acl_m_'),
+				'front'				=> array('title' => 'MCP_NOTES_FRONT', 'auth' => ''),
+				'user_notes'		=> array('title' => 'MCP_NOTES_USER', 'auth' => ''),
 			),
 		);
 	}
