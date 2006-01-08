@@ -24,6 +24,7 @@ $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/session.'.$phpEx);
+include($phpbb_root_path . 'includes/auth.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_main.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
@@ -357,6 +358,20 @@ if ($stage == 0)
 		echo '</b>';
 	}
 
+?></td>
+	</tr>
+	<tr>
+		<td>&bull;&nbsp;<b><?php echo $lang['PHP_REGISTER_GLOBALS']; ?>: </b></td>
+		<td><?php
+	if (@ini_get('register_globals') || strtolower(@ini_get('register_globals')) == 'on')
+	{
+		$passed['db'] = false;
+		echo '<b style="color:red">' . $lang['NO'] . '</b>';
+	}
+	else
+	{
+		echo '<b style="color:green">' . $lang['YES'] . '</b>';
+	}
 ?></td>
 	</tr>
 	<tr>
@@ -1261,30 +1276,24 @@ function inst_page_header()
 	global $phpEx, $lang;
 
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
 <html>
 <head>
-<link rel="stylesheet" href="../adm/subSilver.css" type="text/css">
-<style type="text/css">
-<!--
-th		{ background-image: url('../adm/images/cellpic3.gif') }
-td.cat	{ background-image: url('../adm/images/cellpic1.gif') }
-//-->
-</style>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 <title><?php echo $lang['WELCOME_INSTALL']; ?></title>
 </head>
 <body>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-	<tr>
-		<td><img src="../adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0"/></td>
-		<td width="100%" background="../adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle"><?php echo $lang['WELCOME_INSTALL']; ?></span> &nbsp; &nbsp; &nbsp;</td>
-	</tr>
-</table>
-
-<table width="85%" cellspacing="0" cellpadding="0" border="0" align="center">
-	<tr>
-		<td><br clear="all" />
+<div id="wrap">
+	<div id="page-header">
+		<h1><?php echo $lang['WELCOME_INSTALL']; ?></h1>
+	</div>
+	<div id="page-body">
+		<div class="panel">
+			<span class="corners-top"><span></span></span>
+			<div id="content">
 
 <form action="<?php echo "install.$phpEx"; ?>" name="installation" method="post">
 
@@ -1322,13 +1331,14 @@ function inst_page_footer()
 {
 
 ?>
-
-<div class="copyright" align="center">Powered by phpBB &copy; <a href="http://www.phpbb.com/" target="_phpbb" class="copyright">phpBB Group</a>, 2003</div>
-
-		<br clear="all" /></td>
-	</tr>
-</table>
-
+			</div>
+			<span class="corners-bottom"><span></span></span>
+		</div>
+	</div>
+	<div id="page-footer">
+		Powered by phpBB &copy; <?php echo date('Y'); ?> <a href="http://www.phpbb.com/">phpBB Group</a>
+	</div>
+</div>
 </body>
 </html>
 <?php
