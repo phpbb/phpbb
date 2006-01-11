@@ -527,6 +527,13 @@ if ( isset($HTTP_POST_VARS['submit']) )
 				message_die(GENERAL_ERROR, 'Could not update users table', '', __LINE__, __FILE__, $sql);
 			}
 
+			// We remove all stored login keys since the password has been updated
+			// and change the current one (if applicable)
+			if ( !empty($passwd_sql) )
+			{
+				session_reset_keys($user_id, $user_ip);
+			}
+
 			if ( !$user_active )
 			{
 				//
