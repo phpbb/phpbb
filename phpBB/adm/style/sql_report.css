@@ -63,7 +63,8 @@ a.th:hover {  color: #FFA34F; text-decoration: underline; }
 }
 .nav {
 	color:	black;
-	font:	bold 7pt;
+	font-size:	7pt;
+	font-weight: bold;
 }
 
 .error { color: #FF0000 }
