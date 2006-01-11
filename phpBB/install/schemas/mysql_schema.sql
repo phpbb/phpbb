@@ -564,7 +564,7 @@ CREATE TABLE phpbb_reports (
 );
 
 # Table: 'phpbb_search_results'
-CREATE TABLE new_search_results (
+CREATE TABLE phpbb_search_results (
   search_key varchar(32) DEFAULT '' NOT NULL,
   search_time int(11) DEFAULT '0' NOT NULL,
   search_keywords mediumtext NOT NULL,
