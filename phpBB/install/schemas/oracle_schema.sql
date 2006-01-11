@@ -1141,15 +1141,12 @@ END;
  Table: phpbb_search_results
 */
 CREATE TABLE phpbb_search_results (
-  search_id number(11) DEFAULT '0' NOT NULL,
-  session_id varchar2(32) DEFAULT '',
+  session_key varchar2(32) DEFAULT '',
   search_time number(11) DEFAULT '0' NOT NULL,
-  search_array clob,
-  CONSTRAINT pk_phpbb_search_results PRIMARY KEY (search_id)
+  search_keywords clob,
+  search_authors clob,
+  CONSTRAINT pk_phpbb_search_results PRIMARY KEY (search_key)
 )
-/
-
-CREATE INDEX session_id on phpbb_search_results (session_id)
 /
 
 /*

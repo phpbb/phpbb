@@ -775,15 +775,12 @@ SELECT SETVAL('phpbb_reports_report_id_seq',(select case when max(report_id)>0 t
 
 /* Table: phpbb_search_results */
 CREATE TABLE phpbb_search_results (
-  search_id INT4  DEFAULT '0' NOT NULL,
-  session_id varchar(32) DEFAULT '' NOT NULL,
+  search_key varchar(32) DEFAULT '' NOT NULL,
   search_time INT4 DEFAULT '0' NOT NULL,
-  search_array TEXT DEFAULT '' NOT NULL,
-  PRIMARY KEY (search_id),
-  CHECK (search_id>=0)
+  search_keywords TEXT DEFAULT '' NOT NULL,
+  search_authors TEXT DEFAULT '' NOT NULL,
+  PRIMARY KEY (search_key)
 );
-
-CREATE INDEX session_id_phpbb_search_results_index ON phpbb_search_results (session_id);
 
 /* Table: phpbb_search_wordlist */
 CREATE SEQUENCE phpbb_search_wordlist_word_i;

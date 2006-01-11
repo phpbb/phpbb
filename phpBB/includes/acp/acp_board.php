@@ -564,7 +564,7 @@ class acp_board
 		$dp = opendir($phpbb_root_path . 'includes/search');
 		while ($file = readdir($dp))
 		{
-			if (preg_match('#\.' . $phpEx . '$#', $file))
+			if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
 			{
 				$search_plugins[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
 			}

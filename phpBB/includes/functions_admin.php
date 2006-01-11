@@ -509,7 +509,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true)
 {
-	global $db;
+	global $db, $config, $phpbb_root_path, $phpEx;
 
 	if (is_array($where_ids))
 	{
@@ -542,7 +542,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(POSTS_TABLE, REPORTS_TABLE, SEARCH_MATCH_TABLE);
+	$table_ary = array(POSTS_TABLE, REPORTS_TABLE);
 
 	foreach ($table_ary as $table)
 	{
@@ -551,6 +551,26 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
+
+	// Remove the message from the search index
+	$search_type = $config['search_type'];
+
+	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	{
+		trigger_error('NO_SUCH_SEARCH_MODULE');
+	}
+
+	require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+
+	$error = false;
+	$search = new $search_type($error);
+
+	if ($error)
+	{
+		trigger_error($error);
+	}
+
+	$search->index_remove($where_ids);
 
 	delete_attachments('post', $post_ids, false);
 

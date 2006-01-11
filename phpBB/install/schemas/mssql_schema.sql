@@ -486,10 +486,10 @@ CREATE TABLE [phpbb_reports_reasons] (
 GO
 
 CREATE TABLE [phpbb_search_results] (
-	[search_id] [int] NOT NULL ,
-	[session_id] [varchar] (32) NOT NULL ,
+	[search_key] [varchar] (32) NOT NULL ,
 	[search_time] [int] NOT NULL ,
-	[search_array] [text] NOT NULL 
+	[search_keywords] [text] NOT NULL ,
+	[search_authors] [text] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1058,7 +1058,7 @@ GO
 ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_search_results] PRIMARY KEY  CLUSTERED 
 	(
-		[search_id]
+		[search_key]
 	)  ON [PRIMARY] 
 GO
 
@@ -1461,7 +1461,6 @@ ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD 
-	CONSTRAINT [DF_search_search_id] DEFAULT (0) FOR [search_id],
 	CONSTRAINT [DF_search_search_time] DEFAULT (0) FOR [search_time]
 GO
 
@@ -1783,9 +1782,6 @@ CREATE  INDEX [field_type] ON [phpbb_profile_fields]([field_type]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [field_order] ON [phpbb_profile_fields]([field_order]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [session_id] ON [phpbb_search_results]([session_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [word_id] ON [phpbb_search_wordlist]([word_id]) ON [PRIMARY]

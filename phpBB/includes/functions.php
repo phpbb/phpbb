@@ -2057,6 +2057,11 @@ function page_footer()
 			// Tidy some table rows every week
 			$cron_type = 'tidy_database';
 		}
+		else if (time() - $config['search_last_gc'] > $config['search_gc'])
+		{
+			// Tidy the cache
+			$cron_type = 'tidy_search';
+		}
 /**
 * @todo add session garbage collection
 

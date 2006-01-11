@@ -9,8 +9,8 @@
 		<td colspan="2"><span class="titles">{SEARCH_MATCHES}</span><br /></td>
 	</tr>
 	<tr>
-		<td class="genmed"><!-- IF SEARCH_WORDS -->{L_SEARCHED_FOR}: <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a><!-- ENDIF --><!-- IF IGNORED_WORDS --> {L_IGNORED_TERMS}: <b>{IGNORED_WORDS}</b><!-- ENDIF --></td>
-		<td align="right"><span class="genmed">{L_SEARCH_IN_RESULTS}: </span><input type="text" name="keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
+		<td class="genmed"><!-- IF SEARCH_TOPIC -->{L_SEARCHED_TOPIC}: <a href="{U_SEARCH_TOPIC}"><b>{SEARCH_TOPIC}</b></a><br /><!-- ENDIF --><!-- IF SEARCH_WORDS -->{L_SEARCHED_FOR}: <a href="{U_SEARCH_WORDS}"><b>{SEARCH_WORDS}</b></a><!-- ENDIF --><!-- IF IGNORED_WORDS --> {L_IGNORED_TERMS}: <b>{IGNORED_WORDS}</b><!-- ENDIF --></td>
+		<td align="right"><!-- IF SEARCH_IN_RESULTS --><span class="genmed">{L_SEARCH_IN_RESULTS}: </span><input type="text" name="add_keywords" value="" /> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /><!-- ENDIF --></td>
 	</tr>
 </table>
 
@@ -64,7 +64,7 @@
 	</tr>
 	<!-- END searchresults -->
 	<tr>
-		<td class="cat" colspan="7" valign="middle" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></td>
+		<td class="cat" colspan="7" valign="middle" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY -->&nbsp;<span class="gensmall">{L_SORT_BY}:</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /><!-- ENDIF --></td>
 	</tr>
 	</table>
 

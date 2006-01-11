@@ -154,6 +154,11 @@ class acm
 	{
 		global $phpEx;
 
+		if (!$this->_exists($var_name))
+		{
+			return;
+		}
+
 		if ($var_name == 'sql' && !empty($table))
 		{
 			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';

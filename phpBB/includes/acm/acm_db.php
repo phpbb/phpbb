@@ -57,7 +57,7 @@ class acm
 
 			if (!$var_names)
 			{
-				$var_requested[] = $row['var_name'];
+				$this->var_requested[] = $row['var_name'];
 			}
 		}
 	}
@@ -137,7 +137,7 @@ class acm
 
 		if ($var_name{0} == '_')
 		{
-			if (!in_array($this->var_requested, $var_name))
+			if (!in_array($var_name, $this->var_requested))
 			{
 				$this->var_requested[] = $var_name;
 

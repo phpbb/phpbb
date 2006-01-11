@@ -1812,11 +1812,28 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			WHERE topic_moved_id = ' . $data['topic_id']);
 	}
 
-	// Fulltext parse
+	// Index message contents
 	if ($update_message && $data['enable_indexing'])
 	{
-		$search = new fulltext_search();
-		$result = $search->add($mode, $data['post_id'], $data['message'], $subject);
+		// Select the search method and do some additional checks to ensure it can actually be utilised
+		$search_type = $config['search_type'];
+	
+		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		{
+			trigger_error('NO_SUCH_SEARCH_MODULE');
+		}
+	
+		require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+
+		$error = false;
+		$search = new $search_type($error);
+	
+		if ($error)
+		{
+			trigger_error($error);
+		}
+
+		$search->index($mode, $data['post_id'], $data['message'], $subject);
 	}
 
 	$db->sql_transaction('commit');

@@ -36,6 +36,7 @@ $lang = array_merge($lang, array(
 
 	'FOUND_SEARCH_MATCH'	=> 'Search found %d match',
 	'FOUND_SEARCH_MATCHES'	=> 'Search found %d matches',
+	'FOUND_MORE_SEARCH_MATCHES'	=> 'Search found more than %d matches',
 
 	'IGNORED_TERMS'			=> 'ignored',
 
@@ -43,6 +44,8 @@ $lang = array_merge($lang, array(
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
 	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
 	'NO_SEARCH_TIME'		=> 'Sorry but you cannot use search at this time. Please try again in a few minutes.',
+	'NO_KEYWORDS'			=> 'You must specify at least one word to search for. Each word must consist of at least %d characters and must not contain more than %d characters excluding wildcards.',
+	'TOO_FEW_AUTHOR_CHARS'	=> 'You must specify at least %d characters of the authors name.',
 
 	'POST_CHARACTERS'		=> 'characters of posts',
 
@@ -52,6 +55,7 @@ $lang = array_merge($lang, array(
 	'RETURN_FIRST'			=> 'Return first',
 
 	'SEARCHED_FOR'			=> 'Search term used',
+	'SEARCHED_TOPIC'		=> 'Searched topic',
 	'SEARCH_ALL_TERMS'		=> 'Search for all terms or use query as entered',
 	'SEARCH_ANY_TERMS'		=> 'Search for any terms',
 	'SEARCH_AUTHOR'			=> 'Search for Author',

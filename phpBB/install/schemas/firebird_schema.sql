@@ -481,10 +481,10 @@ CREATE TABLE phpbb_reports_reasons (
 
 # phpbb_search_results
 CREATE TABLE phpbb_search_results (
-  search_id INTEGER DEFAULT 0  NOT NULL,
-  session_id VARCHAR(32) NOT NULL,
+  search_key VARCHAR(32) NOT NULL,
   search_time INTEGER DEFAULT 0  NOT NULL,
-  search_array BLOB SUB_TYPE TEXT NOT NULL
+  search_keywords BLOB SUB_TYPE TEXT NOT NULL,
+  search_authors BLOB SUB_TYPE TEXT NOT NULL
 );;
 
 # phpbb_search_wordlist
@@ -1242,12 +1242,7 @@ ADD PRIMARY KEY (
 
 ALTER TABLE phpbb_search_results
 ADD PRIMARY KEY (
-  search_id
-);;
-
-CREATE INDEX session_id54
-ON phpbb_search_results(
-  session_id
+  search_key
 );;
 
 ALTER TABLE phpbb_search_wordlist

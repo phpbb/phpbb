@@ -563,17 +563,16 @@ CREATE TABLE phpbb_reports (
   PRIMARY KEY (report_id)
 );
 
-# Table: phpbb_search_results
-CREATE TABLE phpbb_search_results (
-  search_id int(11) UNSIGNED DEFAULT '0' NOT NULL,
-  session_id varchar(32) DEFAULT '' NOT NULL,
+# Table: 'phpbb_search_results'
+CREATE TABLE new_search_results (
+  search_key varchar(32) DEFAULT '' NOT NULL,
   search_time int(11) DEFAULT '0' NOT NULL,
-  search_array mediumtext NOT NULL,
-  PRIMARY KEY (search_id),
-  KEY session_id (session_id)
+  search_keywords mediumtext NOT NULL,
+  search_authors mediumtext NOT NULL,
+  PRIMARY KEY (search_key)
 );
 
-# Table: phpbb_search_wordlist
+# Table: 'phpbb_search_wordlist'
 CREATE TABLE phpbb_search_wordlist (
   word_text varchar(50) BINARY DEFAULT '' NOT NULL,
   word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
@@ -582,7 +581,7 @@ CREATE TABLE phpbb_search_wordlist (
   KEY word_id (word_id)
 );
 
-# Table: phpbb_search_wordmatch
+# Table: 'phpbb_search_wordmatch'
 CREATE TABLE phpbb_search_wordmatch (
   post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,

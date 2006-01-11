@@ -108,6 +108,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_birthdays', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_memberlist', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewprofile', '1');
@@ -121,7 +122,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_guests', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_phr', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
@@ -138,12 +138,13 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_urls', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_quote_depth', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_reg_attempts', '5');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_search_chars', '10');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_search_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars', '255');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
@@ -156,9 +157,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'imag
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('save_passwd', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size', '250');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'fulltext_phpbb');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_results', '1800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads', '0');
@@ -184,6 +187,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '2.1.2')
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('database_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('last_queue_run', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('last_search_time', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_user_id', '2', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('newest_username', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_files', '0', 1);
