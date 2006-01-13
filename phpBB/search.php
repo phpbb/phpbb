@@ -197,13 +197,13 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			}
 			else
 			{
-				if (preg_match('#^[\*%]+$#', trim($search_author)) || preg_match('#^[^\*]{1,2}$#', str_replace(array('*', '%'), '', trim($search_author))))
+				$search_author = str_replace('*', '%', trim($search_author));
+
+				if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < 3 ) )
 				{
 					$search_author = '';
 				}
 
-				$search_author = str_replace('*', '%', trim($search_author));
-				
 				$sql = "SELECT user_id
 					FROM " . USERS_TABLE . "
 					WHERE username LIKE '" . str_replace("\'", "''", $search_author) . "'";
@@ -420,12 +420,12 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		//
 		if ( $search_author != '' )
 		{
-			if (preg_match('#^[\*%]+$#', trim($search_author)) || preg_match('#^[^\*]{1,2}$#', str_replace(array('*', '%'), '', trim($search_author))))
+			$search_author = str_replace('*', '%', trim($search_author));
+
+			if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < 3 ) )
 			{
 				$search_author = '';
 			}
-
-			$search_author = str_replace('*', '%', trim(str_replace("\'", "''", $search_author)));
 		}
 
 		if ( $total_match_count )
