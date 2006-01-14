@@ -2435,9 +2435,9 @@ function get_database_size()
 		{
 			$version = $row['mysql_version'];
 
-			if (preg_match('#^(3\.23|4\.|5\.)#', $version))
+			if (preg_match('#(3\.23|[45]\.)#', $version))
 			{
-				$db_name = (preg_match('#^(3\.23\.[6-9])|(3\.23\.[1-9][1-9])|(4\.)|(5\.)#', $version)) ? "`{$db->dbname}`" : $db->dbname;
+				$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`{$db->dbname}`" : $db->dbname;
 
 				$sql = "SHOW TABLE STATUS
 					FROM " . $db_name;
@@ -2446,7 +2446,7 @@ function get_database_size()
 				$dbsize = 0;
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && $row['Engine'] == 'MyISAM'))
+					if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
 					{
 						if ($table_prefix != '')
 						{
