@@ -118,7 +118,7 @@ function mcp_notes_user_view($id, $mode, $action)
 	// Handle any actions
 	if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 	{
-		$where_sql = '';
+		$where_sql = " AND reportee_id = $user_id";
 		if ($deletemark && $marked)
 		{
 			$sql_in = array();
@@ -135,7 +135,7 @@ function mcp_notes_user_view($id, $mode, $action)
 				$where_sql";
 		$db->sql_query($sql);
 
-		add_log('admin', 'LOG_USERS_CLEAR');
+		add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
 
 		$msg = ($deletemark) ? 'MARKED_DELETED' : 'ALL_DELETED';
 		$redirect = "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id";
