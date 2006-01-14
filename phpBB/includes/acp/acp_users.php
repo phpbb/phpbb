@@ -1809,7 +1809,7 @@ class acp_users
 		}
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $config["\\1"]'), trim($module_auth)) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $config["\\1"]'), $module_auth) . ');');
 
 		return $is_auth;
 	}
