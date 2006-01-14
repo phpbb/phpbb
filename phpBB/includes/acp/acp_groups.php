@@ -342,14 +342,11 @@ class acp_groups
 				$result = $db->sql_query($sql);
 
 				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $user->lang['USER_DEFAULT'] . '</option>';
-				if ($row = $db->sql_fetchrow($result))
+
+				while ($row = $db->sql_fetchrow($result))
 				{
-					do
-					{
-						$selected = ($group_rank && $row['rank_id'] == $group_rank) ? ' selected="selected"' : '';
-						$rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
-					}
-					while ($row = $db->sql_fetchrow($result));
+					$selected = ($group_rank && $row['rank_id'] == $group_rank) ? ' selected="selected"' : '';
+					$rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
 				}
 				$db->sql_freeresult($result);
 

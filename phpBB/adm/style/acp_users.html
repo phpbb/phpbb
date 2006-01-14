@@ -513,6 +513,24 @@
 
 	</form>
 
+<!-- ELSEIF S_RANK -->
+
+	<form id="user_prefs" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_ACP_USER_RANK}</legend>
+		<dl>
+			<dt><label for="user_rank">{L_USER_RANK}:</label></dt>
+			<dd><select name="user_rank" id="user_rank">{S_RANK_OPTIONS}</select></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
 <!-- ELSEIF S_SIGNATURE -->
 
 	<script type="text/javascript">

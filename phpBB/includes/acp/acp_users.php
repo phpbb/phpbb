@@ -104,10 +104,17 @@ class acp_users
 
 		// Generate overall "header" for user admin
 		$s_form_options = '';
-		$forms_ary = array('overview', 'feedback', 'profile', 'prefs', 'avatar', 'sig', 'groups', 'perm', 'attach');
 
-		foreach ($forms_ary as $value)
+		$module_info = new acp_users_info();
+		$forms_ary = $module_info->module();
+
+		foreach ($forms_ary['modes'] as $value => $ary)
 		{
+			if (!$this->is_authed($ary['auth']))
+			{
+				continue;
+			}
+			
 			$selected = ($mode == $value) ? ' selected="selected"' : '';
 			$s_form_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($value)]  . '</option>';
 		}
@@ -1348,6 +1355,42 @@ class acp_users
 
 			break;
 
+			case 'rank':
+
+				if ($submit)
+				{
+					$rank_id = request_var('user_rank', 0);
+
+					$sql = 'UPDATE ' . USERS_TABLE . "
+						SET user_rank = $rank_id
+						WHERE user_id = $user_id";
+					$db->sql_query($sql);
+
+					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($u_action));
+				}
+				
+				$sql = 'SELECT * 
+					FROM ' . RANKS_TABLE . '
+					WHERE rank_special = 1
+					ORDER BY rank_title';
+				$result = $db->sql_query($sql);
+
+				$s_rank_options = '<option value="0"' . ((!$user_row['user_rank']) ? ' selected="selected"' : '') . '>' . $user->lang['NO_SPECIAL_RANK'] . '</option>';
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$selected = ($user_row['user_rank'] && $row['rank_id'] == $user_row['user_rank']) ? ' selected="selected"' : '';
+					$s_rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
+				}
+				$db->sql_freeresult($result);
+
+				$template->assign_vars(array(
+					'S_RANK'			=> true,
+					'S_RANK_OPTIONS'	=> $s_rank_options)
+				);
+
+			break;
+			
 			case 'sig':
 			
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -1707,6 +1750,9 @@ class acp_users
 		);
 	}
 
+	/**
+	* Optionset replacement for this module based on $user->optionset
+	*/
 	function optionset(&$user_row, $key, $value, $data = false)
 	{
 		global $user;
@@ -1737,12 +1783,35 @@ class acp_users
 		}
 	}
 
+	/**
+	* Optionget replacement for this module based on $user->optionget
+	*/
 	function optionget(&$user_row, $key, $data = false)
 	{
 		global $user;
 
 		$var = ($data) ? $data : $user_row['user_options'];
 		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
+	}
+
+	/**
+	* Check if user is allowed to call this user mode
+	*/
+	function is_authed($module_auth)
+	{
+		global $config, $auth;
+
+		$module_auth = trim($module_auth);
+
+		if (!$module_auth)
+		{
+			return true;
+		}
+
+		$is_auth = false;
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $config["\\1"]'), trim($module_auth)) . ');');
+
+		return $is_auth;
 	}
 }
 
@@ -1763,8 +1832,9 @@ class acp_users_info
 				'profile'		=> array('title' => 'ACP_USER_PROFILE', 'auth' => 'acl_a_user', 'display' => false),
 				'prefs'			=> array('title' => 'ACP_USER_PREFS', 'auth' => 'acl_a_user', 'display' => false),
 				'avatar'		=> array('title' => 'ACP_USER_AVATAR', 'auth' => 'acl_a_user', 'display' => false),
+				'rank'			=> array('title' => 'ACP_USER_RANK', 'auth' => 'acl_a_user', 'display' => false),
 				'sig'			=> array('title' => 'ACP_USER_SIG', 'auth' => 'acl_a_user', 'display' => false),
-				'groups'		=> array('title' => 'ACP_USER_GROUPS', 'auth' => 'acl_a_user', 'display' => false),
+				'groups'		=> array('title' => 'ACP_USER_GROUPS', 'auth' => 'acl_a_user && acl_a_group', 'display' => false),
 				'perm'			=> array('title' => 'ACP_USER_PERM', 'auth' => 'acl_a_user', 'display' => false),
 				'attach'		=> array('title' => 'ACP_USER_ATTACH', 'auth' => 'acl_a_user', 'display' => false),
 			),

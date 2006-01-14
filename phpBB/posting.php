@@ -1668,7 +1668,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				default:
 					foreach ($sql_insert_ary as $ary)
 					{
-						$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_insert_ary));
+						$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
 					}
 				break;
 			}

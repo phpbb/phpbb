@@ -389,7 +389,7 @@ class acp_modules
 					'S_MODULE_NAMES'	=> $s_name_options,
 					'S_MODULE_MODES'	=> $s_mode_options,
 					'U_BACK'			=> $u_action . '&amp;parent_id=' . $parent_id,
-					'U_EDIT_ACTION'		=> $u_action,
+					'U_EDIT_ACTION'		=> $u_action . '&amp;parent_id=' . $parent_id,
 
 					'L_TITLE'			=> $user->lang[strtoupper($action) . '_MODULE'],
 					

@@ -54,6 +54,8 @@ $lang = array_merge($lang, array(
 
 	'MOVE_POSTS_EXPLAIN'	=> 'Please select the forum to which you wish to move all the posts this user has made.',
 
+	'NO_SPECIAL_RANK'		=> 'No special rank assigned',
+
 	'QUICK_TOOLS'			=> 'Quick tools',
 
 	'REGISTERED'			=> 'Registered',
@@ -97,6 +99,8 @@ $lang = array_merge($lang, array(
 	'USER_PREFS_UPDATED'			=> 'User preferences updated',
 	'USER_PROFILE'					=> 'User Profile',
 	'USER_PROFILE_UPDATED'			=> 'User profile updated',
+	'USER_RANK'						=> 'User Rank',
+	'USER_RANK_UPDATED'				=> 'User rank updated',
 	'USER_SIG_UPDATED'				=> 'User signature successfully updated',
 	'USER_TOOLS'					=> 'Basic tools',
 

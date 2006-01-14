@@ -115,6 +115,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_PERM'				=> 'Permissions',
 	'ACP_USER_PREFS'			=> 'Preferences',
 	'ACP_USER_PROFILE'			=> 'Profile',
+	'ACP_USER_RANK'				=> 'Rank',
 	'ACP_USER_SECURITY'			=> 'User Security',
 	'ACP_USER_SIG'				=> 'Signature',
 	'ACP_VERSION_CHECK'			=> 'Check for Updates',

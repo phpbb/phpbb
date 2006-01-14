@@ -2059,12 +2059,9 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 	return;
 }
 
+/*
 if (class_exists('auth'))
 {
-	/**
-	* @package phpBB3
-	* Extension of auth class for changing permissions
-	*/
 	class auth_admin extends auth
 	{
 		// Set a user or group ACL record
@@ -2228,112 +2225,8 @@ if (class_exists('auth'))
 
 			$this->acl_clear_prefetch();
 		}
-
-		// NOTE: this function is not in use atm
-		// Add a new option to the list ... $options is a hash of form ->
-		// $options = array(
-		//	'local'		=> array('option1', 'option2', ...),
-		//	'global'	=> array('optionA', 'optionB', ...)
-		//);
-		function acl_add_option($options)
-		{
-			global $db, $cache;
-
-			if (!is_array($options))
-			{
-				trigger_error('Incorrect parameter for acl_add_option', E_USER_ERROR);
-			}
-
-			$cur_options = array();
-
-			$sql = "SELECT auth_option, is_global, is_local
-				FROM " . ACL_OPTIONS_TABLE . "
-				ORDER BY auth_option_id";
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!empty($row['is_global']))
-				{
-					$cur_options['global'][] = $row['auth_option'];
-				}
-
-				if (!empty($row['is_local']))
-				{
-					$cur_options['local'][] = $row['auth_option'];
-				}
-			}
-			$db->sql_freeresult($result);
-
-			// Here we need to insert new options ... this requires discovering whether
-			// an options is global, local or both and whether we need to add an option
-			// type flag (x_)
-			$new_options = array('local' => array(), 'global' => array());
-			foreach ($options as $type => $option_ary)
-			{
-				$option_ary = array_unique($option_ary);
-				foreach ($option_ary as $option_value)
-				{
-					if (!in_array($option_value, $cur_options[$type]))
-					{
-						$new_options[$type][] = $option_value;
-					}
-
-					$flag = substr($option_value, 0, strpos($option_value, '_') + 1);
-					if (!in_array($flag, $cur_options[$type]) && !in_array($flag, $new_options[$type]))
-					{
-						$new_options[$type][] = $flag;
-					}
-				}
-			}
-			unset($options);
-
-			$options = array();
-			$options['local'] = array_diff($new_options['local'], $new_options['global']);
-			$options['global'] = array_diff($new_options['global'], $new_options['local']);
-			$options['local_global'] = array_intersect($new_options['local'], $new_options['global']);
-
-			$type_sql = array('local' => '0, 1', 'global' => '1, 0', 'local_global' => '1, 1');
-
-			$sql = '';
-			foreach ($options as $type => $option_ary)
-			{
-				foreach ($option_ary as $option)
-				{
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-							$sql .= (($sql != '') ? ', ' : '') . "('$option', " . $type_sql[$type] . ")";
-							break;
-
-						case 'mysql4':
-						case 'mysqli':
-						case 'mssql':
-						case 'mssql_odbc':
-						case 'sqlite':
-							$sql .= (($sql != '') ? ' UNION ALL ' : '') . " SELECT '$option', " . $type_sql[$type];
-							break;
-
-						default:
-							$sql = 'INSERT INTO ' . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
-								VALUES ($option, " . $type_sql[$type] . ")";
-							$db->sql_query($sql);
-							$sql = '';
-					}
-				}
-			}
-
-			if ($sql != '')
-			{
-				$sql = 'INSERT INTO ' . ACL_OPTIONS_TABLE . " (auth_option, is_global, is_local)
-					VALUES $sql";
-				$db->sql_query($sql);
-			}
-
-			$cache->destroy('acl_options');
-		}
-	}
 }
+*/
 
 /**
 * Update Post Informations (First/Last Post in topic/forum)

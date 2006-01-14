@@ -554,12 +554,24 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				'ban_give_reason'	=> $ban_give_reason,
 			);
 		}
-		$sql = $db->sql_build_array('MULTI_INSERT', $sql_ary);
-
-		if ($sql)
+		
+		if (sizeof($sql_ary))
 		{
-			$sql = 'INSERT INTO ' . BANLIST_TABLE . ' ' . $sql;
-			$db->sql_query($sql);
+			switch (SQL_LAYER)
+			{
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					$db->sql_query('INSERT INTO ' . BANLIST_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+				break;
+
+				default:
+					foreach ($sql_ary as $ary)
+					{
+						$db->sql_query('INSERT INTO ' . BANLIST_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+					}
+				break;
+			}
 		}
 
 		// If we are banning we want to logout anyone matching the ban
