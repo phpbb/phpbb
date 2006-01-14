@@ -63,6 +63,8 @@ $lang = array_merge($lang, array(
 	'GROUP_IS_FREE'			=> 'This is a freely open group, all new members are welcome.', 
 	'GROUP_IS_SPECIAL'		=> 'This is a special group, special groups are managed by the board administrators.', 
 
+	'GROUP_LIST'			=> 'Manage Users',
+
 	'LOGIN_EXPLAIN_GROUP'	=> 'You need to login to view group details',
 	
 	'NOT_LEADER_OF_GROUP'	=> 'The requested operation cannot be taken because you are not a leader of the selected group.',
