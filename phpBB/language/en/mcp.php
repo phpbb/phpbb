@@ -119,6 +119,12 @@ $lang = array_merge($lang, array(
 	'LOOKUP_IP'					=> 'Look up IP',
 
 	'MCP_ADD'						=> 'Add a warning',
+
+	'MCP_LOGS'						=> 'Moderator Logs',
+	'MCP_LOGS_FRONT'				=> 'Front Page',
+	'MCP_LOGS_FORUM_VIEW'			=> 'Forum Logs',
+	'MCP_LOGS_TOPIC_VIEW'			=> 'Topic Logs',
+
 	'MCP_MAIN'						=> 'Main',
 	'MCP_MAIN_FORUM_VIEW'			=> 'View Forum',
 	'MCP_MAIN_FRONT'				=> 'Front Page',

@@ -78,6 +78,12 @@ if ($action == 'merge_select')
 	$mode = 'forum_view';
 }
 
+if ($mode == 'topic_logs')
+{
+	$id = 'logs';
+	$quickmod = false;
+}
+
 // Topic view modes
 if (in_array($mode, array('split', 'split_all', 'split_beyond', 'merge', 'merge_posts')))
 {
@@ -163,10 +169,12 @@ if (!$quickmod)
 	if (!$topic_id)
 	{
 		$module->set_display('topic_view', false);
+		$module->set_display('topic_logs', false);
 	}
 	if (!$forum_id)
 	{
 		$module->set_display('forum_view', false);
+		$module->set_display('forum_logs', false);
 	}
 	if (!$user_id && $username == '')
 	{
@@ -231,6 +239,16 @@ function _module_main_topic_view_url()
 }
 
 function _module_main_post_details_url()
+{
+	return extra_url();
+}
+
+function _module_logs_forum_view_url()
+{
+	return extra_url();
+}
+
+function _module_logs_topic_view_url()
 {
 	return extra_url();
 }
