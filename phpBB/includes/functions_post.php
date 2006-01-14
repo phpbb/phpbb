@@ -57,15 +57,20 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		{
 			$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $end_html + 1, ($start_html - $end_html - 1)));
 
-			if ($end_html = strpos($message, '>', $start_html))
+			$element = addslashes(preg_replace('#^((?:"[^"]*"|\'[^\']*\'|`[^`]*`|[^>`\'"])+>).*#', '\1', stripslashes(substr($message, $start_html + 1, strlen($message) - $start_html))));
+			$end_html = $start_html + strlen($element);
+
+			if ($end_html != $start_html)
 			{
 				$length = $end_html - $start_html + 1;
 				$hold_string = substr($message, $start_html, $length);
 
-				if (($unclosed_open = strrpos(' ' . $hold_string, '<')) != 1)
+				$short_hold_string = preg_replace('#.*(<(?:"[^"]*"|\'[^\']*\'|`[^`]*`|[^<>`\'"])+>)$#', '\1', $hold_string);
+
+				if (strlen($short_hold_string) < $length)
 				{
-					$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($hold_string, 0, $unclosed_open - 1));
-					$hold_string = substr($hold_string, $unclosed_open - 1);
+					$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($hold_string, 0, $length - strlen($short_hold_string)));
+					$hold_string = $short_hold_string;
 				}
 
 				$tagallowed = false;
