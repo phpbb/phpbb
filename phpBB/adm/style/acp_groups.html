@@ -23,7 +23,7 @@
 		<legend>{L_GROUP_DETAILS}</legend>
 		<dl>
 			<dt><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></dt>
-			<dd><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ELSE --><input name="group_name" type="text" id="group_name" value="{GROUP_NAME}" /><!-- ENDIF --></dd>
+			<dd><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="group_description">{L_GROUP_DESC}:</label></dt>
@@ -39,6 +39,8 @@
 				<input name="group_type" type="radio" class="radio" value="{GROUP_TYPE_HIDDEN}"{GROUP_HIDDEN} /> {L_GROUP_HIDDEN}
 			</dd>
 		</dl>
+	<!-- ELSE -->
+		<input name="group_type" type="hidden" value="{GROUP_TYPE_SPECIAL}" />
 	<!-- ENDIF -->
 	</fieldset>
 

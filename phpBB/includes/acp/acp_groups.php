@@ -409,6 +409,7 @@ class acp_groups
 
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
+					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESCRIPTION'		=> $group_description,
 					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
@@ -420,10 +421,12 @@ class acp_groups
 					'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
 					'GROUP_AVATAR_HEIGHT'	=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
-					'GROUP_TYPE_FREE'	=> GROUP_FREE,
-					'GROUP_TYPE_OPEN'	=> GROUP_OPEN,
-					'GROUP_TYPE_CLOSED'	=> GROUP_CLOSED,
-					'GROUP_TYPE_HIDDEN'	=> GROUP_HIDDEN,
+					'GROUP_TYPE_FREE'		=> GROUP_FREE,
+					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,
+					'GROUP_TYPE_CLOSED'		=> GROUP_CLOSED,
+					'GROUP_TYPE_HIDDEN'		=> GROUP_HIDDEN,
+					'GROUP_TYPE_SPECIAL'	=> GROUP_SPECIAL,
+
 					'GROUP_FREE'		=> $type_free,
 					'GROUP_OPEN'		=> $type_open,
 					'GROUP_CLOSED'		=> $type_closed,
