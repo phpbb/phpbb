@@ -289,7 +289,7 @@ class sql_db
 
 			while( list($key, $value) = @each($row) )
 			{
-				$row[$key] = stripslashes($value);
+				$row[$key] = ($value === ' ') ? trim($value) : stripslashes($value);
 			}
 			@reset($row);
 
@@ -317,7 +317,7 @@ class sql_db
 			{
 				while( list($key, $value) = @each($row) )
 				{
-					$rowset[$i][$key] = stripslashes($value);
+					$rowset[$i][$key] = ($value === ' ') ? trim($value) : stripslashes($value);
 				}
 				$i++;
 			}
@@ -356,7 +356,7 @@ class sql_db
 				if( empty($this->row[$query_id]) )
 				{
 					$this->row[$query_id] = @mssql_fetch_array($query_id);
-					$result = stripslashes($this->row[$query_id][$field]);
+					$result = ($this->row[$query_id][$field] === ' ') ? trim($this->row[$query_id][$field]) : stripslashes($this->row[$query_id][$field]);
 				}
 			}
 
