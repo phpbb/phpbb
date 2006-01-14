@@ -568,6 +568,7 @@ class ucp_groups
 							'S_EDIT'			=> true,
 							'S_INCLUDE_SWATCH'	=> true,
 							'S_CAN_UPLOAD'		=> $can_upload,
+							'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 							'S_ERROR'			=> (sizeof($error)) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 							'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
@@ -598,8 +599,8 @@ class ucp_groups
 							'GROUP_CLOSED'		=> $type_closed,
 							'GROUP_HIDDEN'		=> $type_hidden,
 
-							'U_SWATCH'			=> "{$phpbb_root_path}adm/swatch.$phpEx$SID&form=settings&name=group_colour",
-							'U_ACTION'			=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;g=$group_id",
+							'U_SWATCH'			=> "{$phpbb_root_path}adm/swatch.$phpEx$SID&form=ucp&name=group_colour",
+							'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
 						);
 

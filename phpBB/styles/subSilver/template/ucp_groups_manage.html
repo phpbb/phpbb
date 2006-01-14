@@ -1,7 +1,9 @@
 <!-- INCLUDE ucp_header.html -->
 
 <!-- $Id$ -->
+
 <!-- IF S_EDIT -->
+
 	<script type="text/javascript">
 	function swatch()
 	{
@@ -9,14 +11,13 @@
 		return false;
 	}
 	</script>
+
 	<!-- IF S_ERROR -->
 		<div class="errorbox">
 			<h3>{L_WARNING}</h3>
 			<p>{ERROR_MSG}</p>
 		</div>
 	<!-- ENDIF -->
-
-	<form id="settings" method="post" name="settings" action="{U_ACTION}"<!-- IF S_CAN_UPLOAD --> enctype="multipart/form-data"<!-- ENDIF -->>
 
 	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
@@ -131,28 +132,25 @@
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" /></td>
 	</tr>
 	</table>
-	</form>
 
 <!-- ELSEIF S_LIST -->
 
 	<script type="text/javascript">
 	<!--
-	function marklist(match, status)
-	{
-		doc = document.getElementById(match);
-		for (i = 0; i < doc.length; i++)
+		function marklist(match, status)
 		{
-			doc.elements[i].checked = status;
+			doc = document.forms[match];
+			for (i = 0; i < doc.length; i++)
+			{
+				doc.elements[i].checked = status;
+			}
 		}
-	}
 	//-->
 	</script>
 
 	<h1>{L_GROUP_MEMBERS}</h1>
 
 	<p>{L_GROUP_MEMBERS_EXPLAIN}</p>
-
-	<form id="list" name="list" method="post" action="{U_ACTION}">
 
 	<table class="tablebg" width="100%" cellspacing="1">
 		<tr>
@@ -185,7 +183,7 @@
 		</tr>
 	<!-- END member -->
 		<tr>
-			<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="javascript:marklist('list', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('list', false);">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
+			<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
 		</tr>
 	</table>
 	<div class="pagination" style="float: left;">
@@ -220,10 +218,9 @@
 		</tr>
 	</table>
 
-	</form>
-
 <!-- ELSE -->
-<table class="tablebg" width="100%" cellspacing="1">
+
+	<table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<th colspan="4">{L_USERGROUPS}</th>
 	</tr>
@@ -255,7 +252,8 @@
 	<tr>
 		<td class="cat" align="right" colspan="4"></td>
 	</tr>
+	</table>
 
-</table>
 <!-- ENDIF -->
+
 <!-- INCLUDE ucp_footer.html -->
