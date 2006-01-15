@@ -636,8 +636,7 @@ class ucp_groups
 						$sql = 'SELECT u.user_id, u.username, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
-								AND u.user_id = ug.user_id 
-								AND ug.group_leader = 0
+								AND u.user_id = ug.user_id
 							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username";
 						$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
@@ -654,7 +653,7 @@ class ucp_groups
 								$pending = true;
 							}
 
-							$template->assign_block_vars('member', array(
+							$template->assign_block_vars($row['group_leader'] ? 'leader' : 'member', array(
 								'USERNAME'			=> $row['username'],
 								'U_USER_VIEW'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}",
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
