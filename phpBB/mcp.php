@@ -243,12 +243,12 @@ function _module_main_post_details_url()
 	return extra_url();
 }
 
-function _module_logs_forum_view_url()
+function _module_logs_forum_logs_url()
 {
 	return extra_url();
 }
 
-function _module_logs_topic_view_url()
+function _module_logs_topic_logs_url()
 {
 	return extra_url();
 }

@@ -55,12 +55,12 @@ class mcp_logs
 			case 'front':
 				$where_sql = '';
 				break;
-			case 'forum_view':
+			case 'forum_logs':
 				$forum_id = request_var('f', 0);
 				$where_sql = " AND forum_id = $forum_id";
 				break;
-			case 'topic_view':
-				$topic_id = request_vat('t', 0);
+			case 'topic_logs':
+				$topic_id = request_var('t', 0);
 				$where_sql = " AND topic_id = $topic_id";
 				break;
 		}
