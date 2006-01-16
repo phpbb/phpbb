@@ -587,6 +587,8 @@ class acp_groups
 		}
 		$db->sql_freeresult($result);
 
+		ksort($group_ary);
+
 		$special_toggle = false;
 		foreach ($group_ary as $type => $row_ary)
 		{
