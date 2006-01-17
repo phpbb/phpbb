@@ -312,7 +312,7 @@ class bbcode_firstpass extends bbcode
 					}
 
 					// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
-					$code = strtr($code, array_flip(get_html_translation_table(HTML_ENTITIES)));
+					$code = html_entity_decode($code);
 
 					ob_start();
 					highlight_string($code);

@@ -250,7 +250,7 @@ if ($sql)
 	{
 		$sql = 'SELECT draft_id
 			FROM ' . DRAFTS_TABLE . '
-			WHERE (forum_id = ' . $forum_id . (($topic_id) ? " OR topic_id = $topic_id" : '') . ')
+			WHERE (forum_id IN (' . $forum_id . ', 0)' . (($topic_id) ? " OR topic_id = $topic_id" : '') . ')
 				AND user_id = ' . $user->data['user_id'] .
 				(($draft_id) ? " AND draft_id <> $draft_id" : '');
 		$result = $db->sql_query_limit($sql, 1);
@@ -486,8 +486,8 @@ if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 
 	if ($row = $db->sql_fetchrow($result))
 	{
-		$_REQUEST['subject'] = strtr($row['draft_subject'], array_flip(get_html_translation_table(HTML_ENTITIES)));
-		$_POST['message'] = strtr($row['draft_message'], array_flip(get_html_translation_table(HTML_ENTITIES)));
+		$_REQUEST['subject'] = html_entity_decode($row['draft_subject']);
+		$_REQUEST['message'] = html_entity_decode($row['draft_message']);
 		$refresh = true;
 		$template->assign_var('S_DRAFT_LOADED', true);
 	}

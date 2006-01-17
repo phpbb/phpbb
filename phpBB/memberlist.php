@@ -671,7 +671,7 @@ switch ($mode)
 					'FROM_USERNAME' => stripslashes($user->data['username']),
 					'TO_USERNAME'	=> ($topic_id) ? stripslashes($name) : stripslashes($row['username']),
 					'MESSAGE'		=> $message,
-					'TOPIC_NAME'	=> ($topic_id) ? strtr($row['topic_title'], array_flip(get_html_translation_table(HTML_ENTITIES))) : '',
+					'TOPIC_NAME'	=> ($topic_id) ? html_entity_decode($row['topic_title']) : '',
 
 					'U_TOPIC'	=> ($topic_id) ? generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id" : '')
 				);
