@@ -368,8 +368,8 @@ input {
 textarea {
 	background-color: #FAFAFA;
 	color: #333333;
-	font-family: "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
-	font-size: 1.3em;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 1.3em; 
 	line-height: 1.4em;
 	font-weight: normal;
 	border: 1px solid #A9B8C2;
