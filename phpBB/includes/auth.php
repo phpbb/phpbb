@@ -616,6 +616,7 @@ class auth_admin extends auth
 
 			break;
 
+			// Global Moderator Permission Mask
 			case 'mod_global':
 				
 				if ($group_id === false && $user_id === false)
@@ -630,6 +631,7 @@ class auth_admin extends auth
 
 			break;
 
+			// Moderator Permission Mask
 			case 'mod_local':
 			
 				if ($forum_id === false && ($group_id === false || $user_id === false))
@@ -676,6 +678,9 @@ class auth_admin extends auth
 			$compare_options = array_combine($compare_options, array_fill(1, sizeof($compare_options), 0));
 		}
 
+		// Defining the user-function here to save some memory
+		$return_zero = create_function('$value', 'return 0;');
+
 		// Actually fill the gaps
 		if (sizeof($hold_ary))
 		{
@@ -688,7 +693,7 @@ class auth_admin extends auth
 					// The differences get merged into $hold_ary (all permissions having ACL_NO set)
 					$hold_ary[$ug_id][$id] = array_merge($options, 
 
-						array_map(create_function('$value', 'return 0;'),
+						array_map($return_zero,
 							array_flip(
 								array_diff(
 									array_keys($compare_options), array_keys($options)
@@ -813,6 +818,7 @@ class auth_admin extends auth
 
 		return true;
 	}
+
 }
 
 ?>
