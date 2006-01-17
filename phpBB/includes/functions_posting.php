@@ -646,28 +646,14 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 {
 	global $user, $db, $template, $phpEx, $SID, $auth;
 
-	// Only those fitting into this forum...
-	if ($forum_id || $topic_id)
-	{
-		$sql = 'SELECT d.draft_id, d.topic_id, d.forum_id, d.draft_subject, d.save_time, f.forum_name
-			FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
-				WHERE d.user_id = ' . $user->data['user_id'] . '
-				AND f.forum_id = d.forum_id ' . 
-				(($forum_id) ? " AND f.forum_id = $forum_id" : '') . '
-			ORDER BY d.save_time DESC';
-	}
-	else
-	{
-		$sql = 'SELECT *
-			FROM ' . DRAFTS_TABLE . '
-				WHERE user_id = ' . $user->data['user_id'] . '
-				AND forum_id = 0
-				AND topic_id = 0
-			ORDER BY save_time DESC';
-	}
+	// Load those drafts not connected to forums/topics
+	$sql = 'SELECT *
+		FROM ' . DRAFTS_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . '
+			AND forum_id = 0
+			OR topic_id = 0
+		ORDER BY save_time DESC';
 	$result = $db->sql_query($sql);
-
-	$draftrows = $topic_ids = array();
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -678,7 +664,34 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 		$draftrows[] = $row;
 	}
 	$db->sql_freeresult($result);
-				
+
+	// Only those fitting into this forum now...
+	if ($forum_id || $topic_id)
+	{
+		$sql = 'SELECT d.draft_id, d.topic_id, d.forum_id, d.draft_subject, d.save_time, f.forum_name
+			FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
+				WHERE d.user_id = ' . $user->data['user_id'] . '
+				AND d.forum_id = f.forum_id ' . 
+				(($forum_id) ? " AND d.forum_id = $forum_id" : '') . '
+			ORDER BY d.save_time DESC';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['topic_id'])
+			{
+				$topic_ids[] = (int) $row['topic_id'];
+			}
+			$draftrows[] = $row;
+		}
+		$db->sql_freeresult($result);
+	}
+
+	if (!sizeof($draftrows))
+	{
+		return;
+	}
+
 	if (sizeof($topic_ids))
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title
@@ -694,51 +707,48 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	}
 	unset($topic_ids);
 	
-	if (sizeof($draftrows))
+	$template->assign_var('S_SHOW_DRAFTS', true);
+
+	foreach ($draftrows as $draft)
 	{
-		$template->assign_var('S_SHOW_DRAFTS', true);
+		$link_topic = $link_forum = $link_pm = false;
+		$insert_url = $view_url = $title = '';
 
-		foreach ($draftrows as $draft)
+		if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 		{
-			$link_topic = $link_forum = $link_pm = false;
-			$insert_url = $view_url = $title = '';
+			$link_topic = true;
+			$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
+			$title = $topic_rows[$draft['topic_id']]['topic_title'];
 
-			if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
-			{
-				$link_topic = true;
-				$view_url = "viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
-				$title = $topic_rows[$draft['topic_id']]['topic_title'];
-
-				$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
-			}
-			else if ($auth->acl_get('f_read', $draft['forum_id']))
-			{
-				$link_forum = true;
-				$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
-				$title = $draft['forum_name'];
-
-				$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
-			}
-			else
-			{
-				$link_pm = true;
-				$insert_url = "ucp.$phpEx$SID&amp;i=$id&amp;mode=compose&amp;d=" . $draft['draft_id'];
-			}
-						
-			$template->assign_block_vars('draftrow', array(
-				'DRAFT_ID'		=> $draft['draft_id'],
-				'DATE'			=> $user->format_date($draft['save_time']),
-				'DRAFT_SUBJECT'	=> $draft['draft_subject'],
-
-				'TITLE'			=> $title,
-				'U_VIEW'		=> $view_url,
-				'U_INSERT'		=> $insert_url,
-
-				'S_LINK_PM'		=> $link_pm,
-				'S_LINK_TOPIC'	=> $link_topic,
-				'S_LINK_FORUM'	=> $link_forum)
-			);
+			$insert_url = "posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
 		}
+		else if ($auth->acl_get('f_read', $draft['forum_id']))
+		{
+			$link_forum = true;
+			$view_url = "viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
+			$title = $draft['forum_name'];
+
+			$insert_url = "posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
+		}
+		else
+		{
+			$link_pm = true;
+			$insert_url = "ucp.$phpEx$SID&amp;i=$id&amp;mode=compose&amp;d=" . $draft['draft_id'];
+		}
+					
+		$template->assign_block_vars('draftrow', array(
+			'DRAFT_ID'		=> $draft['draft_id'],
+			'DATE'			=> $user->format_date($draft['save_time']),
+			'DRAFT_SUBJECT'	=> $draft['draft_subject'],
+
+			'TITLE'			=> $title,
+			'U_VIEW'		=> $view_url,
+			'U_INSERT'		=> $insert_url,
+
+			'S_LINK_PM'		=> $link_pm,
+			'S_LINK_TOPIC'	=> $link_topic,
+			'S_LINK_FORUM'	=> $link_forum)
+		);
 	}
 }
 
