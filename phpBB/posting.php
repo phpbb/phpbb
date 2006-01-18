@@ -1867,7 +1867,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Mark this topic as read
-	markread('topic', $data['forum_id'], $data['topic_id'], $data['post_time']);
+	// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
+	markread('topic', $data['forum_id'], $data['topic_id'], time());
 
 	// Send Notifications
 	if ($mode != 'edit' && $mode != 'delete' && (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')))

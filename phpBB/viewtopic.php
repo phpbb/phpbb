@@ -154,17 +154,13 @@ if (!$post_id)
 }
 else
 {
-	if ($auth->acl_get('m_approve', $forum_id))
-	{
-		$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_id <= $post_id";
-	}
-	else
-	{
-		$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id AND p.post_approved = 1 AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = 1 AND p2.post_id <= $post_id";
-	}
+	$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '') . ' AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = 1';
+
+	// This is for determining where we are (page)
+	$join_sql .= ($sort_dir == 'd') ? " AND p2.post_id >= $post_id" : " AND p2.post_id <= $post_id";
 }
 $extra_fields = (!$post_id)  ? '' : ', COUNT(p2.post_id) AS prev_posts';
-$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, ' . $select_sql . ' ORDER BY p.post_id ASC';
+$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, ' . $select_sql . ' ORDER BY p.post_id ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 if ($user->data['is_registered'])
 {
