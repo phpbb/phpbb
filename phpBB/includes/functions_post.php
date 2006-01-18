@@ -57,7 +57,9 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		{
 			$tmp_message .= preg_replace($html_entities_match, $html_entities_replace, substr($message, $end_html + 1, ($start_html - $end_html - 1)));
 
-			$element = addslashes(preg_replace('#^((?:"[^"]*"|\'[^\']*\'|`[^`]*`|[^>`\'"])+>).*#', '\1', stripslashes(substr($message, $start_html + 1, strlen($message) - $start_html))));
+			$matches = array();
+			preg_match('#^(/?\w+(?:\s+\w+=(?:\w+|"[^"]*"|\'[^\']*\'|`[^`]*`))*\s*?/?>)#', stripslashes(substr($message, $start_html + 1, strlen($message) - $start_html)), $matches);
+			$element = addslashes($matches[1]);
 			$end_html = $start_html + strlen($element);
 
 			if ($end_html != $start_html)
@@ -65,7 +67,9 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 				$length = $end_html - $start_html + 1;
 				$hold_string = substr($message, $start_html, $length);
 
-				$short_hold_string = preg_replace('#.*(<(?:"[^"]*"|\'[^\']*\'|`[^`]*`|[^<>`\'"])+>)$#', '\1', $hold_string);
+				$matches = array();
+				preg_match('#(</?\w+(?:\s+\w+=(?:\w+|"[^"]*"|\'[^\']*\'|`[^`]*`))*\s*?/?>)$#', stripslashes($hold_string), $matches);
+				$short_hold_string = addslashes($matches[1]);
 
 				if (strlen($short_hold_string) < $length)
 				{
