@@ -52,6 +52,10 @@ switch ($cron_type)
 		}
 	break;
 
+	case 'tidy_search':
+		set_config('search_last_gc', time(), true);
+	break;
+
 	case 'tidy_database':
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
