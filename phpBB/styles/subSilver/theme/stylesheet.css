@@ -34,10 +34,6 @@ body {
 	margin: 0;
 	}
 
-li {
-	margin-left: 25px;
-}
-
 #wrapheader {
 	height: 120px;
 	background-image: url('./images/background.gif');
@@ -113,7 +109,7 @@ h2 {
 h3 {
 	font-size: 1.3em;
 	font-weight: bold;
-	font-family: Verdana, serif;
+	font-family: Arial, Helvetica, sans-serif;
 	line-height: 120%;
 	}
 h4 {
@@ -158,19 +154,8 @@ p.searchbarreg {
 	float: right;
 	white-space: nowrap;
 	}
-a.forumlink {
-	color: #069;
-	font-weight: bold;
-	font-family: Arial, Verdana, sans-serif;
-	font-size: 1.2em;
-	}
 p.forumdesc {
 	padding-bottom: 4px;
-	}
-p.topictitle {
-	margin: 1px 0px;
-	display: inline;
-	font-weight: bold;
 	}
 p.topicauthor {
 	margin: 1px 0px;
@@ -197,6 +182,9 @@ p.postapprove {
 	font-size: 1.3em;
 	line-height: 1.4em;
 	font-family: "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
+	}
+.postbody li {
+	margin-left: 1.5em;
 	}
 .posthilit {
 	background-color: yellow;
@@ -233,7 +221,7 @@ p.postapprove {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	}
 .titles {
-	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
 	font-weight: bold;
 	font-size: 1.3em;
 	text-decoration: none;
@@ -331,24 +319,27 @@ a:hover {
 	color: #D46400;
 	text-decoration: underline;
 	}
+a.forumlink {
+	color: #069;
+	font-weight: bold;
+	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+	font-size: 1.2em;
+	}
+a.topictitle {
+	margin: 1px 0px;
+	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
+	font-weight: bold;
+	font-size: 1.2em;
+	}
 a.topictitle:visited {
 	color: #5493B4;
 	text-decoration: none;
 	}
-a.th:link {
-	color: #FFA34F;
+th a, th a:visited {
+	color: #FFA34F !important;
 	text-decoration: none;
 	}
-a.th:active {
-	color: #FFA34F;
-	text-decoration: none;
-	}
-a.th:visited {
-	color: #FFA34F;
-	text-decoration: none;
-	}
-a.th:hover {
-	color: #FFA34F;
+th a:hover {
 	text-decoration: underline;
 	}
 
@@ -432,7 +423,7 @@ input.radio {
 
 /* BBCode
  ------------ */
-.quotetitle {
+.quotetitle, .attachtitle {
 	margin: 10px 5px 0px 5px;
 	padding: 4px;
 	border-width: 1px 1px 0px 1px;
@@ -440,9 +431,13 @@ input.radio {
 	border-color: #A9B8C2;
 	color: #333333;
 	background-color: #A9B8C2;
-	font-size: 0.9em;
+	font-size: 0.85em;
+	font-weight: bold;
 	}
-.quotecontent {
+.quotetitle .quotetitle {
+	font-size: 1em;
+	}
+.quotecontent, .attachcontent {
 	margin: 0px 5px 10px 5px;
 	padding: 5px;
 	border-color: #A9B8C2;
@@ -455,14 +450,19 @@ input.radio {
 	background-color: #FAFAFA;
 	color: #4B5C77;
 	}
+.attachcontent {
+	font-size: 0.85em;
+	}
 .codetitle {
 	margin: 10px 5px 0px 5px;
-	padding: 4px;
+	padding: 2px 4px;
 	border-width: 1px 1px 0px 1px;
 	border-style: solid;
 	border-color: #A9B8C2;
 	color: #333333;
 	background-color: #A9B8C2;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 0.8em;
 	}
 .codecontent {
 	margin: 0px 5px 10px 5px;
@@ -472,8 +472,8 @@ input.radio {
 	border-style: solid;
 	font-weight: normal;
 	color: #006600;
-	font-size: 1em;
-	font-family: 'Courier New', monospace;
+	font-size: 0.85em;
+	font-family: Monaco, 'Courier New', monospace;
 	background-color: #FAFAFA;
 	}
 .syntaxbg {

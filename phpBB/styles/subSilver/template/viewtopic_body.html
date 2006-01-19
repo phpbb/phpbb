@@ -109,13 +109,16 @@
 				{S_HIDDEN_FIELDS}</form></td>
 			</tr>
 			<!-- ENDIF -->
-			<tr>
-				<th width="150" nowrap="nowrap">{L_AUTHOR}</th>
-				<th nowrap="nowrap">{L_MESSAGE}</th>
-			</tr>
-
+			</table>
+			
 			<!-- BEGIN postrow -->
-
+			<table class="tablebg" width="100%" cellspacing="1">
+			<!-- IF postrow.S_FIRST_ROW -->
+			<tr>
+				<th>{L_AUTHOR}</th>
+				<th>{L_MESSAGE}</th>
+			</tr>
+			<!-- ENDIF -->
 			<!-- IF postrow.S_ROW_COUNT is even -->
 			<tr class="row1">
 			<!-- ELSE -->
@@ -266,9 +269,10 @@
 			<tr>
 				<td class="spacer" colspan="2" height="1"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 			</tr>
-
-			<!-- END postrow -->
-
+		</table>
+		<!-- END postrow -->
+		
+		<table width="100%" cellspacing="1" class="tablebg">
 			<tr align="center">
 				<td class="cat" colspan="2"><form name="viewtopic" method="post" action="{S_TOPIC_ACTION}"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" value="{L_GO}" name="sort" /></form></td>
 			</tr>
