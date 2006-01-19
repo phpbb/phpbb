@@ -564,13 +564,12 @@ CREATE TABLE phpbb_reports (
 
 # Table: phpbb_search_results
 CREATE TABLE phpbb_search_results (
-  search_id INTEGER PRIMARY KEY NOT NULL DEFAULT '0',
-  session_id varchar(32) NOT NULL DEFAULT '',
+  search_key varchar(32) NOT NULL DEFAULT '',
   search_time int(11) NOT NULL DEFAULT '0',
-  search_array mediumtext(16777215) NOT NULL
+  search_keywords mediumtext(16777215) NOT NULL,
+  search_authors mediumtext(16777215) NOT NULL,
+  PRIMARY KEY (search_key)
 );
-
-CREATE INDEX session_id_phpbb_search_result on phpbb_search_results (session_id);
 
 # Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (

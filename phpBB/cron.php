@@ -1,4 +1,4 @@
-<?php 
+<?php
 /** 
 *
 * @package phpBB3
@@ -53,8 +53,33 @@ switch ($cron_type)
 	break;
 
 	case 'tidy_search':
-		set_config('search_last_gc', time(), true);
-	break;
+		// Select the search method
+		$search_type = $config['search_type'];
+
+		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx) || (time() - $config['search_last_gc'] <= $config['search_gc']))
+		{
+			break;
+		}
+		include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+
+		// We do some additional checks in the module to ensure it can actually be utilised
+		$error = false;
+		$search = new $search_type($error);
+
+		if ($error)
+		{
+			break;
+		}
+
+		if ($use_shutdown_function)
+		{
+			register_shutdown_function(array(&$search, 'tidy'));
+		}
+		else
+		{
+			$search->tidy();
+		}
+		set_config('search_last_gc', time());
 
 	case 'tidy_database':
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
@@ -68,7 +93,7 @@ switch ($cron_type)
 			tidy_database();
 		}
 	break;
-		
+
 	case 'tidy_sessions':
 		if ($use_shutdown_function)
 		{
@@ -83,7 +108,7 @@ switch ($cron_type)
 	case 'prune_forum':
 
 		$forum_id = request_var('f', 0);
-	
+
 		$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
