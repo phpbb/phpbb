@@ -499,9 +499,9 @@ function get_table_content_postgresql($table, $handler)
 
 	while($row = $db->sql_fetchrow($result))
 	{
-		unset($schema_vals);
-		unset($schema_fields);
-		unset($schema_insert);
+		$schema_vals = '';
+		$schema_fields = '';
+		$schema_insert = '';
 		//
 		// Build the SQL statement to recreate the data.
 		//
