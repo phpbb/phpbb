@@ -46,7 +46,11 @@
 			<!-- IF searchresults.PAGINATION -->
 				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {searchresults.PAGINATION} ] </p>
 			<!-- ENDIF -->
-			<p class="gensmall">in <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></p>
+			<!-- IF searchresults.S_TOPIC_GLOBAL -->
+			<p class="gensmall">{L_GLOBAL}</p>
+			<!-- ELSE -->
+			<p class="gensmall">{L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></p>
+			<!-- ENDIF -->
 		</td>
 		<td class="row2" width="100" align="center"><p class="topicauthor">{searchresults.TOPIC_AUTHOR}</p></td>
 		<td class="row1" width="50" align="center"><p class="topicdetails">{searchresults.REPLIES}</p></td>
@@ -80,7 +84,7 @@
 	<!-- IF searchresults.S_IGNORE_POST -->
 		<td class="gensmall" colspan="2" height="25" align="center">{searchresults.L_IGNORE_POST}</td>
 	<!-- ELSE -->
-		<td colspan="2" height="25"><p class="topictitle"><a name="{searchresults.POST_ID}"></a>&nbsp;{L_FORUM}: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a> &nbsp; {L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></p></td>
+		<td colspan="2" height="25"><p class="topictitle"><a name="{searchresults.POST_ID}"></a>&nbsp;<!-- IF searchresults.FORUM_TITLE -->{L_FORUM}: <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a><!-- ELSE -->{L_GLOBAL}<!-- ENDIF --> &nbsp; {L_TOPIC}: <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></p></td>
 	</tr>
 	<tr class="row1">
 		<td width="150" align="center" valign="middle"><b class="postauthor">{searchresults.POSTER_NAME}</b></td>

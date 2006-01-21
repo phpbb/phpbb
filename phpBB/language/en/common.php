@@ -176,6 +176,7 @@ $lang = array_merge($lang, array(
 
 	'ICQ_STATUS'			=> 'ICQ Status',
 	'IF'					=> 'If',
+	'IN'					=> 'in',
 	'INDEX'					=> 'Index page',
 	'INFORMATION'			=> 'Information',
 	'INTERESTS'				=> 'Interests',

@@ -521,7 +521,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 	}
 	$post_ids = $topic_ids = $forum_ids = array();
 
-	$sql = 'SELECT post_id, topic_id, forum_id
+	$sql = 'SELECT post_id, poster_id, topic_id, forum_id
 		FROM ' . POSTS_TABLE . "
 		WHERE $where_type " . ((!is_array($where_ids)) ? "= $where_ids" : 'IN (' . implode(', ', $where_ids) . ')');
 	$result = $db->sql_query($sql);
@@ -529,6 +529,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$post_ids[] = $row['post_id'];
+		$poster_ids[] = $row['poster_id'];
 		$topic_ids[] = $row['topic_id'];
 		$forum_ids[] = $row['forum_id'];
 	}
@@ -570,7 +571,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 		trigger_error($error);
 	}
 
-	$search->index_remove($where_ids);
+	$search->index_remove($post_ids, $poster_ids);
 
 	delete_attachments('post', $post_ids, false);
 

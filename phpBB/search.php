@@ -340,6 +340,9 @@ if ($keywords || $author || $search_id)
 	}
 	else if (sizeof($author_id_ary))
 	{
+		// default to showing results as posts when performing an author search
+		$show_results = ($topic_id) ? 'posts' : request_var('sr', 'posts');
+
 		$total_match_count = $search->author_search($show_results, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
 
@@ -349,7 +352,7 @@ if ($keywords || $author || $search_id)
 	}
 
 	$sql_where = (($show_results == 'posts') ? 'p.post_id' : 't.topic_id') . ' IN (' . implode(', ', $id_ary) . ')';
-	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND f.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (f.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ') OR f.forum_id IS NULL)' : '';
 
 	if ($show_results == 'posts')
 	{
@@ -437,18 +440,18 @@ if ($keywords || $author || $search_id)
 			$db->sql_freeresult($result);
 
 			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.user_sig, u.user_sig_bbcode_uid
-				FROM ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
+				FROM (' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . POSTS_TABLE . ' p)
+				LEFT JOIN ' . FORUMS_TABLE . " f ON (p.forum_id = f.forum_id)
 				WHERE $sql_where
-					AND f.forum_id = p.forum_id
 					AND p.topic_id = t.topic_id
 					AND p.poster_id = u.user_id";
 		}
 		else
 		{
 			$sql = 'SELECT t.*, f.forum_id, f.forum_name
-				FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-				WHERE $sql_where
-					AND f.forum_id = t.forum_id";
+				FROM ' . TOPICS_TABLE . ' t
+				LEFT JOIN ' . FORUMS_TABLE . " f ON (f.forum_id = t.forum_id)
+				WHERE $sql_where";
 		}
 		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
@@ -488,6 +491,7 @@ if ($keywords || $author || $search_id)
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
+					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
 					'S_TOPIC_TYPE'			=> $row['topic_type'],
 					'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
 
@@ -567,12 +571,6 @@ if ($keywords || $author || $search_id)
 				'U_SEARCH_TOPIC'	=> $view_topic_url
 			));
 		}
-	}
-	else
-	{
-		$template->assign_vars(array(
-			'S_NO_SEARCH_RESULTS'	=> true)
-		);
 	}
 
 	page_header($user->lang['SEARCH']);

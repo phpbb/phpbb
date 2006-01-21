@@ -82,7 +82,7 @@ class search_backend
 
 			if (!isset($match_synonym[$user->lang_name]))
 			{
-				preg_match_all('#^\s+(\S+)\s+(\S+)\s+$#m', file_get_contents($user->lang_path . '/search_synonyms.txt'), $match);
+				preg_match_all('#^\s*(\S+)\s+(\S+)\s*$#m', file_get_contents($user->lang_path . '/search_synonyms.txt'), $match);
 				$match_synonym[$user->lang_name]['replace']= &$match[1];
 				$match_synonym[$user->lang_name]['match'] = &$match[2];
 
@@ -170,6 +170,12 @@ class search_backend
 
 		$length = min(sizeof($id_ary), $config['search_block_size']);
 
+		// nothing to cache so exit
+		if (!$length)
+		{
+			return;
+		}
+
 		$store_ids = array_slice($id_ary, 0, $length);
 
 		// create a new resultset if there is none for this search_key yet
@@ -190,7 +196,7 @@ class search_backend
 						'search_key'		=> $search_key,
 						'search_time'		=> time(),
 						'search_keywords'	=> $keywords,
-						'search_authors'	=> implode(' ', $author_ary)
+						'search_authors'	=> ' ' . implode(' ', $author_ary) . ' '
 					);
 
 					$sql = 'INSERT INTO ' . SEARCH_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
@@ -218,9 +224,19 @@ class search_backend
 			}
 		}
 
+		$store_ids = array_combine($id_range, $store_ids);
+
 		// append the ids
-		$store += array_combine($id_range, $store_ids);
-		$cache->put('_search_results_' . $search_key, $store, $config['search_store_results']);
+		if (is_array($store_ids))
+		{
+			$store += $store_ids;
+			$cache->put('_search_results_' . $search_key, $store, $config['search_store_results']);
+
+			$sql = 'UPDATE ' . SEARCH_TABLE . ' 
+				SET search_time = ' . time() . '
+				WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
+			$db->sql_query($sql);
+		}
 
 		unset($store);
 		unset($store_ids);
@@ -230,10 +246,11 @@ class search_backend
 	/**
 	* Removes old entries from the search results table and removes searches with keywords that contain a word in $words.
 	*/
-	function destroy_cache($words)
+	function destroy_cache($words, $authors = false)
 	{
 		global $db, $cache, $config;
 
+		// clear all searches that searched for the specified words
 		if (sizeof($words))
 		{
 			$sql_where = '';
@@ -245,6 +262,27 @@ class search_backend
 			$sql = 'SELECT search_key
 				FROM ' . SEARCH_TABLE . "
 				WHERE search_keywords LIKE '%*%' $sql_where";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$cache->destroy('_search_results_' . $row['search_key']);
+			}
+			$db->sql_freeresult();
+		}
+
+		// clear all searches that searched for the specified authors
+		if (is_array($authors) && sizeof($authors))
+		{
+			$sql_where = '';
+			foreach ($authors as $author)
+			{
+				$sql_where .= (($sql_where) ? ' OR ' : '') . 'search_authors LIKE \'% ' . (int) $author . ' %\'';
+			}
+
+			$sql = 'SELECT search_key
+				FROM ' . SEARCH_TABLE . "
+				WHERE $sql_where";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))

@@ -1833,7 +1833,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			trigger_error($error);
 		}
 
-		$search->index($mode, $data['post_id'], $data['message'], $subject);
+		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id);
 	}
 
 	$db->sql_transaction('commit');

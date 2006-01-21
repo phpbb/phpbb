@@ -163,9 +163,9 @@ class fulltext_phpbb extends search_backend
 		// NCRs like &nbsp; etc.
 		$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
 		// Do not index code
-		$match[] = '#\[code=?.*?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
+		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
 		// BBcode
-		$match[] = '#\[\/?[a-z\*\+\-]+=?.*?(\:?[0-9a-z]{5,})\]#';
+		$match[] = '#\[\/?[a-z\*\+\-]+(?:=.*?)?(\:?[0-9a-z]{5,})\]#';
 		// Filter out ; and # but not &#[0-9]+;
 		//$match[] = '#(&\#[0-9]+;)|;|\#|&#';
 
@@ -243,6 +243,7 @@ class fulltext_phpbb extends search_backend
 		$result_count = 0;
 		$id_ary = array();
 
+		$join_topic = ($type == 'posts') ? false : true;
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 		$sql_sort_table = $sql_sort_join = '';
@@ -250,11 +251,10 @@ class fulltext_phpbb extends search_backend
 		{
 			case 'u':
 				$sql_sort_table	= USERS_TABLE . ' u, ';
-				$sql_sort_join	= 'AND u.user_id = p.poster_id ';
+				$sql_sort_join	= ' AND u.user_id = p.poster_id ';
 				break;
 			case 't':
-				$sql_sort_table	= ($type == 'posts') ? TOPICS_TABLE . ' t, ' : '';
-				$sql_sort_join	= ($type == 'posts') ? ' AND t.topic_id = p.topic_id ' : '';
+				$join_topic = true;
 				break;
 			case 'f':
 				$sql_sort_table	= FORUMS_TABLE . ' f, ';
@@ -266,26 +266,31 @@ class fulltext_phpbb extends search_backend
 		switch ($fields)
 		{
 			case 'titleonly':
-				$sql_match = ' AND m.title_match = 1';
+				$sql_match = ' AND m.title_match = 1 AND p.post_id = t.topic_first_post_id';
+				$join_topic = true;
 				break;
 			case 'msgonly':
 				$sql_match = ' AND m.title_match = 0';
+				break;
+			case 'firstpost':
+				$sql_match = ' AND p.post_id = t.topic_first_post_id';
+				$join_topic = true;
 				break;
 			default:
 				$sql_match = '';
 		}
 
 		$sql_select			= ($type == 'posts') ? 'm.post_id' : 'DISTINCT t.topic_id';
-		$sql_from			= ($type == 'posts') ? '' : TOPICS_TABLE . ' t, ';
+		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'm.post_id' : 't.topic_id';
 		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(',', $author_ary) . ')';
 
 		$sql_where_options = $sql_sort_join;
-		$sql_where_options .= ($topic_id) ? 'AND p.topic_id = ' . $topic_id : '';
-		$sql_where_options .= ($type == 'posts') ? '' : 'AND t.topic_id = p.topic_id';
+		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
+		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
-		$sql_where_options .= (sizeof($author_ary)) ? 'AND p.poster_id ' . $sql_author : '';
-		$sql_where_options .= ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
+		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match;
 
 		// split the words into three arrays (AND, OR, NOT)
@@ -557,7 +562,7 @@ class fulltext_phpbb extends search_backend
 		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
 		$sql_topic_id	= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
-		$sql_time		= ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
@@ -566,7 +571,7 @@ class fulltext_phpbb extends search_backend
 		{
 			case 'u':
 				$sql_sort_table	= USERS_TABLE . ' u, ';
-				$sql_sort_join	= 'AND u.user_id = p.poster_id ';
+				$sql_sort_join	= ' AND u.user_id = p.poster_id ';
 				break;
 			case 't':
 				$sql_sort_table	= ($type == 'posts') ? TOPICS_TABLE . ' t, ' : '';
@@ -657,7 +662,7 @@ class fulltext_phpbb extends search_backend
 	*
 	* @param string $mode contains the post mode: edit, post, reply, quote ...
 	*/
-	function index($mode, $post_id, &$message, &$subject)
+	function index($mode, $post_id, &$message, &$subject, $poster_id)
 	{
 		global $config, $db;
 
@@ -801,7 +806,7 @@ class fulltext_phpbb extends search_backend
 		}
 
 		// destroy cached search results containing any of the words removed or added
-		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['post'])));
+		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['post'])), array($poster_id));
 
 		unset($unique_add_words);
 		unset($words);
@@ -811,7 +816,7 @@ class fulltext_phpbb extends search_backend
 	/**
 	* Removes entries from the wordmatch table for the specified post_ids
 	*/
-	function index_remove($post_ids)
+	function index_remove($post_ids, $author_ids)
 	{
 		global $db;
 
@@ -820,6 +825,8 @@ class fulltext_phpbb extends search_backend
 		$db->sql_query($sql);
 
 		// SEARCH_WORD_TABLE will be updated by tidy()
+
+		$this->destroy_cache(array(), $author_ids);
 	}
 
 	/**
