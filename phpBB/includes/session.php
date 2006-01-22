@@ -789,6 +789,27 @@ class user extends session
 		$this->theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
+		// User has wrong style
+		if (!$this->theme && $style == $this->data['user_style'])
+		{
+			$style = $this->data['user_style'] = $config['default_style'];
+
+			$sql = 'UPDATE ' . USERS_TABLE . " 
+				SET user_style = $style 
+				WHERE user_id = {$this->data['user_id']}";
+			$db->sql_query($sql);
+
+			$sql = 'SELECT s.style_id, t.*, c.*, i.*
+				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+				WHERE s.style_id = $style
+					AND t.template_id = s.template_id
+					AND c.theme_id = s.theme_id
+					AND i.imageset_id = s.imageset_id";
+			$result = $db->sql_query($sql);
+			$this->theme = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
 		if (!$this->theme)
 		{
 			trigger_error('Could not get style data', E_USER_ERROR);

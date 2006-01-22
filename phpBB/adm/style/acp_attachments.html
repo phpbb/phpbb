@@ -46,15 +46,15 @@
 		</dl>
 		<dl>
 			<dt><label for="attach_quota">{L_ATTACH_QUOTA}:</label><br /><span>{L_ATTACH_QUOTA_EXPLAIN}</span></dt>
-			<dd><input type="text" id="attach_quota" size="8" maxlength="15" name="attachment_quota" value="{ATTACHMENT_QUOTA}" /> {S_QUOTA_SELECT}</dd>
+			<dd><input type="text" id="attach_quota" size="8" maxlength="15" name="attachment_quota" value="{ATTACHMENT_QUOTA}" /> <select name="quota_size">{S_QUOTA_SIZE_OPTIONS}</select></dd>
 		</dl>
 		<dl>
 			<dt><label for="max_filesize">{L_ATTACH_MAX_FILESIZE}:</label><br /><span>{L_ATTACH_MAX_FILESIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="max_filesize" size="8" maxlength="15" name="max_filesize" value="{MAX_FILESIZE}" /> {S_MAX_FILESIZE_SELECT}</dd>
+			<dd><input type="text" id="max_filesize" size="8" maxlength="15" name="max_filesize" value="{MAX_FILESIZE}" /> <select name="size">{S_MAX_FILESIZE_OPTIONS}</select></dd>
 		</dl>
 		<dl>
 			<dt><label for="max_pm_filesize">{L_ATTACH_MAX_PM_FILESIZE}:</label><br /><span>{L_ATTACH_MAX_PM_FILESIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="max_pm_filesize" size="8" maxlength="15" name="max_filesize_pm" value="{MAX_PM_FILESIZE}" /> {S_MAX_PM_FILESIZE_SELECT}</dd>
+			<dd><input type="text" id="max_pm_filesize" size="8" maxlength="15" name="max_filesize_pm" value="{MAX_PM_FILESIZE}" /> <select name="pm_size">{S_MAX_PM_FILESIZE_OPTIONS}</select></dd>
 		</dl>
 		<dl>
 			<dt><label for="max_attachments">{L_MAX_ATTACHMENTS}:</label></dt>
@@ -245,7 +245,7 @@
 			</dl>
 			<dl>
 				<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>
-				<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> {S_EXT_GROUP_SIZE}</dd>
+				<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
 			</dl>
 			<dl>
 				<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}:</label></dt>

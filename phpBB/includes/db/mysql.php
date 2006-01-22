@@ -286,8 +286,8 @@ class dbal_mysql extends dbal
 	function _sql_error()
 	{
 		return array(
-			'message'	=> @mysql_error(),
-			'code'		=> @mysql_errno()
+			'message'	=> @mysql_error($this->db_connect_id),
+			'code'		=> @mysql_errno($this->db_connect_id)
 		);
 	}
 

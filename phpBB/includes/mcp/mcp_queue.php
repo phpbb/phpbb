@@ -28,6 +28,8 @@ class mcp_queue
 		global $auth, $db, $user, $template;
 		global $config, $phpbb_root_path, $phpEx, $SID;
 
+		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+
 		$forum_id = request_var('f', 0);
 		$start = request_var('start', 0);
 
@@ -36,7 +38,6 @@ class mcp_queue
 			case 'approve':
 			case 'disapprove':
 				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
 				$post_id_list = request_var('post_id_list', array(0));
 
@@ -59,7 +60,6 @@ class mcp_queue
 			case 'approve_details':
 				
 				$user->add_lang('posting');
-				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);

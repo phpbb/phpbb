@@ -68,7 +68,7 @@ switch ($mode)
 		$sql = 'SELECT *
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
-		break;
+	break;
 
 	case 'bump':
 	case 'reply':
@@ -82,7 +82,7 @@ switch ($mode)
 			WHERE t.topic_id = $topic_id
 				AND (f.forum_id = t.forum_id
 					OR f.forum_id = $forum_id)";
-		break;
+	break;
 
 	case 'quote':
 	case 'edit':
@@ -99,18 +99,18 @@ switch ($mode)
 				AND u.user_id = p.poster_id
 				AND (f.forum_id = t.forum_id
 					OR f.forum_id = $forum_id)";
-		break;
+	break;
 
 	case 'smilies':
 		$sql = '';
 		generate_smilies('window', $forum_id);
-		break;
+	break;
 
 	case 'popup':
 		$sql = 'SELECT forum_style
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . $forum_id;
-		break;
+	break;
 
 	default:
 		$sql = '';
@@ -417,9 +417,7 @@ if ($mode == 'bump' && ($bump_time = bump_topic_allowed($forum_id, $topic_bumped
 			topic_bumper = " . $user->data['user_id'] . "
 		WHERE topic_id = $topic_id");
 
-	$db->sql_query('UPDATE ' . FORUMS_TABLE . '
-		SET ' . implode(', ', update_last_post_information('forum', $forum_id)) . "
-		WHERE forum_id = $forum_id");
+	update_post_information('forum', $forum_id);
 
 	$db->sql_query('UPDATE ' . USERS_TABLE . "
 		SET user_lastpost_time = $current_time
@@ -555,7 +553,7 @@ if ($submit || $preview || $refresh)
 				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . ', ' . POLL_VOTES_TABLE . "
 					WHERE topic_id = $topic_id";
 				$db->sql_query($sql);
-				break;
+			break;
 
 			default:
 				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
@@ -718,10 +716,12 @@ if ($submit || $preview || $refresh)
 			case POST_GLOBAL:
 			case POST_ANNOUNCE:
 				$auth_option = 'f_announce';
-				break;
+			break;
+
 			case POST_STICKY:
 				$auth_option = 'f_sticky';
-				break;
+			break;
+			
 			default:
 				$auth_option = '';
 		}
@@ -1027,12 +1027,12 @@ switch ($mode)
 {
 	case 'post':
 		$page_title = $user->lang['POST_TOPIC'];
-		break;
+	break;
 
 	case 'quote':
 	case 'reply':
 		$page_title = $user->lang['POST_REPLY'];
-		break;
+	break;
 
 	case 'delete':
 	case 'edit':
@@ -1213,10 +1213,15 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 				$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
 			}
 
-			$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
-			$sql_data[FORUMS_TABLE] .= implode(', ', update_last_post_information('forum', $forum_id));
+			$update_sql = update_post_information('forum', $forum_id, true);
+			if (sizeof($update_sql))
+			{
+				$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
+				$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
+			}
+			
 			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
-			break;
+		break;
 
 		case 'delete_first_post':
 			$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username
@@ -1238,7 +1243,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 
 			$next_post_id = (int) $row['post_id'];
-			break;
+		break;
 
 		case 'delete_last_post':
 			if ($data['topic_type'] != POST_GLOBAL)
@@ -1246,15 +1251,20 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 			}
 
-			$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
-			$sql_data[FORUMS_TABLE] .= implode(', ', update_last_post_information('forum', $forum_id));
+			$update_sql = update_post_information('forum', $forum_id, true);
+			if (sizeof($update_sql))
+			{
+				$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
+				$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
+			}
+			
 			$sql_data[TOPICS_TABLE] = 'topic_bumped = 0, topic_bumper = 0, topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 
-			$update = update_last_post_information('topic', $topic_id);
-			if (sizeof($update))
+			$update_sql = update_post_information('topic', $topic_id, true);
+			if (sizeof($update_sql))
 			{
-				$sql_data[TOPICS_TABLE] .= ', ' . implode(', ', $update);
-				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update[0]);
+				$sql_data[TOPICS_TABLE] .= ', ' . implode(', ', $update_sql[$topic_id]);
+				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update[$topic_id][0]);
 			}
 			else
 			{
@@ -1268,7 +1278,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 
 				$next_post_id = (int) $row['last_post_id'];
 			}
-			break;
+		break;
 
 		case 'delete':
 			$sql = 'SELECT post_id
@@ -1374,7 +1384,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked']
 			);
-			break;
+		break;
 
 		case 'edit_first_post':
 		case 'edit':
@@ -1432,7 +1442,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[POSTS_TABLE]['sql']['post_text'] = $data['message'];
 			}
 
-			break;
+		break;
 	}
 
 	// And the topic ladies and gentlemen
@@ -1473,7 +1483,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				}
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ? ', forum_topics = forum_topics + 1' : '');
 			}
-			break;
+		break;
 
 		case 'reply':
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ? ', topic_replies = topic_replies + 1' : '');
@@ -1483,7 +1493,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 			}
-			break;
+		break;
 
 		case 'edit_topic':
 		case 'edit_first_post':
@@ -1504,7 +1514,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0) : $data['topic_attachment']
 			);
-			break;
+		break;
 	}
 
 	$db->sql_transaction();
@@ -1753,27 +1763,35 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($topic_type != POST_GLOBAL)
 		{
-			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
+			$update_sql = update_post_information('forum', $data['forum_id'], true);
+			if (sizeof($update_sql))
+			{
+				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
+			}
 		}
 
-		$update = update_last_post_information('topic', $data['topic_id']);
+		$update_sql = update_post_information('topic', $data['topic_id'], true);
 		if (sizeof($update))
 		{
-			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update);
+			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
 		}
 	}
 
 	if ($make_global)
 	{
-		$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', update_last_post_information('forum', $data['forum_id']));
+		$update_sql = update_post_information('forum', $data['forum_id'], true);
+		if (sizeof($update_sql))
+		{
+			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$forum_id]);
+		}
 	}
 
 	if ($post_mode == 'edit_topic')
 	{
-		$update = update_last_post_information('topic', $data['topic_id']);
-		if (sizeof($update))
+		$update_sql = update_post_information('topic', $data['topic_id'], true);
+		if (sizeof($update_sql))
 		{
-			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update);
+			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
 		}
 	}
 

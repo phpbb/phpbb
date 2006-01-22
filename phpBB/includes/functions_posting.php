@@ -90,48 +90,85 @@ function generate_smilies($mode, $forum_id)
 }
 
 /**
-* Update Last Post Informations
+* Update Post Informations (First/Last Post in topic/forum)
+* Should be used instead of sync() if only the last post informations are out of sync... faster
 */
-function update_last_post_information($type, $id)
+function update_post_information($type, $ids)
 {
 	global $db;
 
-	$update_sql = array();
-
-	$sql = 'SELECT MAX(p.post_id) as last_post_id
-		FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-		WHERE p.topic_id = t.topic_id
-			AND p.post_approved = 1
-			AND t.topic_approved = 1
-			AND p.{$type}_id = $id";
-
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-
-	if ((int) $row['last_post_id'])
+	if (!is_array($ids))
 	{
-		$sql = 'SELECT p.post_id, p.poster_id, p.post_time, u.username, p.post_username
+		$ids = array($ids);
+	}
+
+	$update_sql = $empty_forums = array();
+
+	$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
+		FROM ' . POSTS_TABLE . "
+		WHERE post_approved = 1
+			AND {$type}_id IN (" . implode(', ', $ids) . ")
+		GROUP BY {$type}_id";
+	$result = $db->sql_query($sql);
+
+	$last_post_ids = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($type == 'forum')
+		{
+			$empty_forums[] = $row['forum_id'];
+		}
+
+		$last_post_ids[] = $row['last_post_id'];
+	}
+	$db->sql_freeresult($result);
+
+	if ($type == 'forum')
+	{
+		$empty_forums = array_diff($ids, $empty_forums);
+
+		foreach ($empty_forums as $void => $forum_id)
+		{
+			$update_sql[$forum_id][] = 'forum_last_post_id = 0';
+			$update_sql[$forum_id][] =	'forum_last_post_time = 0';
+			$update_sql[$forum_id][] = 'forum_last_poster_id = 0';
+			$update_sql[$forum_id][] = "forum_last_poster_name = ''";
+		}
+	}
+
+	if (sizeof($last_post_ids))
+	{
+		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_time, p.poster_id, p.post_username, u.user_id, u.username
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 			WHERE p.poster_id = u.user_id
-				AND p.post_id = ' . $row['last_post_id'];
+				AND p.post_id IN (' . implode(', ', $last_post_ids) . ')';
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id = ' . (int) $row['post_id'];
+			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time = ' . (int) $row['post_time'];
+			$update_sql[$row["{$type}_id"]][] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+		}
 		$db->sql_freeresult($result);
-
-		$update_sql[] = $type . '_last_post_id = ' . (int) $row['post_id'];
-		$update_sql[] =	$type . '_last_post_time = ' . (int) $row['post_time'];
-		$update_sql[] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
-		$update_sql[] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
 	}
-	else if ($type == 'forum')
+	unset($empty_forums, $ids, $last_post_ids);
+
+	if (!sizeof($update_sql))
 	{
-		$update_sql[] = 'forum_last_post_id = 0';
-		$update_sql[] =	'forum_last_post_time = 0';
-		$update_sql[] = 'forum_last_poster_id = 0';
-		$update_sql[] = "forum_last_poster_name = ''";
+		return array();
 	}
 
-	return $update_sql;
+	$table = ($type == 'forum') ? FORUMS_TABLE : TOPICS_TABLE;
+
+	foreach ($update_sql as $update_id => $update_sql_ary)
+	{
+		$sql = "UPDATE $table
+			SET " . implode(', ', $update_sql_ary) . "
+			WHERE {$type}_id = $update_id";
+		$db->sql_query($sql);
+	}
 }
 
 /**

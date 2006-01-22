@@ -139,9 +139,9 @@ class acp_attachments
 				// We strip eventually manual added convert program, we only want the patch
 				$new['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $new['img_imagick']);
 
-				$select_size_mode = size_select('size', $size);
-				$select_quota_size_mode = size_select('quota_size', $quota_size);
-				$select_pm_size_mode = size_select('pm_size', $pm_size);
+				$s_size_options = size_select_options($size);
+				$s_quota_size_options = size_select_options($quota_size);
+				$s_pm_size_options = size_select_options($pm_size);
 
 				$sql = 'SELECT group_name, cat_id
 					FROM ' . EXTENSION_GROUPS_TABLE . '
@@ -187,9 +187,9 @@ class acp_attachments
 
 					'U_SEARCH_IMAGICK'		=> $u_action . '&amp;action=imgmagick',
 
-					'S_QUOTA_SELECT'			=> $select_quota_size_mode,
-					'S_MAX_FILESIZE_SELECT'		=> $select_size_mode,
-					'S_MAX_PM_FILESIZE_SELECT'	=> $select_pm_size_mode,
+					'S_QUOTA_SIZE_OPTIONS'		=> $s_quota_size_options,
+					'S_MAX_FILESIZE_OPTIONS'	=> $s_size_options,
+					'S_MAX_PM_FILESIZE_OPTIONS'	=> $s_pm_size_options,
 					'S_THUMBNAIL_SUPPORT'		=> (!$new['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format']))) ? false : true,
 					)
 				);
@@ -653,14 +653,14 @@ class acp_attachments
 							'EXTGROUP_FILESIZE'	=> $ext_group_row['max_filesize'],
 							'ASSIGNED_EXTENSIONS'	=> $assigned_extensions,
 							
-							'S_CATEGORY_SELECT'	=> $this->category_select('special_category', $group_id, 'category'),
-							'S_DOWNLOAD_SELECT'	=> $this->download_select('download_mode', $group_id, 'download_mode'),
-							'S_EXT_GROUP_SIZE'	=> size_select('size_select', $size_format),
-							'S_EXTENSION_OPTIONS'	=> $s_extension_options,
-							'S_FILENAME_LIST'	=> $filename_list,
-							'S_EDIT_GROUP'		=> true,
-							'S_NO_IMAGE'		=> $no_image_select,
-							'S_FORUM_IDS'		=> (sizeof($forum_ids)) ? true : false,
+							'S_CATEGORY_SELECT'			=> $this->category_select('special_category', $group_id, 'category'),
+							'S_DOWNLOAD_SELECT'			=> $this->download_select('download_mode', $group_id, 'download_mode'),
+							'S_EXT_GROUP_SIZE_OPTIONS'	=> size_select_options($size_format),
+							'S_EXTENSION_OPTIONS'		=> $s_extension_options,
+							'S_FILENAME_LIST'			=> $filename_list,
+							'S_EDIT_GROUP'				=> true,
+							'S_NO_IMAGE'				=> $no_image_select,
+							'S_FORUM_IDS'				=> (sizeof($forum_ids)) ? true : false,
 
 							'U_EXTENSIONS'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=$id&amp;mode=extensions",
 

@@ -2073,7 +2073,7 @@ function page_footer()
 		}
 		else if (time() - $config['search_last_gc'] > $config['search_gc'])
 		{
-			// Tidy the cache
+			// Tidy the search
 			$cron_type = 'tidy_search';
 		}
 /**

@@ -65,13 +65,13 @@ class auth
 			{
 				$i = 0;
 
+				if (!isset($this->acl[$f]))
+				{
+					$this->acl[$f] = '';
+				}
+
 				while ($subseq = substr($seq, $i, 6))
 				{
-					if (!isset($this->acl[$f]))
-					{
-						$this->acl[$f] = '';
-					}
-					
 					// We put the original bitstring into the acl array
 					$this->acl[$f] .= str_pad(base_convert($subseq, 36, 2), 31, 0, STR_PAD_LEFT);
 					$i += 6;
@@ -157,6 +157,32 @@ class auth
 			$opt = substr($opt, 1);
 		}
 
+		// If we retrieve a list of forums not having permissions in, we need to get every forum_id
+		if ($negate)
+		{
+			static $acl_forum_ids;
+
+			if (!isset($acl_forum_ids))
+			{
+				global $db;
+
+				$sql = 'SELECT forum_id 
+					FROM ' . FORUMS_TABLE;
+				
+				if (sizeof($this->acl))
+				{
+					$sql .= ' WHERE forum_id NOT IN (' . implode(', ', array_keys($this->acl)) . ')';
+				}
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$acl_forum_ids[] = $row['forum_id'];
+				}
+				$db->sql_freeresult($result);
+			}
+		}
+		
 		if (isset($this->acl_options['local'][$opt]))
 		{
 			foreach ($this->acl as $f => $bitstring)
@@ -180,6 +206,15 @@ class auth
 						$acl_f[$f][$opt] = 1;
 					}
 				}
+			}
+		}
+
+		// If we get forum_ids not having this permission, we need to fill the remaining parts
+		if ($negate && sizeof($acl_forum_ids))
+		{
+			foreach ($acl_forum_ids as $f)
+			{
+				$acl_f[$f][$opt] = 1;
 			}
 		}
 
@@ -542,13 +577,13 @@ class auth_admin extends auth
 	* @param mixed $forum_id forum_ids to search for. Defining a forum id also means getting local settings (required for the modes forum and mod_local)
 	* @param string $auth_option if mode is 'custom' the auth_option defines the permission setting to look after
 	* @param local|global $scope if mode is 'custom' the scope defines the permission scope. If local, a forum_id is additionally required
+	* @param ACL_NO|ACL_UNSET|ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
 	*/
-	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false)
+	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NO)
 	{
 		global $db;
 
 		$hold_ary = array();
-		$auth_option = '';
 
 		switch ($mode)
 		{
@@ -566,7 +601,7 @@ class auth_admin extends auth
 				}
 				else
 				{
-					$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%') : $this->acl_raw_data($user_id, $auth_option . '%');
+					$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', ($scope == 'global') ? 0 : false) : $this->acl_raw_data($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
 				}
 
 			break;
@@ -624,7 +659,7 @@ class auth_admin extends auth
 					return array();
 				}
 			
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'm_%') : $this->acl_raw_data($user_id, 'm_%');
+				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'm_%', 0) : $this->acl_raw_data($user_id, 'm_%', 0);
 
 				$auth_option = 'm_';
 				$scope = 'global';
@@ -675,11 +710,11 @@ class auth_admin extends auth
 		// Now switch back to keys
 		if (sizeof($compare_options))
 		{
-			$compare_options = array_combine($compare_options, array_fill(1, sizeof($compare_options), 0));
+			$compare_options = array_combine($compare_options, array_fill(1, sizeof($compare_options), $acl_fill));
 		}
 
 		// Defining the user-function here to save some memory
-		$return_zero = create_function('$value', 'return 0;');
+		$return_acl_fill = create_function('$value', 'return ' . $acl_fill . ';');
 
 		// Actually fill the gaps
 		if (sizeof($hold_ary))
@@ -693,7 +728,7 @@ class auth_admin extends auth
 					// The differences get merged into $hold_ary (all permissions having ACL_NO set)
 					$hold_ary[$ug_id][$id] = array_merge($options, 
 
-						array_map($return_zero,
+						array_map($return_acl_fill,
 							array_flip(
 								array_diff(
 									array_keys($compare_options), array_keys($options)
@@ -819,6 +854,187 @@ class auth_admin extends auth
 		return true;
 	}
 
+	/**
+	* Set a user or group ACL record
+	*/
+	function acl_set($ug_type, &$forum_id, &$ug_id, &$auth)
+	{
+		global $db;
+
+		// One or more forums
+		if (!is_array($forum_id))
+		{
+			$forum_id = array($forum_id);
+		}
+
+		// Set any flags as required
+		foreach ($auth as $auth_option => $setting)
+		{
+			$flag = substr($auth_option, 0, strpos($auth_option, '_') + 1);
+
+			if (!isset($auth[$flag]) || !$auth[$flag])
+			{
+				$auth[$flag] = $setting;
+			}
+		}
+
+		$sql = 'SELECT auth_option_id, auth_option
+			FROM ' . ACL_OPTIONS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$option_ids[$row['auth_option']] = $row['auth_option_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql_forum = 'AND a.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
+
+		if ($ug_type == 'user')
+		{
+			$sql = 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting 
+				FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o 
+				WHERE a.auth_option_id = o.auth_option_id 
+					$sql_forum 
+					AND a.user_id = $ug_id";
+		}
+		else
+		{
+			$sql = 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting 
+				FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o 
+				WHERE a.auth_option_id = o.auth_option_id 
+					$sql_forum 
+					AND a.group_id = $ug_id";
+		}
+		$result = $db->sql_query($sql);
+
+		$cur_auth = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$cur_auth[$row['forum_id']][$row['auth_option_id']] = $row['auth_setting'];
+		}
+		$db->sql_freeresult($result);
+
+		$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+		$id_field  = $ug_type . '_id';
+
+		$sql_ary = array();
+		foreach ($forum_id as $forum)
+		{
+			foreach ($auth as $auth_option => $setting)
+			{
+				$auth_option_id = $option_ids[$auth_option];
+
+				switch ($setting)
+				{
+					case ACL_UNSET:
+						if (isset($cur_auth[$forum][$auth_option_id]))
+						{
+							$sql_ary['delete'][] = "DELETE FROM $table 
+								WHERE forum_id = $forum
+									AND auth_option_id = $auth_option_id
+									AND $id_field = $ug_id";
+						}
+					break;
+
+					default:
+						if (!isset($cur_auth[$forum][$auth_option_id]))
+						{
+							$sql_ary['insert'][] = "$ug_id, $forum, $auth_option_id, $setting";
+						}
+						else if ($cur_auth[$forum][$auth_option_id] != $setting)
+						{
+							$sql_ary['update'][] = "UPDATE " . $table . " 
+								SET auth_setting = $setting 
+								WHERE $id_field = $ug_id 
+									AND forum_id = $forum 
+									AND auth_option_id = $auth_option_id";
+						}
+				}
+			}
+		}
+		unset($cur_auth);
+
+		$sql = '';
+		foreach ($sql_ary as $sql_type => $sql_subary)
+		{
+			switch ($sql_type)
+			{
+				case 'insert':
+					switch (SQL_LAYER)
+					{
+						case 'mysql':
+							$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
+						break;
+
+						case 'mysql4':
+						case 'mysqli':
+						case 'mssql':
+						case 'mssql_odbc':
+						case 'sqlite':
+							$sql = implode(' UNION ALL ', preg_replace('#^(.*?)$#', 'SELECT \1', $sql_subary));
+						break;
+
+						default:
+							foreach ($sql_subary as $sql)
+							{
+								$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) VALUES ($sql)";
+								$db->sql_query($sql);
+								$sql = '';
+							}
+					}
+
+					if ($sql != '')
+					{
+						$sql = "INSERT INTO $table ($id_field, forum_id, auth_option_id, auth_setting) $sql";
+						$db->sql_query($sql);
+					}
+				break;
+
+				case 'update':
+				case 'delete':
+					foreach ($sql_subary as $sql)
+					{
+						$db->sql_query($sql);
+					}
+				break;
+			}
+			unset($sql_ary[$sql_type]);
+		}
+		unset($sql_ary);
+
+		$this->acl_clear_prefetch();
+	}
+
+	/**
+	* Remove local permission
+	*/
+	function acl_delete($mode, &$forum_id, &$ug_id, $auth_ids = false)
+	{
+		global $db;
+
+		// One or more forums
+		if (!is_array($forum_id))
+		{
+			$forum_id = array($forum_id);
+		}
+
+		$auth_sql = ($auth_ids) ? ' AND auth_option_id IN (' . implode(', ', array_map('intval', $auth_ids)) . ')' : '';
+
+		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
+		$id_field  = $mode . '_id';
+
+		foreach ($forum_id as $forum)
+		{
+			$sql = "DELETE FROM $table
+				WHERE $id_field = $ug_id
+					AND forum_id = $forum
+					$auth_sql";
+			$db->sql_query($sql);
+		}
+
+		$this->acl_clear_prefetch();
+	}
 }
 
 ?>

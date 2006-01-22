@@ -146,7 +146,7 @@ class p_master
 					}
 
 					// Module there
-					if ($temp_row['module_name'])
+					if ($temp_row['module_name'] && $temp_row['module_enabled'])
 					{
 						$empty_category = false;
 						break;
