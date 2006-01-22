@@ -476,12 +476,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		foreach ($style_row as $key => $value)
 		{
-			$src = '';
-
 			$width = $height = $imgsrc = '';
 			if (!empty($value))
 			{
-				$values = explode('*',$value);
+				$values = explode('*', $value);
 				$imgsrc = $values[0];
 				$height = (!empty($values[1])) ? $values[1] : '';
 				$width = (!empty($values[2])) ? $values[2] : '';
