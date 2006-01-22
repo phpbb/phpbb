@@ -36,8 +36,8 @@ class fulltext_phpbb extends search_backend
 	{
 		global $db, $config;
 
-		$drop_char_match =   array('^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!');
-		$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ');
+		$drop_char_match =   array('^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '!');
+		$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ');
 
 		$this->get_ignore_words();
 		$this->get_synonyms();
@@ -206,7 +206,7 @@ class fulltext_phpbb extends search_backend
 	* Performs a search on keywords depending on display specific params.
 	*
 	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicated the first index of the page
+	* @param int $start indicates the first index of the page
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
@@ -252,14 +252,17 @@ class fulltext_phpbb extends search_backend
 			case 'u':
 				$sql_sort_table	= USERS_TABLE . ' u, ';
 				$sql_sort_join	= ' AND u.user_id = p.poster_id ';
-				break;
+			break;
+
 			case 't':
 				$join_topic = true;
-				break;
+			break;
+
 			case 'f':
 				$sql_sort_table	= FORUMS_TABLE . ' f, ';
 				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
-				break;
+			break;
+
 		}
 
 		// Build some display specific sql strings
@@ -268,14 +271,17 @@ class fulltext_phpbb extends search_backend
 			case 'titleonly':
 				$sql_match = ' AND m.title_match = 1 AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
-				break;
+			break;
+
 			case 'msgonly':
 				$sql_match = ' AND m.title_match = 0';
-				break;
+			break;
+
 			case 'firstpost':
 				$sql_match = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
-				break;
+			break;
+
 			default:
 				$sql_match = '';
 		}
@@ -522,7 +528,7 @@ class fulltext_phpbb extends search_backend
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
 	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicated the first index of the page
+	* @param int $start indicates the first index of the page
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
@@ -572,15 +578,17 @@ class fulltext_phpbb extends search_backend
 			case 'u':
 				$sql_sort_table	= USERS_TABLE . ' u, ';
 				$sql_sort_join	= ' AND u.user_id = p.poster_id ';
-				break;
+			break;
+
 			case 't':
 				$sql_sort_table	= ($type == 'posts') ? TOPICS_TABLE . ' t, ' : '';
 				$sql_sort_join	= ($type == 'posts') ? ' AND t.topic_id = p.topic_id ' : '';
-				break;
+			break;
+
 			case 'f':
 				$sql_sort_table	= FORUMS_TABLE . ' f, ';
 				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
-				break;
+			break;
 		}
 
 		// If the cache was completely empty count the results
@@ -745,7 +753,7 @@ class fulltext_phpbb extends search_backend
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text)
 							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'$1\')', $new_words));
 						$db->sql_query($sql);
-						break;
+					break;
 
 					case 'mysql4':
 					case 'mysqli':
@@ -754,7 +762,7 @@ class fulltext_phpbb extends search_backend
 					case 'sqlite':
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
 						$db->sql_query($sql);
-						break;
+					break;
 
 					default:
 						foreach ($new_words as $word)
@@ -763,7 +771,6 @@ class fulltext_phpbb extends search_backend
 								VALUES ('$word')";
 							$db->sql_query($sql);
 						}
-						break;
 				}
 			}
 			unset($new_words);

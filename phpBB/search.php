@@ -99,7 +99,7 @@ if ($keywords || $author || $search_id)
 	{
 		if ($row['forum_password'] && ($row['user_id'] != $user->data['user_id']))
 		{
-			$ex_fid_ary[] = $row['forum_id'];
+			$ex_fid_ary[] = (int) $row['forum_id'];
 			continue;
 		}
 
@@ -109,7 +109,7 @@ if ($keywords || $author || $search_id)
 			{
 				if (in_array($row['forum_id'], $search_forum) && $row['right_id'] > $right_id)
 				{
-					$right_id = $row['right_id'];
+					$right_id = (int) $row['right_id'];
 				}
 				else if ($row['right_id'] < $right_id)
 				{
@@ -119,7 +119,7 @@ if ($keywords || $author || $search_id)
 
 			if (!in_array($row['forum_id'], $search_forum))
 			{
-				$ex_fid_ary[] = $row['forum_id'];
+				$ex_fid_ary[] = (int) $row['forum_id'];
 				$reset_search_forum = false;
 			}
 		}
@@ -210,9 +210,15 @@ if ($keywords || $author || $search_id)
 		}
 	}
 
+	if (!$keywords && sizeof($author_id_ary))
+	{
+		// default to showing results as posts when performing an author search
+		$show_results = ($topic_id) ? 'posts' : request_var('sr', 'posts');
+	}
+
 	// define some variables needed for retrieving post_id/topic_id information
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
-	$sort_by_sql = array('a' => (($show_results == 'posts') ? 'u.username' : 't.topic_poster'), 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
+	$sort_by_sql = array('a' => 'u.username', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
 
 	// pre-made searches
 	$sql = $field = '';
@@ -246,7 +252,7 @@ if ($keywords || $author || $search_id)
 						" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
-				break;
+			break;
 
 			case 'unanswered':
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
@@ -276,7 +282,7 @@ if ($keywords || $author || $search_id)
 						$sql_sort";
 					$field = 'topic_id';
 				}
-				break;
+			break;
 
 			case 'newposts':
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
@@ -311,7 +317,7 @@ if ($keywords || $author || $search_id)
 						$sql_sort";
 					$field = 'topic_id';
 				}
-				break;
+			break;
 		}
 
 		if ($sql)
@@ -340,9 +346,6 @@ if ($keywords || $author || $search_id)
 	}
 	else if (sizeof($author_id_ary))
 	{
-		// default to showing results as posts when performing an author search
-		$show_results = ($topic_id) ? 'posts' : request_var('sr', 'posts');
-
 		$total_match_count = $search->author_search($show_results, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
 
@@ -417,7 +420,7 @@ if ($keywords || $author || $search_id)
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
 		'GOTO_PAGE_IMG'			=> $user->img('icon_post', 'GOTO_PAGE'),
 
-		'U_SEARCH_WORDS'	=> "{$phpbb_root_path}search.$phpEx$SID$u_show_results&amp;keywords=$u_hilit")
+		'U_SEARCH_WORDS'	=> "{$phpbb_root_path}search.$phpEx$SID$u_show_results&amp;keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : ''))
 	);
 
 	if ($sql_where)
@@ -448,29 +451,111 @@ if ($keywords || $author || $search_id)
 		}
 		else
 		{
-			$sql = 'SELECT t.*, f.forum_id, f.forum_name
-				FROM ' . TOPICS_TABLE . ' t
-				LEFT JOIN ' . FORUMS_TABLE . " f ON (f.forum_id = t.forum_id)
-				WHERE $sql_where";
+			$sql_from = TOPICS_TABLE . ' t' . (($sort_key == 'a') ? ', ' . USERS_TABLE . ' u' : '');
+			$sql_select = 't.*, f.forum_id, f.forum_name';
+			if ($user->data['is_registered'])
+			{
+				if ($config['load_db_track'])
+				{
+					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.user_id = ' . $user->data['user_id'] . '
+						AND t.topic_id = tp.topic_id)';
+					$sql_select .= ', tp.topic_posted';
+				}
+				if ($config['load_db_lastread'])
+				{
+					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . '
+							AND t.topic_id = tt.topic_id)
+						LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
+							AND ft.forum_id = f.forum_id)';
+					$sql_select .= ', tt.mark_time, ft.mark_time as f_mark_time';
+				}
+			}
+
+			if ((!$user->data['is_registered']) || (!$config['load_db_lastread']))
+			{
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+			}
+
+			$sql = "SELECT $sql_select
+				FROM ($sql_from)
+				LEFT JOIN " . FORUMS_TABLE . " f ON (f.forum_id = t.forum_id)
+				WHERE $sql_where" . (($sort_key == 'a') ? ' AND u.user_id = t.topic_poster' : '');
 		}
 		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
 
-		while ($row = $db->sql_fetchrow($result))
+		if ($show_results = 'topics')
+		{
+			$forums = $rowset = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$rowset[$row['topic_id']] = $row;
+
+				if ((!isset($forums[$row['forum_id']])) && ($user->data['is_registered']) && ($config['load_db_lastread']))
+				{
+					$forums[$row['forum_id']]['mark_time'] = $row['f_mark_time'];
+				}
+				$forums[$row['forum_id']]['topic_list'][] = $row['topic_id'];
+				$forums[$row['forum_id']]['rowset'][$row['topic_id']] = &$rowset[$row['topic_id']];
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($forums as $forum_id => $forum)
+			{
+				if (($user->data['is_registered']) && ($config['load_db_lastread']))
+				{
+					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']), ($forum_id) ? false : $forum['topic_list']);
+				}
+				else
+				{
+					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list'], ($forum_id) ? false : $forum['topic_list']);
+		
+					if (!$user->data['is_registered'])
+					{
+						$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+					}
+				}
+			}
+			unset($forums);
+		}
+		else
+		{
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$rowset[] = $row;
+			}
+			$db->sql_freeresult($result);
+		}
+
+		foreach ($rowset as $row)
 		{
 			$forum_id = $row['forum_id'];
 			$result_topic_id = $row['topic_id'];
 			$topic_title = censor_text($row['topic_title']);
 
-			$view_topic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$result_topic_id&amp;hilit=$u_hilit";
+			if (!$forum_id)
+			{
+				if (!isset($g_forum_id))
+				{
+					$availible_forums = array_values(array_diff(array_keys($auth->acl_getf('f_read', true)), $ex_fid_ary));
+					$g_forum_id = $availible_forums[0];
+				}
+				$u_forum_id = $g_forum_id;
+			}
+			else
+			{
+				$u_forum_id = $forum_id;
+			}
+
+			$view_topic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$u_forum_id&amp;t=$result_topic_id&amp;hilit=$u_hilit";
 
 			if ($show_results == 'topics')
 			{
 				$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 				$folder_img = $folder_alt = $topic_type = '';
-				topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
+				topic_status($row, $replies, (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false, $folder_img, $folder_alt, $topic_type);
 
 				$tpl_ary = array(
 					'TOPIC_AUTHOR' 		=> topic_topic_author($row),
@@ -562,7 +647,6 @@ if ($keywords || $author || $search_id)
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;hilit=' . $u_hilit . '#' . $row['post_id'] : '')
 			));
 		}
-		$db->sql_freeresult($result);
 
 		if ($topic_id && ($topic_id == $result_topic_id))
 		{
@@ -572,6 +656,7 @@ if ($keywords || $author || $search_id)
 			));
 		}
 	}
+	unset($rowset);
 
 	page_header($user->lang['SEARCH']);
 

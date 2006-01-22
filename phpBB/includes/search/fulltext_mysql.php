@@ -9,196 +9,528 @@
 */
 
 /**
+* @ignore
+*/
+include($phpbb_root_path . 'includes/search/search.' . $phpEx);
+
+/**
 * @package search
 * fulltext_mysql
-* Search indexing for MySQL
+* Fulltext search for MySQL
 */
-class fulltext_mysql
+class fulltext_mysql extends search_backend
 {
-	var $version = 4;
-	var $split_words = array();
-	var $common_words = array();
-	var $old_split_words = array();
-
 	function fulltext_mysql(&$error)
 	{
 		global $db;
 
-		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
+		/**
+		* @todo Move some of this to ACP
+		* @todo Add SET SESSION ft_stopword_file = '' to ACP?
+		*/
+
+		$result = $db->sql_query('SELECT VERSION() AS mysql_version', 7200);
 		$version = ($row = $db->sql_fetchrow($result)) ? $row['mysql_version'] : '';
 		$db->sql_freeresult($result);
 
-		// Need to check for fulltext indexes ... maybe all of thise is best left in acp?
+		$sql = 'SHOW VARIABLES
+			LIKE \'ft\_%\'';
+		$result = $db->sql_query($sql, 7200);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$this->mysql_info[$row['Variable_name']] = $row['Value'];
+		}
+		$db->sql_freeresult($result);
 
 		$error = (!preg_match('#^4|5|6#s', $version)) ? true : false;
 	}
 
-	function search($type, &$fields, &$terms, &$fid_ary, &$keywords, &$author, &$pid_ary, $sort_days)
+	/**
+	* Splits keywords entered by a user into an array of words stored in $this->split_words
+	*
+	* @param string $keywords Contains the keyword as entered by the user
+	* @param string $terms is either 'all' or 'any'
+	* @return false if no valid keywords were found and otherwise true
+	*/
+	function split_keywords(&$keywords, $terms)
 	{
-		global $phpbb_root_path, $phpEx, $config, $db, $user, $SID;
+		global $config;
 
-		// Are we looking for words
-		if ($keywords)
+		$this->get_ignore_words();
+		$this->get_synonyms();
+
+		if ($terms == 'all')
 		{
-			$author = ($author) ? ' AND ' . $author : '';
-
-			$this->split_words = $this->common_words = array();
-			$drop_char_match =   array('^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*');
-			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '', '', ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ');
-
-			if ($fp = @fopen($user->lang_path . '/search_stopwords.txt', 'rb'))
-			{
-				$stopwords = explode("\n", str_replace("\r\n", "\n", fread($fp, filesize($user->lang_path . '/search_stopwords.txt'))));
-			}
-			fclose($fp);
-
-			if ($fp = @fopen($user->lang_path . '/search_synonyms.txt', 'rb'))
-			{
-				preg_match_all('#^(.*?) (.*?)$#ms', fread($fp, filesize($user->lang_path . '/search_synonyms.txt')), $match);
-				$replace_synonym = &$match[1];
-				$match_synonym = &$match[2];
-			}
-			fclose($fp);
-
 			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#');
 			$replace	= array(' +', ' |', ' -', ' +', ' -', ' |');
 
 			$keywords = preg_replace($match, $replace, $keywords);
-
-			$match = array();
-			// Comments for hardcoded bbcode elements (urls, smilies, html)
-			$match[] = '#<!\-\- .* \-\->(.*?)<!\-\- .* \-\->#is';
-			// New lines, carriage returns
-			$match[] = "#[\n\r]+#";
-			// NCRs like &nbsp; etc.
-			$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
-			// BBcode
-			$match[] = '#\[\/?[a-z\*\+\-]+(=.*)?(\:?[0-9a-z]{5,})\]#';
-
-			// Filter out as above
-			$keywords = preg_replace($match, ' ', strtolower(trim($keywords)));
-			$keywords = str_replace($drop_char_match, $drop_char_replace, $keywords);
-
-			// Split words
-			$this->split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
-
-			if (sizeof($stopwords))
-			{
-				$this->common_words = array_intersect($this->split_words, $stopwords);
-				$this->split_words = array_diff($this->split_words, $stopwords);
-			}
-
-			if (sizeof($replace_synonym))
-			{
-				$this->split_words = str_replace($replace_synonym, $match_synonym, $this->split_words);
-			}
 		}
 
-		if ($this->old_split_words && sizeof($this->old_split_words))
+		$match = array();
+		// New lines, carriage returns
+		$match[] = "#[\n\r]+#";
+		// NCRs like &nbsp; etc.
+		$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
+
+		// Filter out as above
+		$keywords = preg_replace($match, ' ', trim($keywords));
+
+		// Split words
+		$split_keywords = preg_replace('#([^\w\'*])#', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
+		$matches = array();
+		preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#', $split_keywords, $matches);
+		$this->split_words = $matches[1];
+
+		if (sizeof($this->ignore_words))
 		{
-			$this->split_words = (sizeof($this->split_words)) ? array_diff($this->split_words, $this->old_split_words) : $this->old_split_words;
+			$this->common_words = array_intersect($this->split_words, $this->ignore_words);
+			$this->split_words = array_diff($this->split_words, $this->ignore_words);
+		}
+
+		if (sizeof($this->replace_synonym))
+		{
+			$this->split_words = str_replace($this->replace_synonym, $this->match_synonym, $this->split_words);
+		}
+
+		foreach ($this->split_words as $i => $word)
+		{
+			$clean_word = preg_replace('#^[+\-|]#', '', $word);
+
+			// check word length
+			$clean_len = strlen(str_replace('*', '', $clean_word));
+			if (($clean_len < $this->mysql_info['ft_min_word_len']) || ($clean_len > $this->mysql_info['ft_max_word_len']))
+			{
+				$this->common_words[] = $word;
+				unset($this->split_words[$i]);
+			}
 		}
 
 		if (sizeof($this->split_words))
 		{
-			// Build some display specific variable strings
-			$sql_select = ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
-			$sql_from = ($type == 'posts') ? '' : TOPICS_TABLE . ' t, ';
-			$sql_fora = (sizeof($fid_ary)) ? ' AND p.forum_id IN (' . implode(',', $fid_ary) . ')' : '';
-			$sql_author = ($author) ? 'AND p.poster_id = ' . $author : '';
-			$sql_time = ($sort_days) ? 'AND p.post_time >= ' . ($current_time - ($sort_days * 86400)) : '';
-			$sql_topic = ($type == 'posts') ? '' : 'AND t.topic_id = p.topic_id';
+			$this->split_words = array_values($this->split_words);
+			return true;
+		}
+		return false;
+	}
 
-			switch ($fields)
+	/**
+	* Turns text into an array of words that can be stored in the word list table
+	*/
+	function split_message($text)
+	{
+		global $config;
+
+		$this->get_ignore_words();
+		$this->get_synonyms();
+
+		// Split words
+		$text = preg_replace('#([^\w\'*])#', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$matches = array();
+		preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#', $text, $matches);
+		$text = $matches[1];
+
+		if (sizeof($this->ignore_words))
+		{
+			$stopped_words = array_intersect($text, $this->ignore_words);
+			$text = array_diff($text, $this->ignore_words);
+		}
+
+		if (sizeof($this->replace_synonym))
+		{
+			$text = str_replace($this->replace_synonym, $this->match_synonym, $text);
+		}
+
+		// remove too short or too long words
+		$text = array_values($text);
+		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
+		{
+			$text[$i] = trim($text[$i]);
+			if (strlen($text[$i]) < $this->mysql_info['ft_min_word_len'] || strlen($text[$i]) > $this->mysql_info['ft_max_word_len'])
 			{
-				case 'titleonly':
-					$sql_match = 'p.post_subject';
-					break;
-				case 'msgonly':
-					$sql_match = 'p.post_text';
-					break;
-				default:
-					$sql_match = 'p.post_text, p.post_subject';
+				unset($text[$i]);
 			}
+		}
 
-			// Are we searching within an existing search set? Yes, then include the old ids
-			$sql_find_in = (sizeof($pid_ary)) ? 'AND ' . (($type == 'topics') ? 't.topic_id' : 'p.post_id') . ' IN (' . implode(', ', $pid_ary) . ')' : '';
+		return array_values($text);
+	}
 
-			$words = array();
-			if ($terms == 'all')
+	/**
+	* Performs a search on keywords depending on display specific params.
+	*
+	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param int $start indicates the first index of the page
+	* @param int $per_page number of ids each page is supposed to contain
+	* @return total number of results
+	*/
+	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	{
+		global $config, $db;
+
+		// No keywords? No posts.
+		if (!sizeof($this->split_words))
+		{
+			return false;
+		}
+
+		// generate a search_key from all the options to identify the results
+		$search_key = md5(implode('#', array(
+			implode(',', $this->split_words),
+			$type,
+			$fields,
+			$terms,
+			$sort_days,
+			$sort_key,
+			$topic_id,
+			implode(',', $ex_fid_ary),
+			implode(',', $author_ary)
+		)));
+
+		// try reading the results from cache
+		$result_count = 0;
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		{
+			return $result_count;
+		}
+
+		$id_ary = array();
+
+		$join_topic = ($type == 'posts') ? false : true;
+		// Build sql strings for sorting
+		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
+		$sql_sort_table = $sql_sort_join = '';
+		switch ($sql_sort[0])
+		{
+			case 'u':
+				$sql_sort_table	= USERS_TABLE . ' u, ';
+				$sql_sort_join	= ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
+			break;
+
+			case 't':
+				$join_topic = true;
+			break;
+
+			case 'f':
+				$sql_sort_table	= FORUMS_TABLE . ' f, ';
+				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
+			break;
+		}
+
+		// Build some display specific sql strings
+		switch ($fields)
+		{
+			case 'titleonly':
+				$sql_match = 'p.post_subject';
+				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
+				$join_topic = true;
+			break;
+
+			case 'msgonly':
+				$sql_match = 'p.post_text';
+				$sql_match_where = '';
+			break;
+
+			case 'firstpost':
+				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
+				$join_topic = true;
+			break;
+
+			default:
+				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match_where = '';
+		}
+
+		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
+		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
+		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
+		$field				= ($type == 'posts') ? 'p.post_id' : 't.topic_id';
+		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(',', $author_ary) . ')';
+
+		$sql_where_options = $sql_sort_join;
+		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
+		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
+		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
+		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+		$sql_where_options .= $sql_match_where;
+
+		// split the words into words that have to be included or must not be included and optional words
+		$words = $any_words = array();
+		if ($terms == 'all')
+		{
+			foreach ($this->split_words as $id => $word)
 			{
-				foreach ($this->split_words as $id => $word)
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0))
 				{
-					$words[] = (strpos($word, '+') === 0) ? $word : '+' . $word;
+					$words[] = $word;
+				}
+				else if (strpos($word, '|') === 0)
+				{
+					$any_words[] = substr($word, 1);
+				}
+				else
+				{
+					$words[] = '+' . $word;
 				}
 			}
-			else
-			{
-				$words = $this->split_words;
-			}
-
-			$sql = "SELECT $sql_select
-				FROM $sql_from" . POSTS_TABLE . " p
-				WHERE MATCH ($sql_match) AGAINST ('" . implode(' ', $words) . "' IN BOOLEAN MODE)
-					$sql_topic
-					$sql_find_in
-					$sql_fora
-					$sql_author
-					$sql_time";
-			$result = $db->sql_query_limit($sql, 1000);
-
-			if ($db->sql_numrows() > 999)
-			{
-				trigger_error($user->lang['TOO_MANY_SEARCH_RESULTS']);
-			}
-
-			$pid_ary = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$pid_ary[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$pid_ary = array_unique($pid_ary);
-
-			if (!sizeof($pid_ary))
-			{
-				trigger_error($user->lang['NO_SEARCH_RESULTS']);
-			}
 		}
-		else if ($author)
+		else
 		{
-			$sql_author = ($author) ? 'p.poster_id = ' . $author : '';
-			$sql_fora = (sizeof($fid_ary)) ? ' AND p.forum_id IN (' . implode(',', $fid_ary) . ')' : '';
-
-			if ($type == 'posts')
+			foreach ($this->split_words as $id => $word)
 			{
-				$sql = 'SELECT p.post_id
-					FROM ' . POSTS_TABLE . " p
-					WHERE $sql_author
-						$sql_fora";
-				$field = 'post_id';
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0) || (strpos($word, '|') === 0))
+				{
+					$words[] = substr($word, 1);
+				}
+				else
+				{
+					$words[] = $word;
+				}
 			}
-			else
-			{
-				$sql = 'SELECT t.topic_id
-					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-					WHERE $sql_author
-						$sql_fora
-						AND t.topic_id = p.topic_id
-					GROUP BY t.topic_id";
-				$field = 'topic_id';
-			}
-			$result = $db->sql_query_limit($sql, 1000);
+		}
 
-			while ($row = $db->sql_fetchrow($result))
+		// Get the ids for the current result block
+		$any_words = (sizeof($any_words)) ? ' +(' . implode(' ', $any_words) . ')' : '';
+		$sql = "SELECT $sql_select
+			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
+			WHERE MATCH ($sql_match) AGAINST ('" . implode(' ', $words) . $any_words . "' IN BOOLEAN MODE)
+				$sql_where_options
+			ORDER BY $sql_sort";
+		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$id_ary[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$id_ary = array_unique($id_ary);
+
+		if (!sizeof($id_ary))
+		{
+			return false;
+		}
+
+		// if the total result count is not cached yet, retrieve it from the db
+		if (!$result_count)
+		{
+			$sql = 'SELECT FOUND_ROWS() as result_count';
+			$result = $db->sql_query($sql);
+
+			if (!($result_count = (int) $db->sql_fetchfield('result_count', 0, $result)))
 			{
-				$pid_ary[] = $row[$field];
+				return false;
 			}
 			$db->sql_freeresult($result);
 		}
 
+		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
+		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
+		$id_ary = array_slice($id_ary, 0, (int) $per_page);
+
+		return $result_count;
+	}
+
+	/**
+	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
+	*
+	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param int $start indicates the first index of the page
+	* @param int $per_page number of ids each page is supposed to contain
+	* @return total number of results
+	*/
+	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	{
+		global $config, $db;
+
+		// No author? No posts.
+		if (!sizeof($author_ary))
+		{
+			return 0;
+		}
+
+		// generate a search_key from all the options to identify the results
+		$search_key = md5(implode('#', array(
+			'',
+			$type,
+			'',
+			'',
+			$sort_days,
+			$sort_key,
+			$topic_id,
+			implode(',', $ex_fid_ary),
+			implode(',', $author_ary)
+		)));
+
+		// try reading the results from cache
+		$result_count = 0;
+		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		{
+			return $result_count;
+		}
+
+		$id_ary = array();
+
+		// Create some display specific sql strings
+		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_topic_id	= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+
+		// Build sql strings for sorting
+		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
+		$sql_sort_table = $sql_sort_join = '';
+		switch ($sql_sort[0])
+		{
+			case 'u':
+				$sql_sort_table	= USERS_TABLE . ' u, ';
+				$sql_sort_join	= ($type == 'posts') ? ' AND u.user_id = p.poster_id ' : ' AND u.user_id = t.topic_poster ';
+			break;
+
+			case 't':
+				$sql_sort_table	= ($type == 'posts') ? TOPICS_TABLE . ' t, ' : '';
+				$sql_sort_join	= ($type == 'posts') ? ' AND t.topic_id = p.topic_id ' : '';
+			break;
+
+			case 'f':
+				$sql_sort_table	= FORUMS_TABLE . ' f, ';
+				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
+			break;
+		}
+
+		// If the cache was completely empty count the results
+		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
+
+		// Build the query for really selecting the post_ids
+		if ($type == 'posts')
+		{
+			$sql = "SELECT {$calc_results}p.post_id
+				FROM " . $sql_sort_table . POSTS_TABLE . " p
+				WHERE $sql_author
+					$sql_fora
+					$sql_sort_join
+					$sql_time
+				ORDER BY $sql_sort";
+			$field = 'post_id';
+		}
+		else
+		{
+			$sql = "SELECT {$calc_results}t.topic_id
+				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+				WHERE $sql_author
+					$sql_fora
+					AND t.topic_id = p.topic_id
+					$sql_sort_join
+					$sql_time
+				GROUP BY t.topic_id
+				ORDER BY $sql_sort";
+			$field = 'topic_id';
+		}
+
+		// Only read one block of posts from the db and then cache it
+		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$id_ary[] = $row[$field];
+		}
+		$db->sql_freeresult($result);
+
+		// retrieve the total result count if needed
+		if (!$result_count)
+		{
+			$sql = 'SELECT FOUND_ROWS() as result_count';
+			$result = $db->sql_query($sql);
+
+			if (!($result_count = (int) $db->sql_fetchfield('result_count', 0, $result)))
+			{
+				return false;
+			}
+			$db->sql_freeresult($result);
+		}
+
+		if (sizeof($id_ary))
+		{
+			$this->save_ids($search_key, '', $author_ary, $result_count, $id_ary, $start, $sort_dir);
+			$id_ary = array_slice($id_ary, 0, $per_page);
+
+			return $result_count;
+		}
 		return false;
+	}
+
+	/**
+	* Destroys cached search results, that contained one of the new words in a post so the results won't be outdated.
+	*
+	* @param string $mode contains the post mode: edit, post, reply, quote ...
+	*/
+	function index($mode, $post_id, &$message, &$subject, $poster_id)
+	{
+		global $db;
+
+		// Split old and new post/subject to obtain array of words
+		$split_text = $this->split_message($message);
+		$split_title = ($subject) ? $this->split_message($subject) : array();
+
+		$words = array();
+		if ($mode == 'edit')
+		{
+			$old_text = array();
+			$old_title = array();
+
+			$sql = 'SELECT post_text, post_subject
+				FROM ' . POSTS_TABLE . "
+				WHERE post_id = $post_id";
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				$old_text = $this->split_message($row['post_text']);
+				$old_title = $this->split_message($row['post_subject']);
+			}
+			$db->sql_freeresult($result);
+
+			$words = array_unique(array_merge(
+				array_diff($split_text, $old_text), 
+				array_diff($split_title, $old_title),
+				array_diff($old_text, $split_text),
+				array_diff($old_title, $split_title)
+			));
+			unset($old_title);
+			unset($old_text);
+		}
+		else
+		{
+			$words = array_unique(array_merge($split_text, $split_title));
+		}
+		unset($split_text);
+		unset($split_title);
+
+		// destroy cached search results containing any of the words removed or added
+		$this->destroy_cache($words, array($poster_id));
+
+		unset($words);
+	}
+
+	/**
+	* Destroy cached results, that might be outdated after deleting a post
+	*/
+	function index_remove($post_ids, $author_ids)
+	{
+		$this->destroy_cache(array(), $author_ids);
+	}
+
+	/**
+	* Destroy old cache entries
+	*/
+	function tidy()
+	{
+		global $db, $config;
+
+		// destroy too old cached search results
+		$this->destroy_cache(array());
 	}
 }
 
