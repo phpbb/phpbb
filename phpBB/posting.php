@@ -51,7 +51,7 @@ $current_time = time();
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
-	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=$post_id#$post_id" : (($topic_id) ? "viewtopic.$phpEx$SID&t=$topic_id" : (($forum_id) ? "viewforum.$phpEx$SID&f=$forum_id" : "index.$phpEx$SID"));
+	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=$post_id#p$post_id" : (($topic_id) ? "viewtopic.$phpEx$SID&t=$topic_id" : (($forum_id) ? "viewforum.$phpEx$SID&f=$forum_id" : "index.$phpEx$SID"));
 	redirect($redirect);
 }
 
@@ -362,8 +362,8 @@ if ($mode == 'delete' && (($poster_id == $user->data['user_id'] && $user->data['
 		{
 			add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_POST', $post_subject);
 
-			$meta_info = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id";
-			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#$next_post_id\">", '</a>');
+			$meta_info = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#p$next_post_id";
+			$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#p$next_post_id\">", '</a>');
 		}
 
 		meta_refresh(3, $meta_info);
@@ -431,9 +431,9 @@ if ($mode == 'bump' && ($bump_time = bump_topic_allowed($forum_id, $topic_bumped
 
 	add_log('mod', $forum_id, $topic_id, sprintf($user->lang['LOGM_BUMP'], $topic_title));
 
-	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id");
+	meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#p$topic_last_post_id");
 
-	$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID . "&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#$topic_last_post_id\">", '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $forum_id . '">', '</a>');
+	$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="viewtopic.' . $phpEx . $SID . "&amp;f=$forum_id&amp;t=$topic_id&amp;p=$topic_last_post_id#p$topic_last_post_id\">", '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="viewforum.' . $phpEx . $SID .'&amp;f=' . $forum_id . '">', '</a>');
 
 	trigger_error($message);
 }
@@ -1882,7 +1882,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 	else
 	{
-		$url = (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ?  "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#{$data['post_id']}" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}";
+		$url = (!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve')) ?  "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}#p{$data['post_id']}" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$data['forum_id']}&amp;t={$data['topic_id']}";
 	}
 
 	meta_refresh(3, $url);
