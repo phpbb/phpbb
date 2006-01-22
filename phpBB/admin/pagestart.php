@@ -49,13 +49,6 @@ else if ($userdata['user_level'] != ADMIN)
 
 if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 {
-	$url = str_replace(preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['server_name'])), '', $HTTP_SERVER_VARS['REQUEST_URI']);
-	$url = str_replace(preg_replace('#^\/?(.*?)\/?$#', '\1', trim($board_config['script_path'])), '', $url);
-	$url = str_replace('//', '/', $url);
-	$url = preg_replace('/sid=([^&]*)(&?)/i', '', $url);
-	$url = preg_replace('/\?$/', '', $url);
-	$url .= ((strpos($url, '?')) ? '&' : '?') . 'sid=' . $userdata['session_id'];
-
 	redirect("index.$phpEx?sid=" . $userdata['session_id']);
 }
 
