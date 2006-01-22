@@ -19,14 +19,14 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
 	$module['Users']['Ranks'] = $file;
 	return;
 }
+
+define('IN_PHPBB', 1);
 
 //
 // Let's set the root dir for phpBB
@@ -37,7 +37,7 @@ require('./pagestart.' . $phpEx);
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
-	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
 	$mode = htmlspecialchars($mode);
 }
 else 
@@ -213,8 +213,10 @@ if( $mode != "" )
 		{
 			$rank_id = 0;
 		}
+
+		$confirm = isset($HTTP_POST_VARS['confirm']);
 		
-		if( $rank_id )
+		if( $rank_id && $confirm )
 		{
 			$sql = "DELETE FROM " . RANKS_TABLE . "
 				WHERE rank_id = $rank_id";
@@ -238,135 +240,95 @@ if( $mode != "" )
 			message_die(GENERAL_MESSAGE, $message);
 
 		}
+		elseif( $rank_id && !$confirm)
+		{
+			// Present the confirmation screen to the user
+			$template->set_filenames(array(
+				'body' => 'admin/confirm_body.tpl')
+			);
+
+			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $rank_id . '" />';
+
+			$template->assign_vars(array(
+				'MESSAGE_TITLE' => $lang['Confirm'],
+				'MESSAGE_TEXT' => $lang['Confirm_delete_rank'],
+
+				'L_YES' => $lang['Yes'],
+				'L_NO' => $lang['No'],
+
+				'S_CONFIRM_ACTION' => append_sid("admin_ranks.$phpEx"),
+				'S_HIDDEN_FIELDS' => $hidden_fields)
+			);
+		}
 		else
 		{
 			message_die(GENERAL_MESSAGE, $lang['Must_select_rank']);
 		}
 	}
-	else
-	{
-		//
-		// They didn't feel like giving us any information. Oh, too bad, we'll just display the
-		// list then...
-		//
-		$template->set_filenames(array(
-			"body" => "admin/ranks_list_body.tpl")
-		);
-		
-		$sql = "SELECT * FROM " . RANKS_TABLE . "
-			ORDER BY rank_min, rank_title";
-		if( !$result = $db->sql_query($sql) )
-		{
-			message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
-		}
-		
-		$rank_rows = $db->sql_fetchrowset($result);
-		$rank_count = count($rank_rows);
-		
-		$template->assign_vars(array(
-			"L_RANKS_TITLE" => $lang['Ranks_title'],
-			"L_RANKS_TEXT" => $lang['Ranks_explain'],
-			"L_RANK" => $lang['Rank_title'],
-			"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-			"L_SPECIAL_RANK" => $lang['Special_rank'],
-			"L_EDIT" => $lang['Edit'],
-			"L_DELETE" => $lang['Delete'],
-			"L_ADD_RANK" => $lang['Add_new_rank'],
-			"L_ACTION" => $lang['Action'],
-			
-			"S_RANKS_ACTION" => append_sid("admin_ranks.$phpEx"))
-		);
-		
-		for( $i = 0; $i < $rank_count; $i++)
-		{
-			$rank = $rank_rows[$i]['rank_title'];
-			$special_rank = $rank_rows[$i]['rank_special'];
-			$rank_id = $rank_rows[$i]['rank_id'];
-			$rank_min = $rank_rows[$i]['rank_min'];
 
-			if($special_rank)
-			{
-				$rank_min = $rank_max = "-";
-			}
-			
-			$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-			$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-	
-			$template->assign_block_vars("ranks", array(
-				"ROW_COLOR" => "#" . $row_color,
-				"ROW_CLASS" => $row_class,
-				"RANK" => $rank,
-				"RANK_MIN" => $rank_min,
+	$template->pparse("body");
 
-				"SPECIAL_RANK" => ( $special_rank == 1 ) ? $lang['Yes'] : $lang['No'],
-
-				"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
-				"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
-			);
-		}
-	}
+	include('./page_footer_admin.'.$phpEx);
 }
-else
+
+//
+// Show the default page
+//
+$template->set_filenames(array(
+	"body" => "admin/ranks_list_body.tpl")
+);
+
+$sql = "SELECT * FROM " . RANKS_TABLE . "
+	ORDER BY rank_min ASC, rank_special ASC";
+if( !$result = $db->sql_query($sql) )
 {
-	//
-	// Show the default page
-	//
-	$template->set_filenames(array(
-		"body" => "admin/ranks_list_body.tpl")
-	);
+	message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
+}
+$rank_count = $db->sql_numrows($result);
+
+$rank_rows = $db->sql_fetchrowset($result);
+
+$template->assign_vars(array(
+	"L_RANKS_TITLE" => $lang['Ranks_title'],
+	"L_RANKS_TEXT" => $lang['Ranks_explain'],
+	"L_RANK" => $lang['Rank_title'],
+	"L_RANK_MINIMUM" => $lang['Rank_minimum'],
+	"L_SPECIAL_RANK" => $lang['Rank_special'],
+	"L_EDIT" => $lang['Edit'],
+	"L_DELETE" => $lang['Delete'],
+	"L_ADD_RANK" => $lang['Add_new_rank'],
+	"L_ACTION" => $lang['Action'],
 	
-	$sql = "SELECT * FROM " . RANKS_TABLE . "
-		ORDER BY rank_min ASC, rank_special ASC";
-	if( !$result = $db->sql_query($sql) )
+	"S_RANKS_ACTION" => append_sid("admin_ranks.$phpEx"))
+);
+
+for($i = 0; $i < $rank_count; $i++)
+{
+	$rank = $rank_rows[$i]['rank_title'];
+	$special_rank = $rank_rows[$i]['rank_special'];
+	$rank_id = $rank_rows[$i]['rank_id'];
+	$rank_min = $rank_rows[$i]['rank_min'];
+	
+	if( $special_rank == 1 )
 	{
-		message_die(GENERAL_ERROR, "Couldn't obtain ranks data", "", __LINE__, __FILE__, $sql);
+		$rank_min = $rank_max = "-";
 	}
-	$rank_count = $db->sql_numrows($result);
 
-	$rank_rows = $db->sql_fetchrowset($result);
+	$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
+	$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
+
+	$rank_is_special = ( $special_rank ) ? $lang['Yes'] : $lang['No'];
 	
-	$template->assign_vars(array(
-		"L_RANKS_TITLE" => $lang['Ranks_title'],
-		"L_RANKS_TEXT" => $lang['Ranks_explain'],
-		"L_RANK" => $lang['Rank_title'],
-		"L_RANK_MINIMUM" => $lang['Rank_minimum'],
-		"L_SPECIAL_RANK" => $lang['Rank_special'],
-		"L_EDIT" => $lang['Edit'],
-		"L_DELETE" => $lang['Delete'],
-		"L_ADD_RANK" => $lang['Add_new_rank'],
-		"L_ACTION" => $lang['Action'],
-		
-		"S_RANKS_ACTION" => append_sid("admin_ranks.$phpEx"))
+	$template->assign_block_vars("ranks", array(
+		"ROW_COLOR" => "#" . $row_color,
+		"ROW_CLASS" => $row_class,
+		"RANK" => $rank,
+		"SPECIAL_RANK" => $rank_is_special,
+		"RANK_MIN" => $rank_min,
+
+		"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
+		"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
 	);
-	
-	for($i = 0; $i < $rank_count; $i++)
-	{
-		$rank = $rank_rows[$i]['rank_title'];
-		$special_rank = $rank_rows[$i]['rank_special'];
-		$rank_id = $rank_rows[$i]['rank_id'];
-		$rank_min = $rank_rows[$i]['rank_min'];
-		
-		if( $special_rank == 1 )
-		{
-			$rank_min = $rank_max = "-";
-		}
-
-		$row_color = ( !($i % 2) ) ? $theme['td_color1'] : $theme['td_color2'];
-		$row_class = ( !($i % 2) ) ? $theme['td_class1'] : $theme['td_class2'];
-
-		$rank_is_special = ( $special_rank ) ? $lang['Yes'] : $lang['No'];
-		
-		$template->assign_block_vars("ranks", array(
-			"ROW_COLOR" => "#" . $row_color,
-			"ROW_CLASS" => $row_class,
-			"RANK" => $rank,
-			"SPECIAL_RANK" => $rank_is_special,
-			"RANK_MIN" => $rank_min,
-
-			"U_RANK_EDIT" => append_sid("admin_ranks.$phpEx?mode=edit&amp;id=$rank_id"),
-			"U_RANK_DELETE" => append_sid("admin_ranks.$phpEx?mode=delete&amp;id=$rank_id"))
-		);
-	}
 }
 
 $template->pparse("body");

@@ -557,6 +557,7 @@ $lang['No_update_ranks'] = 'The rank was successfully deleted. However, user acc
 
 $lang['Click_return_rankadmin'] = 'Click %sHere%s to return to Rank Administration';
 
+$lang['Confirm_delete_rank'] = 'Are you sure you want to delete this rank?';
 
 //
 // Disallow Username Admin
