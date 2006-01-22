@@ -258,8 +258,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 
 			case 'imageset':
-
-				$this->frontend('imageset', array('details', 'delete', 'export'));
+				switch ($action)
+				{
+					case 'edit':
+						$this->edit_imageset($style_id);
+					break;
+					default:
+						$this->frontend('imageset', array('details', 'delete', 'export'));
+				}
 			break;
 		}
 	}
@@ -408,6 +414,100 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'S_BASIS_OPTIONS'		=> $basis_options)
 		);
 
+	}
+
+	/**
+	* Edit imagesets
+	*/
+	function edit_imageset($style_id)
+	{
+		global $db, $template, $user, $phpbb_root_path, $cache;
+
+		$update = (isset($_POST['submit'])) ? true : false;
+
+		$sql = 'SELECT imageset_name, ' . $this->imageset_keys . '
+			FROM ' . STYLES_IMAGE_TABLE . '
+			WHERE imageset_id = ' . $style_id;
+		$result = $db->sql_query($sql);
+		$style_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$style_row)
+		{
+			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
+		}
+		
+		$name = $style_row['imageset_name'];
+		unset($style_row['imageset_name']);
+
+		if ($update)
+		{
+			$images			= (isset($_POST['src'])) ? request_var('src', array('' => '')) : array();
+			$image_width	= (isset($_POST['width'])) ? array_map('intval', $_POST['width']) : array();
+			$image_height	= (isset($_POST['height'])) ? array_map('intval', $_POST['height']) : array();
+			
+			$img_array = array();
+
+			foreach ($images as $image_name => $value)
+			{
+				if (!empty($value))
+				{
+					$width = ($image_width[$image_name] == 0) ? '' : $image_width[$image_name];
+					$img_array[$image_name] = $value . '*' . $image_height[$image_name] . '*' . $width;
+				}
+				else
+				{
+					$img_array[$image_name] = '';
+				}
+			}
+
+			$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $img_array) . " 
+				WHERE imageset_id = $style_id";
+			$db->sql_query($sql);
+
+			$cache->destroy('sql', STYLES_IMAGE_TABLE);
+
+			add_log('admin', 'LOG_IMAGESET_EDIT', $name);
+			trigger_error($user->lang['EDITED_IMAGESET'] . adm_back_link($this->u_action));
+		}
+
+		$this->page_title = 'EDIT_IMAGESET';
+
+		foreach ($style_row as $key => $value)
+		{
+			$src = '';
+
+			$width = $height = $imgsrc = '';
+			if (!empty($value))
+			{
+				$values = explode('*',$value);
+				$imgsrc = $values[0];
+				$height = (!empty($values[1])) ? $values[1] : '';
+				$width = (!empty($values[2])) ? $values[2] : '';
+			}
+
+			$template->assign_block_vars('element', array(
+				'NAME'		=> $key,
+				'SRC'		=> $imgsrc,
+				'HEIGHT'	=> $height,
+				'WIDTH'		=> $width,
+				'IMG_SRC'	=> $phpbb_root_path . 'styles/' . $user->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $user->img_lang, $imgsrc)
+				)
+			);
+		}
+
+
+		$template->assign_vars(array(
+			'S_EDIT_IMAGESET'	=> true,
+			'L_TITLE'			=> $user->lang[$this->page_title],
+			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
+
+			'U_ACTION'		=> $this->u_action . "&amp;action=edit&amp;id=$style_id",
+			'U_BACK'		=> $this->u_action,
+			'NAME'			=> $name,
+			)
+		);
 	}
 
 	/**

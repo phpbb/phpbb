@@ -62,6 +62,15 @@ $lang = array_merge($lang, array(
 	'DELETE_THEME_EXPLAIN'		=> 'Here you can remove the selected theme from the database. Additionally, if you have permission you can elect to remove the theme from the filesystem. Please note that there is no undo capability. When the theme is deleted it is gone for good. It is recommended that you first export your theme for possible future use.',
 	'DETAILS'					=> 'Details',
 
+	'EDIT_IMAGESET'				=> 'Edit imageset',
+	'EDIT_IMAGESET_EXPLAIN'		=> 'Here you can modify the images stored in the currently selected imageset.',
+	'IMAGE_CONFIGURATION'		=> 'Image configuration',
+	'IMAGE_WIDTH'				=> 'Image width',
+	'IMAGE_HEIGHT'				=> 'Image height',
+	'IMAGE'						=> 'Image',
+	'IMAGE_NAME'				=> 'Image name',
+	'IMAGE_LOCATION'			=> 'Image location',
+
 	'EDIT_DETAILS_IMAGESET'				=> 'Edit imageset details',
 	'EDIT_DETAILS_IMAGESET_EXPLAIN'		=> 'Here you can edit certain imageset details such as its name.',
 	'EDIT_DETAILS_STYLE'				=> 'Edit Style',
@@ -105,6 +114,8 @@ $lang = array_merge($lang, array(
 	'INSTALLED_STYLE'			=> 'Installed styles',
 	'INSTALLED_TEMPLATE'		=> 'Installed templates',
 	'INSTALLED_THEME'			=> 'Installed themes',
+
+	'EDITED_IMAGESET'			=> 'Edited imageset',
 
 	'NO_IMAGESET'				=> 'Cannot find imageset on filesystem',
 	'NO_STYLE'					=> 'Cannot find style on filesystem',

@@ -30,6 +30,51 @@
 
 	</form>
 
+<!-- ELSEIF S_EDIT_IMAGESET -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th colspan="5">{L_IMAGE_CONFIGURATION}</th>
+	</tr>
+	<tr>
+		<td class="row3" colspan="5"><b>{L_IMAGESET_NAME}: {NAME}</b></td>
+	</tr>
+	<tr class="row3">
+		<td>{L_IMAGE_NAME}</td>
+		<td>{L_IMAGE}</td>
+		<td>{L_IMAGE_LOCATION}</td>
+		<td>{L_IMAGE_WIDTH}</td>
+		<td>{L_IMAGE_HEIGHT}</td>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN element -->
+		<!-- IF element.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td style="text-align: center;">{element.NAME}</td>
+		<td style="text-align: center;"><img src="{element.IMG_SRC}" alt="" title="" /></td>
+		<td><input class="post" type="text" name="src[{element.NAME}]" value="{element.SRC}" size="20" /></td>
+		<td><input class="post" type="text" size="3" name="width[{element.NAME}]" value="{element.WIDTH}" /></td>
+		<td><input class="post" type="text" size="3" name="height[{element.NAME}]" value="{element.HEIGHT}" /></td>
+		</tr>
+	<!-- END element -->
+	</tbody>
+	</table>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</fieldset>
+
+	</form>
+
 <!-- ELSEIF S_EXPORT -->
 
 	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>

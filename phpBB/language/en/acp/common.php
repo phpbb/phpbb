@@ -338,6 +338,7 @@ $lang = array_merge($lang, array(
 	'LOG_IMAGESET_ADD_FS'		=> '<b>Add new imageset on filesystem</b><br />&#187; %s',
 	'LOG_IMAGESET_DELETE'		=> '<b>Deleted imageset</b><br />&#187; %s',
 	'LOG_IMAGESET_EDIT_DETAILS'	=> '<b>Edited imageset details</b><br />&#187; %s',
+	'LOG_IMAGESET_EDIT'			=> '<b>Edited imageset</b><br />&#187; %s',
 	'LOG_IMAGESET_EXPORT'		=> '<b>Exported imageset</b><br />&#187; %s',
 
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
