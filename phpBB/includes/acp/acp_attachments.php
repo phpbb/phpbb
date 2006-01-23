@@ -435,6 +435,7 @@ class acp_attachments
 						$allow_in_pm	= isset($_POST['allow_in_pm']) ? true : false;
 						$max_filesize	= request_var('max_filesize', 0);
 						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
+						$allow_group	= (isset($_POST['allow_group'])) ? 1 : 0;
 
 						if ($max_filesize == $config['max_filesize'])
 						{
@@ -449,7 +450,7 @@ class acp_attachments
 						$group_ary = array(
 							'group_name'	=> $group_name,
 							'cat_id'		=> request_var('special_category', ATTACHMENT_CATEGORY_NONE),
-							'allow_group'	=> (isset($_POST['allow_group'])) ? 1 : 0,
+							'allow_group'	=> $allow_group,
 							'download_mode'	=> request_var('download_mode', INLINE_LINK),
 							'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
 							'max_filesize'	=> $max_filesize,

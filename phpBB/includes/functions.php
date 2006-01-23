@@ -1479,7 +1479,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 
 	if (is_array($check))
 	{
-		// Check for private messaging
+		// Check for private messaging AND all forums allowed
 		if (sizeof($check) == 1 && $check[0] == 0)
 		{
 			return true;

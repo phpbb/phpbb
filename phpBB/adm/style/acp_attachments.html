@@ -226,7 +226,7 @@
 			</dl>
 			<dl>
 				<dt><label for="allowed">{L_ALLOWED}:</label></dt>
-				<dd><input type="checkbox" id="allowed" name="allow_group" value="{GROUP_ID}"<!-- IF ALLOW_GROUP --> cecked="checked"<!-- ENDIF --> /></dd>
+				<dd><input type="checkbox" id="allowed" name="allow_group" value="1"<!-- IF ALLOW_GROUP --> checked="checked"<!-- ENDIF --> /></dd>
 			</dl>
 			<dl>
 				<dt><label for="allow_in_pm">{L_ALLOW_IN_PM}:</label></dt>
@@ -254,7 +254,7 @@
 			</dl>
 			<dl>
 				<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
+				<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
 				<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
 			</dl>
 		</fieldset>

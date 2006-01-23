@@ -1771,7 +1771,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$update_sql = update_post_information('topic', $data['topic_id'], true);
-		if (sizeof($update))
+		if (sizeof($update_sql))
 		{
 			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
 		}

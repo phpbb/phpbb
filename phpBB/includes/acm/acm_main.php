@@ -217,18 +217,19 @@ class cache extends acm
 
 				if (is_array($check))
 				{
-					// Check for private messaging
+					// Check for private messaging AND all forums allowed
 					if (sizeof($check) == 1 && $check[0] == 0)
 					{
 						$allowed = true;
-						continue;
 					}
-
-					$allowed = (!in_array($forum_id, $check)) ? false : true;
+					else
+					{
+						$allowed = (!in_array($forum_id, $check)) ? false : true;
+					}
 				}
 				else
 				{
-					$allowed = ($forum_id == 0) ? false : true;
+					$allowed = ($forum_id === 0) ? false : true;
 				}
 			
 				if ($allowed)
@@ -315,7 +316,7 @@ class cache extends acm
 				continue;
 			}
 
-			if (!isset($parsed_array[$theme[$key . '_id']]) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
+			if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
 			{
 				$reparse = true;
 			}
