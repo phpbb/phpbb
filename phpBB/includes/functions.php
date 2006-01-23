@@ -1603,26 +1603,23 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$cache->unload();
 			}
 			
-			if (!defined('HEADER_INC'))
-			{
-				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-				echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
-				echo '<head>';
-				echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-				echo '<title>' . $msg_title . '</title>';
-				echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
-				echo '</head>';
-				echo '<body id="errorpage">';
-				echo '<div id="wrap">';
-				echo '	<div id="page-header">';
-				echo '		<a href="' . $phpbb_root_path . '">Return to forum index</a>';
-				echo '	</div>';
-				echo '	<div id="page-body">';
-				echo '		<div class="panel">';
-				echo '			<span class="corners-top"><span></span></span>';
-				echo '			<div id="content">';
-				echo '				<h1>General Error</h1>';
-			}
+			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+			echo '<head>';
+			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+			echo '<title>' . $msg_title . '</title>';
+			echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+			echo '</head>';
+			echo '<body id="errorpage">';
+			echo '<div id="wrap">';
+			echo '	<div id="page-header">';
+			echo '		<a href="' . $phpbb_root_path . '">Return to forum index</a>';
+			echo '	</div>';
+			echo '	<div id="page-body">';
+			echo '		<div class="panel">';
+			echo '			<span class="corners-top"><span></span></span>';
+			echo '			<div id="content">';
+			echo '				<h1>General Error</h1>';
 			
 			echo '				<h2>' . $msg_text . '</h2>';
 			echo '				<p>Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
