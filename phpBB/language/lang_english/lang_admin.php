@@ -518,6 +518,8 @@ $lang['Word_removed'] = 'The selected word censor has been successfully removed'
 
 $lang['Click_return_wordadmin'] = 'Click %sHere%s to return to Word Censor Administration';
 
+$lang['Confirm_delete_word'] = 'Are you sure you want to delete this word censor?';
+
 
 //
 // Mass Email
