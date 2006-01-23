@@ -59,6 +59,8 @@ else
 	}
 }
 
+// Restrict mode input to valid options
+$mode = ( in_array($mode, array('add', 'edit', 'save', 'delete')) ) ? $mode : '';
 
 if( $mode != "" )
 {
