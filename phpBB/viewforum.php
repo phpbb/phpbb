@@ -56,9 +56,6 @@ if ($user->data['is_registered'])
 	$sql_from .= ' LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . ')';
 	$lastread_select .= ', fw.notify_status';
 }
-else
-{
-}
 
 $sql = "SELECT f.* $lastread_select
 	FROM $sql_from

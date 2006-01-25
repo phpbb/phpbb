@@ -45,7 +45,22 @@ class session
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
 		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
 		$sid = substr($this->page, strpos($this->page, 'sid='), 36);
-		$this->page = str_replace(array('/' . $config['script_path'] . '/', (strlen($sid) == 36 && strpos($sid, '&') === false) ? $sid : 'sid='), '', $this->page);
+
+		/**
+		* @todo: getting away with script_path or being more strict in it's format
+		*/
+		$script_path = $config['script_path'];
+		if ($script_path{0} != '/')
+		{
+			$script_path = '/' . $script_path;
+		}
+
+		if ($script_path{(strlen($script_path)-1)} != '/')
+		{
+			$script_path .= '/';
+		}
+
+		$this->page = str_replace(array($script_path, (strlen($sid) == 36 && strpos($sid, '&') === false) ? $sid : 'sid='), '', $this->page);
 
 		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
@@ -929,6 +944,14 @@ class user extends session
 	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{
 		global $phpEx;
+
+		// Make sure the language path is set (if the user setup did not happen it is not set)
+		if (!$this->lang_path)
+		{
+			global $phpbb_root_path, $config;
+			
+			$this->lang_path = $phpbb_root_path . 'language/' . $config['default_lang'] . '/';
+		}
 
 		// $lang == $this->lang
 		// $help == $this->help

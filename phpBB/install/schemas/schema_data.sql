@@ -30,6 +30,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_html', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_img', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_smilies', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_smilies', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_topic_notify', '1');
@@ -40,6 +41,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_flash_pm', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_html_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_img_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method', 'db');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_quote_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_report_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize', '6144');
@@ -147,6 +149,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', '.*');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');

@@ -17,7 +17,6 @@ function compose_pm($id, $mode, $action)
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config, $SID;
 
-	include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 	include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
 

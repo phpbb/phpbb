@@ -531,6 +531,11 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
 	
 				$user->set_cookie('track', serialize($tracking), time() + 31536000);
 				unset($tracking);
+
+				if ($user->data['is_registered'])
+				{
+					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+				}
 			}
 		}
 		
@@ -1566,6 +1571,62 @@ function parse_cfg_file($filename, $lines = false)
 	}
 	
 	return $parsed_items;
+}
+
+/**
+* Add log event
+*/
+function add_log()
+{
+	global $db, $user;
+
+	$args = func_get_args();
+
+	$mode			= array_shift($args);
+	$reportee_id	= ($mode == 'user') ? intval(array_shift($args)) : '';
+	$forum_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
+	$action			= array_shift($args);
+	$data			= (!sizeof($args)) ? '' : $db->sql_escape(serialize($args));
+
+	$sql_ary = array(
+		'user_id'		=> $user->data['user_id'],
+		'log_ip'		=> $user->ip,
+		'log_time'		=> time(),
+		'log_operation'	=> $action,
+		'log_data'		=> $data,
+	);
+	
+	switch ($mode)
+	{
+		case 'admin':
+			$sql_ary['log_type'] = LOG_ADMIN;
+		break;
+		
+		case 'mod':
+			$sql_ary += array(
+				'log_type'	=> LOG_MOD,
+				'forum_id'	=> $forum_id,
+				'topic_id'	=> $topic_id
+			);
+		break;
+
+		case 'user':
+			$sql_ary += array(
+				'log_type'		=> LOG_USERS,
+				'reportee_id'	=> $reportee_id
+			);
+		break;
+
+		case 'critical':
+			$sql_ary['log_type'] = LOG_CRITICAL;
+		break;
+		
+		default:
+			return;
+	}
+
+	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 }
 
 /**

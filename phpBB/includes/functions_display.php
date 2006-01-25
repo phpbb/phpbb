@@ -46,7 +46,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Display list of active topics for this category?
 	$show_active = (isset($root_data['forum_flags']) && $root_data['forum_flags'] & 16) ? true : false;
 
-	if ($config['load_db_track'] && $user->data['is_registered'])
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		$sql_from = FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
 		$lastread_select = ', ft.mark_time ';
@@ -117,6 +117,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else
 		{
+			if (!$user->data['is_registered'])
+			{
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+			}
 			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'] : $user->data['user_lastmark'];
 		}
 

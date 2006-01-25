@@ -230,7 +230,6 @@ class messenger
 		// Session doesn't exist, create it
 		$user->session_begin();
 
-		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 		add_log('critical', 'LOG_ERROR_' . $type, $msg);
 	}
 

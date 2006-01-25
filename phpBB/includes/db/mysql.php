@@ -285,6 +285,14 @@ class dbal_mysql extends dbal
 	*/
 	function _sql_error()
 	{
+		if (!$this->db_connect_id)
+		{
+			return array(
+				'message'	=> @mysql_error(),
+				'code'		=> @mysql_errno()
+			);
+		}
+		
 		return array(
 			'message'	=> @mysql_error($this->db_connect_id),
 			'code'		=> @mysql_errno($this->db_connect_id)

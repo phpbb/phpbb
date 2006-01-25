@@ -569,122 +569,52 @@ class auth_admin extends auth
 	
 	/**
 	* Get permission mask
-	* This function only supports getting permissions of one type (for example a_%)
+	* This function only supports getting permissions of one type (for example a_)
 	*
-	* @param user|forum|admin|mod_global|mod_local|custom $mode defining the permission mask to get (custom uses $auth_option and $scope)
 	* @param mixed $user_id user ids to search for (a user_id or a group_id has to be specified at least)
 	* @param mixed $group_id group ids to search for, return group related settings (a user_id or a group_id has to be specified at least)
-	* @param mixed $forum_id forum_ids to search for. Defining a forum id also means getting local settings (required for the modes forum and mod_local)
-	* @param string $auth_option if mode is 'custom' the auth_option defines the permission setting to look after
-	* @param local|global $scope if mode is 'custom' the scope defines the permission scope. If local, a forum_id is additionally required
+	* @param mixed $forum_id forum_ids to search for. Defining a forum id also means getting local settings
+	* @param string $auth_option the auth_option defines the permission setting to look for (a_ for example)
+	* @param local|global $scope the scope defines the permission scope. If local, a forum_id is additionally required
 	* @param ACL_NO|ACL_UNSET|ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
 	*/
-	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NO)
+	function get_mask($user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NO)
 	{
 		global $db;
 
 		$hold_ary = array();
 
-		switch ($mode)
+		if ($auth_option === false || $scope === false)
 		{
-			// Custom (not known) permissions
-			case 'custom':
-				
-				if ($auth_option === false || $scope === false)
-				{
-					return array();
-				}
+			return array();
+		}
 
-				if ($forum_id !== false)
-				{
-					$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', $forum_id) : $this->acl_raw_data($user_id, $auth_option . '%', $forum_id);
-				}
-				else
-				{
-					$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', ($scope == 'global') ? 0 : false) : $this->acl_raw_data($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
-				}
-
-			break;
-			
-			// User Permission Mask
-			case 'user':
-
-				if ($group_id === false && $user_id === false)
-				{
-					return array();
-				}
-			
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'u_%') : $this->acl_raw_data($user_id, 'u_%');
-				
-				$auth_option = 'u_';
-				$scope = 'global';
-
-			break;
-
-			// Forum Permission Mask (User/Group based)
-			case 'forum':
-			
-				if ($forum_id === false && ($group_id === false || $user_id === false))
-				{
-					return array();
-				}
-
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'f_%', $forum_id) : $this->acl_raw_data($user_id, 'f_%', $forum_id);
-
-				$auth_option = 'f_';
-				$scope = 'local';
-
-			break;
-
-			// Admin Permission Mask
-			case 'admin':
-				
-				if ($group_id === false && $user_id === false)
-				{
-					return array();
-				}
-
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'a_%') : $this->acl_raw_data($user_id, 'a_%');
-
-				$auth_option = 'a_';
-				$scope = 'global';
-
-			break;
-
-			// Global Moderator Permission Mask
-			case 'mod_global':
-				
-				if ($group_id === false && $user_id === false)
-				{
-					return array();
-				}
-			
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'm_%', 0) : $this->acl_raw_data($user_id, 'm_%', 0);
-
-				$auth_option = 'm_';
-				$scope = 'global';
-
-			break;
-
-			// Moderator Permission Mask
-			case 'mod_local':
-			
-				if ($forum_id === false && ($group_id === false || $user_id === false))
-				{
-					return array();
-				}
-
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, 'm_%', $forum_id) : $this->acl_raw_data($user_id, 'm_%', $forum_id);
-
-				$auth_option = 'm_';
-				$scope = 'local';
-
-			break;
+		if ($forum_id !== false)
+		{
+			$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', $forum_id) : $this->acl_raw_data($user_id, $auth_option . '%', $forum_id);
+		}
+		else
+		{
+			$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', ($scope == 'global') ? 0 : false) : $this->acl_raw_data($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
 		}
 
 		// Make sure hold_ary is filled with every setting (prevents missing forums/users/groups)
 		$ug_id = ($group_id !== false) ? ((!is_array($group_id)) ? array($group_id) : $group_id) : ((!is_array($user_id)) ? array($user_id) : $user_id);
-		$forum_ids = ($forum_id !== false) ? ((!is_array($forum_id)) ? array($forum_id) : $forum_id) : array(0);
+		$forum_ids = ($forum_id !== false) ? ((!is_array($forum_id)) ? array($forum_id) : $forum_id) : (($scope == 'global') ? array(0) : array());
+
+		// If forum_ids is false and the scope is local we actually want to have all forums within the array
+		if ($scope == 'local' && !sizeof($forum_ids))
+		{
+			$sql = 'SELECT forum_id 
+				FROM ' . FORUMS_TABLE;
+			$result = $db->sql_query($sql, 120);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_ids[] = $row['forum_id'];
+			}
+			$db->sql_freeresult($result);
+		}
 
 		foreach ($ug_id as $_id)
 		{
@@ -702,7 +632,7 @@ class auth_admin extends auth
 			}
 		}
 
-		// Now, we need to fill the gaps with ACL_NO. ;)
+		// Now, we need to fill the gaps with $acl_fill. ;)
 
 		// Only those options we need
 		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), array(''));
@@ -725,7 +655,7 @@ class auth_admin extends auth
 				{
 					// Not a "fine" solution, but at all it's a 1-dimensional 
 					// array_diff_key function filling the resulting array values with zeros
-					// The differences get merged into $hold_ary (all permissions having ACL_NO set)
+					// The differences get merged into $hold_ary (all permissions having $acl_fill set)
 					$hold_ary[$ug_id][$id] = array_merge($options, 
 
 						array_map($return_acl_fill,

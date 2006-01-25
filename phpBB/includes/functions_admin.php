@@ -199,12 +199,13 @@ function size_select_options($size_compare)
 /**
 * Generate list of groups
 */
-function group_select_options($group_id)
+function group_select_options($group_id, $exclude_ids = false)
 {
 	global $db, $user;
 
 	$sql = 'SELECT group_id, group_name, group_type 
 		FROM ' . GROUPS_TABLE . ' 
+		' . (($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE group_id NOT IN (' . implode(', ', array_map('intval', $exclude_ids)) . ')' : '') . '
 		ORDER BY group_type DESC, group_name ASC';
 	$result = $db->sql_query($sql);
 
@@ -240,7 +241,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 		{
 			$forum_rows[] = $row;
 		}
-		$db->sql_freeresult();
+		$db->sql_freeresult($result);
 	}
 
 	$rowset = array();
@@ -1853,52 +1854,6 @@ function cache_moderators()
 				}
 		}
 	}
-}
-
-/**
-* Add log event
-*/
-function add_log()
-{
-	global $db, $user;
-
-	$args = func_get_args();
-
-	$mode			= array_shift($args);
-	$reportee_id	= ($mode == 'user') ? intval(array_shift($args)) : '';
-	$forum_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
-	$action			= array_shift($args);
-	$data			= (!sizeof($args)) ? '' : $db->sql_escape(serialize($args));
-
-	switch ($mode)
-	{
-		case 'admin':
-			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, log_ip, log_time, log_operation, log_data)
-				VALUES (' . LOG_ADMIN . ', ' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
-			break;
-		
-		case 'mod':
-			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, forum_id, topic_id, log_ip, log_time, log_operation, log_data)
-				VALUES (' . LOG_MOD . ', ' . $user->data['user_id'] . ", $forum_id, $topic_id, '$user->ip', " . time() . ", '$action', '$data')";
-			break;
-
-		case 'user':
-			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, reportee_id, log_ip, log_time, log_operation, log_data)
-				VALUES (' . LOG_USERS . ', ' . $user->data['user_id'] . ", $reportee_id, '$user->ip', " . time() . ", '$action', '$data')";
-			break;
-
-		case 'critical':
-			$sql = 'INSERT INTO ' . LOG_TABLE . ' (log_type, user_id, log_ip, log_time, log_operation, log_data)
-				VALUES (' . LOG_CRITICAL . ', ' . $user->data['user_id'] . ", '$user->ip', " . time() . ", '$action', '$data')";
-			break;
-		
-		default:
-			return;
-	}
-
-	$db->sql_query($sql);
-	return;
 }
 
 /**

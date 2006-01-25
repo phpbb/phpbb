@@ -274,12 +274,6 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 
 	$auth->acl_clear_prefetch($user_id);
 
-	if (!function_exists('add_log'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-	}
-
 	if ($username === false)
 	{
 		$sql = 'SELECT username
@@ -631,12 +625,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			}
 		}
 
-		if (!function_exists('add_log'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-		}
-
 		// Update log
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
@@ -703,12 +691,6 @@ function user_unban($mode, $ban)
 		$sql = 'DELETE FROM ' . BANLIST_TABLE . "
 			WHERE ban_id IN ($unban_sql)";
 		$db->sql_query($sql);
-
-		if (!function_exists('add_log'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-		}
 
 		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
@@ -1272,12 +1254,6 @@ function group_create($group_id, $type, $name, $desc, $group_attributes)
 			$db->sql_query($sql);
 		}
 
-		if (!function_exists('add_log'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-		}
-
 		$log = ($group_id) ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
 		add_log('admin', $log, $name);
 	}
@@ -1340,12 +1316,6 @@ function group_delete($group_id, $group_name = false)
 	$sql = 'DELETE FROM ' . GROUPS_TABLE . "
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
-
-	if (!function_exists('add_log'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-	}
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
@@ -1451,12 +1421,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		}
 
 		$db->sql_freeresult($result);
-	}
-
-	if (!function_exists('add_log'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	}
 
 	$log = ($leader) ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
@@ -1574,12 +1538,6 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		$db->sql_freeresult($result);
 	}
 
-	if (!function_exists('add_log'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-	}
-
 	$log = 'LOG_GROUP_REMOVE';
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
@@ -1626,12 +1584,6 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			group_set_user_default($group_id, $user_id_ary, $group_attributes);
 			$log = 'LOG_GROUP_DEFAULTS';
 			break;
-	}
-
-	if (!function_exists('add_log'))
-	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 	}
 
 	// Clear permissions cache of relevant users

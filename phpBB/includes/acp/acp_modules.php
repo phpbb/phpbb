@@ -532,6 +532,7 @@ class acp_modules
 			'U_ACTION'		=> $u_action . '&amp;parent_id=' . $parent_id,
 			'NAVIGATION'	=> $navigation,
 			'MODULE_BOX'	=> $module_box,
+			'PARENT_ID'		=> $parent_id,
 			'S_INSTALL_OPTIONS'	=> $s_install_options,
 			)
 		);

@@ -213,7 +213,16 @@ class dbal
 			}
 			else
 			{
-				$message .= '<br /><br />' . $user->lang['SQL_ERROR_OCCURRED'];
+				// If error occurs in initiating the session we need to use a pre-defined language string
+				// This could happen if the connection could not be established for example (then we are not able to grab the default language)
+				if (!isset($user->lang['SQL_ERROR_OCCURRED']))
+				{
+					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persist.';
+				}
+				else
+				{
+					$message .= '<br /><br />' . $user->lang['SQL_ERROR_OCCURRED'];
+				}
 			}
 
 			if ($this->transaction)

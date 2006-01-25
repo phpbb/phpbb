@@ -76,7 +76,7 @@ switch ($mode)
 		}
 
 		login_box("index.$phpEx$SID");
-		break;
+	break;
 
 	case 'logout':
 		if ($user->data['user_id'] != ANONYMOUS)
@@ -89,11 +89,11 @@ switch ($mode)
 
 		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . "{$phpbb_root_path}index.$phpEx$SID" . '">', '</a> ');
 		trigger_error($message);
-		break;
+	break;
 
 	case 'terms_of_use':
 	case 'privacy_statement':
-		break;
+	break;
 
 	case 'delete_cookies':
 		// Delete Cookies with dynamic names (do NOT delete poll cookies)
@@ -127,7 +127,7 @@ switch ($mode)
 			confirm_box(false, 'DELETE_COOKIES', '');
 		}
 		redirect("index.$phpEx$SID");
-		break;
+	break;
 }
 
 // Only registered users can go beyond this point

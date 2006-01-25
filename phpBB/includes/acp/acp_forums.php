@@ -1130,7 +1130,7 @@ class acp_forums
 				WHERE group_id = {$row['group_id']}";
 			$db->sql_query($sql);
 		}
-		$cache->destroy('extensions');
+		$cache->destroy('_extensions');
 
 		$log_action = implode('_', array($log_action_posts, $log_action_forums));
 
