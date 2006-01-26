@@ -24,7 +24,7 @@ class ucp_confirm
 {
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $db, $user;
 
 		// Do we have an id? No, then just exit
 		$confirm_id = request_var('id', '');
@@ -34,13 +34,10 @@ class ucp_confirm
 			exit;
 		}
 
-		// Define available charset
-		$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-
 		// Try and grab code for this id and session
 		$sql = 'SELECT code  
 			FROM ' . CONFIRM_TABLE . " 
-			WHERE session_id = '" . $db->sql_escape($user->data['session_id']) . "' 
+			WHERE session_id = '" . $db->sql_escape($user->session_id) . "' 
 				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'";
 		$result = $db->sql_query($sql);
 
@@ -198,9 +195,9 @@ class ucp_confirm
 		$raw = $type;
 		$raw .= $data;
 		$crc = crc32($raw);
-		$raw .= pack('C4', $crc >> 24, $crc >> 16, $crc >> 8, $crc);
+		$raw .= pack('C4', ($crc >> 24) & 255, ($crc >> 16) & 255, ($crc >> 8) & 255, $crc & 255);
 
-		return pack('C4', $length >> 24, $length >> 16, $length >> 8, $length) . $raw;
+		return pack('C4', ($length >> 24) & 255, ($length >> 16) & 255, ($length >> 8) & 255, $length & 255) . $raw;
 	}
 
 	// Creates greyscale 8bit png - The PNG spec can be found at
@@ -212,8 +209,8 @@ class ucp_confirm
 		// SIG
 		$image = pack('C8', 137, 80, 78, 71, 13, 10, 26, 10);
 		// IHDR
-		$raw = pack('C4', $width >> 24, $width >> 16, $width >> 8, $width);
-		$raw .= pack('C4', $height >> 24, $height >> 16, $height >> 8, $height);
+		$raw = pack('C4', ($width >> 24) & 255, ($width >> 16) & 255, ($width >> 8) & 255, $width & 255);
+		$raw .= pack('C4', ($height >> 24) & 255, ($height >> 16) & 255, ($height >> 8) & 255, $height & 255);
 		$raw .= pack('C5', 8, 0, 0, 0, 0);
 		$image .= $this->png_chunk(13, 'IHDR', $raw);
 		// IDAT

@@ -420,7 +420,8 @@ class ucp_register
 				}
 				$db->sql_freeresult($result);
 		
-				$code = gen_rand_string(6);
+				$code = gen_rand_string(mt_rand(5, 8));
+
 				$confirm_id = md5(uniqid($user->ip));
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
@@ -431,8 +432,18 @@ class ucp_register
 				$db->sql_query($sql);
 			}
 
-			$confirm_image = (@extension_loaded('zlib')) ? "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />" : "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=1\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=2\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=3\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=4\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=5\" alt=\"\" title=\"\" /><img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=6\" alt=\"\" title=\"\" />";
-			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
+			if (@extension_loaded('zlib'))
+			{
+				$confirm_image = "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />";
+			}
+			else
+			{
+				$confirm_image = '';
+				for ($i = 1; $i < strlen($code) + 1; $i++)
+				{
+					$confirm_image .= "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=$i\" alt=\"\" title=\"\" />";
+				}
+			}
 		}
 
 		//

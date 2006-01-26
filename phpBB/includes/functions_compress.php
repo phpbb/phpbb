@@ -246,7 +246,7 @@ class compress_zip extends compress
 							{
 								trigger_error("Could not create directory $dir");
 							}
-							@chmod("$dir", 0777);
+							@chmod("$dst$str", 0777);
 						}
 					}
 				}
@@ -270,22 +270,28 @@ class compress_zip extends compress
 				$mode = $fdetails['c_method'];
 				$content = fread($this->fp, $fdetails['c_size']);
 
+
+				$fp = fopen($target_filename, "w");
+
 				switch ($mode)
 				{
 					case 0:
 						// Not compressed
-						$fp = fopen($target_filename, "w");
 						fwrite($fp, $content);
-						fclose($fp);
 					break;
 				
 					case 8:
 						// Deflate
-						$fp = fopen($target_filename, "w");
 						fwrite($fp, gzinflate($content, $fdetails['uc_size']));
-						fclose($fp);
+					break;
+
+					case 12:
+						// Bzip2
+						fwrite($fp, bzdecompress($content));
 					break;
 				}
+				
+				fclose($fp);
 			}
 		}
 	}
@@ -306,7 +312,7 @@ class compress_zip extends compress
 		$name = str_replace('\\', '/', $name);
 
 		$dtime = dechex($this->unix_to_dos_time($stat[9]));
-		$hexdtime = pack('H*', $dtime[6] . $dtime[7] . $dtime[4] . $dtime[5] . $dtime[2] . $dtime[3] . $dtime[0] . $dtime[1]);
+		$hexdtime = pack('H8', $dtime[6] . $dtime[7] . $dtime[4] . $dtime[5] . $dtime[2] . $dtime[3] . $dtime[0] . $dtime[1]);
 
 		if ($is_dir)
 		{
@@ -317,8 +323,7 @@ class compress_zip extends compress
 		{
 			$unc_len = strlen($data);
 			$crc = crc32($data);
-			$zdata = gzcompress($data);
-			$zdata = substr(substr($zdata, 0, strlen($zdata) - 4), 2); // fix crc bug
+			$zdata = gzdeflate($data);
 			$c_len = strlen($zdata);
 
 			// Did we compress? No, then use data as is
