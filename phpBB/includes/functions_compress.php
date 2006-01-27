@@ -163,6 +163,7 @@ class compress_zip extends compress
 				break;
 			}
 
+			// TODO: Move the extraction loop inside the signature detection code, small speed boost
 			switch ($signature)
 			{
 				// 'Local File Header'
@@ -196,6 +197,7 @@ class compress_zip extends compress
 					);
 				break;
 
+				// 'Central Directory Header'
 				case "\x50\x4b\x01\x02":
 					fread($this->fp, 24);
 					fread($this->fp, 12 + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))));
@@ -244,7 +246,7 @@ class compress_zip extends compress
 						{
 							if (!@mkdir("$dst$str", 0777))
 							{
-								trigger_error("Could not create directory $dir");
+								trigger_error("Could not create directory $folder");
 							}
 							@chmod("$dst$str", 0777);
 						}
@@ -433,6 +435,7 @@ class compress_tar extends compress
 	var $filename = '';
 	var $mode = '';
 	var $type = '';
+	var $wrote = false;
 
 	function compress_tar($mode, $file, $type = '')
 	{
@@ -463,97 +466,53 @@ class compress_tar extends compress
 				$tmp = unpack("Atype", substr($buffer, 156, 1));
 				$filetype = (int) trim($tmp['type']);
 
-				if ($filetype == 5)
-				{
-					$mkdir_ary[] = "$dst$filename";
-				}
-				else if (dirname($filename) != '.')
-				{
-					$mkdir_alt_ary[] = $dst . dirname($filename);
-				}
-			}
-		}
-
-		$mkdir_alt_ary = array_unique($mkdir_alt_ary);
-
-		// Create the directory structure
-		if (sizeof($mkdir_ary) || sizeof($mkdir_alt_ary))
-		{
-			if (!sizeof($mkdir_ary) && sizeof($mkdir_alt_ary))
-			{
-				$mkdir_ary = $mkdir_alt_ary;
-				unset($mkdir_alt_ary);
-			}
-
-			sort($mkdir_ary);
-			foreach ($mkdir_ary as $dir)
-			{
-				$folders = explode('/', $dir);
-				foreach ($folders as $folder)
-				{
-					$str = (!empty($str)) ? $str . '/' . $folder : $folder;
-					if(!is_dir($str))
-					{
-						if (!@mkdir($str, 0777))
-						{
-							trigger_error("Could not create directory $folder");
-						}
-						@chmod("$str", 0777);
-					}
-				}
-				unset($str);
-			}
-		}
-
-		// If this is a .bz2 we need to close and re-open the file in order
-		// to reset the file pointer since we cannot apparently rewind it
-		if ($this->isbz)
-		{
-			$this->close();
-			$this->open();
-		}
-		else
-		{
-			fseek($this->fp, 0);
-		}
-
-		// Write out the files
-		$size = 0;
-		while ($buffer = $fzread($this->fp, 512))
-		{
-			$tmp = unpack("A6magic", substr($buffer, 257, 6));
-
-			if (trim($tmp['magic']) == 'ustar')
-			{
-				$tmp = unpack("A100name", $buffer);
-				$filename = trim($tmp['name']);
-
-				$tmp = unpack("Atype", substr($buffer, 156, 1));
-				$filetype = (int) trim($tmp['type']);
-
 				$tmp = unpack("A12size", substr($buffer, 124, 12));
 				$filesize = octdec((int) trim($tmp['size']));
 
-				if ($filesize != 0 && ($filetype == 0 || $filetype == "\0"))
+				if ($filetype == 5)
 				{
+					if (!is_dir("$dst$filename"))
+					{
+						$str = '';
+						$folders = explode('/', "$dst$filename");
+
+						// Create and folders and subfolders if they do not exist
+						foreach ($folders as $folder)
+						{
+							$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+							if (!is_dir($str))
+							{
+								if (!@mkdir($str, 0777))
+								{
+									trigger_error("Could not create directory $folder");
+								}
+								@chmod("$str", 0777);
+							}
+						}
+					}
+				}
+				else if($filesize != 0 && ($filetype == 0 || $filetype == "\0"))
+				{
+					// Write out the files
 					if (!($fp = fopen("$dst$filename", 'wb')))
 					{
 						trigger_error("Couldn't create file $filename");
 					}
 					@chmod("$dst$filename", 0777);
 
-					$size = 0;
-					continue;
+					// Grab the file contents
+					$n = floor($filesize / 512);
+					for ($i = 0; $i < $n; $i++)
+					{
+						fwrite($fp, $fzread($this->fp, 512), 512);
+					}
+					if (($filesize % 512) > 0)
+					{
+						fwrite($fp, $fzread($this->fp, 512), ($filesize % 512));
+					}
+					fclose($fp);
 				}
 			}
-
-			$size += 512;
-			$length = ($size > $filesize) ? 512 - ($size - $filesize) : 512;
-
-			$tmp = unpack("a512data", $buffer);
-
-			fwrite($fp, (string) $tmp['data'], $length);
-			unset($buffer);
 		}
 	}
 
