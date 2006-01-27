@@ -372,7 +372,40 @@ function setup_style($style)
 
 	if ( !($row = $db->sql_fetchrow($result)) )
 	{
-		message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
+		// We are trying to setup a style which does not exist in the database
+		// Try to fallback to the board default (if the user had a custom style)
+		// and then any users using this style to the default if it succeeds
+		if ( $style != $board_config['default_style'])
+		{
+			$sql = 'SELECT *
+				FROM ' . THEMES_TABLE . '
+				WHERE themes_id = ' . $board_config['default_style'];
+			if ( !($result = $db->sql_query($sql)) )
+			{
+				message_die(CRITICAL_ERROR, 'Could not query database for theme info');
+			}
+
+			if ( $row = $db->sql_fetchrow($result) )
+			{
+				$db->sql_freeresult($result);
+
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_style = ' . $board_config['default_style'] . "
+					WHERE user_style = $style";
+				if ( !($result = $db->sql_query($sql)) )
+				{
+					message_die(CRITICAL_ERROR, 'Could not query database for theme info');
+				}
+			}
+			else
+			{
+				message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
+			}
+		}
+		else
+		{
+			message_die(CRITICAL_ERROR, "Could not get theme data for themes_id [$style]");
+		}
 	}
 
 	$template_path = 'templates/' ;
