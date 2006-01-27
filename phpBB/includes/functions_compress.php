@@ -154,60 +154,101 @@ class compress_zip extends compress
 		$dd_try = false;
 		fseek($this->fp, 0);
 
-		while (true)
+		while (!feof($this->fp))
 		{
 			// Check if the signature is valid...
 			$signature = fread($this->fp, 4);
-			if (feof($this->fp))
-			{
-				break;
-			}
 
-			// TODO: Move the extraction loop inside the signature detection code, small speed boost
 			switch ($signature)
 			{
 				// 'Local File Header'
 				case "\x50\x4b\x03\x04":
 					// Get information about the zipped file but skip all the junk we don't need
-					fread($this->fp, 4);
-					$file['c_method']	= unpack("v", fread($this->fp, 2)); // compression method
-					fread($this->fp, 8);
-					$file['c_size']		= unpack("V", fread($this->fp, 4)); // compressed size
-					$file['uc_size']	= unpack("V", fread($this->fp, 4)); // uncompressed size
-					$file_name_length	= unpack("v", fread($this->fp, 2)); // filename length
-					$extra_field_length	= unpack("v", fread($this->fp, 2)); // extra field length
-					$file_name			= fread($this->fp, $file_name_length[1]); // filename
+					fseek($this->fp, 4, SEEK_CUR);
+					$c_method			= current(unpack("v", fread($this->fp, 2))); // compression method
+					fseek($this->fp, 4, SEEK_CUR);
+					$crc				= current(unpack("V", fread($this->fp, 4))); // crc value
+					$c_size				= current(unpack("V", fread($this->fp, 4))); // compressed size
+					$uc_size			= current(unpack("V", fread($this->fp, 4))); // uncompressed size
+					$file_name_length	= current(unpack("v", fread($this->fp, 2))); // filename length
+					$extra_field_length	= current(unpack("v", fread($this->fp, 2))); // extra field length
+					$file_name			= fread($this->fp, $file_name_length); // filename
 
-					if ($extra_field_length[1])
+					if ($extra_field_length)
 					{
-						fread($this->fp, $extra_field_length[1]);
+						fread($this->fp, $extra_field_length);
 					}
 
-					$file['offset']		= ftell($this->fp);
+					$target_filename = "$dst$file_name";
 
-					// Bypass the whole compressed contents, and look for the next file
-					fseek($this->fp, $file['c_size'][1], SEEK_CUR);
+					if (!$uc_size && !$crc && substr($file_name, -1, 1) == '/')
+					{
+						if (!is_dir($target_filename))
+						{
+							$str = '';
+							$folders = explode('/', $target_filename);
 
-					// Mount file table
-					$seek_ary[$file_name] = array(
-						'c_method'	=> $file['c_method'][1],
-						'c_size'	=> $file['c_size'][1],
-						'uc_size'	=> $file['uc_size'][1],
-						'offset'	=> $file['offset']
-					);
+							// Create and folders and subfolders if they do not exist
+							foreach ($folders as $folder)
+							{
+								$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+								if (!is_dir($str))
+								{
+									if (!@mkdir($str, 0777))
+									{
+										trigger_error("Could not create directory $folder");
+									}
+									@chmod($str, 0777);
+								}
+							}
+						}
+						// This is a directory, we are not writting files
+						continue;
+					}
+
+					if (!$uc_size)
+					{
+						$content = '';
+					}
+					else
+					{
+						$content = fread($this->fp, $c_size);
+					}
+
+					$fp = fopen($target_filename, "w");
+
+					switch ($c_method)
+					{
+						case 0:
+							// Not compressed
+							fwrite($fp, $content);
+						break;
+					
+						case 8:
+							// Deflate
+							fwrite($fp, gzinflate($content, $uc_size));
+						break;
+
+						case 12:
+							// Bzip2
+							fwrite($fp, bzdecompress($content));
+						break;
+					}
+					
+					fclose($fp);
 				break;
 
 				// 'Central Directory Header'
 				case "\x50\x4b\x01\x02":
-					fread($this->fp, 24);
-					fread($this->fp, 12 + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))));
+					fseek($this->fp, 24, SEEK_CUR);
+					fseek($this->fp, 12 + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))), SEEK_CUR);
 				break;
 				
-				// We safely end the loop as we are totally finished with looking for files and folders
+				// Hit the end of the central directory record, we can safely end the loop as we are totally finished with looking for files and folders
 				case "\x50\x4b\x05\x06":
 				break 2;
 				
-				// Look for the next signature...
+				// 'Packed to Removable Disk', ignore it and look for the next signature...
 				case 'PK00':
 				continue 2;
 				
@@ -221,80 +262,9 @@ class compress_zip extends compress
 						continue 2;
 					}
 					trigger_error("Unexpected header, ending loop");
-					break 2;
+				break 2;
 			}
 			$dd_try = false;
-		}
-		
-		if (sizeof($seek_ary))
-		{
-			foreach ($seek_ary as $filename => $trash)
-			{
-				$dirname = dirname($filename);
-				
-				if (!is_dir("$dst$dirname"))
-				{
-					$str = '';
-					$folders = explode('/', $dirname);
-
-					// Create and folders and subfolders if they do not exist
-					foreach ($folders as $folder)
-					{
-						$str = (!empty($str)) ? $str . '/' . $folder : $folder;
-					
-						if (!is_dir("$dst$str"))
-						{
-							if (!@mkdir("$dst$str", 0777))
-							{
-								trigger_error("Could not create directory $folder");
-							}
-							@chmod("$dst$str", 0777);
-						}
-					}
-				}
-
-				if (substr($filename, -1, 1) == '/')
-				{
-					continue;
-				}
-
-				$target_filename = "$dst$filename";
-				$fdetails = &$seek_ary[$filename];
-
-				if (!$fdetails['uc_size'])
-				{
-					$fp = fopen($target_filename, "w");
-					fwrite($fp, '');
-					fclose($fp);
-				}
-				
-				fseek($this->fp, $fdetails['offset']);
-				$mode = $fdetails['c_method'];
-				$content = fread($this->fp, $fdetails['c_size']);
-
-
-				$fp = fopen($target_filename, "w");
-
-				switch ($mode)
-				{
-					case 0:
-						// Not compressed
-						fwrite($fp, $content);
-					break;
-				
-					case 8:
-						// Deflate
-						fwrite($fp, gzinflate($content, $fdetails['uc_size']));
-					break;
-
-					case 12:
-						// Bzip2
-						fwrite($fp, bzdecompress($content));
-					break;
-				}
-				
-				fclose($fp);
-			}
 		}
 	}
 
