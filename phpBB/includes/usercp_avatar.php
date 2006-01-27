@@ -100,6 +100,8 @@ function user_avatar_url($mode, &$error, &$error_msg, $avatar_filename)
 		$avatar_filename = 'http://' . $avatar_filename;
 	}
 
+	$avatar_filename = substr($avatar_filename, 0, 100);
+
 	if ( !preg_match("#^((ht|f)tp://)([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png))$)#is", $avatar_filename) )
 	{
 		$error = true;
