@@ -471,7 +471,7 @@ if ($keywords || $author || $search_id)
 				}
 			}
 
-			if ((!$user->data['is_registered']) || (!$config['load_db_lastread']))
+			if (!$user->data['is_registered'] || !$config['load_db_lastread'])
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 			}
@@ -492,7 +492,7 @@ if ($keywords || $author || $search_id)
 			{
 				$rowset[$row['topic_id']] = $row;
 
-				if ((!isset($forums[$row['forum_id']])) && ($user->data['is_registered']) && ($config['load_db_lastread']))
+				if (!isset($forums[$row['forum_id']]) && $user->data['is_registered'] && $config['load_db_lastread'])
 				{
 					$forums[$row['forum_id']]['mark_time'] = $row['f_mark_time'];
 				}
@@ -503,7 +503,7 @@ if ($keywords || $author || $search_id)
 
 			foreach ($forums as $forum_id => $forum)
 			{
-				if (($user->data['is_registered']) && ($config['load_db_lastread']))
+				if ($user->data['is_registered'] && $config['load_db_lastread'])
 				{
 					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']), ($forum_id) ? false : $forum['topic_list']);
 				}
@@ -643,8 +643,8 @@ if ($keywords || $author || $search_id)
 				'TOPIC_TITLE' 		=> $topic_title,
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
-				'U_VIEW_FORUM'		=> "viewforum.$phpEx$SID&amp;f=$forum_id",
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;hilit=' . $u_hilit . '#' . $row['post_id'] : '')
+				'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id",
+				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;hilit=' . $u_hilit . '#' . $row['post_id'] : '')
 			));
 		}
 
