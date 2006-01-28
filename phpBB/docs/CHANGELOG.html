@@ -76,7 +76,17 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] Better handling of short usernames within the search (bug #105)</li>
 <li>[Fix] Workaround for an issue in either PHP or MSSQL resulting in a space being returned instead of an empty string (bug #830)</li>
 <li>[Fix] Correct use of default_style config value (Bug #861)</li>
+<li>[Fix] Replace unneeded unset calls in admin_db_utilities.php - vanderaj</li>
+<li>[Fix] Improved error handling in modcp.php</li>
+<li>[Fix] Improved handling of forums to which the user does not have any explicit permissions - vanderaj</li>
+<li>[Fix] Assorted fixes and cleanup of admin_ranks.php, now requires confirmation of deletions</li>
+<li>[Fix] Assorted fixes and cleanup of admin_words.php, now requires confirmation of deletions</li>
+<li>[Fix] Addition and editing of smilies can no longer be performed via GET, now requires confirmation of deletions</li>
+<li>[Fix] Escape group names in admin_groups.php</li>
 <li>[Sec] Some changes to HTML handling if enabled</li>
+<li>[Sec] Escape any special characters in reverse dns - Anthrax101</i>
+<li>[Change] Changed handling of the case where a selected style doesn't exist in the database</li>
+<li>[Change] <strong>PHP requirements are now 4.0.5</strong> as a result of changes to HTML parsing</li>
 </ul>
 
 
