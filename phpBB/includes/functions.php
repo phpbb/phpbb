@@ -394,7 +394,7 @@ function setup_style($style)
 					WHERE user_style = $style";
 				if ( !($result = $db->sql_query($sql)) )
 				{
-					message_die(CRITICAL_ERROR, 'Could not query database for theme info');
+					message_die(CRITICAL_ERROR, 'Could not update user theme info');
 				}
 			}
 			else
