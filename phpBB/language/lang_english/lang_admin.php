@@ -425,6 +425,7 @@ $lang['smiley_import_success'] = 'The Smiley Pack was imported successfully!';
 $lang['smiley_del_success'] = 'The Smiley was successfully removed';
 $lang['Click_return_smileadmin'] = 'Click %sHere%s to return to Smiley Administration';
 
+$lang['Confirm_delete_smiley'] = 'Are you sure you want to delete this Smiley?';
 
 //
 // User Management

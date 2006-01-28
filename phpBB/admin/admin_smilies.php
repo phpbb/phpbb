@@ -316,17 +316,43 @@ else if ( $mode != "" )
 			$smiley_id = ( !empty($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
 			$smiley_id = intval($smiley_id);
 
-			$sql = "DELETE FROM " . SMILIES_TABLE . "
-				WHERE smilies_id = " . $smiley_id;
-			$result = $db->sql_query($sql);
-			if( !$result )
+			$confirm = isset($HTTP_POST_VARS['confirm']);
+
+			if( $confirm )
 			{
-				message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
+				$sql = "DELETE FROM " . SMILIES_TABLE . "
+					WHERE smilies_id = " . $smiley_id;
+				$result = $db->sql_query($sql);
+				if( !$result )
+				{
+					message_die(GENERAL_ERROR, "Couldn't delete smiley", "", __LINE__, __FILE__, $sql);
+				}
+
+				$message = $lang['smiley_del_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+
+				message_die(GENERAL_MESSAGE, $message);
 			}
+			else
+			{
+				// Present the confirmation screen to the user
+				$template->set_filenames(array(
+					'body' => 'admin/confirm_body.tpl')
+				);
 
-			$message = $lang['smiley_del_success'] . "<br /><br />" . sprintf($lang['Click_return_smileadmin'], "<a href=\"" . append_sid("admin_smilies.$phpEx") . "\">", "</a>") . "<br /><br />" . sprintf($lang['Click_return_admin_index'], "<a href=\"" . append_sid("index.$phpEx?pane=right") . "\">", "</a>");
+				$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $smiley_id . '" />';
 
-			message_die(GENERAL_MESSAGE, $message);
+				$template->assign_vars(array(
+					'MESSAGE_TITLE' => $lang['Confirm'],
+					'MESSAGE_TEXT' => $lang['Confirm_delete_smiley'],
+
+					'L_YES' => $lang['Yes'],
+					'L_NO' => $lang['No'],
+
+					'S_CONFIRM_ACTION' => append_sid("admin_smilies.$phpEx"),
+					'S_HIDDEN_FIELDS' => $hidden_fields)
+				);
+				$template->pparse('body');
+			}
 			break;
 
 		case 'edit':
@@ -402,11 +428,13 @@ else if ( $mode != "" )
 			// Get the submitted data, being careful to ensure that we only
 			// accept the data we are looking for.
 			//
-			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? trim($HTTP_POST_VARS['smile_code']) : trim($HTTP_GET_VARS['smile_code']);
-			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? trim($HTTP_POST_VARS['smile_url']) : trim($HTTP_GET_VARS['smile_url']);
+			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? trim($HTTP_POST_VARS['smile_code']) : '';
+			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? trim($HTTP_POST_VARS['smile_url']) : '';
 			$smile_url = phpbb_ltrim(basename($smile_url), "'");
-			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? trim($HTTP_POST_VARS['smile_emotion']) : trim($HTTP_GET_VARS['smile_emotion']);
-			$smile_id = ( isset($HTTP_POST_VARS['smile_id']) ) ? intval($HTTP_POST_VARS['smile_id']) : intval($HTTP_GET_VARS['smile_id']);
+			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? htmlspecialchars(trim($HTTP_POST_VARS['smile_emotion'])) : '';
+			$smile_id = ( isset($HTTP_POST_VARS['smile_id']) ) ? intval($HTTP_POST_VARS['smile_id']) : 0;
+			$smile_code = trim($smile_code);
+			$smile_url = trim($smile_url);
 
 			// If no code was entered complain ...
 			if ($smile_code == '' || $smile_url == '')
@@ -445,13 +473,12 @@ else if ( $mode != "" )
 			// Get the submitted data being careful to ensure the the data
 			// we recieve and process is only the data we are looking for.
 			//
-			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? $HTTP_POST_VARS['smile_code'] : $HTTP_GET_VARS['smile_code'];
-			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : $HTTP_GET_VARS['smile_url'];
+			$smile_code = ( isset($HTTP_POST_VARS['smile_code']) ) ? $HTTP_POST_VARS['smile_code'] : '';
+			$smile_url = ( isset($HTTP_POST_VARS['smile_url']) ) ? $HTTP_POST_VARS['smile_url'] : '';
 			$smile_url = phpbb_ltrim(basename($smile_url), "'");
-			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? $HTTP_POST_VARS['smile_emotion'] : $HTTP_GET_VARS['smile_emotion'];
+			$smile_emotion = ( isset($HTTP_POST_VARS['smile_emotion']) ) ? htmlspecialchars(trim($HTTP_POST_VARS['smile_emotion'])) : '';
 			$smile_code = trim($smile_code);
 			$smile_url = trim($smile_url);
-			$smile_emotion = trim($smile_emotion);
 
 			// If no code was entered complain ...
 			if ($smile_code == '' || $smile_url == '')
