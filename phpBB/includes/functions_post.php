@@ -46,7 +46,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 	if ($html_on)
 	{
-		$message = addslashes(preg_replace_callback('/<\/?(\w+)((?:[\W]+\w+\s*=\s*(?:"[^"]*"|\'[^\']*\'|`[^`]*`|.*?))*)\s*?\/?>/', 'clean_html', stripslashes($message)));
+		$message = addslashes(preg_replace_callback('/<\/?(\w+)((?:[^\w>]+\w+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|`[^`]*`|´[^´]*´|.*?))?)*)[\W]*?\/?>/', 'clean_html', stripslashes($message)));
 	}
 	else
 	{
@@ -813,23 +813,23 @@ function clean_html($tag)
 	$disallowed_attributes = '/^(?:style|on)/';
 
 	if (in_array(strtolower($tag[1]), $allowed_html_tags))
-	{   
+	{	
 		$attributes = '';
 		if (!empty($tag[2]))
 		{
 			// Get all the elements of a tag so that they can be checked in turn
 			$matches = array();
-			preg_match_all('/[\W]+(\w+)\s*=\s*("[^"]*"|\'[^\']*\'|`[^`]*`|[^\'"`]*)/', $tag[2], $matches);
+			preg_match_all('/[\W]+(\w+)(?:\s*=\s*("[^"]*"|\'[^\']*\'|`[^`]*`|´[^´]*´|[^\'"`´]*))?/', $tag[2], $matches);
 
 			foreach ($matches[1] as $key => $value)
 			{
 				// Remove any attributes which are not allowed
-				if (preg_match($disallowed_attributes, strtolower($value)) || (!preg_match('/([\'`"]).*\\1/', $matches[2][$key]) && preg_match('/[^0-9a-zA-Z\\x2D\\x2E\\\x3A\\x5F]+/', $matches[2][$key])))
+				if (preg_match($disallowed_attributes, strtolower($value)) || (!preg_match('/([\'´`"]).*\\1/', $matches[2][$key]) && preg_match('/[^0-9a-zA-Z\\x2D\\x2E\\\x3A\\x5F]+/', $matches[2][$key])))
 				{
 					continue;
 				}
 				// Build a string containing the allowed attributes, strip out anything that could harm the parser
-				$attributes .= ' ' . $value . '="' . htmlentities(preg_replace('/^[`"\']?(.*?)[`"\']?$/', '\1', $matches[2][$key])) . '"';
+				$attributes .= ' ' . $value . '="' . htmlentities(preg_replace('/^[´`"\']?(.*?)[´`"\']?$/', '\1', $matches[2][$key])) . '"';
 			}
 		}
 		else
