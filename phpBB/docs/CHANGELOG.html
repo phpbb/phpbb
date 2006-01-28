@@ -71,6 +71,8 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] Prevent login attempts from incrementing for inactive users</li>
 <li>[Fix] Do not check maximum login attempts on re-authentication to the admin panel - tomknight</li>
 <li>[Fix] Regenerate session keys on password change</li>
+<li>[Fix] retrieving category rows in index.php (Bug #90)</li>
+<li>[Fix] improved index performance by determining the permissions before iterating through all forums (Bug #91)</li>
 <li>[Fix] Better handling of short usernames within the search (bug #105)</li>
 <li>[Fix] Workaround for an issue in either PHP or MSSQL resulting in a space being returned instead of an empty string (bug #830)</li>
 <li>[Fix] Correct use of default_style config value (Bug #861)</li>
@@ -101,8 +103,6 @@ p,ul,td {font-size:10pt;}
 
 <ul>
 <li>[Fix] incorrect handling of password resets if admin activation is enabled (Bug #88)</li>
-<li>[Fix] retrieving category rows in index.php (Bug #90)</li>
-<li>[Fix] improved index performance by determining the permissions before iterating through all forums (Bug #91)</li>
 <li>[Fix] wrong topic redirection after login redirect (Bug #94)</li>
 <li>[Fix] improved handling of username lists in admin_ug_auth.php (Bug #98)</li>
 <li>[Fix] incorrect removal of bbcode_uid values if bbcode has been turned off (Bug #100)</li>
