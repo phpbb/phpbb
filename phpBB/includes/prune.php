@@ -31,6 +31,21 @@ function prune($forum_id, $prune_date, $prune_all = false)
 {
 	global $db, $lang;
 
+	// Before pruning, lets try to clean up the invalid topic entries
+	$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . '
+		WHERE topic_last_post_id = 0';
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to sync', '', __LINE__, __FILE__, $sql);
+	}
+
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		sync('topic', $row['topic_id']);
+	}
+
+	$db->sql_freeresult($result);
+
 	$prune_all = ($prune_all) ? '' : 'AND t.topic_vote = 0 AND t.topic_type <> ' . POST_ANNOUNCE;
 	//
 	// Those without polls and announcements ... unless told otherwise!
@@ -39,8 +54,7 @@ function prune($forum_id, $prune_date, $prune_all = false)
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
 		WHERE t.forum_id = $forum_id
 			$prune_all 
-			AND ( p.post_id = t.topic_last_post_id 
-				OR t.topic_last_post_id = 0 )";
+			AND p.post_id = t.topic_last_post_id";
 	if ( $prune_date != '' )
 	{
 		$sql .= " AND p.post_time < $prune_date";
