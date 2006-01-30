@@ -238,13 +238,10 @@ class compress_zip extends compress
 					fclose($fp);
 				break;
 
-				// 'Central Directory Header'
+				// We hit the 'Central Directory Header', we can stop because nothing else in here requires our attention
+				// or we hit the end of the central directory record, we can safely end the loop as we are totally finished with looking for files and folders
 				case "\x50\x4b\x01\x02":
-					fseek($this->fp, 24, SEEK_CUR);
-					fseek($this->fp, 12 + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))) + current(unpack("v", fread($this->fp, 2))), SEEK_CUR);
-				break;
-				
-				// Hit the end of the central directory record, we can safely end the loop as we are totally finished with looking for files and folders
+				// This case should simply never happen.. but it does exist..
 				case "\x50\x4b\x05\x06":
 				break 2;
 				
