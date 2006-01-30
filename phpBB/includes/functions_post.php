@@ -46,7 +46,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 	if ($html_on)
 	{
-		$message = addslashes(preg_replace_callback('/<\/?(\w+)((?:[^\w>]+\w+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|`[^`]*`|´[^´]*´|.*?))?)*)[\W]*?\/?>/', 'clean_html', stripslashes($message)));
+		$message = addslashes(preg_replace_callback('/<\/?(\w+)((?:[^\w>]+\w+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|`[^`]*`|´[^´]*´|[^`´\'">]*))?)*)[\W]*?\/?>/', 'clean_html', stripslashes($message)));
 	}
 	else
 	{
