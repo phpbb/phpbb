@@ -724,7 +724,7 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	visibility: hidden;
 }
 /* Hide from Mac IE, Windows IE uses this as it doesn't support the :after method above \*/
-* html .clearfix, * html #tabs, * html .row, * html #content, * html fieldset dl, #page-body {
+.clearfix, #tabs, .row, #content, fieldset dl, #page-body {
 	height: 1%;
 }
 /* End hide */
