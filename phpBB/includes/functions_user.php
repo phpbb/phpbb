@@ -1680,7 +1680,7 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 		$sql .= " ug.group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary") . "
 				AND ug.user_id " . ((is_array($user_id_ary)) ? ' IN (' . implode(', ', $user_id_ary) . ')' : " = $user_id_ary");
 	}
-	else if ($group_id)
+	else if ($group_id_ary)
 	{
 		$sql .= " ug.group_id " . ((is_array($group_id_ary)) ? ' IN (' . implode(', ', $group_id_ary) . ')' : " = $group_id_ary");
 	}
