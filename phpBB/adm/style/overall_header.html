@@ -30,11 +30,19 @@ function jumpto()
 
 // Set display of page element
 // s[-1,0,1] = hide,toggle display,show
-function dE(n,s)
+function dE(n, s, type)
 {
+	if (!type)
+	{
+		type = 'block';
+	}
+
 	var e = document.getElementById(n);
-	if(!s) s = (e.style.display=='') ? -1:1;
-	e.style.display = (s==1) ? 'block':'none';
+	if (!s)
+	{
+		s = (e.style.display == '') ? -1 : 1;
+	}
+	e.style.display = (s == 1) ? type : 'none';
 }
 
 function marklist(match, status)

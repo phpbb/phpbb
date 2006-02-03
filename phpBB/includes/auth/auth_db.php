@@ -28,10 +28,11 @@ function login_db(&$username, &$password)
 		FROM ' . USERS_TABLE . "
 		WHERE username = '" . $db->sql_escape($username) . "'";
 	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($row)
 	{
-		$db->sql_freeresult($result);
 		if (md5($password) == $row['user_password'])
 		{
 			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? 0 : $row;

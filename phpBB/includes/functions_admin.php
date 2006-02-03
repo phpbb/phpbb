@@ -109,7 +109,7 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 /**
 * Simple version of jumpbox, just lists authed forums
 */
-function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true)
+function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $return_array = false)
 {
 	global $db, $user, $auth;
 
@@ -123,7 +123,8 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 	$right = $iteration = 0;
 	$padding_store = array('0' => '');
-	$forum_list = $padding = '';
+	$padding = '';
+	$forum_list = ($return_array) ? array() : '';
 
 	// Sometimes it could happen that forums will be displayed here not be displayed within the index page
 	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
@@ -164,9 +165,16 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 			continue;
 		}
 
-		$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
-
-		$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+		if ($return_array)
+		{
+			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? true : false) : (($row['forum_id'] == $select_id) ? true : false);
+			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => $selected), $row);
+		}
+		else
+		{
+			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
+			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+		}
 
 		$iteration++;
 	}

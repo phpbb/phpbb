@@ -30,12 +30,14 @@ if (empty($lang) || !is_array($lang))
 
 // Common
 $lang = array_merge($lang, array(
+	'ACP_ADMINISTRATORS'		=> 'Administrators',
 	'ACP_ADMIN_LOGS'			=> 'Admin Log',
 	'ACP_ATTACHMENTS'			=> 'Attachments',
 	'ACP_ATTACHMENT_SETTINGS'	=> 'Attachment Settings',
 	'ACP_AUTH_SETTINGS'			=> 'Authentication',
 	'ACP_AUTOMATION'			=> 'Automation',
 	'ACP_AVATAR_SETTINGS'		=> 'Avatar Settings',
+
 	'ACP_BAN'					=> 'Banning',
 	'ACP_BAN_EMAILS'			=> 'Ban Emails',
 	'ACP_BAN_IPS'				=> 'Ban IPs',
@@ -45,6 +47,7 @@ $lang = array_merge($lang, array(
 	'ACP_BOARD_MANAGEMENT'		=> 'Board Management',
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
+	
 	'ACP_CAT_DATABASE'			=> 'Database',
 	'ACP_CAT_DOT_MODS'			=> '.Mods',
 	'ACP_CAT_FORUMS'			=> 'Forums',
@@ -60,26 +63,39 @@ $lang = array_merge($lang, array(
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie Settings',
 	'ACP_CRITICAL_LOGS'			=> 'Error Log',
 	'ACP_CUSTOM_PROFILE_FIELDS'	=> 'Custom Profile Fields',
+	
 	'ACP_DISALLOW'				=> 'Disallow',
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow Usernames',
+	
 	'ACP_EMAIL_SETTINGS'		=> 'Email Settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage Extension Groups',
+	
 	'ACP_FORUM_LOGS'			=> 'Forum Logs',
 	'ACP_FORUM_MANAGEMENT'		=> 'Forum Management',
-	'ACP_GENERAL_CONFIGURATION'	=> 'General Configuration',
-	'ACP_GENERAL_TASKS'			=> 'General Tasks',
-	'ACP_GROUPS'				=> 'Groups',
-	'ACP_GROUPS_MANAGE'			=> 'Manage Groups',
-	'ACP_GROUPS_MANAGEMENT'		=> 'Group Management',
+	'ACP_FORUM_MODERATORS'		=> 'Forum Moderators',
+	'ACP_FORUM_PERMISSIONS'		=> 'Forum Permissions',
+
+	'ACP_GENERAL_CONFIGURATION'		=> 'General Configuration',
+	'ACP_GENERAL_TASKS'				=> 'General Tasks',
+	'ACP_GLOBAL_MODERATORS'			=> 'Global Moderators',
+	'ACP_GROUPS'					=> 'Groups',
+	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Groups Forum Permissions',
+	'ACP_GROUPS_MANAGE'				=> 'Manage Groups',
+	'ACP_GROUPS_MANAGEMENT'			=> 'Group Management',
+	'ACP_GROUPS_PERMISSIONS'		=> 'Groups Permissions',
+	
 	'ACP_ICONS'					=> 'Topic Icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
 	'ACP_IMAGESETS'				=> 'Imagesets',
 	'ACP_INDEX'					=> 'Admin index',
+	
 	'ACP_JABBER_SETTINGS'		=> 'Jabber Settings',
+	
 	'ACP_LANGUAGE'				=> 'Language Management',
 	'ACP_LANGUAGE_PACKS'		=> 'Language Packs',
 	'ACP_LOAD_SETTINGS'			=> 'Load Settings',
 	'ACP_LOGGING'				=> 'Logging',
+	
 	'ACP_MAIN'					=> 'Admin index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage Extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage Forums',
@@ -90,35 +106,51 @@ $lang = array_merge($lang, array(
 	'ACP_MESSAGE_SETTINGS'		=> 'Message Settings',
 	'ACP_MODULE_MANAGEMENT'		=> 'Module Management',
 	'ACP_MOD_LOGS'				=> 'Moderator Log',
+	
 	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphan Attachments',
+	
+	'ACP_PERMISSION_MASKS'		=> 'Permission Masks',
 	'ACP_PERMISSION_SETTINGS'	=> 'Permission Settings',
 	'ACP_PHP_INFO'				=> 'PHP Information',
 	'ACP_PRUNE_FORUMS'			=> 'Prune Forums',
 	'ACP_PRUNE_USERS'			=> 'Prune Users',
 	'ACP_PRUNING'				=> 'Pruning',
+	
 	'ACP_RANKS'					=> 'Ranks',
+	
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
 	'ACP_SMILIES'				=> 'Smilies',
 	'ACP_STYLE_COMPONENTS'		=> 'Style Components',
 	'ACP_STYLE_MANAGEMENT'		=> 'Style Management',
 	'ACP_STYLES'				=> 'Styles',
+	
 	'ACP_TEMPLATES'				=> 'Templates',
 	'ACP_THEMES'				=> 'Themes',
-	'ACP_UPDATE'				=> 'Updating',
-	'ACP_USER_ATTACH'			=> 'Attachments',
-	'ACP_USER_AVATAR'			=> 'Avatar',
-	'ACP_USER_FEEDBACK'			=> 'Feedback',
-	'ACP_USER_GROUPS'			=> 'Groups',
-	'ACP_USER_MANAGEMENT'		=> 'User Management',
-	'ACP_USER_OVERVIEW'			=> 'Overview',
-	'ACP_USER_PERM'				=> 'Permissions',
-	'ACP_USER_PREFS'			=> 'Preferences',
-	'ACP_USER_PROFILE'			=> 'Profile',
-	'ACP_USER_RANK'				=> 'Rank',
-	'ACP_USER_SECURITY'			=> 'User Security',
-	'ACP_USER_SIG'				=> 'Signature',
-	'ACP_VERSION_CHECK'			=> 'Check for Updates',
+	
+	'ACP_UPDATE'					=> 'Updating',
+	'ACP_USERS_FORUM_PERMISSIONS'	=> 'Users Forum Permissions',
+	'ACP_USERS_PERMISSIONS'			=> 'Users Permissions',
+	'ACP_USER_ATTACH'				=> 'Attachments',
+	'ACP_USER_AVATAR'				=> 'Avatar',
+	'ACP_USER_FEEDBACK'				=> 'Feedback',
+	'ACP_USER_GROUPS'				=> 'Groups',
+	'ACP_USER_MANAGEMENT'			=> 'User Management',
+	'ACP_USER_OVERVIEW'				=> 'Overview',
+	'ACP_USER_PERM'					=> 'Permissions',
+	'ACP_USER_PREFS'				=> 'Preferences',
+	'ACP_USER_PROFILE'				=> 'Profile',
+	'ACP_USER_RANK'					=> 'Rank',
+	'ACP_USER_SECURITY'				=> 'User Security',
+	'ACP_USER_SIG'					=> 'Signature',
+
+	'ACP_VERSION_CHECK'					=> 'Check for Updates',
+	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View Admin Permissions',
+	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View Forum Moderator Permissions',
+	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View Forum Permissions',
+	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View Global Moderator Permissions',
+	'ACP_VIEW_USER_PERMISSIONS'			=> 'View User Permissions',
+	
 	'ACP_WORDS'					=> 'Word Censoring',
 
 	'ACTION'				=> 'Action',
@@ -152,6 +184,7 @@ $lang = array_merge($lang, array(
 
 	'GENERAL_OPTIONS'		=> 'General Options',
 	'GENERAL_SETTINGS'		=> 'General Settings',
+	'GLOBAL_MASK'			=> 'Global Permission Mask',
 
 	'INSTALL'				=> 'Install',
 	'IP'					=> 'User IP',
@@ -256,6 +289,30 @@ $lang = array_merge($lang, array(
 
 // Log
 $lang = array_merge($lang, array(
+	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<b>Added or edited users user permissions</b><br />&#187; %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_U_'		=> '<b>Added or edited groups user permissions</b><br />&#187; %s',
+	'LOG_ACL_ADD_USER_GLOBAL_M_'		=> '<b>Added or edited users global moderator permissions</b><br />&#187; %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_M_'		=> '<b>Added or edited groups global moderator permissions</b><br />&#187; %s',
+	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<b>Added or edited users admin permissions</b><br />&#187; %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<b>Added or edited groups admin permissions</b><br />&#187; %s',
+
+	'LOG_ACL_ADD_ADMIN_GLOBAL_A_'		=> '<b>Added or edited Administrators</b><br />&#187; %s',
+	'LOG_ACL_ADD_MOD_GLOBAL_M_'			=> '<b>Added or edited Global Moderators</b><br />&#187; %s',
+
+	'LOG_ACL_ADD_USER_LOCAL_F_'			=> '<b>Added or edited users forum access</b> from %s<br />&#187; %s',
+	'LOG_ACL_ADD_USER_LOCAL_M_'			=> '<b>Added or edited users forum moderator access</b> from %s<br />&#187; %s',
+	'LOG_ACL_ADD_GROUP_LOCAL_F_'		=> '<b>Added or edited groups forum access</b> from %s<br />&#187; %s',
+	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<b>Added or edited groups forum moderator access</b> from %s<br />&#187; %s',
+
+	'LOG_ACL_ADD_MOD_LOCAL_M_'			=> '<b>Added or edited Moderators</b> from %s<br />&#187; %s',
+	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<b>Added or edited Forum Permissions</b> from %s<br />&#187; %s',
+
+	'LOG_ACL_DEL_ADMIN_GLOBAL_A_'		=> '<b>Removed Administrators</b><br />&#187; %s',
+	'LOG_ACL_DEL_MOD_GLOBAL_M_'			=> '<b>Removed Global Moderators</b><br />&#187; %s',
+	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<b>Removed Moderators</b> from %s<br />&#187; %s',
+	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<b>Removed User/Group Forum Permissions</b> from %s<br />&#187; %s',
+
+	
 	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',

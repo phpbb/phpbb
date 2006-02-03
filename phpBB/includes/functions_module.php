@@ -75,22 +75,31 @@ class p_master
 			$this->module_cache['modules'] = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				// Only add if we are allowed to view this module...
-				if (!$this->module_auth($row['module_auth']))
-				{
-					continue;
-				}
-
 				$this->module_cache['modules'][] = $row;
 			}
 			$db->sql_freeresult($result);
 			
 			// Get module parents
 			$this->module_cache['parents'] = array();
+			
+			// We pre-get all parents due to the huge amount of queries required if we do not do so. ;)
+			$sql = 'SELECT module_id, parent_id, left_id, right_id
+				FROM ' . MODULES_TABLE . '
+				ORDER BY left_id ASC';
+			$result = $db->sql_query($sql);
+
+			$parents = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$parents[$row['module_id']] = $row;
+			}
+			$db->sql_freeresult($result);		
+
 			foreach ($this->module_cache['modules'] as $row)
 			{
-				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id']);
+				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id'], $parents);
 			}
+			unset($parents);
 
 			$file = '<?php $this->module_cache=' . $cache->format_array($this->module_cache) . "; ?>";
 
@@ -113,6 +122,7 @@ class p_master
 			// Not allowed to view module?
 			if (!$this->module_auth($row['module_auth']))
 			{
+				unset($this->module_cache['modules'][$key]);
 				continue;
 			}
 
@@ -336,7 +346,7 @@ class p_master
 		}
 	}
 
-	function get_parents($parent_id, $left_id, $right_id)
+	function get_parents($parent_id, $left_id, $right_id, &$all_parents)
 	{
 		global $db;
 
@@ -344,19 +354,18 @@ class p_master
 
 		if ($parent_id > 0)
 		{
-			$sql = 'SELECT module_id, parent_id
-				FROM ' . MODULES_TABLE . '
-				WHERE left_id < ' . $left_id . '
-					AND right_id > ' . $right_id . '
-				ORDER BY left_id ASC';
-			$result = $db->sql_query($sql);
-
-			$parents = array();
-			while ($row = $db->sql_fetchrow($result))
+			foreach ($all_parents as $module_id => $row)
 			{
-				$parents[$row['module_id']] = $row['parent_id'];
+				if ($row['left_id'] < $left_id && $row['right_id'] > $right_id)
+				{
+					$parents[$module_id] = $row['parent_id'];
+				}
+
+				if ($row['left_id'] > $left_id)
+				{
+					break;
+				}
 			}
-			$db->sql_freeresult($result);		
 		}
 
 		return $parents;

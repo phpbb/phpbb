@@ -64,6 +64,8 @@ class acp_users
 
 			$template->assign_vars(array(
 				'U_ACTION'			=> $u_action,
+				'ANONYMOUS_USER_ID'	=> ANONYMOUS,
+
 				'S_SELECT_USER'		=> true,
 				'U_FIND_USERNAME'	=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=select_user&amp;field=username",
 				)
