@@ -1507,7 +1507,11 @@ else if ( $submit || $refresh || $mode != '' )
 				redirect(append_sid("privmsg.$phpEx?folder=$folder", true));
 			}
 
+			$orig_word = $replacement_word = array();
+			obtain_word_list($orig_word, $replace_word);
+
 			$privmsg_subject = ( ( !preg_match('/^Re:/', $privmsg['privmsgs_subject']) ) ? 'Re: ' : '' ) . $privmsg['privmsgs_subject'];
+			$privmsg_subject = preg_replace($orig_word, $replacement_word, $privmsg_subject);
 
 			$to_username = $privmsg['username'];
 			$to_userid = $privmsg['user_id'];
@@ -1520,6 +1524,7 @@ else if ( $submit || $refresh || $mode != '' )
 				$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", '', $privmsg_message);
 				$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
 				$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
+				$privmsg_message = preg_replace($orig_word, $replacement_word, $privmsg_message);
 				
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); 
 
