@@ -309,7 +309,7 @@ CREATE INDEX is_dynamic on phpbb_config (is_dynamic)
 CREATE TABLE phpbb_confirm (
   confirm_id varchar2(32) DEFAULT '',
   session_id varchar2(32) DEFAULT '',
-  code varchar2(6) DEFAULT '',
+  code varchar2(8) DEFAULT '',
   CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
 )
 /

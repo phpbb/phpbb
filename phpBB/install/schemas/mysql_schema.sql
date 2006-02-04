@@ -140,7 +140,7 @@ CREATE TABLE phpbb_config (
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) DEFAULT '' NOT NULL,
   session_id char(32) DEFAULT '' NOT NULL,
-  code char(6) DEFAULT '' NOT NULL,
+  code char(8) DEFAULT '' NOT NULL,
   PRIMARY KEY  (session_id,confirm_id)
 );
 

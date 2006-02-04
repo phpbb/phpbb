@@ -121,7 +121,7 @@ GO
 CREATE TABLE [phpbb_confirm] (
 	[confirm_id] [varchar] (32) NOT NULL ,
 	[session_id] [varchar] (32) NOT NULL ,
-	[code] [varchar] (6) NOT NULL 
+	[code] [varchar] (8) NOT NULL 
 ) ON [PRIMARY]
 GO
 

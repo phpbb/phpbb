@@ -144,7 +144,7 @@ CREATE INDEX is_dynamic_phpbb_config on phpbb_config (is_dynamic);
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) NOT NULL DEFAULT '',
   session_id char(32) NOT NULL DEFAULT '',
-  code char(6) NOT NULL DEFAULT '',
+  code char(8) NOT NULL DEFAULT '',
   PRIMARY KEY (session_id, confirm_id)
 );
 

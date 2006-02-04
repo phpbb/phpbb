@@ -116,7 +116,7 @@ CREATE TABLE phpbb_config (
 CREATE TABLE phpbb_confirm (
   confirm_id VARCHAR(32) NOT NULL,
   session_id VARCHAR(32) NOT NULL,
-  code VARCHAR(6) NOT NULL
+  code VARCHAR(8) NOT NULL
 );;
 
 # phpbb_disallow

@@ -183,7 +183,7 @@ CREATE INDEX is_dynamic_phpbb_config_index ON phpbb_config (is_dynamic);
 CREATE TABLE phpbb_confirm (
   confirm_id varchar(32) DEFAULT '' NOT NULL,
   session_id varchar(32) DEFAULT '' NOT NULL,
-  code varchar(6) DEFAULT '' NOT NULL,
+  code varchar(8) DEFAULT '' NOT NULL,
   PRIMARY KEY (session_id,confirm_id)
 );
 
