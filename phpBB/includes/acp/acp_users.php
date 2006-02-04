@@ -1462,7 +1462,7 @@ class acp_users
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
 					'HTML_STATUS'			=> ($config['allow_sig_html']) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . $phpbb_root_path . "faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" target="_phpbbcode">', '</a>'),
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . $phpbb_root_path . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
