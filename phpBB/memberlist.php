@@ -907,7 +907,10 @@ switch ($mode)
 			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'] != -1)
 			{
-				$rank_title = $ranks['special'][$group_row['group_rank']]['rank_title'];
+				if (isset($ranks['special'][$group_row['group_rank']]))
+				{
+					$rank_title = $ranks['special'][$group_row['group_rank']]['rank_title'];
+				}
 				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
 				$rank_img_src = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] : '';
 			}
