@@ -75,7 +75,7 @@ class compress
 
 	function add_custom_file($src, $filename)
 	{
-		$this->data($filename, implode('', file($src)), false, stat($src));
+		$this->data($filename, file_get_contents($src), false, stat($src));
 		return true;
 	}
 	
@@ -468,15 +468,7 @@ class compress_tar extends compress
 					@chmod("$dst$filename", 0777);
 
 					// Grab the file contents
-					$n = floor($filesize / 512);
-					for ($i = 0; $i < $n; $i++)
-					{
-						fwrite($fp, $fzread($this->fp, 512), 512);
-					}
-					if (($filesize % 512) > 0)
-					{
-						fwrite($fp, $fzread($this->fp, 512), ($filesize % 512));
-					}
+					fwrite($fp, $fzread($this->fp, $filesize + 512 - $filesize % 512), $filesize);
 					fclose($fp);
 				}
 			}
@@ -525,10 +517,9 @@ class compress_tar extends compress
 
 		// Checksum
 		$checksum = 0;
-		for ($i = 0; $i < 512; $i++)
+		for ($i = 0; $i < 329; $i++)
 		{
-			$b = unpack("c1char", substr($header, $i, 1));
-			$checksum += $b['char'];
+			$checksum += ord(substr($header, $i, 1));
 		}
 		$header = substr_replace($header, pack("a8", sprintf("%07o", $checksum)), 148, 8);
 
@@ -536,12 +527,8 @@ class compress_tar extends compress
 
 		if ($stat[7] !== 0 && !$is_dir)
 		{
-			$fzwrite($this->fp, $data);
+			$fzwrite($this->fp, pack('a'.($stat[7] + 512 - $stat[7] % 512), $data));
 			unset($data);
-			if ($stat[7] % 512 > 0)
-			{
-				$fzwrite($this->fp, str_repeat("\0", 512 - $stat[7] % 512));
-			}
 		}
 	}
 
