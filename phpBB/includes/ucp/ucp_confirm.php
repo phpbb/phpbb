@@ -52,109 +52,85 @@ class ucp_confirm
 			exit;
 		}
 
-		// If we can we will generate a single filtered png else we will have to simply
-		// output six seperate original pngs ... first way is preferable!
-		if (@extension_loaded('zlib'))
+		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
+		$_png = $this->define_filtered_pngs();
+
+		$total_width = 320;
+		$total_height = 50;
+		$img_height = 40;
+		$img_width = 0;
+		$l = 0;
+
+		list($usec, $sec) = explode(' ', microtime()); 
+		mt_srand($sec * $usec); 
+
+		$char_widths = array();
+		for ($i = 0; $i < strlen($code); $i++)
 		{
-			$_png = $this->define_filtered_pngs();
+			$char = $code{$i};
 
-			$total_width = 320;
-			$total_height = 50;
-			$img_height = 40;
-			$img_width = 0;
-			$l = 0;
-
-			list($usec, $sec) = explode(' ', microtime()); 
-			mt_srand($sec * $usec); 
-
-			$char_widths = array();
-			for ($i = 0; $i < strlen($code); $i++)
-			{
-				$char = $code{$i};
-
-				$width = mt_rand(0, 4);
-				$char_widths[] = $width;
-				$img_width += $_png[$char]['width'] - $width;
-			}
-
-			$offset_x = mt_rand(0, $total_width - $img_width);
-			$offset_y = mt_rand(0, $total_height - $img_height);
-
-			$image = '';
-			$hold_chars = array();
-			for ($i = 0; $i < $total_height; $i++)
-			{
-				$image .= chr(0);
-
-				if ($i > $offset_y && $i < $offset_y + $img_height)
-				{
-					$j = 0;
-
-					for ($k = 0; $k < $offset_x; $k++)
-					{
-						$image .= chr(mt_rand(140, 255));
-					}
-
-					for ($k = 0; $k < strlen($code); $k++)
-					{
-						$char = $code{$k};
-
-						if (empty($hold_chars[$char]))
-						{
-							$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
-						}
-						$image .= $this->randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
-						$j++;
-					}
-
-					for ($k = $offset_x + $img_width; $k < $total_width; $k++)
-					{
-						$image .= chr(mt_rand(140, 255));
-					}
-
-					$l++;
-				}
-				else
-				{
-					for ($k = 0; $k < $total_width; $k++)
-					{
-						$image .= chr(mt_rand(140, 255));
-					}
-				}
-
-			}
-			unset($hold);
-
-			$image = $this->create_png(gzcompress($image), $total_width, $total_height);
-
-			// Output image
-			header('Content-Type: image/png');
-			header('Cache-control: no-cache, no-store');
-			echo $image;
-
-			unset($image);
-			unset($_png);
-			exit;
-
-		}
-		else
-		{
-			$char = request_var('c', 0);
-
-			if ($char)
-			{
-				$_png = $this->define_raw_pngs();
-
-				$char = substr($code, $char - 1, 1);
-				header('Content-Type: image/png');
-				header('Cache-control: no-cache, no-store');
-				echo base64_decode($_png[$char]);
-
-				unset($_png);
-				exit;
-			}
+			$width = mt_rand(0, 4);
+			$char_widths[] = $width;
+			$img_width += $_png[$char]['width'] - $width;
 		}
 
+		$offset_x = mt_rand(0, $total_width - $img_width);
+		$offset_y = mt_rand(0, $total_height - $img_height);
+
+		$image = '';
+		$hold_chars = array();
+		for ($i = 0; $i < $total_height; $i++)
+		{
+			$image .= chr(0);
+
+			if ($i > $offset_y && $i < $offset_y + $img_height)
+			{
+				$j = 0;
+
+				for ($k = 0; $k < $offset_x; $k++)
+				{
+					$image .= chr(mt_rand(140, 255));
+				}
+
+				for ($k = 0; $k < strlen($code); $k++)
+				{
+					$char = $code{$k};
+
+					if (empty($hold_chars[$char]))
+					{
+						$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
+					}
+					$image .= $this->randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
+					$j++;
+				}
+
+				for ($k = $offset_x + $img_width; $k < $total_width; $k++)
+				{
+					$image .= chr(mt_rand(140, 255));
+				}
+
+				$l++;
+			}
+			else
+			{
+				for ($k = 0; $k < $total_width; $k++)
+				{
+					$image .= chr(mt_rand(140, 255));
+				}
+			}
+
+		}
+		unset($hold);
+
+		$image = $this->create_png($image, $total_width, $total_height);
+
+		// Output image
+		header('Content-Type: image/png');
+		header('Cache-control: no-cache, no-store');
+		echo $image;
+
+		unset($image);
+		unset($_png);
 		exit;
 	}
 
@@ -204,7 +180,7 @@ class ucp_confirm
 	// http://www.libpng.org/pub/png/spec/PNG-Contents.html we use
 	// png because it's a fully recognised open standard and supported
 	// by practically all modern browsers and OSs
-	function create_png($gzimage, $width, $height)
+	function create_png($raw_image, $width, $height)
 	{
 		// SIG
 		$image = pack('C8', 137, 80, 78, 71, 13, 10, 26, 10);
@@ -214,7 +190,27 @@ class ucp_confirm
 		$raw .= pack('C5', 8, 0, 0, 0, 0);
 		$image .= $this->png_chunk(13, 'IHDR', $raw);
 		// IDAT
-		$image .= $this->png_chunk(strlen($gzimage), 'IDAT', $gzimage);
+		if (@extension_loaded('zlib'))
+		{
+			$raw_image = gzcompress($raw_image);
+			$len = strlen($raw_image);
+		}
+		else
+		{
+			$len = strlen($raw_image);
+			// Adler-32 hash, lets go!
+			$s1 = 1;
+			$s2 = 0;
+			for ($n = 0; $n < $len; $n++) {
+				$s1 = ($s1 + ord($raw_image[$n])) % 65521;
+				$s2 = ($s2 + $s1) % 65521;
+			}
+			$adler = ($s2 << 16) | $s1;
+			$raw_image = pack('C7', 0x78, 0x01, 1, $len & 255, ($len >> 8) & 255, 255 - ($len & 255), 255 - (($len >> 8) & 255)) . $raw_image;
+			$raw_image .= pack('C4', ($adler >> 24) & 255, ($adler >> 16) & 255, ($adler >> 8) & 255, $adler & 255);
+			$len += 11;
+		}
+		$image .= $this->png_chunk($len, 'IDAT', $raw_image);
 		// IEND
 		$image .= $this->png_chunk(0, 'IEND', '');
 
@@ -370,52 +366,6 @@ class ucp_confirm
 				'data' => 'AP////////////////////////////////////////////////////8A/////////////////////////////////////////////////////wD/////////////////////////////////////////////////////AP////////////////////////////////////////////////////8A/////////////////////////////////////////////////////wD/////////////////////////////////////////////////////AP////////////////////////////////////////////////////8A//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////wD//////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////////////AP//////////AAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////////8A//////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////wD//////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAP//////////////AP//////////AAAAAAAAAAAAAAAAAAAAAAAAAAAQ//////////////8A/////////////////////////1AAAAAAAAAABLz//////////////wD///////////////////////98AAAAAAAAAACY////////////////AP//////////////////////pAAAAAAAAAAAaP////////////////8A/////////////////////8QIAAAAAAAAAET8/////////////////wD////////////////////gGAAAAAAAAAAo9P//////////////////AP//////////////////9CwAAAAAAAAAFNz///////////////////8A//////////////////xMAAAAAAAAAATA/////////////////////wD/////////////////eAAAAAAAAAAAnP//////////////////////AP///////////////5wAAAAAAAAAAHT///////////////////////8A///////////////ABAAAAAAAAABM/P///////////////////////wD/////////////3BQAAAAAAAAALPT/////////////////////////AP////////////QoAAAAAAAAABjg//////////////////////////8A///////////8SAAAAAAAAAAExP///////////////////////////wD//////////2wAAAAAAAAAAKD/////////////////////////////AP////////+YAAAAAAAAAAB8//////////////////////////////8A/////////wQAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////wD/////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////////////AP////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////8A/////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/////////////wD/////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/////////////AP////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////8A/////////////////////////////////////////////////////wD/////////////////////////////////////////////////////AP////////////////////////////////////////////////////8A/////////////////////////////////////////////////////wD/////////////////////////////////////////////////////AP////////////////////////////////////////////////////8=', 
 				'width' => 40
 			), 
-		);
-
-		return $_png;
-	}
-
-	// These define base64_encoded raw png image data used
-	// when we cannot generate our own single png image
-	function define_raw_pngs()
-	{
-		$_png = array(
-			'0' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QKCNGXKO6AAAAB3RJTUUH0wUOEDQ6EUG1VwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAXNJREFUeNpj/M9AHGAiUt2wVvhyaqAqKyOjpG3jQwaGv+e+IUn9RwJfSjjg4iwFP1aKJD6HyyErfGGAYrquIoP5E2wK/zigu0v5wH9sChdgeKDqP1aFGhBZmxv/z0Dd4IxV4RWIpMQHIPuJAITzAqEQETx7IFQIP5CQNoJwDmALxzMQCuyjg1chnBPYwtECwr8AZN41h0p6YHOjAkTuwf//77wYuCEcFWwKOWA2fM1iZuuHcASwKYQ55c9ENuasrxgRjKlwJS+D17v/hBUeUGYwv/sfn0IRiJQZJIbxuFEFagjvSlDUQNgK2GIGqpC1JRhIfoAqxBYz0DRhn8IMJO+giKEqhMaMJBeI3AHhIKdkRPqG8DlAifqFADyasKRHO6h1Z/6fMYEwTbCmx3cWGCl8CTaFwBhGz+M2/7EpXMvOnBmIok7jBVaFz/Mi3/1pQORrhpgPyOr+M8IL0j9/gKpeLjhy5QEwoDVsYuRR3cE4IktcAJNx8cJaZBeQAAAAAElFTkSuQmCC', 
-			'1' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QMi//xxVKAAAAB3RJTUUH0wUOEDYLcqnX7wAAAAlwSFlzAAALEgAACxIB0t1+/AAAAHpJREFUeNpj/M9AHGAiUh1WhR8FGUGAsMKaD9iM/I8BlmCVwVS4hoUohT8qcNiFyv2zQIWBCIV3amRwu54RKcDRAgQ1KigIcJYK7CqR3QsCFmf+Y8qgeQakbANMAz6FKjUXECbj8zWa76nm61GFw1UhI10KqVGFNFQIADdK9Zj7PsV9AAAAAElFTkSuQmCC', 
-			'2' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QMwPUBEjoAAAAB3RJTUUH0wUOEDUqFe2UcgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAQxJREFUeNpj/M9AHGAiUt2owkGrkAWF93LFgStPfjCwyGiYRGijqfyPAH9aOJAkQl78RwbICkNQjdB4gUNhD7qzLLAr/CKA4YENSAoRvl7zAUJXvPmxhgfCXILVMxEQvg+IDVUhgtVqDYjkDhD7B2aQIMIx5cOTN29evLAAsaEKObBajQzmQOQMcIQjHLwQgSisIaDwBdS5LHfwK7yhAHVVyX+8CrdAA5HB5gdehQ3Yoxpd4ZcAmDqbD//xKISEIjhU//zHoxDmXQaeFRhOZ8CmzuDOf3wKf8DsDfnyH6/CHJi6P//xKjyDJethVehBpMI7DPgVwrPCCgb8AK5wDwGFcNMF8EkCASOx1QcAGUxu1untnFIAAAAASUVORK5CYII=', 
-			'3' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QMxBQugk2AAAAB3RJTUUH0wUOEDU3duv4qwAAAAlwSFlzAAALEgAACxIB0t1+/AAAATdJREFUeNpj/M9AHGAiUt0IVciCzPm7ZceZB28YGBQkLHwcmNFU/keANRJI4ioH/qMAJIUlaHatwaFwBrqrOO5gVfiCB8P9KVgVVkAtnPDh/wkLCFsGq0IFiGQLiH0D06P/GWHJ7O+NOzfuXLlzQRrEhgSawHscwYPurxAcwQMBf/4/aIAYyHIGr8IEeDhO+Y9XoQNUncwOVHGMRPEDSovc+IkzrpGDCQgUbuC1WgBhhsIHfAp3vPn/oIIFKfRxKQSDGohCA4IKX0DTD7YoRAWMUJ9iyQpbn4DBBWUQ5yFEDDnFw622gXAzwBxoYvfB5sYlUI0lD/4/gWWKJdgU/tHAcKjCD6y+PsGCpo4FJbaRgmcNqkqWCThTzxkTJHXo+Ro1HA9uOPHiATDlKJj4eKCVFIzDqWgGAK7GW/haPS+zAAAAAElFTkSuQmCC', 
-			'4' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QMyqWttCEAAAAB3RJTUUH0wUOEDUxn4hdngAAAAlwSFlzAAALEgAACxIB0t1+/AAAAKBJREFUeNpj/M9AHGAiUh2FCucyQgCK4H9McIAFixwWhQ8kGIhS+MWAgTiFIQzEKWxhIE7hFgbiFF7hASkQIajwjQpInuUAIYV/XMDyU/4TUlgAlk75T0jhArCszR9CCk+AY07mxX8CCp+AY47nzH8CCn+YgOWW/CekMAYsVfMfl0JGmCBq4kNEDp2zAn0UMmItABjRvDykPTO43DgyFQIANP6pTFLWAdoAAAAASUVORK5CYII=', 
-			'5' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QMzPy3XhEAAAAB3RJTUUH0wUOEDUk8lW5dQAAAAlwSFlzAAALEgAACxIB0t1+/AAAAQpJREFUeNpj/M9AHGAiUt2oQuIVfmREBzgU3iHWxAfEKiTaRFpZnfAfAbAr/AsxUYagiVCbeQgqhPpFYmukLCOrZupRNJUIB02BCAjAZCK+/Ed2LoJZgm6bzRfsCgMw3JWAXaEBpg8uIGSRPPMBQmXc+P+iggXCnoOQZUQK1K8PgEAjGcQs7QGL6FzG5mtkcAUiyYIQYcRRUkDTLEIWR1b4ixamQMPhrKUP3rx48eDNFXmwdyFiOthixgXqaTAnBcKpwRaOS6A6Mx78fwBVx/IAm8I/KsTGzAkWNHUyb7Ar/L8GNSlK3MCRev7/v+CApC7kBUoUoAX4yQ0nHjwAWqpiE6GNFgNDoAwHAKC2Q2lMNcCmAAAAAElFTkSuQmCC', 
-			'6' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QNAObRd4vAAAAB3RJTUUH0wUOEDUc2lcB6wAAAAlwSFlzAAALEgAACxIB0t1+/AAAATtJREFUeNpj/M9AHGAiUh2Gwq2puryMjKKmmSfRVf5HBkcMEBI+L1CkUBROYUE2QuMFLoVr0CzzwKHwhQC6szZgV1gAtfHI/xs2mEYywsPxp8QHEMVxQ56B4aaJiIKIiIRCPDZf74DwI/5jB4hwPAChbAgG+BWoExlOxkoysuqW3sUV4BoQ/p0SqARLB44AF4HIByDMKMCuEIu7phCrUOADNl/DgMOJ/09SIMwPC7B5hgfC1/kB4kRAOC7YrFaByM0Ac85AOCLYrFaBhSMIQNPlG2wBDg3HP2CSGU/MuEAoiKVXUWxB9cwPiG8UwEGSg5FCMNOjwZ4/byqgpqwgMoWr/MGeZ1agqWPZgSNz/Z+AqnDCf1wK/29B8qbKDhQpRtTE8HfLjjMP3jDwKJh4hKCGJSPNC6lRhTRWCABWpdoxd/bZ4QAAAABJRU5ErkJggg==', 
-			'7' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QNA18/fMoAAAAB3RJTUUH0wUOEDUVo4u5TwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAM9JREFUeNpj/M9AHGAiUt2oQnorZIGzGLFJIyJ40HqGhUiFPFuQ/YUFPBGBmLcDSQybwj8OEDOW/CegsAeiruQ/AYV3OMDqTP4QUugCceCN/wQUQn1a8Z+Awj8qYHUiHwgpXAAxcMJ/Qgp1wOoEPhBSuANiYM5/QgpjIAovEFL4gweszgAz0NASxZ4vYMqHYDKDBiIWhWhWa0CS1x9CVn+8AaYsmAlZfQRC6RDMChADGTQIKjxDrMI7EEoBi0JGlMJe8AOY+sFOSCEeQHQBAABCZ7xyT9fJhwAAAABJRU5ErkJggg==', 
-			'8' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QNBeBnwpSAAAAB3RJTUUH0wUOEDUOKe5wowAAAAlwSFlzAAALEgAACxIB0t1+/AAAATVJREFUeNpj/M9AHGAiUt1AKmRB459cc+DBGwYWGQ2LEG1Umf/I4IELkozLA2QpFIUXJFDMEDiBQ+EHGTR3yHzArrAFwwct2BXqQGQ1zvw/owFh6mBXCDXmDJB5BsOrjEhxzfoHIgkiGCGB9xtrgEPtOwvEV6FWY4+ZAAgVc5LhZgKEGYI9wN+gBiPu4Pl/BFWlxA1cMfN/C0rUr8AVhX8K0KyuwaEwASNmarAqPACVTXnw/0oENBFewKYQGhYZYE4MVBM2hVAvQ1LhHQhHBVsUMjIgYhCdhy3PPASTd6GOxBYz0KhOQHajDjY3pkC1Rlz5fweqjqEAm8ILGK5gYLlDZICXYI+ZLzZo6gL+4EgUfyo4kJQJtCCpQ8kKQPB2zZ47L14AU5iMgUMAN7IM43AqHwdQIQAhMPz6Gz5V/wAAAABJRU5ErkJggg==', 
-			'9' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QNCQ+T2tEAAAAB3RJTUUH0wUOEDUHUDLIBwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAUZJREFUeNpj/M9AHGAiUh26wr9rE3V5GRlFTTM3/kVT+R8Z7FBBSKjsQJFCUTiFBcWMCbgUHmBBs20FdoV/VNDUMQi8wapwDVS65s2fPToQZgFWhRFIkm8kwGyeH9gUQm2+Aua0QDhb4LJI4XgHQmmDSRMIZw+emIEENAeEcwObQhEIdQHiABRbUGPGBSIQAWL/gHqbB5tnJkC1Fjz5f8IGwxwkhR8EsCQarFE4hViF/wsQCgKgHsSu8H8HLFkUQL2rgUPh/zslOiwMEjFH/kND2geXQvQgqMAWhSjgAIRygAswIuXCpXfevHjz4M0ZdQaGhxo/wAnyBTuWmPnvARGxuPH/iAa+9Ph/A7r9Ai+wK/zvg6ZwzX8cCl9oICtjmfIfl8L/bwIQ6gyO/Met8P//EwUmwHTJo5OyBU2CkdaF1KhCWisEAM/sJxmZkdWnAAAAAElFTkSuQmCC', 
-			'A' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QFwy1U7TfAAAAB3RJTUUH0wUOEC0ZKCZtPQAAAAlwSFlzAAALEgAACxIB0t1+/AAAAO1JREFUeNrt1LERwiAUBuAHZ2GRwsIypQMwQEZwgBQpM4QDZBSLFI7gCA5gQWGRdA5gkTuMSh48eMTUnq96wH98B+QiDCwruTD3D76qF676ueAp0Y9lSBXeSkFWaLAje3T+kkzK4SgpBzZw8pqxJWcdOJuRsyGPbWDk0tS20zw9SXsobdfytJVXdzNsP61i6Zt3K7Ht0UeUgbPdjsrOXMd+2IS2C2qb271HVWi7YANcNXFQsUEVBTXwNdl46jYRxPl52dnwRUZbhkLSDmS8DnxFRWiULxg8UxvobefuRR8ZQYDKtffVVcQWv/RrfgJC4bd0upw4MQAAAABJRU5ErkJggg==', 
-			'B' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGAusrz2zAAAAB3RJTUUH0wUOEC01Gv4B3gAAAAlwSFlzAAALEgAACxIB0t1+/AAAANJJREFUeNpj/M9AHGAiUh0tFTKiAUHL2rsoKv9DARZDWFr+IwA+hQwMFcQqZDhCrMIIYhWK4FYIYv8444PuV+wK//9/A+UJwBUSCHAL3OEIsdoFyttCpGdiiAtHjoY/RCnk6PlBbBRKrCE6CqcQq5DlDs5whIT3CgUI788EvOEIBCegXB2YPCNMBSNMISqf5TeUjysK90LpP/itfrFEAhZCMHkWdKMYUbk2MAah7BqD02pUYEFkgMu8IE6hD0IdpmegwSejoKLjoY7syaFU7A0HhQA2e4cJytImvAAAAABJRU5ErkJggg==', 
-			'C' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGBbPqVFqAAAAB3RJTUUH0wUOEC4BEGemqAAAAAlwSFlzAAALEgAACxIB0t1+/AAAASlJREFUeNpj/M9AHGAiUt2owkGrkAWV+3TDgRtPPjBwyGiYBOijSv1HAlcCkGUcTiDLISvsQDOeZQp2hQWYDpuCTeEEbD44ganwDgc2vxpgKoyAyUWc+f9hjgCMtwFd4RuYRxog/ueBcl3QFc6BSmj8gfBrwE40yFmCrjABqrAH5mSZgJ4jX7AEjwlU4Zn/OAAsrp9AaRlccc0IzdeMsBilOPWQrBDmtpfEKnwBpZ8qZq58i6IS6vscKHcBcgQYlOz4gh6OK6AKfaB8G5hN6Aq/wBLPHjB3CczCFIzUA0u2PD0v/j9pgaf1ExgK3wgwYAEOWFL4GizqWC5gyzM1mArnEJkLZ2DPhf//n3BAVmeDkq8ZUZPL3TUn7gBLCgYFBYsAcxQZRmKrDwABNsv9SJSDwwAAAABJRU5ErkJggg==', 
-			'D' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGC1+orhOAAAAB3RJTUUH0wUOEC4yr7fHvgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAM9JREFUeNpj/M9AHGAiUt1AKmSBsxiRhXlkNBxCpFFU/ocBTDMyPvxHADwKGRgUbhCpkEHiCZEKGRyIVciwArdCIPPFGg8YzwSvQiBogXFvEFD43wDKnQDl44yZGCh9glAU2sCsJqRQBkq/gMUw3G2wuP6PnU/H9PgRSgsQUvgESosQUngFSqsQUrgCSsNiCFcU7oBx9+CL6w8XamB5SeUPkelxAZEJ1+YPcQolXhCXFTTuEJULOUq+IOVrFgasQELBxMaHG1mEcTiVjwOoEADAIkCnGpmJKgAAAABJRU5ErkJggg==', 
-			'E' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGDeDwEE0AAAAB3RJTUUH0wUOEC8CkHXGUwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAD5JREFUeNpj/M9AHGAiUt2owkGrkAXGYMQqjUgJQ8EzpPsa05+D140oMYTk4KEQ4MMqZqgUhcM1czESW30AABfqB1XDnLzcAAAAAElFTkSuQmCC', 
-			'F' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGQe8AkDZAAAAB3RJTUUH0wUOEC8JB6cf2wAAAAlwSFlzAAALEgAACxIB0t1+/AAAADlJREFUeNpj/M9AHGAiUt3wUsiCYDJikUYE3lDwDDm+xvTp4HUjIoaQXTsUAnxYxcyoQryAcUSWuAAW/gZTg/yEMAAAAABJRU5ErkJggg==', 
-			'G' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGRFI1vWIAAAAB3RJTUUH0wUOEC8QY8y3GwAAAAlwSFlzAAALEgAACxIB0t1+/AAAASZJREFUeNpj/M9AHGAiUt0IVciCwvt7ZM+FOy8+MDBwSEho2AQII8v9R4A/U2RQtHEUfEBIIim8YYBhn8oNLAqP8GBxmcwbDIU3sKljYIhAV/jHgAE7uICmcAJMQqDmwp//D2YowPgxqAr/wPyr8QAi8EEHwleIQFW4BxYicG+eEHEomHECET5QhRVQhQn/cQFoFJ6AKgwgFNcPoFwdnAoZIXmGERahKDwkIdqlR1j4PiRW4RVCCmExvQenQrSYEXiDiAoUBfC4loAK23yBSnzArhCRehRmAJPFnRUxHDgU/lDA7zZECj/Cgl2dAkaeWYNVZcoHDIX/94hgKLM4gS27/v9QIICizGMDkiQjSon7c8eBCw+e/GFgkZEwsHCRRpZiHE5FMwCa2YE+WcAOUwAAAABJRU5ErkJggg==', 
-			'H' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGRw2Z4k1AAAAB3RJTUUH0wUOEC8agxleBQAAAAlwSFlzAAALEgAACxIB0t1+/AAAAD1JREFUeNpj/M9AHGAiUt2oQvyABUozQml4+KMLDAXPDAWFLGh8RlwKh4JnaB88GOlxELhxVCFewDgEynAAN2sFVHAvevkAAAAASUVORK5CYII=', 
-			'I' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGSlg1E0WAAAAB3RJTUUH0wUOEC86uHd+zQAAAAlwSFlzAAALEgAACxIB0t1+/AAAAD5JREFUeNpj/M9AHGAiUt1AKmRBMBkxJJE9OhQ8Q32FjGhxDQsjjCQwFDwzqnCwKkRKZqO5EBMwDqcSl2iFAMMeB0s/kLo2AAAAAElFTkSuQmCC', 
-			'J' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QGywiiNsbAAAAB3RJTUUH0wUOEDAFw0tdbgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAKdJREFUeNpj/M9AHGAiUh3xClmwijJCaSR3Ud/qUYWjCklTyIHEhifctw8ePHgCxO+B7L9QMQlsChW+QOiX4gwMd6BiItisVoHSB6AYWQwM/kNBBszkC/9PwKyc8B8B4Ar3YPHMHWwK/xtgqAv4j1XhEfScK/EEu8L/a1BVStz4j0Ph/yPItoe8QFH3nxGlkNq75cKDB0DDVBwitNEcwjhwpdmoQrwAAN6ioiFapgUdAAAAAElFTkSuQmCC', 
-			'K' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHAEoFhGpAAAAB3RJTUUH0wUOEDANzZDVXAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAPZJREFUeNpj/M9AHGAiUt2owgFSyAgFMOGDrDARxkKo0H8wYEDh/b/AAzepACqEVeEdCQx1WBW+0ICry/mPR+EXE7i6kD94FP5xwaYOi8IIrOowFRbA1Xkgq8NQ2ANXZ/PlPx6FS3CpQ1fIAmOIoKn7jxbXf2CMNxvQIxvVRAQQ+YDXaiSQQqxChiOEFGoIQGidP/gVStxogLI68CqUuPH/BzSVcTzAoxCo7v//ObBIxK0QrO7/H1iCXIFT4QkIFxbaMh9wKYQJO0D5OYQUnoDF/QkCCuHJ1+APAYV3YOloAgGF8JTO84SAwjfQiGQIgPAZqV4rAACnKSarzdlc4gAAAABJRU5ErkJggg==', 
-			'L' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHA64qQw4AAAAB3RJTUUH0wUOEDAXMPIsJgAAAAlwSFlzAAALEgAACxIB0t1+/AAAADlJREFUeNpj/M9AHGAiUt2QUMiCYDJCaezhMBQ8M6pwVCEdFLJgCjEisRH5Zyh4hvoKGUdkQUq0QgARaARRV9jUFQAAAABJRU5ErkJggg==', 
-			'M' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHBhMfblpAAAAB3RJTUUH0wUOEDAqaJpgNwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAPNJREFUeNrdlK0OgzAUhS8bCQYxMYmcmEAgEAgejQfZQyG2pAIxOYlATkAu691o2tvSYia2iv7lyzn3NG0jhG1tt5H7Aggom7ZuaKPhBFqKV+pFWDGjjcxStEAYXuvBkrKtoVX+gdRiK9i6sxjgeVGUMJzWwZLACaZOTqoAOAronmrlBuvPkQsIgHn8BqnE2AMmhaaYJ57jqTRFMwsDyW249XaJLhAujizm7UFM5XCUXTqiTvBLQYWRc7H3WWt+3NmlyGbOGh9q/45mjQxUb+CA6A2jSqu5MweX0ooQWLJxLYx6fz0GwmBOsww5GP3At/dX4Ayb7qpFI9y5ygAAAABJRU5ErkJggg==', 
-			'N' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHC6DxyzwAAAAB3RJTUUH0wUOEDAye/b4YQAAAAlwSFlzAAALEgAACxIB0t1+/AAAALRJREFUeNpj/M9AHGAiUt0IV8gIARsRMlAROP8/BEB5Ii/+/0cVgXNRhRk8iFXIMIFYhRxXiFTIYPCDSIUMBcQqZNhDrEKZN0QqZAggViHDHIIKRSAUzx1CCrdAaZM/BBT+z4Eyaggp/KEDYbAcIaDw/wUWCEuBkML/PagBgFvhfxdiFT4RIVLh/zXEKvyfQqzCLypEKvx/hoVIhf9biFX4x4ZIhf8fCBCp8P8KNBHG4VQ0AwDEOyeZhO5p1AAAAABJRU5ErkJggg==', 
-			'O' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHQExDSDoAAAAB3RJTUUH0wUOEDA4myMRfwAAAAlwSFlzAAALEgAACxIB0t1+/AAAATtJREFUeNpj/M9AHGAiUt3wUsiCyv265ciZJ08YGGRkDGwCuFGk/iOBDwU8SDIcGS+Q5JAV7hBBs45nAVaFC1gwXTYBi8IdWNQxMCzAUPhBBJs6Bp4n6AoLYFI6az78f7NEB8ZNQFP4QwAqEfADwg+A+f0NqsI1UHGBDzCnSKC6EhYzB6B0Cj+UwZ+CKgNTeAZKu8C94QGlL6DGjAyU+wAeXC+gIiIQLiM0KzDC9CFCBlWICsnsL3aFMDc+hcs8QZWBKYSF2g24whvYFZpA6T1whUegNCwyoYGxAmYyLGZ+wOxYghqFX2BpO+APmP8nBspHj2uk1LPizf8PGyxgXPTUQ3x6JDqF//8/AYs6bHkGmCYF0O3FnguBCSaFA0kZS8IDJDlG1IIUVFK8eABMWzI6DgHCyDKMI7LEBQCD5YgI9wbKGgAAAABJRU5ErkJggg==', 
-			'P' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHQvR2Mn2AAAAB3RJTUUH0wUOEDEDMzPJGgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAKVJREFUeNpj/M9AHGAiUh05ChlRAKdu4k5Ulf9hANMQiwf/EQCfQgaJB0QqZHAhViHDEbg0AV8vwRM8QN0v5vBAOSfw+BrMWQDl8MClGeEKGGEKQcRXHmQemTGD1RMy+N14o4MDyvGAS7NgGMaIzPHAYyIy4HhBZMy0EBmFIX+IUsjRgqQOi2fAgEVBwyVGGEUEQw2O3EbLzDWSFDIOhtJsVCEWAAC/Yt2X+2PYcgAAAABJRU5ErkJggg==', 
-			'Q' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHRxSC0wxAAAAB3RJTUUH0wUOEDEKSu9xvgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAW1JREFUeNpj/M9AHGAiUt2QUMiCzPm65cCZF08YGGRkDBx8uNFU/oeDDwU8SOIcBS/+IwOEwh0iaEYIrMCqcA4LprsmYFG4A4s6BoYFGAo/iGBTx8DzAl1hAUxKZ8WH/29W6MC4KWgKfwhAJXx+gPl/QmB+/4KqcANUXOQDVPiLBFRkCUwhJGb2wGzihzK4U6CMA6hReAbKc4F7wwFKX0CNGRkoB+HJJ1ARGZgAIziFM8J0IUIGXYjMZPaXkEJYYDyBiz+EuRFVoQKUdwWIz6qWvmRguAMVkUBVaIIUalPu9GgshIefAWrwrIHp//L/DQc4KjFiBi2uQ/7832KB5AX0uP5fAZOx2PDhfwNCIXrq+f9BhgEb4HmCkcL3YE3hSHkBnmfWYFMpsoaYXAgGDgcwFKLlaxYOCG2DqRCYrldkmIACUMIgZsaTI5Cg3IBNISp4AoovlT+EFf7/kYPkb3wK//8/YAGPGcYhUIYDAHBC9Yak1w7iAAAAAElFTkSuQmCC', 
-			'R' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHSkEuIgSAAAAB3RJTUUH0wUOEDEUsOBM3QAAAAlwSFlzAAALEgAACxIB0t1+/AAAAOZJREFUeNpj/M9AHGAiUh0NFLJAaUY0YRkJHYcQdmSh/xCAzRCZHf8RAJ9CBpYNRCpkEHgBV4jfMx+mEOVGIDDAaTWY82aPBZTLgV8hUCkaH6cbP8B8gxHgyODjgwstMDfiVIgWQyFE+lrhB3EBznOFuJgxuUFMXPPEbPmDpA53FH55osKMIoAe4F826MDMvPMfj9WgWFGBBeIf/Ar/H4FxJhBQ+B8WzCIfCCi8A4uvBgIK/2fA/POCgMIXHFBuDqH02ABLM3cIKPwgAuVHEFD4fwJM4AIBhT9goe4AFWAcAsXesFIIAEvJyZHTCSiTAAAAAElFTkSuQmCC', 
-			'S' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHTRnvuTLAAAAB3RJTUUH0wUOEDEbIF9RTAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAVZJREFUeNpj/M9AHGAiUt2oQvyABYX398CWK3de/GBgkVEw8HFgRpH7jwSWqCDLyCxAlkNS+CcG3boY7AozMB3Wgk3hGSw+4HgBl0b4egIWhT9mYPGMBFQg4MH/D2tgvrKASzPC0yMjlP7CDSTOmrDIMDDwiHBsxzSRBypw5j9WgFDoAPNAxIQjX/ApXIDsC4OCLV9wKfzjwIACOEIO4IiZFxbooePzAqvC/z9qONBUStzAqvD//zc9BqgqNX5gVwgETxbkmCClvSk4FYLdsCMCptAGI2YSGV78+PLmz5MX4mDu1ByIMM9n9JiBxe4caGChy8MZMMsUIEFyAMoVwVC4BGaEwpI3/9/MEYGlJQyFPwQYsIE1mL7GlnCR0iNSXLtgqpO4gy1mvtigq1NAxCBKgP9pEUFWxlOCnNIYUYrmn3v23Ljx5gsw88sYOPhwI0sxDoEyHAABtSc836a1EQAAAABJRU5ErkJggg==', 
-			'T' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHgUdTbcyAAAAB3RJTUUH0wUOEDEgkVS4aAAAAAlwSFlzAAALEgAACxIB0t1+/AAAADdJREFUeNpj/M9AHGAiUt0IVcgCpRlxyMODeSh4hmiFjGipB+Z7jEQ1FDwzqnBU4WBSyDicimYAb/AFTaJpyH8AAAAASUVORK5CYII=', 
-			'U' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHhEHl2NPAAAAB3RJTUUH0wUOEDEon48wWgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAKlJREFUeNpj/M9AHGAiUh3xClmgNCOUhrsEXYD6Vo8qHFVIuUIVKP0USr+E0jLoCjWg9A4ovQVNHJjUIaADZsILMPeFApRfA5X/D1N4AaZRYc6b/2+WwNQxXEBX+N8Bqxcc/mMoPMGCRR3LBUyF/2dgUTjjPxaF/6egm8ky5T9Whf9P2KCoMziBJPefEaWQurjnzIMXL34wsMhoWHiYo2hjHLjSbFQhXgAAKzejCLAOcVMAAAAASUVORK5CYII=', 
-			'V' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHh/gL05IAAAAB3RJTUUH0wUOEDEuduyVbwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAVNJREFUeNpj/M9AHGAiUt2owoFRaMgIAYlIMqlQMUMo/z8ITIByRP78hwMRqNgECBei8AULVPQIXN0RqAjLGwgfYrW4B1R4DdzmLVDaQxjZ6v8roDwVuIkqMK3/ka3+/0MAKn4FKn4D5uof/5GtZmCPgEpsQHNDBDsDitVwt5tA+RZQ/pn/qFYj3PQEzHsC5WnA3QyPmQQU3+5AE0VYDTfDBcxzgQbik/8YVv93gMp9AbK/cEAD8T+m1TBb/oD8veEHhs0IE2GmxADZMRAmz4//WKxGkv3DA2Gm/MeqcA/Ujj1w1hHsCv/LQKQz/megRzyawgqIvAxMRwsuhbCEAEvGT3AphEUwNCU5IEv9R8lcUH9/wAxE5HAEgjccSBI8X3CbKOyBxAnhxm3i/w1IEgdQZFA98/+PCFydDKo6VKsZmGPQ0wgOq/+fgYvfQTORkeq1AgCIAvD7+THsDgAAAABJRU5ErkJggg==', 
-			'W' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QFhZRKnzkAAAAB3RJTUUH0wUOEDIR66frkQAAAAlwSFlzAAALEgAACxIB0t1+/AAAAXNJREFUeNrtlK1ywkAUhZdMZsJMKyIqKhAIBAKBiEBEVCDyCJV9iIo+Do9QGRERgUBEVCAqKhAIREVERURnTvfn3t27xSA6g+kOQ/ZkP/aec5NlBHXZSC7k/sE/AhUwoVkDPQ58/2RUQ2IC6B1XpN7MV8tg62/pUdjSDO7OwR2J0pbekpqZYlMG50bNSGwBDQ4pyV5YtCZ7mqZf1mO2IN2Jynba0XRx49pThjQCbEKWFfVRpIlBzlK4PuLdpxEWlTr4LHvYMEDOaTYS3HCW3DAJt8mmaSXYchZbOfEzkyYGZRbrEbX8qe7GMpLqFeyxV9F4fon1pwcxjxbqJpJTBPBJLoyHYSz1I3xq78aOMssepHZZHFjKhbX9/AZd6e9bsdABeyHTQXiE2PLO6PugCwiP/r1QVLYSlpXwKE1Wno7b7jY+hoWj0aegPyA9+jPrzgqwZJ0j8hhMVtElmDoD19FFPAvamc+sOXBm+KdYEzC63p/9D7Tr72kj/8qjAAAAAElFTkSuQmCC', 
-			'X' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHi/G9n7kAAAAB3RJTUUH0wUOEDIXAsROpAAAAAlwSFlzAAALEgAACxIB0t1+/AAAAT9JREFUeNpj/M9AHGAiUt3IVhjKCAFr4RJroSKBMIH/YPBEAMITeQLh//8gAxHggQlAFf6fAdXnA+WnQPkT/qMp/O8AlVkA5h2A8kz+YCi8wQGREngA5PxQgXBYzvzHUPi/A2qIA5BdAmUX/Mei8I8BVHbK/wssEJbMB2wK/5+ASvPcgGlZ8x+rQriFAmghgKHwiwJKXPA8wKXw/x4UhT3/cSr8n4CkzuAPHoVvRODqWE6gyPxHTT1ffiAUCjCgAhRtDkgSFnisnoJixAScCh/wEBk8DmiucsChcA5MQQSMMQWrQlgiZ0iAByey5QiFPlBZnS//v+hgxjZc4QKYKVeAnCswby3AUAi3eAGKNoEn6Ap94A5EjXUfNIUrEA6EALgzl6AohCUGsAMhAOZMkTfICkMw3I5wZgiEyzicimYAFRFkVwgDfJ0AAAAASUVORK5CYII=', 
-			'Y' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHjkyIsu1AAAAB3RJTUUH0wUOEDIkvRQvsgAAAAlwSFlzAAALEgAACxIB0t1+/AAAANJJREFUeNrt1L0NgzAQBWAcUVB6AAZgBAoKhmAICoZgCAoKxmAECkbwABSUlBRILwF8duwYhFJEihJ37+6T5T9g8K6N20X3FdDDNjKKOeTIqZLtWcKBU73bCx1lPhgQNTWieY1zRLmGCZFQp1xTSSmBDUUgW754BF+GQLxAPUkMxMb0FlzUsqpKLXhxQPRqo+oIerggCvuMC7jhFJounA4gWhO2OIL6Jp/uzglHrh0fTyAaDRucQaTkUpxDQVBYDWZ/hYze6bsv/A8/DNlP/kgvwzuer4kCMGPZDgAAAABJRU5ErkJggg==', 
-			'Z' => 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAAAAACpleexAAAAFXRFWHRDcmVhdGlvbiBUaW1lAAfTBQ4QHwfqWOdfAAAAB3RJTUUH0wUOEDIrLasyIwAAAAlwSFlzAAALEgAACxIB0t1+/AAAAL5JREFUeNrl1C0OwkAQBWCWQIJEVPQIFT0GAlHBMRBIBKIHqahAIDlERY9R0UOs3ORh5qVLunmp5GfUZvczbzKzDqtltV7ofgtueHCp16h33xBGwn0KYqoTO/J868Csaj418e0cPujOkLDfmTsECcfcXOGhoC/NZQMUDBUDd5DwxiAtJGzprpCw48xVQcIhM1d6KOgLc/kIBcORgXtIeGGQOyRs6Oq0g7P92YbkRE7bRZhcwhh+6nLF5f7yx30B8Z7FgxzMWtEAAAAASUVORK5CYII=', 
 		);
 
 		return $_png;

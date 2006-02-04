@@ -432,18 +432,7 @@ class ucp_register
 				$db->sql_query($sql);
 			}
 
-			if (@extension_loaded('zlib'))
-			{
-				$confirm_image = "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />";
-			}
-			else
-			{
-				$confirm_image = '';
-				for ($i = 1; $i < strlen($code) + 1; $i++)
-				{
-					$confirm_image .= "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id&amp;c=$i\" alt=\"\" title=\"\" />";
-				}
-			}
+			$confirm_image = "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />";
 		}
 
 		//
