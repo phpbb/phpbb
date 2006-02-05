@@ -11,10 +11,12 @@
 /**
 * MCP Front Panel
 */
-function mcp_front_view($id, $mode, $action, $url)
+function mcp_front_view($id, $mode, $action)
 {
 	global $SID, $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
+
+	$url = "{$phpbb_root_path}mcp.$phpEx$SID" . extra_url();
 
 	// Latest 5 unapproved
 	$forum_list = get_forum_list('m_approve');
@@ -39,8 +41,8 @@ function mcp_front_view($id, $mode, $action, $url)
 			$sql = 'SELECT forum_id, forum_name
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_id IN (' . implode(', ', $forum_list) . ')';
-			$result = $db->sql_query_limit($sql);
-			
+			$result = $db->sql_query($sql);
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$forum_names[$row['forum_id']] = $row['forum_name'];
@@ -69,19 +71,19 @@ function mcp_front_view($id, $mode, $action, $url)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$template->assign_block_vars('unapproved', array(
-					'U_POST_DETAILS'=> $url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details',
-					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;f=' . $row['forum_id'] . '&amp;mode=forum_view' : '',
-					'U_MCP_TOPIC'	=> $url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
-					'U_FORUM'		=> ($row['forum_id']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : '',
-					'U_TOPIC'		=> $phpbb_root_path . 'viewtopic.' . $phpEx . $SID . '&amp;f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $row['topic_id'],
-					'U_AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? '' : 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['poster_id'],
+					'U_POST_DETAILS'=> $url . '&amp;i=main&amp;mode=post_details&amp;p=' . $row['post_id'],
+					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;i=main&amp;mode=forum_view&amp;f=' . $row['forum_id'] : '',
+					'U_MCP_TOPIC'	=> $url . '&amp;i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'],
+					'U_FORUM'		=> ($row['forum_id']) ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '',
+					'U_TOPIC'		=> $phpbb_root_path . "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $row['topic_id'],
+					'U_AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? '' : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['poster_id'],
 
 					'FORUM_NAME'	=> ($row['forum_id']) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
 					'AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? (($row['post_username']) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_TIME'		=> $user->format_date($row['post_time']))
-				);				
+				);
 			}
 		}
 
@@ -103,7 +105,7 @@ function mcp_front_view($id, $mode, $action, $url)
 
 	// Latest 5 reported
 	$forum_list = get_forum_list('m_');
-				
+
 	$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
 	if (!empty($forum_list))
 	{
@@ -134,16 +136,16 @@ function mcp_front_view($id, $mode, $action, $url)
 					'U_POST_DETAILS'=> $url . '&amp;p=' . $row['post_id'] . '&amp;mode=post_details',
 					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;f=' . $row['forum_id'] . '&amp;mode=forum_view' : '',
 					'U_MCP_TOPIC'	=> $url . '&amp;t=' . $row['topic_id'] . '&amp;mode=topic_view',
-					'U_FORUM'		=> ($row['forum_id']) ? 'viewforum.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] : '',
-					'U_TOPIC'		=> 'viewtopic.' . $phpEx . $SID . '&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
-					'U_REPORTER'	=> ($row['user_id'] == ANONYMOUS) ? '' : 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
+					'U_FORUM'		=> ($row['forum_id']) ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '',
+					'U_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
+					'U_REPORTER'	=> ($row['user_id'] == ANONYMOUS) ? '' : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],
 
 					'FORUM_NAME'	=> ($row['forum_id']) ? $row['forum_name'] : $user->lang['POST_GLOBAL'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
 					'REPORTER'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 					'REPORT_TIME'	=> $user->format_date($row['report_time']))
-				);				
+				);
 			}
 		}
 

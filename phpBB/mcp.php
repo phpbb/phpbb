@@ -31,19 +31,13 @@ $module = new p_master();
 // Basic parameter data
 $id = request_var('i', '');
 
-if (is_array($_REQUEST['mode']))
+if (isset($_REQUEST['mode']) && is_array($_REQUEST['mode']))
 {
 	list($mode, ) = each(request_var('mode', array('')));
 }
 else
 {
 	$mode = request_var('mode', '');
-}
-
-if (isset($_REQUEST['quick']))
-{
-	$mode = request_var('mode2', '');
-	$action = '';
 }
 
 // Make sure we are using the correct module
@@ -69,14 +63,9 @@ $action_ary = request_var('action', array('' => 0));
 
 if (sizeof($action_ary))
 {
-	list($action, ) = each($action);
+	list($action, ) = each($action_ary);
 }
 unset($action_ary);
-
-if ($action == 'merge_select')
-{
-	$mode = 'forum_view';
-}
 
 if ($mode == 'topic_logs')
 {
@@ -84,146 +73,131 @@ if ($mode == 'topic_logs')
 	$quickmod = false;
 }
 
-// Topic view modes
-if (in_array($mode, array('split', 'split_all', 'split_beyond', 'merge', 'merge_posts')))
+$post_id = request_var('p', 0);
+$topic_id = request_var('t', 0);
+$forum_id = request_var('f', 0);
+$user_id = request_var('u', 0);
+$username = request_var('username', '');
+
+if ($post_id)
 {
-	$_REQUEST['action'] = $action = $mode;
-	$mode = 'topic_view';
-	$quickmod = false;
+	// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
+	$sql = 'SELECT topic_id, forum_id
+		FROM ' . POSTS_TABLE . "
+		WHERE post_id = $post_id";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$topic_id = (int) $row['topic_id'];
+	$forum_id = (int) $row['forum_id'];
 }
 
-// Forum view modes
-if (in_array($mode, array('resync')))
+if ($topic_id && !$forum_id)
 {
-	$_REQUEST['action'] = $action = $mode;
-	$mode = 'forum_view';
-	$quickmod = false;
+	$sql = 'SELECT forum_id
+		FROM ' . TOPICS_TABLE . "
+		WHERE topic_id = $topic_id";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	$forum_id = (int) $row['forum_id'];
 }
 
-if (!$quickmod)
+// If we do not have a forum id and the user is not a super moderator (global options are set to false, even if the user is able to moderator at least one forum
+if (!$forum_id && !$auth->acl_get('m_'))
 {
-	$post_id = request_var('p', 0);
-	$topic_id = request_var('t', 0);
-	$forum_id = request_var('f', 0);
-	$user_id = request_var('u', 0);
-	$username = request_var('username', '');
+	$forum_list = get_forum_list('m_');
 
-
-	if ($post_id)
+	if (!sizeof($forum_list))
 	{
-		// We determine the topic and forum id here, to make sure the moderator really has moderative rights on this post
-		$sql = 'SELECT topic_id, forum_id
-			FROM ' . POSTS_TABLE . "
-			WHERE post_id = $post_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		$topic_id = (int) $row['topic_id'];
-		$forum_id = (int) $row['forum_id'];
+		trigger_error('MODULE_NOT_EXIST');
 	}
 
-	if ($topic_id && !$forum_id)
+	// We do not check all forums, only the first one should be sufficiant.
+	$forum_id = $forum_list[0];
+}
+
+if($forum_id)
+{
+	$module->acl_forup_id = $forum_id;
+}
+
+// Instantiate module system and generate list of available modules
+$module->list_modules('mcp');
+
+if ($quickmod)
+{
+	$mode = 'quickmod';
+
+	switch ($action)
 	{
-		$sql = 'SELECT forum_id
-			FROM ' . TOPICS_TABLE . "
-			WHERE topic_id = $topic_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		case 'lock':
+		case 'unlock':
+		case 'lock_post':
+		case 'unlock_post':
+		case 'make_sticky':
+		case 'make_announce':
+		case 'make_global':
+		case 'make_normal':
+		case 'fork':
+		case 'move':
+		case 'delete_post':
+		case 'delete_topic':
+			$module->load('mcp', 'main', 'quickmod');
+		exit;
 
-		$forum_id = (int) $row['forum_id'];
+		case 'topic_logs':
+			$module->set_active('logs', 'topic_logs');
+		break;
+
+		default:
+			trigger_error("$action not allowed as quickmod");
 	}
-
-	// If we do not have a forum id and the user is not a super moderator (global options are set to false, even if the user is able to moderator at least one forum
-	if (!$forum_id && !$auth->acl_get('m_'))
-	{
-		$forum_list = get_forum_list('m_');
-
-		if (!sizeof($forum_list))
-		{
-			trigger_error('MODULE_NOT_EXIST');
-		}
-
-		// We do not check all forums, only the first one should be sufficiant.
-		$forum_id = $forum_list[0];
-	}
-
-	if($forum_id)
-	{
-		$module->acl_forup_id = $forum_id;
-	}
-
-	// Instantiate module system and generate list of available modules
-	$module->list_modules('mcp');
-
+}
+else
+{
 	// Select the active module
 	$module->set_active($id, $mode);
-
-	// Hide some of the options if we don't have the relevant information to use them
-	if (!$post_id)
-	{
-		$module->set_display('post_details', false);
-		$module->set_display('warn_post', false);
-	}
-	if (!$topic_id)
-	{
-		$module->set_display('topic_view', false);
-		$module->set_display('topic_logs', false);
-	}
-	if (!$forum_id)
-	{
-		$module->set_display('forum_view', false);
-		$module->set_display('forum_logs', false);
-	}
-	if (!$user_id && $username == '')
-	{
-		$module->set_display('user_notes', false);
-		$module->set_display('warn_user', false);
-	}
-
-	// Load and execute the relevant module
-	$module->load_active();
-
-	// Assign data to the template engine for the list of modules
-	$module->assign_tpl_vars("mcp.$phpEx$SID");
-
-	// Generate the page
-	page_header($user->lang['MCP_MAIN']);
-
-	$template->set_filenames(array(
-		'body' => $module->get_tpl_name())
-	);
-
-	page_footer();
-
 }
 
-switch ($mode)
+// Hide some of the options if we don't have the relevant information to use them
+if (!$post_id)
 {
-	case 'lock':
-	case 'unlock':
-	case 'lock_post':
-	case 'unlock_post':
-		$module->load('mcp', 'main', $mode);
-		break;
-	case 'make_sticky':
-	case 'make_announce':
-	case 'make_global':
-	case 'make_normal':
-		$module->load('mcp', 'main', $mode);
-		break;
-	case 'fork':
-	case 'move':
-		$module->load('mcp', 'main', $mode);
-		break;
-	case 'delete_post':
-	case 'delete_topic':
-		$module->load('mcp', 'main', $mode);
-		break;
-	default:
-		trigger_error("$mode not allowed as quickmod");
+	$module->set_display('post_details', false);
+	$module->set_display('warn_post', false);
 }
+if (!$topic_id)
+{
+	$module->set_display('topic_view', false);
+	$module->set_display('topic_logs', false);
+}
+if (!$forum_id)
+{
+	$module->set_display('forum_view', false);
+	$module->set_display('forum_logs', false);
+}
+if (!$user_id && $username == '')
+{
+	$module->set_display('user_notes', false);
+	$module->set_display('warn_user', false);
+}
+
+// Load and execute the relevant module
+$module->load_active();
+
+// Assign data to the template engine for the list of modules
+$module->assign_tpl_vars("mcp.$phpEx$SID");
+
+// Generate the page
+page_header($user->lang['MCP_MAIN']);
+
+$template->set_filenames(array(
+	'body' => $module->get_tpl_name())
+);
+
+page_footer();
 
 /**
 * Functions used to generate additional URL paramters
@@ -572,8 +546,5 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 
 	return $forum_id;
 }
-
-// LITTLE HELPER
-//
 
 ?>

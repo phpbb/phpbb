@@ -11,10 +11,12 @@
 /**
 * MCP Forum View
 */
-function mcp_forum_view($id, $mode, $action, $url, $forum_info)
+function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache;
 	global $SID, $phpEx, $phpbb_root_path, $config;
+
+	$url = "{$phpbb_root_path}mcp.$phpEx$SID" . extra_url();
 
 	if ($action == 'merge_select')
 	{
@@ -33,14 +35,7 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 	{
 		$topic_ids = request_var('topic_id_list', array(0));
 
-		if (!sizeof($topic_ids))
-		{
-			$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
-		}
-		else
-		{
-			mcp_resync_topics($topic_ids);
-		}
+		mcp_resync_topics($topic_ids);
 	}
 
 	$selected_ids = '';
@@ -52,7 +47,7 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 		}
 	}
 
-	make_jumpbox($url . "&amp;action=$action&amp;mode=$mode", $forum_id . (($action == 'merge_select') ? $selected_ids : ''), false, 'm_');
+	make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode", $forum_id . (($action == 'merge_select') ? $selected_ids : ''), false, 'm_');
 
 	$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : $config['topics_per_page'];
 
@@ -62,6 +57,7 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 
 	$template->assign_vars(array(
 		'FORUM_NAME'			=> $forum_info['forum_name'],
+		'FORUM_DESCRIPTION'		=> $forum_info['forum_desc'],
 
 		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
@@ -73,10 +69,12 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
 
-		'U_VIEW_FORUM'			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
-		'S_MCP_ACTION'			=> $url . "&amp;action=$action&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
+		'U_VIEW_FORUM'			=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_id,
+		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=logs&amp;mode=forum_logs&amp;f=" . $forum_id : '',
 
-		'PAGINATION'			=> generate_pagination($url . "&amp;action=$action&amp;mode=$mode" . (($action == 'merge_select') ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
+		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
+
+		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($action == 'merge_select') ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
 		'TOTAL'					=> $forum_topics)
 	);
@@ -178,14 +176,14 @@ function mcp_forum_view($id, $mode, $action, $url, $forum_info)
 		}
 
 		$topic_title = censor_text($row['topic_title']);
-			
+
 		$template->assign_block_vars('topicrow', array(
-			'U_VIEW_TOPIC'		=> "mcp.$phpEx$SID&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view",
+			'U_VIEW_TOPIC'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view",
 
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
-			'U_SELECT_TOPIC'	=> $url . '&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=' . $row['topic_id'] . $selected_ids,
+			'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
 			'U_MCP_QUEUE'		=> $url . '&amp;i=queue&amp;mode=approve_details&amp;t=' . $row['topic_id'],
-			'U_MCP_REPORT'		=> "mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
+			'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
 
 			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
@@ -222,10 +220,10 @@ function mcp_resync_topics($topic_ids)
 
 	if (!sizeof($topic_ids))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
+		trigger_error($user->lang['NO_TOPIC_SELECTED']);
 		return;
 	}
-	
+
 	// Sync everything and perform extra checks separately
 	sync('topic_reported', 'topic_id', $topic_ids, false, true);
 	sync('topic_attachment', 'topic_id', $topic_ids, false, true);
@@ -243,7 +241,11 @@ function mcp_resync_topics($topic_ids)
 	}
 
 	$msg = (sizeof($topic_ids) == 1) ? $user->lang['TOPIC_RESYNC_SUCCESS'] : $user->lang['TOPICS_RESYNC_SUCCESS'];
-	$template->assign_var('MESSAGE', $msg);
+
+	$redirect = request_var('redirect', $user->data['session_page']);
+
+	meta_refresh(2, $redirect);
+	trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 
 	return;
 }

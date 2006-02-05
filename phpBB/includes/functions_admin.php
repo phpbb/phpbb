@@ -1869,11 +1869,11 @@ function cache_moderators()
 */
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
-	global $db, $user, $auth, $phpEx, $SID;
+	global $db, $user, $auth, $phpEx, $SID, $phpbb_root_path;
 
 	$topic_id_list = $is_auth = $is_mod = array();
 
-	$profile_url = (defined('IN_ADMIN')) ? "index.$phpEx$SID&amp;i=users&amp;mode=overview" : "memberlist.$phpEx$SID&amp;mode=viewprofile";
+	$profile_url = (defined('IN_ADMIN')) ? "{$phpbb_root_path}index.$phpEx$SID&amp;i=users&amp;mode=overview" : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile";
 
 	switch ($mode)
 	{
@@ -1937,7 +1937,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		$log[$i]['time'] = $row['log_time'];
 		$log[$i]['forum_id'] = $row['forum_id'];
 		$log[$i]['topic_id'] = $row['topic_id'];
-		$log[$i]['viewforum'] = ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? ((defined('IN_ADMIN')) ? '../' : '') . "viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '';
+		$log[$i]['viewforum'] = ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '';
 
 		$log[$i]['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
 
@@ -1992,8 +1992,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		foreach ($log as $key => $row)
 		{
-			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "viewtopic.$phpEx$SID&amp;f=" . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id'] : '';
-			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? ((defined('IN_ADMIN')) ? '../' : '') . "mcp.$phpEx$SID&amp;mode=logs&amp;action=topic_logs&amp;t=" . $row['topic_id'] : '';
+			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id'] : '';
+			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=logs&amp;mode=topic_logs&amp;t=" . $row['topic_id'] : '';
 		}
 	}
 

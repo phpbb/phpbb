@@ -441,6 +441,7 @@ $lang = array_merge($lang, array(
 	'VIEWING_UCP'				=> 'Viewing user control panel',
 	'VIEWS'						=> 'Views',
 	'VIEW_BOOKMARKS'			=> 'View bookmarks',
+	'VIEW_FORUM_LOGS'			=> 'View Logs',
 	'VIEW_LATEST_POST'			=> 'View latest post',
 	'VIEW_NEWEST_POST'			=> 'View newest post',
 	'VIEW_NOTES'				=> 'View user notes',

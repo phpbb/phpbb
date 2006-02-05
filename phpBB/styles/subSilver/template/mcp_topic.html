@@ -36,7 +36,7 @@
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_MERGE_TOPIC_ID}</span></td>
-		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <input class="btnlite" type="submit" name="action[merge_select]" value="{L_SELECT_TOPIC}" /></td>
+		<td class="row2" colspan="2"><input class="post" type="text" size="6" name="to_topic_id" value="{TO_TOPIC_ID}" /> <a href="{U_SELECT_TOPIC}">{L_SELECT_TOPIC}</a></td>
 	</tr>
 	<!-- IF TO_TOPIC_INFO -->
 	<tr>
@@ -117,13 +117,13 @@
 		</tr>
 	<!-- END postrow -->
 	<tr>
-		<td class="cat" colspan="3" height="28" align="center"><select name="mode2"><option value="" selected="selected">{L_SELECT_ACTION}</option>			
+		<td class="cat" colspan="3" height="28" align="center"><select name="action"><option value="" selected="selected">{L_SELECT_ACTION}</option>
 			<!-- IF S_CAN_APPROVE --><option value="approve">{L_APPROVE_POSTS}</option><!-- ENDIF -->
 			<!-- IF S_CAN_LOCK --><option value="lock_post">{L_LOCK_POST_POSTS} [ {L_LOCK_POST_EXPLAIN} ]</option><option value="unlock_post">{L_UNLOCK_POST_POSTS}</option><!-- ENDIF -->
 			<!-- IF S_CAN_DELETE --><option value="delete_post">{L_DELETE_POSTS}</option><!-- ENDIF -->
 			<!-- IF S_CAN_MERGE --><option value="merge_posts"<!-- IF MODE == 'merge' --> selected="selected"<!-- ENDIF -->>{L_MERGE_POSTS}</option><!-- ENDIF -->
 			<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF MODE == 'split' --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
-		</select>&nbsp;<input class="btnmain" type="submit" name="quick" value="{L_SUBMIT}"></form></td>
+		</select>&nbsp;<input class="btnmain" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}"></form></td>
 	</tr>
 </table>
 </form>

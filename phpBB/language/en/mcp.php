@@ -18,7 +18,7 @@ if (empty($lang) || !is_array($lang))
 	$lang = array();
 }
 
-// DEVELOPERS PLEASE NOTE 
+// DEVELOPERS PLEASE NOTE
 //
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
@@ -30,10 +30,10 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACTION'				=> 'Action',
-	'ADD_FEEDBACK'			=> 'Add feedback', 
-	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.', 
-	'ADD_WARNING'			=> 'Add warning', 
-	'ADD_WARNING_EXPLAIN'	=> 'To send a warning to this user please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.', 
+	'ADD_FEEDBACK'			=> 'Add feedback',
+	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.',
+	'ADD_WARNING'			=> 'Add warning',
+	'ADD_WARNING_EXPLAIN'	=> 'To send a warning to this user please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.',
 	'ALL_ENTRIES'			=> 'All entries',
 	'ALREADY_REPORTED'		=> 'This post has already been reported',
 	'ALREADY_WARNED'		=> 'A warning has already been issued for this post',
@@ -75,7 +75,7 @@ $lang = array_merge($lang, array(
 	'FORUM_STYLE'			=> 'Forum Style',
 
 	'GLOBAL_ANNOUNCEMENT'	=> 'Global Announcement',
-	
+
 	'IP_INFO'				=> 'IP Information',
 
 	'LATEST_LOGS'				=> 'Latest 5 logged actions',
@@ -112,6 +112,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_LOCK'				=> '<b>User locked own topic</b><br />&#187; %s',
 	'LOG_USER_MOVE_POSTS_USER'	=> '<b>Moved all posts to forum "%s"</b>',
 	'LOG_USER_REACTIVATE_USER'	=> '<b>Forced user account re-activation</b>',
+	'LOGIN_EXPLAIN_MCP'			=> 'To moderate this forum you must login.',
 	'LOGVIEW_VIEWTOPIC'			=> 'View Topic',
 	'LOGVIEW_VIEWLOGS'			=> 'View Topic Log',
 	'LOGVIEW_VIEWFORUM'			=> 'View Forum',
@@ -201,10 +202,10 @@ $lang = array_merge($lang, array(
 	'POST_APPROVED_SUCCESS'	=> 'The selected post has been approved',
 	'POST_DELETED_SUCCESS'	=> 'The selected post has been successfully removed from the database',
 	'POST_DETAILS'			=> 'Post details',
-	'POST_LOCKED_SUCCESS'	=> 'Post locked successsfully',
+	'POST_LOCKED_SUCCESS'	=> 'Post locked successfully',
 	'POST_NOT_EXIST'		=> 'The post you requested does not exist',
 	'POST_REPORTED_SUCCESS'	=> 'This post has been successfully reported',
-	'POST_UNLOCKED_SUCCESS'	=> 'Post unlocked successsfully',
+	'POST_UNLOCKED_SUCCESS'	=> 'Post unlocked successfully',
 	'POST_UNRATED_SUCCESS'	=> 'Post unrated successfully',
 
 	'READ_USERNOTES'		=> 'User notes',
@@ -274,7 +275,7 @@ $lang = array_merge($lang, array(
 	'UNLOCK_TOPIC'			=> 'Unlock Topic',
 	'UNLOCK_TOPIC_CONFIRM'	=> 'Are you sure you want to unlock this topic?',
 	'UNLOCK_TOPICS'			=> 'Unlock selected topics',
-	'UNLOCK_TOPICS_CONFIRM'	=> 'Are you sure you want to unlock all selected topics?', 
+	'UNLOCK_TOPICS_CONFIRM'	=> 'Are you sure you want to unlock all selected topics?',
 	'UNRATE_POST'			=> 'Unrate post',
 	'UNRATE_POST_EXPLAIN'	=> 'Reset post rating',
 	'USER_CANNOT_POST'		=> 'You cannot post in this forum',

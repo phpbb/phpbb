@@ -2,6 +2,8 @@
 
 		<!-- $Id$ -->
 
+		<!-- IF U_VIEW_FORUM_LOGS --><a href="{U_VIEW_FORUM_LOGS}">{L_VIEW_FORUM_LOGS}</a><!-- ENDIF -->
+
 		<form method="post" name="mcp" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
 			<tr>
 				<td class="cat" colspan="6" align="center"><span class="gensmall">{L_DISPLAY_TOPICS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
@@ -43,7 +45,7 @@
 			<!-- END topicrow -->
 			<tr>
 				<td class="cat" colspan="6" align="right">
-					<select name="mode">
+					<select name="action">
 						<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
 						<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
 						<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
