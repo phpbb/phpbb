@@ -923,9 +923,7 @@ function validate_email($email)
 		return 'EMAIL_INVALID';
 	}
 
-	$sql = 'SELECT ban_email
-		FROM ' . BANLIST_TABLE;
-	$result = $db->sql_query($sql);
+	$banned = false;
 
 	// TODO: This is a duplication of code from session->check_ban()
 	$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
@@ -961,8 +959,6 @@ function validate_email($email)
 	{
 		return 'EMAIL_BANNED';
 	}
-
-	$db->sql_freeresult($result);
 
 	if (!$config['allow_emailreuse'])
 	{
