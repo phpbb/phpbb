@@ -784,6 +784,7 @@ $lang['No_searchable_forums'] = 'You do not have permissions to search any forum
 $lang['No_search_match'] = 'No topics or posts met your search criteria';
 $lang['Found_search_match'] = 'Search found %d match'; // eg. Search found 1 match
 $lang['Found_search_matches'] = 'Search found %d matches'; // eg. Search found 24 matches
+$lang['Search_Flood_Error'] = 'You cannot make another search so soon after your last; please try again in a short while.';
 
 $lang['Close_window'] = 'Close Window';
 

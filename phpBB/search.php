@@ -153,12 +153,31 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 	//
 	// Search ID Limiter, decrease this value if you experience further timeout problems with searching forums
 	$limiter = 5000;
+	$current_time = time();
 
 	//
 	// Cycle through options ...
 	//
 	if ( $search_id == 'newposts' || $search_id == 'egosearch' || $search_id == 'unanswered' || $search_keywords != '' || $search_author != '' )
 	{
+		//
+		// Flood control
+		//
+		$where_sql = ($userdata['user_id'] == ANONYMOUS) ? "se.session_ip = '$user_ip'" : 'se.session_user_id = ' . $userdata['user_id'];
+		$sql = 'SELECT MAX(sr.search_time) AS last_search_time
+			FROM ' . SEARCH_TABLE . ' sr, ' . SESSIONS_TABLE . " se
+			WHERE sr.session_id = se.session_id
+				AND $where_sql";
+		if ($result = $db->sql_query($sql))
+		{
+			if ($row = $db->sql_fetchrow($result))
+			{
+				if (intval($row['last_search_time']) > 0 && ($current_time - intval($row['last_search_time'])) < intval($board_config['search_flood_interval']))
+				{
+					message_die(GENERAL_MESSAGE, $lang['Search_Flood_Error']);
+				}
+			}
+		}
 		if ( $search_id == 'newposts' || $search_id == 'egosearch' || ( $search_author != '' && $search_keywords == '' )  )
 		{
 			if ( $search_id == 'newposts' )
@@ -629,28 +648,13 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		}
 
 		//
-		// Finish building query (for all combinations)
-		// and run it ...
+		// Delete old data from the search result table
 		//
-		$sql = "SELECT session_id 
-			FROM " . SESSIONS_TABLE;
-		if ( $result = $db->sql_query($sql) )
+		$sql = 'DELETE FROM ' . SEARCH_TABLE . '
+			WHERE search_time < ' . ($current_time - (int) $board_config['session_length']);
+		if ( !$result = $db->sql_query($sql) )
 		{
-			$delete_search_ids = array();
-			while( $row = $db->sql_fetchrow($result) )
-			{
-				$delete_search_ids[] = "'" . $row['session_id'] . "'";
-			}
-
-			if ( count($delete_search_ids) )
-			{
-				$sql = "DELETE FROM " . SEARCH_TABLE . " 
-					WHERE session_id NOT IN (" . implode(", ", $delete_search_ids) . ")";
-				if ( !$result = $db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not delete old search id sessions', '', __LINE__, __FILE__, $sql);
-				}
-			}
+			message_die(GENERAL_ERROR, 'Could not delete old search id sessions', '', __LINE__, __FILE__, $sql);
 		}
 
 		//
@@ -691,12 +695,12 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		$search_id = mt_rand();
 
 		$sql = "UPDATE " . SEARCH_TABLE . " 
-			SET search_id = $search_id, search_array = '" . str_replace("\'", "''", $result_array) . "'
+			SET search_id = $search_id, search_time = $current_time, search_array = '" . str_replace("\'", "''", $result_array) . "'
 			WHERE session_id = '" . $userdata['session_id'] . "'";
 		if ( !($result = $db->sql_query($sql)) || !$db->sql_affectedrows() )
 		{
-			$sql = "INSERT INTO " . SEARCH_TABLE . " (search_id, session_id, search_array) 
-				VALUES($search_id, '" . $userdata['session_id'] . "', '" . str_replace("\'", "''", $result_array) . "')";
+			$sql = "INSERT INTO " . SEARCH_TABLE . " (search_id, session_id, search_time, search_array) 
+				VALUES($search_id, '" . $userdata['session_id'] . "', $current_time, '" . str_replace("\'", "''", $result_array) . "')";
 			if ( !($result = $db->sql_query($sql)) )
 			{
 				message_die(GENERAL_ERROR, 'Could not insert search results', '', __LINE__, __FILE__, $sql);

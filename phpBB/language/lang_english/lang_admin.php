@@ -341,6 +341,10 @@ $lang['Allow_autologin_explain'] = 'Determines whether users are allowed to sele
 $lang['Autologin_time'] = 'Automatic login key expiry';
 $lang['Autologin_time_explain'] = 'How long a autologin key is valid for in days if the user does not visit the board. Set to zero to disable expiry.';
 
+// Search Flood Control - added 2.0.20
+$lang['Search_Flood_Interval'] = 'Search Flood Interval';
+$lang['Search_Flood_Interval_explain'] = 'Number of seconds a user must wait between search requests'; 
+
 //
 // Forum Management
 //

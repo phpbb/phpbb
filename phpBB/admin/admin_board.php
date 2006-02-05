@@ -191,6 +191,8 @@ $template->assign_vars(array(
 	"L_MAX_POLL_OPTIONS" => $lang['Max_poll_options'],
 	"L_FLOOD_INTERVAL" => $lang['Flood_Interval'],
 	"L_FLOOD_INTERVAL_EXPLAIN" => $lang['Flood_Interval_explain'], 
+	"L_SEARCH_FLOOD_INTERVAL" => $lang['Search_Flood_Interval'],
+	"L_SEARCH_FLOOD_INTERVAL_EXPLAIN" => $lang['Search_Flood_Interval_explain'], 
 
 	'L_MAX_LOGIN_ATTEMPTS'			=> $lang['Max_login_attempts'],
 	'L_MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> $lang['Max_login_attempts_explain'],
@@ -276,6 +278,7 @@ $template->assign_vars(array(
 	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"MAX_POLL_OPTIONS" => $new['max_poll_options'], 
 	"FLOOD_INTERVAL" => $new['flood_interval'],
+	"SEARCH_FLOOD_INTERVAL" => $new['search_flood_interval'],
 	"TOPICS_PER_PAGE" => $new['topics_per_page'],
 	"POSTS_PER_PAGE" => $new['posts_per_page'],
 	"HOT_TOPIC" => $new['hot_threshold'],
