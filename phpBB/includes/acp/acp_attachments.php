@@ -15,7 +15,7 @@ class acp_attachments
 {
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $cache;
 		global $config, $SID, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
