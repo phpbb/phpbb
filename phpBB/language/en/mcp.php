@@ -231,6 +231,7 @@ $lang = array_merge($lang, array(
 	'SORT_ACTION'			=> 'Log action',
 	'SORT_DATE'				=> 'Date',
 	'SORT_IP'				=> 'IP address',
+	'SORT_WARNINGS'			=> 'Warnings',
 	'SPLIT_AFTER'			=> 'Split from selected post',
 	'SPLIT_FORUM'			=> 'Forum for new topic',
 	'SPLIT_POSTS'			=> 'Split selected posts',

@@ -164,8 +164,8 @@ function mcp_warn_list_view($id, $mode, $action)
 	$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_WARNINGS']);
 	$sort_by_sql = array('a' => 'username', 'b' => 'user_last_warning', 'c' => 'user_warnings');
 
-	$s_limit_days = $s_sort_key = $s_sort_dir = '';
-	gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir);
+	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+	gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 	// Define where and sort sql for use in displaying logs
 	$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
@@ -196,7 +196,7 @@ function mcp_warn_list_view($id, $mode, $action)
 		'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 		'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 
-		'PAGE_NUMBER'		=> on_page($user_count, $config['topic_per_page'], $start),
+		'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
 		'PAGINATION'		=> generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $user_count, $config['topics_per_page'], $start),
 		'TOTAL_USERS'		=> ($user_count == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $user_count),
 		)

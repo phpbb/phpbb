@@ -182,8 +182,8 @@ function mcp_notes_user_view($id, $mode, $action)
 	$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
 	$sort_by_sql = array('a' => 'l.user_id', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
 
-	$s_limit_days = $s_sort_key = $s_sort_dir = '';
-	gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir);
+	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
+	gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 	// Define where and sort sql for use in displaying logs
 	$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
