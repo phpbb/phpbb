@@ -248,6 +248,7 @@ CREATE TABLE phpbb_ranks (
 CREATE TABLE phpbb_search_results (
   search_id int4 NOT NULL default '0',
   session_id char(32) NOT NULL default '',
+  search_time int4 DEFAULT '0' NOT NULL,
   search_array text NOT NULL,
   CONSTRAINT phpbb_search_results_pkey PRIMARY KEY (search_id)
 );

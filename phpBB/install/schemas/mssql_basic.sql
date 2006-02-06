@@ -51,6 +51,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_password','')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sendmail_fix','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('login_reset_time', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
@@ -73,7 +74,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('record_online_date
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www.yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.19');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.20');
 
 /*
   -- Categories

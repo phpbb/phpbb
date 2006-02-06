@@ -165,6 +165,7 @@ GO
 CREATE TABLE [phpbb_search_results] (
 	[search_id] [int] NOT NULL ,
 	[session_id] [char] (32) NOT NULL ,
+	[search_time] [int] NOT NULL ,
 	[search_array] [text] NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -591,6 +592,10 @@ ALTER TABLE [phpbb_posts] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_posts_enable_smilies] DEFAULT (1) FOR [enable_smilies],
 	CONSTRAINT [DF_phpbb_posts_enable_sig] DEFAULT (1) FOR [enable_sig],
 	CONSTRAINT [DF_phpbb_posts_post_edit_count] DEFAULT (0) FOR [post_edit_count]
+GO
+
+ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD
+	CONSTRAINT [DF_phpbb_search_results_search_time] DEFAULT (0) FOR [search_time]
 GO
 
 ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD
