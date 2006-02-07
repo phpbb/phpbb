@@ -1225,10 +1225,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	// Bump information
-	if ($topic_data['topic_bumped'] && $row['post_id'] == $topic_data['topic_last_post_id'])
+	if ($topic_data['topic_bumped'] && $row['post_id'] == $topic_data['topic_last_post_id'] && isset($user_cache[$topic_data['topic_bumper']]) )
 	{
 		// It is safe to grab the username from the user cache array, we are at the last
-		// post and only the topic poster and last poster are allowed to bump
+		// post and only the topic poster and last poster are allowed to bump. However, a 
+		// check is still needed incase an admin bumped the topic (but didn't post in the topic)
 		$l_bumped_by = '<br /><br />' . sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time']));
 	}
 	else
