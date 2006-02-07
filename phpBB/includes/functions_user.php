@@ -1505,7 +1505,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	foreach ($special_group_data as $gid => $default_data_ary)
 	{
-		if (isset($sql_where_ary[$gid]) && sizeof($sql_whery_ary[$gid]))
+		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
 			$special_group_data[$gid]['group_id'] = $gid;
 
