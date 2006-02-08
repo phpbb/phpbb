@@ -121,7 +121,7 @@ class ucp_register
 					array('string', false, 6, 60),
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
-				'confirm_code'		=> array('string', !$config['enable_confirm'], 6, 6),
+				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
 				'tz'				=> array('num', false, -13, 13),
 				'lang'				=> array('match', false, '#^[a-z_]{2,}$#i'),
 			);
@@ -433,6 +433,7 @@ class ucp_register
 			}
 
 			$confirm_image = "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />";
+			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 
 		//
