@@ -62,15 +62,16 @@ class ucp_confirm
 		$l = 0;
 
 		list($usec, $sec) = explode(' ', microtime()); 
-		mt_srand($sec * $usec); 
+		mt_srand($sec * $usec);
 
 		$char_widths = array();
-		for ($i = 0; $i < strlen($code); $i++)
+		$code_len = strlen($code);
+		for ($i = 0; $i < $code_len; ++$i)
 		{
 			$char = $code{$i};
 
 			$width = mt_rand(0, 4);
-			$char_widths[] = $width;
+			$char_widths[$i] = $width;
 			$img_width += $_png[$char]['width'] - $width;
 		}
 
@@ -79,7 +80,7 @@ class ucp_confirm
 
 		$image = '';
 		$hold_chars = array();
-		for ($i = 0; $i < $total_height; $i++)
+		for ($i = 0; $i < $total_height; ++$i)
 		{
 			$image .= chr(0);
 
@@ -87,12 +88,12 @@ class ucp_confirm
 			{
 				$j = 0;
 
-				for ($k = 0; $k < $offset_x; $k++)
+				for ($k = 0; $k < $offset_x; ++$k)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
 
-				for ($k = 0; $k < strlen($code); $k++)
+				for ($k = 0; $k < $code_len; ++$k)
 				{
 					$char = $code{$k};
 
@@ -100,27 +101,26 @@ class ucp_confirm
 					{
 						$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
 					}
-					$image .= $this->randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
-					$j++;
+					$image .= $this->randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j++]);
 				}
 
-				for ($k = $offset_x + $img_width; $k < $total_width; $k++)
+				for ($k = $offset_x + $img_width; $k < $total_width; ++$k)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
 
-				$l++;
+				++$l;
 			}
 			else
 			{
-				for ($k = 0; $k < $total_width; $k++)
+				for ($k = 0; $k < $total_width; ++$k)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
 			}
 
 		}
-		unset($hold);
+		unset($hold_chars);
 
 		$image = $this->create_png($image, $total_width, $total_height);
 
@@ -140,10 +140,9 @@ class ucp_confirm
 	function randomise($scanline, $width)
 	{
 		$new_line = '';
-		$start = floor($width/2);
-		$end = strlen($scanline) - ceil($width/2);
 
-		for ($i = $start; $i < $end; $i++)
+		$end = strlen($scanline) - ceil($width/2);
+		for ($i = floor($width/2); $i < $end; ++$i)
 		{
 			$pixel = ord($scanline{$i});
 
@@ -201,11 +200,12 @@ class ucp_confirm
 			// Adler-32 hash, lets go!
 			$s1 = 1;
 			$s2 = 0;
-			for ($n = 0; $n < $len; $n++) {
+			for ($n = 0; $n < $len; ++$n) {
 				$s1 = ($s1 + ord($raw_image[$n])) % 65521;
 				$s2 = ($s2 + $s1) % 65521;
 			}
 			$adler = ($s2 << 16) | $s1;
+			// This is the same thing as gzcompress($raw_image, 0)
 			$raw_image = pack('C7', 0x78, 0x01, 1, $len & 255, ($len >> 8) & 255, 255 - ($len & 255), 255 - (($len >> 8) & 255)) . $raw_image;
 			$raw_image .= pack('C4', ($adler >> 24) & 255, ($adler >> 16) & 255, ($adler >> 8) & 255, $adler & 255);
 			$len += 11;
