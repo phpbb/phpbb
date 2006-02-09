@@ -40,17 +40,16 @@ class ucp_confirm
 			WHERE session_id = '" . $db->sql_escape($user->session_id) . "' 
 				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'";
 		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		// If we have a row then grab data else create a new id
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$db->sql_freeresult($result);
-			$code = $row['code'];
-		}
-		else
+		if (!$row)
 		{
 			exit;
 		}
+
+		$code = $row['code'];
 
 		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
 		$_png = $this->define_filtered_pngs();
@@ -59,14 +58,13 @@ class ucp_confirm
 		$total_height = 50;
 		$img_height = 40;
 		$img_width = 0;
-		$l = 0;
 
 		list($usec, $sec) = explode(' ', microtime()); 
 		mt_srand($sec * $usec);
 
 		$char_widths = array();
 		$code_len = strlen($code);
-		for ($i = 0; $i < $code_len; ++$i)
+		for ($i = 0; $i < $code_len; $i++)
 		{
 			$char = $code{$i};
 
@@ -80,20 +78,18 @@ class ucp_confirm
 
 		$image = '';
 		$hold_chars = array();
-		for ($i = 0; $i < $total_height; ++$i)
+		for ($i = 0; $i < $total_height; $i++)
 		{
 			$image .= chr(0);
 
 			if ($i > $offset_y && $i < $offset_y + $img_height)
 			{
-				$j = 0;
-
-				for ($k = 0; $k < $offset_x; ++$k)
+				for ($k = 0; $k < $offset_x; $k++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
 
-				for ($k = 0; $k < $code_len; ++$k)
+				for ($k = 0; $k < $code_len; $k++)
 				{
 					$char = $code{$k};
 
@@ -101,19 +97,17 @@ class ucp_confirm
 					{
 						$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
 					}
-					$image .= $this->randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j++]);
+					$image .= $this->randomise(substr($hold_chars[$char][$i - $offset_y - 1], 1), $char_widths[$k]);
 				}
 
-				for ($k = $offset_x + $img_width; $k < $total_width; ++$k)
+				for ($k = $offset_x + $img_width; $k < $total_width; $k++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
-
-				++$l;
 			}
 			else
 			{
-				for ($k = 0; $k < $total_width; ++$k)
+				for ($k = 0; $k < $total_width; $k++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
@@ -142,7 +136,7 @@ class ucp_confirm
 		$new_line = '';
 
 		$end = strlen($scanline) - ceil($width/2);
-		for ($i = floor($width/2); $i < $end; ++$i)
+		for ($i = floor($width/2); $i < $end; $i++)
 		{
 			$pixel = ord($scanline{$i});
 
@@ -196,18 +190,39 @@ class ucp_confirm
 		}
 		else
 		{
-			$len = strlen($raw_image);
-			// Adler-32 hash, lets go!
+			// The total length of this image, uncompressed, is just a calculation of pixels
+			$len = $temp_len = ($width + 1) * $height;
+
+			// Optimized Adler-32 loop ported from the GNU Classpath project
 			$s1 = 1;
 			$s2 = 0;
-			for ($n = 0; $n < $len; ++$n) {
-				$s1 = ($s1 + ord($raw_image[$n])) % 65521;
-				$s2 = ($s2 + $s1) % 65521;
+			$i = 0;
+			while ($temp_len > 0)
+			{
+				// We can defer the modulo operation:
+				// s1 maximally grows from 65521 to 65521 + 255 * 3800
+				// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
+				$n = 3800;
+				if ($n > $temp_len)
+				{
+					$n = $temp_len;
+				}
+				$temp_len -= $n;
+				while (--$n >= 0)
+				{
+					$s1 += (ord($raw_image[$i++]) & 255);
+					$s2 += $s1;
+				}
+				$s1 %= 65521;
+				$s2 %= 65521;
 			}
 			$adler = ($s2 << 16) | $s1;
+
 			// This is the same thing as gzcompress($raw_image, 0)
-			$raw_image = pack('C7', 0x78, 0x01, 1, $len & 255, ($len >> 8) & 255, 255 - ($len & 255), 255 - (($len >> 8) & 255)) . $raw_image;
+			$raw_image = pack('C7', 0x78, 0x01, 0x01, $len, ($len >> 8) & 255, ~$len & 255, ~($len >> 8)) . $raw_image;
 			$raw_image .= pack('C4', ($adler >> 24) & 255, ($adler >> 16) & 255, ($adler >> 8) & 255, $adler & 255);
+
+			// The Zlib header + Adler hash make us add on 11
 			$len += 11;
 		}
 		$image .= $this->png_chunk($len, 'IDAT', $raw_image);
