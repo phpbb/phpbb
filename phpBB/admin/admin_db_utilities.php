@@ -516,7 +516,7 @@ function get_table_content_postgresql($table, $handler)
 			}
 			elseif (eregi("date|timestamp", $aryType[$i]))
 			{
-				if ($empty($strVal))
+				if (empty($strVal))
 				{
 					$strQuote = "";
 				}
