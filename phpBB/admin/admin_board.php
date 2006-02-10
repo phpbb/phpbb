@@ -49,7 +49,14 @@ else
 
 		if ($config_name == 'cookie_name')
 		{
-			$cookie_name = str_replace('.', '_', $new['cookie_name']);
+			$new['cookie_name'] = str_replace('.', '_', $new['cookie_name']);
+		}
+
+		// Attempt to prevent a common mistake with this value,
+		// http:// is the protocol and not part of the server name
+		if ($config_name == 'server_name')
+		{
+			$new['server_name'] = str_replace('http://', '', $new['server_name']);
 		}
 
 		if( isset($HTTP_POST_VARS['submit']) )
