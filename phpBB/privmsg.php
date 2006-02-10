@@ -1309,7 +1309,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 		if ( !$db->sql_query($sql, END_TRANSACTION) )
 		{
-			message_die(GENERAL_ERROR, "Could not insert/update private message sent text.", "", __LINE__, __FILE__, $sql_info);
+			message_die(GENERAL_ERROR, "Could not insert/update private message sent text.", "", __LINE__, __FILE__, $sql);
 		}
 
 		if ( $mode != 'edit' )
