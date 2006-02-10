@@ -9,7 +9,7 @@ To use the new password you need to activate it. To do this click the link provi
 
 {U_ACTIVATE}
 
-If sucessful you will be able to login using the following password:
+If successful you will be able to login using the following password:
 
 Password: {PASSWORD}
 
