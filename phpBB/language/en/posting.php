@@ -174,7 +174,6 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_URLS'				=> 'Your message contains too many urls. A maximum of %d urls are allowed.',
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more Options per User than existing poll options',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully',
-	'TOPIC_REVIEW'				=> 'Topic review',
 
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain bbcodes: ',
 	'UPDATE_COMMENT'			=> 'Update comment',

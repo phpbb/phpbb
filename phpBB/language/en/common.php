@@ -85,6 +85,7 @@ $lang = array_merge($lang, array(
 	'BROWSING_FORUM_GUEST'	=> 'Users browsing this forum: %1$s and %2$d guest',
 	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
 	'BYTES'					=> 'Bytes',
+	'BY'						=> 'By',
 
 	'CANCEL'				=> 'Cancel',
 	'CHANGE'				=> 'Change',
@@ -403,6 +404,7 @@ $lang = array_merge($lang, array(
 	'TOPIC_ICON'		=> 'Topic icon',
 	'TOPIC_LOCKED'		=> 'This topic is locked you cannot edit posts or make replies',
 	'TOPIC_MOVED'		=> 'Moved Topic',
+	'TOPIC_REVIEW'		=> 'Topic review',
 	'TOPIC_TITLE'		=> 'Topic Title',
 	'TOPIC_UNAPPROVED'	=> 'This topic has not been approved',
 	'TOTAL_ATTACHMENTS'	=> 'Attachment(s)',
