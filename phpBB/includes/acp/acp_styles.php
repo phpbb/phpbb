@@ -421,91 +421,170 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function edit_imageset($style_id)
 	{
-		global $db, $template, $user, $phpbb_root_path, $cache;
-
-		$update = (isset($_POST['submit'])) ? true : false;
-
-		$sql = 'SELECT imageset_name, ' . $this->imageset_keys . '
-			FROM ' . STYLES_IMAGE_TABLE . '
-			WHERE imageset_id = ' . $style_id;
-		$result = $db->sql_query($sql);
-		$style_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$style_row)
-		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
-		}
-		
-		$name = $style_row['imageset_name'];
-		unset($style_row['imageset_name']);
-
-		if ($update)
-		{
-			$images			= (isset($_POST['src'])) ? request_var('src', array('' => '')) : array();
-			$image_width	= (isset($_POST['width'])) ? array_map('intval', $_POST['width']) : array();
-			$image_height	= (isset($_POST['height'])) ? array_map('intval', $_POST['height']) : array();
-			
-			$img_array = array();
-
-			foreach ($images as $image_name => $value)
-			{
-				if (!empty($value))
-				{
-					$width = ($image_width[$image_name] == 0) ? '' : $image_width[$image_name];
-					$img_array[$image_name] = $value . '*' . $image_height[$image_name] . '*' . $width;
-				}
-				else
-				{
-					$img_array[$image_name] = '';
-				}
-			}
-
-			$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $img_array) . " 
-				WHERE imageset_id = $style_id";
-			$db->sql_query($sql);
-
-			$cache->destroy('sql', STYLES_IMAGE_TABLE);
-
-			add_log('admin', 'LOG_IMAGESET_EDIT', $name);
-			trigger_error($user->lang['EDITED_IMAGESET'] . adm_back_link($this->u_action));
-		}
+		global $db, $user, $phpbb_root_path, $cache, $template;
 
 		$this->page_title = 'EDIT_IMAGESET';
+		$update = (isset($_POST['update'])) ? true : false;
+		$imgname = (!empty($_POST['imgname'])) ? htmlspecialchars($_POST['imgname']) : '';
+		$imgpath = (isset($_POST['imgpath'])) ? htmlspecialchars($_POST['imgpath']) : '';
+		$imgsize = (!empty($_POST['imgsize'])) ? true : false;
+		$imgwidth = (isset($_POST['imgwidth'])) ? intval($_POST['imgwidth']) : '';
 
-		foreach ($style_row as $key => $value)
+		if ($style_id)
 		{
-			$width = $height = $imgsrc = '';
-			if (!empty($value))
+			$sql_select = ($imgname) ? ", $imgname" : '';
+			$sql = "SELECT imageset_path, imageset_name, imageset_copyright$sql_select
+				FROM " . STYLES_IMAGE_TABLE . "
+				WHERE imageset_id = $style_id";
+			$result = $db->sql_query($sql);
+
+			if (!extract($db->sql_fetchrow($result)))
 			{
-				$values = explode('*', $value);
-				$imgsrc = $values[0];
-				$height = (!empty($values[1])) ? $values[1] : '';
-				$width = (!empty($values[2])) ? $values[2] : '';
+				trigger_error($user->lang['NO_IMAGESET']);
+			}
+			$db->sql_freeresult($result);
+
+			// Check to see whether the selected image exists in the table
+			$valid_name = ($update) ? false : true;
+			$imglist = array(
+				'logos' => array(
+					'site_logo',
+				),
+				'buttons'	=> array(
+					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_ip', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline',
+				),
+				'icons'		=> array(
+					'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
+				'forums'		=> array(
+					'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
+				'folders'	=> array(
+					'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
+				'polls'		=> array(
+					'poll_left', 'poll_center', 'poll_right',), 
+			);
+			foreach ($imglist as $category => $img_ary)
+			{
+				if (in_array($imgname, $img_ary))
+				{
+					$valid_name = true;
+					break;
+				}
 			}
 
-			$template->assign_block_vars('element', array(
-				'NAME'		=> $key,
-				'SRC'		=> $imgsrc,
-				'HEIGHT'	=> $height,
-				'WIDTH'		=> $width,
-				'IMG_SRC'	=> $phpbb_root_path . 'styles/' . $user->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $user->img_lang, $imgsrc)
-				)
-			);
+			if ($update && $imgpath)
+			{
+				if ($valid_name)
+				{
+					// If imgwidth and imgheight are non-zero grab the actual size
+					// from the image itself ... we ignore width settings for the poll center
+					// image
+					$imgwidth = $imgheight = '';
+					if ($imgsize)
+					{
+						list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+						$imgheight = '*' . $imgheight;
+						$imgwidth = ($imgname != 'poll_center') ? '*' . $imgwidth : '';
+					}
+
+					$imgpath = preg_replace('/^([^\/]+\/)/', '{LANG}/', $imgpath) . $imgheight . $imgwidth;
+
+					$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . "
+						SET $imgname = '$imgpath'
+						WHERE imageset_id = $style_id";
+					$db->sql_query($sql);
+
+					$cache->destroy('sql', STYLES_IMAGE_TABLE);
+
+					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
+
+					$template->assign_var('SUCCESS', true);
+					$$imgname = $imgpath;
+				}
+			}
 		}
 
+		// Generate list of image options
+		$img_options = '';
+		foreach ($imglist as $category => $img_ary)
+		{
+			$template->assign_block_vars('category', array(
+				'NAME'			=> $user->lang['IMG_CAT_' . strtoupper($category)]
+			));
+			foreach ($img_ary as $img)
+			{
+				$template->assign_block_vars('category.images', array(
+					'SELECTED'			=> ($img == $imgname),
+					'VALUE'				=> $img,
+					'TEXT'				=> (($category == 'custom') ? $img : $user->lang['IMG_' . strtoupper($img)])
+				));
+			}
+		}
+
+		// TODO
+		// Check whether localised buttons exist in admins language first
+		// Clean up this code
+		$imglang = '';
+		$imagesetlist = array('nolang' => array(), 'lang' => array());
+		$dp = opendir("{$phpbb_root_path}styles/$imageset_path/imageset");
+		while ($file = readdir($dp))
+		{
+			if (!is_file($file) && !is_link($file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+			{
+				$dp2 = opendir("{$phpbb_root_path}styles/$imageset_path/imageset/$file");
+				while ($file2 = readdir($dp2))
+				{
+					$imglang = $file;
+					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+					{
+						$imagesetlist['lang'][] = "$file/$file2";
+					}
+				}
+				closedir($dp2);
+			}
+			else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
+			{
+				$imagesetlist['nolang'][] = $file;
+			}
+		}
+		closedir($dp);
+
+		$imagesetlist_options = '';
+		foreach ($imagesetlist as $type => $img_ary)
+		{
+			$template->assign_block_vars('imagesetlist', array(
+				'TYPE'	=> ($type == 'lang')
+			));
+			foreach ($img_ary as $img)
+			{
+				$imgtext = preg_replace('/^([^\/]+\/)/', '', $img);
+				$selected = (!empty($imgname) && strpos($$imgname, $imgtext) !== false);
+				if ($selected)
+				{
+					$template->assign_var('IMAGE_SELECT', true);
+				}
+				$template->assign_block_vars('imagesetlist.images', array(
+					'SELECTED'			=> $selected,
+					'TEXT'				=> $imgtext,
+					'VALUE'				=> htmlspecialchars($img)
+				));
+			}
+		}
+
+		$imgsize_bool = (!empty($imgname) && ($imgsize || preg_match('#\*\d+#', $$imgname))) ? true : false;
 
 		$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
 			'L_TITLE'			=> $user->lang[$this->page_title],
 			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
-
-			'U_ACTION'		=> $this->u_action . "&amp;action=edit&amp;id=$style_id",
-			'U_BACK'		=> $this->u_action,
-			'NAME'			=> $name,
-			)
-		);
+			'IMAGE_OPTIONS'		=> $img_options,
+			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
+			'IMAGE_SIZE'		=> $imgsize_bool,
+			'IMAGE_REQUEST'		=> (!empty($imgname)) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, current(explode('*', $$imgname))) : '',
+			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$style_id",
+			'U_BACK'			=> $this->u_action,
+			'NAME'				=> $imageset_name,
+			'ERROR'				=> !$valid_name
+		));
 	}
 
 	/**

@@ -37,43 +37,77 @@
 	<h1>{L_TITLE}</h1>
 
 	<p>{L_EXPLAIN}</p>
+	<script language="javascript" type="text/javascript" defer="defer">
+	<!--
 
-	<form id="acp_styles" method="post" action="{U_ACTION}">
-	<table cellspacing="1">
-	<thead>
-	<tr>
-		<th colspan="5">{L_IMAGE_CONFIGURATION}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="5"><b>{L_IMAGESET_NAME}: {NAME}</b></td>
-	</tr>
-	<tr class="row3">
-		<td>{L_IMAGE_NAME}</td>
-		<td>{L_IMAGE}</td>
-		<td>{L_IMAGE_LOCATION}</td>
-		<td>{L_IMAGE_WIDTH}</td>
-		<td>{L_IMAGE_HEIGHT}</td>
-	</tr>
-	</thead>
-	<tbody>
-	<!-- BEGIN element -->
-		<!-- IF element.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-		<td style="text-align: center;">{element.NAME}</td>
-		<td style="text-align: center;"><img src="{element.IMG_SRC}" alt="" title="" /></td>
-		<td><input class="post" type="text" name="src[{element.NAME}]" value="{element.SRC}" size="20" /></td>
-		<td><input class="post" type="text" size="3" name="width[{element.NAME}]" value="{element.WIDTH}" /></td>
-		<td><input class="post" type="text" size="3" name="height[{element.NAME}]" value="{element.HEIGHT}" /></td>
+	function update_image(newimage)
+	{
+		document.newimg.src = (newimage) ? "../styles/{NAME}/imageset/" + newimage : "images/no_image.png";
+	}
+	//-->
+	</script>
+	<form method="post" action="{U_ACTION}"><table width="95%" cellspacing="1" cellpadding="1" border="0" align="center">
+		<tr>
+			<td align="right">{L_SELECT_IMAGE}: <select name="imgname" onchange="this.form.submit(); ">
+			<!-- BEGIN category -->
+			<option class="sep" value="">{category.NAME}</option>
+				<!-- BEGIN images --><option value="{category.images.VALUE}"<!-- IF category.images.SELECTED--> selected="selected"<!-- ENDIF -->>{category.images.TEXT}</option>
+				<!-- END images -->
+			<!-- END category -->
+			</select>&nbsp; <input class="btnlite" type="submit" value="{L_SELECT}" tabindex="100" /></td>
 		</tr>
-	<!-- END element -->
-	</tbody>
-	</table>
-
-	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-	</fieldset>
-
-	</form>
+		<tr>
+			<td><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center">
+				<tr>
+					<th colspan="2">{L_EDIT_IMAGESET}</th>
+				</tr>
+				<!-- IF SUCCESS -->
+				<tr>
+					<td class="row1" colspan="2" align="center"><span style="color: green">{L_IMAGESET_UPDATED}</span><br /></td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- IF ERROR -->
+				<tr>
+					<td class="row1" colspan="2" align="center"><span style="color: red">{L_NO_IMAGE}</span><br /></td>
+				</tr>
+				<!-- ENDIF -->
+				<tr>
+					<td class="row1" colspan="2" align="center"><table width="100%" cellspacing="2" cellpadding="2" border="0">
+						<tr>
+							<td width="50%" align="center"><img src="<!-- IF IMAGE_REQUEST neq '' -->{IMAGE_REQUEST}<!-- ELSE -->images/no_image.png<!-- ENDIF -->"/></td>
+							<td width="50%" align="center"><img src="images/no_image.png" name="newimg" /></td>
+						</tr>
+						<tr>
+							<td class="gensmall" align="center">{L_CURRENT_IMAGE}</td>
+							<td class="gensmall" align="center">{L_SELECTED_IMAGE}</td>
+						</tr>
+					</table></td>
+				</tr>
+				<tr>
+					<th width="40%">{L_IMAGE_PARAMETER}</th>
+					<th>{L_IMAGE_VALUE}</th>
+				</tr>
+				<tr>
+					<td class="row1" width="40%"><b>{L_IMAGE}: </b></td>
+					<td class="row2"><select name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><option value=""<!-- IF not IMAGE_SELECT--> selected="selected"<!-- ENDIF -->>{L_NONE}</option>
+					<!-- BEGIN imagesetlist -->
+					<option class="sep" value=""><!-- IF imagesetlist.TYPE -->{L_LOCALISED_IMAGES}<!-- ELSE -->{L_GLOBAL_IMAGES}<!-- ENDIF --></option>
+						<!-- BEGIN images -->
+						<option value="{imagesetlist.images.VALUE}"<!-- IF imagesetlist.images.SELECTED--> selected="selected"<!-- ENDIF -->>{imagesetlist.images.TEXT}</option>
+						<!-- END images -->
+					<!-- END imagesetlist -->
+					</select></td>
+				</tr>
+				<tr>
+					<td class="row1" width="40%"><b>{L_DIMENSIONS}: </b><br /><span class="gensmall">{L_DIMENSIONS_EXPLAIN}</span></td>
+					<td class="row2"><input type="radio" name="imgsize" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="imgsize" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</td>
+				</tr>
+				<tr>
+					<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnmain" type="reset" value="{L_RESET}" /></td>
+				</tr>
+			</table></td>
+		</tr>
+	</table></form>
 
 <!-- ELSEIF S_EXPORT -->
 

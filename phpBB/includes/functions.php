@@ -2051,7 +2051,9 @@ function page_header($page_title = '')
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'],
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
-		'T_THEME_DATA'			=> (!$user->theme['theme_storedb']) ? '' : $user->theme['theme_data'])
+		'T_THEME_DATA'			=> (!$user->theme['theme_storedb']) ? '' : $user->theme['theme_data'],
+
+		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
 
 	if ($config['send_encoding'])
