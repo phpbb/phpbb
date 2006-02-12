@@ -152,6 +152,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 								SET user_style = ' . $config['default_style'] . " 
 								WHERE user_style = $style_id";
 							$db->sql_query($sql);
+
+							$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+								SET forum_style = 0
+								WHERE forum_style = ' . $style_id;
+							$db->sql_query($sql);
 						}
 					break;
 				}
@@ -530,7 +535,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$dp = opendir($dir);
 		while ($file = readdir($dp))
 		{
-			if (!is_file($dir . $file) && !is_link($dir . $file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+			if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
 			{
 				$dp2 = opendir("$dir/$file");
 				while ($file2 = readdir($dp2))
@@ -669,6 +674,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$sql = 'UPDATE ' . USERS_TABLE . " 
 					SET user_style = $new_id
 					WHERE user_style = $style_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . FORUMS_TABLE . " 
+					SET forum_style = $new_id
+					WHERE forum_style = $style_id";
 				$db->sql_query($sql);
 			}
 			else
