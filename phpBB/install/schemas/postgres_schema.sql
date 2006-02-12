@@ -505,7 +505,7 @@ CREATE TABLE phpbb_users (
    user_avatar_type int2 DEFAULT '0' NOT NULL,
    user_level int4 DEFAULT '0',
    user_lang varchar(255),
-   user_timezone decimal(5) DEFAULT '0' NOT NULL,
+   user_timezone decimal(5,2) DEFAULT '0.0' NOT NULL,
    user_dateformat varchar(14) DEFAULT 'd M Y H:i' NOT NULL,
    user_notify_pm int2 DEFAULT '0' NOT NULL,
    user_popup_pm int2 DEFAULT '0' NOT NULL,
