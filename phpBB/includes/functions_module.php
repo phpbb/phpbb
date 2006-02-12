@@ -261,7 +261,7 @@ class p_master
 		}
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', '(int) $this->acl_forup_id', '(int) $config["\\1"]'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', '(int) $this->acl_forup_id', '(int) $auth->acl_getf_global("\\1")', '(int) $config["\\1"]'), $module_auth) . ');');
 
 		return $is_auth;
 	}
