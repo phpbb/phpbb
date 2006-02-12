@@ -33,15 +33,16 @@ CREATE TABLE phpbb_attachments (
 CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  auth_option_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
-  auth_setting tinyint(4) DEFAULT '0' NOT NULL,
+  auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_preset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   KEY group_id (group_id),
   KEY auth_option_id (auth_option_id)
 );
 
 # Table: phpbb_auth_options
 CREATE TABLE phpbb_auth_options (
-  auth_option_id smallint(5) UNSIGNED NOT NULL auto_increment,
+  auth_option_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   auth_option char(20) NOT NULL,
   is_global tinyint(1) DEFAULT '0' NOT NULL,
   is_local tinyint(1) DEFAULT '0' NOT NULL,
@@ -52,21 +53,29 @@ CREATE TABLE phpbb_auth_options (
 
 # Table: phpbb_auth_presets
 CREATE TABLE phpbb_auth_presets (
-  preset_id tinyint(4) NOT NULL auto_increment,
+  preset_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   preset_name varchar(50) DEFAULT '' NOT NULL,
-  preset_user_id mediumint(5) UNSIGNED DEFAULT '0' NOT NULL,
-  preset_type varchar(2) DEFAULT '' NOT NULL,
-  preset_data text DEFAULT '' NOT NULL,
+  preset_type varchar(10) DEFAULT '' NOT NULL,
+  preset_group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY (preset_id),
   KEY preset_type (preset_type)
+);
+
+# Table: phpbb_auth_preset_data
+CREATE TABLE phpbb_auth_preset_data (
+  preset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_setting tinyint(2) DEFAULT '0' NOT NULL,
+  PRIMARY KEY  (preset_id, auth_option_id)
 );
 
 # Table: phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  auth_option_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
-  auth_setting tinyint(4) DEFAULT '0' NOT NULL,
+  auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_preset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)
 );

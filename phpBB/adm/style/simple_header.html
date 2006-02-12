@@ -30,19 +30,39 @@ function jumpto()
 
 // Set display of page element
 // s[-1,0,1] = hide,toggle display,show
-function dE(n,s)
+function dE(n, s, type)
 {
+	if (!type)
+	{
+		type = 'block';
+	}
+
 	var e = document.getElementById(n);
-	if(!s) s = (e.style.display=='') ? -1:1;
-	e.style.display = (s==1) ? 'block':'none';
+	if (!s)
+	{
+		s = (e.style.display == '') ? -1 : 1;
+	}
+	e.style.display = (s == 1) ? type : 'none';
 }
 
-function marklist(match, status)
+// Mark/unmark checkboxes
+// id = ID of parent container, name = name prefix, state = state [true/false]
+function marklist(id, name, state)
 {
-	doc = document.getElementById(match);
-	for (i = 0; i < doc.length; i++)
+	var parent = document.getElementById(id);
+	if (!parent)
 	{
-		doc.elements[i].checked = status;
+		return;
+	}
+
+	var rb = parent.getElementsByTagName('input');
+	
+	for (var r = 0; r < rb.length; r++)
+	{
+		if (rb[r].name.substr(0, name.length) == name)
+		{
+			rb[r].checked = state;
+		}
 	}
 }
 

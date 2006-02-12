@@ -27,6 +27,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
+  auth_preset_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -43,16 +44,23 @@ CREATE TABLE phpbb_auth_options (
 CREATE TABLE phpbb_auth_presets (
   preset_id INTEGER NOT NULL,
   preset_name VARCHAR(50) NOT NULL,
-  preset_user_id INTEGER DEFAULT 0  NOT NULL,
-  preset_type VARCHAR(2) NOT NULL,
-  preset_data BLOB SUB_TYPE TEXT NOT NULL
+  preset_type VARCHAR(10) NOT NULL,
+  preset_group_id INTEGER DEFAULT 0  NOT NULL
 );;
+
+# phpbb_auth_preset_data
+CREATE TABLE phpbb_auth_preset_data (
+  preset_id INTEGER DEFAULT 0  NOT NULL,
+  auth_option_id INTEGER DEFAULT 0  NOT NULL,
+  auth_setting INTEGER DEFAULT 0  NOT NULL
+);
 
 # phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
   user_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
+  auth_preset_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -878,6 +886,12 @@ ADD PRIMARY KEY (
 CREATE INDEX preset_type10
 ON phpbb_auth_presets(
   preset_type
+);;
+
+ALTER TABLE phpbb_auth_preset_data
+ADD PRIMARY KEY (
+  preset_id,
+  auth_option_id
 );;
 
 CREATE INDEX auth_option_id11

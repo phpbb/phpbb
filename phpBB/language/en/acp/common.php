@@ -112,6 +112,10 @@ $lang = array_merge($lang, array(
 	'ACP_PERMISSION_MASKS'		=> 'Permission Masks',
 	'ACP_PERMISSION_SETTINGS'	=> 'Permission Settings',
 	'ACP_PHP_INFO'				=> 'PHP Information',
+	'ACP_PRESET_ADMIN'			=> 'Admin Permission Presets',
+	'ACP_PRESET_FORUM'			=> 'Forum Permission Presets',
+	'ACP_PRESET_MOD'			=> 'Mod Permission Presets',
+	'ACP_PRESET_USER'			=> 'User Permission Presets',
 	'ACP_PRUNE_FORUMS'			=> 'Prune Forums',
 	'ACP_PRUNE_USERS'			=> 'Prune Users',
 	'ACP_PRUNING'				=> 'Pruning',
@@ -212,6 +216,7 @@ $lang = array_merge($lang, array(
 	'REORDER'				=> 'Reorder',
 	'RETURN_TO'				=> 'Return to ...',
 
+	'SELECT_ANONYMOUS'		=> 'Select Anonymous User',
 	'SELECT_OPTION'			=> 'Select option',
 
 	'UCP'					=> 'User Control Panel',
@@ -420,6 +425,9 @@ $lang = array_merge($lang, array(
 	'LOG_MODULE_REMOVED'	=> '<b>Module removed</b><br />&#187; %s',
 	'LOG_MODULE_ADD'		=> '<b>Module added</b><br />&#187; %s',
 	'LOG_MODULE_EDIT'		=> '<b>Module edited</b><br />&#187; %s',
+
+	'LOG_PRESET_ADD'		=> '<b>Preset added</b><br />&#187; %s',
+	'LOG_PRESET_EDIT'		=> '<b>Preset edited</b><br />&#187; %s',
 
 	'LOG_PROFILE_FIELD_ACTIVATE'	=> '<b>Profile field activated</b><br />&#187; %s',
 	'LOG_PROFILE_FIELD_CREATE'		=> '<b>Profile field added</b><br />&#187; %s',

@@ -10,6 +10,7 @@
 
 /**
 * @package acp
+* @todo make sure permissions are met for adding groups and removing groups (a_groupadd, a_groupdel)
 */
 class acp_groups
 {

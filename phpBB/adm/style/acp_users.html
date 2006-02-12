@@ -16,7 +16,7 @@
 		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 		<dd><input class="medium" type="text" id="username" name="username" /></dd>
 		<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
-		<dd class="full" style="text-align: left;"><input type="checkbox" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> &nbsp;Select Anonymous User</dd>
+		<dd class="full" style="text-align: left;"><input type="checkbox" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 	</dl>
 	</fieldset>
 
@@ -203,7 +203,7 @@
 
 	<!-- IF S_CLEARLOGS -->
 		<fieldset class="quick">
-			<b class="small"><a href="#" onclick="marklist('list', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', false);">{L_UNMARK_ALL}</a></b><br />
+			<b class="small"><a href="#" onclick="marklist('list', 'mark', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></b><br />
 			<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />&nbsp;
 			<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
 		</fieldset>
@@ -696,11 +696,20 @@
 	<!-- ENDIF -->
 
 	<fieldset class="quick">
-		<b class="small"><a href="#" onclick="marklist('user_attachments', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('user_attachments', false);">{L_UNMARK_ALL}</a></b><br />
+		<b class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></b><br />
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
 	</fieldset>
 
 	</form>
+
+<!-- ELSEIF S_PERMISSIONS -->
+
+	<fieldset class="quick">
+		<a href="{U_USER_PERMISSIONS}">&raquo; {L_SET_USERS_PERMISSIONS}</a><br />
+		<a href="{U_USER_FORUM_PERMISSIONS}">&raquo; {L_SET_USERS_FORUM_PERMISSIONS}</a>
+	</fieldset>
+
+	<!-- INCLUDE permission_mask.html -->
 
 <!-- ENDIF -->
 

@@ -494,6 +494,52 @@ class auth
 	}
 
 	/**
+	* Get raw user based permission settings
+	*/
+	function acl_user_raw_data($user_id = false, $opts = false, $forum_id = false)
+	{
+		global $db;
+
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : 'user_id IN (' . implode(', ', $user_id) . ')') : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+
+		$sql_opts = '';
+
+		if ($opts !== false)
+		{
+			if (!is_array($opts))
+			{
+				$sql_opts = (strpos($opts, '%') !== false) ? "AND ao.auth_option LIKE '" . $db->sql_escape($opts) . "'" : "AND ao.auth_option = '" . $db->sql_escape($opts) . "'";
+			}
+			else
+			{
+				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+			}
+		}
+
+		$hold_ary = array();
+
+		// Grab user settings ... each user has only one setting for each
+		// option ... so we shouldn't need any ACL_NO checks ... he says ...
+		$sql = 'SELECT ao.auth_option, a.user_id, a.forum_id, a.auth_setting
+			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a
+			WHERE ao.auth_option_id = a.auth_option_id
+				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts
+			ORDER BY a.forum_id, ao.auth_option_id";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+		}
+		$db->sql_freeresult($result);
+
+		return $hold_ary;
+	}
+
+	/**
 	* Get raw group based permission settings
 	*/
 	function acl_group_raw_data($group_id = false, $opts = false, $forum_id = false)

@@ -57,6 +57,11 @@ class acp_main
 					}
 					else if ($action == 'delete')
 					{
+						if (!$auth->acl_get('a_userdel'))
+						{
+							trigger_error($user->lang['NO_ADMIN']);
+						}
+
 						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " WHERE user_id IN ($mark)";
 						$db->sql_query($sql);
 						$sql = 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
@@ -335,18 +340,23 @@ class acp_main
 			)
 		);
 
-		view_log('admin', $log_data, $log_count, 5);
+		$log_data = array();
 
-		foreach ($log_data as $row)
+		if ($auth->acl_get('a_viewlogs'))
 		{
-			$template->assign_block_vars('log', array(
-				'USERNAME'	=> $row['username'],
-				'IP'		=> $row['ip'],
-				'DATE'		=> $user->format_date($row['time']),
-				'ACTION'	=> $row['action'])
-			);
+			view_log('admin', $log_data, $log_count, 5);
+
+			foreach ($log_data as $row)
+			{
+				$template->assign_block_vars('log', array(
+					'USERNAME'	=> $row['username'],
+					'IP'		=> $row['ip'],
+					'DATE'		=> $user->format_date($row['time']),
+					'ACTION'	=> $row['action'])
+				);
+			}
 		}
-		
+
 		if ($auth->acl_get('a_user'))
 		{
 			$sql = 'SELECT user_id, username, user_regdate

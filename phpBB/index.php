@@ -48,7 +48,6 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-
 // Generate birthday list if required ...
 $birthday_list = '';
 if ($config['load_birthdays'])

@@ -45,12 +45,24 @@ function dE(n, s, type)
 	e.style.display = (s == 1) ? type : 'none';
 }
 
-function marklist(match, status)
+// Mark/unmark checkboxes
+// id = ID of parent container, name = name prefix, state = state [true/false]
+function marklist(id, name, state)
 {
-	doc = document.getElementById(match);
-	for (i = 0; i < doc.length; i++)
+	var parent = document.getElementById(id);
+	if (!parent)
 	{
-		doc.elements[i].checked = status;
+		return;
+	}
+
+	var rb = parent.getElementsByTagName('input');
+	
+	for (var r = 0; r < rb.length; r++)
+	{
+		if (rb[r].name.substr(0, name.length) == name)
+		{
+			rb[r].checked = state;
+		}
 	}
 }
 

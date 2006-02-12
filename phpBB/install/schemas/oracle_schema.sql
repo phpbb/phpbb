@@ -95,7 +95,8 @@ CREATE INDEX filesize on phpbb_attachments (filesize)
 CREATE TABLE phpbb_auth_groups (
   group_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
-  auth_option_id number(5) DEFAULT '0' NOT NULL,
+  auth_option_id number(8) DEFAULT '0' NOT NULL,
+  auth_preset_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(4) DEFAULT '0' NOT NULL
 )
 /
@@ -109,7 +110,7 @@ CREATE INDEX auth_option_id on phpbb_auth_groups (auth_option_id)
  Table: phpbb_auth_options
 */
 CREATE TABLE phpbb_auth_options (
-  auth_option_id number(5) NOT NULL,
+  auth_option_id number(8) NOT NULL,
   auth_option varchar2(20),
   is_global number(1) DEFAULT '0' NOT NULL,
   is_local number(1) DEFAULT '0' NOT NULL,
@@ -140,11 +141,10 @@ CREATE INDEX auth_option on phpbb_auth_options (auth_option)
  Table: phpbb_auth_presets
 */
 CREATE TABLE phpbb_auth_presets (
-  preset_id number(4) NOT NULL,
+  preset_id number(8) NOT NULL,
   preset_name varchar2(50) DEFAULT '',
-  preset_user_id number(5) DEFAULT '0' NOT NULL,
-  preset_type varchar2(2) DEFAULT '',
-  preset_data clob DEFAULT '',
+  preset_type varchar2(10) DEFAULT '',
+  preset_group_id number(8) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_auth_presets PRIMARY KEY (preset_id)
 )
 /
@@ -168,12 +168,24 @@ CREATE INDEX preset_type on phpbb_auth_presets (preset_type)
 /
 
 /*
+ Table: phpbb_auth_preset_data
+*/
+CREATE TABLE phpbb_auth_preset_data (
+  preset_id number(8) DEFAULT '0' NOT NULL,
+  auth_option_id number(8) DEFAULT '0' NOT NULL,
+  auth_setting number(4) DEFAULT '0' NOT NULL,
+  CONSTRAINT pk_phpbb_confirm PRIMARY KEY (preset_id, auth_option_id)
+)
+/
+
+/*
  Table: phpbb_auth_users
 */
 CREATE TABLE phpbb_auth_users (
   user_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
-  auth_option_id number(5) DEFAULT '0' NOT NULL,
+  auth_option_id number(8) DEFAULT '0' NOT NULL,
+  auth_preset_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(4) DEFAULT '0' NOT NULL
 )
 /

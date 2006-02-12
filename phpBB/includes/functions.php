@@ -2165,4 +2165,76 @@ function page_footer()
 	exit;
 }
 
+/**
+* Return a nicely formatted backtrace (parts from the php manual by diz at ysagoon dot com)
+*/
+function get_backtrace()
+{
+	global $phpbb_root_path;
+
+	$output = '<div style="font-family: monospace;">';
+	$backtrace = debug_backtrace();
+	$path = realpath($phpbb_root_path);
+
+	foreach ($backtrace as $number => $trace)
+	{
+		// We skip the first one, because it only shows this file/function
+		if ($number == 0)
+		{
+			continue;
+		}
+
+		// Strip the current directory from path
+		$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
+		$trace['file'] = substr($trace['file'], 1);
+		
+		$args = array();
+		foreach ($trace['args'] as $argument)
+		{
+			switch (gettype($argument)) 
+			{
+				case 'integer':
+				case 'double':
+					$args[] = $argument;
+				break;
+				
+				case 'string':
+					$argument = htmlspecialchars(substr($argument, 0, 64)) . ((strlen($argument) > 64) ? '...' : '');
+					$args[] = '"' . $argument . '"';
+				break;
+				
+				case 'array':
+					$args[] = 'Array(' . sizeof($argument) . ')';
+				break;
+				
+				case 'object':
+					$args[] = 'Object(' . get_class($argument) . ')';
+				break;
+				
+				case 'resource':
+					$args[] = 'Resource(' . strstr($a, '#') . ')';
+				break;
+				
+				case 'boolean':
+					$args[] = ($argument) ? 'true' : 'false';
+				break;
+				
+				case 'NULL':
+					$args[] = 'NULL';
+				break;
+				
+				default:
+					$args[] = 'Unknown';
+			}
+		}
+		
+		$output .= '<br />';
+		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
+		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
+		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
+	}
+	$output .= '</div>';
+	return $output;
+}
+
 ?>

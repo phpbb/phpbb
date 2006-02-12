@@ -923,15 +923,16 @@ function validate_email($email)
 		return 'EMAIL_INVALID';
 	}
 
-	$banned = false;
-
-	// TODO: This is a duplication of code from session->check_ban()
+	/**
+	* @todo This is a duplication of code from session->check_ban()
+	*/
 	$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 		FROM ' . BANLIST_TABLE . '
 		WHERE ban_end >= ' . time() . '
 			OR ban_end = 0';
 	$result = $db->sql_query($sql);
 
+	$banned = false;
 	if ($row = $db->sql_fetchrow($result))
 	{
 		do

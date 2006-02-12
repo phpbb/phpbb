@@ -1743,6 +1743,52 @@ class acp_users
 
 			break;
 
+			case 'perm':
+
+				include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+
+				$auth_admin = new auth_admin();
+
+				$user->add_lang('acp/permissions');
+				$user->add_lang('acp/permissions_phpbb');
+
+				// Select auth options
+				$sql = 'SELECT auth_option, is_local, is_global
+					FROM ' . ACL_OPTIONS_TABLE . "
+					WHERE auth_option LIKE '%\_'
+						AND is_global = 1
+					ORDER BY auth_option";
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NO);
+					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
+				}
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT auth_option, is_local, is_global
+					FROM ' . ACL_OPTIONS_TABLE . "
+					WHERE auth_option LIKE '%\_'
+						AND is_local = 1
+					ORDER BY is_global DESC, auth_option";
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'local', ACL_NO);
+					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
+				}
+				$db->sql_freeresult($result);
+
+				$template->assign_vars(array(
+					'S_PERMISSIONS'				=> true,
+					'U_USER_PERMISSIONS'		=> $phpbb_admin_path . 'index.' . $phpEx . $SID . '&amp;i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id,
+					'U_USER_FORUM_PERMISSIONS'	=> $phpbb_admin_path . 'index.' . $phpEx . $SID . '&amp;i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id)
+				);
+			
+			break;
+
 		}
 
 		// Assign general variables
@@ -1837,7 +1883,7 @@ class acp_users_info
 				'rank'			=> array('title' => 'ACP_USER_RANK', 'auth' => 'acl_a_user', 'display' => false),
 				'sig'			=> array('title' => 'ACP_USER_SIG', 'auth' => 'acl_a_user', 'display' => false),
 				'groups'		=> array('title' => 'ACP_USER_GROUPS', 'auth' => 'acl_a_user && acl_a_group', 'display' => false),
-				'perm'			=> array('title' => 'ACP_USER_PERM', 'auth' => 'acl_a_user', 'display' => false),
+				'perm'			=> array('title' => 'ACP_USER_PERM', 'auth' => 'acl_a_user && acl_a_viewauth', 'display' => false),
 				'attach'		=> array('title' => 'ACP_USER_ATTACH', 'auth' => 'acl_a_user', 'display' => false),
 			),
 		);

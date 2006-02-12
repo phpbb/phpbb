@@ -151,9 +151,9 @@ class acp_logs_info
 			'title'		=> 'ACP_LOGGING',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'admin'		=> array('title' => 'ACP_ADMIN_LOGS', 'auth' => 'acl_a_'),
-				'mod'		=> array('title' => 'ACP_MOD_LOGS', 'auth' => 'acl_a_'),
-				'critical'	=> array('title' => 'ACP_CRITICAL_LOGS', 'auth' => 'acl_a_'),
+				'admin'		=> array('title' => 'ACP_ADMIN_LOGS', 'auth' => 'acl_a_viewlogs'),
+				'mod'		=> array('title' => 'ACP_MOD_LOGS', 'auth' => 'acl_a_viewlogs'),
+				'critical'	=> array('title' => 'ACP_CRITICAL_LOGS', 'auth' => 'acl_a_viewlogs'),
 			),
 		);
 	}

@@ -1,17 +1,5 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript">
-<!--
-	function marklist(status)
-	{
-		for (i = 0; i < document.inactive.length; i++)
-		{
-			document.inactive.elements[i].checked = status;
-		}
-	}
-//-->
-</script>
-
 <a name="maincontent"></a><h1>{L_WELCOME_PHPBB}</h1>
 
 <p>{L_ADMIN_INTRO}</p>
@@ -140,7 +128,7 @@
 
 	<!-- IF .inactive -->
 		<fieldset class="quick">
-			<p><a href="javascript:marklist(true);">Mark all</a> &bull; <a href="javascript:marklist(false);">Unmark all</a></p>
+			<p><a href="javascript:marklist('inactive', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="javascript:marklist('inactive', 'mark', false);">{L_UNMARK_ALL}</a></p>
 			<select name="action">{S_INACTIVE_OPTIONS}</select>
 
 			<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />

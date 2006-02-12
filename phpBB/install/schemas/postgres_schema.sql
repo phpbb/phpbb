@@ -48,7 +48,8 @@ SELECT SETVAL('phpbb_attachments_attach_id_',(select case when max(attach_id)>0 
 CREATE TABLE phpbb_auth_groups (
   group_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
-  auth_option_id INT2  DEFAULT '0' NOT NULL,
+  auth_option_id INT4  DEFAULT '0' NOT NULL,
+  auth_preset_id INT4  DEFAULT '0' NOT NULL,
   auth_setting INT2 DEFAULT '0' NOT NULL
 );
 
@@ -59,7 +60,7 @@ CREATE INDEX auth_option_id_phpbb_auth_groups_index ON phpbb_auth_groups (auth_o
 CREATE SEQUENCE phpbb_auth_options_auth_opti;
 
 CREATE TABLE phpbb_auth_options (
-  auth_option_id INT2 DEFAULT nextval('phpbb_auth_options_auth_opti'),
+  auth_option_id INT4 DEFAULT nextval('phpbb_auth_options_auth_opti'),
   auth_option varchar(20) NOT NULL,
   is_global INT2 DEFAULT '0' NOT NULL,
   is_local INT2 DEFAULT '0' NOT NULL,
@@ -75,24 +76,31 @@ SELECT SETVAL('phpbb_auth_options_auth_opti',(select case when max(auth_option_i
 CREATE SEQUENCE phpbb_auth_presets_preset_id;
 
 CREATE TABLE phpbb_auth_presets (
-  preset_id INT2 DEFAULT nextval('phpbb_auth_presets_preset_id'),
+  preset_id INT4 DEFAULT nextval('phpbb_auth_presets_preset_id'),
   preset_name varchar(50) DEFAULT '' NOT NULL,
-  preset_user_id INT4  DEFAULT '0' NOT NULL,
-  preset_type varchar(2) DEFAULT '' NOT NULL,
-  preset_data text DEFAULT '' NOT NULL,
-  PRIMARY KEY (preset_id),
-  CHECK (preset_user_id>=0)
+  preset_type varchar(10) DEFAULT '' NOT NULL,
+  preset_group_id INT4  DEFAULT '0' NOT NULL,
+  PRIMARY KEY (preset_id)
 );
 
 CREATE INDEX preset_type_phpbb_auth_presets_index ON phpbb_auth_presets (preset_type);
 
 SELECT SETVAL('phpbb_auth_presets_preset_id',(select case when max(preset_id)>0 then max(preset_id)+1 else 1 end from phpbb_auth_presets));
 
+/* Table: phpbb_auth_preset_data */
+CREATE TABLE phpbb_auth_preset_data (
+  preset_id INT4  DEFAULT '0' NOT NULL,
+  auth_option_id INT4  DEFAULT '0' NOT NULL,
+  auth_setting INT2  DEFAULT '0' NOT NULL,
+  PRIMARY KEY  (preset_id, auth_option_id)
+);
+
 /* Table: phpbb_auth_users */
 CREATE TABLE phpbb_auth_users (
   user_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
-  auth_option_id INT2  DEFAULT '0' NOT NULL,
+  auth_option_id INT4  DEFAULT '0' NOT NULL,
+  auth_preset_id INT4  DEFAULT '0' NOT NULL,
   auth_setting INT2 DEFAULT '0' NOT NULL
 );
 

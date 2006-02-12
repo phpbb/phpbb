@@ -205,11 +205,13 @@ class dbal
 
 			// Show complete SQL error and path to administrators only
 			if ($auth->acl_get('a_'))
-			{			
-				$this_page = (isset($_SERVER['PHP_SELF']) && !empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
-				$this_page .= '&' . ((isset($_SERVER['QUERY_STRING']) && !empty($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : (isset($_ENV['QUERY_STRING']) ? $_ENV['QUERY_STRING'] : ''));
+			{
+				// Print out a nice backtrace...
+				$backtrace = get_backtrace();
 
-				$message .= '<br /><br /><u>CALLING PAGE</u><br /><br />'  . htmlspecialchars($this_page) . (($sql != '') ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '') . '<br />';
+				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . $sql : '';
+				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />'  . $backtrace : '';
+				$message .= '<br />';
 			}
 			else
 			{

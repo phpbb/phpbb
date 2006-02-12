@@ -361,24 +361,6 @@
 
 <!-- ELSEIF S_ORPHAN -->
 
-	<script type="text/javascript">
-	<!--
-	function marklist(match, name, status)
-	{
-		var object = document.getElementById(match);
-
-		var len = object.length;
-
-		for (i = 0; i < len; i++)
-		{
-			result = eval('object.elements[' + i + '].name.search(/' + name + '.+/)');
-			if (result != -1)
-				object.elements[i].checked = status;
-		}
-	}
-	//-->
-	</script>
-
 	<form id="orphan" method="post" action="{U_ACTION}">
 
 	<table cellspacing="1">
@@ -403,8 +385,8 @@
 	<!-- END orphan -->
 	<tr>
 		<td colspan="3">&nbsp;</td>
-		<td class="small"><a href="javascript:marklist('attachments', 'add', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('attachments', 'add', false);">{L_UNMARK_ALL}</a></td>
-		<td class="small"><a href="javascript:marklist('attachments', 'delete', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('attachments', 'delete', false);">{L_UNMARK_ALL}</a></td>
+		<td class="small"><a href="javascript:marklist('orphan', 'add', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('orphan', 'add', false);">{L_UNMARK_ALL}</a></td>
+		<td class="small"><a href="javascript:marklist('orphan', 'delete', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('orphan', 'delete', false);">{L_UNMARK_ALL}</a></td>
 	</tr>
 	</tbody>
 	</table>

@@ -281,6 +281,7 @@ td {
 .row1 { background-color: #EFEFEF; }
 .row2 { background-color: #DEE3E7; }
 .row3 { background-color: #D1D7DC; }
+.row4 { background-color: #E4E8EB; }
 .col1 { background-color: #DEE3E7; }
 .col2 { background-color: #EFEFEF; }
 
@@ -648,6 +649,168 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	padding: 4px 8px;
 	}
 
+/* Permission related
+---------------------------------------- */
+
+.permissions {
+	margin: 15px 0 0 0;
+	padding: 0;
+	border: none;
+	background-color: transparent;
+}
+
+.permissions table {
+	width: 100%;
+	/*empty-cells: hide;*/
+	border: 1px solid #CCCFD3;
+	background-color: #FFFFFF;
+	padding: 1px;
+}
+
+.permissions th {
+	padding: 3px 4px;
+	color: #FFFFFF;
+	background: #DDE1E4 url("../images/gradient2b.gif") bottom left repeat-x;
+	border-top: 1px solid #6DACD2;
+	border-bottom: 1px solid #327AA5;
+	text-align: left;
+	font-size: .85em;
+	text-transform: uppercase;	
+}
+
+.permissions td {
+	text-align: left;
+	font-size: 1.1em;
+	padding: 4px;
+	line-height: 120%;
+}
+
+table.pmask {
+	border: none;
+	background: none;
+	padding: 0;
+}
+
+table.pmask th {
+	background: none;
+	border-top: none;
+	text-align: center;
+	vertical-align: bottom;
+	color: #115098;
+	padding: 2px 0;
+}
+
+table.pmask td {
+	padding: 0px;
+}
+
+table.pmask td.name {
+	padding: 2px;
+	vertical-align: middle;
+}
+
+.permissions th.name {
+	text-align: left;
+	width: auto;
+	padding-left: 4px;
+}
+
+.permissions .entry {
+	text-align: left;
+	font-weight: normal;
+}
+
+.permissions td.name {
+	text-align: left;
+	font-weight: bold;
+}
+
+.permissions table.type3 {
+	float: right;
+	width: 350px; /* Setting the length of the permission view box */
+	border: none;
+	background-color: transparent;
+	padding: 0;
+}
+
+.permissions table.type3 thead th {
+	background-color: transparent;
+	border-top: none;
+	text-align: center;
+	color: #115098;
+	padding: 0 3px;
+	font-size: .9em;
+	font-weight: normal;
+	text-transform: none;
+}
+
+.permissions table.type3 tbody th {
+	border-top: none;
+	text-align: left;
+	text-transform: none;
+	padding: 0;
+	border: none;
+	font-size: 1em;
+	font-weight: normal;
+	width: 100%;
+	vertical-align: middle;
+}
+
+.permissions table.type3 td {
+	text-align: center;
+	padding: 1px;
+}
+
+.permissions td.yes {
+	width: 20px;
+	background-color: #40C53D;
+}
+
+.permissions td.no {
+	width: 20px;
+	background-color: #EC7181;
+}
+
+.permissions td.unset {
+	width: 20px;
+	background-color: transparent;
+}
+
+/* Preset Styles
+---------------------------------------- */
+.preset_yes, .preset_custom, .preset_no, .preset_unset {
+	width: 60px;
+}
+
+.preset_yes a span, .preset_custom a span, .preset_no a span, .preset_unset a span {
+	float: left;
+	display: block;
+	width: 100%;
+	height: 20px;
+	cursor: pointer;
+	background: none;
+}
+
+.preset_yes a:hover span, .preset_custom a:hover span, .preset_no a:hover span, .preset_unset a:hover span {
+	background: url("../images/arrow_down.gif") no-repeat 50% 50%;
+	text-decoration: none;
+}
+
+.preset_yes {
+	background: #D3F3D2 url("../images/bg_hash1.gif") repeat;
+}
+
+.preset_custom {
+	background: #DAE4EC url("../images/bg_hash2.gif") repeat;
+}
+
+.preset_no {
+	background: #ECD7DA url("../images/bg_hash3.gif") repeat;
+}
+
+.preset_unset {
+	background: #ECD7DA url("../images/bg_hash4.gif") repeat;
+}
 
 /* Action Highlighting
 ---------------------------------------- */

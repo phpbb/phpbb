@@ -32,6 +32,7 @@ CREATE TABLE [phpbb_auth_groups] (
 	[group_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
+	[auth_preset_id] [int] NOT NULL ,
 	[auth_setting] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -48,16 +49,23 @@ GO
 CREATE TABLE [phpbb_auth_presets] (
 	[preset_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[preset_name] [varchar] (50) NOT NULL ,
-	[preset_user_id] [int] NOT NULL ,
-	[preset_type] [varchar] (2) NOT NULL ,
-	[preset_data] [text] NOT NULL 
+	[preset_type] [varchar] (10) NOT NULL ,
+	[preset_group_id] [int] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [phpbb_auth_preset_data] (
+	[preset_id] [int] NOT NULL ,
+	[auth_option_id] [int] NOT NULL ,
+	[auth_setting] [int] NOT NULL 
+) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_auth_users] (
 	[user_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
+	[auth_preset_id] [int] NOT NULL ,
 	[auth_setting] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -845,6 +853,14 @@ ALTER TABLE [phpbb_auth_presets] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [phpbb_auth_preset_data] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_auth_preset_data] PRIMARY KEY  CLUSTERED 
+	(
+		[preset_id],
+		[auth_option_id]
+	)  ON [PRIMARY] 
+GO
+
 ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD 
 	CONSTRAINT [PK_phpbb_banlist] PRIMARY KEY  CLUSTERED 
 	(
@@ -1188,7 +1204,13 @@ ALTER TABLE [phpbb_auth_options] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_auth_presets] WITH NOCHECK ADD 
-	CONSTRAINT [DF_auth_p_preset_user_id] DEFAULT (0) FOR [preset_user_id]
+	CONSTRAINT [DF_auth_p_preset_group_id] DEFAULT (0) FOR [preset_group_id]
+GO
+
+ALTER TABLE [phpbb_auth_preset_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_auth_d_preset_id] DEFAULT (0) FOR [preset_id],
+	CONSTRAINT [DF_auth_d_auth_option_id] DEFAULT (0) FOR [auth_option_id],
+	CONSTRAINT [DF_auth_d_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
 
 ALTER TABLE [phpbb_auth_users] WITH NOCHECK ADD 

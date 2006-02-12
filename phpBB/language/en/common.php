@@ -144,6 +144,7 @@ $lang = array_merge($lang, array(
 	'GO'						=> 'Go',
 	'GOTO_PAGE'					=> 'Goto page',
 	'GROUP'						=> 'Group',
+	'GROUPS'					=> 'Groups',
 	'GROUP_ERR_DESC_LONG'		=> 'Group description too long.',
 	'GROUP_ERR_TYPE'			=> 'Inappropriate group type specified.',
 	'GROUP_ERR_USERNAME'		=> 'No group name specified.',

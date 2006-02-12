@@ -149,9 +149,23 @@ class acp_forums
 						$auth->acl_clear_prefetch();
 						recalc_btree('forum_id', FORUMS_TABLE);
 
+						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
+
+						// Add default groups to selection
+						$sql = 'SELECT group_id
+							FROM ' . GROUPS_TABLE . '
+							WHERE group_type = ' . GROUP_SPECIAL;
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$acl_url .= '&amp;group_id[]=' . $row['group_id'];
+						}
+						$db->sql_freeresult($result);
+	
 						// Redirect to permissions
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
-						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=permissions&amp;mode=forum&amp;submit_usergroups=true&amp;ug_type=forum&amp;action=usergroups&amp;f[forum][]={$forum_data['forum_id']}" . '">', '</a>');
+						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=permissions" . $acl_url . '">', '</a>');
 
 						trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
