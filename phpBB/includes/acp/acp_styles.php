@@ -525,12 +525,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// Clean up this code
 		$imglang = '';
 		$imagesetlist = array('nolang' => array(), 'lang' => array());
-		$dp = opendir("{$phpbb_root_path}styles/$imageset_path/imageset");
+
+		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
+		$dp = opendir($dir);
 		while ($file = readdir($dp))
 		{
-			if (!is_file($file) && !is_link($file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+			if (!is_file($dir . $file) && !is_link($dir . $file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
 			{
-				$dp2 = opendir("{$phpbb_root_path}styles/$imageset_path/imageset/$file");
+				$dp2 = opendir("$dir/$file");
 				while ($file2 = readdir($dp2))
 				{
 					$imglang = $file;
