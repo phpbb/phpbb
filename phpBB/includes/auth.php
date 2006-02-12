@@ -222,6 +222,49 @@ class auth
 	}
 
 	/**
+	* Get local permission state for any forum.
+	*
+	* Returns true if user has the permission in one or more forums, false if in no forum.
+	* If global option is checked it returns the global state (same as acl_get($opt))
+	* Local option has precedence...
+	*/
+	function acl_getf_global($opt)
+	{
+		static $cache;
+
+		if (!isset($cache))
+		{
+			$cache = array();
+		}
+
+		$allowed = false;
+		if (isset($this->acl_options['local'][$opt]))
+		{
+			foreach ($this->acl as $f => $bitstring)
+			{
+				// Skip global settings
+				if (!$f)
+				{
+					continue;
+				}
+
+				$allowed = (!isset($cache[$f][$opt])) ? $this->acl_get($opt, $f) : $cache[$f][$opt];
+
+				if ($allowed)
+				{
+					break;
+				}
+			}
+		}
+		else if (isset($this->acl_options['global'][$opt]))
+		{
+			$allowed = $this->acl_get($opt);
+		}
+
+		return $allowed;
+	}
+
+	/**
 	* Get permission settings (more than one)
 	*/
 	function acl_gets()
