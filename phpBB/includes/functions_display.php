@@ -538,14 +538,13 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		return;
 	}
 
-	// If we don't have a forum then we can't have a moderator
-	if (!sizeof($forum_id))
-	{
-		return;
-	}
-
 	if ($forum_id !== false && is_array($forum_id))
 	{
+		// If we don't have a forum then we can't have a moderator
+		if (!sizeof($forum_id))
+		{
+			return;
+		}
 		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
 	}
 	else
