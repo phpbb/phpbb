@@ -1082,7 +1082,7 @@ if ($stage == 3)
 
 		foreach ($sql_query as $sql)
 		{
-			$sql = trim(str_replace('|', ';', $sql));
+			//$sql = trim(str_replace('|', ';', $sql));
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();
@@ -1117,7 +1117,7 @@ if ($stage == 3)
 
 		foreach ($sql_query as $sql)
 		{
-			$sql = trim(str_replace('|', ';', $sql));
+			//$sql = trim(str_replace('|', ';', $sql));
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();
