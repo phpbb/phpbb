@@ -450,7 +450,7 @@ if ($stage == 0)
 
 <h1><?php echo $lang['DIRECTORIES_AND_FILES']; ?></h2>
 
-<h2><? echo $lang['INSTALL_REQUIRED']; ?></h2>
+<h2><?php echo $lang['INSTALL_REQUIRED']; ?></h2>
 
 <p><?php echo $lang['INSTALL_REQUIRED_FILES']; ?></p>
 
