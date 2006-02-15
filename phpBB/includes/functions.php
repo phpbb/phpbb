@@ -1635,7 +1635,13 @@ function add_log()
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime, $msg_title;
+	global $phpEx, $phpbb_root_path, $starttime, $msg_title, $msg_long_text;
+
+	// Message handler is stripping text. In case we need it, we are possible to define long text...
+	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
+	{
+		$msg_text = $msg_long_text;
+	}
 
 	switch ($errno)
 	{

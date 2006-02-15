@@ -232,6 +232,15 @@ class dbal
 				$this->sql_transaction('rollback');
 			}
 			
+			if (strlen($message) > 1024)
+			{
+				// We need to define $msg_long_text here to circumvent text stripping.
+				global $msg_long_text;
+				$msg_long_text = $message;
+
+				trigger_error(false, E_USER_ERROR);
+			}
+
 			trigger_error($message, E_USER_ERROR);
 		}
 		
