@@ -276,7 +276,12 @@ class dbal_mysql extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return mysql_escape_string($msg);
+		if (!$this->db_connect_id)
+		{
+			return @mysql_real_escape_string($msg);
+		}
+	
+		return @mysql_real_escape_string($msg, $this->db_connect_id);
 	}
 	
 	/**

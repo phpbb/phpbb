@@ -235,7 +235,7 @@ class dbal_postgres extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @pg_fetch_array($query_id, NULL, PGSQL_ASSOC) : false;
+		return ($query_id) ? @pg_fetch_assoc($query_id, NULL) : false;
 	}
 
 	/**
@@ -295,7 +295,7 @@ class dbal_postgres extends dbal
 					return false;
 				}
 
-				$temp_result = @pg_fetch_array($temp_q_id, NULL, PGSQL_ASSOC);
+				$temp_result = @pg_fetch_assoc($temp_q_id, NULL);
 				@pg_freeresult($query_id);
 
 				return ($temp_result) ? $temp_result['last_value'] : false;
@@ -328,7 +328,7 @@ class dbal_postgres extends dbal
 	function sql_escape($msg)
 	{
 		// Do not use for bytea values
-		return pg_escape_string($msg);
+		return @pg_escape_string($msg);
 	}
 
 	/**
@@ -338,7 +338,7 @@ class dbal_postgres extends dbal
 	function _sql_error()
 	{
 		return array(
-			'message'	=> @pg_errormessage(),
+			'message'	=> (!$this->db_connect_id) ? @pg_last_error() : @pg_last_error($this->db_connect_id),
 			'code'		=> ''
 		);
 	}
@@ -368,7 +368,7 @@ class dbal_postgres extends dbal
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @pg_exec($this->db_connect_id, $query);
-				while ($void = @pg_fetch_array($result, NULL, PGSQL_ASSOC))
+				while ($void = @pg_fetch_assoc($result, NULL))
 				{
 					// Take the time spent on parsing rows into account
 				}

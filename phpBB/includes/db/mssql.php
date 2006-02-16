@@ -203,7 +203,7 @@ class dbal_mssql extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$row = @mssql_fetch_array($query_id, MSSQL_ASSOC);
+		$row = @mssql_fetch_assoc($query_id);
 		
 		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
 		if ($row)
@@ -264,7 +264,7 @@ class dbal_mssql extends dbal
 		$result_id = @mssql_query('SELECT @@IDENTITY', $this->db_connect_id);
 		if ($result_id)
 		{
-			if (@mssql_fetch_array($result_id, MSSQL_ASSOC))
+			if (@mssql_fetch_assoc($result_id))
 			{
 				$id = @mssql_result($result_id, 1);	
 				@mssql_free_result($result_id);
@@ -340,7 +340,7 @@ class dbal_mssql extends dbal
 				$endtime = $endtime[0] + $endtime[1];
 
 				$result = @mssql_query($query, $this->db_connect_id);
-				while ($void = @mssql_fetch_array($result, MSSQL_ASSOC))
+				while ($void = @mssql_fetch_assoc($result))
 				{
 					// Take the time spent on parsing rows into account
 				}
