@@ -509,7 +509,6 @@ function session_reset_keys($user_id, $user_ip)
 	$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
 		WHERE user_id = ' . (int) $user_id . "
 			$key_sql";
-	$db->sql_query($sql);
 
 	if ( !$db->sql_query($sql) )
 	{
