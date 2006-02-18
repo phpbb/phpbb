@@ -13,7 +13,7 @@
 */
 class acp_forums
 {
-	var $u_action = '';
+	var $u_action;
 	var $parent_id = 0;
 	
 	function main($id, $mode)
@@ -25,8 +25,6 @@ class acp_forums
 
 		$this->tpl_name = 'acp_forums';
 		$this->page_title = 'ACP_MANAGE_FORUMS';
-
-		$this->u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		$action		= request_var('action', '');
 		$update		= (isset($_POST['update'])) ? true : false;

@@ -14,6 +14,8 @@
 */
 class acp_words
 {
+	var $u_action;
+	
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -31,8 +33,6 @@ class acp_words
 		$this->tpl_name = 'acp_words';
 		$this->page_title = 'ACP_WORDS';
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
-
 		switch ($action)
 		{
 			case 'edit':
@@ -40,7 +40,7 @@ class acp_words
 				
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action));
 				}
 
 				$sql = 'SELECT *
@@ -56,8 +56,8 @@ class acp_words
 
 				$template->assign_vars(array(
 					'S_EDIT_WORD'		=> true,
-					'U_ACTION'			=> $u_action,
-					'U_BACK'			=> $u_action,
+					'U_ACTION'			=> $this->u_action,
+					'U_BACK'			=> $this->u_action,
 					'WORD'				=> (isset($word_info['word'])) ? $word_info['word'] : '',
 					'REPLACEMENT'		=> (isset($word_info['replacement'])) ? $word_info['replacement'] : '',
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
@@ -74,7 +74,7 @@ class acp_words
 
 				if (!$word || !$replacement)
 				{
-					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($u_action));
+					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action));
 				}
 
 				$sql_ary = array(
@@ -97,7 +97,7 @@ class acp_words
 				add_log('admin', $log_action, $word);
 
 				$message = ($word_id) ? $user->lang['WORD_UPDATED'] : $user->lang['WORD_ADDED'];
-				trigger_error($message . adm_back_link($u_action));
+				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
 
@@ -107,7 +107,7 @@ class acp_words
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action));
 				}
 
 				$sql = 'SELECT word
@@ -125,14 +125,14 @@ class acp_words
 
 				add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
 
-				trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($u_action));
+				trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
 				
 			break;
 		}
 
 
 		$template->assign_vars(array(
-			'U_ACTION'			=> $u_action,
+			'U_ACTION'			=> $this->u_action,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
 		);
 
@@ -146,8 +146,8 @@ class acp_words
 			$template->assign_block_vars('words', array(
 				'WORD'			=> $row['word'],
 				'REPLACEMENT'	=> $row['replacement'],
-				'U_EDIT'		=> $u_action . '&amp;action=edit&amp;id=' . $row['word_id'],
-				'U_DELETE'		=> $u_action . '&amp;action=delete&amp;id=' . $row['word_id'])
+				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['word_id'],
+				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id'])
 			);
 		}
 		$db->sql_freeresult($result);

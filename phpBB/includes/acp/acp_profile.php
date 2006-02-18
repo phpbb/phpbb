@@ -13,7 +13,7 @@
 */
 class acp_profile
 {
-	var $u_action = '';
+	var $u_action;
 
 	function main($id, $mode)
 	{
@@ -30,7 +30,6 @@ class acp_profile
 
 		$action = (isset($_POST['create'])) ? 'create' : request_var('action', '');
 
-		$this->u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 		$error = array();
 		$s_hidden_fields = '';
 

@@ -13,6 +13,8 @@
 */
 class acp_ranks
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -28,8 +30,6 @@ class acp_ranks
 
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		switch ($action)
 		{
@@ -48,7 +48,7 @@ class acp_ranks
 
 				if (!$rank_title)
 				{
-					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action));
 				}
 
 				$sql_ary = array(
@@ -72,7 +72,7 @@ class acp_ranks
 
 				$cache->destroy('ranks');
 
-				trigger_error($message . adm_back_link($u_action));
+				trigger_error($message . adm_back_link($this->u_action));
 
 			break;
 
@@ -92,11 +92,11 @@ class acp_ranks
 
 					$cache->destroy('ranks');
 
-					trigger_error($user->lang['RANK_REMOVED'] . adm_back_link($u_action));
+					trigger_error($user->lang['RANK_REMOVED'] . adm_back_link($this->u_action));
 				}
 				else
 				{
-					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($u_action));
+					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action));
 				}
 
 			break;
@@ -154,9 +154,9 @@ class acp_ranks
 
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
-					'U_BACK'			=> $u_action,
+					'U_BACK'			=> $this->u_action,
 					'RANKS_PATH'		=> $phpbb_root_path . $config['ranks_path'],
-					'U_ACTION'			=> $u_action . '&amp;id=' . $rank_id,
+					'U_ACTION'			=> $this->u_action . '&amp;id=' . $rank_id,
 
 					'RANK_TITLE'		=> (isset($ranks['rank_title'])) ? $ranks['rank_title'] : '',
 					'S_FILENAME_LIST'	=> $filename_list,
@@ -172,7 +172,7 @@ class acp_ranks
 		}
 	
 		$template->assign_vars(array(
-			'U_ACTION'		=> $u_action)
+			'U_ACTION'		=> $this->u_action)
 		);
 
 		$sql = 'SELECT *
@@ -190,8 +190,8 @@ class acp_ranks
 				'RANK_TITLE'		=> $row['rank_title'],
 				'MIN_POSTS'			=> $row['rank_min'],
 
-				'U_EDIT'			=> $u_action . '&amp;action=edit&amp;id=' . $row['rank_id'],
-				'U_DELETE'			=> $u_action . '&amp;action=delete&amp;id=' . $row['rank_id'])
+				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;id=' . $row['rank_id'],
+				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'])
 			);	
 		}
 		$db->sql_freeresult($result);

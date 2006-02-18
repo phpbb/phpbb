@@ -40,8 +40,6 @@ class acp_styles
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 		$style_id = request_var('id', 0);
 
-		$this->u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
-
 		// Fill the configuration variables
 		$this->style_cfg = $this->template_cfg = $this->theme_cfg = $this->imageset_cfg = '
 #

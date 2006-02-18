@@ -1215,6 +1215,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$err = '';
 
+	// Make sure user->setup() has been called
+	if (empty($user->lang))
+	{
+		$user->setup();
+	}
+
 	if (isset($_POST['login']))
 	{
 		$username	= request_var('username', '');
@@ -1229,9 +1235,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// If admin authentication
 			if ($admin)
 			{
-				add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
+				if ($auth->acl_get('a_'))
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
+				}
+				else
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				}
 			}
-						
+
 			$redirect = request_var('redirect', "index.$phpEx$SID");
 			meta_refresh(3, $redirect);
 

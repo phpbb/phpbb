@@ -13,6 +13,8 @@
 */
 class acp_ban
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
@@ -27,8 +29,6 @@ class acp_ban
 		$user->add_lang('acp/ban');
 		$this->tpl_name = 'acp_ban';
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
-
 		// Ban submitted?
 		if ($bansubmit)
 		{
@@ -42,7 +42,7 @@ class acp_ban
 
 			user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
 
-			trigger_error($user->lang['BAN_UPDATE_SUCESSFUL'] . adm_back_link($u_action));
+			trigger_error($user->lang['BAN_UPDATE_SUCESSFUL'] . adm_back_link($this->u_action));
 		}
 		else if ($unbansubmit)
 		{
@@ -50,7 +50,7 @@ class acp_ban
 
 			user_unban($mode, $ban);
 
-			trigger_error($user->lang['BAN_UPDATE_SUCESSFUL'] . adm_back_link($u_action));
+			trigger_error($user->lang['BAN_UPDATE_SUCESSFUL'] . adm_back_link($this->u_action));
 		}
 
 		// Ban length options
@@ -176,7 +176,7 @@ class acp_ban
 			'S_BANNED_OPTIONS'	=> ($banned_options) ? true : false,
 			'BANNED_OPTIONS'	=> $banned_options,
 			
-			'U_ACTION'			=> $u_action,
+			'U_ACTION'			=> $this->u_action,
 			'U_FIND_USER'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_ban&amp;field=ban",
 			)
 		);

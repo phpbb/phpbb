@@ -13,6 +13,8 @@
 */
 class acp_users
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
@@ -21,8 +23,6 @@ class acp_users
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
 		$this->page_title = 'ACP_USER_' . strtoupper($mode);
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
@@ -63,7 +63,7 @@ class acp_users
 			$this->page_title = 'SELECT_USER';
 
 			$template->assign_vars(array(
-				'U_ACTION'			=> $u_action,
+				'U_ACTION'			=> $this->u_action,
 				'ANONYMOUS_USER_ID'	=> ANONYMOUS,
 
 				'S_SELECT_USER'		=> true,
@@ -85,7 +85,7 @@ class acp_users
 
 			if (!$user_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($u_action));
+				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -101,7 +101,7 @@ class acp_users
 
 		if (!$user_row)
 		{
-			trigger_error($user->lang['NO_USER'] . adm_back_link($u_action));
+			trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 		}
 
 		// Generate overall "header" for user admin
@@ -122,9 +122,9 @@ class acp_users
 		}
 
 		$template->assign_vars(array(
-			'U_BACK'			=> $u_action,
+			'U_BACK'			=> $this->u_action,
 			'U_MODE_SELECT'		=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;u=$user_id",
-			'U_ACTION'			=> $u_action . '&amp;u=' . $user_id,
+			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
 			'S_FORM_OPTIONS'	=> $s_form_options)
 		);
 
@@ -143,7 +143,7 @@ class acp_users
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
-							trigger_error($user->lang['NO_ADMIN'] . adm_back_link($u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						}
 
 						if (confirm_box(true))
@@ -151,7 +151,7 @@ class acp_users
 							user_delete($delete_type, $user_id);
 
 							add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
-							trigger_error($user->lang['USER_DELETED'] . adm_back_link($u_action));
+							trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
 						}
 						else
 						{
@@ -213,7 +213,7 @@ class acp_users
 							add_log('admin', $log, $user->lang['reason']);
 							add_log('user', $user_id, $log, $user->lang['reason']);
 
-							trigger_error($user->lang['BAN_SUCCESSFULL'] . adm_back_link($u_action));
+							trigger_error($user->lang['BAN_SUCCESSFULL'] . adm_back_link($this->u_action));
 
 						break;
 
@@ -261,7 +261,7 @@ class acp_users
 								add_log('admin', 'LOG_USER_REACTIVATE', $user_row['username']);
 								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
 
-								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($u_action));
+								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($this->u_action));
 							}
 
 						break;
@@ -275,7 +275,7 @@ class acp_users
 
 							add_log('user', $user_id, $log . '_USER');
 
-							trigger_error($user->lang[$message] . adm_back_link($u_action));
+							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 
 						break;
 
@@ -294,7 +294,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
 
-							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($u_action));
+							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($this->u_action));
 
 						break;
 
@@ -321,7 +321,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_AVATAR_USER');
 
-							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($u_action));
+							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($this->u_action));
 						break;
 
 						case 'delposts':
@@ -370,7 +370,7 @@ class acp_users
 								delete_posts('poster_id', $user_id);
 
 								add_log('admin', 'LOG_USER_DEL_POSTS', $user_row['username']);
-								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($u_action));
+								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action));
 							}
 							else
 							{
@@ -392,7 +392,7 @@ class acp_users
 								delete_attachments('user', $user_id);
 
 								add_log('admin', 'LOG_USER_DEL_ATTACH', $user_row['username']);
-								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($u_action));
+								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action));
 							}
 							else
 							{
@@ -417,8 +417,8 @@ class acp_users
 
 								$template->assign_vars(array(
 									'S_SELECT_FORUM'		=> true,
-									'U_ACTION'				=> $u_action . "&amp;action=$action&amp;u=$user_id",
-									'U_BACK'				=> $u_action . "&amp;u=$user_id",
+									'U_ACTION'				=> $this->u_action . "&amp;action=$action&amp;u=$user_id",
+									'U_BACK'				=> $this->u_action . "&amp;u=$user_id",
 									'S_FORUM_OPTIONS'		=> make_forum_select(false, false, false, true))
 								);
 
@@ -540,7 +540,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
 
-							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($u_action));
+							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action));
 
 						break;
 					}
@@ -670,7 +670,7 @@ class acp_users
 
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
 
-						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($u_action));
+						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -701,8 +701,8 @@ class acp_users
 					'S_USER_FOUNDER'	=> ($user_row['user_type'] == USER_FOUNDER) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 
-					'U_SHOW_IP'		=> $u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
-					'U_WHOIS'		=> $u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
+					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
+					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
 					
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
@@ -762,7 +762,7 @@ class acp_users
 					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
 
-					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($u_action));
+					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action));
 				}
 				
 				// Sorting
@@ -785,7 +785,7 @@ class acp_users
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
 					'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -916,7 +916,7 @@ class acp_users
 							}
 						}
 
-						trigger_error($user->lang['USER_PROFILE_UPDATED'] . adm_back_link($u_action));
+						trigger_error($user->lang['USER_PROFILE_UPDATED'] . adm_back_link($this->u_action));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1085,7 +1085,7 @@ class acp_users
 							WHERE user_id = $user_id";
 						$db->sql_query($sql);
 
-						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($u_action));
+						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1303,7 +1303,7 @@ class acp_users
 							}
 						}
 
-						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($u_action));
+						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1368,7 +1368,7 @@ class acp_users
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
 
-					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($u_action));
+					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action));
 				}
 				
 				$sql = 'SELECT * 
@@ -1432,7 +1432,7 @@ class acp_users
 							WHERE user_id = ' . $user_id;
 						$db->sql_query($sql);
 
-						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($u_action));
+						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action));
 					}
 	
 					// Replace "error" strings with their real, localised form
@@ -1508,7 +1508,7 @@ class acp_users
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
 						add_log('admin', $log, implode(', ', $log_attachments));
-						trigger_error($message . adm_back_link($u_action));
+						trigger_error($message . adm_back_link($this->u_action));
 					}
 					else
 					{
@@ -1599,7 +1599,7 @@ class acp_users
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
 
-					'PAGINATION'		=> generate_pagination($u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
+					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
 				);
 
 			break;
@@ -1628,12 +1628,12 @@ class acp_users
 						{
 							if (!$group_id)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 
 							if ($error = group_user_del($group_id, $user_id))
 							{
-								trigger_error($user->lang[$error] . adm_back_link($u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 						
 							$error = array();
@@ -1657,13 +1657,13 @@ class acp_users
 				{
 					if (!$group_id)
 					{
-						trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Add user/s to group
 					if ($error = group_user_add($group_id, $user_id))
 					{
-						trigger_error($user->lang[$error] . adm_back_link($u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					$error = array();
@@ -1722,9 +1722,9 @@ class acp_users
 					{
 						$template->assign_block_vars('group', array(
 							'U_EDIT_GROUP'		=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;back_link=acp_users_groups',
-							'U_DEFAULT'			=> $u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
-							'U_DEMOTE_PROMOTE'	=> $u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
-							'U_DELETE'			=> $u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
 
 							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name'],
 							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE'],

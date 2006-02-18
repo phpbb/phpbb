@@ -13,6 +13,8 @@
 */
 class acp_bbcodes
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -26,8 +28,6 @@ class acp_bbcodes
 
 		$this->tpl_name = 'acp_bbcodes';
 		$this->page_title = 'ACP_BBCODES';
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		// Set up mode-specific vars
 		switch ($action)
@@ -80,8 +80,8 @@ class acp_bbcodes
 
 				$template->assign_vars(array(
 					'S_EDIT_BBCODE'		=> true,
-					'U_BACK'			=> $u_action,
-					'U_ACTION'			=> $u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
+					'U_BACK'			=> $this->u_action,
+					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
 
 					'BBCODE_MATCH'		=> $bbcode_match,
 					'BBCODE_TPL'		=> $bbcode_tpl,
@@ -165,7 +165,7 @@ class acp_bbcodes
 
 				add_log('admin', $log_action, $data['bbcode_tag']);
 
-				trigger_error($user->lang[$lang] . adm_back_link($u_action));
+				trigger_error($user->lang[$lang] . adm_back_link($this->u_action));
 
 			break;
 
@@ -186,7 +186,7 @@ class acp_bbcodes
 		}
 
 		$template->assign_vars(array(
-			'U_ACTION'		=> $u_action . '&amp;mode=add')
+			'U_ACTION'		=> $this->u_action . '&amp;mode=add')
 		);
 
 		$sql = 'SELECT *
@@ -198,8 +198,8 @@ class acp_bbcodes
 		{
 			$template->assign_block_vars('bbcodes', array(
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
-				'U_EDIT'			=> $u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
-				'U_DELETE'			=> $u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'])
+				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
+				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'])
 			);
 		}
 		$db->sql_freeresult($result);

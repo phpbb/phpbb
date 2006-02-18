@@ -14,6 +14,8 @@
 */
 class acp_groups
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
@@ -22,8 +24,6 @@ class acp_groups
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
 		$this->page_title = 'ACP_GROUPS_MANAGE';
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -53,7 +53,7 @@ class acp_groups
 
 			if (!$group_row)
 			{
-				trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -65,7 +65,7 @@ class acp_groups
 			case 'promote':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 				}
 			
 				// Approve, demote or promote
@@ -86,13 +86,13 @@ class acp_groups
 					break;
 				}
 
-				trigger_error($user->lang[$message] . adm_back_link($u_action));
+				trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 			break;
 
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 				}
 
 				if (confirm_box(true))
@@ -135,7 +135,7 @@ class acp_groups
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 					}
 
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($u_action));
+					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -156,7 +156,7 @@ class acp_groups
 				{
 					if (!$group_id)
 					{
-						trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 					}
 
 					$error = '';
@@ -174,11 +174,11 @@ class acp_groups
 
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($u_action));
+						trigger_error($user->lang[$error] . adm_back_link($this->u_action));
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
-					trigger_error($user->lang[$message] . adm_back_link($u_action));
+					trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -195,12 +195,12 @@ class acp_groups
 			case 'addusers':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action));
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
@@ -208,11 +208,11 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($u_action));
+					trigger_error($user->lang[$error] . adm_back_link($this->u_action));
 				}
 
 				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($user->lang[$message] . adm_back_link($u_action));
+				trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 			break;
 
 			case 'edit':
@@ -222,7 +222,7 @@ class acp_groups
 
 				if ($action == 'edit' && !$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 				}
 
 				$error = array();
@@ -318,7 +318,7 @@ class acp_groups
 					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_attributes)))
 					{
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-						trigger_error($user->lang[$message] . adm_back_link($u_action));
+						trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 					}
 				}
 				else if (!$group_id)
@@ -392,7 +392,7 @@ class acp_groups
 					break;
 
 					default:
-						$u_back = $u_action;
+						$u_back = $this->u_action;
 					break;
 				}
 
@@ -432,7 +432,7 @@ class acp_groups
 
 					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=settings&name=group_colour",
-					'U_ACTION'			=> "{$u_action}&amp;action=$action&amp;g=$group_id",
+					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
 					)
 				);
@@ -444,7 +444,7 @@ class acp_groups
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 				}
 
 				$this->page_title = 'GROUP_MEMBERS';
@@ -509,10 +509,10 @@ class acp_groups
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 
 					'S_ON_PAGE'		=> on_page($total_members, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
+					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
 
-					'U_ACTION'			=> $u_action . "&amp;g=$group_id",
-					'U_BACK'			=> $u_action,
+					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
+					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=list&amp;field=usernames")
 				);
 
@@ -561,7 +561,7 @@ class acp_groups
 		}
 
 		$template->assign_vars(array(
-			'U_ACTION'		=> $u_action,
+			'U_ACTION'		=> $this->u_action,
 			)
 		);
 
@@ -606,10 +606,10 @@ class acp_groups
 				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 				
 				$template->assign_block_vars('groups', array(
-					'U_LIST'		=> "{$u_action}&amp;action=list&amp;g=$group_id",
-					'U_DEFAULT'		=> "{$u_action}&amp;action=default&amp;g=$group_id",
-					'U_EDIT'		=> "{$u_action}&amp;action=edit&amp;g=$group_id",
-					'U_DELETE'		=> "{$u_action}&amp;action=delete&amp;g=$group_id",
+					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
+					'U_DEFAULT'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
+					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
+					'U_DELETE'		=> "{$this->u_action}&amp;action=delete&amp;g=$group_id",
 
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 					

@@ -13,15 +13,13 @@
 */
 class acp_prune
 {
-	var $u_action = '';
+	var $u_action;
 
 	function main($id, $mode)
 	{
 		global $user, $phpEx, $SID, $phpbb_admin_path;
 
 		$user->add_lang('acp/prune');
-
-		$this->u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		switch ($mode)
 		{

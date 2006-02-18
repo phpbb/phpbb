@@ -13,6 +13,8 @@
 */
 class acp_disallow
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -29,8 +31,6 @@ class acp_disallow
 		$disallow = (isset($_POST['disallow'])) ? true : false;
 		$allow = (isset($_POST['allow'])) ? true : false;
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
-
 		if ($disallow)
 		{
 			$disallowed_user = str_replace('*', '%', request_var('disallowed_user', ''));
@@ -45,7 +45,7 @@ class acp_disallow
 				add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
 			}
 
-			trigger_error($message . adm_back_link($u_action));
+			trigger_error($message . adm_back_link($this->u_action));
 		}
 		else if ($allow)
 		{
@@ -53,7 +53,7 @@ class acp_disallow
 
 			if (!$disallowed_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($u_action));
+				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 			}
 
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . "
@@ -62,7 +62,7 @@ class acp_disallow
 
 			add_log('admin', 'LOG_DISALLOW_DELETE');
 
-			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($u_action));
+			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
 		}
 
 		// Grab the current list of disallowed usernames...
@@ -78,7 +78,7 @@ class acp_disallow
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'U_ACTION'				=> $u_action,
+			'U_ACTION'				=> $this->u_action,
 			'S_DISALLOWED_NAMES'	=> $disallow_select)
 		);
 	}

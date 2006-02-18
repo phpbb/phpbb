@@ -13,6 +13,8 @@
 */
 class acp_logs
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -35,8 +37,6 @@ class acp_logs
 
 		$this->tpl_name = 'acp_logs';
 		$this->log_type = constant('LOG_' . strtoupper($mode));
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
@@ -100,10 +100,10 @@ class acp_logs
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
-			'U_ACTION'		=> $u_action,
+			'U_ACTION'		=> $this->u_action,
 
 			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,

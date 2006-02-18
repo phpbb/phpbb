@@ -65,41 +65,27 @@ class p_master
 		{
 			global $cache;
 			
-			// Get active modules
+			// Get modules
 			$sql = 'SELECT *
 				FROM ' . MODULES_TABLE . "
 				WHERE module_class = '" . $db->sql_escape($p_class) . "'
 				ORDER BY left_id ASC";
 			$result = $db->sql_query($sql);
 			
-			$this->module_cache['modules'] = array();
+			$rows = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$this->module_cache['modules'][] = $row;
-			}
-			$db->sql_freeresult($result);
-			
-			// Get module parents
-			$this->module_cache['parents'] = array();
-			
-			// We pre-get all parents due to the huge amount of queries required if we do not do so. ;)
-			$sql = 'SELECT module_id, parent_id, left_id, right_id
-				FROM ' . MODULES_TABLE . '
-				ORDER BY left_id ASC';
-			$result = $db->sql_query($sql);
-
-			$parents = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$parents[$row['module_id']] = $row;
+				$rows[$row['module_id']] = $row;
 			}
 			$db->sql_freeresult($result);		
 
-			foreach ($this->module_cache['modules'] as $row)
+			$this->module_cache = array();
+			foreach ($rows as $module_id => $row)
 			{
-				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id'], $parents);
+				$this->module_cache['modules'][] = $row;
+				$this->module_cache['parents'][$row['module_id']] = $this->get_parents($row['parent_id'], $row['left_id'], $row['right_id'], $rows);
 			}
-			unset($parents);
+			unset($rows);
 
 			$file = '<?php $this->module_cache=' . $cache->format_array($this->module_cache) . "; ?>";
 
@@ -114,9 +100,13 @@ class p_master
 			unset($file);
 		}
 
-		$right = $depth = $i = 0;
-		$depth_ary = $disable = array();
+		// We "could" build a true tree with this function - maybe mod authors want to use this...
+		// Functions for traversing and manipulating the tree are not available though
+		// We might re-structure the module system to use true trees in 3.2.x...
+		// $tree = $this->build_tree($this->module_cache['modules'], $this->module_cache['parents']);
 
+		// Clean up module cache array to only let survive modules the user can access
+		$right_id = false;
 		foreach ($this->module_cache['modules'] as $key => $row)
 		{
 			// Not allowed to view module?
@@ -129,7 +119,50 @@ class p_master
 			// Category with no members, ignore
 			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
 			{
+				unset($this->module_cache['modules'][$key]);
 				continue;
+			}
+
+			// Skip branch
+			if ($right_id !== false)
+			{
+				if ($row['left_id'] < $right_id)
+				{
+					unset($this->module_cache['modules'][$key]);
+					continue;
+				}
+				
+				$right_id = false;
+			}
+
+			// Not enabled?
+			if (!$row['module_enabled'])
+			{
+				// If category is disabled then disable every child too
+				unset($this->module_cache['modules'][$key]);
+				$right_id = $row['right_id'];
+				continue;
+			}
+		}
+
+		// Re-index (this is needed, else we are not able to array_slice later)
+		$this->module_cache['modules'] = array_merge($this->module_cache['modules']);
+
+		// Now build the module array, but exclude completely empty categories...
+		$right_id = false;
+		$names = array();
+
+		foreach ($this->module_cache['modules'] as $key => $row)
+		{
+			// Skip branch
+			if ($right_id !== false)
+			{
+				if ($row['left_id'] < $right_id)
+				{
+					continue;
+				}
+				
+				$right_id = false;
 			}
 
 			// Category with no members on their way down (we have to check every level)
@@ -137,93 +170,46 @@ class p_master
 			{
 				$empty_category = true;
 
-				// If we do find members we can add this module to the array
-				$right_id = $row['right_id'];
-				
-				// Get branch (from this module to module with left_id >= right_id)
-				$temp_module_cache = array_slice($this->module_cache['modules'], $key + 1);
-
-				if (!sizeof($temp_module_cache))
+				// We go through the branch and look for an activated module
+				foreach (array_slice($this->module_cache['modules'], $key + 1) as $temp_row)
 				{
-					continue;
+					if ($temp_row['left_id'] > $row['left_id'] && $temp_row['left_id'] < $row['right_id'])
+					{
+						// Module there
+						if ($temp_row['module_name'] && $temp_row['module_enabled'])
+						{
+							$empty_category = false;
+							break;
+						}
+						continue;
+					}
+					break;
 				}
 
-				foreach ($temp_module_cache as $temp_row)
-				{
-					if ($temp_row['left_id'] >= $right_id)
-					{
-						break;
-					}
-
-					// Module there
-					if ($temp_row['module_name'] && $temp_row['module_enabled'])
-					{
-						$empty_category = false;
-						break;
-					}
-				}
-
-				unset($temp_module_cache);
-				
+				// Skip the branch
 				if ($empty_category)
 				{
+					$right_id = $row['right_id'];
 					continue;
 				}
 			}
 
-			// Not enabled?
-			if (!$row['module_enabled'])
-			{
-				// If category is disabled then disable every child too
-				if (!$row['module_name'])
-				{
-					$disable['left_id'] = $row['left_id'];
-					$disable['right_id'] = $row['right_id'];
-				}
-				
-				continue;
-			}
-			
-			if (sizeof($disable))
-			{
-				if ($row['left_id'] > $disable['left_id'] && $row['left_id'] < $disable['right_id'] && 
-					$row['right_id'] > $disable['left_id'] && $row['right_id'] < $disable['right_id'])
-				{
-					continue;
-				}
-
-				$disable = array();
-			}
-
-			if ($row['left_id'] < $right)
-			{
-				$depth++;
-				$depth_ary[$row['parent_id']] = $depth;
-			}
-			else if ($row['left_id'] > $right + 1)
-			{
-				if (!isset($depth_ary[$row['parent_id']]))
-				{
-					$depth = 0;
-				}
-				else
-				{
-					$depth = $depth_ary[$row['parent_id']];
-				}
-			}
-
-			$right = $row['right_id'];
+			$depth = sizeof($this->module_cache['parents'][$row['module_id']]);
 
 			// We need to prefix the functions to not create a naming conflict
 			$url_func = '_module_' . $row['module_name'] . '_' . $row['module_mode'] . '_url';
 			$lang_func = '_module_' . $row['module_name'];
 
-			$this->module_ary[$i] = array(
+			$names[$row['module_name'] . '_' . $row['module_mode']][] = true;
+			
+			$this->module_ary[] = array(
 				'depth'		=> $depth,
 
 				'id'		=> (int) $row['module_id'],
 				'parent'	=> (int) $row['parent_id'],
 				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
+
+				'is_duplicate'	=> ($row['module_name'] && sizeof($names[$row['module_name'] . '_' . $row['module_mode']]) > 1) ? true : false,
 
 				'name'		=> (string) $row['module_name'],
 				'mode'		=> (string) $row['module_mode'],
@@ -237,11 +223,9 @@ class p_master
 				'left'		=> $row['left_id'],
 				'right'		=> $row['right_id'],
 			);
-
-			$i++;
 		}
 
-		unset($this->module_cache['modules']);
+		unset($this->module_cache['modules'], $names);
 	}
 
 	/**
@@ -266,8 +250,19 @@ class p_master
 		return $is_auth;
 	}
 
+	/**
+	* Set active module
+	*/
 	function set_active($id = false, $mode = false)
 	{
+		$icat = false;
+
+		if (request_var('icat', ''))
+		{
+			$icat = $id;
+			$id = request_var('icat', '');
+		}
+
 		$category = false;
 		foreach ($this->module_ary as $row_id => $itep_ary)
 		{
@@ -276,12 +271,20 @@ class p_master
 			// If this is a module and no mode selected, select first mode
 			// If no category or module selected, go active for first module in first category
 			if (
-				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && $itep_ary['mode'] == $mode && !$itep_ary['cat']) ||
-				($itep_ary['parent'] === $category && !$itep_ary['cat']) ||
+				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && (($itep_ary['mode'] == $mode && !$itep_ary['cat']) || ($icat && $itep_ary['cat']))) ||
+				($itep_ary['parent'] === $category && !$itep_ary['cat'] && !$icat) ||
 				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && !$mode && !$itep_ary['cat']) ||
 				(!$id && !$mode && !$itep_ary['cat'])
 				)
 			{
+				if ($itep_ary['cat'])
+				{
+					$id = $icat;
+					$icat = false;
+
+					continue;
+				}
+
 				$this->p_id		= $itep_ary['id'];
 				$this->p_parent	= $itep_ary['parent'];
 				$this->p_name	= $itep_ary['name'];
@@ -293,7 +296,7 @@ class p_master
 
 				break;
 			}
-			else if (($itep_ary['cat'] && $itep_ary['id'] == $id) || ($itep_ary['parent'] === $category && $itep_ary['cat']))
+			else if (($itep_ary['cat'] && $itep_ary['id'] === (int) $id) || ($itep_ary['parent'] === $category && $itep_ary['cat']))
 			{
 				$category = $itep_ary['id'];
 			}
@@ -309,9 +312,10 @@ class p_master
 	*/
 	function load_active($mode = false)
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID;
 
 		$module_path = $phpbb_root_path . 'includes/' . $this->p_class;
+		$icat = request_var('icat', '');
 
 		if (!class_exists("{$this->p_class}_$this->p_name"))
 		{
@@ -338,6 +342,9 @@ class p_master
 
 			$this->module = new $instance($this);
 
+			// We pre-define the action parameter we are using all over the place
+			$this->module->u_action = "{$phpbb_admin_path}index.$phpEx$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+
 			// Execute the main method for the new instance, we send the module
 			// id and mode as parameters
 			$this->module->main(($this->p_name) ? $this->p_name : $this->p_id, $this->p_mode);
@@ -346,6 +353,9 @@ class p_master
 		}
 	}
 
+	/**
+	* Get parents
+	*/
 	function get_parents($parent_id, $left_id, $right_id, &$all_parents)
 	{
 		global $db;
@@ -370,10 +380,72 @@ class p_master
 
 		return $parents;
 	}
-	
+
+	/**
+	* Get tree branch
+	*/
+	function get_branch($left_id, $right_id, $remaining)
+	{
+		$branch = array();
+
+		foreach ($remaining as $key => $row)
+		{
+			if ($row['left_id'] > $left_id && $row['left_id'] < $right_id)
+			{
+				$branch[] = $row;
+				continue;
+			}
+			break;
+		}
+		
+		return $branch;
+	}
+
+	/**
+	* Build true binary tree from given array
+	*/
+	function build_tree(&$modules, &$parents)
+	{
+		$tree = array();
+
+		foreach ($modules as $row)
+		{
+			$branch = &$tree;
+
+			if ($row['parent_id'])
+			{
+				// Go through the tree to find our branch
+				$parent_tree = $parents[$row['module_id']];
+					
+				foreach ($parent_tree as $id => $value)
+				{
+					if (!isset($branch[$id]) && isset($branch['child']))
+					{
+						$branch = &$branch['child'];
+					}
+					$branch = &$branch[$id];
+				}
+				$branch = &$branch['child'];
+			}
+
+			$branch[$row['module_id']] = $row;
+			if (!isset($branch[$row['module_id']]['child']))
+			{
+				$branch[$row['module_id']]['child'] = array();
+			}
+		}
+		
+		return $tree;
+	}
+
+	/**
+	* Build navigation structure
+	*/
 	function assign_tpl_vars($module_url)
 	{
 		global $template;
+
+		$current_id = false;
 
 		$current_padding = $current_depth = 0;
 		$linear_offset 	= 'l_block1';
@@ -388,6 +460,12 @@ class p_master
 			if (!$itep_ary['display'])
 			{
 				continue;
+			}
+
+			// Select first id we can get
+			if (!$current_id && (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id))
+			{
+				$current_id = $itep_ary['id'];
 			}
 
 			$depth = $itep_ary['depth'];
@@ -406,7 +484,7 @@ class p_master
 				}
 			}
 
-			$u_title = $module_url . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode']);
+			$u_title = $module_url . (($itep_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode']);
 			$u_title .= (!$itep_ary['cat'] && isset($itep_ary['url_extra'])) ? $itep_ary['url_extra'] : '';
 			
 			// Only output a categories items if it's currently selected
@@ -507,7 +585,7 @@ class p_master
 	{
 		foreach ($this->module_ary as $row_id => $itep_ary)
 		{
-			if ($itep_ary['mode'] === $id || $itep_ary['id'] === (int) $id)
+			if ($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id)
 			{
 				$this->module_ary[$row_id]['display'] = (int) $display;
 				break;

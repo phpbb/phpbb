@@ -13,12 +13,12 @@
 */
 class acp_attachments
 {
+	var $u_action;
+	
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
 		global $config, $SID, $phpbb_admin_path, $phpbb_root_path, $phpEx;
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -54,7 +54,7 @@ class acp_attachments
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$l_title],
 			'L_TITLE_EXPLAIN'	=> $user->lang[$l_title . '_EXPLAIN'],
-			'U_ACTION'			=> $u_action,
+			'U_ACTION'			=> $this->u_action,
 			)
 		);
 
@@ -125,7 +125,7 @@ class acp_attachments
 
 					if (!sizeof($error))
 					{
-						trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($u_action));
+						trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 					}
 				}
 
@@ -185,7 +185,7 @@ class acp_attachments
 					'LINK_WIDTH'			=> $new['img_link_width'],
 					'LINK_HEIGHT'			=> $new['img_link_height'],
 
-					'U_SEARCH_IMAGICK'		=> $u_action . '&amp;action=imgmagick',
+					'U_SEARCH_IMAGICK'		=> $this->u_action . '&amp;action=imgmagick',
 
 					'S_QUOTA_SIZE_OPTIONS'		=> $s_quota_size_options,
 					'S_MAX_FILESIZE_OPTIONS'	=> $s_size_options,
@@ -537,7 +537,7 @@ class acp_attachments
 
 							$this->rewrite_extensions();
 
-							trigger_error($user->lang['EXTENSION_GROUP_DELETED'] . adm_back_link($u_action));
+							trigger_error($user->lang['EXTENSION_GROUP_DELETED'] . adm_back_link($this->u_action));
 						}
 						else
 						{
@@ -556,7 +556,7 @@ class acp_attachments
 					
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($u_action));
+							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action));
 						}
 
 						$sql = 'SELECT * FROM ' . EXTENSION_GROUPS_TABLE . "
@@ -738,7 +738,7 @@ class acp_attachments
 				
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($u_action));
+							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action));
 						}
 
 						$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
@@ -765,9 +765,9 @@ class acp_attachments
 					$template->assign_block_vars('groups', array(
 						'S_ADD_SPACER'	=> $s_add_spacer,
 
-						'U_EDIT'		=> $u_action . "&amp;action=edit&amp;g={$row['group_id']}",
-						'U_DELETE'		=> $u_action . "&amp;action=delete&amp;g={$row['group_id']}",
-						'U_ACT_DEACT'	=> $u_action . "&amp;action=$act_deact&amp;g={$row['group_id']}",
+						'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$row['group_id']}",
+						'U_DELETE'		=> $this->u_action . "&amp;action=delete&amp;g={$row['group_id']}",
+						'U_ACT_DEACT'	=> $this->u_action . "&amp;action=$act_deact&amp;g={$row['group_id']}",
 						
 						'L_ACT_DEACT'	=> $user->lang[strtoupper($act_deact)],
 						'GROUP_NAME'	=> $row['group_name'],

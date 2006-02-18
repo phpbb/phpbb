@@ -11,7 +11,6 @@
 /**
 */
 define('IN_PHPBB', 1);
-define('IN_ADMIN', true);
 define('NEED_SID', true);
 
 // Include files
@@ -47,18 +46,21 @@ if (!$auth->acl_get('a_'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
+// We define it now, because the user is now able to use the admin related features...
+define('IN_ADMIN', true);
+
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;
 $file_uploads 	= (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
 $module_id		= request_var('i', '');
 $mode			= request_var('mode', '');
 
-// Force pagination seperation for admin style
-$user->theme['pagination_sep'] = '';
-
 // Set custom template for admin area
 $template->set_custom_template($phpbb_admin_path . 'style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
+
+// Force pagination seperation for admin style
+$user->theme['pagination_sep'] = '';
 
 // Instantiate new module
 $module = new p_master();

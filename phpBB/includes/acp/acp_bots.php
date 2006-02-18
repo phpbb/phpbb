@@ -13,6 +13,8 @@
 */
 class acp_bots
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
@@ -33,8 +35,6 @@ class acp_bots
 		$user->add_lang('acp/bots');
 		$this->tpl_name = 'acp_bots';
 		$this->page_title = 'ACP_BOTS';
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		// User wants to do something, how inconsiderate of them!
 		switch ($action)
@@ -105,7 +105,7 @@ class acp_bots
 					$cache->destroy('bots');
 
 					add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
-					trigger_error($user->lang['BOT_DELETED'] . adm_back_link($u_action));
+					trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
 				}
 			break;
 
@@ -157,7 +157,7 @@ class acp_bots
 
 							if (!$group_row)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($u_action . "&amp;id=$bot_id&amp;action=$action"));
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
 							}
 
 							$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
@@ -202,7 +202,7 @@ class acp_bots
 
 							if (!$row)
 							{
-								trigger_error($user->lang['NO_BOT'] . adm_back_link($u_action . "&amp;id=$bot_id&amp;action=$action"));
+								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
 							}
 
 							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
@@ -227,7 +227,7 @@ class acp_bots
 						$cache->destroy('bots');
 				
 						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
-						trigger_error($user->lang['BOT_' . $log] . adm_back_link($u_action . "&amp;id=$bot_id&amp;action=$action"));
+						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
 					}
 				}
 				else if ($bot_id)
@@ -242,7 +242,7 @@ class acp_bots
 
 					if (!$bot_row)
 					{
-						trigger_error($user->lang['NO_BOT'] . adm_back_link($u_action . "&amp;id=$bot_id&amp;action=$action"));
+						trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];
@@ -265,8 +265,8 @@ class acp_bots
 
 				$template->assign_vars(array(
 					'L_TITLE'		=> $user->lang['BOT_' . $l_title],
-					'U_ACTION'		=> $u_action . "&amp;id=$bot_id&amp;action=$action",
-					'U_BACK'		=> $u_action,
+					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
+					'U_BACK'		=> $this->u_action,
 					'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 					
 					'BOT_NAME'		=> $bot_row['bot_name'],
@@ -294,7 +294,7 @@ class acp_bots
 		}
 
 		$template->assign_vars(array(
-			'U_ACTION'		=> $u_action,
+			'U_ACTION'		=> $this->u_action,
 			'S_BOT_OPTIONS'	=> $s_options)
 		);
 
@@ -314,10 +314,10 @@ class acp_bots
 				'BOT_ID'		=> $row['bot_id'],
 				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang['BOT_NEVER'],
 
-				'U_ACTIVATE_DEACTIVATE'	=> $u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
+				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
 				'L_ACTIVATE_DEACTIVATE'	=> $user->lang[$active_lang],
-				'U_EDIT'				=> $u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
-				'U_DELETE'				=> $u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
+				'U_EDIT'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
+				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
 			);
 		}
 		$db->sql_freeresult($result);

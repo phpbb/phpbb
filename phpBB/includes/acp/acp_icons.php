@@ -14,6 +14,8 @@
 */
 class acp_icons
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -28,8 +30,6 @@ class acp_icons
 		$icon_id = request_var('id', 0);
 
 		$this->tpl_name = 'acp_icons';
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		// What are we working on?
 		switch ($mode)
@@ -170,8 +170,8 @@ class acp_icons
 					'COLSPAN'		=> $colspan,
 					'ID'			=> $icon_id,
 
-					'U_BACK'		=> $u_action,
-					'U_ACTION'		=> $u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify'),
+					'U_BACK'		=> $this->u_action,
+					'U_ACTION'		=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify'),
 					)
 				);
 
@@ -306,11 +306,11 @@ class acp_icons
 
 				if ($action == 'modify')
 				{
-					trigger_error($user->lang[$lang . '_EDITED'] . adm_back_link($u_action));
+					trigger_error($user->lang[$lang . '_EDITED'] . adm_back_link($this->u_action));
 				}
 				else
 				{
-					trigger_error($user->lang[$lang . '_ADDED'] . adm_back_link($u_action));
+					trigger_error($user->lang[$lang . '_ADDED'] . adm_back_link($this->u_action));
 				}
 
 			break;
@@ -358,7 +358,7 @@ class acp_icons
 
 					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
 					{
-						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($u_action));
+						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action));
 					}
 
 					foreach ($pak_ary as $pak_entry)
@@ -369,7 +369,7 @@ class acp_icons
 							if ((sizeof($data[1]) != 3 && $mode == 'icons') || 
 								(sizeof($data[1]) != 5 && $mode == 'smilies'))
 							{
-								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($u_action));
+								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action));
 							}
 
 							$img = stripslashes($data[1][0]);
@@ -427,7 +427,7 @@ class acp_icons
 					}
 
 					$cache->destroy('icons');
-					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($u_action));
+					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
 				}
 				else
 				{
@@ -450,8 +450,8 @@ class acp_icons
 						'L_CURRENT_EXPLAIN'	=> $user->lang['CURRENT_' . $lang . '_EXPLAIN'],
 						'L_IMPORT_SUBMIT'	=> $user->lang['IMPORT_' . $lang],
 
-						'U_BACK'		=> $u_action,
-						'U_ACTION'		=> $u_action . '&amp;action=import',
+						'U_BACK'		=> $this->u_action,
+						'U_ACTION'		=> $this->u_action . '&amp;action=import',
 						)
 					);
 				}
@@ -464,7 +464,7 @@ class acp_icons
 
 				$template->assign_vars(array(
 					'MESSAGE_TITLE'		=> $user->lang['EXPORT_' . $lang],
-					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $u_action . '&amp;action=send">', '</a>'))
+					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send">', '</a>'))
 				);
 
 				return;
@@ -509,7 +509,7 @@ class acp_icons
 				}
 				else
 				{
-					trigger_error($user->lang['NO_' . $fields . '_EXPORT'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_' . $fields . '_EXPORT'] . adm_back_link($this->u_action));
 				}
 
 			break;
@@ -594,9 +594,9 @@ class acp_icons
 
 			'S_SMILIES'			=> ($mode == 'smilies') ? true : false,
 
-			'U_ACTION'			=> $u_action,
-			'U_IMPORT'			=> $u_action . '&amp;action=import',
-			'U_EXPORT'			=> $u_action . '&amp;action=export',
+			'U_ACTION'			=> $this->u_action,
+			'U_IMPORT'			=> $this->u_action . '&amp;action=import',
+			'U_EXPORT'			=> $this->u_action . '&amp;action=export',
 			)
 		);
 
@@ -619,10 +619,10 @@ class acp_icons
 				'HEIGHT'		=> $row[$fields . '_height'],
 				'CODE'			=> (isset($row['code'])) ? $row['code'] : '',
 				'EMOTION'		=> (isset($row['emotion'])) ? $row['emotion'] : '',
-				'U_EDIT'		=> $u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
-				'U_DELETE'		=> $u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $u_action . '&amp;action=move_up&amp;order=' . $row[$fields . '_order'],
-				'U_MOVE_DOWN'	=> $u_action . '&amp;action=move_down&amp;order=' . $row[$fields . '_order'])
+				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
+				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;order=' . $row[$fields . '_order'],
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;order=' . $row[$fields . '_order'])
 			);
 
 			if (!$spacer && !$row['display_on_posting'])

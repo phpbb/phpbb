@@ -13,6 +13,8 @@
 */
 class acp_email
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
@@ -21,8 +23,6 @@ class acp_email
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
 		$this->page_title = 'ACP_MASS_EMAIL';
-
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		// Set some vars
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -87,7 +87,7 @@ class acp_email
 
 				if (!($row = $db->sql_fetchrow($result)))
 				{
-					trigger_error($user->lang['NO_USER'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 				}
 				$db->sql_freeresult($result);
 	
@@ -186,7 +186,7 @@ class acp_email
 
 				add_log('admin', 'LOG_MASS_EMAIL', $group_name);
 				$message = (!$errored) ? $user->lang['EMAIL_SENT'] : sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=logs&amp;mode=critical" . '">', '</a>');
-				trigger_error($message . adm_back_link($u_action));
+				trigger_error($message . adm_back_link($this->u_action));
 			}
 		}
 
@@ -206,7 +206,7 @@ class acp_email
 		$template->assign_vars(array(
 			'S_WARNING'				=> (sizeof($error)) ? true : false,
 			'WARNING_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'U_ACTION'				=> $u_action,
+			'U_ACTION'				=> $this->u_action,
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> $usernames,
 			'U_FIND_USERNAME'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_email&amp;field=usernames",

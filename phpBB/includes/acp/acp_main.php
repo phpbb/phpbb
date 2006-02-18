@@ -13,6 +13,8 @@
 */
 class acp_main
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template;

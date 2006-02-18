@@ -68,6 +68,9 @@ if (!($forum_data = $db->sql_fetchrow($result)))
 }
 $db->sql_freeresult($result);
 
+// Configure style, language, etc.
+$user->setup('viewforum', $forum_data['forum_style']);
+
 // Redirect to login upon emailed notification links
 if (isset($_GET['e']) && !$user->data['is_registered'])
 {
@@ -100,9 +103,6 @@ if ($forum_data['forum_link'])
 
 	redirect(str_replace('&amp;', '&', $forum_data['forum_link']));
 }
-
-// Configure style, language, etc.
-$user->setup('viewforum', $forum_data['forum_style']);
 
 // Forum is passworded ... check whether access has been granted to this
 // user this session, if not show login box

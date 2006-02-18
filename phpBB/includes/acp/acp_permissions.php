@@ -30,7 +30,6 @@ class acp_permissions
 		$user->add_lang('acp/permissions_phpbb');
 
 		$this->tpl_name = 'acp_permissions';
-		$this->u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		// Set some vars
 		$action = request_var('action', array('' => 0));
@@ -577,7 +576,7 @@ class acp_permissions
 	*/
 	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
-		global $user, $db;
+		global $user, $db, $auth;
 			
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';

@@ -13,6 +13,7 @@
 */
 class acp_board
 {
+	var $u_action;
 	var $new_config = array();
 
 	function main($id, $mode)
@@ -255,8 +256,6 @@ class acp_board
 				trigger_error('NO_MODE');
 		}
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
-		
 		if (isset($display_vars['lang']))
 		{
 			$user->add_lang($display_vars['lang']);
@@ -347,7 +346,7 @@ class acp_board
 		{
 			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
 
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($u_action));
+			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 
 		$this->tpl_name = 'acp_board';
@@ -356,7 +355,7 @@ class acp_board
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang[$display_vars['title']],
 			'L_TITLE_EXPLAIN'	=> $user->lang[$display_vars['title'] . '_EXPLAIN'],
-			'U_ACTION'			=> $u_action)
+			'U_ACTION'			=> $this->u_action)
 		);
 
 		// Output relevant page

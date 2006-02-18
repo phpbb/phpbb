@@ -13,6 +13,7 @@
 */
 class acp_language
 {
+	var $u_action;
 	var $main_files;
 	var $language_header = '';
 	var $lang_header = '';
@@ -54,15 +55,13 @@ class acp_language
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
-
 		switch ($action)
 		{
 			case 'update_details':
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
 				$sql = 'SELECT * FROM ' . LANG_TABLE . "
@@ -83,7 +82,7 @@ class acp_language
 					
 				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
 
-				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($u_action));
+				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 			break;
 
 			case 'submit_file':
@@ -91,12 +90,12 @@ class acp_language
 
 				if (!$lang_id || !isset($_POST['entry']) || !is_array($_POST['entry']))
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
 				if (!$this->language_file || (!$this->language_directory && !in_array($this->language_file, $this->main_files)))
 				{
-					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action));
 				}
 
 				$sql = 'SELECT * FROM ' . LANG_TABLE . "
@@ -235,7 +234,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 				
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
@@ -267,28 +266,28 @@ class acp_language
 					case 'email':
 						if (!in_array($this->language_file, $email_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
 						}
 					break;
 
 					case 'acp':
 						if (!in_array($this->language_file, $acp_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
 						}
 					break;
 
 					case 'mods':
 						if (!in_array($this->language_file, $mods_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
 						}
 					break;
 
 					default:
 						if (!in_array($this->language_file, $this->main_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
 						}
 				}
 				
@@ -300,8 +299,8 @@ class acp_language
 
 				$template->assign_vars(array(
 					'S_DETAILS'			=> true,
-					'U_ACTION'			=> $u_action . "&amp;action=details&amp;id=$lang_id",
-					'U_BACK'			=> $u_action,
+					'U_ACTION'			=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
+					'U_BACK'			=> $this->u_action,
 					'LANG_LOCAL_NAME'	=> $lang_entries['lang_local_name'],
 					'LANG_ENGLISH_NAME'	=> $lang_entries['lang_english_name'],
 					'LANG_ISO'			=> $lang_entries['lang_iso'],
@@ -392,7 +391,7 @@ class acp_language
 						$template->assign_vars(array(
 							'S_MISSING_VARS'			=> true,
 							'L_MISSING_VARS_EXPLAIN'	=> sprintf($user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries['lang_local_name']),
-							'U_MISSING_ACTION'			=> $u_action . "&amp;action=$action&amp;id=$lang_id")
+							'U_MISSING_ACTION'			=> $this->u_action . "&amp;action=$action&amp;id=$lang_id")
 						);						
 
 						foreach ($missing_vars as $file => $vars)
@@ -496,7 +495,7 @@ class acp_language
 
 				// Normal language pack entries
 				$template->assign_vars(array(
-					'U_ENTRY_ACTION'		=> $u_action . "&amp;action=details&amp;id=$lang_id#entries",
+					'U_ENTRY_ACTION'		=> $this->u_action . "&amp;action=details&amp;id=$lang_id#entries",
 					'S_EMAIL_FILE'			=> $is_email_file,
 					'S_FROM_STORE'			=> $file_from_store,
 					'S_LANG_OPTIONS'		=> $s_lang_options,
@@ -536,7 +535,7 @@ class acp_language
 			
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 				
 				$sql = 'SELECT * FROM ' . LANG_TABLE . '
@@ -547,7 +546,7 @@ class acp_language
 
 				if ($row['lang_iso'] == $config['default_lang'])
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action));
 				}
 
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
@@ -559,7 +558,7 @@ class acp_language
 					
 				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 				
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($u_action));
+				trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
 			break;
 
 			case 'install':
@@ -568,7 +567,7 @@ class acp_language
 
 				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/iso.txt"))
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($u_action));
+					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action));
 				}
 
 				$file = file("{$phpbb_root_path}language/$lang_iso/iso.txt");
@@ -587,13 +586,13 @@ class acp_language
 
 				if ($row = $db->sql_fetchrow($result))
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($u_action));
+					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action));
 				}
 				$db->sql_freeresult($result);
 
 				if (!$lang_pack['name'] || !$lang_pack['local_name'])
 				{
-					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($u_action));
+					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action));
 				}
 				
 				// Add language pack
@@ -609,7 +608,7 @@ class acp_language
 				
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 				
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($u_action));
+				trigger_error(sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($this->u_action));
 
 			break;
 
@@ -617,7 +616,7 @@ class acp_language
 		
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
 				$sql = 'SELECT * FROM ' . LANG_TABLE . '
@@ -653,8 +652,8 @@ class acp_language
 
 					$template->assign_vars(array(
 						'S_SELECT_METHOD'		=> true,
-						'U_BACK'				=> $u_action,
-						'U_ACTION'				=> $u_action . "&amp;action=$action&amp;id=$lang_id",
+						'U_BACK'				=> $this->u_action,
+						'U_ACTION'				=> $this->u_action . "&amp;action=$action&amp;id=$lang_id",
 						'RADIO_BUTTONS'			=> $radio_buttons)
 					);
 				
@@ -747,9 +746,9 @@ class acp_language
 			$tagstyle = ($row['lang_iso'] == $config['default_lang']) ? '*' : '';
 
 			$template->assign_block_vars('lang', array(
-					'U_DETAILS'			=> $u_action . "&amp;action=details&amp;id={$row['lang_id']}",
-					'U_DOWNLOAD'		=> $u_action . "&amp;action=download&amp;id={$row['lang_id']}",
-					'U_DELETE'			=> $u_action . "&amp;action=delete&amp;id={$row['lang_id']}",
+					'U_DETAILS'			=> $this->u_action . "&amp;action=details&amp;id={$row['lang_id']}",
+					'U_DOWNLOAD'		=> $this->u_action . "&amp;action=download&amp;id={$row['lang_id']}",
+					'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;id={$row['lang_id']}",
 
 					'ENGLISH_NAME'		=> $row['lang_english_name'],
 					'TAG'				=> $tagstyle,
@@ -797,7 +796,7 @@ class acp_language
 					'ISO'			=> $lang_ary['iso'],
 					'LOCAL_NAME'	=> $lang_ary['local_name'],
 					'NAME'			=> $lang_ary['name'],
-					'U_INSTALL'		=> $u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']))
+					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']))
 				);
 			}
 		}

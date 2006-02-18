@@ -14,6 +14,8 @@
 */
 class acp_jabber
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template;
@@ -31,7 +33,6 @@ class acp_jabber
 			return;
 		}
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 		$this->tpl_name = 'acp_jabber';
 		$this->page_title = 'ACP_JABBER_SETTINGS';
 
@@ -63,7 +64,7 @@ class acp_jabber
 			{
 				if (!$jabber->Connect())
 				{
-					trigger_error('Could not connect to Jabber server' . adm_back_link($u_action));
+					trigger_error('Could not connect to Jabber server' . adm_back_link($this->u_action));
 				}
 
 				// First we'll try to authorise using this account, if that fails we'll
@@ -93,12 +94,12 @@ class acp_jabber
 			{
 				if (!$jabber->Connect())
 				{
-					trigger_error('Could not connect to Jabber server' . adm_back_link($u_action));
+					trigger_error('Could not connect to Jabber server' . adm_back_link($this->u_action));
 				}
 
 				if (!$jabber->SendAuth())
 				{
-					trigger_error('Could not authorise on Jabber server' . adm_back_link($u_action));
+					trigger_error('Could not authorise on Jabber server' . adm_back_link($this->u_action));
 				}
 				$jabber->SendPresence(NULL, NULL, 'online');
 
@@ -140,7 +141,7 @@ class acp_jabber
 		if ($submit && !sizeof($error))
 		{
 			add_log('admin', 'LOG_' . $log);
-			trigger_error($message . adm_back_link($u_action));
+			trigger_error($message . adm_back_link($this->u_action));
 		}
 
 		if (sizeof($error))
@@ -152,7 +153,7 @@ class acp_jabber
 		}
 
 		$template->assign_vars(array(
-			'U_ACTION'				=> $u_action,
+			'U_ACTION'				=> $this->u_action,
 			'JAB_ENABLE'			=> $new['jab_enable'],
 			'L_JAB_SERVER_EXPLAIN'	=> sprintf($user->lang['JAB_SERVER_EXPLAIN'], '<a href="http://www.jabber.org/user/publicservers.php" rel="external">', '</a>'),
 			'JAB_HOST'				=> $new['jab_host'],
