@@ -179,6 +179,18 @@ class transfer
 	}
 
 	/**
+	* Rename a file or folder
+	*/
+	function rename($old_handle, $new_handle)
+	{
+		global $phpbb_root_path;
+
+		$old_handle = $this->root_path . '/' . str_replace($phpbb_root_path, '', $old_handle);
+		
+		return $this->_rename($old_handle, $new_handle);
+	}
+
+	/**
 	* Open session
 	*/
 	function open_session()
@@ -228,7 +240,19 @@ class ftp extends transfer
 		$this->timeout		= $timeout;
 		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path);
 
+		// Init some needed values
+		transfer::transfer();
+
 		return;
+	}
+
+	/**
+	* Requests data
+	*/
+	function data()
+	{
+		global $config;
+		return array('host' => 'localhost' , 'username' => 'anonymous', 'password' => '', 'root_path' => $config['script_path'], 'port' => 21, 'timeout' => 10);
 	}
 
 	/**
@@ -279,6 +303,14 @@ class ftp extends transfer
 	}
 
 	/**
+	* Remove directory (RMDIR)
+	*/
+	function _rename($old_handle, $new_handle)
+	{
+		return @ftp_rename($this->connection, $old_handle, $new_handle);
+	}
+
+	/**
 	* Change current working directory (CHDIR)
 	*/
 	function _chdir($dir = '')
@@ -296,9 +328,15 @@ class ftp extends transfer
 	*/
 	function _chmod($file, $perms)
 	{
-		$chmod_cmd = 'CHMOD 0' . $perms . ' ' . $file;
-		$err = $this->_site($chmod_cmd);
-
+		if (function_exists('ftp_chmod'))
+		{
+			$err = @ftp_chmod($this->connection, $perms, $file);
+		}
+		else
+		{
+			$chmod_cmd = 'CHMOD 0' . $perms . ' ' . $file;
+			$err = $this->_site($chmod_cmd);
+		}
 		return $err;
 	}
 

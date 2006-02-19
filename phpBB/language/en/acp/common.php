@@ -415,6 +415,7 @@ $lang = array_merge($lang, array(
 	'LOG_LANGUAGE_PACK_DELETED'		=> '<b>Deleted language pack</b><br />&#187; %s',
 	'LOG_LANGUAGE_PACK_INSTALLED'	=> '<b>Installed language pack</b><br />&#187; %s',
 	'LOG_LANGUAGE_PACK_UPDATED'		=> '<b>Updated language pack details</b><br />&#187; %s',
+	'LOG_LANGUAGE_FILE_REPLACED'	=> '<b>Replaced language file</b><br />&#187; %s',
 
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
 

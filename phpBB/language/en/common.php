@@ -92,6 +92,8 @@ $lang = array_merge($lang, array(
 	'CLICK_VIEW_PRIVMSG'	=> 'Click %sHere%s to visit your Inbox',
 	'CONFIRM'				=> 'Confirm',
 	'CONGRATULATIONS'		=> 'Congratulations to',
+	'CONNECTION_FAILED'		=> 'Connection failed',
+	'CONNECTION_SUCCESS'	=> 'Connection was successful!',
 	'COOKIES_DELETED'		=> 'All Board Cookies successfully deleted.',
 	'CURRENT_TIME'			=> 'The time is %s',
 
@@ -119,6 +121,7 @@ $lang = array_merge($lang, array(
 	'EMAIL_ADDRESS'						=> 'Email address',
 	'EMPTY_SUBJECT'						=> 'You must specify a subject when posting a new topic.',
 	'ENABLED'							=> 'Enabled',
+	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server',
 	'EXTENSION'							=> 'Extension',
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <b>%s</b> has been deactivated and can no longer be displayed',
 
@@ -140,6 +143,19 @@ $lang = array_merge($lang, array(
 	'FORUM_RULES'			=> 'Forum Rules',
 	'FORUM_RULES_LINK'		=> 'Please click to view the forum rules',
 	'FROM'					=> 'from',
+
+	'FTP_HOST'					=> 'FTP Host',
+	'FTP_HOST_EXPLAIN'			=> 'FTP Server used to connect your site',
+	'FTP_PASSWORD'				=> 'FTP Password',
+	'FTP_PASSWORD_EXPLAIN'		=> 'Password for your FTP Username',
+	'FTP_PORT'					=> 'FTP Port',
+	'FTP_PORT_EXPLAIN'			=> 'Port used to connect to your server',
+	'FTP_ROOT_PATH'				=> 'Path to phpBB',
+	'FTP_ROOT_PATH_EXPLAIN'		=> 'Path from the root to your phpBB board',
+	'FTP_TIMEOUT'				=> 'FTP Timeout',
+	'FTP_TIMEOUT_EXPLAIN'		=> 'The amount of time, in seconds, that the system will wait for a reply from your server',
+	'FTP_USERNAME'				=> 'FTP Username',
+	'FTP_USERNAME_EXPLAIN'		=> 'Username used to connect to your server',
 
 	'GO'						=> 'Go',
 	'GOTO_PAGE'					=> 'Goto page',

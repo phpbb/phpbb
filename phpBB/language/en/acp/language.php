@@ -37,10 +37,13 @@ $lang = array_merge($lang, array(
 	'FILE_CONTENTS'				=> 'File Contents',
 	'FILE_FROM_STORAGE'			=> 'File from storage folder',
 
+	'TEST_CONNECTION'			=> 'Test Connection',
+
 	'HELP_FILES'				=> 'Help Files',
 
 	'INSTALLED_LANGUAGE_PACKS'	=> 'Installed language packs',
 	'INVALID_LANGUAGE_PACK'		=> 'The selected language pack seems to be not valid. Please verify the language pack and upload it again if necessary.',
+	'INVALID_UPLOAD_METHOD'		=> 'The selected upload method is not valid, please choose a different method.',
 
 	'LANGUAGE_DETAILS_UPDATED'			=> 'Language details successfully updated',
 	'LANGUAGE_ENTRIES'					=> 'Language Entries',
@@ -74,11 +77,16 @@ $lang = array_merge($lang, array(
 
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download format',
 	'SUBMIT_AND_DOWNLOAD'		=> 'Submit and Download File',
+	'SUBMIT_AND_UPLOAD'		=> 'Submit and Upload File',
 
 	'THOSE_MISSING_LANG_FILES'			=> 'The following language files are missing from the %s language folder',
 	'THOSE_MISSING_LANG_VARIABLES'		=> 'The following language variables are missing from the <b>%s</b> language pack',
 
 	'UNINSTALLED_LANGUAGE_PACKS'	=> 'Uninstalled language packs',
+
+	'UPLOAD_COMPLETED'			=> 'The upload has completed',
+	'UPLOAD_METHOD'				=> 'Upload method',
+	'UPLOAD_SETTINGS'			=> 'Upload settings',
 
 	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid',
 ));

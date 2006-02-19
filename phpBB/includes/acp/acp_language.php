@@ -36,6 +36,8 @@ class acp_language
 
 		$action		= (isset($_POST['update_details'])) ? 'update_details' : $action;
 		$action		= (isset($_POST['download_file'])) ? 'download_file' : $action;
+		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : $action;
+		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : $action;
 		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : $action;
 		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
 
@@ -55,8 +57,106 @@ class acp_language
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
+		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
+
+		if ($action == 'upload_data' && request_var('test_connection', ''))
+		{
+			$test_connection = false;
+
+			$action = 'upload_file';
+
+			$method = request_var('method', '');
+
+			include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+
+			switch ($method)
+			{
+				case 'ftp':
+					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+				break;
+				default:
+					trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
+			}
+
+			$test_connection = $transfer->open_session();
+			$transfer->close_session();
+		}
+
 		switch ($action)
 		{
+			case 'upload_data':
+				if (!$lang_id)
+				{
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+				}
+
+				$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
+					WHERE lang_id = $lang_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$file = request_var('file', '');
+				$dir = request_var('dir', '');
+
+				$old_file = '/' . $this->get_filename($row['lang_iso'], $dir, $file, false, true);
+				$lang_path = 'language/' . $row['lang_iso'] . '/' . (($dir) ? $dir . '/' : '');
+
+				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+				$method = request_var('method', '');
+
+				switch ($method)
+				{
+					case 'ftp':
+						$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+					break;
+					default:
+						trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
+				}
+
+				if (!$transfer->open_session())
+				{
+					trigger_error($user->lang['ERR_CONNECTING_SERVER'] . adm_back_link($this->u_action));
+				}
+
+				$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
+				$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
+				$transfer->close_session();
+
+				add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
+
+				trigger_error($user->lang['UPLOAD_COMPLETED']);
+			break;
+
+			case 'upload_file':
+				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+
+				$method = request_var('method', '');
+
+				$requested_data = call_user_func(array($method, 'data'));
+				foreach ($requested_data as $data => $default)
+				{
+					$template->assign_block_vars('data', array(
+						'DATA'		=> $data,
+						'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
+						'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
+						'DEFAULT'	=> $_REQUEST[$data] ? request_var($data, '') : $default
+					));
+				}
+
+				$hidden_data = build_hidden_fields(array('file' => $this->language_file, 'dir' => $this->language_directory, 'method' => $method));
+
+				$template->assign_vars(array(
+					'S_UPLOAD'	=> true,
+					'NAME'		=> $method,
+					'U_ACTION'	=> $this->u_action . "&amp;id=$lang_id&amp;action=upload_data",
+					'HIDDEN'	=> $hidden_data,
+
+					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
+					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection === false) ? true : false
+				));
+				break;
+
 			case 'update_details':
 
 				if (!$lang_id)
@@ -297,6 +397,17 @@ class acp_language
 					@unlink($phpbb_root_path . $store_filename);
 				}
 
+				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+
+				$methods = transfer::methods();
+
+				foreach ($methods as $method)
+				{
+					$template->assign_block_vars('buttons', array(
+						'VALUE' => $method
+					));
+				}
+
 				$template->assign_vars(array(
 					'S_DETAILS'			=> true,
 					'U_ACTION'			=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
@@ -305,6 +416,7 @@ class acp_language
 					'LANG_ENGLISH_NAME'	=> $lang_entries['lang_english_name'],
 					'LANG_ISO'			=> $lang_entries['lang_iso'],
 					'LANG_AUTHOR'		=> $lang_entries['lang_author'],
+					'ALLOW_UPLOAD'		=> sizeof($methods)
 					)
 				);
 
@@ -824,6 +936,14 @@ class acp_language
 *
 */
 
+/**
+* DO NOT CHANGE
+*/
+if (empty($lang) || !is_array($lang))
+{
+	$lang = array();
+}
+
 // DEVELOPERS PLEASE NOTE
 //
 // Placeholders can now contain order information, e.g. instead of
@@ -836,16 +956,7 @@ class acp_language
 ';
 
 		$this->lang_header = '
-
-/**
-* DO NOT CHANGE
-*/
-if (empty($lang) || !is_array($lang))
-{
-	$lang = array();
-}
-
-$lang += array(
+$lang = array_merge($lang, array(
 ';
 
 		// Language files in language root directory

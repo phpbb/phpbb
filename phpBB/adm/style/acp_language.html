@@ -111,12 +111,12 @@
 			<input type="submit" name="remove_store" value="{L_REMOVE_FROM_STORAGE_FOLDER}" class="button2" /> 
 		</fieldset>
 	<!-- ENDIF -->
-		
+	
 	<fieldset class="quick" style="float: right;">
 		<select name="language_file">{S_LANG_OPTIONS}</select>&nbsp;<input type="submit" class="button2" name="change" value="{L_SELECT}" />
 	</fieldset>
 
-	<br /><br />
+	<br /><br /><br />
 
 	<table cellspacing="1">
 	<thead>
@@ -132,7 +132,7 @@
 	<!-- ENDIF -->
 	<tr>
 		<td class="row3"><b>{PRINT_MESSAGE}<!-- IF S_FROM_STORE --><br /><span style="color: red;">{L_FILE_FROM_STORAGE}</span><!-- ENDIF --></b></td>
-		<td class="row3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /></td>
+		<td class="row3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio"<!-- IF buttons.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> value="{buttons.VALUE}" name="method">&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
 	</tr>
 	</thead>
 	<tbody>
@@ -144,13 +144,50 @@
 		{TPL}
 	<!-- ENDIF -->
 	<tr>
-		<td class="row3" colspan="3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /></td>
+		<td class="row3" colspan="3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio" value="{buttons.VALUE}" name="method">&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
 	</tr>
 	</tbody>
 	</table>
 
 	</form>
+<!-- ELSEIF S_UPLOAD -->
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
 
+	<h1>{L_UPLOAD_SETTINGS}</h1>
+
+	<form id="upload" method="post" action="{U_ACTION}">
+
+	<!-- IF S_CONNECTION_SUCCESS -->
+		<div class="successbox">
+			<p>{L_CONNECTION_SUCCESS}</p>
+		</div>
+	<!-- ELSEIF S_CONNECTION_FAILED -->
+		<div class="errorbox">
+			<p>{L_CONNECTION_FAILED}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_UPLOAD_SETTINGS}</legend>
+	<dl>
+		<dt><label>{L_UPLOAD_METHOD}:</label></dt>
+		<dd><b>{NAME}</b></dd>
+	</dl>
+	<!-- BEGIN data -->
+	<dl>
+		<dt><label for="store">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
+		<dd><input type="text" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" checked="checked" /></dd>
+	</dl>
+	<!-- END data -->
+	</fieldset>
+	
+	<fieldset class="quick">
+		{HIDDEN}
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		<input class="button1" type="submit" name="test_connection" value="{L_TEST_CONNECTION}" />
+	</fieldset>
+
+	</form>
 <!-- ELSE -->
 
 	<h1>{L_ACP_LANGUAGE_PACKS}</h1>
