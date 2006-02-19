@@ -37,8 +37,6 @@ $lang = array_merge($lang, array(
 	'FILE_CONTENTS'				=> 'File Contents',
 	'FILE_FROM_STORAGE'			=> 'File from storage folder',
 
-	'TEST_CONNECTION'			=> 'Test Connection',
-
 	'HELP_FILES'				=> 'Help Files',
 
 	'INSTALLED_LANGUAGE_PACKS'	=> 'Installed language packs',

@@ -403,9 +403,10 @@ $lang = array_merge($lang, array(
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
 
-	'TERMS_USE'		=> 'Terms of Use',
-	'THE_TEAM'		=> 'The team',
-	'TIME'			=> 'Time',
+	'TERMS_USE'			=> 'Terms of Use',
+	'TEST_CONNECTION'	=> 'Test Connection',
+	'THE_TEAM'			=> 'The team',
+	'TIME'				=> 'Time',
 
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
 	'TOO_MANY_VOTE_OPTIONS'			=> 'You have tried to vote for too many options.',
