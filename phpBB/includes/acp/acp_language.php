@@ -57,7 +57,7 @@ class acp_language
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
-		$u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
+		$this->u_action = "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 		if ($action == 'upload_data' && request_var('test_connection', ''))
 		{
@@ -87,7 +87,7 @@ class acp_language
 			case 'upload_data':
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
 				$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
