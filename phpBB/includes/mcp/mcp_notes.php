@@ -112,13 +112,13 @@ function mcp_notes_user_view($id, $mode, $action)
 
 	$deletemark = ($action == 'del_marked') ? true : false;
 	$deleteall	= ($action == 'del_all') ? true : false;
-	$marked		= request_var('marknote', 0);
+	$marked		= request_var('marknote', array(0));
 	$usernote	= request_var('usernote', '');
 
 	// Handle any actions
 	if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 	{
-		$where_sql = " AND reportee_id = $user_id";
+		$where_sql = '';
 		if ($deletemark && $marked)
 		{
 			$sql_in = array();
@@ -130,17 +130,21 @@ function mcp_notes_user_view($id, $mode, $action)
 			unset($sql_in);
 		}
 
-		$sql = 'DELETE FROM ' . LOG_TABLE . '
-			WHERE log_type = ' . LOG_USERS . " 
-				$where_sql";
-		$db->sql_query($sql);
+		if ($where_sql || $deleteall)
+		{
+			$sql = 'DELETE FROM ' . LOG_TABLE . '
+				WHERE log_type = ' . LOG_USERS . " 
+					AND reportee_id = $user_id
+					$where_sql";
+			$db->sql_query($sql);
 
-		add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
+			add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
 
-		$msg = ($deletemark) ? 'MARKED_DELETED' : 'ALL_DELETED';
-		$redirect = "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id";
-		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			$msg = ($deletemark) ? 'MARKED_DELETED' : 'ALL_DELETED';
+			$redirect = "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id";
+			meta_refresh(2, $redirect);
+			trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+		}
 	}
 
 	if ($usernote && $action == 'add_feedback')
