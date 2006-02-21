@@ -886,41 +886,32 @@ class parse_message extends bbcode_firstpass
 	{
 		static $match;
 		static $replace;
-		
+
 		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
 
 		if (!is_array($match))
 		{
 			$match = $replace = array();
 			// Be sure to not let the matches cross over. ;)
-	
+
 			// relative urls for this board
-			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/(.*?([^ \t\n\r<"\'\)]*)?)#i';
+			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
 			$replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
-	
+
 			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#(^|[\n ]|\()([\w]+?://.*?([^ \t\n\r<"\'\)]*)?)#ie';
+			$match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
 			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
-	
+
 			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ]|\()(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\'\)]*)?)#ie';
+			$match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
 			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
-	
+
 			// matches an email@domain type address at the start of a line, or after a space.
-			$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.([\w\-\.]+\.)?[\w]+)#ie';
+			$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.(?:[\w\-\.]+\.)?[\w]+)#ie';
 			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 		}
-		
-		/* IMPORTANT NOTE (Developer inability to do advanced regular expressions) - Acyd Burn:  
-			Transforming &lt; (<) to <&amp;lt; in order to bypass the inability of preg_replace 
-			supporting multi-character sequences (POSIX - [..]). Since all message text is specialchared by
-			default a match against < will always fail, since it is a &lt; sequence within the text.
-			Replacing with <&amp;lt; and switching back thereafter produces no problems, because < will never show up with &amp;lt; in
-			the same text (due to this specialcharing). The < is put in front of &amp;lt; to let the url break gracefully.
-			I hope someone can lend me a hand here, telling me how to achive the wanted result without switching to ereg_replace.
-		*/
-		$this->message = preg_replace($match, $replace, str_replace('&lt;', '<&amp;lt;', $this->message));
-		$this->message = str_replace('<&amp;lt;', '&lt;', $this->message);
+
+		$this->message = preg_replace($match, $replace, $this->message);
 	}
 
 	// Parse Smilies
@@ -954,7 +945,7 @@ class parse_message extends bbcode_firstpass
 					break;
 			}
 			$result = $db->sql_query($sql, 600);
-	
+
 			if ($row = $db->sql_fetchrow($result))
 			{
 				$match = $replace = array();
@@ -973,7 +964,7 @@ class parse_message extends bbcode_firstpass
 			}
 			$db->sql_freeresult($result);
 		}
-		
+
 		if (sizeof($match))
 		{
 			if ($max_smilies)

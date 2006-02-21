@@ -213,13 +213,13 @@ class template_compile
 		$varrefs = array();
 
 		// This one will handle varrefs WITH namespaces
-		preg_match_all('#\{(([a-z0-9\-_]+?\.)+?)(\$)?([A-Z0-9\-_]+?)\}#', $text_blocks, $varrefs);
+		preg_match_all('#\{((?:[a-z0-9\-_]+\.)+)(\$)?([A-Z0-9\-_]+)\}#', $text_blocks, $varrefs);
 
 		for ($j = 0, $size = sizeof($varrefs[1]); $j < $size; $j++)
 		{
 			$namespace = $varrefs[1][$j];
-			$varname = $varrefs[4][$j];
-			$new = $this->generate_block_varref($namespace, $varname, true, $varrefs[3][$j]);
+			$varname = $varrefs[3][$j];
+			$new = $this->generate_block_varref($namespace, $varname, true, $varrefs[2][$j]);
 
 			$text_blocks = str_replace($varrefs[0][$j], $new, $text_blocks);
 		}
@@ -227,17 +227,17 @@ class template_compile
 		// This will handle the remaining root-level varrefs
 		if (!$this->template->static_lang)
 		{
-			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*?)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_([\w\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')); ?>", $text_blocks);
 		}
 		else
 		{
 			global $user;
 
-			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*?)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
+			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
 		}
-		
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "<?php echo (isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*?)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return;
 	}
@@ -253,7 +253,7 @@ class template_compile
 		// foo(-2)   : Will start the loop two entries from the end
 		// foo(3,4)  : Will start the loop on the fourth entry and end it on the fifth
 		// foo(3,-4) : Will start the loop on the fourth entry and end it four from last
-		if (preg_match('#^(.*?)\(([\-0-9]+)(,([\-0-9]+))?\)$#', $tag_args, $match))
+		if (preg_match('#^([^()]*)\(([\-\d]+)(?:,([\-\d]+))?\)$#', $tag_args, $match))
 		{
 			$tag_args = $match[1];
 			
@@ -266,17 +266,17 @@ class template_compile
 				$loop_start = '($_' . $tag_args . '_count < ' . $match[2] . ' ? $_' . $tag_args . '_count : ' . $match[2] . ')';
 			}
 
-			if (strlen($match[4]) < 1 || $match[4] == -1)
+			if (strlen($match[3]) < 1 || $match[3] == -1)
 			{
 				$loop_end = '$_' . $tag_args . '_count';
 			}
-			else if ($match[4] >= 0)
+			else if ($match[3] >= 0)
 			{
-				$loop_end = '(' . ($match[4] + 1) . ' > $_' . $tag_args . '_count ? $_' . $tag_args . '_count : ' . ($match[4] + 1) . ')';
+				$loop_end = '(' . ($match[3] + 1) . ' > $_' . $tag_args . '_count ? $_' . $tag_args . '_count : ' . ($match[3] + 1) . ')';
 			}
-			else //if ($match[4] < -1)
+			else //if ($match[3] < -1)
 			{
-				$loop_end = '$_' . $tag_args . '_count' . ($match[4] + 1);
+				$loop_end = '$_' . $tag_args . '_count' . ($match[3] + 1);
 			}
 		}
 		else
@@ -423,11 +423,11 @@ class template_compile
 					$i = $is_arg_start;
 
 				default:
-					if (preg_match('#^(([a-z0-9\-_]+?\.)+?)?(\$)?([A-Z]+[A-Z0-9\-_]+)$#s', $token, $varrefs))
+					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?([A-Z0-9\-_]+)$#s', $token, $varrefs))
 					{
-						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[3]) . '[\'' . $varrefs[4] . '\']' : (($varrefs[3]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[4] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[4] . '\']');
+						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[3] . '\']');
 					}
-					else if (preg_match('#^\.((([a-z0-9\-_]+)?\.?)+?)$#s', $token, $varrefs))
+					else if (preg_match('#^\.([a-z0-9\-_.]+)$#s', $token, $varrefs))
 					{
 						$_tok = $this->generate_block_data_ref($varrefs[1], false);
 						$token = "(isset($_tok) && sizeof($_tok))";
@@ -446,49 +446,49 @@ class template_compile
 	*/
 	function compile_tag_define($tag_args, $op)
 	{
-		preg_match('#^(([a-z0-9\-_]+?\.)+?)?\$([A-Z][A-Z0-9_\-]*?)( = (\'?)(.*?)(\'?))?$#', $tag_args, $match);
+		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$([A-Z][A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
 
-		if (empty($match[3]) || (empty($match[6]) && $op))
+		if (empty($match[2]) || (empty($match[4]) && $op))
 		{
 			return;
 		}
 
 		if (!$op)
 		{
-			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ');';
+			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
 		}
 
 		// Are we a string?
-		if ($match[5] && $match[7])
+		if ($match[3] && $match[5])
 		{
-			$match[6] = addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[6]));
+			$match[4] = addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[4]));
 
 			// Compile reference, we allow template variables in defines...
-			$match[6] = $this->compile($match[6]);
+			$match[4] = $this->compile($match[4]);
 
 			// Now replace the php code
-			$match[6] = "'" . str_replace(array('<?php echo ', '; ?>'), array("' . ", " . '"), $match[6]) . "'";
+			$match[4] = "'" . str_replace(array('<?php echo ', '; ?>'), array("' . ", " . '"), $match[4]) . "'";
 		}
 		else
 		{
-			preg_match('#(true|false|\.)#i', $match[6], $type);
+			preg_match('#true|false|\.#i', $match[4], $type);
 
 			switch (strtolower($type[1]))
 			{
 				case 'true':
 				case 'false':
-					$match[6] = strtoupper($match[6]);
+					$match[4] = strtoupper($match[4]);
 					break;
 				case '.';
-					$match[6] = doubleval($match[6]);
+					$match[4] = doubleval($match[4]);
 					break;
 				default:
-					$match[6] = intval($match[6]);
+					$match[4] = intval($match[4]);
 					break;
 			}
 		}
 
-		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[3] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[3] . '\']') . ' = ' . $match[6] . ';';
+		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $match[4] . ';';
 	}
 
 	/**

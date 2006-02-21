@@ -1704,7 +1704,7 @@ function split_sql_file($sql, $delimiter)
 			$total_quotes = preg_match_all("#'#", $tokens[$i], $matches);
 			// Counts single quotes that are preceded by an odd number of backslashes,
 			// which means they're escaped quotes.
-			$escaped_quotes = preg_match_all("#(?<!\\\\)(\\\\\\\\)*\\\\'#", $tokens[$i], $matches);
+			$escaped_quotes = preg_match_all("/(?<!\\\\)(?>\\\\{2})*\\\\'/", $tokens[$i], $matches);
 
 			$unescaped_quotes = $total_quotes - $escaped_quotes;
 
@@ -1733,7 +1733,7 @@ function split_sql_file($sql, $delimiter)
 					$total_quotes = preg_match_all("#'#", $tokens[$j], $matches);
 					// Counts single quotes that are preceded by an odd number of backslashes,
 					// which means they're escaped quotes.
-					$escaped_quotes = preg_match_all("#(?<!\\\\)(\\\\\\\\)*\\\\'#", $tokens[$j], $matches);
+					$escaped_quotes = preg_match_all("/(?<!\\\\)(?>\\\\{2})*\\\\'/", $tokens[$j], $matches);
 
 					$unescaped_quotes = $total_quotes - $escaped_quotes;
 

@@ -34,7 +34,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 		$$which_ary = array($$which_ary);
 	}
 
-	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^[\s]*(.*?)[\s]*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
 	unset($$which_ary);
 
 	// Grab the user id/username records
