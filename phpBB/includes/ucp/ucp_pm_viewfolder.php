@@ -121,56 +121,75 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 		$url = "{$phpbb_root_path}ucp.$phpEx$SID";
 
+		$data = array();
+
 		foreach ($folder_info['pm_list'] as $message_id)
 		{
 			$row = &$folder_info['rowset'][$message_id];
 
-			$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
-			$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
-
-			// Generate all URIs ...
-			$message_author = "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['author_id'] . '">' . $row['username'] . '</a>';
-			$view_message_url = "$url&amp;i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id";
-			$remove_message_url = "$url&amp;i=compose&amp;action=delete&amp;p=$message_id";
-
-			$row_indicator = '';
-			foreach ($color_rows as $var)
+			if (isset($_REQUEST['submit_export']))
 			{
-				if (($var != 'friend' && $var != 'foe' && $row[$var])
-					||
-					(($var == 'friend' || $var == 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
-				{
-					$row_indicator = $var;
-					break;
-				}
+				$sql = 'SELECT p.message_text
+					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
+					WHERE t.user_id = ' . $user->data['user_id'] . "
+						AND p.author_id = u.user_id
+						AND t.folder_id = $folder_id
+						AND t.msg_id = p.msg_id
+						AND p.msg_id = $message_id";
+				$result = $db->sql_query_limit($sql, 1);
+				$message_row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$data[] = array('subject' => censor_text($row['message_subject']), 'from' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '', 'message' => $message_row['message_text']);
 			}
+			else
+			{
+				$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
+				$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
-			// Send vars to template
-			$template->assign_block_vars('messagerow', array(
-				'PM_CLASS'			=> ($row_indicator) ? 'pm_' . $row_indicator . '_colour' : '',
+				// Generate all URIs ...
+				$message_author = "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['author_id'] . '">' . $row['username'] . '</a>';
+				$view_message_url = "$url&amp;i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id";
+				$remove_message_url = "$url&amp;i=compose&amp;action=delete&amp;p=$message_id";
 
-				'FOLDER_ID' 		=> $folder_id,
-				'MESSAGE_ID'		=> $message_id,
-				'MESSAGE_AUTHOR'	=> $message_author,
-				'SENT_TIME'		 	=> $user->format_date($row['message_time']),
-				'SUBJECT'			=> censor_text($row['message_subject']),
-				'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
-				'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? "$url&amp;folder=" . $row['folder_id'] : '',
-				'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
-				'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-				'PM_IMG'	 		=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-				'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+				$row_indicator = '';
+				foreach ($color_rows as $var)
+				{
+					if (($var != 'friend' && $var != 'foe' && $row[$var])
+						||
+						(($var == 'friend' || $var == 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
+					{
+						$row_indicator = $var;
+						break;
+					}
+				}
 
-				'S_PM_REPORTED'		=> (!empty($row['message_reported']) && $auth->acl_get('m_')) ? true : false,
-				'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
+				// Send vars to template
+				$template->assign_block_vars('messagerow', array(
+					'PM_CLASS'			=> ($row_indicator) ? 'pm_' . $row_indicator . '_colour' : '',
 
-				'U_VIEW_PM'			=> ($row['deleted']) ? '' : $view_message_url,
-				'U_REMOVE_PM'		=> ($row['deleted']) ? $remove_message_url : '',
-				'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '',
-				'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=reports&amp;pm=$message_id")
-//				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;i=mod_queue&amp;t=$topic_id")
-			);
+					'FOLDER_ID' 		=> $folder_id,
+					'MESSAGE_ID'		=> $message_id,
+					'MESSAGE_AUTHOR'	=> $message_author,
+					'SENT_TIME'		 	=> $user->format_date($row['message_time']),
+					'SUBJECT'			=> censor_text($row['message_subject']),
+					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
+					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? "$url&amp;folder=" . $row['folder_id'] : '',
+					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
+					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
+					'PM_IMG'	 		=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
+					'S_PM_REPORTED'		=> (!empty($row['message_reported']) && $auth->acl_get('m_')) ? true : false,
+					'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
+
+					'U_VIEW_PM'			=> ($row['deleted']) ? '' : $view_message_url,
+					'U_REMOVE_PM'		=> ($row['deleted']) ? $remove_message_url : '',
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '',
+					'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=reports&amp;pm=$message_id")
+	//				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;i=mod_queue&amp;t=$topic_id")
+				);
+			}
 		}
 		unset($folder_info['rowset']);
 
@@ -178,6 +197,78 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 			'S_SHOW_RECIPIENTS'	=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
 			'S_SHOW_COLOUR_LEGEND'	=> true)
 		);
+	}
+
+	$type = request_var('export_option', '');
+
+	// Ask the user what he wants
+	if (isset($_REQUEST['submit_export']))
+	{
+		if (!isset($_REQUEST['delimiter']) && $type == 'CSV')
+		{
+			$template->assign_var('PROMPT', true);
+		}
+		else
+		{
+			switch ($type)
+			{
+				case 'CSV':
+				case 'CSV_EXCEL':
+					$mimetype = 'text/csv';
+					$filetype = 'csv';
+					if ($type == 'csv_excel')
+					{
+						$enclosure = '"';
+						$delimiter = ',';
+						$newline = "\r\n";
+					}
+					else
+					{
+						$enclosure = request_var('enclosure', '"');
+						$delimiter = request_var('delimiter', ',');
+						$newline = "\n";
+					}
+					$string = '';
+					foreach ($data as $value)
+					{
+						foreach ($value as $text)
+						{
+							$cell = str_replace($enclosure, $enclosure . $enclosure, $text);
+
+							if (strpos($cell, $enclosure) !== false || strpos($cell, $delimiter) !== FALSE || strpos($cell, $newline) !== FALSE)
+							{
+								$string .= $enclosure . $text . $enclosure . $delimiter;
+							}
+							else
+							{
+								$string .= $cell . $delimiter;
+							}
+						}
+						$string = substr($string, 0, -1) . $newline;
+					}
+				break;
+				case 'XML':
+					$mimetype = 'text/xml';
+					$filetype = 'xml';
+					$string = '<?xml version="1.0"?>' . "\n";
+					$string .= "<messages>\n";
+					foreach ($data as $value)
+					{
+						$string .= "\t<privmsg>\n";
+						foreach ($value as $tag => $text)
+						{
+							$string .= "\t\t<$tag>$text</$tag>\n";
+						}
+						$string .= "\t</privmsg>\n";
+					}
+					$string .= '</messages>';
+			}
+			header('Pragma: no-cache');
+			header("Content-Type: $mimetype; name=\"data.$filetype\"");
+			header("Content-disposition: attachment; filename=data.$filetype");
+			echo $string;
+			exit;
+		}
 	}
 }
 

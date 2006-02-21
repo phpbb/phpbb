@@ -3,8 +3,9 @@
 <!-- $Id$ -->
 
 <div id="pagecontent">
-
+<!-- IF not PROMPT -->
 <!-- INCLUDE ucp_pm_message_header.html -->
+<!-- ENDIF -->
 	<div style="padding: 2px;"></div>
 
 <!-- IF S_PM_ICONS and S_UNREAD -->
@@ -16,7 +17,24 @@
 <!-- ENDIF -->
 
 <form name="viewfolder" method="post" action="{S_PM_ACTION}" style="margin:0px">
-
+<!-- IF PROMPT -->
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
+	<tr>
+		<th colspan="2" valign="middle">{L_OPTIONS}</th>
+	</tr>
+	<tr>
+		<td class="row1" width="35%">{L_DELIMITER}: </td>
+		<td class="row2"><input class="post" type="text" name="delimiter" value="," /></td>
+	</tr>
+	<tr>
+		<td class="row1" width="35%">{L_ENCLOSURE}: </td>
+		<td class="row2"><input class="post" type="text" name="enclosure" value="&#034;" /></td>
+	</tr>
+	<tr>
+		<td class="cat" colspan="2" align="center"><input type="hidden" name="export_option" value="CSV" /><input class="btnmain" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="Reset" name="reset" /></td>
+	</tr>
+</table>
+<!-- ELSE -->
 <table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
 <!-- IF NUM_NOT_MOVED -->
 	<tr>
@@ -84,6 +102,12 @@
 <div style="padding: 2px;"></div>
 <!-- INCLUDE ucp_pm_message_footer.html -->
 
+<!-- IF .messagerow -->
+	<div style="float:left"><br /><select name="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select>&nbsp;<input class="btnlite" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" /></div>
+<!-- ENDIF -->
+
+<!-- ENDIF -->
+</form>
 <br clear="all" />
 
 </div>
