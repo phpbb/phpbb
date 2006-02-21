@@ -216,7 +216,7 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				case 'CSV_EXCEL':
 					$mimetype = 'text/csv';
 					$filetype = 'csv';
-					if ($type == 'csv_excel')
+					if ($type == 'CSV_EXCEL')
 					{
 						$enclosure = '"';
 						$delimiter = ',';
@@ -235,7 +235,7 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 						{
 							$cell = str_replace($enclosure, $enclosure . $enclosure, $text);
 
-							if (strpos($cell, $enclosure) !== false || strpos($cell, $delimiter) !== FALSE || strpos($cell, $newline) !== FALSE)
+							if (strpos($cell, $enclosure) !== false || strpos($cell, $delimiter) !== false || strpos($cell, $newline) !== false)
 							{
 								$string .= $enclosure . $text . $enclosure . $delimiter;
 							}
