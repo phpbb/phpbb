@@ -200,11 +200,14 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 	}
 
 	$type = request_var('export_option', '');
+	$enclosure = request_var('enclosure', '"');
+	$delimiter = request_var('delimiter', ',');
+	$submit_export = (isset($_POST['submit_export'])) ? true : false;
 
 	// Ask the user what he wants
-	if (isset($_REQUEST['submit_export']))
+	if ($submit_export)
 	{
-		if (!isset($_REQUEST['delimiter']) && $type == 'CSV')
+		if ($delimiter && $type == 'CSV')
 		{
 			$template->assign_var('PROMPT', true);
 		}
@@ -224,8 +227,6 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 					}
 					else
 					{
-						$enclosure = request_var('enclosure', '"');
-						$delimiter = request_var('delimiter', ',');
 						$newline = "\n";
 					}
 					$string = '';
