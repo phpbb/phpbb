@@ -130,6 +130,7 @@ class dbal
 				}
 				else if (is_array($var) && is_string($var[0]))
 				{
+					// This is used for INSERT_SELECT(s)
 					$values[] = $var[0];
 				}
 				else

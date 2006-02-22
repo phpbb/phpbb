@@ -34,7 +34,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  auth_preset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   KEY group_id (group_id),
   KEY auth_option_id (auth_option_id)
@@ -51,22 +51,22 @@ CREATE TABLE phpbb_auth_options (
   KEY auth_option (auth_option)
 );
 
-# Table: phpbb_auth_presets
-CREATE TABLE phpbb_auth_presets (
-  preset_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-  preset_name varchar(50) DEFAULT '' NOT NULL,
-  preset_type varchar(10) DEFAULT '' NOT NULL,
-  preset_group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  PRIMARY KEY (preset_id),
-  KEY preset_type (preset_type)
+# Table: phpbb_auth_roles
+CREATE TABLE phpbb_auth_roles (
+  role_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+  role_name varchar(50) DEFAULT '' NOT NULL,
+  role_type varchar(10) DEFAULT '' NOT NULL,
+  role_group_ids varchar(255) UNSIGNED DEFAULT '' NOT NULL,
+  PRIMARY KEY (role_id),
+  KEY role_type (role_type)
 );
 
-# Table: phpbb_auth_preset_data
-CREATE TABLE phpbb_auth_preset_data (
-  preset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+# Table: phpbb_auth_roles_data
+CREATE TABLE phpbb_auth_roles_data (
+  role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
-  PRIMARY KEY  (preset_id, auth_option_id)
+  PRIMARY KEY  (role_id, auth_option_id)
 );
 
 # Table: phpbb_auth_users
@@ -74,7 +74,7 @@ CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  auth_preset_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+  auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)

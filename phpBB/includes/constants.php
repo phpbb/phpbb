@@ -117,8 +117,8 @@ define('FIELD_DATE', 6);
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
-define('ACL_PRESETS_TABLE', $table_prefix.'auth_presets');
-define('ACL_PRESETS_DATA_TABLE', $table_prefix.'auth_preset_data');
+define('ACL_ROLES_TABLE', $table_prefix.'auth_roles');
+define('ACL_ROLES_DATA_TABLE', $table_prefix.'auth_roles_data');
 define('ACL_USERS_TABLE', $table_prefix.'auth_users');
 define('ATTACHMENTS_TABLE', $table_prefix.'attachments');
 define('BANLIST_TABLE', $table_prefix.'banlist');

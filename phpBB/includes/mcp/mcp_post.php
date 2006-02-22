@@ -96,7 +96,7 @@ function mcp_post_details($id, $mode, $action)
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
 		'U_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id",
 
-		'S_CAN_VIEWIP'			=> $auth->acl_get('m_ip', $post_info['forum_id']),
+		'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_', $post_info['forum_id']),
 		'S_CAN_LOCK_POST'		=> $auth->acl_get('m_lock', $post_info['forum_id']),
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
@@ -182,7 +182,7 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	// Get IP
-	if ($auth->acl_get('m_ip', $post_info['forum_id']))
+	if ($auth->acl_get('m_info', $post_info['forum_id']))
 	{
 		$rdns_ip_num = request_var('rdns', '');
 

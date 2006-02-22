@@ -10,7 +10,6 @@
 
 /**
 * @package acp
-* @todo make sure permissions are met for adding groups and removing groups (a_groupadd, a_groupdel)
 */
 class acp_groups
 {
@@ -164,6 +163,11 @@ class acp_groups
 					switch ($action)
 					{
 						case 'delete':
+							if (!$auth->acl_get('a_groupdel'))
+							{
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
+							}
+
 							$error = group_delete($group_id, $group_row['group_name']);
 						break;
 
@@ -223,6 +227,11 @@ class acp_groups
 				if ($action == 'edit' && !$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+				}
+
+				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
+				{
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
 				}
 
 				$error = array();
@@ -309,7 +318,7 @@ class acp_groups
 					$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'message_limit');
 					foreach ($test_variables as $test)
 					{
-						if ($action == 'add' || (isset($submit_ary[$test]) && $group_row['group_' . $test] != $submit_ary[$test]))
+						if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
 						{
 							$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
 						}
@@ -317,6 +326,28 @@ class acp_groups
 
 					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_attributes)))
 					{
+						$group_perm_from = request_var('group_perm_from', 0);
+
+						// Copy permissions?
+						if ($group_perm_from && $action == 'add')
+						{
+							$sql_ary = array(
+								'group_id'			=> $group_id,
+								'forum_id'			=> array('forum_id'),
+								'auth_option_id'	=> array('auth_option_id'),
+								'auth_role_id'		=> array('auth_role_id'),
+								'auth_setting'		=> array('auth_setting')
+							);
+							
+							// We copy the permissions the manual way. ;)
+							$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
+								FROM ' . ACL_GROUPS_TABLE . ' 
+								WHERE group_id = ' . $group_perm_from;
+							$db->sql_query($sql);
+
+							$auth->acl_clear_prefetch();
+						}
+
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 					}
@@ -398,6 +429,7 @@ class acp_groups
 
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
+					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
 					'S_CAN_UPLOAD'		=> $can_upload,
 					'S_ERROR'			=> (sizeof($error)) ? true : false,
@@ -414,6 +446,7 @@ class acp_groups
 					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
 
 					'S_RANK_OPTIONS'		=> $rank_options,
+					'S_GROUP_OPTIONS'		=> group_select_options(0),
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 					'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
@@ -562,7 +595,7 @@ class acp_groups
 
 		$template->assign_vars(array(
 			'U_ACTION'		=> $this->u_action,
-			)
+			'S_GROUP_ADD'	=> ($auth->acl_get('a_groupadd')) ? true : false)
 		);
 
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type, COUNT(ug.user_id) AS total_members 
@@ -609,7 +642,7 @@ class acp_groups
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
 					'U_DEFAULT'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
 					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
-					'U_DELETE'		=> "{$this->u_action}&amp;action=delete&amp;g=$group_id",
+					'U_DELETE'		=> ($auth->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
 
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 					

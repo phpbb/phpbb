@@ -1,0 +1,224 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<!-- IF S_EDIT -->
+
+	<script type="text/javascript">
+	<!--
+		var active_option = 'options0';
+
+		// Show/hide option panels
+		// value = suffix for ID to show
+		function swap_options(id)
+		{
+			if (id == active_option)
+			{
+				return;
+			}
+			
+			// Hide active options and display container
+			dE(active_option, -1);
+			dE(id, 1);
+
+			active_option = id;
+		}
+
+		// Mark all radio buttons in one panel
+		// id = table ID container, s = status ['y'/'u'/'n']
+		function mark_options(id, s)
+		{
+			var t = document.getElementById(id);
+			
+			if (!t)
+			{
+				return;
+			}
+		
+			var rb = t.getElementsByTagName('input');
+		
+			for (var r = 0; r < rb.length; r++ )
+			{
+				if (rb[r].id.substr(rb[r].id.length-1) == s)
+				{
+					rb[r].checked = true;
+				}
+			}
+		}
+
+	//-->
+	</script>
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<form id="acp_roles" method="post" action="{U_ACTION}">
+
+	<br />
+	<a href="#acl">&raquo; {L_SET_ROLE_PERMISSIONS}</a>
+
+	<fieldset>
+		<legend>{L_ROLE_DETAILS}</legend>
+		<dl>
+			<dt><label for="role_name">{L_ROLE_NAME}:</label></dt>
+			<dd><input name="role_name" type="text" id="role_name" value="{ROLE_NAME}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="pre_select">{L_DISPLAY_FOR_GROUP}:</label><br /><span>{L_DISPLAY_FOR_GROUP_EXPLAIN}</span></dt>
+			<dd><select name="pre_select" id="pre_select" onchange="if(this.value=='custom'){dE('custom_group',1);}else{dE('custom_group',-1);}">{S_PRESELECT_OPTIONS}</select></dd>
+			<dd id="custom_group"<!-- IF not S_CUSTOM_GROUP_IDS --> style="display:none;"<!-- ENDIF -->>
+				<select name="role_group_ids[]" id="role_group_id" style="width: 100%;" multiple="multiple" size="10">{S_GROUP_OPTIONS}</select>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="quick">
+		<input type="submit" class="button1" name="submit" value="{L_SUBMIT}" />
+	</fieldset>
+
+	<!-- IF S_DISPLAY_ROLE_MASK -->
+
+		<h1>{L_ROLE_ASSIGNED_TO}</h1>
+
+		<!-- INCLUDE permission_roles_mask.html -->
+
+	<!-- ENDIF -->
+
+	<a name="acl"></a>
+
+	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br />
+	<br /><br />
+
+	<h1>{L_ACL_TYPE}</h1>
+
+	<fieldset class="quick">
+		<a href="javascript: mark_options('a_options', 'y');">{L_ALL_YES}</a> &bull; <a href="javascript: mark_options('a_options', 'n');">{L_ALL_NO}</a> &bull; <a href="javascript: mark_options('a_options', 'u');">{L_ALL_UNSET}</a>
+	</fieldset>
+
+	<fieldset class="permissions">
+
+		<table cellspacing="1" class="pmask">
+		<thead>
+		<tr>
+		<!-- BEGIN auth -->
+			<th>{auth.CAT_NAME}</th>
+		<!-- END auth -->
+		</tr>
+		</thead>
+		<tbody>
+		<tr>
+		<!-- BEGIN auth -->
+			<!-- IF auth.S_YES -->
+				<td class="preset_yes">
+			<!-- ELSEIF auth.S_NO -->
+				<td class="preset_no">
+			<!-- ELSEIF auth.S_UNSET -->
+				<td class="preset_unset">
+			<!-- ELSE -->
+				<td class="preset_custom">
+			<!-- ENDIF -->
+				<a href="javascript:swap_options('options{auth.S_ROW_COUNT}');"><span>&nbsp;</span></a></td>
+		<!-- END auth -->
+		</tr>
+		<tr class="row3">
+			<td colspan="{S_NUM_PERM_COLS}" id="a_options" style="vertical-align: top; text-align: left; width: 100%;">
+			<!-- BEGIN auth -->
+				<table cellspacing="1" id="options{auth.S_ROW_COUNT}" class="type3" style="width: 100%; text-align: left;<!-- IF auth.S_FIRST_ROW --><!-- ELSE --> display: none;<!-- ENDIF -->">
+				<thead>
+				<tr>
+					<th scope="col" style="text-align: left; padding-left: 0;"><strong>{L_ACL_SETTING} [{auth.CAT_NAME}]</strong></th>
+					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'y');">{L_ACL_YES}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'u');">{L_ACL_UNSET}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'n');">{L_ACL_NO}</a></th>
+				</tr>
+				</thead>
+				<tbody>
+				<!-- BEGIN mask -->
+					<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
+					<th>{auth.mask.PERMISSION}</th>
+					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
+					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" type="radio"<!-- IF auth.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
+					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
+				</tr>
+				<!-- END mask -->
+				</tbody>
+				</table>
+			<!-- END auth -->
+			</td>
+		</tr>
+		</tbody>
+		</table>
+
+	</fieldset>
+
+	<fieldset class="quick">
+		<input type="submit" class="button1" name="submit" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+
+	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br />
+	<br />
+
+<!-- ELSE -->
+
+	<h1>{L_TITLE}</h1>
+
+	<p>{L_EXPLAIN}</p>
+
+	<form id="acp_roles" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
+	<thead>
+	<tr>
+		<th style="width: 50%">{L_ROLE_NAME}</th>
+		<th>{L_DISPLAY_FOR_GROUP}</th>
+		<th colspan="3">{L_OPTIONS}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN roles -->
+	<tr>
+		<td style="vertical-align: top;"><b>{roles.NAME}</b></td>
+		<td style="vertical-align: top;">
+			<!-- IF roles.S_GROUP -->
+				<!-- BEGIN groups -->
+					<a href="{roles.groups.U_GROUP}">{roles.groups.GROUP_NAME}</a><br />
+				<!-- END groups -->
+			<!-- ELSE -->
+				{L_EVERY_USER_GROUP}
+			<!-- ENDIF -->
+		</td>
+		<td style="vertical-align: top; white-space: nowrap;"><a href="{roles.U_EDIT}">{L_EDIT_ROLE}</a></td>
+		<td style="vertical-align: top; white-space: nowrap;"><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a></td>
+		<td style="vertical-align: top; white-space: nowrap;"><a href="{roles.U_REMOVE}">{L_REMOVE_ROLE}</a></td>
+	</tr>
+	<!-- END roles -->
+	</tbody>
+	</table>
+
+	<fieldset class="quick">
+		{L_CREATE_ROLE}: <input type="text" name="role_name" value="" /><!-- IF S_ROLE_OPTIONS --> <select name="options_from"><option value="0" selected="selected">{L_CREATE_ROLE_FROM}</option>{S_ROLE_OPTIONS}</select><!-- ENDIF --> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" /><br />
+	</fieldset>
+
+	</form>
+
+	<!-- IF S_DISPLAY_ROLE_MASK -->
+
+		<a name="assigned_to"></a>
+
+		<h1>{L_ROLE_ASSIGNED_TO}</h1>
+
+		<!-- INCLUDE permission_roles_mask.html -->
+
+	<!-- ENDIF -->
+
+
+<!-- ENDIF -->
+
+
+<!-- INCLUDE overall_footer.html -->

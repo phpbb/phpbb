@@ -37,7 +37,9 @@ $lang = array_merge($lang, array(
 	'AUTO_PRUNE_VIEWED'			=> 'Auto-prune Post Viewed Age',
 	'AUTO_PRUNE_VIEWED_EXPLAIN'	=> 'Number of days since topic was viewed after which topic is removed.',
 
-	'CREATE_FORUM'	=> 'Create new forum',
+	'COPY_PERMISSIONS'				=> 'Copy permissions from',
+	'COPY_PERMISSIONS_EXPLAIN'		=> 'Once created, the forum will have the same permissions as the one you select here. If no forum is selected the newly created forum will not be visible until permissions had been set.',
+	'CREATE_FORUM'					=> 'Create new forum',
 
 	'DECIDE_MOVE_DELETE_CONTENT'		=> 'Delete content or move to forum',
 	'DEFAULT_STYLE'						=> 'Default Style',
@@ -107,6 +109,7 @@ $lang = array_merge($lang, array(
 	'NO_DESTINATION_FORUM'			=> 'You have not specified a forum to move content to',
 	'NO_FORUM_ACTION'				=> 'No action defined for what happens with the forum content',
 	'NO_PARENT'						=> 'No Parent',
+	'NO_PERMISSIONS'				=> 'Do not copy permissions',
 	'NO_PERMISSION_FORUM_ADD'		=> 'You do not have the neccessary permissions to delete forums',
 	'NO_PERMISSION_FORUM_DELETE'	=> 'You do not have the neccessary permissions to add forums',
 

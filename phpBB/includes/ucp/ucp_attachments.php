@@ -38,7 +38,10 @@ class ucp_attachments
 
 			if (confirm_box(true))
 			{
-				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				if (!function_exists('delete_attachments'))
+				{
+					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				}
 				delete_attachments('attach', $delete_ids);
 
 				$refresh_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id";

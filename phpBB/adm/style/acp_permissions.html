@@ -2,6 +2,16 @@
 
 <a name="maincontent"></a>
 
+<!-- IF S_INTRO -->
+	
+	<h1>{L_ACP_PERMISSIONS}</h1>
+
+	<p>{L_ACP_PERMISSIONS_EXPLAIN}</p>
+
+	Here, an introductionary text will be placed, explaining permissions and the several menu items. Also adding quick links to this page.
+
+<!-- ENDIF -->
+
 <!-- IF S_SELECT_VICTIM -->
 
 	<h1>{L_TITLE}</h1>
@@ -32,6 +42,45 @@
 		</fieldset>
 
 		</form>
+
+		<!-- IF S_FORUM_MULTIPLE -->
+
+			<form id="select_subforum" method="post" action="{U_ACTION}">
+
+			<fieldset>
+				<legend>{L_LOOK_UP_FORUM}</legend>
+				<p>{L_SELECT_FORUM_SUBFORUM_EXPLAIN}</p>
+			<dl>
+				<dt><label for="sforum">{L_LOOK_UP_FORUM}:</label></dt>
+				<dd><select id="sforum" name="subforum_id">{S_SUBFORUM_OPTIONS}</select></dd>
+			</dl>
+			</fieldset>
+
+			<fieldset class="quick">
+				{S_HIDDEN_FIELDS}
+				<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+			</fieldset>
+
+			</form>
+			
+			<form id="select_single_forum" method="post" action="{U_ACTION}">
+
+			<fieldset>
+				<legend>{L_LOOK_UP_FORUM}</legend>
+			<dl>
+				<dt><label for="forum">{L_LOOK_UP_FORUM}:</label></dt>
+				<dd><select id="forum" name="forum_id[]">{S_FORUM_OPTIONS}</select></dd>
+			</dl>
+			</fieldset>
+
+			<fieldset class="quick">
+				{S_HIDDEN_FIELDS}
+				<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+			</fieldset>
+
+			</form>
+
+		<!-- ENDIF -->
 
 	<!-- ELSEIF S_SELECT_USER and S_CAN_SELECT_USER -->
 
@@ -87,6 +136,7 @@
 				<legend>{L_MANAGE_USERS}</legend>
 			<dl>
 				<dd class="full"><select style="width: 100%;" name="user_id[]" multiple="multiple" size="5">{S_DEFINED_USER_OPTIONS}</select></dd>
+				<dd class="full" style="text-align: right;"><input type="checkbox" name="all_users" value="1" />&nbsp; {L_ALL_USERS}</dd>
 			</dl>
 			</fieldset>
 			
@@ -133,6 +183,7 @@
 				<legend>{L_MANAGE_GROUPS}</legend>
 			<dl>
 				<dd class="full"><select style="width: 100%;" name="group_id[]" multiple="multiple" size="5">{S_DEFINED_GROUP_OPTIONS}</select></dd>
+				<dd class="full" style="text-align: right;"><input type="checkbox" name="all_groups" value="1" />&nbsp; {L_ALL_GROUPS}</dd>
 			</dl>
 			</fieldset>
 			
@@ -301,12 +352,13 @@
 	<br /><br />
 
 	<fieldset class="quick" style="float: left;">
-		{L_PERM_PRESET_APPLIED_TO_ALL}<br />
+		{L_PERMISSION_APPLIED_TO_ALL}<br />
 		<a href="javascript:marklist('set_permissions', 'inherit', true);">{L_MARK_ALL}</a> &bull; <a href="javascript:marklist('set_permissions', 'inherit', false);">{L_UNMARK_ALL}</a>
 	</fieldset>
 
 	<fieldset class="quick" style="float: right;">
 		<input class="button1" type="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />
+		<input class="button2" type="reset" name="cancel" value="{L_RESET}" />
 	</fieldset>
 
 	<br /><br />

@@ -49,7 +49,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT4  DEFAULT '0' NOT NULL,
-  auth_preset_id INT4  DEFAULT '0' NOT NULL,
+  auth_role_id INT4  DEFAULT '0' NOT NULL,
   auth_setting INT2 DEFAULT '0' NOT NULL
 );
 
@@ -72,27 +72,27 @@ CREATE INDEX auth_option_phpbb_auth_options_index ON phpbb_auth_options (auth_op
 
 SELECT SETVAL('phpbb_auth_options_auth_opti',(select case when max(auth_option_id)>0 then max(auth_option_id)+1 else 1 end from phpbb_auth_options));
 
-/* Table: phpbb_auth_presets */
-CREATE SEQUENCE phpbb_auth_presets_preset_id;
+/* Table: phpbb_auth_roles */
+CREATE SEQUENCE phpbb_auth_roles_role_id;
 
-CREATE TABLE phpbb_auth_presets (
-  preset_id INT4 DEFAULT nextval('phpbb_auth_presets_preset_id'),
-  preset_name varchar(50) DEFAULT '' NOT NULL,
-  preset_type varchar(10) DEFAULT '' NOT NULL,
-  preset_group_id INT4  DEFAULT '0' NOT NULL,
-  PRIMARY KEY (preset_id)
+CREATE TABLE phpbb_auth_roles (
+  role_id INT4 DEFAULT nextval('phpbb_auth_roles_role_id'),
+  role_name varchar(50) DEFAULT '' NOT NULL,
+  role_type varchar(10) DEFAULT '' NOT NULL,
+  role_group_ids varchar(255)  DEFAULT '' NOT NULL,
+  PRIMARY KEY (role_id)
 );
 
-CREATE INDEX preset_type_phpbb_auth_presets_index ON phpbb_auth_presets (preset_type);
+CREATE INDEX role_type_phpbb_auth_roles_index ON phpbb_auth_roles (role_type);
 
-SELECT SETVAL('phpbb_auth_presets_preset_id',(select case when max(preset_id)>0 then max(preset_id)+1 else 1 end from phpbb_auth_presets));
+SELECT SETVAL('phpbb_auth_roles_role_id',(select case when max(role_id)>0 then max(role_id)+1 else 1 end from phpbb_auth_roles));
 
-/* Table: phpbb_auth_preset_data */
-CREATE TABLE phpbb_auth_preset_data (
-  preset_id INT4  DEFAULT '0' NOT NULL,
+/* Table: phpbb_auth_roles_data */
+CREATE TABLE phpbb_auth_roles_data (
+  role_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT4  DEFAULT '0' NOT NULL,
   auth_setting INT2  DEFAULT '0' NOT NULL,
-  PRIMARY KEY  (preset_id, auth_option_id)
+  PRIMARY KEY  (role_id, auth_option_id)
 );
 
 /* Table: phpbb_auth_users */
@@ -100,7 +100,7 @@ CREATE TABLE phpbb_auth_users (
   user_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT4  DEFAULT '0' NOT NULL,
-  auth_preset_id INT4  DEFAULT '0' NOT NULL,
+  auth_role_id INT4  DEFAULT '0' NOT NULL,
   auth_setting INT2 DEFAULT '0' NOT NULL
 );
 

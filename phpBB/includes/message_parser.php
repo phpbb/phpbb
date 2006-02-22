@@ -1063,6 +1063,10 @@ class parse_message extends bbcode_firstpass
 				}
 				else
 				{
+					if (!function_exists('delete_attachments'))
+					{
+						include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+					}
 					delete_attachments('attach', array(intval($this->attachment_data[$index]['attach_id'])));
 				}
 				

@@ -27,7 +27,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
-  auth_preset_id INTEGER DEFAULT 0  NOT NULL,
+  auth_role_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -40,17 +40,17 @@ CREATE TABLE phpbb_auth_options (
   founder_only INTEGER DEFAULT 0  NOT NULL
 );;
 
-# phpbb_auth_presets
-CREATE TABLE phpbb_auth_presets (
-  preset_id INTEGER NOT NULL,
-  preset_name VARCHAR(50) NOT NULL,
-  preset_type VARCHAR(10) NOT NULL,
-  preset_group_id INTEGER DEFAULT 0  NOT NULL
+# phpbb_auth_roles
+CREATE TABLE phpbb_auth_roles (
+  role_id INTEGER NOT NULL,
+  role_name VARCHAR(50) NOT NULL,
+  role_type VARCHAR(10) NOT NULL,
+  role_group_ids VARCHAR(255) NOT NULL
 );;
 
-# phpbb_auth_preset_data
-CREATE TABLE phpbb_auth_preset_data (
-  preset_id INTEGER DEFAULT 0  NOT NULL,
+# phpbb_auth_roles_data
+CREATE TABLE phpbb_auth_roles_data (
+  role_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );
@@ -60,7 +60,7 @@ CREATE TABLE phpbb_auth_users (
   user_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
-  auth_preset_id INTEGER DEFAULT 0  NOT NULL,
+  auth_role_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -878,19 +878,19 @@ ON phpbb_auth_options(
   auth_option
 );;
 
-ALTER TABLE phpbb_auth_presets
+ALTER TABLE phpbb_auth_roles
 ADD PRIMARY KEY (
-  preset_id
+  role_id
 );;
 
-CREATE INDEX preset_type10
-ON phpbb_auth_presets(
-  preset_type
+CREATE INDEX role_type10
+ON phpbb_auth_roles(
+  role_type
 );;
 
-ALTER TABLE phpbb_auth_preset_data
+ALTER TABLE phpbb_auth_roles_data
 ADD PRIMARY KEY (
-  preset_id,
+  role_id,
   auth_option_id
 );;
 
@@ -1476,9 +1476,9 @@ CREATE GENERATOR b_auth_optionsauth_option_idGen;;
 
 SET GENERATOR b_auth_optionsauth_option_idGen TO 0;;
 
-CREATE GENERATOR G_auth_presetspreset_idGen;;
+CREATE GENERATOR G_auth_rolesrole_idGen;;
 
-SET GENERATOR G_auth_presetspreset_idGen TO 0;;
+SET GENERATOR G_auth_rolesrole_idGen TO 0;;
 
 CREATE GENERATOR G_phpbb_banlistban_idGen3;;
 
@@ -1614,11 +1614,11 @@ BEGIN
   NEW.auth_option_id = GEN_ID(b_auth_optionsauth_option_idGen, 1);
 END;;
 
-CREATE TRIGGER t_phpbb_auth_presetspreset_idGe FOR phpbb_auth_presets
+CREATE TRIGGER t_phpbb_auth_rolesrole_idGe FOR phpbb_auth_roles
 BEFORE INSERT
 AS
 BEGIN
-  NEW.preset_id = GEN_ID(G_auth_presetspreset_idGen, 1);
+  NEW.role_id = GEN_ID(G_auth_rolesrole_idGen, 1);
 END;;
 
 CREATE TRIGGER GetNextG_phpbb_banlistban_idGen FOR phpbb_banlist

@@ -2219,7 +2219,7 @@ function get_backtrace()
 				
 				case 'string':
 					$argument = htmlspecialchars(substr($argument, 0, 64)) . ((strlen($argument) > 64) ? '...' : '');
-					$args[] = '"' . $argument . '"';
+					$args[] = "'{$argument}'";
 				break;
 				
 				case 'array':

@@ -32,7 +32,7 @@ CREATE TABLE [phpbb_auth_groups] (
 	[group_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
-	[auth_preset_id] [int] NOT NULL ,
+	[auth_role_id] [int] NOT NULL ,
 	[auth_setting] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -46,16 +46,16 @@ CREATE TABLE [phpbb_auth_options] (
 ) ON [PRIMARY]
 GO
 
-CREATE TABLE [phpbb_auth_presets] (
-	[preset_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[preset_name] [varchar] (50) NOT NULL ,
-	[preset_type] [varchar] (10) NOT NULL ,
-	[preset_group_id] [int] NOT NULL 
+CREATE TABLE [phpbb_auth_roles] (
+	[role_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[role_name] [varchar] (50) NOT NULL ,
+	[role_type] [varchar] (10) NOT NULL ,
+	[role_group_ids] [varchar] (255) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-CREATE TABLE [phpbb_auth_preset_data] (
-	[preset_id] [int] NOT NULL ,
+CREATE TABLE [phpbb_auth_roles_data] (
+	[role_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
 	[auth_setting] [int] NOT NULL 
 ) ON [PRIMARY]
@@ -65,7 +65,7 @@ CREATE TABLE [phpbb_auth_users] (
 	[user_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
-	[auth_preset_id] [int] NOT NULL ,
+	[auth_role_id] [int] NOT NULL ,
 	[auth_setting] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -846,17 +846,17 @@ ALTER TABLE [phpbb_auth_options] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_auth_presets] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_auth_presets] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_auth_roles] PRIMARY KEY  CLUSTERED 
 	(
-		[preset_id]
+		[role_id]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_auth_preset_data] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_auth_preset_data] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_auth_roles_data] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_auth_roles_data] PRIMARY KEY  CLUSTERED 
 	(
-		[preset_id],
+		[role_id],
 		[auth_option_id]
 	)  ON [PRIMARY] 
 GO
@@ -1203,12 +1203,12 @@ ALTER TABLE [phpbb_auth_options] WITH NOCHECK ADD
 	CONSTRAINT [DF_auth_o_founder_only] DEFAULT (0) FOR [founder_only]
 GO
 
-ALTER TABLE [phpbb_auth_presets] WITH NOCHECK ADD 
-	CONSTRAINT [DF_auth_p_preset_group_id] DEFAULT (0) FOR [preset_group_id]
+ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
+	CONSTRAINT [DF_auth_p_role_group_ids] DEFAULT ('') FOR [role_group_ids]
 GO
 
-ALTER TABLE [phpbb_auth_preset_data] WITH NOCHECK ADD 
-	CONSTRAINT [DF_auth_d_preset_id] DEFAULT (0) FOR [preset_id],
+ALTER TABLE [phpbb_auth_roles_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_auth_d_role_id] DEFAULT (0) FOR [role_id],
 	CONSTRAINT [DF_auth_d_auth_option_id] DEFAULT (0) FOR [auth_option_id],
 	CONSTRAINT [DF_auth_d_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
@@ -1677,7 +1677,7 @@ GO
 CREATE  INDEX [auth_option] ON [phpbb_auth_options]([auth_option]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [preset_type] ON [phpbb_auth_presets]([preset_type]) ON [PRIMARY]
+CREATE  INDEX [role_type] ON [phpbb_auth_roles]([role_type]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_auth_users]([user_id]) ON [PRIMARY]

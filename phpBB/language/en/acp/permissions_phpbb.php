@@ -54,16 +54,18 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'permission_cat'	=> array(
 		'actions'		=> 'Actions',
-		'forums'		=> 'Forums',
-		'post'			=> 'Post',
-		'posting'		=> 'Posting',
-		'polls'			=> 'Polls',
 		'content'		=> 'Content',
-		'pm'			=> 'Private Messages',
+		'forums'		=> 'Forums',
 		'misc'			=> 'Misc',
-		'profile'		=> 'Profile',
 		'permissions'	=> 'Permissions',
+		'pm'			=> 'Private Messages',
+		'polls'			=> 'Polls',
+		'post'			=> 'Post',
+		'post_actions'	=> 'Post Actions',
+		'posting'		=> 'Posting',
+		'profile'		=> 'Profile',
 		'settings'		=> 'Settings',
+		'topic_actions'	=> 'Topic Actions',
 		'user_group'	=> 'Users &amp; Groups',
 	),
 
@@ -156,18 +158,18 @@ $lang = array_merge($lang, array(
 
 // Moderator Permissions
 $lang = array_merge($lang, array(
-	'acl_m_edit'	=> array('lang' => 'Can edit posts', 'cat' => 'actions'),
-	'acl_m_delete'	=> array('lang' => 'Can delete posts', 'cat' => 'actions'),
-	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'actions'),
-	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'actions'),
-	'acl_m_split'	=> array('lang' => 'Can split topics', 'cat' => 'actions'),
-	'acl_m_merge'	=> array('lang' => 'Can merge topics', 'cat' => 'actions'),
-	'acl_m_approve' => array('lang' => 'Can approve posts', 'cat' => 'actions'),
-	'acl_m_unrate'	=> array('lang' => 'Can un-rate posts', 'cat' => 'actions'),
+	'acl_m_edit'		=> array('lang' => 'Can edit posts', 'cat' => 'post_actions'),
+	'acl_m_delete'		=> array('lang' => 'Can delete posts', 'cat' => 'post_actions'),
+	'acl_m_approve'		=> array('lang' => 'Can approve posts', 'cat' => 'post_actions'),
+	'acl_m_chgposter'	=> array('lang' => 'Can change post author', 'cat' => 'post_actions'),
 
-	'acl_m_auth'	=> array('lang' => 'Can set permissions', 'cat' => 'misc'),
-	'acl_m_ip'		=> array('lang' => 'Can view IP\'s', 'cat' => 'misc'),
-	'acl_m_info'	=> array('lang' => 'Can alter forum info', 'cat' => 'misc'),
+	'acl_m_move'	=> array('lang' => 'Can move topics', 'cat' => 'topic_actions'),
+	'acl_m_lock'	=> array('lang' => 'Can lock topics', 'cat' => 'topic_actions'),
+	'acl_m_split'	=> array('lang' => 'Can split topics', 'cat' => 'topic_actions'),
+	'acl_m_merge'	=> array('lang' => 'Can merge topics', 'cat' => 'topic_actions'),
+
+	'acl_m_info'	=> array('lang' => 'Can view post details', 'cat' => 'misc'),
+	'acl_m_warn'	=> array('lang' => 'Can issue warnings', 'cat' => 'misc'),
 ));
 
 // Admin Permissions
@@ -206,6 +208,7 @@ $lang = array_merge($lang, array(
 	'acl_a_uauth'		=> array('lang' => 'Can alter user permissions', 'cat' => 'permissions'),
 	'acl_a_authgroups'	=> array('lang' => 'Can alter permissions for groups', 'cat' => 'permissions'),
 	'acl_a_authusers'	=> array('lang' => 'Can alter permissions for users', 'cat' => 'permissions'),
+	'acl_a_roles'		=> array('lang' => 'Can manage roles', 'cat' => 'permissions'),
 
 	'acl_a_styles'		=> array('lang' => 'Can manage styles', 'cat' => 'misc'),
 	'acl_a_viewlogs'	=> array('lang' => 'Can view logs', 'cat' => 'misc'),

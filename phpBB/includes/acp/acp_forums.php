@@ -144,6 +144,35 @@ class acp_forums
 					
 					if (!sizeof($errors))
 					{
+						$forum_perm_from = request_var('forum_perm_from', 0);
+
+						// Copy permissions?
+						if ($forum_perm_from && $action == 'add')
+						{
+							$sql_ary = array(
+								'user_id'			=> array('user_id'),
+								'forum_id'			=> (int) $forum_data['forum_id'],
+								'auth_option_id'	=> array('auth_option_id'),
+								'auth_role_id'		=> array('auth_role_id'),
+								'auth_setting'		=> array('auth_setting')
+							);
+							
+							// We copy the permissions the manual way. ;)
+							$sql = 'INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
+								FROM ' . ACL_USERS_TABLE . ' 
+								WHERE forum_id = ' . $forum_perm_from;
+							$db->sql_query($sql);
+
+							// Change array for copying settings from the acl groups table
+							unset($sql_ary['user_id']);
+							$sql_ary['group_id'] = array('group_id');
+							
+							$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
+								FROM ' . ACL_GROUPS_TABLE . ' 
+								WHERE forum_id = ' . $forum_perm_from;
+							$db->sql_query($sql);
+						}
+
 						$auth->acl_clear_prefetch();
 						recalc_btree('forum_id', FORUMS_TABLE);
 
@@ -477,6 +506,7 @@ class acp_forums
 					'S_STATUS_OPTIONS'			=> $statuslist,
 					'S_PARENT_OPTIONS'			=> $parents_list,
 					'S_STYLES_OPTIONS'			=> $styles_list,
+					'S_FORUM_OPTIONS'			=> make_forum_select(false, false, false),
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
 					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
@@ -1309,7 +1339,7 @@ class acp_forums
 		// Set forum ids to 0
 		$table_ary = array(DRAFTS_TABLE);
 
-		foreach ($tables_ary as $table)
+		foreach ($table_ary as $table)
 		{
 			$db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
 		}

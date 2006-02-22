@@ -661,7 +661,7 @@ class acp_modules
 			if (!$ignore_acl && $row['module_auth'])
 			{
 				$is_auth = false;
-				eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#e', '#\$id#', '#cfg_([a-z_]+)#e'), array('(int) $auth->acl_get("\\1"\\2)', '$this->acl_forup_id', '(int) $config["\\1"]'), trim($row['module_auth'])) . ');');
+				eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $auth->acl_getf_global("\\1")', '(int) $config["\\1"]'), $row['module_auth']) . ');');
 				if (!$is_auth)
 				{
 					continue;

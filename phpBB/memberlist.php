@@ -803,7 +803,7 @@ switch ($mode)
 				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
 			}
 
-			if ($ipdomain && $auth->acl_get('m_ip'))
+			if ($ipdomain && $auth->acl_get('m_info'))
 			{
 				$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
 

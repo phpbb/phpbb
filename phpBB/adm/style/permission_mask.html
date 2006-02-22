@@ -5,6 +5,12 @@
 	var active_fmask = '0';
 	var active_cat = '0';
 
+	var role_options = new Array();
+
+	<!-- IF S_ROLE_JS_ARRAY -->
+		{S_ROLE_JS_ARRAY}
+	<!-- ENDIF -->
+
 	// Show/hide option panels
 	// value = suffix for ID to show
 	function swap_options(pmask, fmask, cat)
@@ -33,7 +39,7 @@
 	}
 
 	// Mark all radio buttons in one panel
-	// id = table ID container, s = status [1/-1/0]
+	// id = table ID container, s = status ['y'/'u'/'n']
 	function mark_options(id, s)
 	{
 		var t = document.getElementById(id);
@@ -51,6 +57,60 @@
 			{
 				rb[r].checked = true;
 			}
+		}
+	}
+
+	// Mark one radio button in one panel
+	// id = table ID container, field_name = the auth option, s = status ['y'/'u'/'n']
+	function mark_one_option(id, field_name, s)
+	{
+		var t = document.getElementById(id);
+		
+		if (!t)
+		{
+			return;
+		}
+
+		var rb = t.getElementsByTagName('input');
+	
+		for (var r = 0; r < rb.length; r++ )
+		{
+			if (rb[r].id.substr(rb[r].id.length-field_name.length-3, field_name.length) == field_name && rb[r].id.substr(rb[r].id.length-1) == s)
+			{
+				rb[r].checked = true;
+			}
+		}
+	}
+
+	// Reset role dropdown field to Select role... if an option gets changed
+	function reset_role(id)
+	{
+		var t = document.getElementById(id);
+
+		if (!t)
+		{
+			return;
+		}
+
+		t.options[0].selected = true;
+	}
+
+	// Load role and set options accordingly
+	function set_role_settings(role_id, target_id)
+	{
+		settings = role_options[role_id];
+
+		if (!settings)
+		{
+			return;
+		}
+
+		// Mark all options to unset first...
+		mark_options(target_id, 'u');
+
+		for (var r in settings)
+		{
+			mark_one_option(target_id, r, (settings[r] == 1) ? 'y' : 'n');
 		}
 	}
 
@@ -93,11 +153,11 @@
 				<!-- IF p_mask.S_VIEW -->
 					&nbsp;
 				<!-- ELSE -->
-					<!-- <b>{L_PRESET}:</b>&nbsp; &nbsp;<select name="preset[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]">
-							<option value="">Select preset...</option>
-							<option value="2">Valued Members</option>
-							<option value="3">Restricted Access</option>
-							</select> -->
+					<!-- IF p_mask.f_mask.S_ROLE_OPTIONS -->
+						<b>{L_ROLE}:</b>&nbsp; &nbsp;<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" onchange="set_role_settings(this.options[selectedIndex].value, 'a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')">{p_mask.f_mask.S_ROLE_OPTIONS}</select>
+					<!-- ELSE -->
+						<b>{L_ROLE}:</b> {L_NO_ROLE_AVAILABLE}
+					<!-- ENDIF -->
 				<!-- ENDIF -->
 				</td>
 			</tr>
@@ -126,7 +186,11 @@
 					<input class="button1" type="submit" name="psubmit[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" value="{L_APPLY_PERMISSIONS}" />
 				</div>
 				<div style="float: right; text-align: right; width: 35%;">
-					<p class="small"><a href="javascript: mark_options('a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}', 'y')">{L_ALL_YES}</a> &bull; <a href="javascript: mark_options('a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}', 'n')">{L_ALL_NO}</a> &bull; <a href="javascript: mark_options('a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}', 'u')">{L_ALL_UNSET}</a></p>
+					<p class="small">
+						[<a href="javascript: mark_options('a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}', 'y'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}');">{L_ALL_YES}</a>]<br />
+						[<a href="javascript: mark_options('a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}', 'n'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}');">{L_ALL_NO}</a>]<br />
+						[<a href="javascript: mark_options('a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}', 'u'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}');">{L_ALL_UNSET}</a>]
+					</p>
 				</div>
 			<!-- ELSE -->
 				&nbsp;
@@ -144,9 +208,9 @@
 					<th scope="col">{L_ACL_YES}</th>
 					<th scope="col">{L_ACL_NO}</th>
 				<!-- ELSE -->
-					<th scope="col"><a href="javascript: mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'y')">{L_ACL_YES}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'u')">{L_ACL_UNSET}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'n')">{L_ACL_NO}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'y'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}');">{L_ACL_YES}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'u'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}');">{L_ACL_UNSET}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'n'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}');">{L_ACL_NO}</a></th>
 				<!-- ENDIF -->
 				</tr>
 				</thead>
@@ -158,9 +222,9 @@
 						<td<!-- IF p_mask.f_mask.category.mask.S_YES --> class="yes"<!-- ELSE --> class="unset"<!-- ENDIF -->>&nbsp;</td>
 						<td<!-- IF p_mask.f_mask.category.mask.S_NO --> class="no"<!-- ELSE --> class="unset"<!-- ENDIF -->>&nbsp;</td>
 					<!-- ELSE -->
-						<td class="unset"><input id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_y" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
-						<td class="unset"><input id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_u" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
-						<td class="unset"><input id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_n" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
+						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_y" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
+						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_u" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
+						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_n" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
 					<!-- ENDIF -->
 				</tr>
 				<!-- END mask -->

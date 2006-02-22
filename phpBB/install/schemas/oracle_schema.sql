@@ -96,7 +96,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
-  auth_preset_id number(8) DEFAULT '0' NOT NULL,
+  auth_role_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(4) DEFAULT '0' NOT NULL
 )
 /
@@ -138,43 +138,43 @@ CREATE INDEX auth_option on phpbb_auth_options (auth_option)
 /
 
 /*
- Table: phpbb_auth_presets
+ Table: phpbb_auth_roles
 */
-CREATE TABLE phpbb_auth_presets (
-  preset_id number(8) NOT NULL,
-  preset_name varchar2(50) DEFAULT '',
-  preset_type varchar2(10) DEFAULT '',
-  preset_group_id number(8) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_auth_presets PRIMARY KEY (preset_id)
+CREATE TABLE phpbb_auth_roles (
+  role_id number(8) NOT NULL,
+  role_name varchar2(50) DEFAULT '',
+  role_type varchar2(10) DEFAULT '',
+  role_group_ids varchar2(255) DEFAULT '' NOT NULL,
+  CONSTRAINT pk_phpbb_auth_roles PRIMARY KEY (role_id)
 )
 /
 
-CREATE SEQUENCE sq_phpbb_auth_presets_preset_i
+CREATE SEQUENCE sq_phpbb_auth_roles_role_i
 /
 
-CREATE OR REPLACE TRIGGER ai_phpbb_auth_presets_preset_i
-BEFORE INSERT ON phpbb_auth_presets
+CREATE OR REPLACE TRIGGER ai_phpbb_auth_roles_role_i
+BEFORE INSERT ON phpbb_auth_roles
 FOR EACH ROW WHEN (
- new.preset_id IS NULL OR new.preset_id = 0
+ new.role_id IS NULL OR new.role_id = 0
 )
 BEGIN
- SELECT sq_phpbb_auth_presets_preset_i.nextval
- INTO :new.preset_id
+ SELECT sq_phpbb_auth_roles_role_i.nextval
+ INTO :new.role_id
  FROM dual;
 END;
 /
 
-CREATE INDEX preset_type on phpbb_auth_presets (preset_type)
+CREATE INDEX role_type on phpbb_auth_roles (role_type)
 /
 
 /*
- Table: phpbb_auth_preset_data
+ Table: phpbb_auth_roles_data
 */
-CREATE TABLE phpbb_auth_preset_data (
-  preset_id number(8) DEFAULT '0' NOT NULL,
+CREATE TABLE phpbb_auth_roles_data (
+  role_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(4) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_confirm PRIMARY KEY (preset_id, auth_option_id)
+  CONSTRAINT pk_phpbb_confirm PRIMARY KEY (role_id, auth_option_id)
 )
 /
 
@@ -185,7 +185,7 @@ CREATE TABLE phpbb_auth_users (
   user_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
-  auth_preset_id number(8) DEFAULT '0' NOT NULL,
+  auth_role_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(4) DEFAULT '0' NOT NULL
 )
 /

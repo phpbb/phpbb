@@ -166,19 +166,19 @@ class auth_admin extends auth
 	}
 
 	/**
-	* Get permission mask for presets
-	* This function only supports getting masks for one preset
+	* Get permission mask for roles
+	* This function only supports getting masks for one role
 	*/
-	function get_preset_mask($preset_id)
+	function get_role_mask($role_id)
 	{
 		global $db;
 
 		$hold_ary = array();
 
-		// Get users having this preset set...
+		// Get users having this role set...
 		$sql = 'SELECT user_id, forum_id
 			FROM ' . ACL_USERS_TABLE . '
-			WHERE auth_preset_id = ' . $preset_id . '
+			WHERE auth_role_id = ' . $role_id . '
 			ORDER BY forum_id';
 		$result = $db->sql_query($sql);
 
@@ -191,7 +191,7 @@ class auth_admin extends auth
 		// Now grab groups... 
 		$sql = 'SELECT group_id, forum_id
 			FROM ' . ACL_GROUPS_TABLE . '
-			WHERE auth_preset_id = ' . $preset_id . '
+			WHERE auth_role_id = ' . $role_id . '
 			ORDER BY forum_id';
 		$result = $db->sql_query($sql);
 
@@ -261,6 +261,49 @@ class auth_admin extends auth
 			$forum_names_ary[0] = $l_acl_type;
 		}
 
+		// Get available roles
+		$sql = 'SELECT *
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_type = '" . $db->sql_escape($permission_type) . "'";
+		$result = $db->sql_query($sql);
+
+		$roles = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$roles[$row['role_id']] = $row;
+			$roles[$row['role_id']]['groups'] = ($row['role_group_ids']) ? explode(':', $row['role_group_ids']) : array();
+		}
+		$db->sql_freeresult($result);
+
+		$cur_roles = $this->acl_role_data($user_mode, $permission_type, array_keys($hold_ary));
+
+		// Build js roles array (role data assignments)
+		$s_role_js_array = '';
+		
+		if (sizeof($roles))
+		{
+			$sql = 'SELECT r.role_id, o.auth_option, r.auth_setting
+				FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
+				WHERE o.auth_option_id = r.auth_option_id
+					AND r.role_id IN (' . implode(', ', array_keys($roles)) . ')';
+			$result = $db->sql_query($sql);
+
+			$s_role_js_array = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!isset($s_role_js_array[$row['role_id']]))
+				{
+					$s_role_js_array[$row['role_id']] = "\n" . 'role_options[' . $row['role_id'] . '] = new Array();' . "\n";
+				}
+				$s_role_js_array[$row['role_id']] .= 'role_options[' . $row['role_id'] . '][\'' . $row['auth_option'] . '\'] = ' . $row['auth_setting'] . '; ';
+			}
+			$db->sql_freeresult($result);
+
+			$s_role_js_array = implode('', $s_role_js_array);
+		}
+
+		$template->assign_var('S_ROLE_JS_ARRAY', $s_role_js_array);
+
 		// Now obtain memberships
 		$user_groups_default = $user_groups_custom = array();
 		if ($user_mode == 'user' && $group_display)
@@ -293,9 +336,10 @@ class auth_admin extends auth
 			unset($memberships, $groups);
 		}
 
-		// If we only have one forum id to display, we switch the complete interface to group by user/usergroup instead of grouping by forum
+		// If we only have one forum id to display or being in local mode and more than one user/group to display, 
+		// we switch the complete interface to group by user/usergroup instead of grouping by forum
 		// To achive this, we need to switch the array a bit
-		if (sizeof($forum_ids) == 1)
+		if (sizeof($forum_ids) == 1 || ($local && sizeof($ug_names_ary) > 1))
 		{
 			$hold_ary_temp = $hold_ary;
 			$hold_ary = array();
@@ -330,10 +374,28 @@ class auth_admin extends auth
 
 				foreach ($content_array as $ug_id => $ug_array)
 				{
+					// Build role dropdown options
+					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
+
+					$s_role_options = '';
+					foreach ($roles as $role_id => $role_row)
+					{
+						if ($role_id == $current_role_id || !sizeof($role_row['groups']) || ($user_mode == 'group' && in_array($ug_id, $role_row['groups'])))
+						{
+							$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . '>' . $role_row['role_name'] . '</option>';
+						}
+					}
+					
+					if ($s_role_options)
+					{
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . '>' . $user->lang['SELECT_ROLE'] . '</option>' . $s_role_options;
+					}
+
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
-						'NAME'		=> $ug_names_ary[$ug_id],
-						'UG_ID'		=> $ug_id,
-						'FORUM_ID'	=> $forum_id)
+						'NAME'				=> $ug_names_ary[$ug_id],
+						'S_ROLE_OPTIONS'	=> $s_role_options,
+						'UG_ID'				=> $ug_id,
+						'FORUM_ID'			=> $forum_id)
 					);
 
 					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id);
@@ -371,11 +433,29 @@ class auth_admin extends auth
 
 				foreach ($content_array as $forum_id => $forum_array)
 				{
+					// Build role dropdown options
+					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
+
+					$s_role_options = '';
+					foreach ($roles as $role_id => $role_row)
+					{
+						if ($role_id == $current_role_id || !sizeof($role_row['groups']) || ($user_mode == 'group' && in_array($ug_id, $role_row['groups'])))
+						{
+							$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . '>' . $role_row['role_name'] . '</option>';
+						}
+					}
+
+					if ($s_role_options)
+					{
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . '>' . $user->lang['SELECT_ROLE'] . '</option>' . $s_role_options;
+					}
+
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
-						'NAME'		=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
-						'PADDING'	=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
-						'UG_ID'		=> $ug_id,
-						'FORUM_ID'	=> $forum_id)
+						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
+						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
+						'S_ROLE_OPTIONS'	=> $s_role_options,
+						'UG_ID'				=> $ug_id,
+						'FORUM_ID'			=> $forum_id)
 					);
 
 					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id);
@@ -385,9 +465,9 @@ class auth_admin extends auth
 	}
 
 	/**
-	* Display permission mask for presets
+	* Display permission mask for roles
 	*/
-	function display_preset_mask(&$hold_ary)
+	function display_role_mask(&$hold_ary)
 	{
 		global $db, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID;
 
@@ -411,7 +491,7 @@ class auth_admin extends auth
 
 		foreach ($hold_ary as $forum_id => $auth_ary)
 		{
-			$template->assign_block_vars('preset_mask', array(
+			$template->assign_block_vars('role_mask', array(
 				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_names[$forum_id],
 				'FORUM_ID'			=> $forum_id)
 			);
@@ -426,7 +506,7 @@ class auth_admin extends auth
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('preset_mask.users', array(
+					$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
 						'USERNAME'		=> $row['username'],
 						'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}")
@@ -445,7 +525,7 @@ class auth_admin extends auth
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('preset_mask.groups', array(
+					$template->assign_block_vars('role_mask.groups', array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
 						'U_PROFILE'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=group&amp;g={$row['group_id']}")
@@ -566,7 +646,7 @@ class auth_admin extends auth
 	/**
 	* Set a user or group ACL record
 	*/
-	function acl_set($ug_type, &$forum_id, &$ug_id, &$auth)
+	function acl_set($ug_type, &$forum_id, &$ug_id, &$auth, $role_id = 0)
 	{
 		global $db;
 
@@ -599,120 +679,70 @@ class auth_admin extends auth
 		$ug_id_sql = 'IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
 		$forum_sql = 'IN (' . implode(', ', array_map('intval', $forum_id)) . ') ';
 
-		// Set any flags as required
-		foreach ($auth as $auth_option => $setting)
-		{
-			$flag = substr($auth_option, 0, strpos($auth_option, '_') + 1);
-
-			if (!isset($auth[$flag]) || !$auth[$flag])
-			{
-				$auth[$flag] = $setting;
-			}
-		}
-
-		if ($ug_type == 'user')
-		{
-			$sql = 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting 
-				FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o 
-				WHERE a.auth_option_id = o.auth_option_id 
-					AND a.forum_id $forum_sql
-					AND a.user_id $ug_id_sql";
-		}
-		else
-		{
-			$sql = 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting 
-				FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o 
-				WHERE a.auth_option_id = o.auth_option_id 
-					AND a.forum_id $forum_sql
-					AND a.group_id $ug_id_sql";
-		}
-		$result = $db->sql_query($sql);
-
-		$cur_auth = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$cur_auth[$row['forum_id']][$row['auth_option_id']] = $row['auth_setting'];
-		}
-		$db->sql_freeresult($result);
-
+		// Instead of updating, inserting, removing we just remove all current settings and re-set everything...
 		$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 		$id_field  = $ug_type . '_id';
+
+		// Remove current auth options...
+		$sql = "DELETE FROM $table
+			WHERE forum_id $forum_sql
+				AND $id_field $ug_id_sql";
+		$db->sql_query($sql);
 
 		$sql_ary = array();
 		foreach ($forum_id as $forum)
 		{
 			$forum = (int) $forum;
 
-			foreach ($auth as $auth_option => $setting)
+			if ($role_id)
 			{
-				$auth_option_id = (int) $this->option_ids[$auth_option];
-
-				switch ($setting)
+				foreach ($ug_id as $id)
 				{
-					case ACL_UNSET:
-						if (isset($cur_auth[$forum][$auth_option_id]))
-						{
-							$sql_ary['delete'][] = "DELETE FROM $table 
-								WHERE forum_id = $forum
-									AND auth_option_id = $auth_option_id
-									AND $id_field $ug_id_sql";
-						}
-					break;
+					$sql_ary[] = array(
+						$id_field			=> (int) $id,
+						'forum_id'			=> (int) $forum,
+						'auth_option_id'	=> 0,
+						'auth_setting'		=> 0,
+						'auth_role_id'		=> $role_id
+					);
+				}
+			}
+			else
+			{
+				foreach ($auth as $auth_option => $setting)
+				{
+					$auth_option_id = (int) $this->option_ids[$auth_option];
 
-					default:
-						if (!isset($cur_auth[$forum][$auth_option_id]))
+					if ($setting != ACL_UNSET)
+					{
+						foreach ($ug_id as $id)
 						{
-							foreach ($ug_id as $id)
-							{
-								$sql_ary['insert'][] = array(
-									$id_field			=> (int) $id,
-									'forum_id'			=> (int) $forum,
-									'auth_option_id'	=> (int) $auth_option_id,
-									'auth_setting'		=> (int) $setting
-								);
-							}
+							$sql_ary[] = array(
+								$id_field			=> (int) $id,
+								'forum_id'			=> (int) $forum,
+								'auth_option_id'	=> (int) $auth_option_id,
+								'auth_setting'		=> (int) $setting
+							);
 						}
-						else if ($cur_auth[$forum][$auth_option_id] != $setting)
-						{
-							$sql_ary['update'][] = "UPDATE $table 
-								SET auth_setting = " . (int) $setting . "
-								WHERE $id_field $ug_id_sql
-									AND forum_id = $forum
-									AND auth_option_id = $auth_option_id";
-						}
-					break;
+					}
 				}
 			}
 		}
-		unset($cur_auth);
 
-		foreach ($sql_ary as $sql_type => $sql_subary)
+		if (sizeof($sql_ary))
 		{
-			switch ($sql_type)
+			switch (SQL_LAYER)
 			{
-				case 'insert':
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-						case 'mysql4':
-						case 'mysqli':
-							$db->sql_query("INSERT INTO $table " . $db->sql_build_array('MULTI_INSERT', $sql_subary));
-						break;
-
-						default:
-							foreach ($sql_subary as $ary)
-							{
-								$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $ary));
-							}
-						break;
-					}
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					$db->sql_query("INSERT INTO $table " . $db->sql_build_array('MULTI_INSERT', $sql_ary));
 				break;
 
-				case 'update':
-				case 'delete':
-					foreach ($sql_subary as $sql)
+				default:
+					foreach ($sql_ary as $ary)
 					{
-						$db->sql_query($sql);
+						$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $ary));
 					}
 				break;
 			}
@@ -722,9 +752,9 @@ class auth_admin extends auth
 	}
 
 	/**
-	* Set a preset ACL record
+	* Set a role-specific ACL record
 	*/
-	function acl_set_preset($preset_id, &$auth)
+	function acl_set_role($role_id, &$auth)
 	{
 		global $db;
 
@@ -742,97 +772,40 @@ class auth_admin extends auth
 			$db->sql_freeresult($result);
 		}
 
-		// Set any flags as required
-		foreach ($auth as $auth_option => $setting)
-		{
-			$flag = substr($auth_option, 0, strpos($auth_option, '_') + 1);
-
-			if (!isset($auth[$flag]) || !$auth[$flag])
-			{
-				$auth[$flag] = $setting;
-			}
-		}
-
-		$sql = 'SELECT auth_option_id, auth_setting
-			FROM ' . ACL_PRESETS_DATA_TABLE . '
-			WHERE preset_id = ' . $preset_id;
-		$result = $db->sql_query($sql);
-
-		$cur_auth = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$cur_auth[$row['auth_option_id']] = $row['auth_setting'];
-		}
-		$db->sql_freeresult($result);
+		// Remove current auth options...
+		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
+			WHERE role_id = ' . $role_id;
+		$db->sql_query($sql);
 
 		$sql_ary = array();
-
 		foreach ($auth as $auth_option => $setting)
 		{
 			$auth_option_id = (int) $this->option_ids[$auth_option];
 
-			switch ($setting)
+			if ($setting != ACL_UNSET)
 			{
-				case ACL_UNSET:
-					if (isset($cur_auth[$auth_option_id]))
-					{
-						$sql_ary['delete'][] = 'DELETE FROM ' . ACL_PRESETS_DATA_TABLE . '
-							WHERE auth_option_id = ' . $auth_option_id . '
-								AND preset_id = ' . $preset_id;
-					}
-				break;
-
-				default:
-					if (!isset($cur_auth[$auth_option_id]))
-					{
-						$sql_ary['insert'][] = array(
-							'preset_id'			=> (int) $preset_id,
-							'auth_option_id'	=> (int) $auth_option_id,
-							'auth_setting'		=> (int) $setting
-						);
-					}
-					else if ($cur_auth[$auth_option_id] != $setting)
-					{
-						$sql_ary['update'][] = 'UPDATE ' . ACL_PRESETS_DATA_TABLE . '
-							SET auth_setting = ' . (int) $setting . '
-							WHERE preset_id = ' . $preset_id . '
-								AND auth_option_id = ' . $auth_option_id;
-					}
-				break;
+				$sql_ary[] = array(
+					'role_id'			=> (int) $role_id,
+					'auth_option_id'	=> (int) $auth_option_id,
+					'auth_setting'		=> (int) $setting
+				);
 			}
 		}
-		unset($cur_auth);
 
-		foreach ($sql_ary as $sql_type => $sql_subary)
+		switch (SQL_LAYER)
 		{
-			switch ($sql_type)
-			{
-				case 'insert':
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-						case 'mysql4':
-						case 'mysqli':
-							$db->sql_query('INSERT INTO ' . ACL_PRESETS_DATA_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_subary));
-						break;
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$db->sql_query('INSERT INTO ' . ACL_ROLES_DATA_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+			break;
 
-						default:
-							foreach ($sql_subary as $ary)
-							{
-								$db->sql_query('INSERT INTO ' . ACL_PRESETS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-							}
-						break;
-					}
-				break;
-
-				case 'update':
-				case 'delete':
-					foreach ($sql_subary as $sql)
-					{
-						$db->sql_query($sql);
-					}
-				break;
-			}
+			default:
+				foreach ($sql_ary as $ary)
+				{
+					$db->sql_query('INSERT INTO ' . ACL_ROLES_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+				}
+			break;
 		}
 
 		$this->acl_clear_prefetch();
@@ -840,6 +813,7 @@ class auth_admin extends auth
 
 	/**
 	* Remove local permission
+	* @todo take roles into consideration (if one auth option is being removed and placed within a role we need to re-build the acl entries)
 	*/
 	function acl_delete($mode, $ug_id = false, $forum_id = false, $auth_id = false)
 	{

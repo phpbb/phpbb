@@ -36,7 +36,7 @@ CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
-  auth_preset_id mediumint(8) NOT NULL DEFAULT '0',
+  auth_role_id mediumint(8) NOT NULL DEFAULT '0',
   auth_setting tinyint(4) NOT NULL DEFAULT '0'
 );
 
@@ -54,22 +54,22 @@ CREATE TABLE phpbb_auth_options (
 
 CREATE INDEX auth_option_phpbb_auth_options on phpbb_auth_options (auth_option);
 
-# Table: phpbb_auth_presets
-CREATE TABLE phpbb_auth_presets (
-  preset_id INTEGER PRIMARY KEY NOT NULL,
-  preset_name varchar(50) NOT NULL DEFAULT '',
-  preset_type varchar(10) NOT NULL DEFAULT '',
-  preset_group_id mediumint(8) NOT NULL DEFAULT '0'
+# Table: phpbb_auth_roles
+CREATE TABLE phpbb_auth_roles (
+  role_id INTEGER PRIMARY KEY NOT NULL,
+  role_name varchar(50) NOT NULL DEFAULT '',
+  role_type varchar(10) NOT NULL DEFAULT '',
+  role_group_ids varchar(255) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX preset_type_phpbb_auth_presets on phpbb_auth_presets (preset_type);
+CREATE INDEX role_type_phpbb_auth_roles on phpbb_auth_roles (role_type);
 
-# Table: phpbb_auth_preset_data
-CREATE TABLE phpbb_auth_preset_data (
-  preset_id mediumint(8) NOT NULL DEFAULT '0',
+# Table: phpbb_auth_roles_data
+CREATE TABLE phpbb_auth_roles_data (
+  role_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
   auth_setting tinyint(2) NOT NULL DEFAULT '0',
-  PRIMARY KEY  (preset_id, auth_option_id)
+  PRIMARY KEY  (role_id, auth_option_id)
 );
 
 # Table: phpbb_auth_users
@@ -77,7 +77,7 @@ CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
-  auth_preset_id mediumint(8) NOT NULL DEFAULT '0',
+  auth_role_id mediumint(8) NOT NULL DEFAULT '0',
   auth_setting tinyint(4) NOT NULL DEFAULT '0'
 );
 

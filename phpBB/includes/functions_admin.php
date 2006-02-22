@@ -1869,11 +1869,11 @@ function cache_moderators()
 */
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
-	global $db, $user, $auth, $phpEx, $SID, $phpbb_root_path;
+	global $db, $user, $auth, $phpEx, $SID, $phpbb_root_path, $phpbb_admin_path;
 
 	$topic_id_list = $is_auth = $is_mod = array();
 
-	$profile_url = (defined('IN_ADMIN')) ? "{$phpbb_root_path}index.$phpEx$SID&amp;i=users&amp;mode=overview" : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile";
+	$profile_url = (defined('IN_ADMIN')) ? "{$phpbb_admin_path}index.$phpEx$SID&amp;i=users&amp;mode=overview" : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile";
 
 	switch ($mode)
 	{

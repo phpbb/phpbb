@@ -271,6 +271,7 @@ $lang = array_merge($lang, array(
 	'NONE'				=> 'None',
 	'NOT_WATCHING_FORUM'=> 'You no subscribe to updates on this forum',
 	'NOT_WATCHING_TOPIC'=> 'You are no longer subscribed to this topic.',
+	'NO_AUTH_OPERATION'	=> 'You do not have the neccessary permissions to complete this operation.',
 	'NO_BIRTHDAYS'		=> 'No birthdays today',
 	'NO_FORUM'			=> 'The forum you selected does not exist',
 	'NO_FORUMS'			=> 'This board has no forums',

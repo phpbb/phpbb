@@ -33,7 +33,9 @@ $lang = array_merge($lang, array(
 	'ADD_USERS'						=> 'Add Users',
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a seperate line.',
 
-	'CREATE_GROUP'			=> 'Create new group',
+	'COPY_PERMISSIONS'				=> 'Copy permissions from',
+	'COPY_PERMISSIONS_EXPLAIN'		=> 'Once created, the group will have the same permissions as the one you select here.',
+	'CREATE_GROUP'					=> 'Create new group',
 
 	'GROUPS_NO_MEMBERS'				=> 'This group has no members',
 	'GROUPS_NO_MODS'				=> 'No group leaders defined',
@@ -90,6 +92,7 @@ $lang = array_merge($lang, array(
 	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully',
 
 	'NO_GROUP'					=> 'No group specified',
+	'NO_PERMISSIONS'			=> 'Do not copy permissions',
 	'NO_USERS'					=> 'The requested users do not exist',
 
 	'SPECIAL_GROUPS'			=> 'Predefined groups',

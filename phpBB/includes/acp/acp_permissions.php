@@ -38,11 +38,14 @@ class acp_permissions
 		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
 
 		$all_forums = request_var('all_forums', 0);
-		$user_id = request_var('user_id', array(0));
-		$group_id = request_var('group_id', array(0));
+		$subforum_id = request_var('subforum_id', 0);
 		$forum_id = request_var('forum_id', array(0));
+
 		$username = request_var('username', array(''));
 		$usernames = request_var('usernames', '');
+		$user_id = request_var('user_id', array(0));
+
+		$group_id = request_var('group_id', array(0));
 
 		// Map usernames to ids and vice versa
 		if ($usernames)
@@ -62,10 +65,44 @@ class acp_permissions
 		}
 		unset($username);
 		
+		// Build forum ids (of all forums are checked or subforum listing used)
+		if ($all_forums)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				ORDER BY left_id';
+			$result = $db->sql_query($sql);
+
+			$forum_id = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_id[] = $row['forum_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+		else if ($subforum_id)
+		{
+			$forum_id = array();
+			foreach (get_forum_branch($subforum_id, 'children') as $row)
+			{
+				$forum_id[] = $row['forum_id'];
+			}
+		}
+
 		// Define some common variables for every mode
 		$error = array();
 		
 		$permission_scope = (strpos($mode, '_global') !== false) ? 'global' : 'local';
+
+		// Showing introductionary page?
+		if ($mode == 'intro')
+		{
+			$template->assign_vars(array(
+				'S_INTRO'		=> true)
+			);
+
+			return;
+		}
 
 		switch ($mode)
 		{
@@ -168,11 +205,6 @@ class acp_permissions
 			'type'			=> $permission_type)
 		);
 
-		if ($all_forums)
-		{
-			$s_hidden_fields .= build_hidden_fields(array('all_forums' => $all_forums));
-		}
-
 		// Go through the screens/options needed and present them in correct order
 		foreach ($permission_victim as $victim)
 		{
@@ -195,19 +227,28 @@ class acp_permissions
 					
 				case 'forums':
 
-					if (sizeof($forum_id) || $all_forums)
+					if (sizeof($forum_id))
 					{
-						if (sizeof($forum_id))
-						{
-							$this->check_existence('forum', $forum_id);
-						}
-
+						$this->check_existence('forum', $forum_id);
 						continue 2;
 					}
 
+					$forum_list = make_forum_select(false, false, false, false, true, true);
+
+					// Build forum options
+					$s_forum_options = '';
+					foreach ($forum_list as $f_id => $f_row)
+					{
+						$s_forum_options .= '<option value="' . $f_id . '"' . $f_row['selected'] . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+					}
+
+					// Build subforum options
+					$s_subforum_options = $this->build_subforum_options($forum_list);
+
 					$template->assign_vars(array(
 						'S_SELECT_FORUM'		=> true,
-						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, false),
+						'S_FORUM_OPTIONS'		=> $s_forum_options,
+						'S_SUBFORUM_OPTIONS'	=> $s_subforum_options,
 						'S_FORUM_ALL'			=> true,
 						'S_FORUM_MULTIPLE'		=> true)
 					);
@@ -263,29 +304,33 @@ class acp_permissions
 					}
 
 					$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')' : 'AND a.forum_id <> 0');
-					$sql_permission_option = "o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+					$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
 
 					$sql = 'SELECT DISTINCT u.user_id, u.username
-						FROM ' . USERS_TABLE . ' u, ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o
-						WHERE $sql_permission_option
+						FROM (' . USERS_TABLE . ' u, ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . ' o)
+						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
+						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
+							$sql_permission_option
 							$sql_forum_id
-							AND a.auth_option_id = o.auth_option_id
 							AND u.user_id = a.user_id
 						ORDER BY u.username, u.user_regdate ASC";
 					$result = $db->sql_query($sql);
 
 					$s_defined_user_options = '';
+					$defined_user_ids = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$s_defined_user_options .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
+						$defined_user_ids[] = $row['user_id'];
 					}
 					$db->sql_freeresult($result);
 
 					$sql = 'SELECT DISTINCT g.group_id, g.group_name, g.group_type 
-						FROM ' . GROUPS_TABLE . ' g, ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o
-						WHERE $sql_permission_option
+						FROM (' . GROUPS_TABLE . ' g, ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . ' o)
+						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
+						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
+							$sql_permission_option
 							$sql_forum_id
-							AND a.auth_option_id = o.auth_option_id
 							AND g.group_id = a.group_id
 						ORDER BY g.group_type DESC, g.group_name ASC";
 					$result = $db->sql_query($sql);
@@ -298,6 +343,22 @@ class acp_permissions
 						$defined_group_ids[] = $row['group_id'];
 					}
 					$db->sql_freeresult($result);
+
+					// Now we check the users... because the "all"-selection is different here (all defined users/groups)
+					$all_users = (isset($_POST['all_users'])) ? true : false;
+					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+
+					if ($all_users && sizeof($defined_user_ids))
+					{
+						$user_id = $defined_user_ids;
+						continue 2;
+					}
+
+					if ($all_groups && sizeof($defined_group_ids))
+					{
+						$group_id = $defined_group_ids;
+						continue 2;
+					}
 
 					$template->assign_vars(array(
 						'S_SELECT_USERGROUP'		=> ($victim == 'usergroup') ? true : false,
@@ -346,12 +407,6 @@ class acp_permissions
 			return;
 		}
 
-		// Set to all forums if selected
-		if ($permission_scope == 'local' && $all_forums)
-		{
-			$forum_id = array();
-		}
-
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (sizeof($forum_id) && !sizeof($user_id) && !sizeof($group_id))
 		{
@@ -386,6 +441,45 @@ class acp_permissions
 		}
 	}
 
+	/**
+	* Build +subforum options
+	*/
+	function build_subforum_options($forum_list)
+	{
+		global $user;
+
+		$s_options = '';
+
+		$forum_list = array_merge($forum_list);
+
+		foreach ($forum_list as $key => $row)
+		{
+			$s_options .= '<option value="' . $row['forum_id'] . '"' . $row['selected'] . '>' . $row['padding'] . $row['forum_name'];
+
+			// We check if a branch is there...
+			$branch_there = false;
+
+			foreach (array_slice($forum_list, $key + 1) as $temp_row)
+			{
+				if ($temp_row['left_id'] > $row['left_id'] && $temp_row['left_id'] < $row['right_id'])
+				{
+					$branch_there = true;
+					break;
+				}
+				continue;
+			}
+			
+			if ($branch_there)
+			{
+				$s_options .= ' [' . $user->lang['PLUS_SUBFORUMS'] . ']';
+			}
+
+			$s_options .= '</option>';
+		}
+
+		return $s_options;
+	}
+	
 	/**
 	* Build dropdown field for changing permission types
 	*/
@@ -476,9 +570,12 @@ class acp_permissions
 
 		$auth_settings = array_map('intval', $_POST['setting'][$ug_id][$forum_id]);
 
-		// Do the admin want to set these permissions to other forums too?
+		// Do we have a role we want to set?
+		$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
+
+		// Do the admin want to set these permissions to other items too?
 		$inherit = request_var('inherit', array(0));
-			
+
 		$ug_id = array($ug_id);
 		$forum_id = array($forum_id);
 
@@ -499,8 +596,17 @@ class acp_permissions
 
 		$forum_id = array_unique($forum_id);
 
+		// If the auth settings differ from the assigned role, then do not set a role...
+		if ($assigned_role)
+		{
+			if (!$this->check_assigned_role($assigned_role, $auth_settings))
+			{
+				$assigned_role = 0;
+			}
+		}
+
 		// Update the permission set...
-		$auth_admin->acl_set($ug_type, $forum_id, $ug_id, $auth_settings);
+		$auth_admin->acl_set($ug_type, $forum_id, $ug_id, $auth_settings, $assigned_role);
 
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
@@ -549,8 +655,20 @@ class acp_permissions
 				$forum_id = (int) $forum_id;
 				$forum_ids[] = $forum_id;
 
+				// Check role...
+				$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
+
+				// If the auth settings differ from the assigned role, then do not set a role...
+				if ($assigned_role)
+				{
+					if (!$this->check_assigned_role($assigned_role, $auth_options))
+					{
+						$assigned_role = 0;
+					}
+				}
+
 				// Update the permission set...
-				$auth_admin->acl_set($ug_type, $forum_id, $ug_id, $auth_options);
+				$auth_admin->acl_set($ug_type, $forum_id, $ug_id, $auth_options, $assigned_role);
 			}
 		}
 
@@ -569,6 +687,44 @@ class acp_permissions
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
 
 		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+	}
+
+	/**
+	* Compare auth settings with auth settings from role
+	* returns false if they differ, true if they are equal
+	*/
+	function check_assigned_role($role_id, &$auth_settings)
+	{
+		global $db;
+
+		$sql = 'SELECT o.auth_option, r.auth_setting
+			FROM ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_ROLES_DATA_TABLE . ' r
+			WHERE o.auth_option_id = r.auth_option_id
+				AND r.role_id = ' . $role_id;
+		$result = $db->sql_query($sql);
+
+		$test_auth_settings = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$test_auth_settings[$row['auth_option']] = $row['auth_setting'];
+		}
+		$db->sql_freeresult($result);
+
+		// We need to add any ACL_UNSET setting from auth_settings to compare correctly
+		foreach ($auth_settings as $option => $setting)
+		{
+			if ($setting == ACL_UNSET)
+			{
+				$test_auth_settings[$option] = $setting;
+			}
+		}
+
+		if (sizeof(array_diff_assoc($auth_settings, $test_auth_settings)))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -708,6 +864,8 @@ class acp_permissions_info
 			'title'		=> 'ACP_PERMISSIONS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
+				'intro'					=> array('title' => 'ACP_PERMISSIONS', 'auth' => 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth'),
+
 				'setting_user_global'	=> array('title' => 'ACP_USERS_PERMISSIONS', 'auth' => 'acl_a_authusers && (acl_a_aauth || acl_a_mauth || acl_a_uauth)'),
 				'setting_user_local'	=> array('title' => 'ACP_USERS_FORUM_PERMISSIONS', 'auth' => 'acl_a_authusers && (acl_a_mauth || acl_a_fauth)'),
 				'setting_group_global'	=> array('title' => 'ACP_GROUPS_PERMISSIONS', 'auth' => 'acl_a_authgroups && (acl_a_aauth || acl_a_mauth || acl_a_uauth)'),

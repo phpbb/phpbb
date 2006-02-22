@@ -353,7 +353,7 @@ class auth
 		if (sizeof($hold_ary))
 		{
 			ksort($hold_ary);
-			
+
 			$last_f = 0;
 
 			foreach ($hold_ary as $f => $auth_ary)
@@ -378,7 +378,7 @@ class auth
 					}
 					else
 					{
-						$bitstring[$id] = 0;
+						$bitstring[$id] = ACL_NO;
 					}
 				}
 
@@ -428,6 +428,39 @@ class auth
 	}
 
 	/**
+	* Get assigned roles
+	*/
+	function acl_role_data($user_type, $role_type, $ug_id = false, $forum_id = false)
+	{
+		global $db;
+
+		$roles = array();
+
+		$sql_id = ($user_type == 'user') ? 'user_id' : 'group_id';
+
+		$sql_ug = ($ug_id !== false) ? ((!is_array($ug_id)) ? "AND a.$sql_id = $ug_id" : "AND a.$sql_id IN (" . implode(', ', $ug_id) . ')') : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+
+		// Grab assigned roles...
+		$sql = 'SELECT a.auth_role_id, a.' . $sql_id . ', a.forum_id
+			FROM ' . (($user_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE) . ' a, ' . ACL_ROLES_TABLE . " r
+			WHERE a.auth_role_id = r.role_id
+				AND r.role_type = '" . $db->sql_escape($role_type) . "'
+				$sql_ug
+				$sql_forum
+			ORDER BY r.role_name ASC";
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$roles[$row[$sql_id]][$row['forum_id']] = $row['auth_role_id'];
+		}
+		$db->sql_freeresult($result);
+
+		return $roles;
+	}
+
+	/**
 	* Get raw acl data based on user/option/forum
 	*/
 	function acl_raw_data($user_id = false, $opts = false, $forum_id = false)
@@ -455,37 +488,41 @@ class auth
 
 		// First grab user settings ... each user has only one setting for each
 		// option ... so we shouldn't need any ACL_NO checks ... he says ...
-		$sql = 'SELECT ao.auth_option, a.user_id, a.forum_id, a.auth_setting
-			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a
-			WHERE ao.auth_option_id = a.auth_option_id
+		$sql = 'SELECT ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting
+			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a)
+			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
+			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
 				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option_id";
+			ORDER BY a.forum_id, ao.auth_option";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+			$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
+			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
 		}
 		$db->sql_freeresult($result);
 
 		// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
-		$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, a.auth_setting
-			FROM ' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a
-			WHERE ao.auth_option_id = a.auth_option_id
+		$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting
+			FROM (' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a)
+			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
+			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
 				AND a.group_id = ug.group_id
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option_id";
+			ORDER BY a.forum_id, ao.auth_option";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NO))
 			{
-				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+				$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
+				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
 			}
 		}
 		$db->sql_freeresult($result);
@@ -519,20 +556,21 @@ class auth
 
 		$hold_ary = array();
 
-		// Grab user settings ... each user has only one setting for each
-		// option ... so we shouldn't need any ACL_NO checks ... he says ...
-		$sql = 'SELECT ao.auth_option, a.user_id, a.forum_id, a.auth_setting
-			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a
-			WHERE ao.auth_option_id = a.auth_option_id
+		// Grab user settings...
+		$sql = 'SELECT ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting
+			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a)
+			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
+			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
 				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option_id";
+			ORDER BY a.forum_id, ao.auth_option";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+			$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
+			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
 		}
 		$db->sql_freeresult($result);
 
@@ -564,18 +602,20 @@ class auth
 		$hold_ary = array();
 
 		// Grab group settings... 
-		$sql = 'SELECT a.group_id, ao.auth_option, a.forum_id, a.auth_setting
-			FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a
-			WHERE ao.auth_option_id = a.auth_option_id
+		$sql = 'SELECT a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting
+			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a)
+			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
+			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
 				' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
 				$sql_forum
 				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option_id";
+			ORDER BY a.forum_id, ao.auth_option";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$hold_ary[$row['group_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+			$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
+			$hold_ary[$row['group_id']][$row['forum_id']][$row['auth_option']] = $setting;
 		}
 		$db->sql_freeresult($result);
 

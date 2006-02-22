@@ -1172,7 +1172,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 * Add or edit a group. If we're editing a group we only update user
 * parameters such as rank, etc. if they are changed
 */
-function group_create($group_id, $type, $name, $desc, $group_attributes)
+function group_create(&$group_id, $type, $name, $desc, $group_attributes)
 {
 	global $phpbb_root_path, $config, $db, $user, $file_upload;
 
@@ -1228,8 +1228,16 @@ function group_create($group_id, $type, $name, $desc, $group_attributes)
 			}
 		}
 
+		// Setting the log message before we set the group id (if group gets added)
+		$log = ($group_id) ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
+
 		$sql = ($group_id) ? 'UPDATE ' . GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "	WHERE group_id = $group_id" : 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
+
+		if (!$group_id)
+		{
+			$group_id = $db->sql_nextid();
+		}
 
 		// Set user attributes
 		$sql_ary = array();
@@ -1251,7 +1259,6 @@ function group_create($group_id, $type, $name, $desc, $group_attributes)
 			$db->sql_query($sql);
 		}
 
-		$log = ($group_id) ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
 		add_log('admin', $log, $name);
 	}
 
