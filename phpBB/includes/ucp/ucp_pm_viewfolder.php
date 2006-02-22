@@ -17,50 +17,55 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 	global $user, $template, $auth, $db, $cache;
 	global $phpbb_root_path, $config, $phpEx, $SID;
 
-	$user->add_lang('viewforum');
+	$submit_export = (isset($_POST['submit_export'])) ? true : false;
 
-	// Grab icons
-	$icons = array();
-	$cache->obtain_icons($icons);
-
-	$color_rows = array('marked', 'replied', 'message_reported', 'friend', 'foe');
-
-	foreach ($color_rows as $var)
+	if (!$submit_export)
 	{
-		$template->assign_block_vars('pm_colour_info', array(
-			'IMG'	=> $user->img("pm_{$var}", ''),
-			'CLASS' => "pm_{$var}_colour",
-			'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
+		$user->add_lang('viewforum');
+
+		// Grab icons
+		$icons = array();
+		$cache->obtain_icons($icons);
+
+		$color_rows = array('marked', 'replied', 'message_reported', 'friend', 'foe');
+
+		foreach ($color_rows as $var)
+		{
+			$template->assign_block_vars('pm_colour_info', array(
+				'IMG'	=> $user->img("pm_{$var}", ''),
+				'CLASS' => "pm_{$var}_colour",
+				'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
+			);
+		}
+
+		$mark_options = array('mark_important', 'delete_marked');
+
+		$s_mark_options = '';
+		foreach ($mark_options as $mark_option)
+		{
+			$s_mark_options .= '<option value="' . $mark_option . '">' . $user->lang[strtoupper($mark_option)] . '</option>';
+		}
+
+		$friend = $foe = array();
+
+		// Get friends and foes
+		$sql = 'SELECT *
+			FROM ' . ZEBRA_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'];
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$friend[$row['zebra_id']] = $row['friend'];
+			$foe[$row['zebra_id']] = $row['foe'];
+		}
+		$db->sql_freeresult($result);
+
+		$template->assign_vars(array(
+			'S_UNREAD'		=> ($type == 'unread'),
+			'S_MARK_OPTIONS'=> $s_mark_options)
 		);
 	}
-
-	$mark_options = array('mark_important', 'delete_marked');
-
-	$s_mark_options = '';
-	foreach ($mark_options as $mark_option)
-	{
-		$s_mark_options .= '<option value="' . $mark_option . '">' . $user->lang[strtoupper($mark_option)] . '</option>';
-	}
-
-	$friend = $foe = array();
-
-	// Get friends and foes
-	$sql = 'SELECT *
-		FROM ' . ZEBRA_TABLE . '
-		WHERE user_id = ' . $user->data['user_id'];
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$friend[$row['zebra_id']] = $row['friend'];
-		$foe[$row['zebra_id']] = $row['foe'];
-	}
-	$db->sql_freeresult($result);
-
-	$template->assign_vars(array(
-		'S_UNREAD'		=> ($type == 'unread'),
-		'S_MARK_OPTIONS'=> $s_mark_options)
-	);
 
 	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id'], "{$phpbb_root_path}ucp.$phpEx$SID", $type);
 
@@ -123,11 +128,15 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 		$data = array();
 
+		$export_type = request_var('export_option', '');
+		$enclosure = request_var('enclosure', '');
+		$delimiter = request_var('delimiter', '');
+
 		foreach ($folder_info['pm_list'] as $message_id)
 		{
 			$row = &$folder_info['rowset'][$message_id];
 
-			if (isset($_REQUEST['submit_export']))
+			if ($submit_export && ($export_type !== 'CSV' || ($delimiter !== '' && $enclosure !== '')))
 			{
 				$sql = 'SELECT p.message_text
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -140,9 +149,11 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				$message_row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$data[] = array('subject' => censor_text($row['message_subject']), 'from' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '', 'message' => $message_row['message_text']);
+				$message = preg_replace('#\[(\/?[a-z\*\+\-]+(?:=.*?)?)(?:\:?[0-9a-z]{5,})\]#', '[\1]', $message_row['message_text']);
+
+				$data[] = array('subject' => censor_text($row['message_subject']), 'from' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '', 'message' => $message);
 			}
-			else
+			else if (!$submit_export || $export_type !== 'CSV')
 			{
 				$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
 				$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
@@ -199,27 +210,22 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 		);
 	}
 
-	$type = request_var('export_option', '');
-	$enclosure = request_var('enclosure', '');
-	$delimiter = request_var('delimiter', '');
-	$submit_export = (isset($_POST['submit_export'])) ? true : false;
-
 	// Ask the user what he wants
 	if ($submit_export)
 	{
-		if ($delimiter === '' && $type == 'CSV')
+		if ($export_type == 'CSV' && ($delimiter === '' || $enclosure === ''))
 		{
 			$template->assign_var('PROMPT', true);
 		}
 		else
 		{
-			switch ($type)
+			switch ($export_type)
 			{
 				case 'CSV':
 				case 'CSV_EXCEL':
 					$mimetype = 'text/csv';
 					$filetype = 'csv';
-					if ($type == 'CSV_EXCEL')
+					if ($export_type == 'CSV_EXCEL')
 					{
 						$enclosure = '"';
 						$delimiter = ',';

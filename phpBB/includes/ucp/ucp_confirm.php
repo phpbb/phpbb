@@ -191,36 +191,51 @@ class ucp_confirm
 		else
 		{
 			// The total length of this image, uncompressed, is just a calculation of pixels
-			$len = $temp_len = ($width + 1) * $height;
+			$len = ($width + 1) * $height;
 
-			// Optimized Adler-32 loop ported from the GNU Classpath project
-			$s1 = 1;
-			$s2 = 0;
-			$i = 0;
-			while ($temp_len > 0)
+			// Adler-32 hash generation
+			// Note: The hash is _backwards_ so we must reverse it
+
+			if (@extension_loaded('hash'))
 			{
-				// We can defer the modulo operation:
-				// s1 maximally grows from 65521 to 65521 + 255 * 3800
-				// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
-				$n = 3800;
-				if ($n > $temp_len)
-				{
-					$n = $temp_len;
-				}
-				$temp_len -= $n;
-				while (--$n >= 0)
-				{
-					$s1 += (ord($raw_image[$i++]) & 255);
-					$s2 += $s1;
-				}
-				$s1 %= 65521;
-				$s2 %= 65521;
+				$adler_hash = hash('adler32', $raw_image, true);
 			}
-			$adler = ($s2 << 16) | $s1;
+			else if (@extension_loaded('mhash'))
+			{
+				$adler_hash = mhash(MHASH_ADLER32, $raw_image);
+			}
+			else
+			{
+				// Optimized Adler-32 loop ported from the GNU Classpath project
+				$temp_len = $len;
+				$s1 = 1;
+				$s2 = 0;
+				$i = 0;
+				while ($temp_len > 0)
+				{
+					// We can defer the modulo operation:
+					// s1 maximally grows from 65521 to 65521 + 255 * 3800
+					// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
+					$n = 3800;
+					if ($n > $temp_len)
+					{
+						$n = $temp_len;
+					}
+					$temp_len -= $n;
+					while (--$n >= 0)
+					{
+						$s1 += (ord($raw_image[$i++]) & 255);
+						$s2 += $s1;
+					}
+					$s1 %= 65521;
+					$s2 %= 65521;
+				}
+				$adler = ($s2 << 16) | $s1;
+				$adler_hash = pack('C4', $adler & 255, ($adler >> 8) & 255, ($adler >> 16) & 255, ($adler >> 24) & 255);
+			}
 
-			// This is the same thing as gzcompress($raw_image, 0)
-			$raw_image = pack('C7', 0x78, 0x01, 0x01, $len, ($len >> 8) & 255, ~$len & 255, ~($len >> 8)) . $raw_image;
-			$raw_image .= pack('C4', ($adler >> 24) & 255, ($adler >> 16) & 255, ($adler >> 8) & 255, $adler & 255);
+			// This is the same thing as gzcompress($raw_image, 0) but does not need zlib
+			$raw_image = pack('C7', 0x78, 0x01, 0x01, $len, ($len >> 8) & 255, ~$len & 255, ~($len >> 8)) . $raw_image . strrev($adler_hash);
 
 			// The Zlib header + Adler hash make us add on 11
 			$len += 11;
