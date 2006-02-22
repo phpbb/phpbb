@@ -40,12 +40,6 @@ else
 	$mode = request_var('mode', '');
 }
 
-// Make sure we are using the correct module
-if ($mode == 'approve' || $mode == 'disapprove')
-{
-	$id = 'queue';
-}
-
 // Only Moderators can go beyond this point
 if (!$user->data['is_registered'])
 {
@@ -165,23 +159,24 @@ else
 // Hide some of the options if we don't have the relevant information to use them
 if (!$post_id)
 {
-	$module->set_display('post_details', false);
-	$module->set_display('warn_post', false);
+	$module->set_display('main', 'post_details', false);
+	$module->set_display('queue', 'approve_details', false);
+	$module->set_display('warn', 'warn_post', false);
 }
 if (!$topic_id)
 {
-	$module->set_display('topic_view', false);
-	$module->set_display('topic_logs', false);
+	$module->set_display('main', 'topic_view', false);
+	$module->set_display('logs', 'topic_logs', false);
 }
 if (!$forum_id)
 {
-	$module->set_display('forum_view', false);
-	$module->set_display('forum_logs', false);
+	$module->set_display('main', 'forum_view', false);
+	$module->set_display('logs', 'forum_logs', false);
 }
 if (!$user_id && $username == '')
 {
-	$module->set_display('user_notes', false);
-	$module->set_display('warn_user', false);
+	$module->set_display('notes', 'user_notes', false);
+	$module->set_display('warn', 'warn_user', false);
 }
 
 // Load and execute the relevant module

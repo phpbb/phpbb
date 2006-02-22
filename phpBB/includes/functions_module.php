@@ -581,14 +581,13 @@ class p_master
 	/**
 	* Toggle whether this module will be displayed or not
 	*/
-	function set_display($id, $display = true)
+	function set_display($id, $mode = false, $display = true)
 	{
 		foreach ($this->module_ary as $row_id => $itep_ary)
 		{
-			if ($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id)
+			if (($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && (!$mode || $itep_ary['mode'] === $mode))
 			{
 				$this->module_ary[$row_id]['display'] = (int) $display;
-				break;
 			}
 		}
 	}
