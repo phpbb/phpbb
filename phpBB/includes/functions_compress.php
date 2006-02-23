@@ -527,7 +527,7 @@ class compress_tar extends compress
 
 		if ($stat[7] !== 0 && !$is_dir)
 		{
-			$fzwrite($this->fp, pack('a'.($stat[7] + 512 - $stat[7] % 512), $data));
+			$fzwrite($this->fp, $data . (($stat[7] % 512 > 0) ? str_repeat("\0", 512 - $stat[7] % 512) : ''));
 			unset($data);
 		}
 	}
