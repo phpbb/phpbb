@@ -646,7 +646,7 @@ class auth_admin extends auth
 	/**
 	* Set a user or group ACL record
 	*/
-	function acl_set($ug_type, &$forum_id, &$ug_id, &$auth, $role_id = 0)
+	function acl_set($ug_type, &$forum_id, &$ug_id, &$auth, $role_id = 0, $clear_prefetch = true)
 	{
 		global $db;
 
@@ -683,10 +683,30 @@ class auth_admin extends auth
 		$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 		$id_field  = $ug_type . '_id';
 
+		// Get any flags as required
+		list(, $flag) = each(array_keys($auth));
+		$flag = substr($flag, 0, strpos($flag, '_') + 1);
+		
+		// This ID (the any-flag) is only set if roles are assigned - this makes it very easy to determine the correct roles
+		$any_option_id = (int) $this->option_ids[$flag];
+
+		// Remove any-flag from auth ary
+		if (isset($auth[$flag]))
+		{
+			unset($auth[$flag]);
+		}
+
 		// Remove current auth options...
+		$auth_option_ids = array();
+		foreach ($auth as $auth_option => $auth_setting)
+		{
+			$auth_option_ids[] = (int) $this->option_ids[$auth_option];
+		}
+
 		$sql = "DELETE FROM $table
 			WHERE forum_id $forum_sql
-				AND $id_field $ug_id_sql";
+				AND $id_field $ug_id_sql
+				AND auth_option_id IN ($any_option_id, " . implode(', ', $auth_option_ids) . ')';
 		$db->sql_query($sql);
 
 		$sql_ary = array();
@@ -701,7 +721,7 @@ class auth_admin extends auth
 					$sql_ary[] = array(
 						$id_field			=> (int) $id,
 						'forum_id'			=> (int) $forum,
-						'auth_option_id'	=> 0,
+						'auth_option_id'	=> $any_option_id,
 						'auth_setting'		=> 0,
 						'auth_role_id'		=> $role_id
 					);
@@ -748,7 +768,10 @@ class auth_admin extends auth
 			}
 		}
 
-		$this->acl_clear_prefetch();
+		if ($clear_prefetch)
+		{
+			$this->acl_clear_prefetch();
+		}
 	}
 
 	/**
@@ -813,39 +836,105 @@ class auth_admin extends auth
 
 	/**
 	* Remove local permission
-	* @todo take roles into consideration (if one auth option is being removed and placed within a role we need to re-build the acl entries)
 	*/
-	function acl_delete($mode, $ug_id = false, $forum_id = false, $auth_id = false)
+	function acl_delete($mode, $ug_id = false, $forum_id = false, $permission_type = false)
 	{
 		global $db;
 
-		if ($ug_id === false && $forum_id === false && $auth_ids === false)
+		if ($ug_id === false && $forum_id === false)
 		{
 			return;
 		}
 
+		$option_id_ary = array();
 		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
 		$id_field  = $mode . '_id';
 
-		$sql = array();
+		$where_sql = array();
 
-		if ($auth_id !== false)
-		{
-			$sql[] = (!is_array($auth_id)) ? 'auth_option_id = ' . (int) $auth_id : 'auth_option_id IN (' . implode(', ', array_map('intval', $auth_id)) . ')';
-		}
-		
 		if ($forum_id !== false)
 		{
-			$sql[] = (!is_array($forum_id)) ? 'forum_id = ' . (int) $forum_id : 'forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
+			$where_sql[] = (!is_array($forum_id)) ? 'forum_id = ' . (int) $forum_id : 'forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
 		}
 
 		if ($ug_id !== false)
 		{
-			$sql[] = (!is_array($ug_id)) ? $id_field . ' = ' . (int) $ug_id : $id_field . ' IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
+			$where_sql[] = (!is_array($ug_id)) ? $id_field . ' = ' . (int) $ug_id : $id_field . ' IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
 		}
 
+		// There seem to be auth options involved, therefore we need to go through the list and make sure we capture roles correctly
+		if ($permission_type !== false)
+		{
+			// Get permission type
+			$sql = 'SELECT auth_option, auth_option_id
+				FROM ' . ACL_OPTIONS_TABLE . "
+				WHERE auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+			$result = $db->sql_query($sql);
+
+			$auth_id_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$option_id_ary[] = $row['auth_option_id'];
+				$auth_id_ary[$row['auth_option']] = ACL_UNSET;
+			}
+			$db->sql_freeresult($result);
+
+			// First of all, lets grab the items having roles with the specified auth options assigned
+			$sql = "SELECT auth_role_id, $id_field, forum_id
+				FROM $table
+				WHERE auth_role_id <> 0
+					AND auth_option_id = {$auth_id_ary[$permission_type]}
+					AND " . implode(' AND ', $where_sql) . '
+				ORDER BY auth_role_id';
+			$result = $db->sql_query($sql);
+
+			$cur_role_auth = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$cur_role_auth[$row['auth_role_id']][$row['forum_id']][] = $row[$id_field];
+			}
+			$db->sql_freeresult($result);
+
+			// Get role data for resetting data
+			if (sizeof($cur_role_auth))
+			{
+				$sql = 'SELECT ao.auth_option, rd.role_id, rd.auth_setting
+					FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_ROLES_DATA_TABLE . ' rd
+					WHERE ao.auth_option_id = rd.auth_option_id
+						AND rd.role_id IN (' . implode(', ', array_keys($cur_role_auth)) . ')';
+				$result = $db->sql_query($sql);
+
+				$auth_settings = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					// We need to fill all auth_options, else setting it will fail...
+					if (!isset($auth_settings[$row['role_id']]))
+					{
+						$auth_settings[$row['role_id']] = $auth_id_ary;
+					}
+					$auth_settings[$row['role_id']][$row['auth_option']] = $row['auth_setting'];
+				}
+				$db->sql_freeresult($result);
+
+				// Set the options
+				foreach ($cur_role_auth as $role_id => $auth_row)
+				{
+					foreach ($auth_row as $f_id => $ug_row)
+					{
+						$this->acl_set($mode, $f_id, $ug_row, $auth_settings[$role_id], 0, false);
+					}
+				}
+			}
+		}
+
+		// Now, normally remove permissions...
+		if ($permission_type !== false)
+		{
+			$where_sql[] = 'auth_option_id IN (' . implode(', ', array_map('intval', $option_id_ary)) . ')';
+		}
+		
 		$sql = "DELETE FROM $table
-			WHERE " . implode(' AND ', $sql);
+			WHERE " . implode(' AND ', $where_sql);
 		$db->sql_query($sql);
 
 		$this->acl_clear_prefetch();

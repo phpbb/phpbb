@@ -743,23 +743,7 @@ class acp_permissions
 			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
 		}
 
-		// Remove permission type
-		$sql = 'SELECT auth_option_id
-			FROM ' . ACL_OPTIONS_TABLE . "
-			WHERE auth_option LIKE '{$permission_type}%'";
-		$result = $db->sql_query($sql);
-
-		$option_id_ary = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$option_id_ary[] = $row['auth_option_id'];
-		}
-		$db->sql_freeresult($result);
-
-		if (sizeof($option_id_ary))
-		{
-			$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : false), $option_id_ary);
-		}
+		$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : false), $permission_type);
 
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
