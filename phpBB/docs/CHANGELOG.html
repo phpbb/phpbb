@@ -74,6 +74,9 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] retrieving category rows in index.php (Bug #90)</li>
 <li>[Fix] improved index performance by determining the permissions before iterating through all forums (Bug #91)</li>
 <li>[Fix] Better handling of short usernames within the search (bug #105)</li>
+<li>[Fix] Send a no-cache header on admin pages as well as normal board pages (Bug #149)</li>
+<li>[Fix] Apply word censors to the message when quoting it (Bug #405)</li>
+<li>[Fix] Improved performance of query in admin_groups (Bug #753)</li>
 <li>[Fix] Workaround for an issue in either PHP or MSSQL resulting in a space being returned instead of an empty string (bug #830)</li>
 <li>[Fix] Correct use of default_style config value (Bug #861)</li>
 <li>[Fix] Replace unneeded unset calls in admin_db_utilities.php - vanderaj</li>
@@ -83,10 +86,13 @@ p,ul,td {font-size:10pt;}
 <li>[Fix] Assorted fixes and cleanup of admin_words.php, now requires confirmation of deletions</li>
 <li>[Fix] Addition and editing of smilies can no longer be performed via GET, now requires confirmation of deletions</li>
 <li>[Fix] Escape group names in admin_groups.php</li>
+<li>[Sec] Replace strip_tags with htmlspecialchars in private message subject</li>
 <li>[Sec] Some changes to HTML handling if enabled</li>
-<li>[Sec] Escape any special characters in reverse dns - Anthrax101</i>
+<li>[Sec] Escape any special characters in reverse dns - Anthrax101</li>
+<li>[Sec] Typecast poll id values - Anthrax101</li>
+<li>[Sec] Added configurable search flood control to reduce the effect of DoS style attacks</li>
 <li>[Change] Changed handling of the case where a selected style doesn't exist in the database</li>
-<li>[Change] <strong>PHP requirements are now 4.0.5</strong> as a result of changes to HTML parsing</li>
+<li>[Change] Changed handling of topic pruning to improve performance</li>
 </ul>
 
 

@@ -46,7 +46,25 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 
 	if ($html_on)
 	{
-		$message = addslashes(preg_replace_callback('/<\/?(\w+)((?:[^\w>]+\w+(?:\s*=\s*(?:"[^"]*"|\'[^\']*\'|`[^`]*`|´[^´]*´|[^`´\'">]*))?)*)[\W]*?\/?>/', 'clean_html', stripslashes($message)));
+		// If HTML is on, we try to make it safe
+		// This approach is quite agressive and anything that does not look like a valid tag
+		// is going to get converted to HTML entities
+		$message = stripslashes($message);
+		$html_match = '#<[^\w<]*(\w+)((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?>#';
+		$matches = array();
+
+		$message_split = preg_split($html_match, $message);
+		preg_match_all($html_match, $message, $matches);
+
+		$message = '';
+
+		foreach ($message_split as $part)
+		{
+			$tag = array(array_shift($matches[0]), array_shift($matches[1]), array_shift($matches[2]));
+			$message .= htmlspecialchars($part) . clean_html($tag);
+		}
+
+		$message = addslashes($message);
 	}
 	else
 	{
@@ -809,38 +827,57 @@ function clean_html($tag)
 {
 	global $board_config;
 
+	if (empty($tag[0]))
+	{
+		return '';
+	}
+
 	$allowed_html_tags = preg_split('/, */', strtolower($board_config['allow_html_tags']));
 	$disallowed_attributes = '/^(?:style|on)/';
 
-	if (in_array(strtolower($tag[1]), $allowed_html_tags))
-	{	
-		$attributes = '';
-		if (!empty($tag[2]))
+	// Check if this is an end tag
+	preg_match('/<[^\w\/]*\/[\W]*(\w+)/', $tag[0], $matches);
+	if (sizeof($matches))
+	{
+		if (in_array(strtolower($matches[1]), $allowed_html_tags))
 		{
-			// Get all the elements of a tag so that they can be checked in turn
-			$matches = array();
-			preg_match_all('/[\W]+(\w+)(?:\s*=\s*("[^"]*"|\'[^\']*\'|`[^`]*`|´[^´]*´|[^\'"`´]*))?/', $tag[2], $matches);
-
-			foreach ($matches[1] as $key => $value)
-			{
-				// Remove any attributes which are not allowed
-				if (preg_match($disallowed_attributes, strtolower($value)) || (!preg_match('/([\'´`"]).*\\1/', $matches[2][$key]) && preg_match('/[^0-9a-zA-Z\\x2D\\x2E\\\x3A\\x5F]+/', $matches[2][$key])))
-				{
-					continue;
-				}
-				// Build a string containing the allowed attributes, strip out anything that could harm the parser
-				$attributes .= ' ' . $value . '="' . htmlentities(preg_replace('/^[´`"\']?(.*?)[´`"\']?$/', '\1', $matches[2][$key])) . '"';
-			}
+			return  '</' . $matches[1] . '>';
 		}
 		else
 		{
-			// This is a closing tag or one without any attributes, it is safe
-			return strtolower($tag[0]);
+			return  htmlspecialchars('</' . $matches[1] . '>');
 		}
-		// Build the HTML tag from the tag name and the allowed attributes
-		return '<' . strtolower($tag[1]) . $attributes . '>';
 	}
-	// This tag is not allowed so escape it
-	return htmlentities($tag[0]);
+
+	// Check if this is an allowed tag
+	if (in_array(strtolower($tag[1]), $allowed_html_tags))
+	{
+		$attributes = '';
+		if (!empty($tag[2]))
+		{
+			preg_match_all('/[\W]*?(\w+)[\W]*?=[\W]*?(["\'])((?:(?!\2).)*)\2/', $tag[2], $test);
+			for ($i = 0; $i < sizeof($test[0]); $i++)
+			{
+				if (preg_match($disallowed_attributes, $test[1][$i]))
+				{
+					continue;
+				}
+				$attributes .= ' ' . $test[1][$i] . '=' . $test[2][$i] . str_replace(array('[', ']'), array('&#91;', '&#93;'), htmlspecialchars($test[3][$i])) . $test[2][$i];
+			}
+		}
+		if (in_array(strtolower($tag[1]), $allowed_html_tags))
+		{
+			return '<' . $tag[1] . $attributes . '>';
+		}
+		else
+		{
+			return htmlspecialchars('<' . $tag[1] . $attributes . '>');
+		}
+	}
+	// Finally, this is not an allowed tag so strip all the attibutes and escape it
+	else
+	{
+		return htmlspecialchars('<' .   $tag[1] . '>');
+	}
 }
 ?>
