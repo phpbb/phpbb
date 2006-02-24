@@ -130,7 +130,7 @@ function user_delete($mode, $user_id)
 			if (!function_exists('delete_posts'))
 			{
 				global $phpbb_root_path, $phpEx;
-				include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+				include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 			}
 
 			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts

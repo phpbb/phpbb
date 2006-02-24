@@ -613,6 +613,11 @@ function disapprove_post($post_id_list)
 
 		if (sizeof($post_disapprove_sql))
 		{
+			if (!function_exists('delete_posts'))
+			{
+				include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			}
+
 			// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
 			delete_posts('post_id', $post_disapprove_sql);
 		}

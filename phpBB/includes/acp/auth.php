@@ -47,6 +47,20 @@ class auth_admin extends auth
 
 			$cache->put('acl_options', $this->acl_options);
 		}
+
+		if (!sizeof($this->option_ids))
+		{
+			$sql = 'SELECT auth_option_id, auth_option
+				FROM ' . ACL_OPTIONS_TABLE;
+			$result = $db->sql_query($sql);
+
+			$this->option_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$this->option_ids[$row['auth_option']] = $row['auth_option_id'];
+			}
+			$db->sql_freeresult($result);
+		}
 	}
 	
 	/**
@@ -662,20 +676,6 @@ class auth_admin extends auth
 			$ug_id = array($ug_id);
 		}
 		
-		if (!sizeof($this->option_ids))
-		{
-			$sql = 'SELECT auth_option_id, auth_option
-				FROM ' . ACL_OPTIONS_TABLE;
-			$result = $db->sql_query($sql);
-
-			$this->option_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$this->option_ids[$row['auth_option']] = $row['auth_option_id'];
-			}
-			$db->sql_freeresult($result);
-		}
-
 		$ug_id_sql = 'IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
 		$forum_sql = 'IN (' . implode(', ', array_map('intval', $forum_id)) . ') ';
 
@@ -780,20 +780,6 @@ class auth_admin extends auth
 	function acl_set_role($role_id, &$auth)
 	{
 		global $db;
-
-		if (!sizeof($this->option_ids))
-		{
-			$sql = 'SELECT auth_option_id, auth_option
-				FROM ' . ACL_OPTIONS_TABLE;
-			$result = $db->sql_query($sql);
-
-			$this->option_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$this->option_ids[$row['auth_option']] = $row['auth_option_id'];
-			}
-			$db->sql_freeresult($result);
-		}
 
 		// Remove current auth options...
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '

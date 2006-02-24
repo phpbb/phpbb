@@ -1177,12 +1177,14 @@ page_footer();
 */
 function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 {
-	global $db, $user, $config, $auth, $phpEx, $SID;
+	global $db, $user, $config, $auth, $phpEx, $SID, $phpbb_root_path;
 
 	// Specify our post mode
 	$post_mode = ($data['topic_first_post_id'] == $data['topic_last_post_id']) ? 'delete_topic' : (($data['topic_first_post_id'] == $post_id) ? 'delete_first_post' : (($data['topic_last_post_id'] == $post_id) ? 'delete_last_post' : 'delete'));
 	$sql_data = array();
 	$next_post_id = 0;
+
+	include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 	$db->sql_transaction();
 

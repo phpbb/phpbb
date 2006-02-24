@@ -194,7 +194,7 @@
 			<!-- ENDIF -->
 		</td>
 		<td style="vertical-align: top; white-space: nowrap;"><a href="{roles.U_EDIT}">{L_EDIT_ROLE}</a></td>
-		<td style="vertical-align: top; white-space: nowrap;"><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a></td>
+		<td style="vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
 		<td style="vertical-align: top; white-space: nowrap;"><a href="{roles.U_REMOVE}">{L_REMOVE_ROLE}</a></td>
 	</tr>
 	<!-- END roles -->
@@ -208,7 +208,7 @@
 	</form>
 
 	<!-- IF S_DISPLAY_ROLE_MASK -->
-
+		
 		<a name="assigned_to"></a>
 
 		<h1>{L_ROLE_ASSIGNED_TO}</h1>

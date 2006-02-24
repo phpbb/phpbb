@@ -602,6 +602,11 @@ function mcp_delete_post($post_ids)
 
 	if (confirm_box(true))
 	{
+		if (!function_exists('delete_posts'))
+		{
+			include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+		}
+
 		// Count the number of topics that are affected
 		// I did not use COUNT(DISTINCT ...) because I remember having problems
 		// with it on older versions of MySQL -- Ashe

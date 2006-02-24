@@ -111,7 +111,7 @@ class acp_permission_roles
 
 					if (confirm_box(true))
 					{
-						$this->remove_role($role_id);
+						$this->remove_role($role_id, $permission_type);
 
 						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_row['role_name']);
 						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
@@ -189,9 +189,12 @@ class acp_permission_roles
 
 							if (!$row['negate'] && !isset($row['name']))
 							{
-								foreach ($groups[$row['type']] as $group_id => $group_name)
+								if (isset($groups[$row['type']]))
 								{
-									$role_group_ids[] = $group_id;
+									foreach ($groups[$row['type']] as $group_id => $group_name)
+									{
+										$role_group_ids[] = $group_id;
+									}
 								}
 							}
 							else if ($row['negate'] && !isset($row['name']))
@@ -201,6 +204,11 @@ class acp_permission_roles
 
 								foreach ($group_types as $type)
 								{
+									if (!isset($groups[$type]))
+									{
+										continue;
+									}
+
 									foreach ($groups[$type] as $group_id => $group_name)
 									{
 										$role_group_ids[] = $group_id;
@@ -223,6 +231,11 @@ class acp_permission_roles
 
 								foreach ($group_types as $type)
 								{
+									if (!isset($groups[$type]))
+									{
+										continue;
+									}
+
 									foreach ($groups[$type] as $group_id => $group_name)
 									{
 										if ($type != $row['type'])
@@ -421,7 +434,11 @@ class acp_permission_roles
 
 					if (sizeof($hold_ary))
 					{
-						$template->assign_var('S_DISPLAY_ROLE_MASK', true);
+						$template->assign_var(array(
+							'S_DISPLAY_ROLE_MASK'	=> true,
+							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_row['role_name']))
+						);
+
 						$auth_admin->display_role_mask($hold_ary);
 					}
 				}
@@ -466,6 +483,9 @@ class acp_permission_roles
 			$db->sql_freeresult($result);
 		}
 		
+		// Display assigned items?
+		$display_item = request_var('display_item', 0);
+
 		$s_role_options = '';
 		foreach ($roles as $row)
 		{
@@ -476,7 +496,7 @@ class acp_permission_roles
 				
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
-				'U_DISPLAY_ITEMS'	=> $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
+				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 
 			if (isset($groups[$row['role_id']]) && sizeof($groups[$row['role_id']]))
@@ -492,18 +512,24 @@ class acp_permission_roles
 			}
 			
 			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $row['role_name'] . '</option>';
+
+			if ($display_item == $row['role_id'])
+			{
+				$template->assign_vars(array(
+					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $row['role_name']))
+				);
+			}
 		}
 
 		$template->assign_vars(array(
 			'S_ROLE_OPTIONS'		=> $s_role_options)
 		);
 
-		// Display assigned items?
-		$display_item = request_var('display_item', 0);
-
 		if ($display_item)
 		{
-			$template->assign_var('S_DISPLAY_ROLE_MASK', true);
+			$template->assign_vars(array(
+				'S_DISPLAY_ROLE_MASK'	=> true)
+			);
 
 			$hold_ary = $auth_admin->get_role_mask($display_item);
 			$auth_admin->display_role_mask($hold_ary);
@@ -661,12 +687,20 @@ class acp_permission_roles
 						}
 					}
 				}
-				
-				foreach ($group_types as $type)
+
+				if ($s_selected)
 				{
-					if (!isset($selected_groups[$type]) || sizeof($selected_groups[$type]) != sizeof($groups[$type]))
+					foreach ($group_types as $type)
 					{
-						$s_selected = false;
+						if (!isset($groups[$type]))
+						{
+							continue;
+						}
+
+						if (!isset($selected_groups[$type]) || sizeof($selected_groups[$type]) != sizeof($groups[$type]))
+						{
+							$s_selected = false;
+						}
 					}
 				}
 			}
@@ -687,20 +721,32 @@ class acp_permission_roles
 	/**
 	* Remove role
 	*/
-	function remove_role($role_id)
+	function remove_role($role_id, $permission_type)
 	{
 		global $db;
 
 		$auth_admin = new auth_admin();
 		
-		// First of all, get the role auth settings we need to re-set...
+		// Get complete auth array
+		$sql = 'SELECT auth_option, auth_option_id
+			FROM ' . ACL_OPTIONS_TABLE . "
+			WHERE auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+		$result = $db->sql_query($sql);
+
+		$auth_settings = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$auth_settings[$row['auth_option']] = ACL_UNSET;
+		}
+		$db->sql_freeresult($result);
+
+		// Get the role auth settings we need to re-set...
 		$sql = 'SELECT o.auth_option, r.auth_setting
 			FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
 			WHERE o.auth_option_id = r.auth_option_id
 				AND r.role_id = ' . $role_id;
 		$result = $db->sql_query($sql);
 
-		$auth_settings = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$auth_settings[$row['auth_option']] = $row['auth_setting'];
@@ -709,8 +755,22 @@ class acp_permission_roles
 
 		// Get role assignments
 		$hold_ary = $auth_admin->get_role_mask($role_id);
-		
-		// Remove role from users and groups
+
+		// Re-assign permisisons
+		foreach ($hold_ary as $forum_id => $forum_ary)
+		{
+			if (isset($forum_ary['users']))
+			{
+				$auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings, 0, false);
+			}
+
+			if (isset($forum_ary['groups']))
+			{
+				$auth_admin->acl_set('group', $forum_id, $forum_ary['groups'], $auth_settings, 0, false);
+			}
+		}
+
+		// Remove role from users and groups just to be sure (happens through acl_set)
 		$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
 			WHERE auth_role_id = ' . $role_id;
 		$db->sql_query($sql);
@@ -718,20 +778,6 @@ class acp_permission_roles
 		$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
 			WHERE auth_role_id = ' . $role_id;
 		$db->sql_query($sql);
-
-		// Re-assign permisisons
-		foreach ($hold_ary as $forum_id => $forum_ary)
-		{
-			if (isset($forum_ary['users']))
-			{
-				$auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings);
-			}
-
-			if (isset($forum_ary['groups']))
-			{
-				$auth_admin->acl_set('group', $forum_id, $forum_ary['users'], $auth_settings);
-			}
-		}
 
 		// Remove role data and role
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
@@ -741,6 +787,8 @@ class acp_permission_roles
 		$sql = 'DELETE FROM ' . ACL_ROLES_TABLE . '
 			WHERE role_id = ' . $role_id;
 		$db->sql_query($sql);
+
+		$auth_admin->acl_clear_prefetch();
 	}
 }
 
