@@ -152,7 +152,7 @@ class compress_zip extends compress
 	{		
 		// Loop the file, looking for files and folders
 		$dd_try = false;
-		fseek($this->fp, 0);
+		rewind($this->fp);
 
 		while (!feof($this->fp))
 		{
@@ -163,25 +163,19 @@ class compress_zip extends compress
 			{
 				// 'Local File Header'
 				case "\x50\x4b\x03\x04":
-					// Get information about the zipped file but skip all the junk we don't need
-					fseek($this->fp, 4, SEEK_CUR);
-					$c_method			= current(unpack("v", fread($this->fp, 2))); // compression method
-					fseek($this->fp, 4, SEEK_CUR);
-					$crc				= current(unpack("V", fread($this->fp, 4))); // crc value
-					$c_size				= current(unpack("V", fread($this->fp, 4))); // compressed size
-					$uc_size			= current(unpack("V", fread($this->fp, 4))); // uncompressed size
-					$file_name_length	= current(unpack("v", fread($this->fp, 2))); // filename length
-					$extra_field_length	= current(unpack("v", fread($this->fp, 2))); // extra field length
-					$file_name			= fread($this->fp, $file_name_length); // filename
+					// Lets get everything we need.
+					// We don't store the version needed to extract, the general purpose bit flag or the date and time fields
+					$data = unpack("@4/vc_method/@10/Vcrc/Vc_size/Vuc_size/vname_len/vextra_field", fread($this->fp, 26));
+					$file_name = fread($this->fp, $data['name_len']); // filename
 
-					if ($extra_field_length)
+					if ($data['extra_field'])
 					{
-						fread($this->fp, $extra_field_length);
+						fread($this->fp, $data['extra_field']); // extra field
 					}
 
 					$target_filename = "$dst$file_name";
 
-					if (!$uc_size && !$crc && substr($file_name, -1, 1) == '/')
+					if (!$data['uc_size'] && !$data['crc'] && substr($file_name, -1, 1) == '/')
 					{
 						if (!is_dir($target_filename))
 						{
@@ -206,18 +200,18 @@ class compress_zip extends compress
 						continue;
 					}
 
-					if (!$uc_size)
+					if (!$data['uc_size'])
 					{
 						$content = '';
 					}
 					else
 					{
-						$content = fread($this->fp, $c_size);
+						$content = fread($this->fp, $data['c_size']);
 					}
 
 					$fp = fopen($target_filename, "w");
 
-					switch ($c_method)
+					switch ($data['c_method'])
 					{
 						case 0:
 							// Not compressed
@@ -226,7 +220,7 @@ class compress_zip extends compress
 					
 						case 8:
 							// Deflate
-							fwrite($fp, gzinflate($content, $uc_size));
+							fwrite($fp, gzinflate($content, $data['uc_size']));
 						break;
 
 						case 12:
@@ -287,6 +281,7 @@ class compress_zip extends compress
 		{
 			$unc_len = $c_len = $crc = 0;
 			$zdata = '';
+			$var_ext = 10;
 		}
 		else
 		{
@@ -294,12 +289,14 @@ class compress_zip extends compress
 			$crc = crc32($data);
 			$zdata = gzdeflate($data);
 			$c_len = strlen($zdata);
+			$var_ext = 20;
 
 			// Did we compress? No, then use data as is
 			if ($c_len >= $unc_len)
 			{
 				$zdata = $data;
 				$c_len = $unc_len;
+				$var_ext = 10;
 			}
 		}
 		unset($data);
@@ -309,11 +306,9 @@ class compress_zip extends compress
 
 		// Are we a file or a directory? Set archive for file
 		$attrib = ($is_dir) ? 16 : 32;
-		$var_ext = ($is_dir) ? "\x0a" : "\x14";
-
 		// File Record Header
 		$fr = "\x50\x4b\x03\x04";		// Local file header 4bytes
-		$fr .= "$var_ext\x00";			// ver needed to extract 2bytes
+		$fr .= pack('v', $var_ext);		// ver needed to extract 2bytes
 		$fr .= "\x00\x00";				// gen purpose bit flag 2bytes
 		$fr .= $c_method;				// compression method 2bytes
 		$fr .= $hexdtime;				// last mod time and date 2+2bytes
@@ -336,7 +331,7 @@ class compress_zip extends compress
 		// Central Directory Header
 		$cdrec = "\x50\x4b\x01\x02";		// header 4bytes
 		$cdrec .= "\x00\x00";               // version made by
-		$cdrec .= "$var_ext\x00";           // version needed to extract
+		$cdrec .= pack('v', $var_ext);		// version needed to extract
 		$cdrec .= "\x00\x00";               // gen purpose bit flag
 		$cdrec .= $c_method;				// compression method
 		$cdrec .= $hexdtime;                // last mod time & date
