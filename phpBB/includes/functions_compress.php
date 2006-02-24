@@ -477,7 +477,7 @@ class compress_tar extends compress
 		if ($this->wrote) 
 		{
 			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
-			$fzwrite($this->fp, pack("a1024", ""));
+			$fzwrite($this->fp, pack("a512", "")); // Symbolizes that there are no more files
 		}
 
 		$fzclose($this->fp);
@@ -492,39 +492,38 @@ class compress_tar extends compress
 
 		// This is the header data, it contains all the info we know about the file or folder that we are about to archive
 		$header = '';
-		$header .= pack("a100", $name);
-		$header .= pack("a8", sprintf("%07o", $stat[2]));
-		$header .= pack("a8", sprintf("%07o", $stat[4]));
-		$header .= pack("a8", sprintf("%07o", $stat[5]));
-		$header .= pack("a12", sprintf("%011o", $stat[7]));
-		$header .= pack("a12", sprintf("%011o", $stat[9]));
-		$header .= pack("a8", '        ');
-		$header .= pack("a1", $typeflag);
-		$header .= pack("a100", '');
-		$header .= pack("a6", 'ustar');
-		$header .= pack("a2", '00');
-		$header .= pack("a32", 'Unknown');
-		$header .= pack("a32", 'Unknown');
-		$header .= pack("a8", '');
-		$header .= pack("a8", '');
-		$header .= pack("a155", '');
-		$header .= pack("a12", '');
+		$header .= pack("a100", $name); // file name
+		$header .= pack("a8", sprintf("%07o", $stat[2])); // file mode
+		$header .= pack("a8", sprintf("%07o", $stat[4])); // owner id
+		$header .= pack("a8", sprintf("%07o", $stat[5])); // group id
+		$header .= pack("a12", sprintf("%011o", $stat[7])); // file size
+		$header .= pack("a12", sprintf("%011o", $stat[9])); // last mod time
 
 		// Checksum
 		$checksum = 0;
-		for ($i = 0; $i < 329; $i++)
+		for ($i = 0; $i < 148; $i++)
 		{
 			$checksum += ord(substr($header, $i, 1));
 		}
-		$header = substr_replace($header, pack("a8", sprintf("%07o", $checksum)), 148, 8);
 
-		$fzwrite($this->fp, $header);
+		// We precompute the rest of the hash, this saves us time in the loop and allows us to insert our hash without resorting to string functions
+		$checksum += 2415 + (($is_dir) ? 53 : 0);
 
-		if ($stat[7] !== 0 && !$is_dir)
-		{
-			$fzwrite($this->fp, $data . (($stat[7] % 512 > 0) ? str_repeat("\0", 512 - $stat[7] % 512) : ''));
-			unset($data);
-		}
+		$header .= pack("a8", sprintf("%07o", $checksum)); // checksum
+		$header .= pack("a1", $typeflag); // link indicator
+		$header .= pack("a100", ''); // name of linked file
+		$header .= pack("a6", 'ustar'); // ustar indicator
+		$header .= pack("a2", '00'); // ustar version
+		$header .= pack("a32", 'Unknown'); // owner name
+		$header .= pack("a32", 'Unknown'); // group name
+		$header .= pack("a8", ''); // device major number
+		$header .= pack("a8", ''); // device minor number
+		$header .= pack("a155", ''); // filename prefix
+		$header .= pack("a12", ''); // end
+
+		// This writes the entire file in one shot. Header, followed by data and then null padded to a multiple of 512
+		$fzwrite($this->fp, $header . (($stat[7] !== 0 && !$is_dir) ? $data . (($stat[7] % 512 > 0) ? str_repeat("\0", 512 - $stat[7] % 512) : '') : ''));
+		unset($data);
 	}
 
 	function open()
