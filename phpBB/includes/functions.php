@@ -620,12 +620,21 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
 			{
 				$topic_ids36 = (isset($tracking['tf'][$f_id])) ? $tracking['tf'][$f_id] : array();
 
-				unset($tracking['tf'][$f_id]);
+				if (isset($tracking['tf'][$f_id]))
+				{
+					unset($tracking['tf'][$f_id]);
+				}
+
 				foreach ($topic_ids36 as $topic_id36)
 				{
 					unset($tracking['t'][$topic_id36]);
 				}
-				unset($tracking['f'][$f_id]);
+
+				if (isset($tracking['f'][$f_id]))
+				{
+					unset($tracking['f'][$f_id]);
+				}
+
 				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
 			}
 
