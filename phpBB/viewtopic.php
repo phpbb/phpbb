@@ -154,7 +154,7 @@ if (!$post_id)
 }
 else
 {
-	$join_sql = (!$post_id) ? "t.topic_id = $topic_id" : "p.post_id = $post_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '') . ' AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id AND p2.post_approved = 1';
+	$join_sql = "p.post_id = $post_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '') . ' AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id' . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p2.post_approved = 1' : '');
 
 	// This is for determining where we are (page)
 	$join_sql .= ($sort_dir == 'd') ? " AND p2.post_id >= $post_id" : " AND p2.post_id <= $post_id";
@@ -1299,7 +1299,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		'U_REPORT'			=> "{$phpbb_root_path}report.$phpEx$SID&amp;p=" . $row['post_id'],
 		'U_MCP_REPORT'		=> ($auth->acl_gets('m_', 'a_', 'f_report', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
-		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;post_id_list[]=" . $row['post_id'] : '',
+		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'] : '',
 		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,

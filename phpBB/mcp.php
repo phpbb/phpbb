@@ -99,18 +99,10 @@ if ($topic_id && !$forum_id)
 	$forum_id = (int) $row['forum_id'];
 }
 
-// If we do not have a forum id and the user is not a super moderator (global options are set to false, even if the user is able to moderator at least one forum
-if (!$forum_id && !$auth->acl_get('m_'))
+// If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
+if (!$forum_id && !$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
 {
-	$forum_list = get_forum_list('m_');
-
-	if (!sizeof($forum_list))
-	{
-		trigger_error('MODULE_NOT_EXIST');
-	}
-
-	// We do not check all forums, only the first one should be sufficiant.
-	$forum_id = $forum_list[0];
+	trigger_error('MODULE_NOT_EXIST');
 }
 
 if($forum_id)
@@ -160,13 +152,16 @@ else
 if (!$post_id)
 {
 	$module->set_display('main', 'post_details', false);
-	$module->set_display('queue', 'approve_details', false);
 	$module->set_display('warn', 'warn_post', false);
 }
 if (!$topic_id)
 {
 	$module->set_display('main', 'topic_view', false);
 	$module->set_display('logs', 'topic_logs', false);
+}
+if (!$topic_id && !$post_id)
+{
+	$module->set_display('queue', 'approve_details', false);
 }
 if (!$forum_id)
 {
@@ -515,6 +510,24 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 	{
 		// Global Announcement?
 		$forum_id = request_var('f', 0);
+	}
+
+	if ($forum_id === 0)
+	{
+		// Determine first forum the user is able to read - for global announcements
+		$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
+
+		$sql = 'SELECT forum_id 
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_type = ' . FORUM_POST;
+		if (sizeof($forum_ary))
+		{
+			$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+		}
+
+		$result = $db->sql_query_limit($sql, 1);
+		$forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
+		$db->sql_freeresult($result);
 	}
 
 	if ($acl_list && !$auth->acl_get($acl_list, $forum_id))

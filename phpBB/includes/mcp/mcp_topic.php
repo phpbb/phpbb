@@ -134,6 +134,7 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_SUBJECT'	=> $post_subject,
 			'MESSAGE'		=> $message,
 			'POST_ID'		=> $row['post_id'],
+			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$topic_id\">", '</a>'),
 
 			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 
@@ -142,7 +143,7 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_MCP_APPROVE'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=approve&amp;post_id_list[]=" . $row['post_id'])
+			'U_MCP_APPROVE'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'])
 		);
 
 		unset($rowset[$i]);

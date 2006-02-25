@@ -109,11 +109,11 @@ function mcp_post_details($id, $mode, $action)
 
 		'U_FIND_MEMBER'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp_chgposter&amp;field=username",
 		'U_VIEW_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'],
-		'U_MCP_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'] : '',
+		'U_MCP_USER_NOTES'		=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'] : '',
 		'U_MCP_WARN_USER'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $post_info['user_id'],
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}" : '',
 
-		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=$post_id#$post_id\">", '</a>'),
+		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=$post_id#p$post_id\">", '</a>'),
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], "<a href=\"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$post_info['forum_id']}&amp;start={$start}\">", '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),

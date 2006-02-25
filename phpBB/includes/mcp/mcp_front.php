@@ -166,7 +166,7 @@ function mcp_front_view($id, $mode, $action)
 	}
 
 	// Latest 5 logs
-	$forum_list = get_forum_list(array('m_', 'a_general'));
+	$forum_list = get_forum_list(array('m_', 'a_'));
 
 	if (!empty($forum_list))
 	{
@@ -196,7 +196,7 @@ function mcp_front_view($id, $mode, $action)
 	);
 
 	$template->assign_var('S_MCP_ACTION', $url);
-	make_jumpbox($url . '&amp;mode=forum_view', 0, false, 'm_');
+	make_jumpbox($url . '&amp;i=main&amp;mode=forum_view', 0, false, 'm_');
 }
 
 ?>

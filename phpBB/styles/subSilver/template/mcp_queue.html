@@ -15,7 +15,7 @@
 	</tr>
 	<!-- BEGIN postrow -->
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWTOPIC}">{postrow.TOPIC_TITLE}</a></p><br />
+		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWTOPIC}">{postrow.TOPIC_TITLE}</a></p>
 			<span class="gensmall">{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span></td>
 		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen"><!-- IF postrow.U_VIEWPROFILE --><a href="{postrow.U_VIEWPROFILE}">{postrow.POSTER}</a><!-- ELSE -->{postrow.POSTER}<!-- ENDIF --></span><br />
 			<span class="gensmall">[ <a href="{postrow.U_VIEW_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
@@ -28,7 +28,7 @@
 	</tr>
 	<!-- END postrow -->
 	<tr>
-		<td class="cat" colspan="6" height="28" align="center"><input class="btnmain" type="submit" name="mode[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="mode[disapprove]" value="{L_DISAPPROVE}" /></td>
+		<td class="cat" colspan="6" height="28" align="center"><input class="btnmain" type="submit" name="action[approve]" value="{L_APPROVE}" />&nbsp;&nbsp;<input class="btnlite" type="submit" name="action[disapprove]" value="{L_DISAPPROVE}" /></td>
 	</tr>
 </form></table>
 
