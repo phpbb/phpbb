@@ -105,7 +105,7 @@ if (!$forum_id && !$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
 	trigger_error('MODULE_NOT_EXIST');
 }
 
-if($forum_id)
+if ($forum_id)
 {
 	$module->acl_forup_id = $forum_id;
 }
@@ -154,20 +154,24 @@ if (!$post_id)
 	$module->set_display('main', 'post_details', false);
 	$module->set_display('warn', 'warn_post', false);
 }
+
 if (!$topic_id)
 {
 	$module->set_display('main', 'topic_view', false);
 	$module->set_display('logs', 'topic_logs', false);
 }
+
 if (!$topic_id && !$post_id)
 {
 	$module->set_display('queue', 'approve_details', false);
 }
+
 if (!$forum_id)
 {
 	$module->set_display('main', 'forum_view', false);
 	$module->set_display('logs', 'forum_logs', false);
 }
+
 if (!$user_id && $username == '')
 {
 	$module->set_display('notes', 'user_notes', false);
