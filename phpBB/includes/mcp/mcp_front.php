@@ -26,6 +26,7 @@ function mcp_front_view($id, $mode, $action)
 	$forum_id = request_var('f', 0);
 
 	$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
+	
 	if (!empty($forum_list))
 	{
 		$sql = 'SELECT COUNT(post_id) AS total
@@ -33,8 +34,8 @@ function mcp_front_view($id, $mode, $action)
 			WHERE forum_id IN (0, ' . implode(', ', $forum_list) . ')
 				AND post_approved = 0';
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$total = $row['total'];
+		$total = (int) $db->sql_fetchfield('total', 0, $result);
+		$db->sql_freeresult($result);
 
 		if ($total)
 		{
