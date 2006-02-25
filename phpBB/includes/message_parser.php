@@ -155,11 +155,18 @@ class bbcode_firstpass extends bbcode
 
 	function bbcode_size($stx, $in)
 	{
+		global $user, $config;
+
 		if (!$this->check_bbcode('size', $in))
 		{
 			return '';
 		}
 		
+		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
+		{
+			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+		}
+
 		return '[size=' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/size:' . $this->bbcode_uid . ']';
 	}
 
@@ -205,9 +212,24 @@ class bbcode_firstpass extends bbcode
 
 	function bbcode_img($in)
 	{
+		global $user, $config;
+
 		if (!$this->check_bbcode('img', $in))
 		{
 			return '';
+		}
+
+		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
+		{
+			$stats = getimagesize($in);
+			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
+			{
+				$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+			}
+			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
+			{
+				$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+			}
 		}
 
 		return '[img:' . $this->bbcode_uid . ']' . $in . '[/img:' . $this->bbcode_uid . ']';
@@ -689,6 +711,8 @@ class parse_message extends bbcode_firstpass
 	var $allow_flash_bbcode = true;
 	var $allow_quote_bbcode = true;
 
+	var $mode;
+
 	// Init - give message here or manually
 	function parse_message($message = '')
 	{
@@ -707,6 +731,8 @@ class parse_message extends bbcode_firstpass
 		global $config, $db, $user;
 
 		$mode = ($mode != 'post') ? 'sig' : 'post';
+
+		$this->mode = $mode;
 
 		$this->allow_img_bbcode = $allow_img_bbcode;
 		$this->allow_flash_bbcode = $allow_flash_bbcode;

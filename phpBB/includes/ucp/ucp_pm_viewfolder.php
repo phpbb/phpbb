@@ -138,7 +138,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 			if ($submit_export && ($export_type !== 'CSV' || ($delimiter !== '' && $enclosure !== '')))
 			{
-				$sql = 'SELECT p.message_text
+				include_once($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+				$sql = 'SELECT p.message_text, p.bbcode_uid
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE t.user_id = ' . $user->data['user_id'] . "
 						AND p.author_id = u.user_id
@@ -149,9 +150,9 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 				$message_row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$message = preg_replace('#\[(\/?[a-z\*\+\-]+(?:=.*?)?)(?:\:?[0-9a-z]{5,})\]#', '[\1]', $message_row['message_text']);
+				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
 
-				$data[] = array('subject' => censor_text($row['message_subject']), 'from' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '', 'message' => $message);
+				$data[] = array('subject' => censor_text($row['message_subject']), 'from' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '', 'message' => $message_row['message_text']);
 			}
 			else if (!$submit_export || $export_type !== 'CSV')
 			{

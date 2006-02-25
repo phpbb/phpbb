@@ -97,7 +97,11 @@ class acp_board
 						'max_poll_options'	=> array('lang' => 'MAX_POLL_OPTIONS',	'type' => 'text:4:4', 'explain' => false),
 						'max_post_chars'	=> array('lang' => 'CHAR_LIMIT',		'type' => 'text:4:6', 'explain' => true),
 						'max_post_smilies'	=> array('lang' => 'SMILIES_LIMIT',		'type' => 'text:4:4', 'explain' => true),
-						'max_quote_depth'	=> array('lang' => 'QUOTE_DEPTH_LIMIT',	'type' => 'text:4:4', 'explain' => true)
+						'max_post_urls'		=> array('lang' => 'MAX_POST_URLS',		'type' => 'text:5:4', 'explain' => true),
+						'max_post_font_size' => array('lang' => 'MAX_POST_FONT_SIZE', 'type' => 'text:5:4', 'explain' => true),
+						'max_quote_depth'	=> array('lang' => 'QUOTE_DEPTH_LIMIT',	'type' => 'text:4:4', 'explain' => true),
+						'max_post_img_width' => array('lang' => 'MAX_POST_IMG_WIDTH', 'type' => 'text:5:4', 'explain' => true),
+						'max_post_img_height' => array('lang' => 'MAX_POST_IMG_HEIGHT', 'type' => 'text:5:4', 'explain' => true)
 					)
 				);
 			break;
@@ -115,6 +119,11 @@ class acp_board
 						'board_dst'				=> array('lang' => 'SYSTEM_DST',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_html_tags'		=> array('lang' => 'ALLOWED_TAGS',			'type' => 'text:30:255', 'explain' => true),
 						'max_sig_chars'			=> array('lang' => 'MAX_SIG_LENGTH',		'type' => 'text:5:4', 'explain' => true),
+						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'type' => 'text:5:4', 'explain' => true),
+						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'type' => 'text:5:4', 'explain' => true),
+						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'type' => 'text:5:4', 'explain' => true),
+						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'type' => 'text:5:4', 'explain' => true),
+						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'type' => 'text:5:4', 'explain' => true),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'allow_privmsg'			=> array('lang' => 'BOARD_PM',				'type' => 'radio:yes_no', 'explain' => true),
@@ -126,6 +135,11 @@ class acp_board
 						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_bbcode'		=> array('lang' => 'ALLOW_SIG_BBCODE',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_img'			=> array('lang' => 'ALLOW_SIG_IMG',			'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_flash'		=> array('lang' => 'ALLOW_SIG_FLASH',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_html'		=> array('lang' => 'ALLOW_SIG_HTML',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'type' => 'radio:yes_no', 'explain' => true),
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true)
 					)

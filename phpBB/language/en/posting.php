@@ -113,7 +113,11 @@ $lang = array_merge($lang, array(
 	'LOAD_DRAFT'				=> 'Load Draft',
 	'LOAD_DRAFT_EXPLAIN'		=> 'Here you are able to select the draft you want to continue writing. Your current post will be canceled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
 	'LOGIN_EXPLAIN_POST'		=> 'You need to login in order to post within this forum',
-	
+
+	'MAX_FONT_SIZE_EXCEEDED'	=> 'You may only use fonts up to size %1$d.',
+	'MAX_IMG_HEIGHT_EXCEEDED'	=> 'Your images may only be up to %1$d pixels high.',
+	'MAX_IMG_WIDTH_EXCEEDED'	=> 'Your images may only be up to %1$d pixels wide.',
+
 	'MESSAGE_BODY_EXPLAIN'		=> 'Enter your message here, it may contain no more than <b>%d</b> characters.',
 	'MESSAGE_DELETED'			=> 'Your message has been deleted successfully',
 	'MORE_SMILIES'				=> 'View more smilies',
