@@ -177,9 +177,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 			AND session_ip = '$user_ip'";
 	if ( !$db->sql_query($sql) || !$db->sql_affectedrows() )
 	{
-		list($sec, $usec) = explode(' ', microtime());
-		mt_srand((float) $sec + ((float) $usec * 100000));
-		$session_id = md5(uniqid(mt_rand(), true));
+		$session_id = md5(dss_rand);
 
 		$sql = "INSERT INTO " . SESSIONS_TABLE . "
 			(session_id, session_user_id, session_start, session_time, session_ip, session_page, session_logged_in, session_admin)
@@ -212,9 +210,7 @@ function session_begin($user_id, $user_ip, $page_id, $auto_create = 0, $enable_a
 		//
 		if ($enable_autologin)
 		{
-			list($sec, $usec) = explode(' ', microtime());
-			mt_srand(hexdec(substr($session_id, 0, 8)) + (float) $sec + ((float) $usec * 1000000));
-			$auto_login_key = uniqid(mt_rand(), true);
+			$auto_login_key = dss_rand() . dss_rand();
 			
 			if (isset($sessiondata['autologinid']) && (string) $sessiondata['autologinid'] != '')
 			{
@@ -517,9 +513,7 @@ function session_reset_keys($user_id, $user_ip)
 
 	if ( !empty($key_sql) )
 	{
-		list($sec, $usec) = explode(' ', microtime());
-		mt_srand(hexdec(substr($userdata['session_id'], 0, 8)) + (float) $sec + ((float) $usec * 1000000));
-		$auto_login_key = uniqid(mt_rand(), true);
+		$auto_login_key = dss_rand() . dss_rand();
 
 		$current_time = time();
 		

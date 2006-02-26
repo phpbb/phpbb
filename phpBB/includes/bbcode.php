@@ -235,7 +235,7 @@ function make_bbcode_uid()
 {
 	// Unique ID for this message..
 
-	$uid = md5(mt_rand());
+	$uid = dss_rand();
 	$uid = substr($uid, 0, BBCODE_UID_LEN);
 
 	return $uid;

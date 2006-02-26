@@ -991,17 +991,10 @@ else
 		}
 		$db->sql_freeresult($result);
 		
-		$confirm_chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
-
-		list($usec, $sec) = explode(' ', microtime()); 
-		mt_srand($sec * $usec); 
-
-		$max_chars = count($confirm_chars) - 1;
-		$code = '';
-		for ($i = 0; $i < 6; $i++)
-		{
-			$code .= $confirm_chars[mt_rand(0, $max_chars)];
-		}
+		// Generate the required confirmation code
+		// NB 0 (zero) could get confused with O (the letter) so we make change it
+		$code = dss_rand();
+		$code = strtoupper(str_replace('0', 'o', substr($code, 6)));
 
 		$confirm_id = md5(uniqid($user_ip));
 

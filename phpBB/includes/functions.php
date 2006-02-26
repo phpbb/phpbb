@@ -139,6 +139,37 @@ function phpbb_rtrim($str, $charlist = false)
 	return $str;
 }
 
+/**
+* Our own generator of random values
+* This uses a constantly changing value as the base for generating the values
+* The board wide setting is updated once per page if this code is called
+* With thanks to Anthrax101 for the inspiration on this one
+* Added in phpBB 2.0.20
+*/
+function dss_rand()
+{
+	global $db, $board_config, $dss_seeded;
+
+	$val = $board_config['rand_seed'] . microtime();
+	$val = md5($val);
+	$board_config['rand_seed'] = md5($board_config['rand_seed'] . $val . 'a');
+   
+	if($seeded !== true)
+	{
+		$sql = "UPDATE " . CONFIG_TABLE . " SET
+			config_value = '" . $board_config['rand_seed'] . "'
+			WHERE config_name = 'rand_seed'";
+		
+		if( !$db->sql_query($sql) )
+		{
+			message_die(GENERAL_ERROR, "Unable to reseed PRNG", "", __LINE__, __FILE__, $sql);
+		}
+
+		$dss_seeded = true;
+	}
+
+	return substr($val, 16);
+}
 //
 // Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.
 //

@@ -170,6 +170,7 @@ $theme = array();
 $images = array();
 $lang = array();
 $nav_links = array();
+$dss_seeded = false;
 $gen_simple_header = FALSE;
 
 include($phpbb_root_path . 'config.'.$phpEx);

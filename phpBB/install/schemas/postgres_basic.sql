@@ -69,6 +69,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', 'www
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '80');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '/phpBB2/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '.0.20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('rand_seed', '0');
 
 -- Categories
 INSERT INTO phpbb_categories (cat_id, cat_title, cat_order) VALUES (1, 'Test category 1', 10);
