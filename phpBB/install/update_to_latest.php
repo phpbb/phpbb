@@ -59,7 +59,7 @@ include($phpbb_root_path . 'includes/db.'.$phpEx);
 //
 //
 //
-$updates_to_version = '.0.19';
+$updates_to_version = '.0.20';
 //
 //
 //
@@ -626,6 +626,37 @@ switch ($row['config_value'])
 				break;
 		}
 
+	case '.0.19':
+
+		// Add search time to the search table
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = "ALTER TABLE " . SEARCH_TABLE . "
+					ADD COLUMN search_time int(11) DEFAULT '0' NOT NULL";
+				break;
+
+			case 'postgresql':
+				$sql[] = "ALTER TABLE " . SEARCH_TABLE . "
+					ADD COLUMN search_time int4";
+				$sql[] = "ALTER TABLE " . SEARCH_TABLE . "
+					ALTER COLUMN search_time SET DEFAULT '0'";
+				break;
+
+			case 'mssql-odbc':
+			case 'mssql':
+				$sql[] = "ALTER TABLE " . SEARCH_TABLE . " ADD
+					search_time int NOT NULL,
+					CONSTRAINT [DF_" . $table_prefix . "search_results_search_time] DEFAULT (0) FOR [search_time]";
+				break;
+
+			case 'msaccess':
+				$sql[] = "ALTER TABLE " . SEARCH_TABLE . " ADD
+					search_time int NOT NULL";
+				break;
+		}
+
 		break;
 }
 
@@ -1041,10 +1072,6 @@ switch ($row['config_value'])
 			VALUES ('max_autologin_time', '0')";
 		_sql($sql, $errored, $error_ary);
 		
-		// We reset those having autologin enabled and forcing the re-assignment of a session id
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
-		_sql($sql, $errored, $error_ary);
-
 	case '.0.18':
 
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
@@ -1053,6 +1080,24 @@ switch ($row['config_value'])
 
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
 			VALUES ('login_reset_time', '30')";
+		_sql($sql, $errored, $error_ary);
+
+	case '.0.19':
+
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
+			VALUES ('search_flood_interval', '15')";
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value)
+			VALUES ('rand_seed', '0')";
+		_sql($sql, $errored, $error_ary);
+
+		// We reset those having autologin enabled and forcing the re-assignment of a session id
+		// since there have been changes to the way these are handled from previous versions
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE;
 		_sql($sql, $errored, $error_ary);
 
 		break;
@@ -1079,7 +1124,7 @@ switch (SQL_LAYER)
 {
 	case 'mysql':
 	case 'mysql4':
-		$sql = 'OPTIMIZE TABLE ' . $table_prefix . 'auth_access, ' . $table_prefix . 'banlist, ' . $table_prefix . 'categories, ' . $table_prefix . 'config, ' . $table_prefix . 'disallow, ' . $table_prefix . 'forum_prune, ' . $table_prefix . 'forums, ' . $table_prefix . 'groups, ' . $table_prefix . 'posts, ' . $table_prefix . 'posts_text, ' . $table_prefix . 'privmsgs, ' . $table_prefix . 'privmsgs_text, ' . $table_prefix . 'ranks, ' . $table_prefix . 'search_results, ' . $table_prefix . 'search_wordlist, ' . $table_prefix . 'search_wordmatch, ' . $table_prefix . 'smilies, ' . $table_prefix . 'themes, ' . $table_prefix . 'themes_name, ' . $table_prefix . 'topics, ' . $table_prefix . 'topics_watch, ' . $table_prefix . 'user_group, ' . $table_prefix . 'users, ' . $table_prefix . 'vote_desc, ' . $table_prefix . 'vote_results, ' . $table_prefix . 'vote_voters, ' . $table_prefix . 'words';
+		$sql = 'OPTIMIZE TABLE ' . $table_prefix . 'auth_access, ' . $table_prefix . 'banlist, ' . $table_prefix . 'categories, ' . $table_prefix . 'config, ' . $table_prefix . 'disallow, ' . $table_prefix . 'forum_prune, ' . $table_prefix . 'forums, ' . $table_prefix . 'groups, ' . $table_prefix . 'posts, ' . $table_prefix . 'posts_text, ' . $table_prefix . 'privmsgs, ' . $table_prefix . 'privmsgs_text, ' . $table_prefix . 'ranks, ' . $table_prefix . 'search_results, ' . $table_prefix . 'search_wordlist, ' . $table_prefix . 'search_wordmatch, ' . $table_prefix . 'sessions_keys' . $table_prefix . 'smilies, ' . $table_prefix . 'themes, ' . $table_prefix . 'themes_name, ' . $table_prefix . 'topics, ' . $table_prefix . 'topics_watch, ' . $table_prefix . 'user_group, ' . $table_prefix . 'users, ' . $table_prefix . 'vote_desc, ' . $table_prefix . 'vote_results, ' . $table_prefix . 'vote_voters, ' . $table_prefix . 'words';
 		_sql($sql, $errored, $error_ary);
 		break;
 
