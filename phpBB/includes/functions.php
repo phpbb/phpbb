@@ -154,7 +154,7 @@ function dss_rand()
 	$val = md5($val);
 	$board_config['rand_seed'] = md5($board_config['rand_seed'] . $val . 'a');
    
-	if($seeded !== true)
+	if($dss_seeded !== true)
 	{
 		$sql = "UPDATE " . CONFIG_TABLE . " SET
 			config_value = '" . $board_config['rand_seed'] . "'
