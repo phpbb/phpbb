@@ -133,7 +133,6 @@ class fulltext_mysql extends search_backend
 
 		if (sizeof($this->ignore_words))
 		{
-			$stopped_words = array_intersect($text, $this->ignore_words);
 			$text = array_diff($text, $this->ignore_words);
 		}
 
@@ -295,7 +294,7 @@ class fulltext_mysql extends search_backend
 		$any_words = (sizeof($any_words)) ? ' +(' . implode(' ', $any_words) . ')' : '';
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE MATCH ($sql_match) AGAINST ('" . implode(' ', $words) . $any_words . "' IN BOOLEAN MODE)
+			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(implode(' ', $words)) . $any_words . "' IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
 		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
