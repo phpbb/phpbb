@@ -59,8 +59,7 @@ function compose_pm($id, $mode, $action)
 	// Was cancel pressed? If so then redirect to the appropriate page
 	if ($cancel || ($current_time - $lastclick < 2 && $submit))
 	{
-		$redirect = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view&amp;action=view_message" . (($msg_id) ? "&amp;p=$msg_id" : '');
-		redirect($redirect);
+		redirect("ucp.$phpEx$SID&i=pm&mode=view&action=view_message" . (($msg_id) ? "&p=$msg_id" : ''));
 	}
 
 	$sql = '';

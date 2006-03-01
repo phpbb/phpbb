@@ -667,11 +667,8 @@ class bbcode_firstpass extends bbcode
 			return '';
 		}
 
-		$server_protocol = ( $config['cookie_secure'] ) ? 'https://' : 'http://';
-		$server_port = ( $config['server_port'] <> 80 ) ? ':' . trim($config['server_port']) . '/' : '/';
-
 		// relative urls for this board
-		if (preg_match('#' . $server_protocol . trim($config['server_name']) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($config['script_path'])) . '/([^ \t\n\r<"\']+)#i', $url) ||
+		if (preg_match('#' . preg_quote(generate_board_url(), '#') . '/([^ \t\n\r<"\']+)#i', $url) ||
 			preg_match('#([\w]+?://.*?[^ \t\n\r<"\']*)#i', $url) ||
 			preg_match('#(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#i', $url))
 		{
@@ -803,7 +800,7 @@ class parse_message extends bbcode_firstpass
 		// Parse URL's
 		if ($allow_magic_url)
 		{
-			$this->magic_url((($config['cookie_secure']) ? 'https://' : 'http://'), $config['server_name'], $config['server_port'], $config['script_path']);
+			$this->magic_url(generate_board_url());
 	
 			if ($config['max_' . $mode . '_urls'])
 			{
@@ -908,12 +905,10 @@ class parse_message extends bbcode_firstpass
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
 	// Cuts down displayed size of link if over 50 chars, turns absolute links
 	// into relative versions when the server/script path matches the link
-	function magic_url($server_protocol, $server_name, $server_port, $script_path)
+	function magic_url($server_url)
 	{
 		static $match;
 		static $replace;
-
-		$server_port = ($server_port <> 80 ) ? ':' . trim($server_port) . '/' : '/';
 
 		if (!is_array($match))
 		{
@@ -921,7 +916,7 @@ class parse_message extends bbcode_firstpass
 			// Be sure to not let the matches cross over. ;)
 
 			// relative urls for this board
-			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_protocol . trim($server_name) . $server_port . preg_replace('/^\/?(.*?)(\/)?$/', '$1', trim($script_path)), '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
+			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
 			$replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
@@ -1011,7 +1006,7 @@ class parse_message extends bbcode_firstpass
 	// Parse Attachments
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $phpbb_root_path;
+		global $config, $auth, $user, $phpbb_root_path, $phpEx;
 
 		$error = array();
 
@@ -1075,6 +1070,8 @@ class parse_message extends bbcode_firstpass
 			// Perform actions on temporary attachments
 			if ($delete_file)
 			{
+				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+
 				$index = (int) key($_POST['delete_file']);
 
 				// delete selected attachment
@@ -1089,10 +1086,6 @@ class parse_message extends bbcode_firstpass
 				}
 				else
 				{
-					if (!function_exists('delete_attachments'))
-					{
-						include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-					}
 					delete_attachments('attach', array(intval($this->attachment_data[$index]['attach_id'])));
 				}
 				

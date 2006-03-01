@@ -259,11 +259,11 @@ if (isset($_GET['e']))
 {
 	$jump_to = request_var('e', 0);
 
-	$redirect_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id";
+	$redirect_url = "viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id";
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		login_box($redirect_url . "&p=$post_id&e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
+		login_box("{$phpbb_root_path}$redirect_url&p=$post_id&e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
 	}
 
 	if ($jump_to > 0)

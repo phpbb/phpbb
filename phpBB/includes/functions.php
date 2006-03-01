@@ -629,7 +629,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
 				{
 					unset($tracking['t'][$topic_id36]);
 				}
-
+				
 				if (isset($tracking['f'][$f_id]))
 				{
 					unset($tracking['f'][$f_id]);
@@ -1041,19 +1041,41 @@ function on_page($num_items, $per_page, $start)
 }
 
 /**
-* Generate board url
+* Generate board url (example: http://www.foo.bar/phpBB)
 */
 function generate_board_url()
 {
-	global $config;
+	global $config, $user;
 
-	$path = preg_replace('#^/?(.*?)/?$#', '\1', trim($config['script_path']));
+	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
 
-	return (($config['cookie_secure']) ? 'https://' : 'http://') . preg_replace('#^/?(.*?)/?$#', '\1', trim($config['server_name'])) . (($config['server_port'] <> 80) ? ':' . trim($config['server_port']) : '') . (($path) ? '/' . $path : '');
+	$url = (($config['cookie_secure']) ? 'https://' : 'http://') . $server_name;
+
+	// Forcing server vars is the only way to specify/override the protocol
+	if ($config['force_server_vars'] || !$server_name)
+	{
+		$server_protocol = ($config['server_protocol']) ? $config['server_protocol'] : (($config['cookie_secure']) ? 'https://' : 'http://');
+		$server_name = $config['server_name'];
+		$server_port = (int) $config['server_port'];
+
+		$url = $server_protocol . $server_name;
+	}
+
+	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
+	{
+		$url .= ':' . $server_port;
+	}
+	
+	$url .= $user->page['root_script_path'];
+
+	return $url;
 }
 
 /**
 * Redirects the user to another page then exits the script nicely
+* Do not prepend url with $phpbb_root_path
+* If not prefixed by / or full url given the board url will be prefixed
 */
 function redirect($url)
 {
@@ -1075,9 +1097,13 @@ function redirect($url)
 	// If relative path, prepend board url
 	if (strpos($url, '://') === false && $url{0} != '/')
 	{
-		$url = generate_board_url() . preg_replace('#^/?(.*?)/?$#', '/\1', trim($url));
+		$url = generate_board_url() . '/' . $url;
 	}
 
+	/**
+	* Make sure no HTTP Response Splitting attacks are possible
+	*/
+	
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
 	{
@@ -1187,10 +1213,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
-	// re-add $SID / transform & to &amp; for user->page (user->page is always using &
-	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page);
-	$u_action = (strpos($use_page, ".{$phpEx}?") !== false) ? str_replace(".{$phpEx}?", ".$phpEx$SID&amp;", $use_page) : $use_page . '?';
-	$u_action .= '&amp;confirm_key=' . $confirm_key;
+	// re-add $SID / transform & to &amp; for user->page (user->page is always using &)
+	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
+	$u_action = (strpos($use_page, 'sid=') === false) ? ((strpos($use_page, '?') !== false) ? str_replace('?', $SID . '&amp;', $use_page) : $use_page . '?' . str_replace('?', '', $SID)) : $use_page;
+	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
 		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
@@ -1278,17 +1304,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if (!$redirect)
 	{
-		$split_page = array();
-		preg_match_all('#^.*?([a-z_-]+?)\.' . $phpEx . '?(.*?)$#i', $user->page, $split_page, PREG_SET_ORDER);
-
-		// No script name set? Assume index
-		if (empty($split_page[0][1]))
-		{
-			$split_page[0][1] = 'index';
-		}
-
-		// Current page correctly formatted for (login) redirects
-		$redirect = htmlspecialchars($split_page[0][1] . '.' . $phpEx . $SID . ((!empty($split_page[0][2])) ? '&' . $split_page[0][2] : ''));
+		// We just use what the session code determined...
+		$redirect = htmlspecialchars($user->page['page_name'] . $SID . '&' . $user->page['query_string']);
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $SID));
@@ -2015,7 +2032,7 @@ function page_header($page_title = '')
 		'SITENAME' 						=> $config['sitename'],
 		'SITE_DESCRIPTION' 				=> $config['site_desc'],
 		'PAGE_TITLE' 					=> $page_title,
-		'SCRIPT_NAME'					=> substr($user->page, 0, strpos($user->page, '.')),
+		'SCRIPT_NAME'					=> str_replace($phpEx, '', $user->page['page_name']),
 		'LAST_VISIT_DATE' 				=> sprintf($user->lang['YOU_LAST_VISIT'], $s_last_visit),
 		'CURRENT_TIME' 					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time(), false, true)),
 		'TOTAL_USERS_ONLINE' 			=> $l_online_users,

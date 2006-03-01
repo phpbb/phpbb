@@ -160,7 +160,7 @@ while ($row = $db->sql_fetchrow($result))
 		continue;
 	}
 
-	preg_match('#^([a-z]+)#i', $row['session_page'], $on_page);
+	preg_match('#^([a-z/]+)#i', $row['session_page'], $on_page);
 	if (!sizeof($on_page))
 	{
 		$on_page[1] = '';
@@ -171,15 +171,20 @@ while ($row = $db->sql_fetchrow($result))
 		case 'index':
 			$location = $user->lang['INDEX'];
 			$location_url = "index.$phpEx$SID";
-			break;
+		break;
+
+		case 'adm/index':
+			$location = $user->lang['ACP'];
+			$location_url = "index.$phpEx$SID";
+		break;
 
 		case 'posting':
 		case 'viewforum':
 		case 'viewtopic':
 			preg_match('#f=([0-9]+)#', $row['session_page'], $forum_id);
-			$forum_id = (sizeof($forum_id)) ? $forum_id[1] : 0;
+			$forum_id = (sizeof($forum_id)) ? (int) $forum_id[1] : 0;
 
-			if ($auth->acl_get('f_list', $forum_id))
+			if ($forum_id && $auth->acl_get('f_list', $forum_id))
 			{
 				$location = '';
 				switch ($on_page[1])
@@ -191,20 +196,21 @@ while ($row = $db->sql_fetchrow($result))
 						{
 							case 'reply':
 								$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]);
-								break;
+							break;
+
 							default:
 								$location = sprintf($user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]);
-								break;
+							break;
 						}
-						break;
+					break;
 
 					case 'viewtopic':
 						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]);
-						break;
+					break;
 	
 					case 'viewforum':
 						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]);
-						break;
+					break;
 				}
 
 				$location_url = "viewforum.$phpEx$SID&amp;f=$forum_id";
@@ -214,43 +220,64 @@ while ($row = $db->sql_fetchrow($result))
 				$location = $user->lang['INDEX'];
 				$location_url = "index.$phpEx$SID";
 			}
-			break;
+		break;
 
 		case 'search':
 			$location = $user->lang['SEARCHING_FORUMS'];
 			$location_url = "search.$phpEx$SID";
-			break;
+		break;
 
 		case 'faq':
 			$location = $user->lang['VIEWING_FAQ'];
 			$location_url = "faq.$phpEx$SID";
-			break;
+		break;
 
 		case 'viewonline':
 			$location = $user->lang['VIEWING_ONLINE'];
 			$location_url = "viewonline.$phpEx$SID";
-			break;
+		break;
 
 		case 'memberlist':
-			$location = $user->lang['VIEWING_MEMBERS'];
+			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
 			$location_url = "memberlist.$phpEx$SID";
-			break;
+		break;
 
+		case 'mcp':
 		case 'ucp':
 			$location = $user->lang['VIEWING_UCP'];
-			$location_url = '';
+
+			/**
+			* @todo getting module/mode for ucp and mcp
+			*/
+/*			if (strpos($row['session_page'], 'i=pm&mode=compose') !== false)
+			{
+				$location = 'Composing PM';
+			}*/
+
+			$location_url = "index.$phpEx$SID";
+		break;
+
+		case 'download':
+			$location = $user->lang['DOWNLOADING_FILE'];
+			$location_url = "index.$phpEx$SID";
+		break;
+
+		case 'report':
+			$location = $user->lang['REPORTING_POST'];
+			$location_url = "index.$phpEx$SID";
+		break;
 
 		default:
 			$location = $user->lang['INDEX'];
 			$location_url = "index.$phpEx$SID";
-			break;
+		break;
 	}
 
 	$template->assign_block_vars('user_row', array(
-		'USERNAME' 		=> $row['username'],
-		'LASTUPDATE' 	=> $user->format_date($row['session_time']),
-		'FORUM_LOCATION'=> $location,
-		'USER_IP'		=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
+		'USERNAME' 			=> $row['username'],
+		'LASTUPDATE'		=> $user->format_date($row['session_time']),
+		'FORUM_LOCATION'	=> $location,
+		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
 
 		'U_USER_PROFILE'	=> (($row['user_type'] == USER_NORMAL || $row['user_type'] == USER_FOUNDER) && $row['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] : '',
 		'U_USER_IP'			=> "{$phpbb_root_path}viewonline.$phpEx$SID" . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;mode=lookup&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir",

@@ -60,6 +60,7 @@ function mcp_front_view($id, $mode, $action)
 			{
 				$post_list[] = $row['post_id'];
 			}
+			$db->sql_freeresult($result);
 
 			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t,  ' . USERS_TABLE . ' u
@@ -86,6 +87,7 @@ function mcp_front_view($id, $mode, $action)
 					'POST_TIME'		=> $user->format_date($row['post_time']))
 				);
 			}
+			$db->sql_freeresult($result);
 		}
 
 		if ($total == 0)

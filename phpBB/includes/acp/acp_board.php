@@ -192,21 +192,26 @@ class acp_board
 					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
-						'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
-						'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
-						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'type' => 'text::255', 'explain' => true),
 						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',	'type' => 'radio:yes_no', 'explain' => true),
 						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',	'type' => 'text:5:5', 'explain' => true),
 						'ip_check'				=> array('lang' => 'IP_VALID',			'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
 						'browser_check'			=> array('lang' => 'BROWSER_VALID',		'type' => 'radio:yes_no', 'explain' => true),
-						'send_encoding'			=> array('lang' => 'SEND_ENCODING', 'type' => 'radio:yes_no', 'explain' => true),
+						'send_encoding'			=> array('lang' => 'SEND_ENCODING',		'type' => 'radio:yes_no', 'explain' => true),
 						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'type' => 'radio:yes_no', 'explain' => false),
 
 						'legend2'				=> 'PATH_SETTINGS',
 						'smilies_path'			=> array('lang' => 'SMILIES_PATH',		'type' => 'text:20:255', 'explain' => true),
 						'icons_path'			=> array('lang' => 'ICONS_PATH',		'type' => 'text:20:255', 'explain' => true),
 						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'type' => 'text:20:255', 'explain' => true),
-						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'type' => 'text:20:255', 'explain' => true)
+						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'type' => 'text:20:255', 'explain' => true),
+
+						'legend3'				=> 'SERVER_URL_SETTINGS',
+						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'type' => 'radio:yes_no', 'explain' => true),
+						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'type' => 'text:10:10', 'explain' => true),
+						'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
+						'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
+//						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'type' => 'text::255', 'explain' => true),
+						
 					)
 				);
 			break;

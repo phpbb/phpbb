@@ -134,7 +134,7 @@ if ($download_mode == PHYSICAL_LINK)
 		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 	}
 
-	redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+	redirect($config['upload_path'] . '/' . $attachment['physical_filename']);
 }
 else
 {

@@ -101,7 +101,7 @@ if ($forum_data['forum_link'])
 		$db->sql_query($sql);
 	}
 
-	redirect(str_replace('&amp;', '&', $forum_data['forum_link']));
+	redirect($forum_data['forum_link']);
 }
 
 // Forum is passworded ... check whether access has been granted to this

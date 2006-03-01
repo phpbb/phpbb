@@ -238,6 +238,9 @@ class ftp extends transfer
 		$this->username		= $username;
 		$this->password		= $password;
 		$this->timeout		= $timeout;
+
+		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (prefixed with / and no / at the end)
+		$this->root_path	= str_replace('\\', '/', $this->root_path);
 		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path);
 
 		// Init some needed values
@@ -251,8 +254,9 @@ class ftp extends transfer
 	*/
 	function data()
 	{
-		global $config;
-		return array('host' => 'localhost' , 'username' => 'anonymous', 'password' => '', 'root_path' => $config['script_path'], 'port' => 21, 'timeout' => 10);
+		global $user;
+
+		return array('host' => 'localhost' , 'username' => 'anonymous', 'password' => '', 'root_path' => $user->page['root_script_path'], 'port' => 21, 'timeout' => 10);
 	}
 
 	/**

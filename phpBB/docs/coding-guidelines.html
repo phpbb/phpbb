@@ -179,7 +179,7 @@ body {
 
 <a name="top"></a><div id="main">
 
-<p>This is the April, 2005 revision of the phpBB Coding Guidelines, all attempts should be made to follow it as closely as possible. This document is (c) 2005 phpBB Group, copying or redistribution is not allowed without permission.</p>
+<p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow it as closely as possible. This document is (c) 2006 phpBB Group, copying or redistribution is not allowed without permission.</p>
 
 <h1>Coding Guidelines</h1>
 
@@ -200,6 +200,7 @@ body {
 	</ol>
 	<li><a href="#styling">Styling</a></li>
 	<li><a href="#templating">Templating</a></li>
+	<li><a href="#changes">Guidelines Changelog</a></li>
 </ol>
 
 <hr />
@@ -212,6 +213,14 @@ body {
 
 	<h3>Tabs vs Spaces:</h3>
 	<p>In order to make this as simple as possible, we will be using tabs, not spaces. Feel free to set how many spaces your editor uses when it <b>displays</b> tabs, but make sure that when you <b>save</b> the file, it's saving tabs and not spaces. This way, we can each have the code be displayed the way we like it, without breaking the layout of the actual files.</p>
+	<p>Additionally please check your editor for the indent size. If tabs are set to 4 spaces for example, the indent size needs to be 4 too:</p>
+	
+	<blockquote><pre>
+$mode{TAB}{TAB}= request_var('mode', '');
+$search_id{TAB}= request_var('search_id', '');
+	</blockquote></pre>
+
+	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
 
 	<h3>Linefeeds:</h3> 
 	<p>Ensure that your editor is saving files in the UNIX format. This means lines are terminated with a newline, not with a CR/LF combo as they are on Win32, or whatever the Mac uses. Any decent editor should be able to do this, but it might not always be the default. Know your editor. If you want advice on Windows text editors, just ask one of the developers. Some of them do their editing on Win32.</p>
@@ -233,7 +242,7 @@ body {
 *
 * @package {PACKAGENAME}
 * @version &#36;Id: &#36;
-* @copyright (c) 2005 phpBB Group 
+* @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
 */
@@ -247,9 +256,7 @@ body {
 
 	<blockquote><pre>
 /**
-*
 * {HEADER}
-*
 */
 
 /**
@@ -303,28 +310,34 @@ class ...
 		<li><b>phpBB3</b><br />Core files and all files not assigned to a seperate package</li>
 		<li><b>acm</b><br /><code>/includes/acm</code><br />Cache System, seperated because of equal class names
 			<ul>
+				<li><b>acm_main</b><br /><code>/includes/acm/acm_main.php</code><br />Base caching class. All functions obtaining cached data should be placed into this file</li>
 				<li><b>acm_db</b><br /><code>/includes/acm/acm_db.php</code><br />Database based caching</li>
 				<li><b>acm_file</b><br /><code>/includes/acm/acm_file.php</code><br />File based caching</li>
 			</ul>
 		</li>
-		<li><b>dbal</b><br /><code>/includes/db</code><br />Database Abstraction Layer, seperated because of equal class names.<br />Every database class is a seperate package preceeded by dbal_
+		<li><b>acp</b><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
+		<li><b>dbal</b><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
 			<ul>
-				<li><b>dbal_db2</b><br /><code>/includes/db/db2.php</code><br />DB2 Database Abstraction Layer</li>
 				<li><b>dbal_firebird</b><br /><code>/includes/db/firebird.php</code><br />Firebird/Interbase Database Abstraction Layer<br />Minimum Requirement is Firebird 1.5+/Interbase 7.1+</li>
 				<li><b>dbal_mssql</b><br /><code>/includes/db/msssql.php</code><br />MSSQL Database Abstraction Layer<br />Minimum Requirement is MSSQL 2000+</li>
-				<li><b>dbal_odbc_mssql</b><br /><code>/includes/db/mssql-odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL<br />Minimum Requirement is Version 2000+</li>
+				<li><b>dbal_mssql_odbc</b><br /><code>/includes/db/mssql_odbc.php</code><br />MSSQL ODBC Database Abstraction Layer for MSSQL<br />Minimum Requirement is Version 2000+</li>
 				<li><b>dbal_mysql</b><br /><code>/includes/db/mysql.php</code><br />MySQL Database Abstraction Layer<br />Minimum Requirement is 3.23+/4.0+/4.1+</li>
-				<li><b>dbal_mysqli</b><br /><code>/includes/db/mysqli.php</code><br />MySQL4 Database Abstraction Layer<br />Minimum Requirement is MySQL 4.1+</li>
+				<li><b>dbal_mysql4</b><br /><code>/includes/db/mysql4.php</code><br />MySQL4 Database Abstraction Layer<br />Minimum Requirement is 4.0+/4.1+/5.0+</li>
+				<li><b>dbal_mysqli</b><br /><code>/includes/db/mysqli.php</code><br />MySQLi Database Abstraction Layer<br />Minimum Requirement is MySQLi extension with MySQL 4.1+/5.0+</li>
 				<li><b>dbal_oracle</b><br /><code>/includes/db/oracle.php</code><br />Oracle Database Abstraction Layer</li>
 				<li><b>dbal_postgres</b><br /><code>/includes/db/postgres.php</code><br />PostgreSQL Database Abstraction Layer<br />Minimum Requirement is Version 7.3+</li>
 				<li><b>dbal_sqlite</b><br /><code>/includes/db/sqlite.php</code><br />Sqlite Database Abstraction Layer</li>
 			</ul>
 		</li>
+		<li><b>docs</b><br /><code>/docs</code><br />phpBB Documentation</li>
+		<li><b>images</b><br /><code>/images</code><br />All global images not connected to styles</li>
+		<li><b>install</b><br /><code>/install</code><br />Installation System</li>
+		<li><b>language</b><br /><code>/language</code><br />All language files</li>
 		<li><b>login</b><br /><code>/includes/auth</code><br />Login Authentication Plugins</li>
-		<li><b>mcp</b><br /><code>mcp.php</code>, <code>/includes/mcp</code><br />Moderator Control Panel</li>
+		<li><b>mcp</b><br /><code>mcp.php</code>, <code>/includes/mcp</code>, <code>report.php</code><br />Moderator Control Panel</li>
 		<li><b>ucp</b><br /><code>ucp.php</code>, <code>/includes/ucp</code><br />User Control Panel</li>
-		<li><b>search</b><br /><code>/includes/search</code><br />Search System</li>
-		<li><b>acp</b><br /><code>/adm</code><br />Administration Control Panel</li>
+		<li><b>search</b><br /><code>/includes/search</code>, <code>search.php</code><br />Search System</li>
+		<li><b>styles</b><br /><code>/styles</code>, <code>style.php</code><br />phpBB Styles/Templates/Themes/Imagesets</li>
 	</ul>
 
 	</div>
@@ -334,6 +347,8 @@ class ...
 <hr />
 
 <a name="code"></a><h1>2. Code Layout/Guidelines</h1>
+
+	<p>Please note that these Guidelines also applies to js code.</p>
 
 	<a name="namingvars"></a><b>2.i. Variable/Function Naming</b>
 	<br /><br />
@@ -468,7 +483,7 @@ do_stuff( $i, "foo", $b );
 do_stuff($i, "foo", $b);
 		
 for($i=0; $i&lt;$size; $i++) ...
-for($i = 0; $i &lt; $size; $i++) ... 
+for ($i = 0; $i &lt; $size; $i++) ... 
 		
 $i=($j &lt; $size)?0:1;
 $i = ($j &lt; $size) ? 0 : 1;
@@ -484,12 +499,12 @@ $bool = ($i &lt; 7 &amp;&amp; $j &gt; 8 || $k == 4);
 
 	<p class="bad">// now you can be certain what I'm doing here.</p>
 	<blockquote><pre>
-$bool = (($i &lt; 7) &amp;&amp; (($j &lt; 8) || ($k == 4)))
+$bool = (($i &lt; 7) &amp;&amp; (($j &lt; 8) || ($k == 4)));
 	</pre></blockquote>
 
 	<p class="good">// But this one is even better, because it is easier on the eye but the intention is preserved</p>
 	<blockquote><pre>
-$bool = ($i &lt; 7 &amp;&amp; ($j &lt; 8 || $k == 4))
+$bool = ($i &lt; 7 &amp;&amp; ($j &lt; 8 || $k == 4));
 	</pre></blockquote>
 
 	<h3>Quoting strings:</h3>
@@ -590,6 +605,92 @@ if (isset($forum)) ...
 if (isset($forum) &amp;&amp; $forum == 5)
 	</pre></blockquote>
 
+	<h3>Switch statements:</h3>
+	<p>Switch/case code blocks can get a bit long sometimes. To have some level of notice and being in-line with the opening/closing brace requirement (where they are on the same line for better readability), this also applies to switch/case code blocks and the breaks. An example:</p>
+
+	<p class="bad">// Wrong </p>
+	<blockquote><pre>
+switch ($mode)
+{
+	case 'mode1':
+		// I am doing something here
+		break;
+	case 'mode2':
+		// I am doing something completely different here
+		break;
+}
+	</pre></blockquote>
+
+	<p class="good">// Good </p>
+	<blockquote><pre>
+switch ($mode)
+{
+	case 'mode1':
+		// I am doing something here
+	break;
+
+	case 'mode2':
+		// I am doing something completely different here
+	break;
+
+	default:
+		// Always assume that the case got not catched
+	break;
+}
+	</pre></blockquote>
+
+	<p class="good">// Also good, if you have more code between the case and the break </p>
+	<blockquote><pre>
+switch ($mode)
+{
+	case 'mode1':
+
+		// I am doing something here
+
+	break;
+	
+	case 'mode2':
+	
+		// I am doing something completely different here
+
+	break;
+
+	default:
+
+		// Always assume that the case got not catched
+
+	break;
+}
+	</pre></blockquote>
+
+	<p>Even if the break for the default case is not needed, it is sometimes better to include it just for readability and completeness.</p>
+
+	<p>If no break is intended, please add a comment instead. An example:</p>
+
+	<p class="good">// Example with no break </p>
+	<blockquote><pre>
+switch ($mode)
+{
+	case 'mode1':
+	
+		// I am doing something here
+
+	// no break here
+
+	case 'mode2':
+
+		// I am doing something completely different here
+
+	break;
+
+	default:
+
+		// Always assume that the case got not catched
+
+	break;
+}
+	</pre></blockquote>
+
 	</div>
 	<a href="#top">Top</a>
 	<br /><br />
@@ -604,7 +705,7 @@ if (isset($forum) &amp;&amp; $forum == 5)
 	<p>All SQL commands should utilise the DataBase Abstraction Layer (DBAL)</p>
 
 	<h3>SQL code layout:</h3>
-	<p>SQL Statements are often unreadable without some formatting, since they tend to be big at times. Though the formatting of sql statements adds a lot to the readability of code. SQL statements should be formatted in the following way, basically writing keywords :</p>
+	<p>SQL Statements are often unreadable without some formatting, since they tend to be big at times. Though the formatting of sql statements adds a lot to the readability of code. SQL statements should be formatted in the following way, basically writing keywords: </p>
 
 	<blockquote><pre>
 $sql = 'SELECT * 
@@ -648,7 +749,7 @@ $sql = 'SELECT *
 
 	<h3>Common DBAL methods: </h3>
 
-	<p>Always use <code>$db-&gt;sql_escape()</code> if you need to check for a string within an SQL statement, for example:</p>
+	<p>Always use <code>$db-&gt;sql_escape()</code> if you need to check for a string within an SQL statement (even if you are sure the variable can not contain single quotes - never trust your input), for example:</p>
 
 	<blockquote><pre>
 $sql = 'SELECT *
@@ -682,6 +783,8 @@ $sql = 'UPDATE ' . SOME_TABLE . '
 	WHERE user_id = $user_id";
 $db-&gt;sql_query($sql);
 	</pre></blockquote>
+
+	<p>The <code>$db-&gt;sql_build_array()</code> function supports the following modes: <code>INSERT</code> (example above), <code>INSERT_SELECT</code> (building query for <code>INSERT INTO table (...) SELECT value, column ...</code> statements), <code>MULTI_INSERT</code> (for returning extended inserts), <code>UPDATE</code> (example above) and <code>SELECT</code> (for building WHERE statement [AND logic]).</p>
 
 	</div>
 	<a href="#top">Top</a>
@@ -729,7 +832,8 @@ for ($i = 0, $size = sizeof($post_data); $i &lt; $size; $i++)
 	<p>No attempt should be made to remove any copyright information (either contained within the source or displayed interactively when the source is run/compiled), neither should the copyright information be altered in any way (it may be added to)</p>
 
 	<h3>Variables: </h3>
-	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params. Example:</p>
+	<p>Make use of the <code>request_var()</code> function for anything except for submit or single checking params. </p>
+	<p>The request_var function determines the type to set from the second parameter (which determines the default value too). If you need to get a scalar variable type, you need to tell this the request_var function explicitly. Examples:</p>
 
 	<p class="bad">// Old method, do not use it</p>
 	<blockquote><pre>
@@ -748,10 +852,20 @@ $submit = (isset($_POST['submit'])) ? true : false;
 $start = request_var('start', '0');
 	</pre></blockquote>
 
+	<p class="good">// Getting an array, keys are integers, value defaults to 0
+	<blockquote><pre>
+$mark_array = request_var('mark', array(0));
+	</blockquote></pre>
+
+	<p class="good">// Getting an array, keys are strings, value defaults to 0
+	<blockquote><pre>
+$action_ary = request_var('action', array('' => 0));
+	</blockquote></pre>
+
 	<h3>Login checks/redirection: </h3>
 	<p>To show a forum login box use <code>login_forum_box($forum_data)</code>, else use the <code>login_box()</code> function.</p>
 
-	<h3>Sensitive Operatiosn: </h3>
+	<h3>Sensitive Operations: </h3>
 	<p>For sensitive operations always let the user confirm the action. For the confirmation screens, make use of the <code>confirm_box()</code> function.</p>
 
 	<h3>Sessions: </h3>
@@ -772,8 +886,12 @@ $user->setup();
 trigger_error('NO_FORUM');
 	</pre></blockquote>
 
+	<h3>Url formatting</h3>
+
+	<p>All urls pointing to internal files need to be prepended by the <code>$phpbb_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$phpbb_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended.</p>
+	
 	<h3>General Functions: </h3>
-	<p>Use <code>sizeof</code> instead of <code>count</code>, this is just a general preference and guideline and has no other benefit.</p>
+	<p>Use <code>sizeof</code> instead of <code>count</code>, this is just a general preference and guideline and has no other benefit than to be consistent.</p>
 
 	<p>Use <code>strpos</code> instead of <code>strstr</code>.</p>
 
@@ -1031,8 +1149,44 @@ markup
 
 </div>
 <a href="#top">Top</a>
+<br /><br />
 
 <hr />
+
+<a name="changes"></a><h1>5. Guidelines Changelog</h1>
+<div class="paragraph">
+
+<h2>Revision 1.7</h2>
+
+<ul class="menu">
+	<li>Updated <a href="#locations">1.iii. File Locations</a> to reflect recent updates</li>
+	<li>Added paragraph about switch statements to <a href="#codelayout">2.ii. Code Layout</a></li>
+	<li>Updated <a href="#sql">2.iii. SQL/SQL Layout</a></li>
+	<li>Added paragraph about url formatting to <a href="#general">2.v. General Guidelines</a></li>
+</ul>
+
+<h2>Revision 1.6</h2>
+
+<ul class="menu">
+	<li>Added more information to Tabs vs. Spaces paragraph</li>
+</ul>
+
+<h2>Revision 1.5</h2>
+
+<ul class="menu">
+	<li>$user->start now $user->session_begin</li>
+</ul>
+
+<h2>Revision 1.3</h2>
+
+<ul class="menu">
+	<li>Updated Section 1.iii. - dbal layout</li>
+	<li>Extended Section 2.v. - usage of request_var()</li>
+</ul>
+
+</div>
+<a href="#top">Top</a>
+
 </div>
 
 <div id="footer"> $Id$ 

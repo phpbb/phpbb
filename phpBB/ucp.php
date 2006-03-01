@@ -96,6 +96,7 @@ switch ($mode)
 	break;
 
 	case 'delete_cookies':
+		
 		// Delete Cookies with dynamic names (do NOT delete poll cookies)
 		if (confirm_box(true))
 		{
@@ -126,7 +127,9 @@ switch ($mode)
 		{
 			confirm_box(false, 'DELETE_COOKIES', '');
 		}
+		
 		redirect("index.$phpEx$SID");
+
 	break;
 }
 

@@ -294,7 +294,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 		if (!$delete_id)
 		{
-			redirect("{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode");
+			redirect("ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode");
 		}
 
 		// Do we need to confirm?

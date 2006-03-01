@@ -32,9 +32,7 @@ class acp_permissions
 		$this->tpl_name = 'acp_permissions';
 
 		// Set some vars
-		$action = request_var('action', array('' => 0));
-		list($action, ) = each($action);
-
+		$action = key(request_var('action', array('' => 0)));
 		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
 
 		$all_forums = request_var('all_forums', 0);

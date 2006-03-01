@@ -495,7 +495,7 @@ function approve_post($post_id_list, $mode)
 		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx$SID");
+	$redirect = request_var('redirect', "index.$phpEx$SID");
 
 	if (strpos($redirect, '?') === false)
 	{
@@ -509,7 +509,7 @@ function approve_post($post_id_list, $mode)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_id . '">', '</a>'));
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $phpbb_root_path . $redirect . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_id . '">', '</a>'));
 	}
 }
 
@@ -715,7 +715,7 @@ function disapprove_post($post_id_list, $mode)
 		confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx$SID");
+	$redirect = request_var('redirect', "index.$phpEx$SID");
 
 	if (strpos($redirect, '?') === false)
 	{

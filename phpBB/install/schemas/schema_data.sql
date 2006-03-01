@@ -85,6 +85,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
@@ -165,7 +166,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('save_passwd', '3');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('script_path', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size', '250');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
@@ -177,6 +177,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('send_encoding', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', 'A _little_ text to describe your forum');

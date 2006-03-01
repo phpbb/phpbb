@@ -18,10 +18,79 @@ class session
 	var $cookie_data = array();
 	var $browser = '';
 	var $ip = '';
-	var $page = '';
+	var $page = array();
 	var $current_page_filename = '';
 	var $load;
 	var $time_now = 0;
+
+	/**
+	* Extract current session page
+	*/
+	function extract_current_page($root_path)
+	{
+		$page_array = array();
+
+		// First of all, get the request uri...
+		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+		$args = (!empty($_SERVER['QUERY_STRING'])) ? explode('&', $_SERVER['QUERY_STRING']) : explode('&', getenv('QUERY_STRING'));
+
+		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
+		if (!$script_name)
+		{
+			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			$page['failover'] = 1;
+		}
+
+		// Replace backslashes and doubled slashes (could happen on some proxy setups)
+		$script_name = str_replace(array('\\', '//'), '/', $script_name);
+
+		// Now, remove the sid and let us get a clean query string...
+		foreach ($args as $key => $argument)
+		{
+			if (strpos($argument, 'sid=') === 0)
+			{
+				unset($args[$key]);
+				break;
+			}
+		}
+
+		// The current query string
+		$query_string = trim(implode('&', $args));
+
+		// basenamed page name (for example: index.php)
+		$page_name = htmlspecialchars(basename($script_name));
+
+		// current directory within the phpBB root (for example: adm)
+		$page_dir = substr(str_replace(str_replace('\\', '/', realpath($root_path)), '', str_replace('\\', '/', realpath('./'))), 1);
+
+		// Current page from phpBB root (for example: adm/index.php?i=10)
+		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
+
+		// The script path from the webroot to the current directory (for example: /phpBB2/adm) : always prefixed with /
+		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
+
+		// The script path from the webroot to the phpBB root (for example: /phpBB2)
+		$root_script_path = ($page_dir) ? str_replace('/' . $page_dir, '', $script_path) : $script_path;
+
+		// We are on the base level (phpBB root == webroot), lets adjust the variables a bit...
+		if (!$root_script_path)
+		{
+			$root_script_path = ($page_dir) ? str_replace($page_dir, '', $script_path) : $script_path;;
+		}
+
+		$page_array += array(
+			'page_name'			=> $page_name,
+			'page_dir'			=> $page_dir,
+
+			'query_string'		=> $query_string,
+			'script_path'		=> htmlspecialchars($script_path),
+			'root_script_path'	=> htmlspecialchars($root_script_path),
+
+			'page'				=> $page
+		);
+
+		return $page_array;
+	}
 
 	/**
 	* Start session management
@@ -38,29 +107,14 @@ class session
 	*/
 	function session_begin()
 	{
-		global $phpEx, $SID, $db, $config;
+		global $phpEx, $SID, $db, $config, $phpbb_root_path;
 
 		$this->time_now = time();
 		
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$this->page = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] . ((isset($_POST['f'])) ? 'f=' . intval($_POST['f']) : '') : '';
-		$sid = substr($this->page, strpos($this->page, 'sid='), 36);
 
-		/**
-		* @todo: getting away with script_path or being more strict in it's format
-		*/
-		$script_path = $config['script_path'];
-		if ($script_path{0} != '/')
-		{
-			$script_path = '/' . $script_path;
-		}
-
-		if ($script_path{(strlen($script_path)-1)} != '/')
-		{
-			$script_path .= '/';
-		}
-
-		$this->page = str_replace(array($script_path, (strlen($sid) == 36 && strpos($sid, '&') === false) ? $sid : 'sid='), '', $this->page);
+		$this->page = $this->extract_current_page($phpbb_root_path);
+		$this->page['page'] .= (isset($_POST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . 'f=' . intval($_POST['f']) : '';
 
 		$this->cookie_data = array();
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
@@ -126,10 +180,10 @@ class session
 				if ($u_ip == $s_ip && $s_browser == $u_browser)
 				{
 					// Only update session DB a minute or so after last update or if page changes
-					if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page)
+					if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page['page'])
 					{
 						$sql = 'UPDATE ' . SESSIONS_TABLE . "
-							SET session_time = $this->time_now, session_page = '" . $db->sql_escape($this->page) . "'
+							SET session_time = $this->time_now, session_page = '" . $db->sql_escape($this->page['page']) . "'
 							WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 						$db->sql_query($sql);
 					}
@@ -317,7 +371,7 @@ class session
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) $this->browser,
-			'session_page'			=> (string) $this->page,
+			'session_page'			=> (string) $this->page['page'],
 			'session_ip'			=> (string) $this->ip,
 			'session_admin'			=> ($set_admin) ? 1 : 0,
 			'session_viewonline'	=> ($viewonline) ? 1 : 0,
@@ -888,7 +942,7 @@ class user extends session
 		{
 			global $SID;
 
-			if (strpos($this->page, 'mode=reg_details') !== false && strpos($this->page, "ucp.$phpEx") !== false)
+			if (strpos($this->page['page_query'], 'mode=reg_details') !== false && $this->page['page_name'] == "ucp.$phpEx")
 			{
 				redirect("ucp.$phpEx$SID&i=profile&mode=reg_details");
 			}

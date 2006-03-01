@@ -282,22 +282,8 @@ switch ($mode)
 			trigger_error('NO_USER');
 		}
 
-		// Do the SQL thang
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type
-			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = $user_id
-				AND g.group_id = ug.group_id" . ((!$auth->acl_gets('a_group')) ? ' AND group_type <> ' . GROUP_HIDDEN : '') . '
-			ORDER BY group_type, group_name';
-		$result = $db->sql_query($sql);
-
-		$group_options = '';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$group_options .= '<option value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
-		}
-
-		// 
-		$sql = 'SELECT username, user_id, user_type, user_colour, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_allow_viewonline, user_posts, user_warnings, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
+		// Get user...
+		$sql = 'SELECT username, user_id, user_type, user_colour, group_id, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_allow_viewonline, user_posts, user_warnings, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
@@ -308,6 +294,20 @@ switch ($mode)
 			trigger_error('NO_USER');
 		}
 		$db->sql_freeresult($result);
+
+		// Do the SQL thang
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type
+			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
+			WHERE ug.user_id = $user_id
+				AND g.group_id = ug.group_id" . ((!$auth->acl_get('a_group')) ? ' AND group_type <> ' . GROUP_HIDDEN : '') . '
+			ORDER BY group_type, group_name';
+		$result = $db->sql_query($sql);
+
+		$group_options = '';
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		}
 
 		$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 			FROM ' . SESSIONS_TABLE . "
