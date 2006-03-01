@@ -307,7 +307,7 @@ class acp_board
 			$auth_plugins = array();
 
 			$dp = opendir($phpbb_root_path . 'includes/auth');
-			while ($file = readdir($dp))
+			while (($file = readdir($dp)) !== false)
 			{
 				if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
 				{
@@ -438,7 +438,7 @@ class acp_board
 		$auth_plugins = array();
 
 		$dp = opendir($phpbb_root_path . 'includes/auth');
-		while ($file = readdir($dp))
+		while (($file = readdir($dp)) !== false)
 		{
 			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
 			{
@@ -575,7 +575,7 @@ class acp_board
 		$search_plugins = array();
 
 		$dp = opendir($phpbb_root_path . 'includes/search');
-		while ($file = readdir($dp))
+		while (($file = readdir($dp)) !== false)
 		{
 			if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
 			{
