@@ -76,7 +76,7 @@ $error = array();
 
 // Other PHP modules we may find useful
 //$php_dlls_other	= array('zlib', 'mbstring', 'ftp');
-$php_dlls_other	= array('zlib', 'ftp', 'xml', 'mhash');
+$php_dlls_other	= array('zlib', 'ftp', 'xml');
 
 // Supported DB layers including relevant details
 $available_dbms = array(

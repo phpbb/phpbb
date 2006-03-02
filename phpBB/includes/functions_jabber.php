@@ -185,12 +185,12 @@ class jabber
 		// was a result returned?
 		if ($this->get_info_from_iq_type($packet) == 'result' && $this->get_info_from_iq_id($packet) == $this->auth_id)
 		{
-			if (@function_exists('mhash') && isset($packet['iq']['#']['query'][0]['#']['sequence'][0]['#']) && isset($packet['iq']['#']['query'][0]['#']['token'][0]['#']))
+			if (isset($packet['iq']['#']['query'][0]['#']['sequence'][0]['#']) && isset($packet['iq']['#']['query'][0]['#']['token'][0]['#']))
 			{
 				// auth_0k
 				return $this->_sendauth_ok($packet['iq']['#']['query'][0]['#']['token'][0]['#'], $packet['iq']['#']['query'][0]['#']['sequence'][0]['#']);
 			}
-			else if (@function_exists('mhash') && isset($packet['iq']['#']['query'][0]['#']['digest']))
+			else if (isset($packet['iq']['#']['query'][0]['#']['digest']))
 			{
 				// digest
 				return $this->_sendauth_digest();
@@ -577,18 +577,15 @@ class jabber
 	function _sendauth_ok($zerok_token, $zerok_sequence)
 	{
 		// initial hash of password
-		$zerok_hash = @mhash(MHASH_SHA1, $this->password);
-		$zerok_hash = bin2hex($zerok_hash);
+		$zerok_hash = sha1($this->password);
 
 		// sequence 0: hash of hashed-password and token
-		$zerok_hash = @mhash(MHASH_SHA1, $zerok_hash . $zerok_token);
-		$zerok_hash = bin2hex($zerok_hash);
+		$zerok_hash = sha1($zerok_hash . $zerok_token);
 
 		// repeat as often as needed
 		for ($a = 0; $a < $zerok_sequence; $a++)
 		{
-			$zerok_hash = @mhash(MHASH_SHA1, $zerok_hash);
-			$zerok_hash = bin2hex($zerok_hash);
+			$zerok_hash = sha1($zerok_hash);
 		}
 
 		$payload = "<username>{$this->username}</username>
@@ -605,7 +602,7 @@ class jabber
 	{
 		$payload = "<username>{$this->username}</username>
 					<resource>{$this->resource}</resource>
-					<digest>" . bin2hex(mhash(MHASH_SHA1, $this->stream_id . $this->password)) . "</digest>";
+					<digest>" . sha1($this->stream_id . $this->password) . "</digest>";
 
 		$packet = $this->send_iq(NULL, 'set', $this->auth_id, 'jabber:iq:auth', $payload);
 
