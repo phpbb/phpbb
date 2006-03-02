@@ -19,6 +19,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 	$submit_export = (isset($_POST['submit_export'])) ? true : false;
 
+	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id'], "{$phpbb_root_path}ucp.$phpEx$SID", $type);
+
 	if (!$submit_export)
 	{
 		$user->add_lang('viewforum');
@@ -65,97 +67,70 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 			'S_UNREAD'		=> ($type == 'unread'),
 			'S_MARK_OPTIONS'=> $s_mark_options)
 		);
-	}
 
-	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id'], "{$phpbb_root_path}ucp.$phpEx$SID", $type);
-
-	// Okay, lets dump out the page ...
-	if (sizeof($folder_info['pm_list']))
-	{
-		// Build Recipient List if in outbox/sentbox - max two additional queries
-		$recipient_list = $address_list = $address = array();
-		if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
+		// Okay, lets dump out the page ...
+		if (sizeof($folder_info['pm_list']))
 		{
-			foreach ($folder_info['rowset'] as $message_id => $row)
+			// Build Recipient List if in outbox/sentbox - max two additional queries
+			$recipient_list = $address_list = $address = array();
+			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 			{
-				$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
-				$_save = array('u', 'g');
-				foreach ($_save as $save)
+				foreach ($folder_info['rowset'] as $message_id => $row)
 				{
-					if (isset($address[$message_id][$save]) && sizeof($address[$message_id][$save]))
+					$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
+					$_save = array('u', 'g');
+					foreach ($_save as $save)
 					{
-						foreach (array_keys($address[$message_id][$save]) as $ug_id)
+						if (isset($address[$message_id][$save]) && sizeof($address[$message_id][$save]))
 						{
-							$recipient_list[$save][$ug_id] = array('name' => $user->lang['NA'], 'colour' => '');
+							foreach (array_keys($address[$message_id][$save]) as $ug_id)
+							{
+								$recipient_list[$save][$ug_id] = array('name' => $user->lang['NA'], 'colour' => '');
+							}
 						}
 					}
 				}
-			}
 
-			$_types = array('u', 'g');
-			foreach ($_types as $ug_type)
-			{
-				if (isset($recipient_list[$ug_type]) && sizeof($recipient_list[$ug_type]))
+				$_types = array('u', 'g');
+				foreach ($_types as $ug_type)
 				{
-					$sql = ($ug_type == 'u') ? 'SELECT user_id as id, username as name, user_colour as colour FROM ' . USERS_TABLE . ' WHERE user_id' : 'SELECT group_id as id, group_name as name, group_colour as colour FROM ' . GROUPS_TABLE . ' WHERE group_id';
-					$sql .= ' IN (' . implode(', ', array_keys($recipient_list[$ug_type])) . ')';
-
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
+					if (isset($recipient_list[$ug_type]) && sizeof($recipient_list[$ug_type]))
 					{
-						$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
-					}
-					$db->sql_freeresult($result);
-				}
-			}
+						$sql = ($ug_type == 'u') ? 'SELECT user_id as id, username as name, user_colour as colour FROM ' . USERS_TABLE . ' WHERE user_id' : 'SELECT group_id as id, group_name as name, group_colour as colour FROM ' . GROUPS_TABLE . ' WHERE group_id';
+						$sql .= ' IN (' . implode(', ', array_keys($recipient_list[$ug_type])) . ')';
 
-			foreach ($address as $message_id => $adr_ary)
-			{
-				foreach ($adr_ary as $type => $id_ary)
-				{
-					foreach ($id_ary as $ug_id => $_id)
-					{
-						$address_list[$message_id][] = (($type == 'u') ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$ug_id\">" : "<a href=\"{$phpbb_root_path}groupcp.$phpEx$SID&amp;g=$ug_id\">") . (($recipient_list[$type][$ug_id]['colour']) ? '<span style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '">' : '<span>') . $recipient_list[$type][$ug_id]['name'] . '</span></a>';
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
+						}
+						$db->sql_freeresult($result);
 					}
 				}
+
+				foreach ($address as $message_id => $adr_ary)
+				{
+					foreach ($adr_ary as $type => $id_ary)
+					{
+						foreach ($id_ary as $ug_id => $_id)
+						{
+							$address_list[$message_id][] = (($type == 'u') ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$ug_id\">" : "<a href=\"{$phpbb_root_path}groupcp.$phpEx$SID&amp;g=$ug_id\">") . (($recipient_list[$type][$ug_id]['colour']) ? '<span style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '">' : '<span>') . $recipient_list[$type][$ug_id]['name'] . '</span></a>';
+						}
+					}
+				}
+
+				unset($recipient_list, $address);
 			}
 
-			unset($recipient_list, $address);
-		}
+			$url = "{$phpbb_root_path}ucp.$phpEx$SID";
 
-		$url = "{$phpbb_root_path}ucp.$phpEx$SID";
+			$data = array();
 
-		$data = array();
-
-		$export_type = request_var('export_option', '');
-		$enclosure = request_var('enclosure', '');
-		$delimiter = request_var('delimiter', '');
-
-		foreach ($folder_info['pm_list'] as $message_id)
-		{
-			$row = &$folder_info['rowset'][$message_id];
-
-			if ($submit_export && ($export_type !== 'CSV' || ($delimiter !== '' && $enclosure !== '')))
+			foreach ($folder_info['pm_list'] as $message_id)
 			{
-				include_once($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
-				$sql = 'SELECT p.message_text, p.bbcode_uid
-					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
-					WHERE t.user_id = ' . $user->data['user_id'] . "
-						AND p.author_id = u.user_id
-						AND t.folder_id = $folder_id
-						AND t.msg_id = p.msg_id
-						AND p.msg_id = $message_id";
-				$result = $db->sql_query_limit($sql, 1);
-				$message_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$row = &$folder_info['rowset'][$message_id];
 
-				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
-
-				$data[] = array('subject' => censor_text($row['message_subject']), 'from' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '', 'message' => $message_row['message_text']);
-			}
-			else if (!$submit_export || $export_type !== 'CSV')
-			{
 				$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
 				$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
@@ -202,30 +177,83 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 	//				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;i=mod_queue&amp;t=$topic_id")
 				);
 			}
+			unset($folder_info['rowset']);
+
+			$template->assign_vars(array(
+				'S_SHOW_RECIPIENTS'	=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
+				'S_SHOW_COLOUR_LEGEND'	=> true)
+			);
 		}
-		unset($folder_info['rowset']);
-
-		$template->assign_vars(array(
-			'S_SHOW_RECIPIENTS'	=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
-			'S_SHOW_COLOUR_LEGEND'	=> true)
-		);
 	}
-
-	// Ask the user what he wants
-	if ($submit_export)
+	else
 	{
+		$export_type = request_var('export_option', '');
+		$enclosure = request_var('enclosure', '');
+		$delimiter = request_var('delimiter', '');
+
 		if ($export_type == 'CSV' && ($delimiter === '' || $enclosure === ''))
 		{
 			$template->assign_var('PROMPT', true);
 		}
 		else
 		{
+			// Build Recipient List if in outbox/sentbox
+			$address = array();
+			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
+			{
+				foreach ($folder_info['rowset'] as $message_id => $row)
+				{
+					$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
+				}
+			}
+
+			foreach ($folder_info['pm_list'] as $message_id)
+			{
+				$row = &$folder_info['rowset'][$message_id];
+
+				include_once($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+				$sql = 'SELECT p.message_text, p.bbcode_uid
+					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
+					WHERE t.user_id = ' . $user->data['user_id'] . "
+						AND p.author_id = u.user_id
+						AND t.folder_id = $folder_id
+						AND t.msg_id = p.msg_id
+						AND p.msg_id = $message_id";
+				$result = $db->sql_query_limit($sql, 1);
+				$message_row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$_types = array('u', 'g');
+				foreach ($_types as $ug_type)
+				{
+					if (isset($address[$message_id][$ug_type]) && sizeof($address[$message_id][$ug_type]))
+					{
+						$sql = ($ug_type == 'u') ? 'SELECT user_id as id, username as name FROM ' . USERS_TABLE . ' WHERE user_id' : 'SELECT group_id as id, group_name as name FROM ' . GROUPS_TABLE . ' WHERE group_id';
+						$sql .= ' IN (' . implode(', ', array_keys($address[$message_id][$ug_type])) . ')';
+
+						$result = $db->sql_query($sql);
+
+						while ($info_row = $db->sql_fetchrow($result))
+						{
+							$address[$message_id][$ug_type][$address[$message_id][$ug_type][$info_row['id']]][] = $info_row['name'];
+							unset($address[$message_id][$ug_type][$info_row['id']]);
+						}
+						$db->sql_freeresult($result);
+					}
+				}
+
+				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
+
+				$data[] = array('subject' => censor_text($row['message_subject']), 'sender' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '', 'message' => $message_row['message_text']);
+			}
+
 			switch ($export_type)
 			{
 				case 'CSV':
 				case 'CSV_EXCEL':
 					$mimetype = 'text/csv';
 					$filetype = 'csv';
+
 					if ($export_type == 'CSV_EXCEL')
 					{
 						$enclosure = '"';
@@ -236,10 +264,22 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 					{
 						$newline = "\n";
 					}
+
 					$string = '';
 					foreach ($data as $value)
 					{
-						foreach ($value as $text)
+
+						$value['bcc'] = '';
+						if (is_array($value['to']))
+						{
+							foreach ($value['to'] as $key => $values)
+							{
+								$value['bcc'] = implode(',', $values['bcc']);
+								$value['to'] = implode(',', $values['to']);
+							}
+						}
+
+						foreach ($value as $tag => $text)
 						{
 							$cell = str_replace($enclosure, $enclosure . $enclosure, $text);
 
@@ -256,20 +296,39 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 					}
 				break;
 				case 'XML':
-					$mimetype = 'text/xml';
+					$mimetype = 'application/xml';
 					$filetype = 'xml';
 					$string = '<?xml version="1.0"?>' . "\n";
-					$string .= "<messages>\n";
+					$string .= "<phpbb>\n";
 					foreach ($data as $value)
 					{
+
 						$string .= "\t<privmsg>\n";
+
+						if (is_array($value['to']))
+						{
+							foreach ($value['to'] as $key => $values)
+							{
+								foreach ($values as $type => $types)
+								{
+									foreach ($types as $name)
+									{
+										$string .= "\t\t<recipient type=\"$type\" status=\"$key\">$name</recipient>\n";
+									}
+								}
+							}
+						}
+
+						unset($value['to']);
+
 						foreach ($value as $tag => $text)
 						{
 							$string .= "\t\t<$tag>$text</$tag>\n";
 						}
+
 						$string .= "\t</privmsg>\n";
 					}
-					$string .= '</messages>';
+					$string .= '</phpbb>';
 			}
 			header('Pragma: no-cache');
 			header("Content-Type: $mimetype; name=\"data.$filetype\"");
