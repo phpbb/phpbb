@@ -41,7 +41,7 @@
 		<td>{log.USERNAME}</td>
 		<td style="text-align: center;">{log.IP}</td>
 		<td style="text-align: center;">{log.DATE}</td>
-		<td>{log.ACTION}</td>
+		<td>{log.ACTION}<!-- IF log.DATA --><br />{log.DATA}</span><!-- ENDIF --></td>
 		<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{log.ID}" /></td>
 	</tr>
 <!-- END log -->
