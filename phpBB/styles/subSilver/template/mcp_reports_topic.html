@@ -1,0 +1,77 @@
+<!-- INCLUDE mcp_header.html -->
+<form method="POST" action="{U_FEEDBACK_ACTION}">
+<!-- BEGIN postrow -->
+<a name="{postrow.POST_ID}"></a>
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+<tr>
+	<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
+</tr>
+<tr>
+	<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
+	<td class="row2"><span class="gen"><a href="{postrow.U_VIEW}">{postrow.POST_SUBJECT}</a></span></td>
+</tr>
+<tr>
+	<td class="row1" width="20%" valign="top">
+		<b class="gen">{L_POSTER}:</b> <span class="gen"><a href="{U_POSTER_PROFILE}">{postrow.POSTER_NAME}</a></span><br />
+		<b class="gen">{L_POSTED}: </b> <span class="postdetails">{postrow.POST_DATE}</span>
+	</td>
+	<td class="row2" width="80%"><span class="gen">{postrow.POST_PREVIEW}</span></td>
+</tr>
+</table>
+
+<table style="margin-left: 5%" width="100%">
+	<!-- BEGIN reportrow -->
+	<tr>
+		<th colspan="3">Report {postrow.reportrow.REPORT_ID}</th>
+	</tr>
+	<tr class="row1">
+		<!-- IF postrow.reportrow.REPORT_STATUS neq 1 -->
+			<td width="5%"><input type="checkbox" name="sendfeedback[]" value="{postrow.reportrow.REPORT_ID}" /></td>
+		<!-- ENDIF -->
+		<!-- Nesting IF/ELSE didn't work as expected -->
+		<!-- IF postrow.reportrow.REPORT_STATUS eq 1 -->
+			<td width="5%"><span style="color: red">RESOLVED</style></td>
+		<!-- ENDIF -->
+		<td width="15%" valign="top">
+			<b>Time:</b> <span class="postdetails">{postrow.reportrow.REPORT_TIME}</span><br />
+			<b>Reporter:</b> <span class="gen"><!-- IF postrow.reportrow.U_REPORTERPROFILE --><a href="{postrow.reportrow.U_REPORTERPROFILE}">{postrow.reportrow.REPORTER_USERNAME}</a><!-- ELSE -->{postrow.reportrow.REPORTER_USERNAME}<!-- ENDIF --></span>
+		</td>
+		<td valign="top"><span class="gen">{postrow.reportrow.REPORT_TEXT}</span></td>
+	</tr>
+	<!-- This needs some VERY serious cleaning up :) -->
+	<tr><td colspan="3">
+		<table style="margin-left: 10%" width="100%">
+	<!-- BEGIN replyrow -->
+			<tr>
+				<th colspan="2">Reply {postrow.reportrow.replyrow.REPLY_ID}</th>
+			</tr>
+			<tr class="row1">
+				<td width="15%" valign="top">
+					<b>Time:</b> <span class="postdetails">{postrow.reportrow.REPORT_TIME}</span><br />
+					<b>From:</b> <span class="gen">{postrow.reportrow.replyrow.REPLY_FROMUSERNAME}</span>
+					<b>To:</b> <span class="gen">{postrow.reportrow.replyrow.REPLY_TOUSERNAME}</span>
+				</td>
+				<td valign="top"><span class="gen">{postrow.reportrow.replyrow.REPLY_TEXT}</span></td>
+			</tr>
+	<!-- END replyrow -->
+		</table>
+	</td></tr>
+	<!-- BEGINELSE -->
+	<tr class="row1">
+		<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_REPORTS}</span></td>
+	</tr>
+	<!-- END reportrow -->
+</table>
+<br />
+<!-- END postrow -->
+
+Send this comment to the selected reporters:<br />
+<textarea name="feedback_text" style="width: 100%" cols="80" rows="5"></textarea>
+{L_CLOSE_REPORT}<input type="checkbox" name="feedback_close">
+<input type="submit" name="feedback_submit" value="{L_SUBMIT}"/></p>
+
+</form>
+
+
+
+<!-- INCLUDE mcp_footer.html -->

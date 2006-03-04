@@ -83,6 +83,10 @@ define('PRIVMSGS_OUTBOX', -2);
 define('PRIVMSGS_SENTBOX', -1);
 define('PRIVMSGS_INBOX', 0);
 
+// Report Types
+define('REPORT_POST', 1);
+define('REPORT_GENERAL', 2);
+
 // Full Folder Actions
 define('FULL_FOLDER_NONE', -3);
 define('FULL_FOLDER_DELETE', -2);

@@ -1,0 +1,34 @@
+<!-- INCLUDE mcp_header.html -->
+
+	<!-- $Id$ -->
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<td class="row3" colspan="6" align="center"><b class="gen">{L_OPEN_REPORTS}</b></td>
+	</tr>
+	<tr>
+		<th>&nbsp;{L_NR}&nbsp;</th>
+		<th>&nbsp;{L_FORUM}&nbsp;</th>
+		<th>&nbsp;{L_TOPIC}&nbsp;</th>
+		<th>&nbsp;{L_USER}&nbsp;</th>
+		<th>&nbsp;{L_COUNT}&nbsp;</th>
+		<th>&nbsp;</th>
+	</tr>
+	<!-- BEGIN report -->
+		<tr>
+			<td class="row1" width="15%" valign="top"><span class="gen"><a href="{report.U_USER}"><a href="{report.U_REPORT_TOPIC}">{report.REPORT_COUNT}</a></span></td>
+			<td class="row1" width="15%" valign="top"><span class="gen"><a href="{report.U_USER}"><a href="{report.U_FORUM}">{report.FORUM_NAME}</a></span></td>
+			<td class="row2" width="15%" valign="top"><a class="gen" href="{report.U_TOPIC}">{report.TOPIC_TITLE}</a></td>
+			<td class="row1" width="15%" valign="top"><a class="gen" href="{report.U_VIEWPROFILE}">{report.POSTER}</a></span></td>
+			<td class="row2" width="15%" valign="top"><span class="gen">{report.REPORT_COUNT}</span></td>
+			<td class="row1" width="15%" valign="top"><span class="gen"> <input type="checkbox" /> </td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr>
+			<td class="row1" colspan="5" align="center"><span class="gen">{L_REPORTS_ZERO_TOTAL}</span></td>
+		</tr>
+	<!-- END report -->
+	</table>
+
+	<br clear="all" /><br />
+
+<!-- INCLUDE mcp_footer.html -->

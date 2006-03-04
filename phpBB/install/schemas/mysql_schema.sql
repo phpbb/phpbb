@@ -550,26 +550,42 @@ CREATE TABLE phpbb_ranks (
    PRIMARY KEY (rank_id)
 );
 
+# Table: 'phpbb_reports'
+CREATE TABLE `phpbb_reports` (
+  `report_id` smallint(5) unsigned NOT NULL auto_increment,
+  `report_type` tinyint(4) unsigned NOT NULL default '0',
+  `reason_id` smallint(5) unsigned NOT NULL default '0',
+  `post_id` mediumint(8) unsigned NOT NULL default '0',
+  `user_id` mediumint(8) unsigned NOT NULL default '0',
+  `user_notify` tinyint(1) NOT NULL default '0',
+  `report_time` int(10) unsigned NOT NULL default '0',
+  `report_text` text NOT NULL,
+  `report_status` tinyint(4) NOT NULL default '0',
+  `bbcode_uid` varchar(5) NOT NULL default '',
+  `bbcode_bitfield` int(11) NOT NULL default '0',
+  PRIMARY KEY  (`report_id`)
+);
+
 # Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
   reason_id smallint(6) NOT NULL auto_increment,
+  report_type tinyint(4) unsigned NOT NULL default '0',
   reason_priority tinyint(4) DEFAULT '0' NOT NULL,
   reason_name varchar(255) DEFAULT '' NOT NULL,
   reason_description text NOT NULL,
   PRIMARY KEY (reason_id)
 );
 
-# Table: 'phpbb_reports'
-CREATE TABLE phpbb_reports (
-  report_id smallint(5) UNSIGNED NOT NULL auto_increment,
-  reason_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
-  post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-  user_notify tinyint(1) DEFAULT '0' NOT NULL,
-  report_time int(10) UNSIGNED DEFAULT '0' NOT NULL,
-  report_text text NOT NULL,
-  PRIMARY KEY (report_id)
+# Table: `phpbb_reports_replies`
+CREATE TABLE `phpbb_reports_replies` (
+  `reply_id` mediumint(8) unsigned NOT NULL auto_increment,
+  `report_id` mediumint(8) unsigned NOT NULL default '0',
+  `reply_time` int(10) unsigned NOT NULL default '0',
+  `reply_text` text NOT NULL,
+  `from_user_id` mediumint(9) NOT NULL default '0',
+  `status` tinyint(4) NOT NULL default '0',
+  `to_user_id` mediumint(9) NOT NULL default '0',
+  PRIMARY KEY  (`reply_id`)
 );
 
 # Table: 'phpbb_search_results'

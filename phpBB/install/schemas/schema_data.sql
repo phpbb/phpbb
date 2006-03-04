@@ -754,10 +754,15 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (3, 1,
 # MSSQL IDENTITY phpbb_reports_reasons ON #
 
 # -- reasons
-INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES (1, 3, 'warez', 'The reported post contains links to pirated or illegal software');
-INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES (2, 2, 'spam', 'The reported post has for only purpose to advertise for a website or another product');
-INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES (3, 1, 'off_topic', 'The reported post is off topic');
-INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description) VALUES (4, 0, 'other', 'The reported post does not fit into any other category, please use the description field');
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (1, 0, 'other', 'The reported post does not fit into any other category (please use the description field)', 1);
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (2, 90, 'warez', 'The reported post contains links to pirated or illegal software', 1);
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (3, 60, 'spam', 'The reported post has for only purpose to advertise for a website or another product', 1);
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (4, 20, 'off_topic', 'The reported post is off topic', 1);
+
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (5, 0, 'other', 'Other reason (please use the description field)', 2);
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (6, 40, 'bug', 'The forum is not behaving as I expected', 2);
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (7, 30, 'email', 'I have a problem with receiving email.', 2);
+INSERT INTO phpbb_reports_reasons (reason_id, reason_priority, reason_name, reason_description, report_type) VALUES (8, 20, 'user', 'I have a complaint about a user', 2);
 
 # MSSQL IDENTITY phpbb_reports_reasons OFF #
 
