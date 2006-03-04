@@ -81,6 +81,19 @@ switch ($cron_type)
 		}
 		set_config('search_last_gc', time());
 
+	case 'tidy_warnings':
+		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+
+		if ($use_shutdown_function)
+		{
+			register_shutdown_function('tidy_warnings');
+		}
+		else
+		{
+			tidy_warnings();
+		}
+	break;
+
 	case 'tidy_database':
 		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 

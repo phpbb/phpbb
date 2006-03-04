@@ -2177,6 +2177,53 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 }
 
 /**
+* Tidy Warnings
+* Remove all warnings which have now expired from the database
+* The duration of a warning can be defined by the administrator
+* This only removes the warning and reduces the assosciated count,
+* it does not remove the user note recording the contents of the warning
+*/
+function tidy_warnings()
+{
+	global $db, $config;
+
+	$expire_date = time() - ($config['warnings_expire_days'] * 86400);
+	$warning_list = $user_list = array();
+
+	$sql = 'SELECT * FROM ' . WARNINGS_TABLE . "
+		WHERE warning_time < $expire_date";
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$warning_list[] = $row['warning_id'];
+		$user_list[$row['user_id']] = isset($user_list[$row['user_id']]) ? $user_list[$row['user_id']]++ : 0;
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($warning_list))
+	{
+		$db->sql_transaction('begin');
+
+		$sql_where = ' IN (' . implode(', ', $warning_list) . ')';
+		$sql = 'DELETE FROM ' . WARNINGS_TABLE . "
+			WHERE warning_id $sql_where";
+		$db->sql_query($sql);
+	
+		foreach($user_list as $user_id => $value)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . " SET user_warnings = user_warnings - $value
+				WHERE user_id = $user_id";
+			$db->sql_query($sql);
+		}
+
+		$db->sql_transaction('commit');
+	}
+
+	set_config('warnings_last_gc', time());
+}
+
+/**
 * Tidy database
 * Removes all tracking rows older than 6 months, including mark_posted informations
 */

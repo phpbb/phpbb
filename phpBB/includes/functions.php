@@ -2171,6 +2171,10 @@ function page_footer()
 			// Tidy the cache
 			$cron_type = 'tidy_cache';
 		}
+		else if (time() - $config['warnings_last_gc'] > $config['warnings_gc'])
+		{
+			$cron_type = 'tidy_warnings';
+		}
 		else if (time() - (7 * 24 * 3600) > $config['database_last_gc'])
 		{
 			// Tidy some table rows every week
