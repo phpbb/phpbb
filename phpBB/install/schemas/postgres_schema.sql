@@ -130,6 +130,7 @@ SELECT SETVAL('phpbb_banlist_ban_id_seq',(select case when max(ban_id)>0 then ma
 CREATE TABLE phpbb_bbcodes (
   bbcode_id INT2  DEFAULT '0' NOT NULL,
   bbcode_tag varchar(16) DEFAULT '' NOT NULL,
+  display_on_posting INT2  DEFAULT '0' NOT NULL,
   bbcode_match varchar(255) DEFAULT '' NOT NULL,
   bbcode_tpl text DEFAULT '' NOT NULL,
   first_pass_match varchar(255) DEFAULT '' NOT NULL,
@@ -139,6 +140,8 @@ CREATE TABLE phpbb_bbcodes (
   PRIMARY KEY (bbcode_id),
   CHECK (bbcode_id>=0)
 );
+
+CREATE INDEX display_on_posting_phpbb_bbcodes_index ON phpbb_bbcodes (display_on_posting);
 
 /* Table: phpbb_bookmarks */
 CREATE TABLE phpbb_bookmarks (
@@ -521,7 +524,6 @@ CREATE TABLE phpbb_posts (
    post_approved INT2 DEFAULT '1' NOT NULL,
    post_reported INT2 DEFAULT '0' NOT NULL,
    enable_bbcode INT2 DEFAULT '1' NOT NULL,
-   enable_html INT2 DEFAULT '0' NOT NULL,
    enable_smilies INT2 DEFAULT '1' NOT NULL,
    enable_magic_url INT2 DEFAULT '1' NOT NULL,
    enable_sig INT2 DEFAULT '1' NOT NULL,
@@ -571,7 +573,6 @@ CREATE TABLE phpbb_privmsgs (
    message_time INT4 DEFAULT '0' NOT NULL,
    message_reported INT2 DEFAULT '0' NOT NULL,
    enable_bbcode INT2 DEFAULT '1' NOT NULL,
-   enable_html INT2 DEFAULT '0' NOT NULL,
    enable_smilies INT2 DEFAULT '1' NOT NULL,
    enable_magic_url INT2 DEFAULT '1' NOT NULL,
    enable_sig INT2 DEFAULT '1' NOT NULL,

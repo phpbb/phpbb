@@ -1321,6 +1321,11 @@ function group_delete($group_id, $group_name = false)
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
 
+	// Delete auth entries from the groups table
+	$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
+		WHERE group_id = $group_id";
+	$db->sql_query($sql);
+
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
 	return false;

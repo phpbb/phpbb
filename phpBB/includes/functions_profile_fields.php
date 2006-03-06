@@ -390,12 +390,14 @@ class custom_profile
 		{
 			case 'int':
 				return (int) $value;
-				break;
+			break;
+
 			case 'string':
 				return str_replace("\n", '<br />', $value);
-				break;
+			break;
+			
 			case 'text':
-				// Prepare further, censor_text, smilies, bbcode, html, whatever
+				// Prepare further, censor_text, smilies, bbcode, whatever
 				if ($ident_ary['data']['bbcode_bitfield'])
 				{
 					$bbcode = new bbcode($ident_ary['data']['bbcode_bitfield']);
@@ -404,9 +406,11 @@ class custom_profile
 					$value = censor_text($value);
 				}
 				return str_replace("\n", '<br />', $value);
-				break;
+			break;
+			
 			case 'date':
-				break;
+			break;
+			
 			case 'dropdown':
 				$field_id = $ident_ary['data']['field_id'];
 				$lang_id = $ident_ary['data']['lang_id'];
@@ -416,12 +420,14 @@ class custom_profile
 				}
 
 				return $this->options_lang[$field_id][$lang_id][(int) $value];
-				break;
+			break;
+			
 			case 'bool':
-				break;
+			break;
+			
 			default:
 				trigger_error('Unknown profile type');
-				break;
+			break;
 		}
 	}
 
@@ -665,6 +671,7 @@ class custom_profile
 		switch ($profile_row['field_type'])
 		{
 			case FIELD_DATE:
+
 				if (!isset($_REQUEST[$var_name . '_day']))
 				{
 					if ($profile_row['field_default_value'] == 'now')
@@ -682,25 +689,30 @@ class custom_profile
 				}
 				
 				$var = sprintf('%2d-%2d-%4d', $day, $month, $year);
-				break;
-			case FIELD_TEXT:
-					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+			break;
 
-					$message_parser = new parse_message(request_var($var_name, ''));
+			case FIELD_TEXT:
+				include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+				$message_parser = new parse_message(request_var($var_name, ''));
 					
-					// Get the allowed settings from the global settings. Magic URLs are always set to true.
-					// TODO: It might be nice to make this a per field setting.
-					$message_parser->parse($config['allow_html'], $config['allow_bbcode'], true, $config['allow_smilies']);
-					$var = array(
-						$profile_row['field_ident'] => $message_parser->message,
-						$profile_row['field_ident'] . '_bbcode_uid' => $message_parser->bbcode_uid,
-						$profile_row['field_ident'] . '_bbcode_bitfield' => $message_parser->bbcode_bitfield,
-						'submitted' => request_var($var_name, '')
-					);
-					break;
+				/**
+				* Get the allowed settings from the global settings. Magic URLs are always set to true.
+				* @todo It might be nice to make this a per field setting.
+				*/
+				$message_parser->parse($config['allow_bbcode'], true, $config['allow_smilies']);
+
+				$var = array(
+					$profile_row['field_ident'] => $message_parser->message,
+					$profile_row['field_ident'] . '_bbcode_uid' => $message_parser->bbcode_uid,
+					$profile_row['field_ident'] . '_bbcode_bitfield' => $message_parser->bbcode_bitfield,
+					'submitted' => request_var($var_name, '')
+				);
+			break;
+
 			default:
 				$var = request_var($var_name, $profile_row['field_default_value']);
-				break;
+			break;
 		}
 
 		return $var;

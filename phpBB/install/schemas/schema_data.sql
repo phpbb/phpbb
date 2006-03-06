@@ -17,8 +17,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bbcode', '1'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bookmarks', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_html', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_html_tags', 'b,i,u,pre');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mass_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars', '.*');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange', '0');
@@ -28,7 +26,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_html', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_img', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_smilies', '1');
@@ -38,7 +35,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_download_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_flash_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_html_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_img_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method', 'db');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_quote_pm', '1');
@@ -231,7 +227,6 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_sticky', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_attach', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_download', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_icons', 1);
-INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_html', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_bbcode', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_smilies', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_img', 1);
@@ -321,7 +316,6 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_attach', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sig', 1);
 
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_attach', 1);
-INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_html', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_bbcode', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_smilies', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_download', 1);
@@ -621,8 +615,8 @@ INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_nam
 # Default user - admin rights
 INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
 INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html');
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html');
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 
 # Default user - moderation rights
 INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
@@ -631,8 +625,8 @@ INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) S
 # ADMINISTRATOR group - admin and forum rights
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach', 'f_html');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 
 # SUPER MODERATOR group - moderator rights
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 6, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chggrp', 'u_chgname');

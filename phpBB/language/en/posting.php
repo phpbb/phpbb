@@ -74,7 +74,6 @@ $lang = array_merge($lang, array(
 	'DELETE_POST_CONFIRM'		=> 'Are you sure you want to delete this message?',
 	'DELETE_POST_WARN'			=> 'Once deleted the post cannot be recovered',
 	'DISABLE_BBCODE'			=> 'Disable BBCode',
-	'DISABLE_HTML'				=> 'Disable HTML',
 	'DISABLE_MAGIC_URL'			=> 'Do not automatically parse URLs',
 	'DISABLE_SMILIES'			=> 'Disable Smilies',
 	'DISALLOWED_EXTENSION'		=> 'The Extension %s is not allowed',
@@ -99,9 +98,6 @@ $lang = array_merge($lang, array(
 	'FONT_TINY'					=> 'Tiny',
 
 	'GENERAL_UPLOAD_ERROR'		=> 'Could not upload Attachment to %s',
-
-	'HTML_IS_OFF'				=> 'HTML is <u>OFF</u>',
-	'HTML_IS_ON'				=> 'HTML is <u>ON</u>',
 
 	'IMAGES_ARE_OFF'			=> '[img] is <u>OFF</u>',
 	'IMAGES_ARE_ON'				=> '[img] is <u>ON</u>',

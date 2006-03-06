@@ -91,7 +91,7 @@ class acp_forums
 				case 'add':
 
 					$forum_data += array(
-						'parent_id'				=> $this->parent_id,
+						'parent_id'				=> request_var('forum_parent_id', $this->parent_id),
 						'forum_type'			=> request_var('forum_type', FORUM_POST),
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
@@ -132,7 +132,7 @@ class acp_forums
 						$forum_data['forum_rules_flags'] = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
 
 						$message_parser = new parse_message($forum_data['forum_rules']);
-						$message_parser->parse(false, $allow_bbcode, $allow_urls, $allow_smilies);
+						$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies);
 			
 						$forum_data['forum_rules'] = $message_parser->message;
 						$forum_data['forum_rules_bbcode_uid'] = $message_parser->bbcode_uid;
@@ -363,7 +363,7 @@ class acp_forums
 						$forum_data = $row;
 					}
 
-					$parents_list = make_forum_select($this->parent_id, $forum_id, false, false, false);
+					$parents_list = make_forum_select($forum_data['parent_id'], $forum_id, false, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
 				}
@@ -421,10 +421,10 @@ class acp_forums
 					}
 					else
 					{
-						$message_parser->parse(false, ($forum_data['forum_rules_flags'] & 1), ($forum_data['forum_rules_flags'] & 4), ($forum_data['forum_rules_flags'] & 2));
+						$message_parser->parse(($forum_data['forum_rules_flags'] & 1), ($forum_data['forum_rules_flags'] & 4), ($forum_data['forum_rules_flags'] & 2));
 					}
 
-					$forum_rules_preview = $message_parser->format_display(false, ($forum_data['forum_rules_flags'] & 1), ($forum_data['forum_rules_flags'] & 4), ($forum_data['forum_rules_flags'] & 2), false);
+					$forum_rules_preview = $message_parser->format_display(($forum_data['forum_rules_flags'] & 1), ($forum_data['forum_rules_flags'] & 4), ($forum_data['forum_rules_flags'] & 2), false);
 					$forum_rules_plain = $message_parser->decode_message('', false);
 				}
 
@@ -449,17 +449,17 @@ class acp_forums
 				if ($db->sql_fetchrow($result))
 				{
 					$template->assign_vars(array(
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($this->parent_id, $forum_id, false, true, false))
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $forum_id, false, true, false))
 					);
 				}
 				$db->sql_freeresult($result);
 
 				$s_show_display_on_index = false;
 	
-				if ($action == 'edit' && $this->parent_id > 0)
+				if ($action == 'edit' && $forum_data['parent_id'] > 0)
 				{
 					// if this forum is a subforum put the "display on index" checkbox
-					if ($parent_info = $this->get_forum_info($this->parent_id))
+					if ($parent_info = $this->get_forum_info($forum_data['parent_id']))
 					{
 						if ($parent_info['parent_id'] > 0 || $parent_info['forum_type'] == FORUM_CAT)
 						{
@@ -469,10 +469,11 @@ class acp_forums
 				}
 
 				$template->assign_vars(array(
-					'S_EDIT_FORUM'	=> true,
-					'S_ERROR'		=> (sizeof($errors)) ? true : false,
-					'S_PARENT_ID'	=> $this->parent_id,
-					'S_ADD_ACTION'	=> ($action == 'add') ? true : false,
+					'S_EDIT_FORUM'		=> true,
+					'S_ERROR'			=> (sizeof($errors)) ? true : false,
+					'S_PARENT_ID'		=> $this->parent_id,
+					'S_FORUM_PARENT_ID'	=> $forum_data['parent_id'],
+					'S_ADD_ACTION'		=> ($action == 'add') ? true : false,
 
 					'U_BACK'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 					'U_EDIT_ACTION'	=> $this->u_action . "&amp;parent_id={$this->parent_id}&amp;action=$action&amp;f=$forum_id",
@@ -545,7 +546,7 @@ class acp_forums
 					$subforums_id[] = $row['forum_id'];
 				}
 
-				$forums_list = make_forum_select($this->parent_id, $subforums_id);
+				$forums_list = make_forum_select($forum_data['parent_id'], $subforums_id);
 
 				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
@@ -556,14 +557,16 @@ class acp_forums
 				if ($db->sql_fetchrow($result))
 				{
 					$template->assign_vars(array(
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($this->parent_id, $subforums_id)) // , false, true, false???
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)) // , false, true, false???
 					);
 				}
 				$db->sql_freeresult($result);
 
+				$parent_id = ($this->parent_id == $forum_id) ? 0 : $this->parent_id;
+
 				$template->assign_vars(array(
 					'S_DELETE_FORUM'		=> true,
-					'U_ACTION'				=> $this->u_action . "&amp;parent_id={$this->parent_id}&amp;action=delete&amp;f=$forum_id",
+					'U_ACTION'				=> $this->u_action . "&amp;parent_id={$parent_id}&amp;action=delete&amp;f=$forum_id",
 					'U_BACK'				=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 
 					'FORUM_NAME'			=> $forum_data['forum_name'],
@@ -1208,6 +1211,10 @@ class acp_forums
 			
 			case 'POSTS_':
 				add_log('admin', 'LOG_FORUM_DEL_POSTS', $forum_data['forum_name']);
+			break;
+
+			default:
+				add_log('admin', 'LOG_FORUM_DEL_FORUM', $forum_data['forum_name']);
 			break;
 		}
 

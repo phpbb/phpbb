@@ -105,13 +105,6 @@ function mcp_topic_view($id, $mode, $action)
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
 
-		// If the board has HTML off but the post has HTML
-		// on then we process it, else leave it alone
-		if (!$config['allow_html'] && $row['enable_html'])
-		{
-			$message = preg_replace('#(<)([\/]?.*?)(>)#is', '&lt;\\2&gt;', $message);
-		}
-
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);

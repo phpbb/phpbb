@@ -101,6 +101,7 @@ CREATE TABLE phpbb_banlist (
 CREATE TABLE phpbb_bbcodes (
   bbcode_id INTEGER PRIMARY KEY NOT NULL DEFAULT '0',
   bbcode_tag varchar(16) NOT NULL DEFAULT '',
+  display_on_posting tinyint(1) NOT NULL DEFAULT '0',
   bbcode_match varchar(255) NOT NULL DEFAULT '',
   bbcode_tpl text(65535) NOT NULL DEFAULT '',
   first_pass_match varchar(255) NOT NULL DEFAULT '',
@@ -108,6 +109,8 @@ CREATE TABLE phpbb_bbcodes (
   second_pass_match varchar(255) NOT NULL DEFAULT '',
   second_pass_replace text(65535) NOT NULL DEFAULT ''
 );
+
+CREATE INDEX display_on_posting_phpbb_bbcodes on phpbb_bbcodes (display_on_posting);
 
 # Table: phpbb_bookmarks
 CREATE TABLE phpbb_bookmarks (
@@ -393,7 +396,6 @@ CREATE TABLE phpbb_posts (
   post_approved tinyint(1) NOT NULL DEFAULT '1',
   post_reported tinyint(1) NOT NULL DEFAULT '0',
   enable_bbcode tinyint(1) NOT NULL DEFAULT '1',
-  enable_html tinyint(1) NOT NULL DEFAULT '0',
   enable_smilies tinyint(1) NOT NULL DEFAULT '1',
   enable_magic_url tinyint(1) NOT NULL DEFAULT '1',
   enable_sig tinyint(1) NOT NULL DEFAULT '1',
@@ -429,7 +431,6 @@ CREATE TABLE phpbb_privmsgs (
   message_time int(11) NOT NULL DEFAULT '0',
   message_reported tinyint(1) NOT NULL DEFAULT '0',
   enable_bbcode tinyint(1) NOT NULL DEFAULT '1',
-  enable_html tinyint(1) NOT NULL DEFAULT '0',
   enable_smilies tinyint(1) NOT NULL DEFAULT '1',
   enable_magic_url tinyint(1) NOT NULL DEFAULT '1',
   enable_sig tinyint(1) NOT NULL DEFAULT '1',

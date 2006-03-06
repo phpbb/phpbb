@@ -359,7 +359,6 @@ class ucp_prefs
 				{
 					$var_ary = array(
 						'bbcode'	=> true,
-						'html'		=> false,
 						'smilies'	=> true,
 						'sig'		=> true,
 						'notify'	=> false,
@@ -371,7 +370,6 @@ class ucp_prefs
 					}
 
 					$user->optionset('bbcode', $bbcode);
-					$user->optionset('html', $html);
 					$user->optionset('smilies', $smilies);
 					$user->optionset('attachsig', $sig);
 
@@ -399,9 +397,6 @@ class ucp_prefs
 				$bbcode = (isset($bbcode)) ? $bbcode : $user->optionget('bbcode');
 				$bbcode_yes = ($bbcode) ? ' checked="checked"' : '';
 				$bbcode_no = (!$bbcode) ? ' checked="checked"' : '';
-				$html = (isset($html)) ? $html : $user->optionget('html');
-				$html_yes = ($html) ? ' checked="checked"' : '';
-				$html_no = (!$html) ? ' checked="checked"' : '';
 				$smilies = (isset($smilies)) ? $smilies : $user->optionget('smilies');
 				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
 				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
@@ -417,8 +412,6 @@ class ucp_prefs
 
 					'DEFAULT_BBCODE_YES'	=> $bbcode_yes,
 					'DEFAULT_BBCODE_NO'		=> $bbcode_no,
-					'DEFAULT_HTML_YES'		=> $html_yes,
-					'DEFAULT_HTML_NO'		=> $html_no,
 					'DEFAULT_SMILIES_YES'	=> $smilies_yes,
 					'DEFAULT_SMILIES_NO'	=> $smilies_no,
 					'DEFAULT_SIG_YES'		=> $sig_yes,

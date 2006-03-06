@@ -113,7 +113,13 @@ class bbcode_firstpass extends bbcode
 			'flash'		=>	array('bbcode_id' => 11, 'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ie' => "\$this->bbcode_flash('\$1', '\$2', '\$3')"))
 		);
 
-		$this->parsed_items = array('code' => 0, 'quote' => 0, 'attachment' => 0, 'b' => 0, 'i' => 0, 'url' => 0, 'img' => 0, 'size' => 0, 'color' => 0, 'u' => 0, 'list' => 0, 'email' => 0, 'flash' => 0);
+		// Zero the parsed items array
+		$this->parsed_items = array();
+
+		foreach ($this->bbcodes as $tag => $bbcode_data)
+		{
+			$this->parsed_items[$tag] = 0;
+		}
 
 		if (!is_array($rowset))
 		{
@@ -128,8 +134,9 @@ class bbcode_firstpass extends bbcode
 			{
 				$rowset[] = $row;
 			}
+			$db->sql_freeresult($result);
 		}
-		
+
 		foreach ($rowset as $row)
 		{
 			$this->bbcodes[$row['bbcode_tag']] = array(
@@ -279,7 +286,6 @@ class bbcode_firstpass extends bbcode
 			'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 			'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
 			'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-			'#<!\-\- h \-\-><(.*?)><!\-\- h \-\->#',
 			'#&\#([0-9]+);#',
 		);
 		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;', '&amp;#\1;');
@@ -694,7 +700,7 @@ class bbcode_firstpass extends bbcode
 /**
 * @package phpBB3
 * Main message parser for posting, pm, etc. takes raw message
-* and parses it for attachments, html, bbcode and smilies
+* and parses it for attachments, bbcode and smilies
 */
 class parse_message extends bbcode_firstpass
 {
@@ -723,7 +729,7 @@ class parse_message extends bbcode_firstpass
 	}
 
 	// Parse Message : public
-	function parse($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $update_this_message = true, $mode = 'post')
+	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
 		global $config, $db, $user;
 
@@ -764,12 +770,6 @@ class parse_message extends bbcode_firstpass
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
 				return $this->warn_msg;
 			}
-		}
-
-		// Parse HTML
-		if ($allow_html && $config['allow_html_tags'])
-		{
-			$this->html($config['allow_html_tags']);
 		}
 
 		// Parse smilies
@@ -827,7 +827,7 @@ class parse_message extends bbcode_firstpass
 	}
 
 	// Formatting text for display
-	function format_display($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
+	function format_display($allow_bbcode, $allow_magic_url, $allow_smilies, $update_this_message = true)
 	{
 		// If false, then the parsed message get returned but internal message not processed.
 		if (!$update_this_message)
@@ -839,7 +839,7 @@ class parse_message extends bbcode_firstpass
 		if ($this->message_status == 'plain')
 		{
 			// Force updating message - of course.
-			$this->parse($allow_html, $allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, true);
+			$this->parse($allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, true);
 		}
 
 		// Parse BBcode
@@ -889,19 +889,6 @@ class parse_message extends bbcode_firstpass
 		$this->message_status = 'plain';
 	}
 	
-	// Parse HTML
-	function html($allowed_tags)
-	{
-		// If $allow_html is true then "allowed_tags" are converted back from entity
-		// form, others remain
-		$allowed_tags = split(',', $allowed_tags);
-			
-		if (sizeof($allowed_tags))
-		{
-			$this->message = preg_replace('#&lt;(\/?)(' . str_replace('*', '.*?', implode('|', $allowed_tags)) . ')&gt;#is', '<!-- h --><$1$2><!-- h -->', $this->message);
-		}
-	}
-
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
 	// Cuts down displayed size of link if over 50 chars, turns absolute links
 	// into relative versions when the server/script path matches the link
@@ -916,7 +903,7 @@ class parse_message extends bbcode_firstpass
 			// Be sure to not let the matches cross over. ;)
 
 			// relative urls for this board
-			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
+			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*#i';
 			$replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
 
 			// matches a xxxx://aaaaa.bbb.cccc. ...
@@ -1184,7 +1171,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_option_text'];
 		$bbcode_bitfield = $this->bbcode_bitfield;
 
-		$poll['poll_option_text'] = $this->parse($poll['enable_html'], $poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
+		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
 		
 		$this->bbcode_bitfield |= $bbcode_bitfield;
 		$this->message = $tmp_message;
@@ -1194,7 +1181,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_title'];
 		$bbcode_bitfield = $this->bbcode_bitfield;
 
-		$poll['poll_title'] = $this->parse($poll['enable_html'], $poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
+		$poll['poll_title'] = $this->parse($poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
 
 		$this->bbcode_bitfield |= $bbcode_bitfield;
 		$this->message = $tmp_message;

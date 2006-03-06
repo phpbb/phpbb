@@ -1771,95 +1771,136 @@ function split_sql_file($sql, $delimiter)
 /**
 * Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
 * and group names must be carried through for the moderators table
+*
+* @todo let the admin define if he wants to display moderators (forum-based) - display_on_index already present and checked for...
 */
 function cache_moderators()
 {
-	global $db, $cache;
+	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
 
 	// Clear table
 	$sql = (SQL_LAYER != 'sqlite') ? 'TRUNCATE ' . MODERATOR_TABLE : 'DELETE FROM ' . MODERATOR_TABLE;
 	$db->sql_query($sql);
 
-	// Holding array
-	$m_sql = array();
-	$user_id_sql = '';
+	// We add moderators who have forum moderator permissions without an explicit ACL_NO setting
+	$hold_ary = $ug_id_ary = $sql_ary = array();
 
-	$sql = 'SELECT a.forum_id, u.user_id, u.username
-		FROM  ' . ACL_OPTIONS_TABLE . '  o, ' . ACL_USERS_TABLE . ' a,  ' . USERS_TABLE . "  u
-		WHERE o.auth_option = 'm_'
-			AND a.auth_option_id = o.auth_option_id
-			AND a.auth_setting = " . ACL_YES . ' 
-			AND u.user_id = a.user_id';
-	$result = $db->sql_query($sql);
+	// Grab all users having moderative options...
+	$hold_ary = $auth->acl_user_raw_data(false, 'm_%', false);
 
-	while ($row = $db->sql_fetchrow($result))
+	// Add users?
+	if (sizeof($hold_ary))
 	{
-		$m_sql['f_' . $row['forum_id'] . '_u_' . $row['user_id']] = $row['forum_id'] . ', ' . $row['user_id'] . ", '" . $row['username'] . "', NULL, NULL";
-		$user_id_sql .= (($user_id_sql) ? ', ' : '') . $row['user_id'];
-	}
-	$db->sql_freeresult($result);
+		// At least one moderative option warrants a display
+		$ug_id_ary = array_keys($hold_ary);
 
-	// Remove users who have group memberships with DENY moderator permissions
-	if ($user_id_sql)
-	{
+		// Remove users who have group memberships with DENY moderator permissions
 		$sql = 'SELECT a.forum_id, ug.user_id
-			FROM  ' . ACL_OPTIONS_TABLE . '  o, ' . ACL_GROUPS_TABLE . ' a,  ' . USER_GROUP_TABLE . "  ug
-			WHERE o.auth_option = 'm_'
-				AND a.auth_option_id = o.auth_option_id
-				AND a.auth_setting = " . ACL_NO . " 
+			FROM  (' . ACL_OPTIONS_TABLE . '  o, ' . ACL_GROUPS_TABLE . ' a,  ' . USER_GROUP_TABLE . '  ug)
+			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
+			WHERE (o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
+				AND ((a.auth_setting = ' . ACL_NO . ' AND r.auth_setting IS NULL)
+					OR r.auth_setting = ' . ACL_NO . ')
 				AND a.group_id = ug.group_id
-				AND ug.user_id IN ($user_id_sql)";
+				AND ug.user_id IN (' . implode(', ', $ug_id_ary) . ")
+				AND o.auth_option LIKE 'm\_%'";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			unset($m_sql['f_' . $row['forum_id'] . '_u_' . $row['user_id']]);
+			if (isset($hold_ary[$row['user_id']][$row['forum_id']]))
+			{
+				unset($hold_ary[$row['user_id']][$row['forum_id']]);
+			}
 		}
 		$db->sql_freeresult($result);
+
+		if (sizeof($hold_ary))
+		{
+			// Get usernames...
+			$sql = 'SELECT user_id, username
+				FROM ' . USERS_TABLE . '
+				WHERE user_id IN (' . implode(', ', array_keys($hold_ary)) . ')';
+			$result = $db->sql_query($sql);
+
+			$usernames_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$usernames_ary[$row['user_id']] = $row['username'];
+			}
+
+			foreach ($hold_ary as $user_id => $forum_id_ary)
+			{
+				foreach ($forum_id_ary as $forum_id => $auth_ary)
+				{
+					$sql_ary[] = array(
+						'forum_id'		=> $forum_id,
+						'user_id'		=> $user_id,
+						'username'		=> $usernames_ary[$user_id],
+						'group_id'		=> 0,
+						'groupname'		=> ''
+					);
+				}
+			}
+		}
 	}
 
-	$sql = 'SELECT a.forum_id, g.group_name, g.group_id
-		FROM  ' . ACL_OPTIONS_TABLE . '  o, ' . ACL_GROUPS_TABLE . ' a,  ' . GROUPS_TABLE . "  g
-		WHERE o.auth_option = 'm_'
-			AND a.auth_option_id = o.auth_option_id
-			AND a.auth_setting = " . ACL_YES . '
-			AND g.group_id = a.group_id
-			AND g.group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_SPECIAL . ')';
-	$result = $db->sql_query($sql);
+	// Now to the groups...
+	$hold_ary = $auth->acl_group_raw_data(false, 'm_%', false);
 
-	while ($row = $db->sql_fetchrow($result))
+	if (sizeof($hold_ary))
 	{
-		$m_sql['f_' . $row['forum_id'] . '_g_' . $row['group_id']] = $row['forum_id'] . ', NULL, NULL, ' . $row['group_id'] . ", '" . $row['group_name'] . "'";
-	}
-	$db->sql_freeresult($result);
+		$ug_id_ary = array_keys($hold_ary);
 
-	if (sizeof($m_sql))
+		// Make sure not hidden or special groups are involved...
+		$sql = 'SELECT group_name, group_id, group_type
+			FROM  ' . GROUPS_TABLE . '
+			WHERE group_id IN (' . implode(', ', $ug_id_ary) . ')';
+		$result = $db->sql_query($sql);
+
+		$groupnames_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['group_type'] == GROUP_HIDDEN || $row['group_type'] == GROUP_SPECIAL)
+			{
+				unset($hold_ary[$row['group_id']]);
+			}
+
+			$groupnames_ary[$row['group_id']] = $row['group_name'];
+		}
+		$db->sql_freeresult($result);
+
+		foreach ($hold_ary as $group_id => $forum_id_ary)
+		{
+			foreach ($forum_id_ary as $forum_id => $auth_ary)
+			{
+				$sql_ary[] = array(
+					'forum_id'		=> $forum_id,
+					'user_id'		=> 0,
+					'username'		=> '',
+					'group_id'		=> $group_id,
+					'groupname'		=> $groupnames_ary[$group_id]
+				);
+			}
+		}
+	}
+
+	if (sizeof($sql_ary))
 	{
 		switch (SQL_LAYER)
 		{
 			case 'mysql':
-				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname) 
-					VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\1)',  $m_sql));
-				$db->sql_query($sql);
-				break;
-
 			case 'mysql4':
 			case 'mysqli':
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'sqlite':
-				$sql = 'INSERT INTO ' . MODERATOR_TABLE . ' (forum_id, user_id, username, group_id, groupname)
-					 ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', 'SELECT \1',  $m_sql));
-				$db->sql_query($sql);
-				break;
+				$db->sql_query('INSERT INTO ' . MODERATOR_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+			break;
 
 			default:
-				foreach ($m_sql as $k => $sql)
+				foreach ($sql_ary as $ary)
 				{
-					$sql = 'INSERT INTO ' . MODERATOR_TABLE . " (forum_id, user_id, username, group_id, groupname) 
-						VALUES ($sql)";
-					$db->sql_query($sql);
+					$db->sql_query('INSERT INTO ' . MODERATOR_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
 				}
+			break;
 		}
 	}
 }

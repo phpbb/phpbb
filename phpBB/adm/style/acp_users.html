@@ -363,10 +363,6 @@
 		<dd><input type="radio" class="radio" name="bbcode" value="1"<!-- IF BBCODE --> id="bbcode" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="bbcode" value="0"<!-- IF not BBCODE --> id="bbcode" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
 	</dl>
 	<dl> 
-		<dt><label for="html">{L_DEFAULT_HTML}:</label></dt>
-		<dd><input type="radio" class="radio" name="html" value="1"<!-- IF HTML --> id="html" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="html" value="0"<!-- IF HTML --> id="html" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
-	</dl>
-	<dl> 
 		<dt><label for="smilies">{L_DEFAULT_SMILIES}:</label></dt>
 		<dd><input type="radio" class="radio" name="smilies" value="1"<!-- IF SMILIES --> id="smilies" checked="checked"<!-- ENDIF --> />&nbsp; {L_YES} &nbsp;<input type="radio" class="radio" name="smilies" value="0"<!-- IF not SMILIES --> id="smilies" checked="checked"<!-- ENDIF --> />&nbsp; {L_NO}</dd>
 	</dl>
@@ -603,11 +599,10 @@
 			</dt>
 			<dd style="text-align: left; margin-left: 110px;"><textarea name="signature" rows="10" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
 			<dd style="text-align: left; margin-left: 110px;">
-				<!-- IF S_HTML_ALLOWED --><input type="checkbox" name="disable_html"{S_HTML_CHECKED} />&nbsp; {L_DISABLE_HTML} &nbsp;<!-- ENDIF -->
 				<!-- IF S_BBCODE_ALLOWED --><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;<!-- ENDIF -->
 				<!-- IF S_SMILIES_ALLOWED --><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;<!-- ENDIF -->
 				<input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
-				<br /><br /><strong>{L_OPTIONS}: </strong>{HTML_STATUS} :: {BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {SMILIES_STATUS}
+				<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {SMILIES_STATUS}
 			</dd>
 		</dl>
 	</fieldset>

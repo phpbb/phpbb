@@ -33,7 +33,7 @@ if (!$id)
 	trigger_error('INVALID_MODE');
 }
 
-$redirect_url = ($report_post) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&p=$id#$id" : "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&p=$id";
+$redirect_url = ($report_post) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&p=$id#p$id" : "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&p=$id";
 
 // Has the report been cancelled?
 if (isset($_POST['cancel']))
@@ -387,7 +387,6 @@ function report_notification($notify_user, $report_post, $report_data)
 				'from_username'		=> $user->data['username'],
 				'icon_id'			=> 0,
 				'enable_bbcode' 	=> 0,
-				'enable_html' 		=> 0,
 				'enable_smilies' 	=> 0,
 				'enable_magic_url' 	=> 1,
 				'enable_sig' 		=> 0,

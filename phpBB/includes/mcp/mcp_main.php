@@ -847,7 +847,6 @@ function mcp_fork_topic($topic_ids)
 					'post_approved'		=> 1,
 					'post_reported'		=> 0,
 					'enable_bbcode'		=> (int) $row['enable_bbcode'],
-					'enable_html'		=> (int) $row['enable_html'],
 					'enable_smilies'	=> (int) $row['enable_smilies'],
 					'enable_magic_url'	=> (int) $row['enable_magic_url'],
 					'enable_sig'		=> (int) $row['enable_sig'],

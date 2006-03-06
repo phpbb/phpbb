@@ -471,6 +471,7 @@ if ($keywords || $author || $search_id)
 						AND t.topic_id = tp.topic_id)';
 					$sql_select .= ', tp.topic_posted';
 				}
+
 				if ($config['load_db_lastread'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . '
@@ -609,11 +610,6 @@ if ($keywords || $author || $search_id)
 					);
 
 					continue;
-				}
-
-				if ($row['enable_html'])
-				{
-					$row['post_text'] = preg_replace('#(<!\-\- h \-\-><)([\/]?.*?)(><!\-\- h \-\->)#is', "&lt;\\2&gt;", $row['post_text']);
 				}
 
 				decode_message($row['post_text'], $row['bbcode_uid']);

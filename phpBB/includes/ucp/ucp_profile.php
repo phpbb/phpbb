@@ -380,7 +380,6 @@ class ucp_profile
 				
 				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 
-				$enable_html	= ($config['allow_sig_html']) ? request_var('enable_html', false) : false;
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
@@ -395,7 +394,7 @@ class ucp_profile
 						$message_parser = new parse_message($signature);
 
 						// Allowing Quote BBCode
-						$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
+						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
 						
 						if (sizeof($message_parser->warn_msg))
 						{
@@ -428,7 +427,7 @@ class ucp_profile
 				if ($preview)
 				{
 					// Now parse it for displaying
-					$signature_preview = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+					$signature_preview = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 					unset($message_parser);
 				}
 
@@ -439,12 +438,10 @@ class ucp_profile
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
-					'S_HTML_CHECKED' 		=> (!$enable_html) ? 'checked="checked"' : '',
 					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? 'checked="checked"' : '',
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
-					'HTML_STATUS'			=> ($config['allow_sig_html']) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
@@ -452,7 +449,6 @@ class ucp_profile
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_HTML_ALLOWED'		=> $config['allow_sig_html'], 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
 				);

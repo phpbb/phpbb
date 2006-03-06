@@ -15,7 +15,6 @@ define('NEED_SID', true);
 
 // Include files
 $phpbb_root_path = './../';
-$phpbb_admin_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
@@ -46,8 +45,9 @@ if (!$auth->acl_get('a_'))
 	trigger_error($user->lang['NO_ADMIN']);
 }
 
-// We define it now, because the user is now able to use the admin related features...
+// We define the admin variables now, because the user is now able to use the admin related features...
 define('IN_ADMIN', true);
+$phpbb_admin_path = './';
 
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on') ? true : false;

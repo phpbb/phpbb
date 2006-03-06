@@ -818,7 +818,6 @@ while ($row = $db->sql_fetchrow($result))
 		'post_encoding'		=> $row['post_encoding'],
 		'bbcode_uid'		=> $row['bbcode_uid'],
 		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
-		'enable_html'		=> $row['enable_html'],
 		'enable_smilies'	=> $row['enable_smilies'],
 		'enable_sig'		=> $row['enable_sig'],
 		'friend'			=> $row['friend'],
@@ -1139,12 +1138,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Parse the message and subject
 	$message = $row['post_text'];
 
-	// If the board has HTML off but the post has HTML on then we process it, else leave it alone
-	if (!$auth->acl_get('f_html', $forum_id) && $row['enable_html'])
-	{
-		$message = preg_replace('#(<!\-\- h \-\-><)([\/]?.*?)(><!\-\- h \-\->)#is', "&lt;\\2&gt;", $message);
-	}
-
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
 	{
@@ -1169,12 +1162,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	if ($highlight_match)
 	{
 		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">\1</span>', $message);
-	}
-
-	if ($row['enable_html'] && $auth->acl_get('f_html', $forum_id))
-	{
-		// Remove Comments from post content
-		$message = preg_replace('#<!\-\-(.*?)\-\->#is', '', $message);
 	}
 
 	// Replace naughty words such as farty pants

@@ -233,6 +233,7 @@ END;
 CREATE TABLE phpbb_bbcodes (
   bbcode_id number(3) DEFAULT '0' NOT NULL,
   bbcode_tag varchar2(16) DEFAULT '',
+  display_on_posting number(1) DEFAULT '0' NOT NULL,
   bbcode_match varchar2(255) DEFAULT '',
   bbcode_tpl clob DEFAULT '',
   first_pass_match varchar2(255) DEFAULT '',
@@ -241,6 +242,9 @@ CREATE TABLE phpbb_bbcodes (
   second_pass_replace clob DEFAULT '',
   CONSTRAINT pk_phpbb_bbcodes PRIMARY KEY (bbcode_id)
 )
+/
+
+CREATE INDEX display_on_posting on phpbb_bbcodes (display_on_posting)
 /
 
 /*
@@ -793,7 +797,6 @@ CREATE TABLE phpbb_posts (
   post_approved number(1) DEFAULT '1' NOT NULL,
   post_reported number(1) DEFAULT '0' NOT NULL,
   enable_bbcode number(1) DEFAULT '1' NOT NULL,
-  enable_html number(1) DEFAULT '0' NOT NULL,
   enable_smilies number(1) DEFAULT '1' NOT NULL,
   enable_magic_url number(1) DEFAULT '1' NOT NULL,
   enable_sig number(1) DEFAULT '1' NOT NULL,
@@ -854,7 +857,6 @@ CREATE TABLE phpbb_privmsgs (
   message_time number(11) DEFAULT '0' NOT NULL,
   message_reported number(1) DEFAULT '0' NOT NULL,
   enable_bbcode number(1) DEFAULT '1' NOT NULL,
-  enable_html number(1) DEFAULT '0' NOT NULL,
   enable_smilies number(1) DEFAULT '1' NOT NULL,
   enable_magic_url number(1) DEFAULT '1' NOT NULL,
   enable_sig number(1) DEFAULT '1' NOT NULL,

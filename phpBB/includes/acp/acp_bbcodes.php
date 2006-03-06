@@ -34,10 +34,11 @@ class acp_bbcodes
 		{
 			case 'add':
 				$bbcode_match = $bbcode_tpl = '';
+				$display_on_posting = 0;
 			break;
 
 			case 'edit':
-				$sql = 'SELECT bbcode_match, bbcode_tpl
+				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
@@ -50,6 +51,7 @@ class acp_bbcodes
 
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
+				$display_on_posting = $row['display_on_posting'];
 			break;
 
 			case 'modify':
@@ -67,6 +69,8 @@ class acp_bbcodes
 				// No break here
 
 			case 'create':
+				$display_on_posting = request_var('display_on_posting', 0);
+
 				$bbcode_match = (isset($_POST['bbcode_match'])) ? htmlspecialchars(stripslashes($_POST['bbcode_match'])) : '';
 				$bbcode_tpl = (isset($_POST['bbcode_tpl'])) ? stripslashes($_POST['bbcode_tpl']) : '';
 			break;
@@ -83,9 +87,9 @@ class acp_bbcodes
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
 
-					'BBCODE_MATCH'		=> $bbcode_match,
-					'BBCODE_TPL'		=> $bbcode_tpl,
-					)
+					'BBCODE_MATCH'			=> $bbcode_match,
+					'BBCODE_TPL'			=> $bbcode_tpl,
+					'DISPLAY_ON_POSTING'	=> $display_on_posting)
 				);
 
 				foreach ($user->lang['tokens'] as $token => $token_explain)
@@ -109,6 +113,7 @@ class acp_bbcodes
 					'bbcode_tag'				=> $data['bbcode_tag'],
 					'bbcode_match'				=> $bbcode_match,
 					'bbcode_tpl'				=> $bbcode_tpl,
+					'display_on_posting'		=> $display_on_posting,
 					'first_pass_match'			=> $data['first_pass_match'],
 					'first_pass_replace'		=> $data['first_pass_replace'],
 					'second_pass_match'			=> $data['second_pass_match'],
@@ -170,6 +175,7 @@ class acp_bbcodes
 			break;
 
 			case 'delete':
+
 				$sql = 'SELECT bbcode_tag
 					FROM ' . BBCODES_TABLE . "
 					WHERE bbcode_id = $bbcode_id";
@@ -186,7 +192,7 @@ class acp_bbcodes
 		}
 
 		$template->assign_vars(array(
-			'U_ACTION'		=> $this->u_action . '&amp;mode=add')
+			'U_ACTION'		=> $this->u_action . '&amp;action=add')
 		);
 
 		$sql = 'SELECT *
@@ -312,7 +318,7 @@ class acp_bbcodes
 		}
 
 		// Lowercase tags
-		$bbcode_tag = preg_replace('/.*?\[([a-z]+).*/i', '$1', $msg_bbcode);
+		$bbcode_tag = preg_replace('/.*?\[([a-z]+=?).*/i', '$1', $msg_bbcode);
 		$fp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_match);
 		$fp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_replace);
 		$sp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_match);

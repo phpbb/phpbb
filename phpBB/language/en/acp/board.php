@@ -71,7 +71,6 @@ $lang = array_merge($lang, array(
 	'PM_EDIT_TIME_EXPLAIN'		=> 'Limits the time available to edit a private message not already delivered, zero equals infinity',
 
 	'ALLOW_MASS_PM'		=> 'Allow Mass PM\'s',
-	'ALLOW_HTML_PM'		=> 'Allow HTML in private messages',
 	'ALLOW_BBCODE_PM'	=> 'Allow BBCode in private messages',
 	'ALLOW_SMILIES_PM'	=> 'Allow smilies in private messages',
 	'ALLOW_DOWNLOAD_PM'	=> 'Allow downloading of attachments in private messages',
@@ -330,7 +329,7 @@ $lang = array_merge($lang, array(
 
 // Board defaults
 $lang = array_merge($lang, array(
-	'ACP_BOARD_DEFAULTS_EXPLAIN'	=> 'These settings allow you to define a number of default or global settings used by the board. For example, to disable the use of HTML across the entire board alter the relevant setting below. This data is also used for new user registrations and (where relevant) guest users. Please note that registered users can override some of these options with their own settings.',
+	'ACP_BOARD_DEFAULTS_EXPLAIN'	=> 'These settings allow you to define a number of default or global settings used by the board. This data is also used for new user registrations and (where relevant) guest users. Please note that registered users can override some of these options with their own settings.',
 	'DEFAULT_STYLE'				=> 'Default Style',
 	'OVERRIDE_STYLE'			=> 'Override user style',
 	'OVERRIDE_STYLE_EXPLAIN'	=> 'Replaces users style with the default.',
@@ -359,16 +358,12 @@ $lang = array_merge($lang, array(
 	'MIN_RATINGS_EXPLAIN'		=> 'Number of distinct ratings before users karma is calculated.',
 	'ALLOW_ATTACHMENTS'			=> 'Allow Attachments',
 	'ALLOW_PM_ATTACHMENTS'		=> 'Allow Attachments in Private Messages',
-	'ALLOW_HTML'				=> 'Allow HTML',
-	'ALLOWED_TAGS'				=> 'Allowed HTML tags',
-	'ALLOWED_TAGS_EXPLAIN'		=> 'Separate tags with commas.',
 	'ALLOW_BBCODE'				=> 'Allow BBCode',
 	'ALLOW_SMILIES'				=> 'Allow Smilies',
 	'ALLOW_SIG'					=> 'Allow Signatures',
 	'ALLOW_SIG_IMG'				=> 'Allow use of IMG BBCode Tag in user signatures',
 	'ALLOW_SIG_BBCODE'			=> 'Allow BBCode in user signatures',
 	'ALLOW_SIG_SMILIES'			=> 'Allow use of smilies in user signatures',
-	'ALLOW_SIG_HTML'			=> 'Allow use of HTML in user signatures',
 	'ALLOW_SIG_FLASH'			=> 'Allow use of FLASH BBCode Tag in user signatures',
 	'ALLOW_NO_CENSORS'			=> 'Allow Disable of Censors',
 	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'User can disable word censoring.',

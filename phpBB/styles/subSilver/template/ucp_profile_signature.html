@@ -101,9 +101,6 @@ function marklist(form_name, status)
 	<tr>
 		<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}</b><br /><table cellspacing="2" cellpadding="0" border="0">
 			<tr>
-				<td class="gensmall">{HTML_STATUS}</td>
-			</tr>
-			<tr>
 				<td class="gensmall">{BBCODE_STATUS}</td>
 			</tr>
 			<tr>
@@ -117,12 +114,6 @@ function marklist(form_name, status)
 			</tr>
 		</table></td>
 		<td class="row2" valign="top"><table cellspacing="0" cellpadding="1" border="0">
-			<!-- IF S_HTML_ALLOWED -->
-			<tr>
-				<td><input type="checkbox" name="disable_html"{S_HTML_CHECKED} /></td>
-				<td class="gen">{L_DISABLE_HTML}</td>
-			</tr>
-			<!-- ENDIF -->
 			<!-- IF S_BBCODE_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>

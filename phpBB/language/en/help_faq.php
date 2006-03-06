@@ -130,7 +130,7 @@ $help = array(
 	),
 	array(
 		0 => 'Can I use HTML?',
-		1 => 'That depends on whether the administrator allows you too, they have complete control over it. If you are allowed to use it you will probably find only certain tags work. This is a <i>safety</i> feature to prevent people abusing the board by using tags which may destroy the layout or cause other problems. If HTML is enabled you can disable it on a per post basis from the posting form.'
+		1 => '...'
 	),
 	array(
 		0 => 'What are Smileys?',

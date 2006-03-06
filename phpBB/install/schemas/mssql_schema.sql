@@ -86,6 +86,7 @@ GO
 CREATE TABLE [phpbb_bbcodes] (
 	[bbcode_id] [int] NOT NULL ,
 	[bbcode_tag] [varchar] (16) NOT NULL ,
+	[display_on_posting] [int] NOT NULL ,
 	[bbcode_match] [varchar] (255) NOT NULL ,
 	[bbcode_tpl] [text] NOT NULL ,
 	[first_pass_match] [varchar] (255) NOT NULL ,
@@ -336,7 +337,6 @@ CREATE TABLE [phpbb_posts] (
 	[post_approved] [int] NOT NULL ,
 	[post_reported] [int] NOT NULL ,
 	[enable_bbcode] [int] NOT NULL ,
-	[enable_html] [int] NOT NULL ,
 	[enable_smilies] [int] NOT NULL ,
 	[enable_magic_url] [int] NOT NULL ,
 	[enable_sig] [int] NOT NULL ,
@@ -365,7 +365,6 @@ CREATE TABLE [phpbb_privmsgs] (
 	[message_time] [int] NOT NULL ,
 	[message_reported] [int] NOT NULL ,
 	[enable_bbcode] [int] NOT NULL ,
-	[enable_html] [int] NOT NULL ,
 	[enable_smilies] [int] NOT NULL ,
 	[enable_magic_url] [int] NOT NULL ,
 	[enable_sig] [int] NOT NULL ,
@@ -1228,7 +1227,8 @@ ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_bbcodes] WITH NOCHECK ADD 
-	CONSTRAINT [DF_bbcode_bbcode_id] DEFAULT (0) FOR [bbcode_id]
+	CONSTRAINT [DF_bbcode_bbcode_id] DEFAULT (0) FOR [bbcode_id],
+	CONSTRAINT [DF_bbcode_display_on_posting] DEFAULT (0) FOR [display_on_posting]
 GO
 
 ALTER TABLE [phpbb_bookmarks] WITH NOCHECK ADD 
@@ -1377,7 +1377,6 @@ ALTER TABLE [phpbb_posts] WITH NOCHECK ADD
 	CONSTRAINT [DF_posts__post_approved] DEFAULT (1) FOR [post_approved],
 	CONSTRAINT [DF_posts__post_reported] DEFAULT (0) FOR [post_reported],
 	CONSTRAINT [DF_posts__enable_bbcode] DEFAULT (1) FOR [enable_bbcode],
-	CONSTRAINT [DF_posts__enable_html] DEFAULT (0) FOR [enable_html],
 	CONSTRAINT [DF_posts__enable_smilies] DEFAULT (1) FOR [enable_smilies],
 	CONSTRAINT [DF_posts__enable_magic_url] DEFAULT (1) FOR [enable_magic_url],
 	CONSTRAINT [DF_posts__enable_sig] DEFAULT (1) FOR [enable_sig],
@@ -1397,7 +1396,6 @@ ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD
 	CONSTRAINT [DF_privms_message_time] DEFAULT (0) FOR [message_time],
 	CONSTRAINT [DF_privms_message_reported] DEFAULT (0) FOR [message_reported],
 	CONSTRAINT [DF_privms_enable_bbcode] DEFAULT (1) FOR [enable_bbcode],
-	CONSTRAINT [DF_privms_enable_html] DEFAULT (0) FOR [enable_html],
 	CONSTRAINT [DF_privms_enable_smilies] DEFAULT (1) FOR [enable_smilies],
 	CONSTRAINT [DF_privms_enable_magic_url] DEFAULT (1) FOR [enable_magic_url],
 	CONSTRAINT [DF_privms_enable_sig] DEFAULT (1) FOR [enable_sig],
@@ -1696,6 +1694,9 @@ CREATE  INDEX [bot_active] ON [phpbb_bots]([bot_active]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [is_dynamic] ON [phpbb_config]([is_dynamic]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [display_on_posting] ON [phpbb_bbcodes]([display_on_posting]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [save_time] ON [phpbb_drafts]([save_time]) ON [PRIMARY]

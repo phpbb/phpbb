@@ -97,7 +97,7 @@ function compose_pm($id, $mode, $action)
 
 			if ($action == 'quotepost')
 			{
-				$sql = 'SELECT p.post_id as msg_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_html, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
+				$sql = 'SELECT p.post_id as msg_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 					WHERE p.post_id = $msg_id
 						AND t.topic_id = p.topic_id
@@ -210,7 +210,7 @@ function compose_pm($id, $mode, $action)
 		}
 		else
 		{
-			$check_value = (($post['enable_html']+1) << 16) + (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
+			$check_value = (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
 		}
 	}
 	else
@@ -347,7 +347,6 @@ function compose_pm($id, $mode, $action)
 		$message_parser->bbcode_uid = $bbcode_uid;
 	}
 
-	$html_status	= ($config['allow_html'] && $config['auth_html_pm'] && $auth->acl_get('u_pm_html'));
 	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode'));
 	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies'));
 	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img'));
@@ -422,13 +421,11 @@ function compose_pm($id, $mode, $action)
 		}
 		$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $subject);
 
-
 		$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
 		$message_parser->message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message_parser->message);
 
 		$icon_id			= request_var('icon', 0);
 
-		$enable_html 		= (!$html_status || isset($_POST['disable_html'])) ? false : true;
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 		$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
@@ -436,7 +433,7 @@ function compose_pm($id, $mode, $action)
 
 		if ($submit)
 		{
-			$status_switch	= (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+			$status_switch	= (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
 			$status_switch = ($status_switch != $check_value);
 		}
 		else
@@ -455,7 +452,7 @@ function compose_pm($id, $mode, $action)
 
 		if ($update_message)
 		{
-			$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
+			$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
 		}
 		else
 		{
@@ -505,7 +502,6 @@ function compose_pm($id, $mode, $action)
 				'icon_id'				=> (int) $icon_id,
 				'enable_sig'			=> (bool) $enable_sig,
 				'enable_bbcode'			=> (bool) $enable_bbcode,
-				'enable_html' 			=> (bool) $enable_html,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
 				'message_md5'			=> (int) $message_md5,
@@ -537,7 +533,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$post_time = ($action == 'edit') ? $post_time : $current_time;
 
-		$preview_message = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
 		$preview_signature = $user->data['user_sig'];
 		$preview_signature_uid = $user->data['user_sig_bbcode_uid'];
@@ -550,7 +546,7 @@ function compose_pm($id, $mode, $action)
 			$parse_sig->bbcode_uid = $preview_signature_uid;
 			$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
 
-			$parse_sig->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
+			$parse_sig->format_display($enable_bbcode, $enable_urls, $enable_smilies);
 			$preview_signature = $parse_sig->message;
 			unset($parse_sig);
 		}
@@ -716,7 +712,6 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
-	$html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html'] && $auth->acl_get('u_pm_html')) ? !$user->optionget('html') : 1);
 	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
 	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);
 	$urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
@@ -766,7 +761,6 @@ function compose_pm($id, $mode, $action)
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
-		'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
@@ -776,8 +770,6 @@ function compose_pm($id, $mode, $action)
 
 		'S_EDIT_POST'			=> ($action == 'edit'),
 		'S_SHOW_PM_ICONS'		=> $s_pm_icons,
-		'S_HTML_ALLOWED'		=> $html_status,
-		'S_HTML_CHECKED' 		=> ($html_checked) ? ' checked="checked"' : '',
 		'S_BBCODE_ALLOWED'		=> $bbcode_status,
 		'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? ' checked="checked"' : '',
 		'S_SMILIES_ALLOWED'		=> $smilies_status,
@@ -789,10 +781,33 @@ function compose_pm($id, $mode, $action)
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
 		'S_FORM_ENCTYPE'		=> $form_enctype,
 
+		'S_BBCODE_IMG'			=> $img_status,
+		'S_BBCODE_FLASH'		=> $flash_status,
+		'S_BBCODE_QUOTE'		=> true,
+
 		'S_POST_ACTION' 		=> $s_action,
 		'S_HIDDEN_ADDRESS_FIELD'=> $s_hidden_address_field,
 		'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 	);
+
+	// Build custom bbcodes array
+	$sql = 'SELECT bbcode_id, bbcode_tag 
+		FROM ' . BBCODES_TABLE . '
+		WHERE display_on_posting = 1';
+	$result = $db->sql_query($sql);
+
+	$i = 0;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$template->assign_block_vars('custom_tags', array(
+			'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+			'BBCODE_ID'		=> 22 + ($i * 2),
+			'BBCODE_TAG'	=> $row['bbcode_tag'])
+		);
+
+		$i++;
+	}
+	$db->sql_freeresult($result);
 
 	// Attachment entry
 	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)

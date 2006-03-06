@@ -232,8 +232,6 @@ if ($sql)
 
 	$enable_urls = $enable_magic_url;
 	
-	$enable_html = (isset($enable_html)) ? $enable_html : $config['allow_html'];
-
 	if (!in_array($mode, array('quote', 'edit', 'delete')))
 	{
 		$enable_sig		= ($config['allow_sig'] && $user->optionget('attachsig'));
@@ -261,7 +259,7 @@ if ($sql)
 		$db->sql_freeresult($result);
 	}
 
-	$check_value = (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+	$check_value = (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
 }
 
 // Notify user checkbox
@@ -393,7 +391,6 @@ if ($mode == 'delete')
 
 
 // HTML, BBCode, Smilies, Images and Flash status
-$html_status	= ($config['allow_html'] && $auth->acl_get('f_html', $forum_id));
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id));
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id));
 $img_status		= ($auth->acl_get('f_img', $forum_id));
@@ -519,7 +516,6 @@ if ($submit || $preview || $refresh)
 	$topic_time_limit	= (isset($_POST['topic_time_limit'])) ? (int) $_POST['topic_time_limit'] : (($mode != 'post') ? $topic_time_limit : 0);
 	$icon_id			= request_var('icon', 0);
 
-	$enable_html 		= (!$html_status || isset($_POST['disable_html'])) ? false : true;
 	$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 	$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 	$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
@@ -533,7 +529,7 @@ if ($submit || $preview || $refresh)
 
 	if ($submit)
 	{
-		$status_switch	= (($enable_html+1) << 16) + (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
+		$status_switch	= (($enable_bbcode+1) << 8) + (($enable_smilies+1) << 4) + (($enable_urls+1) << 2) + (($enable_sig+1) << 1);
 		$status_switch = ($status_switch != $check_value);
 	}
 	else
@@ -615,7 +611,7 @@ if ($submit || $preview || $refresh)
 	// Parse message
 	if ($update_message)
 	{
-		$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
+		$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, $quote_status);
 	}
 	else
 	{
@@ -685,7 +681,6 @@ if ($submit || $preview || $refresh)
 			'poll_start'		=> $poll_start,
 			'poll_last_vote'	=> $poll_last_vote,
 			'poll_vote_change'	=> $poll_vote_change,
-			'enable_html'		=> $enable_html,
 			'enable_bbcode'		=> $enable_bbcode,
 			'enable_urls'		=> $enable_urls,
 			'enable_smilies'	=> $enable_smilies,
@@ -820,7 +815,6 @@ if ($submit || $preview || $refresh)
 				'poster_id'				=> (int) $poster_id,
 				'enable_sig'			=> (bool) $enable_sig,
 				'enable_bbcode'			=> (bool) $enable_bbcode,
-				'enable_html' 			=> (bool) $enable_html,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
 				'enable_indexing'		=> (bool) $enable_indexing,
@@ -855,7 +849,7 @@ if (!sizeof($error) && $preview)
 {
 	$post_time = ($mode == 'edit') ? $post_time : $current_time;
 
-	$preview_message = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+	$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
 	$preview_signature = ($mode == 'edit') ? $user_sig : $user->data['user_sig'];
 	$preview_signature_uid = ($mode == 'edit') ? $user_sig_bbcode_uid : $user->data['user_sig_bbcode_uid'];
@@ -869,7 +863,7 @@ if (!sizeof($error) && $preview)
 		$parse_sig->bbcode_bitfield = $preview_signature_bitfield;
 
 		// Not sure about parameters for bbcode/smilies/urls... in signatures
-		$parse_sig->format_display($config['allow_html'], $config['allow_bbcode'], true, $config['allow_smilies']);
+		$parse_sig->format_display($config['allow_bbcode'], true, $config['allow_smilies']);
 		$preview_signature = $parse_sig->message;
 		unset($parse_sig);
 	}
@@ -888,7 +882,7 @@ if (!sizeof($error) && $preview)
 		$parse_poll->bbcode_uid = $message_parser->bbcode_uid;
 		$parse_poll->bbcode_bitfield = $message_parser->bbcode_bitfield;
 
-		$parse_poll->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
+		$parse_poll->format_display($enable_bbcode, $enable_urls, $enable_smilies);
 		
 		$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS'=> (sizeof($poll_options)),
@@ -901,7 +895,7 @@ if (!sizeof($error) && $preview)
 		);
 
 		$parse_poll->message = implode("\n", $poll_options);
-		$parse_poll->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies);
+		$parse_poll->format_display($enable_bbcode, $enable_urls, $enable_smilies);
 		$preview_poll_options = explode('<br />', $parse_poll->message);
 		unset($parse_poll);
 
@@ -1008,7 +1002,6 @@ if ($enable_icons)
 	$s_topic_icons = posting_gen_topic_icons($mode, $icon_id);
 }
 
-$html_checked		= (isset($enable_html)) ? !$enable_html : (($config['allow_html']) ? !$user->optionget('html') : 1);
 $bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode']) ? !$user->optionget('bbcode') : 1);
 $smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies']) ? !$user->optionget('smilies') : 1);
 $urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
@@ -1079,7 +1072,6 @@ $template->assign_vars(array(
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? stripslashes($username) : '',
 	'SUBJECT'				=> $post_subject,
 	'MESSAGE'				=> $post_text,
-	'HTML_STATUS'			=> ($html_status) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
@@ -1101,8 +1093,6 @@ $template->assign_vars(array(
 	'S_DISPLAY_USERNAME'	=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_username)),
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 	'S_DELETE_ALLOWED' 		=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
-	'S_HTML_ALLOWED'		=> $html_status,
-	'S_HTML_CHECKED' 		=> ($html_checked) ? ' checked="checked"' : '',
 	'S_BBCODE_ALLOWED'		=> $bbcode_status,
 	'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'		=> $smilies_status,
@@ -1121,9 +1111,32 @@ $template->assign_vars(array(
 	'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $drafts),
 	'S_FORM_ENCTYPE'		=> $form_enctype,
 
+	'S_BBCODE_IMG'			=> $img_status,
+	'S_BBCODE_FLASH'		=> $flash_status,
+	'S_BBCODE_QUOTE'		=> $quote_status,
+
 	'S_POST_ACTION' 		=> $s_action,
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
+
+// Build custom bbcodes array
+$sql = 'SELECT bbcode_id, bbcode_tag 
+	FROM ' . BBCODES_TABLE . '
+	WHERE display_on_posting = 1';
+$result = $db->sql_query($sql);
+
+$i = 0;
+while ($row = $db->sql_fetchrow($result))
+{
+	$template->assign_block_vars('custom_tags', array(
+		'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+		'BBCODE_ID'		=> 22 + ($i * 2),
+		'BBCODE_TAG'	=> $row['bbcode_tag'])
+	);
+
+	$i++;
+}
+$db->sql_freeresult($result);
 
 // Poll entry
 if (($mode == 'post' || ($mode == 'edit' && $post_id == $topic_first_post_id && (!$poll_last_vote || $auth->acl_get('m_edit', $forum_id))))
@@ -1371,7 +1384,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_time'			=> $current_time,
 				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'enable_bbcode' 	=> $data['enable_bbcode'],
-				'enable_html' 		=> $data['enable_html'],
 				'enable_smilies' 	=> $data['enable_smilies'],
 				'enable_magic_url' 	=> $data['enable_urls'],
 				'enable_sig' 		=> $data['enable_sig'],
@@ -1422,7 +1434,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'icon_id'			=> $data['icon_id'],
 				'post_approved' 	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve')) ? 0 : 1,
 				'enable_bbcode' 	=> $data['enable_bbcode'],
-				'enable_html' 		=> $data['enable_html'],
 				'enable_smilies' 	=> $data['enable_smilies'],
 				'enable_magic_url' 	=> $data['enable_urls'],
 				'enable_sig' 		=> $data['enable_sig'],

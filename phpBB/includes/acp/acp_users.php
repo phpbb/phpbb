@@ -1015,7 +1015,6 @@ class acp_users
 						'view_wordcensor'	=> false,
 
 						'bbcode'	=> true,
-						'html'		=> false,
 						'smilies'	=> true,
 						'sig'		=> true,
 						'notify'	=> false,
@@ -1050,7 +1049,6 @@ class acp_users
 						$this->optionset($user_row, 'viewavatars', $data['view_avatars']);
 						$this->optionset($user_row, 'viewcensors', $data['view_wordcensor']);
 						$this->optionset($user_row, 'bbcode', $data['bbcode']);
-						$this->optionset($user_row, 'html', $data['html']);
 						$this->optionset($user_row, 'smilies', $data['smilies']);
 						$this->optionset($user_row, 'attachsig', $data['sig']);
 
@@ -1181,7 +1179,6 @@ class acp_users
 					'REPORT_PM_NOTIFY'	=> (isset($data['report_pm_notify'])) ? $data['report_pm_notify'] : $this->optionget($user_row, 'report_pm_notify'),
 					'DST'				=> (isset($data['dst'])) ? $data['dst'] : $user_row['user_dst'],
 					'BBCODE'			=> (isset($data['bbcode'])) ? $data['bbcode'] : $this->optionget($user_row, 'bbcode'),
-					'HTML'				=> (isset($data['html'])) ? $data['html'] : $this->optionget($user_row, 'html'),
 					'SMILIES'			=> (isset($data['smilies'])) ? $data['smilies'] : $this->optionget($user_row, 'smilies'),
 					'ATTACH_SIG'		=> (isset($data['sig'])) ? $data['sig'] : $this->optionget($user_row, 'attachsig'),
 					'NOTIFY'			=> (isset($data['notify'])) ? $data['notify'] : $user_row['user_notify'],
@@ -1398,7 +1395,6 @@ class acp_users
 			
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
-				$enable_html	= ($config['allow_sig_html']) ? request_var('enable_html', false) : false;
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
@@ -1413,7 +1409,7 @@ class acp_users
 					$message_parser = new parse_message($signature);
 
 					// Allowing Quote BBCode
-					$message_parser->parse($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
+					$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
 						
 					if (sizeof($message_parser->warn_msg))
 					{
@@ -1445,7 +1441,7 @@ class acp_users
 				if ($preview)
 				{
 					// Now parse it for displaying
-					$signature_preview = $message_parser->format_display($enable_html, $enable_bbcode, $enable_urls, $enable_smilies, false);
+					$signature_preview = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 					unset($message_parser);
 				}
 
@@ -1457,12 +1453,10 @@ class acp_users
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
-					'S_HTML_CHECKED' 		=> (!$enable_html) ? 'checked="checked"' : '',
 					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? 'checked="checked"' : '',
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
-					'HTML_STATUS'			=> ($config['allow_sig_html']) ? $user->lang['HTML_IS_ON'] : $user->lang['HTML_IS_OFF'],
 					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . $phpbb_root_path . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
@@ -1470,7 +1464,6 @@ class acp_users
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_HTML_ALLOWED'		=> $config['allow_sig_html'], 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
 				);

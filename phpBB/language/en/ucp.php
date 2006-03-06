@@ -102,7 +102,6 @@ $lang = array_merge($lang, array(
 	'DEFAULT_ACTION_EXPLAIN'	=> 'This Action will be triggered if none of the above is applicable',
 	'DEFAULT_ADD_SIG'			=> 'Attach my signature by default',
 	'DEFAULT_BBCODE'			=> 'Enable BBCode by default',
-	'DEFAULT_HTML'				=> 'Enable HTML by default',
 	'DEFAULT_NOTIFY'			=> 'Notify me upon replies by default',
 	'DEFAULT_SMILIES'			=> 'Enable smilies by default',
 	'DEFINED_RULES'				=> 'Defined Rules',

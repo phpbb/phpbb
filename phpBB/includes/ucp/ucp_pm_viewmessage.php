@@ -53,15 +53,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Parse the message and subject
 	$message = $message_row['message_text'];
 
-	// If the board has HTML off but the message has HTML on then we process it, else leave it alone
-	if (!$config['auth_html_pm'] || !$auth->acl_get('u_pm_html'))
-	{
-		if ($message_row['enable_html'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode'))
-		{
-			$message = preg_replace('#(<)([\/]?.*?)(>)#is', "&lt;\\2&gt;", $message);
-		}
-	}
-
 	// Second parse bbcode here
 	if ($message_row['bbcode_bitfield'])
 	{

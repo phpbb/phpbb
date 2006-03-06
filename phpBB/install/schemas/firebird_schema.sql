@@ -81,6 +81,7 @@ CREATE TABLE phpbb_banlist (
 CREATE TABLE phpbb_bbcodes (
   bbcode_id INTEGER DEFAULT 0  NOT NULL,
   bbcode_tag VARCHAR(16) NOT NULL,
+  display_on_posting INTEGER DEFAULT 0  NOT NULL,
   bbcode_match VARCHAR(255) NOT NULL,
   bbcode_tpl BLOB SUB_TYPE TEXT NOT NULL,
   first_pass_match VARCHAR(255) NOT NULL,
@@ -331,7 +332,6 @@ CREATE TABLE phpbb_posts (
   post_approved INTEGER DEFAULT 1  NOT NULL,
   post_reported INTEGER DEFAULT 0  NOT NULL,
   enable_bbcode INTEGER DEFAULT 1  NOT NULL,
-  enable_html INTEGER DEFAULT 0  NOT NULL,
   enable_smilies INTEGER DEFAULT 1  NOT NULL,
   enable_magic_url INTEGER DEFAULT 1  NOT NULL,
   enable_sig INTEGER DEFAULT 1  NOT NULL,
@@ -360,7 +360,6 @@ CREATE TABLE phpbb_privmsgs (
   message_time INTEGER DEFAULT 0  NOT NULL,
   message_reported INTEGER DEFAULT 0  NOT NULL,
   enable_bbcode INTEGER DEFAULT 1  NOT NULL,
-  enable_html INTEGER DEFAULT 0  NOT NULL,
   enable_smilies INTEGER DEFAULT 1  NOT NULL,
   enable_magic_url INTEGER DEFAULT 1  NOT NULL,
   enable_sig INTEGER DEFAULT 1  NOT NULL,
@@ -954,6 +953,11 @@ ALTER TABLE phpbb_confirm
 ADD PRIMARY KEY (
   session_id,
   confirm_id
+);;
+
+CREATE INDEX display_on_posting
+ON phpbb_bbcodes(
+  display_on_posting
 );;
 
 ALTER TABLE phpbb_disallow

@@ -262,12 +262,6 @@ function mcp_warn_post_view($id, $mode, $action)
 	// Parse the message and subject
 	$message = $userrow['post_text'];
 
-	// If the board has HTML off but the post has HTML on then we process it, else leave it alone
-	if (!$auth->acl_get('f_html', $userrow['forum_id']) && $row['enable_html'])
-	{
-		$message = preg_replace('#(<!\-\- h \-\-><)([\/]?.*?)(><!\-\- h \-\->)#is', "&lt;\\2&gt;", $message);
-	}
-
 	// Second parse bbcode here
 	if ($userrow['bbcode_bitfield'])
 	{
@@ -276,12 +270,6 @@ function mcp_warn_post_view($id, $mode, $action)
 
 	// Always process smilies after parsing bbcodes
 	$message = smiley_text($message);
-
-	if ($userrow['enable_html'] && $auth->acl_get('f_html', $userrow['forum_id']))
-	{
-		// Remove Comments from post content
-		$message = preg_replace('#<!\-\-(.*?)\-\->#is', '', $message);
-	}
 
 	// Replace naughty words such as farty pants
 	$message = str_replace("\n", '<br />', censor_text($message));
@@ -391,7 +379,7 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 		$message_parser = new parse_message();
 		$message_parser->message = sprintf($lang['WARNING_PM_BODY'], $warning);
 		$message_md5 = md5($message_parser->message);
-		$message_parser->parse(false, true, true, true, false, false, true);
+		$message_parser->parse(true, true, true, false, false, true);
 
 		$pm_data = array(
 			'from_user_id'			=> $user->data['user_id'],
@@ -399,7 +387,6 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 			'from_username'			=> $user->data['username'],
 			'enable_sig'			=> false,
 			'enable_bbcode'			=> true,
-			'enable_html' 			=> false,
 			'enable_smilies'		=> true,
 			'enable_urls'			=> false,
 			'icon_id'				=> 0,
