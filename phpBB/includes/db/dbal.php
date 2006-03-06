@@ -254,7 +254,7 @@ class dbal
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path;
+		global $cache, $starttime, $phpbb_root_path, $user;
 
 		if (empty($_GET['explain']))
 		{
@@ -278,27 +278,43 @@ class dbal
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-				echo '
-					<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><html><head><meta http-equiv="Content-Type" content="text/html; charset=iso-8869-1"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" href="' . $phpbb_root_path . 'adm/style/sql_report.css" type="text/css">
-					<style type="text/css">	th { background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic3.gif\') }	td.cat	{ background-image: url(\'' . $phpbb_root_path . 'adm/images/cellpic1.gif\') } </style>
-					<title>Explain</title></head><body>
-					<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
-						<td><a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '"><img src="' . $phpbb_root_path . 'adm/images/header_left.jpg" width="200" height="60" alt="phpBB Logo" title="phpBB Logo" border="0" /></a></td>
-						<td width="100%" background="' . $phpbb_root_path . 'adm/images/header_bg.jpg" height="60" align="right" nowrap="nowrap"><span class="maintitle">SQL Report</span> &nbsp; &nbsp; &nbsp;</td>
-					</tr></table>
-					<br clear="all"/>
-					<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>
-						<td height="40" align="center" valign="middle"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($this->cache_num_queries) ? " + {$this->cache_num_queries} " . (($this->cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></td>
-					</tr><tr>
-						<td align="center" nowrap="nowrap">Time spent on MySQL queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></td>
-					</tr></table>
-					<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>
-						<td>
-				' . $this->sql_report . '</td>
-					</tr></table>
-					<br />
-					</body></html>
-				';
+				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+				echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+				echo '<head>';
+				echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+				echo '<title>SQL Report</title>';
+				echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+				echo '<link href="' . $phpbb_root_path . 'adm/style/sql_report.css" rel="stylesheet" type="text/css" media="screen" />';
+				echo '</head>';
+				echo '<body id="errorpage">';
+				echo '<div id="wrap">';
+				echo '	<div id="page-header">';
+				echo '		<a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '">Return to previous page</a>';
+				echo '	</div>';
+				echo '	<div id="page-body">';
+				echo '		<div class="panel">';
+				echo '			<span class="corners-top"><span></span></span>';
+				echo '			<div id="content">';
+				echo '				<h1>SQL Report</h1>';
+				echo '				<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>
+										<td height="40" align="center" valign="middle"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($this->cache_num_queries) ? " + {$this->cache_num_queries} " . (($this->cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></td>
+									</tr><tr>
+										<td align="center" nowrap="nowrap">Time spent on MySQL queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></td>
+									</tr></table>
+									<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>
+										<td>' . $this->sql_report . '</td>
+									</tr></table>';
+				echo '			</div>';
+				echo '			<span class="corners-bottom"><span></span></span>';
+				echo '		</div>';
+				echo '	</div>';
+				echo '	<div id="page-footer">';
+				echo '		Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>';
+				echo '	</div>';
+				echo '</div>';
+				echo '</body>';
+				echo '</html>';
+
 				exit;
 				break;
 
