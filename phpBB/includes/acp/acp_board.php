@@ -101,7 +101,10 @@ class acp_board
 						'max_post_font_size' => array('lang' => 'MAX_POST_FONT_SIZE', 'type' => 'text:5:4', 'explain' => true),
 						'max_quote_depth'	=> array('lang' => 'QUOTE_DEPTH_LIMIT',	'type' => 'text:4:4', 'explain' => true),
 						'max_post_img_width' => array('lang' => 'MAX_POST_IMG_WIDTH', 'type' => 'text:5:4', 'explain' => true),
-						'max_post_img_height' => array('lang' => 'MAX_POST_IMG_HEIGHT', 'type' => 'text:5:4', 'explain' => true)
+						'max_post_img_height' => array('lang' => 'MAX_POST_IMG_HEIGHT', 'type' => 'text:5:4', 'explain' => true),
+
+						'legend5'			=> 'MODERATION',
+						'warnings_expire_days' => array('lang' => 'WARNINGS_EXPIRE', 'type' => 'text:3:4', 'explain' => true)
 					)
 				);
 			break;

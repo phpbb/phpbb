@@ -313,6 +313,9 @@ $lang = array_merge($lang, array(
 	'COPPA'						=> 'Coppa',
 	'REGISTRATION'				=> 'User Registration',
 	'POSTING'					=> 'Posting',
+	'MODERATION'				=> 'Moderation',
+	'WARNINGS_EXPIRE'			=> 'Warning duration',
+	'WARNINGS_EXPIRE_EXPLAIN'	=> 'Number of days after it is issued before a warning will expire from a user\'s record',
 ));
 
 // Auth settings
