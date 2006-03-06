@@ -36,13 +36,14 @@
 			<!-- ENDIF -->
 		</td>
 		<td class="row1">
+			<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
+			{topicrow.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
 			<!-- IF searchresults.S_TOPIC_UNAPPROVED -->
 				<a href="{topicrow.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
 			<!-- IF searchresults.S_TOPIC_REPORTED -->
 				<a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
-			<p class="topictitle"> {topicrow.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></p>
 			<!-- IF searchresults.PAGINATION -->
 				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {searchresults.PAGINATION} ] </p>
 			<!-- ENDIF -->

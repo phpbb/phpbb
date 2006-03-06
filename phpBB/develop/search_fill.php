@@ -99,7 +99,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 
 			$post_id = $rowset[$post_nr]['post_id']; 
 
-			$search->index('post', $rowset[$post_nr]['post_id'], $rowset[$post_nr]['post_text'], $rowset[$post_nr]['post_subject']);
+			$search->index('post', $rowset[$post_nr]['post_id'], $rowset[$post_nr]['post_text'], $rowset[$post_nr]['post_subject'], $rowset[$post_nr]['poster_id']);
 		}
 	// $sql = "UNLOCK TABLES";
 	// $result = $db->sql_query($sql);

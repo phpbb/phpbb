@@ -211,7 +211,7 @@ class search_backend
 		}
 		else
 		{
-			// we use one set of resuts for both sort directions so we have to calculate the indizes
+			// we use one set of results for both sort directions so we have to calculate the indizes
 			// for the reversed array and we also have to reverse the ids themselves
 			if ($store[-2] != $sort_dir)
 			{
@@ -230,6 +230,29 @@ class search_backend
 		if (is_array($store_ids))
 		{
 			$store += $store_ids;
+
+			// if the cache is too big
+			if (sizeof($store) - 2 > 20 * $config['search_block_size'])
+			{
+				// remove everything in front of two blocks in front of the current start index
+				for ($i = 0, $n = $id_range[0] - 2 * $config['search_block_size']; $i < $n; $i++)
+				{
+					if (isset($store[$i]))
+					{
+						unset($store[$i]);
+					}
+				}
+
+				// remove everything after two blocks after the current stop index
+				end($id_range);
+				for ($i = $store[-1] - 1, $n = current($id_range) + 2 * $config['search_block_size']; $i > $n; $i--)
+				{
+					if (isset($store[$i]))
+					{
+						unset($store[$i]);
+					}
+				}
+			}
 			$cache->put('_search_results_' . $search_key, $store, $config['search_store_results']);
 
 			$sql = 'UPDATE ' . SEARCH_TABLE . ' 

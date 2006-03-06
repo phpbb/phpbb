@@ -179,7 +179,6 @@ class fulltext_phpbb extends search_backend
 
 		if (sizeof($this->ignore_words))
 		{
-			$stopped_words = array_intersect($text, $this->ignore_words);
 			$text = array_diff($text, $this->ignore_words);
 		}
 
@@ -210,7 +209,7 @@ class fulltext_phpbb extends search_backend
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
-	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -230,6 +229,7 @@ class fulltext_phpbb extends search_backend
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
+			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary)
 		)));
 
@@ -286,6 +286,19 @@ class fulltext_phpbb extends search_backend
 				$sql_match = '';
 		}
 
+		if (!sizeof($m_approve_fid_ary))
+		{
+			$m_approve_fid_sql = ' AND p.post_approved = 1';
+		}
+		else if ($m_approve_fid_ary === array(-1))
+		{
+			$m_approve_fid_sql = '';
+		}
+		else
+		{
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . '))';
+		}
+
 		$sql_select			= ($type == 'posts') ? 'm.post_id' : 'DISTINCT t.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'm.post_id' : 't.topic_id';
@@ -295,6 +308,7 @@ class fulltext_phpbb extends search_backend
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_where_options .= $m_approve_fid_sql;
 		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match;
@@ -438,7 +452,6 @@ class fulltext_phpbb extends search_backend
 			}
 			$sql_where = ($sql_in) ? $sql_where . (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
 
-			$sql_and = (sizeof($result_ary['AND'])) ? "AND $field IN (" . implode(', ', $result_ary['AND']) . ')' : '';
 			$sql = "SELECT $sql_select
 				FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
 				WHERE ($sql_where)
@@ -486,7 +499,6 @@ class fulltext_phpbb extends search_backend
 			}
 			$sql_where = ($sql_in) ? $sql_where . (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
 
-			$sql_and = "AND $field IN (" . implode(', ', $id_ary) . ')';
 			$sql = "SELECT $sql_select
 				FROM $sql_from" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
 				WHERE ($sql_where)
@@ -532,7 +544,7 @@ class fulltext_phpbb extends search_backend
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
-	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -552,6 +564,7 @@ class fulltext_phpbb extends search_backend
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
+			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary)
 		)));
 
@@ -567,8 +580,8 @@ class fulltext_phpbb extends search_backend
 		// Create some display specific sql strings
 		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
-		$sql_topic_id	= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
@@ -591,6 +604,19 @@ class fulltext_phpbb extends search_backend
 			break;
 		}
 
+		if (!sizeof($m_approve_fid_ary))
+		{
+			$m_approve_fid_sql = ' AND p.post_approved = 1';
+		}
+		else if ($m_approve_fid_ary == array(-1))
+		{
+			$m_approve_fid_sql = '';
+		}
+		else
+		{
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id IN (' . implode($m_approve_fid_ary) . '))';
+		}
+
 		// If the cache was completely empty count the results
 		if (!$result_count)
 		{
@@ -599,6 +625,8 @@ class fulltext_phpbb extends search_backend
 				$sql = 'SELECT COUNT(p.post_id) as result_count
 					FROM ' . POSTS_TABLE . " p
 					WHERE $sql_author
+						$sql_topic_id
+						$m_approve_fid_sql
 						$sql_fora
 						$sql_time";
 			}
@@ -607,6 +635,8 @@ class fulltext_phpbb extends search_backend
 				$sql = 'SELECT COUNT(DISTINCT t.topic_id) as result_count
 					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 					WHERE $sql_author
+						$sql_topic_id
+						$m_approve_fid_sql
 						$sql_fora
 						AND t.topic_id = p.topic_id
 						$sql_time";
@@ -624,8 +654,10 @@ class fulltext_phpbb extends search_backend
 		if ($type == 'posts')
 		{
 			$sql = 'SELECT p.post_id
-				FROM ' . $sql_sort_table . POSTS_TABLE . " p
+				FROM ' . $sql_sort_table . POSTS_TABLE . ' p' . (($topic_id) ? ', ' . TOPICS_TABLE . ' t' : '') . "
 				WHERE $sql_author
+					$sql_topic_id
+					$m_approve_fid_sql
 					$sql_fora
 					$sql_sort_join
 					$sql_time
@@ -637,6 +669,8 @@ class fulltext_phpbb extends search_backend
 			$sql = 'SELECT t.topic_id
 				FROM ' . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
+					$sql_topic_id
+					$m_approve_fid_sql
 					$sql_fora
 					AND t.topic_id = p.topic_id
 					$sql_sort_join

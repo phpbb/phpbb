@@ -163,7 +163,7 @@ class fulltext_mysql extends search_backend
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
-	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -183,6 +183,7 @@ class fulltext_mysql extends search_backend
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
+			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary)
 		)));
 
@@ -241,16 +242,30 @@ class fulltext_mysql extends search_backend
 				$sql_match_where = '';
 		}
 
+		if (!sizeof($m_approve_fid_ary))
+		{
+			$m_approve_fid_sql = ' AND p.post_approved = 1';
+		}
+		else if ($m_approve_fid_ary === array(-1))
+		{
+			$m_approve_fid_sql = '';
+		}
+		else
+		{
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . '))';
+		}
+
 		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
 		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
-		$field				= ($type == 'posts') ? 'p.post_id' : 't.topic_id';
+		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
 		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(',', $author_ary) . ')';
 
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_where_options .= $m_approve_fid_sql;
 		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match_where;
@@ -301,7 +316,7 @@ class fulltext_mysql extends search_backend
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$id_ary[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
+			$id_ary[] = $row[$field];
 		}
 		$db->sql_freeresult($result);
 
@@ -340,7 +355,7 @@ class fulltext_mysql extends search_backend
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
-	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -360,6 +375,7 @@ class fulltext_mysql extends search_backend
 			$sort_key,
 			$topic_id,
 			implode(',', $ex_fid_ary),
+			implode(',', $m_approve_fid_ary),
 			implode(',', $author_ary)
 		)));
 
@@ -375,7 +391,7 @@ class fulltext_mysql extends search_backend
 		// Create some display specific sql strings
 		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
-		$sql_topic_id	= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 		// Build sql strings for sorting
@@ -399,6 +415,19 @@ class fulltext_mysql extends search_backend
 			break;
 		}
 
+		if (!sizeof($m_approve_fid_ary))
+		{
+			$m_approve_fid_sql = ' AND p.post_approved = 1';
+		}
+		else if ($m_approve_fid_ary == array(-1))
+		{
+			$m_approve_fid_sql = '';
+		}
+		else
+		{
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id IN (' . implode($m_approve_fid_ary) . '))';
+		}
+
 		// If the cache was completely empty count the results
 		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
 
@@ -408,6 +437,8 @@ class fulltext_mysql extends search_backend
 			$sql = "SELECT {$calc_results}p.post_id
 				FROM " . $sql_sort_table . POSTS_TABLE . " p
 				WHERE $sql_author
+					$sql_topic_id
+					$m_approve_fid_sql
 					$sql_fora
 					$sql_sort_join
 					$sql_time
@@ -419,6 +450,8 @@ class fulltext_mysql extends search_backend
 			$sql = "SELECT {$calc_results}t.topic_id
 				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
+					$sql_topic_id
+					$m_approve_fid_sql
 					$sql_fora
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
