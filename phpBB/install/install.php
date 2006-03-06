@@ -363,9 +363,8 @@ if ($stage == 0)
 	<tr>
 		<td>&bull;&nbsp;<b><?php echo $lang['PHP_REGISTER_GLOBALS']; ?>: </b></td>
 		<td><?php
-	if (@ini_get('register_globals') || strtolower(@ini_get('register_globals')) == 'on')
+	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
 	{
-		$passed['db'] = false;
 		echo '<b style="color:red">' . $lang['NO'] . '</b>';
 	}
 	else
