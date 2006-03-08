@@ -89,22 +89,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		FROM ' . TOPICS_TABLE . " t
 		WHERE (t.forum_id = $forum_id OR t.forum_id = 0)
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
-			AND t.topic_type IN (" . POST_ANNOUNCE . ", " . POST_GLOBAL . ")
-			$limit_time_sql
-		ORDER BY $sort_order_sql";
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$topic_rows[] = $row;
-	}
-	$db->sql_freeresult($result);
-
-	$sql = 'SELECT t.*
-		FROM ' . TOPICS_TABLE . " t
-		WHERE t.forum_id = $forum_id
-			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . '
-			AND t.topic_type IN (' . POST_NORMAL . ', ' . POST_STICKY . ")
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);

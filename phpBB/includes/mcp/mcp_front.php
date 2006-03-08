@@ -187,8 +187,8 @@ function mcp_front_view($id, $mode, $action)
 				'IP'			=> $row['ip'],
 				'TIME'			=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
-				'U_VIEWTOPIC'	=> $row['viewtopic'],
-				'U_VIEWLOGS'	=> $row['viewlogs'])
+				'U_VIEWTOPIC'	=> isset($row['viewtopic']) ? $row['viewtopic'] : '',
+				'U_VIEWLOGS'	=> isset($row['viewlogs']) ? $row['viewlogs'] : '')
 			);
 		}
 	}
