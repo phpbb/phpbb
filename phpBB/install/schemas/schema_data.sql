@@ -207,6 +207,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('warnings_last_gc', '0', 1);
 
 # -- auth options
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_', 1);
@@ -607,6 +608,10 @@ INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_nam
 INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (139, 1, 1, 'warn', 'mcp', 127, 68, 69, 'MCP_WARN_USER', 'warn_user', '');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (140, 1, 1, 'warn', 'mcp', 127, 70, 71, 'MCP_WARN_POST', 'warn_post', 'acl_m_,$id');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (166, 1, 1, 'queue', 'mcp', 126, 58, 59, 'MCP_QUEUE_APPROVE_DETAILS', 'approve_details', 'acl_m_approve || aclf_m_approve');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (189, 1, 1, '', 'mcp', 0, 81, 88, 'MCP_LOGS', '', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (190, 1, 1, 'logs', 'mcp', 189, 82, 83, 'MCP_LOGS_FRONT', 'front', '');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (191, 1, 1, 'logs', 'mcp', 189, 84, 85, 'MCP_LOGS_FORUM_VIEW', 'forum_logs', 'acl_m_,$id');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (192, 1, 1, 'logs', 'mcp', 189, 86, 87, 'MCP_LOGS_TOPIC_VIEW', 'topic_logs', 'acl_m_,$id');
 
 # MSSQL IDENTITY phpbb_modules OFF #
 
