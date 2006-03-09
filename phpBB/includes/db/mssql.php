@@ -210,7 +210,7 @@ class dbal_mssql extends dbal
 		{
 			foreach ($row as $key => $value)
 			{
-				$row[$key] = ($value === ' ') ? trim($value) : $value;
+				$row[$key] = ($value === ' ') ? '' : $value;
 			}
 		}
 
