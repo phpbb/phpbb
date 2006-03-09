@@ -104,20 +104,27 @@ if ( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 	//
 	// Ok, now we know everything about them, let's show the page.
 	//
-	$sql = "SELECT user_id, username
-		FROM " . USERS_TABLE . "
-		WHERE user_id = " . $group_info['group_moderator'];
-	if ( !($result = $db->sql_query($sql)) )
+	if ($group_info['group_moderator'] != '')
 	{
-		message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
-	}
+		$sql = "SELECT user_id, username
+			FROM " . USERS_TABLE . "
+			WHERE user_id = " . $group_info['group_moderator'];
+		if ( !($result = $db->sql_query($sql)) )
+		{
+			message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
+		}
 
-	if ( !($row = $db->sql_fetchrow($result)) )
+		if ( !($row = $db->sql_fetchrow($result)) )
+		{
+			message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
+		}
+
+		$group_moderator = $row['username'];
+	}
+	else
 	{
-		message_die(GENERAL_ERROR, 'Could not obtain user info for moderator list', '', __LINE__, __FILE__, $sql);
+		$group_moderator = $row['username'];
 	}
-
-	$group_moderator = $row['username'];
 
 	$group_open = ( $group_info['group_type'] == GROUP_OPEN ) ? ' checked="checked"' : '';
 	$group_closed = ( $group_info['group_type'] == GROUP_CLOSED ) ? ' checked="checked"' : '';
