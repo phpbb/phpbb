@@ -123,7 +123,7 @@ if ( isset($HTTP_POST_VARS['edit']) || isset($HTTP_POST_VARS['new']) )
 	}
 	else
 	{
-		$group_moderator = $row['username'];
+		$group_moderator = '';
 	}
 
 	$group_open = ( $group_info['group_type'] == GROUP_OPEN ) ? ' checked="checked"' : '';
