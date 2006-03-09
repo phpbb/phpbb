@@ -161,7 +161,8 @@ if (!function_exists('array_combine'))
 		$values = array_values($values);
 
 		$n = sizeof($keys);
-		if (!$n || !sizeof($values) || ($n != sizeof($values)))
+		$m = sizeof($values);
+		if (!$n || !$m || ($n != $m))
 		{
 			return false;
 		}

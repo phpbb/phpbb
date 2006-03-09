@@ -1123,9 +1123,18 @@ class acp_attachments
 		if (empty($_ENV['MAGICK_HOME']))
 		{
 			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
+			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', $_ENV['PATH'])));	
+			
+			$locations = array_merge($path_locations, $locations);
 
 			foreach ($locations as $location)
 			{
+				// The path might not end properly, fudge it
+				if (substr($location, -1, 1) !== '/')
+				{
+					$location .= '/';
+				}
+
 				if (@is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
 				{
 					$imagick = str_replace('\\', '/', $location);
