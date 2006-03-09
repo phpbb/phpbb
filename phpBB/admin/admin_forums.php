@@ -39,8 +39,8 @@ include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 $forum_auth_ary = array(
 	"auth_view" => AUTH_ALL, 
 	"auth_read" => AUTH_ALL, 
-	"auth_post" => AUTH_ALL, 
-	"auth_reply" => AUTH_ALL, 
+	"auth_post" => AUTH_REG, 
+	"auth_reply" => AUTH_REG, 
 	"auth_edit" => AUTH_REG, 
 	"auth_delete" => AUTH_REG, 
 	"auth_sticky" => AUTH_MOD, 
