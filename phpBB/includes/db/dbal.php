@@ -250,7 +250,6 @@ class dbal
 
 	/**
 	* Explain queries
-	* @child _sql_report
 	*/
 	function sql_report($mode, $query = '')
 	{

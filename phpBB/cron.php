@@ -24,7 +24,7 @@ $use_shutdown_function = (@function_exists('register_shutdown_function')) ? true
 * Run cron-like action
 * Real cron-based layer will be introduced in 3.2
 *
-* @todo: check gc-intervals here too (important!)
+* @todo check gc-intervals here too (important!)
 */
 switch ($cron_type)
 {

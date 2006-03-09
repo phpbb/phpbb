@@ -749,15 +749,12 @@ class acp_modules
 	*/
 	function remove_cache_file()
 	{
-		global $phpbb_root_path, $phpEx;
+		global $cache;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$p_class = str_replace(array('.', '/', '\\'), '', basename($this->module_class));
 		
-		if (file_exists($phpbb_root_path . 'cache/' . $p_class . '_modules.' . $phpEx))
-		{
-			@unlink($phpbb_root_path . 'cache/' . $p_class . '_modules.' . $phpEx);
-		}
+		$cache->destroy('_modules_' . $p_class);
 	}
 
 	/**

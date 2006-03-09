@@ -112,7 +112,6 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 	if (!$is_dynamic)
 	{
 		$cache->destroy('config');
-		$cache->save();
 	}
 }
 
@@ -691,25 +690,47 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
 			$post_time = ($post_time) ? $post_time : time();
 			$tracking['t'][$topic_id36] = base_convert($post_time - $config['board_startdate'], 10, 36);
 
-			// If the cookie grows larger than 5000 characters we will remove the smallest value
-			if (isset($_COOKIE[$config['cookie_name'] . '_track']) && strlen($_COOKIE[$config['cookie_name'] . '_track']) > 5000)
+			// If the cookie grows larger than 10000 characters we will remove the smallest value
+			// This can result in old topics being unread - but most of the time it should be accurate...
+			if (isset($_COOKIE[$config['cookie_name'] . '_track']) && strlen($_COOKIE[$config['cookie_name'] . '_track']) > 10000)
 			{
-//				echo 'Cookie grown too large' . print_r($tracking, true);
+				//echo 'Cookie grown too large' . print_r($tracking, true);
 
-				$min_value = min($tracking['t']);
-				$m_tkey = array_search($min_value, $t_ary);
-				unset($tracking['t'][$m_tkey]);
-				
+				// We get the ten most minimum stored time offsets and its associated topic ids
+				$time_keys = array();
+				for ($i = 0; $i < 10 && sizeof($tracking['t']); $i++)
+				{
+					$min_value = min($tracking['t']);
+					$m_tkey = array_search($min_value, $tracking['t']);
+					unset($tracking['t'][$m_tkey]);
+
+					$time_keys[$m_tkey] = $min_value;
+				}
+
+				// Now remove the topic ids from the array...
 				foreach ($tracking['tf'] as $f_id => $topic_id_ary)
 				{
-					if (in_array($m_tkey, array_keys($topic_id_ary)))
+					foreach ($time_keys as $m_tkey => $min_value)
 					{
-						unset($tracking['tf'][$f_id][$m_tkey]);
-						break;
+						if (isset($topic_id_ary[$m_tkey]))
+						{
+							$tracking['f'][$f_id] = $min_value;
+							unset($tracking['tf'][$f_id][$m_tkey]);
+						}
 					}
 				}
+
+				if ($user->data['is_registered'])
+				{
+					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10)) . " WHERE user_id = {$user->data['user_id']}");
+				}
+				else
+				{
+					$tracking['l'] = max($time_keys);
+				}
+
 			}
-		
+
 			$user->set_cookie('track', serialize($tracking), time() + 31536000);
 		}
 

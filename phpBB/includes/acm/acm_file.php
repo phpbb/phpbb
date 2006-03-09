@@ -191,6 +191,9 @@ class acm
 			$this->is_modified = true;
 			unset($this->vars[$var_name]);
 			unset($this->var_expires[$var_name]);
+
+			// We save here to let the following cache hits succeed
+			$this->save();
 		}
 	}
 

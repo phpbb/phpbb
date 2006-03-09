@@ -10,6 +10,7 @@
 
 /**
 * Class handling all types of 'plugins' (a future term)
+* @package phpBB3
 */
 class p_master
 {
@@ -44,31 +45,19 @@ class p_master
 	*/
 	function list_modules($p_class)
 	{
-		global $auth, $db, $user;
+		global $auth, $db, $user, $cache;
 		global $config, $phpbb_root_path, $phpEx;
-
-		$get_cache_data = true;
-
-		// Empty cached contents
-		$this->module_cache = array();
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
-		
-		if (file_exists($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx))
-		{
-			include($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx);
-			$get_cache_data = false;
-		}
 
-		if ($get_cache_data)
+		// Get cached modules
+		if (!($this->module_cache = $cache->get('_modules_' . $this->p_class)))
 		{
-			global $cache;
-			
 			// Get modules
 			$sql = 'SELECT *
 				FROM ' . MODULES_TABLE . "
-				WHERE module_class = '" . $db->sql_escape($p_class) . "'
+				WHERE module_class = '" . $db->sql_escape($this->p_class) . "'
 				ORDER BY left_id ASC";
 			$result = $db->sql_query($sql);
 			
@@ -77,7 +66,7 @@ class p_master
 			{
 				$rows[$row['module_id']] = $row;
 			}
-			$db->sql_freeresult($result);		
+			$db->sql_freeresult($result);
 
 			$this->module_cache = array();
 			foreach ($rows as $module_id => $row)
@@ -87,17 +76,7 @@ class p_master
 			}
 			unset($rows);
 
-			$file = '<?php $this->module_cache=' . $cache->format_array($this->module_cache) . "; ?>";
-
-			if ($fp = @fopen($phpbb_root_path . 'cache/' . $this->p_class . '_modules.' . $phpEx, 'wb'))
-			{
-				@flock($fp, LOCK_EX);
-				fwrite($fp, $file);
-				@flock($fp, LOCK_UN);
-				fclose($fp);
-			}
-
-			unset($file);
+			$cache->put('_modules_' . $this->p_class, $this->module_cache);
 		}
 
 		// We "could" build a true tree with this function - maybe mod authors want to use this...

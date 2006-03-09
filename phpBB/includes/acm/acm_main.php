@@ -301,7 +301,7 @@ class cache extends acm
 
 		foreach ($parsed_items as $key => $parsed_array)
 		{
-			$parsed_array = $this->get('_' . $key . '_cfg');
+			$parsed_array = $this->get('_cfg_' . $key);
 
 			if (!$parsed_array)
 			{
@@ -327,14 +327,13 @@ class cache extends acm
 				$parsed_array = parse_cfg_file($filename);
 				$parsed_array['filetime'] = @filemtime($filename);
 
-				$this->put('_' . $key . '_cfg', $parsed_array);
+				$this->put('_cfg_' . $key, $parsed_array);
 			}
 			$parsed_items[$key] = $parsed_array;
 		}
 
 		return $parsed_items;
 	}
-
 }
 
 ?>
