@@ -473,7 +473,7 @@ class template_compile
 		{
 			preg_match('#true|false|\.#i', $match[4], $type);
 
-			switch (strtolower($type[1]))
+			switch (strtolower($type[0]))
 			{
 				case 'true':
 				case 'false':
