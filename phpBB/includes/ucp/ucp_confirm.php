@@ -216,15 +216,12 @@ class ucp_confirm
 					// We can defer the modulo operation:
 					// s1 maximally grows from 65521 to 65521 + 255 * 3800
 					// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
-					$n = 3800;
-					if ($n > $temp_len)
-					{
-						$n = $temp_len;
-					}
+					$n = ($temp_len < 3800) ? $temp_len : 3800;
+
 					$temp_len -= $n;
 					while (--$n >= 0)
 					{
-						$s1 += (ord($raw_image[$i++]) & 255);
+						$s1 += ord($raw_image[$i++]);
 						$s2 += $s1;
 					}
 					$s1 %= 65521;
