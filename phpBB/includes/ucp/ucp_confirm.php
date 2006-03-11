@@ -62,22 +62,30 @@ class ucp_confirm
 		list($usec, $sec) = explode(' ', microtime()); 
 		mt_srand($sec * $usec);
 
-		$char_widths = array();
+		$char_widths = $hold_chars = array();
 		$code_len = strlen($code);
 		for ($i = 0; $i < $code_len; $i++)
 		{
 			$char = $code{$i};
 
 			$width = mt_rand(0, 4);
+			$raw_width = $_png[$char]['width'];
 			$char_widths[$i] = $width;
-			$img_width += $_png[$char]['width'] - $width;
+			$img_width += $raw_width - $width;
+
+			// Split the char into chunks of $raw_width + 1 length
+			if (empty($hold_chars[$char]))
+			{
+				$hold_chars[$char] = str_split(base64_decode($_png[$char]['data']), $raw_width + 1);
+			}
 		}
+
+		unset($_png);
 
 		$offset_x = mt_rand(0, $total_width - $img_width);
 		$offset_y = mt_rand(0, $total_height - $img_height);
 
 		$image = '';
-		$hold_chars = array();
 		for ($i = 0; $i < $total_height; $i++)
 		{
 			$image .= chr(0);
@@ -91,13 +99,7 @@ class ucp_confirm
 
 				for ($k = 0; $k < $code_len; $k++)
 				{
-					$char = $code{$k};
-
-					if (empty($hold_chars[$char]))
-					{
-						$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
-					}
-					$image .= $this->randomise(substr($hold_chars[$char][$i - $offset_y - 1], 1), $char_widths[$k]);
+					$image .= $this->randomise(substr($hold_chars[$code{$k}][$i - $offset_y - 1], 1), $char_widths[$k]);
 				}
 
 				for ($k = $offset_x + $img_width; $k < $total_width; $k++)
@@ -124,7 +126,6 @@ class ucp_confirm
 		echo $image;
 
 		unset($image);
-		unset($_png);
 		exit;
 	}
 
@@ -153,7 +154,6 @@ class ucp_confirm
 				$new_line .= $scanline{$i};
 			}
 		}
-
 		return $new_line;
 	}
 

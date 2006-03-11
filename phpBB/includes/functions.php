@@ -175,6 +175,37 @@ if (!function_exists('array_combine'))
 	}
 }
 
+if (!function_exists('str_split'))
+{
+	/**
+	* A wrapper for the PHP5 function str_split()
+	* @param array $string contains the string to be converted
+	* @param array $split_length contains the length of each chunk
+	*
+	* @return  Converts a string to an array. If the optional split_length parameter is specified,
+	*  	the returned array will be broken down into chunks with each being split_length in length,
+	*  	otherwise each chunk will be one character in length. FALSE is returned if split_length is
+	*  	less than 1. If the split_length length exceeds the length of string, the entire string is
+	*  	returned as the first (and only) array element. 
+	*/
+	function str_split($string, $split_length = 1)
+	{
+		if ($split_length < 1)
+		{
+			return false;
+		}
+		else if ($split_length >= strlen($string))
+		{
+			return array($string);
+		}
+		else
+		{
+			preg_match_all('#.{1,' . $split_length . '}#s', $string, $matches);
+			return $matches[0];
+		}
+	}
+}
+
 /**
 * Get userdata
 * @param mixed $user user id or username
