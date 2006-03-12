@@ -2,6 +2,7 @@
  PostgreSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
+@todo user_last_warning to users table and warnings table
 */
 
 BEGIN;
@@ -194,6 +195,7 @@ CREATE INDEX is_dynamic_phpbb_config_index ON phpbb_config (is_dynamic);
 CREATE TABLE phpbb_confirm (
   confirm_id varchar(32) DEFAULT '' NOT NULL,
   session_id varchar(32) DEFAULT '' NOT NULL,
+  confirm_type INT2 DEFAULT '0' NOT NULL,
   code varchar(8) DEFAULT '' NOT NULL,
   PRIMARY KEY (session_id,confirm_id)
 );
@@ -571,7 +573,6 @@ CREATE TABLE phpbb_privmsgs (
    icon_id INT2  DEFAULT '1' NOT NULL,
    author_ip varchar(40) DEFAULT '' NOT NULL,
    message_time INT4 DEFAULT '0' NOT NULL,
-   message_reported INT2 DEFAULT '0' NOT NULL,
    enable_bbcode INT2 DEFAULT '1' NOT NULL,
    enable_smilies INT2 DEFAULT '1' NOT NULL,
    enable_magic_url INT2 DEFAULT '1' NOT NULL,
@@ -752,9 +753,9 @@ CREATE SEQUENCE phpbb_reports_reasons_reason;
 
 CREATE TABLE phpbb_reports_reasons (
   reason_id INT2 DEFAULT nextval('phpbb_reports_reasons_reason'),
-  reason_priority INT2 DEFAULT '0' NOT NULL,
-  reason_name varchar(255) DEFAULT '' NOT NULL,
+  reason_title varchar(255) DEFAULT '' NOT NULL,
   reason_description TEXT DEFAULT '' NOT NULL,
+  reason_order INT2 DEFAULT '0' NOT NULL,
   PRIMARY KEY (reason_id)
 );
 
@@ -767,15 +768,14 @@ CREATE TABLE phpbb_reports (
   report_id INT2 DEFAULT nextval('phpbb_reports_report_id_seq'),
   reason_id INT2  DEFAULT '0' NOT NULL,
   post_id INT4  DEFAULT '0' NOT NULL,
-  msg_id INT4  DEFAULT '0' NOT NULL,
   user_id INT4  DEFAULT '0' NOT NULL,
   user_notify INT2 DEFAULT '0' NOT NULL,
+  report_closed INT2 DEFAULT '0' NOT NULL,
   report_time INT4  DEFAULT '0' NOT NULL,
   report_text TEXT DEFAULT '' NOT NULL,
   PRIMARY KEY (report_id),
   CHECK (reason_id>=0),
   CHECK (post_id>=0),
-  CHECK (msg_id>=0),
   CHECK (user_id>=0),
   CHECK (report_time>=0)
 );
@@ -1170,6 +1170,7 @@ CREATE TABLE phpbb_users (
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_last_confirm_key varchar(10) DEFAULT '' NOT NULL,
    user_warnings INT2 DEFAULT '0' NOT NULL,
+   user_login_attempts INT4 DEFAULT '0' NOT NULL,
    user_posts INT4  DEFAULT '0' NOT NULL,
    user_lang varchar(30) DEFAULT '' NOT NULL,
    user_timezone decimal(5,2) DEFAULT '0.0' NOT NULL,

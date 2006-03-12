@@ -74,7 +74,6 @@ $lang = array_merge($lang, array(
 	'ALLOW_BBCODE_PM'	=> 'Allow BBCode in private messages',
 	'ALLOW_SMILIES_PM'	=> 'Allow smilies in private messages',
 	'ALLOW_DOWNLOAD_PM'	=> 'Allow downloading of attachments in private messages',
-	'ALLOW_REPORT_PM'	=> 'Allow reporting of private messages',
 	'ALLOW_FORWARD_PM'	=> 'Allow forwarding of private messages',
 	'ALLOW_PRINT_PM'	=> 'Allow print view in private messaging',
 	'ALLOW_EMAIL_PM'	=> 'Allow emailing private messages',

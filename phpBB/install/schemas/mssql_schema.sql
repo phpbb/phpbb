@@ -3,6 +3,7 @@
 MSSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
 $Id$
+@todo user_last_warning to users table and warnings table
 
 */
 
@@ -130,6 +131,7 @@ GO
 CREATE TABLE [phpbb_confirm] (
 	[confirm_id] [varchar] (32) NOT NULL ,
 	[session_id] [varchar] (32) NOT NULL ,
+	[confirm_type] [int] NOT NULL ,
 	[code] [varchar] (8) NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -363,7 +365,6 @@ CREATE TABLE [phpbb_privmsgs] (
 	[icon_id] [int] NOT NULL ,
 	[author_ip] [varchar] (40) NOT NULL ,
 	[message_time] [int] NOT NULL ,
-	[message_reported] [int] NOT NULL ,
 	[enable_bbcode] [int] NOT NULL ,
 	[enable_smilies] [int] NOT NULL ,
 	[enable_magic_url] [int] NOT NULL ,
@@ -476,9 +477,9 @@ CREATE TABLE [phpbb_reports] (
 	[report_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[reason_id] [int] NOT NULL ,
 	[post_id] [int] NOT NULL ,
-	[msg_id] [int] NOT NULL ,
 	[user_id] [int] NOT NULL ,
 	[user_notify] [int] NOT NULL ,
+	[report_closed] [int] NOT NULL ,
 	[report_time] [int] NOT NULL ,
 	[report_text] [text] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
@@ -486,9 +487,9 @@ GO
 
 CREATE TABLE [phpbb_reports_reasons] (
 	[reason_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[reason_priority] [int] NOT NULL ,
-	[reason_name] [varchar] (255) NOT NULL ,
-	[reason_description] [text] NOT NULL 
+	[reason_title] [varchar] (255) NOT NULL ,
+	[reason_description] [text] NOT NULL ,
+	[reason_order] [int] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -766,6 +767,7 @@ CREATE TABLE [phpbb_users] (
 	[user_lastpage] [varchar] (100) NOT NULL ,
 	[user_last_confirm_key] [varchar] (10) NOT NULL ,
 	[user_warnings] [int] NOT NULL ,
+	[user_login_attempts] [int] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_lang] [varchar] (30) NOT NULL ,
 	[user_timezone] [float] NOT NULL ,
@@ -1250,6 +1252,10 @@ ALTER TABLE [phpbb_config] WITH NOCHECK ADD
 	CONSTRAINT [DF_config_is_dynamic] DEFAULT (0) FOR [is_dynamic]
 GO
 
+ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
+	CONSTRAINT [DF_confirm_confirm_type] DEFAULT (0) FOR [confirm_type]
+GO
+
 ALTER TABLE [phpbb_drafts] WITH NOCHECK ADD 
 	CONSTRAINT [DF_drafts_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_drafts_topic_id] DEFAULT (0) FOR [topic_id],
@@ -1394,7 +1400,6 @@ ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD
 	CONSTRAINT [DF_privms_author_id] DEFAULT (0) FOR [author_id],
 	CONSTRAINT [DF_privms_icon_id] DEFAULT (1) FOR [icon_id],
 	CONSTRAINT [DF_privms_message_time] DEFAULT (0) FOR [message_time],
-	CONSTRAINT [DF_privms_message_reported] DEFAULT (0) FOR [message_reported],
 	CONSTRAINT [DF_privms_enable_bbcode] DEFAULT (1) FOR [enable_bbcode],
 	CONSTRAINT [DF_privms_enable_smilies] DEFAULT (1) FOR [enable_smilies],
 	CONSTRAINT [DF_privms_enable_magic_url] DEFAULT (1) FOR [enable_magic_url],
@@ -1470,14 +1475,14 @@ GO
 ALTER TABLE [phpbb_reports] WITH NOCHECK ADD 
 	CONSTRAINT [DF_report_reason_id] DEFAULT (0) FOR [reason_id],
 	CONSTRAINT [DF_report_post_id] DEFAULT (0) FOR [post_id],
-	CONSTRAINT [DF_report_msg_id] DEFAULT (0) FOR [msg_id],
 	CONSTRAINT [DF_report_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_report_user_notify] DEFAULT (0) FOR [user_notify],
+	CONSTRAINT [DF_report_report_closed] DEFAULT (0) FOR [report_closed],
 	CONSTRAINT [DF_report_report_time] DEFAULT (0) FOR [report_time]
 GO
 
 ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD 
-	CONSTRAINT [DF_reporr_reason_priority] DEFAULT (0) FOR [reason_priority]
+	CONSTRAINT [DF_reporr_reason_order] DEFAULT (0) FOR [reason_order]
 GO
 
 ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD 
@@ -1608,6 +1613,7 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_users__user_lastmark] DEFAULT (0) FOR [user_lastmark],
 	CONSTRAINT [DF_users__user_lastpost_time] DEFAULT (0) FOR [user_lastpost_time],
 	CONSTRAINT [DF_users__user_warnings] DEFAULT (0) FOR [user_warnings],
+	CONSTRAINT [DF_users__user_login_attempts] DEFAULT (0) FOR [user_login_attempts],
 	CONSTRAINT [DF_users__user_posts] DEFAULT (0) FOR [user_posts],
 	CONSTRAINT [DF_users__user_timezone] DEFAULT (0) FOR [user_timezone],
 	CONSTRAINT [DF_users__user_dst] DEFAULT (0) FOR [user_dst],

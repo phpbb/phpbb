@@ -88,7 +88,8 @@ $template->assign_vars(array(
 	'S_LOGIN_ACTION'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login",
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 
-	'U_MARK_FORUMS' => "{$phpbb_root_path}index.$phpEx$SID&amp;mark=forums")
+	'U_MARK_FORUMS'		=> "{$phpbb_root_path}index.$phpEx$SID&amp;mark=forums",
+	'U_MCP'				=> ($auth->acl_get('m_')) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=front" : '')
 );
 
 // Output page

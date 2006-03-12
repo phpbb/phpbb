@@ -2,6 +2,7 @@
 # SQLite Schema for phpBB 3.x - (c) phpBB Group, 2005
 #
 # $Id$
+# @todo user_last_warning to users table and warnings table
 #
 
 BEGIN TRANSACTION;
@@ -156,6 +157,7 @@ CREATE INDEX is_dynamic_phpbb_config on phpbb_config (is_dynamic);
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) NOT NULL DEFAULT '',
   session_id char(32) NOT NULL DEFAULT '',
+  confirm_type INTEGER NOT NULL DEFAULT '0',
   code char(8) NOT NULL DEFAULT '',
   PRIMARY KEY (session_id, confirm_id)
 );
@@ -429,7 +431,6 @@ CREATE TABLE phpbb_privmsgs (
   icon_id tinyint(4) NOT NULL DEFAULT '1',
   author_ip varchar(40) NOT NULL DEFAULT '',
   message_time int(11) NOT NULL DEFAULT '0',
-  message_reported tinyint(1) NOT NULL DEFAULT '0',
   enable_bbcode tinyint(1) NOT NULL DEFAULT '1',
   enable_smilies tinyint(1) NOT NULL DEFAULT '1',
   enable_magic_url tinyint(1) NOT NULL DEFAULT '1',
@@ -555,9 +556,9 @@ CREATE TABLE phpbb_ranks (
 # Table: phpbb_reports_reasons
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER PRIMARY KEY NOT NULL,
-  reason_priority tinyint(4) NOT NULL DEFAULT '0',
-  reason_name varchar(255) NOT NULL DEFAULT '',
-  reason_description text(65535) NOT NULL
+  reason_title varchar(255) NOT NULL DEFAULT '',
+  reason_description text(65535) NOT NULL,
+  reason_order tinyint(4) NOT NULL DEFAULT '0'
 );
 
 # Table: phpbb_reports
@@ -565,9 +566,9 @@ CREATE TABLE phpbb_reports (
   report_id INTEGER PRIMARY KEY NOT NULL,
   reason_id smallint(5) NOT NULL DEFAULT '0',
   post_id mediumint(8) NOT NULL DEFAULT '0',
-  msg_id mediumint(8) NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
   user_notify tinyint(1) NOT NULL DEFAULT '0',
+  report_closed tinyint(1) NOT NULL DEFAULT '0',
   report_time int(10) NOT NULL DEFAULT '0',
   report_text text(65535) NOT NULL
 );
@@ -890,6 +891,7 @@ CREATE TABLE phpbb_users (
   user_lastpage varchar(100) NOT NULL DEFAULT '',
   user_last_confirm_key varchar(10) NOT NULL DEFAULT '',
   user_warnings tinyint(4) NOT NULL DEFAULT '0',
+  user_login_attempts smallint(4) NOT NULL DEFAULT '0',
   user_posts mediumint(8) NOT NULL DEFAULT '0',
   user_lang varchar(30) NOT NULL DEFAULT '',
   user_timezone decimal(5,2) NOT NULL DEFAULT '0.0',

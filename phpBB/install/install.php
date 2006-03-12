@@ -418,10 +418,10 @@ if ($stage == 0)
 
 	// Imagemagick are you there? Give me a sign or a path ...
 	$img_imagick = '';
-	if (empty($_ENV['MAGICK_HOME']))
+	if (empty(getenv('MAGICK_HOME')))
 	{
 		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', $_ENV['PATH'])));
+		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
 
 		$locations = array_merge($path_locations, $locations);
 		foreach ($locations as $location)
@@ -441,7 +441,7 @@ if ($stage == 0)
 	}
 	else
 	{
-		$img_imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
+		$img_imagick = str_replace('\\', '/', getenv('MAGICK_HOME'));
 	}
 
 ?>
@@ -880,7 +880,7 @@ if ($stage == 2)
 					// Write out a temp file ... if safe mode is on we'll write it to our
 					// local cache/tmp directory
 					$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache/tmp';
-					$filename = tempnam($tmp_path, uniqid(rand()) . 'cfg');
+					$filename = tempnam($tmp_path, unique_id() . 'cfg');
 
 					$fp = @fopen($filename, 'w');
 					@fwrite($fp, $config_data);

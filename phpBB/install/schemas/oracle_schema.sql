@@ -2,6 +2,7 @@
  Oracle Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
+@todo user_last_warning to users table and warnings table
 */
 
 /*
@@ -325,6 +326,7 @@ CREATE INDEX is_dynamic on phpbb_config (is_dynamic)
 CREATE TABLE phpbb_confirm (
   confirm_id varchar2(32) DEFAULT '',
   session_id varchar2(32) DEFAULT '',
+  confirm_type number(3) DEFAULT '0' NOT NULL,
   code varchar2(8) DEFAULT '',
   CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
 )
@@ -855,7 +857,6 @@ CREATE TABLE phpbb_privmsgs (
   icon_id number(4) DEFAULT '1' NOT NULL,
   author_ip varchar2(40) DEFAULT '',
   message_time number(11) DEFAULT '0' NOT NULL,
-  message_reported number(1) DEFAULT '0' NOT NULL,
   enable_bbcode number(1) DEFAULT '1' NOT NULL,
   enable_smilies number(1) DEFAULT '1' NOT NULL,
   enable_magic_url number(1) DEFAULT '1' NOT NULL,
@@ -1098,9 +1099,9 @@ END;
 */
 CREATE TABLE phpbb_reports_reasons (
   reason_id number(6) NOT NULL,
-  reason_priority number(4) DEFAULT '0' NOT NULL,
-  reason_name varchar2(255) DEFAULT '',
+  reason_title varchar2(255) DEFAULT '',
   reason_description clob,
+  reason_order number(4) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_reports_reasons PRIMARY KEY (reason_id)
 )
 /
@@ -1127,9 +1128,9 @@ CREATE TABLE phpbb_reports (
   report_id number(5) NOT NULL,
   reason_id number(5) DEFAULT '0' NOT NULL,
   post_id number(8) DEFAULT '0' NOT NULL,
-  msg_id number(8) DEFAULT '0' NOT NULL,
   user_id number(8) DEFAULT '0' NOT NULL,
   user_notify number(1) DEFAULT '0' NOT NULL,
+  report_closed number(1) DEFAULT '0' NOT NULL,
   report_time number(10) DEFAULT '0' NOT NULL,
   report_text clob,
   CONSTRAINT pk_phpbb_reports PRIMARY KEY (report_id)
@@ -1666,6 +1667,7 @@ CREATE TABLE phpbb_users (
   user_lastpage varchar2(100) DEFAULT '',
   user_last_confirm_key varchar2(10) DEFAULT '',
   user_warnings number(4) DEFAULT '0' NOT NULL,
+  user_login_attempts number(4) DEFAULT '0' NOT NULL,
   user_posts number(8) DEFAULT '0' NOT NULL,
   user_lang varchar2(30) DEFAULT '',
   user_timezone number(5, 2) DEFAULT '1' NOT NULL,

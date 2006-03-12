@@ -893,4 +893,35 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 //	$totaltime = $mtime[0] + $mtime[1] - $starttime;
 }
 
+/**
+* Display reasons
+*/
+function display_reasons($reason_id = 0)
+{
+	global $db, $user, $template;
+
+	$sql = 'SELECT * 
+		FROM ' . REASONS_TABLE . ' 
+		ORDER BY reason_order ASC';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
+		if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+		{
+			$row['reson_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+			$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
+		}
+
+		$template->assign_block_vars('reason', array(
+			'ID'			=> $row['reason_id'],
+			'TITLE'			=> $row['reason_title'],
+			'DESCRIPTION'	=> $row['reason_description'],
+			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false)
+		);
+	}
+	$db->sql_freeresult($result);
+}
+
 ?>

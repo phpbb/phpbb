@@ -200,4 +200,29 @@ $lang = array_merge($lang, array(
 	'NO_DISALLOWED'		=> 'No Disallowed Usernames',
 ));
 
+// Reasons
+$lang = array_merge($lang, array(
+	'ACP_REASONS_EXPLAIN'	=> 'Here you can manage the reasons used in reports and denial messages when disapproving posts. There is one default reason (marked with a *) you are not able to remove, this reason is normally used for custom messages if no reason fits.',
+
+	'ADD_NEW_REASON'		=> 'Add new reason',
+	
+	'IS_NOT_TRANSLATED'		=> 'Reason has not been localized',
+	'IS_TRANSLATED'			=> 'Reason has been localized',
+	
+	'NO_REASON'				=> 'Reason could not be found',
+	'NO_REASON_INFO'		=> 'You have to specify a title and a description for this reason.',
+
+	'REASON_ADD'			=> 'Add report/denial reason',
+	'REASON_ADDED'			=> 'Report/denial reason successfully added',
+	'REASON_ALREADY_EXIST'	=> 'A reason with this title already exist, please enter another title for this reason.',
+	'REASON_DESCRIPTION'	=> 'Reason Description',
+	'REASON_EDIT'			=> 'Edit report/denial reason',
+	'REASON_EDIT_EXPLAIN'	=> 'Here you are able to add or edit a reason. If the reason is translated the localized version is used instead of the description entered here.',
+	'REASON_REMOVED'		=> 'Report/denial reason successfully removed',
+	'REASON_TITLE'			=> 'Reason Title',
+	'REASON_UPDATED'		=> 'Report/denial reason successfully updated',
+
+	'USED_IN_REPORTS'		=> 'Used in reports',
+));
+
 ?>

@@ -164,8 +164,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
 		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
 		'INFO_IMG' 			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
-		'REPORT_IMG'		=> $user->img('btn_report', $user->lang['REPORT_PM']),
-		'REPORTED_IMG'		=> $user->img('icon_reported', $user->lang['MESSAGE_REPORTED_MESSAGE']),
 		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']),
 		'EMAIL_IMG' 		=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
 		'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
@@ -179,9 +177,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'SIGNATURE' 		=> ($message_row['enable_sig']) ? $signature : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
 
-		'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=pm_details&amp;p=" . $message_row['msg_id'],
-		'U_REPORT'			=> ($config['auth_report_pm'] && $auth->acl_get('u_pm_report')) ? "{$phpbb_root_path}report.$phpEx$SID&amp;pm=" . $message_row['msg_id'] : '',
-		'U_INFO'			=> ($auth->acl_get('m_') && ($message_row['message_reported'] || $message_row['forwarded'])) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=pm_details&amp;p=" . $message_row['msg_id'] : '',
+		'U_INFO'			=> ($auth->acl_get('m_') && $message_row['forwarded']) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=pm_details&amp;p=" . $message_row['msg_id'] : '',
 		'U_DELETE' 			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_AUTHOR_PROFILE' 		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $author_id,
 		'U_EMAIL' 			=> $user_info['email'],
@@ -191,7 +187,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
 
-		'S_MESSAGE_REPORTED'=> ($message_row['message_reported'] && $auth->acl_get('m_')) ? true : false,
 		'S_HAS_ATTACHMENTS' => (sizeof($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 

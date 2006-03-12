@@ -371,9 +371,9 @@ class auth
 
 						// If one option is allowed, the global permission for this option has to be allowed too
 						// example: if the user has the a_ permission this means he has one or more a_* permissions
-						if ($auth_ary[$opt] == ACL_YES && !isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || !$bitstring[$this->acl_options[$ary_key][$option_key]])
+						if ($auth_ary[$opt] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NO))
 						{
-							$bitstring[$this->acl_options[$ary_key][$option_key]] = 1;
+							$bitstring[$this->acl_options[$ary_key][$option_key]] = ACL_YES;
 						}
 					}
 					else
@@ -523,6 +523,22 @@ class auth
 			{
 				$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
 				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
+
+				// Check for existence of ACL_YES if an option got set to NO
+				if ($setting == ACL_NO)
+				{
+					$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
+				
+					if (isset($hold_ary[$row['user_id']][$row['forum_id']][$flag]) && $hold_ary[$row['user_id']][$row['forum_id']][$flag] == ACL_YES)
+					{
+						unset($hold_ary[$row['user_id']][$row['forum_id']][$flag]);
+
+						if (in_array(ACL_YES, $hold_ary[$row['user_id']][$row['forum_id']]))
+						{
+							$hold_ary[$row['user_id']][$row['forum_id']][$flag] = ACL_YES;
+						}
+					}
+				}
 			}
 		}
 		$db->sql_freeresult($result);
@@ -641,16 +657,29 @@ class auth
 			{
 				$login = $method($username, $password);
 
-				// If login returned anything other than an array there was an error
-				if (!is_array($login))
+				// If login succeeded, we will log the user in... else we pass the login array through...
+				if ($login['status'] == LOGIN_SUCCESS)
 				{
-					/**
-					* @todo Login Attempt++
-					*/
-					return $login;
+					$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
+
+					// Successful session creation
+					if ($result === true)
+					{
+						return array(
+							'status'		=> LOGIN_SUCCESS,
+							'error_msg'		=> false,
+							'user_row'		=> $login['user_row'],
+						);
+					}
+
+					return array(
+						'status'		=> LOGIN_BREAK,
+						'error_msg'		=> $result,
+						'user_row'		=> $login['user_row'],
+					);
 				}
-				
-				return $user->session_create($login['user_id'], $admin, $autologin, $viewonline);
+
+				return $login;
 			}
 		}
 

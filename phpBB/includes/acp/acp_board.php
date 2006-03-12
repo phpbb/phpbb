@@ -258,7 +258,6 @@ class acp_board
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
 						'auth_download_pm'		=> array('lang' => 'ALLOW_DOWNLOAD_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'type' => 'radio:yes_no', 'explain' => false),
-						'auth_report_pm'		=> array('lang' => 'ALLOW_REPORT_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'auth_quote_pm'			=> array('lang' => 'ALLOW_QUOTE_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'email_pm'				=> array('lang' => 'ALLOW_EMAIL_PM',		'type' => 'radio:yes_no', 'explain' => false),

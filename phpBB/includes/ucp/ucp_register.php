@@ -150,7 +150,8 @@ class ucp_register
 					$sql = 'SELECT code
 						FROM ' . CONFIRM_TABLE . "
 						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-							AND session_id = '" . $db->sql_escape($user->session_id) . "'";
+							AND session_id = '" . $db->sql_escape($user->session_id) . "'
+							AND confirm_type = " . CONFIRM_REG;
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
@@ -164,7 +165,8 @@ class ucp_register
 						{
 							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
 								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-									AND session_id = '" . $db->sql_escape($user->session_id) . "'";
+									AND session_id = '" . $db->sql_escape($user->session_id) . "'
+									AND confirm_type = " . CONFIRM_REG;
 							$db->sql_query($sql);
 						}
 					}
@@ -401,14 +403,16 @@ class ucp_register
 					while ($row = $db->sql_fetchrow($result));
 
 					$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
-						WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
+						WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')
+							AND confirm_type = ' . CONFIRM_REG;
 					$db->sql_query($sql);
 				}
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT COUNT(session_id) AS attempts
 					FROM ' . CONFIRM_TABLE . "
-					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'";
+					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
+						AND confirm_type = " . CONFIRM_REG;
 				$result = $db->sql_query($sql);
 
 				if ($row = $db->sql_fetchrow($result))
@@ -421,18 +425,18 @@ class ucp_register
 				$db->sql_freeresult($result);
 		
 				$code = gen_rand_string(mt_rand(5, 8));
-
-				$confirm_id = md5(uniqid($user->ip));
+				$confirm_id = md5(unique_id(0, $user->ip));
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,
 					'session_id'	=> (string) $user->session_id,
+					'confirm_type'	=> (int) CONFIRM_REG,
 					'code'			=> (string) $code)
 				);
 				$db->sql_query($sql);
 			}
 
-			$confirm_image = "<img src=\"ucp.$phpEx$SID&amp;mode=confirm&amp;id=$confirm_id\" alt=\"\" title=\"\" />";
+			$confirm_image = '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . '" alt="" title="" />';
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 

@@ -165,10 +165,17 @@ function mcp_post_details($id, $mode, $action)
 
 			do
 			{
+				// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
+				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+				{
+					$row['reson_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+					$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
+				}
+
 				$template->assign_block_vars('reports', array(
 					'REPORT_ID'		=> $row['report_id'],
-					'REASON_TITLE'	=> $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_name'])],
-					'REASON_DESC'	=> $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_name'])],
+					'REASON_TITLE'	=> $row['reason_title'],
+					'REASON_DESC'	=> $row['reason_description'],
 					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : $user->lang['GUEST'],
 					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}" : '',
 					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,

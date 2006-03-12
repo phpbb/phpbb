@@ -104,6 +104,7 @@ $lang = array_merge($lang, array(
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage Extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage Forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage Ranks',
+	'ACP_MANAGE_REASONS'		=> 'Manage Report/Denial Reasons',
 	'ACP_MANAGE_USERS'			=> 'Manage Users',
 	'ACP_MASS_EMAIL'			=> 'Mass Email',
 	'ACP_MESSAGES'				=> 'Messages',
@@ -124,6 +125,7 @@ $lang = array_merge($lang, array(
 	'ACP_PRUNING'				=> 'Pruning',
 	
 	'ACP_RANKS'					=> 'Ranks',
+	'ACP_REASONS'				=> 'Report/Denial Reasons',
 	
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
@@ -457,6 +459,10 @@ $lang = array_merge($lang, array(
 	'LOG_PRUNE_USER_DEAC'		=> '<b>Users deactivated</b><br />&#187; %s',
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<b>Users pruned and posts deleted</b><br />&#187; %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<b>Users pruned and posts retained</b><br />&#187; %s',
+
+	'LOG_REASON_ADDED'		=> '<b>Added report/denial reason</b><br />&#187; %s',
+	'LOG_REASON_REMOVED'	=> '<b>Removed report/denial reason</b><br />&#187; %s',
+	'LOG_REASON_UPDATED'	=> '<b>Updated report/denial reason</b><br />&#187; %s',
 
 	'LOG_RESET_DATE'		=> '<b>Board start date reset</b>',
 	'LOG_RESET_ONLINE'		=> '<b>Most users online reset</b>',

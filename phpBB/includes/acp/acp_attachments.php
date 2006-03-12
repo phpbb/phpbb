@@ -266,7 +266,7 @@ class acp_attachments
 						}
 						$db->sql_freeresult($result);
 
-						// Delete Extension ?
+						// Delete Extension?
 						$extension_id_list = (isset($_POST['extension_id_list'])) ? array_map('intval', $_POST['extension_id_list']) : array();
 
 						if (sizeof($extension_id_list))
@@ -292,7 +292,7 @@ class acp_attachments
 						}
 					}
 					
-					// Add Extension ?
+					// Add Extension?
 					$add_extension			= strtolower(request_var('add_extension', ''));
 					$add_extension_group	= request_var('add_group_select', 0);
 					$add					= (isset($_POST['add_extension_check'])) ? true : false;
@@ -1120,10 +1120,10 @@ class acp_attachments
 		
 		$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
 
-		if (empty($_ENV['MAGICK_HOME']))
+		if (empty(getenv('MAGICK_HOME')))
 		{
 			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', $_ENV['PATH'])));	
+			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));	
 			
 			$locations = array_merge($path_locations, $locations);
 
@@ -1144,7 +1144,7 @@ class acp_attachments
 		}
 		else
 		{
-			$imagick = str_replace('\\', '/', $_ENV['MAGICK_HOME']);
+			$imagick = str_replace('\\', '/', getenv('MAGICK_HOME'));
 		}
 
 		return $imagick;

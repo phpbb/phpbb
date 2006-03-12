@@ -91,6 +91,12 @@ class filespec
 		switch ($mode)
 		{
 			case 'real':
+				// Remove every extension from filename (to not let the mime bug being exposed)
+				if (strpos($this->realname, '.') !== false)
+				{
+					$this->realname = substr($this->realname, 0, strpos($this->realname, '.'));
+				}
+
 				// Replace any chars which may cause us problems with _
 				$bad_chars = array("'", "\\", ' ', '/', ':', '*', '?', '"', '<', '>', '|');
 
@@ -575,7 +581,7 @@ class fileupload
 		unset($url_ary);
 
 		$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache';
-		$filename = tempnam($tmp_path, uniqid(rand()) . '-');
+		$filename = tempnam($tmp_path, unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{

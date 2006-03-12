@@ -997,7 +997,6 @@ class acp_users
 						'notifypm'			=> true,
 						'popuppm'			=> false,
 						'allowpm'			=> true,
-						'report_pm_notify'	=> false,
 
 						'topic_sk'			=> (string) 't',
 						'topic_sd'			=> (string) 'd',
@@ -1041,7 +1040,6 @@ class acp_users
 					if (!sizeof($error))
 					{
 						$this->optionset($user_row, 'popuppm', $data['popuppm']);
-						$this->optionset($user_row, 'report_pm_notify', $data['report_pm_notify']);
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
 						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
@@ -1176,7 +1174,6 @@ class acp_users
 					'NOTIFY_BOTH'		=> ($notify_method == NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> (isset($data['notifypm'])) ? $data['notifypm'] : $user_row['user_notify_pm'],
 					'POPUP_PM'			=> (isset($data['popuppm'])) ? $data['popuppm'] : $this->optionget($user_row, 'popuppm'),
-					'REPORT_PM_NOTIFY'	=> (isset($data['report_pm_notify'])) ? $data['report_pm_notify'] : $this->optionget($user_row, 'report_pm_notify'),
 					'DST'				=> (isset($data['dst'])) ? $data['dst'] : $user_row['user_dst'],
 					'BBCODE'			=> (isset($data['bbcode'])) ? $data['bbcode'] : $this->optionget($user_row, 'bbcode'),
 					'SMILIES'			=> (isset($data['smilies'])) ? $data['smilies'] : $this->optionget($user_row, 'smilies'),

@@ -28,8 +28,9 @@ class ucp_confirm
 
 		// Do we have an id? No, then just exit
 		$confirm_id = request_var('id', '');
+		$type = request_var('type', 0);
 
-		if (!$confirm_id)
+		if (!$confirm_id || !$type)
 		{
 			exit;
 		}
@@ -38,7 +39,8 @@ class ucp_confirm
 		$sql = 'SELECT code  
 			FROM ' . CONFIRM_TABLE . " 
 			WHERE session_id = '" . $db->sql_escape($user->session_id) . "' 
-				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'";
+				AND confirm_id = '" . $db->sql_escape($confirm_id) . "'
+				AND confirm_type = $type";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

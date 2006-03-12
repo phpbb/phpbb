@@ -1285,7 +1285,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_YIM' 			=> $user_cache[$poster_id]['yim'],
 		'U_JABBER'			=> $user_cache[$poster_id]['jabber'],
 
-		'U_REPORT'			=> "{$phpbb_root_path}report.$phpEx$SID&amp;p=" . $row['post_id'],
+		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? "{$phpbb_root_path}report.$phpEx$SID&amp;p=" . $row['post_id'] : '',
 		'U_MCP_REPORT'		=> ($auth->acl_gets('m_', 'a_', 'f_report', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'] : '',
 		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],

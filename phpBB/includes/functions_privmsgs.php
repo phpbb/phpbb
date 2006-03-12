@@ -33,7 +33,6 @@ define('RULE_IS_USER', 9); // Is User
 define('RULE_IS_GROUP', 10); // Is In Usergroup
 define('RULE_ANSWERED', 11); // Answered
 define('RULE_FORWARDED', 12); // Forwarded
-define('RULE_REPORTED', 13); // Reported
 define('RULE_TO_GROUP', 14); // Usergroup
 define('RULE_TO_ME', 15); // Me
 
@@ -78,7 +77,6 @@ $global_privmsgs_rules = array(
 	CHECK_STATUS	=> array(
 		RULE_ANSWERED		=> array('check0' => 'replied', 'function' => '{CHECK0} == 1'),
 		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1'),
-		RULE_REPORTED		=> array('check0' => 'message_reported', 'function' => '{CHECK0} == 1')),
 		
 	CHECK_TO		=> array(
 		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group', 'function' => 'in_array("g_" . {CHECK2}, {CHECK0}) || in_array("g_" . {CHECK2}, {CHECK1})'),

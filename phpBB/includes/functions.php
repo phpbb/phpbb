@@ -136,11 +136,11 @@ function gen_rand_string($num_chars)
 * Return unique id
 * @param $extra additional entropy for call to mt_srand
 */
-function unique_id($extra = 0)
+function unique_id($extra = 0, $prefix = false)
 {
 	list($usec, $sec) = explode(' ', microtime());
 	mt_srand((float) $extra + (float) $sec + ((float) $usec * 100000));
-	return uniqid(mt_rand(), true);
+	return uniqid(($prefix === false) ? mt_rand() : $prefix, true);
 }
 
 if (!function_exists('array_combine'))
@@ -1318,7 +1318,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$admin 		= ($admin) ? 1 : 0;
 
 		// If authentication is successful we redirect user to previous page
-		if (($result = $auth->login($username, $password, $autologin, $viewonline, $admin)) === true)
+		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
+
+		// The result parameter is always an array, holding the relevant informations...
+		if ($result['status'] == LOGIN_SUCCESS)
 		{
 			// If admin authentication
 			if ($admin)
@@ -1329,7 +1332,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				}
 				else
 				{
+					// Authenticated, but not having admin permissions
 					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+					trigger_error('NO_AUTH_ADMIN');
 				}
 			}
 
@@ -1340,19 +1345,57 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			trigger_error($message);
 		}
 
+		// The user wanted to re-authenticate, but something failed - log this
 		if ($admin)
 		{
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		}
 
-		// If we get a non-numeric (e.g. string) value we output an error
-		if (is_string($result))
+		// Something failed, determine what...
+		if ($result['status'] == LOGIN_BREAK)
 		{
-			trigger_error($result, E_USER_ERROR);
+			trigger_error($result['error_msg'], E_USER_ERROR);
 		}
 
-		// If we get an integer zero then we are inactive, else the username/password is wrong
-		$err = ($result === 0) ? $user->lang['ACTIVE_ERROR'] : $user->lang['LOGIN_ERROR'];
+		// Special cases... determine
+		switch ($result['status'])
+		{
+			case LOGIN_ERROR_ATTEMPTS:
+
+				// Show confirm image
+				$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
+					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
+						AND confirm_type = " . CONFIRM_LOGIN;
+				$db->sql_query($sql);
+		
+				// Generate code
+				$code = gen_rand_string(mt_rand(5, 8));
+				$confirm_id = md5(unique_id(0, $user->ip));
+
+				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'confirm_id'	=> (string) $confirm_id,
+					'session_id'	=> (string) $user->session_id,
+					'confirm_type'	=> (int) CONFIRM_LOGIN,
+					'code'			=> (string) $code)
+				);
+				$db->sql_query($sql);
+
+				$template->assign_vars(array(
+					'S_CONFIRM_CODE'			=> true,
+					'CONFIRM_ID'				=> $confirm_id,
+					'CONFIRM_IMAGE'				=> '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_LOGIN . '" alt="" title="" />',
+					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+				));
+
+				$err = $user->lang[$result['error_msg']];
+
+			break;
+
+			// Username, password, etc...
+			default:
+				$err = $user->lang[$result['error_msg']];
+			break;
+		}
 	}
 
 	if (!$redirect)

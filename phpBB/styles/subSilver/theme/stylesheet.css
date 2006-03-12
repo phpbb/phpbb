@@ -498,9 +498,6 @@ input.radio {
 
 /* Private messages
  ------------------ */
-.pm_message_reported_colour {
-	background-color: #FFFFFF;
-	}
 .pm_marked_colour {
 	background-color: #000000;
 	}

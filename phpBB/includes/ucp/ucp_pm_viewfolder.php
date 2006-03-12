@@ -29,7 +29,7 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 		$icons = array();
 		$cache->obtain_icons($icons);
 
-		$color_rows = array('marked', 'replied', 'message_reported', 'friend', 'foe');
+		$color_rows = array('marked', 'replied', 'friend', 'foe');
 
 		foreach ($color_rows as $var)
 		{
@@ -167,14 +167,11 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 					'PM_IMG'	 		=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
-					'S_PM_REPORTED'		=> (!empty($row['message_reported']) && $auth->acl_get('m_')) ? true : false,
 					'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
 
 					'U_VIEW_PM'			=> ($row['deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['deleted']) ? $remove_message_url : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '',
-					'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=reports&amp;pm=$message_id")
-	//				'U_MCP_QUEUE'		=> "mcp.$phpEx?sid={$user->session_id}&amp;i=mod_queue&amp;t=$topic_id")
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
 				);
 			}
 			unset($folder_info['rowset']);
@@ -437,8 +434,6 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('btn_locked', 'PM_LOCKED') : $user->img('btn_post_pm', 'POST_PM'),
 
-		'REPORTED_IMG'	=> $user->img('icon_reported', 'MESSAGE_REPORTED'),
-
 		'L_NO_MESSAGES'	=> (!$auth->acl_get('u_sendpm')) ? $user->lang['POST_PM_LOCKED'] : $user->lang['NO_MESSAGES'],
 
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
@@ -476,7 +471,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 		$sql_start = $start;
 	}
 
-	$sql = 'SELECT t.*, p.author_id, p.root_level, p.message_time, p.message_subject, p.icon_id, p.message_reported, p.to_address, p.message_attachment, p.bcc_address, u.username
+	$sql = 'SELECT t.*, p.author_id, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username
 		FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE t.user_id = $user_id
 			AND p.author_id = u.user_id

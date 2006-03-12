@@ -305,6 +305,12 @@ class auth_admin extends auth
 			$s_role_js_array = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
+				if ($flag == $row['auth_option'])
+				{
+					continue;
+				}
+
 				if (!isset($s_role_js_array[$row['role_id']]))
 				{
 					$s_role_js_array[$row['role_id']] = "\n" . 'role_options[' . $row['role_id'] . '] = new Array();' . "\n";
@@ -687,7 +693,7 @@ class auth_admin extends auth
 		list(, $flag) = each(array_keys($auth));
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
 		
-		// This ID (the any-flag) is only set if roles are assigned - this makes it very easy to determine the correct roles
+		// This ID (the any-flag) is set if one or more permissions are true...
 		$any_option_id = (int) $this->option_ids[$flag];
 
 		// Remove any-flag from auth ary
@@ -709,6 +715,38 @@ class auth_admin extends auth
 				AND auth_option_id IN ($any_option_id, " . implode(', ', $auth_option_ids) . ')';
 		$db->sql_query($sql);
 
+		// Remove those having a role assigned... the correct type of course...
+		$sql = 'SELECT role_id
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_type = '" . $db->sql_escape($flag) . "'";
+		$result = $db->sql_query($sql);
+
+		$role_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$role_ids[] = $row['role_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($role_ids))
+		{
+			$sql = "DELETE FROM $table
+				WHERE forum_id $forum_sql
+					AND $id_field $ug_id_sql
+					AND auth_option_id = 0
+					AND auth_role_id IN (" . implode(', ', $role_ids) . ')';
+			$db->sql_query($sql);
+		}
+
+		// Ok, include the any-flag if one or more auth options are set to yes...
+		foreach ($auth as $auth_option => $setting)
+		{
+			if ($setting == ACL_YES && (!isset($auth[$flag]) || $auth[$flag] == ACL_NO))
+			{
+				$auth[$flag] = ACL_YES;
+			}
+		}
+
 		$sql_ary = array();
 		foreach ($forum_id as $forum)
 		{
@@ -721,7 +759,7 @@ class auth_admin extends auth
 					$sql_ary[] = array(
 						$id_field			=> (int) $id,
 						'forum_id'			=> (int) $forum,
-						'auth_option_id'	=> $any_option_id,
+						'auth_option_id'	=> 0,
 						'auth_setting'		=> 0,
 						'auth_role_id'		=> $role_id
 					);
@@ -780,6 +818,25 @@ class auth_admin extends auth
 	function acl_set_role($role_id, &$auth)
 	{
 		global $db;
+
+		// Get any-flag as required
+		list(, $flag) = each(array_keys($auth));
+		$flag = substr($flag, 0, strpos($flag, '_') + 1);
+		
+		// Remove any-flag from auth ary
+		if (isset($auth[$flag]))
+		{
+			unset($auth[$flag]);
+		}
+
+		// Re-set any flag...
+		foreach ($auth as $auth_option => $setting)
+		{
+			if ($setting == ACL_YES && (!isset($auth[$flag]) || $auth[$flag] == ACL_NO))
+			{
+				$auth[$flag] = ACL_YES;
+			}
+		}
 
 		// Remove current auth options...
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
@@ -867,9 +924,10 @@ class auth_admin extends auth
 
 			// First of all, lets grab the items having roles with the specified auth options assigned
 			$sql = "SELECT auth_role_id, $id_field, forum_id
-				FROM $table
+				FROM $table, " . ACL_ROLES_TABLE . " r
 				WHERE auth_role_id <> 0
-					AND auth_option_id = {$auth_id_ary[$permission_type]}
+					AND auth_role_id = r.role_id
+					AND r.role_type = '{$permission_type}'
 					AND " . implode(' AND ', $where_sql) . '
 				ORDER BY auth_role_id';
 			$result = $db->sql_query($sql);

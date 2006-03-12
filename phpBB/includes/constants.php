@@ -35,6 +35,15 @@ define('ACL_NO', 0);
 define('ACL_YES', 1);
 define('ACL_UNSET', -1);
 
+// Login error codes
+define('LOGIN_CONTINUE', 1);
+define('LOGIN_BREAK', 2);
+define('LOGIN_SUCCESS', 3);
+define('LOGIN_ERROR_USERNAME', 10);
+define('LOGIN_ERROR_PASSWORD', 11);
+define('LOGIN_ERROR_ACTIVE', 12);
+define('LOGIN_ERROR_ATTEMPTS', 13);
+
 // Group settings
 define('GROUP_OPEN', 0);
 define('GROUP_CLOSED', 1);
@@ -83,18 +92,22 @@ define('PRIVMSGS_OUTBOX', -2);
 define('PRIVMSGS_SENTBOX', -1);
 define('PRIVMSGS_INBOX', 0);
 
-// Report Types
-define('REPORT_POST', 1);
-define('REPORT_GENERAL', 2);
-
 // Full Folder Actions
 define('FULL_FOLDER_NONE', -3);
 define('FULL_FOLDER_DELETE', -2);
 define('FULL_FOLDER_HOLD', -1);
 
+// Reason types
+define('REPORT_REASON_SPECIAL', 1);
+define('REPORT_REASON_NORMAL', 2);
+
 // Download Modes - Attachments
 define('INLINE_LINK', 1);
 define('PHYSICAL_LINK', 2);
+
+// Confirm types
+define('CONFIRM_REG', 1);
+define('CONFIRM_LOGIN', 2);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);

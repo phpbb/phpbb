@@ -559,9 +559,10 @@ class acp_permission_roles
 		{
 			$template->assign_block_vars('auth', array(
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat],
-				'S_YES'		=> $cat_array['S_YES'],
-				'S_NO'		=> $cat_array['S_NO'],
-				'S_UNSET'	=> $cat_array['S_UNSET'])
+
+				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NO'] && !$cat_array['S_UNSET']) ? true : false,
+				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_YES'] && !$cat_array['S_UNSET']) ? true : false,
+				'S_UNSET'	=> ($cat_array['S_UNSET'] && !$cat_array['S_NO'] && !$cat_array['S_YES']) ? true : false)
 			);
 				
 			foreach ($cat_array['permissions'] as $permission => $allowed)

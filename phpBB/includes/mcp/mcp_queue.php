@@ -542,23 +542,25 @@ function disapprove_post($post_id_list, $mode)
 
 	if ($reason_id)
 	{
-		$sql = 'SELECT reason_name
+		$sql = 'SELECT reason_title, reason_description
 			FROM ' . REASONS_TABLE . "
 			WHERE reason_id = $reason_id";
 		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($row = $db->sql_fetchrow($result)) || (!$reason && $row['reason_name'] == 'other'))
+		if (!$row || (!$reason && $row['reason_title'] == 'other'))
 		{
 			$additional_msg = 'Please give an appropiate reason for disapproval';
 			unset($_POST['confirm']);
 		}
 		else
 		{
-			$disapprove_reason = ($row['reason_name'] != 'other') ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_name'])] : '';
+			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
+			$disapprove_reason = ($row['reason_title'] != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
 			$disapprove_reason .= ($reason) ? "\n\n" . $_REQUEST['reason'] : '';
 			unset($reason);
 		}
-		$db->sql_freeresult($result);
 	}
 
 	if (confirm_box(true))
@@ -683,27 +685,9 @@ function disapprove_post($post_id_list, $mode)
 	}
 	else
 	{
-		$sql = 'SELECT *
-			FROM ' . REASONS_TABLE . '
-			ORDER BY reason_priority ASC';
-		$result = $db->sql_query($sql);
+		include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$row['reason_name'] = strtoupper($row['reason_name']);
-
-			$reason_title = (!empty($user->lang['report_reasons']['TITLE'][$row['reason_name']])) ? $user->lang['report_reasons']['TITLE'][$row['reason_name']] : ucwords(str_replace('_', ' ', $row['reason_name']));
-
-			$reason_desc = (!empty($user->lang['report_reasons']['DESCRIPTION'][$row['reason_name']])) ? $user->lang['report_reasons']['DESCRIPTION'][$row['reason_name']] : $row['reason_desc'];
-
-			$template->assign_block_vars('reason', array(
-				'ID'			=>	$row['reason_id'],
-				'NAME'			=>	htmlspecialchars($reason_title),
-				'DESCRIPTION'	=>	htmlspecialchars($reason_desc),
-				'S_SELECTED'	=>	($row['reason_id'] == $reason_id) ? true : false)
-			);
-		}
-		$db->sql_freeresult($result);
+		display_reasons($reason_id);
 
 		$template->assign_vars(array(
 			'S_NOTIFY_POSTER'	=> true,

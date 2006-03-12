@@ -2,7 +2,7 @@
 # Firebird Schema for phpBB 3.x - (c) phpBB Group, 2005
 #
 # $Id$
-#
+# @todo user_last_warning to users table and warnings table
 
 # phpbb_attachments
 CREATE TABLE phpbb_attachments (
@@ -125,6 +125,7 @@ CREATE TABLE phpbb_config (
 CREATE TABLE phpbb_confirm (
   confirm_id VARCHAR(32) NOT NULL,
   session_id VARCHAR(32) NOT NULL,
+  confirm_type INTEGER DEFAULT 0  NOT NULL,
   code VARCHAR(8) NOT NULL
 );;
 
@@ -358,7 +359,6 @@ CREATE TABLE phpbb_privmsgs (
   icon_id INTEGER DEFAULT 1  NOT NULL,
   author_ip VARCHAR(40) NOT NULL,
   message_time INTEGER DEFAULT 0  NOT NULL,
-  message_reported INTEGER DEFAULT 0  NOT NULL,
   enable_bbcode INTEGER DEFAULT 1  NOT NULL,
   enable_smilies INTEGER DEFAULT 1  NOT NULL,
   enable_magic_url INTEGER DEFAULT 1  NOT NULL,
@@ -471,9 +471,9 @@ CREATE TABLE phpbb_reports (
   report_id INTEGER NOT NULL,
   reason_id INTEGER DEFAULT 0  NOT NULL,
   post_id INTEGER DEFAULT 0  NOT NULL,
-  msg_id INTEGER DEFAULT 0  NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
   user_notify INTEGER DEFAULT 0  NOT NULL,
+  report_closed INTEGER DEFAULT 0  NOT NULL,
   report_time INTEGER DEFAULT 0  NOT NULL,
   report_text BLOB SUB_TYPE TEXT NOT NULL
 );;
@@ -481,9 +481,9 @@ CREATE TABLE phpbb_reports (
 # phpbb_reports_reasons
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER NOT NULL,
-  reason_priority INTEGER DEFAULT 0  NOT NULL,
-  reason_name VARCHAR(255) NOT NULL,
-  reason_description BLOB SUB_TYPE TEXT NOT NULL
+  reason_title VARCHAR(255) NOT NULL,
+  reason_description BLOB SUB_TYPE TEXT NOT NULL,
+  reason_order INTEGER DEFAULT 0  NOT NULL
 );;
 
 # phpbb_search_results
@@ -761,6 +761,7 @@ CREATE TABLE phpbb_users (
   user_lastpage VARCHAR(100) NOT NULL,
   user_last_confirm_key VARCHAR(10) NOT NULL,
   user_warnings INTEGER DEFAULT 0  NOT NULL,
+  user_login_attempts INTEGER DEFAULT 0  NOT NULL,
   user_posts INTEGER DEFAULT 0  NOT NULL,
   user_lang VARCHAR(30) NOT NULL,
   user_timezone DOUBLE PRECISION DEFAULT 0  NOT NULL,

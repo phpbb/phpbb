@@ -964,7 +964,7 @@ class mcp_main_info
 			'version'	=> '1.0.0',
 			'modes'		=> array(
 				'forum_view'	=> array('title' => 'MCP_MAIN_FORUM_VIEW', 'auth' => 'acl_m_,$id'),
-				'front'			=> array('title' => 'MCP_MAIN_FRONT', 'auth' => ''),
+				'front'			=> array('title' => 'MCP_MAIN_FRONT', 'auth' => 'acl_m_'),
 				'post_details'	=> array('title' => 'MCP_MAIN_POST_DETAILS', 'auth' => 'acl_m_,$id'),
 				'topic_view'	=> array('title' => 'MCP_MAIN_TOPIC_VIEW', 'auth' => 'acl_m_,$id'),
 			),

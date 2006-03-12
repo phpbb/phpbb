@@ -299,7 +299,7 @@ class messenger
 		$headers .= 'Return-Path: <' . $config['board_email'] . ">\n";
 		$headers .= 'Sender: <' . $config['board_email'] . ">\n";
 		$headers .= "MIME-Version: 1.0\n";
-		$headers .= 'Message-ID: <' . md5(uniqid(time())) . "@" . $config['server_name'] . ">\n";
+		$headers .= 'Message-ID: <' . md5(uniqe_id(0, time())) . "@" . $config['server_name'] . ">\n";
 		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
 		$headers .= "Content-type: text/plain; charset={$this->encoding}\n";
 		$headers .= "Content-transfer-encoding: 8bit\n";

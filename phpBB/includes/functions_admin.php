@@ -457,7 +457,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	{
 		$forum_ids[] = $row['forum_id'];
 
-		sync('reported', 'topic_id', $topic_ids);
+		sync('topic_reported', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true);
 	}
@@ -609,7 +609,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 
 	if ($auto_sync)
 	{
-		sync('reported', 'topic_id', $topic_ids);
+		sync('topic_reported', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true);
 	}

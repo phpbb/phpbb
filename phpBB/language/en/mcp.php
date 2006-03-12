@@ -83,6 +83,8 @@ $lang = array_merge($lang, array(
 
 	'IP_INFO'				=> 'IP Information',
 
+	'JUMP_TO'					=> 'Moderate Forum',		// Overwriting the jump to language variable for the mcp jumpbox
+	
 	'LATEST_LOGS'				=> 'Latest 5 logged actions',
 	'LATEST_REPORTED'			=> 'Latest 5 reports',
 	'LATEST_UNAPPROVED'			=> 'Latest 5 posts awaiting for approval',
@@ -175,7 +177,6 @@ $lang = array_merge($lang, array(
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to merge the selected posts?',
 	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on the "Select" button to search for one',
 	'MERGE_TOPIC_ID'		=> 'Destination topic id',
-	'MESSAGE_REPORTED_SUCCESS'	=> 'This message has been successfully reported',
 	'MOD_OPTIONS'			=> 'Moderator Options',
 	'MORE_INFO'				=> 'Further information',
 	'MOVE_TOPIC_CONFIRM'	=> 'Are you sure you want to move the topic into a new forum?',
@@ -219,6 +220,7 @@ $lang = array_merge($lang, array(
 	'READ_USERNOTES'		=> 'User notes',
 	'READ_WARNINGS'			=> 'User warnings',
 	'REPORTER'				=> 'Reporter',
+	'REPORT_ALREADY_DEALT_WITH'		=> 'This post has already been reported previously and successfully dealt with',
 	'REPORT_TIME'			=> 'Report time',
 	'REPORTS_TOTAL'			=> 'In total there are <b>%d</b> reports to review',
 	'REPORTS_ZERO_TOTAL'	=> 'There are no reports to review',

@@ -314,7 +314,7 @@ class template
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
-			$str[$blocks[$blockcount]][] = &$vararray;
+			$str[$blocks[$blockcount]][] = $vararray;
 		}
 		else
 		{
@@ -337,7 +337,7 @@ class template
 			
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
-			$this->_tpldata[$blockname][] = &$vararray;
+			$this->_tpldata[$blockname][] = $vararray;
 		}
 
 		return true;
@@ -349,7 +349,7 @@ class template
 	* Some Examples:
 	* <code>
 	*
-	* alter_block_array('loop', $varrarray); // Insert vararray at the end
+	* alter_block_array('loop', $vararray); // Insert vararray at the beginning
 	* alter_block_array('loop', $vararray, 2); // Insert vararray at position 2
 	* alter_block_array('loop', $vararray, array('KEY' => 'value')); // Insert vararray at the position where the key 'KEY' has the value of 'value' 
 	* alter_block_array('loop', $vararray, false); // Insert vararray at first position
@@ -447,7 +447,7 @@ class template
 
 			// Insert vararray at given position
 			$vararray['S_ROW_COUNT'] = $key;
-			$this->_tpldata[$blockname][$key] = &$vararray;
+			$this->_tpldata[$blockname][$key] = $vararray;
 		
 			return true;
 		}
@@ -460,7 +460,7 @@ class template
 				$key--;
 			}
 
-			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], &$vararray);
+			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], $vararray);
 			return true;
 		}
 	}
