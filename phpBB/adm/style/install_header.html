@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="{S_CONTENT_DIRECTION}">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="imagetoolbar" content="no" />
+<!-- IF META -->{META}<!-- ENDIF -->
+<title>{PAGE_TITLE}</title>
+
+<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+
+</head>
+
+<body>
+<div id="wrap">
+	<div id="page-header">
+		<h1>{L_INSTALL_PANEL}</h1>
+	</div>
+	
+	<div id="page-body">
+		<div id="tabs">
+			<ul>
+			<!-- BEGIN t_block1 -->
+				<li<!-- IF t_block1.S_SELECTED --> id="activetab"<!-- ENDIF -->><a href="{t_block1.U_TITLE}"><span>{t_block1.L_TITLE}</span></a></li>
+			<!-- END t_block1 -->
+			</ul>
+		</div>
+	
+		<div class="panel">
+			<span class="corners-top"><span></span></span>
+				<div id="content">
+					<div id="menu">
+						<ul>
+						<!-- BEGIN l_block1 -->
+							<li<!-- IF l_block1.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.U_TITLE}"><span>{l_block1.L_TITLE}</span></a></li>
+						<!-- END l_block1 -->
+						</ul>
+					</div>
+	
+					<div id="main">

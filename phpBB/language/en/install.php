@@ -38,6 +38,9 @@ $lang = array_merge($lang, array(
 
 	'CACHE_STORE'				=> 'Cache type',
 	'CACHE_STORE_EXPLAIN'		=> 'The physical location where data is cached, filesystem is prefered.',
+	'CAT_CONVERT'				=> 'Convert',
+	'CAT_INSTALL'				=> 'Install',
+	'CAT_OVERVIEW'				=> 'Overview',
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL'				=> 'Contact email address',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
@@ -84,6 +87,8 @@ $lang = array_merge($lang, array(
 	'FTP_UPLOAD'				=> 'Upload',
 	'FTP_USERNAME'				=> 'FTP Username',
 
+	'GPL'						=> 'General Public License',
+	
 	'INITIAL_CONFIG'			=> 'Basic Configuration',
 	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or  use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
 	'INSTALL_ADVICE'			=> 'Installation Compatibility',
@@ -98,6 +103,7 @@ $lang = array_merge($lang, array(
 	'INSTALL_OPTIONAL'			=> 'Optional',
 	'INSTALL_OPTIONAL_FILES'	=> 'These files, directories or permissions are optional. The installation routines will attempt to use various techniques to complete if they do not exist or cannot be written to. However, the presence of these files, directories or permissions will speed installation.',
 	'INSTALL_OPTIONAL_PHP'		=> 'These modules or applications are optional, you do not need these to use phpBB 3.0. However if you do have them they will will enable greater functionality.',
+	'INSTALL_PANEL'				=> 'Installation Panel',
 	'INSTALL_REQUIRED'			=> 'Required',
 	'INSTALL_REQUIRED_FILES'	=> 'In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see "Not Found" you need to create the relevant file or directory. If you see "Unwriteable" you need to change the permissions on the file or directory to allow phpBB to write to it.',
 	'INSTALL_REQUIRED_PHP'		=> 'You must be running at least PHP 4.3.3 with support for at least one compatible database. If no support modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice. If "safe mode" is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
@@ -117,6 +123,8 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
 
 	'NO_LOCATION'				=> 'Cannot determine location',
+// TODO: Write some explanatory introduction text
+	'OVERVIEW_BODY'				=> '<p>Some brief explanatory text about phpBB will go here.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above</p>',
 
 	'PHP_AND_APPS'				=> 'PHP and Applications',
 	'PHP_REQD_DB'				=> 'Supported Databases',
@@ -134,6 +142,11 @@ $lang = array_merge($lang, array(
 	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from',
 	'SERVER_PORT'				=> 'Server port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
+	'SUB_INTRO'					=> 'Introduction',
+	'SUB_LICENSE'				=> 'License',
+	'SUB_SUPPORT'				=> 'Support',
+// TODO: Write some text on obtaining support
+	'SUPPORT_BODY'				=> '<p>Some text on obtaining support, etc can go here.</p><p>Probably this can be copied from the documentation</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a></p>',
 
 	'TABLE_PREFIX'				=> 'Prefix for tables in database',
 	'TESTS_PASSED'				=> 'Tests passed',
