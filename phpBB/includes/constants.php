@@ -97,10 +97,6 @@ define('FULL_FOLDER_NONE', -3);
 define('FULL_FOLDER_DELETE', -2);
 define('FULL_FOLDER_HOLD', -1);
 
-// Reason types
-define('REPORT_REASON_SPECIAL', 1);
-define('REPORT_REASON_NORMAL', 2);
-
 // Download Modes - Attachments
 define('INLINE_LINK', 1);
 define('PHYSICAL_LINK', 2);
