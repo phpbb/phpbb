@@ -1120,7 +1120,9 @@ class acp_attachments
 		
 		$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
 
-		if (empty(getenv('MAGICK_HOME')))
+		$magic_home = getenv('MAGICK_HOME');
+
+		if (empty($magic_home))
 		{
 			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
 			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));	
@@ -1144,7 +1146,7 @@ class acp_attachments
 		}
 		else
 		{
-			$imagick = str_replace('\\', '/', getenv('MAGICK_HOME'));
+			$imagick = str_replace('\\', '/', $magic_home);
 		}
 
 		return $imagick;

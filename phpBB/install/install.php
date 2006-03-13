@@ -416,9 +416,11 @@ if ($stage == 0)
 
 	$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
 
+	$magic_home = getenv('MAGICK_HOME');
+
 	// Imagemagick are you there? Give me a sign or a path ...
 	$img_imagick = '';
-	if (empty(getenv('MAGICK_HOME')))
+	if (empty($magic_home))
 	{
 		$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
 		$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
@@ -441,7 +443,7 @@ if ($stage == 0)
 	}
 	else
 	{
-		$img_imagick = str_replace('\\', '/', getenv('MAGICK_HOME'));
+		$img_imagick = str_replace('\\', '/', $magic_home);
 	}
 
 ?>
