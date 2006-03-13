@@ -122,6 +122,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_user_activity', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time','0');

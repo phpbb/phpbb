@@ -1153,10 +1153,12 @@ function redirect($url)
 		$url = generate_board_url() . '/' . $url;
 	}
 
-	/**
-	* Make sure no HTTP Response Splitting attacks are possible
-	*/
-	
+	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
+	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false)
+	{
+		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
 	// Redirect via an HTML form for PITA webservers
 	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
 	{

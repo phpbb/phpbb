@@ -122,8 +122,6 @@ $lang = array_merge($lang, array(
 	'PATH_SETTINGS'				=> 'Path Settings',
 	'SERVER_NAME'				=> 'Domain Name',
 	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: www.foo.bar)',
-//	'SCRIPT_PATH'				=> 'Script path',
-//	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB2 is located relative to the domain name',
 	'SERVER_PORT'				=> 'Server Port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
 	'SERVER_PROTOCOL'			=> 'Server Protocol',
@@ -187,7 +185,9 @@ $lang = array_merge($lang, array(
 	'MIN_SEARCH_CHARS'			=> 'Min characters indexed by search',
 	'MIN_SEARCH_CHARS_EXPLAIN'	=> 'Words with at least this many characters will be indexed for searching.',
 	'MAX_SEARCH_CHARS'			=> 'Max characters indexed by search',
-	'MAX_SEARCH_CHARS_EXPLAIN'	=> 'Words with no more than this many characters will be indexed for searching.'
+	'MAX_SEARCH_CHARS_EXPLAIN'	=> 'Words with no more than this many characters will be indexed for searching.',
+	'LOAD_USER_ACTIVITY'			=> 'Show users activity',
+	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
 ));
 
 // Email settings

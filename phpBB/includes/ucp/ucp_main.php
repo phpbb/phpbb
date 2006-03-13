@@ -136,92 +136,15 @@ class ucp_main
 					);
 				}
 
-				$post_count_ary = $auth->acl_getf('!f_postcount');
-				$forum_read_ary = $auth->acl_getf('!f_read');
-				
-				$forum_ary = array();
-				foreach ($post_count_ary as $forum_id => $allowed)
+				if ($config['load_user_activity'])
 				{
-					if ($allowed['f_postcount'] || $forum_read_ary[$forum_id]['f_read'])
-					{
-						$forum_ary[] = $forum_id;
-					}
-				}
-
-				$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
-				unset($forum_ary, $post_count_ary, $forum_read_ary);
-
-				if ($post_count_sql)
-				{
-					// NOTE: The following three queries could be a problem for big boards
-					
-					// Grab all the relevant data
-					$sql = 'SELECT COUNT(p.post_id) AS num_posts   
-						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
-						WHERE p.poster_id = ' . $user->data['user_id'] . " 
-							AND f.forum_id = p.forum_id 
-							$post_count_sql";
-					$result = $db->sql_query($sql);
-
-					$num_real_posts = min($user->data['user_posts'], $db->sql_fetchfield('num_posts', 0, $result));
-					$db->sql_freeresult($result);
-
-					$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-						WHERE p.poster_id = ' . $user->data['user_id'] . " 
-							AND f.forum_id = p.forum_id 
-							$post_count_sql
-						GROUP BY f.forum_id, f.forum_name  
-						ORDER BY num_posts DESC"; 
-					$result = $db->sql_query_limit($sql, 1);
-
-					$active_f_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-						WHERE p.poster_id = ' . $user->data['user_id'] . " 
-							AND t.topic_id = p.topic_id  
-							AND f.forum_id = t.forum_id 
-							$post_count_sql
-						GROUP BY t.topic_id, t.topic_title  
-						ORDER BY num_posts DESC";
-					$result = $db->sql_query_limit($sql, 1);
-
-					$active_t_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-				}
-				else
-				{
-					$num_real_posts = 0;
-					$active_f_row = $active_t_row = array();
+					$this->show_user_activity();
 				}
 
 				// Do the relevant calculations 
 				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
 				$posts_per_day = $user->data['user_posts'] / $memberdays;
-				$percentage = ($config['num_posts']) ? min(100, ($num_real_posts / $config['num_posts']) * 100) : 0;
-
-				$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
-				if (!empty($active_f_row['num_posts']))
-				{
-					$active_f_name = $active_f_row['forum_name'];
-					$active_f_id = $active_f_row['forum_id'];
-					$active_f_count = $active_f_row['num_posts'];
-					$active_f_pct = ($user->data['user_posts']) ? ($active_f_count / $user->data['user_posts']) * 100 : 0;
-				}
-				unset($active_f_row);
-
-				$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
-				if (!empty($active_t_row['num_posts']))
-				{
-					$active_t_name = $active_t_row['topic_title'];
-					$active_t_id = $active_t_row['topic_id'];
-					$active_t_count = $active_t_row['num_posts'];
-					$active_t_pct = ($user->data['user_posts']) ? ($active_t_count / $user->data['user_posts']) * 100 : 0;
-				}
-				unset($active_t_row);
-
+				$percentage = ($config['num_posts']) ? min(100, ($user->data['user_posts'] / $config['num_posts']) * 100) : 0;
 
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
@@ -231,21 +154,15 @@ class ucp_main
 					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
 					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
-					'ACTIVE_FORUM'		=> $active_f_name, 
-					'ACTIVE_FORUM_POSTS'=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
-					'ACTIVE_FORUM_PCT'	=> sprintf($user->lang['POST_PCT'], $active_f_pct),
-					'ACTIVE_TOPIC'		=> $active_t_name,
-					'ACTIVE_TOPIC_POSTS'=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count), 
-					'ACTIVE_TOPIC_PCT'	=> sprintf($user->lang['POST_PCT'], $active_t_pct),
 
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
 //					'S_GROUP_OPTIONS'	=> $group_options, 
+					'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
 					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;search_author=" . urlencode($user->data['username']) . "&amp;show_results=posts" : '',  
-					'U_ACTIVE_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$active_f_id",
-					'U_ACTIVE_TOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$active_t_id",)
+					)
 				);
 				break;
 
@@ -824,6 +741,82 @@ class ucp_main
 		// Set desired template
 		$this->tpl_name = 'ucp_main_' . $mode;
 	}
+
+	function show_user_activity()
+	{
+		global $auth, $template, $db, $user;
+		global $phpbb_root_path, $SID, $phpEx;
+
+		$post_count_ary = $auth->acl_getf('!f_postcount');
+		$forum_read_ary = $auth->acl_getf('!f_read');
+
+		$forum_ary = array();
+		foreach ($post_count_ary as $forum_id => $allowed)
+		{
+			if ($allowed['f_postcount'] || $forum_read_ary[$forum_id]['f_read'])
+			{
+				$forum_ary[] = $forum_id;
+			}
+		}
+
+		$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
+
+		if ($post_count_sql)
+		{
+			$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+				WHERE p.poster_id = ' . $user->data['user_id'] . " 
+					AND f.forum_id = p.forum_id 
+					$post_count_sql
+				GROUP BY f.forum_id, f.forum_name  
+				ORDER BY num_posts DESC"; 
+			$result = $db->sql_query_limit($sql, 1);
+			$active_f_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+				WHERE p.poster_id = ' . $user->data['user_id'] . " 
+					AND t.topic_id = p.topic_id  
+					AND f.forum_id = t.forum_id 
+					$post_count_sql
+				GROUP BY t.topic_id, t.topic_title  
+				ORDER BY num_posts DESC";
+			$result = $db->sql_query_limit($sql, 1);
+			$active_t_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
+		if (!empty($active_f_row['num_posts']))
+		{
+			$active_f_name = $active_f_row['forum_name'];
+			$active_f_id = $active_f_row['forum_id'];
+			$active_f_count = $active_f_row['num_posts'];
+			$active_f_pct = ($user->data['user_posts']) ? ($active_f_count / $user->data['user_posts']) * 100 : 0;
+		}
+
+		$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
+		if (!empty($active_t_row['num_posts']))
+		{
+			$active_t_name = $active_t_row['topic_title'];
+			$active_t_id = $active_t_row['topic_id'];
+			$active_t_count = $active_t_row['num_posts'];
+			$active_t_pct = ($user->data['user_posts']) ? ($active_t_count / $user->data['user_posts']) * 100 : 0;
+		}
+
+		$template->assign_vars(array(
+			'ACTIVE_FORUM'			=> $active_f_name,
+			'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
+			'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT'], $active_f_pct),
+			'ACTIVE_TOPIC'			=> censor_text($active_t_name),
+			'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
+			'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT'], $active_t_pct),
+			'U_ACTIVE_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$active_f_id",
+			'U_ACTIVE_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$active_t_id")
+		);
+	}
+
 }
 
 /**
