@@ -401,12 +401,12 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 	}
 
 	add_log('admin', 'LOG_USER_WARNING', $userrow['username']);
-	add_log('user', $userrow['user_id'], 'LOG_USER_WARNING_BODY', $warning);
+	$log_id = add_log('user', $userrow['user_id'], 'LOG_USER_WARNING_BODY', $warning);
 
 	$sql_ary = array(
 		'user_id'		=> $userrow['user_id'],
 		'post_id'		=> $post_id,
-		'log_id'		=> 0, // TODO : Obtain the log_id of the warning
+		'log_id'		=> $log_id,
 		'warning_time'	=> time(),
 	);
 

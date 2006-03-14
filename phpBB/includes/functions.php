@@ -1806,6 +1806,8 @@ function add_log()
 	}
 
 	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+
+	return $db->sql_nextid();
 }
 
 /**
