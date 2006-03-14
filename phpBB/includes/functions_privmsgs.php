@@ -76,7 +76,7 @@ $global_privmsgs_rules = array(
 		
 	CHECK_STATUS	=> array(
 		RULE_ANSWERED		=> array('check0' => 'replied', 'function' => '{CHECK0} == 1'),
-		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1'),
+		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1')),
 		
 	CHECK_TO		=> array(
 		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group', 'function' => 'in_array("g_" . {CHECK2}, {CHECK0}) || in_array("g_" . {CHECK2}, {CHECK1})'),
