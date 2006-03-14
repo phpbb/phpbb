@@ -1095,8 +1095,9 @@ function on_page($num_items, $per_page, $start)
 
 /**
 * Generate board url (example: http://www.foo.bar/phpBB)
+* @param bool $without_script_path if set to true the script path gets not appended (example: http://www.foo.bar)
 */
-function generate_board_url()
+function generate_board_url($without_script_path = false)
 {
 	global $config, $user;
 
@@ -1119,16 +1120,17 @@ function generate_board_url()
 	{
 		$url .= ':' . $server_port;
 	}
-	
-	$url .= $user->page['root_script_path'];
 
-	return $url;
+	if ($without_script_path)
+	{
+		return $url;
+	}
+
+	return $url . $user->page['root_script_path'];
 }
 
 /**
 * Redirects the user to another page then exits the script nicely
-* Do not prepend url with $phpbb_root_path
-* If not prefixed by / or full url given the board url will be prefixed
 */
 function redirect($url)
 {
@@ -1147,16 +1149,56 @@ function redirect($url)
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
 
-	// If relative path, prepend board url
-	if (strpos($url, '://') === false && $url{0} != '/')
-	{
-		$url = generate_board_url() . '/' . $url;
-	}
-
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
 	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false)
 	{
 		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
+	// Determine which type of redirect we need to handle...
+	$url_parts = parse_url($url);
+
+	if ($url_parts === false)
+	{
+		// Malformed url, redirect to current page...
+		$url = generate_board_url() . '/' . $user->page['page'];
+	}
+	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		// Full URL
+	}
+	else if ($url{0} == '/')
+	{
+		// Absolute uri, prepend direct url...
+		$url = generate_board_url_2(true) . $url;
+	}
+	else
+	{
+		// Relative uri
+		$pathinfo = pathinfo($url);
+
+		// Is the uri pointing to the current directory?
+		if ($pathinfo['dirname'] == '.')
+		{
+			$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . str_replace('./', '', $url);
+		}
+		else
+		{
+			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+			// Make sure we point to the correct directory, we transform the relative uri to an absolute uri...
+			$substract_path = str_replace(realpath($pathinfo['dirname']), '', realpath('./'));
+			$dir = str_replace($substract_path, '', $user->page['script_path']);
+
+			if (!$dir)
+			{
+				$url = '/' . $url;
+			}
+			else
+			{
+				$url = (strpos($dir, '/') !== 0) ? '/' . $dir . '/' . $url : $dir . '/' . $url;
+			}
+		}
 	}
 
 	// Redirect via an HTML form for PITA webservers
