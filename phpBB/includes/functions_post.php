@@ -833,7 +833,7 @@ function clean_html($tag)
 	}
 
 	$allowed_html_tags = preg_split('/, */', strtolower($board_config['allow_html_tags']));
-	$disallowed_attributes = '/^(?:style|on)/';
+	$disallowed_attributes = '/^(?:style|on)/i';
 
 	// Check if this is an end tag
 	preg_match('/<[^\w\/]*\/[\W]*(\w+)/', $tag[0], $matches);
