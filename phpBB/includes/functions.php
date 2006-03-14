@@ -1170,7 +1170,7 @@ function redirect($url)
 	else if ($url{0} == '/')
 	{
 		// Absolute uri, prepend direct url...
-		$url = generate_board_url_2(true) . $url;
+		$url = generate_board_url(true) . $url;
 	}
 	else
 	{
