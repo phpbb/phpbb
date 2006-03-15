@@ -83,6 +83,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_phpbb_load_search_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_phpbb_max_search_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_phpbb_min_search_chars', '3');
@@ -151,8 +153,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', '.*');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
