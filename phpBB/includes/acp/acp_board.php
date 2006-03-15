@@ -165,15 +165,7 @@ class acp_board
 						'load_moderators'		=> array('lang' => 'YES_MODERATORS',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',		'type' => 'radio:yes_no', 'explain' => false),
 						'load_user_activity'	=> array('lang' => 'LOAD_USER_ACTIVITY','type' => 'radio:yes_no', 'explain' => true),
-						'load_tplcompile'		=> array('lang' => 'RECOMPILE_TEMPLATES', 'type' => 'radio:yes_no', 'explain' => true),
-
-						'legend3'			=> 'SEARCH_SETTINGS',
-						'load_search'		=> array('lang' => 'YES_SEARCH',		'type' => 'radio:yes_no', 'explain' => true),
-						'search_interval'	=> array('lang' => 'SEARCH_INTERVAL',	'type' => 'text:3:4', 'explain' => true),
-						'search_type'		=> array('lang' => 'SEARCH_TYPE',		'type' => 'select', 'method' => 'select_search_type', 'explain' => true),
-						'load_search_upd'	=> array('lang' => 'YES_SEARCH_UPDATE',	'type' => 'radio:yes_no', 'explain' => true),
-						'min_search_chars'	=> array('lang' => 'MIN_SEARCH_CHARS',	'type' => 'text:3:3', 'explain' => true),
-						'max_search_chars'	=> array('lang' => 'MAX_SEARCH_CHARS',	'type' => 'text:3:3', 'explain' => true)
+						'load_tplcompile'		=> array('lang' => 'RECOMPILE_TEMPLATES', 'type' => 'radio:yes_no', 'explain' => true)
 					)
 				);
 			break;
@@ -570,33 +562,6 @@ class acp_board
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
-	}
-
-	function select_search_type($selected_type, $key = '')
-	{
-		global $phpbb_root_path, $phpEx;
-
-		$search_plugins = array();
-
-		$dp = opendir($phpbb_root_path . 'includes/search');
-		while (($file = readdir($dp)) !== false)
-		{
-			if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
-			{
-				$search_plugins[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
-			}
-		}
-
-		sort($search_plugins);
-
-		$search_select = '';
-		foreach ($search_plugins as $type)
-		{
-			$selected = ($selected_type == $type) ? ' selected="selected"' : '';
-			$search_select .= '<option value="' . $type . '"' . $selected . '>' . ucfirst(strtolower(str_replace('_', ' ', $type))) . '</option>';
-		}
-
-		return $search_select;
 	}
 }
 

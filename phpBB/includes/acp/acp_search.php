@@ -1,0 +1,522 @@
+<?php
+/** 
+*
+* @package acp
+* @version $Id$
+* @copyright (c) 2005 phpBB Group 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+*
+*/
+
+/**
+* @package acp
+*/
+class acp_search
+{
+	var $u_action;
+	var $state;
+	var $search;
+	var $max_post_id;
+	var $batch_size = 4000;
+
+	function main($id, $mode)
+	{
+		global $user;
+
+		$user->add_lang('acp/search');
+
+		switch ($mode)
+		{
+			case 'settings':
+				$this->settings($id, $mode);
+			break;
+
+			case 'index':
+				$this->index($id, $mode);
+			break;
+		}
+	}
+
+	function settings($id, $mode)
+	{
+		global $db, $user, $auth, $template, $cache;
+		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+
+		$submit = (isset($_POST['submit'])) ? true : false;
+
+		$search_types = $this->get_search_types();
+
+		$settings = array(
+			'search_interval'	=> 'integer',
+			'load_search'		=> 'bool',
+			'limit_search_load'	=> 'float',
+			'min_search_author_chars'	=> 'integer',
+			'search_store_results' => 'integer',
+		);
+
+		$search = null;
+		$error = false;
+		$search_options = '';
+		foreach ($search_types as $type)
+		{
+			if ($this->init_search($type, $search, $error))
+			{
+				continue;
+			}
+
+			$name = ucfirst(strtolower(str_replace('_', ' ', $type)));
+			$selected = ($config['search_type'] == $type) ? ' selected="selected"' : '';
+			$search_options .= '<option value="' . $type . '"' . $selected . '>' . $name . '</option>';
+
+			if (method_exists($search, 'acp'))
+			{
+				$vars = $search->acp();
+
+				if (!$submit)
+				{
+					$template->assign_block_vars('backend', array(
+						'NAME'		=> $name,
+						'SETTINGS'	=> $vars['tpl'])
+					);
+				}
+				else if (is_array($vars['config']))
+				{
+					$settings = array_merge($settings, $vars['config']);
+				}
+			}
+		}
+		unset($search);
+		unset($error);
+
+		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : array();
+		$updated = request_var('updated', false);
+
+		foreach ($settings as $config_name => $var_type)
+		{
+			if (!isset($cfg_array[$config_name]))
+			{
+				continue;
+			}
+
+			$config_value = $cfg_array[$config_name];
+			settype($config_value, $var_type);
+
+			if ($submit)
+			{
+				set_config($config_name, $config_value);
+				$updated = true;
+			}
+		}
+
+		if ($submit)
+		{
+			$extra_message = '';
+			if ($updated)
+			{
+				add_log('admin', 'LOG_CONFIG_SEARCH');
+			}
+
+			if (isset($cfg_array['search_type']) && in_array($cfg_array['search_type'], $search_types, true) && ($cfg_array['search_type'] != $config['search_type']))
+			{
+				$search = null;
+				$error = false;
+
+				if (!$this->init_search($cfg_array['search_type'], $search, $error))
+				{
+					if (confirm_box(true))
+					{
+						if (!method_exists($search, 'init') || !($error = $search->init()))
+						{
+							set_config('search_type', $cfg_array['search_type']);
+		
+							if (!$updated)
+							{
+								add_log('admin', 'LOG_CONFIG_SEARCH');
+							}
+							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . "<br /><a href=\"{$phpbb_admin_path}index.$phpEx$SID&amp;i=search&amp;mode=index\">&raquo; " . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
+						}
+						else
+						{
+							trigger_error($error);
+						}
+					}
+					else
+					{
+						confirm_box(false, $user->lang['CONFIRM_SEARCH_BACKEND'], build_hidden_fields(array(
+							'i'			=> $id,
+							'mode'		=> $mode,
+							'submit'	=> true,
+							'updated'	=> $updated,
+							'config'	=> array('search_type' => $cfg_array['search_type']),
+						)));
+					}
+				}
+				else
+				{
+					trigger_error($error);
+				}
+			}
+
+			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
+		}
+		unset($cfg_array);
+
+		$this->tpl_name = 'acp_search';
+		$this->page_title = 'ACP_SEARCH_SETTINGS';
+
+		$template->assign_vars(array(
+			'LIMIT_SEARCH_LOAD'		=> $config['limit_search_load'],
+			'MIN_SEARCH_AUTHOR_CHARS'	=> $config['min_search_author_chars'],
+			'SEARCH_INTERVAL'		=> $config['search_interval'],
+			'SEARCH_STORE_RESULTS'	=> $config['search_store_results'],
+
+			'S_SEARCH_TYPES'		=> $search_options,
+			'S_YES_SEARCH'			=> (bool) $config['load_search'],
+			'S_SETTINGS'			=> true,
+
+			'U_ACTION'				=> $this->u_action)
+		);
+	}
+
+	function index($id, $mode)
+	{
+		global $db, $user, $auth, $template, $cache;
+		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+
+		$action = (isset($_REQUEST['action']) && is_array($_REQUEST['action'])) ? key(request_var('action', array('' => false))) : request_var('action', '');
+		$this->state = explode(',', $config['search_indexing_state']);
+
+		if ($action)
+		{
+			switch ($action)
+			{
+				case 'progress_bar':
+					$type = request_var('type', '');
+					$this->display_progress_bar($type);
+				break;
+	
+				case 'delete':
+					$this->state[1] = 'delete';
+				break;
+	
+				case 'create':
+					$this->state[1] = 'create';
+				break;
+	
+				default:
+					trigger_error('NO_ACTION');
+			}
+
+			if (empty($this->state[0]))
+			{
+				$this->state[0] = request_var('search_type', '');
+			}
+
+			$this->search = null;
+			$error = false;
+			if ($this->init_search($this->state[0], $this->search, $error))
+			{
+				trigger_error($error);
+			}
+	
+			$action = &$this->state[1];
+	
+			@set_time_limit(0);
+	
+			$this->max_post_id = $this->get_max_post_id();
+	
+			$post_counter = (isset($this->state[2])) ? $this->state[2] : 0;
+			$this->state[2] = &$post_counter;
+			$this->save_state();
+	
+			if ($action == 'delete')
+			{
+				if (method_exists($this->search, 'delete_index'))
+				{
+					// pass a reference to myself so the $search object can make use of save_state() and attributes
+					$this->search->delete_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=delete");
+				}
+				else
+				{
+					$sql = 'SELECT post_id, poster_id
+						FROM ' . POSTS_TABLE . '
+						WHERE post_id >= ' . (int) ($post_counter + 1) . '
+							AND post_id < ' . (int) ($post_counter + $this->batch_size);
+					$result = $db->sql_query($sql);
+	
+					$ids = $posters = array();
+					while (false !== ($row = $db->sql_fetchrow($result)))
+					{
+						$ids[] = $row['post_id'];
+						$posters[] = $row['poster_id'];
+					}
+					$db->sql_freeresult($result);
+	
+					if (sizeof($ids))
+					{
+						$this->search->index_remove($ids, $posters);
+					}
+	
+					$post_counter += $this->batch_size;
+	
+					// save the current state
+					$this->save_state();
+	
+					if ($post_counter <= $this->max_post_id)
+					{
+						redirect($phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=delete", 3);
+					}
+				}
+	
+				$this->search->tidy();
+	
+				$this->state = array('');
+				$this->save_state();
+
+				/**
+				* @todo remove Javascript
+				*/
+				trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . '<script language="javascript" type="text/javascript">
+	<!--
+		close_waitscreen = 1;
+	//-->
+	</script>');
+			}
+			else
+			{
+				if (method_exists($this->search, 'create_index'))
+				{
+					// pass a reference to myself so the $search object can make use of save_state() and attributes
+					$this->search->create_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=create");
+				}
+				else
+				{
+					$sql = 'SELECT post_id, post_subject, post_text, poster_id
+						FROM ' . POSTS_TABLE . '
+						WHERE post_id >= ' . (int) ($post_counter + 1) . '
+							AND post_id < ' . (int) ($post_counter + $this->batch_size);
+					$result = $db->sql_query($sql);
+	
+					while (false !== ($row = $db->sql_fetchrow($result)))
+					{
+						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id']);
+					}
+					$db->sql_freeresult($result);
+	
+					$post_counter += $this->batch_size;
+	
+					// save the current state
+					$this->save_state();
+	
+					if ($post_counter <= $this->max_post_id)
+					{
+						redirect($phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=create", 3);
+					}
+				}
+	
+				$this->search->tidy();
+	
+				$this->state = array('');
+				$this->save_state();
+
+				/**
+				* @todo remove Javascript
+				*/
+				trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . '<script language="javascript" type="text/javascript">
+	<!--
+		close_waitscreen = 1;
+	//-->
+	</script>');
+			}
+		}
+
+		$search_types = $this->get_search_types();
+
+		$search = null;
+		$error = false;
+		$search_options = '';
+		foreach ($search_types as $type)
+		{
+			if ($this->init_search($type, $search, $error) || !method_exists($search, 'index_created'))
+			{
+				continue;
+			}
+
+			$name = ucfirst(strtolower(str_replace('_', ' ', $type)));
+
+			$data = array();
+			if (method_exists($search, 'index_stats'))
+			{
+				$data = $search->index_stats();
+			}
+
+			$statistics = array();
+			foreach ($data as $statistic => $value)
+			{
+				$n = sizeof($statistics);
+				if ($n && sizeof($statistics[$n - 1]) < 3)
+				{
+					$statistics[$n - 1] += array('statistic_2' => $statistic, 'value_2' => $value);
+				}
+				else
+				{
+					$statistics[] = array('statistic_1' => $statistic, 'value_1' => $value);
+				}
+			}
+
+			$template->assign_block_vars('backend', array(
+				'L_NAME'			=> $name,
+				'NAME'				=> $type,
+
+				'S_ACTIVE'			=> ($type == $config['search_type']) ? true : false,
+				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('search_type' => $type)),
+				'S_INDEXED'			=> (bool) $search->index_created(),
+				'S_STATS'			=> (bool) sizeof($statistics))
+			);
+
+			foreach ($statistics as $statistic)
+			{
+				$template->assign_block_vars('backend.data', array(
+					'STATISTIC_1'	=> $statistic['statistic_1'],
+					'VALUE_1'		=> $statistic['value_1'],
+					'STATISTIC_2'	=> (isset($statistic['statistic_2'])) ? $statistic['statistic_2'] : '',
+					'VALUE_2'		=> (isset($statistic['value_2'])) ? $statistic['value_2'] : '')
+				);
+			}
+		}
+		unset($search);
+		unset($error);
+		unset($statistics);
+		unset($data);
+
+		$this->tpl_name = 'acp_search';
+		$this->page_title = 'ACP_SEARCH_INDEX';
+
+		$template->assign_vars(array(
+			'S_INDEX'				=> true,
+			'U_ACTION'				=> $this->u_action,
+			'U_PROGRESS_BAR'		=> $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=progress_bar") // don't use &amp; here
+		);
+
+		if (isset($this->state[1]))
+		{
+			$template->assign_vars(array(
+				'S_CONTINUE_INDEXING'	=> $this->state[1],
+				'U_CONTINUE_INDEXING'	=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=" . $this->state[1],
+				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_INDEX_DELETING'],
+				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_INDEX_DELETING_EXPLAIN'])
+			);
+		}
+	}
+
+	function display_progress_bar($type)
+	{
+		global $template, $user;
+		adm_page_header('PROGRESS_BAR');
+
+		$template->set_filenames(array(
+			'body'	=> 'search_index_progress_bar.html')
+		);
+
+		$template->assign_vars(array(
+			'L_PROGRESS'			=> ($type == 'create') ? $user->lang['INDEXING_IN_PROGRESS'] : $user->lang['DELETING_INDEX_IN_PROGRESS'],
+			'L_PROGRESS_EXPLAIN'	=> ($type == 'create') ? $user->lang['INDEXING_IN_PROGRESS_EXPLAIN'] : $user->lang['DELETING_INDEX_IN_PROGRESS_EXPLAIN'])
+		);
+
+		adm_page_footer();
+	}
+
+	function get_search_types()
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$search_types = array();
+
+		$dp = opendir($phpbb_root_path . 'includes/search');
+		while (($file = readdir($dp)) !== false)
+		{
+			if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
+			{
+				$search_types[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
+			}
+		}
+		sort($search_types);
+
+		return $search_types;
+	}
+
+	function get_max_post_id()
+	{
+		global $db;
+
+		$sql = 'SELECT MAX(post_id) as max_post_id
+			FROM '. POSTS_TABLE;
+		$result = $db->sql_query($sql);
+
+		return $db->sql_fetchfield('max_post_id', 0, $result);
+	}
+
+	function save_state($state = false)
+	{
+		if ($state)
+		{
+			$this->state = $state;
+		}
+
+		ksort($this->state);
+
+		set_config('search_indexing_state', implode(',', $this->state), true);
+	}
+
+	/**
+	* Initialises a search backend object
+	*
+	* @return false if no error occured else an error message
+	*/
+	function init_search($type, &$search, &$error)
+	{
+		global $phpbb_root_path, $phpEx, $user;
+
+		if (!preg_match('#^\w+$#', $type) || !file_exists("{$phpbb_root_path}includes/search/$type.$phpEx"))
+		{
+			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
+			return $error;
+		}
+
+		include_once("{$phpbb_root_path}includes/search/$type.$phpEx");
+
+		$error = false;
+		$search = new $type($error);
+
+		return $error;
+	}
+}
+
+/**
+* @package module_install
+*/
+class acp_search_info
+{
+	function module()
+	{
+		return array(
+			'filename'	=> 'acp_search',
+			'title'		=> 'ACP_SEARCH',
+			'version'	=> '1.0.0',
+			'modes'		=> array(
+				'settings'	=> array('title' => 'ACP_SEARCH_SETTINGS', 'auth' => 'acl_a_server'),
+				'index'		=> array('title' => 'ACP_SEARCH_INDEX', 'auth' => 'acl_a_server'),
+			),
+		);
+	}
+
+	function install()
+	{
+	}
+
+	function uninstall()
+	{
+	}
+}
+
+?>

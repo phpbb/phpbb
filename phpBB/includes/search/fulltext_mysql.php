@@ -11,7 +11,7 @@
 /**
 * @ignore
 */
-include($phpbb_root_path . 'includes/search/search.' . $phpEx);
+include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 
 /**
 * @package search
@@ -20,30 +20,49 @@ include($phpbb_root_path . 'includes/search/search.' . $phpEx);
 */
 class fulltext_mysql extends search_backend
 {
+	var $stats;
+
 	function fulltext_mysql(&$error)
 	{
-		global $db;
+		$error = false;
+	}
 
-		/**
-		* @todo Move some of this to ACP
-		* @todo Add SET SESSION ft_stopword_file = '' to ACP?
-		*/
+	/**
+	* Checks for correct MySQL version and stores max/min word length in the config
+	*/
+	function init()
+	{
+		global $db, $user;
 
-		$result = $db->sql_query('SELECT VERSION() AS mysql_version', 7200);
-		$version = ($row = $db->sql_fetchrow($result)) ? $row['mysql_version'] : '';
+		if (strpos(SQL_LAYER, 'mysql') === false)
+		{
+			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+		}
+
+		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
+		$version = $db->sql_fetchfield('mysql_version', 0, $result);
 		$db->sql_freeresult($result);
+
+		if (!preg_match('#^4|5|6#s', $version))
+		{
+			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+		}
 
 		$sql = 'SHOW VARIABLES
 			LIKE \'ft\_%\'';
-		$result = $db->sql_query($sql, 7200);
+		$result = $db->sql_query($sql);
 
+		$mysql_info = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$this->mysql_info[$row['Variable_name']] = $row['Value'];
+			$mysql_info[$row['Variable_name']] = $row['Value'];
 		}
 		$db->sql_freeresult($result);
 
-		$error = (!preg_match('#^4|5|6#s', $version)) ? true : false;
+		set_config('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
+		set_config('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
+
+		return false;
 	}
 
 	/**
@@ -100,7 +119,7 @@ class fulltext_mysql extends search_backend
 
 			// check word length
 			$clean_len = strlen(str_replace('*', '', $clean_word));
-			if (($clean_len < $this->mysql_info['ft_min_word_len']) || ($clean_len > $this->mysql_info['ft_max_word_len']))
+			if (($clean_len < $config['fulltext_mysql_min_word_len']) || ($clean_len > $config['fulltext_mysql_max_word_len']))
 			{
 				$this->common_words[] = $word;
 				unset($this->split_words[$i]);
@@ -146,7 +165,7 @@ class fulltext_mysql extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (strlen($text[$i]) < $this->mysql_info['ft_min_word_len'] || strlen($text[$i]) > $this->mysql_info['ft_max_word_len'])
+			if (strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
 			{
 				unset($text[$i]);
 			}
@@ -563,6 +582,128 @@ class fulltext_mysql extends search_backend
 
 		// destroy too old cached search results
 		$this->destroy_cache(array());
+	}
+
+	/**
+	* Create fulltext index
+	*/
+	function create_index($acp_module, $u_action)
+	{
+		global $db;
+
+		if (strpos(SQL_LAYER, 'mysql') === false)
+		{
+			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+		}
+
+		if (!is_array($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		if (!isset($this->stats['post_subject']))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_subject)');
+		}
+
+		if (!isset($this->stats['post_text']))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_text)');
+		}
+
+		$db->sql_query('TRUNCATE ' . SEARCH_TABLE);
+	}
+
+	/**
+	* Drop fulltext index
+	*/
+	function delete_index($acp_module, $u_action)
+	{
+		global $db;
+
+		if (strpos(SQL_LAYER, 'mysql') === false)
+		{
+			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+		}
+
+		if (!is_array($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		if (isset($this->stats['post_subject']))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_subject');
+		}
+
+		if (isset($this->stats['post_text']))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_text');
+		}
+
+		$db->sql_query('TRUNCATE ' . SEARCH_TABLE);
+	}
+
+	/**
+	* Returns true if both FULLTEXT indexes exist
+	*/
+	function index_created()
+	{
+		if (!is_array($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		return (isset($this->stats['post_text']) && isset($this->stats['post_subject'])) ? true : false;
+	}
+
+	/**
+	* Returns an associative array containing information about the indexes
+	*/
+	function index_stats()
+	{
+		global $user;
+
+		if (!is_array($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		return array(
+			$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			$user->lang['FULLTEXT_MYSQL_TEXT_CARDINALITY']		=> isset($this->stats['post_text']['Cardinality']) ? $this->stats['post_text']['Cardinality'] : 0,
+			$user->lang['FULLTEXT_MYSQL_SUBJECT_CARDINALITY']	=> isset($this->stats['post_subject']['Cardinality']) ? $this->stats['post_subject']['Cardinality'] : 0);
+	}
+
+	function get_stats()
+	{
+		global $db;
+
+		$sql = 'SHOW INDEX
+			FROM ' . POSTS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['Index_type'] == 'FULLTEXT' || $row['Comment'] == 'FULLTEXT')
+			{
+				if ($row['Column_name'] == 'post_text')
+				{
+					$this->stats['post_text'] = $row;
+				}
+				else if ($row['Column_name'] == 'post_subject')
+				{
+					$this->stats['post_subject'] = $row;
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(*) as total_posts
+			FROM ' . POSTS_TABLE;
+		$result = $db->sql_query($sql);
+		$this->stats['total_posts'] = $db->sql_fetchfield('total_posts', 0, $result);
+		$db->sql_freeresult($result);
 	}
 }
 

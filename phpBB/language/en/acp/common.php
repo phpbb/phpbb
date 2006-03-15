@@ -126,7 +126,9 @@ $lang = array_merge($lang, array(
 	
 	'ACP_RANKS'					=> 'Ranks',
 	'ACP_REASONS'				=> 'Report/Denial Reasons',
-	
+
+	'ACP_SEARCH_INDEX'			=> 'Search Index',
+	'ACP_SEARCH_SETTINGS'		=> 'Search Settings',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
 	'ACP_SMILIES'				=> 'Smilies',
@@ -365,6 +367,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_EMAIL'		=> '<b>Altered email settings</b>',
 	'LOG_CONFIG_LOAD'		=> '<b>Altered load settings</b>',
 	'LOG_CONFIG_MESSAGE'	=> '<b>Altered private message settings</b>',
+	'LOG_CONFIG_SEARCH'		=> '<b>Altered search settings</b>',
 	'LOG_CONFIG_SERVER'		=> '<b>Altered server settings</b>',
 	'LOG_CONFIG_SETTINGS'	=> '<b>Altered board settings</b>',
 

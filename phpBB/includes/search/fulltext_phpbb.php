@@ -11,7 +11,7 @@
 /**
 * @ignore
 */
-include($phpbb_root_path . 'includes/search/search.' . $phpEx);
+include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 
 /**
 * @package search
@@ -20,6 +20,8 @@ include($phpbb_root_path . 'includes/search/search.' . $phpEx);
 */
 class fulltext_phpbb extends search_backend
 {
+	var $stats;
+
 	function fulltext_phpbb(&$error)
 	{
 		$error = false;
@@ -887,13 +889,13 @@ class fulltext_phpbb extends search_backend
 
 		$destroy_cache_words = array();
 
-		// Remove common (> 50% of posts ) words
+		// Remove common (> 60% of posts ) words
 		if ($config['num_posts'] >= 100)
 		{
 			$sql = 'SELECT word_id
 				FROM ' . SEARCH_MATCH_TABLE . '
 				GROUP BY word_id
-				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.5);
+				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
 			$result = $db->sql_query($sql);
 
 			if ($row = $db->sql_fetchrow($result))
@@ -950,6 +952,94 @@ class fulltext_phpbb extends search_backend
 
 		// destroy cached search results containing any of the words that are now common or were removed
 		$this->destroy_cache(array_unique($destroy_cache_words));
+	}
+
+	/**
+	* Deletes all words from the index
+	*/
+	function delete_index($acp_module, $u_action)
+	{
+		global $db;
+
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE ' : 'DELETE FROM ') . SEARCH_WORD_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE ' : 'DELETE FROM ') . SEARCH_MATCH_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE ' : 'DELETE FROM ') . SEARCH_TABLE);
+	}
+
+	/**
+	* Returns true if both FULLTEXT indexes exist
+	*/
+	function index_created()
+	{
+		if (!is_array($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		return ($this->stats['total_words'] && $this->stats['total_matches']) ? true : false;
+	}
+
+	/**
+	* Returns an associative array containing information about the indexes
+	*/
+	function index_stats()
+	{
+		global $user;
+
+		if (!is_array($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		return array(
+			$user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
+			$user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
+	}
+
+	function get_stats()
+	{
+		global $db;
+
+		$sql = 'SELECT COUNT(*) as total_words
+			FROM ' . SEARCH_WORD_TABLE;
+		$result = $db->sql_query($sql);
+		$this->stats['total_words'] = $db->sql_fetchfield('total_words', 0, $result);
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(*) as total_matches
+			FROM ' . SEARCH_MATCH_TABLE;
+		$result = $db->sql_query($sql);
+		$this->stats['total_matches'] = $db->sql_fetchfield('total_matches', 0, $result);
+		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Returns a list of options for the ACP to display
+	*/
+	function acp()
+	{
+		global $user, $config;
+
+		$tpl = '
+		<dl>
+			<dt><label for="fulltext_phpbb_load_search_upd">' . $user->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . $user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
+			<dd><input type="radio" id="fulltext_phpbb_load_search_upd" name="config[fulltext_phpbb_load_search_upd]" value="1"' . (($config['fulltext_phpbb_load_search_upd']) ? ' checked="checked"' : '') . ' class="radio" />&nbsp;' . $user->lang['YES'] . '&nbsp;&nbsp;<input type="radio" name="config[fulltext_phpbb_load_search_upd]" value="0"' . ((!$config['fulltext_phpbb_load_search_upd']) ? ' checked="checked"' : '') . ' class="radio" />&nbsp;' . $user->lang['NO'] . '</dd>
+		</dl>
+		<dl>
+			<dt><label for="fulltext_phpbb_min_search_chars">' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_phpbb_min_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_phpbb_min_search_chars]" value="' . $config['fulltext_phpbb_min_search_chars'] . '" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="fulltext_phpbb_max_search_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_phpbb_max_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_phpbb_max_search_chars]" value="' . $config['fulltext_phpbb_max_search_chars'] . '" /></dd>
+		</dl>
+		';
+
+		// These are fields required in the config table
+		return array(
+			'tpl'		=> $tpl,
+			'config'	=> array('fulltext_phpbb_load_search_upd' => 'bool', 'fulltext_phpbb_min_search_chars' => 'integer', 'fulltext_phpbb_max_search_chars' => 'integer')
+		);
 	}
 }
 
