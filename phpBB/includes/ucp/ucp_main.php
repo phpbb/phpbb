@@ -85,7 +85,15 @@ class ucp_main
 				}
 				$db->sql_freeresult($result);
 
-				$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, false, $topic_list);
+				$topic_tracking_info = array();
+				if ($config['load_db_lastread'])
+				{
+					$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, false, $topic_list);
+				}
+				else
+				{
+					$topic_tracking_info = get_complete_topic_tracking(0, $topic_list, $topic_list);
+				}
 
 				foreach ($topic_list as $topic_id)
 				{
