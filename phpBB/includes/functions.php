@@ -2302,7 +2302,7 @@ function page_footer()
 	if (!defined('IN_CRON'))
 	{
 		$cron_type = '';
-
+	
 		if (time() - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
 		{
 			// Process email queue

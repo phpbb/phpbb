@@ -75,6 +75,8 @@ class acp_forums
 					}
 
 					$auth->acl_clear_prefetch();
+					$cache->destroy('sql', FORUMS_TABLE);
+
 					recalc_btree('forum_id', FORUMS_TABLE);
 
 					trigger_error($user->lang['FORUM_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
@@ -174,6 +176,8 @@ class acp_forums
 						}
 
 						$auth->acl_clear_prefetch();
+						$cache->destroy('sql', FORUMS_TABLE);
+	
 						recalc_btree('forum_id', FORUMS_TABLE);
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
@@ -306,6 +310,8 @@ class acp_forums
 				add_log('admin', $log_action, $forum_data['forum_name'], $move_forum_name);
 				unset($forum_data);
 	
+				$cache->destroy('sql', FORUMS_TABLE);
+
 			break;
 
 			case 'sync':
@@ -328,6 +334,7 @@ class acp_forums
 
 				sync('forum', 'forum_id', $forum_id);
 				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
+				$cache->destroy('sql', FORUMS_TABLE);
 
 				$template->assign_var('L_FORUM_RESYNCED', sprintf($user->lang['FORUM_RESYNCED'], $row['forum_name']));
 

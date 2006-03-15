@@ -303,6 +303,7 @@ class acp_icons
 				}
 				
 				$cache->destroy('icons');
+				$cache->destroy('sql', $table);
 
 				if ($action == 'modify')
 				{
@@ -427,6 +428,8 @@ class acp_icons
 					}
 
 					$cache->destroy('icons');
+					$cache->destroy('sql', $table);
+	
 					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
 				}
 				else
@@ -553,6 +556,7 @@ class acp_icons
 				$db->sql_query($sql);
 
 				$cache->destroy('icons');
+				$cache->destroy('sql', $table);
 
 			break;
 		}

@@ -85,7 +85,7 @@ class ucp_main
 				}
 				$db->sql_freeresult($result);
 
-				$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, array(0 => false), $topic_list);
+				$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, false, $topic_list);
 
 				foreach ($topic_list as $topic_id)
 				{
@@ -334,11 +334,14 @@ class ucp_main
 					ORDER BY t.topic_last_post_time DESC';
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-				$topic_list = $global_announce_list = $rowset = array();
+				$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$topic_list[] = $row['topic_id'];
 					$rowset[$row['topic_id']] = $row;
+
+					$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
+					$topic_forum_list[$row['forum_id']]['topics'][] = $row['topic_id'];
 
 					if ($row['topic_type'] == POST_GLOBAL)
 					{
@@ -347,10 +350,21 @@ class ucp_main
 				}
 				$db->sql_freeresult($result);
 
-				/**
-				* @todo get_topic_tracking able to fetch from multiple forums
-				*/
-				$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, array(0 => false), $global_announce_list);
+				$topic_tracking_info = array();
+				if ($config['load_db_lastread'])
+				{
+					foreach ($topic_forum_list as $f_id => $topic_row)
+					{
+						$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), ($f_id == 0) ? $global_announce_list : false);
+					}
+				}
+				else
+				{
+					foreach ($topic_forum_list as $f_id => $topic_row)
+					{
+						$topic_tracking_info += get_complete_topic_tracking($f_id, $topic_row['topics'], $global_announce_list);
+					}
+				}
 
 				foreach ($topic_list as $topic_id)
 				{

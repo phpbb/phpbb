@@ -128,6 +128,11 @@ $lang = array_merge($lang, array(
 
 	'MCP_ADD'						=> 'Add a warning',
 
+	'MCP_BAN'					=> 'Banning',
+	'MCP_BAN_EMAILS'			=> 'Ban Emails',
+	'MCP_BAN_IPS'				=> 'Ban IPs',
+	'MCP_BAN_USERNAMES'			=> 'Ban Usernames',
+
 	'MCP_LOGS'						=> 'Moderator Logs',
 	'MCP_LOGS_FRONT'				=> 'Front Page',
 	'MCP_LOGS_FORUM_VIEW'			=> 'Forum Logs',

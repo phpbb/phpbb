@@ -154,11 +154,6 @@ class acm
 	{
 		global $phpEx;
 
-		if (!$this->_exists($var_name))
-		{
-			return;
-		}
-
 		if ($var_name == 'sql' && !empty($table))
 		{
 			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
@@ -166,7 +161,7 @@ class acm
 			$dir = opendir($this->cache_dir);
 			while ($entry = readdir($dir))
 			{
-				if (substr($entry, 0, 4) != 'sql_')
+				if (strpos($entry, 'sql_') !== 0)
 				{
 					continue;
 				}
@@ -181,8 +176,16 @@ class acm
 				}
 			}
 			@closedir($dir);
+
+			return;
 		}
-		else if ($var_name{0} == '_')
+
+		if (!$this->_exists($var_name))
+		{
+			return;
+		}
+
+		if ($var_name{0} == '_')
 		{
 			@unlink($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
@@ -251,7 +254,7 @@ class acm
 
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$query_id = 'Cache id #' . sizeof($this->sql_rowset);
+		$query_id = sizeof($this->sql_rowset);
 
 		if (!file_exists($this->cache_dir . 'sql_' . md5($query) . ".$phpEx"))
 		{
@@ -285,7 +288,7 @@ class acm
 			@flock($fp, LOCK_EX);
 
 			$lines = array();
-			$query_id = 'Cache id #' . sizeof($this->sql_rowset);
+			$query_id = sizeof($this->sql_rowset);
 			$this->sql_rowset[$query_id] = array();
 
 			while ($row = $db->sql_fetchrow($query_result))

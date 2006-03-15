@@ -643,11 +643,11 @@ class session
 	* Check for banned user
 	*
 	* Checks whether the supplied user is banned by id, ip or email. If no parameters
-	* are passed to the method pre-existing session data is used. This routine does 
-	* not return on finding a banned user, it outputs a relevant message and stops 
-	* execution.
+	* are passed to the method pre-existing session data is used. If $return is false
+	* this routine does not return on finding a banned user , it outputs a relevant 
+	* message and stops execution.
 	*/
-	function check_ban($user_id = false, $user_ip = false, $user_email = false)
+	function check_ban($user_id = false, $user_ip = false, $user_email = false, $return = false)
 	{
 		global $config, $db;
 		
@@ -684,7 +684,7 @@ class session
 		}
 		$db->sql_freeresult($result);
 
-		if ($banned)
+		if ($banned && !$return)
 		{
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
@@ -703,6 +703,11 @@ class session
 			trigger_error($message);
 		}
 		
+		if ($banned)
+		{
+			return true;
+		}
+
 		return false;
 	}
 	
@@ -928,8 +933,7 @@ class user extends session
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		// Is board disabled and user not an admin or moderator?
-		// TODO
-		// New ACL enabling board access while offline?
+		// @todo new ACL enabling board access while offline?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
 		{
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';

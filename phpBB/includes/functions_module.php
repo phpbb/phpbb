@@ -209,7 +209,7 @@ class p_master
 
 	/**
 	* Check module authorisation
-	* @todo implement $this->is_module_id
+	* @todo Have a look at the eval statement and replace with other code...
 	*/
 	function module_auth($module_auth)
 	{
@@ -291,7 +291,7 @@ class p_master
 	*/
 	function load_active($mode = false)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $user;
 
 		$module_path = $phpbb_root_path . 'includes/' . $this->p_class;
 		$icat = request_var('icat', '');
@@ -322,7 +322,14 @@ class p_master
 			$this->module = new $instance($this);
 
 			// We pre-define the action parameter we are using all over the place
-			$this->module->u_action = "{$phpbb_admin_path}index.$phpEx$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+			if (defined('IN_ADMIN'))
+			{
+				$this->module->u_action = "{$phpbb_admin_path}index.$phpEx$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+			}
+			else
+			{
+				$this->module->u_action = "{$phpbb_root_path}{$user->page['page_dir']}{$user->page['page_name']}$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+			}
 
 			// Execute the main method for the new instance, we send the module
 			// id and mode as parameters

@@ -755,6 +755,9 @@ class acp_modules
 		$p_class = str_replace(array('.', '/', '\\'), '', basename($this->module_class));
 		
 		$cache->destroy('_modules_' . $p_class);
+
+		// Additionally remove sql cache
+		$cache->destroy('sql', MODULES_TABLE);
 	}
 
 	/**

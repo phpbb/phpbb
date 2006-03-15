@@ -53,15 +53,6 @@ class acp_ban
 			trigger_error($user->lang['BAN_UPDATE_SUCESSFUL'] . adm_back_link($this->u_action));
 		}
 
-		// Ban length options
-		$ban_end_text = array(0 => $user->lang['PERMANENT'], 30 => $user->lang['30_MINS'], 60 => $user->lang['1_HOUR'], 360 => $user->lang['6_HOURS'], 1440 => $user->lang['1_DAY'], 10080 => $user->lang['7_DAYS'], 20160 => $user->lang['2_WEEKS'], 40320 => $user->lang['1_MONTH'], -1 => $user->lang['UNTIL'] . ' -&gt; ');
-
-		$ban_end_options = '';
-		foreach ($ban_end_text as $length => $text)
-		{
-			$ban_end_options .= '<option value="' . $length . '">' . $text . '</option>';
-		}
-
 		// Define language vars
 		$this->page_title = $user->lang[strtoupper($mode) . '_BAN'];
 
@@ -70,6 +61,53 @@ class acp_ban
 		$l_unban_title = $user->lang[strtoupper($mode) . '_UNBAN'];
 		$l_unban_explain = $user->lang[strtoupper($mode) . '_UNBAN_EXPLAIN'];
 		$l_no_ban_cell = $user->lang[strtoupper($mode) . '_NO_BANNED'];
+
+		switch ($mode)
+		{
+			case 'user':
+				$l_ban_cell = $user->lang['USERNAME'];
+			break;
+
+			case 'ip':
+				$l_ban_cell = $user->lang['IP_HOSTNAME'];
+			break;
+
+			case 'email':
+				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+			break;
+		}
+
+		$this->display_ban_options($mode);
+
+		$template->assign_vars(array(
+			'L_TITLE'				=> $this->page_title,
+			'L_EXPLAIN'				=> $l_ban_explain,
+			'L_UNBAN_TITLE'			=> $l_unban_title,
+			'L_UNBAN_EXPLAIN'		=> $l_unban_explain,
+			'L_BAN_CELL'			=> $l_ban_cell,
+			'L_BAN_EXCLUDE_EXPLAIN'	=> $l_ban_exclude_explain,
+			'L_NO_BAN_CELL'			=> $l_no_ban_cell,
+
+			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
+			
+			'U_ACTION'			=> $this->u_action,
+			'U_FIND_USER'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_ban&amp;field=ban",
+			)
+		);
+	}
+
+	function display_ban_options($mode)
+	{
+		global $user, $db, $template;
+
+		// Ban length options
+		$ban_end_text = array(0 => $user->lang['PERMANENT'], 30 => $user->lang['30_MINS'], 60 => $user->lang['1_HOUR'], 360 => $user->lang['6_HOURS'], 1440 => $user->lang['1_DAY'], 10080 => $user->lang['7_DAYS'], 20160 => $user->lang['2_WEEKS'], 40320 => $user->lang['1_MONTH'], -1 => $user->lang['UNTIL'] . ' -&gt; ');
+
+		$ban_end_options = '';
+		foreach ($ban_end_text as $length => $text)
+		{
+			$ban_end_options .= '<option value="' . $length . '">' . $text . '</option>';
+		}
 
 		switch ($mode)
 		{
@@ -163,22 +201,9 @@ class acp_ban
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'				=> $this->page_title,
-			'L_EXPLAIN'				=> $l_ban_explain,
-			'L_UNBAN_TITLE'			=> $l_unban_title,
-			'L_UNBAN_EXPLAIN'		=> $l_unban_explain,
-			'L_BAN_CELL'			=> $l_ban_cell,
-			'L_BAN_EXCLUDE_EXPLAIN'	=> $l_ban_exclude_explain,
-			'L_NO_BAN_CELL'			=> $l_no_ban_cell,
-
-			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
 			'S_BAN_END_OPTIONS'	=> $ban_end_options,
 			'S_BANNED_OPTIONS'	=> ($banned_options) ? true : false,
-			'BANNED_OPTIONS'	=> $banned_options,
-			
-			'U_ACTION'			=> $this->u_action,
-			'U_FIND_USER'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_ban&amp;field=ban",
-			)
+			'BANNED_OPTIONS'	=> $banned_options)
 		);
 	}
 }

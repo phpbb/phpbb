@@ -750,6 +750,8 @@ if ($submit || $preview || $refresh)
 
 				if (!$to_forum_id)
 				{
+					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+
 					$template->assign_vars(array(
 						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true),
 						'S_UNGLOBALISE'		=> true)

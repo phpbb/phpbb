@@ -52,6 +52,7 @@ $lang = array_merge($lang, array(
 	'IP_BAN'					=> 'Ban one or more ips',
 	'IP_BAN_EXCLUDE_EXPLAIN'	=> 'Enable this to exclude the entered IP from all current bans.',
 	'IP_BAN_EXPLAIN'			=> 'To specify several different IP\'s or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *',
+	'IP_HOSTNAME'				=> 'IP addresses or hostnames',
 	'IP_NO_BANNED'				=> 'No banned IP addresses',
 	'IP_UNBAN'					=> 'Un-ban or Un-exclude IPs',
 	'IP_UNBAN_EXPLAIN'			=> 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IP\'s have a grey background.',
