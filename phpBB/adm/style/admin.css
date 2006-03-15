@@ -217,7 +217,7 @@ span.corners-top span, span.corners-bottom span {
 	}
 
 /* Link styles for the sub-section links */
-#menu li a {
+#menu li a, #menu li span {
 	display: block;
 	padding: 3px 2px 3px 10px;
 	text-decoration: none;
@@ -227,10 +227,15 @@ span.corners-top span, span.corners-bottom span {
 	background-color: #ECECEC;
 	border-top: 1px solid #FFFFFF;
 	}
-#menu li a:hover {
+#menu li a:hover, #menu li#activemenu span {
 	text-decoration: none;
 	background-color: #FFA34F;
 	color: #FFFFFF;
+	}
+#menu li span.completed {
+	text-decoration: none;
+	background-color: #B9DBB3;
+	color: #006699;
 	}
 #menu li.header {
 	display: block;

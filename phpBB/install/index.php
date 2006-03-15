@@ -206,6 +206,10 @@ class module
 				{
 					$this->sub = strtolower((in_array(strtoupper($selected_submod), $row['module_subs'])) ? $selected_submod : $row['module_subs'][0]);
 				}
+				elseif (is_array($row['module_stages']))
+				{
+					$this->sub = strtolower((in_array(strtoupper($selected_submod), $row['module_stages'])) ? $selected_submod : $row['module_stages'][0]);
+				}
 				else
 				{
 					$this->sub = '';
@@ -358,6 +362,24 @@ class module
 								'L_TITLE'		=> $l_option,
 								'S_SELECTED'	=> ($this->sub == $option),
 								'U_TITLE'		=> $url,
+							));
+						}
+					}
+
+					if (is_array($this->module_ary[$this->id]['stages']))
+					{
+						$subs = $this->module_ary[$this->id]['stages']; 
+						$matched = false;
+						foreach ($subs as $option)
+						{
+							$l_option = (!empty($lang['STAGE_' . $option])) ? $lang['STAGE_' . $option] : preg_replace('#_#', ' ', $option);
+							$option = strtolower($option);
+							$matched = ($this->sub == $option) ? true : $matched;
+
+							$template->assign_block_vars('l_block2', array(
+								'L_TITLE'		=> $l_option,
+								'S_SELECTED'	=> ($this->sub == $option),
+								'S_COMPLETE'	=> !$matched,
 							));
 						}
 					}
