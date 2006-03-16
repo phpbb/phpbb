@@ -838,8 +838,6 @@ CREATE TABLE phpbb_topics_marking (
   PRIMARY KEY (user_id, topic_id)
 );
 
-CREATE INDEX forum_id_phpbb_topics_posted on phpbb_topics_posted (forum_id);
-
 # Table: phpbb_topics_posted
 CREATE TABLE phpbb_topics_posted (
   user_id mediumint(8) NOT NULL DEFAULT '0',
