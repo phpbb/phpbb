@@ -217,7 +217,7 @@ span.corners-top span, span.corners-bottom span {
 	}
 
 /* Link styles for the sub-section links */
-#menu li a, #menu li span {
+#menu li span {
 	display: block;
 	padding: 3px 2px 3px 10px;
 	text-decoration: none;
@@ -227,7 +227,7 @@ span.corners-top span, span.corners-bottom span {
 	background-color: #ECECEC;
 	border-top: 1px solid #FFFFFF;
 	}
-#menu li a:hover, #menu li#activemenu span {
+#menu li a:hover span, #menu li#activemenu span {
 	text-decoration: none;
 	background-color: #FFA34F;
 	color: #FFFFFF;
@@ -248,13 +248,13 @@ span.corners-top span, span.corners-bottom span {
 	margin-top: 5px;
 	text-transform: uppercase;
 	}
-#menu li#activemenu a {
+#menu li#activemenu a span {
 	text-decoration: none;
 	font-weight: bold;
 	color: #000;
 	background-color: #DADFE4;
 	}
-#menu li#activemenu a:hover {
+#menu li#activemenu a:hover span {
 	text-decoration: none;
 	color: #000;
 	}
