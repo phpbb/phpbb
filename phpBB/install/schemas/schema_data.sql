@@ -292,6 +292,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_prune', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_ranks', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_reasons', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_roles', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_search', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_server', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_styles', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_uauth', 1);
@@ -594,8 +595,8 @@ INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_nam
 INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (187, 1, 1, 'permissions', 'acp', 58, 349, 350, 'ACP_GROUPS_FORUM_PERMISSIONS', 'setting_group_local', 'acl_a_authgroups && (acl_a_mauth || acl_a_fauth)');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (188, 1, 1, 'permissions', 'acp', 57, 341, 342, 'ACP_USERS_FORUM_PERMISSIONS', 'setting_user_local', 'acl_a_authusers && (acl_a_mauth || acl_a_fauth)');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (199, 1, 1, 'reasons', 'acp', 66, 449, 450, 'ACP_MANAGE_REASONS', 'main', 'acl_a_reasons');
-INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (204, 1, 1, 'search', 'acp', 64, 437, 438, 'ACP_SEARCH_INDEX', 'index', 'acl_a_server');
-INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (205, 1, 1, 'search', 'acp', 44, 263, 264, 'ACP_SEARCH_SETTINGS', 'settings', 'acl_a_server');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (204, 1, 1, 'search', 'acp', 64, 437, 438, 'ACP_SEARCH_INDEX', 'index', 'acl_a_search');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_name, module_class, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (205, 1, 1, 'search', 'acp', 44, 263, 264, 'ACP_SEARCH_SETTINGS', 'settings', 'acl_a_search');
 
 # MCP
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (124, 1, '', 'mcp', 1, 0, 57, 66, 'MCP_MAIN', '', '');

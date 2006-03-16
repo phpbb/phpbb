@@ -504,8 +504,8 @@ class acp_search_info
 			'title'		=> 'ACP_SEARCH',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'settings'	=> array('title' => 'ACP_SEARCH_SETTINGS', 'auth' => 'acl_a_server'),
-				'index'		=> array('title' => 'ACP_SEARCH_INDEX', 'auth' => 'acl_a_server'),
+				'settings'	=> array('title' => 'ACP_SEARCH_SETTINGS', 'auth' => 'acl_a_search'),
+				'index'		=> array('title' => 'ACP_SEARCH_INDEX', 'auth' => 'acl_a_search'),
 			),
 		);
 	}

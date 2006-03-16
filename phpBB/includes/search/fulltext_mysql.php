@@ -48,6 +48,19 @@ class fulltext_mysql extends search_backend
 			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
 		}
 
+		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
+		$engine = $db->sql_fetchfield('Engine', 0, $result);
+		if (!$engine)
+		{
+			$engine = $db->sql_fetchfield('Type', 0, $result);
+		}
+		$db->sql_freeresult($result);
+
+		if ($engine != 'MyISAM')
+		{
+			return $user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
+		}
+
 		$sql = 'SHOW VARIABLES
 			LIKE \'ft\_%\'';
 		$result = $db->sql_query($sql);
