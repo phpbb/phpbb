@@ -53,7 +53,7 @@ CREATE TABLE phpbb_auth_roles_data (
   role_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
-);
+);;
 
 # phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
@@ -302,7 +302,7 @@ CREATE TABLE phpbb_modules (
   right_id INTEGER NOT NULL,
   module_langname VARCHAR(50) NOT NULL,
   module_mode VARCHAR(255) NOT NULL,
-  module_auth VARCHAR(255) NOT NULL,
+  module_auth VARCHAR(255) NOT NULL
 );;
 
 # phpbb_poll_results
