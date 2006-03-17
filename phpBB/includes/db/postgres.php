@@ -14,7 +14,7 @@
 if (!defined('SQL_LAYER'))
 {
 
-	define('SQL_LAYER', 'postgresql');
+	define('SQL_LAYER', 'postgres');
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
@@ -122,7 +122,7 @@ class dbal_postgres extends dbal
 
 			if (strpos($query, 'SELECT') === 0 && strpos($query, 'FROM (') !== false)
 			{
-				$query = preg_replace('#FROM \((.+)\) #', 'FROM \1 ', $query);
+				$query = preg_replace('#FROM \(([^)]+)\)\s#', 'FROM \1 ', $query);
 			}
 
 			// EXPLAIN only in extra debug mode
