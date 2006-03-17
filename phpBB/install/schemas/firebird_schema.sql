@@ -2,7 +2,6 @@
 # Firebird Schema for phpBB 3.x - (c) phpBB Group, 2005
 #
 # $Id$
-# @todo user_last_warning to users table and warnings table
 
 # phpbb_attachments
 CREATE TABLE phpbb_attachments (
@@ -761,6 +760,7 @@ CREATE TABLE phpbb_users (
   user_lastpage VARCHAR(100) NOT NULL,
   user_last_confirm_key VARCHAR(10) NOT NULL,
   user_warnings INTEGER DEFAULT 0  NOT NULL,
+  user_last_warning INTEGER DEFAULT 0  NOT NULL,
   user_login_attempts INTEGER DEFAULT 0  NOT NULL,
   user_posts INTEGER DEFAULT 0  NOT NULL,
   user_lang VARCHAR(30) NOT NULL,
@@ -811,6 +811,15 @@ CREATE TABLE phpbb_users (
   user_interests VARCHAR(255) NOT NULL,
   user_actkey VARCHAR(32) NOT NULL,
   user_newpasswd VARCHAR(32) NOT NULL
+);;
+
+# phpbb_warnings
+CREATE TABLE phpbb_warnings (
+  warning_id INTEGER NOT NULL,
+  user_id INTEGER DEFAULT 0  NOT NULL,
+  post_id INTEGER DEFAULT 0  NOT NULL,
+  log_id INTEGER DEFAULT 0  NOT NULLL,
+  warning_time INTEGER DEFAULT 0  NOT NULL,
 );;
 
 # phpbb_words
@@ -1447,6 +1456,11 @@ ON phpbb_users(
   username
 );;
 
+ALTER TABLE phpbb_warnings
+ADD PRIMARY KEY (
+  warning_id
+);;
+
 ALTER TABLE phpbb_words
 ADD PRIMARY KEY (
   word_id
@@ -1601,9 +1615,13 @@ CREATE GENERATOR G_phpbb_usersuser_idGen31;;
 
 SET GENERATOR G_phpbb_usersuser_idGen31 TO 0;;
 
-CREATE GENERATOR G_phpbb_wordsword_idGen32;;
+CREATE GENERATOR G_phpbb_warningswarning_idGen32;;
 
-SET GENERATOR G_phpbb_wordsword_idGen32 TO 0;;
+SET GENERATOR G_phpbb_warningswarning_idGen32 TO 0;;
+
+CREATE GENERATOR G_phpbb_wordsword_idGen33;;
+
+SET GENERATOR G_phpbb_wordsword_idGen33 TO 0;;
 
 CREATE TRIGGER tG_phpbb_attachmentsattach_idGe FOR phpbb_attachments
 BEFORE INSERT
@@ -1829,9 +1847,16 @@ BEGIN
   NEW.user_id = GEN_ID(G_phpbb_usersuser_idGen31, 1);
 END;;
 
+CREATE TRIGGER GetNextG_phpbb_warningswarning_idGen3 FOR phpbb_warnings
+BEFORE INSERT
+AS
+BEGIN
+  NEW.warning_id = GEN_ID(G_phpbb_warningswarning_idGen32, 1);
+END;;
+
 CREATE TRIGGER GetNextG_phpbb_wordsword_idGen3 FOR phpbb_words
 BEFORE INSERT
 AS
 BEGIN
-  NEW.word_id = GEN_ID(G_phpbb_wordsword_idGen32, 1);
+  NEW.word_id = GEN_ID(G_phpbb_wordsword_idGen33, 1);
 END;;

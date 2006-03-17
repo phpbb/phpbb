@@ -2,7 +2,6 @@
  PostgreSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
-@todo user_last_warning to users table and warnings table
 */
 
 BEGIN;
@@ -1170,6 +1169,7 @@ CREATE TABLE phpbb_users (
    user_lastpage varchar(100) DEFAULT '' NOT NULL,
    user_last_confirm_key varchar(10) DEFAULT '' NOT NULL,
    user_warnings INT2 DEFAULT '0' NOT NULL,
+   user_last_warning INT4 DEFAULT '0' NOT NULL,
    user_login_attempts INT4 DEFAULT '0' NOT NULL,
    user_posts INT4  DEFAULT '0' NOT NULL,
    user_lang varchar(30) DEFAULT '' NOT NULL,
@@ -1234,6 +1234,18 @@ CREATE INDEX user_email_hash_phpbb_users_index ON phpbb_users (user_email_hash);
 CREATE INDEX username_phpbb_users_index ON phpbb_users (username);
 
 SELECT SETVAL('phpbb_users_user_id_seq',(select case when max(user_id)>0 then max(user_id)+1 else 1 end from phpbb_users));
+
+/* Table: phpbb_warnings */
+CREATE SEQUENCE phpbb_warnings_warning_id_seq;
+
+CREATE TABLE phpbb_warnings (
+   warning_id INT4 DEFAULT nextval('phpbb_warnings_warning_id_seq'),
+   user_id INT4 DEFAULT '0' NOT NULL,
+   post_id INT4 DEFAULT '0' NOT NULL,
+   log_id INT4 DEFAULT '0' NOT NULL,
+   warning_time INT4 DEFAULT '0' NOT NULL,
+   PRIMARY KEY (warning_id)
+);
 
 /* Table: phpbb_words */
 CREATE SEQUENCE phpbb_words_word_id_seq;

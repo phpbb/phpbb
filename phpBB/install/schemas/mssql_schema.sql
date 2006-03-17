@@ -3,7 +3,6 @@
 MSSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
 $Id$
-@todo user_last_warning to users table and warnings table
 
 */
 
@@ -767,6 +766,7 @@ CREATE TABLE [phpbb_users] (
 	[user_lastpage] [varchar] (100) NOT NULL ,
 	[user_last_confirm_key] [varchar] (10) NOT NULL ,
 	[user_warnings] [int] NOT NULL ,
+	[user_last_warning] [int] NOT NULL ,
 	[user_login_attempts] [int] NOT NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_lang] [varchar] (30) NOT NULL ,
@@ -816,6 +816,15 @@ CREATE TABLE [phpbb_users] (
 	[user_actkey] [varchar] (32) NOT NULL ,
 	[user_newpasswd] [varchar] (32) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE TABLE [phpbb_warnings] (
+	[warning_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[user_id] [int] NOT NULL ,
+	[post_id] [int] NOT NULL ,
+	[log_id] [int] NOT NULL ,
+	[warning_time] [int] NOT NULL
+) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_words] (
@@ -1170,6 +1179,13 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [PK_phpbb_users] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_warnings] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_warnings] PRIMARY KEY  CLUSTERED 
+	(
+		[warning_id]
 	)  ON [PRIMARY] 
 GO
 
@@ -1613,6 +1629,7 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_users__user_lastmark] DEFAULT (0) FOR [user_lastmark],
 	CONSTRAINT [DF_users__user_lastpost_time] DEFAULT (0) FOR [user_lastpost_time],
 	CONSTRAINT [DF_users__user_warnings] DEFAULT (0) FOR [user_warnings],
+	CONSTRAINT [DF_users__user_last_warning] DEFAULT (0) FOR [user_last_warning],
 	CONSTRAINT [DF_users__user_login_attempts] DEFAULT (0) FOR [user_login_attempts],
 	CONSTRAINT [DF_users__user_posts] DEFAULT (0) FOR [user_posts],
 	CONSTRAINT [DF_users__user_timezone] DEFAULT (0) FOR [user_timezone],
@@ -1645,6 +1662,13 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_users__user_avatar_width] DEFAULT (0) FOR [user_avatar_width],
 	CONSTRAINT [DF_users__user_avatar_height] DEFAULT (0) FOR [user_avatar_height],
 	CONSTRAINT [DF_users__user_sig_bbcode_bitf] DEFAULT (0) FOR [user_sig_bbcode_bitfield]
+GO
+
+ALTER TABLE [phpbb_warnings] WITH NOCHECK ADD
+	CONSTRAINT [DF_warnings__user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_warnings__post_id] DEFAULT (0) FOR [post_id],
+	CONSTRAINT [DF_warnings__log_id] DEFAULT (0) FOR [log_id],
+	CONSTRAINT [DF_warnings__warning_time] DEFAULT (0) FOR [warning_time]
 GO
 
 ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 

@@ -2,7 +2,6 @@
  Oracle Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
-@todo user_last_warning to users table and warnings table
 */
 
 /*
@@ -1667,6 +1666,7 @@ CREATE TABLE phpbb_users (
   user_lastpage varchar2(100) DEFAULT '',
   user_last_confirm_key varchar2(10) DEFAULT '',
   user_warnings number(4) DEFAULT '0' NOT NULL,
+  user_last_warning number(11) DEFAULT '0' NOT NULL,
   user_login_attempts number(4) DEFAULT '0' NOT NULL,
   user_posts number(8) DEFAULT '0' NOT NULL,
   user_lang varchar2(30) DEFAULT '',
@@ -1739,6 +1739,34 @@ CREATE INDEX user_birthday on phpbb_users (user_birthday)
 CREATE INDEX user_email_hash on phpbb_users (user_email_hash)
 /
 CREATE INDEX username on phpbb_users (username)
+/
+
+/*
+ Table: phpbb_warnings
+*/
+CREATE TABLE phpbb_warnings (
+  warning_id number(8) NOT NULL,
+  user_id number(8) DEFAULT '0' NOT NULL,
+  post_id number(8) DEFAULT '0' NOT NULL,
+  log_id number(8) DEFAULT '0' NOT NULL,
+  warning_time number(11) DEFAULT '0' NOT NULL
+  CONSTRAINT pk_phpbb_warnings PRIMARY KEY (warning_id)
+)
+/
+
+CREATE SEQUENCE sq_phpbb_warnings_warning_id
+/
+
+CREATE OR REPLACE TRIGGER ai_phpbb_warnings_warning_id
+BEFORE INSERT ON phpbb_warnings
+FOR EACH ROW WHEN (
+ new.warning_id IS NULL OR new.warning_id = 0
+)
+BEGIN
+ SELECT sq_phpbb_warnings_warning_id.nextval
+ INTO :new.warning_id
+ FROM dual;
+END;
 /
 
 /*

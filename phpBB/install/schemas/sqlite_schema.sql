@@ -2,7 +2,6 @@
 # SQLite Schema for phpBB 3.x - (c) phpBB Group, 2005
 #
 # $Id$
-# @todo user_last_warning to users table and warnings table
 #
 
 BEGIN TRANSACTION;
@@ -889,6 +888,7 @@ CREATE TABLE phpbb_users (
   user_lastpage varchar(100) NOT NULL DEFAULT '',
   user_last_confirm_key varchar(10) NOT NULL DEFAULT '',
   user_warnings tinyint(4) NOT NULL DEFAULT '0',
+  user_last_warning int(11) NOT NULL DEFAULT '0',
   user_login_attempts smallint(4) NOT NULL DEFAULT '0',
   user_posts mediumint(8) NOT NULL DEFAULT '0',
   user_lang varchar(30) NOT NULL DEFAULT '',
@@ -942,6 +942,15 @@ CREATE TABLE phpbb_users (
 CREATE INDEX user_birthday_phpbb_users on phpbb_users (user_birthday);
 CREATE INDEX user_email_hash_phpbb_users on phpbb_users (user_email_hash);
 CREATE INDEX username_phpbb_users on phpbb_users (username);
+
+# Table: phpbb_warnings
+CREATE TABLE phpbb_warnings (
+  warning_id INTEGER PRIMARY KEY NOT NULL,
+  user_id mediumint(8) NOT NULL DEFAULT '0',
+  post_id mediumint(8) NOT NULL DEFAULT '0',
+  log_id mediumint(8) NOT NULL DEFAULT '0',
+  warning_time int(11) NOT NULL DEFAULT '0'
+);
 
 # Table: phpbb_words
 CREATE TABLE phpbb_words (
