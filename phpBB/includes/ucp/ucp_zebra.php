@@ -108,6 +108,29 @@ class ucp_zebra
 							unset($perms);
 						}
 
+						// Do not let add users to friends if the user is within the foes list of the to-be-added users
+						if ($mode == 'friends' && sizeof($user_id_ary))
+						{
+							$sql = 'SELECT user_id
+								FROM ' . ZEBRA_TABLE . '
+								WHERE user_id IN (' . implode(', ', $user_id_ary) . ')
+									AND zebra_id = ' . $user->data['user_id'] . '
+									AND foe = 1';
+							$result = $db->sql_query($sql);
+
+							$remove_user_ids = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$remove_user_ids[] = $row['user_id'];
+							}
+
+							if (sizeof($remove_user_ids))
+							{
+								$user_id_ary = array_diff($user_id_ary, $remove_user_ids);
+							}
+							unset($remove_user_ids);
+						}
+
 						if (sizeof($user_id_ary))
 						{
 							$sql_mode = ($mode == 'friends') ? 'friend' : 'foe';

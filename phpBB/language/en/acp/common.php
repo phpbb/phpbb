@@ -503,6 +503,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_MOVE_POSTS'	=> '<b>Moved user posts</b><br />&#187; posts by "%s" to forum "%s"',
 	'LOG_USER_NEW_PASSWORD'	=> '<b>Changed user password</b><br />&#187; %s',
 	'LOG_USER_REACTIVATE'	=> '<b>Forced user account re-activation</b><br />&#187; %s',
+	'LOG_USER_UPDATE_EMAIL'	=> '<b>User "%s" changed email</b>&#187; from "%s" to "%s"',
 	'LOG_USER_UPDATE_NAME'	=> '<b>Changed username</b><br />&#187; from "%s" to "%s"',
 	'LOG_USER_USER_UPDATE'	=> '<b>Updated user details</b><br />&#187; %s',
 

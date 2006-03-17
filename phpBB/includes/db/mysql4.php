@@ -120,7 +120,7 @@ class dbal_mysql4 extends dbal
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 					$cache->sql_save($query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') !== false && $this->query_result)
+				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}

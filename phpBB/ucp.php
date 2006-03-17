@@ -159,7 +159,7 @@ $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$which = (time() - $update_time < $row['online_time']) ? 'online' : 'offline';
+	$which = (time() - $update_time < $row['online_time'] && $row['viewonline']) ? 'online' : 'offline';
 
 	$template->assign_block_vars("friends_{$which}", array(
 		'U_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],

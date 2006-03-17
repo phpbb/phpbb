@@ -321,7 +321,7 @@ class session
 /*		echo "<br />$sql";
 		echo "<br />$user_id :: " . sizeof($this->data) . " :: " . (int) is_array($this->data) . " :: " . $db->sql_numrows();
 		print_r($this->cookie_data);
-		print_r($this->data);*/
+		print_r($this->data);
 		
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -339,6 +339,15 @@ class session
 			}
 			$db->sql_freeresult($result);
 
+			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
+		}
+		else
+		{
+			$this->data['session_last_visit'] = time();
+		}
+*/
+		if ($this->data['user_id'] != ANONYMOUS)
+		{
 			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
 		}
 		else
@@ -867,6 +876,8 @@ class user extends session
 		// User has wrong style
 		if (!$this->theme && $style == $this->data['user_style'])
 		{
+			echo "HERE";
+			exit;
 			$style = $this->data['user_style'] = $config['default_style'];
 
 			$sql = 'UPDATE ' . USERS_TABLE . " 
@@ -880,7 +891,7 @@ class user extends session
 					AND t.template_id = s.template_id
 					AND c.theme_id = s.theme_id
 					AND i.imageset_id = s.imageset_id";
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query($sql, 3600);
 			$this->theme = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
@@ -892,7 +903,7 @@ class user extends session
 
 		// Now parse the cfg file and cache it
 		$parsed_items = $cache->obtain_cfg_items($this->theme);
-		
+
 		// We are only interested in the theme configuration for now
 		$parsed_items = $parsed_items['theme'];
 

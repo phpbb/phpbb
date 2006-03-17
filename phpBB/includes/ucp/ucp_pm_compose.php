@@ -182,7 +182,7 @@ function compose_pm($id, $mode, $action)
 		$message_attachment = (isset($post['message_attachement'])) ? $post['message_attachement'] : 0;
 		$message_text = $post['message_text'];
 		$message_subject = $post['message_subject'];
-		$quote_username = $post['quote_username'];
+		$quote_username = (isset($post['quote_username'])) ? $post['quote_username'] : '';
 
 		$message_time = $post['message_time'];
 		$icon_id = (isset($post['icon_id'])) ? $post['icon_id'] : 0;
@@ -821,7 +821,7 @@ function compose_pm($id, $mode, $action)
 */
 function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_to, $add_bcc)
 {
-	global $_REQUEST;
+	global $auth;
 
 	// Delete User [TO/BCC]
 	if ($remove_u)
@@ -853,6 +853,9 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 			}
 		}
 
+		// User ID's to add...
+		$user_id_ary = array();
+
 		// Build usernames to add
 		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '')) : array();
 		$username_list = request_var('username_list', '');
@@ -866,8 +869,31 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		{
 			$user_id_ary = array();
 			user_get_id_name($user_id_ary, $usernames);
+		}
 
-			if (sizeof($user_id_ary))
+		// Add Friends if specified
+		$friend_list = (is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
+		$user_id_ary = array_merge($user_id_ary, $friend_list);
+
+		if (sizeof($user_id_ary))
+		{
+			// We need to check their PM status (do they want to receive PM's?)
+			// Only check if not a moderator or admin, since they are allowed to override this user setting
+			if (!$auth->acl_gets('a_', 'm_'))
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE user_id IN (' . implode(', ', $user_id_ary) . ')
+						AND user_allow_pm = 1';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$address_list['u'][$row['user_id']] = $type;
+				}
+				$db->sql_freeresult($result);
+			}
+			else
 			{
 				foreach ($user_id_ary as $user_id)
 				{
@@ -875,16 +901,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 				}
 			}
 		}
-
-		// Add Friends if specified
-		$friend_list = (is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
-
-		foreach ($friend_list as $user_id)
-		{
-			$address_list['u'][$user_id] = $type;
-		}
 	}
-
 }
 
 /**

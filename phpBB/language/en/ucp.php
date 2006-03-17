@@ -214,6 +214,7 @@ $lang = array_merge($lang, array(
 	'NOTIFY_METHOD_EXPLAIN'		=> 'Method for sending messages sent via this board.',
 	'NOTIFY_METHOD_IM'			=> 'Jabber only',
 	'NOTIFY_ON_PM'				=> 'Email me on new private messages',
+	'NOT_ADDED_FRIENDS'			=> 'Usernames not added to friends list because you are within their foes list.',
 	'NOT_ADDED_FOES'			=> 'Usernames not added to foes list because of administrator/moderator status.',
 	'NOT_AGREE'					=> 'I do not agree to these terms',
 	'NOT_ENOUGH_SPACE_FOLDER'	=> 'The Destination Folder "%s" seems to be full. The requested action has not been taken.',

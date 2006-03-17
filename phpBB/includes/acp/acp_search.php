@@ -220,15 +220,15 @@ class acp_search
 			}
 	
 			$action = &$this->state[1];
-	
+
 			@set_time_limit(0);
-	
+
 			$this->max_post_id = $this->get_max_post_id();
-	
+
 			$post_counter = (isset($this->state[2])) ? $this->state[2] : 0;
 			$this->state[2] = &$post_counter;
 			$this->save_state();
-	
+
 			if ($action == 'delete')
 			{
 				if (method_exists($this->search, 'delete_index'))
@@ -251,7 +251,7 @@ class acp_search
 						$posters[] = $row['poster_id'];
 					}
 					$db->sql_freeresult($result);
-	
+
 					if (sizeof($ids))
 					{
 						$this->search->index_remove($ids, $posters);
@@ -296,13 +296,13 @@ class acp_search
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
 							AND post_id < ' . (int) ($post_counter + $this->batch_size);
 					$result = $db->sql_query($sql);
-	
+
 					while (false !== ($row = $db->sql_fetchrow($result)))
 					{
 						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id']);
 					}
 					$db->sql_freeresult($result);
-	
+
 					$post_counter += $this->batch_size;
 	
 					// save the current state
@@ -452,8 +452,10 @@ class acp_search
 		$sql = 'SELECT MAX(post_id) as max_post_id
 			FROM '. POSTS_TABLE;
 		$result = $db->sql_query($sql);
+		$max_post_id = (int) $db->sql_fetchfield('max_post_id', 0, $result);
+		$db->sql_freeresult($result);
 
-		return $db->sql_fetchfield('max_post_id', 0, $result);
+		return $max_post_id;
 	}
 
 	function save_state($state = false)

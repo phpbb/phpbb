@@ -2295,7 +2295,7 @@ function page_footer()
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? "{$phpbb_root_path}adm/index.$phpEx?sid=" . $user->data['session_id'] : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? "{$phpbb_root_path}adm/index.$phpEx?sid=" . $user->session_id : '')
 	);
 
 	// Call cron-type script
@@ -2419,6 +2419,9 @@ function get_backtrace()
 			}
 		}
 		
+		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
+		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
+
 		$output .= '<br />';
 		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
 		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';

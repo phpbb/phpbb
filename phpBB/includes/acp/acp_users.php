@@ -616,16 +616,13 @@ class acp_users
 					// Which updates do we need to do?
 					$update_warning = ($user_row['user_warnings'] != $data['warnings']) ? true : false;
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($user_row['user_password'] != $data['user_password']) ? true : false;
+					$update_password = ($data['user_password'] && $user_row['user_password'] != md5($data['user_password'])) ? true : false;
+					$update_email = ($data['user_email'] != $user_row['user_email']) ? $data['user_email'] : false;
 
 					if (!sizeof($error))
 					{
-						$sql_ary = array(
-							'username'			=> $data['username'],
-							'user_email'		=> $data['user_email'],
-							'user_email_hash'	=> crc32(strtolower($data['user_email'])) . strlen($data['user_email'])
-						);
-						
+						$sql_ary = array();
+
 						if ($user_row['user_type'] != USER_FOUNDER || $user->data['user_type'] == USER_FOUNDER)
 						{
 							if ($update_warning)
@@ -639,6 +636,25 @@ class acp_users
 							}
 						}
 
+						if ($update_username !== false)
+						{
+							$sql_ary['username'] = $update_username;
+
+							add_log('admin', 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
+							add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
+						}
+
+						if ($update_email !== false)
+						{
+							$sql_ary += array(
+								'user_email'		=> $update_email,
+								'user_email_hash'	=> crc32(strtolower($update_email)) . strlen($update_email)
+							);
+
+							add_log('admin', 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
+							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
+						}
+
 						if ($update_password)
 						{
 							$sql_ary += array(
@@ -647,6 +663,7 @@ class acp_users
 							);
 
 							add_log('admin', 'LOG_USER_NEW_PASSWORD', $user_row['username']);
+							add_log('user', $user_id, 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 						}
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -664,9 +681,6 @@ class acp_users
 						if ($update_username)
 						{
 							user_update_name($user_row['username'], $update_username);
-
-							add_log('admin', 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
-							add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
 						}
 
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);

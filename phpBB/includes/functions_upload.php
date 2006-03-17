@@ -103,7 +103,7 @@ class filespec
 				$this->realname = rawurlencode(str_replace($bad_chars, '_', strtolower($this->realname)));
 				$this->realname = preg_replace("/%(\w{2})/", '_', $this->realname);
 
-				$this->realname = $prefix . $this->realname . '_.' . $this->extension;
+				$this->realname = $prefix . $this->realname . '.' . $this->extension;
 				break;
 
 			case 'unique':

@@ -86,8 +86,26 @@ class ucp_profile
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $email : $user->data['user_email'],
 							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32(strtolower($email)) . strlen($email) : $user->data['user_email_hash'],
 							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $new_password) ? md5($new_password) : $user->data['user_password'],
-							'user_passchg'		=> time(),
+							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $new_password) ? time() : 0,
 						);
+
+						if ($auth->acl_get('u_chgname') && $config['allow_namechange'] && $username != $user->data['username'])
+						{
+							add_log('admin', 'LOG_USER_UPDATE_NAME', $user->data['username'], $username);
+							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $username);
+						}
+
+						if ($auth->acl_get('u_chgpasswd') && $new_password && md5($new_password) != $user->data['user_password'])
+						{
+							add_log('admin', 'LOG_USER_NEW_PASSWORD', $username);
+							add_log('user', $user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $username);
+						}
+
+						if ($auth->acl_get('u_chgemail') && $email != $user->data['user_email'])
+						{
+							add_log('admin', 'LOG_USER_UPDATE_EMAIL', $username, $user->data['user_email'], $email);
+							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $username, $user->data['user_email'], $email);
+						}
 
 						if ($config['email_enable'] && $email != $user->data['user_email'] && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{

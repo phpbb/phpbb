@@ -18,7 +18,7 @@ class acp_forums
 	
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $SID;
 
 		$user->add_lang('acp/forums');

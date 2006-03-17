@@ -809,7 +809,7 @@ class acp_permissions
 	}
 
 	/**
-	* Update foes
+	* Update foes - remove moderators and administrators from foe lists...
 	*/
 	function update_foes()
 	{
@@ -827,7 +827,8 @@ class acp_permissions
 		if (sizeof($perms))
 		{
 			$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
-				WHERE zebra_id IN (' . implode(', ', $perms) . ')';
+				WHERE zebra_id IN (' . implode(', ', $perms) . ')
+					AND foe = 1';
 			$db->sql_query($sql);
 		}
 		unset($perms);
