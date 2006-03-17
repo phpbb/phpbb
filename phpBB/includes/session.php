@@ -876,8 +876,6 @@ class user extends session
 		// User has wrong style
 		if (!$this->theme && $style == $this->data['user_style'])
 		{
-			echo "HERE";
-			exit;
 			$style = $this->data['user_style'] = $config['default_style'];
 
 			$sql = 'UPDATE ' . USERS_TABLE . " 
