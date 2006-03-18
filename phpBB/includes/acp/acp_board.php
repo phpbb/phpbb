@@ -370,7 +370,7 @@ class acp_board
 					$method = 'init_' . $method;
 					if (function_exists($method))
 					{
-						if (($error = $method()) == true)
+						if ($error = $method())
 						{
 							foreach ($old_auth_config as $config_name => $config_value)
 							{
