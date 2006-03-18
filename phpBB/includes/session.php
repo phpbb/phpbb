@@ -763,6 +763,29 @@ class session
 		
 		return false;
 	}
+
+	/**
+	* Reset all login keys for the specified user
+	*
+	* This method removes all current login keys for a specified (or the current)
+	* user. It will be called on password change to render old keys unusable
+	*/
+	function reset_login_keys($user_id = false)
+	{
+		global $config, $db;
+
+		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
+
+		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' WHERE user_id = ' . (int) $user_id;
+		$db->sql_query($sql);
+
+		// We're changing the password of the current user and they have a key
+		// Lets regenerate it to be safe
+		if ($user_id === $this->data['user_id'] && $this->cookie_data['k'])
+		{
+			$this->set_login_key($user_id);
+		}
+	}
 }
 
 

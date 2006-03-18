@@ -97,6 +97,7 @@ class ucp_profile
 
 						if ($auth->acl_get('u_chgpasswd') && $new_password && md5($new_password) != $user->data['user_password'])
 						{
+							$user->reset_login_keys();
 							add_log('admin', 'LOG_USER_NEW_PASSWORD', $username);
 							add_log('user', $user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $username);
 						}

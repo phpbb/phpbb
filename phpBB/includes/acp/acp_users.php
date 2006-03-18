@@ -662,6 +662,7 @@ class acp_users
 								'user_passchg'	=> time(),
 							);
 
+							$user->reset_login_keys($user_id);
 							add_log('admin', 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 						}
