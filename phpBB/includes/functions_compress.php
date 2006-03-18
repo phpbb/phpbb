@@ -81,6 +81,7 @@ class compress
 	
 	function add_data($src, $name)
 	{
+		$stat = array();
 		$stat[2] = 436; //384
 		$stat[4] = $stat[5] = 0;
 		$stat[7] = strlen($src);
@@ -543,15 +544,15 @@ class compress_tar extends compress
 
 		switch ($this->type)
 		{
-			case 'tar':
+			case '.tar':
 				$mimetype = 'application/x-tar';
 			break;
 
-			case 'tar.gz':
+			case '.tar.gz':
 				$mimetype = 'application/x-gzip';
 			break;
 
-			case 'tar.bz2':
+			case '.tar.bz2':
 				$mimetype = 'application/x-bzip2';
 			break;
 
@@ -561,10 +562,10 @@ class compress_tar extends compress
 		}
 
 		header('Pragma: no-cache');
-		header("Content-Type: $mimetype; name=\"$filename.$this->type\"");
-		header("Content-disposition: attachment; filename=$filename.$this->type");
+		header("Content-Type: $mimetype; name=\"$filename$this->type\"");
+		header("Content-disposition: attachment; filename=$filename$this->type");
 
-		$fp = fopen("{$phpbb_root_path}store/$filename.$this->type", 'rb');
+		$fp = fopen("{$phpbb_root_path}store/$filename$this->type", 'rb');
 		while ($buffer = fread($fp, 1024))
 		{
 			echo $buffer;

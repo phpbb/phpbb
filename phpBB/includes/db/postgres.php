@@ -85,22 +85,22 @@ class dbal_postgres extends dbal
 		switch ($status)
 		{
 			case 'begin':
-				$result = @pg_exec($this->db_connect_id, 'BEGIN');
+				$result = @pg_query($this->db_connect_id, 'BEGIN');
 				$this->transaction = true;
 				break;
 
 			case 'commit':
-				$result = @pg_exec($this->db_connect_id, 'COMMIT');
+				$result = @pg_query($this->db_connect_id, 'COMMIT');
 				$this->transaction = false;
 
 				if (!$result)
 				{
-					@pg_exec($this->db_connect_id, 'ROLLBACK');
+					@pg_query($this->db_connect_id, 'ROLLBACK');
 				}
 				break;
 
 			case 'rollback':
-				$result = @pg_exec($this->db_connect_id, 'ROLLBACK');
+				$result = @pg_query($this->db_connect_id, 'ROLLBACK');
 				$this->transaction = false;
 				break;
 
@@ -207,7 +207,7 @@ class dbal_postgres extends dbal
 			$query_id = $this->query_result;
 		}
 
-		return ($query_id) ? @pg_numrows($query_id) : false;
+		return ($query_id) ? @pg_num_rows($query_id) : false;
 	}
 
 	/**
@@ -289,14 +289,14 @@ class dbal_postgres extends dbal
 			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
 			{
 				$query = "SELECT currval('" . $tablename[1] . "_id_seq') AS last_value";
-				$temp_q_id =  @pg_exec($this->db_connect_id, $query);
+				$temp_q_id =  @pg_query($this->db_connect_id, $query);
 				if (!$temp_q_id)
 				{
 					return false;
 				}
 
 				$temp_result = @pg_fetch_assoc($temp_q_id, NULL);
-				@pg_freeresult($query_id);
+				@pg_free_result($query_id);
 
 				return ($temp_result) ? $temp_result['last_value'] : false;
 			}
@@ -318,7 +318,7 @@ class dbal_postgres extends dbal
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return @pg_freeresult($query_id);
+			return @pg_free_result($query_id);
 		}
 	}
 
@@ -367,12 +367,12 @@ class dbal_postgres extends dbal
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1];
 
-				$result = @pg_exec($this->db_connect_id, $query);
+				$result = @pg_query($this->db_connect_id, $query);
 				while ($void = @pg_fetch_assoc($result, NULL))
 				{
 					// Take the time spent on parsing rows into account
 				}
-				@pg_freeresult($result);
+				@pg_free_result($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

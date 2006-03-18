@@ -1,0 +1,57 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+<!-- IF MODE eq 'restore' -->
+<h1>{L_ACP_RESTORE}</h1>
+
+<p>{L_ACP_RESTORE_EXPLAIN}</p>
+
+<form id="acp_backup" method="post" action="{U_ACTION}">
+<fieldset>
+	<legend>{L_RESTORE_OPTIONS}</legend>
+	<dl>
+		<dt><label for="user">{L_SELECT_FILE}:</label></dt>
+		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF not files.SUPPORTED --> disabled="disabled"<!-- ENDIF --><!-- IF files.SELECTED --> selected="selected"<!-- ENDIF -->>{files.FILE}</option><!-- END files --></select></dd>
+	</dl>
+</fieldset>
+<fieldset class="submit-buttons">
+	<input class="button1" type="submit" id="submit" name="submit" value="{L_START_RESTORE}" />&nbsp;
+	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+</fieldset>
+</form>
+<!-- ELSE -->
+<h1>{L_ACP_BACKUP}</h1>
+
+<p>{L_ACP_BACKUP_EXPLAIN}</p>
+
+<form id="acp_backup" method="post" action="{U_ACTION}">
+<fieldset>
+	<legend>{L_BACKUP_OPTIONS}</legend>
+	<dl>
+		<dt><label for="user">{L_BACKUP_TYPE}:</label></dt>
+		<dd><input type="radio" name="type" value="full" id="type" checked="checked" />&nbsp;{L_FULL_BACKUP}&nbsp;&nbsp;<input type="radio" name="type" value="structure" id="type" />&nbsp;{L_STRUCTURE_ONLY}&nbsp;&nbsp;<input type="radio" name="type" value="data" id="type" />&nbsp;{L_DATA_ONLY}</dd>
+	</dl>
+	<dl>
+		<dt><label for="user">{L_FILE_TYPE}:</label></dt>
+		<!-- BEGIN methods -->
+		<dd><input name="method" id="method" type="radio" value="{methods.TYPE}"<!-- IF methods.S_FIRST_ROW -->checked="checked"<!-- ENDIF --> />&nbsp;{methods.TYPE}</dd>
+		<!-- END methods -->
+	</dl>
+	<dl>
+		<dt><label for="user">{L_ACTION}:</label></dt>
+		<dd><input type="radio" name="where" value="download" id="where" checked="checked" />&nbsp;{L_DOWNLOAD}&nbsp;&nbsp;<input type="radio" name="where" value="store" id="where" />&nbsp;{L_STORE_LOCAL}</dd>
+	</dl>
+	<dl>
+		<dt><label for="user">{L_TABLE_SELECT}:</label></dt>
+		<!-- BEGIN tables -->
+		<dd><input name="table[]" id="table[]" type="checkbox" value="{tables.TABLE}" />&nbsp;{tables.TABLE}</dd>
+		<!-- END tables -->
+	</dl>
+</fieldset>
+<fieldset class="submit-buttons">
+	<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+</fieldset>
+</form>
+<!-- ENDIF -->
+<!-- INCLUDE overall_footer.html -->

@@ -1087,6 +1087,7 @@ if ($stage == 3)
 		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
 
 		$remove_remarks($sql_query);
+
 		$sql_query = split_sql_file($sql_query, $delimiter);
 
 		foreach ($sql_query as $sql)
@@ -1237,6 +1238,7 @@ if ($stage == 4)
 	define('USER_INACTIVE', 1);
 	define('USER_IGNORE', 2);
 	define('USER_FOUNDER', 3);
+	define('LOGIN_SUCCESS', 3);
 	
 
 	$sql = "SELECT *

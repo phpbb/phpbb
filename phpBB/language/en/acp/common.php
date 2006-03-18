@@ -39,6 +39,7 @@ $lang = array_merge($lang, array(
 	'ACP_AUTOMATION'			=> 'Automation',
 	'ACP_AVATAR_SETTINGS'		=> 'Avatar Settings',
 
+	'ACP_BACKUP'				=> 'Backup',
 	'ACP_BAN'					=> 'Banning',
 	'ACP_BAN_EMAILS'			=> 'Ban Emails',
 	'ACP_BAN_IPS'				=> 'Ban IPs',
@@ -66,6 +67,7 @@ $lang = array_merge($lang, array(
 	'ACP_CRITICAL_LOGS'			=> 'Error Log',
 	'ACP_CUSTOM_PROFILE_FIELDS'	=> 'Custom Profile Fields',
 	
+	'ACP_DATABASE'				=> 'Database Management',
 	'ACP_DISALLOW'				=> 'Disallow',
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow Usernames',
 	
@@ -127,8 +129,11 @@ $lang = array_merge($lang, array(
 	'ACP_RANKS'					=> 'Ranks',
 	'ACP_REASONS'				=> 'Report/Denial Reasons',
 
+	'ACP_RESTORE'				=> 'Restore',
+
 	'ACP_SEARCH_INDEX'			=> 'Search Index',
 	'ACP_SEARCH_SETTINGS'		=> 'Search Settings',
+
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
 	'ACP_SMILIES'				=> 'Smilies',
@@ -373,6 +378,9 @@ $lang = array_merge($lang, array(
 
 	'LOG_DISALLOW_ADD'		=> '<b>Added disallowed username</b><br />&#187; %s',
 	'LOG_DISALLOW_DELETE'	=> '<b>Deleted disallowed username</b>',
+
+	'LOG_DB_BACKUP'			=> '<b>Database backup</b>',
+	'LOG_DB_RESTORE'		=> '<b>Database restore</b>',
 
 	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<b>Exluded ip/hostname from download list</b><br />&#187; %s',
 	'LOG_DOWNLOAD_IP'			=> '<b>Added ip/hostname to download list</b><br />&#187; %s',
