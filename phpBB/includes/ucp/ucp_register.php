@@ -71,7 +71,7 @@ class ucp_register
 			else
 			{
 				$template->assign_vars(array(
-					'L_TERMS_OF_USE'	=> $user->lang['TERMS_OF_USE_CONTENT'],
+					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,

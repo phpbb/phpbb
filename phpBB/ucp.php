@@ -116,7 +116,7 @@ switch ($mode)
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
 			'AGREEMENT_TITLE'		=> $user->lang[$title],
-			'AGREEMENT_TEXT'		=> $user->lang[$message],
+			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], $config['sitename'], generate_board_url()),
 			'U_BACK'				=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login",
 			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'])
 		);
