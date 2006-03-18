@@ -779,6 +779,15 @@ class session
 		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' WHERE user_id = ' . (int) $user_id;
 		$db->sql_query($sql);
 
+		// Let's also clear any current sessions for the specified user_id
+		// If it's the current user then we'll leave this session intact
+		$sql_where = 'session_user_id = ' . (int) $user_id;
+		$sql_where .= ($user_id === $this->data['user_id']) ? " AND session_id <> '" . $this->session_id . "'" : '';
+
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . " 
+			WHERE $sql_where";
+		$db->sql_query($sql);
+
 		// We're changing the password of the current user and they have a key
 		// Lets regenerate it to be safe
 		if ($user_id === $this->data['user_id'] && $this->cookie_data['k'])
