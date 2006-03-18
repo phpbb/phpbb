@@ -106,7 +106,7 @@ class mcp_queue
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
 					'S_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id&amp;f=$forum_id",
-					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
+					'S_CAN_VIEWIP'			=> $auth->acl_get('m_ip', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
@@ -117,7 +117,7 @@ class mcp_queue
 					'U_MCP_WARN_USER'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $post_info['user_id'],
 					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}" : '',
 
-					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], "<a href=\"{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue" . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts') . "\">", '</a>'),
+					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], "<a href=\"{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue" . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts') . "&amp;start=$start\">", '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
 					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
 					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
@@ -269,7 +269,7 @@ class mcp_queue
 						// Q: Why accessing the topic by a post_id instead of its topic_id?
 						// A: To prevent the post from being hidden because of wrong encoding or different charset
 						'U_VIEWTOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
-						'U_VIEW_DETAILS'=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}",
+						'U_VIEW_DETAILS'=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '' ),
 						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
 
 						'FORUM_NAME'	=> $row['forum_name'],
@@ -732,7 +732,6 @@ class mcp_queue_info
 				'approve_details'	=> array('title' => 'MCP_QUEUE_APPROVE_DETAILS', 'auth' => 'acl_m_approve || aclf_m_approve'),
 				'unapproved_topics'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_TOPICS', 'auth' => 'acl_m_approve || aclf_m_approve'),
 				'unapproved_posts'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_POSTS', 'auth' => 'acl_m_approve || aclf_m_approve'),
-				'reports'			=> array('title' => 'MCP_QUEUE_REPORTS', 'auth' => 'acl_m_approve'),
 			),
 		);
 	}

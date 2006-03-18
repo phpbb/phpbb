@@ -151,6 +151,7 @@ else
 // Hide some of the options if we don't have the relevant information to use them
 if (!$post_id)
 {
+	$module->set_display('reports', 'report_details', false);
 	$module->set_display('main', 'post_details', false);
 	$module->set_display('warn', 'warn_post', false);
 }
@@ -394,7 +395,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 		case 'reports':
 			$type = 'reports';
-			$default_key = 'p';
+			$default_key = 't';
 			$default_dir = 'd';
 			$limit_time_sql = ($min_time) ? "AND r.report_time >= $min_time" : '';
 
@@ -452,8 +453,8 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 		case 'reports':
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 364 => $user->lang['1_YEAR']);
-			$sort_by_text = array('p' => $user->lang['REPORT_PRIORITY'], 'r' => $user->lang['REPORTER'], 't' => $user->lang['REPORT_TIME']);
-			$sort_by_sql = array('p' => 'rr.reason_order', 'r' => 'u.username', 't' => 'r.report_time');
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
+			$sort_by_sql = array('a' => 'u.username', 'r' => 'ru.username', 'p' => 'p.post_id', 't' => 'r.report_time', 's' => 'p.post_subject');
 			break;
 
 		case 'logs':

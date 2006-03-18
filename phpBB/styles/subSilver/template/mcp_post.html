@@ -2,12 +2,46 @@
 
 <!-- $Id$ -->
 
-<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg"><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}">
+<!-- IF S_MCP_REPORT -->
+	<form method="post" name="mcp_report" action="{U_CLOSE_ACTION}"><table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<tr>
+		<th colspan="2" height="28" align="center">{L_REPORT_DETAILS}</th>
+	</tr>
+	<tr>
+		<td class="row1"><b class="gen">{L_REPORT_REASON}: </b></td>
+		<td class="row2"><span class="gen">{REPORT_REASON_TITLE} &raquo; {REPORT_REASON_DESCRIPTION}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" width="20%"><b class="gen">{L_REPORTER}: </b></td>
+		<td class="row2" width="80%"><span class="gen">{REPORTER_NAME} &nbsp; [ <a href="{U_VIEW_REPORTER_PROFILE}">{L_READ_PROFILE}</a><!-- IF S_USER_NOTES --> | <a href="{U_MCP_REPORTER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_REPORTER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
+	</tr>
+	<tr>
+		<td class="row1"><b class="gen">{L_REPORTED}: </b></td>
+		<td class="row2"><span class="postdetails">{REPORT_DATE}</span></td>
+	</tr>
+	<!-- IF REPORT_TEXT -->
+	<tr>
+		<th colspan="2" height="28" align="center">{L_MORE_INFO}</th>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{REPORT_TEXT}</div></td>
+	</tr>
+	<!-- ENDIF -->
+	<tr>
+		<td class="cat" align="center" colspan="2"><!-- IF S_POST_REPORTED --><input class="btnmain" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /><!-- ELSE -->{L_REPORT_CLOSED}<!-- ENDIF --> &nbsp; <input class="btnlite" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" /></td>
+	</tr>
+	<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
+	</table></form>
+
+	<br clear="all"/>
+<!-- ENDIF -->
+
+<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report" action="{U_CLOSE_ACTION}"><!-- ENDIF --><table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 <tr>
 	<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
 </tr>
 <tr>
-	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
+	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
 </tr>
 <tr>
 	<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
@@ -33,7 +67,7 @@
 <tr>
 	<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{POST_PREVIEW}</div><!-- IF U_EDIT --><div class="gen" style="float: right;"><a href="{U_EDIT}">{EDIT_IMG}</a></div><!-- ENDIF --></td>
 </tr>
-<!-- IF S_POST_UNAPPROVED -->
+<!-- IF S_POST_UNAPPROVED and S_MCP_QUEUE -->
 	<tr>
 		<td class="cat" align="center" colspan="2"><input class="btnmain" type="submit" value="{L_APPROVE}" name="action[approve]" /> &nbsp; <input class="btnlite" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /></td>
 	</tr>
@@ -46,37 +80,11 @@
 	<br clear="all" />
 
 	<!-- IF S_TOPIC_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
+<!-- ELSEIF S_MCP_REPORT -->
+	<br clear="all" />
+
+	<!-- IF S_TOPIC_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
 <!-- ELSE -->
-
-	<!-- IF S_SHOW_REPORTS -->
-		<br /><a name="reports"></a>
-
-		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
-		<tr>
-			<th colspan="2" height="28" align="center">{L_REPORTS}</th>
-		</tr>
-		<!-- BEGIN reports -->
-			<tr>
-				<td class="row1"><b class="genmed">{reports.REPORT_TIME}</b></td>
-				<td class="row2"><span class="gen">{reports.REASON_TITLE} &#187; {reports.REASON_DESC}</span></td>
-			</tr>
-			<tr>
-				<td class="row1"><b class="genmed">{L_REPORTER}: </b></td>
-				<td class="row2"><span class="gen"><!-- IF reports.U_REPORTER --><a href="{reports.U_REPORTER}">{reports.REPORTER}</a><!-- ELSE -->{reports.REPORTER}<!-- ENDIF --></span></td>
-			</tr>
-			<!-- IF reports.REPORT_TEXT -->
-				<tr>
-					<td class="row1" valign="top"><b class="genmed">{L_MORE_INFO}: </b></td>
-					<td class="row2"><span class="gen">{reports.REPORT_TEXT}</span></td>
-				</tr>
-			<!-- ENDIF -->
-			<tr>
-				<td colspan="2" class="spacer"></td>
-			</tr>
-		<!-- END reports -->
-		</table>
-	<!-- ENDIF -->
-
 	<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST or S_CAN_CHGPOSTER -->
 		<br /><a name="mod"></a>
 
