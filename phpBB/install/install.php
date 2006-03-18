@@ -1065,6 +1065,7 @@ if ($stage == 3)
 	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate the database
+	$sql_db = 'dbal_' . $dbms;
 	$db = new $sql_db();
 	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
@@ -1407,6 +1408,7 @@ function connect_check_db($error_connect, &$error, &$dbms, &$table_prefix, &$dbh
 	include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	// Instantiate it and set return on error true
+	$sql_db = 'dbal_' . $dbms;
 	$db = new $sql_db();
 	$db->sql_return_on_error(true);
 
