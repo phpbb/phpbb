@@ -91,8 +91,38 @@ switch ($mode)
 		trigger_error($message);
 	break;
 
-	case 'terms_of_use':
-	case 'privacy_statement':
+	case 'terms':
+	case 'privacy':
+
+		$message = ($mode == 'terms') ? 'TERMS_OF_USE_CONTENT' : 'PRIVACY_POLICY';
+		$title = ($mode == 'terms') ? 'TERMS_USE' : 'PRIVACY';
+
+		if (empty($user->lang[$message]))
+		{
+			if ($user->data['is_registered'])
+			{
+				redirect("index.$phpEx$SID");
+			}
+	
+			login_box("index.$phpEx$SID");
+		}
+
+		$template->set_filenames(array(
+			'body'		=> 'ucp_agreement.html')
+		);
+
+		page_header($user->lang[$title]);
+
+		$template->assign_vars(array(
+			'S_AGREEMENT'			=> true,
+			'AGREEMENT_TITLE'		=> $user->lang[$title],
+			'AGREEMENT_TEXT'		=> $user->lang[$message],
+			'U_BACK'				=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login",
+			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'])
+		);
+		
+		page_footer();
+
 	break;
 
 	case 'delete_cookies':

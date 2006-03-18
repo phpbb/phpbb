@@ -27,6 +27,27 @@ if (empty($lang) || !is_array($lang))
 // You do not need this where single placeholders are used, e.g. 'Message %d' is fine
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
+
+// Privacy policy and T&C
+$lang = array_merge($lang, array(
+	'TERMS_OF_USE_CONTENT'		=> 'By accessing ACME Forums (hereinafter "we", "us", "our", "ACME Forums", "www.acme.com/(forum-path?/)"), you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use ACME Forums. We may change these at any time and we\'ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of ACME Forums after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br />
+	<br />
+	You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where ACME Forums are hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider deemed required by us. The IP address of all posts are recorded to aid in enforcing these conditions. You agree that the ACME Forums have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither ACME Forums nor phpBB be held responsible for any hacking attempt that may lead to the data being compromised.<br />
+	<br />
+	Our forums are powered by phpBB (hereinafter "they", "them", "their", "phpBB software", "www.phpBB.com", "phpBB Group", "phpBB Teams") which is a bulletin board solution released under the General Public License (hereinafter "GPL", "http://www.gnu.org/licenses/gpl.html") and can be downloaded from www.phpbb.com. The phpBB software only facilitates Internet based discussions and the GPL strictly forbids them in what we allow and/or disallow as permissible content and/or conduct. For further information about phpBB, please see: http://www.phpbb.com/.',
+
+	
+	'PRIVACY_POLICY'	=> 'This policy explains in detail how ACME Forums with its affiliated companies (hereinafter "we", "us", "our", "ACME Forums", "www.acme.com/(forum-path?/)") and phpBB (hereinafter "they", "them", "their", "phpBB software", "www.phpBB.com", "phpBB Group", "phpBB Teams") use any information collected during any session of usage by you (hereinafter "your information"). <br />
+	<br />
+	Your information is collected via two ways: Firstly, by browsing ACME Forums will cause the phpBB software to create a number of cookies, which are small text files that are downloaded on to your computer\'s web browser temporary files. The first two cookies just contain a user identifier (hereinafter "user-id") and an anonymous session identifier (hereinafter "session-id"), automatically assigned to you by the phpBB software. A third cookie will be created once you have browsed topics within ACME Forums and is used to store which topics have been read, thereby improving your user experience. We may also create cookies external to the phpBB software whilst browsing the ACME Forums, though these are outside the scope of this document which is intended to only cover the pages created by the phpBB software. The second way of how we collect your information is by what you submit to us. This can be, and is not limited to: posting as an anonymous user (hereinafter "anonymous posts"), registering on ACME Forums (hereinafter "your account") and posts submitted by you after registration and whilst logged in (hereinafter "your posts").<br />
+	<br />
+	Your account will at a bare minimum contain a uniquely identifiable name (hereinafter "your user name"), a personal password used for logging into your account (hereinafter "your password") and a personal, valid email address (hereinafter "your email"). Your information for your account at ACME Forums is protected by data-protection laws applicable in the country that hosts us. Any information beyond your user name, your password and your email required by ACME Forum during the registration process are at our digression what is mandatory and what is optional. In all cases, you have the option of what information in your account is publicly displayed. Furthermore, within your account, you have the option to opt-in or opt-out of automatically generated emails from the phpBB software.<br />
+	<br />
+	Your password is ciphered (a one-way hash) so that it is secure. However, it is recommended that you do not reuse the same password across a number of different websites. Your password is the means of accessing your account at ACME Forums, so please guard it carefully and under no circumstance will anyone affiliated with ACME Forums, phpBB or another 3rd party, legitimately ask you for your password. Should you forget your password for your account, you can use the "I forgot my password" feature provided by the phpBB software. This process will ask you to submit your user name and your email, then the phpBB software will generate a new password to reclaim your account.<br />
+	',
+));
+
+// Common language entries
 $lang = array_merge($lang, array(
 	'ACCOUNT_ACTIVE'			=> 'Your account has now been activated. Thank you for registering',
 	'ACCOUNT_ACTIVE_ADMIN'		=> 'The account has now been activated',
@@ -59,6 +80,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_PAGE'				=> 'Page',
 
 	'BACK_TO_DRAFTS'			=> 'Back to saved drafts',
+	'BACK_TO_LOGIN'				=> 'Back to login screen',
 	'BIRTHDAY'					=> 'Birthday',
 	'BIRTHDAY_EXPLAIN'			=> 'Setting a year will list your age when it is your birthday.',
 	'BOARD_DATE_FORMAT'			=> 'My date format',
@@ -309,7 +331,6 @@ $lang = array_merge($lang, array(
 	'SORT_POST_TIME'			=> 'Post Time',
 	'SORT_SIZE'					=> 'Filesize',
 
-	'TERMS_OF_USE_CONTENT'		=> 'While the administrators and moderators of this forum will attempt to remove or edit any generally objectionable material as quickly as possible, it is impossible to review every message. Therefore you acknowledge that all posts made to these forums express the views and opinions of the author and not the administrators, moderators or webmaster (except for posts by these people) and hence will not be held liable.<br /><br />You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any applicable laws. Doing so may lead to you being immediately and permanently banned (and your service provider being informed). The IP address of all posts is recorded to aid in enforcing these conditions. You agree that the webmaster, administrator and moderators of this forum have the right to remove, edit, move or close any topic at any time should they see fit. As a user you agree to any information you	have entered above being stored in a database. While this information will not be disclosed to any third party without your consent the webmaster, administrator and moderators cannot be held responsible for any hacking attempt that may lead to the data being compromised.<br /><br />This forum system uses cookies to store information on your local computer. These cookies do not contain any of the information you have entered above, they serve only to improve your viewing pleasure. The email address is used only for confirming your registration details and password (and for sending new passwords should you forget your current one).<br /><br />By clicking Register below you agree to be bound by these conditions.',
 	'TIMEZONE'					=> 'Timezone',
 	'TO'						=> 'To',
 	'TOO_MANY_RECIPIENTS'		=> 'Too many recipients',

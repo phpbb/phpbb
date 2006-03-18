@@ -74,6 +74,7 @@ class ucp_register
 					'L_TERMS_OF_USE'	=> $user->lang['TERMS_OF_USE_CONTENT'],
 
 					'S_SHOW_COPPA'		=> false,
+					'S_REGISTRATION'	=> true,
 					'S_REGISTER_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
 				);
 			}
