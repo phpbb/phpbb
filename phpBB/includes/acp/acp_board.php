@@ -282,6 +282,11 @@ class acp_board
 				continue;
 			}
 
+			if ($config_name == 'auth_method')
+			{
+				continue;
+			}
+
 			$config_value = $cfg_array[$config_name];
 			$this->new_config[$config_name] = $config_value;
 
@@ -313,6 +318,8 @@ class acp_board
 
 			sort($auth_plugins);
 
+			$updated_auth_settings = false;
+			$old_auth_config = array();
 			foreach ($auth_plugins as $method)
 			{
 				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
@@ -337,17 +344,46 @@ class acp_board
 									continue;
 								}
 
+								$old_auth_config[$field] = $this->new_config[$field];
 								$config_value = $cfg_array[$field];
 								$this->new_config[$field] = $config_value;
 
 								if ($submit)
 								{
+									$updated_auth_settings = true;
 									set_config($field, $config_value);
 								}
 							}
 						}
 						unset($fields);
 					}
+				}
+			}
+
+			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
+			{
+				$method = $cfg_array['auth_method'];
+				if ($method && in_array($method, $auth_plugins))
+				{
+					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+
+					$method = 'init_' . $method;
+					if (function_exists($method))
+					{
+						if (($error = $method()) == true)
+						{
+							foreach ($old_auth_config as $config_name => $config_value)
+							{
+								set_config($config_name, $config_value);
+							}
+							trigger_error($error . adm_back_link($this->u_action));
+						}
+					}
+					set_config('auth_method', $cfg_array['auth_method']);
+				}
+				else
+				{
+					trigger_error('NO_AUTH_PLUGIN');
 				}
 			}
 		}

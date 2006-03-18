@@ -20,6 +20,48 @@
 */
 
 /**
+* Only allow changing authentication to ldap if we can connect to the ldap server
+*/
+function init_ldap()
+{
+	global $config, $user;
+
+	if (!extension_loaded('ldap'))
+	{
+		return $user->lang['LDAP_NO_LDAP_EXTENSION'];
+	}
+
+	if (!($ldap = @ldap_connect($config['ldap_server'])))
+	{
+		return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+	}
+
+	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
+
+	// We'll get a notice here that we don't want, if we cannot connect to the server.
+	// ldap_connect only checks whether the specified server is valid, so the connection might still fail
+	ob_start();
+
+	$search = @ldap_search($ldap, $config['ldap_base_dn'], $config['ldap_uid'] . '=' . $user->data['username'], array($config['ldap_uid']));
+
+	if (ob_get_clean())
+	{
+		return $user->lang['LDAP_NO_SERVER_CONNECTION'];
+	}
+
+	$result = @ldap_get_entries($ldap, $search);
+
+	@ldap_close($ldap);
+
+	if (is_array($result) && sizeof($result) > 1)
+	{
+		return false;
+	}
+
+	return sprintf($user->lang['LDAP_NO_IDENTITY'], $user->data['username']);
+}
+
+/**
 * Login function
 */
 function login_ldap(&$username, &$password)

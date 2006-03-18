@@ -308,13 +308,16 @@ $lang = array_merge($lang, array(
 // Auth settings
 $lang = array_merge($lang, array(
 	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
-	'AUTH_METHOD'			=> 'Select an authentication method',
-	'LDAP_SERVER'			=> 'LDAP server name',
-	'LDAP_SERVER_EXPLAIN'	=> 'If using LDAP this is the name or IP address of the server.',
-	'LDAP_DN'				=> 'LDAP base dn',
-	'LDAP_DN_EXPLAIN'		=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
-	'LDAP_UID'				=> 'LDAP uid',
-	'LDAP_UID_EXPLAIN'		=> 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
+	'AUTH_METHOD'				=> 'Select an authentication method',
+	'LDAP_NO_IDENTITY'			=> 'Could not find a login identity for %s',
+	'LDAP_NO_LDAP_EXTENSION'	=> 'LDAP extension not availible',
+	'LDAP_NO_SERVER_CONNECTION'	=> 'Could not connect to LDAP server',
+	'LDAP_DN'					=> 'LDAP base dn',
+	'LDAP_DN_EXPLAIN'			=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
+	'LDAP_SERVER'				=> 'LDAP server name',
+	'LDAP_SERVER_EXPLAIN'		=> 'If using LDAP this is the name or IP address of the server.',
+	'LDAP_UID'					=> 'LDAP uid',
+	'LDAP_UID_EXPLAIN'			=> 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
 ));
 
 // Board defaults
