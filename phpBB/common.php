@@ -77,7 +77,7 @@ require($phpbb_root_path . 'config.'.$phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
 {
-	header('Location: install/install.'.$phpEx);
+	header('Location: install/index.'.$phpEx);
 	exit;
 }
 

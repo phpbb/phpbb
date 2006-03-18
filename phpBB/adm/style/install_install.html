@@ -1,0 +1,50 @@
+<!-- INCLUDE install_header.html -->
+
+<form id="install_install" method="post" action="{U_ACTION}">
+
+<h2>{TITLE}</h2>
+{BODY}
+
+<!-- BEGIN checks -->
+	<!-- IF checks.S_LEGEND -->
+		<!-- IF not checks.S_FIRST_ROW -->
+			</fieldset>
+		<!-- ENDIF -->
+		<fieldset>
+			<legend>{checks.LEGEND}</legend>
+			<!-- IF checks.LEGEND_EXPLAIN --><p>{checks.LEGEND_EXPLAIN}</p><!-- ENDIF -->
+	<!-- ELSE -->
+
+		<dl>
+			<dt>{checks.TITLE}:</label><!-- IF checks.S_EXPLAIN --><br /><span>{checks.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd>{checks.RESULT}</dd>
+		</dl>
+	<!-- ENDIF -->
+<!-- END checks -->
+
+<!-- BEGIN options -->
+	<!-- IF options.S_LEGEND -->
+		<!-- IF not options.S_FIRST_ROW -->
+			</fieldset>
+		<!-- ENDIF -->
+		<fieldset>
+			<legend>{options.LEGEND}</legend>
+	<!-- ELSE -->
+
+		<dl>
+			<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd>{options.CONTENT}</dd>
+		</dl>
+
+	<!-- ENDIF -->
+<!-- END options -->
+</fieldset>
+
+<!-- IF L_SUBMIT -->
+<fieldset class="submit-buttons">
+	<!-- IF L_SUBMIT --><input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
+</fieldset>
+<!-- ENDIF -->
+
+</form>
+<!-- INCLUDE install_footer.html -->

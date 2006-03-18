@@ -206,7 +206,7 @@ class module
 				{
 					$this->sub = strtolower((in_array(strtoupper($selected_submod), $row['module_subs'])) ? $selected_submod : $row['module_subs'][0]);
 				}
-				elseif (is_array($row['module_stages']))
+				else if (is_array($row['module_stages']))
 				{
 					$this->sub = strtolower((in_array(strtoupper($selected_submod), $row['module_stages'])) ? $selected_submod : $row['module_stages'][0]);
 				}
@@ -339,7 +339,7 @@ class module
 				$cat = $cat_ary['name'];
 				$l_cat = (!empty($lang['CAT_' . $cat])) ? $lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
 				$cat = strtolower($cat);
-				$url = 'index.' . $phpEx . '?mode=' . $cat;
+				$url = $this->module_url . '?mode=' . $cat;
 				
 				if ($this->mode == $cat)
 				{
@@ -356,7 +356,7 @@ class module
 						{
 							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
-							$url = 'index.' . $phpEx . '?mode=' . $this->mode . '&amp;sub=' . $option;
+							$url = $this->module_url . '?mode=' . $this->mode . '&amp;sub=' . $option;
 
 							$template->assign_block_vars('l_block1', array(
 								'L_TITLE'		=> $l_option,
