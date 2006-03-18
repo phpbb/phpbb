@@ -1746,9 +1746,6 @@ else if ( $submit || $refresh || $mode != '' )
 	//
 	generate_smilies('inline', PAGE_PRIVMSGS);
 
-	$privmsg_subject = preg_replace($html_entities_match, $html_entities_replace, $privmsg_subject);
-	$privmsg_subject = str_replace('"', '&quot;', $privmsg_subject);
-
 	$template->assign_vars(array(
 		'SUBJECT' => $privmsg_subject, 
 		'USERNAME' => $to_username,
