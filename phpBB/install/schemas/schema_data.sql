@@ -166,6 +166,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('save_passwd', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_block_size', '250');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_gc', '7200');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_indexing_state', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_interval', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_type', 'fulltext_phpbb');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_results', '1800');
@@ -206,7 +207,6 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_to
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('num_users', '1', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_date', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('record_online_users', '0', 1);
-INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_indexing_state', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);

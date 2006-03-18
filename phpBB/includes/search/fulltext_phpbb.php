@@ -21,9 +21,14 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 class fulltext_phpbb extends search_backend
 {
 	var $stats;
+	var $word_length;
 
 	function fulltext_phpbb(&$error)
 	{
+		global $config;
+
+		$this->word_length = array('min' => $config['fulltext_phpbb_min_search_chars'], 'max' => $config['fulltext_phpbb_max_search_chars']);
+
 		$error = false;
 	}
 
@@ -89,7 +94,7 @@ class fulltext_phpbb extends search_backend
 
 			// check word length
 			$clean_len = strlen(str_replace('*', '', $word));
-			if (($clean_len < $config['min_search_chars']) || ($clean_len > $config['max_search_chars']))
+			if (($clean_len < $config['fulltext_phpbb_min_search_chars']) || ($clean_len > $config['fulltext_phpbb_max_search_chars']))
 			{
 				if ($prefixed)
 				{
@@ -194,7 +199,7 @@ class fulltext_phpbb extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (strlen($text[$i]) < $config['min_search_chars'] || strlen($text[$i]) > $config['max_search_chars'])
+			if (strlen($text[$i]) < $config['fulltext_phpbb_min_search_chars'] || strlen($text[$i]) > $config['fulltext_phpbb_max_search_chars'])
 			{
 				unset($text[$i]);
 			}
@@ -712,7 +717,7 @@ class fulltext_phpbb extends search_backend
 
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (!$config['load_search_upd'])
+		if (!$config['fulltext_phpbb_load_search_upd'])
 		{
 			return;
 		}
@@ -882,7 +887,7 @@ class fulltext_phpbb extends search_backend
 
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (!$config['load_search_upd'])
+		if (!$config['fulltext_phpbb_load_search_upd'])
 		{
 			return;
 		}

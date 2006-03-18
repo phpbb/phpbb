@@ -223,7 +223,7 @@ if ($keywords || $author || $search_id)
 		$search->split_keywords($keywords, $search_terms);
 		if (!sizeof($search->split_words) && !sizeof($author_id_ary) && !$search_id)
 		{
-			trigger_error(sprintf($user->lang['NO_KEYWORDS'], $config['min_search_chars'], $config['max_search_chars']));
+			trigger_error(sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
 		}
 	}
 

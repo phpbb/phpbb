@@ -281,7 +281,7 @@ class mcp_reports
 
 						$template->assign_block_vars('postrow', array(
 							'U_VIEWFORUM'				=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
-							'U_VIEWTOPIC'				=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id'],
+							'U_VIEWTOPIC'				=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
 							'U_VIEW_DETAILS'			=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;start=$start&amp;mode=report_details&amp;f={$forum_id}&amp;p={$row['post_id']}",
 							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['reporter_id']}" : '',

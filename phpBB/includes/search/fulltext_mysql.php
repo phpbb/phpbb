@@ -21,9 +21,14 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 class fulltext_mysql extends search_backend
 {
 	var $stats;
+	var $word_length;
 
 	function fulltext_mysql(&$error)
 	{
+		global $config;
+
+		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
+
 		$error = false;
 	}
 
