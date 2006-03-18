@@ -511,6 +511,15 @@ function session_reset_keys($user_id, $user_ip)
 		message_die(CRITICAL_ERROR, 'Error removing auto-login keys', '', __LINE__, __FILE__, $sql);
 	}
 
+	$where_sql = 'session_user_id = ' . (int) $user_id;
+	$where_sql .= ($user_id == $userdata['user_id']) ? "' AND session_id <> '" . $userdata['session_id'] . "'" : '';
+	$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
+		WHERE $where_sql;
+	if ( !$db->sql_query($sql) )
+	{
+		message_die(CRITICAL_ERROR, 'Error removing user session(s)', '', __LINE__, __FILE__, $sql);
+	}
+
 	if ( !empty($key_sql) )
 	{
 		$auto_login_key = dss_rand() . dss_rand();
