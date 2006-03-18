@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* acp_ban [English]
+* acp_database [English]
 *
 * @package language
 * @version $Id$
