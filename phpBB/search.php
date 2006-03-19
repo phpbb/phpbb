@@ -263,9 +263,10 @@ if ($keywords || $author || $search_id)
 				$last_post_time = (time() - ($sort_days * 24 * 3600));
 
 				$sql = 'SELECT DISTINCT t.topic_id
-					FROM ' . POSTS_TABLE . ' p
-					LEFT JOIN ' . TOPICS_TABLE . " t ON (t.topic_approved = 1 AND p.topic_id = t.topic_id)
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 					WHERE p.post_time > $last_post_time
+						AND t.topic_approved = 1
+						AND p.topic_id = t.topic_id
 						$m_approve_fid_sql
 						" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . '
 					ORDER BY t.topic_last_post_time DESC';
@@ -736,7 +737,14 @@ while ($row = $db->sql_fetchrow($result))
 	}
 	else if ($row['left_id'] > $right + 1)
 	{
-		$padding = $pad_store[$row['parent_id']];
+		if (isset($pad_store[$row['parent_id']]))
+		{
+			$padding = $pad_store[$row['parent_id']];
+		}
+		else
+		{
+			continue;
+		}
 	}
 
 	$right = $row['right_id'];

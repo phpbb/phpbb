@@ -14,7 +14,7 @@
 */
 class messenger
 {
-	var $vars, $msg, $extra_headers, $replyto, $from, $subject, $necoding;
+	var $vars, $msg, $extra_headers, $replyto, $from, $subject, $encoding;
 	var $addresses = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
