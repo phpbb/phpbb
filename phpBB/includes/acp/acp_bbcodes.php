@@ -122,7 +122,7 @@ class acp_bbcodes
 
 				if ($action == 'create')
 				{
-					$sql = 'SELECT MAX(bbcode_id) as bbcode_id
+					$sql = 'SELECT MAX(bbcode_id) as max_bbcode_id
 						FROM ' . BBCODES_TABLE;
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
@@ -130,24 +130,17 @@ class acp_bbcodes
 
 					if ($row)
 					{
-						$bbcode_id = $row['bbcode_id'] + 1;
-					}
-					else
-					{
-						$sql = 'SELECT MIN(bbcode_id) AS min_id, MAX(bbcode_id) AS max_id
-							FROM ' . BBCODES_TABLE;
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$bbcode_id = $row['max_bbcode_id'] + 1;
 
-						if (empty($row['min_id']) || $row['min_id'] >= NUM_CORE_BBCODES)
+						// Make sure it is greater than the core bbcode ids...
+						if ($bbcode_id <= NUM_CORE_BBCODES)
 						{
 							$bbcode_id = NUM_CORE_BBCODES + 1;
 						}
-						else
-						{
-							$bbcode_id = $row['max_id'] + 1;
-						}
+					}
+					else
+					{
+						$bbcode_id = NUM_CORE_BBCODES + 1;
 					}
 
 					if ($bbcode_id > 31)
