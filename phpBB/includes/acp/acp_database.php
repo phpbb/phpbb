@@ -45,6 +45,8 @@ class acp_database
 						$format	= request_var('method', '');
 						$where	= request_var('where', '');
 
+						@set_time_limit(1200);
+
 						$filename = time();
 
 						// All of the generated queries go here
@@ -53,6 +55,8 @@ class acp_database
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
 						$sql_data .= "#\n# DATE : " .  gmdate("d-m-Y H:i:s", $filename) . " GMT\n";
+						$time_start = microtime(true);
+						$sql_data .= "# START : $time_start\n";
 						$sql_data .= "#\n";
 
 						switch (SQL_LAYER)
@@ -73,7 +77,7 @@ class acp_database
 
 									foreach ($table as $table_name)
 									{
-										$row = array();
+										$row = $rows = array();
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
 										$sql_data .= "CREATE TABLE $table_name(\n";
@@ -100,10 +104,12 @@ class acp_database
 
 											$rows[] = $line;
 										}
+										$db->sql_freeresult($result);
 
 										$result = $db->sql_query("SHOW KEYS FROM $table_name");
-
-										while($row = $db->sql_fetchrow($result))
+										$index = array();
+										
+										while ($row = $db->sql_fetchrow($result))
 										{
 											$kname = $row['Key_name'];
 
@@ -112,13 +118,9 @@ class acp_database
 												$kname = "UNIQUE|$kname";
 											}
 
-											if (!is_array($index[$kname]))
-											{
-												$index[$kname] = array();
-											}
-
 											$index[$kname][] = $row['Column_name'];
 										}
+										$db->sql_freeresult($result);
 
 										$field = array();
 										foreach ($index as $key => $columns)
@@ -155,6 +157,7 @@ class acp_database
 										$sql2 = "PRAGMA index_list('{$row['name']}');";
 										$result2 = $db->sql_query($sql2);
 										$ar = sqlite_fetch_all($result2);
+										$db->sql_freeresult($result2);
 
 										foreach ($ar as $value)
 										{
@@ -164,6 +167,7 @@ class acp_database
 											}
 											$result3 = $db->sql_query("PRAGMA index_info('{$value['name']}');");
 											$ars = sqlite_fetch_all($result3);
+											$db->sql_freeresult($result3);
 
 											$fields = array();
 											foreach ($ars as $va)
@@ -228,6 +232,7 @@ class acp_database
 										$sql_data .= $return_val . "\n";
 
 									}
+									$db->sql_freeresult($seq);
 
 									foreach ($table as $table_name)
 									{
@@ -299,6 +304,7 @@ class acp_database
 											}
 											$lines[] = $line;
 										}
+										$db->sql_freeresult($result2);
 
 
 										// Get the listing of primary keys.
@@ -334,6 +340,7 @@ class acp_database
 												$index_rows[$row['index_name']]['column_names'][] = $row['column_name'];
 											}
 										}
+										$db->sql_freeresult($result);
 
 										if (!empty($index_rows))
 										{
@@ -363,11 +370,6 @@ class acp_database
 												)";
 										$result = $db->sql_query($sql_checks);
 
-										if (!$result)
-										{
-											message_die(GENERAL_ERROR, "Failed in get_table_def (show fields)", "", __LINE__, __FILE__, $sql_checks);
-										}
-
 										// Add the constraints to the sql file.
 										while ($row = $db->sql_fetchrow($result))
 										{
@@ -376,6 +378,7 @@ class acp_database
 												$lines[] = '  CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['consrc'];
 											}
 										}
+										$db->sql_freeresult($result);
 
 										$sql_data .= implode(", \n", $lines);
 										$sql_data .= "\n);\n";
@@ -399,44 +402,94 @@ class acp_database
 							switch (SQL_LAYER)
 							{
 								case 'mysqli':
+									foreach ($table as $name)
+									{
+										$sql = "SELECT * FROM $name";
+										$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
+										if ($result != false)
+										{
+											$fields_cnt = mysqli_num_fields($result);
+
+											// Get field information
+											$field = mysqli_fetch_fields($result);
+											$field_set = array();
+											for ($j = 0; $j < $fields_cnt; $j++)
+											{
+												  $field_set[$j] = $field[$j]->name;
+											}
+											$fields			= implode(', ', $field_set);
+											$values			= array();
+											$schema_insert	= 'INSERT INTO ' . $name . ' (' . $fields . ') VALUES (';
+
+											while ($row = mysqli_fetch_row($result))
+											{
+												for ($j = 0; $j < $fields_cnt; $j++)
+												{
+													if (!isset($row[$j]) || is_null($row[$j]))
+													{
+														$values[] = 'NULL';
+													}
+													elseif (($field[$j]->flags & 32768) && !($field[$j]->flags & 1024))
+													{
+														$values[] = $row[$j];
+													}
+													else
+													{
+														$values[] = "'" . $row[$j] . "'";
+													}
+												}
+												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
+												$values	= array();
+											}
+											mysqli_free_result($result);
+										}
+									}
+								break;
 								case 'mysql4':
 								case 'mysql':
 									foreach ($table as $name)
 									{
-										$col_types = array();
-										$col = $db->sql_query("SHOW COLUMNS FROM $name");
-										while ($row = $db->sql_fetchrow($col))
-										{
-											$col_types[$row['Field']] = $row['Type'];
-										}
 										$sql = "SELECT * FROM $name";
-										$result = $db->sql_query($sql);
-
-										while ($row = $db->sql_fetchrow($result))
+										$result = mysql_unbuffered_query($sql, $db->db_connect_id);
+										if ($result != false)
 										{
-											$sql_data .= 'INSERT INTO ' . $name . ' (';
-											$names = $data = array();
-											foreach ($row as $row_name => $row_data)
-											{
-												$names[] = $row_name;
+											$fields_cnt = mysql_num_fields($result);
 
-												// Figure out what this data is, escape it properly
-												if (is_null($row_data))
-												{
-													$row_data = 'NULL';
-												}
-												else if ($row_data == '')
-												{
-													$row_data = "''";
-												}
-												else if (strpos($col_types[$row_name], 'text') !== false || strpos($col_types[$row_name], 'char') !== false)
-												{
-													$row_data = "'" . $row_data . "'";
-												}
-
-												$data[] = $row_data;
+											// Get field information
+											$field = array();
+											for ($i = 0; $i < $fields_cnt; $i++) {
+												$field[] = mysql_fetch_field($result, $i);
 											}
-											$sql_data .= implode(', ', $names) . ') VALUES ('. implode(', ', $data) .");\n";
+											$field_set = array();
+											for ($j = 0; $j < $fields_cnt; $j++)
+											{
+												  $field_set[$j] = $field[$j]->name;
+											}
+											$fields			= implode(', ', $field_set);
+											$values			= array();
+											$schema_insert	= 'INSERT INTO ' . $name . ' (' . $fields . ') VALUES (';
+
+											while ($row = mysql_fetch_row($result))
+											{
+												for ($j = 0; $j < $fields_cnt; $j++)
+												{
+													if (!isset($row[$j]) || is_null($row[$j]))
+													{
+														$values[] = 'NULL';
+													}
+													elseif ($field[$j]->numeric && ($field[$j]->type !== 'timestamp'))
+													{
+														$values[] = $row[$j];
+													}
+													else
+													{
+														$values[] = "'" . $row[$j] . "'";
+													}
+												}
+												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
+												$values	= array();
+											}
+											mysql_free_result($result);
 										}
 									}
 								break;
@@ -449,7 +502,6 @@ class acp_database
 
 										while ($row = $db->sql_fetchrow($result))
 										{
-											$sql_data .= 'INSERT INTO ' . $name . ' (';
 											$names = $data = array();
 											foreach ($row as $row_name => $row_data)
 											{
@@ -471,8 +523,9 @@ class acp_database
 
 												$data[] = $row_data;
 											}
-											$sql_data .= implode(', ', $names) . ') VALUES ('. implode(', ', $data) .");\n";
+											$sql_data .= 'INSERT INTO ' . $name . ' (' . implode(', ', $names) . ') VALUES ('. implode(', ', $data) .");\n";
 										}
+										$db->sql_freeresult($result);
 									}
 								break;
 
@@ -536,6 +589,7 @@ class acp_database
 											// into a valid sql statement to recreate that field in the data.
 											$sql_data .= "INSERT INTO $name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
 										}
+										$db->sql_freeresult($result);
 									}
 								break;
 
@@ -551,6 +605,9 @@ class acp_database
 							break;
 						}
 
+						$time_stop = microtime(true);
+						$sql_data .= "# END : $time_stop\n";
+						$sql_data .= "# DIFF : ".($time_stop-$time_start);
 						// Base file name
 						$file = $phpbb_root_path . 'store/' . $filename . $format;
 
@@ -619,6 +676,7 @@ class acp_database
 										$tables[] = $row['name'];
 									}
 								}
+								$db->sql_freeresult($result);
 							break;
 							
 							case 'mysqli':
@@ -630,6 +688,7 @@ class acp_database
 								{
 									$tables[] = current($row);
 								}
+								$db->sql_freeresult($result);
 							break;
 
 							case 'postgres':
@@ -642,6 +701,7 @@ class acp_database
 										$tables[] = $row['relname'];
 									}
 								}
+								$db->sql_freeresult($result);
 							break;
 
 							default:
@@ -772,8 +832,8 @@ class acp_database_info
 			'title'		=> 'ACP_DATABASE',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'backup'	=> array('title' => 'ACP_BACKUP', 'auth' => 'acl_a_server'),
-				'restore'	=> array('title' => 'ACP_RESTORE', 'auth' => 'acl_a_server'),
+				'backup'	=> array('title' => 'ACP_BACKUP', 'auth' => 'acl_a_backup'),
+				'restore'	=> array('title' => 'ACP_RESTORE', 'auth' => 'acl_a_backup'),
 			),
 		);
 	}
