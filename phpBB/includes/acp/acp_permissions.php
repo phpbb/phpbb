@@ -218,7 +218,7 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_FORUM'		=> true,
-						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, false))
+						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true))
 					);
 
 				break;
@@ -231,7 +231,7 @@ class acp_permissions
 						continue 2;
 					}
 
-					$forum_list = make_forum_select(false, false, false, false, true, true);
+					$forum_list = make_forum_select(false, false, true, false, true, true);
 
 					// Build forum options
 					$s_forum_options = '';
