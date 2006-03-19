@@ -551,9 +551,6 @@ $lang = array_merge($lang, array(
 		'Oct'		=> 'Oct',
 		'Nov'		=> 'Nov',
 		'Dec'		=> 'Dec',
-
-		'TODAY'		=> 'Today',
-		'YESTERDAY'	=> 'Yesterday',
 	),
 
 	'tz'				=> array(
