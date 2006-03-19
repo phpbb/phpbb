@@ -37,6 +37,7 @@ class acp_database
 		switch ($mode)
 		{
 			case 'backup':
+
 				switch ($action)
 				{
 					case 'download':
@@ -48,6 +49,18 @@ class acp_database
 						@set_time_limit(1200);
 
 						$filename = time();
+						$time_start = microtime(true);
+
+						// We write the file to "store" first (and then compress the file) to not use too much
+						// memory. The server process can be easily killed by storing too much data at once.
+						$file = $phpbb_root_path . 'store/' . $filename . '.sql';
+
+						$fp = fopen($file, 'a');
+
+						if (!$fp)
+						{
+							trigger_error('Unable to write temporary file to storage folder');
+						}
 
 						// All of the generated queries go here
 						$sql_data = '';
@@ -55,7 +68,6 @@ class acp_database
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
 						$sql_data .= "#\n# DATE : " .  gmdate("d-m-Y H:i:s", $filename) . " GMT\n";
-						$time_start = microtime(true);
 						$sql_data .= "# START : $time_start\n";
 						$sql_data .= "#\n";
 
@@ -66,345 +78,46 @@ class acp_database
 							break;
 						}
 
-						// Structure
-						if ($type == 'full' || $type == 'structure')
+						foreach ($table as $table_name)
 						{
-							switch (SQL_LAYER)
+							// Get the table structure
+							if ($type == 'full' || $type == 'structure')
 							{
-								case 'mysqli':
-								case 'mysql4':
-								case 'mysql':
+								switch (SQL_LAYER)
+								{
+									case 'mysqli':
+									case 'mysql4':
+									case 'mysql':
+									case 'sqlite';
 
-									foreach ($table as $table_name)
-									{
-										$row = $rows = array();
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
-										$sql_data .= "CREATE TABLE $table_name(\n";
+									break;
 
-										$result = $db->sql_query("SHOW FIELDS FROM $table_name");
-										while ($row = $db->sql_fetchrow($result))
-										{
-											$line = '   ' . $row['Field'] . ' ' . $row['Type'];
-
-											if (!is_null($row['Default']))
-											{
-												$line .= " DEFAULT '{$row['Default']}'";
-											}
-
-											if ($row['Null'] != 'YES')
-											{
-												$line .= ' NOT NULL';
-											}
-
-											if ($row['Extra'] != '')
-											{
-												$line .= ' ' . $row['Extra'];
-											}
-
-											$rows[] = $line;
-										}
-										$db->sql_freeresult($result);
-
-										$result = $db->sql_query("SHOW KEYS FROM $table_name");
-										$index = array();
-										
-										while ($row = $db->sql_fetchrow($result))
-										{
-											$kname = $row['Key_name'];
-
-											if (($kname != 'PRIMARY') && ($row['Non_unique'] == 0))
-											{
-												$kname = "UNIQUE|$kname";
-											}
-
-											$index[$kname][] = $row['Column_name'];
-										}
-										$db->sql_freeresult($result);
-
-										$field = array();
-										foreach ($index as $key => $columns)
-										{
-											$line = '   ';
-
-											if ($key == 'PRIMARY')
-											{
-												$line .= 'PRIMARY KEY (' . implode(', ', $columns) . ')';
-											}
-											elseif (strpos($key, 'UNIQUE') === 0)
-											{
-												$line .= 'UNIQUE ' . substr($key, 7) . ' (' . implode(', ', $columns) . ')';
-											}
-											else
-											{
-												$line .= "KEY $key (" . implode(', ', $columns) . ')';
-											}
-											$rows[] = $line;
-										}
-										$sql_data .= implode(",\n", $rows);
-										$sql_data .= "\n);\n\n";
-									}
-								break;
-								case 'sqlite':
-									$names	= preg_replace('/\w+/', "'\\0'", implode(', ', $table));
-									$sql = "SELECT sql, name FROM sqlite_master WHERE type!='meta' AND name IN ($names) ORDER BY type DESC, name;";
-									$result = $db->sql_query($sql);
-
-									while ($row = $db->sql_fetchrow($result))
-									{
-										$sql_data .= '# Table: ' . $row['name'] . "\n" . $row['sql'] . ";\n";
-										$sql_data .= "DROP TABLE IF EXISTS {$row['name']};\n";
-										$sql2 = "PRAGMA index_list('{$row['name']}');";
-										$result2 = $db->sql_query($sql2);
-										$ar = sqlite_fetch_all($result2);
-										$db->sql_freeresult($result2);
-
-										foreach ($ar as $value)
-										{
-											if (strpos($value['name'], 'autoindex') !== false)
-											{
-												continue;
-											}
-											$result3 = $db->sql_query("PRAGMA index_info('{$value['name']}');");
-											$ars = sqlite_fetch_all($result3);
-											$db->sql_freeresult($result3);
-
-											$fields = array();
-											foreach ($ars as $va)
-											{
-												$fields[] = $va['name'];
-											}
-
-											$sql_data .= 'CREATE ' . ($value['unique'] ? 'UNIQUE ' : '') . 'INDEX ' . $value['name'] . ' on ' . $row['name'] . ' (' . implode(', ', $fields) . ");\n";
-										}
-										$sql_data .= "\n";
-									}
-								break;
-								case 'postgres':
-									$get_seq_sql = "SELECT * FROM pg_class WHERE NOT relname ~ 'pg_.*'
-										AND relkind = 'S' ORDER BY relname";
-
-									$seq = $db->sql_query($get_seq_sql);
-
-									if ($num_seq = $db->sql_numrows($seq))
-									{
-										$return_val = "\n# Sequences \n";
-										$i_seq = 0;
-
-										while($i_seq < $num_seq)
-										{
-											$row = $db->sql_fetchrow($seq);
-											$sequence = $row['relname'];
-
-											$bool = false;
-											foreach($table as $table_name)
-											{
-												if (strpos($sequence, $table_name) === false)
-												{
-													continue;
-												}
-												$bool = true;
-												break;
-											}
-
-											// Don't create a sequence for tables we don't create
-											if (!$bool)
-											{
-												$i_seq++;
-												continue;
-											}
-
-											$get_props_sql = "SELECT * FROM $sequence";
-											$seq_props = $db->sql_query($get_props_sql);
-
-											if ($db->sql_numrows($seq_props) > 0)
-											{
-												$row1 = $db->sql_fetchrow($seq_props);
-												$row1['last_value'] = 1;
-
-												$return_val .= "DROP SEQUENCE $sequence;\n";
-												$return_val .= "CREATE SEQUENCE $sequence START " . $row1['last_value'] . ' INCREMENT ' . $row1['increment_by'] . ' MAXVALUE ' . $row1['max_value'] . ' MINVALUE ' . $row1['min_value'] . ' CACHE ' . $row1['cache_value'] . ";\n";
-											}
-
-											$i_seq++;
-
-										}
-										$sql_data .= $return_val . "\n";
-
-									}
-									$db->sql_freeresult($seq);
-
-									foreach ($table as $table_name)
-									{
-										$field_query = "SELECT a.attnum, a.attname AS field, t.typname as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
-											FROM pg_class c, pg_attribute a, pg_type t
-											WHERE c.relname = '$table_name'
-												AND a.attnum > 0
-												AND a.attrelid = c.oid
-												AND a.atttypid = t.oid
-											ORDER BY a.attnum";
-										$result = $db->sql_query($field_query);
-
+									case 'postgres':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE $table_name;\n";
-										$sql_data .= "CREATE TABLE $table_name(\n";
-										$lines = array();
-										while ($row = $db->sql_fetchrow($result))
-										{
-											//
-											// Get the data from the table
-											//
-											$sql_get_default = "SELECT d.adsrc AS rowdefault
-												FROM pg_attrdef d, pg_class c
-												WHERE (c.relname = '$table_name')
-													AND (c.oid = d.adrelid)
-													AND d.adnum = " . $row['attnum'];
-											$def_res = $db->sql_query($sql_get_default);
-
-											if (!$def_res)
-											{
-												unset($row['rowdefault']);
-											}
-											else
-											{
-												$row['rowdefault'] = @pg_fetch_result($def_res, 0, 'rowdefault');
-											}
-
-											if ($row['type'] == 'bpchar')
-											{
-												// Internally stored as bpchar, but isn't accepted in a CREATE TABLE statement.
-												$row['type'] = 'char';
-											}
-
-											$line = '  ' . $row['field'] . ' ' . $row['type'];
-
-											if (strpos($row['type'], 'char') !== false)
-											{
-												if ($row['lengthvar'] > 0)
-												{
-													$line .= '(' . ($row['lengthvar'] - 4) . ')';
-												}
-											}
-
-											if (strpos($row['type'], 'numeric') !== false)
-											{
-												$line .= '(';
-												$line .= sprintf("%s,%s", (($row['lengthvar'] >> 16) & 0xffff), (($row['lengthvar'] - 4) & 0xffff));
-												$line .= ')';
-											}
-
-											if (!empty($row['rowdefault']))
-											{
-												$line .= ' DEFAULT ' . $row['rowdefault'];
-											}
-
-											if ($row['notnull'] == 't')
-											{
-												$line .= ' NOT NULL';
-											}
-											$lines[] = $line;
-										}
-										$db->sql_freeresult($result2);
-
-
-										// Get the listing of primary keys.
-										$sql_pri_keys = "SELECT ic.relname AS index_name, bc.relname AS tab_name, ta.attname AS column_name, i.indisunique AS unique_key, i.indisprimary AS primary_key
-											FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
-											WHERE (bc.oid = i.indrelid)
-												AND (ic.oid = i.indexrelid)
-												AND (ia.attrelid = i.indexrelid)
-												AND	(ta.attrelid = bc.oid)
-												AND (bc.relname = '$table_name')
-												AND (ta.attrelid = i.indrelid)
-												AND (ta.attnum = i.indkey[ia.attnum-1])
-											ORDER BY index_name, tab_name, column_name ";
-										$result = $db->sql_query($sql_pri_keys);
-
-										$index_create = $index_rows = $primary_key = array();
-
-										// We do this in two steps. It makes placing the comma easier
-										while ($row = $db->sql_fetchrow($result))
-										{
-											if ($row['primary_key'] == 't')
-											{
-												$primary_key[] = $row['column_name'];
-												$primary_key_name = $row['index_name'];
-
-											}
-											else
-											{
-												// We have to store this all this info because it is possible to have a multi-column key...
-												// we can loop through it again and build the statement
-												$index_rows[$row['index_name']]['table'] = $table_name;
-												$index_rows[$row['index_name']]['unique'] = ($row['unique_key'] == 't') ? true : false;
-												$index_rows[$row['index_name']]['column_names'][] = $row['column_name'];
-											}
-										}
-										$db->sql_freeresult($result);
-
-										if (!empty($index_rows))
-										{
-											foreach ($index_rows as $idx_name => $props)
-											{
-												$index_create[] = 'CREATE ' . ($props['unique'] ? 'UNIQUE ' : '') . "INDEX $idx_name ON $table_name (" . implode(', ', $props['column_names']) . ");";
-											}
-										}
-
-										if (!empty($primary_key))
-										{
-											$lines[] = "  CONSTRAINT $primary_key_name PRIMARY KEY (" . implode(', ', $primary_key) . ")";
-										}
-
-										// Generate constraint clauses for CHECK constraints
-										$sql_checks = "SELECT conname as index_name, consrc
-											FROM pg_constraint, pg_class bc
-											WHERE conrelid = bc.oid
-												AND bc.relname = '$table_name'
-												AND NOT EXISTS (
-													SELECT *
-														FROM pg_constraint as c, pg_inherits as i
-														WHERE i.inhrelid = pg_constraint.conrelid
-															AND c.conname = pg_constraint.conname
-															AND c.consrc = pg_constraint.consrc
-															AND c.conrelid = i.inhparent
-												)";
-										$result = $db->sql_query($sql_checks);
-
-										// Add the constraints to the sql file.
-										while ($row = $db->sql_fetchrow($result))
-										{
-											if (!is_null($row['consrc']))
-											{
-												$lines[] = '  CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['consrc'];
-											}
-										}
-										$db->sql_freeresult($result);
-
-										$sql_data .= implode(", \n", $lines);
-										$sql_data .= "\n);\n";
-
-										if (!empty($index_create))
-										{
-											$sql_data .= implode("\n", $index_create) . "\n\n";
-										}
-									}
-								break;
-
-								default:
-									trigger_error('KungFuDeathGrip');
+									break;
+								}
 							}
-						}
 
-						// Data
-						if ($type == 'full' || $type == 'data')
-						{
-							$sql_data .= "\n";
-							switch (SQL_LAYER)
+							$sql_data .= $this->get_table_structure($table_name);
+
+							// Now write the data for the first time. :)
+							fwrite($fp, $sql_data);
+
+							$sql_data = '';
+
+							// Data
+							if ($type == 'full' || $type == 'data')
 							{
-								case 'mysqli':
-									foreach ($table as $name)
-									{
-										$sql = "SELECT * FROM $name";
+								$sql_data .= "\n";
+
+								switch (SQL_LAYER)
+								{
+									case 'mysqli':
+
+										$sql = "SELECT * FROM $table_name";
 										$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
 										if ($result != false)
 										{
@@ -413,10 +126,12 @@ class acp_database
 											// Get field information
 											$field = mysqli_fetch_fields($result);
 											$field_set = array();
+
 											for ($j = 0; $j < $fields_cnt; $j++)
 											{
 												  $field_set[$j] = $field[$j]->name;
 											}
+											
 											$fields			= implode(', ', $field_set);
 											$values			= array();
 											$schema_insert	= 'INSERT INTO ' . $name . ' (' . $fields . ') VALUES (';
@@ -429,7 +144,7 @@ class acp_database
 													{
 														$values[] = 'NULL';
 													}
-													elseif (($field[$j]->flags & 32768) && !($field[$j]->flags & 1024))
+													else if (($field[$j]->flags & 32768) && !($field[$j]->flags & 1024))
 													{
 														$values[] = $row[$j];
 													}
@@ -439,35 +154,41 @@ class acp_database
 													}
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
+
 												$values	= array();
+												fwrite($fp, $sql_data);
+												$sql_data = '';
 											}
 											mysqli_free_result($result);
 										}
-									}
-								break;
-								case 'mysql4':
-								case 'mysql':
-									foreach ($table as $name)
-									{
-										$sql = "SELECT * FROM $name";
+									break;
+
+									case 'mysql4':
+									case 'mysql':
+	
+										$sql = "SELECT * FROM $table_name";
 										$result = mysql_unbuffered_query($sql, $db->db_connect_id);
+
 										if ($result != false)
 										{
 											$fields_cnt = mysql_num_fields($result);
 
 											// Get field information
 											$field = array();
-											for ($i = 0; $i < $fields_cnt; $i++) {
+											for ($i = 0; $i < $fields_cnt; $i++) 
+											{
 												$field[] = mysql_fetch_field($result, $i);
 											}
 											$field_set = array();
+											
 											for ($j = 0; $j < $fields_cnt; $j++)
 											{
-												  $field_set[$j] = $field[$j]->name;
+												$field_set[$j] = $field[$j]->name;
 											}
+											
 											$fields			= implode(', ', $field_set);
 											$values			= array();
-											$schema_insert	= 'INSERT INTO ' . $name . ' (' . $fields . ') VALUES (';
+											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
 											while ($row = mysql_fetch_row($result))
 											{
@@ -477,7 +198,7 @@ class acp_database
 													{
 														$values[] = 'NULL';
 													}
-													elseif ($field[$j]->numeric && ($field[$j]->type !== 'timestamp'))
+													else if ($field[$j]->numeric && ($field[$j]->type !== 'timestamp'))
 													{
 														$values[] = $row[$j];
 													}
@@ -487,17 +208,19 @@ class acp_database
 													}
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
+
 												$values	= array();
+												fwrite($fp, $sql_data);
+												$sql_data = '';
 											}
 											mysql_free_result($result);
 										}
-									}
-								break;
-								case 'sqlite':
-									foreach ($table as $name)
-									{
+									break;
+	
+									case 'sqlite':
+
 										$col_types = sqlite_fetch_column_types($name, $db->db_connect_id);
-										$sql = "SELECT * FROM $name";
+										$sql = "SELECT * FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										while ($row = $db->sql_fetchrow($result))
@@ -524,17 +247,19 @@ class acp_database
 												$data[] = $row_data;
 											}
 											$sql_data .= 'INSERT INTO ' . $name . ' (' . implode(', ', $names) . ') VALUES ('. implode(', ', $data) .");\n";
+
+											fwrite($fp, $sql_data);
+											$sql_data = '';
 										}
 										$db->sql_freeresult($result);
-									}
-								break;
+									break;
 
-								case 'postgres':
-									foreach ($table as $name)
-									{
+									case 'postgres':
+
 										$aryType = $aryName = array();
+										
 										// Grab all of the data from current table.
-										$sql = "SELECT * FROM {$name}";
+										$sql = "SELECT * FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = pg_num_fields($result);
@@ -548,6 +273,7 @@ class acp_database
 										while ($row = $db->sql_fetchrow($result))
 										{
 											$schema_vals = $schema_fields = array();
+
 											// Build the SQL statement to recreate the data.
 											for ($i = 0; $i < $i_num_fields; $i++)
 											{
@@ -588,13 +314,16 @@ class acp_database
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
 											$sql_data .= "INSERT INTO $name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+
+											fwrite($fp, $sql_data);
+											$sql_data = '';
 										}
 										$db->sql_freeresult($result);
-									}
-								break;
+									break;
 
-								default:
-									trigger_error('KungFuDeathGrip');
+									default:
+										trigger_error('KungFuDeathGrip');
+								}
 							}
 						}
 
@@ -608,6 +337,12 @@ class acp_database
 						$time_stop = microtime(true);
 						$sql_data .= "# END : $time_stop\n";
 						$sql_data .= "# DIFF : ".($time_stop-$time_start);
+						
+						fwrite($fp, $sql_data);
+						fclose($fp);
+
+						unset($sql_data);
+
 						// Base file name
 						$file = $phpbb_root_path . 'store/' . $filename . $format;
 
@@ -627,7 +362,7 @@ class acp_database
 									$compress = new compress_tar('w', $file, $format);
 								}
 
-								$compress->add_data($sql_data, "$filename.sql");
+								$compress->add_data(file_get_contents($phpbb_root_path . 'store/' . $filename . '.sql'), "$filename.sql");
 								$compress->close();
 								if ($where == 'download')
 								{
@@ -638,9 +373,6 @@ class acp_database
 
 							case '.sql':
 
-								$handle = @fopen($file, 'a');
-								@fwrite($handle, $sql_data);
-								@fclose($handle);
 								if ($where == 'download')
 								{
 									$mimetype = 'text/sql';
@@ -817,6 +549,295 @@ class acp_database
 				}
 			break;
 		}
+	}
+
+	/**
+	* Return table structure
+	*/
+	function get_table_structure($table_name)
+	{
+		global $db;
+
+		$sql_data = '';
+
+		switch (SQL_LAYER)
+		{
+			case 'mysqli':
+			case 'mysql4':
+			case 'mysql':
+
+				$sql_data .= "CREATE TABLE $table_name(\n";
+				$rows = array();
+
+				$result = $db->sql_query("SHOW FIELDS FROM $table_name");
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$line = '   ' . $row['Field'] . ' ' . $row['Type'];
+
+					if (!is_null($row['Default']))
+					{
+						$line .= " DEFAULT '{$row['Default']}'";
+					}
+
+					if ($row['Null'] != 'YES')
+					{
+						$line .= ' NOT NULL';
+					}
+
+					if ($row['Extra'] != '')
+					{
+						$line .= ' ' . $row['Extra'];
+					}
+
+					$rows[] = $line;
+				}
+				$db->sql_freeresult($result);
+
+				$result = $db->sql_query("SHOW KEYS FROM $table_name");
+
+				$index = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$kname = $row['Key_name'];
+
+					if ($kname != 'PRIMARY' && $row['Non_unique'] == 0)
+					{
+						$kname = "UNIQUE|$kname";
+					}
+
+					$index[$kname][] = $row['Column_name'];
+				}
+				$db->sql_freeresult($result);
+
+				$field = array();
+				foreach ($index as $key => $columns)
+				{
+					$line = '   ';
+
+					if ($key == 'PRIMARY')
+					{
+						$line .= 'PRIMARY KEY (' . implode(', ', $columns) . ')';
+					}
+					else if (strpos($key, 'UNIQUE') === 0)
+					{
+						$line .= 'UNIQUE ' . substr($key, 7) . ' (' . implode(', ', $columns) . ')';
+					}
+					else
+					{
+						$line .= "KEY $key (" . implode(', ', $columns) . ')';
+					}
+
+					$rows[] = $line;
+				}
+
+				$sql_data .= implode(",\n", $rows);
+				$sql_data .= "\n);\n\n";
+
+			break;
+
+			case 'sqlite':
+
+				$sql = "SELECT sql
+					FROM sqlite_master 
+					WHERE type = 'table' 
+						AND name = '" . $db->sql_escape($table_name) . "'
+					ORDER BY type DESC, name;";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				// Create Table
+				$sql_data .= $row['sql'] . "\n";
+
+				$result = $db->sql_query("PRAGMA index_list('" . $db->sql_escape($table_name) . "');");
+
+				$ar = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$ar[] = $row;
+				}
+				$db->sql_freeresult($result);
+				
+				foreach ($ar as $value)
+				{
+					if (strpos($value['name'], 'autoindex') !== false)
+					{
+						continue;
+					}
+
+					$result = $db->sql_query("PRAGMA index_info('" . $db->sql_escape($value['name']) . "');");
+
+					$fields = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$fields[] = $row['name'];
+					}
+					$db->sql_freeresult($result);
+
+					$sql_data .= 'CREATE ' . ($value['unique'] ? 'UNIQUE ' : '') . 'INDEX ' . $value['name'] . ' on ' . $table_name . ' (' . implode(', ', $fields) . ");\n";
+				}
+
+				$sql_data .= "\n";
+			break;
+
+			case 'postgres':
+			
+				$field_query = "SELECT a.attnum, a.attname AS field, t.typname as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
+					FROM pg_class c, pg_attribute a, pg_type t
+					WHERE c.relname = '" . $db->sql_escape($table_name) . "'
+						AND a.attnum > 0
+						AND a.attrelid = c.oid
+						AND a.atttypid = t.oid
+					ORDER BY a.attnum";
+				$result = $db->sql_query($field_query);
+
+				$sql_data .= "CREATE TABLE $table_name(\n";
+				$lines = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					// Get the data from the table
+					$sql_get_default = "SELECT d.adsrc AS rowdefault
+						FROM pg_attrdef d, pg_class c
+						WHERE (c.relname = '" . $db->sql_escape($table_name) . "')
+							AND (c.oid = d.adrelid)
+							AND d.adnum = " . $row['attnum'];
+					$def_res = $db->sql_query($sql_get_default);
+
+					if (!$def_res)
+					{
+						unset($row['rowdefault']);
+					}
+					else
+					{
+						$row['rowdefault'] = $db->sql_fetchfield('rowdefault', 0, $def_res);
+					}
+					$db->sql_freeresult($def_res);
+
+					if ($row['type'] == 'bpchar')
+					{
+						// Internally stored as bpchar, but isn't accepted in a CREATE TABLE statement.
+						$row['type'] = 'char';
+					}
+
+					$line = '  ' . $row['field'] . ' ' . $row['type'];
+
+					if (strpos($row['type'], 'char') !== false)
+					{
+						if ($row['lengthvar'] > 0)
+						{
+							$line .= '(' . ($row['lengthvar'] - 4) . ')';
+						}
+					}
+
+					if (strpos($row['type'], 'numeric') !== false)
+					{
+						$line .= '(';
+						$line .= sprintf("%s,%s", (($row['lengthvar'] >> 16) & 0xffff), (($row['lengthvar'] - 4) & 0xffff));
+						$line .= ')';
+					}
+
+					if (!empty($row['rowdefault']))
+					{
+						$line .= ' DEFAULT ' . $row['rowdefault'];
+					}
+
+					if ($row['notnull'] == 't')
+					{
+						$line .= ' NOT NULL';
+					}
+					
+					$lines[] = $line;
+				}
+				$db->sql_freeresult($result);
+
+
+				// Get the listing of primary keys.
+				$sql_pri_keys = "SELECT ic.relname AS index_name, bc.relname AS tab_name, ta.attname AS column_name, i.indisunique AS unique_key, i.indisprimary AS primary_key
+					FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (ia.attrelid = i.indexrelid)
+						AND	(ta.attrelid = bc.oid)
+						AND (bc.relname = '" . $db->sql_escape($table_name) . "')
+						AND (ta.attrelid = i.indrelid)
+						AND (ta.attnum = i.indkey[ia.attnum-1])
+					ORDER BY index_name, tab_name, column_name ";
+				$result = $db->sql_query($sql_pri_keys);
+
+				$index_create = $index_rows = $primary_key = array();
+
+				// We do this in two steps. It makes placing the comma easier
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if ($row['primary_key'] == 't')
+					{
+						$primary_key[] = $row['column_name'];
+						$primary_key_name = $row['index_name'];
+					}
+					else
+					{
+						// We have to store this all this info because it is possible to have a multi-column key...
+						// we can loop through it again and build the statement
+						$index_rows[$row['index_name']]['table'] = $table_name;
+						$index_rows[$row['index_name']]['unique'] = ($row['unique_key'] == 't') ? true : false;
+						$index_rows[$row['index_name']]['column_names'][] = $row['column_name'];
+					}
+				}
+				$db->sql_freeresult($result);
+
+				if (!empty($index_rows))
+				{
+					foreach ($index_rows as $idx_name => $props)
+					{
+						$index_create[] = 'CREATE ' . ($props['unique'] ? 'UNIQUE ' : '') . "INDEX $idx_name ON $table_name (" . implode(', ', $props['column_names']) . ");";
+					}
+				}
+
+				if (!empty($primary_key))
+				{
+					$lines[] = "  CONSTRAINT $primary_key_name PRIMARY KEY (" . implode(', ', $primary_key) . ")";
+				}
+
+				// Generate constraint clauses for CHECK constraints
+				$sql_checks = "SELECT conname as index_name, consrc
+					FROM pg_constraint, pg_class bc
+					WHERE conrelid = bc.oid
+						AND bc.relname = '" . $db->sql_escape($table_name) . "'
+						AND NOT EXISTS (
+							SELECT *
+								FROM pg_constraint as c, pg_inherits as i
+								WHERE i.inhrelid = pg_constraint.conrelid
+									AND c.conname = pg_constraint.conname
+									AND c.consrc = pg_constraint.consrc
+									AND c.conrelid = i.inhparent
+						)";
+				$result = $db->sql_query($sql_checks);
+
+				// Add the constraints to the sql file.
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if (!is_null($row['consrc']))
+					{
+						$lines[] = '  CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['consrc'];
+					}
+				}
+				$db->sql_freeresult($result);
+
+				$sql_data .= implode(", \n", $lines);
+				$sql_data .= "\n);\n";
+
+				if (!empty($index_create))
+				{
+					$sql_data .= implode("\n", $index_create) . "\n\n";
+				}
+			break;
+
+			default:
+				trigger_error('KungFuDeathGrip');
+		}
+
+		return $sql_data;
 	}
 }
 
