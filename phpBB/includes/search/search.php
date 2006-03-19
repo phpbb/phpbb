@@ -9,6 +9,13 @@
 */
 
 /**
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @ignore
 */
 define('SEARCH_RESULT_NOT_IN_CACHE', 2);

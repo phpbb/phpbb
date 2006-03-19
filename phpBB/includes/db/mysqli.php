@@ -9,6 +9,13 @@
 */
 
 /**
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @ignore
 */
 if (!defined('SQL_LAYER'))

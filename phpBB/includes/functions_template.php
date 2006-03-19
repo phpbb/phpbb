@@ -9,6 +9,13 @@
 */
 
 /**
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package phpBB3
 *
 * Extension of template class - Functions needed for compiling templates only.

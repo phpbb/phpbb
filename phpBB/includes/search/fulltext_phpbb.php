@@ -9,6 +9,13 @@
 */
 
 /**
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @ignore
 */
 include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);

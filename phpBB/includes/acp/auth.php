@@ -9,6 +9,13 @@
 */
 
 /**
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package phpBB3
 * ACP Permission/Auth class
 */

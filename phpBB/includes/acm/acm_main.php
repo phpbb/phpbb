@@ -9,6 +9,13 @@
 */
 
 /**
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acm
 * Class for grabbing/handling cached entries, extends acm_file or acm_db depending on the setup
 */
