@@ -72,7 +72,8 @@ if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals
 define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 
 // Try and load an appropriate language if required
-if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))// && !$language)
+$language = request_var('language', '');
+if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $language == '')
 {
 	$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 	foreach ($accept_lang_ary as $accept_lang)
@@ -99,7 +100,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))// && !$language)
 
 // No appropriate language found ... so let's use the first one in the language
 // dir, this may or may not be English
-if (!$language)
+if ($language == '')
 {
 	$dir = @opendir($phpbb_root_path . 'language');
 	while ($file = readdir($dir))
@@ -183,7 +184,7 @@ class module
 			$this->error('No installation modules found', __LINE__, __FILE__);
 		}
 
-		foreach($module as $row)
+		foreach ($module as $row)
 		{
 			// Check any module pre-reqs
 			if ($row['module_reqs'] != '')
@@ -426,7 +427,7 @@ class module
 		}
 
 		echo '		<p>' . $lang['INST_ERR_FATAL'] . "</p>\n";
-		echo '		<p>' . $file . ' [ ' . $line . " ]</p>\n";
+		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
 		echo '		<p><b>' . $error . "</b></p>\n";
 
 		if ($skip)
@@ -465,7 +466,7 @@ class module
 
 		echo '		<h2 style="color:red;text-align:center">' . $lang['INST_ERR_FATAL'] . "</h2>\n";
 		echo '		<p>' . $lang['INST_ERR_FATAL_DB'] . "</p>\n";
-		echo '		<p>' . $file . ' [ ' . $line . " ]</p>\n";
+		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
 		echo '		<p>SQL : ' . $sql . "</p>\n";
 		echo '		<p><b>' . $error . "</b></p>\n";
 
