@@ -97,6 +97,8 @@ $lang = array_merge($lang, array(
 	'LATEST_LOGS'				=> 'Latest 5 logged actions',
 	'LATEST_REPORTED'			=> 'Latest 5 reports',
 	'LATEST_UNAPPROVED'			=> 'Latest 5 posts awaiting for approval',
+	'LATEST_WARNING_TIME'		=> 'Latest warning issued',
+	'LATEST_WARNINGS'			=> 'Latest 5 warnings',
 	'LEAVE_SHADOW'				=> 'Leave shadow topic in place',
 	'LIST_REPORT'				=> '1 Report',
 	'LIST_REPORTS'				=> '%d Reports',
@@ -199,6 +201,7 @@ $lang = array_merge($lang, array(
 	'MERGE_TOPIC_ID'		=> 'Destination topic id',
 	'MOD_OPTIONS'			=> 'Moderator Options',
 	'MORE_INFO'				=> 'Further information',
+	'MOST WARNINGS'			=> 'Users with most warnings',
 	'MOVE_TOPIC_CONFIRM'	=> 'Are you sure you want to move the topic into a new forum?',
 	'MOVE_TOPICS'			=> 'Move selected topics',
 	'MOVE_TOPICS_CONFIRM'	=> 'Are you sure you want to move the selected topics into a new forum?',
@@ -305,6 +308,7 @@ $lang = array_merge($lang, array(
 	'TOPIC_TIME'			=> 'Topic time',
 	'TOPIC_TYPE_CHANGED'	=> 'Topic type changed successfully.',
 	'TOPIC_UNLOCKED_SUCCESS'=> 'The selected topic has been unlocked',
+	'TOTAL_WARNINGS'		=> 'Total Warnings',
 
 	'UNAPPROVED_POSTS_TOTAL'=> 'In total there are <b>%d</b> posts waiting for approval',
 	'UNAPPROVED_POSTS_ZERO_TOTAL'	=> 'There are no posts waiting for approval',
@@ -332,6 +336,7 @@ $lang = array_merge($lang, array(
 	'WARNED_USERS'			=> 'Warned Users',
 	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
 	'WARNING_PM_SUBJECT'	=> 'Board Warning Issued',
+	'WARNINGS_ZERO_TOTAL'	=> 'No warnings exists',
 
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s',
 

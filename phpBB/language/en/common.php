@@ -301,6 +301,7 @@ $lang = array_merge($lang, array(
 
 	'OCCUPATION'				=> 'Occupation',
 	'OFFLINE'					=> 'Offline',
+	'ON'						=> 'On'
 	'ONLINE'					=> 'Online',
 	'ONLINE_BUDDIES'			=> 'Online Buddies',
 	'ONLINE_USERS_TOTAL'		=> 'In total there are <b>%d</b> users online :: ',
