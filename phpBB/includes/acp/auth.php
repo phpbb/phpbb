@@ -845,11 +845,6 @@ class auth_admin extends auth
 			}
 		}
 
-		// Remove current auth options...
-		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
-			WHERE role_id = ' . $role_id;
-		$db->sql_query($sql);
-
 		$sql_ary = array();
 		foreach ($auth as $auth_option => $setting)
 		{
@@ -864,6 +859,21 @@ class auth_admin extends auth
 				);
 			}
 		}
+
+		// If no data is there, we set the any-flag to ACL_NO...
+		if (!sizeof($sql_ary))
+		{
+			$sql_ary[] = array(
+				'role_id'			=> (int) $role_id,
+				'auth_option_id'	=> $this->option_ids[$flag],
+				'auth_setting'		=> ACL_NO
+			);
+		}
+
+		// Remove current auth options...
+		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
+			WHERE role_id = ' . $role_id;
+		$db->sql_query($sql);
 
 		switch (SQL_LAYER)
 		{
