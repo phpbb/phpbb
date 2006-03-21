@@ -765,7 +765,7 @@ class parse_message extends bbcode_firstpass
 		{
 			$msg_len = ($mode == 'post') ? strlen($this->message) : strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#is', ' ', $this->message));
 	
-			if ($config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
+			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
 				return $this->warn_msg;
