@@ -756,6 +756,7 @@ class acp_attachments
 					ORDER BY allow_group DESC, group_name';
 				$result = $db->sql_query($sql);
 
+				$act_deact = 'activate';
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$s_add_spacer = ($row['allow_group'] == 0 && $act_deact == 'deactivate') ? true : false;

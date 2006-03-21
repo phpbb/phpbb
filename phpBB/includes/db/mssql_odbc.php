@@ -208,7 +208,7 @@ class dbal_mssql_odbc extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 		
-		return ($query_id) ? @odbc_fetch_array($result_id) : false;
+		return ($query_id) ? @odbc_fetch_array($query_id) : false;
 	}
 
 	/**

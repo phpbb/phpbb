@@ -32,7 +32,8 @@ class acp_permissions
 		$this->tpl_name = 'acp_permissions';
 
 		// Set some vars
-		$action = key(request_var('action', array('' => 0)));
+		$action = request_var('action', array('' => 0));
+		$action = key($action);
 		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
 
 		$all_forums = request_var('all_forums', 0);
@@ -218,7 +219,7 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_FORUM'		=> true,
-						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true))
+						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true, false, false))
 					);
 
 				break;
@@ -231,7 +232,7 @@ class acp_permissions
 						continue 2;
 					}
 
-					$forum_list = make_forum_select(false, false, true, false, true, true);
+					$forum_list = make_forum_select(false, false, true, false, false, true);
 
 					// Build forum options
 					$s_forum_options = '';

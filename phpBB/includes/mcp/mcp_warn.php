@@ -349,13 +349,13 @@ function mcp_warn_user_view($id, $mode, $action)
 
 		'USERNAME'			=> $userrow['username'],
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
-		'RANK_TITLE'		=> $rank_title,
+		'RANK_TITLE'		=> $userrow['rank_title'],
 		'JOINED'			=> $user->format_date($userrow['user_regdate'], $user->lang['DATE_FORMAT']),
 		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 		'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
 
-		'AVATAR_IMG'		=> $avatar_img,
-		'RANK_IMG'			=> $rank_img,
+		'AVATAR_IMG'		=> $userrow['avatar_img'],
+		'RANK_IMG'			=> $userrow['rank_img'],
 		)
 	);
 }
@@ -378,7 +378,6 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 
 		$message_parser = new parse_message();
 		$message_parser->message = sprintf($lang['WARNING_PM_BODY'], $warning);
-		$message_md5 = md5($message_parser->message);
 		$message_parser->parse(true, true, true, false, false, true);
 
 		$pm_data = array(
@@ -390,7 +389,6 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 			'enable_smilies'		=> true,
 			'enable_urls'			=> false,
 			'icon_id'				=> 0,
-			'message_md5'			=> (int) $message_md5,
 			'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
 			'bbcode_uid'			=> $message_parser->bbcode_uid,
 			'message'				=> $message_parser->message,

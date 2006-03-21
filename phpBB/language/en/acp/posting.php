@@ -57,7 +57,7 @@ $lang = array_merge($lang, array(
 
 	'tokens'	=>	array(
 		'TEXT'			=> 'Any text, including foreign characters, numbers, etc...',
-		'NUMBER'		=> 'Any serie of digits',
+		'NUMBER'		=> 'Any series of digits',
 		'EMAIL'			=> 'A valid email address',
 		'URL'			=> 'A valid URL using any protocol (http, ftp, etc... cannot be used for javascript exploits). If none is given, "http://" is prepended to to the string',
 		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',

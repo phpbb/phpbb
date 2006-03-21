@@ -51,7 +51,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : $config['topics_per_page'];
 
+	$sort_days = $total = 0;
+	$sort_key = $sort_dir = '';
+	$sort_by_sql = $sort_order_sql = array();
 	mcp_sorting('viewforum', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id);
+
 	$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 

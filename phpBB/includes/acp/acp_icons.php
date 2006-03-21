@@ -208,8 +208,8 @@ class acp_icons
 				$image_width	= (isset($_POST['width'])) ? array_map('intval', $_POST['width']) : array();
 				$image_height	= (isset($_POST['height'])) ? array_map('intval', $_POST['height']) : array();
 				$image_add		= (isset($_POST['add_img'])) ? array_map('intval', $_POST['add_img']) : array();
-				$image_emotion	= request_var('emotion', '');
-				$image_code		= request_var('code', '');
+				$image_emotion	= request_var('emotion', array('' => ''));
+				$image_code		= request_var('code', array('' => ''));
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? array_map('intval', $_POST['display_on_posting']) : array();
 
 				foreach ($images as $image)

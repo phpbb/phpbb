@@ -465,6 +465,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				'polls'		=> array(
 					'poll_left', 'poll_center', 'poll_right',), 
 			);
+
 			foreach ($imglist as $category => $img_ary)
 			{
 				if (in_array($imgname, $img_ary))
@@ -492,7 +493,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					$imgpath = preg_replace('/^([^\/]+\/)/', '{LANG}/', $imgpath) . $imgheight . $imgwidth;
 
 					$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . "
-						SET $imgname = '$imgpath'
+						SET $imgname = '" . $db->sql_escape($imgpath) . "'
 						WHERE imageset_id = $style_id";
 					$db->sql_query($sql);
 
@@ -1801,27 +1802,27 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		global $config, $db, $user;
 
 		$element_ary = array('template', 'theme', 'imageset');
-		
+
 		if (!$name)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
+			$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
 		}
 
 		// Check if the character set is allowed
 		if (!preg_match('/^[a-z0-9_\-\+ ]+$/i', $name))
 		{
-			$error[] = $user->lang[$l_type . '_ERR_NAME_CHARS'];
+			$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
 		}
 
 		// Check length settings
 		if (strlen($name) > 30)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
+			$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
 		}
 
 		if (strlen($copyright) > 60)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
+			$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
 		}
 
 		// Check if the name already exist
@@ -1834,7 +1835,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if ($row)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
+			$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
 		}
 
 		if (sizeof($error))

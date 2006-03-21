@@ -153,7 +153,7 @@ class acp_language
 					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
 					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection === false) ? true : false
 				));
-				break;
+			break;
 
 			case 'update_details':
 
@@ -302,7 +302,7 @@ class acp_language
 						}	
 					}
 
-					$footer = ");\n\n?>";
+					$footer = "));\n\n?>";
 					fwrite($fp, $footer);	
 				}
 
@@ -592,6 +592,7 @@ class acp_language
 					}
 					else
 					{
+						$help = array();
 						include($phpbb_root_path . $this->get_filename($lang_iso, $this->language_directory, $this->language_file, $file_from_store));
 
 						if ($is_help_file)
@@ -1026,12 +1027,12 @@ $lang = array_merge($lang, array(
 				{
 					$tpl .= '
 						<tr>
-							<td class="row1" style="width: 10%; white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
+							<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
 							<td class="row2">';
 					
 					if ($input_field)
 					{
-						$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" style="width: 99%" />';
+						$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" size="50" />';
 					}
 					else
 					{
@@ -1051,12 +1052,12 @@ $lang = array_merge($lang, array(
 			{
 				$tpl .= '
 				<tr>
-					<td class="row1" style="width: 10%; white-space: nowrap;">' . $key_prefix . '<b>' . $key . '</b></td>
+					<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $key . '</b></td>
 					<td class="row2">';
 
 				if ($input_field)
 				{
-					$tpl .= '<input type="text" name="entry[' . $key . ']" value="' . htmlspecialchars($value) . '" style="width: 99%" />';
+					$tpl .= '<input type="text" name="entry[' . $key . ']" value="' . htmlspecialchars($value) . '" size="50" />';
 				}
 				else
 				{

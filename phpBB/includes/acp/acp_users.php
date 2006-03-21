@@ -147,6 +147,17 @@ class acp_users
 							trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						}
 
+						// Check if the user wants to remove himself or the guest user account
+						if ($user_id == ANONYMOUS)
+						{
+							trigger_error($user->lang['CANNOT_REMOVE_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						}
+
+						if ($user_id == $user->data['user_id'])
+						{
+							trigger_error($user->lang['CANNOT_REMOVE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						}
+
 						if (confirm_box(true))
 						{
 							user_delete($delete_type, $user_id);
@@ -1225,6 +1236,7 @@ class acp_users
 
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				$data = array();
 
@@ -1319,8 +1331,6 @@ class acp_users
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
-
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				// Generate users avatar
 				if ($user_row['user_avatar'])

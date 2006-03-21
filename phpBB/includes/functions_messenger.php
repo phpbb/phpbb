@@ -394,7 +394,7 @@ class messenger
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, 'normal', NULL, array('body' => $msg));
+				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg));
 			}
 
 			sleep(1);
@@ -528,6 +528,7 @@ class queue
 
 			for ($i = 0; $i < $num_items; $i++)
 			{
+				// Make variables available...
 				extract(array_shift($this->queue_data[$object]['data']));
 
 				switch ($object)

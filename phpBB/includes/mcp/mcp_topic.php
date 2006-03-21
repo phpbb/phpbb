@@ -60,6 +60,11 @@ function mcp_topic_view($id, $mode, $action)
 	// Jumpbox, sort selects and that kind of things
 	make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_');
 	$where_sql = ($action == 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';
+	
+	
+	$sort_days = $total = 0;
+	$sort_key = $sort_dir = '';
+	$sort_by_sql = $sort_order_sql = array();
 	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -290,7 +295,11 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	{
 		if ($action == 'split_beyond')
 		{
+			$sort_days = $total = 0;
+			$sort_key = $sort_dir = '';
+			$sort_by_sql = $sort_order_sql = array();
 			mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
+
 			$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 			if ($sort_order_sql{0} == 'u')

@@ -281,6 +281,10 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
 		$db->sql_query($sql);
 
+		// Update users message rules
+		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_message_rules = 1 WHERE user_id = ' . $user->data['user_id'];
+		$db->sql_query($sql);
+		
 		$message = $user->lang['RULE_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
@@ -307,6 +311,21 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 			$meta_info = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode";
 			$message = $user->lang['RULE_DELETED'];
+
+			// Reset user_message_rules if no more assigned
+			$sql = 'SELECT rule_id 
+				FROM ' . PRIVMSGS_RULES_TABLE . '
+				WHERE user_id = ' . $user->data['user_id'];
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			// Update users message rules
+			if ($row)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_message_rules = 0 WHERE user_id = ' . $user->data['user_id'];
+				$db->sql_query($sql);
+			}
 
 			meta_refresh(3, $meta_info);
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $meta_info . '">', '</a>');

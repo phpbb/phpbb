@@ -33,7 +33,9 @@ $lang = array_merge($lang, array(
 	
 	'BAN_SUCCESSFULL'		=> 'Ban entered successfully',
 
-	'CONFIRM_EMAIL_EXPLAIN'	=> 'You only need to specify this if you are changing the users email address.',
+	'CANNOT_REMOVE_ANONYMOUS'	=> 'You are not able to remove the guest user account.',
+	'CANNOT_REMOVE_YOURSELF'	=> 'You are not allowed to remove your own user account.',
+	'CONFIRM_EMAIL_EXPLAIN'		=> 'You only need to specify this if you are changing the users email address.',
 	
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',

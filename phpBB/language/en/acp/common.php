@@ -226,6 +226,7 @@ $lang = array_merge($lang, array(
 	'OFF'					=> 'OFF',
 	'ON'					=> 'ON',
 
+	'PROCEED_TO_ACP'		=> 'Click %sHere%s to procced to the ACP',
 	'REMIND'				=> 'Remind',
 	'REORDER'				=> 'Reorder',
 	'RETURN_TO'				=> 'Return to ...',

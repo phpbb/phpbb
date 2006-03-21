@@ -107,7 +107,7 @@ class ucp_pm
 			case 'compose':
 				$action = request_var('action', 'post');
 
-				get_folder($user->data['user_id'], $folder);
+				get_folder($user->data['user_id']);
 
 				if (!$auth->acl_get('u_sendpm'))
 				{
@@ -130,7 +130,7 @@ class ucp_pm
 
 				$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
 
-				get_folder($user->data['user_id'], $folder);
+				get_folder($user->data['user_id']);
 
 				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.'.$phpEx);
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
@@ -139,7 +139,8 @@ class ucp_pm
 				break;
 
 			case 'drafts':
-				get_folder($user->data['user_id'], $folder);
+
+				get_folder($user->data['user_id']);
 				$this->p_name = 'pm';
 				
 				// Call another module... please do not try this at home... Hoochie Coochie Man
@@ -300,7 +301,7 @@ class ucp_pm
 					update_unread_status($message_row['unread'], $message_row['msg_id'], $user->data['user_id'], $folder_id);
 				}
 
-				get_folder($user->data['user_id'], $folder, $folder_id);
+				$folder = get_folder($user->data['user_id'], $folder_id);
 
 				$s_folder_options = $s_to_folder_options = '';
 				foreach ($folder as $f_id => $folder_ary)

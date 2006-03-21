@@ -295,7 +295,7 @@ class acp_prune
 							{
 								$sql = 'UPDATE ' . POSTS_TABLE . '
 									SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($usernames[$i]) . "'
-									WHERE user_id = " . $userids[$i];
+									WHERE user_id = " . $user_ids[$i];
 								$db->sql_query($sql);
 							}
 

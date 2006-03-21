@@ -153,6 +153,7 @@ $lang = array_merge($lang, array(
 	'POST_STORED_MOD'			=> 'Your message has been saved but requires approval',
 	'POST_TOPIC'				=> 'Post a new topic',
 	'POST_TOPIC_AS'				=> 'Post topic as',
+	'PROGRESS_BAR'				=> 'Progress bar',
 
 	'QUOTE_DEPTH_EXCEEDED'		=> 'You may embed only %1$d quotes within each other.',
 

@@ -243,11 +243,11 @@ class acp_bbcodes
 			)
 		);
 
+		$pad = 0;
+		$modifiers = 'i';
+
 		if (preg_match_all('/\{(' . implode('|', array_keys($tokens)) . ')[0-9]*\}/i', $msg_bbcode, $m))
 		{
-			$pad = 0;
-			$modifiers = 'i';
-
 			foreach ($m[0] as $n => $token)
 			{
 				$token_type = $m[1][$n];

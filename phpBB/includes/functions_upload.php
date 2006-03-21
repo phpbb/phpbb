@@ -578,7 +578,6 @@ class fileupload
 			$file = new fileerror($user->lang[$this->error_prefix . 'EMPTY_REMOTE_DATA']);
 			return $file;
 		}
-		unset($url_ary);
 
 		$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache';
 		$filename = tempnam($tmp_path, unique_id() . '-');

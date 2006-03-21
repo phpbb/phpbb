@@ -77,7 +77,7 @@ function dE(n,s){
 			<select name="dateoptions" id="dateoptions" onchange="if(this.value=='custom'){dE('custom_date',1);}else{dE('custom_date',-1);} if (this.value == 'custom') { document.getElementById('dateformat').value = '{DEFAULT_DATEFORMAT}'; } else { document.getElementById('dateformat').value = this.value; }">
 				{S_DATEFORMAT_OPTIONS}
 			</select>
-			<div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="14" class="post" style="margin-top: 3px;" /></div>
+			<div id="custom_date"<!-- IF not S_CUSTOM_DATEFORMAT --> style="display:none;"<!-- ENDIF -->><input type="text" name="dateformat" id="dateformat" value="{DATE_FORMAT}" maxlength="30" class="post" style="margin-top: 3px;" /></div>
 		</td>
 	</tr>
 	<tr>

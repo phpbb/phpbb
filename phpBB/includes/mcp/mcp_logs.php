@@ -15,7 +15,7 @@
 */
 class mcp_logs
 {
-
+	var $u_action;
 	var $p_master;
 	
 	function mcp_main(&$p_master)
@@ -36,7 +36,10 @@ class mcp_logs
 		}
 
 		// Set up general vars
+
+		// Isn't this set above? :o
 		$action		= request_var('action', '');
+		
 		$start		= request_var('start', 0);
 		$deletemark = (isset($_POST['del_marked'])) ? true : false;
 		$deleteall	= (isset($_POST['del_all'])) ? true : false;
@@ -111,7 +114,7 @@ class mcp_logs
 		$template->assign_vars(array(
 			'S_ON_PAGE'			=> on_page($log_count, $config['topics_per_page'], $start),
 			'TOTAL_LOGS'		=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id",
 			'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,

@@ -226,7 +226,13 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	
 	if (!$result)
 	{
-		trigger_error('Unable to deliver file.<br />Error was: ' . $php_errormsg, E_USER_WARNING);
+		// PHP track_errors setting On?
+		if (!empty($php_errormsg))
+		{
+			trigger_error('Unable to deliver file.<br />Error was: ' . $php_errormsg, E_USER_WARNING);
+		}
+
+		trigger_error('Unable to deliver file.', E_USER_WARNING);
 	}
 
 	flush();

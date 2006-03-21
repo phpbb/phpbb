@@ -638,12 +638,18 @@ class session
 	{
 		global $config;
 
-		if ($config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1')
+		if (!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1')
 		{
 			setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path']);
 		}
 		else
 		{
+			// Firefox does not allow setting cookies with a domain containing no periods.
+			if (strpos($config['cookie_domain'], '.') === false)
+			{
+				$config['cookie_domain'] = '.' . $config['cookie_domain'];
+			}
+
 			setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
 		}
 	}

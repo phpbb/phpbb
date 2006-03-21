@@ -131,8 +131,6 @@ class acp_main
 
 						$messenger->save_queue();
 
-						unset($email_list);
-
 						add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
 						unset($usernames);
 					}
@@ -343,6 +341,7 @@ class acp_main
 		);
 
 		$log_data = array();
+		$log_count = 0;
 
 		if ($auth->acl_get('a_viewlogs'))
 		{

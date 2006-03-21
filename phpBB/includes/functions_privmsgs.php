@@ -102,14 +102,11 @@ $global_rule_conditions = array(
 /**
 * Get all folder
 */
-function get_folder($user_id, &$folder, $folder_id = false)
+function get_folder($user_id, $folder_id = false)
 {
 	global $db, $user, $template;
 
-	if (!is_array($folder))
-	{
-		$folder = array();
-	}
+	$folder = array();
 
 	// Get folder informations
 	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(unread) as num_unread
@@ -178,7 +175,7 @@ function get_folder($user_id, &$folder, $folder_id = false)
 		);
 	}
 
-	return;
+	return $folder;
 }
 
 /**
@@ -244,12 +241,14 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 	{
 		case ACTION_PLACE_INTO_FOLDER:
 			return array('action' => $rule_row['rule_action'], 'folder_id' => $rule_row['rule_folder_id']);
-			break;
+		break;
+		
 		case ACTION_MARK_AS_READ:
 		case ACTION_MARK_AS_IMPORTANT:
 		case ACTION_DELETE_MESSAGE:
-			return array('action' => $rule_row['rule_action'], 'unread' => $row['unread'], 'important' => $row['important']);
-			break;
+			return array('action' => $rule_row['rule_action'], 'unread' => $message_row['unread'], 'important' => $message_row['important']);
+		break;
+		
 		default:
 			return false;
 	}
@@ -1171,7 +1170,6 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'enable_sig' 		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text' 		=> $data['message'],
-				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
 				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
@@ -1191,7 +1189,6 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'enable_sig' 		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text' 		=> $data['message'],
-				'message_checksum'	=> $data['message_md5'],
 				'message_encoding'	=> $user->lang['ENCODING'],
 				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],

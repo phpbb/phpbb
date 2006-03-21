@@ -54,7 +54,7 @@ if ($cancel || ($current_time - $lastclick < 2 && $submit))
 	redirect($redirect);
 }
 
-if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete', 'popup')) && !$forum_id)
+if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$forum_id)
 {
 	trigger_error('NO_FORUM');
 }
@@ -106,9 +106,17 @@ switch ($mode)
 	break;
 
 	case 'popup':
-		$sql = 'SELECT forum_style
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $forum_id;
+		if ($forum_id)
+		{
+			$sql = 'SELECT forum_style
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $forum_id;
+		}
+		else
+		{
+			upload_popup();
+			exit;
+		}
 	break;
 
 	default:
@@ -1280,7 +1288,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 			if (sizeof($update_sql))
 			{
 				$sql_data[TOPICS_TABLE] .= ', ' . implode(', ', $update_sql[$topic_id]);
-				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update[$topic_id][0]);
+				$next_post_id = (int) str_replace('topic_last_post_id = ', '', $update_sql[$topic_id][0]);
 			}
 			else
 			{
@@ -1315,6 +1323,7 @@ function delete_post($mode, $post_id, $topic_id, $forum_id, &$data)
 
 			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 			$next_post_id = (int) $row['post_id'];
+		break;
 	}
 
 	$sql_data[USERS_TABLE] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
@@ -1796,7 +1805,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$update_sql = update_post_information('forum', $data['forum_id'], true);
 		if (sizeof($update_sql))
 		{
-			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$forum_id]);
+			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
 		}
 	}
 
@@ -1924,11 +1933,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	trigger_error($message);
 }
 
-function upload_popup($forum_style)
+function upload_popup($forum_style = 0)
 {
 	global $template, $user;
 
-	$user->setup('posting', $forum_style);
+	($forum_style) ? $user->setup('posting', $forum_style) : $user->setup('posting');
 
 	page_header('PROGRESS_BAR');
 

@@ -342,7 +342,7 @@ function compose_pm($id, $mode, $action)
 		$db->sql_freeresult($result);
 	}
 
-	if ($action == 'edit' || $action == 'forward')
+	if ($action == 'edit')
 	{
 		$message_parser->bbcode_uid = $bbcode_uid;
 	}
@@ -444,20 +444,8 @@ function compose_pm($id, $mode, $action)
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
-		// Grab md5 'checksum' of new message
-		$message_md5 = md5($message_parser->message);
-
 		// Check checksum ... don't re-parse message if the same
-		$update_message = ($action != 'edit' || $message_md5 != $message_checksum || $status_switch || $preview) ? true : false;
-
-		if ($update_message)
-		{
-			$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
-		}
-		else
-		{
-			$message_parser->bbcode_bitfield = $bbcode_bitfield;
-		}
+		$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
 
 		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
 		{
@@ -504,7 +492,6 @@ function compose_pm($id, $mode, $action)
 				'enable_bbcode'			=> (bool) $enable_bbcode,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
-				'message_md5'			=> (int) $message_md5,
 				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
@@ -787,7 +774,11 @@ function compose_pm($id, $mode, $action)
 
 		'S_POST_ACTION' 		=> $s_action,
 		'S_HIDDEN_ADDRESS_FIELD'=> $s_hidden_address_field,
-		'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+		'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+
+		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
+		'U_PROGRESS_BAR'			=> "{$phpbb_root_path}posting.$phpEx$SID&f=0&mode=popup", // do NOT replace & with &amp; here
+		)
 	);
 
 	// Build custom bbcodes array
@@ -821,7 +812,7 @@ function compose_pm($id, $mode, $action)
 */
 function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_to, $add_bcc)
 {
-	global $auth;
+	global $auth, $db;
 
 	// Delete User [TO/BCC]
 	if ($remove_u)

@@ -263,6 +263,7 @@ $lang = array_merge($lang, array(
 	'NO_FRIENDS'				=> 'No friends currently defined',
 	'NO_FRIENDS_OFFLINE'		=> 'No friends offline',
 	'NO_FRIENDS_ONLINE'			=> 'No friends online',
+	'NO_GROUP_SELECTED'			=> 'No group specified',
 	'NO_IMPORTANT_NEWS'			=> 'No important announcements present',
 	'NO_MESSAGE'				=> 'Private Message could not be found',
 	'NO_NEW_FOLDER_NAME'		=> 'You have to specify a new folder name',

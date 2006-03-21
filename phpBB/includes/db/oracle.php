@@ -409,7 +409,7 @@ class dbal_oracle extends dbal
 				$success = @ociexecute($result, OCI_DEFAULT);
 				$row = array();
 
-				while (@ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+				while (@ocifetchinto($result, $row, OCI_ASSOC + OCI_RETURN_NULLS))
 				{
 					// Take the time spent on parsing rows into account
 				}

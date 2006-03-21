@@ -129,12 +129,12 @@ class acp_database
 
 											for ($j = 0; $j < $fields_cnt; $j++)
 											{
-												  $field_set[$j] = $field[$j]->name;
+												$field_set[$j] = $field[$j]->name;
 											}
 											
 											$fields			= implode(', ', $field_set);
 											$values			= array();
-											$schema_insert	= 'INSERT INTO ' . $name . ' (' . $fields . ') VALUES (';
+											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
 											while ($row = mysqli_fetch_row($result))
 											{

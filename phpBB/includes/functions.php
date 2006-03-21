@@ -1385,7 +1385,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$redirect = request_var('redirect', "index.$phpEx$SID");
 			meta_refresh(3, $redirect);
 
-			$message = (($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT']) . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
+			
+			if ($admin)
+			{
+				$message .= '<br /><br />' . sprintf($user->lang['PROCEED_TO_ACP'], '<a href="' . $redirect . '">', '</a> ');
+			}
+			else
+			{
+				$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+			}
 			trigger_error($message);
 		}
 
@@ -1671,12 +1680,8 @@ function extension_allowed($forum_id, $extension, &$extensions)
 
 		return (!in_array($forum_id, $check)) ? false : true;
 	}
-	else
-	{
-		return ($forum_id == 0) ? false : true;
-	}
 
-	return false;
+	return ($forum_id == 0) ? false : true;
 }
 
 /**
@@ -2403,7 +2408,7 @@ function get_backtrace()
 				break;
 				
 				case 'resource':
-					$args[] = 'Resource(' . strstr($a, '#') . ')';
+					$args[] = 'Resource(' . strstr($argument, '#') . ')';
 				break;
 				
 				case 'boolean':
