@@ -62,16 +62,16 @@ class acp_jabber
 		{
 			if ($jab_host != $config['jab_host'] || $jab_username != $config['jab_username'])
 			{
-				if (!$jabber->Connect())
+				if (!$jabber->connect())
 				{
 					trigger_error('Could not connect to Jabber server' . adm_back_link($this->u_action));
 				}
 
 				// First we'll try to authorise using this account, if that fails we'll
 				// try to create it.
-				if (!($result = $jabber->SendAuth()))
+				if (!($result = $jabber->send_auth()))
 				{
-					if (($result = $jabber->AccountRegistration($config['board_email'], $config['sitename'])) <> 2)
+					if (($result = $jabber->account_registration($config['board_email'], $config['sitename'])) <> 2)
 					{
 						$error[] = ($result == 1) ? $user->lang['ERR_JAB_USERNAME'] : sprintf($user->lang['ERR_JAB_REGISTER'], $result);
 					}
@@ -88,22 +88,22 @@ class acp_jabber
 				}
 
 				sleep(1);
-				$jabber->Disconnect();
+				$jabber->disconnect();
 			}
 			else if ($jab_password != $config['jab_password'])
 			{
-				if (!$jabber->Connect())
+				if (!$jabber->connect())
 				{
 					trigger_error('Could not connect to Jabber server' . adm_back_link($this->u_action));
 				}
 
-				if (!$jabber->SendAuth())
+				if (!$jabber->send_auth())
 				{
 					trigger_error('Could not authorise on Jabber server' . adm_back_link($this->u_action));
 				}
-				$jabber->SendPresence(NULL, NULL, 'online');
+				$jabber->send_presence(NULL, NULL, 'online');
 
-				if (($result = $jabber->ChangePassword($jab_password))  <> 2)
+				if (($result = $jabber->change_password($jab_password))  <> 2)
 				{
 					$error[] = ($result == 1) ? $user->lang['ERR_JAB_PASSCHG'] : sprintf($user->lang['ERR_JAB_PASSFAIL'], $result);
 				}
@@ -114,7 +114,7 @@ class acp_jabber
 				}
 
 				sleep(1);
-				$jabber->Disconnect();
+				$jabber->disconnect();
 			}
 		}
 
