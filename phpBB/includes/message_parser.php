@@ -760,12 +760,12 @@ class parse_message extends bbcode_firstpass
 		$replace = array("\n", '', "\n\n", "\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
-		// Message length check. -1 disables this check completely, even allows empty messsages.
+		// Message length check. -1 disables this check completely.
 		if ($config['max_' . $mode . '_chars'] != -1)
 		{
 			$msg_len = ($mode == 'post') ? strlen($this->message) : strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#is', ' ', $this->message));
 	
-			if (!$msg_len || ($config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars']))
+			if ($config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
 				return $this->warn_msg;
