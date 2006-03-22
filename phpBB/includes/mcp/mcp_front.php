@@ -34,7 +34,7 @@ function mcp_front_view($id, $mode, $action)
 			WHERE forum_id IN (0, ' . implode(', ', $forum_list) . ')
 				AND post_approved = 0';
 		$result = $db->sql_query($sql);
-		$total = (int) $db->sql_fetchfield('total', 0, $result);
+		$total = (int) $db->sql_fetchfield('total');
 		$db->sql_freeresult($result);
 
 		if ($total)

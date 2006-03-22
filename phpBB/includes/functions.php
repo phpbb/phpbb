@@ -1838,7 +1838,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.php') === false)
 				{
-					echo "<b>PHP Notice</b>: in file <b>$errfile</b> on line <b>$errline</b>: <b>$msg_text</b><br>";
+					echo '<b>[phpBB Debug Extra] PHP Notice</b>: in file <b>' . str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $errfile) . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 				}
 			}
 		
@@ -2006,7 +2006,7 @@ function page_header($page_title = '')
 					AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
 					$reading_sql;
 			$result = $db->sql_query($sql);
-			$guests_online = (int) $db->sql_fetchfield('num_guests', 0, $result);
+			$guests_online = (int) $db->sql_fetchfield('num_guests');
 			$db->sql_freeresult($result);
 		}
 

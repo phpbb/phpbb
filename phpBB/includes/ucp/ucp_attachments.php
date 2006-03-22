@@ -77,11 +77,11 @@ class ucp_attachments
 
 		$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 		
-		$sql = 'SELECT COUNT(*) as num_attachments
+		$sql = 'SELECT COUNT(attach_id) as num_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE poster_id = ' . $user->data['user_id'];
 		$result = $db->sql_query_limit($sql, 1);
-		$num_attachments = $db->sql_fetchfield('num_attachments', 0, $result);
+		$num_attachments = $db->sql_fetchfield('num_attachments');
 		$db->sql_freeresult($result);
 		
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title

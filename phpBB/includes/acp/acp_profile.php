@@ -99,7 +99,7 @@ class acp_profile
 						FROM ' . PROFILE_FIELDS_TABLE . " 
 						WHERE field_id = $field_id";
 					$result = $db->sql_query($sql);
-					$field_ident = $db->sql_fetchfield('field_ident', 0, $result);
+					$field_ident = (string) $db->sql_fetchfield('field_ident');
 					$db->sql_freeresult($result);
 
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_TABLE . " WHERE field_id = $field_id");
@@ -152,9 +152,9 @@ class acp_profile
 	
 				$sql = 'SELECT lang_id 
 					FROM ' . LANG_TABLE . " 
-					WHERE lang_iso = '{$config['default_lang']}'";
+					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 				$result = $db->sql_query($sql);
-				$default_lang_id = (int) $db->sql_fetchfield('lang_id', 0, $result);
+				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);
 
 				if (!in_array($default_lang_id, $lang_defs['entry'][$field_id]))
@@ -171,7 +171,7 @@ class acp_profile
 					FROM ' . PROFILE_FIELDS_TABLE . " 
 					WHERE field_id = $field_id";
 				$result = $db->sql_query($sql);
-				$field_ident = $db->sql_fetchfield('field_ident', 0, $result);
+				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
@@ -196,7 +196,7 @@ class acp_profile
 					FROM ' . PROFILE_FIELDS_TABLE . " 
 					WHERE field_id = $field_id";
 				$result = $db->sql_query($sql);
-				$field_ident = $db->sql_fetchfield('field_ident', 0, $result);
+				$field_ident = (string) $db->sql_fetchfield('field_ident');
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
@@ -915,10 +915,12 @@ class acp_profile
 
 		if ($action == 'create')
 		{
-			$result = $db->sql_query('SELECT MAX(field_order) as max_field_order FROM ' . PROFILE_FIELDS_TABLE);
-			$new_field_order = (int) $db->sql_fetchfield('max_field_order', 0, $result);
+			$sql = 'SELECT MAX(field_order) as max_field_order
+				FROM ' . PROFILE_FIELDS_TABLE;
+			$result = $db->sql_query($sql);
+			$new_field_order = (int) $db->sql_fetchfield('max_field_order');
 			$db->sql_freeresult($result);
-			
+
 			$field_ident = $cp->vars['field_ident'];
 		}
 

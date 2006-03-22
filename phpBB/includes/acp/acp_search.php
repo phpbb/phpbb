@@ -452,7 +452,7 @@ class acp_search
 		$sql = 'SELECT MAX(post_id) as max_post_id
 			FROM '. POSTS_TABLE;
 		$result = $db->sql_query($sql);
-		$max_post_id = (int) $db->sql_fetchfield('max_post_id', 0, $result);
+		$max_post_id = (int) $db->sql_fetchfield('max_post_id');
 		$db->sql_freeresult($result);
 
 		return $max_post_id;

@@ -1130,10 +1130,12 @@ class user extends session
 
 		$sql = 'SELECT lang_id
 			FROM ' . LANG_TABLE . "
-			WHERE lang_iso = '{$this->lang_name}'";
+			WHERE lang_iso = '" . $db->sql_escape($this->lang_name) . "'";
 		$result = $db->sql_query($sql);
+		$lang_id = (int) $db->sql_fetchfield('lang_id');
+		$db->sql_freeresult($result);
 
-		return (int) $db->sql_fetchfield('lang_id', 0, $result);
+		return $lang_id;
 	}
 
 	// Get profile fields for user

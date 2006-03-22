@@ -189,7 +189,7 @@ class mcp_reports
 						FROM ' . FORUMS_TABLE . "
 						WHERE forum_id IN ($forum_list)";
 					$result = $db->sql_query($sql);
-					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics', 0, $result);
+					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
 
 				}

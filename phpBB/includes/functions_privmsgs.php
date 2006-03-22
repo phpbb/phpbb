@@ -460,9 +460,8 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					AND folder_id = " . PRIVMSGS_INBOX . "
 				GROUP BY folder_id";
 			$result = $db->sql_query_limit($sql, 1);
-			
-			$folder[PRIVMSGS_INBOX] = (int) $db->sql_fetchfield('num_messages', 0, $result);
-			$db->sql_freeresult($result);			
+			$folder[PRIVMSGS_INBOX] = (int) $db->sql_fetchfield('num_messages');
+			$db->sql_freeresult($result);
 		}
 	}
 
@@ -622,7 +621,10 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 				WHERE folder_id = ' . PRIVMSGS_INBOX . "
 					AND user_id = $user_id";
 			$result = $db->sql_query($sql);
-			if ($db->sql_fetchfield('num_messages', 0, $result) + sizeof($move_msg_ids) > $message_limit)
+			$num_messages = (int) $db->sql_fetchfield('num_messages');
+			$db->sql_freeresult($result);
+
+			if ($num_messages + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $user->lang['PM_INBOX']) . '<br /><br />';
 				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], "<a href=\"{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox\">", '</a>', $user->lang['PM_INBOX']);

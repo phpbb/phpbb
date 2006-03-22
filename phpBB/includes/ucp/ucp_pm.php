@@ -125,7 +125,7 @@ class ucp_pm
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
 				$result = $db->sql_query($sql);
-				$message_limit = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
+				$message_limit = (int) $db->sql_fetchfield('group_message_limit');
 				$db->sql_freeresult($result);
 
 				$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
@@ -162,7 +162,7 @@ class ucp_pm
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
 				$result = $db->sql_query($sql);
-				$message_limit = (int) $db->sql_fetchfield('group_message_limit', 0, $result);
+				$message_limit = (int) $db->sql_fetchfield('group_message_limit');
 				$db->sql_freeresult($result);
 
 				$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;

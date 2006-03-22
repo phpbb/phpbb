@@ -97,7 +97,7 @@ class acp_reasons
 							$sql = 'SELECT MAX(reason_order) as max_reason_order
 								FROM ' . REASONS_TABLE;
 							$result = $db->sql_query($sql);
-							$max_order = (int) $db->sql_fetchfield('max_reason_order', 0, $result);
+							$max_order = (int) $db->sql_fetchfield('max_reason_order');
 							$db->sql_freeresult($result);
 							
 							$sql_ary = array(
@@ -191,7 +191,7 @@ class acp_reasons
 						FROM ' . REASONS_TABLE . "
 						WHERE reason_title = 'other'";
 					$result = $db->sql_query($sql);
-					$other_reason_id = (int) $db->sql_fetchfield('reason_id', 0, $result);
+					$other_reason_id = (int) $db->sql_fetchfield('reason_id');
 					$db->sql_freeresult($result);
 
 					// Change the reports using this reason to 'other'

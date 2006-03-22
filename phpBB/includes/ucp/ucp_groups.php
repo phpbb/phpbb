@@ -625,8 +625,7 @@ class ucp_groups
 							WHERE group_id = $group_id 
 								AND group_leader <> 1";
 						$result = $db->sql_query($sql);
-						
-						$total_members = (int) $db->sql_fetchfield('total_members', 0, $result);
+						$total_members = (int) $db->sql_fetchfield('total_members');
 						$db->sql_freeresult($result);
 
 						$start = request_var('start', 0);

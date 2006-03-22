@@ -376,12 +376,13 @@ class fulltext_mysql extends search_backend
 		{
 			$sql = 'SELECT FOUND_ROWS() as result_count';
 			$result = $db->sql_query($sql);
+			$result_count = (int) $db->sql_fetchfield('result_count');
+			$db->sql_freeresult($result);
 
-			if (!($result_count = (int) $db->sql_fetchfield('result_count', 0, $result)))
+			if (!$result_count)
 			{
 				return false;
 			}
-			$db->sql_freeresult($result);
 		}
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
@@ -519,12 +520,13 @@ class fulltext_mysql extends search_backend
 		{
 			$sql = 'SELECT FOUND_ROWS() as result_count';
 			$result = $db->sql_query($sql);
+			$result_count = (int) $db->sql_fetchfield('result_count');
+			$db->sql_freeresult($result);
 
-			if (!($result_count = (int) $db->sql_fetchfield('result_count', 0, $result)))
+			if (!$result_count)
 			{
 				return false;
 			}
-			$db->sql_freeresult($result);
 		}
 
 		if (sizeof($id_ary))
@@ -724,10 +726,10 @@ class fulltext_mysql extends search_backend
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT COUNT(*) as total_posts
+		$sql = 'SELECT COUNT(post_id) as total_posts
 			FROM ' . POSTS_TABLE;
 		$result = $db->sql_query($sql);
-		$this->stats['total_posts'] = $db->sql_fetchfield('total_posts', 0, $result);
+		$this->stats['total_posts'] = (int) $db->sql_fetchfield('total_posts');
 		$db->sql_freeresult($result);
 	}
 }

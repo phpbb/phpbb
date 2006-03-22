@@ -81,7 +81,7 @@ class acp_users
 				FROM ' . USERS_TABLE . "
 				WHERE username = '" . $db->sql_escape($username) . "'";
 			$result = $db->sql_query($sql);
-			$user_id = (int) $db->sql_fetchfield('user_id', false, $result);
+			$user_id = (int) $db->sql_fetchfield('user_id');
 			$db->sql_freeresult($result);
 
 			if (!$user_id)
@@ -1560,11 +1560,11 @@ class acp_users
 
 				$order_by = $sk_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
-				$sql = 'SELECT COUNT(*) as num_attachments
+				$sql = 'SELECT COUNT(attach_id) as num_attachments
 					FROM ' . ATTACHMENTS_TABLE . "
 					WHERE poster_id = $user_id";
 				$result = $db->sql_query_limit($sql, 1);
-				$num_attachments = (int) $db->sql_fetchfield('num_attachments', false, $result);
+				$num_attachments = (int) $db->sql_fetchfield('num_attachments');
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title

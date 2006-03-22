@@ -174,7 +174,7 @@ class acp_email
 						FROM ' . GROUPS_TABLE . " 
 						WHERE group_id = $group_id";
 					$result = $db->sql_query($sql);
-					$group_name = (string) $db->sql_fetchfield('group_name', 0, $result);
+					$group_name = (string) $db->sql_fetchfield('group_name');
 					$db->sql_freeresult($result);
 				}
 				else

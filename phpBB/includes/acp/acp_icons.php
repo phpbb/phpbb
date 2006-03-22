@@ -271,7 +271,7 @@ class acp_icons
 							$result = $db->sql_query("SELECT {$fields}_order 
 								FROM $table
 								WHERE {$fields}_id = " . $image_id[$image]);
-							$order_old = $db->sql_fetchfield($fields . '_order', 0, $result);
+							$order_old = (int) $db->sql_fetchfield($fields . '_order');
 							$db->sql_freeresult($result);
 
 							if ($order_old == $image_order[$image])

@@ -76,12 +76,13 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				FROM ' . PRIVMSGS_FOLDER_TABLE . '
 					WHERE user_id = ' . $user->data['user_id'];
 			$result = $db->sql_query($sql);
-			
-			if ($db->sql_fetchfield('num_folder', 0, $result) >= $config['pm_max_boxes'])
+			$num_folder = (int) $db->sql_fetchfield('num_folder');
+			$db->sql_freeresult($result);
+
+			if ($num_folder >= $config['pm_max_boxes'])
 			{
 				trigger_error('MAX_FOLDER_REACHED');
 			}
-			$db->sql_freeresult($result);
 
 			$sql = 'INSERT INTO ' . PRIVMSGS_FOLDER_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'user_id' => (int) $user->data['user_id'], 'folder_name' => $folder_name));
@@ -344,7 +345,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		WHERE user_id = ' . $user->data['user_id'] . '
 			AND folder_id = ' . PRIVMSGS_INBOX;
 	$result = $db->sql_query($sql);
-	$num_messages = $db->sql_fetchfield('num_messages', 0, $result);
+	$num_messages = (int) $db->sql_fetchfield('num_messages');
 	$db->sql_freeresult($result);
 	
 	$folder[PRIVMSGS_INBOX] = array(
@@ -641,12 +642,13 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					FROM ' . USERS_TABLE . "
 					WHERE username = '" . $db->sql_escape($rule_string) . "'";
 				$result = $db->sql_query($sql);
+				$rule_user_id = (int) $db->sql_fetchfield('user_id');
+				$db->sql_freeresult($result);
 
-				if (!($rule_user_id = $db->sql_fetchfield('user_id', 0, $result)))
+				if (!$rule_user_id)
 				{
 					$rule_string = '';
 				}
-				$db->sql_freeresult($result);
 			}
 			else if (!$rule_string && $rule_user_id)
 			{
@@ -654,12 +656,13 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					FROM ' . USERS_TABLE . "
 					WHERE user_id = $rule_user_id";
 				$result = $db->sql_query($sql);
-				
-				if (!($rule_string = $db->sql_fetchfield('username', 0, $result)))
+				$rule_string = $db->sql_fetchfield('username');
+				$db->sql_freeresult($result);
+
+				if (!$rule_string)
 				{
 					$rule_user_id = 0;
 				}
-				$db->sql_freeresult($result);
 			}
 
 			$template->assign_vars(array(

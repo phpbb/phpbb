@@ -90,7 +90,7 @@ if (!$show_guests)
 		WHERE session_user_id = ' . ANONYMOUS . '
 			AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
 	$result = $db->sql_query($sql);
-	$guest_counter = (int) $db->sql_fetchfield('num_guests', 0, $result);
+	$guest_counter = (int) $db->sql_fetchfield('num_guests');
 	$db->sql_freeresult($result);
 }
 

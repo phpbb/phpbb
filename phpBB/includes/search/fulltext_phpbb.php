@@ -1015,13 +1015,13 @@ class fulltext_phpbb extends search_backend
 		$sql = 'SELECT COUNT(*) as total_words
 			FROM ' . SEARCH_WORD_TABLE;
 		$result = $db->sql_query($sql);
-		$this->stats['total_words'] = $db->sql_fetchfield('total_words', 0, $result);
+		$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(*) as total_matches
 			FROM ' . SEARCH_MATCH_TABLE;
 		$result = $db->sql_query($sql);
-		$this->stats['total_matches'] = $db->sql_fetchfield('total_matches', 0, $result);
+		$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
 		$db->sql_freeresult($result);
 	}
 

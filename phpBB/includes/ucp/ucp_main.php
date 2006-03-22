@@ -67,7 +67,7 @@ class ucp_main
 					$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
 				}
 				$result = $db->sql_query_limit($sql, 1);
-				$g_forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
+				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
 				$db->sql_freeresult($result);
 
 				$sql = "SELECT t.* $sql_select 
@@ -303,7 +303,7 @@ class ucp_main
 					FROM ' . TOPICS_WATCH_TABLE . '
 					WHERE user_id = ' . $user->data['user_id'];
 				$result = $db->sql_query($sql);
-				$topics_count = (int) $db->sql_fetchfield('topics_count', 0, $result);
+				$topics_count = (int) $db->sql_fetchfield('topics_count');
 				$db->sql_freeresult($result);
 
 				if ($topics_count)
@@ -451,10 +451,11 @@ class ucp_main
 				$move_up = request_var('move_up', 0);
 				$move_down = request_var('move_down', 0);
 
-				$sql = 'SELECT MAX(order_id) as max_order_id FROM ' . BOOKMARKS_TABLE . '
+				$sql = 'SELECT MAX(order_id) as max_order_id
+					FROM ' . BOOKMARKS_TABLE . '
 					WHERE user_id = ' . $user->data['user_id'];
 				$result = $db->sql_query($sql);
-				$max_order_id = $db->sql_fetchfield('max_order_id', 0, $result);
+				$max_order_id = (int) $db->sql_fetchfield('max_order_id');
 				$db->sql_freeresult($result);
 
 				if ($move_up || $move_down)

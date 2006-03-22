@@ -280,7 +280,7 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
-		$username = $db->sql_fetchfield('username', 0, $result);
+		$username = (string) $db->sql_fetchfield('username');
 		$db->sql_freeresult($result);
 	}
 
@@ -1245,7 +1245,7 @@ function group_delete($group_id, $group_name = false)
 			FROM ' . GROUPS_TABLE . "
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
-		$group_name = $db->sql_fetchfield('group_name', 0, $result);
+		$group_name = (string) $db->sql_fetchfield('group_name');
 		$db->sql_freeresult($result);
 	}
 
@@ -1518,7 +1518,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 			FROM ' . GROUPS_TABLE . "
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
-		$group_name = $db->sql_fetchfield('group_name', 0, $result);
+		$group_name = (string) $db->sql_fetchfield('group_name');
 		$db->sql_freeresult($result);
 	}
 
@@ -1582,7 +1582,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			FROM ' . GROUPS_TABLE . "
 			WHERE group_id = $group_id";
 		$result = $db->sql_query($sql);
-		$group_name = $db->sql_fetchfield('group_name', 0, $result);
+		$group_name = (string) $db->sql_fetchfield('group_name');
 		$db->sql_freeresult($result);
 	}
 

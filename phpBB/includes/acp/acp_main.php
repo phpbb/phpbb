@@ -190,14 +190,14 @@ class acp_main
 					FROM ' . ATTACHMENTS_TABLE;
 				$result = $db->sql_query($sql);
 
-				set_config('num_files', (int) $db->sql_fetchfield('stat', 0, $result), true);
+				set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT SUM(filesize) as stat
 					FROM ' . ATTACHMENTS_TABLE;
 				$result = $db->sql_query($sql);
 
-				set_config('upload_dir_size', (int) $db->sql_fetchfield('stat', 0, $result), true);
+				set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_RESYNC_STATS');

@@ -508,7 +508,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 	$sql = "SELECT forum_id FROM $table
 		WHERE $sql_id = {$ids[0]}";
 	$result = $db->sql_query($sql);
-	$forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
+	$forum_id = (int) $db->sql_fetchfield('forum_id');
 	$db->sql_freeresult($result);
 
 	if (!$forum_id)
@@ -531,7 +531,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 		}
 
 		$result = $db->sql_query_limit($sql, 1);
-		$forum_id = (int) $db->sql_fetchfield('forum_id', 0, $result);
+		$forum_id = (int) $db->sql_fetchfield('forum_id');
 		$db->sql_freeresult($result);
 	}
 

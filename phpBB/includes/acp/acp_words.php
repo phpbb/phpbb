@@ -114,7 +114,7 @@ class acp_words
 					FROM ' . WORDS_TABLE . "
 					WHERE word_id = $word_id";
 				$result = $db->sql_query($sql);
-				$deleted_word = $db->sql_fetchfield('word', 0, $result);
+				$deleted_word = $db->sql_fetchfield('word');
 				$db->sql_freeresult($result);
 
 				$sql = 'DELETE FROM ' . WORDS_TABLE . "

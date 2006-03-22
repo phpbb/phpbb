@@ -488,8 +488,7 @@ class acp_groups
 					WHERE group_id = $group_id 
 						AND group_leader = 1";
 				$result = $db->sql_query($sql);
-
-				$total_leaders = (int) $db->sql_fetchfield('total_leaders', 0, $result);
+				$total_leaders = (int) $db->sql_fetchfield('total_leaders');
 				$db->sql_freeresult($result);
 
 				// Total number of group members (non-leaders)
@@ -498,8 +497,7 @@ class acp_groups
 					WHERE group_id = $group_id 
 						AND group_leader <> 1";
 				$result = $db->sql_query($sql);
-				
-				$total_members = (int) $db->sql_fetchfield('total_members', 0, $result);
+				$total_members = (int) $db->sql_fetchfield('total_members');
 				$db->sql_freeresult($result);
 
 				// Grab the members
