@@ -306,7 +306,7 @@ function mcp_warn_post_view($id, $mode, $action)
 		'USERNAME'			=> $userrow['username'],
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
 		'RANK_TITLE'		=> $rank_title,
-		'JOINED'			=> $user->format_date($userrow['user_regdate'], $user->lang['DATE_FORMAT']),
+		'JOINED'			=> $user->format_date($userrow['user_regdate']),
 		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 
 		'AVATAR_IMG'		=> $avatar_img,
@@ -350,7 +350,7 @@ function mcp_warn_user_view($id, $mode, $action)
 		'USERNAME'			=> $userrow['username'],
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
 		'RANK_TITLE'		=> $userrow['rank_title'],
-		'JOINED'			=> $user->format_date($userrow['user_regdate'], $user->lang['DATE_FORMAT']),
+		'JOINED'			=> $user->format_date($userrow['user_regdate']),
 		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 		'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
 

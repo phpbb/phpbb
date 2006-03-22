@@ -1125,8 +1125,8 @@ function show_profile($data)
 		'USERNAME'		=> $username,
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '',
 		'RANK_TITLE'	=> $rank_title,
-		'JOINED'		=> $user->format_date($data['user_regdate'], $user->lang['DATE_FORMAT']),
-		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit, $user->lang['DATE_FORMAT']),
+		'JOINED'		=> $user->format_date($data['user_regdate']),
+		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
   		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 

@@ -655,7 +655,7 @@ class ucp_groups
 								'USERNAME'			=> $row['username'],
 								'U_USER_VIEW'		=> "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}",
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-								'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate'], $user->lang['DATE_FORMAT']) : '-',
+								'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
 								'USER_ID'			=> $row['user_id'])
 							);

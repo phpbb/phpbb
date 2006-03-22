@@ -56,6 +56,22 @@ class acp_main
 						{
 							user_active_flip($user_id, USER_INACTIVE);
 						}
+
+						set_config('num_users', $config['num_users'] + sizeof($mark_ary), true);
+
+						// Get latest username
+						$sql = 'SELECT user_id, username
+							FROM ' . USERS_TABLE . '
+							WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+							ORDER BY user_id DESC';
+						$result = $db->sql_query_limit($sql, 1);
+
+						if ($row = $db->sql_fetchrow($result))
+						{
+							set_config('newest_user_id', $row['user_id']);
+							set_config('newest_username', $row['username']);
+						}
+						$db->freeresult($result);
 					}
 					else if ($action == 'delete')
 					{
@@ -70,11 +86,6 @@ class acp_main
 						$db->sql_query($sql);
 	
 						add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
-					}
-
-					if ($action != 'delete')
-					{
-						set_config('num_users', $config['num_users'] + $db->sql_affectedrows(), true);
 					}
 
 				break;

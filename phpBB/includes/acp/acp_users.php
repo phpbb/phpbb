@@ -734,7 +734,7 @@ class acp_users
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
 					'REGISTERED_IP'		=> ($ip == 'hostname') ? gethostbyaddr($user_row['user_ip']) : $user_row['user_ip'],
-					'USER_LASTACTIVE'	=> $user->format_date($user_row['user_lastvisit']),
+					'USER_LASTACTIVE'	=> ($user_row['user_lastvisit']) ? $user->format_date($user_row['user_lastvisit']) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					)

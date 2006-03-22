@@ -117,7 +117,7 @@ class ucp_attachments
 					'EXTENSION'			=> $row['extension'],
 					'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],
-					'POST_TIME'			=> $user->format_date($row['filetime'], $user->lang['DATE_FORMAT']),
+					'POST_TIME'			=> $user->format_date($row['filetime']),
 					'TOPIC_TITLE'		=> ($row['in_message']) ? $row['message_title'] : $row['topic_title'],
 
 					'ATTACH_ID'			=> $row['attach_id'],

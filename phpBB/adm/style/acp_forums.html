@@ -321,17 +321,6 @@
 	</table>
 <!-- ENDIF -->
 
-	<form id="forums" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick" style="float: left;">
-		<input type="hidden" name="action" value="add" />
-
-		<input type="text" name="forum_name" /> 
-		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
-	</fieldset>
-
-	</form>
-
 	<form id="fselect" method="post" action="{U_SEL_ACTION}">
 
 	<fieldset class="quick">
@@ -340,6 +329,17 @@
 		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>
 	
+	</form>
+
+	<form id="forums" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		<input type="hidden" name="action" value="add" />
+
+		<input type="text" name="forum_name" value="" /> 
+		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
+	</fieldset>
+
 	</form>
 
 <!-- ENDIF -->

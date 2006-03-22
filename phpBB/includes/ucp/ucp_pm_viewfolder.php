@@ -241,7 +241,13 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
 
-				$data[] = array('subject' => censor_text($row['message_subject']), 'sender' => $row['username'], 'date' => $user->format_date($row['message_time']), 'to' => ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '', 'message' => $message_row['message_text']);
+				$data[] = array(
+					'subject'	=> censor_text($row['message_subject']),
+					'sender'	=> $row['username'],
+					'date'		=> $user->format_date($row['message_time']),
+					'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
+					'message'	=> $message_row['message_text']
+				);
 			}
 
 			switch ($export_type)
