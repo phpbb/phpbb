@@ -335,7 +335,7 @@ class ucp_main
 
 
 				$sql = "SELECT t.* $sql_f_select $sql_t_select 
-					FROM (" . TOPICS_TABLE . ' t, ' . TOPICS_WATCH_TABLE . " tw
+					FROM (" . TOPICS_WATCH_TABLE . ' tw, ' . TOPICS_TABLE . " t
 					$sql_join )
 					WHERE tw.user_id = " . $user->data['user_id'] . '
 						AND t.topic_id = tw.topic_id 
@@ -432,7 +432,6 @@ class ucp_main
 					);
 
 				}
-				$db->sql_freeresult($result);
 
 				break;
 
