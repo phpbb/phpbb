@@ -755,7 +755,7 @@ if (!sizeof($post_list))
 $max_post_time = 0;
 
 $sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_warnings, z.friend, z.foe, p.*
-	FROM (' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u)
+	FROM (' . USERS_TABLE . ' u, ' . POSTS_TABLE . ' p)
 	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)
 	WHERE p.post_id IN (' . implode(', ', $post_list) . ')
 		AND u.user_id = p.poster_id';
