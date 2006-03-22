@@ -186,6 +186,8 @@ $lang = array_merge($lang, array(
 	'USER_CANNOT_EDIT'			=> 'You cannot edit posts in this forum',
 	'USER_CANNOT_QUOTE'			=> 'You cannot quote posts in this forum',
 	'USER_CANNOT_REPLY'			=> 'You cannot reply in this forum',
+	'USERNAME_DISALLOWED'		=> 'The username you entered has been banned.',
+	'USERNAME_TAKEN'			=> 'The username you entered is already in use, please select an alternative.',
 
 	'VIEW_MESSAGE'				=> 'Click %sHere%s to view your message',
 
