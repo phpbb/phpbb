@@ -36,7 +36,7 @@ class install_main extends module
 	{
 		global $lang, $template;
 
-		switch($sub)
+		switch ($sub)
 		{
 			case 'intro' :
 				$title = $lang['SUB_INTRO'];

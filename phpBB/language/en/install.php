@@ -127,6 +127,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PASSWORD_MISMATCH'=> 'The passwords you entered did not match.',
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
 
+	'NEXT_STEP'					=> 'Proceed to next step',
 	'NO_LOCATION'				=> 'Cannot determine location',
 // TODO: Write some explanatory introduction text
 	'OVERVIEW_BODY'				=> '<p>Some brief explanatory text about phpBB will go here.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above</p>',
@@ -155,6 +156,7 @@ $lang = array_merge($lang, array(
 	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from',
 	'SERVER_PORT'				=> 'Server port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
+	'STAGE_DATABASE'			=> 'Database Settings',
 	'STAGE_INTRO'				=> 'Introduction',
 	'STAGE_REQUIREMENTS'		=> 'Requirements',
 	'SUB_INTRO'					=> 'Introduction',

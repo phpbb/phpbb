@@ -19,7 +19,7 @@ if (!empty($setmodules))
 		'module_filename' => substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order' => 10,
 		'module_subs' => '',
-		'module_stages' => array('INTRO', 'REQUIREMENTS', 'BASIC', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
+		'module_stages' => array('INTRO', 'REQUIREMENTS', 'DATABASE', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
 		'module_reqs' => ''
 	);
 
@@ -37,7 +37,7 @@ class install_install extends module
 	{
 		global $lang, $template;
 
-		switch($sub)
+		switch ($sub)
 		{
 			case 'intro' :
 				$this->page_title = $lang['SUB_INTRO'];
@@ -54,6 +54,11 @@ class install_install extends module
 			case 'requirements' :
 				$this->check_server_requirements($mode, $sub);
 
+			break;
+
+			case 'database' :
+				$this->obtain_database_settings($mode, $sub);
+			
 			break;
 		}
 
@@ -305,12 +310,12 @@ class install_install extends module
 			$write = $exists = false;
 		}
 
-		$exists = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
-		$write = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
+		$exists_str = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
+		$write_str = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
 
 		$template->assign_block_vars('checks', array(
 			'TITLE'		=> $dir,
-			'RESULT'	=> $exists . $write,
+			'RESULT'	=> $exists_str . $write_str,
 
 			'S_EXPLAIN'	=> false,
 			'S_LEGEND'	=> false,
@@ -319,9 +324,7 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-//		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements";
-// The road ahead is still under construction, follow the diversion back to the olod installer..... ;)
-		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? "install.$phpEx?stage=1" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements";
+		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements";
 		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
@@ -332,12 +335,140 @@ class install_install extends module
 		));
 	}
 
+	/**
+	* Obtain the information required to connect to the database
+	*/
+	function obtain_database_settings($mode, $sub)
+	{
+		global $lang, $template, $phpEx;
+
+		$this->page_title = $lang['STAGE_DATABASE'];
+
+		// Has the user opted to test the connection?
+/*		if (isset($_POST['testdb']))
+		{
+			// If the module for the selected database isn't loaded, let's try and load it now
+			if (!@extension_loaded($available_dbms[$dbms]['MODULE']))
+			{
+				if (!$this->can_load_dll($available_dbms[$dbms]['MODULE']))
+				{
+					$error['db'][] = $lang['INST_ERR_NO_DB'];;
+				}
+			}
+
+			$this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
+		}
+*/
+		// Update the list of available DBMS modules to only contain those which can be used
+		$available_dbms_temp = array();
+		foreach ($this->available_dbms as $type => $dbms_ary)
+		{
+			if (!extension_loaded($dbms_ary['MODULE']))
+			{
+				if (!$this->can_load_dll($dbms_ary['MODULE']))
+				{
+					continue;
+				}
+			}
+
+			$available_dbms_temp[$type] = $dbms_ary;
+		}
+
+		$this->available_dbms = &$available_dbms_temp;
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		// And now for the main part of this page
+		$config_options = array(
+			'legend'		=> 'DB_CONFIG',
+			'dbms'			=> array('lang' => 'DBMS', 'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
+			'dbhost'		=> array('lang' => 'DB_HOST', 'type' => 'text:25:100', 'explain' => true),
+			'dbport'		=> array('lang' => 'DB_PORT', 'type' => 'text:25:100', 'explain' => true),
+			'dbname'		=> array('lang' => 'DB_NAME', 'type' => 'text:25:100', 'explain' => false),
+			'dbuser'		=> array('lang' => 'DB_USERNAME', 'type' => 'text:25:100', 'explain' => false),
+			'dbpasswd'		=> array('lang' => 'DB_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
+			'table_prefix'	=> array('lang' => 'TABLE_PREFIX', 'type' => 'text:25:100', 'explain' => false),
+		);
+
+		$table_prefix = (!empty($table_prefix) ? $table_prefix : 'phpbb_');
+
+		foreach ($config_options as $config_key => $vars)
+		{
+			if (!is_array($vars) && strpos($config_key, 'legend') === false)
+			{
+				continue;
+			}
+
+			if (strpos($config_key, 'legend') !== false)
+			{
+				$template->assign_block_vars('options', array(
+					'S_LEGEND'		=> true,
+					'LEGEND'		=> $lang[$vars])
+				);
+
+				continue;
+			}
+
+			$options = isset($vars['options']) ? $vars['options'] : '';
+
+			$template->assign_block_vars('options', array(
+				'KEY'			=> $config_key,
+				'TITLE'			=> $lang[$vars['lang']],
+				'S_EXPLAIN'		=> $vars['explain'],
+				'S_LEGEND'		=> false,
+				'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
+				'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
+				)
+			);
+		}
+
+		// And finally where do we want to go next (well today is taken isn't it :P)
+		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+
+//		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=administrator";
+// The road ahead is still under construction, follow the diversion back to the old installer..... ;)
+		$s_hidden_fields .= '<input type="hidden" name="testdb" value="true" />';
+		$url = "install.$phpEx?stage=1";
+		$submit = $lang['NEXT_STEP'];
+
+
+		$template->assign_vars(array(
+			'L_SUBMIT'	=> $submit,
+			'S_HIDDEN'	=> $s_hidden_fields,
+			'U_ACTION'	=> $url,
+		));
+	}
+
+	/**
+	* Determine if we are able to load a specified PHP module
+	*/
 	function can_load_dll($dll)
 	{
 		global $suffix;
 
 		return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
 	}
+
+	function dbms_select($default='')
+	{
+		$dbms_options = '';
+		foreach ($this->available_dbms as $dbms_name => $details)
+		{
+			$selected = ($dbms_name == $default) ? ' selected="selected"' : '';
+			$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';
+		}
+		return $dbms_options;
+	}
+
+	/**
+	* The variables that we will be passing between pages
+	* Used to retrieve data quickly on each page
+	*/
+	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
 
 	/**
 	* Specific PHP modules we may require for certain optional or extended features

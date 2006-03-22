@@ -483,7 +483,7 @@ class module
 	/**
 	* Generate the relevant HTML for an input field and the assosciated label and explanatory text
 	*/
-	function input_field($name, $lang_key, $type, $value='', $options='')
+	function input_field($name, $type, $value='', $options='')
 	{
 		global $lang;
 		$tpl_type = explode(':', $type);
@@ -496,7 +496,7 @@ class module
 				$size = (int) $tpl_type[1];
 				$maxlength = (int) $tpl_type[2];
 
-				$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $value . '" />';
+				$tpl = '<input id="' . $name . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $value . '" />';
 			break;
 
 			case 'textarea':
