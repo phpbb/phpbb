@@ -15,7 +15,9 @@
 class auth
 {
 	var $acl = array();
+	var $cache = array();
 	var $acl_options = array();
+	var $acl_forum_ids = false;
 
 	/**
 	* Init permissions
@@ -24,7 +26,8 @@ class auth
 	{
 		global $db, $cache;
 
-		$this->acl = array();
+		$this->acl = $this->cache = $this->acl_options = array();
+		$this->acl_forum_ids = false;
 
 		if (!($this->acl_options = $cache->get('acl_options')))
 		{
@@ -88,13 +91,6 @@ class auth
 	*/
 	function acl_get($opt, $f = 0)
 	{
-		static $cache;
-
-		if (!isset($cache))
-		{
-			$cache = array();
-		}
-
 		$negate = false;
 
 		if (strpos($opt, '!') === 0)
@@ -103,18 +99,18 @@ class auth
 			$opt = substr($opt, 1);
 		}
 
-		if (!isset($cache[$f][$opt]))
+		if (!isset($this->cache[$f][$opt]))
 		{
 			// We combine the global/local option with an OR because some options are global and local.
 			// If the user has the global permission the local one is true too and vice versa
-			$cache[$f][$opt] = false;
+			$this->cache[$f][$opt] = false;
 
 			// Is this option a global permission setting?
 			if (isset($this->acl_options['global'][$opt]))
 			{
 				if (isset($this->acl[0]))
 				{
-					$cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
+					$this->cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
 				}
 			}
 
@@ -123,13 +119,13 @@ class auth
 			{
 				if (isset($this->acl[$f]))
 				{
-					$cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
+					$this->cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
 				}
 			}
 		}
 
 		// Founder always has all global options set to true...
-		return ($negate) ? !$cache[$f][$opt] : $cache[$f][$opt];
+		return ($negate) ? !$this->cache[$f][$opt] : $this->cache[$f][$opt];
 	}
 
 	/**
@@ -140,15 +136,7 @@ class auth
 	*/
 	function acl_getf($opt, $clean = false)
 	{
-		static $cache;
-
 		$acl_f = array();
-
-		if (!isset($cache))
-		{
-			$cache = array();
-		}
-
 		$negate = false;
 
 		if (strpos($opt, '!') === 0)
@@ -160,9 +148,7 @@ class auth
 		// If we retrieve a list of forums not having permissions in, we need to get every forum_id
 		if ($negate)
 		{
-			static $acl_forum_ids;
-
-			if (!isset($acl_forum_ids))
+			if ($this->acl_forum_ids === false)
 			{
 				global $db;
 
@@ -175,9 +161,10 @@ class auth
 				}
 				$result = $db->sql_query($sql);
 
+				$this->acl_forum_ids = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$acl_forum_ids[] = $row['forum_id'];
+					$this->acl_forum_ids[] = $row['forum_id'];
 				}
 				$db->sql_freeresult($result);
 			}
@@ -193,7 +180,7 @@ class auth
 					continue;
 				}
 
-				$allowed = (!isset($cache[$f][$opt])) ? $this->acl_get($opt, $f) : $cache[$f][$opt];
+				$allowed = (!isset($this->cache[$f][$opt])) ? $this->acl_get($opt, $f) : $this->cache[$f][$opt];
 
 				if (!$clean)
 				{
@@ -210,9 +197,9 @@ class auth
 		}
 
 		// If we get forum_ids not having this permission, we need to fill the remaining parts
-		if ($negate && sizeof($acl_forum_ids))
+		if ($negate && sizeof($this->acl_forum_ids))
 		{
-			foreach ($acl_forum_ids as $f)
+			foreach ($this->acl_forum_ids as $f)
 			{
 				$acl_f[$f][$opt] = 1;
 			}
@@ -230,14 +217,8 @@ class auth
 	*/
 	function acl_getf_global($opt)
 	{
-		static $cache;
-
-		if (!isset($cache))
-		{
-			$cache = array();
-		}
-
 		$allowed = false;
+
 		if (isset($this->acl_options['local'][$opt]))
 		{
 			foreach ($this->acl as $f => $bitstring)
@@ -248,7 +229,7 @@ class auth
 					continue;
 				}
 
-				$allowed = (!isset($cache[$f][$opt])) ? $this->acl_get($opt, $f) : $cache[$f][$opt];
+				$allowed = (!isset($this->cache[$f][$opt])) ? $this->acl_get($opt, $f) : $this->cache[$f][$opt];
 
 				if ($allowed)
 				{
