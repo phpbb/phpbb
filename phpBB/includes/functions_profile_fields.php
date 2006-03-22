@@ -177,7 +177,6 @@ class custom_profile
 				" . (($mode == 'register') ? ' AND f.field_show_on_reg = 1' : '') .
 				(($auth->acl_gets('a_', 'm_') && $mode == 'profile') ? '' : ' AND f.field_hide = 0') . '
 				AND l.field_id = f.field_id 
-			GROUP BY f.field_id
 			ORDER BY f.field_order';
 		$result = $db->sql_query($sql);
 
