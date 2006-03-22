@@ -306,7 +306,7 @@ class acp_permissions
 					$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
 
 					$sql = 'SELECT DISTINCT u.user_id, u.username
-						FROM (' . USERS_TABLE . ' u, ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . ' o)
+						FROM (' . USERS_TABLE . ' u, ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_USERS_TABLE . ' a)
 						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
 						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
 							$sql_permission_option
@@ -325,7 +325,7 @@ class acp_permissions
 					$db->sql_freeresult($result);
 
 					$sql = 'SELECT DISTINCT g.group_id, g.group_name, g.group_type 
-						FROM (' . GROUPS_TABLE . ' g, ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . ' o)
+						FROM (' . GROUPS_TABLE . ' g, ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_GROUPS_TABLE . ' a)
 						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
 						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
 							$sql_permission_option
