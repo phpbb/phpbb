@@ -52,9 +52,9 @@ class dbal_postgres extends dbal
 
 		if ($sqlserver)
 		{
-			if (ereg(":", $sqlserver))
+			if (strpos($sqlserver, ':') !== false)
 			{
-				list($sqlserver, $sqlport) = split(":", $sqlserver);
+				list($sqlserver, $sqlport) = explode(':', $sqlserver);
 				$this->connect_string .= "host=$sqlserver port=$sqlport ";
 			}
 			else
