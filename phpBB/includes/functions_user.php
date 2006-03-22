@@ -95,7 +95,7 @@ function user_update_name($old_name, $new_name)
 /**
 * Remove User
 */
-function user_delete($mode, $user_id, $post_username = false)
+function user_delete($mode, $user_id)
 {
 	global $config, $db, $user, $auth;
 
@@ -105,12 +105,12 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		case 'retain':
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET forum_last_poster_id = ' . ANONYMOUS . "
 				WHERE forum_last_poster_id = $user_id";
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", post_username = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET poster_id = ' . ANONYMOUS . "
 				WHERE poster_id = $user_id";
 			$db->sql_query($sql);
 
@@ -120,7 +120,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET topic_last_poster_id = ' . ANONYMOUS . "
 				WHERE topic_last_poster_id = $user_id";
 			$db->sql_query($sql);
 			break;
@@ -213,7 +213,7 @@ function user_delete($mode, $user_id, $post_username = false)
 * Flips user_type from active to inactive and vice versa, handles
 * group membership updates
 */
-function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false, $no_log = false)
+function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false)
 {
 	global $db, $user, $auth;
 
@@ -274,21 +274,18 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 
 	$auth->acl_clear_prefetch($user_id);
 
-	if (!$no_log)
+	if ($username === false)
 	{
-		if ($username === false)
-		{
-			$sql = 'SELECT username
-				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql);
-			$username = $db->sql_fetchfield('username', 0, $result);
-			$db->sql_freeresult($result);
-		}
-
-		$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
-		add_log('admin', $log, $username);
+		$sql = 'SELECT username
+			FROM ' . USERS_TABLE . "
+			WHERE user_id = $user_id";
+		$result = $db->sql_query($sql);
+		$username = $db->sql_fetchfield('username', 0, $result);
+		$db->sql_freeresult($result);
 	}
+
+	$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
+	add_log('admin', $log, $username);
 
 	return false;
 }
@@ -1311,6 +1308,11 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	// We need both username and user_id info
 	user_get_id_name($user_id_ary, $username_ary);
 
+	if (!sizeof($user_id_ary))
+	{
+		return false;
+	}
+
 	// Remove users who are already members of this group
 	$sql = 'SELECT user_id, group_leader
 		FROM ' . USER_GROUP_TABLE . '
@@ -1406,9 +1408,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	unset($username_ary, $user_id_ary);
-
-	return false;
+	return true;
 }
 
 /**
@@ -1424,6 +1424,11 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	// We need both username and user_id info
 	user_get_id_name($user_id_ary, $username_ary);
+
+	if (!sizeof($user_id_ary))
+	{
+		return false;
+	}
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
@@ -1521,9 +1526,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	unset($username_ary, $user_id_ary);
-
-	return false;
+	return true;
 }
 
 /**
@@ -1535,6 +1538,11 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	// We need both username and user_id info
 	user_get_id_name($user_id_ary, $username_ary);
+
+	if (!sizeof($user_id_ary))
+	{
+		return false;
+	}
 
 	switch ($action)
 	{
@@ -1580,9 +1588,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	unset($username_ary, $user_id_ary);
-
-	return false;
+	return true;
 }
 
 /**
