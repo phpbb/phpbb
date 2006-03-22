@@ -197,7 +197,8 @@ $lang = array_merge($lang, array(
 	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed',
 	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added',
 
-	'NO_DISALLOWED'		=> 'No Disallowed Usernames',
+	'NO_DISALLOWED'				=> 'No Disallowed Usernames',
+	'NO_USERNAME_SPECIFIED'		=> 'You haven\'t selected or entered a username to operate with.',
 ));
 
 // Reasons

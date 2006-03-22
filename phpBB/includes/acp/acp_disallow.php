@@ -34,16 +34,17 @@ class acp_disallow
 		if ($disallow)
 		{
 			$disallowed_user = str_replace('*', '%', request_var('disallowed_user', ''));
-			$message = validate_username($disallowed_user);
 
-			if (!$message)
+			if (!$disallowed_user)
 			{
-				$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
-				$db->sql_query($sql);
-
-				$message = $user->lang['DISALLOW_SUCCESSFUL'];
-				add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
+				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action));
 			}
+
+			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
+			$db->sql_query($sql);
+
+			$message = $user->lang['DISALLOW_SUCCESSFUL'];
+			add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
 
 			trigger_error($message . adm_back_link($this->u_action));
 		}
@@ -53,7 +54,7 @@ class acp_disallow
 
 			if (!$disallowed_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action));
 			}
 
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . "
