@@ -35,14 +35,13 @@ class dbal_sqlite extends dbal
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
-		global $phpbb_root_path;
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
 		$error = '';
-		$this->db_connect_id = ($this->persistency) ? @sqlite_popen($this->server, 0666, $error) : @sqlite_open($phpbb_root_path .'install/'. $this->server, 0777, $error);
+		$this->db_connect_id = ($this->persistency) ? @sqlite_popen($this->server, 0666, $error) : @sqlite_open($this->server, 0666, $error);;
 
 		if ($this->db_connect_id)
 		{
