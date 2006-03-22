@@ -17,9 +17,10 @@ class acp_prune
 
 	function main($id, $mode)
 	{
-		global $user, $phpEx, $SID, $phpbb_admin_path;
+		global $user, $phpEx, $SID, $phpbb_admin_path, $phpbb_root_path;
 
 		$user->add_lang('acp/prune');
+		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		switch ($mode)
 		{
@@ -258,63 +259,48 @@ class acp_prune
 				$where_sql = '';
 				$user_ids = $usernames = array();
 
-				if ($row = $db->sql_fetchrow($result))
+				while ($row = $db->sql_fetchrow($result))
 				{
-					do
+					if (!in_array($row['user_id'], $bot_ids))
 					{
-						if (!in_array($row['user_id'], $bot_ids))
-						{
-							$where_sql .= (($where_sql != '') ? ', ' : '') . $row['user_id'];
-							$user_ids[] = $row['user_id'];
-							$usernames[] = $row['username'];
-						}
-					}
-					while ($row = $db->sql_fetchrow($result));
-
-					if ($where_sql)
-					{
-						$where_sql = " AND user_id IN ($where_sql)";
+						$user_ids[] = $row['user_id'];
+						$usernames[$row['user_id']] = $row['username'];
 					}
 				}
 				$db->sql_freeresult($result);
 
-				if ($where_sql)
+				if (sizeof($user_ids))
 				{
-					$sql = '';
+					if ($action == 'deactivate')
+					{
+						foreach ($user_ids as $user_id)
+						{
+							user_active_flip($user_id, USER_NORMAL, false, false, true);
+						}
 
-					if ($action == 'delete')
+						$l_log = 'LOG_PRUNE_USER_DEAC';
+					}
+					else if ($action == 'delete')
 					{
 						if ($deleteposts)
 						{
-							delete_posts('poster_id', $user_ids, true);
+							foreach ($user_ids as $user_id)
+							{
+								user_delete('remove', $user_id);
+							}
+							
 							$l_log = 'LOG_PRUNE_USER_DEL_DEL';
 						}
 						else
 						{
-							for ($i = 0, $size = sizeof($user_ids); $i < $size; $i++)
+							foreach ($user_ids as $user_id)
 							{
-								$sql = 'UPDATE ' . POSTS_TABLE . '
-									SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($usernames[$i]) . "'
-									WHERE user_id = " . $user_ids[$i];
-								$db->sql_query($sql);
+								user_delete('retain', $user_id, $usernames[$user_id]);
 							}
 
 							$l_log = 'LOG_PRUNE_USER_DEL_ANON';
 						}
-
-						$sql = 'DELETE FROM ' . USERS_TABLE;
 					}
-					else if ($action == 'deactivate')
-					{
-						$sql = 'UPDATE ' . USERS_TABLE . " 
-							SET user_active = 0";
-
-						$l_log = 'LOG_PRUNE_USER_DEAC';
-					}
-
-					$sql .= ' WHERE user_id <> ' . ANONYMOUS . "
-						$where_sql";
-					$db->sql_query($sql);
 
 					add_log('admin', $l_log, implode(', ', $usernames));
 				}

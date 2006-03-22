@@ -95,7 +95,7 @@ function user_update_name($old_name, $new_name)
 /**
 * Remove User
 */
-function user_delete($mode, $user_id)
+function user_delete($mode, $user_id, $post_username = false)
 {
 	global $config, $db, $user, $auth;
 
@@ -105,12 +105,12 @@ function user_delete($mode, $user_id)
 	{
 		case 'retain':
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . "
+				SET forum_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
 				WHERE forum_last_poster_id = $user_id";
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET poster_id = ' . ANONYMOUS . "
+				SET poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", post_username = '" . $db->sql_escape($post_username) . "'" : '') . "
 				WHERE poster_id = $user_id";
 			$db->sql_query($sql);
 
@@ -120,7 +120,7 @@ function user_delete($mode, $user_id)
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_last_poster_id = ' . ANONYMOUS . "
+				SET topic_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
 				WHERE topic_last_poster_id = $user_id";
 			$db->sql_query($sql);
 			break;
@@ -213,7 +213,7 @@ function user_delete($mode, $user_id)
 * Flips user_type from active to inactive and vice versa, handles
 * group membership updates
 */
-function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false)
+function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false, $no_log = false)
 {
 	global $db, $user, $auth;
 
@@ -274,18 +274,21 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 
 	$auth->acl_clear_prefetch($user_id);
 
-	if ($username === false)
+	if (!$no_log)
 	{
-		$sql = 'SELECT username
-			FROM ' . USERS_TABLE . "
-			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql);
-		$username = $db->sql_fetchfield('username', 0, $result);
-		$db->sql_freeresult($result);
-	}
+		if ($username === false)
+		{
+			$sql = 'SELECT username
+				FROM ' . USERS_TABLE . "
+				WHERE user_id = $user_id";
+			$result = $db->sql_query($sql);
+			$username = $db->sql_fetchfield('username', 0, $result);
+			$db->sql_freeresult($result);
+		}
 
-	$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
-	add_log('admin', $log, $username);
+		$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
+		add_log('admin', $log, $username);
+	}
 
 	return false;
 }
