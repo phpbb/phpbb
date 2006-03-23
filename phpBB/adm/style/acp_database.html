@@ -24,6 +24,22 @@
 
 <p>{L_ACP_BACKUP_EXPLAIN}</p>
 
+<script type="text/javascript">
+<!--
+
+	function selector(bool)
+	{
+		var table = document.getElementById('table');
+
+		for (var i = 0; i < table.options.length; i++)
+		{
+			table.options[i].selected = bool;
+		}
+	}
+
+//-->
+</script>
+
 <form id="acp_backup" method="post" action="{U_ACTION}">
 <fieldset>
 	<legend>{L_BACKUP_OPTIONS}</legend>
@@ -43,9 +59,11 @@
 	</dl>
 	<dl>
 		<dt><label for="user">{L_TABLE_SELECT}:</label></dt>
+		<dd><select id="table" name="table[]" size="10" multiple="true">
 		<!-- BEGIN tables -->
-		<dd><input name="table[]" id="table[]" type="checkbox" value="{tables.TABLE}" />&nbsp;{tables.TABLE}</dd>
+			<option value="{tables.TABLE}">{tables.TABLE}</option>
 		<!-- END tables -->
+		</select><br /><br /><div align="right"><a href="#" onclick="selector(true)">{L_SELECT_ALL}</a><br /><a href="#" onclick="selector(false)">{L_DESELECT_ALL}</a></div></dd>
 	</dl>
 </fieldset>
 <fieldset class="submit-buttons">
