@@ -169,7 +169,7 @@ class ucp_main
 //					'S_GROUP_OPTIONS'	=> $group_options, 
 					'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
-					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;search_author=" . urlencode($user->data['username']) . "&amp;show_results=posts" : '',  
+					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;author=" . urlencode($user->data['username']) . "&amp;sr=posts" : '',  
 					)
 				);
 				break;

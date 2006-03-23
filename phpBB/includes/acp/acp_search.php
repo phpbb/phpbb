@@ -47,7 +47,7 @@ class acp_search
 		$search_types = $this->get_search_types();
 
 		$settings = array(
-			'search_interval'	=> 'integer',
+			'search_interval'	=> 'float',
 			'load_search'		=> 'bool',
 			'limit_search_load'	=> 'float',
 			'min_search_author_chars'	=> 'integer',
@@ -165,10 +165,10 @@ class acp_search
 		$this->page_title = 'ACP_SEARCH_SETTINGS';
 
 		$template->assign_vars(array(
-			'LIMIT_SEARCH_LOAD'		=> $config['limit_search_load'],
-			'MIN_SEARCH_AUTHOR_CHARS'	=> $config['min_search_author_chars'],
-			'SEARCH_INTERVAL'		=> $config['search_interval'],
-			'SEARCH_STORE_RESULTS'	=> $config['search_store_results'],
+			'LIMIT_SEARCH_LOAD'		=> (float) $config['limit_search_load'],
+			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) $config['min_search_author_chars'],
+			'SEARCH_INTERVAL'		=> (float) $config['search_interval'],
+			'SEARCH_STORE_RESULTS'	=> (int) $config['search_store_results'],
 
 			'S_SEARCH_TYPES'		=> $search_options,
 			'S_YES_SEARCH'			=> (bool) $config['load_search'],

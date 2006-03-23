@@ -1039,11 +1039,11 @@ class fulltext_phpbb extends search_backend
 		</dl>
 		<dl>
 			<dt><label for="fulltext_phpbb_min_search_chars">' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_phpbb_min_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_phpbb_min_search_chars]" value="' . $config['fulltext_phpbb_min_search_chars'] . '" /></dd>
+			<dd><input id="fulltext_phpbb_min_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_phpbb_min_search_chars]" value="' . (int) $config['fulltext_phpbb_min_search_chars'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_phpbb_max_search_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_phpbb_max_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_phpbb_max_search_chars]" value="' . $config['fulltext_phpbb_max_search_chars'] . '" /></dd>
+			<dd><input id="fulltext_phpbb_max_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_phpbb_max_search_chars]" value="' . (int) $config['fulltext_phpbb_max_search_chars'] . '" /></dd>
 		</dl>
 		';
 
