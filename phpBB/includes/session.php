@@ -761,7 +761,7 @@ class session
 			);
 		}
 		
-		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . ' AND key_id = "' . $db->sql_escape(md5($key)) . '"' : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . " AND key_id = '" . $db->sql_escape(md5($key)) . "'" : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 		
 		$this->cookie_data['k'] = $key_id;
