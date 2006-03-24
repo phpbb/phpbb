@@ -348,7 +348,7 @@ class bbcode_firstpass extends bbcode
 					ob_end_clean();
 
 					$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
-					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58');
+					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
 					if ($remove_tags)
 					{
@@ -374,7 +374,7 @@ class bbcode_firstpass extends bbcode
 
 				default:
 					$str_from = array('<', '>', '[', ']', '.', ':');
-					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58');
+					$str_to = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;');
 
 					$out .= '[code:' . $this->bbcode_uid . ']' . str_replace($str_from, $str_to, $code) . '[/code:' . $this->bbcode_uid . ']';
 			}
