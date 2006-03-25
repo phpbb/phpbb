@@ -60,6 +60,11 @@ class install_install extends module
 				$this->obtain_database_settings($mode, $sub);
 			
 			break;
+
+			case 'administrator' :
+				$this->obtain_admin_settings($mode, $sub);
+
+			break;
 		}
 
 		$this->tpl_name = 'install_install';
@@ -631,13 +636,6 @@ class install_install extends module
 			'DELIM'			=> ';;',
 			'COMMENTS'		=> 'remove_remarks'
 		),
-		'mysql'		=> array(
-			'LABEL'			=> 'MySQL',
-			'SCHEMA'		=> 'mysql',
-			'MODULE'		=> 'mysql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
-		),
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL 4.1.x/5.x (MySQLi)',
 			'SCHEMA'		=> 'mysql',
@@ -647,6 +645,13 @@ class install_install extends module
 		),
 		'mysql4'	=> array(
 			'LABEL'			=> 'MySQL 4.x/5.x',
+			'SCHEMA'		=> 'mysql',
+			'MODULE'		=> 'mysql', 
+			'DELIM'			=> ';',
+			'COMMENTS'		=> 'remove_remarks'
+		),
+		'mysql'		=> array(
+			'LABEL'			=> 'MySQL',
 			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
