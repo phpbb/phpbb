@@ -11,7 +11,7 @@
 	<legend>{L_RESTORE_OPTIONS}</legend>
 	<dl>
 		<dt><label for="user">{L_SELECT_FILE}:</label></dt>
-		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF not files.SUPPORTED --> disabled="disabled"<!-- ENDIF --><!-- IF files.SELECTED --> selected="selected"<!-- ENDIF -->>{files.FILE}</option><!-- END files --></select></dd>
+		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF files.S_LAST_ROW --> selected="selected"<!-- ENDIF -->>{files.NAME}</option><!-- END files --></select></dd>
 	</dl>
 </fieldset>
 <fieldset class="submit-buttons">
@@ -49,13 +49,13 @@
 	</dl>
 	<dl>
 		<dt><label for="user">{L_FILE_TYPE}:</label></dt>
-		<!-- BEGIN methods -->
-		<dd><input name="method" id="method" type="radio" value="{methods.TYPE}"<!-- IF methods.S_FIRST_ROW -->checked="checked"<!-- ENDIF --> />&nbsp;{methods.TYPE}</dd>
-		<!-- END methods -->
+		<dd><!-- BEGIN methods -->
+		<input name="method" id="method" type="radio" value="{methods.TYPE}"<!-- IF methods.S_FIRST_ROW -->checked="checked"<!-- ENDIF --> />&nbsp;{methods.TYPE}
+		<!-- END methods --></dd>
 	</dl>
 	<dl>
 		<dt><label for="user">{L_ACTION}:</label></dt>
-		<dd><input type="radio" name="where" value="download" id="where" checked="checked" />&nbsp;{L_DOWNLOAD}&nbsp;&nbsp;<input type="radio" name="where" value="store" id="where" />&nbsp;{L_STORE_LOCAL}</dd>
+		<dd><input type="radio" name="where" value="store_and_download" id="where" checked="checked" />&nbsp;{L_STORE_AND_DOWNLOAD}&nbsp;&nbsp;<input type="radio" name="where" value="store" id="where" />&nbsp;{L_STORE_LOCAL}&nbsp;&nbsp;<input type="radio" name="where" value="download" id="where" />&nbsp;{L_DOWNLOAD}</dd>
 	</dl>
 	<dl>
 		<dt><label for="user">{L_TABLE_SELECT}:</label></dt>

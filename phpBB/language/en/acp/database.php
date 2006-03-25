@@ -41,8 +41,11 @@ $lang = array_merge($lang, array(
 	'TABLE_SELECT'		=> 'Table Select',
 	'FILE_TYPE'			=> 'File Type',
 	'STORE_LOCAL'		=> 'Store file locally',
+	'SELECT_ALL'		=> 'Select all',
+	'DESELECT_ALL'		=> 'Deselect all',
 	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully in the location you specified',
 
+	'STORE_AND_DOWNLOAD'	=> 'Store and Download',
 	'ACP_RESTORE'			=> 'Restore',
 	'ACP_RESTORE_EXPLAIN'	=> 'This will perform a full restore of all phpBB tables from a saved file. You can <u>either</u> upload the backup file via this form or upload it manually to a location on the server. If your server supports it you may use a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
 	'SELECT_FILE'			=> 'Select a file',

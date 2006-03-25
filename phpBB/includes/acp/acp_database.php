@@ -19,8 +19,6 @@ class acp_database
 	{
 		global $db, $user, $auth, $template, $table_prefix;
 		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
-
-		include($phpbb_root_path . 'includes/functions_compress.'.$phpEx);
 		
 		$user->add_lang('acp/database');
 
@@ -49,17 +47,58 @@ class acp_database
 						@set_time_limit(1200);
 
 						$filename = time();
-						$time_start = microtime(true);
+						//$time_start = microtime(true);
+
+						// We set up the info needed for our on-the-fly creation :D
+						switch ($format)
+						{
+							case 'text':
+								$ext = '.sql';
+								$open = 'fopen';
+								$write = 'fwrite';
+								$close = 'fclose';
+								$oper = '';
+								$mimetype = 'text/x-sql';
+							break;
+							case 'bzip2':
+								$ext = '.sql.bz2';
+								$open = 'bzopen';
+								$write = 'bzwrite';
+								$close = 'bzclose';
+								$oper = 'bzcompress';
+								$mimetype = 'application/x-bzip2';
+							break;
+							case 'gzip':
+								$ext = '.sql.gz';
+								$open = 'gzopen';
+								$write = 'gzwrite';
+								$close = 'gzclose';
+								$oper = 'gzencode';
+								$mimetype = 'application/x-gzip';
+							break;
+						}
 
 						// We write the file to "store" first (and then compress the file) to not use too much
 						// memory. The server process can be easily killed by storing too much data at once.
-						$file = $phpbb_root_path . 'store/' . $filename . '.sql';
 
-						$fp = fopen($file, 'a');
-
-						if (!$fp)
+						
+						if ($where == 'store')
 						{
-							trigger_error('Unable to write temporary file to storage folder');
+							$file = $phpbb_root_path . 'store/' . $filename . $ext;
+
+							$fp = $open($file, 'w');
+
+							if (!$fp)
+							{
+								trigger_error('Unable to write temporary file to storage folder');
+							}
+						}
+						else
+						{
+							$name = $filename . $ext;
+							header('Pragma: no-cache');
+							header("Content-Type: $mimetype; name=\"$name\"");
+							header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
@@ -67,8 +106,8 @@ class acp_database
 						$sql_data .= "#\n";
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
-						$sql_data .= "#\n# DATE : " .  gmdate("d-m-Y H:i:s", $filename) . " GMT\n";
-						$sql_data .= "# START : $time_start\n";
+						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $filename) . " GMT\n";
+						//$sql_data .= "# START : $time_start\n";
 						$sql_data .= "#\n";
 
 						switch (SQL_LAYER)
@@ -97,14 +136,29 @@ class acp_database
 									case 'postgres':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE $table_name;\n";
+
+									default:
+										trigger_error('KungFuDeathGrip');
 									break;
 								}
+								$sql_data .= $this->get_table_structure($table_name);
 							}
-
-							$sql_data .= $this->get_table_structure($table_name);
-
 							// Now write the data for the first time. :)
-							fwrite($fp, $sql_data);
+							if ($where !== 'download')
+							{
+								$write($fp, $sql_data);
+							}
+							else
+							{
+								if (!empty($oper))
+								{
+									echo $oper($sql_data);
+								}
+								else
+								{
+									echo $sql_data;
+								}
+							}
 
 							$sql_data = '';
 
@@ -155,9 +209,23 @@ class acp_database
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
 
-												$values	= array();
-												fwrite($fp, $sql_data);
+												if ($where !== 'download')
+												{
+													$write($fp, $sql_data);
+												}
+												else
+												{
+													if (!empty($oper))
+													{
+														echo $oper($sql_data);
+													}
+													else
+													{
+														echo $sql_data;
+													}
+												}
 												$sql_data = '';
+
 											}
 											mysqli_free_result($result);
 										}
@@ -209,9 +277,24 @@ class acp_database
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
 
-												$values	= array();
-												fwrite($fp, $sql_data);
+												if ($where !== 'download')
+												{
+													$write($fp, $sql_data);
+												}
+												else
+												{
+													if (!empty($oper))
+													{
+														echo $oper($sql_data);
+													}
+													else
+													{
+														echo $sql_data;
+													}
+												}
 												$sql_data = '';
+
+												$values	= array();
 											}
 											mysql_free_result($result);
 										}
@@ -219,7 +302,7 @@ class acp_database
 	
 									case 'sqlite':
 
-										$col_types = sqlite_fetch_column_types($name, $db->db_connect_id);
+										$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
 										$sql = "SELECT * FROM $table_name";
 										$result = $db->sql_query($sql);
 
@@ -246,10 +329,25 @@ class acp_database
 
 												$data[] = $row_data;
 											}
-											$sql_data .= 'INSERT INTO ' . $name . ' (' . implode(', ', $names) . ') VALUES ('. implode(', ', $data) .");\n";
+											$sql_data .= 'INSERT INTO ' . $table_name . ' (' . implode(', ', $names) . ') VALUES ('. implode(', ', $data) .");\n";
 
-											fwrite($fp, $sql_data);
+											if ($where !== 'download')
+											{
+												$write($fp, $sql_data);
+											}
+											else
+											{
+												if (!empty($oper))
+												{
+													echo $oper($sql_data);
+												}
+												else
+												{
+													echo $sql_data;
+												}
+											}
 											$sql_data = '';
+
 										}
 										$db->sql_freeresult($result);
 									break;
@@ -313,10 +411,25 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
 
-											fwrite($fp, $sql_data);
+											if ($where !== 'download')
+											{
+												$write($fp, $sql_data);
+											}
+											else
+											{
+												if (!empty($oper))
+												{
+													echo $oper($sql_data);
+												}
+												else
+												{
+													echo $sql_data;
+												}
+											}
 											$sql_data = '';
+
 										}
 										$db->sql_freeresult($result);
 									break;
@@ -334,61 +447,41 @@ class acp_database
 							break;
 						}
 
-						$time_stop = microtime(true);
+						/*$time_stop = microtime(true);
 						$sql_data .= "# END : $time_stop\n";
-						$sql_data .= "# DIFF : ".($time_stop-$time_start);
+						$sql_data .= "# DIFF : ".($time_stop-$time_start);*/
 						
-						fwrite($fp, $sql_data);
-						fclose($fp);
+						if ($where !== 'download')
+						{
+							$write($fp, $sql_data);
+							$close($fp);
+						}
+						else
+						{
+							if (!empty($oper))
+							{
+								echo $oper($sql_data);
+							}
+							else
+							{
+								echo $sql_data;
+							}
+							exit;
+						}
 
 						unset($sql_data);
 
-						// Base file name
-						$file = $phpbb_root_path . 'store/' . $filename . $format;
-
-						switch ($format)
+						if ($where == 'store_and_download')
 						{
-							case '.zip':
-							case '.tar.bz2':
-							case '.tar.gz':
-							case '.tar':
+							$name = $filename . $ext;
 
-								if ($format == '.zip')
-								{
-									$compress = new compress_zip('w', $file);
-								}
-								else
-								{
-									$compress = new compress_tar('w', $file, $format);
-								}
-
-								$compress->add_data(file_get_contents($phpbb_root_path . 'store/' . $filename . '.sql'), "$filename.sql");
-								$compress->close();
-								if ($where == 'download')
-								{
-									$compress->download($filename);
-									exit;
-								}
-							break;
-
-							case '.sql':
-
-								if ($where == 'download')
-								{
-									$mimetype = 'text/sql';
-
-									header('Pragma: no-cache');
-									header("Content-Type: $mimetype; name=\"$filename.sql\"");
-									header("Content-disposition: attachment; filename=$filename.sql");
-
-									$fp = fopen("{$phpbb_root_path}store/$filename.sql", 'rb');
-									while ($buffer = fread($fp, 1024))
-									{
-										echo $buffer;
-									}
-									fclose($fp);
-									exit;
-								}
+							$fp = fopen("{$phpbb_root_path}store/$name", 'rb');
+							while ($buffer = fread($fp, 1024))
+							{
+								echo $buffer;
+							}
+							fclose($fp);
+							exit;
 						}
 						add_log('admin', 'LOG_DB_BACKUP');
 						trigger_error($user->lang['BACKUP_SUCCESS']);
@@ -451,8 +544,18 @@ class acp_database
 							'U_ACTION'	=> $this->u_action . '&amp;action=download'
 						));
 						
-						$methods = array('.sql');
-						$methods = array_merge($methods, compress::methods());
+						$methods = array('text');
+						$available_methods = array('gzip' => 'zlib', 'bzip2' => 'bz2');
+
+						foreach ($available_methods as $type => $module)
+						{
+							if (!@extension_loaded($module))
+							{
+								continue;
+							}
+							$methods[] = $type;
+						}
+
 						foreach ($methods as $type)
 						{
 							$template->assign_block_vars('methods', array(
@@ -468,30 +571,24 @@ class acp_database
 				{
 					case 'submit':
 						$file = request_var('file', '');
-						preg_match('#^(\d{10})\.(sql|zip|tar(?:\.(?:gz|bz2))?)$#', $file, $matches);
-						$format = '.' . $matches[2];
-						switch ($format)
-						{
-							case '.zip':
-							case '.tar.bz2':
-							case '.tar.gz':
-							case '.tar':
-								if ($format == '.zip')
-								{
-									$compress = new compress_zip('r', $phpbb_root_path . 'store/' . $file);
-								}
-								else
-								{
-									$compress = new compress_tar('r', $phpbb_root_path . 'store/' . $file, $format);
-								}
+						$data = '';
 
-								$compress->extract($phpbb_root_path . 'store/');
-								$compress->close();
+						preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
+
+						switch ($matches[2])
+						{
+							case 'sql':
+								$data = file_get_contents($phpbb_root_path . 'store/' . $matches[0]);
+							break;
+							case 'sql.bz2':
+								$data = bzdecompress(file_get_contents($phpbb_root_path . 'store/' . $matches[0]));
+							break;
+							case 'sql.gz':
+								$data = implode(gzfile($phpbb_root_path . 'store/' . $matches[0]));
 							break;
 						}
 
-						$data = file_get_contents($phpbb_root_path . 'store/' . $matches[1] . '.sql');
-						if ($data != '')
+						if (!empty($data))
 						{
 							// Strip out sql comments...
 							remove_remarks($data);
@@ -514,30 +611,34 @@ class acp_database
 
 					default:
 						$selected = $stop = false;
-						$methods = compress::methods();
-						$methods[] = '.sql';
+						$methods = array('sql');
+						$available_methods = array('sql.gz' => 'zlib', 'sql.bz2' => 'bz2');
+
+						foreach ($available_methods as $type => $module)
+						{
+							if (!@extension_loaded($module))
+							{
+								continue;
+							}
+							$methods[] = $type;
+						}
 
 						$dir = $phpbb_root_path . 'store/';
 						$dh = opendir($dir);
 						while (($file = readdir($dh)) !== false)
 						{
-							if (preg_match('#^\d{10}\.(sql|zip|tar(?:\.(?:gz|bz2))?)$#', $file, $matches))
+							if (preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 							{
-								$supported = in_array('.' . $matches[1], $methods);
-								if ($supported && !$selected && !$stop)
+								$supported = in_array($matches[2], $methods);
+
+								if ($supported == 'true')
 								{
-									$selected = true;
-									$stop = true;
+									$template->assign_block_vars('files', array(
+										'FILE'		=> $file,
+										'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
+										'SUPPORTED'	=> $supported
+									));
 								}
-								else
-								{
-									$selected = false;
-								}
-								$template->assign_block_vars('files', array(
-									'FILE'		=> $file,
-									'SUPPORTED'	=> $supported,
-									'SELECTED'	=> $selected
-								));
 							}
 						}
 						closedir($dh);
@@ -610,7 +711,6 @@ class acp_database
 				}
 				$db->sql_freeresult($result);
 
-				$field = array();
 				foreach ($index as $key => $columns)
 				{
 					$line = '   ';
