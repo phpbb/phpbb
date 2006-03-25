@@ -22,7 +22,6 @@ class acp_forums
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $SID;
 
 		$user->add_lang('acp/forums');
-
 		$this->tpl_name = 'acp_forums';
 		$this->page_title = 'ACP_MANAGE_FORUMS';
 
@@ -97,11 +96,15 @@ class acp_forums
 						'forum_type'			=> request_var('forum_type', FORUM_POST),
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
-						'forum_name'			=> request_var('forum_name', ''),
+						'forum_name'			=> request_var('forum_name', '', true),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
-						'forum_desc'			=> request_var('forum_desc', ''),
-						'forum_rules'			=> request_var('forum_rules', ''),
+						'forum_desc'			=> request_var('forum_desc', '', true),
+						'forum_desc_uid'		=> '',
+						'forum_desc_bitfield'	=> 0,
+						'forum_rules'			=> request_var('forum_rules', '', true),
+						'forum_rules_uid'		=> '',
+						'forum_rules_bitfield'	=> 0,
 						'forum_rules_link'		=> request_var('forum_rules_link', ''),
 						'forum_image'			=> request_var('forum_image', ''),
 						'forum_style'			=> request_var('forum_style', 0),
@@ -118,28 +121,20 @@ class acp_forums
 						'prune_sticky'			=> request_var('prune_sticky', false),
 						'forum_password'		=> request_var('forum_password', ''),
 						'forum_password_confirm'=> request_var('forum_password_confirm', ''),
-						'forum_rules_flags'		=> 0,
 					);
 
 					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', false) : request_var('display_active', false);
 
+					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
 					{
-						include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], request_var('rules_parse_bbcode', false), request_var('rules_parse_urls', false), request_var('rules_parse_smilies', false));
+					}
 
-						$allow_bbcode = request_var('parse_bbcode', false);
-						$allow_smilies = request_var('parse_smilies', false);
-						$allow_urls = request_var('parse_urls', false);
-
-						$forum_data['forum_rules_flags'] = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
-
-						$message_parser = new parse_message($forum_data['forum_rules']);
-						$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies);
-			
-						$forum_data['forum_rules'] = $message_parser->message;
-						$forum_data['forum_rules_bbcode_uid'] = $message_parser->bbcode_uid;
-						$forum_data['forum_rules_bbcode_bitfield'] = $message_parser->bbcode_bitfield;
-						unset($message_parser);
+					// Get data for forum description if specified
+					if ($forum_data['forum_desc'])
+					{
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], request_var('desc_parse_bbcode', false), request_var('desc_parse_urls', false), request_var('desc_parse_smilies', false));
 					}
 
 					$errors = $this->update_forum_data($forum_data);
@@ -152,26 +147,26 @@ class acp_forums
 						if ($forum_perm_from && $action == 'add')
 						{
 							$sql_ary = array(
-								'user_id'			=> array('user_id'),
-								'forum_id'			=> (int) $forum_data['forum_id'],
-								'auth_option_id'	=> array('auth_option_id'),
-								'auth_role_id'		=> array('auth_role_id'),
-								'auth_setting'		=> array('auth_setting')
+								'a.user_id'			=> array('user_id'),
+								'a.forum_id'		=> (int) $forum_data['forum_id'],
+								'a.auth_option_id'	=> array('auth_option_id'),
+								'a.auth_role_id'	=> array('auth_role_id'),
+								'a.auth_setting'	=> array('auth_setting')
 							);
 							
 							// We copy the permissions the manual way. ;)
-							$sql = 'INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
-								FROM ' . ACL_USERS_TABLE . ' 
-								WHERE forum_id = ' . $forum_perm_from;
+							$sql = 'INSERT INTO ' . ACL_USERS_TABLE . ' a ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
+								FROM ' . ACL_USERS_TABLE . ' b
+								WHERE b.forum_id = ' . $forum_perm_from;
 							$db->sql_query($sql);
 
 							// Change array for copying settings from the acl groups table
 							unset($sql_ary['user_id']);
 							$sql_ary['group_id'] = array('group_id');
 							
-							$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
-								FROM ' . ACL_GROUPS_TABLE . ' 
-								WHERE forum_id = ' . $forum_perm_from;
+							$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . ' a ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
+								FROM ' . ACL_GROUPS_TABLE . ' b
+								WHERE b.forum_id = ' . $forum_perm_from;
 							$db->sql_query($sql);
 						}
 
@@ -197,6 +192,12 @@ class acp_forums
 						// Redirect to permissions
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=permissions" . $acl_url . '">', '</a>');
+
+						// redirect directly to permission settings screen
+						if ($action == 'add' && !$forum_perm_from)
+						{
+							meta_refresh(4, $phpbb_admin_path . "index.$phpEx$SID&amp;i=permissions" . $acl_url);
+						}
 
 						trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
@@ -345,11 +346,6 @@ class acp_forums
 
 				if ($update)
 				{
-					$forum_data['forum_rules_flags']	= 0;
-					$forum_data['forum_rules_flags']	+= (request_var('parse_bbcode', false)) ? 1 : 0;
-					$forum_data['forum_rules_flags']	+= (request_var('parse_smilies', false)) ? 2 : 0;
-					$forum_data['forum_rules_flags']	+= (request_var('parse_urls', false)) ? 4 : 0;
-
 					$forum_data['forum_flags']	= 0;
 					$forum_data['forum_flags']	+= (request_var('forum_link_track', false)) ? 1 : 0;
 					$forum_data['forum_flags']	+= (request_var('prune_old_polls', false)) ? 2 : 0;
@@ -388,7 +384,7 @@ class acp_forums
 							'parent_id'				=> $this->parent_id,
 							'forum_type'			=> FORUM_CAT,
 							'forum_status'			=> ITEM_UNLOCKED,
-							'forum_name'			=> request_var('forum_name', ''),
+							'forum_name'			=> request_var('forum_name', '', true),
 							'forum_link'			=> '',
 							'forum_link_track'		=> false,
 							'forum_desc'			=> '',
@@ -407,32 +403,59 @@ class acp_forums
 							'forum_flags'			=> 0,
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
-							'forum_rules_flags'		=> 7,
 						);
 					}
 				}
 
-				$forum_rules_preview = $forum_rules_plain = '';
+				$forum_rules_data = array(
+					'text'			=> $forum_data['forum_rules'],
+					'allow_bbcode'	=> true,
+					'allow_smilies'	=> true,
+					'allow_urls'	=> true
+				);
 
+				$forum_desc_data = array(
+					'text'			=> $forum_data['forum_desc'],
+					'allow_bbcode'	=> true,
+					'allow_smilies'	=> true,
+					'allow_urls'	=> true
+				);
+
+				$forum_rules_preview = '';
+
+				// Parse rules if specified
 				if ($forum_data['forum_rules'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
-		
-					$message_parser = new parse_message($forum_data['forum_rules']);
+					if (!isset($forum_data['forum_rules_uid']))
+					{
+						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
+						$forum_data['forum_rules_uid'] = '';
+						$forum_data['forum_rules_bitfield'] = 0;
 
-					if (isset($forum_data['forum_rules_bbcode_uid']))
-					{
-						$message_parser->bbcode_uid = $forum_data['forum_rules_bbcode_uid'];
-						$message_parser->bbcode_bitfield = $forum_data['forum_rules_bbcode_bitfield'];
-					}
-					else
-					{
-						$message_parser->parse(($forum_data['forum_rules_flags'] & 1), ($forum_data['forum_rules_flags'] & 4), ($forum_data['forum_rules_flags'] & 2));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
 					}
 
-					$forum_rules_preview = $message_parser->format_display(($forum_data['forum_rules_flags'] & 1), ($forum_data['forum_rules_flags'] & 4), ($forum_data['forum_rules_flags'] & 2), false);
-					$forum_rules_plain = $message_parser->decode_message('', false);
+					// Generate preview content
+					$forum_rules_preview = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+
+					// decode...
+					$forum_rules_data = generate_text_for_edit($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+				}
+
+				// Parse desciption if specified
+				if ($forum_data['forum_desc'])
+				{
+					if (!isset($forum_data['forum_desc_uid']))
+					{
+						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
+						$forum_data['forum_desc_uid'] = '';
+						$forum_data['forum_desc_bitfield'] = 0;
+
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
+					}
+
+					// decode...
+					$forum_desc_data = generate_text_for_edit($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield']);
 				}
 
 				$forum_type_options = '';
@@ -490,7 +513,6 @@ class acp_forums
 
 					'FORUM_NAME'				=> $forum_data['forum_name'],
 					'FORUM_DATA_LINK'			=> $forum_data['forum_link'],
-					'FORUM_DESC'				=> $forum_data['forum_desc'],
 					'FORUM_IMAGE'				=> $forum_data['forum_image'],
 					'FORUM_IMAGE_SRC'			=> ($forum_data['forum_image']) ? $phpbb_root_path . $forum_data['forum_image'] : '',
 					'FORUM_POST'				=> FORUM_POST,
@@ -505,10 +527,15 @@ class acp_forums
 					'FORUM_RULES_LINK'			=> $forum_data['forum_rules_link'],
 					'FORUM_RULES'				=> $forum_data['forum_rules'],
 					'FORUM_RULES_PREVIEW'		=> $forum_rules_preview,
-					'FORUM_RULES_PLAIN'			=> $forum_rules_plain,
-					'S_BBCODE_CHECKED'			=> ($forum_data['forum_rules_flags'] & 1) ? true : false,
-					'S_SMILIES_CHECKED'			=> ($forum_data['forum_rules_flags'] & 2) ? true : false,
-					'S_URLS_CHECKED'			=> ($forum_data['forum_rules_flags'] & 4) ? true : false,
+					'FORUM_RULES_PLAIN'			=> $forum_rules_data['text'],
+					'S_BBCODE_CHECKED'			=> ($forum_rules_data['allow_bbcode']) ? true : false,
+					'S_SMILIES_CHECKED'			=> ($forum_rules_data['allow_smilies']) ? true : false,
+					'S_URLS_CHECKED'			=> ($forum_rules_data['allow_urls']) ? true : false,
+
+					'FORUM_DESC'				=> $forum_desc_data['text'],
+					'S_DESC_BBCODE_CHECKED'		=> ($forum_desc_data['allow_bbcode']) ? true : false,
+					'S_DESC_SMILIES_CHECKED'	=> ($forum_desc_data['allow_smilies']) ? true : false,
+					'S_DESC_URLS_CHECKED'		=> ($forum_desc_data['allow_urls']) ? true : false,
 
 					'S_FORUM_TYPE_OPTIONS'		=> $forum_type_options,
 					'S_STATUS_OPTIONS'			=> $statuslist,
@@ -657,7 +684,7 @@ class acp_forums
 				$template->assign_block_vars('forums', array(
 					'FOLDER_IMAGE'		=> $folder_image,
 					'FORUM_NAME'		=> $row['forum_name'],
-					'FORUM_DESCRIPTION'	=> $row['forum_desc'],
+					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
 					'FORUM_TOPICS'		=> $row['forum_topics'],
 					'FORUM_POSTS'		=> $row['forum_posts'],
 					

@@ -248,7 +248,7 @@ class ucp_groups
 					}
 				}
 
-				$sql = 'SELECT g.group_id, g.group_name, g.group_description, g.group_type, ug.group_leader, ug.user_pending
+				$sql = 'SELECT g.group_id, g.group_name, g.group_desc, g.group_desc_uid, g.group_desc_bitfield, g.group_type, ug.group_leader, ug.user_pending
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 					WHERE ug.user_id = ' . $user->data['user_id'] . '
 						AND g.group_id = ug.group_id
@@ -287,7 +287,7 @@ class ucp_groups
 					$template->assign_block_vars($block, array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
-						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? $row['group_description'] : $user->lang['GROUP_IS_SPECIAL'],
+						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield']) : $user->lang['GROUP_IS_SPECIAL'],
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
 
@@ -303,7 +303,7 @@ class ucp_groups
 
 				// Hide hidden groups unless user is an admin with group privileges
 				$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
-				$sql = 'SELECT group_id, group_name, group_description, group_type
+				$sql = 'SELECT group_id, group_name, group_desc, group_desc_uid, group_desc_bitfield, group_type
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id NOT IN (' . implode(', ', $group_id_ary) . ")
 						AND group_type $sql_and
@@ -339,7 +339,7 @@ class ucp_groups
 					$template->assign_block_vars('nonmember', array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
-						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? $row['group_description'] : $user->lang['GROUP_IS_SPECIAL'],
+						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield']) : $user->lang['GROUP_IS_SPECIAL'],
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
 						'GROUP_CLOSED'	=> ($row['group_type'] <> GROUP_CLOSED || $auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? false : true,
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
@@ -415,9 +415,13 @@ class ucp_groups
 						// Did we submit?
 						if ($update)
 						{
-							$group_name	= request_var('group_name', '');
-							$group_description = request_var('group_description', '');
+							$group_name	= request_var('group_name', '', true);
+							$group_desc = request_var('group_desc', '', true);
 							$group_type	= request_var('group_type', GROUP_FREE);
+
+							$allow_desc_bbcode	= request_var('desc_parse_bbcode', false);
+							$allow_desc_urls	= request_var('desc_parse_urls', false);
+							$allow_desc_smilies	= request_var('desc_parse_smilies', false);
 
 							$data['uploadurl']	= request_var('uploadurl', '');
 							$data['remotelink'] = request_var('remotelink', '');
@@ -496,23 +500,39 @@ class ucp_groups
 								}
 							}
 
-							if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_attributes)))
+							if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
 							{
 								$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 								trigger_error($user->lang[$message] . $return_page);
 							}
+							else
+							{
+								$group_rank = $submit_ary['rank'];
+
+								$group_desc_data = array(
+									'text'			=> $group_desc,
+									'allow_bbcode'	=> $allow_desc_bbcode,
+									'allow_smilies'	=> $allow_desc_smilies,
+									'allow_urls'	=> $allow_desc_urls
+								);
+							}
 						}
 						else if (!$group_id)
 						{
-							$group_name = request_var('group_name', '');
-							$group_description = '';
+							$group_name = request_var('group_name', '', true);
+							$group_desc_data = array(
+								'text'			=> '',
+								'allow_bbcode'	=> true,
+								'allow_smilies'	=> true,
+								'allow_urls'	=> true
+							);
 							$group_rank = 0;
 							$group_type = GROUP_OPEN;
 						}
 						else
 						{
 							$group_name = $group_row['group_name'];
-							$group_description = $group_row['group_description'];
+							$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield']);
 							$group_type = $group_row['group_type'];
 							$group_rank = $group_row['group_rank'];
 						}
@@ -576,10 +596,14 @@ class ucp_groups
 							'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 							'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
 							'GROUP_INTERNAL_NAME'	=> $group_name,
-							'GROUP_DESCRIPTION'		=> $group_description,
+							'GROUP_DESC'			=> $group_desc_data['text'],
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 							'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 							'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
+
+							'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
+							'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
+							'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 							'S_RANK_OPTIONS'		=> $rank_options,
 							'AVATAR_IMAGE'			=> $avatar_img,
@@ -848,7 +872,7 @@ class ucp_groups
 					default:
 						$user->add_lang('acp/common');
 
-						$sql = 'SELECT g.group_id, g.group_name, g.group_description, g.group_type, ug.group_leader
+						$sql = 'SELECT g.group_id, g.group_name, g.group_desc, g.group_desc_uid, g.group_desc_bitfield, g.group_type, ug.group_leader
 							FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 							WHERE ug.user_id = ' . $user->data['user_id'] . '
 								AND g.group_id = ug.group_id
@@ -860,7 +884,7 @@ class ucp_groups
 						{
 							$template->assign_block_vars('leader', array(
 								'GROUP_NAME'	=> ($value['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $value['group_name']] : $value['group_name'],
-								'GROUP_DESC'	=> $value['group_description'],
+								'GROUP_DESC'	=> generate_text_for_display($value['group_desc'], $value['group_desc_uid'], $value['group_desc_bitfield']),
 								'GROUP_TYPE'	=> $value['group_type'],
 								'GROUP_ID'		=> $value['group_id'],
 

@@ -8,6 +8,7 @@
 *
 */
 
+
 /**
 * set_var
 *
@@ -1581,6 +1582,156 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 }
 
 /**
+* Decode text whereby text is coming from the db and expected to be pre-parsed content
+* We are placing this outside of the message parser because we are often in need of it...
+*/
+function decode_message(&$message, $bbcode_uid = '')
+{
+	global $config;
+
+	if ($bbcode_uid)
+	{
+		$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
+		$replace = array("\n", '', '', '', '');
+	}
+	else
+	{
+		$match = array('<br />');
+		$replace = array("\n");
+	}
+
+	$message = str_replace($match, $replace, $message);
+
+	$match = array(
+		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
+		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
+		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
+		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+		'#<.*?>#s'
+	);
+	
+	$replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;');
+	
+	$message = preg_replace($match, $replace, $message);
+
+	return;
+}
+
+/**
+* For display of custom parsed text on user-facing pages
+* Expects $text to be the value directly from the database (stored value)
+*/
+function generate_text_for_display($text, $uid, $bitfield)
+{
+	global $__bbcode;
+
+	if (!$text)
+	{
+		return '';
+	}
+
+	// Get flags... they are always allow_bbcode, allow_smilies and allow_urls
+	$flags = $bitfield;
+	if ($flags >> 3)
+	{
+		$flags = bindec(substr(decbin($flags), strlen(decbin($flags >> 3))));
+	}
+
+	// Parse bbcode if bbcode uid stored and bbcode enabled
+	if ($uid && ($flags & 1))
+	{
+		if (!class_exists('bbcode'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		}
+
+		if (empty($__bbcode))
+		{
+			$__bbcode = new bbcode($bitfield >> 3);
+		}
+		else
+		{
+			$__bbcode->bbcode($bitfield >> 3);
+		}
+		
+		$__bbcode->bbcode_second_pass($text, $uid);
+	}
+
+	$text = smiley_text($text, !($flags & 2));
+	$text = str_replace("\n", '<br />', censor_text($text));
+
+	return $text;
+}
+
+/**
+* For parsing custom parsed text to be stored within the database.
+* This function additionally returns the uid and bitfield that needs to be stored.
+* Expects $text to be the value directly from request_var() and in it's non-parsed form
+*/
+function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
+{
+	global $phpbb_root_path, $phpEx;
+
+	$uid = '';
+	$bitfield = 0;
+
+	if (!$text)
+	{
+		return;
+	}
+
+	if (!class_exists('parse_message'))
+	{
+		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+	}
+
+	$message_parser = new parse_message($text);
+	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies);
+
+	$text = $message_parser->message;
+	$uid = $message_parser->bbcode_uid;
+
+	// If the bbcode_bitfield is empty, there is no need for the uid to be stored.
+	if (!$message_parser->bbcode_bitfield)
+	{
+		$uid = '';
+	}
+
+	$flags = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
+	$bitfield = $flags + ($message_parser->bbcode_bitfield << 3);
+
+	return;
+}
+
+/**
+* For decoding custom parsed text for edits as well as extracting the flags
+* Expects $text to be the value directly from the database (pre-parsed content)
+*/
+function generate_text_for_edit($text, $uid, $bitfield)
+{
+	global $phpbb_root_path, $phpEx;
+
+	// Get forum flags...
+	$flags = $bitfield;
+	if ($flags >> 3)
+	{
+		$flags = bindec(substr(decbin($flags), strlen(decbin($flags >> 3))));
+	}
+
+	decode_message($text, $uid);
+
+	return array(
+		'allow_bbcode'	=> ($flags & 1) ? 1 : 0,
+		'allow_smilies'	=> ($flags & 2) ? 1 : 0,
+		'allow_urls'	=> ($flags & 4) ? 1 : 0,
+		'text'			=> $text
+	);
+}
+
+
+/**
 * Censoring
 */
 function censor_text($text)
@@ -1591,7 +1742,9 @@ function censor_text($text)
 	{
 		$censors = array();
 
-		// TODO: For ANONYMOUS, this option should be enabled by default
+		/**
+		* @todo For ANONYMOUS censoring should be enabled by default
+		*/
 		if ($user->optionget('viewcensors'))
 		{
 			$cache->obtain_word_list($censors);

@@ -243,9 +243,13 @@ class acp_groups
 				// Did we submit?
 				if ($update)
 				{
-					$group_name	= request_var('group_name', '');
-					$group_description = request_var('group_description', '');
+					$group_name	= request_var('group_name', '', true);
+					$group_desc = request_var('group_desc', '', true);
 					$group_type	= request_var('group_type', GROUP_FREE);
+
+					$allow_desc_bbcode	= request_var('desc_parse_bbcode', false);
+					$allow_desc_urls	= request_var('desc_parse_urls', false);
+					$allow_desc_smilies	= request_var('desc_parse_smilies', false);
 
 					$data['uploadurl']	= request_var('uploadurl', '');
 					$data['remotelink'] = request_var('remotelink', '');
@@ -324,7 +328,7 @@ class acp_groups
 						}
 					}
 
-					if (!($error = group_create($group_id, $group_type, $group_name, $group_description, $group_attributes)))
+					if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
 					{
 						$group_perm_from = request_var('group_perm_from', 0);
 
@@ -351,18 +355,34 @@ class acp_groups
 						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 						trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 					}
+					else
+					{
+						$group_rank = $submit_ary['rank'];
+
+						$group_desc_data = array(
+							'text'			=> $group_desc,
+							'allow_bbcode'	=> $allow_desc_bbcode,
+							'allow_smilies'	=> $allow_desc_smilies,
+							'allow_urls'	=> $allow_desc_urls
+						);
+					}
 				}
 				else if (!$group_id)
 				{
-					$group_name = request_var('group_name', '');
-					$group_description = '';
+					$group_name = request_var('group_name', '', true);
+					$group_desc_data = array(
+						'text'			=> '',
+						'allow_bbcode'	=> true,
+						'allow_smilies'	=> true,
+						'allow_urls'	=> true
+					);
 					$group_rank = 0;
 					$group_type = GROUP_OPEN;
 				}
 				else
 				{
 					$group_name = $group_row['group_name'];
-					$group_description = $group_row['group_description'];
+					$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield']);
 					$group_type = $group_row['group_type'];
 					$group_rank = $group_row['group_rank'];
 				}
@@ -440,11 +460,15 @@ class acp_groups
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
 					'GROUP_INTERNAL_NAME'	=> $group_name,
-					'GROUP_DESCRIPTION'		=> $group_description,
+					'GROUP_DESC'			=> $group_desc_data['text'],
 					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
 
+					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
+					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
+					'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
+					
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(0),
 					'AVATAR_IMAGE'			=> $avatar_img,

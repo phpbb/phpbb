@@ -114,9 +114,6 @@ $lang = array_merge($lang, array(
 	'NO_PERMISSION_FORUM_DELETE'	=> 'You do not have the neccessary permissions to add forums',
 
 	'PARENT_NOT_EXIST'			=> 'Parent does not exist',
-	'PARSE_BBCODE'				=> 'Parse BBCode',
-	'PARSE_SMILIES'				=> 'Parse Smilies',
-	'PARSE_URLS'				=> 'Parse Links',
 	'PRUNE_ANNOUNCEMENTS'		=> 'Prune Announcements',
 	'PRUNE_STICKY'				=> 'Prune Stickies',
 	'PRUNE_OLD_POLLS'			=> 'Prune Old Polls',
@@ -132,22 +129,6 @@ $lang = array_merge($lang, array(
 	'TYPE_LINK'			=> 'Link',
 
 	'UNLOCKED'			=> 'Unlocked',
-
-/*
-	'REMOVE'		=> 'Remove',
-	'EDIT'			=> 'Edit',
-	'MOVE_UP'		=> 'Move up',
-	'MOVE_DOWN'		=> 'Move down',
-	'UPDATE'		=> 'Update',
-
-
-	'ENABLE_NEWS'		=> 'Set as news forum',
-	'ENABLE_NEWS_EXPLAIN' => 'If set to yes posts in this forum will be displayed as news items.',
-	'PRUNE_FINISHED_POLLS'		=> 'Prune Closed Polls',
-	'PRUNE_FINISHED_POLLS_EXPLAIN'=> 'Removes topics with polls which have ended.',
-	'ACTIVE_TOPICS_PAGE'			=> 'Number of active topics',
-	'ACTIVE_TOPICS_PAGE_EXPLAIN'	=> 'If non-zero this value will override the default topics per page setting.',
-*/
 ));
 
 ?>

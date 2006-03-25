@@ -146,7 +146,7 @@ if ($view && !$post_id)
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 $join_sql_table = '';
-$select_sql = 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_flags, f.forum_rules_bbcode_uid, f.forum_rules_bbcode_bitfield';
+$select_sql = 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_uid, f.forum_rules_bitfield';
 
 if (!$post_id)
 {
@@ -453,7 +453,7 @@ $topic_data['topic_title'] = censor_text($topic_data['topic_title']);
 $template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME' 	=> $topic_data['forum_name'],
-	'FORUM_DESC'	=> $topic_data['forum_desc'],
+	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield']),
 	'TOPIC_ID' 		=> $topic_id,
 	'TOPIC_TITLE' 	=> $topic_data['topic_title'],
 	'PAGINATION' 	=> $pagination,

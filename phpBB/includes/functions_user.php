@@ -1142,7 +1142,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 * Add or edit a group. If we're editing a group we only update user
 * parameters such as rank, etc. if they are changed
 */
-function group_create(&$group_id, $type, $name, $desc, $group_attributes)
+function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
 	global $phpbb_root_path, $config, $db, $user, $file_upload;
 
@@ -1182,9 +1182,17 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes)
 	{
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
-			'group_description'		=> (string) $desc,
+			'group_desc'			=> (string) $desc,
+			'group_desc_uid'		=> '',
+			'group_desc_bitfield'	=> 0,
 			'group_type'			=> (int) $type,
 		);
+
+		// Parse description
+		if ($desc)
+		{
+			generate_text_for_storage($sql_ary['group_desc'], $sql_ary['group_desc_uid'], $sql_ary['group_desc_bitfield'], $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies);
+		}
 
 		if (sizeof($group_attributes))
 		{

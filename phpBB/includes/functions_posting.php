@@ -473,34 +473,6 @@ function create_thumbnail($source, $destination, $mimetype)
 }
 
 /**
-* DECODE TEXT -> This will/should be handled by bbcode.php eventually
-*/
-function decode_message(&$message, $bbcode_uid = '')
-{
-	global $config;
-
-	$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
-	$replace = array("\n", '', '', '', '');
-
-	$message = ($bbcode_uid) ? str_replace($match, $replace, $message) : str_replace('<br />', "\n", $message);
-
-	$match = array(
-		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
-		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
-		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-		'#<.*?>#s'
-	);
-	
-	$replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;', '');
-	
-	$message = preg_replace($match, $replace, $message);
-
-	return;
-}
-
-/**
 * Generate Topic Icons for display
 */
 function posting_gen_topic_icons($mode, $icon_id)

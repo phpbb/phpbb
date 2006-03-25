@@ -1042,19 +1042,20 @@ switch ($mode)
 }
 
 $forum_data = array(
-	'parent_id'		=> $parent_id,
-	'left_id'		=> $left_id,
-	'right_id'		=> $right_id,
-	'forum_parents'	=> $forum_parents,
-	'forum_name'	=> $forum_name,
-	'forum_id'		=> $forum_id,
-	'forum_type'	=> $forum_type,
-	'forum_desc'	=> $forum_desc,
-	'forum_rules'	=> $forum_rules,
-	'forum_rules_flags' => $forum_rules_flags,
-	'forum_rules_bbcode_uid' => $forum_rules_bbcode_uid,
-	'forum_rules_bbcode_bitfield' => $forum_rules_bbcode_bitfield,
-	'forum_rules_link' => $forum_rules_link
+	'parent_id'				=> $parent_id,
+	'left_id'				=> $left_id,
+	'right_id'				=> $right_id,
+	'forum_parents'			=> $forum_parents,
+	'forum_name'			=> $forum_name,
+	'forum_id'				=> $forum_id,
+	'forum_type'			=> $forum_type,
+	'forum_desc'			=> $forum_desc,
+	'forum_desc_uid'		=> $forum_desc_uid,
+	'forum_desc_bitfield'	=> $forum_desc_bitfield,
+	'forum_rules'			=> $forum_rules,
+	'forum_rules_uid'		=> $forum_rules_uid,
+	'forum_rules_bitfield'	=> $forum_rules_bitfield,
+	'forum_rules_link'		=> $forum_rules_link
 );
 
 // Build Navigation Links
@@ -1076,7 +1077,7 @@ $template->assign_vars(array(
 	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 	'FORUM_NAME' 			=> $forum_name,
-	'FORUM_DESC'			=> ($forum_desc) ? strip_tags($forum_desc) : '',
+	'FORUM_DESC'			=> ($forum_desc) ? generate_text_for_display($forum_desc, $forum_desc_uid, $forum_desc_bitfield) : '',
 	'TOPIC_TITLE' 			=> $topic_title,
 	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? stripslashes($username) : '',

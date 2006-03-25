@@ -569,12 +569,7 @@ class custom_profile
 		
 		if ($preview == false)
 		{
-			include_once($phpbb_root_path . "includes/message_parser.$phpEx");
-			include_once($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
-			$message_parser = new parse_message();
-			$message_parser->message = $value;
-			$message_parser->decode_message($user->profile_fields[str_replace('pf_', '', $profile_row['field_ident']) . '_bbcode_uid']);
-			$value = $message_parser->message;
+			decode_message($value, $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident']) . '_bbcode_uid']);
 		}
 
 		$field_length = explode('|', $profile_row['field_length']);

@@ -379,9 +379,9 @@ INSERT INTO phpbb_lang (lang_id, lang_iso, lang_dir, lang_english_name, lang_loc
 # MSSQL IDENTITY phpbb_forums ON #
 
 # -- Forums
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_bbcode_uid, prune_days, prune_viewed) VALUES (1, 'My first Category', '', 1, 4, 0, 0, 1, 1, 1, 1, 2, 'Admin', 972086460, '', '', '', '', '', '', 0, 0);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed) VALUES (1, 'My first Category', '', 1, 4, 0, 0, 1, 1, 1, 1, 2, 'Admin', 972086460, '', '', '', '', '', '', '', 0, 0);
 
-INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_bbcode_uid, prune_days, prune_viewed) VALUES (2, 'Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 1, 2, 'Admin', 972086460, '', '', '', '', '', '', 0, 0);
+INSERT INTO phpbb_forums (forum_id, forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed) VALUES (2, 'Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 1, 2, 'Admin', 972086460, '', '', '', '', '', '', '', 0, 0);
 
 # MSSQL IDENTITY phpbb_forums OFF #
 
@@ -406,14 +406,14 @@ INSERT INTO phpbb_users (user_id, user_type, group_id, username, user_regdate, u
 # MSSQL IDENTITY phpbb_groups ON #
 
 # -- Groups
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (1, 'GUESTS', 3, '', 0, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (2, 'INACTIVE', 3, '', 0, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (3, 'INACTIVE_COPPA', 3, '', 0, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (4, 'REGISTERED', 3, '', 0, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (5, 'REGISTERED_COPPA', 3, '', 0, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00', 0, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (7, 'ADMINISTRATORS', 3, 'AA0000', 1, '', '');
-INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_description) VALUES (8, 'BOTS', 3, '9E8DA7', 1, '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (1, 'GUESTS', 3, '', 0, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (2, 'INACTIVE', 3, '', 0, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (3, 'INACTIVE_COPPA', 3, '', 0, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (4, 'REGISTERED', 3, '', 0, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (5, 'REGISTERED_COPPA', 3, '', 0, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (6, 'SUPER_MODERATORS', 3, '00AA00', 0, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (7, 'ADMINISTRATORS', 3, 'AA0000', 1, '', '', '');
+INSERT INTO phpbb_groups (group_id, group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES (8, 'BOTS', 3, '9E8DA7', 1, '', '', '');
 
 # MSSQL IDENTITY phpbb_groups OFF #
 

@@ -226,6 +226,9 @@ $lang = array_merge($lang, array(
 	'OFF'					=> 'OFF',
 	'ON'					=> 'ON',
 
+	'PARSE_BBCODE'			=> 'Parse BBCode',
+	'PARSE_SMILIES'			=> 'Parse Smilies',
+	'PARSE_URLS'			=> 'Parse Links',
 	'PROCEED_TO_ACP'		=> 'Click %sHere%s to proceed to the ACP',
 	'REMIND'				=> 'Remind',
 	'REORDER'				=> 'Reorder',

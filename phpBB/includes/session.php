@@ -183,7 +183,7 @@ class session
 					if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page['page'])
 					{
 						$sql = 'UPDATE ' . SESSIONS_TABLE . "
-							SET session_time = $this->time_now, session_page = '" . $db->sql_escape($this->page['page']) . "'
+							SET session_time = $this->time_now, session_page = '" . $db->sql_escape(substr($this->page['page'], 0, 199)) . "'
 							WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 						$db->sql_query($sql);
 					}
@@ -380,7 +380,7 @@ class session
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) $this->browser,
-			'session_page'			=> (string) $this->page['page'],
+			'session_page'			=> (string) substr($this->page['page'], 0, 199),
 			'session_ip'			=> (string) $this->ip,
 			'session_admin'			=> ($set_admin) ? 1 : 0,
 			'session_viewonline'	=> ($viewonline) ? 1 : 0,

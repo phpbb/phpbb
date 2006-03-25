@@ -35,8 +35,10 @@
 			<td class="row2"><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></td>
 		</tr>
 		<tr>
-			<td class="row1" width="35%"><label for="group_description">{L_GROUP_DESC}:</label></td>
-			<td class="row2"><input name="group_description" type="text" id="group_description" value="{GROUP_DESCRIPTION}" /></td>
+			<td class="row1" width="35%"><label for="group_desc">{L_GROUP_DESC}:</label></td>
+			<td class="row2"><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
+				<br /><input type="checkbox" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+			</td>
 		</tr>
 		<!-- IF not S_SPECIAL_GROUP -->
 			<tr>
