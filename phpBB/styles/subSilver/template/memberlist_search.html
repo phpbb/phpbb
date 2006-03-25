@@ -10,13 +10,21 @@ function insert_user(user)
 
 function insert_marked(users)
 {
-	for(i = 0; i < users.length; i++)
+	if (typeof(users.length) == "undefined")
 	{
-		if ( users[i].checked )
+		insert_user(users.value);
+	}
+	else if (users.length > 0)
+	{
+		for (i = 0; i < users.length; i++)
 		{
-			insert_user(users[i].value);
+			if (users[i].checked)
+			{
+				insert_user(users[i].value);
+			}
 		}
 	}
+
 	self.close();
 }
 
