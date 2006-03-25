@@ -199,30 +199,4 @@ class acp_ranks
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_ranks_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_ranks',
-			'title'		=> 'ACP_RANKS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'ranks'		=> array('title' => 'ACP_MANAGE_RANKS', 'auth' => 'acl_a_ranks'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

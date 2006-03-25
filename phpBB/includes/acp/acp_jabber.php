@@ -165,29 +165,4 @@ class acp_jabber
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_jabber_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_jabber',
-			'title'		=> 'ACP_JABBER_SETTINGS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'settings'		=> array('title' => 'ACP_JABBER_SETTINGS', 'auth' => 'acl_a_jabber'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
 ?>

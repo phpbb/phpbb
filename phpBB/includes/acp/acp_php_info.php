@@ -51,30 +51,4 @@ class acp_php_info
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_php_info_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_php_info',
-			'title'		=> 'ACP_PHP_INFO',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'info'		=> array('title' => 'ACP_PHP_INFO', 'auth' => 'acl_a_phpinfo'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

@@ -311,30 +311,4 @@ class acp_reasons
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_reasons_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_reasons',
-			'title'		=> 'ACP_REASONS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'main'		=> array('title' => 'ACP_MANAGE_REASONS', 'auth' => 'acl_a_reasons'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

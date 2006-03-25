@@ -1410,33 +1410,4 @@ class acp_attachments
 
 }
 
-/**
-* @package module_install
-*/
-class acp_attachments_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_attachments',
-			'title'		=> 'ACP_ATTACHMENTS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'attach'		=> array('title' => 'ACP_ATTACHMENT_SETTINGS', 'auth' => 'acl_a_attach'),
-				'extensions'	=> array('title' => 'ACP_MANAGE_EXTENSIONS', 'auth' => 'acl_a_attach'),
-				'ext_groups'	=> array('title' => 'ACP_EXTENSION_GROUPS', 'auth' => 'acl_a_attach'),
-				'orphan'		=> array('title' => 'ACP_ORPHAN_ATTACHMENTS', 'auth' => 'acl_a_attach')
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

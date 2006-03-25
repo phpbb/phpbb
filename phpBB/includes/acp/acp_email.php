@@ -226,31 +226,4 @@ class acp_email
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_email_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_email',
-			'title'		=> 'ACP_MASS_EMAIL',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'email'		=> array('title' => 'ACP_MASS_EMAIL', 'auth' => 'acl_a_email'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
-
 ?>

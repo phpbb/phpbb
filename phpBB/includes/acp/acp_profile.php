@@ -1250,30 +1250,4 @@ class acp_profile
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_profile_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_profile',
-			'title'		=> 'ACP_CUSTOM_PROFILE_FIELDS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'profile'	=> array('title' => 'ACP_CUSTOM_PROFILE_FIELDS', 'auth' => 'acl_a_profile'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

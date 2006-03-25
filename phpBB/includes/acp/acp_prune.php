@@ -363,31 +363,4 @@ class acp_prune
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_prune_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_prune',
-			'title'		=> 'ACP_PRUNING',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'forums'	=> array('title' => 'ACP_PRUNE_FORUMS', 'auth' => 'acl_a_prune'),
-				'users'		=> array('title' => 'ACP_PRUNE_USERS', 'auth' => 'acl_a_userdel'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

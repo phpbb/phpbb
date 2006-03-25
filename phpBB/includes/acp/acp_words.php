@@ -154,30 +154,4 @@ class acp_words
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_words_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_words',
-			'title'		=> 'ACP_WORDS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'words'		=> array('title' => 'ACP_WORDS', 'auth' => 'acl_a_words'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

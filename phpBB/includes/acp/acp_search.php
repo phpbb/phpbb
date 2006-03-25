@@ -494,31 +494,4 @@ class acp_search
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_search_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_search',
-			'title'		=> 'ACP_SEARCH',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'settings'	=> array('title' => 'ACP_SEARCH_SETTINGS', 'auth' => 'acl_a_search'),
-				'index'		=> array('title' => 'ACP_SEARCH_INDEX', 'auth' => 'acl_a_search'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

@@ -151,37 +151,4 @@ class mcp_logs
 	}
 }
 
-/**
-* @package module_install
-*/
-class mcp_logs_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'mcp_logs',
-			'title'		=> 'MCP_LOGS',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'front'			=> array('title' => 'MCP_LOGS_FRONT', 'auth' => ''),
-				'forum_logs'	=> array('title' => 'MCP_LOGS_FORUM_VIEW', 'auth' => 'acl_m_,$id'),
-				'topic_logs'	=> array('title' => 'MCP_LOGS_TOPIC_VIEW', 'auth' => 'acl_m_,$id'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
-
-//
-// Functions
-//
-
 ?>

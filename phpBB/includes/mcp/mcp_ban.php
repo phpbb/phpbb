@@ -109,32 +109,4 @@ class mcp_ban
 	}
 }
 
-/**
-* @package module_install
-*/
-class mcp_ban_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'mcp_ban',
-			'title'		=> 'MCP_BAN',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'email'		=> array('title' => 'MCP_BAN_EMAILS', 'auth' => 'acl_m_ban'),
-				'ip'		=> array('title' => 'MCP_BAN_IPS', 'auth' => 'acl_m_ban'),
-				'user'		=> array('title' => 'MCP_BAN_USERNAMES', 'auth' => 'acl_m_ban'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

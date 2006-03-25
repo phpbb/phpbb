@@ -568,7 +568,7 @@ class acp_modules
 	{
 		global $phpbb_root_path, $phpEx;
 		
-		$directory = $phpbb_root_path . 'includes/' . $this->module_class . '/';
+		$directory = $phpbb_root_path . 'includes/' . $this->module_class . '/info/';
 		
 		$fileinfo = array();
 
@@ -582,7 +582,6 @@ class acp_modules
 				{
 					$class = str_replace(".$phpEx", '', $file) . '_info';
 
-					// Do not include current working file ;)
 					if (!class_exists($class))
 					{
 						include($directory . $file);
@@ -606,7 +605,6 @@ class acp_modules
 			$filename = $this->module_class . '_' . basename($module);
 			$class = $this->module_class . '_' . basename($module) . '_info';
 
-			// Do not include current working file ;)
 			if (!class_exists($class))
 			{
 				include($directory . $filename . '.' . $phpEx);
@@ -988,34 +986,6 @@ class acp_modules
 
 		return array();
 
-	}
-}
-
-/**
-* @package module_install
-*/
-class acp_modules_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_modules',
-			'title'		=> 'ACP_MODULE_MANAGEMENT',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'acp'		=> array('title' => 'ACP', 'auth' => 'acl_a_modules'),
-				'ucp'		=> array('title' => 'UCP', 'auth' => 'acl_a_modules'),
-				'mcp'		=> array('title' => 'MCP', 'auth' => 'acl_a_modules'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
 	}
 }
 

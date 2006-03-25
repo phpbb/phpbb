@@ -85,31 +85,4 @@ class acp_disallow
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_disallow_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_disallow',
-			'title'		=> 'ACP_DISALLOW',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'usernames'		=> array('title' => 'ACP_DISALLOW_USERNAMES', 'auth' => 'acl_a_names'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
-
 ?>

@@ -54,33 +54,6 @@ class mcp_notes
 	}
 }
 
-/**
-* @package module_install
-*/
-class mcp_notes_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'mcp_notes',
-			'title'		=> 'MCP_NOTES',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'front'				=> array('title' => 'MCP_NOTES_FRONT', 'auth' => ''),
-				'user_notes'		=> array('title' => 'MCP_NOTES_USER', 'auth' => ''),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 //
 // Functions
 //

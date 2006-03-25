@@ -721,32 +721,4 @@ function disapprove_post($post_id_list, $mode)
 	}
 }
 
-/**
-* @package module_install
-*/
-class mcp_queue_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'mcp_queue',
-			'title'		=> 'MCP_QUEUE',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'approve_details'	=> array('title' => 'MCP_QUEUE_APPROVE_DETAILS', 'auth' => 'acl_m_approve || aclf_m_approve'),
-				'unapproved_topics'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_TOPICS', 'auth' => 'acl_m_approve || aclf_m_approve'),
-				'unapproved_posts'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_POSTS', 'auth' => 'acl_m_approve || aclf_m_approve'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

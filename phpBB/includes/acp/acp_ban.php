@@ -208,32 +208,4 @@ class acp_ban
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_ban_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_ban',
-			'title'		=> 'ACP_BAN',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'email'		=> array('title' => 'ACP_BAN_EMAILS', 'auth' => 'acl_a_ban'),
-				'ip'		=> array('title' => 'ACP_BAN_IPS', 'auth' => 'acl_a_ban'),
-				'user'		=> array('title' => 'ACP_BAN_USERNAMES', 'auth' => 'acl_a_ban'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>

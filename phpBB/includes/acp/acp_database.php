@@ -941,31 +941,4 @@ class acp_database
 	}
 }
 
-/**
-* @package module_install
-*/
-class acp_database_info
-{
-	function module()
-	{
-		return array(
-			'filename'	=> 'acp_database',
-			'title'		=> 'ACP_DATABASE',
-			'version'	=> '1.0.0',
-			'modes'		=> array(
-				'backup'	=> array('title' => 'ACP_BACKUP', 'auth' => 'acl_a_backup'),
-				'restore'	=> array('title' => 'ACP_RESTORE', 'auth' => 'acl_a_backup'),
-			),
-		);
-	}
-
-	function install()
-	{
-	}
-
-	function uninstall()
-	{
-	}
-}
-
 ?>
