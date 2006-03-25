@@ -314,7 +314,7 @@ class acp_profile
 				}
 
 				$cp->vars['field_ident']		= request_var('field_ident', $field_row['field_ident']);
-				$cp->vars['lang_name']			= request_var('field_ident', $field_row['lang_name']);
+				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name']);
 				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain']);
 				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value']);
 
@@ -450,7 +450,7 @@ class acp_profile
 		
 				foreach ($exclude[3] as $key)
 				{
-					$cp->vars[$key] = request_var($key, '');
+					$cp->vars[$key] = request_var($key, array(0 => ''));
 
 					if (!$cp->vars[$key] && $action == 'edit')
 					{

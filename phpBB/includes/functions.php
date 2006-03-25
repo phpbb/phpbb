@@ -8,6 +8,7 @@
 *
 */
 
+// Common global functions
 
 /**
 * set_var
@@ -142,69 +143,6 @@ function unique_id($extra = 0, $prefix = false)
 	list($usec, $sec) = explode(' ', microtime());
 	mt_srand((float) $extra + (float) $sec + ((float) $usec * 100000));
 	return uniqid(($prefix === false) ? mt_rand() : $prefix, true);
-}
-
-if (!function_exists('array_combine'))
-{
-	/**
-	* A wrapper for the PHP5 function array_combine()
-	* @param array $keys contains keys for the resulting array
-	* @param array $values contains values for the resulting array
-	*
-	* @return Returns an array by using the values from the keys array as keys and the
-	* 	values from the values array as the corresponding values. Returns false if the
-	* 	number of elements for each array isn't equal or if the arrays are empty.
-	*/
-	function array_combine($keys, $values)
-	{
-		$keys = array_values($keys);
-		$values = array_values($values);
-
-		$n = sizeof($keys);
-		$m = sizeof($values);
-		if (!$n || !$m || ($n != $m))
-		{
-			return false;
-		}
-
-		$combined = array();
-		for ($i = 0; $i < $n; $i++)
-		{
-			$combined[$keys[$i]] = $values[$i];
-		}
-		return $combined;
-	}
-}
-
-if (!function_exists('str_split'))
-{
-	/**
-	* A wrapper for the PHP5 function str_split()
-	* @param array $string contains the string to be converted
-	* @param array $split_length contains the length of each chunk
-	*
-	* @return  Converts a string to an array. If the optional split_length parameter is specified,
-	*  	the returned array will be broken down into chunks with each being split_length in length,
-	*  	otherwise each chunk will be one character in length. FALSE is returned if split_length is
-	*  	less than 1. If the split_length length exceeds the length of string, the entire string is
-	*  	returned as the first (and only) array element. 
-	*/
-	function str_split($string, $split_length = 1)
-	{
-		if ($split_length < 1)
-		{
-			return false;
-		}
-		else if ($split_length >= strlen($string))
-		{
-			return array($string);
-		}
-		else
-		{
-			preg_match_all('#.{1,' . $split_length . '}#s', $string, $matches);
-			return $matches[0];
-		}
-	}
 }
 
 /**
@@ -358,6 +296,74 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	return;
 }
 
+
+// Compatibility functions
+
+if (!function_exists('array_combine'))
+{
+	/**
+	* A wrapper for the PHP5 function array_combine()
+	* @param array $keys contains keys for the resulting array
+	* @param array $values contains values for the resulting array
+	*
+	* @return Returns an array by using the values from the keys array as keys and the
+	* 	values from the values array as the corresponding values. Returns false if the
+	* 	number of elements for each array isn't equal or if the arrays are empty.
+	*/
+	function array_combine($keys, $values)
+	{
+		$keys = array_values($keys);
+		$values = array_values($values);
+
+		$n = sizeof($keys);
+		$m = sizeof($values);
+		if (!$n || !$m || ($n != $m))
+		{
+			return false;
+		}
+
+		$combined = array();
+		for ($i = 0; $i < $n; $i++)
+		{
+			$combined[$keys[$i]] = $values[$i];
+		}
+		return $combined;
+	}
+}
+
+if (!function_exists('str_split'))
+{
+	/**
+	* A wrapper for the PHP5 function str_split()
+	* @param array $string contains the string to be converted
+	* @param array $split_length contains the length of each chunk
+	*
+	* @return  Converts a string to an array. If the optional split_length parameter is specified,
+	*  	the returned array will be broken down into chunks with each being split_length in length,
+	*  	otherwise each chunk will be one character in length. FALSE is returned if split_length is
+	*  	less than 1. If the split_length length exceeds the length of string, the entire string is
+	*  	returned as the first (and only) array element. 
+	*/
+	function str_split($string, $split_length = 1)
+	{
+		if ($split_length < 1)
+		{
+			return false;
+		}
+		else if ($split_length >= strlen($string))
+		{
+			return array($string);
+		}
+		else
+		{
+			preg_match_all('#.{1,' . $split_length . '}#s', $string, $matches);
+			return $matches[0];
+		}
+	}
+}
+
+// functions used for building option fields
+
 /**
 * Pick a language, any language ...
 */
@@ -425,6 +431,8 @@ function tz_select($default = '')
 
 	return $tz_select;
 }
+
+// Functions handling topic/post tracking/marking
 
 /**
 * Topic and forum watching common code
@@ -999,6 +1007,8 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 	return $last_read;
 }
 
+// Pagination functions
+
 /**
 * Pagination routine, generates page number sequence
 * tpl_prefix is for using different pagination blocks at one page
@@ -1093,6 +1103,8 @@ function on_page($num_items, $per_page, $start)
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
+
+// Server functions (building urls, redirecting...)
 
 /**
 * Generate board url (example: http://www.foo.bar/phpBB)
@@ -1227,6 +1239,8 @@ function meta_refresh($time, $url)
 		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
 	);
 }
+
+// Message/Login boxes
 
 /**
 * Build Confirm box
@@ -1549,6 +1563,8 @@ function login_forum_box(&$forum_data)
 	page_footer();
 }
 
+// Content related functions
+
 /**
 * Bump Topic Check - used by posting and viewtopic
 */
@@ -1730,6 +1746,47 @@ function generate_text_for_edit($text, $uid, $bitfield)
 	);
 }
 
+/**
+* make_clickable function
+*
+* Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
+* Cuts down displayed size of link if over 50 chars, turns absolute links
+* into relative versions when the server/script path matches the link
+*/
+function make_clickable($text, $server_url = false)
+{
+	if ($server_url === false)
+	{
+		$server_url = generate_board_url();
+	}
+
+	static $magic_url_match;
+	static $magic_url_replace;
+
+	if (!is_array($magic_url_match))
+	{
+		$magic_url_match = $magic_url_replace = array();
+		// Be sure to not let the matches cross over. ;)
+
+		// relative urls for this board
+		$magic_url_match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*#i';
+		$magic_url_replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
+
+		// matches a xxxx://aaaaa.bbb.cccc. ...
+		$magic_url_match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
+		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
+
+		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
+		$magic_url_match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
+		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
+
+		// matches an email@domain type address at the start of a line, or after a space.
+		$magic_url_match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.(?:[\w\-\.]+\.)?[\w]+)#ie';
+		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+	}
+
+	return preg_replace($magic_url_match, $magic_url_replace, $text);
+}
 
 /**
 * Censoring
@@ -1836,6 +1893,8 @@ function extension_allowed($forum_id, $extension, &$extensions)
 
 	return ($forum_id == 0) ? false : true;
 }
+
+// Little helpers
 
 /**
 * Build simple hidden fields from array
@@ -1967,6 +2026,83 @@ function add_log()
 
 	return $db->sql_nextid();
 }
+
+/**
+* Return a nicely formatted backtrace (parts from the php manual by diz at ysagoon dot com)
+*/
+function get_backtrace()
+{
+	global $phpbb_root_path;
+
+	$output = '<div style="font-family: monospace;">';
+	$backtrace = debug_backtrace();
+	$path = realpath($phpbb_root_path);
+
+	foreach ($backtrace as $number => $trace)
+	{
+		// We skip the first one, because it only shows this file/function
+		if ($number == 0)
+		{
+			continue;
+		}
+
+		// Strip the current directory from path
+		$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
+		$trace['file'] = substr($trace['file'], 1);
+		
+		$args = array();
+		foreach ($trace['args'] as $argument)
+		{
+			switch (gettype($argument)) 
+			{
+				case 'integer':
+				case 'double':
+					$args[] = $argument;
+				break;
+				
+				case 'string':
+					$argument = htmlspecialchars(substr($argument, 0, 64)) . ((strlen($argument) > 64) ? '...' : '');
+					$args[] = "'{$argument}'";
+				break;
+				
+				case 'array':
+					$args[] = 'Array(' . sizeof($argument) . ')';
+				break;
+				
+				case 'object':
+					$args[] = 'Object(' . get_class($argument) . ')';
+				break;
+				
+				case 'resource':
+					$args[] = 'Resource(' . strstr($argument, '#') . ')';
+				break;
+				
+				case 'boolean':
+					$args[] = ($argument) ? 'true' : 'false';
+				break;
+				
+				case 'NULL':
+					$args[] = 'NULL';
+				break;
+				
+				default:
+					$args[] = 'Unknown';
+			}
+		}
+		
+		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
+		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
+
+		$output .= '<br />';
+		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
+		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
+		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
+	}
+	$output .= '</div>';
+	return $output;
+}
+
+// Handler, header and footer
 
 /**
 * Error and message handler, call with trigger_error if reqd
@@ -2512,81 +2648,6 @@ function page_footer()
 	$db->sql_close();
 
 	exit;
-}
-
-/**
-* Return a nicely formatted backtrace (parts from the php manual by diz at ysagoon dot com)
-*/
-function get_backtrace()
-{
-	global $phpbb_root_path;
-
-	$output = '<div style="font-family: monospace;">';
-	$backtrace = debug_backtrace();
-	$path = realpath($phpbb_root_path);
-
-	foreach ($backtrace as $number => $trace)
-	{
-		// We skip the first one, because it only shows this file/function
-		if ($number == 0)
-		{
-			continue;
-		}
-
-		// Strip the current directory from path
-		$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
-		$trace['file'] = substr($trace['file'], 1);
-		
-		$args = array();
-		foreach ($trace['args'] as $argument)
-		{
-			switch (gettype($argument)) 
-			{
-				case 'integer':
-				case 'double':
-					$args[] = $argument;
-				break;
-				
-				case 'string':
-					$argument = htmlspecialchars(substr($argument, 0, 64)) . ((strlen($argument) > 64) ? '...' : '');
-					$args[] = "'{$argument}'";
-				break;
-				
-				case 'array':
-					$args[] = 'Array(' . sizeof($argument) . ')';
-				break;
-				
-				case 'object':
-					$args[] = 'Object(' . get_class($argument) . ')';
-				break;
-				
-				case 'resource':
-					$args[] = 'Resource(' . strstr($argument, '#') . ')';
-				break;
-				
-				case 'boolean':
-					$args[] = ($argument) ? 'true' : 'false';
-				break;
-				
-				case 'NULL':
-					$args[] = 'NULL';
-				break;
-				
-				default:
-					$args[] = 'Unknown';
-			}
-		}
-		
-		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
-		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
-
-		$output .= '<br />';
-		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
-		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
-		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
-	}
-	$output .= '</div>';
-	return $output;
 }
 
 ?>

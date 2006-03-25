@@ -150,18 +150,28 @@ $lang = array_merge($lang, array(
 // Load settings
 $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
-	'LIMIT_LOAD'				=> 'Limit system load',
-	'LIMIT_LOAD_EXPLAIN'		=> 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
-	'LIMIT_SESSIONS'			=> 'Limit sessions',
-	'LIMIT_SESSIONS_EXPLAIN'	=> 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.',
-	'LOAD_USER_ACTIVITY'		=> 'Show users activity',
+
+	'CUSTOM_PROFILE_FIELDS'		=> 'Custom Profile Fields',
+
+	'LIMIT_LOAD'					=> 'Limit system load',
+	'LIMIT_LOAD_EXPLAIN'			=> 'If the 1 minute system load exceeds this value the board will go offline, 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
+	'LIMIT_SESSIONS'				=> 'Limit sessions',
+	'LIMIT_SESSIONS_EXPLAIN'		=> 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.',
+	'LOAD_CPF_MEMBERLIST'			=> 'Display custom profile fields in memberlist',
+	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
+	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on viewtopic',
+	'LOAD_USER_ACTIVITY'			=> 'Show users activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
+
 	'ONLINE_LENGTH'				=> 'View online time span',
 	'ONLINE_LENGTH_EXPLAIN'		=> 'Time in minutes after which inactive users will not appear in viewonline listings, lower equals less processing.',
+	
 	'RECOMPILE_TEMPLATES'		=> 'Recompile stale templates',
 	'RECOMPILE_TEMPLATES_EXPLAIN'	=> 'Check for updated template files on filesystem and recompile.',
+	
 	'SESSION_LENGTH'			=> 'Session length',
 	'SESSION_LENGTH_EXPLAIN'	=> 'Sessions will expire after this time, in seconds.',
+	
 	'YES_POST_MARKING'			=> 'Enable dotted topics',
 	'YES_POST_MARKING_EXPLAIN'	=> 'Indicates whether user has posted to a topic.',
 	'YES_READ_MARKING'			=> 'Enable server-side topic marking',

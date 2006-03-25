@@ -894,32 +894,8 @@ class parse_message extends bbcode_firstpass
 	// into relative versions when the server/script path matches the link
 	function magic_url($server_url)
 	{
-		static $match;
-		static $replace;
-
-		if (!is_array($match))
-		{
-			$match = $replace = array();
-			// Be sure to not let the matches cross over. ;)
-
-			// relative urls for this board
-			$match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*#i';
-			$replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
-
-			// matches a xxxx://aaaaa.bbb.cccc. ...
-			$match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
-			$replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
-
-			// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-			$match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
-			$replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
-
-			// matches an email@domain type address at the start of a line, or after a space.
-			$match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.(?:[\w\-\.]+\.)?[\w]+)#ie';
-			$replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
-		}
-
-		$this->message = preg_replace($match, $replace, $this->message);
+		// We use the global make_clickable function
+		$this->message = make_clickable($this->message, $server_url);
 	}
 
 	// Parse Smilies

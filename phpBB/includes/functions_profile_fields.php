@@ -34,7 +34,6 @@ class custom_profile
 				AND f.field_active = 1 ' .
 				((!$auth->acl_gets('a_', 'm_')) ? '	AND f.field_hide = 0 AND f.field_no_view = 0 ' : '') . '
 				AND l.field_id = f.field_id 
-			GROUP BY f.field_id
 			ORDER BY f.field_order';
 		$result = $db->sql_query($sql);
 
@@ -93,7 +92,6 @@ class custom_profile
 				" . (($mode == 'register') ? ' AND f.field_show_on_reg = 1' : '') .
 				(($auth->acl_gets('a_', 'm_') && $mode == 'profile') ? '' : ' AND f.field_hide = 0') . '
 				AND l.field_id = f.field_id 
-			GROUP BY f.field_id
 			ORDER BY f.field_order';
 		$result = $db->sql_query($sql);
 					
@@ -105,14 +103,15 @@ class custom_profile
 			if (is_array($cp_data[$row['field_ident']]))
 			{
 				// Contains the original text without bbcode processing etc
-				$check_value = $cp_data[$row['field_ident']]['submitted'];
+//				$check_value = $cp_data[$row['field_ident']]['submitted'];
 
 				foreach ($cp_data[$row['field_ident']] as $key => $value)
 				{
-					if ($key != 'submitted')
+					$cp_data[$key] = $value;
+/*					if ($key != 'submitted')
 					{
 						$cp_data[$key] = $value;
-					}
+					}*/
 				}
 			}
 			else
@@ -237,14 +236,14 @@ class custom_profile
 						$user_fields[$row['user_id']][$ident]['value'] = $value;
 						$user_fields[$row['user_id']][$ident]['data'] = $this->profile_cache[$ident];
 					}
-					else if ($i = strpos($ident, '_bbcode'))
+/*					else if ($i = strpos($ident, '_bbcode'))
 					{
 						// Add extra data (bbcode_uid and bbcode_bitfield) to the data for this profile field.
 						// TODO: Maybe we should try to make this a bit more generic (not limited to bbcode)?
 						$field = substr($ident, 0, $i);
 						$subfield = substr($ident, $i+1);
 						$user_fields[$row['user_id']][$field]['data'][$subfield] = $value;
-					}
+					}*/
 				}
 			} 
 			while ($row = $db->sql_fetchrow($result));
@@ -392,11 +391,16 @@ class custom_profile
 			break;
 
 			case 'string':
-				return str_replace("\n", '<br />', $value);
+				$value = make_clickable($value);
+				$value = censor_text($value);
+				$value = str_replace("\n", '<br />', $value);
+				return $value;
 			break;
 			
 			case 'text':
-				// Prepare further, censor_text, smilies, bbcode, whatever
+				/*
+					@todo Prepare further, censor_text, smilies, bbcode, whatever
+				
 				if ($ident_ary['data']['bbcode_bitfield'])
 				{
 					$bbcode = new bbcode($ident_ary['data']['bbcode_bitfield']);
@@ -404,7 +408,13 @@ class custom_profile
 					$value = smiley_text($value);
 					$value = censor_text($value);
 				}
-				return str_replace("\n", '<br />', $value);
+				return str_replace("\n", '<br />', $value);*/
+
+				$value = make_clickable($value);
+				$value = censor_text($value);
+				$value = str_replace("\n", '<br />', $value);
+				return $value;
+
 			break;
 			
 			case 'date':
@@ -567,10 +577,10 @@ class custom_profile
 
 		$value = $this->get_var('', $profile_row, $profile_row['lang_default_value'], $preview);
 		
-		if ($preview == false)
+/*		if ($preview == false)
 		{
 			decode_message($value, $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident']) . '_bbcode_uid']);
-		}
+		}*/
 
 		$field_length = explode('|', $profile_row['field_length']);
 		$profile_row['field_rows'] = $field_length[0];
@@ -637,8 +647,7 @@ class custom_profile
 				AND f.field_active = 1
 				AND f.field_show_on_reg = 0
 				' . (($auth->acl_gets('a_', 'm_')) ? '' : ' AND f.field_hide = 0') . '
-				AND l.field_id = f.field_id 
-			GROUP BY f.field_id';
+				AND l.field_id = f.field_id';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -685,15 +694,15 @@ class custom_profile
 				$var = sprintf('%2d-%2d-%4d', $day, $month, $year);
 			break;
 
+/**
 			case FIELD_TEXT:
 				include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 				$message_parser = new parse_message(request_var($var_name, ''));
 					
-				/**
 				* Get the allowed settings from the global settings. Magic URLs are always set to true.
 				* @todo It might be nice to make this a per field setting.
-				*/
+				
 				$message_parser->parse($config['allow_bbcode'], true, $config['allow_smilies']);
 
 				$var = array(
@@ -703,6 +712,7 @@ class custom_profile
 					'submitted' => request_var($var_name, '')
 				);
 			break;
+*/
 
 			default:
 				$var = request_var($var_name, $profile_row['field_default_value']);
