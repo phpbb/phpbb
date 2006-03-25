@@ -179,10 +179,13 @@ class ucp_profile
 							);
 						}
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
+						if (sizeof($sql_ary))
+						{
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
+						}
 
 						// Need to update config, forum, topic, posting, messages, etc.
 						if ($username != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])

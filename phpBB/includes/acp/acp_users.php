@@ -678,10 +678,13 @@ class acp_users
 							add_log('user', $user_id, 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 						}
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user_id;
-						$db->sql_query($sql);
+						if (sizeof($sql_ary))
+						{
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE user_id = ' . $user_id;
+							$db->sql_query($sql);
+						}
 
 						/**
 						* @todo adjust every data based in the number of user warnings

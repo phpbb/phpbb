@@ -1217,25 +1217,35 @@ class acp_profile
 			$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . $db->sql_escape($value) . "'" : (int) $value);
 		}
 
+		if (!sizeof($where_sql))
+		{
+			return;
+		}
+
 		$sql = "SELECT $check_key 
 			FROM $table
 			WHERE " . implode(' AND ', $where_sql);
 		$result = $db->sql_query($sql);
-	
-		if (!$db->sql_fetchrow($result))
-		{
-			$db->sql_freeresult($result);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
+		if (!$row)
+		{
 			$sql_ary = array_merge($where_fields, $sql_ary);
-			$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
+			
+			if (sizeof($sql_ary))
+			{
+				$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
+			}
 		}
 		else
 		{
-			$db->sql_freeresult($result);
-	
-			$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . ' 
-				WHERE ' . implode(' AND ', $where_sql);
-			$db->sql_query($sql);
+			if (sizeof($sql_ary))
+			{
+				$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+					WHERE ' . implode(' AND ', $where_sql);
+				$db->sql_query($sql);
+			}
 		}
 	}
 }
