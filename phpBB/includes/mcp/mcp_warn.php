@@ -99,7 +99,11 @@ function mcp_warn_front_view($id, $mode)
 	global $SID, $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
-	$template->assign_var('U_POST_ACTION', "mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user");
+	$template->assign_vars(array(
+		'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp&amp;field=username",
+		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user",
+		)
+	);
 
 	// Obtain a list of the 5 naughtiest users....
 	// These are the 5 users with the highest warning count

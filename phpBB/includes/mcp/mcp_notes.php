@@ -39,7 +39,7 @@ class mcp_notes
 		{
 			case 'front':
 				$template->assign_vars(array(
-					'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;field=username",
+					'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp&amp;field=username",
 					'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes",
 					)
 				);
