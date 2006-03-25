@@ -269,6 +269,8 @@ function mcp_warn_post_view($id, $mode, $action)
 	// Second parse bbcode here
 	if ($userrow['bbcode_bitfield'])
 	{
+		include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		$bbcode = new bbcode($post_info['bbcode_bitfield']);
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
 
