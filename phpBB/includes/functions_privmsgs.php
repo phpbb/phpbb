@@ -1111,12 +1111,20 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 			{
 				foreach ($data['address_list'][$ug_type] as $id => $field)
 				{
+					$id = (int) $id;
+
+					// Do not rely on the address list being "valid"
+					if (!$id)
+					{
+						continue;
+					}
+
 					$field = ($field == 'to') ? 'to' : 'bcc';
 					if ($ug_type == 'u')
 					{
 						$recipients[$id] = $field;
 					}
-					${$field}[] = $ug_type . '_' . (int) $id;
+					${$field}[] = $ug_type . '_' . $id;
 				}
 			}
 		}
@@ -1229,9 +1237,9 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		foreach ($recipients as $user_id => $type)
 		{
 			$sql_ary[] = array(
-				'msg_id'	=> $data['msg_id'],
-				'user_id'	=> $user_id,
-				'author_id'	=> $data['from_user_id'],
+				'msg_id'	=> (int) $data['msg_id'],
+				'user_id'	=> (int) $user_id,
+				'author_id'	=> (int) $data['from_user_id'],
 				'folder_id'	=> PRIVMSGS_NO_BOX,
 				'new'		=> 1,
 				'unread'	=> 1,
