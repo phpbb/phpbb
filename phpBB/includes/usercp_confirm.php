@@ -155,7 +155,9 @@ else
 {
 	$_png = define_raw_pngs();
 
-	$char = substr($code, -1);
+	$c = intval($HTTP_GET_VARS['c']);
+	$char = substr($code, $c - 1, 1);
+	
 	header('Content-Type: image/png');
 	header('Cache-control: no-cache, no-store');
 	echo base64_decode($_png[$char]);

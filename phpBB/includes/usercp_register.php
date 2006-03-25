@@ -132,7 +132,8 @@ if (
 		}
 	}
 
-	$signature = str_replace('<br />', "\n", $signature);
+	$signature = (isset($signature)) ? str_replace('<br />', "\n", $signature) : '';
+	$signature_bbcode_uid = '';
 
 	// Run some validation on the optional fields. These are pass-by-ref, so they'll be changed to
 	// empty strings if they fail.
@@ -296,12 +297,6 @@ if ( isset($HTTP_POST_VARS['submit']) )
 
 			if ($row = $db->sql_fetchrow($result))
 			{
-				// Only compare one char if the zlib-extension is not loaded
-				if (!@extension_loaded('zlib'))
-				{
-					$row['code'] = substr($row['code'], -1);
-				}
-
 				if ($row['code'] != $confirm_code)
 				{
 					$error = TRUE;
@@ -1022,11 +1017,11 @@ else
 	$form_enctype = ( @$ini_val('file_uploads') == '0' || strtolower(@$ini_val('file_uploads') == 'off') || phpversion() == '4.0.4pl1' || !$board_config['allow_avatar_upload'] || ( phpversion() < '4.0.3' && @$ini_val('open_basedir') != '' ) ) ? '' : 'enctype="multipart/form-data"';
 
 	$template->assign_vars(array(
-		'USERNAME' => $username,
-		'CUR_PASSWORD' => $cur_password,
-		'NEW_PASSWORD' => $new_password,
-		'PASSWORD_CONFIRM' => $password_confirm,
-		'EMAIL' => $email,
+		'USERNAME' => isset($username) ? $username : '',
+		'CUR_PASSWORD' => isset($cur_password) ? $cur_password : '',
+		'NEW_PASSWORD' => isset($new_password) ? $new_password : '',
+		'PASSWORD_CONFIRM' => isset($password_confirm) ? $password_confirm : '',
+		'EMAIL' => isset($email) ? $email : '',
 		'CONFIRM_IMG' => $confirm_image, 
 		'YIM' => $yim,
 		'ICQ' => $icq,
