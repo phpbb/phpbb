@@ -1368,6 +1368,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$user->setup();
 	}
 
+	// Print out error if user tries to authenticate as an administrator without having the privileges...
+	if ($admin && !$auth->acl_get('a_'))
+	{
+		// Not authd
+		add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+		trigger_error('NO_AUTH_ADMIN');
+	}
+
 	if (isset($_POST['login']))
 	{
 		$username	= request_var('username', '');
@@ -1376,27 +1384,35 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 
+		// Check if the supplied username is equal to the one stored within the database if re-authenticating
+		if ($admin && strtolower($username) != strtolower($user->data['username']))
+		{
+			// We log the attempt to use a different username...
+			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
+		}
+		
 		// If authentication is successful we redirect user to previous page
 		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
+
+		// If admin authentication and login, we will log if it was a success or not...
+		// We also break the operation on the first non-success login - it could be argued that the user already
+		// knows 
+		if ($admin)
+		{
+			if ($result['status'] == LOGIN_SUCCESS)
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
+			}
+			else
+			{
+				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+			}
+		}
 
 		// The result parameter is always an array, holding the relevant informations...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
-			// If admin authentication
-			if ($admin)
-			{
-				if ($auth->acl_get('a_'))
-				{
-					add_log('admin', 'LOG_ADMIN_AUTH_SUCCESS');
-				}
-				else
-				{
-					// Authenticated, but not having admin permissions
-					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
-					trigger_error('NO_AUTH_ADMIN');
-				}
-			}
-
 			$redirect = request_var('redirect', "index.$phpEx$SID");
 			meta_refresh(3, $redirect);
 
@@ -1485,7 +1501,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_LOGIN_ACTION'		=> (!$admin) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=login" : "index.$phpEx$SID",
-		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields)
+		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
+
+		'S_ADMIN_AUTH'			=> $admin,
+		'USERNAME'				=> ($admin) ? $user->data['username'] : '')
 	);
 
 	page_header($user->lang['LOGIN']);
