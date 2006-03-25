@@ -51,7 +51,7 @@ CREATE TABLE [phpbb_auth_roles] (
 	[role_name] [varchar] (50) NOT NULL ,
 	[role_type] [varchar] (10) NOT NULL ,
 	[role_group_ids] [varchar] (255) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 CREATE TABLE [phpbb_auth_roles_data] (
