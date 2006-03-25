@@ -47,6 +47,7 @@ $lang = array_merge($lang, array(
 
 	'DBMS'						=> 'Database type',
 	'DB_CONFIG'					=> 'Database Configuration',
+	'DB_CONNECTION'				=> 'Database Connection',
 	'DB_HOST'					=> 'Database server hostname or DSN',
 	'DB_HOST_EXPLAIN'			=> 'DSN stands for Data Source Name and is relevant only for ODBC installs.',
 	'DB_NAME'					=> 'Database name',
@@ -97,7 +98,6 @@ $lang = array_merge($lang, array(
 	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or  use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
 	'INSTALL_CONGRATS'			=> 'Congratulations',
 	'INSTALL_CONGRATS_EXPLAIN'	=> 'You have now successfully installed phpBB 3.0. Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the Userguide and the phpBB support forums, see the %sREADME%s for further information.',
-	'INSTALL_DB_CONNECT'		=> 'Successful Connection',
 	'INSTALL_INTRO'				=> 'Welcome to Installation',
 	'INSTALL_INTRO_BODY'		=> '<p>With this option, it is possible to install phpBB onto your server.</p><p>In order to proceed, you will need the following information to hand:</p>
 	<ul>
@@ -156,12 +156,14 @@ $lang = array_merge($lang, array(
 	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from',
 	'SERVER_PORT'				=> 'Server port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
+	'STAGE_ADMINISTRATOR'		=> 'Administrator Details',
 	'STAGE_DATABASE'			=> 'Database Settings',
 	'STAGE_INTRO'				=> 'Introduction',
 	'STAGE_REQUIREMENTS'		=> 'Requirements',
 	'SUB_INTRO'					=> 'Introduction',
 	'SUB_LICENSE'				=> 'License',
 	'SUB_SUPPORT'				=> 'Support',
+	'SUCCESSFUL_CONNECT'		=> 'Successful Connection',
 // TODO: Write some text on obtaining support
 	'SUPPORT_BODY'				=> '<p>Some text on obtaining support, etc can go here.</p><p>Probably this can be copied from the documentation</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a></p>',
 

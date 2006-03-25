@@ -753,9 +753,9 @@ if ($stage == 1)
 		<td class="row1" width="50%"><b><?php echo $lang['TABLE_PREFIX']; ?>: </b></td>
 		<td class="row2"><input class="post" type="text" name="table_prefix" value="<?php echo (!empty($table_prefix)) ? $table_prefix : 'phpbb_'; ?>" /></td>
 	</tr>
-	<tr>
+<!--	<tr>
 		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" name="testdb" value="<?php echo $lang['DB_TEST']; ?>" /></td>
-	</tr>
+	</tr>-->
 </table>
 
 <br clear="all" />

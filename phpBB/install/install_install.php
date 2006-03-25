@@ -19,7 +19,7 @@ if (!empty($setmodules))
 		'module_filename' => substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order' => 10,
 		'module_subs' => '',
-		'module_stages' => array('INTRO', 'REQUIREMENTS', 'DATABASE', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
+		'module_stages' => array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
 		'module_reqs' => ''
 	);
 
@@ -344,95 +344,129 @@ class install_install extends module
 
 		$this->page_title = $lang['STAGE_DATABASE'];
 
-		// Has the user opted to test the connection?
-/*		if (isset($_POST['testdb']))
-		{
-			// If the module for the selected database isn't loaded, let's try and load it now
-			if (!@extension_loaded($available_dbms[$dbms]['MODULE']))
-			{
-				if (!$this->can_load_dll($available_dbms[$dbms]['MODULE']))
-				{
-					$error['db'][] = $lang['INST_ERR_NO_DB'];;
-				}
-			}
-
-			$this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
-		}
-*/
-		// Update the list of available DBMS modules to only contain those which can be used
-		$available_dbms_temp = array();
-		foreach ($this->available_dbms as $type => $dbms_ary)
-		{
-			if (!extension_loaded($dbms_ary['MODULE']))
-			{
-				if (!$this->can_load_dll($dbms_ary['MODULE']))
-				{
-					continue;
-				}
-			}
-
-			$available_dbms_temp[$type] = $dbms_ary;
-		}
-
-		$this->available_dbms = &$available_dbms_temp;
-
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
 			$$var = request_var($var, '');
 		}
 
-		// And now for the main part of this page
-		$config_options = array(
-			'legend'		=> 'DB_CONFIG',
-			'dbms'			=> array('lang' => 'DBMS', 'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
-			'dbhost'		=> array('lang' => 'DB_HOST', 'type' => 'text:25:100', 'explain' => true),
-			'dbport'		=> array('lang' => 'DB_PORT', 'type' => 'text:25:100', 'explain' => true),
-			'dbname'		=> array('lang' => 'DB_NAME', 'type' => 'text:25:100', 'explain' => false),
-			'dbuser'		=> array('lang' => 'DB_USERNAME', 'type' => 'text:25:100', 'explain' => false),
-			'dbpasswd'		=> array('lang' => 'DB_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
-			'table_prefix'	=> array('lang' => 'TABLE_PREFIX', 'type' => 'text:25:100', 'explain' => false),
-		);
+		$connect_test = false;
 
-		$table_prefix = (!empty($table_prefix) ? $table_prefix : 'phpbb_');
-
-		foreach ($config_options as $config_key => $vars)
+		// Has the user opted to test the connection?
+		if (isset($_POST['testdb']))
 		{
-			if (!is_array($vars) && strpos($config_key, 'legend') === false)
+			// If the module for the selected database isn't loaded, let's try and load it now
+			if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
 			{
-				continue;
+				if (!$this->can_load_dll($this->available_dbms[$dbms]['MODULE']))
+				{
+					$error['db'][] = $lang['INST_ERR_NO_DB'];;
+				}
 			}
 
-			if (strpos($config_key, 'legend') !== false)
+			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
+
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'			=> true,
+				'S_FIRST_ROW'		=> true,
+				'LEGEND'			=> $lang['DB_CONNECTION'],
+				'LEGEND_EXPLAIN'	=> false,
+			));
+
+			if ($connect_test)
 			{
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DB_TEST'],
+					'RESULT'	=> '<b style="color:green">' . $lang['SUCCESSFUL_CONNECT'] . '</b>',
+
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+			}
+			else
+			{
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DB_TEST'],
+					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
+
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+			}
+		}
+
+		if (!$connect_test)
+		{
+			// Update the list of available DBMS modules to only contain those which can be used
+			$available_dbms_temp = array();
+			foreach ($this->available_dbms as $type => $dbms_ary)
+			{
+				if (!extension_loaded($dbms_ary['MODULE']))
+				{
+					if (!$this->can_load_dll($dbms_ary['MODULE']))
+					{
+						continue;
+					}
+				}
+
+				$available_dbms_temp[$type] = $dbms_ary;
+			}
+
+			$this->available_dbms = &$available_dbms_temp;
+
+			// And now for the main part of this page
+			$table_prefix = (!empty($table_prefix) ? $table_prefix : 'phpbb_');
+
+			foreach ($this->db_config_options as $config_key => $vars)
+			{
+				if (!is_array($vars) && strpos($config_key, 'legend') === false)
+				{
+					continue;
+				}
+
+				if (strpos($config_key, 'legend') !== false)
+				{
+					$template->assign_block_vars('options', array(
+						'S_LEGEND'		=> true,
+						'LEGEND'		=> $lang[$vars])
+					);
+
+					continue;
+				}
+
+				$options = isset($vars['options']) ? $vars['options'] : '';
+
 				$template->assign_block_vars('options', array(
-					'S_LEGEND'		=> true,
-					'LEGEND'		=> $lang[$vars])
+					'KEY'			=> $config_key,
+					'TITLE'			=> $lang[$vars['lang']],
+					'S_EXPLAIN'		=> $vars['explain'],
+					'S_LEGEND'		=> false,
+					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
+					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
+					)
 				);
-
-				continue;
 			}
-
-			$options = isset($vars['options']) ? $vars['options'] : '';
-
-			$template->assign_block_vars('options', array(
-				'KEY'			=> $config_key,
-				'TITLE'			=> $lang[$vars['lang']],
-				'S_EXPLAIN'		=> $vars['explain'],
-				'S_LEGEND'		=> false,
-				'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
-				'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
-				)
-			);
 		}
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		if ($connect_test)
+		{
+			foreach ($this->db_config_options as $config_key => $vars)
+			{
+				if (!is_array($vars))
+				{
+					continue;
+				}
+				$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+			}
+		}
 
-//		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=administrator";
+//		$url = ($connect_test) ? $this->p_master->module_url . "?mode=$mode&amp;sub=administrator" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
 // The road ahead is still under construction, follow the diversion back to the old installer..... ;)
-		$s_hidden_fields .= '<input type="hidden" name="testdb" value="true" />';
-		$url = "install.$phpEx?stage=1";
+		$s_hidden_fields .= ($connect_test) ? '' : '<input type="hidden" name="testdb" value="true" />';
+		$url = ($connect_test) ? "install.$phpEx?stage=1" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
+
 		$submit = $lang['NEXT_STEP'];
 
 
@@ -453,6 +487,103 @@ class install_install extends module
 		return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
 	}
 
+	/**
+	* Used to test whether we are able to connect to the database the user has specified
+	* and identify any problems (eg there are already tables with the names we want to use
+	*/
+	function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport)
+	{
+		global $phpbb_root_path, $phpEx, $config, $lang;
+
+		// Include the DB layer
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+
+		// Instantiate it and set return on error true
+		$sql_db = 'dbal_' . $dbms;
+		$db = new $sql_db();
+		$db->sql_return_on_error(true);
+
+		// Try and connect ...
+		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
+		{
+			$db_error = $db->sql_error();
+			$error[] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
+		}
+		else
+		{
+			switch ($dbms)
+			{
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+				case 'sqlite':
+					$sql = "SHOW TABLES";
+					$field = "Tables_in_{$dbname}";
+					break;
+
+				case 'mssql':
+				case 'mssql_odbc':
+					$sql = "SELECT name 
+						FROM sysobjects 
+						WHERE type='U'";
+					$field = "name";
+					break;
+
+				case 'postgres':
+					$sql = "SELECT relname 
+						FROM pg_class 
+						WHERE relkind = 'r' 
+							AND relname NOT LIKE 'pg\_%'";
+					$field = "relname";
+					break;
+
+				case 'firebird':
+					$sql = 'SELECT rdb$relation_name
+						FROM rdb$relations
+						WHERE rdb$view_source is null
+							AND rdb$system_flag = 0';
+					$field = 'rdb$relation_name';
+					break;
+
+				case 'oracle':
+					$sql = 'SELECT table_name FROM USER_TABLES';
+					$field = 'table_name';
+					break;
+			}
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				// Likely matches for an existing phpBB installation
+				$table_ary = array($table_prefix . 'attachments', $table_prefix . 'config', $table_prefix . 'sessions', $table_prefix . 'topics', $table_prefix . 'users');
+
+				do
+				{
+					// All phpBB installations will at least have config else it won't
+					// work
+					if (in_array(strtolower($row[$field]), $table_ary))
+					{
+						$error[] = $lang['INST_ERR_PREFIX'];
+						break;
+					}
+				}
+				while ($row = $db->sql_fetchrow($result));
+			}
+			$db->sql_freeresult($result);
+
+			$db->sql_close();
+		}
+
+		if ($error_connect && (!isset($error) || !sizeof($error)))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	* Generate the drop down of available database options
+	*/
 	function dbms_select($default='')
 	{
 		$dbms_options = '';
@@ -469,6 +600,20 @@ class install_install extends module
 	* Used to retrieve data quickly on each page
 	*/
 	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
+
+	/**
+	* The information below will be used to build the input fields presented to the user
+	*/
+	var $db_config_options = array(
+		'legend'		=> 'DB_CONFIG',
+		'dbms'			=> array('lang' => 'DBMS', 'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
+		'dbhost'		=> array('lang' => 'DB_HOST', 'type' => 'text:25:100', 'explain' => true),
+		'dbport'		=> array('lang' => 'DB_PORT', 'type' => 'text:25:100', 'explain' => true),
+		'dbname'		=> array('lang' => 'DB_NAME', 'type' => 'text:25:100', 'explain' => false),
+		'dbuser'		=> array('lang' => 'DB_USERNAME', 'type' => 'text:25:100', 'explain' => false),
+		'dbpasswd'		=> array('lang' => 'DB_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
+		'table_prefix'	=> array('lang' => 'TABLE_PREFIX', 'type' => 'text:25:100', 'explain' => false),
+	);
 
 	/**
 	* Specific PHP modules we may require for certain optional or extended features
