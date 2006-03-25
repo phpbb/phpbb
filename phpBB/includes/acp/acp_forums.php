@@ -146,28 +146,78 @@ class acp_forums
 						// Copy permissions?
 						if ($forum_perm_from && $action == 'add')
 						{
-							$sql_ary = array(
-								'a.user_id'			=> array('user_id'),
-								'a.forum_id'		=> (int) $forum_data['forum_id'],
-								'a.auth_option_id'	=> array('auth_option_id'),
-								'a.auth_role_id'	=> array('auth_role_id'),
-								'a.auth_setting'	=> array('auth_setting')
-							);
+							// From the mysql documentation:
+							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+							// Due to this we stay on the safe side if we do the insertion "the manual way"
 							
-							// We copy the permissions the manual way. ;)
-							$sql = 'INSERT INTO ' . ACL_USERS_TABLE . ' a ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
-								FROM ' . ACL_USERS_TABLE . ' b
-								WHERE b.forum_id = ' . $forum_perm_from;
-							$db->sql_query($sql);
 
-							// Change array for copying settings from the acl groups table
-							unset($sql_ary['user_id']);
-							$sql_ary['group_id'] = array('group_id');
-							
-							$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . ' a ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
-								FROM ' . ACL_GROUPS_TABLE . ' b
-								WHERE b.forum_id = ' . $forum_perm_from;
-							$db->sql_query($sql);
+							// Copy permisisons from/to the acl users table (only forum_id gets changed)
+							$sql = 'SELECT user_id, auth_option_id, auth_role_id, auth_setting
+								FROM ' . ACL_USERS_TABLE . '
+								WHERE forum_id = ' . $forum_perm_from;
+							$result = $db->sql_query($sql);
+
+							$users_sql_ary = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$users_sql_ary[] = array(
+									'user_id'			=> (int) $row['user_id'],
+									'forum_id'			=> (int) $forum_data['forum_id'],
+									'auth_option_id'	=> (int) $row['auth_option_id'],
+									'auth_role_id'		=> (int) $row['auth_role_id'],
+									'auth_setting'		=> (int) $row['auth_setting']
+								);
+							}
+							$db->sql_freeresult($result);
+
+							// Copy permisisons from/to the acl groups table (only forum_id gets changed)
+							$sql = 'SELECT group_id, auth_option_id, auth_role_id, auth_setting
+								FROM ' . ACL_GROUPS_TABLE . '
+								WHERE forum_id = ' . $forum_perm_from;
+							$result = $db->sql_query($sql);
+
+							$groups_sql_ary = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$groups_sql_ary[] = array(
+									'group_id'			=> (int) $row['group_id'],
+									'forum_id'			=> (int) $forum_data['forum_id'],
+									'auth_option_id'	=> (int) $row['auth_option_id'],
+									'auth_role_id'		=> (int) $row['auth_role_id'],
+									'auth_setting'		=> (int) $row['auth_setting']
+								);
+							}
+							$db->sql_freeresult($result);
+
+							// Now insert the data
+							switch (SQL_LAYER)
+							{
+								case 'mysql':
+								case 'mysql4':
+								case 'mysqli':
+									if (sizeof($users_sql_ary))
+									{
+										$db->sql_query('INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $users_sql_ary));
+									}
+									
+									if (sizeof($groups_sql_ary))
+									{
+										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
+									}
+								break;
+
+								default:
+									foreach ($users_sql_ary as $ary)
+									{
+										$db->sql_query('INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+									}
+
+									foreach ($groups_sql_ary as $ary)
+									{
+										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+									}
+								break;
+							}
 						}
 
 						$auth->acl_clear_prefetch();
@@ -175,20 +225,8 @@ class acp_forums
 	
 						recalc_btree('forum_id', FORUMS_TABLE);
 
-						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
+						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'] . '&amp;select_all_groups=1';
 
-						// Add default groups to selection
-						$sql = 'SELECT group_id
-							FROM ' . GROUPS_TABLE . '
-							WHERE group_type = ' . GROUP_SPECIAL;
-						$result = $db->sql_query($sql);
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$acl_url .= '&amp;group_id[]=' . $row['group_id'];
-						}
-						$db->sql_freeresult($result);
-	
 						// Redirect to permissions
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=permissions" . $acl_url . '">', '</a>');

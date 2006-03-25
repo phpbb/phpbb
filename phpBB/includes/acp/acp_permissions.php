@@ -45,7 +45,24 @@ class acp_permissions
 		$user_id = request_var('user_id', array(0));
 
 		$group_id = request_var('group_id', array(0));
+		$select_all_groups = request_var('select_all_groups', 0);
 
+		// If select all groups is set, we pre-build the group id array (this option is used for other screens to link to the permission settings screen)
+		if ($select_all_groups)
+		{
+			// Add default groups to selection
+			$sql = 'SELECT group_id
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_type = ' . GROUP_SPECIAL;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$group_id[] = $row['group_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+		
 		// Map usernames to ids and vice versa
 		if ($usernames)
 		{

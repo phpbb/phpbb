@@ -335,19 +335,48 @@ class acp_groups
 						// Copy permissions?
 						if ($group_perm_from && $action == 'add')
 						{
-							$sql_ary = array(
-								'group_id'			=> $group_id,
-								'forum_id'			=> array('forum_id'),
-								'auth_option_id'	=> array('auth_option_id'),
-								'auth_role_id'		=> array('auth_role_id'),
-								'auth_setting'		=> array('auth_setting')
-							);
+							// From the mysql documentation:
+							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+							// Due to this we stay on the safe side if we do the insertion "the manual way"
 							
-							// We copy the permissions the manual way. ;)
-							$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT_SELECT', $sql_ary) . '
-								FROM ' . ACL_GROUPS_TABLE . ' 
+							// Copy permisisons from/to the acl groups table (only group_id gets changed)
+							$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
+								FROM ' . ACL_GROUPS_TABLE . '
 								WHERE group_id = ' . $group_perm_from;
-							$db->sql_query($sql);
+							$result = $db->sql_query($sql);
+
+							$groups_sql_ary = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$groups_sql_ary[] = array(
+									'group_id'			=> (int) $group_id,
+									'forum_id'			=> (int) $row['forum_id'],
+									'auth_option_id'	=> (int) $row['auth_option_id'],
+									'auth_role_id'		=> (int) $row['auth_role_id'],
+									'auth_setting'		=> (int) $row['auth_setting']
+								);
+							}
+							$db->sql_freeresult($result);
+
+							// Now insert the data
+							if (sizeof($groups_sql_ary))
+							{
+								switch (SQL_LAYER)
+								{
+									case 'mysql':
+									case 'mysql4':
+									case 'mysqli':
+										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
+									break;
+
+									default:
+										foreach ($groups_sql_ary as $ary)
+										{
+											$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+										}
+									break;
+								}
+							}
 
 							$auth->acl_clear_prefetch();
 						}
