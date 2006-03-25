@@ -4,7 +4,7 @@
 # $Id$
 #
 
-# Table: phpbb_attachments
+# Table: 'phpbb_attachments'
 CREATE TABLE phpbb_attachments (
   attach_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   post_msg_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE phpbb_attachments (
   KEY filesize (filesize)
 );
 
-# Table: phpbb_auth_groups
+# Table: 'phpbb_auth_groups'
 CREATE TABLE phpbb_auth_groups (
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -40,7 +40,7 @@ CREATE TABLE phpbb_auth_groups (
   KEY auth_option_id (auth_option_id)
 );
 
-# Table: phpbb_auth_options
+# Table: 'phpbb_auth_options'
 CREATE TABLE phpbb_auth_options (
   auth_option_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   auth_option char(20) NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE phpbb_auth_options (
   KEY auth_option (auth_option)
 );
 
-# Table: phpbb_auth_roles
+# Table: 'phpbb_auth_roles'
 CREATE TABLE phpbb_auth_roles (
   role_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   role_name varchar(50) DEFAULT '' NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE phpbb_auth_roles (
   KEY role_type (role_type)
 );
 
-# Table: phpbb_auth_roles_data
+# Table: 'phpbb_auth_roles_data'
 CREATE TABLE phpbb_auth_roles_data (
   role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE phpbb_auth_roles_data (
   PRIMARY KEY  (role_id, auth_option_id)
 );
 
-# Table: phpbb_auth_users
+# Table: 'phpbb_auth_users'
 CREATE TABLE phpbb_auth_users (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -241,7 +241,7 @@ CREATE TABLE phpbb_forums (
    KEY forum_last_post_id (forum_last_post_id)
 );
 
-# Table: phpbb_forum_access
+# Table: 'phpbb_forum_access'
 CREATE TABLE phpbb_forum_access (
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,

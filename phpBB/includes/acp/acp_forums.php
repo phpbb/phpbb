@@ -1300,13 +1300,13 @@ class acp_forums
 					POLL_VOTES_TABLE		=> 'pv.topic_id',
 				);
 
-				$sql = 'DELETE ' . POSTS_TABLE . ' p';
+				$sql = 'DELETE ';
 				$sql_using = "\nFROM " . POSTS_TABLE . ' p';
 				$sql_where = "\nWHERE p.forum_id = $forum_id\n";
 
 				foreach ($tables_ary as $table => $field)
 				{
-					$sql .= ", $table " . strtok($field, '.');
+//					$sql .= ", $table " . strtok($field, '.');
 					$sql_using .= ", $table " . strtok($field, '.');
 					$sql_where .= "\nAND $field = p." . strtok('');
 				}
