@@ -321,7 +321,6 @@ class acp_bots
 			);
 		}
 		$db->sql_freeresult($result);
-
 	}
 }
 

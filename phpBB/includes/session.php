@@ -247,8 +247,12 @@ class session
 				$bot = $row['user_id'];
 			}
 			
-			if ($row['bot_ip'] && (!$row['bot_agent'] || !$bot))
+			// If ip is supplied, we will make sure the ip is matching too...
+			if ($row['bot_ip'] && ($bot || !$row['bot_agent']))
 			{
+				// Set bot to false, then we only have to set it to true if it is matching
+				$bot = false;
+
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
 				{
 					if (strpos($this->ip, $bot_ip) === 0)
