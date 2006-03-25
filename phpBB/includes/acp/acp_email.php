@@ -185,7 +185,15 @@ class acp_email
 				}
 
 				add_log('admin', 'LOG_MASS_EMAIL', $group_name);
-				$message = (!$errored) ? $user->lang['EMAIL_SENT'] : sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=logs&amp;mode=critical" . '">', '</a>');
+
+				if (!$errored)
+				{
+					$message = ($use_queue) ? $user->lang['EMAIL_SENT_QUEUE'] : $user->lang['EMAIL_SENT'];
+				}
+				else
+				{
+					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=logs&amp;mode=critical" . '">', '</a>');
+				}
 				trigger_error($message . adm_back_link($this->u_action));
 			}
 		}
