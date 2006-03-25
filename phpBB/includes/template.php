@@ -204,6 +204,13 @@ class template
 			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
+		// Just compile if no user object is present (happens within the installer)
+		if (!$user)
+		{
+			$compile->_tpl_load_file($handle);
+			return false;
+		}
+
 		if ($user->theme['template_storedb'])
 		{
 			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '
