@@ -1328,25 +1328,25 @@ class acp_forums
 
 				// Delete everything else and thank MySQL for offering multi-table deletion
 				$tables_ary = array(
-					SEARCH_MATCH_TABLE		=> 'wm.post_id',
-					REPORTS_TABLE			=> 're.post_id',
-					WARNINGS_TABLE			=> 'wt.post_id',
-					BOOKMARKS_TABLE			=> 'bm.topic_id',
-					TOPICS_WATCH_TABLE		=> 'tw.topic_id',
-					TOPICS_POSTED_TABLE		=> 'tp.topic_id',
-					POLL_OPTIONS_TABLE		=> 'po.topic_id',
-					POLL_VOTES_TABLE		=> 'pv.topic_id',
+					SEARCH_MATCH_TABLE		=> 'post_id',
+					REPORTS_TABLE			=> 'post_id',
+					WARNINGS_TABLE			=> 'post_id',
+					BOOKMARKS_TABLE			=> 'topic_id',
+					TOPICS_WATCH_TABLE		=> 'topic_id',
+					TOPICS_POSTED_TABLE		=> 'topic_id',
+					POLL_OPTIONS_TABLE		=> 'topic_id',
+					POLL_VOTES_TABLE		=> 'topic_id',
 				);
 
-				$sql = 'DELETE ';
-				$sql_using = "\nFROM " . POSTS_TABLE . ' p';
-				$sql_where = "\nWHERE p.forum_id = $forum_id\n";
+				$sql = 'DELETE ' . POSTS_TABLE;
+				$sql_using = "\nFROM " . POSTS_TABLE;
+				$sql_where = "\nWHERE " . POSTS_TABLE . ".forum_id = $forum_id\n";
 
 				foreach ($tables_ary as $table => $field)
 				{
-//					$sql .= ", $table " . strtok($field, '.');
-					$sql_using .= ", $table " . strtok($field, '.');
-					$sql_where .= "\nAND $field = p." . strtok('');
+					$sql .= ", $table ";
+					$sql_using .= ", $table ";
+					$sql_where .= "\nAND $table.$field = " . POSTS_TABLE . ".$field";
 				}
 
 				$db->sql_query($sql . $sql_using . $sql_where);
