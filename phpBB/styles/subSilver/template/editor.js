@@ -66,22 +66,44 @@ function smiley(text) {
 }
 
 function bbfontstyle(bbopen, bbclose) {
-	if ((clientVer >= 4) && is_ie && is_win) {
-		theSelection = document.selection.createRange().text;
-		if (!theSelection) {
-			insert_text(bbopen + bbclose);
+
+	theSelection = false;
+	document.forms[form_name].elements[text_name].focus();
+
+	if ((clientVer >= 4) && is_ie && is_win)
+	{
+		theSelection = document.selection.createRange().text; // Get text selection
+		if (theSelection) {
+			// Add tags around selection
+			document.selection.createRange().text = bbopen + theSelection + bbclose;
 			document.forms[form_name].elements[text_name].focus();
+			theSelection = '';
 			return;
 		}
-		document.selection.createRange().text = bbopen + theSelection + bbclose;
+	}
+	else if (document.forms[form_name].elements[text_name].selectionEnd && (document.forms[form_name].elements[text_name].selectionEnd - document.forms[form_name].elements[text_name].selectionStart > 0))
+	{
+		mozWrap(document.forms[form_name].elements[text_name], bbopen, bbclose);
 		document.forms[form_name].elements[text_name].focus();
-		return;
-	} else {
-		insert_text(bbopen + bbclose);
-		document.forms[form_name].elements[text_name].focus();
+		theSelection = '';
 		return;
 	}
+
+	if (imageTag) {		// Close image tag before adding
+		insert_text(bbtags[15]);
+
+		lastValue = arraypop(bbcode) - 1;	// Remove the close image tag from the list
+		document.forms[form_name].addbbcode14.value = "Img";	// Return button back to normal state
+		imageTag = false;
+	}
+
+	// Open tag
+	insert_text(bbopen + bbclose);
+
+	document.forms[form_name].elements[text_name].focus();
+
 	storeCaret(document.forms[form_name].elements[text_name]);
+	return;
 }
 
 function insert_text(text) {
