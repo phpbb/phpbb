@@ -71,7 +71,7 @@ class acp_main
 							set_config('newest_user_id', $row['user_id']);
 							set_config('newest_username', $row['username']);
 						}
-						$db->freeresult($result);
+						$db->sql_freeresult($result);
 					}
 					else if ($action == 'delete')
 					{
