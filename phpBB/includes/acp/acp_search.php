@@ -234,7 +234,12 @@ class acp_search
 				if (method_exists($this->search, 'delete_index'))
 				{
 					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					$this->search->delete_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=delete");
+					if ($error = $this->search->delete_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=delete"))
+					{
+						$this->state = array('');
+						$this->save_state();
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js());
+					}
 				}
 				else
 				{
@@ -269,25 +274,23 @@ class acp_search
 				}
 	
 				$this->search->tidy();
-	
+
 				$this->state = array('');
 				$this->save_state();
 
-				/**
-				* @todo remove Javascript
-				*/
-				trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . '<script language="javascript" type="text/javascript">
-	<!--
-		close_waitscreen = 1;
-	//-->
-	</script>');
+				trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 			}
 			else
 			{
 				if (method_exists($this->search, 'create_index'))
 				{
 					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					$this->search->create_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=create");
+					if ($error = $this->search->create_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=create"))
+					{
+						$this->state = array('');
+						$this->save_state();
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js());
+					}
 				}
 				else
 				{
@@ -319,14 +322,7 @@ class acp_search
 				$this->state = array('');
 				$this->save_state();
 
-				/**
-				* @todo remove Javascript
-				*/
-				trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . '<script language="javascript" type="text/javascript">
-	<!--
-		close_waitscreen = 1;
-	//-->
-	</script>');
+				trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 			}
 		}
 
@@ -424,6 +420,18 @@ class acp_search
 		);
 
 		adm_page_footer();
+	}
+
+	function close_popup_js()
+	{
+		/**
+		* @todo remove Javascript
+		*/
+		return '<script language="javascript" type="text/javascript">
+	<!--
+		close_waitscreen = 1;
+	//-->
+	</script>';
 	}
 
 	function get_search_types()

@@ -40,7 +40,7 @@ class fulltext_mysql extends search_backend
 	}
 
 	/**
-	* Checks for correct MySQL version and stores max/min word length in the config
+	* Checks for correct MySQL version and stores min/max word length in the config
 	*/
 	function init()
 	{
@@ -61,12 +61,18 @@ class fulltext_mysql extends search_backend
 		}
 
 		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
-		$engine = $db->sql_fetchfield('Engine', 0, $result);
-		if (!$engine)
-		{
-			$engine = $db->sql_fetchfield('Type', 0, $result);
-		}
+		$info = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		$engine = '';
+		if (isset($info['Engine']))
+		{
+			$engine = $info['Engine'];
+		}
+		else if (isset($info['Type']))
+		{
+			$engine = $info['Type'];
+		}
 
 		if ($engine != 'MyISAM')
 		{
@@ -160,7 +166,7 @@ class fulltext_mysql extends search_backend
 	}
 
 	/**
-	* Turns text into an array of words that can be stored in the word list table
+	* Turns text into an array of words
 	*/
 	function split_message($text)
 	{
@@ -618,9 +624,10 @@ class fulltext_mysql extends search_backend
 	{
 		global $db;
 
-		if (strpos(SQL_LAYER, 'mysql') === false)
+		// Make sure we can actually use MySQL with fulltext indexes
+		if ($error = $this->init())
 		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+			return $error;
 		}
 
 		if (!is_array($this->stats))
@@ -648,9 +655,10 @@ class fulltext_mysql extends search_backend
 	{
 		global $db;
 
-		if (strpos(SQL_LAYER, 'mysql') === false)
+		// Make sure we can actually use MySQL with fulltext indexes
+		if ($error = $this->init())
 		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
+			return $error;
 		}
 
 		if (!is_array($this->stats))
@@ -705,6 +713,12 @@ class fulltext_mysql extends search_backend
 	function get_stats()
 	{
 		global $db;
+
+		if (strpos(SQL_LAYER, 'mysql') === false)
+		{
+			$this->stats = array();
+			return;
+		}
 
 		$sql = 'SHOW INDEX
 			FROM ' . POSTS_TABLE;

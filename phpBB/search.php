@@ -28,10 +28,12 @@ $post_id		= request_var('p', 0);
 $topic_id		= request_var('t', 0);
 $view			= request_var('view', '');
 
+$submit			= request_var('submit', false);
 $keywords		= request_var('keywords', '');
 $add_keywords	= request_var('add_keywords', '');
 $author			= request_var('author', '');
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
+$show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
 $search_terms	= request_var('terms', 'all');
 $search_fields	= request_var('sf', 'all');
 $search_child	= request_var('sc', true);
@@ -76,7 +78,7 @@ $sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SOR
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
-if ($keywords || $author || $search_id)
+if ($keywords || $author || $search_id || $submit)
 {
 	// clear arrays
 	$id_ary = array();
@@ -231,6 +233,7 @@ if ($keywords || $author || $search_id)
 	{
 		// default to showing results as posts when performing an author search
 		$show_results = ($topic_id) ? 'posts' : request_var('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
+		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information
@@ -241,9 +244,6 @@ if ($keywords || $author || $search_id)
 	$sql = $field = '';
 	if ($search_id)
 	{
-		// Build sql string for sorting
-		$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
-
 		switch ($search_id)
 		{
 			// Oh holy Bob, bring us some activity...
@@ -252,6 +252,7 @@ if ($keywords || $author || $search_id)
 				$sort_key = 't';
 				$sort_dir = 'd';
 				$sort_by_sql['t'] = 't.topic_last_post_time';
+				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				if (!$sort_days)
 				{
@@ -262,7 +263,7 @@ if ($keywords || $author || $search_id)
 
 				$last_post_time = (time() - ($sort_days * 24 * 3600));
 
-				$sql = 'SELECT DISTINCT t.topic_id
+				$sql = 'SELECT DISTINCT t.topic_last_post_time, t.topic_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 					WHERE p.post_time > $last_post_time
 						AND t.topic_approved = 1
@@ -275,8 +276,10 @@ if ($keywords || $author || $search_id)
 
 			case 'unanswered':
 				$show_results = request_var('sr', 'topics');
+				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
 				$sort_by_sql['s'] = ($show_results == 'posts') ? 'p.post_subject' : 't.topic_title';
+				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
 				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
@@ -298,7 +301,7 @@ if ($keywords || $author || $search_id)
 				}
 				else
 				{
-					$sql = "SELECT DISTINCT p.topic_id
+					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
@@ -311,8 +314,10 @@ if ($keywords || $author || $search_id)
 
 			case 'newposts':
 				$show_results = request_var('sr', 'topics');
+				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
 				$sort_by_sql['s'] = ($show_results == 'posts') ? 'p.post_subject' : 't.topic_title';
+				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
 				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
@@ -339,7 +344,7 @@ if ($keywords || $author || $search_id)
 				}
 				else
 				{
-					$sql = "SELECT DISTINCT p.topic_id
+					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
 						FROM $sort_join" . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
 							AND t.topic_id = p.topic_id
@@ -418,7 +423,7 @@ if ($keywords || $author || $search_id)
 	$hilit = htmlspecialchars(implode('|', str_replace(array('+', '-', '|'), '', $search->split_words)));
 	$split_words = (sizeof($search->split_words)) ? htmlspecialchars(implode(' ', $search->split_words)) : '';
 	$u_hilit = urlencode($split_words);
-	$u_show_results = ($show_results != 'topic') ? '&amp;sr=' . $show_results : '';
+	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
 	$u_search = "{$phpbb_root_path}search.$phpEx$SID";
@@ -585,10 +590,10 @@ if ($keywords || $author || $search_id)
 
 			$view_topic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$u_forum_id&amp;t=$result_topic_id&amp;hilit=$u_hilit";
 
+			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+
 			if ($show_results == 'topics')
 			{
-				$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
-
 				$folder_img = $folder_alt = $topic_type = '';
 				topic_status($row, $replies, (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false, $folder_img, $folder_alt, $topic_type);
 
@@ -601,8 +606,6 @@ if ($keywords || $author || $search_id)
 					'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 					'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
 					'PAGINATION' 		=> topic_generate_pagination($replies, $view_topic_url),
-					'REPLIES' 			=> $replies,
-					'VIEWS' 			=> $row['topic_views'],
 					'TOPIC_TYPE' 		=> $topic_type,
 
 					'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
@@ -675,6 +678,8 @@ if ($keywords || $author || $search_id)
 
 				'FORUM_TITLE'		=> $row['forum_name'],
 				'TOPIC_TITLE' 		=> $topic_title,
+				'TOPIC_REPLIES' 	=> $replies,
+				'TOPIC_VIEWS' 		=> $row['topic_views'],
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
 				'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id",

@@ -254,7 +254,7 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 		'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
 		'S_FORUM_ACTION' 		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;start=$start",
 		'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false,
-		'S_SEARCHBOX_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_forum[]=$forum_id",
+		'S_SEARCHBOX_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;fid%5B%5D=$forum_id",
 
 		'U_MCP' 			=> ($auth->acl_gets('m_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;i=main&amp;mode=forum_view" : '',
 		'U_POST_NEW_TOPIC'	=> "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",

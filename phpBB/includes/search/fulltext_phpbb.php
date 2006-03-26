@@ -405,15 +405,15 @@ class fulltext_phpbb extends search_backend
 
 			if ($sql_in)
 			{
-				$sql = "SELECT $sql_select, COUNT(DISTINCT m.word_id) as matches
+				$sql = "SELECT $sql_select, COUNT(DISTINCT m.word_id) as matches, " . $sort_by_sql[$sort_key] . "
 					FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
 					WHERE w.word_text IN ($sql_in)
 						AND m.word_id = w.word_id
 						AND w.word_common <> 1
 						AND p.post_id = m.post_id
 						$sql_where_options
-					GROUP BY $field
-					ORDER BY $sql_sort";
+					GROUP BY $field, " . $sort_by_sql[$sort_key] . '
+					ORDER BY ' . $sql_sort;
 				$result = $db->sql_query($sql);
 
 				if (!($row = $db->sql_fetchrow($result)))
@@ -689,8 +689,8 @@ class fulltext_phpbb extends search_backend
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
 					$sql_time
-				GROUP BY t.topic_id
-				ORDER BY $sql_sort";
+				GROUP BY t.topic_id, " . $sort_by_sql[$sort_key] . '
+				ORDER BY ' . $sql_sort;
 			$field = 'topic_id';
 		}
 
