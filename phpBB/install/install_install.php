@@ -474,6 +474,139 @@ class install_install extends module
 
 		$submit = $lang['NEXT_STEP'];
 
+		$template->assign_vars(array(
+			'L_SUBMIT'	=> $submit,
+			'S_HIDDEN'	=> $s_hidden_fields,
+			'U_ACTION'	=> $url,
+		));
+	}
+
+	/**
+	* Obtain the administrator's name, password and email address
+	*/
+	function obtain_admin_settings($mode, $sub)
+	{
+		global $lang, $template, $phpEx;
+
+		$this->page_title = $lang['STAGE_ADMINISTRATOR'];
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		$s_hidden_fields = '';
+		$passed = false;
+
+		if (isset($_POST['check']))
+		{
+			$error = array();
+
+			// Check the entered email address and password
+			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 = '' || $board_email2 =='')
+			{
+				$error[] = $lang['INST_ERR_MISSING_DATA'];
+			}
+			if ($admin_pass1 != $admin_pass2 && $admin_pass1 != '')
+			{
+				$error[] = $lang['INST_ERR_PASSWORD_MISMATCH'];
+			}
+
+			if ($board_email1 != $board_email2 && $board_email1 != '')
+			{
+				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
+			}
+
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'			=> true,
+				'S_FIRST_ROW'		=> true,
+				'LEGEND'			=> $lang['STAGE_ADMINISTRATOR'],
+				'LEGEND_EXPLAIN'	=> false,
+			));
+
+			if (!sizeof($error))
+			{
+				$passed = true;
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['ADMIN_TEST'],
+					'RESULT'	=> '<b style="color:green">' . $lang['TESTS_PASSED'] . '</b>',
+
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+			}
+			else
+			{
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['ADMIN_TEST'],
+					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
+
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+			}
+		}
+
+		if (!$passed)
+		{
+			foreach ($this->admin_config_options as $config_key => $vars)
+			{
+				if (!is_array($vars) && strpos($config_key, 'legend') === false)
+				{
+					continue;
+				}
+
+				if (strpos($config_key, 'legend') !== false)
+				{
+					$template->assign_block_vars('options', array(
+						'S_LEGEND'		=> true,
+						'LEGEND'		=> $lang[$vars])
+					);
+
+					continue;
+				}
+
+				$options = isset($vars['options']) ? $vars['options'] : '';
+
+				$template->assign_block_vars('options', array(
+					'KEY'			=> $config_key,
+					'TITLE'			=> $lang[$vars['lang']],
+					'S_EXPLAIN'		=> $vars['explain'],
+					'S_LEGEND'		=> false,
+					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
+					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
+					)
+				);
+			}
+		}
+		else
+		{
+			foreach ($this->admin_config_options as $config_key => $vars)
+			{
+				if (!is_array($vars))
+				{
+					continue;
+				}
+				$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+			}
+		}
+		
+		$s_hidden_fields .= ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+
+		foreach ($this->db_config_options as $config_key => $vars)
+		{
+			if (!is_array($vars))
+			{
+				continue;
+			}
+			$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+		}
+
+		$submit = $lang['NEXT_STEP'];
+
+		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=config" : $this->p_master->module_url . "?mode=$mode&amp;sub=administrator";
+		$s_hidden_fields .= ($passed) ? '' : '<input type="hidden" name="check" value="true" />';
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $submit,
@@ -601,6 +734,45 @@ class install_install extends module
 	}
 
 	/**
+	* Generate the drop down of available language packs
+	*/
+	function inst_language_select($default = '')
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$dir = @opendir($phpbb_root_path . 'language');
+
+		while ($file = readdir($dir))
+		{
+			$path = $phpbb_root_path . 'language/' . $file;
+
+			if (is_file($path) || is_link($path) || $file == '.' || $file == '..')
+			{
+				continue;
+			}
+
+			if (file_exists($path . '/iso.txt'))
+			{
+				list($displayname) = @file($path . '/iso.txt');
+				$lang[$displayname] = $file;
+			}
+		}
+		@closedir($dir);
+
+		@asort($lang);
+		@reset($lang);
+
+		$user_select = '';
+		foreach ($lang as $displayname => $filename)
+		{
+			$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
+			$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+		}
+
+		return $user_select;
+	}
+
+	/**
 	* The variables that we will be passing between pages
 	* Used to retrieve data quickly on each page
 	*/
@@ -618,6 +790,15 @@ class install_install extends module
 		'dbuser'		=> array('lang' => 'DB_USERNAME', 'type' => 'text:25:100', 'explain' => false),
 		'dbpasswd'		=> array('lang' => 'DB_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
 		'table_prefix'	=> array('lang' => 'TABLE_PREFIX', 'type' => 'text:25:100', 'explain' => false),
+	);
+	var $admin_config_options = array(
+		'legend'		=> 'ADMIN_CONFIG',
+		'language'		=> array('lang' => 'DEFAULT_LANG', 'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
+		'admin_name'	=> array('lang' => 'ADMIN_USERNAME', 'type' => 'text:25:100', 'explain' => false),
+		'admin_pass1'	=> array('lang' => 'ADMIN_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
+		'admin_pass2'	=> array('lang' => 'ADMIN_PASSWORD_CONFIRM', 'type' => 'password:25:100', 'explain' => false),
+		'board_email1'	=> array('lang' => 'CONTACT_EMAIL', 'type' => 'text:25:100', 'explain' => false),
+		'board_email2'	=> array('lang' => 'CONTACT_EMAIL_CONFIRM', 'type' => 'text:25:100', 'explain' => false),
 	);
 
 	/**
