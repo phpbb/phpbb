@@ -12,16 +12,19 @@
 <!--
 
 	var ban_length = new Array();
+		ban_length[-1] = "";
 	<!-- BEGIN ban_length -->
 		ban_length['{ban_length.BAN_ID}'] = "{ban_length.LENGTH}";
 	<!-- END ban_length -->
 
 	var ban_reason = new Array();
+		ban_reason[-1] = "";
 	<!-- BEGIN ban_reason -->
 		ban_reason['{ban_reason.BAN_ID}'] = "{ban_reason.REASON}";
 	<!-- END ban_reason -->
 
 	var ban_give_reason = new Array();
+		ban_give_reason[-1] = "";
 	<!-- BEGIN ban_give_reason -->
 		ban_give_reason['{ban_give_reason.BAN_ID}'] = "{ban_give_reason.REASON}";
 	<!-- END ban_give_reason -->
@@ -81,7 +84,7 @@
 <!-- IF S_BANNED_OPTIONS -->
 	<dl>
 		<dt><label for="unban">{L_BAN_CELL}:</label></dt>
-		<dd><select id="unban" name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="display_details(this.options[this.selectedIndex].value)">{BANNED_OPTIONS}</select></dd>
+		<dd><select id="unban" name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{BANNED_OPTIONS}</select></dd>
 	</dl>
 	<dl>
 		<dt><label for="unbanlength">{L_BAN_LENGTH}:</label></dt>

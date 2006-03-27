@@ -477,7 +477,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		'S_SELECT_SORT_DAYS'=>	$s_limit_days)
 	);
 
-	if (($sort_days && $mode != 'viewlogs') || $mode == 'reports' || $where_sql != 'WHERE')
+	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
 	{
 		$result = $db->sql_query($sql);
 		$total = ($row = $db->sql_fetchrow($result)) ? $row['total'] : 0;

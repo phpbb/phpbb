@@ -288,7 +288,11 @@ class mcp_queue
 				// Now display the page
 				$template->assign_vars(array(
 					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
-					'S_FORUM_OPTIONS'		=> $forum_options)
+					'S_FORUM_OPTIONS'		=> $forum_options,
+
+					'PAGINATION'			=> generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'TOTAL'					=> $total)
 				);
 
 				$this->tpl_name = 'mcp_queue';

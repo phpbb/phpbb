@@ -291,7 +291,6 @@ class mcp_reports
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['reporter_id']}" : '',
 
 							'S_CHECKBOX'	=> $s_checkbox,
-							'S_CLOSED'		=> ($mode == 'reports_closed') ? true : false,
 
 							'FORUM_NAME'	=> $row['forum_name'],
 							'POSTER'		=> $poster,
@@ -307,9 +306,12 @@ class mcp_reports
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_DISPLAY_ITEMS'		=> $user->lang['DISPLAY_POSTS'],
-					'S_MCP_ACTION'	=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;t=0",
-					'S_FORUM_OPTIONS'		=> $forum_options)
+					'PAGINATION'			=> generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;f=$forum_id&amp;t=$topic_id", $total, $config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'TOTAL'					=> $total,
+					'S_MCP_ACTION'			=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;t=0",
+					'S_FORUM_OPTIONS'		=> $forum_options,
+					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false)
 				);
 
 				$this->tpl_name = 'mcp_reports';
@@ -488,7 +490,7 @@ function close_report($post_id_list, $mode, $action)
 	else
 	{
 		meta_refresh(3, "viewforum.$phpEx$SID&amp;f=$forum_id");
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], "<a href=\"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_id . '">', '</a>'));
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
 
