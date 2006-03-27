@@ -489,7 +489,7 @@ function close_report($post_id_list, $mode, $action)
 	}
 	else
 	{
-		meta_refresh(3, "viewforum.$phpEx$SID&amp;f=$forum_id");
+		meta_refresh(3, $redirect);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
