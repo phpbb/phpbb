@@ -343,7 +343,7 @@ $lang = array_merge($lang, array(
 	'LOG_ATTACH_EXTGROUP_ADD'	=> '<b>Added extension group</b><br />&#187; %s',
 	'LOG_ATTACH_EXTGROUP_EDIT'	=> '<b>Edited extension group</b><br />&#187; %s',
 	'LOG_ATTACH_EXTGROUP_DEL'	=> '<b>Removed extension group</b><br />&#187; %s',
-	'LOG_ATTACH_FILEUPLOAD'		=> '<b>Orphan File uploaded to Post Number %1$d - %2$s</b>',
+	'LOG_ATTACH_FILEUPLOAD'		=> '<b>Orphan File uploaded to Post</b><br />&#187; ID %1$d - %2$s',
 	'LOG_ATTACH_ORPHAN_DEL'		=> '<b>Orphan Files deleted</b><br />&#187; %s',
 
 	'LOG_BAN_EXCLUDE_USER'	=> '<b>Excluded user from ban</b> for reason "<i>%s</i>"<br />&#187; %s ',

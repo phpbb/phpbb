@@ -61,7 +61,7 @@ $lang = array_merge($lang, array(
 	'ACP_MESSAGE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for private messaging',
 
 	'BOXES_MAX'					=> 'Max private message folders',
-	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages..',
+	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages.',
 	'BOXES_LIMIT'				=> 'Max private messages per box',
 	'BOXES_LIMIT_EXPLAIN'		=> 'Users may receive no more than this many messages in each of their private message boxes or zero for unlimited messages.',
 	'FULL_FOLDER_ACTION'		=> 'Full folder default action',

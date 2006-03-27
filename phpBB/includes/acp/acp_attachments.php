@@ -798,7 +798,7 @@ class acp_attachments
 
 					if (sizeof($delete_files))
 					{
-						add_log('admin', sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files)));
+						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
 						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
 					}
 
@@ -1102,7 +1102,7 @@ class acp_attachments
 
 			$db->sql_transaction('commit');
 
-			add_log('admin', sprintf($user->lang['LOG_ATTACH_FILEUPLOAD'], $post_id, $filename));
+			add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_id, $filename);
 
 			return true;
 		}
