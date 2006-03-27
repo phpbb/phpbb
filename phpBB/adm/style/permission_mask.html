@@ -222,9 +222,9 @@
 						<td<!-- IF p_mask.f_mask.category.mask.S_YES --> class="yes"<!-- ELSE --> class="unset"<!-- ENDIF -->>&nbsp;</td>
 						<td<!-- IF p_mask.f_mask.category.mask.S_NO --> class="no"<!-- ELSE --> class="unset"<!-- ENDIF -->>&nbsp;</td>
 					<!-- ELSE -->
-						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_y" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
-						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_u" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
-						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_n" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" type="radio"<!-- IF p_mask.f_mask.category.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
+						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_y" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" class="radio" type="radio"<!-- IF p_mask.f_mask.category.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
+						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_u" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" class="radio" type="radio"<!-- IF p_mask.f_mask.category.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
+						<td class="unset"><input onchange="reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" id="{p_mask.f_mask.category.mask.S_FIELD_NAME}_n" name="{p_mask.f_mask.category.mask.S_FIELD_NAME}" class="radio" type="radio"<!-- IF p_mask.f_mask.category.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
 					<!-- ENDIF -->
 				</tr>
 				<!-- END mask -->

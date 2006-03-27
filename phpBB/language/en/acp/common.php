@@ -131,6 +131,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_RESTORE'				=> 'Restore',
 
+	'ACP_SEARCH'				=> 'Search Configuration',
 	'ACP_SEARCH_INDEX'			=> 'Search Index',
 	'ACP_SEARCH_SETTINGS'		=> 'Search Settings',
 
