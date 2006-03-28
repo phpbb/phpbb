@@ -383,7 +383,7 @@ class acp_main
 					'DATE'			=> $user->format_date($row['user_regdate']),
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
-					'U_USER_ADMIN'	=> "{$phpbb_admin_path}admin_users.$phpEx$SID&amp;u={$row['user_id']}")
+					'U_USER_ADMIN'	=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=users&amp;mode=overview&amp;u={$row['user_id']}")
 				);
 			}
 
