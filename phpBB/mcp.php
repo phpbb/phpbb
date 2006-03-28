@@ -394,6 +394,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			break;
 
 		case 'reports':
+		case 'reports_closed':
 			$type = 'reports';
 			$default_key = 't';
 			$default_dir = 'd';
@@ -409,8 +410,18 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' p.forum_id IN (' . implode(', ', get_forum_list('m_')) . ')';
+				$where_sql .= ' p.forum_id IN (' . implode(', ', get_forum_list('m_report')) . ')';
 			}
+
+			if ($mode == 'reports')
+			{
+				$where_sql .= 'AND r.report_closed = 0';
+			}
+			else
+			{
+				$where_sql .= 'AND r.report_closed = 1';
+			}
+
 			$sql = 'SELECT COUNT(r.report_id) AS total
 				FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . " p
 				$where_sql
