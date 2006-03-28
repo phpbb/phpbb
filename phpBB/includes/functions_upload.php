@@ -278,7 +278,7 @@ class filespec
 
 		if (!$this->upload->valid_dimensions($this))
 		{
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->min_width, $this->min_height, $this->max_width, $this->max_height);
+			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height);
 		}
 	}
 }
@@ -532,6 +532,7 @@ class fileupload
 		$url['path'] = explode('.', $url['path']);
 		$ext = array_pop($url['path']);
 		
+		$url['path'] = implode('', $url['path']);
 		$upload_ary['name'] = basename($url['path']) . (($ext) ? '.' . $ext : '');
 		$filename = $url['path'];
 		$filesize = 0;

@@ -992,13 +992,13 @@ function avatar_remote($data, &$error)
 		}
 		else if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
+			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
 			return false;
 		}
 	}
 	else if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 	{
-		$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_max_width'], $config['avatar_max_height']);
+		$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
 		return false;
 	}
 
