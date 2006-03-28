@@ -46,7 +46,6 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = array();
 $current_time = time();
 
-
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -669,6 +668,26 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
+	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode == 'post' || $mode == 'reply'))
+	{
+		$confirm_id = request_var('confirm_id', '');
+		$confirm_code = request_var('confirm_code', '');
+
+		$sql = 'SELECT code
+			FROM ' . CONFIRM_TABLE . "
+			WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
+				AND session_id = '" . $db->sql_escape($user->session_id) . "'
+				AND confirm_type = " . CONFIRM_POST;
+		$result = $db->sql_query($sql);
+		$confirm_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($confirm_row['code'] !== $confirm_code)
+		{
+			$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+		}
+	}
+
 	// Parse subject
 	if (!$subject && ($mode == 'post' || ($mode == 'edit' && $topic_first_post_id == $post_id)))
 	{
@@ -1063,6 +1082,33 @@ generate_forum_nav($forum_data);
 
 // Build Forum Rules
 generate_forum_rules($forum_data);
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode == 'post' || $mode == 'reply'))
+{
+	// Show confirm image
+	$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
+		WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
+			AND confirm_type = " . CONFIRM_POST;
+	$db->sql_query($sql);
+
+	// Generate code
+	$code = gen_rand_string(mt_rand(5, 8));
+	$confirm_id = md5(unique_id(0, $user->ip));
+
+	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		'confirm_id'	=> (string) $confirm_id,
+		'session_id'	=> (string) $user->session_id,
+		'confirm_type'	=> (int) CONFIRM_POST,
+		'code'			=> (string) $code)
+	);
+	$db->sql_query($sql);
+
+	$template->assign_vars(array(
+		'S_CONFIRM_CODE'			=> true,
+		'CONFIRM_ID'				=> $confirm_id,
+		'CONFIRM_IMAGE'				=> '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST . '" alt="" title="" />'
+	));
+}
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $topic_last_post_id . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';

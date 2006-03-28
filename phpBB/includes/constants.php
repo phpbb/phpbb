@@ -104,6 +104,7 @@ define('PHYSICAL_LINK', 2);
 // Confirm types
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
+define('CONFIRM_POST', 3);
 
 // Categories - Attachments
 define('ATTACHMENT_CATEGORY_NONE', 0);

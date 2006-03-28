@@ -77,7 +77,7 @@ class acp_board
 
 						'legend3'			=> 'REGISTRATION',
 						'require_activation'=> array('lang' => 'ACC_ACTIVATION',	'type' => 'custom', 'method' => 'select_acc_activation', 'explain' => true),
-						'enable_confirm'	=> array('lang' => 'VISUAL_CONFIRM',	'type' => 'radio:yes_no', 'explain' => true),
+						'enable_confirm'	=> array('lang' => 'VISUAL_CONFIRM_REG', 'type' => 'radio:yes_no', 'explain' => true),
 						'max_reg_attempts'	=> array('lang' => 'REG_LIMIT',			'type' => 'text:4:4', 'explain' => true),
 						'min_name_chars'	=> array('lang' => 'USERNAME_LENGTH',	'type' => 'custom', 'method' => 'username_length', 'explain' => true),
 						'min_pass_chars'	=> array('lang' => 'PASSWORD_LENGTH',	'type' => 'custom', 'method' => 'password_length', 'explain' => true),
@@ -102,6 +102,7 @@ class acp_board
 						'max_quote_depth'	=> array('lang' => 'QUOTE_DEPTH_LIMIT',	'type' => 'text:4:4', 'explain' => true),
 						'max_post_img_width' => array('lang' => 'MAX_POST_IMG_WIDTH', 'type' => 'text:5:4', 'explain' => true),
 						'max_post_img_height' => array('lang' => 'MAX_POST_IMG_HEIGHT', 'type' => 'text:5:4', 'explain' => true),
+						'enable_post_confirm'=> array('lang' => 'VISUAL_CONFIRM_POST', 'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend5'			=> 'MODERATION',
 						'warnings_expire_days' => array('lang' => 'WARNINGS_EXPIRE', 'type' => 'text:3:4', 'explain' => true)
