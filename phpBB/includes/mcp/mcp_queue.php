@@ -198,6 +198,7 @@ class mcp_queue
 							" . (($sort_order_sql{0} == 'u') ? 'AND u.user_id = p.poster_id' : '') . "
 							AND t.topic_id = p.topic_id
 							AND t.topic_first_post_id <> p.post_id
+							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
@@ -244,6 +245,7 @@ class mcp_queue
 						WHERE t.topic_approved = 0
 							AND t.forum_id IN ($forum_list)
 							AND f.forum_id = t.forum_id
+							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 

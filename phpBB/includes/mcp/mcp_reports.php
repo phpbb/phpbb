@@ -215,7 +215,7 @@ class mcp_reports
 				$sort_days = $total = 0;
 				$sort_key = $sort_dir = '';
 				$sort_by_sql = $sort_order_sql = array();
-				mcp_sorting('reports', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
+				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
 				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -238,6 +238,7 @@ class mcp_reports
 						" . (($sort_order_sql[0] == 'r') ? 'AND ru.user_id = p.poster_id' : '') . "
 						" . (($topic_id) ? "AND p.topic_id = $topic_id" : '') . "
 						AND t.topic_id = p.topic_id
+						$limit_time_sql
 					ORDER BY $sort_order_sql";
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
