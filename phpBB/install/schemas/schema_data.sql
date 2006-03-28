@@ -80,6 +80,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
