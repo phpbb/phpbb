@@ -348,16 +348,20 @@ class auth_admin extends auth
 			$db->sql_freeresult($result);
 			
 			$memberships = group_memberships(false, array_keys($hold_ary), false);
-
-			foreach ($memberships as $row)
+			
+			// User is not a member of any group? Bad admin, bad bad admin...
+			if ($memberships)
 			{
-				if ($groups[$row['group_id']]['group_type'] == GROUP_SPECIAL)
+				foreach ($memberships as $row)
 				{
-					$user_groups_default[$row['user_id']][] = $user->lang['G_' . $groups[$row['group_id']]['group_name']];
-				}
-				else
-				{
-					$user_groups_custom[$row['user_id']][] = $groups[$row['group_id']]['group_name'];
+					if ($groups[$row['group_id']]['group_type'] == GROUP_SPECIAL)
+					{
+						$user_groups_default[$row['user_id']][] = $user->lang['G_' . $groups[$row['group_id']]['group_name']];
+					}
+					else
+					{
+						$user_groups_custom[$row['user_id']][] = $groups[$row['group_id']]['group_name'];
+					}
 				}
 			}
 			unset($memberships, $groups);

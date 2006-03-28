@@ -1626,7 +1626,7 @@ class acp_users
 		
 			case 'groups':
 
-				$user->add_lang('groups');
+				$user->add_lang(array('groups', 'acp/groups'));
 				$group_id = request_var('g', 0);
 
 				switch ($action)
@@ -1716,13 +1716,18 @@ class acp_users
 				// Select box for other groups
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE . '
-					WHERE group_id NOT IN (' . implode(', ', $id_ary) . ')
+					' . ((sizeof($id_ary)) ? 'WHERE group_id NOT IN (' . implode(', ', $id_ary) . ')' : '') . '
 					ORDER BY group_type DESC, group_name ASC';
 				$result = $db->sql_query($sql);
 
 				$s_group_options = '';
 				while ($row = $db->sql_fetchrow($result))
 				{
+					if ($config['coppa_hide_groups'] && in_array($row['group_name'], array('INACTIVE_COPPA', 'REGISTERED_COPPA')))
+					{
+						continue;
+					}
+					
 					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 				}
 				$db->sql_freeresult($result);
