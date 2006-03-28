@@ -184,6 +184,11 @@ class acp_reasons
 					trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action));
 				}
 
+				if ($reason_row['reason_title'] == 'other')
+				{
+					trigger_error($user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action));
+				}
+
 				// Let the deletion be confirmed...
 				if (confirm_box(true))
 				{

@@ -226,7 +226,7 @@ class acp_users
 							add_log('admin', $log, $user->lang['reason']);
 							add_log('user', $user_id, $log, $user->lang['reason']);
 
-							trigger_error($user->lang['BAN_SUCCESSFULL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['BAN_SUCCESSFUL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 

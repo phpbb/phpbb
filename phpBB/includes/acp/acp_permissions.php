@@ -322,7 +322,7 @@ class acp_permissions
 					$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')' : 'AND a.forum_id <> 0');
 					$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
 
-					$sql = 'SELECT DISTINCT u.user_id, u.username
+					$sql = 'SELECT DISTINCT u.username, u.user_regdate, u.user_id
 						FROM (' . USERS_TABLE . ' u, ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_USERS_TABLE . ' a)
 						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
 						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
@@ -341,7 +341,7 @@ class acp_permissions
 					}
 					$db->sql_freeresult($result);
 
-					$sql = 'SELECT DISTINCT g.group_id, g.group_name, g.group_type 
+					$sql = 'SELECT DISTINCT g.group_type, g.group_name, g.group_id 
 						FROM (' . GROUPS_TABLE . ' g, ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_GROUPS_TABLE . ' a)
 						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
 						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)

@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
 	
-	'BAN_SUCCESSFULL'		=> 'Ban entered successfully',
+	'BAN_SUCCESSFUL'		=> 'Ban entered successfully',
 
 	'CANNOT_REMOVE_ANONYMOUS'	=> 'You are not able to remove the guest user account.',
 	'CANNOT_REMOVE_YOURSELF'	=> 'You are not allowed to remove your own user account.',
