@@ -1058,16 +1058,16 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		// Collect images
 		$dp = @opendir($path);
 
-		while ($file = readdir($dp))
+		while (($file = readdir($dp)) !== false)
 		{
 			if ($file{0} != '.' && is_dir("$path/$file"))
 			{
 				$avatar_row_count = $avatar_col_count = 0;
 	
 				$dp2 = @opendir("$path/$file");
-				while ($sub_file = readdir($dp2))
+				while (($sub_file = readdir($dp2)) !== false)
 				{
-					if (preg_match('#\.(gif$|png$|jpg|jpeg)$#i', $sub_file))
+					if (preg_match('#\.(?:gif|png|jpe?g)$#i', $sub_file))
 					{
 						$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
 							'file'		=> "$file/$sub_file",

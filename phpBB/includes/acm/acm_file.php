@@ -73,7 +73,7 @@ class acm
 		global $phpEx;
 
 		$dir = opendir($this->cache_dir);
-		while ($entry = readdir($dir))
+		while (($entry = readdir($dir)) !== false)
 		{
 			if (!preg_match('/^(sql_|data_(?!global))/', $entry))
 			{
@@ -159,7 +159,7 @@ class acm
 			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
 
 			$dir = opendir($this->cache_dir);
-			while ($entry = readdir($dir))
+			while (($entry = readdir($dir)) !== false)
 			{
 				if (strpos($entry, 'sql_') !== 0)
 				{

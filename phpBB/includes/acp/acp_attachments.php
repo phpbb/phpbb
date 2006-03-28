@@ -864,7 +864,7 @@ class acp_attachments
 				$attach_filelist = array();
 
 				$dir = @opendir($phpbb_root_path . $config['upload_path']);
-				while ($file = @readdir($dir))
+				while (($file = @readdir($dir)) !== false)
 				{
 					if (is_file($phpbb_root_path . $config['upload_path'] . '/' . $file) && filesize($phpbb_root_path . $config['upload_path'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
 					{

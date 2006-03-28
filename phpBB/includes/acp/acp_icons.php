@@ -79,7 +79,7 @@ class acp_icons
 			unset($imglist);
 
 			$dir = @opendir($phpbb_root_path . $img_path);
-			while ($file = @readdir($dir))
+			while (($file = @readdir($dir)) !== false)
 			{
 				if (is_file($phpbb_root_path . $img_path . '/' . $file) && preg_match('#\.pak$#i', $file))
 				{

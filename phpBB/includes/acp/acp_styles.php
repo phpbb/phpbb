@@ -376,7 +376,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		* @todo grab templates/themes/imagesets from style directories
 		*/
 		$dp = opendir("{$phpbb_root_path}styles");
-		while ($file = readdir($dp))
+		while (($file = readdir($dp)) !== false)
 		{
 			$subpath = ($mode != 'style') ? "$mode/" : '';
 			if ($file{0} != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
@@ -532,12 +532,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
 		$dp = opendir($dir);
-		while ($file = readdir($dp))
+		while (($file = readdir($dp)) !== false)
 		{
 			if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
 			{
 				$dp2 = opendir("$dir/$file");
-				while ($file2 = readdir($dp2))
+				while (($file2 = readdir($dp2)) !== false)
 				{
 					$imglang = $file;
 					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))

@@ -287,7 +287,7 @@ class acp_main
 
 		if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
 		{
-			while ($file = readdir($avatar_dir))
+			while (($file = readdir($avatar_dir)) !== false)
 			{
 				if ($file{0} != '.')
 				{

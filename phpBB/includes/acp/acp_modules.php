@@ -575,7 +575,7 @@ class acp_modules
 		if (!$module)
 		{
 			$dh = opendir($directory);
-			while ($file = readdir($dh))
+			while (($file = readdir($dh)) !== false)
 			{
 				// Is module?
 				if (preg_match('/^' . $this->module_class . '_.+\.' . $phpEx . '$/', $file))

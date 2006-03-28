@@ -184,7 +184,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 if (!$language)
 {
 	$dir = @opendir($phpbb_root_path . 'language');
-	while ($file = readdir($dir))
+	while (($file = readdir($dir)) !== false)
 	{
 		$path = $phpbb_root_path . 'language/' . $file;
 

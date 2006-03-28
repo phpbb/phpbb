@@ -875,7 +875,7 @@ class acp_language
 		$new_ary = $iso = array();
 		$dp = opendir("{$phpbb_root_path}language");
 
-		while ($file = readdir($dp))
+		while (($file = readdir($dp)) !== false)
 		{
 			if ($file{0} != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
 			{
