@@ -1307,7 +1307,7 @@ function group_delete($group_id, $group_name = false)
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
-	return false;
+	return 'GROUP_DELETED';
 }
 
 /**
@@ -1322,7 +1322,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if (!sizeof($user_id_ary))
 	{
-		return false;
+		return 'NO_USER';
 	}
 
 	// Remove users who are already members of this group
@@ -1420,7 +1420,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	return true;
+	return ($leader) ? 'GROUP_LEADERS_ADDED' : 'GROUP_USERS_ADDED';
 }
 
 /**
@@ -1439,7 +1439,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if (!sizeof($user_id_ary))
 	{
-		return false;
+		return 'NO_USER';
 	}
 
 	$sql = 'SELECT *
@@ -1538,7 +1538,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	return true;
+	return 'GROUP_USERS_REMOVE';
 }
 
 /**

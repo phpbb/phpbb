@@ -64,6 +64,7 @@ $lang = array_merge($lang, array(
 	'GROUP_HIDDEN'					=> 'Hidden',
 	'GROUP_LANG'					=> 'Group language',
 	'GROUP_LEAD'					=> 'Group leaders',
+	'GROUP_LEADERS_ADDED'			=> 'New leaders added to group successfully.',
 	'GROUP_LEGEND'					=> 'Display group in legend',
 	'GROUP_LIST'					=> 'Current members',
 	'GROUP_LIST_EXPLAIN'			=> 'This is a complete list of all the current users with membership of this group. You can delete members (except in certain special groups) or add new ones as you see fit.',
