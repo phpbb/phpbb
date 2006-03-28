@@ -1193,7 +1193,14 @@ function redirect($url)
 		// Is the uri pointing to the current directory?
 		if ($pathinfo['dirname'] == '.')
 		{
-			$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . str_replace('./', '', $url);
+			if ($user->page['page_dir'])
+			{
+				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . str_replace('./', '', $url);
+			}
+			else
+			{
+				$url = generate_board_url() . '/' . str_replace('./', '', $url);
+			}
 		}
 		else
 		{
