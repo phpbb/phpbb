@@ -48,9 +48,6 @@ class ucp_profile
 					}
 
 					$var_ary = array(
-						'username'			=> array(
-							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-							array('username', $data['username'])),
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'new_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'cur_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
@@ -59,6 +56,14 @@ class ucp_profile
 							array('email', $data['email'])),
 						'email_confirm'		=> array('string', true, 6, 60),
 					);
+
+					if ($auth->acl_get('u_chgname') && $config['allow_namechange'])
+					{
+						$var_ary['username'] = array(
+							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+							array('username', $data['username']),
+						);
+					}
 
 					$error = validate_data($data, $var_ary);
 					extract($data);
