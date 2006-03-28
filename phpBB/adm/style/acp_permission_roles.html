@@ -186,9 +186,12 @@
 		<td style="vertical-align: top;"><b>{roles.NAME}</b></td>
 		<td style="vertical-align: top;">
 			<!-- IF roles.S_GROUP -->
+				<!-- a href="{roles.groups.U_GROUP}">{roles.groups.GROUP_NAME}</a><br / -->
+				<select name="r_groups">
 				<!-- BEGIN groups -->
-					<a href="{roles.groups.U_GROUP}">{roles.groups.GROUP_NAME}</a><br />
+					<option<!-- IF roles.groups.S_SPECIAL_GROUP --> class="sep"<!-- ENDIF -->>{roles.groups.GROUP_NAME}</option>
 				<!-- END groups -->
+				</select>
 			<!-- ELSE -->
 				{L_EVERY_USER_GROUP}
 			<!-- ENDIF -->

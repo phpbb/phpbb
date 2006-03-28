@@ -564,7 +564,10 @@ class acp_groups
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$leader = $member = 0;
-				$group_data = array();
+				$group_data = array(
+					'leader'	=> array(),
+					'member'	=> array(),
+				);
 
 				while ($row = $db->sql_fetchrow($result))
 				{

@@ -65,8 +65,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain', ''
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name', 'phpbb3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path', '/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_secure', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_hide_groups', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
@@ -78,7 +79,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_nam
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');

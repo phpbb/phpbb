@@ -209,12 +209,16 @@ function size_select_options($size_compare)
 */
 function group_select_options($group_id, $exclude_ids = false)
 {
-	global $db, $user;
+	global $db, $user, $config;
+
+	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE group_id NOT IN (' . implode(', ', array_map('intval', $exclude_ids)) . ')' : '';
+	$sql_and = ($config['coppa_hide_groups']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
 
 	$sql = 'SELECT group_id, group_name, group_type 
-		FROM ' . GROUPS_TABLE . ' 
-		' . (($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE group_id NOT IN (' . implode(', ', array_map('intval', $exclude_ids)) . ')' : '') . '
-		ORDER BY group_type DESC, group_name ASC';
+		FROM ' . GROUPS_TABLE . "
+		$exclude_sql
+		$sql_and
+		ORDER BY group_type DESC, group_name ASC";
 	$result = $db->sql_query($sql);
 
 	$s_group_options = '';

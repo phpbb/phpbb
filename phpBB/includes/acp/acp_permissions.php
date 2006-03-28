@@ -51,9 +51,12 @@ class acp_permissions
 		if ($select_all_groups)
 		{
 			// Add default groups to selection
+			$sql_and = ($config['coppa_hide_groups']) ? " AND group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
+
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . '
-				WHERE group_type = ' . GROUP_SPECIAL;
+				WHERE group_type = ' . GROUP_SPECIAL . "
+				$sql_and";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))

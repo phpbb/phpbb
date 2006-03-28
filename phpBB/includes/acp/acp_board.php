@@ -74,6 +74,7 @@ class acp_board
 						'coppa_enable'		=> array('lang' => 'ENABLE_COPPA',		'type' => 'radio:yes_no', 'explain' => true),
 						'coppa_mail'		=> array('lang' => 'COPPA_MAIL',		'type' => 'textarea:5:40', 'explain' => true),
 						'coppa_fax'			=> array('lang' => 'COPPA_FAX',			'type' => 'text:25:100', 'explain' => false),
+						'coppa_hide_groups'	=> array('lang' => 'COPPA_HIDE_GROUPS',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'			=> 'REGISTRATION',
 						'require_activation'=> array('lang' => 'ACC_ACTIVATION',	'type' => 'custom', 'method' => 'select_acc_activation', 'explain' => true),
