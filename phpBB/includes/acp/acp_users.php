@@ -226,7 +226,7 @@ class acp_users
 							add_log('admin', $log, $user->lang['reason']);
 							add_log('user', $user_id, $log, $user->lang['reason']);
 
-							trigger_error($user->lang['BAN_SUCCESSFULL'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['BAN_SUCCESSFULL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -274,7 +274,7 @@ class acp_users
 								add_log('admin', 'LOG_USER_REACTIVATE', $user_row['username']);
 								add_log('user', $user_id, 'LOG_USER_REACTIVATE_USER');
 
-								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['FORCE_REACTIVATION_SUCCESS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 
 						break;
@@ -288,7 +288,7 @@ class acp_users
 
 							add_log('user', $user_id, $log . '_USER');
 
-							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+							trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -307,7 +307,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
 
-							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['USER_ADMIN_SIG_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -334,7 +334,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_AVATAR_USER');
 
-							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['USER_ADMIN_AVATAR_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 						break;
 
 						case 'delposts':
@@ -383,7 +383,7 @@ class acp_users
 								delete_posts('poster_id', $user_id);
 
 								add_log('admin', 'LOG_USER_DEL_POSTS', $user_row['username']);
-								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['USER_POSTS_DELETED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
 							{
@@ -405,7 +405,7 @@ class acp_users
 								delete_attachments('user', $user_id);
 
 								add_log('admin', 'LOG_USER_DEL_ATTACH', $user_row['username']);
-								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['USER_ATTACHMENTS_REMOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
 							{
@@ -553,7 +553,7 @@ class acp_users
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
 
-							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 					}
@@ -701,7 +701,7 @@ class acp_users
 
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
 
-						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -793,7 +793,7 @@ class acp_users
 					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
 
-					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
 				
 				// Sorting
@@ -947,7 +947,7 @@ class acp_users
 							}
 						}
 
-						trigger_error($user->lang['USER_PROFILE_UPDATED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['USER_PROFILE_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1112,7 +1112,7 @@ class acp_users
 							WHERE user_id = $user_id";
 						$db->sql_query($sql);
 
-						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1329,7 +1329,7 @@ class acp_users
 							}
 						}
 
-						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1392,7 +1392,7 @@ class acp_users
 						WHERE user_id = $user_id";
 					$db->sql_query($sql);
 
-					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
 				
 				$sql = 'SELECT * 
@@ -1455,7 +1455,7 @@ class acp_users
 							WHERE user_id = ' . $user_id;
 						$db->sql_query($sql);
 
-						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 	
 					// Replace "error" strings with their real, localised form
@@ -1528,7 +1528,7 @@ class acp_users
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
 						add_log('admin', $log, implode(', ', $log_attachments));
-						trigger_error($message . adm_back_link($this->u_action));
+						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else
 					{

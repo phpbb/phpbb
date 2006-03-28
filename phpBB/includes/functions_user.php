@@ -1156,11 +1156,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		'group_avatar_height'	=> 'int',
 
 		'group_receive_pm'		=> 'int',
+		'group_legend'			=> 'int',
 		'group_message_limit'	=> 'int',
 	);
 
 	// Those are group-only attributes
-	$group_only_ary = array('group_receive_pm', 'group_message_limit');
+	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit');
 
 	// Check data
 	if (!strlen($name) || strlen($name) > 40)
