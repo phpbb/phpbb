@@ -25,7 +25,7 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 		return;
 	}
 
-	$sql_where = ($module_class) ? " WHERE module_class = '" . $db->sql_escape($module_class) . "'" : ' WHERE 1 ';
+	$sql_where = ($module_class) ? " WHERE module_class = '" . $db->sql_escape($module_class) . "'" : '';
 
 	// Reset to minimum possible left and right id
 	$sql = "SELECT MIN(left_id) as min_left_id, MIN(right_id) as min_right_id
@@ -57,8 +57,8 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 		{
 			$sql = "SELECT left_id, right_id
 				FROM $sql_table
-				$sql_where
-					AND $sql_id = {$item_data['parent_id']}";
+				$sql_where " . (($sql_where) ? 'AND' : 'WHERE') . "
+					$sql_id = {$item_data['parent_id']}";
 			$result = $db->sql_query($sql);
 
 			if (!$row = $db->sql_fetchrow($result))
@@ -70,14 +70,14 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 
 			$sql = "UPDATE $sql_table
 				SET left_id = left_id + 2, right_id = right_id + 2
-				$sql_where
-					AND left_id > {$row['right_id']}";
+				$sql_where " . (($sql_where) ? 'AND' : 'WHERE') . "
+					left_id > {$row['right_id']}";
 			$db->sql_query($sql);
 
 			$sql = "UPDATE $sql_table
 				SET right_id = right_id + 2
-				$sql_where
-					AND {$row['left_id']} BETWEEN left_id AND right_id";
+				$sql_where " . (($sql_where) ? 'AND' : 'WHERE') . "
+					{$row['left_id']} BETWEEN left_id AND right_id";
 			$db->sql_query($sql);
 
 			$item_data['left_id'] = $row['right_id'];
@@ -102,7 +102,6 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 			WHERE $sql_id = " . $item_data[$sql_id];
 		$db->sql_query($sql);
 	}
-	
 	$db->sql_freeresult($f_result);
 }
 
