@@ -119,6 +119,8 @@
 
 <!-- BEGIN p_mask -->
 
+<div class="clearfix"></div>
+
 <fieldset class="permissions">
 	<!-- IF p_mask.USER_GROUPS_DEFAULT or p_mask.USER_GROUPS_CUSTOM -->
 		<br />
@@ -166,15 +168,15 @@
 		</td>
 		<!-- BEGIN category -->
 			<!-- IF p_mask.f_mask.category.S_YES -->
-				<td class="preset_yes">
+				<td class="preset preset_yes">
 			<!-- ELSEIF p_mask.f_mask.category.S_NO -->
-				<td class="preset_no">
+				<td class="preset preset_no">
 			<!-- ELSEIF p_mask.f_mask.category.S_UNSET -->
-				<td class="preset_unset">
+				<td class="preset preset_unset">
 			<!-- ELSE -->
-				<td class="preset_custom">
+				<td class="preset preset_custom">
 			<!-- ENDIF -->
-				<a href="javascript:swap_options('{p_mask.S_ROW_COUNT}', '{p_mask.f_mask.S_ROW_COUNT}', '{p_mask.f_mask.category.S_ROW_COUNT}');"><span>&nbsp;</span></a></td>
+				<a href="javascript:swap_options('{p_mask.S_ROW_COUNT}', '{p_mask.f_mask.S_ROW_COUNT}', '{p_mask.f_mask.category.S_ROW_COUNT}');"><span></span></a></td>
 		<!-- END category -->
 	</tr>
 	<tr class="row3">

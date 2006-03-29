@@ -783,20 +783,20 @@ table.pmask td.name {
 
 /* Preset Styles
 ---------------------------------------- */
-.preset_yes, .preset_custom, .preset_no, .preset_unset {
+.preset {
 	width: 60px;
 }
 
-.preset_yes a span, .preset_custom a span, .preset_no a span, .preset_unset a span {
+.preset a {
 	float: left;
 	display: block;
 	width: 100%;
 	height: 20px;
 	cursor: pointer;
-	background: none;
+	background: transparent;
 }
 
-.preset_yes a:hover span, .preset_custom a:hover span, .preset_no a:hover span, .preset_unset a:hover span {
+.preset a:hover {
 	background: url("../images/arrow_down.gif") no-repeat 50% 50%;
 	text-decoration: none;
 }
