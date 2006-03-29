@@ -1795,7 +1795,7 @@ function make_clickable($text, $server_url = false)
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/([^ \t\n\r<"\'\)&]+|&(?!lt;))*#i';
+		$magic_url_match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/(([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
 		$magic_url_replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
