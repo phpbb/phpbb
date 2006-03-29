@@ -1528,7 +1528,7 @@ ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD
 	CONSTRAINT [DF_sessio_session_admin] DEFAULT (0) FOR [session_admin]
 GO
 
-ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_sessions_keys] WITH NOCHECK ADD 
 	CONSTRAINT [DF_sessik_key_id] DEFAULT ('0') FOR [key_id],
 	CONSTRAINT [DF_sessik_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_sessik_last_ip] DEFAULT ('0') FOR [last_ip],
