@@ -396,8 +396,9 @@ switch ($mode)
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 			'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
-			'U_ADD_FRIEND'		=> "ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']),
-			'U_ADD_FOE'			=> "ucp.$phpEx$SID&amp;i=zebra&amp;mode=foes&amp;add=" . urlencode($member['username']))
+			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered']) ? true : false,
+			'U_ADD_FRIEND'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']),
+			'U_ADD_FOE'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=zebra&amp;mode=foes&amp;add=" . urlencode($member['username']))
 		);
 
 		if (isset($profile_fields['row']) && sizeof($profile_fields['row']))
