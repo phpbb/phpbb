@@ -18,7 +18,7 @@
   </tr>
   <!-- BEGIN searchresults -->
   <tr> 
-	<td class="catHead" colspan="2" height="28"><span class="topictitle"><img src="templates/subSilver/images/folder.gif" align="absmiddle">&nbsp; {L_TOPIC}:&nbsp;<a href="{searchresults.U_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span></td>
+	<td class="catHead" colspan="2" height="28"><span class="topictitle"><img src="templates/subSilver/images/folder.gif" align="absmiddle" />&nbsp; {L_TOPIC}:&nbsp;<a href="{searchresults.U_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a></span></td>
   </tr>
   <tr> 
 	<td width="150" align="left" valign="top" class="row1" rowspan="2"><span class="name"><b>{searchresults.POSTER_NAME}</b></span><br />

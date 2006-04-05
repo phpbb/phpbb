@@ -20,25 +20,26 @@
  *
  ***************************************************************************/
 
-define('IN_PHPBB', 1);
-
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['General']['Word_Censor'] = "$file";
+	$module['General']['Word_Censor'] = $file;
 	return;
 }
+
+define('IN_PHPBB', 1);
 
 //
 // Load default header
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 
 if( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
-	$mode = ($HTTP_GET_VARS['mode']) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = (isset($HTTP_GET_VARS['mode'])) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 }
 else 
 {
@@ -59,16 +60,20 @@ else
 	}
 }
 
+// Restrict mode input to valid options
+$mode = ( in_array($mode, array('add', 'edit', 'save', 'delete')) ) ? $mode : '';
+
 if( $mode != "" )
 {
 	if( $mode == "edit" || $mode == "add" )
 	{
-		$word_id = ( isset($HTTP_GET_VARS['id']) ) ? $HTTP_GET_VARS['id'] : 0;
+		$word_id = ( isset($HTTP_GET_VARS['id']) ) ? intval($HTTP_GET_VARS['id']) : 0;
 
 		$template->set_filenames(array(
 			"body" => "admin/words_edit_body.tpl")
 		);
 
+		$word_info = array('word' => '', 'replacement' => '');
 		$s_hidden_fields = '';
 
 		if( $mode == "edit" )
@@ -109,11 +114,11 @@ if( $mode != "" )
 
 		$template->pparse("body");
 
-		include('page_footer_admin.'.$phpEx);
+		include('./page_footer_admin.'.$phpEx);
 	}
 	else if( $mode == "save" )
 	{
-		$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : 0;
+		$word_id = ( isset($HTTP_POST_VARS['id']) ) ? intval($HTTP_POST_VARS['id']) : 0;
 		$word = ( isset($HTTP_POST_VARS['word']) ) ? trim($HTTP_POST_VARS['word']) : "";
 		$replacement = ( isset($HTTP_POST_VARS['replacement']) ) ? trim($HTTP_POST_VARS['replacement']) : "";
 
@@ -150,13 +155,16 @@ if( $mode != "" )
 		if( isset($HTTP_POST_VARS['id']) ||  isset($HTTP_GET_VARS['id']) )
 		{
 			$word_id = ( isset($HTTP_POST_VARS['id']) ) ? $HTTP_POST_VARS['id'] : $HTTP_GET_VARS['id'];
+			$word_id = intval($word_id);
 		}
 		else
 		{
 			$word_id = 0;
 		}
 
-		if( $word_id )
+		$confirm = isset($HTTP_POST_VARS['confirm']);
+
+		if( $word_id && $confirm )
 		{
 			$sql = "DELETE FROM " . WORDS_TABLE . " 
 				WHERE word_id = $word_id";
@@ -170,9 +178,29 @@ if( $mode != "" )
 
 			message_die(GENERAL_MESSAGE, $message);
 		}
+		elseif( $word_id && !$confirm)
+		{
+			// Present the confirmation screen to the user
+			$template->set_filenames(array(
+				'body' => 'admin/confirm_body.tpl')
+			);
+
+			$hidden_fields = '<input type="hidden" name="mode" value="delete" /><input type="hidden" name="id" value="' . $word_id . '" />';
+
+			$template->assign_vars(array(
+				'MESSAGE_TITLE' => $lang['Confirm'],
+				'MESSAGE_TEXT' => $lang['Confirm_delete_word'],
+
+				'L_YES' => $lang['Yes'],
+				'L_NO' => $lang['No'],
+
+				'S_CONFIRM_ACTION' => append_sid("admin_words.$phpEx"),
+				'S_HIDDEN_FIELDS' => $hidden_fields)
+			);
+		}
 		else
 		{
-			message_die(GENERAL_MESSAGE, $lang['Must_specify_word']);
+			message_die(GENERAL_MESSAGE, $lang['No_word_selected']);
 		}
 	}
 }
@@ -191,6 +219,7 @@ else
 	}
 
 	$word_rows = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
 	$word_count = count($word_rows);
 
 	$template->assign_vars(array(
@@ -230,6 +259,6 @@ else
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

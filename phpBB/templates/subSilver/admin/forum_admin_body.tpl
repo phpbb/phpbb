@@ -13,7 +13,7 @@
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_EDIT}">{L_EDIT}</a></span></td>
 		<td class="cat" align="center" valign="middle"><span class="gen"><a href="{catrow.U_CAT_DELETE}">{L_DELETE}</a></span></td>
 		<td class="cat" align="center" valign="middle" nowrap="nowrap"><span class="gen"><a href="{catrow.U_CAT_MOVE_UP}">{L_MOVE_UP}</a> <a href="{catrow.U_CAT_MOVE_DOWN}">{L_MOVE_DOWN}</a></span></td>
-		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp</span></td>
+		<td class="catRight" align="center" valign="middle"><span class="gen">&nbsp;</span></td>
 	</tr>
 	<!-- BEGIN forumrow -->
 	<tr> 
@@ -27,13 +27,13 @@
 	</tr>
 	<!-- END forumrow -->
 	<tr>
-		<td colspan="7" class="row2"><input type="text" name="{catrow.S_ADD_FORUM_NAME}" /> <input type="submit" class="liteoption"  name="{catrow.S_ADD_FORUM_SUBMIT}" value="{L_CREATE_FORUM}" /></td>
+		<td colspan="7" class="row2"><input class="post" type="text" name="{catrow.S_ADD_FORUM_NAME}" /> <input type="submit" class="liteoption"  name="{catrow.S_ADD_FORUM_SUBMIT}" value="{L_CREATE_FORUM}" /></td>
 	</tr>
 	<tr>
 		<td colspan="7" height="1" class="spaceRow"><img src="../templates/subSilver/images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
 	<!-- END catrow -->
 	<tr>
-		<td colspan="7" class="catBottom"><input type="text" name="categoryname" /> <input type="submit" class="liteoption"  name="addcategory" value="{L_CREATE_CATEGORY}" /></td>
+		<td colspan="7" class="catBottom"><input class="post" type="text" name="categoryname" /> <input type="submit" class="liteoption"  name="addcategory" value="{L_CREATE_CATEGORY}" /></td>
 	</tr>
 </table></form>

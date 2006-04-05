@@ -34,6 +34,16 @@ init_userprefs($userdata);
 // End session management
 //
 
+// session id check
+if (!empty($HTTP_POST_VARS['sid']) || !empty($HTTP_GET_VARS['sid']))
+{
+	$sid = (!empty($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : $HTTP_GET_VARS['sid'];
+}
+else
+{
+	$sid = '';
+}
+
 //
 // Set default email variables
 //
@@ -50,18 +60,9 @@ $server_url = $server_protocol . $server_name . $server_port . $script_name;
 //
 function gen_rand_string($hash)
 {
-	$chars = array( 'a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J',  'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O', 'p', 'P', 'q', 'Q', 'r', 'R', 's', 'S', 't', 'T',  'u', 'U', 'v', 'V', 'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0');
-	
-	$max_chars = count($chars) - 1;
-	srand( (double) microtime()*1000000);
-	
-	$rand_str = '';
-	for($i = 0; $i < 8; $i++)
-	{
-		$rand_str = ( $i == 0 ) ? $chars[rand(0, $max_chars)] : $rand_str . $chars[rand(0, $max_chars)];
-	}
+	$rand_str = dss_rand();
 
-	return ( $hash ) ? md5($rand_str) : $rand_str;
+	return ( $hash ) ? md5($rand_str) : substr($rand_str, 8);
 }
 //
 // End page specific functions
@@ -73,6 +74,7 @@ function gen_rand_string($hash)
 if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 {
 	$mode = ( isset($HTTP_GET_VARS['mode']) ) ? $HTTP_GET_VARS['mode'] : $HTTP_POST_VARS['mode'];
+	$mode = htmlspecialchars($mode);
 
 	if ( $mode == 'viewprofile' )
 	{
@@ -83,12 +85,21 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 	{
 		if ( !$userdata['session_logged_in'] && $mode == 'editprofile' )
 		{
-			$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-			header($header_location . append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
-			exit;
+			redirect(append_sid("login.$phpEx?redirect=profile.$phpEx&mode=editprofile", true));
 		}
 
 		include($phpbb_root_path . 'includes/usercp_register.'.$phpEx);
+		exit;
+	}
+	else if ( $mode == 'confirm' )
+	{
+		// Visual Confirmation
+		if ( $userdata['session_logged_in'] )
+		{
+			exit;
+		}
+
+		include($phpbb_root_path . 'includes/usercp_confirm.'.$phpEx);
 		exit;
 	}
 	else if ( $mode == 'sendpassword' )
@@ -107,11 +118,7 @@ if ( isset($HTTP_GET_VARS['mode']) || isset($HTTP_POST_VARS['mode']) )
 		exit;
 	}
 }
-else
-{
-	$header_location = ( @preg_match("/Microsoft|WebSTAR|Xitami/", getenv("SERVER_SOFTWARE")) ) ? "Refresh: 0; URL=" : "Location: ";
-	header($header_location . append_sid("index.$phpEx", true));
-	exit;
-}
+
+redirect(append_sid("index.$phpEx", true));
 
 ?>
