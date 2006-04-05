@@ -234,7 +234,7 @@ class template_compile
 		// This will handle the remaining root-level varrefs
 		if (!$this->template->static_lang)
 		{
-			$text_blocks = preg_replace('#\{L_([\w\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')); ?>", $text_blocks);
 		}
 		else
 		{
@@ -430,11 +430,11 @@ class template_compile
 					$i = $is_arg_start;
 
 				default:
-					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?([A-Z0-9\-_]+)$#s', $token, $varrefs))
+					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
 						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[3] . '\']');
 					}
-					else if (preg_match('#^\.([a-z0-9\-_.]+)$#s', $token, $varrefs))
+					else if (preg_match('#^\.([a-z0-9\-_]+\.?)+$#s', $token, $varrefs))
 					{
 						$_tok = $this->generate_block_data_ref($varrefs[1], false);
 						$token = "(isset($_tok) && sizeof($_tok))";
@@ -453,7 +453,7 @@ class template_compile
 	*/
 	function compile_tag_define($tag_args, $op)
 	{
-		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$([A-Z][A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
+		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
 
 		if (empty($match[2]) || (empty($match[4]) && $op))
 		{
