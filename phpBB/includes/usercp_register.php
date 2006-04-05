@@ -771,6 +771,7 @@ if ( $error )
 	//
 	$username = stripslashes($username);
 	$email = stripslashes($email);
+	$cur_password = '';
 	$new_password = '';
 	$password_confirm = '';
 
@@ -795,6 +796,7 @@ else if ( $mode == 'editprofile' && !isset($HTTP_POST_VARS['avatargallery']) && 
 	$user_id = $userdata['user_id'];
 	$username = $userdata['username'];
 	$email = $userdata['user_email'];
+	$cur_password = '';
 	$new_password = '';
 	$password_confirm = '';
 
