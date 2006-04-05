@@ -1,0 +1,21 @@
+Subject: phpBB Installed
+Charset: iso-8859-1
+
+Congratulations,
+
+You have successfully installed phpBB on your server.
+
+This email contains important information on your installation that you should keep safe. The password has been encrypted in the database and cannot be recovered, although you can request a new password should you lose this one
+
+----------------------------
+Username: {USERNAME}
+Password: {PASSWORD}
+
+Board URL: {U_BOARD}
+----------------------------
+
+Useful information on your phpBB installation can be found in the docs folder of your installation and on our website - http://www.phpbb.com/support/
+
+We recommend that in order to stay current with software releases you subscribe to our mailing list, located at the above URL.
+
+{EMAIL_SIG}

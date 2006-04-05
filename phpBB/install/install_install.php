@@ -65,6 +65,22 @@ class install_install extends module
 				$this->obtain_admin_settings($mode, $sub);
 
 			break;
+
+			case 'config_file' :
+				$this->create_config_file($mode, $sub);
+			
+			break;
+
+			case 'advanced' :
+				$this->obtain_advanced_settings($mode, $sub);
+
+			break;
+
+			case 'final' :
+				$this->load_schema($mode, $sub);
+				$this->email_admin($mode, $sub);
+			
+			break;
 		}
 
 		$this->tpl_name = 'install_install';
@@ -467,10 +483,10 @@ class install_install extends module
 			}
 		}
 
-//		$url = ($connect_test) ? $this->p_master->module_url . "?mode=$mode&amp;sub=administrator" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
+		$url = ($connect_test) ? $this->p_master->module_url . "?mode=$mode&amp;sub=administrator" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
 // The road ahead is still under construction, follow the diversion back to the old installer..... ;)
 		$s_hidden_fields .= ($connect_test) ? '' : '<input type="hidden" name="testdb" value="true" />';
-		$url = ($connect_test) ? "install.$phpEx?stage=1" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
+//		$url = ($connect_test) ? "install.$phpEx?stage=1" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
 
 		$submit = $lang['NEXT_STEP'];
 
@@ -504,7 +520,7 @@ class install_install extends module
 			$error = array();
 
 			// Check the entered email address and password
-			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 = '' || $board_email2 =='')
+			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
@@ -516,6 +532,10 @@ class install_install extends module
 			if ($board_email1 != $board_email2 && $board_email1 != '')
 			{
 				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
+			}
+			if ($board_email1 != '' && !preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $board_email1))
+			{
+				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
 
 			$template->assign_block_vars('checks', array(
@@ -605,7 +625,7 @@ class install_install extends module
 
 		$submit = $lang['NEXT_STEP'];
 
-		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=config" : $this->p_master->module_url . "?mode=$mode&amp;sub=administrator";
+		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=config_file" : $this->p_master->module_url . "?mode=$mode&amp;sub=administrator";
 		$s_hidden_fields .= ($passed) ? '' : '<input type="hidden" name="check" value="true" />';
 
 		$template->assign_vars(array(
@@ -615,6 +635,467 @@ class install_install extends module
 		));
 	}
 
+	/**
+	* Writes the config file to disk, or if unable to do so offers alternative methods
+	*/
+	function create_config_file($mode, $sub)
+	{
+		global $lang, $template, $phpbb_root_path, $phpEx;
+
+		$this->page_title = $lang['STAGE_CONFIG_FILE'];
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		$s_hidden_fields = '';
+		$written = false;
+
+		// Create a list of any PHP modules we wish to have loaded
+		$load_extensions = array();
+		$check_exts = array_merge(array($this->available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
+
+		foreach ($check_exts as $dll)
+		{
+			if (!extension_loaded($dll))
+			{
+				if (!$this->can_load_dll($dll))
+				{
+					continue;
+				}
+				$load_extensions[] = "$dll.$suffix";
+			}
+		}
+
+		$load_extensions = implode(',', $load_extensions);
+
+		// Time to convert the data provided into a config file
+		$config_data = "<?php\n";
+		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+		$config_data .= "\$dbms = '$dbms';\n";
+		$config_data .= "\$dbhost = '$dbhost';\n";
+		$config_data .= "\$dbport = '$dbport';\n";
+		$config_data .= "\$dbname = '$dbname';\n";
+		$config_data .= "\$dbuser = '$dbuser';\n";
+		$config_data .= "\$dbpasswd = '$dbpasswd';\n\n";
+		$config_data .= "\$table_prefix = '$table_prefix';\n";
+//		$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'file') . "';\n";
+		$config_data .= "\$acm_type = 'file';\n";
+		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
+		$config_data .= "define('PHPBB_INSTALLED', true);\n";
+		$config_data .= "define('DEBUG', true);\n"; // @todo Comment out when final
+		$config_data .= "define('DEBUG_EXTRA', true);\n"; // @todo Comment out when final
+		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+	
+		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
+		if (filesize($phpbb_root_path . 'config.' . $phpEx) == 0 && is_writeable($phpbb_root_path . 'config.' . $phpEx))
+		{
+			// Assume it will work ... if nothing goes wrong below
+			$written = true;
+
+			if (!($fp = @fopen($phpbb_root_path . 'config.'.$phpEx, 'w')))
+			{
+				// Something went wrong ... so let's try another method
+				$written = false;
+			}
+
+			if (!(@fwrite($fp, $config_data)))
+			{
+				// Something went wrong ... so let's try another method
+				$written = false;
+			}
+
+			@fclose($fp);
+		}
+
+		if ($written)
+		{
+			$config_options = array_merge($this->db_config_options, $this->admin_config_options);
+			foreach ($config_options as $config_key => $vars)
+			{
+				if (!is_array($vars))
+				{
+					continue;
+				}
+				$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+			}
+
+			$template->assign_vars(array(
+				'BODY'		=> $lang['CONFIG_FILE_WRITTEN'],
+				'L_SUBMIT'	=> $lang['NEXT_STEP'],
+				'S_HIDDEN'	=> $s_hidden_fields,
+				'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=advanced",
+			));
+			return;
+		}
+	}
+
+	/**
+	* Provide an opportunity to customise some advanced settings during the install
+	* in case it is necessary for them to be set to access later
+	*/
+	function obtain_advanced_settings($mode, $sub)
+	{
+		global $lang, $template, $phpEx;
+
+		$this->page_title = $lang['STAGE_ADVANCED'];
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		$s_hidden_fields = '';
+//		$passed = false;
+
+//		if (!$passed)
+//		{
+			$email_enable = ($email_enable !== '') ? $email_enable : true;
+			foreach ($this->advanced_config_options as $config_key => $vars)
+			{
+				if (!is_array($vars) && strpos($config_key, 'legend') === false)
+				{
+					continue;
+				}
+
+				if (strpos($config_key, 'legend') !== false)
+				{
+					$template->assign_block_vars('options', array(
+						'S_LEGEND'		=> true,
+						'LEGEND'		=> $lang[$vars])
+					);
+
+					continue;
+				}
+
+				$options = isset($vars['options']) ? $vars['options'] : '';
+
+				$template->assign_block_vars('options', array(
+					'KEY'			=> $config_key,
+					'TITLE'			=> $lang[$vars['lang']],
+					'S_EXPLAIN'		=> $vars['explain'],
+					'S_LEGEND'		=> false,
+					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
+					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
+					)
+				);
+			}
+//		}
+
+		$config_options = array_merge($this->db_config_options, $this->admin_config_options);
+		foreach ($config_options as $config_key => $vars)
+		{
+			if (!is_array($vars))
+			{
+				continue;
+			}
+			$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+		}
+
+		$submit = $lang['NEXT_STEP'];
+
+//		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=final" : $this->p_master->module_url . "?mode=$mode&amp;sub=advanced";
+//		$s_hidden_fields .= ($passed) ? '' : '<input type="hidden" name="check" value="true" />';
+		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
+
+		$template->assign_vars(array(
+			'BODY'		=> $lang['STAGE_ADVANCED_EXPLAIN'],
+			'L_SUBMIT'	=> $submit,
+			'S_HIDDEN'	=> $s_hidden_fields,
+			'U_ACTION'	=> $url,
+		));
+	}
+
+	/**
+	* Load the contents of the schema into the database and then alter it based on what has been input during the installation
+	*/
+	function load_schema($mode, $sub)
+	{
+		global $db, $lang, $template, $phpbb_root_path, $phpEx;
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
+		if (!extension_loaded($this->available_dbms[$dbms]['MODULE']))
+		{
+			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
+		}
+
+		// Load the appropriate database class if not already loaded
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+
+		// Instantiate the database
+		$sql_db = 'dbal_' . $dbms;
+		$db = new $sql_db();
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+
+		// NOTE: trigger_error does not work here.
+		$db->return_on_error = true;
+
+		// Ok we have the db info go ahead and read in the relevant schema
+		// and work on building the table
+		$dbms_schema = 'schemas/' . $this->available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
+
+		// How should we treat this schema?
+		$remove_remarks = $this->available_dbms[$dbms]['COMMENTS'];
+		$delimiter = $this->available_dbms[$dbms]['DELIM'];
+
+		$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
+		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
+
+		$remove_remarks($sql_query);
+
+		$sql_query = split_sql_file($sql_query, $delimiter);
+
+		foreach ($sql_query as $sql)
+		{
+			//$sql = trim(str_replace('|', ';', $sql));
+			if (!$db->sql_query($sql))
+			{
+				$error = $db->sql_error();
+				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+			}
+		}
+		unset($sql_query);
+
+		// Ok tables have been built, let's fill in the basic information
+		$sql_query = fread(fopen('schemas/schema_data.sql', 'r'), filesize('schemas/schema_data.sql'));
+
+		// Deal with any special comments, used at present for mssql set identity switching
+		switch ($dbms)
+		{
+			case 'mssql':
+			case 'mssql_odbc':
+				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2', $sql_query);
+				break;
+
+			case 'postgres':
+				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
+				break;
+
+			default:
+				//$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', '', $sql_query);
+		}
+
+		$sql_query = preg_replace('#phpbb_#', $table_prefix, $sql_query);
+
+		$remove_remarks($sql_query);
+		$sql_query = split_sql_file($sql_query, ';');
+
+		foreach ($sql_query as $sql)
+		{
+			//$sql = trim(str_replace('|', ';', $sql));
+			if (!$db->sql_query($sql))
+			{
+				$error = $db->sql_error();
+				inst_db_error($error['message'], $sql, __LINE__, __FILE__);
+			}
+		}
+		unset($sql_query);
+
+		$current_time = time();
+
+		// Set default config and post data, this applies to all DB's
+		$sql_ary = array(
+			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
+				VALUES ('board_startdate', $current_time)",
+
+			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
+				VALUES ('default_lang', '" . $db->sql_escape($language) . "')",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($img_imagick) . "'
+				WHERE config_name = 'img_imagick'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($server_name) . "'
+				WHERE config_name = 'server_name'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($server_port) . "'
+				WHERE config_name = 'server_port'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($board_email1) . "'
+				WHERE config_name = 'board_email'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($board_email1) . "'
+				WHERE config_name = 'board_contact'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($server_name) . "'
+				WHERE config_name = 'cookie_domain'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($email_enable) . "'
+				WHERE config_name = 'email_enable'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($smtp_delivery) . "'
+				WHERE config_name = 'smtp_delivery'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($smtp_host) . "'
+				WHERE config_name = 'smtp_host'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($smtp_auth) . "'
+				WHERE config_name = 'smtp_auth_method'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($smtp_user) . "'
+				WHERE config_name = 'smtp_username'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($smtp_pass) . "'
+				WHERE config_name = 'smtp_password'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($cookie_secure) . "'
+				WHERE config_name = 'cookie_secure'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($force_server_vars) . "'
+				WHERE config_name = 'force_server_vars'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($server_name) . "'
+				WHERE config_name = 'server_name'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($server_protocol) . "'
+				WHERE config_name = 'server_protocol'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($server_port) . "'
+				WHERE config_name = 'server_port'",
+
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($admin_name) . "'
+				WHERE config_name = 'newest_username'",
+
+			'UPDATE ' . $table_prefix . "users
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "'
+				WHERE username = 'Admin'",
+
+			'UPDATE ' . $table_prefix . "moderator_cache
+				SET username = '" . $db->sql_escape($admin_name) . "'
+				WHERE username = 'Admin'",
+
+			'UPDATE ' . $table_prefix . "forums
+				SET forum_last_poster_name = '" . $db->sql_escape($admin_name) . "'
+				WHERE forum_last_poster_name = 'Admin'",
+
+			'UPDATE ' . $table_prefix . "topics
+				SET topic_first_poster_name = '" . $db->sql_escape($admin_name) . "', topic_last_poster_name = '" . $db->sql_escape($admin_name) . "'
+				WHERE topic_first_poster_name = 'Admin'
+					OR topic_last_poster_name = 'Admin'",
+
+			'UPDATE ' . $table_prefix . "users
+				SET user_regdate = $current_time", 
+
+			'UPDATE ' . $table_prefix . "posts
+				SET post_time = $current_time", 
+
+			'UPDATE ' . $table_prefix . "topics
+				SET topic_time = $current_time, topic_last_post_time = $current_time", 
+
+			'UPDATE ' . $table_prefix . "forums
+				SET forum_last_post_time = $current_time", 
+		);
+
+		foreach ($sql_ary as $sql)
+		{
+			$sql = trim(str_replace('|', ';', $sql));
+
+			if (!$db->sql_query($sql))
+			{
+				$error = $db->sql_error();
+				inst_db_error($error['message'], $sql, __LINE__, __FILE__);
+			}
+		}
+	
+	}
+
+	/**
+	* Sends an email to the board administrator with their password and some useful links
+	*/
+	function email_admin($mode, $sub)
+	{
+		global $auth, $config, $db, $lang, $template, $user, $SID, $phpbb_root_path, $phpEx;
+
+		$this->page_title = $lang['STAGE_FINAL'];
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		// Load the basic configuration data
+		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
+
+		$sql = 'SELECT *
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		$config = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
+
+		$user->session_begin();
+		$auth->login($admin_name, $admin_pass1, false, true, true);
+
+		// OK, Now that we've reached this point we can be confident that everything
+		// is installed and working......I hope :)
+		// So it's time to send an email to the administrator confirming the details
+		// they entered
+
+		if ($config['email_enable'])
+		{
+			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+			$messenger = new messenger(false);
+
+			$messenger->template('installed', $language);
+
+			$messenger->replyto($config['board_contact']);
+			$messenger->to($board_email1, $admin_name);
+
+			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+			$messenger->assign_vars(array(
+				'USERNAME'		=> $admin_name,
+				'PASSWORD'		=> $admin_pass1,
+				'U_BOARD'		=> generate_board_url(),
+				'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']))
+			);
+
+			$messenger->send(NOTIFY_EMAIL);
+		}
+
+		$template->assign_vars(array(
+			'TITLE'		=> $lang['INSTALL_CONGRATS'],
+			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
+			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
+			'U_ACTION'	=> $phpbb_root_path . 'adm/index. ' . $phpEx . $SID,
+		));
+	}
+	
 	/**
 	* Determine if we are able to load a specified PHP module
 	*/
@@ -773,32 +1254,67 @@ class install_install extends module
 	}
 
 	/**
+	* Generate a list of available mail server authentication methods
+	*/
+	function mail_auth_select($selected_method)
+	{
+		global $lang;
+
+		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
+		$s_smtp_auth_options = '';
+
+		foreach ($auth_methods as $method)
+		{
+			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . $lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
+		}
+
+		return $s_smtp_auth_options;
+	}
+
+
+	/**
 	* The variables that we will be passing between pages
 	* Used to retrieve data quickly on each page
 	*/
-	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'server_name', 'server_port', 'script_path', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass');
+	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
 
 	/**
 	* The information below will be used to build the input fields presented to the user
 	*/
 	var $db_config_options = array(
-		'legend'		=> 'DB_CONFIG',
-		'dbms'			=> array('lang' => 'DBMS', 'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
-		'dbhost'		=> array('lang' => 'DB_HOST', 'type' => 'text:25:100', 'explain' => true),
-		'dbport'		=> array('lang' => 'DB_PORT', 'type' => 'text:25:100', 'explain' => true),
-		'dbname'		=> array('lang' => 'DB_NAME', 'type' => 'text:25:100', 'explain' => false),
-		'dbuser'		=> array('lang' => 'DB_USERNAME', 'type' => 'text:25:100', 'explain' => false),
-		'dbpasswd'		=> array('lang' => 'DB_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
-		'table_prefix'	=> array('lang' => 'TABLE_PREFIX', 'type' => 'text:25:100', 'explain' => false),
+		'legend1'				=> 'DB_CONFIG',
+		'dbms'					=> array('lang' => 'DBMS',			'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
+		'dbhost'				=> array('lang' => 'DB_HOST',		'type' => 'text:25:100', 'explain' => true),
+		'dbport'				=> array('lang' => 'DB_PORT',		'type' => 'text:25:100', 'explain' => true),
+		'dbname'				=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
+		'dbuser'				=> array('lang' => 'DB_USERNAME',	'type' => 'text:25:100', 'explain' => false),
+		'dbpasswd'				=> array('lang' => 'DB_PASSWORD',	'type' => 'password:25:100', 'explain' => false),
+		'table_prefix'			=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => false),
 	);
 	var $admin_config_options = array(
-		'legend'		=> 'ADMIN_CONFIG',
-		'language'		=> array('lang' => 'DEFAULT_LANG', 'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
-		'admin_name'	=> array('lang' => 'ADMIN_USERNAME', 'type' => 'text:25:100', 'explain' => false),
-		'admin_pass1'	=> array('lang' => 'ADMIN_PASSWORD', 'type' => 'password:25:100', 'explain' => false),
-		'admin_pass2'	=> array('lang' => 'ADMIN_PASSWORD_CONFIRM', 'type' => 'password:25:100', 'explain' => false),
-		'board_email1'	=> array('lang' => 'CONTACT_EMAIL', 'type' => 'text:25:100', 'explain' => false),
-		'board_email2'	=> array('lang' => 'CONTACT_EMAIL_CONFIRM', 'type' => 'text:25:100', 'explain' => false),
+		'legend1'				=> 'ADMIN_CONFIG',
+		'language'				=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
+		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => false),
+		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => false),
+		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
+		'board_email1'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
+		'board_email2'			=> array('lang' => 'CONTACT_EMAIL_CONFIRM',		'type' => 'text:25:100', 'explain' => false),
+	);
+	var $advanced_config_options = array(
+		'legend1'				=> 'ACP_EMAIL_SETTINGS',
+		'email_enable'			=> array('lang' => 'ENABLE_EMAIL',		'type' => 'radio:enabled_disabled', 'explain' => true),
+		'smtp_delivery'			=> array('lang' => 'USE_SMTP',			'type' => 'radio:yes_no', 'explain' => true),
+		'smtp_host'				=> array('lang' => 'SMTP_SERVER',		'type' => 'text:25:50', 'explain' => false),
+		'smtp_auth'				=> array('lang' => 'SMTP_AUTH_METHOD',	'type' => 'select', 'options' => '$this->module->mail_auth_select(\'{VALUE}\')', 'explain' => true),
+		'smtp_user'				=> array('lang' => 'SMTP_USERNAME',		'type' => 'text:25:255', 'explain' => true),
+		'smtp_pass'				=> array('lang' => 'SMTP_PASSWORD',		'type' => 'password:25:255', 'explain' => true),
+
+		'legend2'				=> 'SERVER_URL_SETTINGS',
+		'cookie_secure'			=> array('lang' => 'COOKIE_SECURE',		'type' => 'radio:enabled_disabled', 'explain' => true),
+		'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'type' => 'radio:yes_no', 'explain' => true),
+		'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'type' => 'text:10:10', 'explain' => true),
+		'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
+		'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
 	);
 
 	/**

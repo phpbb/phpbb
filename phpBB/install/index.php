@@ -23,6 +23,7 @@ set_magic_quotes_runtime(0);
 $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
+include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.'.$phpEx);
 include($phpbb_root_path . 'includes/template.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
@@ -118,12 +119,16 @@ if ($language == '')
 // And finally, load the relevant language files
 include($phpbb_root_path . 'language/' . $language . '/common.'.$phpEx);
 include($phpbb_root_path . 'language/' . $language . '/acp/common.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/acp/board.'.$phpEx);
 include($phpbb_root_path . 'language/' . $language . '/install.'.$phpEx);
 include($phpbb_root_path . 'language/' . $language . '/posting.'.$phpEx);
 
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
 
+$user = new user();
+$auth = new auth();
+$cache = new cache();
 $template = new Template();
 
 $template->set_custom_template('../adm/style', 'admin');
@@ -514,7 +519,7 @@ class module
 				$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
 				$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" />&nbsp;' . (($type_no) ? $lang['NO'] : $lang['DISABLED']);
-				$tpl_yes = '<input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $lang['YES'] : $lang['ENABLED']);
+				$tpl_yes = '<input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $lang['YES'] : $lang['ENABLED']);
 
 				$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
 			break;
