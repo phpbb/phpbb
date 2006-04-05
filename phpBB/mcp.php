@@ -197,6 +197,11 @@ page_footer();
 /**
 * Functions used to generate additional URL paramters
 */
+function _module_main_front_url()
+{
+	return extra_url();
+}
+
 function _module_main_forum_view_url()
 {
 	return extra_url();
