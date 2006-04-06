@@ -12,14 +12,14 @@
 * View message folder
 * Called from ucp_pm with mode == 'view' && action == 'view_folder'
 */
-function view_folder($id, $mode, $folder_id, $folder, $type)
+function view_folder($id, $mode, $folder_id, $folder)
 {
 	global $user, $template, $auth, $db, $cache;
 	global $phpbb_root_path, $config, $phpEx, $SID;
 
 	$submit_export = (isset($_POST['submit_export'])) ? true : false;
 
-	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id'], "{$phpbb_root_path}ucp.$phpEx$SID", $type);
+	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id'], "{$phpbb_root_path}ucp.$phpEx$SID");
 
 	if (!$submit_export)
 	{
@@ -48,6 +48,20 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 			$s_mark_options .= '<option value="' . $mark_option . '">' . $user->lang[strtoupper($mark_option)] . '</option>';
 		}
 
+		// We do the folder moving options here too, for template authors to use...
+		$s_folder_move_options = '';
+		foreach ($folder as $f_id => $folder_ary)
+		{
+			if ($f_id == PRIVMSGS_OUTBOX || $f_id == PRIVMSGS_SENTBOX || $f_id == $folder_id)
+			{
+				continue;
+			}
+
+			$s_folder_move_options .= '<option' . (($f_id != PRIVMSGS_INBOX) ? ' class="blue"' : '') . ' value="' . $f_id . '">';
+			$s_folder_move_options .= sprintf($user->lang['MOVE_MARKED_TO_FOLDER'], $folder_ary['folder_name']);
+			$s_folder_move_options .= (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
+		}
+
 		$friend = $foe = array();
 
 		// Get friends and foes
@@ -64,8 +78,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'S_UNREAD'		=> ($type == 'unread'),
-			'S_MARK_OPTIONS'=> $s_mark_options)
+			'S_MARK_OPTIONS'		=> $s_mark_options,
+			'S_MOVE_MARKED_OPTIONS'	=> $s_folder_move_options)
 		);
 
 		// Okay, lets dump out the page ...
@@ -344,10 +358,8 @@ function view_folder($id, $mode, $folder_id, $folder, $type)
 
 /**
 * Get Messages from folder/user
-*
-* @param unread|new|folder $type type of message
 */
-function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
+function get_pm_from($folder_id, $folder, $user_id, $url)
 {
 	global $user, $db, $template, $config, $auth, $_POST;
 
@@ -368,16 +380,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
-	if ($type != 'folder')
-	{
-		$folder_sql = ($type == 'unread') ? 't.unread = 1' : 't.new = 1';
-		$folder_sql .= ' AND t.folder_id NOT IN (' . PRIVMSGS_HOLD_BOX . ', ' . PRIVMSGS_NO_BOX . ')';
-		$folder_id = PRIVMSGS_INBOX;
-	}
-	else
-	{
-		$folder_sql = 't.folder_id = ' . (int) $folder_id;
-	}
+	$folder_sql = 't.folder_id = ' . (int) $folder_id;
 
 	// Limit pms to certain time frame, obtain correct pm count
 	if ($sort_days)
@@ -404,32 +407,7 @@ function get_pm_from($folder_id, $folder, $user_id, $url, $type = 'folder')
 	}
 	else
 	{
-		if ($type == 'folder')
-		{
-			$pm_count = $folder[$folder_id]['num_messages'];
-		}
-		else
-		{
-			if (in_array($folder_id, array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX)))
-			{
-				$sql = 'SELECT COUNT(t.msg_id) AS pm_count
-					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . " p
-					WHERE $folder_sql
-						AND t.user_id = $user_id
-						AND t.msg_id = p.msg_id";
-			}
-			else
-			{
-				$sql = 'SELECT pm_count
-					FROM ' . PRIVMSGS_FOLDER_TABLE . "
-					WHERE folder_id = $folder_id
-						AND user_id = $user_id";
-			}
-			$result = $db->sql_query_limit($sql, 1);
-			$pm_count = ($row = $db->sql_fetchrow($result)) ? $row['pm_count'] : 0;
-			$db->sql_freeresult($result);
-		}
-
+		$pm_count = $folder[$folder_id]['num_messages'];
 		$sql_limit_time = '';
 	}
 

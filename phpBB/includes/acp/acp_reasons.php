@@ -39,8 +39,8 @@ class acp_reasons
 			case 'edit':
 
 				$reason_row = array(
-					'reason_title'			=> request_var('reason_title', ''),
-					'reason_description'	=> request_var('reason_description', '')
+					'reason_title'			=> request_var('reason_title', '', true),
+					'reason_description'	=> request_var('reason_description', '', true)
 				);
 
 				if ($submit)

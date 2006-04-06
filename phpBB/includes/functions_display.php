@@ -563,16 +563,18 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 /**
 * User authorisation levels output
 */
-function gen_forum_auth_level($mode, $forum_id)
+function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
 	global $SID, $template, $auth, $user;
 
+	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
+	
 	$rules = array(
-		($auth->acl_get('f_post', $forum_id)) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
-		($auth->acl_get('f_reply', $forum_id)) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
-		($auth->acl_gets('f_edit', 'm_edit', $forum_id)) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($auth->acl_gets('f_delete', 'm_delete', $forum_id)) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
-		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach', $forum_id)) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
+		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
+		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
+		($auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
+		($auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach', $forum_id) && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
 	);
 
 	foreach ($rules as $rule)

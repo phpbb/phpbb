@@ -40,8 +40,8 @@ class mcp_ban
 			$ban_len			= request_var('banlength', 0);
 			$ban_len_other		= request_var('banlengthother', '');
 			$ban_exclude		= request_var('banexclude', 0);
-			$ban_reason			= request_var('banreason', '');
-			$ban_give_reason	= request_var('bangivereason', '');
+			$ban_reason			= request_var('banreason', '', true);
+			$ban_give_reason	= request_var('bangivereason', '', true);
 
 			user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
 

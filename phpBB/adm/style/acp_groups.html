@@ -87,7 +87,7 @@
 		<!-- IF S_CAN_UPLOAD -->
 			<dl> 
 				<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
-				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_MAX_FILESIZE}" /><input type="file" id="uploadfile" name="uploadfile" /></dd>
+				<dd><input type="file" id="uploadfile" name="uploadfile" /></dd>
 			</dl>
 			<dl>
 				<dt><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
@@ -170,24 +170,22 @@
 	</tr>
 	</thead>
 	<tbody>
-	<!-- IF not S_GROUP_SPECIAL -->
-		<tr>
-			<td class="row3" colspan="5"><b>{L_GROUP_LEAD}</b></td>
+	<tr>
+		<td class="row3" colspan="5"><b>{L_GROUP_LEAD}</b></td>
+	</tr>
+	<!-- BEGIN leader -->
+		<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td><a href="{leader.U_USER_EDIT}">{leader.USERNAME}</a></td>
+			<td style="text-align: center;"><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
+			<td style="text-align: center;">{leader.JOINED}</td>
+			<td style="text-align: center;">{leader.USER_POSTS}</td>
+			<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{leader.USER_ID}" /></td>
 		</tr>
-		<!-- BEGIN leader -->
-			<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-				<td><a href="{leader.U_USER_EDIT}">{leader.USERNAME}</a></td>
-				<td style="text-align: center;"><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
-				<td style="text-align: center;">{leader.JOINED}</td>
-				<td style="text-align: center;">{leader.USER_POSTS}</td>
-				<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{leader.USER_ID}" /></td>
-			</tr>
-		<!-- BEGINELSE -->
-			<tr>
-				<td class="row1" colspan="5" style="text-align: center;">{L_GROUPS_NO_MODS}</td>
-			</tr>
-		<!-- END leader -->
-	<!-- ENDIF -->
+	<!-- BEGINELSE -->
+		<tr>
+			<td class="row1" colspan="5" style="text-align: center;">{L_GROUPS_NO_MODS}</td>
+		</tr>
+	<!-- END leader -->
 	<tr>
 		<td class="row3" colspan="5"><b>{L_GROUP_APPROVED}</b></td>
 	</tr>

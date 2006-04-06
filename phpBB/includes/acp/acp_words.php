@@ -69,8 +69,8 @@ class acp_words
 
 			case 'save':
 				$word_id = request_var('id', 0);
-				$word = request_var('word', '');
-				$replacement = request_var('replacement', '');
+				$word = request_var('word', '', true);
+				$replacement = request_var('replacement', '', true);
 
 				if (!$word || !$replacement)
 				{

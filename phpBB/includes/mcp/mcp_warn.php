@@ -188,7 +188,7 @@ function mcp_warn_post_view($id, $mode, $action)
 
 	$post_id = request_var('p', 0);
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-	$warning = request_var('warning', '');
+	$warning = request_var('warning', '', true);
 
 	$sql = 'SELECT u.*, p.* FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
 		WHERE post_id = $post_id
@@ -302,7 +302,7 @@ function mcp_warn_user_view($id, $mode, $action)
 	$user_id = request_var('u', 0);
 	$username = request_var('username', '');
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
-	$warning = request_var('warning', '');
+	$warning = request_var('warning', '', true);
 
 	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
 

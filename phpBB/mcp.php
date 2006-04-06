@@ -33,7 +33,8 @@ $id = request_var('i', '');
 
 if (isset($_REQUEST['mode']) && is_array($_REQUEST['mode']))
 {
-	list($mode, ) = each(request_var('mode', array('')));
+	$mode = request_var('mode', array(''));
+	list($mode, ) = each($mode);
 }
 else
 {

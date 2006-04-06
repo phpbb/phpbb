@@ -413,16 +413,14 @@ function compose_pm($id, $mode, $action)
 
 	if ($submit || $preview || $refresh)
 	{
-		$subject = request_var('subject', '');
+		$subject = request_var('subject', '', true);
 
 		if (strcmp($subject, strtoupper($subject)) == 0 && $subject)
 		{
 			$subject = strtolower($subject);
 		}
-		$subject = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $subject);
 
-		$message_parser->message = (isset($_POST['message'])) ? htmlspecialchars(str_replace(array('\\\'', '\\"', '\\0', '\\\\'), array('\'', '"', '\0', '\\'), $_POST['message'])) : '';
-		$message_parser->message = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $message_parser->message);
+		$message_parser->message = request_var('message', '', true);
 
 		$icon_id			= request_var('icon', 0);
 
@@ -502,7 +500,7 @@ function compose_pm($id, $mode, $action)
 			unset($message_parser);
 
 			// ((!$message_subject) ? $subject : $message_subject)
-			$msg_id = submit_pm($action, $subject, $pm_data, $update_message);
+			$msg_id = submit_pm($action, $subject, $pm_data, true);
 
 			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view&amp;p=" . $msg_id;
 			$return_folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=outbox";

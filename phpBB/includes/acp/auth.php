@@ -701,7 +701,7 @@ class auth_admin extends auth
 		$id_field  = $ug_type . '_id';
 
 		// Get any flags as required
-		list(, $flag) = each(array_keys($auth));
+		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
 		
 		// This ID (the any-flag) is set if one or more permissions are true...
@@ -831,7 +831,7 @@ class auth_admin extends auth
 		global $db;
 
 		// Get any-flag as required
-		list(, $flag) = each(array_keys($auth));
+		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
 		
 		// Remove any-flag from auth ary

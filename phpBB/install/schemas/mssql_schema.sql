@@ -526,6 +526,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_browser] [varchar] (150) NULL ,
 	[session_page] [varchar] (200) NOT NULL ,
 	[session_viewonline] [int] NOT NULL ,
+	[session_autologin] [int] NOT NULL ,
 	[session_admin] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
@@ -1525,6 +1526,7 @@ ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD
 	CONSTRAINT [DF_sessio_session_time] DEFAULT (0) FOR [session_time],
 	CONSTRAINT [DF_sessio_session_ip] DEFAULT ('0') FOR [session_ip],
 	CONSTRAINT [DF_sessio_session_viewonline] DEFAULT (1) FOR [session_viewonline],
+	CONSTRAINT [DF_sessio_session_autologin] DEFAULT (0) FOR [session_autologin],
 	CONSTRAINT [DF_sessio_session_admin] DEFAULT (0) FOR [session_admin]
 GO
 

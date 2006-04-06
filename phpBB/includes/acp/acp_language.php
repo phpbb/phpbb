@@ -138,7 +138,7 @@ class acp_language
 						'DATA'		=> $data,
 						'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 						'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-						'DEFAULT'	=> $_REQUEST[$data] ? request_var($data, '') : $default
+						'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
 					));
 				}
 
@@ -170,8 +170,8 @@ class acp_language
 
 				$sql_ary	= array(
 					'lang_english_name'		=> request_var('lang_english_name', $row['lang_english_name']),
-					'lang_local_name'		=> request_var('lang_local_name', $row['lang_local_name']),
-					'lang_author'			=> request_var('lang_author', $row['lang_author']),
+					'lang_local_name'		=> request_var('lang_local_name', $row['lang_local_name'], true),
+					'lang_author'			=> request_var('lang_author', $row['lang_author'], true),
 				);
 
 				$db->sql_query('UPDATE ' . LANG_TABLE . ' 
@@ -238,7 +238,9 @@ class acp_language
 				if ($this->language_directory == 'email')
 				{
 					// Email Template
-					fwrite($fp, (STRIP) ? stripslashes($_POST['entry']) : $_POST['entry']);
+					$entry = (STRIP) ? stripslashes($_POST['entry']) : $_POST['entry'];
+					$entry = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $entry);
+					fwrite($fp, $entry);
 				}
 				else
 				{
@@ -263,6 +265,7 @@ class acp_language
 								foreach ($value as $_key => $_value)
 								{
 									$_value = (STRIP) ? stripslashes($_value) : $_value;
+									$_value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $_value);
 									$entry .= "\t\t" . (int) $_key . "\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
 								}
 								
@@ -283,6 +286,7 @@ class acp_language
 							if (!is_array($value))
 							{
 								$value = (STRIP) ? stripslashes($value) : $value;
+								$value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $value);
 								$entry = "\t'" . $key . "'\t=> '" . str_replace("'", "\\'", $value) . "',\n";
 							}
 							else
@@ -292,6 +296,7 @@ class acp_language
 								foreach ($value as $_key => $_value)
 								{
 									$_value = (STRIP) ? stripslashes($_value) : $_value;
+									$_value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $_value);
 									$entry .= "\t\t'" . $_key . "'\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
 								}
 								

@@ -1113,7 +1113,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		if ($update)
 		{
 			$name = request_var('name', '');
-			$copyright = request_var('copyright', '');
+			$copyright = request_var('copyright', '', true);
 
 			$template_id = request_var('template_id', 0);
 			$theme_id = request_var('theme_id', 0);
@@ -1598,7 +1598,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$style_row = array(
 			$mode . '_name'			=> request_var('name', ''),
-			$mode . '_copyright'	=> request_var('copyright', ''),
+			$mode . '_copyright'	=> request_var('copyright', '', true),
 			'template_id'			=> 0,
 			'theme_id'				=> 0,
 			'imageset_id'			=> 0,

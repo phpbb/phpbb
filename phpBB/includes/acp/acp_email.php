@@ -125,6 +125,7 @@ class acp_email
 
 				// Send the messages
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 				$messenger = new messenger($use_queue);
 
 				$errored = false;
@@ -170,12 +171,7 @@ class acp_email
 
 				if ($group_id)
 				{
-					$sql = 'SELECT group_name 
-						FROM ' . GROUPS_TABLE . " 
-						WHERE group_id = $group_id";
-					$result = $db->sql_query($sql);
-					$group_name = (string) $db->sql_fetchfield('group_name');
-					$db->sql_freeresult($result);
+					$group_name = get_group_name($group_id);
 				}
 				else
 				{
@@ -218,8 +214,8 @@ class acp_email
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> $usernames,
 			'U_FIND_USERNAME'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_email&amp;field=usernames",
-			'SUBJECT'				=> request_var('subject', ''),
-			'MESSAGE'				=> request_var('message', ''),
+			'SUBJECT'				=> request_var('subject', '', true),
+			'MESSAGE'				=> request_var('message', '', true),
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options)
 		);
 

@@ -105,6 +105,7 @@ $global_rule_conditions = array(
 function get_folder($user_id, $folder_id = false)
 {
 	global $db, $user, $template;
+	global $phpbb_root_path, $phpEx, $SID;
 
 	$folder = array();
 
@@ -163,13 +164,17 @@ function get_folder($user_id, $folder_id = false)
 	// Define Folder Array for template designers (and for making custom folders usable by the template too)
 	foreach ($folder as $f_id => $folder_ary)
 	{
+		$folder_id_name = ($f_id == PRIVMSGS_INBOX) ? 'inbox' : (($f_id == PRIVMSGS_OUTBOX) ? 'outbox' : 'sentbox');
+
 		$template->assign_block_vars('folder', array(
 			'FOLDER_ID'			=> $f_id,
 			'FOLDER_NAME'		=> $folder_ary['folder_name'],
 			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
 			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
 
-			'S_CUR_FOLDER'		=> ($f_id == $folder_id) ? true : false,
+			'U_FOLDER'			=> ($f_id > 0) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder={$f_id}" : "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder={$folder_id_name}",
+
+			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
 			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
 			'S_CUSTOM_FOLDER'	=> ($f_id > 0) ? true : false)
 		);
@@ -716,7 +721,7 @@ function handle_mark_actions($user_id, $mark_action)
 					AND msg_id IN (" . implode(', ', $msg_ids) . ')';
 			$db->sql_query($sql);
 
-			break;
+		break;
 
 		case 'delete_marked':
 
@@ -742,13 +747,7 @@ function handle_mark_actions($user_id, $mark_action)
 				confirm_box(false, 'DELETE_MARKED_PM', build_hidden_fields($s_hidden_fields));
 			}
 
-			break;
-
-		case 'export_as_xml':
-		case 'export_as_csv':
-		case 'export_as_txt':
-			$export_as = str_replace('export_as_', '', $mark_action);
-			break;
+		break;
 
 		default:
 			return false;
@@ -976,7 +975,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 		{
 			if ($plaintext)
 			{
-				$sql = 'SELECT group_name
+				$sql = 'SELECT group_name, group_type
 					FROM ' . GROUPS_TABLE . ' 
 						WHERE group_id IN (' . implode(', ', $g) . ')';
 				$result = $db->sql_query($sql);
@@ -985,7 +984,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 				{
 					if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 					{
-						$address[] = $row['group_name'];
+						$address[] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1455,7 +1454,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 			'AUTHOR_NAME'	=> $author,
 			'USERNAME'		=> $addr['name'],
 
-			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&mode=unread")
+			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
 		);
 
 		$messenger->send($addr['method']);

@@ -755,7 +755,7 @@ class acp_users
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= request_var('mark', array(0));
-				$message	= request_var('message', '');
+				$message	= request_var('message', '', true);
 
 				// Sort keys
 				$sort_days	= request_var('st', 0);
@@ -872,7 +872,7 @@ class acp_users
 
 					foreach ($var_ary as $var => $default)
 					{
-						$data[$var] = request_var($var, $default);
+						$data[$var] = (in_array($var, array('location', 'occupation', 'interests')) ? request_var($var, $default, true) : $data[$var] = request_var($var, $default);
 					}
 
 					$var_ary = array(
@@ -1424,7 +1424,7 @@ class acp_users
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
-				$signature		= request_var('signature', $user_row['user_sig']);
+				$signature		= request_var('signature', $user_row['user_sig'], true);
 				
 				$preview		= (isset($_POST['preview'])) ? true : false;
 

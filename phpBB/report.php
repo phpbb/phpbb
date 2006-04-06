@@ -23,7 +23,7 @@ $user->setup('mcp');
 
 $post_id = request_var('p', 0);
 $reason_id = request_var('reason_id', 0);
-$report_text = request_var('report_text', '');
+$report_text = request_var('report_text', '', true);
 $user_notify = (isset($_POST['notify']) && $user->data['is_registered']) ? true : false;
 
 if (!$post_id)

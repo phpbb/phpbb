@@ -403,7 +403,7 @@ class acp_attachments
 						$ext_row = array();
 					}
 
-					$group_name = request_var('group_name', '');
+					$group_name = request_var('group_name', '', true);
 					$new_group_name = ($action == 'add') ? $group_name : (($ext_row['group_name'] != $group_name) ? $group_name : '');
 
 					if (!$group_name)
@@ -572,7 +572,7 @@ class acp_attachments
 						if ($action == 'add')
 						{
 							$ext_group_row = array(
-								'group_name'	=> request_var('group_name', ''),
+								'group_name'	=> request_var('group_name', '', true),
 								'cat_id'		=> 0,
 								'allow_group'	=> 1,
 								'allow_in_pm'	=> 1,

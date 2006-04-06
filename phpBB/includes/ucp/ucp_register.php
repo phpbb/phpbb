@@ -27,7 +27,6 @@ class ucp_register
 
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-		// Do not alter this first one to use request_var!
 		$confirm_id = request_var('confirm_id', '');
 		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
 		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;

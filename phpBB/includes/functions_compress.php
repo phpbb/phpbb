@@ -116,7 +116,7 @@ class compress
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
 *
-* Modified extensively by psoTFX and DavidMJ, © phpBB Group, 2003
+* Modified extensively by psoTFX and DavidMJ, (c) phpBB Group, 2003
 *
 * Based on work by Eric Mueller and Denis125
 * Official ZIP file format: http://www.pkware.com/appnote.txt

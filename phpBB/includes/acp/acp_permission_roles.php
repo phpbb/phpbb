@@ -149,7 +149,7 @@ class acp_permission_roles
 
 				case 'add':
 
-					$role_name = request_var('role_name', '');
+					$role_name = request_var('role_name', '', true);
 					$role_group_ids = request_var('role_group_ids', array(0));
 					$pre_select = request_var('pre_select', 'custom');
 					$auth_settings = request_var('setting', array('' => 0));
@@ -313,7 +313,7 @@ class acp_permission_roles
 				$options_from = request_var('options_from', 0);
 
 				$role_row = array(
-					'role_name'			=> request_var('role_name', ''),
+					'role_name'			=> request_var('role_name', '', true),
 					'role_type'			=> $permission_type,
 					'role_group_ids'	=> implode(':', request_var('role_group_ids', array(0))),
 				);

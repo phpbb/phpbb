@@ -177,22 +177,46 @@ class session
 				$s_browser = ($config['browser_check']) ? substr($this->data['session_browser'], 0, 149) : '';
 				$u_browser = ($config['browser_check']) ? substr($this->browser, 0, 149) : '';
 
-				if ($u_ip == $s_ip && $s_browser == $u_browser)
+				if ($u_ip === $s_ip && $s_browser === $u_browser)
 				{
-					// Only update session DB a minute or so after last update or if page changes
-					if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page['page'])
+					$session_expired = false;
+					
+					// Check the session length timeframe if autologin is not enabled.
+					// Else check the autologin length... and also removing those having autologin enabled but no longer allowed board-wide.
+					if (!$this->data['session_autologin'])
 					{
-						$sql = 'UPDATE ' . SESSIONS_TABLE . "
-							SET session_time = $this->time_now, session_page = '" . $db->sql_escape(substr($this->page['page'], 0, 199)) . "'
-							WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
-						$db->sql_query($sql);
+						if ($this->data['session_time'] < $this->time_now - ($config['session_length'] + 60))
+						{
+							$session_expired = true;
+						}
 					}
-					
-					// Ultimately to be removed
-					$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
-					$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
-					
-					return true;
+					else if (!$config['allow_autologin'] || ($config['max_autologin_time'] && $this->data['session_time'] < $this->time_now - (86400 * (int) $config['max_autologin_time']) + 60))
+					{
+						$session_expired = true;
+					}
+
+					if (!$session_expired)
+					{
+						// Only update session DB a minute or so after last update or if page changes
+						if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page['page'])
+						{
+							$sql = 'UPDATE ' . SESSIONS_TABLE . "
+								SET session_time = $this->time_now, session_page = '" . $db->sql_escape(substr($this->page['page'], 0, 199)) . "'
+								WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+							$db->sql_query($sql);
+						}
+
+						// Ultimately to be removed
+						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
+						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
+
+						return true;
+					}
+				}
+				else
+				{
+					// Added logging temporarly to help debug bugs...
+					add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
 				}
 			}
 		}
@@ -356,7 +380,7 @@ class session
 		}
 		else
 		{
-			$this->data['session_last_visit'] = time();
+			$this->data['session_last_visit'] = $this->time_now;
 		}
 
 		// At this stage we should have a filled data array, defined cookie u and k data.
@@ -376,7 +400,10 @@ class session
 		$this->data['is_bot'] = ($bot) ? true : false;
 		//
 		//
-		
+
+		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
+		$session_autologin = (($this->cookie_data['k'] || $persist_login) && $this->data['is_registered']) ? true : false;
+
 		// Create or update the session
 		$sql_ary = array(
 			'session_user_id'		=> (int) $this->data['user_id'],
@@ -386,6 +413,7 @@ class session
 			'session_browser'		=> (string) $this->browser,
 			'session_page'			=> (string) substr($this->page['page'], 0, 199),
 			'session_ip'			=> (string) $this->ip,
+			'session_autologin'		=> ($session_autologin) ? 1 : 0,
 			'session_admin'			=> ($set_admin) ? 1 : 0,
 			'session_viewonline'	=> ($viewonline) ? 1 : 0,
 		);
@@ -423,8 +451,7 @@ class session
 		$db->sql_return_on_error(false);
 
 		// Regenerate autologin/persistent login key
-		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
-		if (($this->cookie_data['k'] || $persist_login) && $this->data['user_id'] != ANONYMOUS)
+		if ($session_autologin)
 		{
 			$this->set_login_key();
 		}

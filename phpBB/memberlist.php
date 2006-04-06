@@ -446,8 +446,8 @@ switch ($mode)
 			trigger_error('FLOOD_EMAIL_LIMIT');
 		}
 
-		$name		= strip_tags(request_var('name', ''));
-		$email		= strip_tags(request_var('email', ''));
+		$name		= request_var('name', '');
+		$email		= request_var('email', '');
 		$email_lang = request_var('lang', '');
 		$subject	= request_var('subject', '');
 		$message	= request_var('message', '');

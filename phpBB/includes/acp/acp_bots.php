@@ -112,7 +112,7 @@ class acp_bots
 			case 'edit':
 			case 'add':
 				$bot_row = array(
-					'bot_name'		=> request_var('bot_name', ''),
+					'bot_name'		=> request_var('bot_name', '', true),
 					'bot_agent'		=> request_var('bot_agent', ''),
 					'bot_ip'		=> request_var('bot_ip', ''),
 					'bot_active'	=> request_var('bot_active', true),

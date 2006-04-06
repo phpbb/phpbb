@@ -1,24 +1,21 @@
 <!-- INCLUDE ucp_header.html -->
 
-<!-- $Id$ -->
-
 <div id="pagecontent">
 <!-- IF not PROMPT -->
-<!-- INCLUDE ucp_pm_message_header.html -->
+	<!-- INCLUDE ucp_pm_message_header.html -->
 <!-- ENDIF -->
 	<div style="padding: 2px;"></div>
 
-<!-- IF S_PM_ICONS and S_UNREAD -->
-	<!-- DEFINE $COLSPAN = 7 -->
-<!-- ELSEIF not S_PM_ICONS and not S_UNREAD -->
-	<!-- DEFINE $COLSPAN = 5 -->
-<!-- ELSE -->
+<!-- IF S_PM_ICONS -->
 	<!-- DEFINE $COLSPAN = 6 -->
+<!-- ELSE -->
+	<!-- DEFINE $COLSPAN = 5 -->
 <!-- ENDIF -->
 
 <form name="viewfolder" method="post" action="{S_PM_ACTION}" style="margin:0px">
+
 <!-- IF PROMPT -->
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
 	<tr>
 		<th colspan="2" valign="middle">{L_OPTIONS}</th>
 	</tr>
@@ -33,22 +30,20 @@
 	<tr>
 		<td class="cat" colspan="2" align="center"><input type="hidden" name="export_option" value="CSV" /><input class="btnmain" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="Reset" name="reset" /></td>
 	</tr>
-</table>
+	</table>
+
+</form>
 <!-- ELSE -->
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
-<!-- IF NUM_NOT_MOVED -->
-	<tr>
-		<td class="row3" colspan="{$COLSPAN}" align="center"><span class="gen">{NOT_MOVED_MESSAGES}<br />{RELEASE_MESSAGE_INFO}</span></td>
-	</tr>
-<!-- ENDIF -->
+	
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
+	<!-- IF NUM_NOT_MOVED -->
+		<tr>
+			<td class="row3" colspan="{$COLSPAN}" align="center"><span class="gen">{NOT_MOVED_MESSAGES}<br />{RELEASE_MESSAGE_INFO}</span></td>
+		</tr>
+	<!-- ENDIF -->
 	<tr>
 		<th colspan="<!-- IF S_PM_ICONS -->3<!-- ELSE -->2<!-- ENDIF -->">&nbsp;{L_SUBJECT}&nbsp;</th>
-		<!-- IF S_UNREAD -->
-			<th>&nbsp;<!-- IF S_SHOW_RECIPIENTS -->{L_RECIPIENTS}<!-- ELSE -->{L_AUTHOR}<!-- ENDIF -->&nbsp;</th>
-			<th>&nbsp;{L_FOLDER}&nbsp;</th>
-		<!-- ELSE -->
-			<th>&nbsp;<!-- IF S_SHOW_RECIPIENTS -->{L_RECIPIENTS}<!-- ELSE -->{L_AUTHOR}<!-- ENDIF -->&nbsp;</th>
-		<!-- ENDIF -->
+		<th>&nbsp;<!-- IF S_SHOW_RECIPIENTS -->{L_RECIPIENTS}<!-- ELSE -->{L_AUTHOR}<!-- ENDIF -->&nbsp;</th>
 		<th>&nbsp;{L_SENT_AT}&nbsp;</th>
 		<th>&nbsp;{L_MARK}&nbsp;</th>
 	</tr>
@@ -61,11 +56,11 @@
 		<!-- ENDIF -->
 		<!-- IF messagerow.S_PM_DELETED --><td class="row3"><!-- ELSE --><td class="row1"><!-- ENDIF -->
 			<!-- IF not messagerow.PM_IMG and messagerow.PM_CLASS -->
-				<span class="{messagerow.PM_CLASS}"><img src="images/spacer.gif" width="10" height="10" alt="" border="0" /></span>&nbsp;
+				<span class="{messagerow.PM_CLASS}" style="float: left;"><img src="images/spacer.gif" width="10" height="10" alt="" /></span>&nbsp;
 			<!-- ELSEIF messagerow.PM_IMG -->
 				{messagerow.PM_IMG}&nbsp;
 			<!-- ENDIF -->
-			<p class="topictitle">
+			<span class="topictitle">
 				{messagerow.ATTACH_ICON_IMG} 
 				<!-- IF messagerow.S_PM_DELETED -->
 					{L_MESSAGE_REMOVED_FROM_OUTBOX}<br />
@@ -73,11 +68,8 @@
 				<!-- ELSE -->
 					<a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a>
 				<!-- ENDIF -->
-			</p></td>
+			</span></td>
 		<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF S_SHOW_RECIPIENTS -->{messagerow.RECIPIENTS}<!-- ELSE -->{messagerow.MESSAGE_AUTHOR}<!-- ENDIF --></p></td>
-		<!-- IF S_UNREAD -->
-			<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF messagerow.FOLDER --><a href="{messagerow.U_FOLDER}">{messagerow.FOLDER}</a><!-- ELSE -->{L_UNKNOWN_FOLDER}<!-- ENDIF --></p></td>
-		<!-- ENDIF -->
 		<td class="row1" width="120" align="center"><p class="topicdetails">{messagerow.SENT_TIME}</p></td>
 		<td class="row1" width="20" align="center"><p class="topicdetails"><input type="checkbox" name="marked_msg_id[]" value="{messagerow.MESSAGE_ID}" /></p></td>
 	</tr>
@@ -86,25 +78,26 @@
 		<td class="row1" colspan="{$COLSPAN}" height="30" align="center" valign="middle"><span class="gen">{L_NO_MESSAGES}</span></td>
 	</tr>
 	<!-- END messagerow -->
-
-	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
 </table>
+
+<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
-	<tr>
-		<td class="cat" align="left"><span class="gensmall">{L_DISPLAY_MESSAGES}:</span> {S_SELECT_SORT_DAYS} <span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR} <input class="btnlite" type="submit" name="sort" value="{L_GO}" /></td>
-		<td class="cat" align="right"><select name="mark_option">{S_MARK_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="submit_mark" value="{L_GO}" />&nbsp;</td>
-	</tr>
+<tr>
+	<td class="cat">
+<!-- IF .messagerow -->
+	<div style="float: left;"><select name="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select>&nbsp;<input class="btnlite" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" /></div>
+	<div style="float: right;"><select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="submit_mark" value="{L_GO}" />&nbsp;</div>
+<!-- ENDIF -->
+	</td>
+</tr>
 </table>
 
 <div style="padding: 2px;"></div>
 <!-- INCLUDE ucp_pm_message_footer.html -->
 
-<!-- IF .messagerow -->
-	<div style="float:left"><br /><select name="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select>&nbsp;<input class="btnlite" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" /></div>
 <!-- ENDIF -->
 
-<!-- ENDIF -->
-</form>
 <br clear="all" />
 
 </div>

@@ -535,7 +535,7 @@ function disapprove_post($post_id_list, $mode)
 	}
 
 	$redirect = request_var('redirect', $user->data['session_page']);
-	$reason = request_var('reason', '');
+	$reason = request_var('reason', '', true);
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';
 

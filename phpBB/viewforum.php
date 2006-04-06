@@ -166,7 +166,7 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 	}
 
 	$s_forum_rules = '';
-	gen_forum_auth_level('forum', $forum_id);
+	gen_forum_auth_level('forum', $forum_id, $forum_data['forum_status']);
 
 	// Topic ordering options
 	$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);

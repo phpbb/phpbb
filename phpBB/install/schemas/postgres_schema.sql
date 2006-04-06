@@ -828,6 +828,7 @@ CREATE TABLE phpbb_sessions (
    session_browser varchar(150) DEFAULT '' NULL,
    session_page varchar(200) DEFAULT '' NOT NULL,
    session_viewonline INT2 DEFAULT '1' NOT NULL,
+   session_autologin INT2 DEFAULT '0' NOT NULL,
    session_admin INT2 DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
   CHECK (session_user_id>=0)

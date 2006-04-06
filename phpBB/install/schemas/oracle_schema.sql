@@ -1220,6 +1220,7 @@ CREATE TABLE phpbb_sessions (
   session_browser varchar2(150) DEFAULT '',
   session_page varchar2(200) DEFAULT '',
   session_viewonline number(1) DEFAULT '1' NOT NULL,
+  session_autologin number(1) DEFAULT '0' NOT NULL,
   session_admin number(1) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_sessions PRIMARY KEY (session_id)
 )

@@ -2254,7 +2254,7 @@ function tidy_warnings()
 			WHERE warning_id $sql_where";
 		$db->sql_query($sql);
 	
-		foreach($user_list as $user_id => $value)
+		foreach ($user_list as $user_id => $value)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . " SET user_warnings = user_warnings - $value
 				WHERE user_id = $user_id";

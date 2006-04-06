@@ -122,7 +122,6 @@ $lang = array_merge($lang, array(
 	'acl_f_announce'	=> array('lang' => 'Can post announcements', 'cat' => 'post'),
 	'acl_f_sticky'		=> array('lang' => 'Can post stickies', 'cat' => 'post'),
 	'acl_f_reply'		=> array('lang' => 'Can reply to posts', 'cat' => 'post'),
-	'acl_f_quote'		=> array('lang' => 'Can quote posts', 'cat' => 'post'),
 	'acl_f_icons'		=> array('lang' => 'Can use post icons', 'cat' => 'post'),
 
 	'acl_f_poll'		=> array('lang' => 'Can create polls', 'cat' => 'polls'),
@@ -141,7 +140,6 @@ $lang = array_merge($lang, array(
 	'acl_f_delete'		=> array('lang' => 'Can delete own posts', 'cat' => 'actions'),
 	'acl_f_user_lock'	=> array('lang' => 'Can lock own topics', 'cat' => 'actions'),
 	'acl_f_bump'		=> array('lang' => 'Can bump topics', 'cat' => 'actions'),
-	'acl_f_rate'		=> array('lang' => 'Can rate posts', 'cat' => 'actions'),
 	'acl_f_report'		=> array('lang' => 'Can report posts', 'cat' => 'actions'),
 	'acl_f_subscribe'	=> array('lang' => 'Can subscribe forum', 'cat' => 'actions'),
 	'acl_f_print'		=> array('lang' => 'Can print topics', 'cat' => 'actions'),

@@ -16,7 +16,6 @@
 * @param inbox|outbox|sentbox display folder with the associated name
 *
 *
-*	Display Unread Messages - mode=unread
 *	Display Messages (default to inbox) - mode=view
 *	Display single message - mode=view&p=[msg_id] or &p=[msg_id] (short linkage)
 *
@@ -101,7 +100,7 @@ class ucp_pm
 				);
 				
 				$tpl_file = 'ucp_pm_popup';
-				break;
+			break;
 
 			// Compose message
 			case 'compose':
@@ -118,7 +117,7 @@ class ucp_pm
 				compose_pm($id, $mode, $action);
 
 				$tpl_file = 'posting_body';
-				break;
+			break;
 
 			case 'options':
 				$sql = 'SELECT group_message_limit
@@ -136,7 +135,7 @@ class ucp_pm
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 
 				$tpl_file = 'ucp_pm_options';
-				break;
+			break;
 
 			case 'drafts':
 
@@ -155,7 +154,6 @@ class ucp_pm
 
 			break;
 
-			case 'unread':
 			case 'view':
 				
 				$sql = 'SELECT group_message_limit
@@ -181,7 +179,7 @@ class ucp_pm
 				$msg_id = request_var('p', 0);
 				$view	= request_var('view', '');
 
-//				if ($msg_id && $action == 'view_folder')
+				// View message if specified
 				if ($msg_id)
 				{
 					$action = 'view_message';
@@ -200,12 +198,23 @@ class ucp_pm
 
 
 				// First Handle Mark actions and moving messages
+				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
+				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
+				$mark_option = request_var('mark_option', '');
+				$dest_folder = request_var('dest_folder', PRIVMSGS_NO_BOX);
+
+				// Is moving PM triggered through mark options?
+				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
+				{
+					$move_pm = true;
+					$dest_folder = (int) $mark_option;
+					$submit_mark = false;
+				}
 
 				// Move PM
-				if (isset($_REQUEST['move_pm']))
+				if ($move_pm)
 				{
 					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
-					$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
 					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))
@@ -221,9 +230,9 @@ class ucp_pm
 				}
 
 				// Message Mark Options
-				if (isset($_REQUEST['submit_mark']))
+				if ($submit_mark)
 				{
-					handle_mark_actions($user->data['user_id'], request_var('mark_option', ''));
+					handle_mark_actions($user->data['user_id'], $mark_option);
 				}
 
 				// If new messages arrived, place them into the appropiate folder
@@ -234,7 +243,7 @@ class ucp_pm
 					$num_not_moved = $user->data['user_new_privmsg'];
 				}
 
-				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX && $mode != 'unread')
+				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)
 				{
 					$folder_id = PRIVMSGS_INBOX;
 				}
@@ -244,8 +253,11 @@ class ucp_pm
 						FROM ' . PRIVMSGS_TO_TABLE . "
 						WHERE msg_id = $msg_id
 							AND user_id = " . $user->data['user_id'];
-					$result = $db->sql_query_limit($sql, 1);
-					if (!($row = $db->sql_fetchrow($result)))
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if (!$row)
 					{
 						trigger_error('NO_MESSAGE');
 					}
@@ -256,7 +268,6 @@ class ucp_pm
 				if ($action == 'view_message' && $msg_id)
 				{
 					// Get Message user want to see
-
 					if ($view == 'next' || $view == 'previous')
 					{
 						$sql_condition = ($view == 'next') ? '>' : '<';
@@ -271,8 +282,10 @@ class ucp_pm
 								AND p.message_time $sql_condition p2.message_time
 							ORDER BY p.message_time $sql_ordering";
 						$result = $db->sql_query_limit($sql, 1);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
 
-						if (!($row = $db->sql_fetchrow($result)))
+						if (!$row)
 						{
 							$message = ($view == 'next') ? 'NO_NEWER_PM' : 'NO_OLDER_PM';
 							trigger_error($message);
@@ -290,9 +303,11 @@ class ucp_pm
 							AND t.folder_id = $folder_id
 							AND t.msg_id = p.msg_id
 							AND p.msg_id = $msg_id";
-					$result = $db->sql_query_limit($sql, 1);
+					$result = $db->sql_query($sql);
+					$message_row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
 
-					if (!($message_row = $db->sql_fetchrow($result)))
+					if (!$message_row)
 					{
 						trigger_error('NO_MESSAGE');
 					}
@@ -306,7 +321,7 @@ class ucp_pm
 				$s_folder_options = $s_to_folder_options = '';
 				foreach ($folder as $f_id => $folder_ary)
 				{
-					$option = '<option' . ((!in_array($f_id, array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX))) ? ' class="blue"' : '') . ' value="' . $f_id . '"' . ((($f_id == $folder_id && $mode != 'unread') || ($f_id === 'unread' && $mode == 'unread')) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
+					$option = '<option' . ((!in_array($f_id, array(PRIVMSGS_INBOX, PRIVMSGS_OUTBOX, PRIVMSGS_SENTBOX))) ? ' class="blue"' : '') . ' value="' . $f_id . '"' . (($f_id == $folder_id) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
 
 					$s_to_folder_options .= ($f_id != PRIVMSGS_OUTBOX && $f_id != PRIVMSGS_SENTBOX) ? $option : '';
 					$s_folder_options .= $option;
@@ -338,25 +353,25 @@ class ucp_pm
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,
 					'S_IN_SENTBOX'			=> ($folder_id == PRIVMSGS_SENTBOX) ? true : false,
 
-					'FOLDER_STATUS'			=> $folder_status['message'],
-					'FOLDER_MAX_MESSAGES'	=> $folder_status['max'],
-					'FOLDER_CUR_MESSAGES'	=> $folder_status['cur'],
+					'FOLDER_STATUS'				=> $folder_status['message'],
+					'FOLDER_MAX_MESSAGES'		=> $folder_status['max'],
+					'FOLDER_CUR_MESSAGES'		=> $folder_status['cur'],
 					'FOLDER_REMAINING_MESSAGES'	=> $folder_status['remaining'],
-					'FOLDER_PERCENT'		=> $folder_status['percent'])
+					'FOLDER_PERCENT'			=> $folder_status['percent'])
 				);
 
-				if ($mode == 'unread' || $action == 'view_folder')
+				if ($action == 'view_folder')
 				{
 					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.'.$phpEx);
-					view_folder($id, $mode, $folder_id, $folder, (($mode == 'unread') ? 'unread' : 'folder'));
+					view_folder($id, $mode, $folder_id, $folder);
 
 					$tpl_file = 'ucp_pm_viewfolder';
 				}
 				else if ($action == 'view_message')
 				{
 					$template->assign_vars(array(
-						'S_VIEW_MESSAGE'=> true,
-						'MSG_ID'		=> $msg_id)
+						'S_VIEW_MESSAGE'	=> true,
+						'MSG_ID'			=> $msg_id)
 					);
 
 					if (!$msg_id)
@@ -370,7 +385,7 @@ class ucp_pm
 					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';
 				}
 
-				break;
+			break;
 
 			default:
 				trigger_error('NO_ACTION_MODE');

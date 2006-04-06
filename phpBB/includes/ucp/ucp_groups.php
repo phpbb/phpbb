@@ -486,26 +486,30 @@ class ucp_groups
 								}
 							}
 
-							// Only set the rank, colour, etc. if it's changed or if we're adding a new
-							// group. This prevents existing group members being updated if no changes 
-							// were made.
-					
-							$group_attributes = array();
-							$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height');
-							foreach ($test_variables as $test)
+							if (!sizeof($error))
 							{
-								if ($action == 'add' || (isset($submit_ary[$test]) && $group_row['group_' . $test] != $submit_ary[$test]))
+								// Only set the rank, colour, etc. if it's changed or if we're adding a new
+								// group. This prevents existing group members being updated if no changes 
+								// were made.
+						
+								$group_attributes = array();
+								$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height');
+								foreach ($test_variables as $test)
 								{
-									$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
+									if ($action == 'add' || (isset($submit_ary[$test]) && $group_row['group_' . $test] != $submit_ary[$test]))
+									{
+										$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
+									}
+								}
+
+								if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
+								{
+									$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+									trigger_error($user->lang[$message] . $return_page);
 								}
 							}
 
-							if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
-							{
-								$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-								trigger_error($user->lang[$message] . $return_page);
-							}
-							else
+							if (sizeof($error))
 							{
 								$group_rank = $submit_ary['rank'];
 

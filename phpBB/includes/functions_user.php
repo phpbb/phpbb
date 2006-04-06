@@ -1253,12 +1253,7 @@ function group_delete($group_id, $group_name = false)
 
 	if (!$group_name)
 	{
-		$sql = 'SELECT group_name
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_id = $group_id";
-		$result = $db->sql_query($sql);
-		$group_name = (string) $db->sql_fetchfield('group_name');
-		$db->sql_freeresult($result);
+		$group_name = get_group_name($group_id);
 	}
 
 	$start = 0;
@@ -1403,17 +1398,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if (!$group_name)
 	{
-		$sql = 'SELECT group_name
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_id = $group_id";
-		$result = $db->sql_query($sql);
-
-		if (!extract($db->sql_fetchrow($result)))
-		{
-			trigger_error("Could not obtain name of group $group_id", E_USER_ERROR);
-		}
-
-		$db->sql_freeresult($result);
+		$group_name = get_group_name($group_id);
 	}
 
 	$log = ($leader) ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
@@ -1526,12 +1511,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if (!$group_name)
 	{
-		$sql = 'SELECT group_name
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_id = $group_id";
-		$result = $db->sql_query($sql);
-		$group_name = (string) $db->sql_fetchfield('group_name');
-		$db->sql_freeresult($result);
+		$group_name = get_group_name($group_id);
 	}
 
 	$log = 'LOG_GROUP_REMOVE';
@@ -1590,12 +1570,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	if (!$group_name)
 	{
-		$sql = 'SELECT group_name
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_id = $group_id";
-		$result = $db->sql_query($sql);
-		$group_name = (string) $db->sql_fetchfield('group_name');
-		$db->sql_freeresult($result);
+		$group_name = get_group_name($group_id);
 	}
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
@@ -1651,6 +1626,28 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 		WHERE user_id IN (' . implode(', ', $user_id_ary) . ')';
 	$db->sql_query($sql);
+}
+
+/**
+* Get group name
+*/
+function get_group_name($group_id)
+{
+	global $db, $user;
+
+	$sql = 'SELECT group_name, group_type
+		FROM ' . GROUPS_TABLE . '
+		WHERE group_id = ' . (int) $group_id;
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if (!$row)
+	{
+		return '';
+	}
+
+	return ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 }
 
 /**

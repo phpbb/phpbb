@@ -1062,12 +1062,7 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($edit_comment)
 				{
-					$actual_comment_list = request_var('comment_list', array(''));
-
-					foreach ($actual_comment_list as $index => $entry)
-					{
-						$this->attachment_data[$index]['comment'] = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $entry);
-					}
+					$actual_comment_list = request_var('comment_list', array(''), true);
 				}
 				
 				if (($add_file || $preview) && $upload_file)

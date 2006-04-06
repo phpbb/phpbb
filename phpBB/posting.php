@@ -285,16 +285,28 @@ else
 	$notify_set = 0;
 }
 
-if (!$auth->acl_get('f_' . $mode, $forum_id) && $forum_type == FORUM_POST)
+// Check permissions
+if ($forum_type != FORUM_POST && !$auth->acl_get('f_read', $forum_id))
 {
 	if ($user->data['is_registered'])
 	{
-		trigger_error('USER_CANNOT_' . strtoupper($mode));
+		trigger_error('USER_CANNOT_READ');
+	}
+
+	login_box('', $user->lang['LOGIN_EXPLAIN_POST']);
+}
+
+$check_auth = ($mode == 'quote') ? 'reply' : $mode;
+
+if (!$auth->acl_get('f_' . $check_auth, $forum_id) && $forum_type == FORUM_POST)
+{
+	if ($user->data['is_registered'])
+	{
+		trigger_error('USER_CANNOT_' . strtoupper($check_auth));
 	}
 
 	login_box('', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
 }
-
 
 // Forum/Topic locked?
 if (($forum_status == ITEM_LOCKED || $topic_status == ITEM_LOCKED) && !$auth->acl_get('m_edit', $forum_id))
@@ -402,7 +414,7 @@ $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_i
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id));
 $img_status		= ($auth->acl_get('f_img', $forum_id));
 $flash_status	= ($auth->acl_get('f_flash', $forum_id));
-$quote_status	= ($auth->acl_get('f_quote', $forum_id));
+$quote_status	= ($auth->acl_get('f_reply', $forum_id));
 
 // Bump Topic
 if ($mode == 'bump' && ($bump_time = bump_topic_allowed($forum_id, $topic_bumped, $topic_last_post_time, $topic_poster, $topic_last_poster_id)))
@@ -517,7 +529,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message = request_var('message', '', true);
 
 	$username			= (isset($_POST['username'])) ? request_var('username', '') : $username;
-	$post_edit_reason	= (isset($_POST['edit_reason']) && !empty($_POST['edit_reason']) && $mode == 'edit' && $user->data['user_id'] != $poster_id) ? request_var('edit_reason', '') : '';
+	$post_edit_reason	= (isset($_POST['edit_reason']) && !empty($_POST['edit_reason']) && $mode == 'edit' && $user->data['user_id'] != $poster_id) ? request_var('edit_reason', '', true) : '';
 
 	$topic_type			= (isset($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
 	$topic_time_limit	= (isset($_POST['topic_time_limit'])) ? (int) $_POST['topic_time_limit'] : (($mode != 'post') ? $topic_time_limit : 0);
@@ -586,9 +598,9 @@ if ($submit || $preview || $refresh)
 	}
 	else
 	{
-		$poll_title			= request_var('poll_title', '');
+		$poll_title			= request_var('poll_title', '', true);
 		$poll_length		= request_var('poll_length', 0);
-		$poll_option_text	= request_var('poll_option_text', '');
+		$poll_option_text	= request_var('poll_option_text', '', true);
 		$poll_max_options	= request_var('poll_max_options', 1);
 		$poll_vote_change	= ($auth->acl_get('f_votechg', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
 	}

@@ -543,7 +543,7 @@ class ucp_main
 					
 					// Get folder img, topic status/type related informations
 					$folder_img = $folder_alt = $topic_type = '';
-					$unread_topic = false; // TODO: get proper unread status
+					$unread_topic = false;
 					
 					topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";

@@ -255,6 +255,14 @@ class template_compile
 	*/
 	function compile_tag_block($tag_args)
 	{
+		$no_nesting = false;
+
+		if (strpos($tag_args, '!') === 0)
+		{
+			$no_nesting = substr_count($tag_args, '!', 0, strrpos($tag_args, '!') + 1);
+			$tag_args = substr($tag_args, $no_nesting);
+		}
+
 		// Allow for control of looping (indexes start from zero):
 		// foo(2)    : Will start the loop on the 3rd entry
 		// foo(-2)   : Will start the loop two entries from the end
@@ -305,7 +313,15 @@ class template_compile
 			// This block is nested.
 
 			// Generate a namespace string for this block.
-			$namespace = implode('.', $this->template->block_names);
+			if ($no_nesting !== false)
+			{
+				// We need to implode $no_nesting times from the end...
+				$namespace = implode('.', array_slice($this->template->block_names, -$no_nesting));
+			}
+			else
+			{
+				$namespace = implode('.', $this->template->block_names);
+			}
 
 			// Get a reference to the data array for this block that depends on the
 			// current indices of all parent blocks.

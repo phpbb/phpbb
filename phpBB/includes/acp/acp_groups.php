@@ -315,77 +315,81 @@ class acp_groups
 						}
 					}
 
-					// Only set the rank, colour, etc. if it's changed or if we're adding a new
-					// group. This prevents existing group members being updated if no changes 
-					// were made.
+					if (!sizeof($error))
+					{
+						// Only set the rank, colour, etc. if it's changed or if we're adding a new
+						// group. This prevents existing group members being updated if no changes 
+						// were made.
 			
-					$group_attributes = array();
-					$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit');
-					foreach ($test_variables as $test)
-					{
-						if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
+						$group_attributes = array();
+						$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit');
+						foreach ($test_variables as $test)
 						{
-							$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
-						}
-					}
-
-					if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
-					{
-						$group_perm_from = request_var('group_perm_from', 0);
-
-						// Copy permissions?
-						if ($group_perm_from && $action == 'add')
-						{
-							// From the mysql documentation:
-							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
-							// Due to this we stay on the safe side if we do the insertion "the manual way"
-							
-							// Copy permisisons from/to the acl groups table (only group_id gets changed)
-							$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
-								FROM ' . ACL_GROUPS_TABLE . '
-								WHERE group_id = ' . $group_perm_from;
-							$result = $db->sql_query($sql);
-
-							$groups_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
+							if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
 							{
-								$groups_sql_ary[] = array(
-									'group_id'			=> (int) $group_id,
-									'forum_id'			=> (int) $row['forum_id'],
-									'auth_option_id'	=> (int) $row['auth_option_id'],
-									'auth_role_id'		=> (int) $row['auth_role_id'],
-									'auth_setting'		=> (int) $row['auth_setting']
-								);
+								$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
 							}
-							$db->sql_freeresult($result);
+						}
 
-							// Now insert the data
-							if (sizeof($groups_sql_ary))
+						if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
+						{
+							$group_perm_from = request_var('group_perm_from', 0);
+
+							// Copy permissions?
+							if ($group_perm_from && $action == 'add')
 							{
-								switch (SQL_LAYER)
+								// From the mysql documentation:
+								// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+								// Due to this we stay on the safe side if we do the insertion "the manual way"
+								
+								// Copy permisisons from/to the acl groups table (only group_id gets changed)
+								$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
+									FROM ' . ACL_GROUPS_TABLE . '
+									WHERE group_id = ' . $group_perm_from;
+								$result = $db->sql_query($sql);
+
+								$groups_sql_ary = array();
+								while ($row = $db->sql_fetchrow($result))
 								{
-									case 'mysql':
-									case 'mysql4':
-									case 'mysqli':
-										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
-									break;
-
-									default:
-										foreach ($groups_sql_ary as $ary)
-										{
-											$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-										}
-									break;
+									$groups_sql_ary[] = array(
+										'group_id'			=> (int) $group_id,
+										'forum_id'			=> (int) $row['forum_id'],
+										'auth_option_id'	=> (int) $row['auth_option_id'],
+										'auth_role_id'		=> (int) $row['auth_role_id'],
+										'auth_setting'		=> (int) $row['auth_setting']
+									);
 								}
+								$db->sql_freeresult($result);
+
+								// Now insert the data
+								if (sizeof($groups_sql_ary))
+								{
+									switch (SQL_LAYER)
+									{
+										case 'mysql':
+										case 'mysql4':
+										case 'mysqli':
+											$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
+										break;
+
+										default:
+											foreach ($groups_sql_ary as $ary)
+											{
+												$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+											}
+										break;
+									}
+								}
+
+								$auth->acl_clear_prefetch();
 							}
 
-							$auth->acl_clear_prefetch();
+							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
+							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 						}
-
-						$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-						trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 					}
-					else
+
+					if (sizeof($error))
 					{
 						$group_rank = $submit_ary['rank'];
 
@@ -605,20 +609,17 @@ class acp_groups
 					'U_FIND_USERNAME'	=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=list&amp;field=usernames")
 				);
 
-				if ($group_row['group_type'] != GROUP_SPECIAL)
+				foreach ($group_data['leader'] as $row)
 				{
-					foreach ($group_data['leader'] as $row)
-					{
-						$template->assign_block_vars('leader', array(
-							'U_USER_EDIT'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=users&amp;action=edit&amp;u={$row['user_id']}",
+					$template->assign_block_vars('leader', array(
+						'U_USER_EDIT'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=users&amp;action=edit&amp;u={$row['user_id']}",
 
-							'USERNAME'			=> $row['username'],
-							'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-							'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
-							'USER_POSTS'		=> $row['user_posts'],
-							'USER_ID'			=> $row['user_id'])
-						);
-					}
+						'USERNAME'			=> $row['username'],
+						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
+						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
+						'USER_POSTS'		=> $row['user_posts'],
+						'USER_ID'			=> $row['user_id'])
+					);
 				}
 
 				$pending = false;

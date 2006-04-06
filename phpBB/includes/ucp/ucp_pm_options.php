@@ -56,7 +56,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Folder
 	if (isset($_POST['addfolder']))
 	{
-		$folder_name = request_var('foldername', '');
+		$folder_name = request_var('foldername', '', true);
 		
 		if ($folder_name)
 		{
@@ -97,7 +97,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Rename folder
 	if (isset($_POST['rename_folder']))
 	{
-		$new_folder_name = request_var('new_folder_name', '');
+		$new_folder_name = request_var('new_folder_name', '', true);
 		$rename_folder_id= request_var('rename_folder_id', 0);
 
 		if (!$new_folder_name)
@@ -240,7 +240,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$rule_option	= request_var('rule_option', 0);
 		$cond_option	= request_var('cond_option', '');
 		$action_option	= explode('|', request_var('action_option', ''));
-		$rule_string	= ($cond_option != 'none') ? request_var('rule_string', '') : '';
+		$rule_string	= ($cond_option != 'none') ? request_var('rule_string', '', true) : '';
 		$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
 		$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
 
@@ -620,7 +620,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	switch ($condition)
 	{
 		case 'text':
-			$rule_string = request_var('rule_string', '');
+			$rule_string = request_var('rule_string', '', true);
 
 			$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
@@ -634,7 +634,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 		case 'user':
 			$rule_user_id = request_var('rule_user_id', 0);
-			$rule_string = request_var('rule_string', '');
+			$rule_string = request_var('rule_string', '', true);
 
 			if ($rule_string && !$rule_user_id)
 			{
@@ -677,7 +677,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 		case 'group':
 			$rule_group_id = request_var('rule_group_id', 0);
-			$rule_string = request_var('rule_string', '');
+			$rule_string = request_var('rule_string', '', true);
 
 			$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 			$sql = 'SELECT group_id, group_name, group_type

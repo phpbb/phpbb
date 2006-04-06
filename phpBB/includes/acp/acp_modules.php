@@ -288,7 +288,7 @@ class acp_modules
 						'module_enabled'	=> 0,
 						'module_display'	=> 1,
 						'parent_id'			=> 0,
-						'module_langname'	=> request_var('module_langname', ''),
+						'module_langname'	=> request_var('module_langname', '', true),
 						'module_mode'		=> '',
 						'module_auth'		=> '',
 					);
@@ -301,7 +301,7 @@ class acp_modules
 				$module_data['module_display'] = request_var('module_display', (int) $module_row['module_display']);
 				$module_data['parent_id'] = request_var('module_parent_id', (int) $module_row['parent_id']);
 				$module_data['module_class'] = $this->module_class;
-				$module_data['module_langname'] = request_var('module_langname', (string) $module_row['module_langname']);
+				$module_data['module_langname'] = request_var('module_langname', (string) $module_row['module_langname'], true);
 				$module_data['module_mode'] = request_var('module_mode', (string) $module_row['module_mode']);
 
 				$submit = (isset($_POST['submit'])) ? true : false;

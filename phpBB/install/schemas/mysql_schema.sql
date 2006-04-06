@@ -611,6 +611,7 @@ CREATE TABLE phpbb_sessions (
    session_browser varchar(150) DEFAULT '' NOT NULL,
    session_page varchar(200) DEFAULT '' NOT NULL,
    session_viewonline tinyint(1) DEFAULT '1' NOT NULL,
+   session_autologin tinyint(1) DEFAULT '0' NOT NULL,
    session_admin tinyint(1) DEFAULT '0' NOT NULL,
    PRIMARY KEY (session_id),
    KEY session_time (session_time),

@@ -314,11 +314,11 @@ class acp_profile
 				}
 
 				$cp->vars['field_ident']		= request_var('field_ident', $field_row['field_ident']);
-				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name']);
-				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain']);
-				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value']);
+				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name'], true);
+				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
+				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);
 
-				$options = request_var('lang_options', '');
+				$options = request_var('lang_options', '', true);
 
 				// If the user has submitted a form with options (i.e. dropdown field)
 				if ($options)
@@ -358,14 +358,14 @@ class acp_profile
 					}
 					else
 					{
-						$var = request_var($key, $field_row[$key]);
+						$var = request_var($key, $field_row[$key], true);
 					}
 
 					// Manipulate the intended variables a little bit if needed
 					if ($field_type == FIELD_DROPDOWN && $key == 'field_maxlen')
 					{
 						// Get the number of options if this key is 'field_maxlen'
-						$var = sizeof(explode("\n", request_var('lang_options', '')));
+						$var = sizeof(explode("\n", request_var('lang_options', '', true)));
 					}
 
 					if ($field_type == FIELD_TEXT && $key == 'field_length')
@@ -450,7 +450,7 @@ class acp_profile
 		
 				foreach ($exclude[3] as $key)
 				{
-					$cp->vars[$key] = request_var($key, array(0 => ''));
+					$cp->vars[$key] = request_var($key, array(0 => ''), true);
 
 					if (!$cp->vars[$key] && $action == 'edit')
 					{
@@ -526,7 +526,7 @@ class acp_profile
 				
 					foreach ($key_ary as $key)
 					{
-						$var = isset($_REQUEST[$key]) ? request_var($key, '') : false;
+						$var = isset($_REQUEST[$key]) ? request_var($key, '', true) : false;
 
 						if ($var !== false)
 						{
@@ -846,7 +846,7 @@ class acp_profile
 			$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 			foreach ($options as $field => $field_type)
 			{
-				$value = ($action == 'create') ? request_var('l_' . $field, '') : $cp->vars['l_' . $field];
+				$value = ($action == 'create') ? request_var('l_' . $field, '', true) : $cp->vars['l_' . $field];
 					 
 				if ($field == 'lang_options')
 				{
@@ -1045,10 +1045,10 @@ class acp_profile
 			}
 		}
 
-		$cp->vars['l_lang_name']			= request_var('l_lang_name', '');
-		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', '');
-		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', '');
-		$cp->vars['l_lang_options']			= request_var('l_lang_options', '');
+		$cp->vars['l_lang_name']			= request_var('l_lang_name', '', true);
+		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', '', true);
+		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', '', true);
+		$cp->vars['l_lang_options']			= request_var('l_lang_options', '', true);
 
 		if ($cp->vars['lang_options'])
 		{

@@ -32,7 +32,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	// Set up some vars
 	$icon_id = request_var('icon', 0);
-	$subject = request_var('subject', '');
+	$subject = request_var('subject', '', true);
 	$start = request_var('start', 0);
 	$to_topic_id = request_var('to_topic_id', 0);
 	$to_forum_id = request_var('to_forum_id', 0);

@@ -71,6 +71,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_PHP_SIZE_NA'			=> 'The avatar is too huge in filesize.<br />Could not determine the maximum size defined by PHP in php.ini.',
 	'AVATAR_PHP_SIZE_OVERRUN'		=> 'The avatar is too huge in filesize, maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
 	'AVATAR_URL_INVALID'			=> 'The URL you specified is invalid.',
+	'AVATAR_URL_NOT_FOUND'			=> 'The file specified could not be found.',
 	'AVATAR_WRONG_FILESIZE'			=> 'The avatar must be between 0 and %1d %2s.',
 	'AVATAR_WRONG_SIZE'				=> 'The avatar must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high.',
 
@@ -251,6 +252,8 @@ $lang = array_merge($lang, array(
 	'LOG_USER_WARNING'		=> '<b>Added user warning</b><br />&#187;%s',
 	'LOG_USER_WARNING_BODY'	=> '<b>The following warning was issued to this user</b><br />&#187;%s',
 
+	'LOG_IP_BROWSER_CHECK'	=> '<b>Session IP/Browser check failed</b><br />&#187;User IP "<i>%s</i>" checked against session IP "<i>%s</i>" and user browser string "<i>%s</i>" checked against session browser string "<i>%s</i>".',
+
 	'MARK'				=> 'Mark',
 	'MARK_ALL'			=> 'Mark all',
 	'MARK_FORUMS_READ'	=> 'Mark Forums Read',
@@ -260,6 +263,7 @@ $lang = array_merge($lang, array(
 	'MEMBERLIST_EXPLAIN'	=> 'View complete list of members',
 	'MERGE_TOPIC'		=> 'Merge Topic',
 	'MESSAGE'			=> 'Message',
+	'MESSAGES'			=> 'Messages',
 	'MESSAGE_BODY'		=> 'Message body',
 	'MINUTES'			=> 'Minutes',
 	'MODERATE'			=> 'Moderate',
@@ -469,6 +473,7 @@ $lang = array_merge($lang, array(
 	'USERGROUPS'			=> 'Groups',
 	'USERNAME'				=> 'Username',
 	'USERNAMES'				=> 'Usernames',
+	'USER_CANNOT_READ'		=> 'You cannot read posts in this forum',
 	'USER_POST'				=> '%d Post',
 	'USER_POSTS'			=> '%d Posts',
 	'USERS'					=> 'Users',

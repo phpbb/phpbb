@@ -34,12 +34,12 @@ class mcp_logs
 		{
 			list($action, ) = each($action);
 		}
+		else
+		{
+			$action = request_var('action', '');
+		}
 
 		// Set up general vars
-
-		// Isn't this set above? :o
-		$action		= request_var('action', '');
-		
 		$start		= request_var('start', 0);
 		$deletemark = (isset($_POST['del_marked'])) ? true : false;
 		$deleteall	= (isset($_POST['del_all'])) ? true : false;

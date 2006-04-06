@@ -520,6 +520,7 @@ CREATE TABLE phpbb_sessions (
   session_browser VARCHAR(150),
   session_page VARCHAR(200) NOT NULL,
   session_viewonline INTEGER DEFAULT 1  NOT NULL,
+  session_autologin INTEGER DEFAULT 0  NOT NULL,
   session_admin INTEGER DEFAULT 0  NOT NULL
 );;
 

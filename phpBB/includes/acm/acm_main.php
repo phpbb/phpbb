@@ -88,7 +88,7 @@ class cache extends acm
 			$censors = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$censors['match'][] = '#\b(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')\b#i';
+				$censors['match'][] = '#(?<!\w)(' . str_replace('\*', '\w*?', preg_quote($row['word'], '#')) . ')(?!\w)#i';
 				$censors['replace'][] = $row['replacement'];
 			}
 			$db->sql_freeresult($result);

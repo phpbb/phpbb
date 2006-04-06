@@ -524,7 +524,7 @@ class fileupload
 		$url = parse_url($upload_url);
 
 		$host = $url['host'];
-		$path = dirname($url['path']);
+		$path = $url['path'];
 		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
 			
 		$upload_ary['type'] = 'application/octet-stream';
@@ -543,7 +543,7 @@ class fileupload
 			return $file;
 		}
 
-		fputs($fsock, 'GET /' . $filename . " HTTP/1.1\r\n");
+		fputs($fsock, 'GET /' . $path . " HTTP/1.1\r\n");
 		fputs($fsock, "HOST: " . $host . "\r\n");
 		fputs($fsock, "Connection: close\r\n\r\n");
 
@@ -568,6 +568,11 @@ class fileupload
 					if (strpos($line, 'Content-Type: ') !== false)
 					{
 						$upload_ary['type'] = rtrim(str_replace('Content-Type: ', '', $line));
+					}
+					else if (strpos($line, 'HTTP/1.1 404 Not Found') !== false)
+					{
+						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
+						return $file;
 					}
 				}
 			}
@@ -609,10 +614,15 @@ class fileupload
 		{
 			case 1:
 				$error = (@ini_get('upload_max_filesize') == '') ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
-				break;
+			break;
+
 			case 2:
-				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $this->max_filesize);
-				break;			
+				$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MB'] : (($this->max_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+				$max_filesize = ($this->max_filesize >= 1048576) ? round($this->max_filesize / 1048576 * 100) / 100 : (($this->max_filesize >= 1024) ? round($this->max_filesize / 1024 * 100) / 100 : $this->max_filesize);
+
+				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+			break;
+
 			case 3:
 				$error = 'The uploaded file was only partially uploaded';
 				break;
@@ -637,7 +647,10 @@ class fileupload
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $this->max_filesize);
+			$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MB'] : (($this->max_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+			$max_filesize = ($this->max_filesize >= 1048576) ? round($this->max_filesize / 1048576 * 100) / 100 : (($this->max_filesize >= 1024) ? round($this->max_filesize / 1024 * 100) / 100 : $this->max_filesize);
+
+			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 		}
 
 		// check Filename

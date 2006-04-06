@@ -454,7 +454,7 @@ class custom_profile
 		}
 		else
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value) : ((!isset($user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]) || $preview) ? $default_value : $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]) || $preview) ? $default_value : $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]);
 		}
 
 		switch ($field_validation)
@@ -715,7 +715,7 @@ class custom_profile
 */
 
 			default:
-				$var = request_var($var_name, $profile_row['field_default_value']);
+				$var = request_var($var_name, $profile_row['field_default_value'], true);
 			break;
 		}
 
