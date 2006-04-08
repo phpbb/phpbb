@@ -39,10 +39,12 @@ class dbal_mysqli extends dbal
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->server = $sqlserver . (($port) ? ':' . $port : '');
+		$this->server = $sqlserver;
 		$this->dbname = $database;
+		$port = (!$port) ? NULL : $port;
 
-		$this->db_connect_id = ($this->persistency) ? @mysqli_pconnect($this->server, $this->user, $sqlpassword) : @mysqli_connect($this->server, $this->user, $sqlpassword);
+		// Persistant connections not supported by the mysqli extension?
+		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $sqlpassword, $this->dbname, $port);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
@@ -289,6 +291,14 @@ class dbal_mysqli extends dbal
 	*/
 	function _sql_error()
 	{
+		if (!$this->db_connect_id)
+		{
+			return array(
+				'message'	=> @mysqli_connect_error(),
+				'code'		=> @mysqli_connect_errno()
+			);
+		}
+
 		return array(
 			'message'	=> @mysqli_error($this->db_connect_id),
 			'code'		=> @mysqli_errno($this->db_connect_id)
