@@ -249,4 +249,15 @@ $template->set_filenames(array(
 
 page_footer();
 
+
+/**
+* Function for assigning a template var if the zebra module got included
+*/
+function _module_zebra($mode, &$module_row)
+{
+	global $template;
+
+	$template->assign_var('S_ZEBRA_ENABLED', true);
+}
+
 ?>

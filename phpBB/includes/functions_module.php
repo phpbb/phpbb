@@ -176,12 +176,19 @@ class p_master
 			$depth = sizeof($this->module_cache['parents'][$row['module_id']]);
 
 			// We need to prefix the functions to not create a naming conflict
-			$url_func = '_module_' . $row['module_name'] . '_' . $row['module_mode'] . '_url';
-			$lang_func = '_module_' . $row['module_name'];
+			
+			// Function for building 'url_extra'
+			$url_func = '_module_' . $row['module_name'] . '_url';
+
+			// Function for building the language name
+			$lang_func = '_module_' . $row['module_name'] . '_lang';
+
+			// Custom function for calling parameters on module init (for example assigning template variables)
+			$custom_func = '_module_' . $row['module_name'];
 
 			$names[$row['module_name'] . '_' . $row['module_mode']][] = true;
 			
-			$this->module_ary[] = array(
+			$module_row = array(
 				'depth'		=> $depth,
 
 				'id'		=> (int) $row['module_id'],
@@ -194,7 +201,7 @@ class p_master
 				'mode'		=> (string) $row['module_mode'],
 				'display'	=> (int) $row['module_display'],
 
-				'url_extra'	=> (function_exists($url_func)) ? $url_func() : '',
+				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode']) : '',
 				
 				'lang'		=> ($row['module_name'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
@@ -202,6 +209,13 @@ class p_master
 				'left'		=> $row['left_id'],
 				'right'		=> $row['right_id'],
 			);
+
+			if (function_exists($custom_func))
+			{
+				$custom_func($row['module_mode'], $module_row);
+			}
+
+			$this->module_ary[] = $module_row;
 		}
 
 		unset($this->module_cache['modules'], $names);

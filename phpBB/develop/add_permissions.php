@@ -56,7 +56,6 @@ $f_permissions = array(
 	'f_read'	=> array(1, 0),
 	'f_post'	=> array(1, 0),
 	'f_reply'	=> array(1, 0),
-	'f_quote'	=> array(1, 0),
 	'f_edit'	=> array(1, 0),
 	'f_user_lock'	=> array(1, 0),
 	'f_delete'	=> array(1, 0),
@@ -69,7 +68,6 @@ $f_permissions = array(
 	'f_attach'	=> array(1, 0),
 	'f_download'=> array(1, 0),
 	'f_icons'	=> array(1, 0),
-	'f_html'	=> array(1, 0),
 	'f_bbcode'	=> array(1, 0),
 	'f_smilies'	=> array(1, 0),
 	'f_img'		=> array(1, 0),
@@ -77,7 +75,6 @@ $f_permissions = array(
 	'f_sigs'	=> array(1, 0),
 	'f_search'	=> array(1, 0),
 	'f_email'	=> array(1, 0),
-	'f_rate'	=> array(1, 0),
 	'f_print'	=> array(1, 0),
 	'f_ignoreflood'	=> array(1, 0),
 	'f_postcount'	=> array(1, 0),
@@ -161,11 +158,9 @@ $u_permissions = array(
 	'u_attach'		=> array(0, 1),
 	'u_sig'			=> array(0, 1),
 	'u_pm_attach'	=> array(0, 1),
-	'u_pm_html'		=> array(0, 1),
 	'u_pm_bbcode'	=> array(0, 1),
 	'u_pm_smilies'	=> array(0, 1),
 	'u_pm_download'	=> array(0, 1),
-	'u_pm_report'	=> array(0, 1),
 	'u_pm_edit'		=> array(0, 1),
 	'u_pm_printpm'	=> array(0, 1),
 	'u_pm_emailpm'	=> array(0, 1),
@@ -235,7 +230,6 @@ $sql = 'UPDATE ' . USERS_TABLE . " SET user_permissions = ''";
 $db->sql_query($sql);
 
 $cache->destroy('acl_options');
-$cache->save();
 
 echo "<p><b>Done</b></p>\n";
  
