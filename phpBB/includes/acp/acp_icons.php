@@ -447,7 +447,6 @@ class acp_icons
 
 						'L_TITLE'			=> $user->lang['ACP_' . $lang],
 						'L_EXPLAIN'			=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
-						'L_IMPORT'			=> $user->lang[$lang . '_IMPORT'],
 						'L_NO_PAK_OPTIONS'	=> $user->lang['NO_' . $lang . '_PAK'],
 						'L_CURRENT'			=> $user->lang['CURRENT_' . $lang],
 						'L_CURRENT_EXPLAIN'	=> $user->lang['CURRENT_' . $lang . '_EXPLAIN'],
@@ -547,7 +546,7 @@ class acp_icons
 			case 'move_up':
 			case 'move_down':
 
-				$image_order = intval($_GET['order']);
+				$image_order = request_var('order', 0);
 				$order_total = $image_order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . $table . '
@@ -564,7 +563,7 @@ class acp_icons
 		// By default, check that image_order is valid and fix it if necessary
 		$sql = "SELECT {$fields}_id AS order_id, {$fields}_order AS fields_order
 			FROM $table
-			ORDER BY {$fields}_order";
+			ORDER BY display_on_posting DESC, {$fields}_order";
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -608,7 +607,7 @@ class acp_icons
 
 		$sql = "SELECT * 
 			FROM $table
-			ORDER BY display_on_posting DESC, {$fields}_order ASC";
+			ORDER BY {$fields}_order ASC";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

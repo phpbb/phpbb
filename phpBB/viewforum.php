@@ -219,7 +219,7 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 	$template->assign_vars(array(
 		'PAGINATION'	=> generate_pagination("{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;$u_sort_param", $topics_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-		'TOTAL_TOPICS'	=> ($forum_data['forum_flags'] & 16) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
+		'TOTAL_TOPICS'	=> ($forum_data['forum_flags'] & 16 && $forum_data['forum_type'] == FORUM_CAT) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
 		'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
 		'POST_IMG' 				=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post', $post_alt),

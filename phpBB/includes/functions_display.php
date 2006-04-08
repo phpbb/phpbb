@@ -127,6 +127,16 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Display active topics from this forum?
 		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & 16))
 		{
+			if (!isset($active_forum_ary['forum_topics']))
+			{
+				$active_forum_ary['forum_topics'] = 0;
+			}
+
+			if (!isset($active_forum_ary['forum_posts']))
+			{
+				$active_forum_ary['forum_posts'] = 0;
+			}
+
 			$active_forum_ary['forum_id'][]		= $forum_id;
 			$active_forum_ary['enable_icons'][] = $row['enable_icons'];
 			$active_forum_ary['forum_topics']	+= ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
