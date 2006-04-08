@@ -822,6 +822,8 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
+		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
 		if (!extension_loaded($this->available_dbms[$dbms]['MODULE']))
 		{
@@ -931,7 +933,7 @@ class install_install extends module
 				WHERE config_name = 'board_contact'",
 
 			'UPDATE ' . $table_prefix . "config
-				SET config_value = '" . $db->sql_escape($server_name) . "'
+				SET config_value = '" . $db->sql_escape($cookie_domain) . "'
 				WHERE config_name = 'cookie_domain'",
 
 			'UPDATE ' . $table_prefix . "config
@@ -1092,7 +1094,7 @@ class install_install extends module
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
-			'U_ACTION'	=> $phpbb_root_path . 'adm/index. ' . $phpEx . $SID,
+			'U_ACTION'	=> $phpbb_root_path . 'adm/index.' . $phpEx . $SID,
 		));
 	}
 	
