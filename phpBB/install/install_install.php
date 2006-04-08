@@ -524,15 +524,28 @@ class install_install extends module
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
+
 			if ($admin_pass1 != $admin_pass2 && $admin_pass1 != '')
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_MISMATCH'];
+			}
+
+			// Test against the default password rules
+			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
+			{
+				$error[] = $lang['INST_ERR_PASSWORD_TOO_SHORT'];
+			}
+
+			if ($admin_pass1 != '' && strlen($admin_pass1) > 30)
+			{
+				$error[] = $lang['INST_ERR_PASSWORD_TOO_LONG'];
 			}
 
 			if ($board_email1 != $board_email2 && $board_email1 != '')
 			{
 				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
 			}
+
 			if ($board_email1 != '' && !preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
@@ -1297,7 +1310,7 @@ class install_install extends module
 		'legend1'				=> 'ADMIN_CONFIG',
 		'language'				=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
 		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => false),
-		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => false),
+		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
 		'board_email1'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
 		'board_email2'			=> array('lang' => 'CONTACT_EMAIL_CONFIRM',		'type' => 'text:25:100', 'explain' => false),
