@@ -259,7 +259,8 @@ class template_compile
 
 		if (strpos($tag_args, '!') === 0)
 		{
-			$no_nesting = substr_count($tag_args, '!', 0, strrpos($tag_args, '!') + 1);
+			// Count the number if ! occurrences (not allowed in vars)
+			$no_nesting = substr_count($tag_args, '!');
 			$tag_args = substr($tag_args, $no_nesting);
 		}
 
@@ -450,7 +451,7 @@ class template_compile
 					{
 						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_tpldata[\'.\'][0][\'' . $varrefs[3] . '\']');
 					}
-					else if (preg_match('#^\.([a-z0-9\-_]+\.?)+$#s', $token, $varrefs))
+					else if (preg_match('#^\.(([a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
 						$_tok = $this->generate_block_data_ref($varrefs[1], false);
 						$token = "(isset($_tok) && sizeof($_tok))";

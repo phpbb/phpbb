@@ -872,7 +872,7 @@ class acp_users
 
 					foreach ($var_ary as $var => $default)
 					{
-						$data[$var] = (in_array($var, array('location', 'occupation', 'interests')) ? request_var($var, $default, true) : $data[$var] = request_var($var, $default);
+						$data[$var] = (in_array($var, array('location', 'occupation', 'interests'))) ? request_var($var, $default, true) : $data[$var] = request_var($var, $default);
 					}
 
 					$var_ary = array(
