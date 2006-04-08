@@ -129,7 +129,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					{
 						foreach ($id_ary as $ug_id => $_id)
 						{
-							$address_list[$message_id][] = (($type == 'u') ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$ug_id\">" : "<a href=\"{$phpbb_root_path}groupcp.$phpEx$SID&amp;g=$ug_id\">") . (($recipient_list[$type][$ug_id]['colour']) ? '<span style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '">' : '<span>') . $recipient_list[$type][$ug_id]['name'] . '</span></a>';
+							$address_list[$message_id][] = (($type == 'u') ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$ug_id\">" : "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=$ug_id\">") . (($recipient_list[$type][$ug_id]['colour']) ? '<span style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '">' : '<span>') . $recipient_list[$type][$ug_id]['name'] . '</span></a>';
 						}
 					}
 				}

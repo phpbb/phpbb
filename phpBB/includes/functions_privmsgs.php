@@ -1031,7 +1031,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 						'IS_USER'	=> ($type == 'user'),
 						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}groupcp.$phpEx$SID&amp;g=" . $id)
+						'U_VIEW'	=> ($type == 'user') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $id)
 					);
 				}
 			}

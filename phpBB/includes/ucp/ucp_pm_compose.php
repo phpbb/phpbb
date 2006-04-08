@@ -680,7 +680,7 @@ function compose_pm($id, $mode, $action)
 					'IS_USER'	=> ($type == 'u'),
 					'COLOUR'	=> (${$type}[$id]['colour']) ? ${$type}[$id]['colour'] : '',
 					'UG_ID'		=> $id,
-					'U_VIEW'	=> ($type == 'u') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}groupcp.$phpEx$SID&amp;g=" . $id,
+					'U_VIEW'	=> ($type == 'u') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $id,
 					'TYPE'		=> $type)
 				);
 			}
