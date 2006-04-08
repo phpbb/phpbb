@@ -222,11 +222,11 @@ class mcp_reports
 
 				if ($mode == 'reports')
 				{
-					$report_state = 'AND p.post_reported = 1';
+					$report_state = 'AND p.post_reported = 1 AND r.report_closed = 0';
 				}
 				else
 				{
-					$report_state = 'AND p.post_reported = 0 AND r.report_closed = 1';
+					$report_state = 'AND r.report_closed = 1';
 				}
 
 				$sql = 'SELECT p.post_id

@@ -401,11 +401,11 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			if ($mode == 'reports')
 			{
-				$where_sql .= 'AND r.report_closed = 0';
+				$where_sql .= ' AND r.report_closed = 0';
 			}
 			else
 			{
-				$where_sql .= 'AND r.report_closed = 1';
+				$where_sql .= ' AND r.report_closed = 1';
 			}
 
 			$sql = 'SELECT COUNT(r.report_id) AS total

@@ -69,17 +69,9 @@ foreach ($acl_check_ary as $acl => $error)
 }
 unset($acl_check_ary);
 
-// Check if the post has already been reported...
-$sql = 'SELECT report_id, report_closed
-	FROM ' . REPORTS_TABLE . "
-	WHERE post_id = $post_id";
-$result = $db->sql_query($sql);
-$row = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
-
-if ($row)
+if ($report_data['post_reported'])
 {
-	$message = ($row['report_closed']) ? $user->lang['REPORT_ALREADY_DEALT_WITH'] : $user->lang['ALREADY_REPORTED'];
+	$message = $user->lang['ALREADY_REPORTED'];
 	$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $phpbb_root_path . $redirect_url . '">', '</a>');
 	trigger_error($message);
 }
@@ -88,7 +80,7 @@ if ($row)
 if (isset($_POST['submit']) && $reason_id)
 {
 	$sql = 'SELECT *
-		FROM ' . REASONS_TABLE . " 
+		FROM ' . REASONS_TABLE . "
 		WHERE reason_id = $reason_id";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
@@ -115,16 +107,16 @@ if (isset($_POST['submit']) && $reason_id)
 
 	if (!$report_data['post_reported'])
 	{
-		$sql = 'UPDATE ' . POSTS_TABLE . ' 
-			SET post_reported = 1 
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET post_reported = 1
 			WHERE post_id = ' . $post_id;
 		$db->sql_query($sql);
 	}
 
 	if (!$report_data['topic_reported'])
 	{
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' 
-			SET topic_reported = 1 
+		$sql = 'UPDATE ' . TOPICS_TABLE . '
+			SET topic_reported = 1
 			WHERE topic_id = ' . $report_data['topic_id'];
 		$db->sql_query($sql);
 	}

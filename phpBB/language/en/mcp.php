@@ -249,7 +249,6 @@ $lang = array_merge($lang, array(
 	'REPORTS_DELETED_SUCCESS'	=> 'The selected reports have been deleted successfully.',
 	'REPORTS_TOTAL'			=> 'In total there are <b>%d</b> reports to review',
 	'REPORTS_ZERO_TOTAL'	=> 'There are no reports to review',
-	'REPORT_ALREADY_DEALT_WITH'		=> 'This post has already been reported previously and successfully dealt with',
 	'REPORT_CLOSED'			=> 'This report has previously been closed.',
 	'REPORT_CLOSED_SUCCESS'	=> 'The selected report has been closed successfully.',
 	'REPORT_DELETED_SUCCESS'	=> 'The selected report has been deleted successfully.',
