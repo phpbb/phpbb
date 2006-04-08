@@ -23,6 +23,8 @@ if (!defined('IN_PHPBB'))
 * psoTFX - Completion of file caching, decompilation routines and implementation of
 * conditionals/keywords and associated changes
 *
+* phpBB Development Team - further additions and fixes
+*
 * The interface was inspired by PHPLib templates,  and the template file (formats are
 * quite similar)
 *
@@ -36,6 +38,8 @@ if (!defined('IN_PHPBB'))
 */
 class template_compile
 {
+	var $template;
+
 	/**
 	* constuctor
 	*/
