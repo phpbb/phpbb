@@ -170,7 +170,14 @@ class mcp_main
 
 				mcp_post_details($id, $mode, $action);
 
-				$this->tpl_name = 'mcp_post';
+				if ($action == 'whois')
+				{
+					$this->tpl_name = 'mcp_whois';
+				}
+				else
+				{
+					$this->tpl_name = 'mcp_post';
+				}
 			break;
 
 			default:
@@ -867,6 +874,9 @@ function mcp_fork_topic($topic_ids)
 
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				$new_post_id = $db->sql_nextid();
+
+				// Copy whether the topic is dotted
+				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
 
 				// Copy Attachments
 				if ($row['post_attachment'])

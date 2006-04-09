@@ -115,6 +115,7 @@ function mcp_front_view($id, $mode, $action)
 		$sql = 'SELECT COUNT(r.report_id) AS total
 			FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
 			WHERE r.post_id = p.post_id
+				AND r.report_closed = 0
 				AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')';
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
@@ -126,6 +127,7 @@ function mcp_front_view($id, $mode, $action)
 				FROM (' . REPORTS_TABLE . ' r, ' . REASONS_TABLE . ' rr,' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u)
 				LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = p.forum_id)
 				WHERE r.post_id = p.post_id
+					AND r.report_closed = 0
 					AND r.reason_id = rr.reason_id
 					AND p.topic_id = t.topic_id
 					AND r.user_id = u.user_id

@@ -544,8 +544,10 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $mat
 /**
 * Marks a topic/forum as read
 * Marks a topic as posted to
+*
+* @param int $user_id can only be used with $mode == 'post'
 */
-function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
+function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
 	global $db, $user, $config;
 	
@@ -786,7 +788,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0)
 		$db->sql_return_on_error(true);
 
 		$sql_ary = array(
-			'user_id'		=> $user->data['user_id'],
+			'user_id'		=> (!$user_id) ? $user->data['user_id'] : $user_id,
 			'topic_id'		=> $topic_id,
 			'topic_posted'	=> 1
 		);

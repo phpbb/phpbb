@@ -298,7 +298,10 @@ hr {
 	background-color: #D1D7DC;
 	color: #D1D7DC;
 	}
-
+.legend {
+	text-align:center;
+	margin: 0 auto;
+	}
 
 /* Links
  ------------ */
@@ -522,3 +525,7 @@ input.radio {
 table.colortable td {
 	padding: 0;
 	}
+pre {
+	font-size: 1.1em;
+	font-family: Monaco, 'Courier New', monospace;
+}

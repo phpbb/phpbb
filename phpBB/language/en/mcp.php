@@ -265,6 +265,7 @@ $lang = array_merge($lang, array(
 	'RETURN_MESSAGE'		=> 'Click %sHere%s to return to the message',
 	'RETURN_NEW_FORUM'		=> 'Click %sHere%s to return to the new forum',
 	'RETURN_NEW_TOPIC'		=> 'Click %sHere%s to return to the new topic',
+	'RETURN_POST'			=> 'Click %sHere%s to return to the post',
 	'RETURN_QUEUE'			=> 'Click %sHere%s to return to the queue',
 	'RETURN_REPORTS'		=> 'Click %sHere%s to return to the reports',
 

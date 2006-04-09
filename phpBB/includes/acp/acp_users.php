@@ -1057,7 +1057,7 @@ class acp_users
 					$var_ary = array(
 						'dateformat'	=> array('string', false, 3, 30),
 						'lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
-						'tz'			=> array('num', false, -13, 13),
+						'tz'			=> array('num', false, -14, 14),
 
 						'topic_sk'		=> array('string', false, 1, 1),
 						'topic_sd'		=> array('string', false, 1, 1),

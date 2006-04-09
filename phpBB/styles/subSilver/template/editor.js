@@ -323,6 +323,7 @@ function mozWrap(txtarea, open, close)
 	var selLength = txtarea.textLength;
 	var selStart = txtarea.selectionStart;
 	var selEnd = txtarea.selectionEnd;
+	var scrollTop = txtarea.scrollTop;
 	if (selEnd == 1 || selEnd == 2) 
 		selEnd = selLength;
 
@@ -330,6 +331,10 @@ function mozWrap(txtarea, open, close)
 	var s2 = (txtarea.value).substring(selStart, selEnd)
 	var s3 = (txtarea.value).substring(selEnd, selLength);
 	txtarea.value = s1 + open + s2 + close + s3;
+	txtarea.selectionStart = selEnd + open.length + close.length;
+	txtarea.selectionEnd = txtarea.selectionStart;
+	txtarea.focus();
+	txtarea.scrollTop = scrollTop;
 	return;
 }
 

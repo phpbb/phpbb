@@ -34,6 +34,22 @@ function mcp_post_details($id, $mode, $action)
 
 	switch ($action)
 	{
+		case 'whois':
+			$ip = request_var('ip', '');
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			
+			$whois = user_ipwhois($ip);
+			
+			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
+			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
+			
+			$template->assign_vars(array(
+				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], "<a href=\"{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;p=$post_id\">", '</a>'),
+				'WHOIS'			=> trim($whois))
+			);
+		// We're done with the whois page so return
+		return;
+
 		case 'chgposter':
 
 			$username = request_var('username', '');
@@ -249,7 +265,7 @@ function mcp_post_details($id, $mode, $action)
 				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
 
 				'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
-				'U_WHOIS'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=whois&amp;ip={$row['poster_ip']}")
+				'U_WHOIS'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}")
 			);
 		}
 		$db->sql_freeresult($result);

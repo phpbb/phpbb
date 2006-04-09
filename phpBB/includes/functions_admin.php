@@ -918,11 +918,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		}
 		else
 		{
+			// Do not sync the "global forum"
+			$where_ids = array_diff($where_ids, array(0));
+
 			if (!sizeof($where_ids))
 			{
 				// Empty array with IDs. This means that we don't have any work to do. Just return.
 				return;
 			}
+
 			// Limit the topics/forums we are syncing, use specific topic/forum IDs.
 			// $where_type contains the field for the where clause (forum_id, topic_id)
 			$where_sql = 'WHERE ' . $mode{0} . ".$where_type IN (" . implode(', ', $where_ids) . ')';
