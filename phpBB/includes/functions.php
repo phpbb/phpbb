@@ -168,7 +168,7 @@ function dss_rand()
 		$dss_seeded = true;
 	}
 
-	return substr($val, 16);
+	return substr($val, 4, 16);
 }
 //
 // Get Userdata, $user can be username or user_id. If force_str is true, the username will be forced.

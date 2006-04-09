@@ -62,7 +62,7 @@ function gen_rand_string($hash)
 {
 	$rand_str = dss_rand();
 
-	return ( $hash ) ? md5($rand_str) : substr($rand_str, 8);
+	return ( $hash ) ? md5($rand_str) : substr($rand_str, 0, 8);
 }
 //
 // End page specific functions
