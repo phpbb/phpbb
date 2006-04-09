@@ -65,6 +65,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		}
 
 		$message = addslashes($message);
+		$message = str_replace('&quot;', '\&quot;', $message);
 	}
 	else
 	{
