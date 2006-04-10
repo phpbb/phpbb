@@ -22,7 +22,6 @@ if (!empty($setmodules))
 		'module_stages' => '',
 		'module_reqs' => ''
 	);
-	return;
 }
 
 class install_main extends module

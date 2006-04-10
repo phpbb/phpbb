@@ -22,8 +22,6 @@ if (!empty($setmodules))
 		'module_stages' => array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
 		'module_reqs' => ''
 	);
-
-	return;
 }
 
 class install_install extends module
