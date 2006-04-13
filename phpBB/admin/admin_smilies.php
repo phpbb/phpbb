@@ -49,7 +49,16 @@ if( isset($HTTP_GET_VARS['export_pack']) )
 
 $phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
+
+$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? true : false;
+$no_page_header = $cancel;
+
 require('./pagestart.' . $phpEx);
+
+if ($cancel)
+{
+	redirect('admin/' . append_sid("admin_smilies.$phpEx", true));
+}
 
 //
 // Check to see what mode we should operate in.
