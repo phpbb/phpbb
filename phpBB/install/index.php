@@ -74,13 +74,15 @@ define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');
-if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $language == '')
+
+if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 {
 	$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 	foreach ($accept_lang_ary as $accept_lang)
 	{
 		// Set correct format ... guess full xx_YY form
 		$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
+
 		if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 		{
 			$language = $accept_lang;
@@ -101,7 +103,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && $language == '')
 
 // No appropriate language found ... so let's use the first one in the language
 // dir, this may or may not be English
-if ($language == '')
+if (!$language)
 {
 	$dir = @opendir($phpbb_root_path . 'language');
 	while (($file = readdir($dir)) !== false)
@@ -125,6 +127,9 @@ include($phpbb_root_path . 'language/' . $language . '/posting.'.$phpEx);
 
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
+
+// Set PHP error handler to ours
+set_error_handler('msg_handler');
 
 $user = new user();
 $auth = new auth();

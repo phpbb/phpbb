@@ -69,7 +69,7 @@ class template
 
 		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template'))
 		{
-			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path']. '/template';
+			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['template_path'] . '_';
 		}
 
@@ -211,7 +211,7 @@ class template
 			return false;
 		}
 
-		if ($user->theme['template_storedb'])
+		if (isset($user->theme['template_storedb']) && $user->theme['template_storedb'])
 		{
 			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '
 				WHERE template_id = ' . $user->theme['template_id'] . "
