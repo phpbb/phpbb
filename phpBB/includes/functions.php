@@ -30,7 +30,6 @@ function set_var(&$result, $var, $type, $multibyte = false)
 		// Check for possible multibyte characters to save a preg_replace call if nothing is in there...
 		if ($multibyte && strpos($result, '&amp;#') !== false)
 		{
-			echo "HERE";
 			$result = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $result);
 		}
 	}
