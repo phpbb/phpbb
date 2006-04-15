@@ -56,19 +56,47 @@ $lang = array_merge($lang, array(
 	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s',
 ));
 
-// Message Settings
+// Auth settings
 $lang = array_merge($lang, array(
-	'ACP_MESSAGE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for private messaging',
+	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
+	'AUTH_METHOD'				=> 'Select an authentication method',
+	'LDAP_NO_IDENTITY'			=> 'Could not find a login identity for %s',
+	'LDAP_NO_LDAP_EXTENSION'	=> 'LDAP extension not availible',
+	'LDAP_NO_SERVER_CONNECTION'	=> 'Could not connect to LDAP server',
+	'LDAP_DN'					=> 'LDAP base dn',
+	'LDAP_DN_EXPLAIN'			=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
+	'LDAP_SERVER'				=> 'LDAP server name',
+	'LDAP_SERVER_EXPLAIN'		=> 'If using LDAP this is the name or IP address of the server.',
+	'LDAP_UID'					=> 'LDAP uid',
+	'LDAP_UID_EXPLAIN'			=> 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
+));
+
+// Board Settings
+$lang = array_merge($lang, array(
+	'ACP_BOARD_FEATURES_EXPLAIN'		=> 'Here you can enable/disable several board features',
+	'ACP_COOKIE_SETTINGS_EXPLAIN'		=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
+	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging',
+	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting',
+	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings',
+	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings',
+	'ACP_SIGNATURE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for signatures',
+	'ACP_VC_SETTINGS_EXPLAIN'			=> 'Here you are able to define visual confirmation defaults and captcha settings',
 
 	'BOXES_MAX'					=> 'Max private message folders',
 	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages.',
 	'BOXES_LIMIT'				=> 'Max private messages per box',
 	'BOXES_LIMIT_EXPLAIN'		=> 'Users may receive no more than this many messages in each of their private message boxes or zero for unlimited messages.',
+
+	'CAPTCHA'					=> 'Captcha Options',
+
 	'FULL_FOLDER_ACTION'		=> 'Full folder default action',
 	'FULL_FOLDER_ACTION_EXPLAIN'=> 'Default Action to take if an users folder is full and if the users folder action set is not applicable. For the special folder "SENTBOX" the default action is always deleting old messages.',
 	'HOLD_NEW_MESSAGES'			=> 'Hold new messages',
 	'PM_EDIT_TIME'				=> 'Limit editing time',
 	'PM_EDIT_TIME_EXPLAIN'		=> 'Limits the time available to edit a private message not already delivered, zero equals infinity',
+
+	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts',
+	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation)',
 
 	'ALLOW_MASS_PM'		=> 'Allow Mass PM\'s',
 	'ALLOW_BBCODE_PM'	=> 'Allow BBCode in private messages',
@@ -82,21 +110,13 @@ $lang = array_merge($lang, array(
 	'ALLOW_SIG_PM'		=> 'Allow signature in private messages',
 	'ALLOW_QUOTE_PM'	=> 'Allow quotes in private messages',
 	'ENABLE_PM_ICONS'	=> 'Enable use of topic icons in private messages',
-));
-
-// Cookie settings
-$lang = array_merge($lang, array(
-	'ACP_COOKIE_SETTINGS_EXPLAIN'	=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
 
 	'COOKIE_DOMAIN'			=> 'Cookie domain',
 	'COOKIE_NAME'			=> 'Cookie name',
 	'COOKIE_PATH'			=> 'Cookie path',
 	'COOKIE_SECURE'			=> 'Cookie secure',
 	'COOKIE_SECURE_EXPLAIN' => 'If your server is running via SSL set this to enabled else leave as disabled',
-));
 
-// Avatar settings
-$lang = array_merge($lang, array(
 	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 	'ALLOW_LOCAL'				=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'				=> 'Enable remote avatars',
@@ -112,10 +132,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/avatars/upload',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar Gallery Path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root dir for pre-loaded images, e.g. images/avatars/gallery',
-));
 
-// Server settings
-$lang = array_merge($lang, array(
 	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 	'FORCE_SERVER_VARS'			=> 'Force server url settings',
 	'FORCE_SERVER_VARS_EXPLAIN'	=> 'If set to yes the server settings defined here will be used in favor of the automatically determined values',
@@ -145,10 +162,7 @@ $lang = array_merge($lang, array(
 	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root dir, e.g. images/upload_icons',
 	'RANKS_PATH'				=> 'Rank image storage path',
 	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root dir, e.g. images/ranks',
-));
 
-// Load settings
-$lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
 
 	'CUSTOM_PROFILE_FIELDS'		=> 'Custom Profile Fields',
@@ -186,10 +200,6 @@ $lang = array_merge($lang, array(
 	'YES_MODERATORS'			=> 'Enable display of Moderators',
 	'YES_JUMPBOX'				=> 'Enable display of Jumpbox',
 
-));
-
-// Email settings
-$lang = array_merge($lang, array(
 	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
 	'ENABLE_EMAIL'				=> 'Enable board-wide emails',
 	'ENABLE_EMAIL_EXPLAIN'		=> 'If this is set to disabled no emails will be sent by the board at all.',
@@ -225,10 +235,7 @@ $lang = array_merge($lang, array(
 	'SMTP_USERNAME_EXPLAIN'		=> 'Only enter a username if your smtp server requires it.',
 	'SMTP_PASSWORD'				=> 'SMTP Password',
 	'SMTP_PASSWORD_EXPLAIN'		=> 'Only enter a password if your smtp server requires it.',
-));
 
-// Board settings
-$lang = array_merge($lang, array(
 	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
 	'SITE_NAME'					=> 'Site name',
 	'SITE_DESC'					=> 'Site description',
@@ -247,7 +254,7 @@ $lang = array_merge($lang, array(
 	'AUTOLOGIN_LENGTH_EXPLAIN'	=> 'Number of days after which persistent login keys are removed or zero to disable.', 
 	'VISUAL_CONFIRM_REG'		=> 'Enable visual confirmation',
 	'VISUAL_CONFIRM_REG_EXPLAIN'=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
-	'VISUAL_CONFIRM_POST'		=> 'Enable visual confirmation',
+	'VISUAL_CONFIRM_POST'		=> 'Enable visual confirmation for guest postings',
 	'VISUAL_CONFIRM_POST_EXPLAIN'=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'LOGIN_LIMIT'				=> 'Login attempts',
 	'LOGIN_LIMIT_EXPLAIN'		=> 'Number of failed logins users can make before being locked out that session',
@@ -317,25 +324,7 @@ $lang = array_merge($lang, array(
 	'MODERATION'				=> 'Moderation',
 	'WARNINGS_EXPIRE'			=> 'Warning duration',
 	'WARNINGS_EXPIRE_EXPLAIN'	=> 'Number of days after it is issued before a warning will expire from a user\'s record',
-));
 
-// Auth settings
-$lang = array_merge($lang, array(
-	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
-	'AUTH_METHOD'				=> 'Select an authentication method',
-	'LDAP_NO_IDENTITY'			=> 'Could not find a login identity for %s',
-	'LDAP_NO_LDAP_EXTENSION'	=> 'LDAP extension not availible',
-	'LDAP_NO_SERVER_CONNECTION'	=> 'Could not connect to LDAP server',
-	'LDAP_DN'					=> 'LDAP base dn',
-	'LDAP_DN_EXPLAIN'			=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
-	'LDAP_SERVER'				=> 'LDAP server name',
-	'LDAP_SERVER_EXPLAIN'		=> 'If using LDAP this is the name or IP address of the server.',
-	'LDAP_UID'					=> 'LDAP uid',
-	'LDAP_UID_EXPLAIN'			=> 'This is the key under which to search for a given login identity, e.g. uid, sn, etc.',
-));
-
-// Board defaults
-$lang = array_merge($lang, array(
 	'ACP_BOARD_DEFAULTS_EXPLAIN'	=> 'These settings allow you to define a number of default or global settings used by the board. This data is also used for new user registrations and (where relevant) guest users. Please note that registered users can override some of these options with their own settings.',
 	'DEFAULT_STYLE'				=> 'Default Style',
 	'OVERRIDE_STYLE'			=> 'Override user style',

@@ -171,10 +171,8 @@ $lang = array_merge($lang, array(
 
 // Admin Permissions
 $lang = array_merge($lang, array(
-	'acl_a_defaults'	=> array('lang' => 'Can alter board defaults', 'cat' => 'settings'),
 	'acl_a_board'		=> array('lang' => 'Can alter board settings', 'cat' => 'settings'),
-	'acl_a_cookies'		=> array('lang' => 'Can alter cookie settings', 'cat' => 'settings'),
-	'acl_a_server'		=> array('lang' => 'Can alter server/email/load/auth settings', 'cat' => 'settings'),
+	'acl_a_server'		=> array('lang' => 'Can alter server/communication settings', 'cat' => 'settings'),
 	'acl_a_jabber'		=> array('lang' => 'Can alter jabber settings', 'cat' => 'settings'),
 	'acl_a_phpinfo'		=> array('lang' => 'Can view php settings', 'cat' => 'settings'),
 

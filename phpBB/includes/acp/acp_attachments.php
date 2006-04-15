@@ -168,6 +168,8 @@ class acp_attachments
 					'UPLOAD_PATH'			=> $new['upload_path'],
 					'DISPLAY_ORDER'			=> $new['display_order'],
 					'ATTACHMENT_QUOTA'		=> $new['attachment_quota'],
+					'ALLOW_ATTACHMENTS'		=> $new['allow_attachments'],
+					'ALLOW_PM_ATTACH'		=> $new['allow_pm_attach'],
 					'MAX_FILESIZE'			=> $new['max_filesize'],
 					'MAX_PM_FILESIZE'		=> $new['max_filesize_pm'],
 					'MAX_ATTACHMENTS'		=> $new['max_attachments'],

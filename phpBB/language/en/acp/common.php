@@ -46,7 +46,9 @@ $lang = array_merge($lang, array(
 	'ACP_BAN_USERNAMES'			=> 'Ban Usernames',
 	'ACP_BASIC_PERMISSIONS'		=> 'Basic Permissions',
 	'ACP_BBCODES'				=> 'BBCodes',
+	'ACP_BOARD_CONFIGURATION'	=> 'Board Configuration',
 	'ACP_BOARD_DEFAULTS'		=> 'Board Defaults',
+	'ACP_BOARD_FEATURES'		=> 'Board Features',
 	'ACP_BOARD_MANAGEMENT'		=> 'Board Management',
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
@@ -110,7 +112,7 @@ $lang = array_merge($lang, array(
 	'ACP_MANAGE_USERS'			=> 'Manage Users',
 	'ACP_MASS_EMAIL'			=> 'Mass Email',
 	'ACP_MESSAGES'				=> 'Messages',
-	'ACP_MESSAGE_SETTINGS'		=> 'Message Settings',
+	'ACP_MESSAGE_SETTINGS'		=> 'Private Message Settings',
 	'ACP_MODULE_MANAGEMENT'		=> 'Module Management',
 	'ACP_MOD_LOGS'				=> 'Moderator Log',
 	'ACP_MOD_ROLES'				=> 'Moderator Roles',
@@ -122,12 +124,16 @@ $lang = array_merge($lang, array(
 	'ACP_PERMISSION_ROLES'		=> 'Permission Roles',
 	'ACP_PERMISSION_SETTINGS'	=> 'Permission Settings',
 	'ACP_PHP_INFO'				=> 'PHP Information',
+	'ACP_POST_SETTINGS'			=> 'Post Settings',
 	'ACP_PRUNE_FORUMS'			=> 'Prune Forums',
 	'ACP_PRUNE_USERS'			=> 'Prune Users',
 	'ACP_PRUNING'				=> 'Pruning',
 	
+	'ACP_QUICK_ACCESS'			=> 'Quick Access',
+	
 	'ACP_RANKS'					=> 'Ranks',
 	'ACP_REASONS'				=> 'Report/Denial Reasons',
+	'ACP_REGISTER_SETTINGS'		=> 'User Registration Settings',
 
 	'ACP_RESTORE'				=> 'Restore',
 
@@ -135,8 +141,10 @@ $lang = array_merge($lang, array(
 	'ACP_SEARCH_INDEX'			=> 'Search Index',
 	'ACP_SEARCH_SETTINGS'		=> 'Search Settings',
 
+	'ACP_SECURITY_SETTINGS'		=> 'Security Settings',
 	'ACP_SERVER_CONFIGURATION'	=> 'Server Configuration',
 	'ACP_SERVER_SETTINGS'		=> 'Server Settings',
+	'ACP_SIGNATURE_SETTINGS'	=> 'Signature Settings',
 	'ACP_SMILIES'				=> 'Smilies',
 	'ACP_SPECIAL_PERMISSIONS'	=> 'Special Permissions',
 	'ACP_STYLE_COMPONENTS'		=> 'Style Components',
@@ -163,6 +171,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_SECURITY'				=> 'User Security',
 	'ACP_USER_SIG'					=> 'Signature',
 
+	'ACP_VC_SETTINGS'					=> 'Visual Confirmation Settings',
 	'ACP_VERSION_CHECK'					=> 'Check for Updates',
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View Admin Permissions',
 	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View Forum Moderator Permissions',

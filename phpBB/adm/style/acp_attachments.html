@@ -37,6 +37,14 @@
 	<fieldset>
 		<legend>{L_ACP_ATTACHMENT_SETTINGS}</legend>
 		<dl>
+			<dt><label for="allow_attachments">{L_ALLOW_ATTACHMENTS}:</label></dt>
+			<dd><input type="radio" id="allow_attachments" name="allow_attachments" value="1"<!-- IF ALLOW_ATTACHMENTS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_attachments" value="0"<!-- IF not ALLOW_ATTACHMENTS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
+		</dl>
+		<dl>
+			<dt><label for="allow_pm_attach">{L_ALLOW_PM_ATTACHMENTS}:</label></dt>
+			<dd><input type="radio" id="allow_pm_attach" name="allow_pm_attach" value="1"<!-- IF ALLOW_PM_ATTACH --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0"<!-- IF not ALLOW_PM_ATTACH --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
+		</dl>
+		<dl>
 			<dt><label for="upload_dir">{L_UPLOAD_DIR}:</label><br /><span>{L_UPLOAD_DIR_EXPLAIN}</span></dt>
 			<dd><input type="text" id="upload_dir" size="25" maxlength="100" name="upload_path" value="{UPLOAD_PATH}" /></dd>
 		</dl>
