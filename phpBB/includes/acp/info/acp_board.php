@@ -49,5 +49,4 @@ class acp_board_info
 	}
 }
 
-// a_cookies, a_defaults weg
 ?>
