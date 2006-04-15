@@ -99,7 +99,7 @@ class ucp_register
 		{
 			foreach ($var_ary as $var => $default)
 			{
-				$$var = request_var($var, $default);
+				$$var = request_var($var, $default, true);
 			}
 		}
 
@@ -108,7 +108,7 @@ class ucp_register
 		{
 			foreach ($var_ary as $var => $default)
 			{
-				$data[$var] = request_var($var, $default);
+				$data[$var] = request_var($var, $default, true);
 			}
 
 			$var_ary = array(

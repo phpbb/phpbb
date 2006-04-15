@@ -678,7 +678,7 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting)
 
 
 # -- Moderator cache
-INSERT INTO phpbb_moderator_cache (user_id, forum_id, username, groupname) VALUES (2, 2, 'Admin', 'Administrators');
+INSERT INTO phpbb_moderator_cache (user_id, forum_id, username, group_name) VALUES (2, 2, 'Admin', 'Administrators');
 
 
 # MSSQL IDENTITY phpbb_topics ON #

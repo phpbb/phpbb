@@ -145,7 +145,7 @@ class messenger
 	// assign variables
 	function assign_vars($vars)
 	{
-		$this->vars = (empty($this->vars)) ? $vars : $this->vars . $vars;
+		$this->vars = (empty($this->vars)) ? $vars : $this->vars + $vars;
 	}
 
 	// Send the mail out to the recipients set previously in var $this->address
@@ -209,14 +209,16 @@ class messenger
 		{
 			case NOTIFY_EMAIL:
 				$result = $this->msg_email();
-				break;
+			break;
+
 			case NOTIFY_IM:
 				$result = $this->msg_jabber();
-				break;
+			break;
+			
 			case NOTIFY_BOTH:
 				$result = $this->msg_email();
 				$this->msg_jabber();
-				break;
+			break;
 		}
 
 		$this->reset();
@@ -394,7 +396,7 @@ class messenger
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg));
+				$this->jabber->send_message($address, 'normal', NULL, array('body' => htmlentities($this->msg)));
 			}
 
 			sleep(1);
@@ -490,7 +492,7 @@ class queue
 						unset($this->queue_data['email']);
 						continue 2;
 					}
-					break;
+				break;
 
 				case 'jabber':
 					if (!$config['jab_enable'])
@@ -520,7 +522,8 @@ class queue
 						continue 2;
 					}
 					$this->jabber->send_presence(NULL, NULL, 'online');
-					break;
+
+				break;
 
 				default:
 					return;
@@ -547,14 +550,14 @@ class queue
 							messenger::error('EMAIL', $message);
 							continue 3;
 						}
-						break;
+					break;
 
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
 							$this->jabber->send_message($address, 'normal', NULL, array('body' => $msg));
 						}
-						break;
+					break;
 				}
 			}
 
@@ -572,7 +575,7 @@ class queue
 					// handled, then disconnect
 					sleep(1);
 					$this->jabber->disconnect();
-					break;
+				break;
 			}
 		}
 	

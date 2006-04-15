@@ -524,7 +524,7 @@ class acp_forums
 
 				$s_show_display_on_index = false;
 	
-				if ($action == 'edit' && $forum_data['parent_id'] > 0)
+				if ($forum_data['parent_id'] > 0)
 				{
 					// if this forum is a subforum put the "display on index" checkbox
 					if ($parent_info = $this->get_forum_info($forum_data['parent_id']))

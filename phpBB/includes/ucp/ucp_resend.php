@@ -23,7 +23,7 @@ class ucp_resend
 
 		if ($submit)
 		{
-			$username	= request_var('username', '');
+			$username	= request_var('username', '', true);
 			$email		= request_var('email', '');
 
 			$sql = 'SELECT user_id, username, user_email, user_type, user_lang, user_actkey

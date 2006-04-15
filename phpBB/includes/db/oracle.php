@@ -311,7 +311,7 @@ class dbal_oracle extends dbal
 		{
 			if (preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
-				$query = 'SELECT ' . $tablename[1] . '_id_seq.currval FROM DUAL';
+				$query = 'SELECT ' . $tablename[1] . '_seq.currval FROM DUAL';
 				$stmt = @ociparse($this->db_connect_id, $query);
 				@ociexecute($stmt, OCI_DEFAULT );
 

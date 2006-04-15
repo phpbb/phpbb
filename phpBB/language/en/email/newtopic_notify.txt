@@ -7,7 +7,7 @@ You are receiving this email because you are watching the forum, "{FORUM_NAME}" 
 
 {U_FORUM}
 
-If you no longer wish to watch this forum you can either click the "Stop watching this forum link" found at the bottom of the forum above, or by clicking the following link:
+If you no longer wish to watch this forum you can either click the "Unsubscribe forum link" found in the forum above, or by clicking the following link:
 
 {U_STOP_WATCHING_FORUM}
 

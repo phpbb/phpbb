@@ -214,7 +214,7 @@ class acp_prune
 				}
 				else
 				{
-					$username = request_var('username', '');
+					$username = request_var('username', '', true);
 					$email = request_var('email', '');
 
 					$joined_select = request_var('joined_select', 'lt');
@@ -315,7 +315,7 @@ class acp_prune
 					'prune'			=> 1,
 
 					'users'			=> request_var('users', ''),
-					'username'		=> request_var('username', ''),
+					'username'		=> request_var('username', '', true),
 					'email'			=> request_var('email', ''),
 					'joined_select'	=> request_var('joined_select', ''),
 					'joined'		=> request_var('joined', ''),

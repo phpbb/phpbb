@@ -846,8 +846,8 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		$user_id_ary = array();
 
 		// Build usernames to add
-		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '')) : array();
-		$username_list = request_var('username_list', '');
+		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
+		$username_list = request_var('username_list', '', true);
 		if ($username_list)
 		{
 			$usernames = array_merge($usernames, explode("\n", $username_list));

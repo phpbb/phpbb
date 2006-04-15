@@ -13,13 +13,32 @@ CREATE TABLE phpbb_attachments (
   physical_filename VARCHAR(255) NOT NULL,
   real_filename VARCHAR(255) NOT NULL,
   download_count INTEGER DEFAULT 0  NOT NULL,
-  comment VARCHAR(255),
+  comment BLOB SUB_TYPE TEXT,
   extension VARCHAR(100),
   mimetype VARCHAR(100),
   filesize INTEGER DEFAULT 0  NOT NULL,
   filetime INTEGER DEFAULT 0  NOT NULL,
   thumbnail INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_attachments ADD PRIMARY KEY (attach_id);;
+
+CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments(filesize);;
+CREATE INDEX phpbb_attachments_filetime ON phpbb_attachments(filetime);;
+CREATE INDEX phpbb_attachments_post_msg_id ON phpbb_attachments(post_msg_id);;
+CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments(poster_id);;
+CREATE INDEX phpbb_attachments_topic_id ON phpbb_attachments(topic_id);;
+
+CREATE GENERATOR phpbb_attachments_gen;;
+SET GENERATOR phpbb_attachments_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_attachments_gen FOR phpbb_attachments
+BEFORE INSERT
+AS
+BEGIN
+  NEW.attach_id = GEN_ID(phpbb_attachments_gen, 1);
+END;;
+
 
 # phpbb_auth_groups
 CREATE TABLE phpbb_auth_groups (
@@ -30,6 +49,10 @@ CREATE TABLE phpbb_auth_groups (
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
+CREATE INDEX phpbb_auth_groups_auth_option_id ON phpbb_auth_groups(auth_option_id);;
+CREATE INDEX phpbb_auth_groups_group_id ON phpbb_auth_groups(group_id);;
+
+
 # phpbb_auth_options
 CREATE TABLE phpbb_auth_options (
   auth_option_id INTEGER NOT NULL,
@@ -39,13 +62,43 @@ CREATE TABLE phpbb_auth_options (
   founder_only INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_auth_options ADD PRIMARY KEY (auth_option_id);;
+
+CREATE INDEX phpbb_auth_options_auth_option ON phpbb_auth_options(auth_option);;
+
+CREATE GENERATOR phpbb_auth_options_gen;;
+SET GENERATOR phpbb_auth_options_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_auth_options_gen FOR phpbb_auth_options
+BEFORE INSERT
+AS
+BEGIN
+  NEW.auth_option_id = GEN_ID(phpbb_auth_options_gen, 1);
+END;;
+
+
 # phpbb_auth_roles
 CREATE TABLE phpbb_auth_roles (
   role_id INTEGER NOT NULL,
-  role_name VARCHAR(50) NOT NULL,
+  role_name VARCHAR(255) NOT NULL,
   role_type VARCHAR(10) NOT NULL,
   role_group_ids VARCHAR(255) NOT NULL
 );;
+
+ALTER TABLE phpbb_auth_roles ADD PRIMARY KEY (role_id);;
+
+CREATE INDEX phpbb_auth_roles_role_type ON phpbb_auth_roles(role_type);;
+
+CREATE GENERATOR phpbb_auth_roles_gen;;
+SET GENERATOR phpbb_auth_roles_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_auth_roles_gen FOR phpbb_auth_roles
+BEFORE INSERT
+AS
+BEGIN
+  NEW.role_id = GEN_ID(phpbb_auth_roles_gen, 1);
+END;;
+
 
 # phpbb_auth_roles_data
 CREATE TABLE phpbb_auth_roles_data (
@@ -53,6 +106,9 @@ CREATE TABLE phpbb_auth_roles_data (
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_auth_roles_data ADD PRIMARY KEY (role_id, auth_option_id);;
+
 
 # phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
@@ -63,18 +119,34 @@ CREATE TABLE phpbb_auth_users (
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
+CREATE INDEX phpbb_auth_users_auth_option_id ON phpbb_auth_users(auth_option_id);;
+CREATE INDEX phpbb_auth_users_user_id ON phpbb_auth_users(user_id);;
+
+
 # phpbb_banlist
 CREATE TABLE phpbb_banlist (
   ban_id INTEGER NOT NULL,
   ban_userid INTEGER DEFAULT 0  NOT NULL,
   ban_ip VARCHAR(40) NOT NULL,
-  ban_email VARCHAR(50) NOT NULL,
+  ban_email VARCHAR(100) NOT NULL,
   ban_start INTEGER DEFAULT 0  NOT NULL,
   ban_end INTEGER DEFAULT 0  NOT NULL,
   ban_exclude INTEGER DEFAULT 0  NOT NULL,
-  ban_reason VARCHAR(255) NOT NULL,
-  ban_give_reason VARCHAR(255) NOT NULL
+  ban_reason BLOB SUB_TYPE TEXT,
+  ban_give_reason BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_banlist ADD PRIMARY KEY (ban_id);;
+
+CREATE GENERATOR phpbb_banlist_gen;;
+SET GENERATOR phpbb_banlist_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_banlist_gen FOR phpbb_banlist
+BEFORE INSERT
+AS
+BEGIN
+  NEW.ban_id = GEN_ID(phpbb_banlist_gen, 1);
+END;;
 
 # phpbb_bbcodes
 CREATE TABLE phpbb_bbcodes (
@@ -82,12 +154,17 @@ CREATE TABLE phpbb_bbcodes (
   bbcode_tag VARCHAR(16) NOT NULL,
   display_on_posting INTEGER DEFAULT 0  NOT NULL,
   bbcode_match VARCHAR(255) NOT NULL,
-  bbcode_tpl BLOB SUB_TYPE TEXT NOT NULL,
+  bbcode_tpl BLOB SUB_TYPE TEXT,
   first_pass_match VARCHAR(255) NOT NULL,
   first_pass_replace VARCHAR(255) NOT NULL,
   second_pass_match VARCHAR(255) NOT NULL,
-  second_pass_replace BLOB SUB_TYPE TEXT NOT NULL
+  second_pass_replace BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_bbcodes ADD PRIMARY KEY (bbcode_id);;
+
+CREATE INDEX phpbb_bbcodes_display_on_posting ON phpbb_bbcodes(display_on_posting);;
+
 
 # phpbb_bookmarks
 CREATE TABLE phpbb_bookmarks (
@@ -96,22 +173,44 @@ CREATE TABLE phpbb_bookmarks (
   order_id INTEGER DEFAULT 0  NOT NULL
 );;
 
+CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks(order_id);;
+CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks(topic_id, user_id);;
+
+
 # phpbb_bots
 CREATE TABLE phpbb_bots (
   bot_id INTEGER NOT NULL,
   bot_active INTEGER DEFAULT 1  NOT NULL,
-  bot_name VARCHAR(255) NOT NULL,
+  bot_name BLOB SUB_TYPE TEXT,
   user_id INTEGER DEFAULT 0  NOT NULL,
   bot_agent VARCHAR(255) NOT NULL,
   bot_ip VARCHAR(255) NOT NULL
 );;
 
+ALTER TABLE phpbb_bots ADD PRIMARY KEY (bot_id);;
+
+CREATE INDEX phpbb_bots_bot_active ON phpbb_bots(bot_active);;
+
+CREATE GENERATOR phpbb_bots_gen;;
+SET GENERATOR phpbb_bots_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_bots_gen FOR phpbb_bots
+BEFORE INSERT
+AS
+BEGIN
+  NEW.bot_id = GEN_ID(phpbb_bots_gen, 1);
+END;;
+
+
 # phpbb_cache
 CREATE TABLE phpbb_cache (
-  var_name VARCHAR(200) NOT NULL,
+  var_name VARCHAR(255) NOT NULL,
   var_expires INTEGER DEFAULT 0  NOT NULL,
-  var_data BLOB SUB_TYPE TEXT NOT NULL
+  var_data BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_cache ADD PRIMARY KEY (var_name);;
+
 
 # phpbb_config
 CREATE TABLE phpbb_config (
@@ -119,6 +218,11 @@ CREATE TABLE phpbb_config (
   config_value VARCHAR(255) NOT NULL,
   is_dynamic INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_config ADD PRIMARY KEY (config_name);;
+
+CREATE INDEX phpbb_config_is_dynamic ON phpbb_config(is_dynamic);;
+
 
 # phpbb_confirm
 CREATE TABLE phpbb_confirm (
@@ -128,11 +232,27 @@ CREATE TABLE phpbb_confirm (
   code VARCHAR(8) NOT NULL
 );;
 
+ALTER TABLE phpbb_confirm ADD PRIMARY KEY (session_id, confirm_id);;
+
+
 # phpbb_disallow
 CREATE TABLE phpbb_disallow (
   disallow_id INTEGER NOT NULL,
-  disallow_username VARCHAR(30) NOT NULL
+  disallow_username VARCHAR(255) NOT NULL
 );;
+
+ALTER TABLE phpbb_disallow ADD PRIMARY KEY (disallow_id);;
+
+CREATE GENERATOR phpbb_disallow_gen;;
+SET GENERATOR phpbb_disallow_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_disallow_gen FOR phpbb_disallow
+BEFORE INSERT
+AS
+BEGIN
+  NEW.disallow_id = GEN_ID(phpbb_disallow_gen, 1);
+END;;
+
 
 # phpbb_drafts
 CREATE TABLE phpbb_drafts (
@@ -141,22 +261,50 @@ CREATE TABLE phpbb_drafts (
   topic_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   save_time INTEGER DEFAULT 0  NOT NULL,
-  draft_subject VARCHAR(60),
-  draft_message BLOB SUB_TYPE TEXT NOT NULL
+  draft_subject BLOB SUB_TYPE TEXT,
+  draft_message BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_drafts ADD PRIMARY KEY (draft_id);;
+
+CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts(save_time);;
+
+CREATE GENERATOR phpbb_drafts_gen;;
+SET GENERATOR phpbb_drafts_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_drafts_gen FOR phpbb_drafts
+BEFORE INSERT
+AS
+BEGIN
+  NEW.draft_id = GEN_ID(phpbb_drafts_gen, 1);
+END;;
+
 
 # phpbb_extension_groups
 CREATE TABLE phpbb_extension_groups (
   group_id INTEGER NOT NULL,
-  group_name VARCHAR(20) NOT NULL,
+  group_name VARCHAR(255) NOT NULL,
   cat_id INTEGER DEFAULT 0  NOT NULL,
   allow_group INTEGER DEFAULT 0  NOT NULL,
   download_mode INTEGER DEFAULT 1  NOT NULL,
-  upload_icon VARCHAR(100) NOT NULL,
+  upload_icon VARCHAR(255) NOT NULL,
   max_filesize INTEGER DEFAULT 0  NOT NULL,
-  allowed_forums BLOB SUB_TYPE TEXT NOT NULL,
+  allowed_forums BLOB SUB_TYPE TEXT,
   allow_in_pm INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_extension_groups ADD PRIMARY KEY (group_id);;
+
+CREATE GENERATOR phpbb_extension_groups_gen;;
+SET GENERATOR phpbb_extension_groups_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_extension_groups_gen FOR phpbb_extension_groups
+BEFORE INSERT
+AS
+BEGIN
+  NEW.group_id = GEN_ID(phpbb_extension_groups_gen, 1);
+END;;
+
 
 # phpbb_extensions
 CREATE TABLE phpbb_extensions (
@@ -165,12 +313,18 @@ CREATE TABLE phpbb_extensions (
   extension VARCHAR(100) NOT NULL
 );;
 
-# phpbb_forum_access
-CREATE TABLE phpbb_forum_access (
-  forum_id INTEGER DEFAULT 0  NOT NULL,
-  user_id INTEGER DEFAULT 0  NOT NULL,
-  session_id VARCHAR(32) NOT NULL
-);;
+ALTER TABLE phpbb_extensions ADD PRIMARY KEY (extension_id);;
+
+CREATE GENERATOR phpbb_extensions_gen;;
+SET GENERATOR phpbb_extensions_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_extensions_gen FOR phpbb_extensions
+BEFORE INSERT
+AS
+BEGIN
+  NEW.extension_id = GEN_ID(phpbb_extensions_gen, 1);
+END;;
+
 
 # phpbb_forums
 CREATE TABLE phpbb_forums (
@@ -179,16 +333,16 @@ CREATE TABLE phpbb_forums (
   left_id INTEGER DEFAULT 0  NOT NULL,
   right_id INTEGER DEFAULT 0  NOT NULL,
   forum_parents BLOB SUB_TYPE TEXT,
-  forum_name VARCHAR(150) NOT NULL,
+  forum_name BLOB SUB_TYPE TEXT,
   forum_desc BLOB SUB_TYPE TEXT,
   forum_desc_bitfield INTEGER DEFAULT 0  NOT NULL,
   forum_desc_uid VARCHAR(5) NOT NULL,
-  forum_link VARCHAR(200) NOT NULL,
-  forum_password VARCHAR(32) NOT NULL,
+  forum_link VARCHAR(255) NOT NULL,
+  forum_password VARCHAR(40) NOT NULL,
   forum_style INTEGER,
-  forum_image VARCHAR(50) NOT NULL,
-  forum_rules BLOB SUB_TYPE TEXT NOT NULL,
-  forum_rules_link VARCHAR(200) NOT NULL,
+  forum_image VARCHAR(255) NOT NULL,
+  forum_rules BLOB SUB_TYPE TEXT,
+  forum_rules_link VARCHAR(255) NOT NULL,
   forum_rules_bitfield INTEGER DEFAULT 0  NOT NULL,
   forum_rules_uid VARCHAR(5) NOT NULL,
   forum_topics_per_page INTEGER DEFAULT 0  NOT NULL,
@@ -200,7 +354,7 @@ CREATE TABLE phpbb_forums (
   forum_last_post_id INTEGER DEFAULT 0  NOT NULL,
   forum_last_poster_id INTEGER DEFAULT 0  NOT NULL,
   forum_last_post_time INTEGER DEFAULT 0  NOT NULL,
-  forum_last_poster_name VARCHAR(30),
+  forum_last_poster_name VARCHAR(255),
   forum_flags INTEGER DEFAULT 0  NOT NULL,
   display_on_index INTEGER DEFAULT 1  NOT NULL,
   enable_indexing INTEGER DEFAULT 1  NOT NULL,
@@ -212,12 +366,41 @@ CREATE TABLE phpbb_forums (
   prune_freq INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_forums ADD PRIMARY KEY (forum_id);;
+
+CREATE INDEX phpbb_forums_forum_last_post_id ON phpbb_forums(forum_last_post_id);;
+CREATE INDEX phpbb_forums_left_right_id ON phpbb_forums(left_id, right_id);;
+
+CREATE GENERATOR phpbb_forums_gen;;
+SET GENERATOR phpbb_forums_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_forums_gen FOR phpbb_forums
+BEFORE INSERT
+AS
+BEGIN
+  NEW.forum_id = GEN_ID(phpbb_forums_gen, 1);
+END;;
+
+
+# phpbb_forum_access
+CREATE TABLE phpbb_forum_access (
+  forum_id INTEGER DEFAULT 0  NOT NULL,
+  user_id INTEGER DEFAULT 0  NOT NULL,
+  session_id VARCHAR(32) NOT NULL
+);;
+
+ALTER TABLE phpbb_forum_access ADD PRIMARY KEY (forum_id, user_id, session_id);;
+
+
 # phpbb_forums_marking
 CREATE TABLE phpbb_forums_marking (
   user_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   mark_time INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_forums_marking ADD PRIMARY KEY (user_id, forum_id);;
+
 
 # phpbb_forums_watch
 CREATE TABLE phpbb_forums_watch (
@@ -226,16 +409,21 @@ CREATE TABLE phpbb_forums_watch (
   notify_status INTEGER DEFAULT 0  NOT NULL
 );;
 
+CREATE INDEX phpbb_forums_watch_forum_id ON phpbb_forums_watch(forum_id);;
+CREATE INDEX phpbb_forums_watch_notify_status ON phpbb_forums_watch(notify_status);;
+CREATE INDEX phpbb_forums_watch_user_id ON phpbb_forums_watch(user_id);;
+
+
 # phpbb_groups
 CREATE TABLE phpbb_groups (
   group_id INTEGER NOT NULL,
   group_type INTEGER DEFAULT 1  NOT NULL,
-  group_name VARCHAR(40) NOT NULL,
+  group_name VARCHAR(255) NOT NULL,
   group_desc BLOB SUB_TYPE TEXT,
   group_desc_bitfield INTEGER DEFAULT 0  NOT NULL,
   group_desc_uid VARCHAR(5) NOT NULL,
   group_display INTEGER DEFAULT 0  NOT NULL,
-  group_avatar VARCHAR(100) NOT NULL,
+  group_avatar VARCHAR(255) NOT NULL,
   group_avatar_type INTEGER DEFAULT 0  NOT NULL,
   group_avatar_width INTEGER DEFAULT 0  NOT NULL,
   group_avatar_height INTEGER DEFAULT 0  NOT NULL,
@@ -248,25 +436,66 @@ CREATE TABLE phpbb_groups (
   group_legend INTEGER DEFAULT 1  NOT NULL
 );;
 
+ALTER TABLE phpbb_groups ADD PRIMARY KEY (group_id);;
+
+CREATE INDEX phpbb_groups_group_legend ON phpbb_groups(group_legend);;
+
+CREATE GENERATOR phpbb_groups_gen;;
+SET GENERATOR phpbb_groups_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_groups_gen FOR phpbb_groups
+BEFORE INSERT
+AS
+BEGIN
+  NEW.group_id = GEN_ID(phpbb_groups_gen, 1);
+END;;
+
+
 # phpbb_icons
 CREATE TABLE phpbb_icons (
   icons_id INTEGER NOT NULL,
-  icons_url VARCHAR(50),
+  icons_url VARCHAR(255),
   icons_width INTEGER DEFAULT 0  NOT NULL,
   icons_height INTEGER DEFAULT 0  NOT NULL,
   icons_order INTEGER DEFAULT 0  NOT NULL,
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
+ALTER TABLE phpbb_icons ADD PRIMARY KEY (icons_id);;
+
+CREATE GENERATOR phpbb_icons_gen;;
+SET GENERATOR phpbb_icons_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_icons_gen FOR phpbb_icons
+BEFORE INSERT
+AS
+BEGIN
+  NEW.icons_id = GEN_ID(phpbb_icons_gen, 1);
+END;;
+
+
 # phpbb_lang
 CREATE TABLE phpbb_lang (
   lang_id INTEGER NOT NULL,
   lang_iso VARCHAR(5) NOT NULL,
   lang_dir VARCHAR(30) NOT NULL,
-  lang_english_name VARCHAR(30),
-  lang_local_name VARCHAR(100),
-  lang_author VARCHAR(100)
+  lang_english_name VARCHAR(100),
+  lang_local_name VARCHAR(255),
+  lang_author VARCHAR(255)
 );;
+
+ALTER TABLE phpbb_lang ADD PRIMARY KEY (lang_id);;
+
+CREATE GENERATOR phpbb_lang_gen;;
+SET GENERATOR phpbb_lang_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_lang_gen FOR phpbb_lang
+BEFORE INSERT
+AS
+BEGIN
+  NEW.lang_id = GEN_ID(phpbb_lang_gen, 1);
+END;;
+
 
 # phpbb_log
 CREATE TABLE phpbb_log (
@@ -282,38 +511,81 @@ CREATE TABLE phpbb_log (
   log_data BLOB SUB_TYPE TEXT
 );;
 
+ALTER TABLE phpbb_log ADD PRIMARY KEY (log_id);;
+
+CREATE INDEX phpbb_log_forum_id ON phpbb_log(forum_id);;
+CREATE INDEX phpbb_log_log_type ON phpbb_log(log_type);;
+CREATE INDEX phpbb_log_reportee_id ON phpbb_log(reportee_id);;
+CREATE INDEX phpbb_log_topic_id ON phpbb_log(topic_id);;
+CREATE INDEX phpbb_log_user_id ON phpbb_log(user_id);;
+
+CREATE GENERATOR phpbb_log_gen;;
+SET GENERATOR phpbb_log_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_log_gen FOR phpbb_log
+BEFORE INSERT
+AS
+BEGIN
+  NEW.log_id = GEN_ID(phpbb_log_gen, 1);
+END;;
+
+
 # phpbb_moderator_cache
 CREATE TABLE phpbb_moderator_cache (
   forum_id INTEGER DEFAULT 0  NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
-  username VARCHAR(30) NOT NULL,
+  username VARCHAR(255) NOT NULL,
   group_id INTEGER DEFAULT 0  NOT NULL,
-  groupname VARCHAR(30) NOT NULL,
+  group_name VARCHAR(255) NOT NULL,
   display_on_index INTEGER DEFAULT 1  NOT NULL
 );;
+
+CREATE INDEX phpbb_moderator_cache_display_on_index ON phpbb_moderator_cache(display_on_index);;
+CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache(forum_id);;
+
 
 # phpbb_modules
 CREATE TABLE phpbb_modules (
   module_id INTEGER NOT NULL,
   module_enabled INTEGER DEFAULT 1  NOT NULL,
   module_display INTEGER DEFAULT 1  NOT NULL,
-  module_name VARCHAR(20) NOT NULL,
-  module_class VARCHAR(4) NOT NULL,
+  module_name VARCHAR(255) NOT NULL,
+  module_class VARCHAR(10) NOT NULL,
   parent_id INTEGER NOT NULL,
   left_id INTEGER NOT NULL,
   right_id INTEGER NOT NULL,
-  module_langname VARCHAR(50) NOT NULL,
+  module_langname VARCHAR(255) NOT NULL,
   module_mode VARCHAR(255) NOT NULL,
   module_auth VARCHAR(255) NOT NULL
 );;
+
+ALTER TABLE phpbb_modules ADD PRIMARY KEY (module_id);;
+
+CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules(module_enabled);;
+CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules(left_id, right_id);;
+
+CREATE GENERATOR phpbb_modules_gen;;
+SET GENERATOR phpbb_modules_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_modules_gen FOR phpbb_modules
+BEFORE INSERT
+AS
+BEGIN
+  NEW.module_id = GEN_ID(phpbb_modules_gen, 1);
+END;;
+
 
 # phpbb_poll_results
 CREATE TABLE phpbb_poll_results (
   poll_option_id INTEGER DEFAULT 0  NOT NULL,
   topic_id INTEGER DEFAULT 0  NOT NULL,
-  poll_option_text VARCHAR(255) NOT NULL,
+  poll_option_text BLOB SUB_TYPE TEXT,
   poll_option_total INTEGER DEFAULT 0  NOT NULL
 );;
+
+CREATE INDEX phpbb_poll_results_poll_option_id ON phpbb_poll_results(poll_option_id);;
+CREATE INDEX phpbb_poll_results_topic_id ON phpbb_poll_results(topic_id);;
+
 
 # phpbb_poll_voters
 CREATE TABLE phpbb_poll_voters (
@@ -322,6 +594,10 @@ CREATE TABLE phpbb_poll_voters (
   vote_user_id INTEGER DEFAULT 0  NOT NULL,
   vote_user_ip VARCHAR(40) NOT NULL
 );;
+
+CREATE INDEX phpbb_poll_voters_vote_user_id ON phpbb_poll_voters(vote_user_id);;
+CREATE INDEX phpbb_poll_voters_vote_user_ip ON phpbb_poll_voters(vote_user_ip);;
+
 
 # phpbb_posts
 CREATE TABLE phpbb_posts (
@@ -338,8 +614,8 @@ CREATE TABLE phpbb_posts (
   enable_smilies INTEGER DEFAULT 1  NOT NULL,
   enable_magic_url INTEGER DEFAULT 1  NOT NULL,
   enable_sig INTEGER DEFAULT 1  NOT NULL,
-  post_username VARCHAR(30),
-  post_subject VARCHAR(60),
+  post_username VARCHAR(255),
+  post_subject BLOB SUB_TYPE TEXT,
   post_text BLOB SUB_TYPE TEXT,
   post_checksum VARCHAR(32) NOT NULL,
   post_encoding VARCHAR(20) DEFAULT 'iso-8859-1'  NOT NULL,
@@ -347,11 +623,31 @@ CREATE TABLE phpbb_posts (
   bbcode_bitfield INTEGER DEFAULT 0  NOT NULL,
   bbcode_uid VARCHAR(5) NOT NULL,
   post_edit_time INTEGER DEFAULT 0  NOT NULL,
-  post_edit_reason VARCHAR(100),
+  post_edit_reason BLOB SUB_TYPE TEXT,
   post_edit_user INTEGER DEFAULT 0  NOT NULL,
   post_edit_count INTEGER DEFAULT 0  NOT NULL,
   post_edit_locked INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_posts ADD PRIMARY KEY (post_id);;
+
+CREATE INDEX phpbb_posts_forum_id ON phpbb_posts(forum_id);;
+CREATE INDEX phpbb_posts_post_approved ON phpbb_posts(post_approved);;
+CREATE INDEX phpbb_posts_post_time ON phpbb_posts(post_time);;
+CREATE INDEX phpbb_posts_poster_id ON phpbb_posts(poster_id);;
+CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts(poster_ip);;
+CREATE INDEX phpbb_posts_topic_id ON phpbb_posts(topic_id);;
+
+CREATE GENERATOR phpbb_posts_gen;;
+SET GENERATOR phpbb_posts_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_posts_gen FOR phpbb_posts
+BEFORE INSERT
+AS
+BEGIN
+  NEW.post_id = GEN_ID(phpbb_posts_gen, 1);
+END;;
+
 
 # phpbb_privmsgs
 CREATE TABLE phpbb_privmsgs (
@@ -365,9 +661,9 @@ CREATE TABLE phpbb_privmsgs (
   enable_smilies INTEGER DEFAULT 1  NOT NULL,
   enable_magic_url INTEGER DEFAULT 1  NOT NULL,
   enable_sig INTEGER DEFAULT 1  NOT NULL,
-  message_subject VARCHAR(60),
+  message_subject BLOB SUB_TYPE TEXT,
   message_text BLOB SUB_TYPE TEXT,
-  message_edit_reason VARCHAR(100),
+  message_edit_reason BLOB SUB_TYPE TEXT,
   message_edit_user INTEGER DEFAULT 0  NOT NULL,
   message_encoding VARCHAR(20) DEFAULT 'iso-8859-1'  NOT NULL,
   message_attachment INTEGER DEFAULT 0  NOT NULL,
@@ -379,13 +675,46 @@ CREATE TABLE phpbb_privmsgs (
   bcc_address BLOB SUB_TYPE TEXT
 );;
 
+ALTER TABLE phpbb_privmsgs ADD PRIMARY KEY (msg_id);;
+
+CREATE INDEX phpbb_privmsgs_author_id ON phpbb_privmsgs(author_id);;
+CREATE INDEX phpbb_privmsgs_author_ip ON phpbb_privmsgs(author_ip);;
+CREATE INDEX phpbb_privmsgs_message_time ON phpbb_privmsgs(message_time);;
+CREATE INDEX phpbb_privmsgs_root_level ON phpbb_privmsgs(root_level);;
+
+CREATE GENERATOR phpbb_privmsgs_gen;;
+SET GENERATOR phpbb_privmsgs_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_privmsgs_gen FOR phpbb_privmsgs
+BEFORE INSERT
+AS
+BEGIN
+  NEW.msg_id = GEN_ID(phpbb_privmsgs_gen, 1);
+END;;
+
+
 # phpbb_privmsgs_folder
 CREATE TABLE phpbb_privmsgs_folder (
   folder_id INTEGER NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
-  folder_name VARCHAR(40) NOT NULL,
+  folder_name VARCHAR(255) NOT NULL,
   pm_count INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_privmsgs_folder ADD PRIMARY KEY (folder_id);;
+
+CREATE INDEX phpbb_privmsgs_folder_user_id ON phpbb_privmsgs_folder(user_id);;
+
+CREATE GENERATOR phpbb_privmsgs_folder_gen;;
+SET GENERATOR phpbb_privmsgs_folder_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_privmsgs_folder_gen FOR phpbb_privmsgs_folder
+BEFORE INSERT
+AS
+BEGIN
+  NEW.folder_id = GEN_ID(phpbb_privmsgs_folder_gen, 1);
+END;;
+
 
 # phpbb_privmsgs_rules
 CREATE TABLE phpbb_privmsgs_rules (
@@ -399,6 +728,19 @@ CREATE TABLE phpbb_privmsgs_rules (
   rule_action INTEGER DEFAULT 0  NOT NULL,
   rule_folder_id INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_privmsgs_rules ADD PRIMARY KEY (rule_id);;
+
+CREATE GENERATOR phpbb_privmsgs_rules_gen;;
+SET GENERATOR phpbb_privmsgs_rules_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_privmsgs_rules_gen FOR phpbb_privmsgs_rules
+BEFORE INSERT
+AS
+BEGIN
+  NEW.rule_id = GEN_ID(phpbb_privmsgs_rules_gen, 1);
+END;;
+
 
 # phpbb_privmsgs_to
 CREATE TABLE phpbb_privmsgs_to (
@@ -414,11 +756,15 @@ CREATE TABLE phpbb_privmsgs_to (
   folder_id INTEGER DEFAULT 0  NOT NULL
 );;
 
+CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to(msg_id);;
+CREATE INDEX phpbb_privmsgs_to_user_id ON phpbb_privmsgs_to(user_id, folder_id);;
+
+
 # phpbb_profile_fields
 CREATE TABLE phpbb_profile_fields (
   field_id INTEGER NOT NULL,
-  field_name VARCHAR(50) NOT NULL,
-  field_desc VARCHAR(255) NOT NULL,
+  field_name VARCHAR(255) NOT NULL,
+  field_desc BLOB SUB_TYPE TEXT,
   field_type INTEGER DEFAULT 0  NOT NULL,
   field_ident VARCHAR(20) NOT NULL,
   field_length VARCHAR(20) NOT NULL,
@@ -435,10 +781,29 @@ CREATE TABLE phpbb_profile_fields (
   field_order INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_profile_fields ADD PRIMARY KEY (field_id);;
+
+CREATE INDEX phpbb_profile_fields_field_order ON phpbb_profile_fields(field_order);;
+CREATE INDEX phpbb_profile_fields_field_type ON phpbb_profile_fields(field_type);;
+
+CREATE GENERATOR phpbb_profile_fields_gen;;
+SET GENERATOR phpbb_profile_fields_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_profile_fields_gen FOR phpbb_profile_fields
+BEFORE INSERT
+AS
+BEGIN
+  NEW.field_id = GEN_ID(phpbb_profile_fields_gen, 1);
+END;;
+
+
 # phpbb_profile_fields_data
 CREATE TABLE phpbb_profile_fields_data (
   user_id INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_profile_fields_data ADD PRIMARY KEY (user_id);;
+
 
 # phpbb_profile_fields_lang
 CREATE TABLE phpbb_profile_fields_lang (
@@ -446,26 +811,45 @@ CREATE TABLE phpbb_profile_fields_lang (
   lang_id INTEGER DEFAULT 0  NOT NULL,
   option_id INTEGER DEFAULT 0  NOT NULL,
   field_type INTEGER DEFAULT 0  NOT NULL,
-  valueCol VARCHAR(255) NOT NULL
+  value VARCHAR(255) NOT NULL
 );;
+
+ALTER TABLE phpbb_profile_fields_lang ADD PRIMARY KEY (field_id, lang_id, option_id);;
+
 
 # phpbb_profile_lang
 CREATE TABLE phpbb_profile_lang (
   field_id INTEGER DEFAULT 0  NOT NULL,
   lang_id INTEGER DEFAULT 0  NOT NULL,
   lang_name VARCHAR(255) NOT NULL,
-  lang_explain BLOB SUB_TYPE TEXT NOT NULL,
+  lang_explain BLOB SUB_TYPE TEXT,
   lang_default_value VARCHAR(255) NOT NULL
 );;
+
+ALTER TABLE phpbb_profile_lang ADD PRIMARY KEY (field_id, lang_id);;
+
 
 # phpbb_ranks
 CREATE TABLE phpbb_ranks (
   rank_id INTEGER NOT NULL,
-  rank_title VARCHAR(50) NOT NULL,
+  rank_title VARCHAR(255) NOT NULL,
   rank_min INTEGER DEFAULT 0  NOT NULL,
   rank_special INTEGER DEFAULT 0 ,
-  rank_image VARCHAR(100)
+  rank_image VARCHAR(255)
 );;
+
+ALTER TABLE phpbb_ranks ADD PRIMARY KEY (rank_id);;
+
+CREATE GENERATOR phpbb_ranks_gen;;
+SET GENERATOR phpbb_ranks_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_ranks_gen FOR phpbb_ranks
+BEFORE INSERT
+AS
+BEGIN
+  NEW.rank_id = GEN_ID(phpbb_ranks_gen, 1);
+END;;
+
 
 # phpbb_reports
 CREATE TABLE phpbb_reports (
@@ -476,24 +860,53 @@ CREATE TABLE phpbb_reports (
   user_notify INTEGER DEFAULT 0  NOT NULL,
   report_closed INTEGER DEFAULT 0  NOT NULL,
   report_time INTEGER DEFAULT 0  NOT NULL,
-  report_text BLOB SUB_TYPE TEXT NOT NULL
+  report_text BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
+
+CREATE GENERATOR phpbb_reports_gen;;
+SET GENERATOR phpbb_reports_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_reports_gen FOR phpbb_reports
+BEFORE INSERT
+AS
+BEGIN
+  NEW.report_id = GEN_ID(phpbb_reports_gen, 1);
+END;;
+
 
 # phpbb_reports_reasons
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER NOT NULL,
   reason_title VARCHAR(255) NOT NULL,
-  reason_description BLOB SUB_TYPE TEXT NOT NULL,
+  reason_description BLOB SUB_TYPE TEXT,
   reason_order INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_reports_reasons ADD PRIMARY KEY (reason_id);;
+
+CREATE GENERATOR phpbb_reports_reasons_gen;;
+SET GENERATOR phpbb_reports_reasons_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_reports_reasons_gen FOR phpbb_reports_reasons
+BEFORE INSERT
+AS
+BEGIN
+  NEW.reason_id = GEN_ID(phpbb_reports_reasons_gen, 1);
+END;;
+
 
 # phpbb_search_results
 CREATE TABLE phpbb_search_results (
   search_key VARCHAR(32) NOT NULL,
   search_time INTEGER DEFAULT 0  NOT NULL,
-  search_keywords BLOB SUB_TYPE TEXT NOT NULL,
-  search_authors BLOB SUB_TYPE TEXT NOT NULL
+  search_keywords BLOB SUB_TYPE TEXT,
+  search_authors BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_search_results ADD PRIMARY KEY (search_key);;
+
 
 # phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
@@ -502,12 +915,29 @@ CREATE TABLE phpbb_search_wordlist (
   word_common INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_search_wordlist ADD PRIMARY KEY (word_text);;
+
+CREATE INDEX phpbb_search_wordlist_word_id ON phpbb_search_wordlist(word_id);;
+
+CREATE GENERATOR phpbb_search_wordlist_gen;;
+SET GENERATOR phpbb_search_wordlist_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_search_wordlist_gen FOR phpbb_search_wordlist
+BEFORE INSERT
+AS
+BEGIN
+  NEW.word_id = GEN_ID(phpbb_search_wordlist_gen, 1);
+END;;
+
+
 # phpbb_search_wordmatch
 CREATE TABLE phpbb_search_wordmatch (
   post_id INTEGER DEFAULT 0  NOT NULL,
   word_id INTEGER DEFAULT 0  NOT NULL,
   title_match INTEGER DEFAULT 0  NOT NULL
 );;
+
+CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch(word_id);;
 
 # phpbb_sessions
 CREATE TABLE phpbb_sessions (
@@ -524,6 +954,12 @@ CREATE TABLE phpbb_sessions (
   session_admin INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_sessions ADD PRIMARY KEY (session_id);;
+
+CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions(session_time);;
+CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions(session_user_id);;
+
+
 # phpbb_sessions_keys
 CREATE TABLE phpbb_sessions_keys (
   key_id VARCHAR(32) NOT NULL,
@@ -532,6 +968,11 @@ CREATE TABLE phpbb_sessions_keys (
   last_login INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_sessions_keys ADD PRIMARY KEY (key_id, user_id);;
+
+CREATE INDEX phpbb_sessions_keys_last_login ON phpbb_sessions_keys(last_login);;
+
+
 # phpbb_sitelist
 CREATE TABLE phpbb_sitelist (
   site_id INTEGER NOT NULL,
@@ -539,6 +980,19 @@ CREATE TABLE phpbb_sitelist (
   site_hostname VARCHAR(255) NOT NULL,
   ip_exclude INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_sitelist ADD PRIMARY KEY (site_id);;
+
+CREATE GENERATOR phpbb_sitelist_gen;;
+SET GENERATOR phpbb_sitelist_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_sitelist_gen FOR phpbb_sitelist
+BEFORE INSERT
+AS
+BEGIN
+  NEW.site_id = GEN_ID(phpbb_sitelist_gen, 1);
+END;;
+
 
 # phpbb_smilies
 CREATE TABLE phpbb_smilies (
@@ -552,23 +1006,54 @@ CREATE TABLE phpbb_smilies (
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
+ALTER TABLE phpbb_smilies ADD PRIMARY KEY (smiley_id);;
+
+CREATE GENERATOR phpbb_smilies_gen;;
+SET GENERATOR phpbb_smilies_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_smilies_gen FOR phpbb_smilies
+BEFORE INSERT
+AS
+BEGIN
+  NEW.smiley_id = GEN_ID(phpbb_smilies_gen, 1);
+END;;
+
+
 # phpbb_styles
 CREATE TABLE phpbb_styles (
   style_id INTEGER NOT NULL,
-  style_name VARCHAR(30) NOT NULL,
-  style_copyright VARCHAR(50) NOT NULL,
+  style_name VARCHAR(255) NOT NULL,
+  style_copyright VARCHAR(255) NOT NULL,
   style_active INTEGER DEFAULT 1  NOT NULL,
   template_id INTEGER DEFAULT 0  NOT NULL,
   theme_id INTEGER DEFAULT 0  NOT NULL,
   imageset_id INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles(style_name);;
+CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles(imageset_id);;
+CREATE INDEX phpbb_styles_template_id ON phpbb_styles(template_id);;
+CREATE INDEX phpbb_styles_theme_id ON phpbb_styles(theme_id);;
+
+CREATE GENERATOR phpbb_styles_gen;;
+SET GENERATOR phpbb_styles_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_gen FOR phpbb_styles
+BEFORE INSERT
+AS
+BEGIN
+  NEW.style_id = GEN_ID(phpbb_styles_gen, 1);
+END;;
+
+
 # phpbb_styles_imageset
 CREATE TABLE phpbb_styles_imageset (
   imageset_id INTEGER NOT NULL,
-  imageset_name VARCHAR(30) NOT NULL,
-  imageset_copyright VARCHAR(50) NOT NULL,
-  imageset_path VARCHAR(30) NOT NULL,
+  imageset_name VARCHAR(255) NOT NULL,
+  imageset_copyright VARCHAR(255) NOT NULL,
+  imageset_path VARCHAR(100) NOT NULL,
   site_logo VARCHAR(200) NOT NULL,
   btn_post VARCHAR(200) NOT NULL,
   btn_post_pm VARCHAR(200) NOT NULL,
@@ -648,35 +1133,84 @@ CREATE TABLE phpbb_styles_imageset (
   user_icon10 VARCHAR(200) NOT NULL
 );;
 
+ALTER TABLE phpbb_styles_imageset ADD PRIMARY KEY (imageset_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_imageset_imageset_name ON phpbb_styles_imageset(imageset_name);;
+
+CREATE GENERATOR phpbb_styles_imageset_gen;;
+SET GENERATOR phpbb_styles_imageset_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_imageset_gen FOR phpbb_styles_imageset
+BEFORE INSERT
+AS
+BEGIN
+  NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1);
+END;;
+
+
 # phpbb_styles_template
 CREATE TABLE phpbb_styles_template (
   template_id INTEGER NOT NULL,
-  template_name VARCHAR(30) NOT NULL,
-  template_copyright VARCHAR(50) NOT NULL,
-  template_path VARCHAR(30) NOT NULL,
+  template_name VARCHAR(255) NOT NULL,
+  template_copyright VARCHAR(255) NOT NULL,
+  template_path VARCHAR(100) NOT NULL,
   bbcode_bitfield INTEGER DEFAULT 0  NOT NULL,
   template_storedb INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_styles_template ADD PRIMARY KEY (template_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_template_template_name ON phpbb_styles_template(template_name);;
+
+
 # phpbb_styles_template_data
 CREATE TABLE phpbb_styles_template_data (
   template_id INTEGER DEFAULT 0  NOT NULL,
-  template_filename VARCHAR(50) NOT NULL,
-  template_included BLOB SUB_TYPE TEXT NOT NULL,
+  template_filename VARCHAR(100) NOT NULL,
+  template_included BLOB SUB_TYPE TEXT,
   template_mtime INTEGER DEFAULT 0  NOT NULL,
   template_data BLOB SUB_TYPE TEXT
 );;
 
+CREATE INDEX phpbb_styles_template_data_template_filename ON phpbb_styles_template_data(template_filename);;
+CREATE INDEX phpbb_styles_template_data_template_id ON phpbb_styles_template_data(template_id);;
+
+CREATE GENERATOR phpbb_styles_template_data_gen;;
+SET GENERATOR phpbb_styles_template_data_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_template_data_gen FOR phpbb_styles_template
+BEFORE INSERT
+AS
+BEGIN
+  NEW.template_id = GEN_ID(phpbb_styles_template_data_gen, 1);
+END;;
+
+
 # phpbb_styles_theme
 CREATE TABLE phpbb_styles_theme (
   theme_id INTEGER NOT NULL,
-  theme_name VARCHAR(30) NOT NULL,
-  theme_copyright VARCHAR(50) NOT NULL,
-  theme_path VARCHAR(30) NOT NULL,
+  theme_name VARCHAR(255) NOT NULL,
+  theme_copyright VARCHAR(255) NOT NULL,
+  theme_path VARCHAR(100) NOT NULL,
   theme_storedb INTEGER DEFAULT 0  NOT NULL,
   theme_mtime INTEGER DEFAULT 0  NOT NULL,
-  theme_data BLOB SUB_TYPE TEXT NOT NULL
+  theme_data BLOB SUB_TYPE TEXT
 );;
+
+ALTER TABLE phpbb_styles_theme ADD PRIMARY KEY (theme_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme(theme_name);;
+
+CREATE GENERATOR phpbb_styles_theme_gen;;
+SET GENERATOR phpbb_styles_theme_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_theme_gen FOR phpbb_styles_theme
+BEFORE INSERT
+AS
+BEGIN
+  NEW.theme_id = GEN_ID(phpbb_styles_theme_gen, 1);
+END;;
+
 
 # phpbb_topics
 CREATE TABLE phpbb_topics (
@@ -686,7 +1220,7 @@ CREATE TABLE phpbb_topics (
   topic_attachment INTEGER DEFAULT 0  NOT NULL,
   topic_approved INTEGER DEFAULT 1  NOT NULL,
   topic_reported INTEGER DEFAULT 0  NOT NULL,
-  topic_title VARCHAR(60) NOT NULL,
+  topic_title BLOB SUB_TYPE TEXT,
   topic_poster INTEGER DEFAULT 0  NOT NULL,
   topic_time INTEGER DEFAULT 0  NOT NULL,
   topic_time_limit INTEGER DEFAULT 0  NOT NULL,
@@ -696,22 +1230,39 @@ CREATE TABLE phpbb_topics (
   topic_status INTEGER DEFAULT 0  NOT NULL,
   topic_type INTEGER DEFAULT 0  NOT NULL,
   topic_first_post_id INTEGER DEFAULT 0  NOT NULL,
-  topic_first_poster_name VARCHAR(30),
+  topic_first_poster_name VARCHAR(255),
   topic_last_post_id INTEGER DEFAULT 0  NOT NULL,
   topic_last_poster_id INTEGER DEFAULT 0  NOT NULL,
-  topic_last_poster_name VARCHAR(30),
+  topic_last_poster_name VARCHAR(255),
   topic_last_post_time INTEGER DEFAULT 0  NOT NULL,
   topic_last_view_time INTEGER DEFAULT 0  NOT NULL,
   topic_moved_id INTEGER DEFAULT 0  NOT NULL,
   topic_bumped INTEGER DEFAULT 0  NOT NULL,
   topic_bumper INTEGER DEFAULT 0  NOT NULL,
-  poll_title VARCHAR(255) NOT NULL,
+  poll_title BLOB SUB_TYPE TEXT,
   poll_start INTEGER DEFAULT 0  NOT NULL,
   poll_length INTEGER DEFAULT 0  NOT NULL,
   poll_max_options INTEGER DEFAULT 1  NOT NULL,
   poll_last_vote INTEGER DEFAULT 0 ,
   poll_vote_change INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
+
+CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
+CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
+CREATE INDEX phpbb_topics_topic_last_post_time ON phpbb_topics(topic_last_post_time);;
+
+CREATE GENERATOR phpbb_topics_gen;;
+SET GENERATOR phpbb_topics_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_topics_gen FOR phpbb_topics
+BEFORE INSERT
+AS
+BEGIN
+  NEW.topic_id = GEN_ID(phpbb_topics_gen, 1);
+END;;
+
 
 # phpbb_topics_marking
 CREATE TABLE phpbb_topics_marking (
@@ -721,6 +1272,11 @@ CREATE TABLE phpbb_topics_marking (
   mark_time INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_topics_marking ADD PRIMARY KEY (user_id, topic_id);;
+
+CREATE INDEX phpbb_topics_marking_forum_id ON phpbb_topics_marking(forum_id);;
+
+
 # phpbb_topics_posted
 CREATE TABLE phpbb_topics_posted (
   user_id INTEGER DEFAULT 0  NOT NULL,
@@ -728,12 +1284,20 @@ CREATE TABLE phpbb_topics_posted (
   topic_posted INTEGER DEFAULT 0  NOT NULL
 );;
 
+ALTER TABLE phpbb_topics_posted ADD PRIMARY KEY (user_id, topic_id);;
+
+
 # phpbb_topics_watch
 CREATE TABLE phpbb_topics_watch (
   topic_id INTEGER DEFAULT 0  NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
   notify_status INTEGER DEFAULT 0  NOT NULL
 );;
+
+CREATE INDEX phpbb_topics_watch_notify_status ON phpbb_topics_watch(notify_status);;
+CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;
+CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch(user_id);;
+
 
 # phpbb_user_group
 CREATE TABLE phpbb_user_group (
@@ -743,18 +1307,23 @@ CREATE TABLE phpbb_user_group (
   user_pending INTEGER
 );;
 
+CREATE INDEX phpbb_user_group_group_id ON phpbb_user_group(group_id);;
+CREATE INDEX phpbb_user_group_group_leader ON phpbb_user_group(group_leader);;
+CREATE INDEX phpbb_user_group_user_id ON phpbb_user_group(user_id);;
+
+
 # phpbb_users
 CREATE TABLE phpbb_users (
   user_id INTEGER NOT NULL,
   user_type INTEGER DEFAULT 0  NOT NULL,
   group_id INTEGER DEFAULT 3  NOT NULL,
-  user_permissions BLOB SUB_TYPE TEXT NOT NULL,
+  user_permissions BLOB SUB_TYPE TEXT,
   user_ip VARCHAR(40) NOT NULL,
   user_regdate INTEGER DEFAULT 0  NOT NULL,
-  username VARCHAR(30) NOT NULL,
-  user_password VARCHAR(32) NOT NULL,
+  username VARCHAR(255) NOT NULL,
+  user_password VARCHAR(40) NOT NULL,
   user_passchg INTEGER DEFAULT 0  NOT NULL,
-  user_email VARCHAR(60) NOT NULL,
+  user_email VARCHAR(100) NOT NULL,
   user_email_hash DOUBLE PRECISION DEFAULT 0  NOT NULL,
   user_birthday VARCHAR(10) NOT NULL,
   user_lastvisit INTEGER DEFAULT 0  NOT NULL,
@@ -779,8 +1348,6 @@ CREATE TABLE phpbb_users (
   user_message_rules INTEGER DEFAULT 0  NOT NULL,
   user_full_folder INTEGER DEFAULT -3  NOT NULL,
   user_emailtime INTEGER DEFAULT 0  NOT NULL,
-  user_sortby_type VARCHAR(2) NOT NULL,
-  user_sortby_dir VARCHAR(2) NOT NULL,
   user_topic_show_days INTEGER DEFAULT 0  NOT NULL,
   user_topic_sortby_type VARCHAR(1) DEFAULT 't' NOT NULL,
   user_topic_sortby_dir VARCHAR(1) DEFAULT 'd' NOT NULL,
@@ -796,11 +1363,11 @@ CREATE TABLE phpbb_users (
   user_allow_viewemail INTEGER DEFAULT 1  NOT NULL,
   user_allow_massemail INTEGER DEFAULT 1  NOT NULL,
   user_options INTEGER DEFAULT 893  NOT NULL,
-  user_avatar VARCHAR(100) NOT NULL,
+  user_avatar VARCHAR(255) NOT NULL,
   user_avatar_type INTEGER DEFAULT 0  NOT NULL,
   user_avatar_width INTEGER DEFAULT 0  NOT NULL,
   user_avatar_height INTEGER DEFAULT 0  NOT NULL,
-  user_sig BLOB SUB_TYPE TEXT NOT NULL,
+  user_sig BLOB SUB_TYPE TEXT,
   user_sig_bbcode_uid VARCHAR(5) NOT NULL,
   user_sig_bbcode_bitfield INTEGER DEFAULT 0  NOT NULL,
   user_from VARCHAR(100) NOT NULL,
@@ -809,12 +1376,29 @@ CREATE TABLE phpbb_users (
   user_yim VARCHAR(255) NOT NULL,
   user_msnm VARCHAR(255) NOT NULL,
   user_jabber VARCHAR(255) NOT NULL,
-  user_website VARCHAR(100) NOT NULL,
+  user_website VARCHAR(200) NOT NULL,
   user_occ VARCHAR(255) NOT NULL,
   user_interests VARCHAR(255) NOT NULL,
   user_actkey VARCHAR(32) NOT NULL,
   user_newpasswd VARCHAR(32) NOT NULL
 );;
+
+ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;
+
+CREATE INDEX phpbb_users_user_birthday ON phpbb_users(user_birthday);;
+CREATE INDEX phpbb_users_user_email_hash ON phpbb_users(user_email_hash);;
+CREATE INDEX phpbb_users_username ON phpbb_users(username);;
+
+CREATE GENERATOR phpbb_users_gen;;
+SET GENERATOR phpbb_users_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_users_gen FOR phpbb_users
+BEFORE INSERT
+AS
+BEGIN
+  NEW.user_id = GEN_ID(phpbb_users_gen, 1);
+END;;
+
 
 # phpbb_warnings
 CREATE TABLE phpbb_warnings (
@@ -825,12 +1409,38 @@ CREATE TABLE phpbb_warnings (
   warning_time INTEGER DEFAULT 0  NOT NULL,
 );;
 
+ALTER TABLE phpbb_warnings ADD PRIMARY KEY (warning_id);;
+
+CREATE GENERATOR phpbb_warnings_gen;;
+SET GENERATOR phpbb_warnings_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_warnings_gen FOR phpbb_warnings
+BEFORE INSERT
+AS
+BEGIN
+  NEW.warning_id = GEN_ID(phpbb_warnings_gen, 1);
+END;;
+
+
 # phpbb_words
 CREATE TABLE phpbb_words (
   word_id INTEGER NOT NULL,
-  word VARCHAR(100) NOT NULL,
-  replacement VARCHAR(100) NOT NULL
+  word VARCHAR(255) NOT NULL,
+  replacement VARCHAR(255) NOT NULL
 );;
+
+ALTER TABLE phpbb_words ADD PRIMARY KEY (word_id);;
+
+CREATE GENERATOR phpbb_words_gen;;
+SET GENERATOR phpbb_words_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_words_gen FOR phpbb_words
+BEFORE INSERT
+AS
+BEGIN
+  NEW.word_id = GEN_ID(phpbb_words_gen, 1);
+END;;
+
 
 # phpbb_zebra
 CREATE TABLE phpbb_zebra (
@@ -840,1026 +1450,5 @@ CREATE TABLE phpbb_zebra (
   foe INTEGER DEFAULT 0  NOT NULL
 );;
 
-ALTER TABLE phpbb_attachments
-ADD PRIMARY KEY (
-  attach_id
-);;
-
-CREATE INDEX filesize1
-ON phpbb_attachments(
-  filesize
-);;
-
-CREATE INDEX filetime2
-ON phpbb_attachments(
-  filetime
-);;
-
-CREATE INDEX post_msg_id4
-ON phpbb_attachments(
-  post_msg_id
-);;
-
-CREATE INDEX poster_id5
-ON phpbb_attachments(
-  poster_id
-);;
-
-CREATE INDEX topic_id6
-ON phpbb_attachments(
-  topic_id
-);;
-
-CREATE INDEX auth_option_id7
-ON phpbb_auth_groups(
-  auth_option_id
-);;
-
-CREATE INDEX group_id8
-ON phpbb_auth_groups(
-  group_id
-);;
-
-ALTER TABLE phpbb_auth_options
-ADD PRIMARY KEY (
-  auth_option_id
-);;
-
-CREATE INDEX auth_option9
-ON phpbb_auth_options(
-  auth_option
-);;
-
-ALTER TABLE phpbb_auth_roles
-ADD PRIMARY KEY (
-  role_id
-);;
-
-CREATE INDEX role_type10
-ON phpbb_auth_roles(
-  role_type
-);;
-
-ALTER TABLE phpbb_auth_roles_data
-ADD PRIMARY KEY (
-  role_id,
-  auth_option_id
-);;
-
-CREATE INDEX auth_option_id11
-ON phpbb_auth_users(
-  auth_option_id
-);;
-
-CREATE INDEX user_id12
-ON phpbb_auth_users(
-  user_id
-);;
-
-ALTER TABLE phpbb_banlist
-ADD PRIMARY KEY (
-  ban_id
-);;
-
-ALTER TABLE phpbb_bbcodes
-ADD PRIMARY KEY (
-  bbcode_id
-);;
-
-CREATE INDEX order_id13
-ON phpbb_bookmarks(
-  order_id
-);;
-
-CREATE INDEX topic_user_id14
-ON phpbb_bookmarks(
-  topic_id,
-  user_id
-);;
-
-ALTER TABLE phpbb_bots
-ADD PRIMARY KEY (
-  bot_id
-);;
-
-CREATE INDEX bot_active15
-ON phpbb_bots(
-  bot_active
-);;
-
-ALTER TABLE phpbb_cache
-ADD PRIMARY KEY (
-  var_name
-);;
-
-ALTER TABLE phpbb_config
-ADD PRIMARY KEY (
-  config_name
-);;
-
-CREATE INDEX is_dynamic16
-ON phpbb_config(
-  is_dynamic
-);;
-
-ALTER TABLE phpbb_confirm
-ADD PRIMARY KEY (
-  session_id,
-  confirm_id
-);;
-
-CREATE INDEX display_on_posting
-ON phpbb_bbcodes(
-  display_on_posting
-);;
-
-ALTER TABLE phpbb_disallow
-ADD PRIMARY KEY (
-  disallow_id
-);;
-
-ALTER TABLE phpbb_drafts
-ADD PRIMARY KEY (
-  draft_id
-);;
-
-CREATE INDEX save_time17
-ON phpbb_drafts(
-  save_time
-);;
-
-ALTER TABLE phpbb_extension_groups
-ADD PRIMARY KEY (
-  group_id
-);;
-
-ALTER TABLE phpbb_extensions
-ADD PRIMARY KEY (
-  extension_id
-);;
-
-ALTER TABLE phpbb_forum_access
-ADD PRIMARY KEY (
-  forum_id,
-  user_id,
-  session_id
-);;
-
-ALTER TABLE phpbb_forums
-ADD PRIMARY KEY (
-  forum_id
-);;
-
-CREATE INDEX forum_last_post_id18
-ON phpbb_forums(
-  forum_last_post_id
-);;
-
-CREATE INDEX left_right_id19
-ON phpbb_forums(
-  left_id,
-  right_id
-);;
-
-ALTER TABLE phpbb_forums_marking
-ADD PRIMARY KEY (
-  user_id,
-  forum_id
-);;
-
-CREATE INDEX forum_id20
-ON phpbb_forums_watch(
-  forum_id
-);;
-
-CREATE INDEX notify_status21
-ON phpbb_forums_watch(
-  notify_status
-);;
-
-CREATE INDEX user_id22
-ON phpbb_forums_watch(
-  user_id
-);;
-
-ALTER TABLE phpbb_groups
-ADD PRIMARY KEY (
-  group_id
-);;
-
-CREATE INDEX group_legend23
-ON phpbb_groups(
-  group_legend
-);;
-
-ALTER TABLE phpbb_icons
-ADD PRIMARY KEY (
-  icons_id
-);;
-
-ALTER TABLE phpbb_lang
-ADD PRIMARY KEY (
-  lang_id
-);;
-
-ALTER TABLE phpbb_log
-ADD PRIMARY KEY (
-  log_id
-);;
-
-CREATE INDEX forum_id24
-ON phpbb_log(
-  forum_id
-);;
-
-CREATE INDEX log_type25
-ON phpbb_log(
-  log_type
-);;
-
-CREATE INDEX reportee_id26
-ON phpbb_log(
-  reportee_id
-);;
-
-CREATE INDEX topic_id27
-ON phpbb_log(
-  topic_id
-);;
-
-CREATE INDEX user_id28
-ON phpbb_log(
-  user_id
-);;
-
-CREATE INDEX display_on_index29
-ON phpbb_moderator_cache(
-  display_on_index
-);;
-
-CREATE INDEX forum_id30
-ON phpbb_moderator_cache(
-  forum_id
-);;
-
-ALTER TABLE phpbb_modules
-ADD PRIMARY KEY (
-  module_id
-);;
-
-CREATE INDEX module_enabled31
-ON phpbb_modules(
-  module_enabled
-);;
-
-CREATE INDEX left_id31_2
-ON phpbb_modules(
-  left_id
-);;
-
-CREATE INDEX poll_option_id32
-ON phpbb_poll_results(
-  poll_option_id
-);;
-
-CREATE INDEX topic_id33
-ON phpbb_poll_results(
-  topic_id
-);;
-
-CREATE INDEX vote_user_id35
-ON phpbb_poll_voters(
-  vote_user_id
-);;
-
-CREATE INDEX vote_user_ip36
-ON phpbb_poll_voters(
-  vote_user_ip
-);;
-
-ALTER TABLE phpbb_posts
-ADD PRIMARY KEY (
-  post_id
-);;
-
-CREATE INDEX forum_id37
-ON phpbb_posts(
-  forum_id
-);;
-
-CREATE INDEX post_approved38
-ON phpbb_posts(
-  post_approved
-);;
-
-CREATE INDEX post_time39
-ON phpbb_posts(
-  post_time
-);;
-
-CREATE INDEX poster_id40
-ON phpbb_posts(
-  poster_id
-);;
-
-CREATE INDEX poster_ip41
-ON phpbb_posts(
-  poster_ip
-);;
-
-CREATE INDEX topic_id42
-ON phpbb_posts(
-  topic_id
-);;
-
-ALTER TABLE phpbb_privmsgs
-ADD PRIMARY KEY (
-  msg_id
-);;
-
-CREATE INDEX author_id43
-ON phpbb_privmsgs(
-  author_id
-);;
-
-CREATE INDEX author_ip44
-ON phpbb_privmsgs(
-  author_ip
-);;
-
-CREATE INDEX message_time45
-ON phpbb_privmsgs(
-  message_time
-);;
-
-CREATE INDEX root_level46
-ON phpbb_privmsgs(
-  root_level
-);;
-
-ALTER TABLE phpbb_privmsgs_folder
-ADD PRIMARY KEY (
-  folder_id
-);;
-
-CREATE INDEX user_id47
-ON phpbb_privmsgs_folder(
-  user_id
-);;
-
-ALTER TABLE phpbb_privmsgs_rules
-ADD PRIMARY KEY (
-  rule_id
-);;
-
-CREATE INDEX msg_id48
-ON phpbb_privmsgs_to(
-  msg_id
-);;
-
-CREATE INDEX user_id49
-ON phpbb_privmsgs_to(
-  user_id,
-  folder_id
-);;
-
-ALTER TABLE phpbb_profile_fields
-ADD PRIMARY KEY (
-  field_id
-);;
-
-CREATE INDEX field_order50
-ON phpbb_profile_fields(
-  field_order
-);;
-
-CREATE INDEX field_type51
-ON phpbb_profile_fields(
-  field_type
-);;
-
-ALTER TABLE phpbb_profile_fields_data
-ADD PRIMARY KEY (
-  user_id
-);;
-
-ALTER TABLE phpbb_profile_fields_lang
-ADD PRIMARY KEY (
-  field_id,
-  lang_id,
-  option_id
-);;
-
-ALTER TABLE phpbb_profile_lang
-ADD PRIMARY KEY (
-  field_id,
-  lang_id
-);;
-
-ALTER TABLE phpbb_ranks
-ADD PRIMARY KEY (
-  rank_id
-);;
-
-ALTER TABLE phpbb_reports
-ADD PRIMARY KEY (
-  report_id
-);;
-
-ALTER TABLE phpbb_reports_reasons
-ADD PRIMARY KEY (
-  reason_id
-);;
-
-ALTER TABLE phpbb_search_results
-ADD PRIMARY KEY (
-  search_key
-);;
-
-ALTER TABLE phpbb_search_wordlist
-ADD PRIMARY KEY (
-  word_text
-);;
-
-CREATE INDEX word_id55
-ON phpbb_search_wordlist(
-  word_id
-);;
-
-ALTER TABLE phpbb_sessions
-ADD PRIMARY KEY (
-  session_id
-);;
-
-CREATE INDEX session_time57
-ON phpbb_sessions(
-  session_time
-);;
-
-CREATE INDEX session_user_id58
-ON phpbb_sessions(
-  session_user_id
-);;
-
-ALTER TABLE phpbb_sitelist
-ADD PRIMARY KEY (
-  site_id
-);;
-
-ALTER TABLE phpbb_smilies
-ADD PRIMARY KEY (
-  smiley_id
-);;
-
-ALTER TABLE phpbb_styles
-ADD PRIMARY KEY (
-  style_id
-);;
-
-CREATE UNIQUE INDEX style_name59
-ON phpbb_styles(
-  style_name
-);;
-
-CREATE INDEX imageset_id60
-ON phpbb_styles(
-  imageset_id
-);;
-
-CREATE INDEX template_id61
-ON phpbb_styles(
-  template_id
-);;
-
-CREATE INDEX theme_id62
-ON phpbb_styles(
-  theme_id
-);;
-
-CREATE UNIQUE INDEX imageset_name63
-ON phpbb_styles_imageset(
-  imageset_name
-);;
-
-ALTER TABLE phpbb_styles_imageset
-ADD PRIMARY KEY (
-  imageset_id
-);;
-
-ALTER TABLE phpbb_styles_template
-ADD PRIMARY KEY (
-  template_id
-);;
-
-CREATE UNIQUE INDEX template_name64
-ON phpbb_styles_template(
-  template_name
-);;
-
-CREATE INDEX template_filename65
-ON phpbb_styles_template_data(
-  template_filename
-);;
-
-CREATE INDEX template_id66
-ON phpbb_styles_template_data(
-  template_id
-);;
-
-ALTER TABLE phpbb_styles_theme
-ADD PRIMARY KEY (
-  theme_id
-);;
-
-CREATE UNIQUE INDEX theme_name67
-ON phpbb_styles_theme(
-  theme_name
-);;
-
-ALTER TABLE phpbb_topics
-ADD PRIMARY KEY (
-  topic_id
-);;
-
-CREATE INDEX forum_id68
-ON phpbb_topics(
-  forum_id
-);;
-
-CREATE INDEX forum_id_type69
-ON phpbb_topics(
-  forum_id,
-  topic_type
-);;
-
-CREATE INDEX topic_last_post_time70
-ON phpbb_topics(
-  topic_last_post_time
-);;
-
-ALTER TABLE phpbb_topics_marking
-ADD PRIMARY KEY (
-  user_id,
-  topic_id
-);;
-
-CREATE INDEX forum_idtp
-ON phpbb_topics_marking(
-  forum_id
-);;
-
-ALTER TABLE phpbb_topics_posted
-ADD PRIMARY KEY (
-  user_id,
-  topic_id
-);;
-
-CREATE INDEX notify_status71
-ON phpbb_topics_watch(
-  notify_status
-);;
-
-CREATE INDEX topic_id72
-ON phpbb_topics_watch(
-  topic_id
-);;
-
-CREATE INDEX user_id73
-ON phpbb_topics_watch(
-  user_id
-);;
-
-CREATE INDEX group_id74
-ON phpbb_user_group(
-  group_id
-);;
-
-CREATE INDEX group_leader75
-ON phpbb_user_group(
-  group_leader
-);;
-
-CREATE INDEX user_id76
-ON phpbb_user_group(
-  user_id
-);;
-
-CREATE INDEX user_birthday77
-ON phpbb_users(
-  user_birthday
-);;
-
-CREATE INDEX user_email_hash78
-ON phpbb_users(
-  user_email_hash
-);;
-
-CREATE INDEX username79
-ON phpbb_users(
-  username
-);;
-
-ALTER TABLE phpbb_warnings
-ADD PRIMARY KEY (
-  warning_id
-);;
-
-ALTER TABLE phpbb_words
-ADD PRIMARY KEY (
-  word_id
-);;
-
-CREATE INDEX user_id80
-ON phpbb_zebra(
-  user_id
-);;
-
-CREATE INDEX zebra_id81
-ON phpbb_zebra(
-  zebra_id
-);;
-
-ALTER TABLE phpbb_sessions_keys
-ADD PRIMARY KEY (
-  key_id,
-  user_id
-);;
-
-CREATE INDEX last_login82
-ON phpbb_sessions_keys(
-  last_login
-);;
-
-CREATE GENERATOR G_phpbb_attachmentsattach_idGen;;
-
-SET GENERATOR G_phpbb_attachmentsattach_idGen TO 0;;
-
-CREATE GENERATOR b_auth_optionsauth_option_idGen;;
-
-SET GENERATOR b_auth_optionsauth_option_idGen TO 0;;
-
-CREATE GENERATOR G_auth_rolesrole_idGen;;
-
-SET GENERATOR G_auth_rolesrole_idGen TO 0;;
-
-CREATE GENERATOR G_phpbb_banlistban_idGen3;;
-
-SET GENERATOR G_phpbb_banlistban_idGen3 TO 0;;
-
-CREATE GENERATOR G_phpbb_botsbot_idGen4;;
-
-SET GENERATOR G_phpbb_botsbot_idGen4 TO 0;;
-
-CREATE GENERATOR G_phpbb_disallowdisallow_idGen5;;
-
-SET GENERATOR G_phpbb_disallowdisallow_idGen5 TO 0;;
-
-CREATE GENERATOR G_phpbb_draftsdraft_idGen6;;
-
-SET GENERATOR G_phpbb_draftsdraft_idGen6 TO 0;;
-
-CREATE GENERATOR pbb_extension_groupsgroup_idGen;;
-
-SET GENERATOR pbb_extension_groupsgroup_idGen TO 0;;
-
-CREATE GENERATOR phpbb_extensionsextension_idGen;;
-
-SET GENERATOR phpbb_extensionsextension_idGen TO 0;;
-
-CREATE GENERATOR G_phpbb_forumsforum_idGen9;;
-
-SET GENERATOR G_phpbb_forumsforum_idGen9 TO 0;;
-
-CREATE GENERATOR G_phpbb_groupsgroup_idGen10;;
-
-SET GENERATOR G_phpbb_groupsgroup_idGen10 TO 0;;
-
-CREATE GENERATOR G_phpbb_iconsicons_idGen11;;
-
-SET GENERATOR G_phpbb_iconsicons_idGen11 TO 0;;
-
-CREATE GENERATOR G_phpbb_langlang_idGen12;;
-
-SET GENERATOR G_phpbb_langlang_idGen12 TO 0;;
-
-CREATE GENERATOR G_phpbb_loglog_idGen13;;
-
-SET GENERATOR G_phpbb_loglog_idGen13 TO 0;;
-
-CREATE GENERATOR G_phpbb_modulesmodule_idGen14;;
-
-SET GENERATOR G_phpbb_modulesmodule_idGen14 TO 0;;
-
-CREATE GENERATOR G_phpbb_postspost_idGen15;;
-
-SET GENERATOR G_phpbb_postspost_idGen15 TO 0;;
-
-CREATE GENERATOR G_phpbb_privmsgsmsg_idGen16;;
-
-SET GENERATOR G_phpbb_privmsgsmsg_idGen16 TO 0;;
-
-CREATE GENERATOR bb_privmsgs_folderfolder_idGen1;;
-
-SET GENERATOR bb_privmsgs_folderfolder_idGen1 TO 0;;
-
-CREATE GENERATOR phpbb_privmsgs_rulesrule_idGen1;;
-
-SET GENERATOR phpbb_privmsgs_rulesrule_idGen1 TO 0;;
-
-CREATE GENERATOR hpbb_profile_fieldsfield_idGen1;;
-
-SET GENERATOR hpbb_profile_fieldsfield_idGen1 TO 0;;
-
-CREATE GENERATOR G_phpbb_ranksrank_idGen20;;
-
-SET GENERATOR G_phpbb_ranksrank_idGen20 TO 0;;
-
-CREATE GENERATOR G_phpbb_reportsreport_idGen21;;
-
-SET GENERATOR G_phpbb_reportsreport_idGen21 TO 0;;
-
-CREATE GENERATOR bb_reports_reasonsreason_idGen2;;
-
-SET GENERATOR bb_reports_reasonsreason_idGen2 TO 0;;
-
-CREATE GENERATOR hpbb_search_wordlistword_idGen2;;
-
-SET GENERATOR hpbb_search_wordlistword_idGen2 TO 0;;
-
-CREATE GENERATOR G_phpbb_sitelistsite_idGen24;;
-
-SET GENERATOR G_phpbb_sitelistsite_idGen24 TO 0;;
-
-CREATE GENERATOR G_phpbb_smiliessmiley_idGen25;;
-
-SET GENERATOR G_phpbb_smiliessmiley_idGen25 TO 0;;
-
-CREATE GENERATOR G_phpbb_stylesstyle_idGen26;;
-
-SET GENERATOR G_phpbb_stylesstyle_idGen26 TO 0;;
-
-CREATE GENERATOR G_styles_imagesetimageset_idGen;;
-
-SET GENERATOR G_styles_imagesetimageset_idGen TO 0;;
-
-CREATE GENERATOR G_styles_templatetemplate_idGen;;
-
-SET GENERATOR G_styles_templatetemplate_idGen TO 0;;
-
-CREATE GENERATOR G_phpbb_styles_themetheme_idGen;;
-
-SET GENERATOR G_phpbb_styles_themetheme_idGen TO 0;;
-
-CREATE GENERATOR G_phpbb_topicstopic_idGen30;;
-
-SET GENERATOR G_phpbb_topicstopic_idGen30 TO 0;;
-
-CREATE GENERATOR G_phpbb_usersuser_idGen31;;
-
-SET GENERATOR G_phpbb_usersuser_idGen31 TO 0;;
-
-CREATE GENERATOR G_phpbb_warningswarning_idGen32;;
-
-SET GENERATOR G_phpbb_warningswarning_idGen32 TO 0;;
-
-CREATE GENERATOR G_phpbb_wordsword_idGen33;;
-
-SET GENERATOR G_phpbb_wordsword_idGen33 TO 0;;
-
-CREATE TRIGGER tG_phpbb_attachmentsattach_idGe FOR phpbb_attachments
-BEFORE INSERT
-AS
-BEGIN
-  NEW.attach_id = GEN_ID(G_phpbb_attachmentsattach_idGen, 1);
-END;;
-
-CREATE TRIGGER tb_auth_optionsauth_option_idGe FOR phpbb_auth_options
-BEFORE INSERT
-AS
-BEGIN
-  NEW.auth_option_id = GEN_ID(b_auth_optionsauth_option_idGen, 1);
-END;;
-
-CREATE TRIGGER t_phpbb_auth_rolesrole_idGe FOR phpbb_auth_roles
-BEFORE INSERT
-AS
-BEGIN
-  NEW.role_id = GEN_ID(G_auth_rolesrole_idGen, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_banlistban_idGen FOR phpbb_banlist
-BEFORE INSERT
-AS
-BEGIN
-  NEW.ban_id = GEN_ID(G_phpbb_banlistban_idGen3, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_botsbot_idGen4 FOR phpbb_bots
-BEFORE INSERT
-AS
-BEGIN
-  NEW.bot_id = GEN_ID(G_phpbb_botsbot_idGen4, 1);
-END;;
-
-CREATE TRIGGER tG_phpbb_disallowdisallow_idGen FOR phpbb_disallow
-BEFORE INSERT
-AS
-BEGIN
-  NEW.disallow_id = GEN_ID(G_phpbb_disallowdisallow_idGen5, 1);
-END;;
-
-CREATE TRIGGER etNextG_phpbb_draftsdraft_idGen FOR phpbb_drafts
-BEFORE INSERT
-AS
-BEGIN
-  NEW.draft_id = GEN_ID(G_phpbb_draftsdraft_idGen6, 1);
-END;;
-
-CREATE TRIGGER tpbb_extension_groupsgroup_idGe FOR phpbb_extension_groups
-BEFORE INSERT
-AS
-BEGIN
-  NEW.group_id = GEN_ID(pbb_extension_groupsgroup_idGen, 1);
-END;;
-
-CREATE TRIGGER tphpbb_extensionsextension_idGe FOR phpbb_extensions
-BEFORE INSERT
-AS
-BEGIN
-  NEW.extension_id = GEN_ID(phpbb_extensionsextension_idGen, 1);
-END;;
-
-CREATE TRIGGER etNextG_phpbb_forumsforum_idGen FOR phpbb_forums
-BEFORE INSERT
-AS
-BEGIN
-  NEW.forum_id = GEN_ID(G_phpbb_forumsforum_idGen9, 1);
-END;;
-
-CREATE TRIGGER tNextG_phpbb_groupsgroup_idGen1 FOR phpbb_groups
-BEFORE INSERT
-AS
-BEGIN
-  NEW.group_id = GEN_ID(G_phpbb_groupsgroup_idGen10, 1);
-END;;
-
-CREATE TRIGGER etNextG_phpbb_iconsicons_idGen1 FOR phpbb_icons
-BEFORE INSERT
-AS
-BEGIN
-  NEW.icons_id = GEN_ID(G_phpbb_iconsicons_idGen11, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_langlang_idGen12 FOR phpbb_lang
-BEFORE INSERT
-AS
-BEGIN
-  NEW.lang_id = GEN_ID(G_phpbb_langlang_idGen12, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_loglog_idGen13 FOR phpbb_log
-BEFORE INSERT
-AS
-BEGIN
-  NEW.log_id = GEN_ID(G_phpbb_loglog_idGen13, 1);
-END;;
-
-CREATE TRIGGER extG_phpbb_modulesmodule_idGen1 FOR phpbb_modules
-BEFORE INSERT
-AS
-BEGIN
-  NEW.module_id = GEN_ID(G_phpbb_modulesmodule_idGen14, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_postspost_idGen1 FOR phpbb_posts
-BEFORE INSERT
-AS
-BEGIN
-  NEW.post_id = GEN_ID(G_phpbb_postspost_idGen15, 1);
-END;;
-
-CREATE TRIGGER tNextG_phpbb_privmsgsmsg_idGen1 FOR phpbb_privmsgs
-BEFORE INSERT
-AS
-BEGIN
-  NEW.msg_id = GEN_ID(G_phpbb_privmsgsmsg_idGen16, 1);
-END;;
-
-CREATE TRIGGER tbb_privmsgs_folderfolder_idGen FOR phpbb_privmsgs_folder
-BEFORE INSERT
-AS
-BEGIN
-  NEW.folder_id = GEN_ID(bb_privmsgs_folderfolder_idGen1, 1);
-END;;
-
-CREATE TRIGGER tphpbb_privmsgs_rulesrule_idGen FOR phpbb_privmsgs_rules
-BEFORE INSERT
-AS
-BEGIN
-  NEW.rule_id = GEN_ID(phpbb_privmsgs_rulesrule_idGen1, 1);
-END;;
-
-CREATE TRIGGER thpbb_profile_fieldsfield_idGen FOR phpbb_profile_fields
-BEFORE INSERT
-AS
-BEGIN
-  NEW.field_id = GEN_ID(hpbb_profile_fieldsfield_idGen1, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_ranksrank_idGen2 FOR phpbb_ranks
-BEFORE INSERT
-AS
-BEGIN
-  NEW.rank_id = GEN_ID(G_phpbb_ranksrank_idGen20, 1);
-END;;
-
-CREATE TRIGGER extG_phpbb_reportsreport_idGen2 FOR phpbb_reports
-BEFORE INSERT
-AS
-BEGIN
-  NEW.report_id = GEN_ID(G_phpbb_reportsreport_idGen21, 1);
-END;;
-
-CREATE TRIGGER tbb_reports_reasonsreason_idGen FOR phpbb_reports_reasons
-BEFORE INSERT
-AS
-BEGIN
-  NEW.reason_id = GEN_ID(bb_reports_reasonsreason_idGen2, 1);
-END;;
-
-CREATE TRIGGER thpbb_search_wordlistword_idGen FOR phpbb_search_wordlist
-BEFORE INSERT
-AS
-BEGIN
-  NEW.word_id = GEN_ID(hpbb_search_wordlistword_idGen2, 1);
-END;;
-
-CREATE TRIGGER NextG_phpbb_sitelistsite_idGen2 FOR phpbb_sitelist
-BEFORE INSERT
-AS
-BEGIN
-  NEW.site_id = GEN_ID(G_phpbb_sitelistsite_idGen24, 1);
-END;;
-
-CREATE TRIGGER NextG_phpbb_smiliessmiley_idGen2 FOR phpbb_smilies
-BEFORE INSERT
-AS
-BEGIN
-  NEW.smiley_id = GEN_ID(G_phpbb_smiliessmiley_idGen25, 1);
-END;;
-
-CREATE TRIGGER tNextG_phpbb_stylesstyle_idGen2 FOR phpbb_styles
-BEFORE INSERT
-AS
-BEGIN
-  NEW.style_id = GEN_ID(G_phpbb_stylesstyle_idGen26, 1);
-END;;
-
-CREATE TRIGGER t_styles_imagesetimageset_idGen FOR phpbb_styles_imageset
-BEFORE INSERT
-AS
-BEGIN
-  NEW.imageset_id = GEN_ID(G_styles_imagesetimageset_idGen, 1);
-END;;
-
-CREATE TRIGGER t_styles_templatetemplate_idGen FOR phpbb_styles_template
-BEFORE INSERT
-AS
-BEGIN
-  NEW.template_id = GEN_ID(G_styles_templatetemplate_idGen, 1);
-END;;
-
-CREATE TRIGGER t_phpbb_styles_themetheme_idGen FOR phpbb_styles_theme
-BEFORE INSERT
-AS
-BEGIN
-  NEW.theme_id = GEN_ID(G_phpbb_styles_themetheme_idGen, 1);
-END;;
-
-CREATE TRIGGER tNextG_phpbb_topicstopic_idGen3 FOR phpbb_topics
-BEFORE INSERT
-AS
-BEGIN
-  NEW.topic_id = GEN_ID(G_phpbb_topicstopic_idGen30, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_usersuser_idGen3 FOR phpbb_users
-BEFORE INSERT
-AS
-BEGIN
-  NEW.user_id = GEN_ID(G_phpbb_usersuser_idGen31, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_warningswarning_idGen3 FOR phpbb_warnings
-BEFORE INSERT
-AS
-BEGIN
-  NEW.warning_id = GEN_ID(G_phpbb_warningswarning_idGen32, 1);
-END;;
-
-CREATE TRIGGER GetNextG_phpbb_wordsword_idGen3 FOR phpbb_words
-BEFORE INSERT
-AS
-BEGIN
-  NEW.word_id = GEN_ID(G_phpbb_wordsword_idGen33, 1);
-END;;
+CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra(user_id);;
+CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra(zebra_id);;

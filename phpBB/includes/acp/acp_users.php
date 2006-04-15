@@ -28,7 +28,7 @@ class acp_users
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$error		= array();
-		$username	= request_var('username', '');
+		$username	= request_var('username', '', true);
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 		

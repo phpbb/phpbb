@@ -201,9 +201,13 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-		'U_EMAIL_PM'		=> ($config['email_pm'] && $config['email_enable'] && $auth->acl_get('u_pm_emailpm')) ? 'Email' : '',
+		'U_EMAIL_PM'		=> ($config['email_pm'] && $config['email_enable'] && $auth->acl_get('u_pm_emailpm')) ? '' : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
 	);
+
+	/**
+	* @todo U_EMAIL_PM add ability to send PM's by email
+	*/
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))

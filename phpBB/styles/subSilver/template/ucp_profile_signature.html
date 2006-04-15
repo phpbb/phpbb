@@ -8,7 +8,7 @@ var text_name = 'signature';
 
 // Define the bbCode tags
 bbcode = new Array();
-bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]');
+bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
 imageTag = false;
 
 // Helpline messages
@@ -52,33 +52,36 @@ function marklist(form_name, status)
 	<tr> 
 		<td class="row1" width="35%"><b class="genmed">{L_SIGNATURE}: </b><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}</span></td>
 		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
-			<tr align="center" valign="middle">
-				<td><input class="btnbbcode" type="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" onmouseover="helpline('i')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" onmouseover="helpline('u')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /></td>
-				<td><input class="btnbbcode" type="button" accesskey="w" name="addbbcode18" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(18)" onmouseover="helpline('w')" /></td>
+			<tr valign="middle" align="left">
+				<td colspan="2"><input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" />
+				<input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" />
+				<input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" />
+				<!-- IF S_BBCODE_QUOTE --><input type="button" class="btnbbcode" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" /><!-- ENDIF -->
+				<input type="button" class="btnbbcode" accesskey="c" name="addbbcode8" value="Code" style="width: 40px" onclick="bbstyle(8)" onmouseover="helpline('c')" />
+				<input type="button" class="btnbbcode" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" />
+				<input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
+				<!-- IF S_BBCODE_IMG --><input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /><!-- ENDIF -->
+				<input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
+				<!-- IF S_BBCODE_FLASH --><input type="button" class="btnbbcode" accesskey="f" name="addbbcode18" value="Flash" onclick="bbstyle(18)" /><!-- ENDIF -->
+				<span class="genmed" style="white-space: nowrap;">{L_FONT_SIZE}: <select class="gensmall" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
+						<option value="7">{L_FONT_TINY}</option>
+						<option value="9">{L_FONT_SMALL}</option>
+						<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+						<option value="18">{L_FONT_LARGE}</option>
+						<option  value="24">{L_FONT_HUGE}</option>
+					</select> | <a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span>
+				</td>
 			</tr>
+			<!-- IF .custom_tags -->
+			<tr valign="middle" align="left">
+				<td colspan="2">
+				<!-- BEGIN custom_tags -->
+					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" />
+				<!-- END custom_tags -->
+				</td>
+			<!-- ENDIF -->
 			<tr>
-				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
-					<tr>
-						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
-							<option value="7">{L_FONT_TINY}</option>
-							<option value="9">{L_FONT_SMALL}</option>
-							<option value="12" selected="selected">{L_FONT_NORMAL}</option>
-							<option value="18">{L_FONT_LARGE}</option>
-							<option  value="24">{L_FONT_HUGE}</option>
-						</select></td>
-						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
-					</tr>
-				</table></td>
-			</tr>
-			<tr>
-				<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" style="width:100%" value="{L_STYLES_TIP}" /></td>
+				<td colspan="9"><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
 			</tr>
 			<tr>
 				<td colspan="9"><textarea class="post" name="signature" rows="10" cols="70" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>

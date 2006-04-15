@@ -151,7 +151,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				// Generate all URIs ...
 				$message_author = "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['author_id'] . '">' . $row['username'] . '</a>';
 				$view_message_url = "$url&amp;i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id";
-				$remove_message_url = "$url&amp;i=compose&amp;action=delete&amp;p=$message_id";
+				$remove_message_url = "$url&amp;i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id";
 
 				$row_indicator = '';
 				foreach ($color_rows as $var)

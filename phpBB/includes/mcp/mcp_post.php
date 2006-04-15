@@ -52,7 +52,7 @@ function mcp_post_details($id, $mode, $action)
 
 		case 'chgposter':
 
-			$username = request_var('username', '');
+			$username = request_var('username', '', true);
 
 			$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '

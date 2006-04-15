@@ -421,6 +421,7 @@ switch ($mode)
 	break;
 
 	case 'email':
+
 		// Send an email
 		$page_title = $user->lang['SEND_EMAIL'];
 		$template_html = 'memberlist_email.html';
@@ -428,11 +429,6 @@ switch ($mode)
 		if (!$config['email_enable'])
 		{
 			trigger_error('EMAIL_DISABLED');
-		}
-
-		if (($user_id == ANONYMOUS || !$config['board_email_form']) && !$topic_id)
-		{
-			trigger_error('NO_EMAIL');
 		}
 
 		if (!$auth->acl_get('u_sendemail'))
@@ -446,29 +442,31 @@ switch ($mode)
 			trigger_error('FLOOD_EMAIL_LIMIT');
 		}
 
-		$name		= request_var('name', '');
-		$email		= request_var('email', '');
-		$email_lang = request_var('lang', '');
-		$subject	= request_var('subject', '');
-		$message	= request_var('message', '');
-		$cc			= (!empty($_POST['cc_email'])) ? true : false;
+		// Determine action...
+		$user_id = request_var('u', 0);
+		$topic_id = request_var('t', 0);
 
-		// Are we sending an email to a user on this board? Or are we sending a
-		// topic heads-up message?
-		if (!$topic_id)
+		// Send email to user...
+		if ($user_id)
 		{
+			if ($user_id == ANONYMOUS || !$config['board_email_form'])
+			{
+				trigger_error('NO_EMAIL');
+			}
+
 			// Get the appropriate username, etc.
 			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
 					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if (!($row = $db->sql_fetchrow($result)))
+			if (!$row)
 			{
 				trigger_error('NO_USER');
 			}
-			$db->sql_freeresult($result);
 
 			// Can we send email to this user?
 			if (!$row['user_allow_viewemail'] && !$auth->acl_get('a_user'))
@@ -476,18 +474,20 @@ switch ($mode)
 				trigger_error('NO_EMAIL');
 			}
 		}
-		else
+		else if ($topic_id)
 		{
+			// Send topic heads-up to email address
 			$sql = 'SELECT forum_id, topic_title
 				FROM ' . TOPICS_TABLE . "
 				WHERE topic_id = $topic_id";
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if (!($row = $db->sql_fetchrow($result)))
+			if (!$row)
 			{
 				trigger_error('NO_TOPIC');
 			}
-			$db->sql_freeresult($result);
 
 			if (!$auth->acl_get('f_read', $row['forum_id']))
 			{
@@ -499,12 +499,24 @@ switch ($mode)
 				trigger_error('NO_EMAIL');
 			}
 		}
+		else
+		{
+			trigger_error('NO_EMAIL');
+		}
 
-		// User has submitted a message, handle it
 		$error = array();
+
+		$name		= request_var('name', '');
+		$email		= request_var('email', '');
+		$email_lang = request_var('lang', $config['default_lang']);
+		$subject	= request_var('subject', '');
+		$message	= request_var('message', '');
+		$cc			= (isset($_POST['cc_email'])) ? true : false;
+		$submit		= (isset($_POST['submit'])) ? true : false;
+
 		if ($submit)
 		{
-			if (!$topic_id)
+			if ($user_id)
 			{
 				if (!$subject)
 				{
@@ -515,6 +527,10 @@ switch ($mode)
 				{
 					$error[] = $user->lang['EMPTY_MESSAGE_EMAIL'];
 				}
+
+				$name = $row['username'];
+				$email_lang = $row['user_lang'];
+				$email = $row['user_email'];
 			}
 			else
 			{
@@ -537,22 +553,24 @@ switch ($mode)
 				$result = $db->sql_query($sql);
 
 				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+				$messenger = new messenger(false);
 
-				$email_tpl	= (!$topic_id) ? 'profile_send_email' : 'email_notify';
-				$email_lang = (!$topic_id) ? $row['user_lang'] : $email_lang;
-				$email		= (!$topic_id) ? $row['user_email'] : $email;
-
-				$messenger = new messenger();
+				$email_tpl = ($user_id) ? 'profile_send_email' : 'email_notify';
 
 				$messenger->template($email_tpl, $email_lang);
-				$messenger->subject($subject);
 
 				$messenger->replyto($user->data['user_email']);
-				$messenger->to($email, $row['username']);
+				$messenger->to($email, $name);
 
-				if (!$topic_id)
+				if ($user_id)
 				{
+					$messenger->subject($subject);
 					$messenger->im($row['user_jabber'], $row['username']);
+					$notify_type = $row['user_notify_type'];
+				}
+				else
+				{
+					$notify_type = NOTIFY_EMAIL;
 				}
 
 				if ($cc)
@@ -568,46 +586,55 @@ switch ($mode)
 				$messenger->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],
 					'BOARD_EMAIL'	=> $config['board_contact'],
-					'FROM_USERNAME' => stripslashes($user->data['username']),
-					'TO_USERNAME'	=> ($topic_id) ? stripslashes($name) : stripslashes($row['username']),
-					'MESSAGE'		=> $message,
-					'TOPIC_NAME'	=> ($topic_id) ? html_entity_decode($row['topic_title']) : '',
-
-					'U_TOPIC'	=> ($topic_id) ? generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id" : '')
+					'TO_USERNAME'	=> html_entity_decode($name),
+					'FROM_USERNAME'	=> html_entity_decode($user->data['username']),
+					'MESSAGE'		=> html_entity_decode($message))
 				);
 
-				$messenger->send($row['user_notify_type']);
+				if ($topic_id)
+				{
+					$messenger->assign_vars(array(
+						'TOPIC_NAME'	=> html_entity_decode($row['topic_title']),
+						'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
+					);
+				}
+
+				$messenger->send($notify_type);
 				$messenger->save_queue();
 
 				meta_refresh(3, "index.$phpEx$SID");
-				$message = (!$topic_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '">', '</a>');
+				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . $phpbb_root_path . "viewtopic.$phpEx$SID&amp;f={$row['forum_id']}&amp;t=$topic_id" . '">', '</a>');
 				trigger_error($user->lang['EMAIL_SENT'] . '<br /><br />' . $message);
 			}
 		}
 
-		if ($topic_id)
+		if ($user_id)
 		{
 			$template->assign_vars(array(
-				'EMAIL'			=> htmlspecialchars($email),
-				'NAME'			=> htmlspecialchars($name),
-				'TOPIC_TITLE'	=> $row['topic_title'],
+				'S_SEND_USER'	=> true,
+				'USERNAME'		=> $row['username'],
+	
+				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_BODY_EXPLAIN'],
+				'S_POST_ACTION'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id")
+			);
+		}
+		else
+		{
+			$template->assign_vars(array(
+				'EMAIL'				=> $email,
+				'NAME'				=> $name,
+				'S_LANG_OPTIONS'	=> language_select($email_lang),
 
-				'U_TOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$row['forum_id']}&amp;t=$topic_id",
-
-				'S_LANG_OPTIONS'=> ($topic_id) ? language_select($email_lang) : '')
+				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_TOPIC_EXPLAIN'],
+				'S_POST_ACTION'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id")
 			);
 		}
 
 		$template->assign_vars(array(
-			'USERNAME'		=> (!$topic_id) ? addslashes($row['username']) : '',
-			'ERROR_MESSAGE'	=> (sizeof($error)) ? implode('<br />', $error) : '',
-
-			'L_EMAIL_BODY_EXPLAIN'	=> (!$topic_id) ? $user->lang['EMAIL_BODY_EXPLAIN'] : $user->lang['EMAIL_TOPIC_EXPLAIN'],
-
-			'S_POST_ACTION' => (!$topic_id) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;f=$forum_id&amp;t=$topic_id",
-			'S_SEND_USER'	=> (!$topic_id) ? true : false)
+			'ERROR_MESSAGE'		=> (sizeof($error)) ? implode('<br />', $error) : '')
 		);
-		break;
+
+	break;
 
 	case 'group':
 	default:
@@ -644,7 +671,7 @@ switch ($mode)
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '');
+			$username	= request_var('username', '', true);
 			$email		= request_var('email', '');
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');

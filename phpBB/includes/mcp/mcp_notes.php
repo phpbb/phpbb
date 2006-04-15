@@ -64,7 +64,7 @@ function mcp_notes_user_view($id, $mode, $action)
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);
-	$username = request_var('username', '');
+	$username = request_var('username', '', true);
 	$start = request_var('start', 0);
 	$st	= request_var('st', 0);
 	$sk	= request_var('sk', 'b');

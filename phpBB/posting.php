@@ -528,7 +528,7 @@ if ($submit || $preview || $refresh)
 
 	$message_parser->message = request_var('message', '', true);
 
-	$username			= (isset($_POST['username'])) ? request_var('username', '') : $username;
+	$username			= (isset($_POST['username'])) ? request_var('username', '', true) : $username;
 	$post_edit_reason	= (isset($_POST['edit_reason']) && !empty($_POST['edit_reason']) && $mode == 'edit' && $user->data['user_id'] != $poster_id) ? request_var('edit_reason', '', true) : '';
 
 	$topic_type			= (isset($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);

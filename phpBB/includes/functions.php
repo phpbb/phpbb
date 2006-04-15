@@ -24,10 +24,13 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 	if ($type == 'string')
 	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\xFF"), array("\n", "\n", ' '), $result)));
+		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r"), array("\n", "\n"), $result)));
 		$result = (STRIP) ? stripslashes($result) : $result;
-		if ($multibyte)
+
+		// Check for possible multibyte characters to save a preg_replace call if nothing is in there...
+		if ($multibyte && strpos($result, '&amp;#') !== false)
 		{
+			echo "HERE";
 			$result = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $result);
 		}
 	}
@@ -1387,7 +1390,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if (isset($_POST['login']))
 	{
-		$username	= request_var('username', '');
+		$username	= request_var('username', '', true);
 		$password	= request_var('password', '');
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
@@ -2510,7 +2513,7 @@ function page_header($page_title = '')
 		'L_INDEX' 			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=" . (($user->data['user_new_privmsg'] || $l_privmsgs_text_unread) ? 'unread' : 'view'),
+		'U_PRIVATEMSGS'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox",
 		'U_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox",
 		'U_JS_RETURN_INBOX'		=> "{$phpbb_root_path}ucp.$phpEx$SID&i=pm&folder=inbox",
 		'U_POPUP_PM'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=popup",

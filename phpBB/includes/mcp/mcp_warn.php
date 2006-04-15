@@ -300,7 +300,7 @@ function mcp_warn_user_view($id, $mode, $action)
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);
-	$username = request_var('username', '');
+	$username = request_var('username', '', true);
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 	$warning = request_var('warning', '', true);
 

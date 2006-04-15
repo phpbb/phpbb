@@ -16,7 +16,7 @@ CREATE TABLE phpbb_attachments (
   physical_filename varchar(255) NOT NULL,
   real_filename varchar(255) NOT NULL,
   download_count mediumint(8) NOT NULL DEFAULT '0',
-  comment varchar(255),
+  comment text(65535),
   extension varchar(100),
   mimetype varchar(100),
   filesize int(20) NOT NULL,
@@ -24,12 +24,13 @@ CREATE TABLE phpbb_attachments (
   thumbnail tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX filetime_phpbb_attachments on phpbb_attachments (filetime);
-CREATE INDEX post_msg_id_phpbb_attachments on phpbb_attachments (post_msg_id);
-CREATE INDEX topic_id_phpbb_attachments on phpbb_attachments (topic_id);
-CREATE INDEX poster_id_phpbb_attachments on phpbb_attachments (poster_id);
-CREATE INDEX physical_filename_phpbb_attach on phpbb_attachments (physical_filename);
-CREATE INDEX filesize_phpbb_attachments on phpbb_attachments (filesize);
+CREATE INDEX phpbb_attachments_filetime on phpbb_attachments (filetime);
+CREATE INDEX phpbb_attachments_post_msg_id on phpbb_attachments (post_msg_id);
+CREATE INDEX phpbb_attachments_topic_id on phpbb_attachments (topic_id);
+CREATE INDEX phpbb_attachments_poster_id on phpbb_attachments (poster_id);
+CREATE INDEX phpbb_attachments_physical_filename on phpbb_attachments (physical_filename);
+CREATE INDEX phpbb_attachments_filesize on phpbb_attachments (filesize);
+
 
 # Table: phpbb_auth_groups
 CREATE TABLE phpbb_auth_groups (
@@ -40,19 +41,21 @@ CREATE TABLE phpbb_auth_groups (
   auth_setting tinyint(4) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX group_id_phpbb_auth_groups on phpbb_auth_groups (group_id);
-CREATE INDEX auth_option_id_phpbb_auth_grou on phpbb_auth_groups (auth_option_id);
+CREATE INDEX phpbb_auth_groups_group_id on phpbb_auth_groups (group_id);
+CREATE INDEX phpbb_auth_groups_auth_option_id on phpbb_auth_groups (auth_option_id);
+
 
 # Table: phpbb_auth_options
 CREATE TABLE phpbb_auth_options (
   auth_option_id INTEGER PRIMARY KEY NOT NULL,
-  auth_option char(20) NOT NULL,
+  auth_option varchar(20) NOT NULL,
   is_global tinyint(1) NOT NULL DEFAULT '0',
   is_local tinyint(1) NOT NULL DEFAULT '0',
   founder_only tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX auth_option_phpbb_auth_options on phpbb_auth_options (auth_option);
+CREATE INDEX phpbb_auth_options_auth_option on phpbb_auth_options (auth_option);
+
 
 # Table: phpbb_auth_roles
 CREATE TABLE phpbb_auth_roles (
@@ -62,7 +65,8 @@ CREATE TABLE phpbb_auth_roles (
   role_group_ids varchar(255) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX role_type_phpbb_auth_roles on phpbb_auth_roles (role_type);
+CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type);
+
 
 # Table: phpbb_auth_roles_data
 CREATE TABLE phpbb_auth_roles_data (
@@ -71,6 +75,7 @@ CREATE TABLE phpbb_auth_roles_data (
   auth_setting tinyint(2) NOT NULL DEFAULT '0',
   PRIMARY KEY  (role_id, auth_option_id)
 );
+
 
 # Table: phpbb_auth_users
 CREATE TABLE phpbb_auth_users (
@@ -81,21 +86,23 @@ CREATE TABLE phpbb_auth_users (
   auth_setting tinyint(4) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX user_id_phpbb_auth_users on phpbb_auth_users (user_id);
-CREATE INDEX auth_option_id_phpbb_auth_user on phpbb_auth_users (auth_option_id);
+CREATE INDEX phpbb_auth_users_user_id on phpbb_auth_users (user_id);
+CREATE INDEX phpbb_auth_users_auth_option_id on phpbb_auth_users (auth_option_id);
+
 
 # Table: phpbb_banlist
 CREATE TABLE phpbb_banlist (
   ban_id INTEGER PRIMARY KEY NOT NULL,
   ban_userid mediumint(8) NOT NULL DEFAULT '0',
   ban_ip varchar(40) NOT NULL DEFAULT '',
-  ban_email varchar(50) NOT NULL DEFAULT '',
+  ban_email varchar(100) NOT NULL DEFAULT '',
   ban_start int(11) NOT NULL DEFAULT '0',
   ban_end int(11) NOT NULL DEFAULT '0',
   ban_exclude tinyint(1) NOT NULL DEFAULT '0',
-  ban_reason varchar(255) NOT NULL DEFAULT '',
-  ban_give_reason varchar(255) NOT NULL DEFAULT ''
+  ban_reason text(65535),
+  ban_give_reason text(65535)
 );
+
 
 # Table: phpbb_bbcodes
 CREATE TABLE phpbb_bbcodes (
@@ -103,14 +110,15 @@ CREATE TABLE phpbb_bbcodes (
   bbcode_tag varchar(16) NOT NULL DEFAULT '',
   display_on_posting tinyint(1) NOT NULL DEFAULT '0',
   bbcode_match varchar(255) NOT NULL DEFAULT '',
-  bbcode_tpl text(65535) NOT NULL DEFAULT '',
+  bbcode_tpl text(65535),
   first_pass_match varchar(255) NOT NULL DEFAULT '',
   first_pass_replace varchar(255) NOT NULL DEFAULT '',
   second_pass_match varchar(255) NOT NULL DEFAULT '',
-  second_pass_replace text(65535) NOT NULL DEFAULT ''
+  second_pass_replace text(65535)
 );
 
-CREATE INDEX display_on_posting_phpbb_bbcodes on phpbb_bbcodes (display_on_posting);
+CREATE INDEX phpbb_bbcodes_display_on_posting on phpbb_bbcodes (display_on_posting);
+
 
 # Table: phpbb_bookmarks
 CREATE TABLE phpbb_bookmarks (
@@ -119,28 +127,31 @@ CREATE TABLE phpbb_bookmarks (
   order_id mediumint(8) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX order_id_phpbb_bookmarks on phpbb_bookmarks (order_id);
-CREATE INDEX topic_user_id_phpbb_bookmarks on phpbb_bookmarks (topic_id, user_id);
+CREATE INDEX phpbb_bookmarks_order_id on phpbb_bookmarks (order_id);
+CREATE INDEX phpbb_bookmarks_topic_user_id on phpbb_bookmarks (topic_id, user_id);
+
 
 # Table: phpbb_bots
 CREATE TABLE phpbb_bots (
   bot_id INTEGER PRIMARY KEY NOT NULL,
   bot_active tinyint(1) NOT NULL DEFAULT '1',
-  bot_name varchar(255) NOT NULL DEFAULT '',
+  bot_name text(65535),
   user_id mediumint(8) NOT NULL DEFAULT '0',
   bot_agent varchar(255) NOT NULL DEFAULT '',
   bot_ip varchar(255) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX bot_active_phpbb_bots on phpbb_bots (bot_active);
+CREATE INDEX phpbb_bots_bot_active on phpbb_bots (bot_active);
+
 
 # Table: phpbb_cache
 CREATE TABLE phpbb_cache (
   var_name varchar(255) NOT NULL DEFAULT '',
   var_expires int(10) NOT NULL DEFAULT '0',
-  var_data mediumtext(16777215) NOT NULL,
+  var_data mediumtext(16777215),
   PRIMARY KEY (var_name)
 );
+
 
 # Table: phpbb_config
 CREATE TABLE phpbb_config (
@@ -150,22 +161,25 @@ CREATE TABLE phpbb_config (
   PRIMARY KEY (config_name)
 );
 
-CREATE INDEX is_dynamic_phpbb_config on phpbb_config (is_dynamic);
+CREATE INDEX phpbb_config_is_dynamic on phpbb_config (is_dynamic);
+
 
 # Table: phpbb_confirm
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) NOT NULL DEFAULT '',
   session_id char(32) NOT NULL DEFAULT '',
   confirm_type INTEGER NOT NULL DEFAULT '0',
-  code char(8) NOT NULL DEFAULT '',
+  code varchar(8) NOT NULL DEFAULT '',
   PRIMARY KEY (session_id, confirm_id)
 );
+
 
 # Table: phpbb_disallow
 CREATE TABLE phpbb_disallow (
   disallow_id INTEGER PRIMARY KEY NOT NULL,
-  disallow_username varchar(30) NOT NULL DEFAULT ''
+  disallow_username varchar(255) NOT NULL DEFAULT ''
 );
+
 
 # Table: phpbb_drafts
 CREATE TABLE phpbb_drafts (
@@ -174,11 +188,12 @@ CREATE TABLE phpbb_drafts (
   topic_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   save_time int(11) NOT NULL DEFAULT '0',
-  draft_subject varchar(60),
-  draft_message mediumtext(16777215) NOT NULL DEFAULT ''
+  draft_subject text(65535),
+  draft_message mediumtext(16777215)
 );
 
-CREATE INDEX save_time_phpbb_drafts on phpbb_drafts (save_time);
+CREATE INDEX phpbb_drafts_save_time on phpbb_drafts (save_time);
+
 
 # Table: phpbb_extensions
 CREATE TABLE phpbb_extensions (
@@ -187,18 +202,20 @@ CREATE TABLE phpbb_extensions (
   extension varchar(100) NOT NULL DEFAULT ''
 );
 
+
 # Table: phpbb_extension_groups
 CREATE TABLE phpbb_extension_groups (
   group_id INTEGER PRIMARY KEY NOT NULL,
-  group_name char(20) NOT NULL,
+  group_name varchar(255) NOT NULL,
   cat_id tinyint(2) NOT NULL DEFAULT '0',
   allow_group tinyint(1) NOT NULL DEFAULT '0',
   download_mode tinyint(1) NOT NULL DEFAULT '1',
-  upload_icon varchar(100) NOT NULL DEFAULT '',
+  upload_icon varchar(255) NOT NULL DEFAULT '',
   max_filesize int(20) NOT NULL DEFAULT '0',
-  allowed_forums text(65535) NOT NULL,
+  allowed_forums text(65535),
   allow_in_pm tinyint(1) NOT NULL DEFAULT '0'
 );
+
 
 # Table: phpbb_forums
 CREATE TABLE phpbb_forums (
@@ -207,16 +224,16 @@ CREATE TABLE phpbb_forums (
   left_id smallint(5) NOT NULL,
   right_id smallint(5) NOT NULL,
   forum_parents text(65535),
-  forum_name varchar(150) NOT NULL,
+  forum_name text(65535),
   forum_desc text(65535),
   forum_desc_bitfield int(11) NOT NULL DEFAULT '0',
   forum_desc_uid varchar(5) NOT NULL DEFAULT '',
-  forum_link varchar(200) NOT NULL DEFAULT '',
-  forum_password varchar(32) NOT NULL DEFAULT '',
+  forum_link varchar(255) NOT NULL DEFAULT '',
+  forum_password varchar(40) NOT NULL DEFAULT '',
   forum_style tinyint(4),
-  forum_image varchar(50) NOT NULL DEFAULT '',
-  forum_rules text(65535) NOT NULL DEFAULT '',
-  forum_rules_link varchar(200) NOT NULL DEFAULT '',
+  forum_image varchar(255) NOT NULL DEFAULT '',
+  forum_rules text(65535),
+  forum_rules_link varchar(255) NOT NULL DEFAULT '',
   forum_rules_bitfield int(11) NOT NULL DEFAULT '0',
   forum_rules_uid varchar(5) NOT NULL DEFAULT '',
   forum_topics_per_page tinyint(4) NOT NULL DEFAULT '0',
@@ -228,7 +245,7 @@ CREATE TABLE phpbb_forums (
   forum_last_post_id mediumint(8) NOT NULL DEFAULT '0',
   forum_last_poster_id mediumint(8) NOT NULL DEFAULT '0',
   forum_last_post_time int(11) NOT NULL DEFAULT '0',
-  forum_last_poster_name varchar(30),
+  forum_last_poster_name varchar(255),
   forum_flags tinyint(4) NOT NULL DEFAULT '0',
   display_on_index tinyint(1) NOT NULL DEFAULT '1',
   enable_indexing tinyint(1) NOT NULL DEFAULT '1',
@@ -240,16 +257,18 @@ CREATE TABLE phpbb_forums (
   prune_freq tinyint(4) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX left_right_id_phpbb_forums on phpbb_forums (left_id, right_id);
-CREATE INDEX forum_last_post_id_phpbb_forum on phpbb_forums (forum_last_post_id);
+CREATE INDEX phpbb_forums_left_right_id on phpbb_forums (left_id, right_id);
+CREATE INDEX phpbb_forums_forum_last_post_id on phpbb_forums (forum_last_post_id);
+
 
 # Table: phpbb_forum_access
 CREATE TABLE phpbb_forum_access (
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
-  session_id char(32) NOT NULL DEFAULT '',
+  session_id varchar(32) NOT NULL DEFAULT '',
   PRIMARY KEY (forum_id, user_id, session_id)
 );
+
 
 # Table: phpbb_forums_marking
 CREATE TABLE phpbb_forums_marking (
@@ -259,6 +278,7 @@ CREATE TABLE phpbb_forums_marking (
   PRIMARY KEY (user_id, forum_id)
 );
 
+
 # Table: phpbb_forums_watch
 CREATE TABLE phpbb_forums_watch (
   forum_id smallint(5) NOT NULL DEFAULT '0',
@@ -266,20 +286,21 @@ CREATE TABLE phpbb_forums_watch (
   notify_status tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX forum_id_phpbb_forums_watch on phpbb_forums_watch (forum_id);
-CREATE INDEX user_id_phpbb_forums_watch on phpbb_forums_watch (user_id);
-CREATE INDEX notify_status_phpbb_forums_wat on phpbb_forums_watch (notify_status);
+CREATE INDEX phpbb_forums_watch_forum_id on phpbb_forums_watch (forum_id);
+CREATE INDEX phpbb_forums_watch_user_id on phpbb_forums_watch (user_id);
+CREATE INDEX phpbb_forums_watch_notify_status on phpbb_forums_watch (notify_status);
+
 
 # Table: phpbb_groups
 CREATE TABLE phpbb_groups (
   group_id INTEGER PRIMARY KEY NOT NULL,
   group_type tinyint(4) NOT NULL DEFAULT '1',
-  group_name varchar(40) NOT NULL DEFAULT '',
+  group_name varchar(255) NOT NULL,
   group_desc text(65535),
   group_desc_bitfield int(11) NOT NULL DEFAULT '0',
   group_desc_uid varchar(5) NOT NULL DEFAULT '',
   group_display tinyint(1) NOT NULL DEFAULT '0',
-  group_avatar varchar(100) NOT NULL DEFAULT '',
+  group_avatar varchar(255) NOT NULL DEFAULT '',
   group_avatar_type tinyint(4) NOT NULL DEFAULT '0',
   group_avatar_width tinyint(4) NOT NULL DEFAULT '0',
   group_avatar_height tinyint(4) NOT NULL DEFAULT '0',
@@ -292,27 +313,30 @@ CREATE TABLE phpbb_groups (
   group_legend tinyint(1) NOT NULL DEFAULT '1'
 );
 
-CREATE INDEX group_legend_phpbb_groups on phpbb_groups (group_legend);
+CREATE INDEX phpbb_groups_group_legend on phpbb_groups (group_legend);
+
 
 # Table: phpbb_icons
 CREATE TABLE phpbb_icons (
   icons_id INTEGER PRIMARY KEY NOT NULL,
-  icons_url varchar(50),
+  icons_url varchar(255),
   icons_width tinyint(4) NOT NULL,
   icons_height tinyint(4) NOT NULL,
   icons_order tinyint(4) NOT NULL,
   display_on_posting tinyint(1) NOT NULL DEFAULT '1'
 );
 
+
 # Table: phpbb_lang
 CREATE TABLE phpbb_lang (
   lang_id INTEGER PRIMARY KEY NOT NULL,
   lang_iso varchar(5) NOT NULL,
   lang_dir varchar(30) NOT NULL,
-  lang_english_name varchar(30),
-  lang_local_name varchar(100),
-  lang_author varchar(100)
+  lang_english_name varchar(100),
+  lang_local_name varchar(255),
+  lang_author varchar(255)
 );
+
 
 # Table: phpbb_log
 CREATE TABLE phpbb_log (
@@ -328,53 +352,57 @@ CREATE TABLE phpbb_log (
   log_data text(65535)
 );
 
-CREATE INDEX log_type_phpbb_log on phpbb_log (log_type);
-CREATE INDEX forum_id_phpbb_log on phpbb_log (forum_id);
-CREATE INDEX topic_id_phpbb_log on phpbb_log (topic_id);
-CREATE INDEX reportee_id_phpbb_log on phpbb_log (reportee_id);
-CREATE INDEX user_id_phpbb_log on phpbb_log (user_id);
+CREATE INDEX phpbb_log_log_type on phpbb_log (log_type);
+CREATE INDEX phpbb_log_forum_id on phpbb_log (forum_id);
+CREATE INDEX phpbb_log_topic_id on phpbb_log (topic_id);
+CREATE INDEX phpbb_log_reportee_id on phpbb_log (reportee_id);
+CREATE INDEX phpbb_log_user_id on phpbb_log (user_id);
+
 
 # Table: phpbb_moderator_cache
 CREATE TABLE phpbb_moderator_cache (
   forum_id mediumint(8) NOT NULL,
   user_id mediumint(8) NOT NULL DEFAULT '0',
-  username char(30) NOT NULL DEFAULT '',
+  username varchar(255) NOT NULL DEFAULT '',
   group_id mediumint(8) NOT NULL DEFAULT '0',
-  groupname char(30) NOT NULL DEFAULT '',
+  group_name varchar(255) NOT NULL DEFAULT '',
   display_on_index tinyint(1) NOT NULL DEFAULT '1'
 );
 
-CREATE INDEX display_on_index_phpbb_moderat on phpbb_moderator_cache (display_on_index);
-CREATE INDEX forum_id_phpbb_moderator_cache on phpbb_moderator_cache (forum_id);
+CREATE INDEX phpbb_moderator_cache_display_on_index on phpbb_moderator_cache (display_on_index);
+CREATE INDEX phpbb_moderator_cache_forum_id on phpbb_moderator_cache (forum_id);
+
 
 # Table: phpbb_modules
 CREATE TABLE phpbb_modules (
   module_id INTEGER PRIMARY KEY NOT NULL,
   module_enabled tinyint(1) NOT NULL DEFAULT '1',
   module_display tinyint(1) NOT NULL DEFAULT '1',
-  module_name varchar(20) NOT NULL DEFAULT '',
-  module_class varchar(4) NOT NULL DEFAULT '',
-  parent_id smallint(5) NOT NULL DEFAULT '0',
-  left_id smallint(5) NOT NULL DEFAULT '0',
-  right_id smallint(5) NOT NULL DEFAULT '0',
-  module_langname varchar(50) NOT NULL DEFAULT '',
+  module_name varchar(255) NOT NULL DEFAULT '',
+  module_class varchar(10) NOT NULL DEFAULT '',
+  parent_id mediumint(8) NOT NULL DEFAULT '0',
+  left_id mediumint(8) NOT NULL DEFAULT '0',
+  right_id mediumint(8) NOT NULL DEFAULT '0',
+  module_langname varchar(255) NOT NULL DEFAULT '',
   module_mode varchar(255) NOT NULL DEFAULT '',
   module_auth varchar(255) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX module_enabled_phpbb_modules on phpbb_modules (module_enabled);
-CREATE INDEX left_id_phpbb_modules on phpbb_modules (left_id);
+CREATE INDEX phpbb_modules_module_enabled on phpbb_modules (module_enabled);
+CREATE INDEX phpbb_modules_left_right_id on phpbb_modules (left_id, right_id);
+
 
 # Table: phpbb_poll_results
 CREATE TABLE phpbb_poll_results (
   poll_option_id tinyint(4) NOT NULL DEFAULT '0',
   topic_id mediumint(8) NOT NULL,
-  poll_option_text varchar(255) NOT NULL,
+  poll_option_text text(65535),
   poll_option_total mediumint(8) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX poll_option_id_phpbb_poll_resu on phpbb_poll_results (poll_option_id);
-CREATE INDEX topic_id_phpbb_poll_results on phpbb_poll_results (topic_id);
+CREATE INDEX phpbb_poll_results_poll_option_id on phpbb_poll_results (poll_option_id);
+CREATE INDEX phpbb_poll_results_topic_id on phpbb_poll_results (topic_id);
+
 
 # Table: phpbb_poll_voters
 CREATE TABLE phpbb_poll_voters (
@@ -384,9 +412,10 @@ CREATE TABLE phpbb_poll_voters (
   vote_user_ip varchar(40) NOT NULL
 );
 
-CREATE INDEX topic_id_phpbb_poll_voters on phpbb_poll_voters (topic_id);
-CREATE INDEX vote_user_id_phpbb_poll_voters on phpbb_poll_voters (vote_user_id);
-CREATE INDEX vote_user_ip_phpbb_poll_voters on phpbb_poll_voters (vote_user_ip);
+CREATE INDEX phpbb_poll_voters_topic_id on phpbb_poll_voters (topic_id);
+CREATE INDEX phpbb_poll_voters_vote_user_id on phpbb_poll_voters (vote_user_id);
+CREATE INDEX phpbb_poll_voters_vote_user_ip on phpbb_poll_voters (vote_user_ip);
+
 
 # Table: phpbb_posts
 CREATE TABLE phpbb_posts (
@@ -403,8 +432,8 @@ CREATE TABLE phpbb_posts (
   enable_smilies tinyint(1) NOT NULL DEFAULT '1',
   enable_magic_url tinyint(1) NOT NULL DEFAULT '1',
   enable_sig tinyint(1) NOT NULL DEFAULT '1',
-  post_username varchar(30),
-  post_subject varchar(60),
+  post_username varchar(255),
+  post_subject text(65535),
   post_text mediumtext(16777215),
   post_checksum varchar(32) NOT NULL,
   post_encoding varchar(20) NOT NULL DEFAULT 'iso-8859-1',
@@ -412,18 +441,19 @@ CREATE TABLE phpbb_posts (
   bbcode_bitfield int(11) NOT NULL DEFAULT '0',
   bbcode_uid varchar(5) NOT NULL DEFAULT '',
   post_edit_time int(11) NOT NULL DEFAULT '0',
-  post_edit_reason varchar(100),
+  post_edit_reason text(65535),
   post_edit_user mediumint(8) NOT NULL DEFAULT '0',
   post_edit_count smallint(5) NOT NULL DEFAULT '0',
   post_edit_locked tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX forum_id_phpbb_posts on phpbb_posts (forum_id);
-CREATE INDEX topic_id_phpbb_posts on phpbb_posts (topic_id);
-CREATE INDEX poster_ip_phpbb_posts on phpbb_posts (poster_ip);
-CREATE INDEX poster_id_phpbb_posts on phpbb_posts (poster_id);
-CREATE INDEX post_approved_phpbb_posts on phpbb_posts (post_approved);
-CREATE INDEX post_time_phpbb_posts on phpbb_posts (post_time);
+CREATE INDEX phpbb_posts_forum_id on phpbb_posts (forum_id);
+CREATE INDEX phpbb_posts_topic_id on phpbb_posts (topic_id);
+CREATE INDEX phpbb_posts_poster_ip on phpbb_posts (poster_ip);
+CREATE INDEX phpbb_posts_poster_id on phpbb_posts (poster_id);
+CREATE INDEX phpbb_posts_post_approved on phpbb_posts (post_approved);
+CREATE INDEX phpbb_posts_post_time on phpbb_posts (post_time);
+
 
 # Table: phpbb_privmsgs
 CREATE TABLE phpbb_privmsgs (
@@ -437,9 +467,9 @@ CREATE TABLE phpbb_privmsgs (
   enable_smilies tinyint(1) NOT NULL DEFAULT '1',
   enable_magic_url tinyint(1) NOT NULL DEFAULT '1',
   enable_sig tinyint(1) NOT NULL DEFAULT '1',
-  message_subject varchar(60),
+  message_subject text(65535),
   message_text mediumtext(16777215),
-  message_edit_reason varchar(100),
+  message_edit_reason text(65535),
   message_edit_user mediumint(8) NOT NULL DEFAULT '0',
   message_encoding varchar(20) NOT NULL DEFAULT 'iso-8859-1',
   message_attachment tinyint(1) NOT NULL DEFAULT '0',
@@ -451,20 +481,22 @@ CREATE TABLE phpbb_privmsgs (
   bcc_address text(65535)
 );
 
-CREATE INDEX author_ip_phpbb_privmsgs on phpbb_privmsgs (author_ip);
-CREATE INDEX message_time_phpbb_privmsgs on phpbb_privmsgs (message_time);
-CREATE INDEX author_id_phpbb_privmsgs on phpbb_privmsgs (author_id);
-CREATE INDEX root_level_phpbb_privmsgs on phpbb_privmsgs (root_level);
+CREATE INDEX phpbb_privmsgs_author_ip on phpbb_privmsgs (author_ip);
+CREATE INDEX phpbb_privmsgs_message_time on phpbb_privmsgs (message_time);
+CREATE INDEX phpbb_privmsgs_author_id on phpbb_privmsgs (author_id);
+CREATE INDEX phpbb_privmsgs_root_level on phpbb_privmsgs (root_level);
+
 
 # Table: phpbb_privmsgs_folder
 CREATE TABLE phpbb_privmsgs_folder (
   folder_id INTEGER PRIMARY KEY NOT NULL,
   user_id mediumint(8) NOT NULL DEFAULT '0',
-  folder_name varchar(40) NOT NULL DEFAULT '',
+  folder_name varchar(255) NOT NULL DEFAULT '',
   pm_count mediumint(8) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX user_id_phpbb_privmsgs_folder on phpbb_privmsgs_folder (user_id);
+CREATE INDEX phpbb_privmsgs_folder_user_id on phpbb_privmsgs_folder (user_id);
+
 
 # Table: phpbb_privmsgs_rules
 CREATE TABLE phpbb_privmsgs_rules (
@@ -478,6 +510,7 @@ CREATE TABLE phpbb_privmsgs_rules (
   rule_action mediumint(4) NOT NULL DEFAULT '0',
   rule_folder_id mediumint(8) NOT NULL DEFAULT '0'
 );
+
 
 # Table: phpbb_privmsgs_to
 CREATE TABLE phpbb_privmsgs_to (
@@ -493,14 +526,15 @@ CREATE TABLE phpbb_privmsgs_to (
   folder_id int(10) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX msg_id_phpbb_privmsgs_to on phpbb_privmsgs_to (msg_id);
-CREATE INDEX user_id_phpbb_privmsgs_to on phpbb_privmsgs_to (user_id, folder_id);
+CREATE INDEX phpbb_privmsgs_to_msg_id on phpbb_privmsgs_to (msg_id);
+CREATE INDEX phpbb_privmsgs_to_user_id on phpbb_privmsgs_to (user_id, folder_id);
+
 
 # Table: phpbb_profile_fields
 CREATE TABLE phpbb_profile_fields (
   field_id INTEGER PRIMARY KEY NOT NULL,
-  field_name varchar(50) NOT NULL DEFAULT '',
-  field_desc varchar(255) NOT NULL DEFAULT '',
+  field_name varchar(255) NOT NULL DEFAULT '',
+  field_desc text(65535),
   field_type mediumint(8) NOT NULL,
   field_ident varchar(20) NOT NULL DEFAULT '',
   field_length varchar(20) NOT NULL DEFAULT '',
@@ -517,13 +551,15 @@ CREATE TABLE phpbb_profile_fields (
   field_order tinyint(4) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX field_type_phpbb_profile_field on phpbb_profile_fields (field_type);
-CREATE INDEX field_order_phpbb_profile_fiel on phpbb_profile_fields (field_order);
+CREATE INDEX phpbb_profile_fields_field_type on phpbb_profile_fields (field_type);
+CREATE INDEX phpbb_profile_fields_field_order on phpbb_profile_fields (field_order);
+
 
 # Table: phpbb_profile_fields_data
 CREATE TABLE phpbb_profile_fields_data (
   user_id INTEGER PRIMARY KEY NOT NULL DEFAULT '0'
 );
+
 
 # Table: phpbb_profile_fields_lang
 CREATE TABLE phpbb_profile_fields_lang (
@@ -535,32 +571,36 @@ CREATE TABLE phpbb_profile_fields_lang (
   PRIMARY KEY (field_id, lang_id, option_id)
 );
 
+
 # Table: phpbb_profile_lang
 CREATE TABLE phpbb_profile_lang (
   field_id mediumint(8) NOT NULL DEFAULT '0',
   lang_id tinyint(4) NOT NULL DEFAULT '0',
   lang_name varchar(255) NOT NULL DEFAULT '',
-  lang_explain text(65535) NOT NULL,
+  lang_explain text(65535),
   lang_default_value varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (field_id, lang_id)
 );
 
+
 # Table: phpbb_ranks
 CREATE TABLE phpbb_ranks (
   rank_id INTEGER PRIMARY KEY NOT NULL,
-  rank_title varchar(50) NOT NULL,
+  rank_title varchar(255) NOT NULL,
   rank_min mediumint(8) NOT NULL DEFAULT '0',
   rank_special tinyint(1) DEFAULT '0',
-  rank_image varchar(100)
+  rank_image varchar(255)
 );
+
 
 # Table: phpbb_reports_reasons
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER PRIMARY KEY NOT NULL,
   reason_title varchar(255) NOT NULL DEFAULT '',
-  reason_description text(65535) NOT NULL,
+  reason_description text(65535),
   reason_order tinyint(4) NOT NULL DEFAULT '0'
 );
+
 
 # Table: phpbb_reports
 CREATE TABLE phpbb_reports (
@@ -571,17 +611,19 @@ CREATE TABLE phpbb_reports (
   user_notify tinyint(1) NOT NULL DEFAULT '0',
   report_closed tinyint(1) NOT NULL DEFAULT '0',
   report_time int(10) NOT NULL DEFAULT '0',
-  report_text text(65535) NOT NULL
+  report_text mediumtext(16777215)
 );
+
 
 # Table: phpbb_search_results
 CREATE TABLE phpbb_search_results (
   search_key varchar(32) NOT NULL DEFAULT '',
   search_time int(11) NOT NULL DEFAULT '0',
-  search_keywords mediumtext(16777215) NOT NULL,
-  search_authors mediumtext(16777215) NOT NULL,
+  search_keywords mediumtext(16777215),
+  search_authors mediumtext(16777215),
   PRIMARY KEY (search_key)
 );
+
 
 # Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
@@ -591,7 +633,8 @@ CREATE TABLE phpbb_search_wordlist (
   PRIMARY KEY (word_text)
 );
 
-CREATE INDEX word_id_phpbb_search_wordlist on phpbb_search_wordlist (word_id);
+CREATE INDEX phpbb_search_wordlist_word_id on phpbb_search_wordlist (word_id);
+
 
 # Table: phpbb_search_wordmatch
 CREATE TABLE phpbb_search_wordmatch (
@@ -600,7 +643,8 @@ CREATE TABLE phpbb_search_wordmatch (
   title_match tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX word_id_phpbb_search_wordmatch on phpbb_search_wordmatch (word_id);
+CREATE INDEX phpbb_search_wordmatch_word_id on phpbb_search_wordmatch (word_id);
+
 
 # Table: phpbb_sessions
 CREATE TABLE phpbb_sessions (
@@ -618,8 +662,9 @@ CREATE TABLE phpbb_sessions (
   PRIMARY KEY (session_id)
 );
 
-CREATE INDEX session_time_phpbb_sessions on phpbb_sessions (session_time);
-CREATE INDEX session_user_id_phpbb_sessions on phpbb_sessions (session_user_id);
+CREATE INDEX phpbb_sessions_session_time on phpbb_sessions (session_time);
+CREATE INDEX phpbb_sessions_session_user_id on phpbb_sessions (session_user_id);
+
 
 # Table: phpbb_sessions_keys
 CREATE TABLE phpbb_sessions_keys (
@@ -630,7 +675,8 @@ CREATE TABLE phpbb_sessions_keys (
   PRIMARY KEY  (key_id,user_id)
 );
 
-CREATE INDEX last_login_phpbb_sessions_keys on phpbb_sessions_keys (last_login);
+CREATE INDEX phpbb_sessions_keys_last_login on phpbb_sessions_keys (last_login);
+
 
 # Table: phpbb_sitelist
 CREATE TABLE phpbb_sitelist (
@@ -640,77 +686,83 @@ CREATE TABLE phpbb_sitelist (
   ip_exclude tinyint(1) NOT NULL DEFAULT '0'
 );
 
+
 # Table: phpbb_smilies
 CREATE TABLE phpbb_smilies (
   smiley_id INTEGER PRIMARY KEY NOT NULL,
-  code char(10),
-  emotion char(50),
-  smiley_url char(50),
+  code varchar(10),
+  emotion varchar(50),
+  smiley_url varchar(50),
   smiley_width tinyint(4) NOT NULL,
   smiley_height tinyint(4) NOT NULL,
   smiley_order tinyint(4) NOT NULL,
   display_on_posting tinyint(1) NOT NULL DEFAULT '1'
 );
 
+
 # Table: phpbb_styles
 CREATE TABLE phpbb_styles (
   style_id INTEGER PRIMARY KEY NOT NULL,
-  style_name varchar(30) NOT NULL DEFAULT '',
-  style_copyright varchar(50) NOT NULL DEFAULT '',
+  style_name varchar(255) NOT NULL DEFAULT '',
+  style_copyright varchar(255) NOT NULL DEFAULT '',
   style_active tinyint(1) NOT NULL DEFAULT '1',
   template_id tinyint(4) NOT NULL,
   theme_id tinyint(4) NOT NULL,
   imageset_id tinyint(4) NOT NULL
 );
 
-CREATE INDEX B_phpbb_styles on phpbb_styles (template_id);
-CREATE INDEX C_phpbb_styles on phpbb_styles (theme_id);
-CREATE INDEX D_phpbb_styles on phpbb_styles (imageset_id);
-CREATE UNIQUE INDEX style_name_phpbb_styles on phpbb_styles (style_name);
+CREATE INDEX phpbb_styles_template_id on phpbb_styles (template_id);
+CREATE INDEX phpbb_styles_theme_id on phpbb_styles (theme_id);
+CREATE INDEX phpbb_styles_imageset_id on phpbb_styles (imageset_id);
+CREATE UNIQUE INDEX phpbb_styles_style_name on phpbb_styles (style_name);
+
 
 # Table: phpbb_styles_template
 CREATE TABLE phpbb_styles_template (
   template_id INTEGER PRIMARY KEY NOT NULL,
-  template_name varchar(30) NOT NULL,
-  template_copyright varchar(50) NOT NULL,
-  template_path varchar(30) NOT NULL,
+  template_name varchar(255) NOT NULL,
+  template_copyright varchar(255) NOT NULL,
+  template_path varchar(100) NOT NULL,
   bbcode_bitfield int(11) NOT NULL DEFAULT '0',
   template_storedb tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE UNIQUE INDEX template_name_phpbb_styles_tem on phpbb_styles_template (template_name);
+CREATE UNIQUE INDEX phpbb_styles_template_template_name on phpbb_styles_template (template_name);
+
 
 # Table: phpbb_styles_template_data
 CREATE TABLE phpbb_styles_template_data (
   template_id tinyint(4) NOT NULL,
-  template_filename varchar(50) NOT NULL DEFAULT '',
-  template_included text(65535) NOT NULL,
+  template_filename varchar(100) NOT NULL DEFAULT '',
+  template_included text(65535),
   template_mtime int(11) NOT NULL DEFAULT '0',
   template_data mediumtext(16777215)
 );
 
-CREATE INDEX B_phpbb_styles_template_data on phpbb_styles_template_data (template_id);
-CREATE INDEX C_phpbb_styles_template_data on phpbb_styles_template_data (template_filename);
+CREATE INDEX phpbb_styles_template_data_template_id on phpbb_styles_template_data (template_id);
+CREATE INDEX phpbb_styles_template_data_template_filename on phpbb_styles_template_data (template_filename);
+
 
 # Table: phpbb_styles_theme
 CREATE TABLE phpbb_styles_theme (
   theme_id INTEGER PRIMARY KEY NOT NULL,
-  theme_name varchar(30) NOT NULL DEFAULT '',
-  theme_copyright varchar(50) NOT NULL DEFAULT '',
-  theme_path varchar(30) NOT NULL DEFAULT '',
+  theme_name varchar(255) NOT NULL DEFAULT '',
+  theme_copyright varchar(255) NOT NULL DEFAULT '',
+  theme_path varchar(100) NOT NULL DEFAULT '',
   theme_storedb tinyint(1) NOT NULL DEFAULT '0',
   theme_mtime int(11) NOT NULL DEFAULT '0',
-  theme_data mediumtext(16777215) NOT NULL DEFAULT ''
+  theme_data mediumtext(16777215)
 );
 
-CREATE UNIQUE INDEX theme_name_phpbb_styles_theme on phpbb_styles_theme (theme_name);
+CREATE UNIQUE INDEX phpbb_styles_theme_theme_name on phpbb_styles_theme (theme_name);
+
 
 # Table: phpbb_styles_imageset
 CREATE TABLE phpbb_styles_imageset (
   imageset_id INTEGER PRIMARY KEY NOT NULL,
-  imageset_name varchar(30) NOT NULL DEFAULT '',
-  imageset_copyright varchar(50) NOT NULL DEFAULT '',
-  imageset_path varchar(30) NOT NULL DEFAULT '',
+  imageset_name varchar(255) NOT NULL DEFAULT '',
+  imageset_copyright varchar(255) NOT NULL DEFAULT '',
+  imageset_path varchar(100) NOT NULL DEFAULT '',
   site_logo varchar(200) NOT NULL DEFAULT '',
   btn_post varchar(200) NOT NULL DEFAULT '',
   btn_post_pm varchar(200) NOT NULL DEFAULT '',
@@ -790,17 +842,18 @@ CREATE TABLE phpbb_styles_imageset (
   user_icon10 varchar(200) NOT NULL DEFAULT ''
 );
 
-CREATE UNIQUE INDEX imageset_name_phpbb_styles_ima on phpbb_styles_imageset (imageset_name);
+CREATE UNIQUE INDEX phpbb_styles_imageset_imageset_name on phpbb_styles_imageset (imageset_name);
+
 
 # Table: phpbb_topics
 CREATE TABLE phpbb_topics (
   topic_id INTEGER PRIMARY KEY NOT NULL,
-  forum_id smallint(8) NOT NULL DEFAULT '0',
+  forum_id smallint(5) NOT NULL DEFAULT '0',
   icon_id tinyint(4) NOT NULL DEFAULT '1',
   topic_attachment tinyint(1) NOT NULL DEFAULT '0',
   topic_approved tinyint(1) NOT NULL DEFAULT '1',
   topic_reported tinyint(1) NOT NULL DEFAULT '0',
-  topic_title varchar(60) NOT NULL,
+  topic_title text(65535),
   topic_poster mediumint(8) NOT NULL DEFAULT '0',
   topic_time int(11) NOT NULL DEFAULT '0',
   topic_time_limit int(11) NOT NULL DEFAULT '0',
@@ -810,16 +863,16 @@ CREATE TABLE phpbb_topics (
   topic_status tinyint(3) NOT NULL DEFAULT '0',
   topic_type tinyint(3) NOT NULL DEFAULT '0',
   topic_first_post_id mediumint(8) NOT NULL DEFAULT '0',
-  topic_first_poster_name varchar(30),
+  topic_first_poster_name varchar(255),
   topic_last_post_id mediumint(8) NOT NULL DEFAULT '0',
   topic_last_poster_id mediumint(8) NOT NULL DEFAULT '0',
-  topic_last_poster_name varchar(30),
+  topic_last_poster_name varchar(255),
   topic_last_post_time int(11) NOT NULL DEFAULT '0',
   topic_last_view_time int(11) NOT NULL DEFAULT '0',
   topic_moved_id mediumint(8) NOT NULL DEFAULT '0',
   topic_bumped tinyint(1) NOT NULL DEFAULT '0',
   topic_bumper mediumint(8) NOT NULL DEFAULT '0',
-  poll_title varchar(255) NOT NULL DEFAULT '',
+  poll_title text(65535),
   poll_start int(11) NOT NULL DEFAULT '0',
   poll_length int(11) NOT NULL DEFAULT '0',
   poll_max_options tinyint(4) NOT NULL DEFAULT '1',
@@ -827,9 +880,10 @@ CREATE TABLE phpbb_topics (
   poll_vote_change tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX forum_id_phpbb_topics on phpbb_topics (forum_id);
-CREATE INDEX forum_id_type_phpbb_topics on phpbb_topics (forum_id, topic_type);
-CREATE INDEX topic_last_post_time_phpbb_top on phpbb_topics (topic_last_post_time);
+CREATE INDEX phpbb_topics_forum_id on phpbb_topics (forum_id);
+CREATE INDEX phpbb_topics_forum_topic_type on phpbb_topics (forum_id, topic_type);
+CREATE INDEX phpbb_topics_topic_last_post_time on phpbb_topics (topic_last_post_time);
+
 
 # Table: phpbb_topics_marking
 CREATE TABLE phpbb_topics_marking (
@@ -840,6 +894,7 @@ CREATE TABLE phpbb_topics_marking (
   PRIMARY KEY (user_id, topic_id)
 );
 
+
 # Table: phpbb_topics_posted
 CREATE TABLE phpbb_topics_posted (
   user_id mediumint(8) NOT NULL DEFAULT '0',
@@ -848,6 +903,7 @@ CREATE TABLE phpbb_topics_posted (
   PRIMARY KEY (user_id, topic_id)
 );
 
+
 # Table: phpbb_topics_watch
 CREATE TABLE phpbb_topics_watch (
   topic_id mediumint(8) NOT NULL DEFAULT '0',
@@ -855,9 +911,10 @@ CREATE TABLE phpbb_topics_watch (
   notify_status tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX topic_id_phpbb_topics_watch on phpbb_topics_watch (topic_id);
-CREATE INDEX user_id_phpbb_topics_watch on phpbb_topics_watch (user_id);
-CREATE INDEX notify_status_phpbb_topics_wat on phpbb_topics_watch (notify_status);
+CREATE INDEX phpbb_topics_watch_topic_id on phpbb_topics_watch (topic_id);
+CREATE INDEX phpbb_topics_watch_user_id on phpbb_topics_watch (user_id);
+CREATE INDEX phpbb_topics_watch_notify_status on phpbb_topics_watch (notify_status);
+
 
 # Table: phpbb_user_group
 CREATE TABLE phpbb_user_group (
@@ -867,22 +924,23 @@ CREATE TABLE phpbb_user_group (
   user_pending tinyint(1)
 );
 
-CREATE INDEX group_id_phpbb_user_group on phpbb_user_group (group_id);
-CREATE INDEX user_id_phpbb_user_group on phpbb_user_group (user_id);
-CREATE INDEX group_leader_phpbb_user_group on phpbb_user_group (group_leader);
+CREATE INDEX phpbb_user_group_group_id on phpbb_user_group (group_id);
+CREATE INDEX phpbb_user_group_user_id on phpbb_user_group (user_id);
+CREATE INDEX phpbb_user_group_group_leader on phpbb_user_group (group_leader);
+
 
 # Table: phpbb_users
 CREATE TABLE phpbb_users (
   user_id INTEGER PRIMARY KEY NOT NULL,
   user_type tinyint(1) NOT NULL DEFAULT '0',
   group_id mediumint(8) NOT NULL DEFAULT '3',
-  user_permissions text(65535) NOT NULL DEFAULT '',
+  user_permissions text(65535),
   user_ip varchar(40) NOT NULL DEFAULT '',
   user_regdate int(11) NOT NULL DEFAULT '0',
-  username varchar(30) NOT NULL DEFAULT '',
-  user_password varchar(32) NOT NULL DEFAULT '',
+  username varchar(255) NOT NULL DEFAULT '',
+  user_password varchar(40) NOT NULL DEFAULT '',
   user_passchg int(11) NOT NULL DEFAULT '0',
-  user_email varchar(60) NOT NULL DEFAULT '',
+  user_email varchar(100) NOT NULL DEFAULT '',
   user_email_hash bigint(20) NOT NULL DEFAULT '0',
   user_birthday varchar(10) NOT NULL DEFAULT '',
   user_lastvisit int(11) NOT NULL DEFAULT '0',
@@ -922,11 +980,11 @@ CREATE TABLE phpbb_users (
   user_allow_viewemail tinyint(1) NOT NULL DEFAULT '1',
   user_allow_massemail tinyint(1) NOT NULL DEFAULT '1',
   user_options int(11) NOT NULL DEFAULT '893',
-  user_avatar varchar(100) NOT NULL DEFAULT '',
+  user_avatar varchar(255) NOT NULL DEFAULT '',
   user_avatar_type tinyint(2) NOT NULL DEFAULT '0',
   user_avatar_width tinyint(4) NOT NULL DEFAULT '0',
   user_avatar_height tinyint(4) NOT NULL DEFAULT '0',
-  user_sig text(65535) NOT NULL DEFAULT '',
+  user_sig text(65535),
   user_sig_bbcode_uid varchar(5) NOT NULL DEFAULT '',
   user_sig_bbcode_bitfield int(11) NOT NULL DEFAULT '0',
   user_from varchar(100) NOT NULL DEFAULT '',
@@ -935,16 +993,17 @@ CREATE TABLE phpbb_users (
   user_yim varchar(255) NOT NULL DEFAULT '',
   user_msnm varchar(255) NOT NULL DEFAULT '',
   user_jabber varchar(255) NOT NULL DEFAULT '',
-  user_website varchar(100) NOT NULL DEFAULT '',
+  user_website varchar(200) NOT NULL DEFAULT '',
   user_occ varchar(255) NOT NULL DEFAULT '',
   user_interests varchar(255) NOT NULL DEFAULT '',
   user_actkey varchar(32) NOT NULL DEFAULT '',
   user_newpasswd varchar(32) NOT NULL DEFAULT ''
 );
 
-CREATE INDEX user_birthday_phpbb_users on phpbb_users (user_birthday);
-CREATE INDEX user_email_hash_phpbb_users on phpbb_users (user_email_hash);
-CREATE INDEX username_phpbb_users on phpbb_users (username);
+CREATE INDEX phpbb_users_user_birthday on phpbb_users (user_birthday);
+CREATE INDEX phpbb_users_user_email_hash on phpbb_users (user_email_hash);
+CREATE INDEX phpbb_users_username on phpbb_users (username);
+
 
 # Table: phpbb_warnings
 CREATE TABLE phpbb_warnings (
@@ -955,12 +1014,14 @@ CREATE TABLE phpbb_warnings (
   warning_time int(11) NOT NULL DEFAULT '0'
 );
 
+
 # Table: phpbb_words
 CREATE TABLE phpbb_words (
   word_id INTEGER PRIMARY KEY NOT NULL,
   word char(100) NOT NULL,
   replacement char(100) NOT NULL
 );
+
 
 # Table: phpbb_zebra
 CREATE TABLE phpbb_zebra (
@@ -970,7 +1031,7 @@ CREATE TABLE phpbb_zebra (
   foe tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX user_id_phpbb_zebra on phpbb_zebra (user_id);
-CREATE INDEX zebra_id_phpbb_zebra on phpbb_zebra (zebra_id);
+CREATE INDEX phpbb_zebra_user_id on phpbb_zebra (user_id);
+CREATE INDEX phpbb_zebra_zebra_id on phpbb_zebra (zebra_id);
 
 COMMIT;

@@ -1845,7 +1845,7 @@ function cache_moderators()
 						'user_id'		=> $user_id,
 						'username'		=> $usernames_ary[$user_id],
 						'group_id'		=> 0,
-						'groupname'		=> ''
+						'group_name'	=> ''
 					);
 				}
 			}
@@ -1886,7 +1886,7 @@ function cache_moderators()
 					'user_id'		=> 0,
 					'username'		=> '',
 					'group_id'		=> $group_id,
-					'groupname'		=> $groupnames_ary[$group_id]
+					'group_name'	=> $groupnames_ary[$group_id]
 				);
 			}
 		}

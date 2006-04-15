@@ -341,7 +341,9 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				if (!isset($bday_day))
+				$bday_day = $bday_month = $bday_year = 0;
+
+				if ($user->data['user_birthday'])
 				{
 					list($bday_day, $bday_month, $bday_year) = explode('-', $user->data['user_birthday']);
 				}
@@ -476,7 +478,27 @@ class ucp_profile
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
 				);
-				break;
+			
+				// Build custom bbcodes array
+				$sql = 'SELECT bbcode_id, bbcode_tag 
+					FROM ' . BBCODES_TABLE . '
+					WHERE display_on_posting = 1';
+				$result = $db->sql_query($sql);
+
+				$i = 0;
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$template->assign_block_vars('custom_tags', array(
+						'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+						'BBCODE_ID'		=> 22 + ($i * 2),
+						'BBCODE_TAG'	=> $row['bbcode_tag'])
+					);
+
+					$i++;
+				}
+				$db->sql_freeresult($result);
+			
+			break;
 
 			case 'avatar':
 
