@@ -200,6 +200,26 @@ class compress_zip extends compress
 						// This is a directory, we are not writting files
 						continue;
 					}
+					else
+					{
+						// Some archivers are punks, they don't don't include folders in their archives!
+						$str = '';
+						$folders = explode('/', pathinfo($target_filename, PATHINFO_DIRNAME));
+
+						// Create and folders and subfolders if they do not exist
+						foreach ($folders as $folder)
+						{
+							$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+							if (!is_dir($str))
+							{
+								if (!@mkdir($str, 0777))
+								{
+									trigger_error("Could not create directory $folder");
+								}
+								@chmod($str, 0777);
+							}
+						}
+					}
 
 					if (!$data['uc_size'])
 					{
