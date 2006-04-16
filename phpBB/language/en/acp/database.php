@@ -47,10 +47,14 @@ $lang = array_merge($lang, array(
 
 	'STORE_AND_DOWNLOAD'	=> 'Store and Download',
 	'ACP_RESTORE'			=> 'Restore',
-	'ACP_RESTORE_EXPLAIN'	=> 'This will perform a full restore of all phpBB tables from a saved file. You can <u>either</u> upload the backup file via this form or upload it manually to a location on the server. If your server supports it you may use a gzip compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
+	'ACP_RESTORE_EXPLAIN'	=> 'This will perform a full restore of all phpBB tables from a saved file. You can <u>either</u> upload the backup file via this form or upload it manually to a location on the server. If your server supports it you may use a gzip or bzip2 compressed text file and it will automatically be decompressed. <b>WARNING</b> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
 	'SELECT_FILE'			=> 'Select a file',
+	'RESTORE_OPTIONS'		=> 'Restore options',
 	'START_RESTORE'			=> 'Start Restore',
+	'DELETE_BACKUP'			=> 'Delete Backup',
+	'DOWNLOAD_BACKUP'		=> 'Download Backup',
 	'RESTORE_SUCCESS'		=> 'The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
+	'BACKUP_SUCCESS'		=> 'The backup has been successfully deleted.',
 ));
 
 ?>
