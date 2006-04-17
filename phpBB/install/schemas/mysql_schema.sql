@@ -55,10 +55,13 @@ CREATE TABLE phpbb_auth_options (
 CREATE TABLE phpbb_auth_roles (
   role_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   role_name varchar(255) DEFAULT '' NOT NULL,
+  role_description text,
   role_type varchar(10) DEFAULT '' NOT NULL,
+  role_order smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
   role_group_ids varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (role_id),
-  KEY role_type (role_type)
+  KEY role_type (role_type),
+  KEY role_order (role_order)
 );
 
 # Table: 'phpbb_auth_roles_data'

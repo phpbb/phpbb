@@ -871,6 +871,22 @@ table.pmask td.name {
 	color: #333333;
 	}
 
+.tooltip {
+	width: 200px;
+	color: #000;
+	text-align: center;
+}
+
+.tooltip span.top {
+	background: #EFEFEF;
+	font-weight: bold;
+}
+
+.tooltip span.bottom {
+	padding: 5px;
+	color: #000;
+	background: #fff;
+}
 
 /*
  Format Buttons for signature editor

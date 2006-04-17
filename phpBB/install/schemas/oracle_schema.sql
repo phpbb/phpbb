@@ -146,7 +146,9 @@ CREATE INDEX phpbb_auth_options_auth_option on phpbb_auth_options (auth_option)
 CREATE TABLE phpbb_auth_roles (
   role_id number(8) NOT NULL,
   role_name varchar2(255) DEFAULT '',
+  role_description clob,
   role_type varchar2(10) DEFAULT '',
+  role_order number(4) DEFAULT '0' NOT NULL,
   role_group_ids varchar2(255) DEFAULT '' NOT NULL,
   CONSTRAINT pk_phpbb_auth_roles PRIMARY KEY (role_id)
 )
@@ -170,6 +172,8 @@ END;
 CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type)
 /
 
+CREATE INDEX phpbb_auth_roles_role_order on phpbb_auth_roles (role_order)
+/
 
 /*
  Table: phpbb_auth_roles_data

@@ -156,7 +156,7 @@
 					&nbsp;
 				<!-- ELSE -->
 					<!-- IF p_mask.f_mask.S_ROLE_OPTIONS -->
-						<b>{L_ROLE}:</b>&nbsp; &nbsp;<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" onchange="set_role_settings(this.options[selectedIndex].value, 'a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')">{p_mask.f_mask.S_ROLE_OPTIONS}</select>
+						<b>{L_ROLE}:</b>&nbsp; &nbsp;<select id="role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" name="role[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" onchange="set_role_settings(this.options[selectedIndex].value, 'a_options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')"><option value="-2" title="testing">testing</option>{p_mask.f_mask.S_ROLE_OPTIONS}</select>
 					<!-- ELSE -->
 						<b>{L_ROLE}:</b> {L_NO_ROLE_AVAILABLE}
 					<!-- ENDIF -->

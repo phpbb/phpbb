@@ -150,6 +150,7 @@ class acp_permission_roles
 				case 'add':
 
 					$role_name = request_var('role_name', '', true);
+					$role_description = request_var('role_description', '', true);
 					$role_group_ids = request_var('role_group_ids', array(0));
 					$pre_select = request_var('pre_select', 'custom');
 					$auth_settings = request_var('setting', array('' => 0));
@@ -275,6 +276,7 @@ class acp_permission_roles
 					
 					$sql_ary = array(
 						'role_name'			=> (string) $role_name,
+						'role_description'	=> (string) $role_description,
 						'role_type'			=> (string) $permission_type,
 						'role_group_ids'	=> (string) implode(':', $role_group_ids),
 					);
@@ -288,6 +290,16 @@ class acp_permission_roles
 					}
 					else
 					{
+						// Get maximum role order for inserting a new role...
+						$sql = 'SELECT MAX(role_order) as max_order
+							FROM ' . ACL_ROLES_TABLE . "
+							WHERE role_type = '" . $db->sql_escape($permission_type) . "'";
+						$result = $db->sql_query($sql);
+						$max_order = (int) $db->sql_fetchfield('max_order');
+						$db->sql_freeresult($result);
+
+						$sql_ary['role_order'] = $max_order + 1;
+						
 						$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 						$db->sql_query($sql);
 
@@ -302,6 +314,7 @@ class acp_permission_roles
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
 
 				break;
+
 			}
 		}
 
@@ -314,6 +327,7 @@ class acp_permission_roles
 
 				$role_row = array(
 					'role_name'			=> request_var('role_name', '', true),
+					'role_description'	=> request_var('role_description', '', true),
 					'role_type'			=> $permission_type,
 					'role_group_ids'	=> implode(':', request_var('role_group_ids', array(0))),
 				);
@@ -400,6 +414,7 @@ class acp_permission_roles
 					'U_BACK'			=> $this->u_action,
 					
 					'ROLE_NAME'			=> $role_row['role_name'],
+					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
 					'L_ACL_TYPE'		=> $user->lang['ACL_TYPE_' . strtoupper($permission_type)],
 					)
 				);
@@ -445,13 +460,49 @@ class acp_permission_roles
 
 				return;
 			break;
+
+			case 'move_up':
+			case 'move_down':
+
+				$order = request_var('order', 0);
+				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
+
+				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
+					SET role_order = ' . $order_total  . " - role_order
+					WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
+				$db->sql_query($sql);
+
+			break;
 		}
+
+		// By default, check that image_order is valid and fix it if necessary
+		$sql = 'SELECT role_id, role_order
+			FROM ' . ACL_ROLES_TABLE . "
+			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			ORDER BY role_order";
+		$result = $db->sql_query($sql);
+
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$order = 0;
+			do
+			{
+				$order++;
+				if ($row['role_order'] != $order)
+				{
+					$db->sql_query('UPDATE ' . ACL_ROLES_TABLE . " SET role_order = $order WHERE role_id = {$row['role_id']}");
+				}
+			}
+			while ($row = $db->sql_fetchrow($result));
+		}
+		$db->sql_freeresult($result);
 
 		// Select existing roles
 		$sql = 'SELECT *
 			FROM ' . ACL_ROLES_TABLE . "
 			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
-			ORDER BY role_name ASC";
+			ORDER BY role_order ASC";
 		$result = $db->sql_query($sql);
 
 		$roles = $groups = $group_ids = $group_info = array();
@@ -490,12 +541,15 @@ class acp_permission_roles
 		foreach ($roles as $row)
 		{
 			$template->assign_block_vars('roles', array(
-				'NAME'				=> $row['role_name'],
+				'ROLE_NAME'				=> $row['role_name'],
+				'ROLE_DESCRIPTION'		=> nl2br($row['role_description']),
 
 				'S_GROUP'			=> ($row['role_group_ids']) ? true : false,
 				
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
+				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;order=' . $row['role_order'],
+				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['role_order'],
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 

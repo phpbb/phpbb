@@ -81,12 +81,15 @@ CREATE SEQUENCE phpbb_auth_roles_seq;
 CREATE TABLE phpbb_auth_roles (
   role_id INT4 DEFAULT nextval('phpbb_auth_roles_seq'),
   role_name varchar(255) DEFAULT '' NOT NULL,
+  role_description TEXT,
   role_type varchar(10) DEFAULT '' NOT NULL,
+  role_order INT4  DEFAULT '0' NOT NULL,
   role_group_ids varchar(255)  DEFAULT '' NOT NULL,
   PRIMARY KEY (role_id)
 );
 
 CREATE INDEX phpbb_auth_roles_role_type ON phpbb_auth_roles (role_type);
+CREATE INDEX phpbb_auth_roles_role_order ON phpbb_auth_roles (role_order);
 
 SELECT SETVAL('phpbb_auth_roles_seq',(select case when max(role_id)>0 then max(role_id)+1 else 1 end from phpbb_auth_roles));
 

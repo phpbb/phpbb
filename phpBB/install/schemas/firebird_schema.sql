@@ -81,13 +81,16 @@ END;;
 CREATE TABLE phpbb_auth_roles (
   role_id INTEGER NOT NULL,
   role_name VARCHAR(255) NOT NULL,
+  role_description BLOB SUB_TYPE TEXT,
   role_type VARCHAR(10) NOT NULL,
+  role_order INTEGER DEFAULT 0  NOT NULL,
   role_group_ids VARCHAR(255) NOT NULL
 );;
 
 ALTER TABLE phpbb_auth_roles ADD PRIMARY KEY (role_id);;
 
 CREATE INDEX phpbb_auth_roles_role_type ON phpbb_auth_roles(role_type);;
+CREATE INDEX phpbb_auth_roles_role_order ON phpbb_auth_roles(role_order);;
 
 CREATE GENERATOR phpbb_auth_roles_gen;;
 SET GENERATOR phpbb_auth_roles_gen TO 0;;

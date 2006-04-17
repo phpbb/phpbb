@@ -128,9 +128,11 @@ GO
 CREATE TABLE [phpbb_auth_roles] (
 	[role_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[role_name] [varchar] (255) NOT NULL ,
+	[role_description] [text] ,
 	[role_type] [varchar] (10) NOT NULL ,
+	[role_order] [int] NOT NULL ,
 	[role_group_ids] [varchar] (255) NOT NULL 
-) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
@@ -141,10 +143,14 @@ ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
+	CONSTRAINT [DF_auth_p_role_role_order] DEFAULT(0) FOR [role_order],
 	CONSTRAINT [DF_auth_p_role_group_ids] DEFAULT ('') FOR [role_group_ids]
 GO
 
 CREATE  INDEX [role_type] ON [phpbb_auth_roles]([role_type]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [role_order] ON [phpbb_auth_roles]([role_order]) ON [PRIMARY]
 GO
 
 

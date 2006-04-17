@@ -61,11 +61,14 @@ CREATE INDEX phpbb_auth_options_auth_option on phpbb_auth_options (auth_option);
 CREATE TABLE phpbb_auth_roles (
   role_id INTEGER PRIMARY KEY NOT NULL,
   role_name varchar(50) NOT NULL DEFAULT '',
+  role_description text(65535),
   role_type varchar(10) NOT NULL DEFAULT '',
+  role_order mediumint(8) NOT NULL DEFAULT '0',
   role_group_ids varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type);
+CREATE INDEX phpbb_auth_roles_role_order on phpbb_auth_roles (role_order);
 
 
 # Table: phpbb_auth_roles_data

@@ -285,7 +285,8 @@ class auth_admin extends auth
 		// Get available roles
 		$sql = 'SELECT *
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'";
+			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			ORDER BY role_order ASC";
 		$result = $db->sql_query($sql);
 
 		$roles = array();
@@ -413,7 +414,8 @@ class auth_admin extends auth
 					{
 						if ($role_id == $current_role_id || !sizeof($role_row['groups']) || ($user_mode == 'group' && in_array($ug_id, $role_row['groups'])))
 						{
-							$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . '>' . $role_row['role_name'] . '</option>';
+							$title = ($role_row['role_description']) ? ' title="' . nl2br($role_row['role_description']) . '"' : '';
+							$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_row['role_name'] . '</option>';
 						}
 					}
 					

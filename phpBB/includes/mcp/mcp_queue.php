@@ -106,7 +106,7 @@ class mcp_queue
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
 					'S_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id&amp;f=$forum_id",
-					'S_CAN_VIEWIP'			=> $auth->acl_get('m_ip', $post_info['forum_id']),
+					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
