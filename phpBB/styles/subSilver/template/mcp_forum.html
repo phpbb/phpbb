@@ -2,7 +2,7 @@
 
 <!-- IF U_VIEW_FORUM_LOGS --><a href="{U_VIEW_FORUM_LOGS}">{L_VIEW_FORUM_LOGS}</a><!-- ENDIF -->
 
-<form method="post" name="mcp" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
+<form method="post" id="mcp" action="{S_MCP_ACTION}"><table class="tablebg" width="100%" cellspacing="1">
 	<tr>
 		<td class="cat" colspan="6" align="center"><span class="gensmall">{L_DISPLAY_TOPICS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 	</tr>
@@ -57,7 +57,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 	<tr>
-		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist('mcp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('mcp', false);">{L_UNMARK_ALL}</a></b></td>
+		<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="javascript:marklist('mcp', 'topic_id_list', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('mcp', 'topic_id_list', false);">{L_UNMARK_ALL}</a></b></td>
 	</tr>
 </table>
 

@@ -135,19 +135,6 @@
 
 <!-- ELSEIF S_LIST -->
 
-	<script type="text/javascript">
-	<!--
-		function marklist(match, status)
-		{
-			doc = document.forms[match];
-			for (i = 0; i < doc.length; i++)
-			{
-				doc.elements[i].checked = status;
-			}
-		}
-	//-->
-	</script>
-
 	<h1>{L_GROUP_MEMBERS}</h1>
 
 	<p>{L_GROUP_MEMBERS_EXPLAIN}</p>
@@ -196,7 +183,7 @@
 			</tr>
 		<!-- END member -->
 		<tr>
-			<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="javascript:marklist('ucp', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', false);">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
+			<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="javascript:marklist('ucp', 'mark', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', 'mark', false);">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
 		</tr>
 	</table>
 

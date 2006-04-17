@@ -1976,6 +1976,7 @@ CREATE TABLE [phpbb_users] (
 	[user_type] [int] NOT NULL ,
 	[group_id] [int] NOT NULL ,
 	[user_permissions] [text] ,
+	[user_perm_from] [int] NOT NULL ,
 	[user_ip] [varchar] (40) NOT NULL ,
 	[user_regdate] [int] NOT NULL ,
 	[username] [varchar] (255) NOT NULL ,
@@ -2052,6 +2053,7 @@ GO
 ALTER TABLE [phpbb_users] WITH NOCHECK ADD 
 	CONSTRAINT [DF_users__user_type] DEFAULT (0) FOR [user_type],
 	CONSTRAINT [DF_users__group_id] DEFAULT (3) FOR [group_id],
+	CONSTRAINT [DF_users__user_perm_from] DEFAULT (0) FOR [user_perm_from],
 	CONSTRAINT [DF_users__user_regdate] DEFAULT (0) FOR [user_regdate],
 	CONSTRAINT [DF_users__user_passchg] DEFAULT (0) FOR [user_passchg],
 	CONSTRAINT [DF_users__user_email_hash] DEFAULT (0) FOR [user_email_hash],

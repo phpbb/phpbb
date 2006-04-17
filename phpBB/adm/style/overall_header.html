@@ -52,6 +52,11 @@ function marklist(id, name, state)
 	var parent = document.getElementById(id);
 	if (!parent)
 	{
+		eval('parent = document.' + id);
+	}
+
+	if (!parent)
+	{
 		return;
 	}
 

@@ -154,7 +154,7 @@ class acp_main
 		switch ($action)
 		{
 			case 'online':
-				if (!$auth->acl_get('a_defaults'))
+				if (!$auth->acl_get('a_board'))
 				{
 					trigger_error($user->lang['NO_ADMIN']);
 				}
@@ -165,7 +165,7 @@ class acp_main
 			break;
 
 			case 'stats':
-				if (!$auth->acl_get('a_defaults'))
+				if (!$auth->acl_get('a_board'))
 				{
 					trigger_error($user->lang['NO_ADMIN']);
 				}
@@ -215,7 +215,7 @@ class acp_main
 			break;
 
 			case 'user':
-				if (!$auth->acl_get('a_defaults'))
+				if (!$auth->acl_get('a_board'))
 				{
 					trigger_error($user->lang['NO_ADMIN']);
 				}
@@ -256,7 +256,7 @@ class acp_main
 			break;
 	
 			case 'date':
-				if (!$auth->acl_get('a_defaults'))
+				if (!$auth->acl_get('a_board'))
 				{
 					trigger_error($user->lang['NO_ADMIN']);
 				}
@@ -347,7 +347,7 @@ class acp_main
 
 			'U_ACTION'			=> "{$phpbb_admin_path}index.$phpEx$SID",
 
-			'S_ACTION_OPTIONS'	=> $s_action_options,
+			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
 			)
 		);
 

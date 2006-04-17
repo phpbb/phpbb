@@ -873,6 +873,7 @@ CREATE TABLE phpbb_users (
    user_type tinyint(1) DEFAULT '0' NOT NULL,
    group_id mediumint(8) DEFAULT '3' NOT NULL,
    user_permissions text,
+   user_perm_from mediumint(8) DEFAULT '0' NOT NULL,
    user_ip varchar(40) DEFAULT '' NOT NULL,
    user_regdate int(11) DEFAULT '0' NOT NULL,
    username varchar(255) DEFAULT '' NOT NULL,

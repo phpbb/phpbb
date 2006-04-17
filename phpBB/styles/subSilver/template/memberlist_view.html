@@ -13,7 +13,7 @@
 			<tr> 
 				<td class="row1" align="center"><table cellspacing="1" cellpadding="2" border="0">
 					<tr>
-						<td class="gen" align="center"><!-- IF USER_COLOR --><b style="color: #{USER_COLOR}"><!-- ELSE --><b><!-- ENDIF -->{USERNAME}</b></td>
+						<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: #{USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
 					</tr>
 					<!-- IF RANK -->
 					<tr>
@@ -33,6 +33,11 @@
 					<tr>
 						<td align="center">{ONLINE_IMG}</td>
 					</tr>
+					<!-- IF U_SWITCH_PERMISSIONS -->
+					<tr>
+						<td class="genmed" align="center">[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</td>
+					</tr>
+					<!-- ENDIF -->
 					<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 					<tr>
 						<td class="genmed" align="center">[ <a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> | <a href="{U_ADD_FOE}">{L_ADD_FOE}</a> ]</td>

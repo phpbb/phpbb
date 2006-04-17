@@ -18,21 +18,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package phpBB3
 *
-* Template class.
-*
-* psoTFX - Completion of file caching, decompilation routines and implementation of
-* conditionals/keywords and associated changes
-*
-* The interface was inspired by PHPLib templates,  and the template file (formats are
-* quite similar)
-*
-* The keyword/conditional implementation is currently based on sections of code from
-* the Smarty templating engine (c) 2001 ispi of Lincoln, Inc. which is released
-* (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
-* derived from an LGPL application may be relicenced under the GPL, this applies
-* to this source
-* 
-* DEFINE directive inspired by a request by Cyberalien
+* Base Template class.
 */
 class template
 {
@@ -51,11 +37,6 @@ class template
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
 	var $compiled_code = array();
-
-	// Various counters and storage arrays
-	var $block_names = array();
-	var $block_else_level = array();
-	var $block_nesting_level = 0;
 
 	var $static_lang;
 
@@ -153,7 +134,7 @@ class template
 	* Display the handle and assign the output to a template variable
 	* @public
 	*/
-	function assign_display($handle, $template_var, $return_content = false, $include_once = true)
+	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
 		ob_start();
 		$this->display($handle, $include_once);
@@ -352,6 +333,36 @@ class template
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
 			$this->_tpldata[$blockname][] = $vararray;
+		}
+
+		return true;
+	}
+
+	/**
+	* Reset/empty complete block
+	* @public
+	*/
+	function reset_block_vars($blockname)
+	{
+		if (strpos($blockname, '.') !== false)
+		{
+			// Nested block.
+			$blocks = explode('.', $blockname);
+			$blockcount = sizeof($blocks) - 1;
+
+			$str = &$this->_tpldata;
+			for ($i = 0; $i < $blockcount; $i++)
+			{
+				$str = &$str[$blocks[$i]];
+				$str = &$str[sizeof($str) - 1];
+			}
+
+			unset($str[$blocks[$blockcount]]);
+		}
+		else
+		{
+			// Top-level block.
+			unset($this->_tpldata[$blockname]);
 		}
 
 		return true;

@@ -294,6 +294,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_roles', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_search', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_server', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_styles', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_switchperm', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_uauth', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_user', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_userdel', 1);
@@ -515,15 +516,15 @@ INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class,
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (77, 1, 'attachments', 'acp', 1, 56, 351, 352, 'ACP_EXTENSION_GROUPS', 'ext_groups', 'acl_a_attach');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (78, 1, 'attachments', 'acp', 1, 56, 353, 354, 'ACP_MANAGE_EXTENSIONS', 'extensions', 'acl_a_attach');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (80, 1, 'attachments', 'acp', 1, 56, 355, 356, 'ACP_ORPHAN_ATTACHMENTS', 'orphan', 'acl_a_attach');
-INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (81, 1, 'board', 'acp', 1, 42, 285, 286, 'ACP_MESSAGE_SETTINGS', 'message', 'acl_a_defaults');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (81, 1, 'board', 'acp', 1, 42, 285, 286, 'ACP_MESSAGE_SETTINGS', 'message', 'acl_a_board');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (82, 1, 'board', 'acp', 1, 43, 297, 298, 'ACP_AUTH_SETTINGS', 'auth', 'acl_a_server');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (83, 1, 'board', 'acp', 1, 43, 299, 300, 'ACP_EMAIL_SETTINGS', 'email', 'acl_a_server');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (84, 1, 'jabber', 'acp', 1, 43, 301, 302, 'ACP_JABBER_SETTINGS', 'settings', 'acl_a_jabber');
-INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (85, 1, 'board', 'acp', 1, 44, 305, 306, 'ACP_COOKIE_SETTINGS', 'cookie', 'acl_a_cookies');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (85, 1, 'board', 'acp', 1, 44, 305, 306, 'ACP_COOKIE_SETTINGS', 'cookie', 'acl_a_server');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (86, 1, 'board', 'acp', 1, 44, 307, 308, 'ACP_SERVER_SETTINGS', 'server', 'acl_a_server');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (87, 1, 'board', 'acp', 1, 44, 311, 312, 'ACP_LOAD_SETTINGS', 'load', 'acl_a_server');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (92, 1, 'modules', 'acp', 1, 67, 511, 512, 'MCP', 'mcp', 'acl_a_modules');
-INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (93, 1, 'board', 'acp', 1, 75, 337, 338, 'ACP_MESSAGE_SETTINGS', 'message', 'acl_a_defaults');
+INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (93, 1, 'board', 'acp', 1, 75, 337, 338, 'ACP_MESSAGE_SETTINGS', 'message', 'acl_a_board');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (94, 1, 'bbcodes', 'acp', 1, 75, 339, 340, 'ACP_BBCODES', 'bbcodes', 'acl_a_bbcode');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (95, 1, 'icons', 'acp', 1, 75, 341, 342, 'ACP_ICONS', 'icons', 'acl_a_icons');
 INSERT INTO phpbb_modules (module_id, module_enabled, module_name, module_class, module_display, parent_id, left_id, right_id, module_langname, module_mode, module_auth) VALUES (96, 1, 'icons', 'acp', 1, 75, 343, 344, 'ACP_SMILIES', 'smilies', 'acl_a_icons');
@@ -657,7 +658,7 @@ INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) S
 
 # ADMINISTRATOR group - admin and forum rights
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 

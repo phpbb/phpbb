@@ -1713,6 +1713,7 @@ CREATE TABLE phpbb_users (
   user_type number(1) DEFAULT '0' NOT NULL,
   group_id number(8) DEFAULT '3' NOT NULL,
   user_permissions clob,
+  user_perm_from number(8) DEFAULT '0' NOT NULL,
   user_ip varchar2(40) DEFAULT '',
   user_regdate number(11) DEFAULT '0' NOT NULL,
   username varchar2(255) DEFAULT '',

@@ -148,23 +148,6 @@ function unique_id($extra = 0, $prefix = false)
 }
 
 /**
-* Get userdata
-* @param mixed $user user id or username
-*/
-function get_userdata($user)
-{
-	global $db;
-
-	$sql = 'SELECT *
-		FROM ' . USERS_TABLE . '
-		WHERE ';
-	$sql .= ((is_integer($user)) ? "user_id = $user" : "username = '" .  $db->sql_escape($user) . "'") . " AND user_id <> " . ANONYMOUS;
-	$result = $db->sql_query($sql);
-
-	return ($row = $db->sql_fetchrow($result)) ? $row : false;
-}
-
-/**
 * Generate sort selection fields
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param)
@@ -1654,10 +1637,11 @@ function decode_message(&$message, $bbcode_uid = '')
 		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
 		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
 		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+		'#<!\-\- .*? \-\->#s',
 		'#<.*?>#s'
 	);
 	
-	$replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;');
+	$replace = array('\1', '\1', '\1', '\1', '\1', '', '&lt;\1&gt;');
 	
 	$message = preg_replace($match, $replace, $message);
 
@@ -1863,7 +1847,7 @@ function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_
 {
 	global $config, $user;
 
-	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, $preview, true);
+	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
 	$tpl_size = sizeof($attachments);
 
 	$unset_tpl = array();
@@ -2013,7 +1997,7 @@ function add_log()
 	$forum_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
 	$topic_id		= ($mode == 'mod') ? intval(array_shift($args)) : '';
 	$action			= array_shift($args);
-	$data			= (!sizeof($args)) ? '' : $db->sql_escape(serialize($args));
+	$data			= (!sizeof($args)) ? '' : serialize($args);
 
 	$sql_ary = array(
 		'user_id'		=> $user->data['user_id'],
@@ -2533,6 +2517,7 @@ function page_header($page_title = '')
 		'U_SEARCH_ACTIVE_TOPICS'=> "{$phpbb_root_path}search.$phpEx$SID&amp;search_id=active_topics",
 		'U_DELETE_COOKIES'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=delete_cookies",
 		'U_TEAM'				=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=leaders",
+		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=restore_perm" : '',
 
 		'S_USER_LOGGED_IN' 		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],

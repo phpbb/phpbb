@@ -381,7 +381,12 @@ function get_user_informations($user_id, $user_row)
 
 	if (empty($user_row))
 	{
-		$user_row = get_userdata((int) $user_id);
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . (int) $user_id;
+		$result = $db->sql_query($sql);
+		$user_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 	}
 
 	// Grab ranks

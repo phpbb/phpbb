@@ -39,8 +39,8 @@ switch ($mode)
 	case 'activate':
 		$module->load('ucp', 'activate');
 		$module->display($user->lang['UCP_ACTIVATE']);
-		redirect("index.$phpEx$SID");
 
+		redirect("index.$phpEx$SID");
 	break;
 
 	case 'resend_act':
@@ -64,7 +64,6 @@ switch ($mode)
 	break;
 
 	case 'confirm':
-
 		$module->load('ucp', 'confirm');
 		exit;
 	break;
@@ -159,6 +158,72 @@ switch ($mode)
 		}
 		
 		redirect("index.$phpEx$SID");
+
+	break;
+
+	case 'switch_perm':
+
+		$user_id = request_var('u', 0);
+
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . (int) $user_id;
+		$result = $db->sql_query($sql);
+		$user_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$auth->acl_get('a_switchperm') || !$user_row || $user_id == $user->data['user_id'])
+		{
+			redirect("index.$phpEx$SID");
+		}
+
+		include($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+
+		$auth_admin = new auth_admin();
+		if (!$auth_admin->ghost_permissions($user_id, $user->data['user_id']))
+		{
+			redirect("index.$phpEx$SID");
+		}
+
+		$sql = 'SELECT username
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+		$username = $db->sql_fetchfield('username');
+		$db->sql_freeresult($result);
+
+		add_log('admin', 'LOG_ACL_TRANSFER_PERMISSIONS', $username);
+
+		$message = sprintf($user->lang['PERMISSIONS_TRANSFERED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], "<a href=\"{$phpbb_root_path}index.$phpEx$SID\">", '</a>');
+		trigger_error($message);
+
+	break;
+
+	case 'restore_perm':
+
+		if (!$user->data['user_perm_from'] || !$auth->acl_get('a_switchperm'))
+		{
+			redirect("index.$phpEx$SID");
+		}
+
+		$auth->acl_cache($user->data);
+
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_perm_from = 0
+			WHERE user_id = " . $user->data['user_id'];
+		$db->sql_query($sql);
+
+		$sql = 'SELECT username
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . $user->data['user_perm_from'];
+		$result = $db->sql_query($sql);
+		$username = $db->sql_fetchfield('username');
+		$db->sql_freeresult($result);
+
+		add_log('admin', 'LOG_ACL_RESTORE_PERMISSIONS', $username);
+
+		$message = $user->lang['PERMISSIONS_RESTORED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], "<a href=\"{$phpbb_root_path}index.$phpEx$SID\">", '</a>');
+		trigger_error($message);
 
 	break;
 }

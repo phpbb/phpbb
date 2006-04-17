@@ -345,6 +345,8 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<b>Removed Moderators</b> from %s<br />&#187; %s',
 	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<b>Removed User/Group Forum Permissions</b> from %s<br />&#187; %s',
 
+	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<b>Permissions transfered from</b><br />&#187; %s',
+	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<b>Own permissions restored after using permissions from</b><br />&#187; %s',
 	
 	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',

@@ -1101,6 +1101,59 @@ class auth_admin extends auth
 			}
 		}
 	}
+
+	/**
+	* Use permissions from another user. This transferes a permission set from one user to another.
+	* The other user is always able to revert back to his permission set.
+	* This function does not check for lower/higher permissions, it is possible for the user to gain 
+	* "more" permissions by this.
+	*
+	*/
+	function ghost_permissions($from_user_id, $to_user_id)
+	{
+		global $db;
+
+		if ($to_user_id == ANONYMOUS)
+		{
+			return false;
+		}
+
+		$hold_ary = $this->acl_raw_data($from_user_id, false, false);
+
+		if (isset($hold_ary[$from_user_id]))
+		{
+			$hold_ary = $hold_ary[$from_user_id];
+		}
+		
+		// Key 0 in $hold_ary are global options, all others are forum_ids
+
+		// We disallow copying admin permissions
+		foreach ($this->acl_options['global'] as $opt => $id)
+		{
+			if (strpos($opt, 'a_') === 0)
+			{
+				$hold_ary[0][$opt] = ACL_NO;
+			}
+		}
+
+		// Force a_switchperm to be allowed
+		$hold_ary[0]['a_switchperm'] = ACL_YES;
+
+		$user_permissions = $this->build_bitstring($hold_ary);
+
+		if (!$user_permissions)
+		{
+			return false;
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_permissions = '" . $db->sql_escape($user_permissions) . "',
+				user_perm_from = $from_user_id
+			WHERE user_id = " . $to_user_id;
+		$db->sql_query($sql);
+
+		return true;
+	}
 }
 
 ?>

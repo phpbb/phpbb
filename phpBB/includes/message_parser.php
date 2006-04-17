@@ -977,9 +977,9 @@ class parse_message extends bbcode_firstpass
 		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
 		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
 
-		$add_file		= (isset($_POST['add_file']));
-		$delete_file	= (isset($_POST['delete_file']));
-		$edit_comment	= (isset($_POST['edit_comment']));
+		$add_file		= (isset($_POST['add_file'])) ? true : false;
+		$delete_file	= (isset($_POST['delete_file'])) ? true : false;
+		$edit_comment	= (isset($_POST['edit_comment'])) ? true : false;
 
 		$cfg = array();
 		$cfg['max_attachments'] = ($is_message) ? $config['max_attachments_pm'] : $config['max_attachments'];
@@ -1063,6 +1063,9 @@ class parse_message extends bbcode_firstpass
 				if ($edit_comment)
 				{
 					$actual_comment_list = request_var('comment_list', array(''), true);
+
+					$edit_comment = key(request_var('edit_comment', array(0 => '')));
+					$this->attachment_data[$edit_comment]['comment'] = $actual_comment_list[$edit_comment];
 				}
 				
 				if (($add_file || $preview) && $upload_file)
@@ -1105,26 +1108,102 @@ class parse_message extends bbcode_firstpass
 		}
 	}
 
-	// Get Attachment Data
+	/**
+	* Get Attachment Data
+	*/
 	function get_submitted_attachment_data()
 	{
+		global $user, $db, $phpbb_root_path, $phpEx, $config;
+
 		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
 		$this->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
 
-		// 
-		$data_prepare = array('physical_filename' => 's', 'real_filename' => 's', 'comment' => 's', 'extension' => 's', 'mimetype' => 's',
-							'filesize' => 'i', 'filetime' => 'i', 'attach_id' => 'i', 'thumbnail' => 'i');
+		// Regenerate data array...
+		$attach_ids = $filenames = array();
+
 		foreach ($this->attachment_data as $pos => $var_ary)
 		{
-			foreach ($data_prepare as $var => $type)
+			if ($var_ary['attach_id'])
 			{
-				if ($type == 's')
+				$attach_ids[(int) $this->attachment_data[$pos]['attach_id']] = $pos;
+			}
+			else
+			{
+				$filenames[$pos] = '';
+				set_var($filenames[$pos], $this->attachment_data[$pos]['physical_filename'], 'string');
+				$filenames[$pos] = basename($filenames[$pos]);
+			}
+		}
+
+		$this->attachment_data = array();
+
+		// Regenerate already posted attachments...
+		if (sizeof($attach_ids))
+		{
+			// Get the data from the attachments
+			$sql = 'SELECT attach_id, physical_filename, real_filename, extension, mimetype, filesize, filetime, thumbnail
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE attach_id IN (' . implode(', ', array_keys($attach_ids)) . ')
+					AND poster_id = ' . $user->data['user_id'];
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (isset($attach_ids[$row['attach_id']]))
 				{
-					$this->attachment_data[$pos][$var] = trim(htmlspecialchars(str_replace(array("\r\n", "\r", '\xFF'), array("\n", "\n", ' '), stripslashes($this->attachment_data[$pos][$var]))));
+					$pos = $attach_ids[$row['attach_id']];
+					$this->attachment_data[$pos] = $row;
+					set_var($this->attachment_data[$pos]['comment'], $_POST['attachment_data'][$pos]['comment'], 'string', true);
+
+					unset($attach_ids[$row['attach_id']]);
+				}
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($attach_ids))
+			{
+				trigger_error('NO_ACCESS_ATTACHMENT');
+			}
+		}
+
+		// Regenerate newly uploaded attachments
+		if (sizeof($filenames))
+		{
+			include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+			
+			$sql = 'SELECT attach_id
+				FROM ' . ATTACHMENTS_TABLE . "
+				WHERE LOWER(physical_filename) IN ('" . implode("', '", array_map('strtolower', $filenames)) . "')";
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				trigger_error('NO_ACCESS_ATTACHMENT');
+			}
+
+			foreach ($filenames as $pos => $physical_filename)
+			{
+				$this->attachment_data[$pos] = array(
+					'physical_filename'	=> $physical_filename,
+					'extension'			=> strtolower(filespec::get_extension($phpbb_root_path . $config['upload_path'] . '/' . $physical_filename)),
+					'filesize'			=> filespec::get_filesize($phpbb_root_path . $config['upload_path'] . '/' . $physical_filename),
+					'attach_id'			=> 0,
+					'thumbnail'			=> (file_exists($phpbb_root_path . $config['upload_path'] . '/thumb_' . $physical_filename)) ? 1 : 0,
+				);
+
+				set_var($this->attachment_data[$pos]['comment'], $_POST['attachment_data'][$pos]['comment'], 'string', true);
+				set_var($this->attachment_data[$pos]['real_filename'], $_POST['attachment_data'][$pos]['real_filename'], 'string', true);
+				set_var($this->attachment_data[$pos]['filetime'], $_POST['attachment_data'][$pos]['filetime'], 'int');
+
+				if (strpos($_POST['attachment_data'][$pos]['mimetype'], 'image/') !== false)
+				{
+					set_var($this->attachment_data[$pos]['mimetype'], $_POST['attachment_data'][$pos]['mimetype'], 'string');
 				}
 				else
 				{
-					$this->attachment_data[$pos][$var] = (int) $this->attachment_data[$pos][$var];
+					$this->attachment_data[$pos]['mimetype'] = filespec::get_mimetype($phpbb_root_path . $config['upload_path'] . '/' . $physical_filename);
 				}
 			}
 		}

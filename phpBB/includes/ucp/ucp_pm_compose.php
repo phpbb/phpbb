@@ -73,8 +73,8 @@ function compose_pm($id, $mode, $action)
 			{
 				trigger_error('NO_AUTH_SEND_MESSAGE');
 			}
+		break;
 
-			break;
 		case 'reply':
 		case 'quote':
 		case 'forward':
@@ -112,7 +112,7 @@ function compose_pm($id, $mode, $action)
 						AND t.msg_id = p.msg_id
 						AND p.msg_id = $msg_id";
 			}
-			break;
+		break;
 
 		case 'edit':
 			if (!$msg_id)
@@ -127,7 +127,7 @@ function compose_pm($id, $mode, $action)
 					AND t.folder_id = ' . PRIVMSGS_OUTBOX . "
 					AND t.msg_id = $msg_id
 					AND t.msg_id = p.msg_id";
-			break;
+		break;
 
 		case 'delete':
 			if (!$auth->acl_get('u_pm_delete'))
@@ -144,11 +144,11 @@ function compose_pm($id, $mode, $action)
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . "
 					AND msg_id = $msg_id";
-			break;
+		break;
 
 		case 'smilies':
 			generate_smilies('window', 0);
-			break;
+		break;
 
 		default:
 			trigger_error('NO_ACTION_MODE');
@@ -175,42 +175,46 @@ function compose_pm($id, $mode, $action)
 
 		$db->sql_freeresult($result);
 
-		$msg_id = (int) $post['msg_id'];
-		$enable_urls = $post['enable_magic_url'];
-		$enable_sig = (isset($post['enable_sig'])) ? $post['enable_sig'] : 0;
-
-		$message_attachment = (isset($post['message_attachement'])) ? $post['message_attachement'] : 0;
-		$message_text = $post['message_text'];
-		$message_subject = $post['message_subject'];
-		$quote_username = (isset($post['quote_username'])) ? $post['quote_username'] : '';
-
-		$message_time = $post['message_time'];
-		$icon_id = (isset($post['icon_id'])) ? $post['icon_id'] : 0;
-		$folder_id = (isset($post['folder_id'])) ? $post['folder_id'] : 0;
-		$bbcode_uid = $post['bbcode_uid'];
+		$msg_id			= (int) $post['msg_id'];
+		$folder_id		= (isset($post['folder_id'])) ? $post['folder_id'] : 0;
+		$message_text	= (isset($post['message_text'])) ? $post['message_text'] : '';
 
 		if (!$post['author_id'] && $msg_id)
 		{
 			trigger_error('NO_AUTHOR');
 		}
 
-		if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+		if ($action != 'delete')
 		{
-			$address_list = array('u' => array($post['author_id'] => 'to'));
-		}
-		else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
-		{
-			// Rebuild TO and BCC Header
-			$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
-		}
+			$enable_urls = $post['enable_magic_url'];
+			$enable_sig = (isset($post['enable_sig'])) ? $post['enable_sig'] : 0;
 
-		if ($action == 'quotepost')
-		{
-			$check_value = 0;
-		}
-		else
-		{
-			$check_value = (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
+			$message_attachment = (isset($post['message_attachement'])) ? $post['message_attachement'] : 0;
+			$message_subject = $post['message_subject'];
+			$message_time = $post['message_time'];
+			$bbcode_uid = $post['bbcode_uid'];
+
+			$quote_username = (isset($post['quote_username'])) ? $post['quote_username'] : '';
+			$icon_id = (isset($post['icon_id'])) ? $post['icon_id'] : 0;
+
+			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+			{
+				$address_list = array('u' => array($post['author_id'] => 'to'));
+			}
+			else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
+			{
+				// Rebuild TO and BCC Header
+				$address_list = rebuild_header(array('to' => $post['to_address'], 'bcc' => $post['bcc_address']));
+			}
+
+			if ($action == 'quotepost')
+			{
+				$check_value = 0;
+			}
+			else
+			{
+				$check_value = (($post['enable_bbcode']+1) << 8) + (($post['enable_smilies']+1) << 4) + (($enable_urls+1) << 2) + (($post['enable_sig']+1) << 1);
+			}
 		}
 	}
 	else
@@ -246,8 +250,6 @@ function compose_pm($id, $mode, $action)
 	{
 		$icon_id = 0;
 	}
-
-
 
 	$message_parser = new parse_message();
 
@@ -547,7 +549,7 @@ function compose_pm($id, $mode, $action)
 			$extensions = $update_count = array();
 
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
-			display_attachments(0, 'attachment', $message_parser->attachment_data, $update_count, true);
+			display_attachments(0, 'attachment', $message_parser->attachment_data, $update_count);
 		}
 
 		$preview_subject = censor_text($subject);

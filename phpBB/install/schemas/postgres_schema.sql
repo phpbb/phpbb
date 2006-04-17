@@ -1216,6 +1216,7 @@ CREATE TABLE phpbb_users (
   user_type INT2 DEFAULT '0' NOT NULL,
   group_id INT4 DEFAULT '3' NOT NULL,
   user_permissions TEXT,
+  user_perm_from INT4 DEFAULT '0' NOT NULL,
   user_ip varchar(40) DEFAULT '' NOT NULL,
   user_regdate INT4 DEFAULT '0' NOT NULL,
   username varchar(255) DEFAULT '' NOT NULL,

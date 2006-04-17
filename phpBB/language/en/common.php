@@ -286,6 +286,7 @@ $lang = array_merge($lang, array(
 	'NOT_AUTHORIZED'			=> 'You are not authorized to access this area.',
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',
+	'NO_ACCESS_ATTACHMENT'		=> 'You are not allowed to access this file.',
 	'NO_AUTH_ADMIN'				=> 'You do not have admin permissions and therefore not allowed to access the administration control panel.',
 	'NO_AUTH_ADMIN_USER_DIFFER'	=> 'You are not able to re-authenticate as a different user.',
 	'NO_AUTH_OPERATION'			=> 'You do not have the neccessary permissions to complete this operation.',
@@ -482,6 +483,7 @@ $lang = array_merge($lang, array(
 	'USER_POST'				=> '%d Post',
 	'USER_POSTS'			=> '%d Posts',
 	'USERS'					=> 'Users',
+	'USE_PERMISSIONS'		=> 'Test out users permissions',
 
 	'VIEWED'					=> 'Viewed',
 	'VIEWING_FAQ'				=> 'Viewing FAQ',

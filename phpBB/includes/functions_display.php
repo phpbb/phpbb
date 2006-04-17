@@ -578,13 +578,13 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 	global $SID, $template, $auth, $user;
 
 	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
-	
+
 	$rules = array(
 		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
 		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
 		($auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
 		($auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
-		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach', $forum_id) && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
+		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
 	);
 
 	foreach ($rules as $rule)
@@ -670,41 +670,13 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
 {
 	global $template, $cache, $user;
-	global $attachment_tpl, $extensions, $config, $phpbb_root_path, $phpEx, $SID;
+	global $extensions, $config, $phpbb_root_path, $phpEx, $SID;
 
-//	$starttime = explode(' ', microtime());
-//	$starttime = $starttime[1] + $starttime[0];
 	$return_tpl = array();
 
-	$blocks = array(ATTACHMENT_CATEGORY_WM => 'WM_STREAM', ATTACHMENT_CATEGORY_RM => 'RM_STREAM', ATTACHMENT_CATEGORY_THUMB => 'THUMBNAIL', ATTACHMENT_CATEGORY_IMAGE => 'IMAGE');
-
-	if (!isset($attachment_tpl))
-	{
-		if (!($attachment_tpl = $cache->get('attachment_tpl')))
-		{
-			$attachment_tpl = array();
-
-			$template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/attachment.html';
-			if (($attachment_template = file_get_contents($template_filename)) === false)
-			{
-				trigger_error('Could not load template file "' . $template_filename . '"');
-			}
-
-			// replace \ with \\ and then ' with \'.
-			$attachment_template = str_replace('\\', '\\\\', $attachment_template);
-			$attachment_template = str_replace("'", "\'", $attachment_template);
-
-			preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (.*?) -->#s', $attachment_template, $tpl);
-
-			foreach ($tpl[1] as $num => $block_name)
-			{
-				$attachment_tpl[$block_name] = $tpl[2][$num];
-			}
-			unset($tpl);
-
-			$cache->put('attachment_tpl', $attachment_tpl);
-		}
-	}
+	$template->set_filenames(array(
+		'attachment_tpl'	=> 'attachment.html')
+	);
 
 	if (empty($extensions) || !is_array($extensions))
 	{
@@ -714,29 +686,39 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 	foreach ($attachment_data as $attachment)
 	{
+		// We need to reset/empty the _file block var, because this function might be called more than once
+		$template->reset_block_vars('_file');
+
+		$block_array = array();
+		
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
 		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
 
-		$upload_image = '';
-
+		$upload_icon = '';
 		if ($user->img('icon_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
 		{
-			$upload_image = $user->img('icon_attach', '');
+			$upload_icon = $user->img('icon_attach', '');
 		}
 		else if ($extensions[$attachment['extension']]['upload_icon'])
 		{
-			$upload_image = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" border="0" />';
+			$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
 		}
 
 		$filesize = $attachment['filesize'];
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$display_name = basename($attachment['real_filename']);
 		$comment = str_replace("\n", '<br />', censor_text($attachment['comment']));
+
+		$block_array += array(
+			'UPLOAD_ICON'		=> $upload_icon,
+			'FILESIZE'			=> $filesize,
+			'SIZE_LANG'			=> $size_lang,
+			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
+			'COMMENT'			=> $comment,
+		);
 
 		$denied = false;
 
@@ -744,32 +726,15 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		{
 			$denied = true;
 
-			$template_array['VAR'] = array('{L_DENIED}');
-			$template_array['VAL'] = array(sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension']));
-
-			$tpl = str_replace($template_array['VAR'], $template_array['VAL'], $attachment_tpl['DENIED']);
-
-			// Replace {L_*} lang strings
-			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
-
-			if (!$return)
-			{
-				$template->assign_block_vars($blockname, array(
-					'DISPLAY_ATTACHMENT' => $tpl)
-				);
-			}
-			else
-			{
-				$return_tpl[] = $tpl;
-			}
+			$block_array += array(
+				'S_DENIED'			=> true,
+				'DENIED_MESSAGE'	=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension'])
+			);
 		}
 
 		if (!$denied)
 		{
-			$l_downloaded_viewed = '';
-			$download_link = '';
-			$additional_array['VAR'] = $additional_array['VAL'] = array();
-
+			$l_downloaded_viewed = $download_link = '';
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
@@ -800,102 +765,108 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
-					$img_source = $filename;
-					$update_count[] = $attachment['attach_id'];
-
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $img_source;
-					break;
+					$download_link = $filename;
+
+					$block_array += array(
+						'S_IMAGE'		=> true,
+					);
+
+					$update_count[] = $attachment['attach_id'];
+				break;
 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
-					$thumb_source = $thumbnail_filename;
-
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = (!$force_physical) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
+					$download_link = (!$force_physical && $attachment['attach_id']) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
 
-					$additional_array['VAR'][] = '{THUMB_IMG}';
-					$additional_array['VAL'][] = $thumb_source;
-					break;
+					$block_array += array(
+						'S_THUMBNAIL'		=> true,
+						'THUMB_IMAGE'		=> $thumbnail_filename,
+					);
+				break;
 
 				// Windows Media Streams
 				case ATTACHMENT_CATEGORY_WM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
 
+					$block_array += array(
+						'S_WM_FILE'		=> true,
+					);
+
 					// Viewed/Heared File ... update the download count (download.php is not called here)
 					$update_count[] = $attachment['attach_id'];
-					break;
+				break;
 
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
 
-					$additional_array['VAR'][] = '{U_FORUM}';
-					$additional_array['VAL'][] = generate_board_url();
-					$additional_array['VAR'][] = '{ATTACH_ID}';
-					$additional_array['VAL'][] = $attachment['attach_id'];
+					$block_array += array(
+						'S_RM_FILE'		=> true,
+						'U_FORUM'		=> generate_board_url(),
+						'ATTACH_ID'		=> $attachment['attach_id'],
+					);
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
 					$update_count[] = $attachment['attach_id'];
 					break;
-/*
-				// Macromedia Flash Files
+
+/*				// Macromedia Flash Files
 				case SWF_CAT:
 					list($width, $height) = swf_getdimension($filename);
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 					$download_link = $filename;
 
-					$additional_array = array(
-						'WIDTH' => $width,
-						'HEIGHT' => $height
+					$block_array += array(
+						'S_SWF_FILE'	=> true,
+						'WIDTH'			=> $width,
+						'HEIGHT'		=> $height,
 					);
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
 					$update_count[] = $attachment['attach_id'];
-					break;
+				break;
 */
 				default:
 					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-					$download_link = (!$force_physical) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
-					break;
+					$download_link = (!$force_physical && $attachment['attach_id']) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
+
+					$block_array += array(
+						'S_FILE'		=> true,
+					);
+				break;
 			}
 
 			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
 
-			$current_block = ($display_cat) ? $blocks[$display_cat] : 'FILE';
-
-			$template_array['VAR'] = array_merge($additional_array['VAR'], array(
-				'{DOWNLOAD_NAME}', '{FILESIZE}', '{SIZE_VAR}', '{COMMENT}', '{U_DOWNLOAD_LINK}', '{UPLOAD_IMG}', '{L_DOWNLOADED_VIEWED}', '{L_DOWNLOAD_COUNT}')
+			$block_array += array(
+				'U_DOWNLOAD_LINK'		=> $download_link,
+				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
+				'L_DOWNLOAD_COUNT'		=> $l_download_count
 			);
+		}
 
-			$template_array['VAL'] = array_merge($additional_array['VAL'], array(
-				$display_name, $filesize, $size_lang, $comment, $download_link, $upload_image, $l_downloaded_viewed, $l_download_count)
+		$template->assign_block_vars('_file', $block_array);
+
+		$tpl = $template->assign_display('attachment_tpl');
+
+		if (!$return)
+		{
+			$template->assign_block_vars($blockname, array(
+				'DISPLAY_ATTACHMENT' => $tpl)
 			);
-
-			$tpl = str_replace($template_array['VAR'], $template_array['VAL'], $attachment_tpl[$current_block]);
-
-			// Replace {L_*} lang strings
-			$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
-
-			if (!$return)
-			{
-				$template->assign_block_vars($blockname, array(
-					'DISPLAY_ATTACHMENT' => $tpl)
-				);
-			}
-			else
-			{
-				$return_tpl[] = $tpl;
-			}
+		}
+		else
+		{
+			$return_tpl[] = $tpl;
 		}
 	}
 
 	return $return_tpl;
-//	$mtime = explode(' ', microtime());
-//	$totaltime = $mtime[0] + $mtime[1] - $starttime;
 }
 
 /**

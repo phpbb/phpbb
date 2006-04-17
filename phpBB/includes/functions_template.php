@@ -40,6 +40,10 @@ class template_compile
 {
 	var $template;
 
+	// Various storage arrays
+	var $block_names = array();
+	var $block_else_level = array();
+
 	/**
 	* constuctor
 	*/
@@ -120,57 +124,54 @@ class template_compile
 			switch ($blocks[1][$curr_tb])
 			{
 				case 'BEGIN':
-					$this->template->block_else_level[] = false;
+					$this->block_else_level[] = false;
 					$compile_blocks[] = '<?php ' . $this->compile_tag_block($blocks[2][$curr_tb]) . ' ?>';
-					break;
+				break;
 
 				case 'BEGINELSE':
-					$this->template->block_else_level[sizeof($this->template->block_else_level) - 1] = true;
+					$this->block_else_level[sizeof($this->block_else_level) - 1] = true;
 					$compile_blocks[] = '<?php }} else { ?>';
-					break;
+				break;
 
 				case 'END':
-					array_pop($this->template->block_names);
-					$compile_blocks[] = '<?php ' . ((array_pop($this->template->block_else_level)) ? '}' : '}}') . ' ?>';
-					break;
+					array_pop($this->block_names);
+					$compile_blocks[] = '<?php ' . ((array_pop($this->block_else_level)) ? '}' : '}}') . ' ?>';
+				break;
 
 				case 'IF':
 					$compile_blocks[] = '<?php ' . $this->compile_tag_if($blocks[2][$curr_tb], false) . ' ?>';
-					break;
+				break;
 
 				case 'ELSE':
 					$compile_blocks[] = '<?php } else { ?>';
-					break;
+				break;
 
 				case 'ELSEIF':
 					$compile_blocks[] = '<?php ' . $this->compile_tag_if($blocks[2][$curr_tb], true) . ' ?>';
-					break;
+				break;
 
 				case 'ENDIF':
 					$compile_blocks[] = '<?php } ?>';
-					break;
+				break;
 
 				case 'DEFINE':
 					$compile_blocks[] = '<?php ' . $this->compile_tag_define($blocks[2][$curr_tb], true) . ' ?>';
-					break;
+				break;
 
 				case 'UNDEFINE':
 					$compile_blocks[] = '<?php ' . $this->compile_tag_define($blocks[2][$curr_tb], false) . ' ?>';
-					break;
+				break;
 
 				case 'INCLUDE':
-					$temp = '';
-					list(, $temp) = each($include_blocks);
+					$temp = array_shift($include_blocks);
 					$compile_blocks[] = '<?php ' . $this->compile_tag_include($temp) . ' ?>';
 					$this->template->_tpl_include($temp, false);
-					break;
+				break;
 
 				case 'INCLUDEPHP':
 					if ($config['tpl_php'])
 					{
-						$temp = '';
-						list(, $temp) = each($includephp_blocks);
-						$compile_blocks[] = '<?php ' . $this->compile_tag_include_php($temp) . ' ?>';
+						$compile_blocks[] = '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>';
 					}
 					else
 					{
@@ -181,9 +182,7 @@ class template_compile
 				case 'PHP':
 					if ($config['tpl_php'])
 					{
-						$temp = '';
-						list(, $temp) = each($php_blocks);
-						$compile_blocks[] = '<?php ' . $temp . ' ?>';
+						$compile_blocks[] = '<?php ' . array_shift($php_blocks) . ' ?>';
 					}
 					else
 					{
@@ -306,9 +305,9 @@ class template_compile
 		}
 
 		$tag_template_php = '';
-		array_push($this->template->block_names, $tag_args);
+		array_push($this->block_names, $tag_args);
 
-		if (sizeof($this->template->block_names) < 2)
+		if (sizeof($this->block_names) < 2)
 		{
 			// Block is not nested.
 			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$this->_tpldata['$tag_args'])) ?  sizeof(\$this->_tpldata['$tag_args']) : 0;";
@@ -321,11 +320,11 @@ class template_compile
 			if ($no_nesting !== false)
 			{
 				// We need to implode $no_nesting times from the end...
-				$namespace = implode('.', array_slice($this->template->block_names, -$no_nesting));
+				$namespace = implode('.', array_slice($this->block_names, -$no_nesting));
 			}
 			else
 			{
-				$namespace = implode('.', $this->template->block_names);
+				$namespace = implode('.', $this->block_names);
 			}
 
 			// Get a reference to the data array for this block that depends on the

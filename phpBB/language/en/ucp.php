@@ -279,6 +279,8 @@ $lang = array_merge($lang, array(
 
 	'PASSWORD_ACTIVATED'		=> 'Your new password has been activated',
 	'PASSWORD_UPDATED'			=> 'Your password has been sent successfully to your original email address.',
+	'PERMISSIONS_RESTORED'		=> 'Successfully restored original permissions.',
+	'PERMISSIONS_TRANSFERED'	=> 'Successfully transfered permissions from <b>%s</b>, you are now able to browse the forum with the users permissions.<br />Please note that admin permissions were not transfered. You are able to revert to your permission set at any time.',
 	'PM_DISABLED'				=> 'Private messaging has been disabled on this board',
 	'PM_FROM'					=> 'From',
 	'PM_ICON'					=> 'PM Icon',

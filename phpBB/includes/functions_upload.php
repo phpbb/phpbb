@@ -165,6 +165,39 @@ class filespec
 	}
 
 	/**
+	* Get mimetype
+	*/
+	function get_mimetype($filename)
+	{
+		if (function_exists('mime_content_type'))
+		{
+			$mimetype = mime_content_type($filename);
+		}
+		else
+		{
+			$mimetype = 'application/octetstream';
+		}
+
+		// Opera adds the name to the mime type
+		$mimetype = (strpos($mimetype, '; name') !== false) ? str_replace(strstr($mimetype, '; name'), '', $mimetype) : $mimetype;
+
+		if (!$mimetype)
+		{
+			$mimetype = 'application/octetstream';
+		}
+
+		return $mimetype;
+	}
+
+	/**
+	* Get filesize
+	*/
+	function get_filesize($filename)
+	{
+		return @filesize($filename);
+	}
+
+	/**
 	* Move file to destination folder
 	* 
 	* The phpbb_root_path variable will be applied to the destination path

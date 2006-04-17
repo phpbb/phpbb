@@ -325,12 +325,34 @@ class auth
 			{
 				if (strpos($opt, 'a_') === 0)
 				{
-					$hold_ary[0][$opt] = 1;
+					$hold_ary[0][$opt] = ACL_YES;
 				}
 			}
 		}
 
+		$hold_str = $this->build_bitstring($hold_ary);
+
+		if ($hold_str)
+		{
+			$userdata['user_permissions'] = $hold_str;
+
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_permissions = '" . $db->sql_escape($userdata['user_permissions']) . "',
+					user_perm_from = 0
+				WHERE user_id = " . $userdata['user_id'];
+			$db->sql_query($sql);
+		}
+
+		return;
+	}
+
+	/**
+	* Build bitstring from permission set
+	*/
+	function build_bitstring(&$hold_ary)
+	{
 		$hold_str = '';
+
 		if (sizeof($hold_ary))
 		{
 			ksort($hold_ary);
@@ -379,16 +401,10 @@ class auth
 			}
 			unset($bitstring);
 
-			$userdata['user_permissions'] = rtrim($hold_str);
-
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_permissions = '" . $db->sql_escape($userdata['user_permissions']) . "'
-				WHERE user_id = " . $userdata['user_id'];
-			$db->sql_query($sql);
+			$hold_str = rtrim($hold_str);
 		}
-		unset($hold_ary);
 
-		return;
+		return $hold_str;
 	}
 
 	/**
@@ -401,7 +417,8 @@ class auth
 		$where_sql = ($user_id !== false) ? ' WHERE user_id ' . ((is_array($user_id)) ? ' IN (' . implode(', ', array_map('intval', $user_id)) . ')' : " = $user_id") : '';
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_permissions = ''
+			SET user_permissions = '',
+				user_perm_from = 0
 			$where_sql";
 		$db->sql_query($sql);
 

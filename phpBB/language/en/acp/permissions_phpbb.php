@@ -204,6 +204,7 @@ $lang = array_merge($lang, array(
 	'acl_a_authgroups'	=> array('lang' => 'Can alter permissions for groups', 'cat' => 'permissions'),
 	'acl_a_authusers'	=> array('lang' => 'Can alter permissions for users', 'cat' => 'permissions'),
 	'acl_a_roles'		=> array('lang' => 'Can manage roles', 'cat' => 'permissions'),
+	'acl_a_switchperm'	=> array('lang' => 'Can use others permissions', 'cat' => 'permissions'),
 
 	'acl_a_styles'		=> array('lang' => 'Can manage styles', 'cat' => 'misc'),
 	'acl_a_viewlogs'	=> array('lang' => 'Can view logs', 'cat' => 'misc'),

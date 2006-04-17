@@ -306,7 +306,12 @@ function mcp_warn_user_view($id, $mode, $action)
 
 	$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
 
-	$userrow = get_userdata($user_id);
+	$sql = 'SELECT *
+		FROM ' . USERS_TABLE . '
+		WHERE ' . $sql_where;
+	$result = $db->sql_query($sql);
+	$userrow = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
 	$user_id = $userrow['user_id'];
 

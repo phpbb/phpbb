@@ -396,6 +396,9 @@ switch ($mode)
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 			'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
+			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? "{$phpbb_root_path}adm/index.$phpEx?sid={$user->session_id}&amp;i=users&amp;mode=overview&amp;u={$user_id}" : '',
+			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=switch_perm&amp;u={$user_id}" : '',
+
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered']) ? true : false,
 			'U_ADD_FRIEND'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=zebra&amp;add=" . urlencode($member['username']),
 			'U_ADD_FOE'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=zebra&amp;mode=foes&amp;add=" . urlencode($member['username']))

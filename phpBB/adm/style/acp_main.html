@@ -61,39 +61,43 @@
 	</tbody>
 </table>
 
-<form id="stats" method="post" action="{U_ACTION}">
-<fieldset class="quick">
-	<select name="action">{S_ACTION_OPTIONS}</select>
+<!-- IF S_ACTION_OPTIONS -->
+	<form id="stats" method="post" action="{U_ACTION}">
+	<fieldset class="quick">
+		<select name="action">{S_ACTION_OPTIONS}</select>
 
-	<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
-</fieldset>
-</form>
+		<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+	</fieldset>
+	</form>
+<!-- ENDIF -->
 
-<h2>{L_ADMIN_LOG}</h2>
+<!-- IF .log -->
+	<h2>{L_ADMIN_LOG}</h2>
 
-<p>{L_ADMIN_LOG_INDEX_EXPLAIN}</p>
+	<p>{L_ADMIN_LOG_INDEX_EXPLAIN}</p>
 
-<table cellspacing="1">
-<thead>
-<tr>
-	<th>{L_USERNAME}</th>
-	<th>{L_IP}</th>
-	<th>{L_TIME}</th>
-	<th>{L_ACTION}</th>
-</tr>
-</thead>
-<tbody>
-<!-- BEGIN log -->
-	<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
-		<td>{log.USERNAME}</td>
-		<td style="text-align: center;">{log.IP}</td>
-		<td style="text-align: center;">{log.DATE}</td>
-		<td>{log.ACTION}</td>
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_USERNAME}</th>
+		<th>{L_IP}</th>
+		<th>{L_TIME}</th>
+		<th>{L_ACTION}</th>
 	</tr>
-<!-- END log -->
-</tbody>
-</table>
+	</thead>
+	<tbody>
+	<!-- BEGIN log -->
+		<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+			<td>{log.USERNAME}</td>
+			<td style="text-align: center;">{log.IP}</td>
+			<td style="text-align: center;">{log.DATE}</td>
+			<td>{log.ACTION}</td>
+		</tr>
+	<!-- END log -->
+	</tbody>
+	</table>
+<!-- ENDIF -->
 
 <!-- IF S_INACTIVE_USERS -->
 	<h2>{L_INACTIVE_USERS}</h2>
