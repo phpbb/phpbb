@@ -108,9 +108,9 @@ class acp_database
 						if ($download == true)
 						{
 							$name = $filename . $ext;
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
+							//header('Pragma: no-cache');
+						//	header("Content-Type: $mimetype; name=\"$name\"");
+						//	header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
@@ -1176,19 +1176,30 @@ class acp_database
 				$db->sql_freeresult($result);
 				$rows = array();
 
-				$sql = "EXEC sp_helpindex '$table_name'";
+				$index = array();
+				$sql = "EXEC sp_statistics '$table_name'";
 				$result = $db->sql_query($sql);
-				if ($db->sql_numrows($result))
+				while ($row = $db->sql_fetchrow($result))
 				{
-					while ($row = $db->sql_fetchrow($result))
+					if ($row['TYPE'] == 3)
 					{
-						if ($row['index_description'] == 'nonclustered located on PRIMARY')
-						{
-							$sql_data .= "\nCREATE  INDEX [{$row['index_name']}] ON [$table_name]([{$row['index_keys']}]) ON [PRIMARY]\nGO\n";
-						}
+						$index[$row['INDEX_NAME']][] = $row['COLUMN_NAME'];
 					}
 				}
 				$db->sql_freeresult($result);
+
+				foreach ($index as $index_name => $column_name)
+				{
+					$index[$index_name] = implode(', ', $index[$index_name]);
+				}
+
+				if (sizeof($index))
+				{
+					foreach ($index as $index_name => $columns)
+					{
+						$sql_data .= "\nCREATE  INDEX [$index_name] ON [$table_name]([$columns]) ON [PRIMARY]\nGO\n";
+					}
+				}
 			break;
 
 			default:
