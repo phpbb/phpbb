@@ -129,6 +129,7 @@ class acp_database
 
 							case 'postgres':
 								$sql_data .= "BEGIN;\n";
+							break;
 
 							case 'mssql':
 							case 'mssql_odbc':
@@ -153,6 +154,7 @@ class acp_database
 
 									case 'postgres':
 									case 'mssql':
+									case 'mssql_odbc':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE $table_name;\nGO\n";
 									break;
@@ -464,8 +466,102 @@ class acp_database
 										$db->sql_freeresult($result);
 									break;
 
-									case 'mssql':
 									case 'mssql_odbc':
+										$aryType = $aryName = array();
+										
+										// Grab all of the data from current table.
+										$sql = "SELECT * FROM {$table_name}";
+										$result = $db->sql_query($sql);
+
+										$retrieved_data = $db->sql_numrows($result);
+
+										if ($retrieved_data)
+										{
+											$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\n";
+										}
+
+										$i_num_fields = odbc_num_fields($result);
+
+										for ($i = 0; $i < $i_num_fields; $i++)
+										{
+											$aryType[] = odbc_field_type($result, $i);
+											$aryName[] = odbc_field_name($result, $i);
+										}
+
+										while ($row = $db->sql_fetchrow($result))
+										{
+											$schema_vals = $schema_fields = array();
+
+											// Build the SQL statement to recreate the data.
+											for ($i = 0; $i < $i_num_fields; $i++)
+											{
+												$strVal = $row[$aryName[$i]];
+
+												if (preg_match('#char|text|bool#i', $aryType[$i]))
+												{
+													$strQuote = "'";
+													$strEmpty = '';
+													$strVal = addslashes($strVal);
+												}
+												else if (preg_match('#date|timestamp#i', $aryType[$i]))
+												{
+													if (empty($strVal))
+													{
+														$strQuote = '';
+													}
+													else
+													{
+														$strQuote = "'";
+													}
+												}
+												else
+												{
+													$strQuote = '';
+													$strEmpty = 'NULL';
+												}
+
+												if (empty($strVal) && $strVal !== '0')
+												{
+													$strVal = $strEmpty;
+												}
+
+												$schema_vals[] = $strQuote . $strVal . $strQuote;
+												$schema_fields[] = $aryName[$i];
+											}
+
+											// Take the ordered fields and their associated data and build it
+											// into a valid sql statement to recreate that field in the data.
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+
+											if ($store == true)
+											{
+												$write($fp, $sql_data);
+											}
+
+											if ($download == true)
+											{
+												if (!empty($oper))
+												{
+													echo $oper($sql_data);
+												}
+												else
+												{
+													echo $sql_data;
+												}
+											}
+
+											$sql_data = '';
+
+										}
+										$db->sql_freeresult($result);
+
+										if ($retrieved_data)
+										{
+											$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\n";
+										}
+									break;
+
+									case 'mssql':
 										$aryType = $aryName = array();
 										
 										// Grab all of the data from current table.
@@ -552,13 +648,12 @@ class acp_database
 											$sql_data = '';
 
 										}
+										$db->sql_freeresult($result);
 
 										if ($retrieved_data)
 										{
 											$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\n";
 										}
-
-										$db->sql_freeresult($result);
 									break;
 
 									default:
