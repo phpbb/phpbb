@@ -384,7 +384,7 @@ class acp_database
 
 									case 'postgres':
 
-										$aryType = $aryName = array();
+										$ary_type = $ary_name = array();
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT * FROM {$table_name}";
@@ -394,8 +394,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$aryType[] = pg_field_type($result, $i);
-											$aryName[] = pg_field_name($result, $i);
+											$ary_type[] = pg_field_type($result, $i);
+											$ary_name[] = pg_field_name($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -405,38 +405,38 @@ class acp_database
 											// Build the SQL statement to recreate the data.
 											for ($i = 0; $i < $i_num_fields; $i++)
 											{
-												$strVal = $row[$aryName[$i]];
+												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $aryType[$i]))
+												if (preg_match('#char|text|bool#i', $ary_type[$i]))
 												{
-													$strQuote = "'";
-													$strEmpty = '';
-													$strVal = addslashes($strVal);
+													$str_quote = "'";
+													$str_empty = '';
+													$str_val = addslashes($str_val);
 												}
-												else if (preg_match('#date|timestamp#i', $aryType[$i]))
+												else if (preg_match('#date|timestamp#i', $ary_type[$i]))
 												{
-													if (empty($strVal))
+													if (empty($str_val))
 													{
-														$strQuote = '';
+														$str_quote = '';
 													}
 													else
 													{
-														$strQuote = "'";
+														$str_quote = "'";
 													}
 												}
 												else
 												{
-													$strQuote = '';
-													$strEmpty = 'NULL';
+													$str_quote = '';
+													$str_empty = 'NULL';
 												}
 
-												if (empty($strVal) && $strVal !== '0')
+												if (empty($str_val) && $str_val !== '0')
 												{
-													$strVal = $strEmpty;
+													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $strQuote . $strVal . $strQuote;
-												$schema_fields[] = $aryName[$i];
+												$schema_vals[] = $str_quote . $str_val . $str_quote;
+												$schema_fields[] = $ary_name[$i];
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -467,13 +467,13 @@ class acp_database
 									break;
 
 									case 'mssql_odbc':
-										$aryType = $aryName = array();
+										$ary_type = $ary_name = array();
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT * FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
-										$retrieved_data = $db->sql_numrows($result);
+										$retrieved_data = odbc_num_rows($result);
 
 										if ($retrieved_data)
 										{
@@ -484,8 +484,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$aryType[] = odbc_field_type($result, $i);
-											$aryName[] = odbc_field_name($result, $i);
+											$ary_type[] = odbc_field_type($result, $i);
+											$ary_name[] = odbc_field_name($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -495,38 +495,38 @@ class acp_database
 											// Build the SQL statement to recreate the data.
 											for ($i = 0; $i < $i_num_fields; $i++)
 											{
-												$strVal = $row[$aryName[$i]];
+												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $aryType[$i]))
+												if (preg_match('#char|text|bool#i', $ary_type[$i]))
 												{
-													$strQuote = "'";
-													$strEmpty = '';
-													$strVal = addslashes($strVal);
+													$str_quote = "'";
+													$str_empty = '';
+													$str_val = addslashes($str_val);
 												}
-												else if (preg_match('#date|timestamp#i', $aryType[$i]))
+												else if (preg_match('#date|timestamp#i', $ary_type[$i]))
 												{
-													if (empty($strVal))
+													if (empty($str_val))
 													{
-														$strQuote = '';
+														$str_quote = '';
 													}
 													else
 													{
-														$strQuote = "'";
+														$str_quote = "'";
 													}
 												}
 												else
 												{
-													$strQuote = '';
-													$strEmpty = 'NULL';
+													$str_quote = '';
+													$str_empty = 'NULL';
 												}
 
-												if (empty($strVal) && $strVal !== '0')
+												if (empty($str_val) && $str_val !== '0')
 												{
-													$strVal = $strEmpty;
+													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $strQuote . $strVal . $strQuote;
-												$schema_fields[] = $aryName[$i];
+												$schema_vals[] = $str_quote . $str_val . $str_quote;
+												$schema_fields[] = $ary_name[$i];
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -562,13 +562,13 @@ class acp_database
 									break;
 
 									case 'mssql':
-										$aryType = $aryName = array();
+										$ary_type = $ary_name = array();
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT * FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
-										$retrieved_data = $db->sql_numrows($result);
+										$retrieved_data = mssql_num_rows($result);
 
 										if ($retrieved_data)
 										{
@@ -579,8 +579,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$aryType[] = mssql_field_type($result, $i);
-											$aryName[] = mssql_field_name($result, $i);
+											$ary_type[] = mssql_field_type($result, $i);
+											$ary_name[] = mssql_field_name($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -590,38 +590,38 @@ class acp_database
 											// Build the SQL statement to recreate the data.
 											for ($i = 0; $i < $i_num_fields; $i++)
 											{
-												$strVal = $row[$aryName[$i]];
+												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $aryType[$i]))
+												if (preg_match('#char|text|bool#i', $ary_type[$i]))
 												{
-													$strQuote = "'";
-													$strEmpty = '';
-													$strVal = addslashes($strVal);
+													$str_quote = "'";
+													$str_empty = '';
+													$str_val = addslashes($str_val);
 												}
-												else if (preg_match('#date|timestamp#i', $aryType[$i]))
+												else if (preg_match('#date|timestamp#i', $ary_type[$i]))
 												{
-													if (empty($strVal))
+													if (empty($str_val))
 													{
-														$strQuote = '';
+														$str_quote = '';
 													}
 													else
 													{
-														$strQuote = "'";
+														$str_quote = "'";
 													}
 												}
 												else
 												{
-													$strQuote = '';
-													$strEmpty = 'NULL';
+													$str_quote = '';
+													$str_empty = 'NULL';
 												}
 
-												if (empty($strVal) && $strVal !== '0')
+												if (empty($str_val) && $str_val !== '0')
 												{
-													$strVal = $strEmpty;
+													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $strQuote . $strVal . $strQuote;
-												$schema_fields[] = $aryName[$i];
+												$schema_vals[] = $str_quote . $str_val . $str_quote;
+												$schema_fields[] = $ary_name[$i];
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -1254,20 +1254,17 @@ class acp_database
 
 				$sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '$table_name'";
 				$result = $db->sql_query($sql);
-				if ($db->sql_numrows($result))
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$sql_data .= "ALTER TABLE [$table_name] WITH NOCHECK ADD\n";
-					while ($row = $db->sql_fetchrow($result))
+					if (!sizeof($rows))
 					{
-						if (!sizeof($rows))
-						{
-							$sql_data .= "\tCONSTRAINT [{$row['CONSTRAINT_NAME']}] PRIMARY KEY  CLUSTERED \n\t(\n";
-						}
-						$rows[] = "\t\t[{$row['COLUMN_NAME']}]";
+						$sql_data .= "ALTER TABLE [$table_name] WITH NOCHECK ADD\n";
+						$sql_data .= "\tCONSTRAINT [{$row['CONSTRAINT_NAME']}] PRIMARY KEY  CLUSTERED \n\t(\n";
 					}
-					$sql_data .= implode(",\n", $rows);
-					$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
+					$rows[] = "\t\t[{$row['COLUMN_NAME']}]";
 				}
+				$sql_data .= implode(",\n", $rows);
+				$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
 				$db->sql_freeresult($result);
 				$rows = array();
 
@@ -1288,12 +1285,9 @@ class acp_database
 					$index[$index_name] = implode(', ', $index[$index_name]);
 				}
 
-				if (sizeof($index))
+				foreach ($index as $index_name => $columns)
 				{
-					foreach ($index as $index_name => $columns)
-					{
-						$sql_data .= "\nCREATE  INDEX [$index_name] ON [$table_name]([$columns]) ON [PRIMARY]\nGO\n";
-					}
+					$sql_data .= "\nCREATE  INDEX [$index_name] ON [$table_name]([$columns]) ON [PRIMARY]\nGO\n";
 				}
 			break;
 
