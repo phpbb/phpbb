@@ -330,7 +330,7 @@ class dbal_firebird extends dbal
 	{
 		return array(
 			'message'	=> @ibase_errmsg(),
-			'code'		=> ''
+			'code'		=> (@function_exists('ibase_errcode') ? @ibase_errcode() : '')
 		);
 	}
 
