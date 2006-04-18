@@ -100,6 +100,8 @@ class dbal_mssql_odbc extends dbal
 			{
 				$this->sql_report('start', $query);
 			}
+			
+			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
 
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;

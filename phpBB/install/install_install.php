@@ -887,11 +887,15 @@ class install_install extends module
 			case 'mssql':
 			case 'mssql_odbc':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2', $sql_query);
-				break;
+			break;
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
-				break;
+			break;
+
+			case 'firebird':
+				$sql_query = str_replace('module_name', '"module_name"', $sql_query);
+			break;
 
 			default:
 				//$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', '', $sql_query);

@@ -90,6 +90,8 @@ class dbal_firebird extends dbal
 		{
 			global $cache;
 
+			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
+
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 

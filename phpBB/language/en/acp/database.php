@@ -54,7 +54,6 @@ $lang = array_merge($lang, array(
 	'DELETE_BACKUP'			=> 'Delete Backup',
 	'DOWNLOAD_BACKUP'		=> 'Download Backup',
 	'RESTORE_SUCCESS'		=> 'The Database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
-	'BACKUP_SUCCESS'		=> 'The backup has been successfully deleted.',
 ));
 
 ?>

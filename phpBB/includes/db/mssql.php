@@ -272,11 +272,10 @@ class dbal_mssql extends dbal
 		$result_id = @mssql_query('SELECT @@IDENTITY', $this->db_connect_id);
 		if ($result_id)
 		{
-			if (@mssql_fetch_assoc($result_id))
+			if ($row = @mssql_fetch_assoc($result_id))
 			{
-				$id = @mssql_result($result_id, 1);	
 				@mssql_free_result($result_id);
-				return $id;
+				return $row['computed'];
 			}
 			@mssql_free_result($result_id);
 		}
