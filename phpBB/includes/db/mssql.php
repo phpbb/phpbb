@@ -317,10 +317,21 @@ class dbal_mssql extends dbal
 	*/
 	function _sql_error()
 	{
-		return array(
+
+		$error = array(
 			'message'	=> @mssql_get_last_message($this->db_connect_id),
-			'code'		=> @mssql_query("SELECT @@ERROR", $this->db_connect_id)
+			'code'		=> ''
 		);
+
+		$result_id = @mssql_query('SELECT @@ERROR as errno', $this->db_connect_id);
+		if ($result_id)
+		{
+			$row = @mssql_fetch_assoc($result_id);
+			$error['code'] = $row['errno'];
+			@mssql_free_result($result_id);
+		}
+
+		return $error;
 	}
 
 	/**
