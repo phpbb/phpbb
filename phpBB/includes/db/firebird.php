@@ -302,11 +302,6 @@ class dbal_firebird extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (!$this->transaction && $query_id)
-		{
-			$this->sql_transaction('commit');
-		}
-
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
