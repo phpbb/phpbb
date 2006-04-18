@@ -98,6 +98,8 @@ class dbal_mssql extends dbal
 		{
 			global $cache;
 
+			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
+
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
 			{
@@ -109,7 +111,6 @@ class dbal_mssql extends dbal
 			if (!$this->query_result)
 			{
 				$this->num_queries++;
-				
 				if (($this->query_result = @mssql_query($query, $this->db_connect_id)) === false)
 				{
 					$this->sql_error($query);
@@ -318,7 +319,7 @@ class dbal_mssql extends dbal
 	{
 		return array(
 			'message'	=> @mssql_get_last_message($this->db_connect_id),
-			'code'		=> ''
+			'code'		=> @mssql_query("SELECT @@ERROR", $this->db_connect_id)
 		);
 	}
 

@@ -83,6 +83,7 @@ ALTER TABLE [phpbb_auth_groups] WITH NOCHECK ADD
 	CONSTRAINT [DF_auth_g_group_id] DEFAULT (0) FOR [group_id],
 	CONSTRAINT [DF_auth_g_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_auth_g_auth_option_id] DEFAULT (0) FOR [auth_option_id],
+	CONSTRAINT [DF_auth_g_auth_role_id] DEFAULT (0) FOR [auth_role_id],
 	CONSTRAINT [DF_auth_g_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
 
@@ -195,6 +196,7 @@ ALTER TABLE [phpbb_auth_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_auth_u_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_auth_u_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_auth_u_auth_option_id] DEFAULT (0) FOR [auth_option_id],
+	CONSTRAINT [DF_auth_u_auth_role_id] DEFAULT (0) FOR [auth_role_id],
 	CONSTRAINT [DF_auth_u_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
 

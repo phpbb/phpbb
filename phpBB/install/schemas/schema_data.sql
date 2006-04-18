@@ -445,7 +445,7 @@ INSERT INTO phpbb_bots (bot_id, bot_active, bot_name, user_id, bot_agent, bot_ip
 # MSSQL IDENTITY phpbb_bots OFF #
 
 
-# MSSQL IDENTITY phpbb_modules OFF #
+# MSSQL IDENTITY phpbb_modules ON #
 
 # -- Modules
 

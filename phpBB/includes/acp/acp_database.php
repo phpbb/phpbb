@@ -126,6 +126,14 @@ class acp_database
 							case 'sqlite':
 								$sql_data .= "BEGIN TRANSACTION;\n";
 							break;
+
+							case 'postgres':
+								$sql_data .= "BEGIN;\n";
+
+							case 'mssql':
+							case 'mssql_odbc':
+								$sql_data .= "BEGIN TRANSACTION\nGO\n";
+							break;
 						}
 
 						foreach ($table as $table_name)
@@ -139,14 +147,15 @@ class acp_database
 									case 'mysql4':
 									case 'mysql':
 									case 'sqlite';
-
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
 									break;
 
 									case 'postgres':
+									case 'mssql':
 										$sql_data .= '# Table: ' . $table_name . "\n";
-										$sql_data .= "DROP TABLE $table_name;\n";
+										$sql_data .= "DROP TABLE $table_name;\nGO\n";
+									break;
 
 									default:
 										trigger_error('KungFuDeathGrip');
@@ -197,12 +206,14 @@ class acp_database
 											{
 												$field_set[$j] = $field[$j]->name;
 											}
-											
+
+											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
+											$replace		= array('\\\\\\\\', "''", '\0', '\n', '\r', '\Z');
 											$fields			= implode(', ', $field_set);
 											$values			= array();
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
-											while ($row = mysqli_fetch_row($result))
+											while ($row = $db->sql_fetchrow($result))
 											{
 												for ($j = 0; $j < $fields_cnt; $j++)
 												{
@@ -216,7 +227,7 @@ class acp_database
 													}
 													else
 													{
-														$values[] = "'" . $row[$j] . "'";
+														$values[] = "'" . str_replace($search, $replace, $row[$j]) . "'";
 													}
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
@@ -268,12 +279,12 @@ class acp_database
 												$field_set[$j] = $field[$j]->name;
 											}
 
-											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a"); //\x08\\x09, not required
+											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
 											$replace		= array('\\\\\\\\', "''", '\0', '\n', '\r', '\Z');
 											$fields			= implode(', ', $field_set);
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
-											while ($row = mysql_fetch_row($result))
+											while ($row = $db->sql_fetchrow($result))
 											{
 												$values = array();
 
@@ -453,6 +464,103 @@ class acp_database
 										$db->sql_freeresult($result);
 									break;
 
+									case 'mssql':
+									case 'mssql_odbc':
+										$aryType = $aryName = array();
+										
+										// Grab all of the data from current table.
+										$sql = "SELECT * FROM {$table_name}";
+										$result = $db->sql_query($sql);
+
+										$retrieved_data = $db->sql_numrows($result);
+
+										if ($retrieved_data)
+										{
+											$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\n";
+										}
+
+										$i_num_fields = mssql_num_fields($result);
+
+										for ($i = 0; $i < $i_num_fields; $i++)
+										{
+											$aryType[] = mssql_field_type($result, $i);
+											$aryName[] = mssql_field_name($result, $i);
+										}
+
+										while ($row = $db->sql_fetchrow($result))
+										{
+											$schema_vals = $schema_fields = array();
+
+											// Build the SQL statement to recreate the data.
+											for ($i = 0; $i < $i_num_fields; $i++)
+											{
+												$strVal = $row[$aryName[$i]];
+
+												if (preg_match('#char|text|bool#i', $aryType[$i]))
+												{
+													$strQuote = "'";
+													$strEmpty = '';
+													$strVal = addslashes($strVal);
+												}
+												else if (preg_match('#date|timestamp#i', $aryType[$i]))
+												{
+													if (empty($strVal))
+													{
+														$strQuote = '';
+													}
+													else
+													{
+														$strQuote = "'";
+													}
+												}
+												else
+												{
+													$strQuote = '';
+													$strEmpty = 'NULL';
+												}
+
+												if (empty($strVal) && $strVal !== '0')
+												{
+													$strVal = $strEmpty;
+												}
+
+												$schema_vals[] = $strQuote . $strVal . $strQuote;
+												$schema_fields[] = $aryName[$i];
+											}
+
+											// Take the ordered fields and their associated data and build it
+											// into a valid sql statement to recreate that field in the data.
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+
+											if ($store == true)
+											{
+												$write($fp, $sql_data);
+											}
+
+											if ($download == true)
+											{
+												if (!empty($oper))
+												{
+													echo $oper($sql_data);
+												}
+												else
+												{
+													echo $sql_data;
+												}
+											}
+
+											$sql_data = '';
+
+										}
+
+										if ($retrieved_data)
+										{
+											$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\n";
+										}
+
+										$db->sql_freeresult($result);
+									break;
+
 									default:
 										trigger_error('KungFuDeathGrip');
 								}
@@ -462,7 +570,13 @@ class acp_database
 						switch (SQL_LAYER)
 						{
 							case 'sqlite':
+							case 'postgres':
 								$sql_data .= "COMMIT;";
+							break;
+
+							case 'mssql':
+							case 'mssql_odbc':
+								$sql_data .= "COMMIT\nGO";
 							break;
 						}
 						
@@ -528,6 +642,20 @@ class acp_database
 									if (strpos($row['relname'] . '_', $table_prefix) === 0)
 									{
 										$tables[] = $row['relname'];
+									}
+								}
+								$db->sql_freeresult($result);
+							break;
+
+							case 'mssql':
+							case 'mssql_odbc':
+								$sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME";
+								$result = $db->sql_query($sql);
+								while ($row = $db->sql_fetchrow($result))
+								{
+									if (strpos($row['TABLE_NAME'] . '_', $table_prefix) === 0)
+									{
+										$tables[] = $row['TABLE_NAME'];
 									}
 								}
 								$db->sql_freeresult($result);
@@ -970,6 +1098,97 @@ class acp_database
 				{
 					$sql_data .= implode("\n", $index_create) . "\n\n";
 				}
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+				$sql_data .= "\nCREATE TABLE [$table_name] (\n";
+				$rows = array();
+
+				$text_flag = false;
+
+				$sql = "SELECT COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMNPROPERTY(object_id(TABLE_NAME), COLUMN_NAME, 'IsIdentity') as IS_IDENTITY FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name'";
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$line = "\t[{$row['COLUMN_NAME']}] [{$row['DATA_TYPE']}]";
+
+					if ($row['DATA_TYPE'] == 'text')
+					{
+						$text_flag = true;
+					}
+
+					if ($row['IS_IDENTITY'])
+					{
+						$line .= ' IDENTITY (1 , 1)';
+					}
+
+					if ($row['CHARACTER_MAXIMUM_LENGTH'] && $row['DATA_TYPE'] !== 'text')
+					{
+						$line .= ' (' . $row['CHARACTER_MAXIMUM_LENGTH'] . ')';
+					}
+
+					if ($row['IS_NULLABLE'] == 'YES')
+					{
+						$line .= ' NULL';
+					}
+					else
+					{
+						$line .= ' NOT NULL';
+					}
+
+					if ($row['COLUMN_DEFAULT'])
+					{
+						$line .= ' CONSTRAINT [DF_' . $table_name . '_' . $row['COLUMN_NAME'] . '] DEFAULT ' . $row['COLUMN_DEFAULT'];
+					}
+
+					$rows[] = $line;
+				}
+				$db->sql_freeresult($result);
+
+				$sql_data .= implode(",\n", $rows);
+				$sql_data .= "\n) ON [PRIMARY]";
+				if ($text_flag)
+				{
+					$sql_data .= " TEXTIMAGE_ON [PRIMARY]";
+				}
+				$sql_data .= "\nGO\n\n";
+				$rows = array();
+				$line = '';
+
+				$sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '$table_name'";
+				$result = $db->sql_query($sql);
+				if ($db->sql_numrows($result))
+				{
+					$sql_data .= "ALTER TABLE [$table_name] WITH NOCHECK ADD\n";
+					while ($row = $db->sql_fetchrow($result))
+					{
+						if (!sizeof($rows))
+						{
+							$sql_data .= "\tCONSTRAINT [{$row['CONSTRAINT_NAME']}] PRIMARY KEY  CLUSTERED \n\t(\n";
+						}
+						$rows[] = "\t\t[{$row['COLUMN_NAME']}]";
+					}
+					$sql_data .= implode(",\n", $rows);
+					$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
+				}
+				$db->sql_freeresult($result);
+				$rows = array();
+
+				$sql = "EXEC sp_helpindex '$table_name'";
+				$result = $db->sql_query($sql);
+				if ($db->sql_numrows($result))
+				{
+					while ($row = $db->sql_fetchrow($result))
+					{
+						if ($row['index_description'] == 'nonclustered located on PRIMARY')
+						{
+							$sql_data .= "\nCREATE  INDEX [{$row['index_name']}] ON [$table_name]([{$row['index_keys']}]) ON [PRIMARY]\nGO\n";
+						}
+					}
+				}
+				$db->sql_freeresult($result);
 			break;
 
 			default:
