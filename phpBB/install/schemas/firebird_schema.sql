@@ -1178,14 +1178,14 @@ CREATE TABLE phpbb_styles_template_data (
 CREATE INDEX phpbb_styles_tmplte_d_tmpl_flnm ON phpbb_styles_template_data(template_filename);;
 CREATE INDEX phpbb_styles_tmplte_dt_tmplt_id ON phpbb_styles_template_data(template_id);;
 
-CREATE GENERATOR phpbb_styles_template_data_gen;;
-SET GENERATOR phpbb_styles_template_data_gen TO 0;;
+CREATE GENERATOR phpbb_styles_templte_data_gen;;
+SET GENERATOR phpbb_styles_templte_data_gen TO 0;;
 
 CREATE TRIGGER t_phpbb_styles_templte_data_gen FOR phpbb_styles_template
 BEFORE INSERT
 AS
 BEGIN
-  NEW.template_id = GEN_ID(phpbb_styles_template_data_gen, 1);
+  NEW.template_id = GEN_ID(phpbb_styles_templte_data_gen, 1);
 END;;
 
 
