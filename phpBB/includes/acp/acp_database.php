@@ -34,6 +34,9 @@ class acp_database
 
 		switch ($mode)
 		{
+			// TODO: Firebird creates EVERYTHING in upper case, should this be changed?
+			// Oracle support must be written
+			// The queries are ugly++, they must get some love so that they follow the CS
 			case 'backup':
 
 				switch ($action)
@@ -107,10 +110,10 @@ class acp_database
 
 						if ($download == true)
 						{
-							$name = $filename . $ext;
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
+						//	$name = $filename . $ext;
+						//	header('Pragma: no-cache');
+						//	header("Content-Type: $mimetype; name=\"$name\"");
+						//	header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
@@ -147,12 +150,17 @@ class acp_database
 									case 'mysqli':
 									case 'mysql4':
 									case 'mysql':
-									case 'sqlite';
+									case 'sqlite':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
 									break;
 
 									case 'postgres':
+									case 'firebird':
+										$sql_data .= '# Table: ' . $table_name . "\n";
+										$sql_data .= "DROP TABLE $table_name;\n";
+									break;
+
 									case 'mssql':
 									case 'mssql_odbc':
 										$sql_data .= '# Table: ' . $table_name . "\n";
@@ -656,6 +664,91 @@ class acp_database
 										}
 									break;
 
+									case 'firebird':
+
+										$ary_type = $ary_name = array();
+										
+										// Grab all of the data from current table.
+										$sql = "SELECT * FROM {$table_name}";
+										$result = $db->sql_query($sql);
+
+										$i_num_fields = ibase_num_fields($result);
+
+										for ($i = 0; $i < $i_num_fields; $i++)
+										{
+											$info = ibase_field_info($result, $i);
+											$ary_type[] = $info['type'];
+											$ary_name[] = "'" . $info['name'] . "'";
+										}
+
+										while ($row = $db->sql_fetchrow($result))
+										{
+											$schema_vals = $schema_fields = array();
+
+											// Build the SQL statement to recreate the data.
+											for ($i = 0; $i < $i_num_fields; $i++)
+											{
+												$str_val = $row[$ary_name[$i]];
+
+												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												{
+													$str_quote = "'";
+													$str_empty = '';
+													$str_val = addslashes($str_val);
+												}
+												else if (preg_match('#date|timestamp#i', $ary_type[$i]))
+												{
+													if (empty($str_val))
+													{
+														$str_quote = '';
+													}
+													else
+													{
+														$str_quote = "'";
+													}
+												}
+												else
+												{
+													$str_quote = '';
+													$str_empty = 'NULL';
+												}
+
+												if (empty($str_val) && $str_val !== '0')
+												{
+													$str_val = $str_empty;
+												}
+
+												$schema_vals[] = $str_quote . $str_val . $str_quote;
+												$schema_fields[] = $ary_name[$i];
+											}
+
+											// Take the ordered fields and their associated data and build it
+											// into a valid sql statement to recreate that field in the data.
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+
+											if ($store == true)
+											{
+												$write($fp, $sql_data);
+											}
+
+											if ($download == true)
+											{
+												if (!empty($oper))
+												{
+													echo $oper($sql_data);
+												}
+												else
+												{
+													echo $sql_data;
+												}
+											}
+
+											$sql_data = '';
+
+										}
+										$db->sql_freeresult($result);
+									break;
+
 									default:
 										trigger_error('KungFuDeathGrip');
 								}
@@ -709,7 +802,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['name'] . '_', $table_prefix) === 0)
+									if (strpos($row['name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['name'];
 									}
@@ -734,7 +827,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['relname'] . '_', $table_prefix) === 0)
+									if (strpos($row['relname'], $table_prefix) === 0)
 									{
 										$tables[] = $row['relname'];
 									}
@@ -748,9 +841,22 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['TABLE_NAME'] . '_', $table_prefix) === 0)
+									if (strpos($row['TABLE_NAME'], $table_prefix) === 0)
 									{
 										$tables[] = $row['TABLE_NAME'];
+									}
+								}
+								$db->sql_freeresult($result);
+							break;
+
+							case 'firebird':
+								$sql = 'SELECT RDB$RELATION_NAME as TABLE_NAME FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG=0 AND RDB$VIEW_BLR IS NULL';
+								$result = $db->sql_query($sql);
+								while ($row = $db->sql_fetchrow($result))
+								{
+									if (stripos($row['table_name'], $table_prefix) === 0)
+									{
+										$tables[] = $row['table_name'];
 									}
 								}
 								$db->sql_freeresult($result);
@@ -1244,13 +1350,14 @@ class acp_database
 
 				$sql_data .= implode(",\n", $rows);
 				$sql_data .= "\n) ON [PRIMARY]";
+
 				if ($text_flag)
 				{
 					$sql_data .= " TEXTIMAGE_ON [PRIMARY]";
 				}
+
 				$sql_data .= "\nGO\n\n";
 				$rows = array();
-				$line = '';
 
 				$sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME = '$table_name'";
 				$result = $db->sql_query($sql);
@@ -1266,7 +1373,6 @@ class acp_database
 				$sql_data .= implode(",\n", $rows);
 				$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
 				$db->sql_freeresult($result);
-				$rows = array();
 
 				$index = array();
 				$sql = "EXEC sp_statistics '$table_name'";
@@ -1289,6 +1395,100 @@ class acp_database
 				{
 					$sql_data .= "\nCREATE  INDEX [$index_name] ON [$table_name]([$columns]) ON [PRIMARY]\nGO\n";
 				}
+			break;
+
+			case 'firebird':
+
+				$data_types = array(7 => 'SMALLINT', 8 => 'INTEGER', 10 => 'FLOAT', 12 => 'DATE', 13 => 'TIME', 14 => 'CHARACTER', 27 => 'DOUBLE PRECISION', 35 => 'TIMESTAMP', 37 => 'VARCHAR', 40 => 'CSTRING', 261 => 'BLOB', 701 => 'DECIMAL', 702 => 'NUMERIC');
+
+				$sql_data .= "\nCREATE TABLE $table_name (\n";
+
+				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME AS FNAME, R.RDB$NULL_FLAG AS NFLAG, R.RDB$DEFAULT_SOURCE AS DSOURCE, F.RDB$FIELD_TYPE AS FTYPE, F.RDB$FIELD_SUB_TYPE AS STYPE, F.RDB$FIELD_LENGTH AS FLEN FROM RDB$RELATION_FIELDS R JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE=F.RDB$FIELD_NAME LEFT JOIN RDB$FIELD_DIMENSIONS D ON R.RDB$FIELD_SOURCE = D.RDB$FIELD_NAME WHERE F.RDB$SYSTEM_FLAG = 0 AND R.RDB$RELATION_NAME = \''. $table_name . '\' ORDER BY R.RDB$FIELD_POSITION';
+				$result = $db->sql_query($sql);
+
+				$rows = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$line = "\t" . '"' . $row['fname'] . '" ' . $data_types[$row['ftype']];
+
+					if ($row['ftype'] == 261 && $row['stype'] == 1)
+					{
+						$line .= ' SUB_TYPE TEXT';
+					}
+
+					if ($row['ftype'] == 37 || $row['ftype'] == 14)
+					{
+						$line .= ' (' . $row['flen'] . ')';
+					}
+
+					if (!empty($row['dsource']))
+					{
+						$line .= ' ' . $row['dsource'];
+					}
+
+					if (!empty($row['nflag']))
+					{
+						$line .= ' NOT NULL';
+					}
+					$rows[] = $line;
+				}
+				$db->sql_freeresult($result);
+
+				$sql_data .= implode(",\n", $rows);
+				$sql_data .= "\n);;\n";
+				$keys = array();
+
+				$sql  = 'SELECT I.RDB$FIELD_NAME as NAME FROM RDB$RELATION_CONSTRAINTS RC, RDB$INDEX_SEGMENTS I, RDB$INDICES IDX WHERE (I.RDB$INDEX_NAME = RC.RDB$INDEX_NAME) AND (IDX.RDB$INDEX_NAME = RC.RDB$INDEX_NAME) AND (RC.RDB$RELATION_NAME = \''. $table_name . '\') ORDER BY I.RDB$FIELD_POSITION';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$keys[] = $row['name'];
+				}
+
+				if (sizeof($keys))
+				{
+					$sql_data .= "\nALTER TABLE $table_name ADD PRIMARY KEY (" . implode(', ', $keys) . ');;';
+				}
+
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT I.RDB$INDEX_NAME AS INAME, I.RDB$UNIQUE_FLAG AS UFLAG, S.RDB$FIELD_NAME AS FNAME FROM RDB$INDICES I JOIN RDB$INDEX_SEGMENTS S ON S.RDB$INDEX_NAME=I.RDB$INDEX_NAME WHERE (I.RDB$SYSTEM_FLAG IS NULL  OR  I.RDB$SYSTEM_FLAG=0)AND I.RDB$FOREIGN_KEY IS NULL AND I.RDB$RELATION_NAME = \''. $table_name . '\' AND I.RDB$INDEX_NAME NOT STARTING WITH \'RDB$\' ORDER BY S.RDB$FIELD_POSITION';
+				$result = $db->sql_query($sql);
+
+				$index = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$index[$row['iname']]['unique'] = !empty($row['uflag']);
+					$index[$row['iname']]['values'][] = $row['fname'];
+				}
+
+				foreach ($index as $index_name => $data)
+				{
+					$sql_data .= "\nCREATE ";
+					if ($data['unique'])
+					{
+						$sql_data .= 'UNIQUE ';
+					}
+					$sql_data .= "INDEX $index_name ON $table_name(" . implode(', ', $data['values']) . ");;";
+				}
+				$sql_data .= "\n";
+
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT D1.RDB$DEPENDENT_NAME as DNAME, D1.RDB$FIELD_NAME as FNAME, D1.RDB$DEPENDENT_TYPE, R1.RDB$RELATION_NAME FROM RDB$DEPENDENCIES D1 LEFT JOIN RDB$RELATIONS R1 ON ((D1.RDB$DEPENDENT_NAME = R1.RDB$RELATION_NAME) AND (NOT (R1.RDB$VIEW_BLR IS NULL))) WHERE (D1.RDB$DEPENDED_ON_TYPE = 0) AND (D1.RDB$DEPENDENT_TYPE <> 3) AND (D1.RDB$DEPENDED_ON_NAME = \'' . $table_name . '\') UNION SELECT DISTINCT F2.RDB$RELATION_NAME, D2.RDB$FIELD_NAME, D2.RDB$DEPENDENT_TYPE, R2.RDB$RELATION_NAME FROM RDB$DEPENDENCIES D2, RDB$RELATION_FIELDS F2 LEFT JOIN RDB$RELATIONS R2 ON ((F2.RDB$RELATION_NAME = R2.RDB$RELATION_NAME) AND (NOT (R2.RDB$VIEW_BLR IS NULL))) WHERE (D2.RDB$DEPENDENT_TYPE = 3) AND (D2.RDB$DEPENDENT_NAME = F2.RDB$FIELD_SOURCE) AND (D2.RDB$DEPENDED_ON_NAME = \'' . $table_name . '\') ORDER BY 1, 2';
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$sql_data .= "\nCREATE GENERATOR " . substr($row['dname'], 2) . ";;";
+					$sql_data .= "\nSET GENERATOR  " . substr($row['dname'], 2) . " TO 0;;\n";
+					$sql_data .= "\nCREATE TRIGGER {$row['dname']} FOR $table_name";
+					$sql_data .= "\nBEFORE INSERT\nAS\nBEGIN";
+					$sql_data .= "\n  NEW.{$row['fname']} = GEN_ID(" . substr($row['dname'], 2) . ", 1);";
+					$sql_data .= "\nEND;;\n";
+				}
+
+				$db->sql_freeresult($result);
 			break;
 
 			default:
