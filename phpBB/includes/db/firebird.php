@@ -165,11 +165,11 @@ class dbal_firebird extends dbal
 		// PHP 5+ function
 		if (function_exists('ibase_affected_rows'))
 		{
-			return ($this->query_result) ? @ibase_affected_rows($this->query_result) : false;
+			return ($this->db_connect_id) ? @ibase_affected_rows($this->db_connect_id) : false;
 		}
 		else
 		{
-			return false; //($this->query_result) ? true : false;
+			return ($this->query_result) ? true : false;
 		}
 	}
 
@@ -275,7 +275,7 @@ class dbal_firebird extends dbal
 		{
 			if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
-				$query = "SELECT GEN_ID('" . $tablename[1] . "_gen', 0) AS new_id  
+				$query = "SELECT GEN_ID(" . $tablename[1] . "_gen, 0) AS new_id  
 					FROM RDB\$DATABASE";
 				if (!($temp_q_id =  @ibase_query($this->db_connect_id, $query)))
 				{
@@ -285,7 +285,7 @@ class dbal_firebird extends dbal
 				$temp_result = @ibase_fetch_object($temp_q_id);
 				@ibase_free_result($temp_q_id);
 
-				return ($temp_result) ? $temp_result->last_value : false;
+				return ($temp_result) ? $temp_result->NEW_ID : false;
 			}
 		}
 	
