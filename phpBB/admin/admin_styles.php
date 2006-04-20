@@ -836,7 +836,7 @@ switch( $mode )
 			// Set template files
 			//
 			$template->set_filenames(array(
-				"confirm" => "confirm_body.tpl")
+				"confirm" => "admin/confirm_body.tpl")
 			);
 
 			$template->assign_vars(array(
