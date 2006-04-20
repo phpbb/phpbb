@@ -441,6 +441,7 @@ $lang = array_merge($lang, array(
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
+	'LOG_INSTALL_INSTALLED'	=> '<b>Installed phpBB %s</b>',
 
 	'LOG_JAB_CHANGED'			=> '<b>Jabber account changed</b>',
 	'LOG_JAB_PASSCHG'			=> '<b>Jabber password changed</b>',

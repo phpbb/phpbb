@@ -1105,6 +1105,9 @@ class install_install extends module
 			$messenger->send(NOTIFY_EMAIL);
 		}
 
+		// And finally, add a note to the log
+		add_log('admin', 'LOG_INSTALL_INSTALLED', $config['version']);
+
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
