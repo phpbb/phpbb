@@ -912,7 +912,7 @@ class install_install extends module
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();
-				inst_db_error($error['message'], $sql, __LINE__, __FILE__);
+				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
 			}
 		}
 		unset($sql_query);
@@ -1036,7 +1036,7 @@ class install_install extends module
 			if (!$db->sql_query($sql))
 			{
 				$error = $db->sql_error();
-				inst_db_error($error['message'], $sql, __LINE__, __FILE__);
+				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
 			}
 		}
 	
