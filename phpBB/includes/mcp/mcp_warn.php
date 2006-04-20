@@ -324,19 +324,44 @@ function mcp_warn_user_view($id, $mode, $action)
 		trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 	}
 
+	// Generate the appropriate user information for the user we are looking at
+	$rank_title = $rank_img = '';
+//	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
+
+	$avatar_img = '';
+	if (!empty($userrow['user_avatar']))
+	{
+		switch ($userrow['user_avatar_type'])
+		{
+			case AVATAR_UPLOAD:
+				$avatar_img = $config['avatar_path'] . '/';
+				break;
+			case AVATAR_GALLERY:
+				$avatar_img = $config['avatar_gallery_path'] . '/';
+				break;
+		}
+		$avatar_img .= $userrow['user_avatar'];
+
+		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" border="0" alt="" />';
+	}
+	else
+	{
+		$avatar_img = '<img src="adm/images/no_avatar.gif" alt="" />';
+	}
+
 	// OK, they didn't submit a warning so lets build the page for them to do so
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id",
 
 		'USERNAME'			=> $userrow['username'],
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
-		'RANK_TITLE'		=> $userrow['rank_title'],
+		'RANK_TITLE'		=> $rank_title,
 		'JOINED'			=> $user->format_date($userrow['user_regdate']),
 		'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 		'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
 
-		'AVATAR_IMG'		=> $userrow['avatar_img'],
-		'RANK_IMG'			=> $userrow['rank_img'],
+		'AVATAR_IMG'		=> $avatar_img,
+		'RANK_IMG'			=> $rank_img,
 		)
 	);
 }
