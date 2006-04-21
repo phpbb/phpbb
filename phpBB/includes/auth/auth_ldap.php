@@ -70,12 +70,20 @@ function login_ldap(&$username, &$password)
 
 	if (!extension_loaded('ldap'))
 	{
-		return 'LDAP extension not available';
+		return array(
+			'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+			'error_msg'		=> 'LDAP_NO_LDAP_EXTENSION',
+			'user_row'		=> array('user_id' => ANONYMOUS),
+		);
 	}
 
 	if (!($ldap = @ldap_connect($config['ldap_server'])))
 	{
-		return 'Could not connect to LDAP server';
+		return array(
+			'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+			'error_msg'		=> 'LDAP_NO_SERVER_CONNECTION',
+			'user_row'		=> array('user_id' => ANONYMOUS),
+		);
 	}
 
 	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -93,18 +101,49 @@ function login_ldap(&$username, &$password)
 				FROM ' . USERS_TABLE . "
 				WHERE username = '" . $db->sql_escape($username) . "'";
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if ($row = $db->sql_fetchrow($result))
+			if ($row)
 			{
-				$db->sql_freeresult($result);
-				return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? 0 : $row;
+				// User inactive...
+				if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
+				{
+					return array(
+						'status'		=> LOGIN_ERROR_ACTIVE,
+						'error_msg'		=> 'ACTIVE_ERROR',
+						'user_row'		=> $row,
+					);
+				}
+		
+				// Successful login... set user_login_attempts to zero...
+				return array(
+					'status'		=> LOGIN_SUCCESS,
+					'error_msg'		=> false,
+					'user_row'		=> $row,
+				);
 			}
+		}
+		else
+		{
+			@ldap_close($ldap);
+
+			// Give status about wrong password...
+			return array(
+				'status'		=> LOGIN_ERROR_PASSWORD,
+				'error_msg'		=> 'LOGIN_ERROR_PASSWORD',
+				'user_row'		=> array('user_id' => ANONYMOUS),
+			);
 		}
 	}
 
 	@ldap_close($ldap);
 
-	return false;
+	return array(
+		'status'	=> LOGIN_ERROR_USERNAME,
+		'error_msg'	=> 'LOGIN_ERROR_USERNAME',
+		'user_row'	=> array('user_id' => ANONYMOUS),
+	);
 }
 
 /**
@@ -147,12 +186,13 @@ function admin_ldap(&$new)
 * their username, password, etc. ... should be up to the plugin what data
 * is updated.
 *
+* @todo implement this functionality (probably 3.2)
+*
 * @param new|update|delete $mode defining the action to take on user updates
 */
 function usercp_ldap($mode)
 {
 	global $db, $config;
-
 }
 
 ?>

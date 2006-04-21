@@ -151,7 +151,7 @@ class session
 				}
 			}
 		}
-		
+
 		// Is session_id is set or session_id is set and matches the url param if required
 		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id === $_GET['sid'])))
 		{
@@ -170,7 +170,7 @@ class session
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
-				
+
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
@@ -180,19 +180,39 @@ class session
 				if ($u_ip === $s_ip && $s_browser === $u_browser)
 				{
 					$session_expired = false;
-					
-					// Check the session length timeframe if autologin is not enabled.
-					// Else check the autologin length... and also removing those having autologin enabled but no longer allowed board-wide.
-					if (!$this->data['session_autologin'])
+
+					// Check whether the session is still valid if we have one
+					$method = trim($config['auth_method']);
+
+					if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 					{
-						if ($this->data['session_time'] < $this->time_now - ($config['session_length'] + 60))
+						include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+
+						$method = 'validate_session_' . $method;
+						if (function_exists($method))
+						{
+							if (!$method($this->data))
+							{
+								$session_expired = true;
+							}
+						}
+					}
+
+					if (!$session_expired)
+					{
+						// Check the session length timeframe if autologin is not enabled.
+						// Else check the autologin length... and also removing those having autologin enabled but no longer allowed board-wide.
+						if (!$this->data['session_autologin'])
+						{
+							if ($this->data['session_time'] < $this->time_now - ($config['session_length'] + 60))
+							{
+								$session_expired = true;
+							}
+						}
+						else if (!$config['allow_autologin'] || ($config['max_autologin_time'] && $this->data['session_time'] < $this->time_now - (86400 * (int) $config['max_autologin_time']) + 60))
 						{
 							$session_expired = true;
 						}
-					}
-					else if (!$config['allow_autologin'] || ($config['max_autologin_time'] && $this->data['session_time'] < $this->time_now - (86400 * (int) $config['max_autologin_time']) + 60))
-					{
-						$session_expired = true;
 					}
 
 					if (!$session_expired)
@@ -236,7 +256,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $db, $config, $cache;
+		global $SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
 
 		$this->data = array();
 		
@@ -292,10 +312,29 @@ class session
 				break;
 			}
 		}
-		
+
+		$method = trim($config['auth_method']);
+
+		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		{
+			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+
+			$method = 'autologin_' . $method;
+			if (function_exists($method))
+			{
+				$this->data = $method();
+
+				if (sizeof($this->data))
+				{
+					$this->cookie_data['k'] = '';
+					$this->cookie_data['u'] = $this->data['user_id'];
+				}
+			}
+		}
+
 		// If we're presented with an autologin key we'll join against it.
 		// Else if we've been passed a user_id we'll grab data based on that
-		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'])
+		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
 		{
 			$sql = 'SELECT u.* 
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
@@ -308,7 +347,7 @@ class session
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
-		else if ($user_id !== false)
+		else if ($user_id !== false && !sizeof($this->data))
 		{
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = $user_id;
@@ -488,12 +527,26 @@ class session
 	*/
 	function session_kill()
 	{
-		global $SID, $db, $config;
+		global $SID, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
 				AND session_user_id = " . (int) $this->data['user_id'];
 		$db->sql_query($sql);
+
+		// Allow connecting logout with external auth method logout
+		$method = trim($config['auth_method']);
+
+		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		{
+			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+
+			$method = 'logout_' . $method;
+			if (function_exists($method))
+			{
+				$method($this->data);
+			}
+		}
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
@@ -537,8 +590,6 @@ class session
 		
 		$SID = '?sid=';
 		$this->session_id = '';
-
-		// Trigger EVENT_END_SESSION
 
 		return true;
 	}
@@ -910,7 +961,7 @@ class user extends session
 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
-		if ((@include $this->lang_path . "common.$phpEx") === false)
+		if ((include $this->lang_path . "common.$phpEx") === false)
 		{
 			die("Language file " . $this->lang_path . "common.$phpEx" . " couldn't be opened.");
 		}
@@ -940,7 +991,6 @@ class user extends session
 				AND i.imageset_id = s.imageset_id";
 		$result = $db->sql_query($sql, 3600);
 		$this->theme = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
 
 		// User has wrong style
 		if (!$this->theme && $style == $this->data['user_style'])

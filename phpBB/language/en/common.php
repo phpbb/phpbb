@@ -235,6 +235,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_CONFIRMATION'	=> 'Confirmation of login',
 	'LOGIN_CONFIRM_EXPLAIN'	=> 'To prevent brute forcing accounts the board administrator requires you to enter a confirmation code after a maximum amount of failed logins. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
 	'LOGIN_ERROR_ATTEMPTS'	=> 'You exceeded the maximum allowed number of login attempts. In addition to your username and password you now have to additionally confirm the image you see below.',
+	'LOGIN_ERROR_EXTERNAL_AUTH_APACHE'	=> 'You have not been authenticated by apache.',
 	'LOGIN_ERROR_PASSWORD'	=> 'You have specified an incorrect password. Please check your password and try again. If you continue to have problems please contact a board administrator.',
 	'LOGIN_ERROR_USERNAME'	=> 'You have specified an incorrect username. Please check your username and try again. If you continue to have problems please contact a board administrator.',
 	'LOGIN_FORUM'			=> 'To view or post in this forum you must enter a password.',
