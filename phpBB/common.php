@@ -131,6 +131,7 @@ unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
 $config = $cache->obtain_config();
+$dss_seeded = false;
 
 // Warn about install/ directory
 if (file_exists('install'))

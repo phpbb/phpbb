@@ -122,29 +122,32 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 /**
 * Generates an alphanumeric random string of given length
 */
-function gen_rand_string($num_chars)
+function gen_rand_string($num_chars = 8)
 {
-	$chars = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',  'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',  'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+	$rand_str = dss_rand();
 
-	$max_chars = sizeof($chars) - 1;
-	$rand_str = '';
-	for ($i = 0; $i < $num_chars; $i++)
-	{
-		$rand_str .= $chars[mt_rand(0, $max_chars)];
-	}
-
-	return $rand_str;
+	return substr($rand_str, 0, $num_chars);
 }
 
 /**
 * Return unique id
-* @param $extra additional entropy for call to mt_srand
+* @param $extra additional entropy
 */
-function unique_id($extra = 0, $prefix = false)
+function unique_id($extra = 'c')
 {
-	list($usec, $sec) = explode(' ', microtime());
-	mt_srand((float) $extra + (float) $sec + ((float) $usec * 100000));
-	return uniqid(($prefix === false) ? mt_rand() : $prefix, true);
+	global $db, $config, $dss_seeded;
+
+	$val = $config['rand_seed'] . microtime();
+	$val = md5($val);
+	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
+   
+	if($dss_seeded !== true)
+	{
+		set_config('rand_seed', $config['rand_seed']);
+		$dss_seeded = true;
+	}
+
+	return substr($val, 4, 16);
 }
 
 /**
@@ -1448,7 +1451,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		
 				// Generate code
 				$code = gen_rand_string(mt_rand(5, 8));
-				$confirm_id = md5(unique_id(0, $user->ip));
+				$confirm_id = md5(unique_id($user->ip));
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,

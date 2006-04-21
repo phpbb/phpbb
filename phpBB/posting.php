@@ -1105,7 +1105,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode ==
 
 	// Generate code
 	$code = gen_rand_string(mt_rand(5, 8));
-	$confirm_id = md5(unique_id(0, $user->ip));
+	$confirm_id = md5(unique_id($user->ip));
 
 	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 		'confirm_id'	=> (string) $confirm_id,
