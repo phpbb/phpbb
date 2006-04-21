@@ -51,7 +51,7 @@ CREATE TABLE phpbb_attachments (
   physical_filename varchar2(255),
   real_filename varchar2(255),
   download_count number(8) DEFAULT '0' NOT NULL,
-  comment clob,
+  "COMMENT" clob,
   extension varchar2(100),
   mimetype varchar2(100),
   filesize number(20) NOT NULL,
@@ -84,7 +84,7 @@ CREATE INDEX phpbb_attachments_topic_id on phpbb_attachments (topic_id)
 /
 CREATE INDEX phpbb_attachments_poster_id on phpbb_attachments (poster_id)
 /
-CREATE INDEX phpbb_attachments_physical_filename on phpbb_attachments (physical_filename)
+CREATE INDEX phpbb_attachments_phys_fname on phpbb_attachments (physical_filename)
 /
 CREATE INDEX phpbb_attachments_filesize on phpbb_attachments (filesize)
 /
@@ -104,7 +104,7 @@ CREATE TABLE phpbb_auth_groups (
 
 CREATE INDEX phpbb_auth_groups_group_id on phpbb_auth_groups (group_id)
 /
-CREATE INDEX phpbb_auth_groups_auth_option_id on phpbb_auth_groups (auth_option_id)
+CREATE INDEX phpbb_auth_groups_auth_opt_id on phpbb_auth_groups (auth_option_id)
 /
 
 
@@ -182,7 +182,7 @@ CREATE TABLE phpbb_auth_roles_data (
   role_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(4) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_confirm PRIMARY KEY (role_id, auth_option_id)
+  CONSTRAINT pk_phpbb_auth_roles_data PRIMARY KEY (role_id, auth_option_id)
 )
 /
 
@@ -201,7 +201,7 @@ CREATE TABLE phpbb_auth_users (
 
 CREATE INDEX phpbb_auth_users_user_id on phpbb_auth_users (user_id)
 /
-CREATE INDEX phpbb_auth_users_auth_option_id on phpbb_auth_users (auth_option_id)
+CREATE INDEX phpbb_auth_users_auth_opt_id on phpbb_auth_users (auth_option_id)
 /
 
 
@@ -255,7 +255,7 @@ CREATE TABLE phpbb_bbcodes (
 )
 /
 
-CREATE INDEX phpbb_bbcodes_display_on_posting on phpbb_bbcodes (display_on_posting)
+CREATE INDEX phpbb_bbcodes_disp_on_posting on phpbb_bbcodes (display_on_posting)
 /
 
 
@@ -529,7 +529,7 @@ END;
 
 CREATE INDEX phpbb_forums_left_right_id on phpbb_forums (left_id, right_id)
 /
-CREATE INDEX phpbb_forums_forum_last_post_id on phpbb_forums (forum_last_post_id)
+CREATE INDEX phpbb_forums_forum_last_pst_id on phpbb_forums (forum_last_post_id)
 /
 
 
@@ -571,7 +571,7 @@ CREATE INDEX phpbb_forums_watch_forum_id on phpbb_forums_watch (forum_id)
 /
 CREATE INDEX phpbb_forums_watch_user_id on phpbb_forums_watch (user_id)
 /
-CREATE INDEX phpbb_forums_watch_notify_status on phpbb_forums_watch (notify_status)
+CREATE INDEX phpbb_forums_watch_notify_stat on phpbb_forums_watch (notify_status)
 /
 
 
@@ -738,7 +738,7 @@ CREATE TABLE phpbb_moderator_cache (
 )
 /
 
-CREATE INDEX phpbb_moderator_cache_display_on_index on phpbb_moderator_cache (display_on_index)
+CREATE INDEX phpbb_moderator_cache_disp_idx on phpbb_moderator_cache (display_on_index)
 /
 CREATE INDEX phpbb_moderator_cache_forum_id on phpbb_moderator_cache (forum_id)
 /
@@ -751,14 +751,14 @@ CREATE TABLE phpbb_modules (
   module_id number(8) NOT NULL,
   module_enabled number(1) DEFAULT '1' NOT NULL,
   module_display number(1) DEFAULT '1' NOT NULL,
-  module_name varchar2(255) DEFAULT '' NOT NULL,
-  module_class varchar2(10) DEFAULT '' NOT NULL,
+  module_name varchar2(255) DEFAULT '',
+  module_class varchar2(10) DEFAULT '',
   parent_id number(8) DEFAULT '0' NOT NULL,
   left_id number(8) DEFAULT '0' NOT NULL,
   right_id number(8) DEFAULT '0' NOT NULL,
-  module_langname varchar2(255) DEFAULT '' NOT NULL,
-  module_mode varchar2(255) DEFAULT '' NOT NULL,
-  module_auth varchar2(255) DEFAULT '' NOT NULL,
+  module_langname varchar2(255) DEFAULT '',
+  module_mode varchar2(255) DEFAULT '',
+  module_auth varchar2(255) DEFAULT '',
   CONSTRAINT pk_phpbb_modules PRIMARY KEY (module_id)
 )
 /
@@ -795,7 +795,7 @@ CREATE TABLE phpbb_poll_results (
 )
 /
 
-CREATE INDEX phpbb_poll_results_poll_option_id on phpbb_poll_results (poll_option_id)
+CREATE INDEX phpbb_poll_results_poll_opt_id on phpbb_poll_results (poll_option_id)
 /
 CREATE INDEX phpbb_poll_results_topic_id on phpbb_poll_results (topic_id)
 /
@@ -953,7 +953,7 @@ CREATE TABLE phpbb_privmsgs_folder (
 CREATE SEQUENCE phpbb_privmsgs_folder_seq
 /
 
-CREATE OR REPLACE TRIGGER ai_phpbb_privmsgs_seq
+CREATE OR REPLACE TRIGGER ai_phpbb_privmsgs_fldr_seq
 BEFORE INSERT ON phpbb_privmsgs_folder
 FOR EACH ROW WHEN (
  new.folder_id IS NULL OR new.folder_id = 0
@@ -1065,9 +1065,9 @@ BEGIN
 END;
 /
 
-CREATE INDEX phpbb_profile_fields_field_type on phpbb_profile_fields (field_type)
+CREATE INDEX phpbb_profile_fields_field_typ on phpbb_profile_fields (field_type)
 /
-CREATE INDEX phpbb_profile_fields_field_order on phpbb_profile_fields (field_order)
+CREATE INDEX phpbb_profile_fields_fld_order on phpbb_profile_fields (field_order)
 /
 
 
@@ -1202,7 +1202,7 @@ END;
  Table: phpbb_search_results
 */
 CREATE TABLE phpbb_search_results (
-  session_key varchar2(32) DEFAULT '',
+  search_key varchar2(32) DEFAULT '',
   search_time number(11) DEFAULT '0' NOT NULL,
   search_keywords clob,
   search_authors clob,
@@ -1438,9 +1438,9 @@ CREATE TABLE phpbb_styles_template_data (
 )
 /
 
-CREATE INDEX phpbb_styles_template_data_template_id on phpbb_styles_template_data (template_id)
+CREATE INDEX phpbb_sty_tmplt_dt_tmplate_id on phpbb_styles_template_data (template_id)
 /
-CREATE INDEX phpbb_styles_template_data_template_filename on phpbb_styles_template_data (template_filename)
+CREATE INDEX phpbb_sty_tmplt_dt_tmplt_fname on phpbb_styles_template_data (template_filename)
 /
 
 
@@ -1640,7 +1640,7 @@ CREATE INDEX phpbb_topics_forum_id on phpbb_topics (forum_id)
 /
 CREATE INDEX phpbb_topics_forum_id_type on phpbb_topics (forum_id, topic_type)
 /
-CREATE INDEX phpbb_topics_topic_last_post_time on phpbb_topics (topic_last_post_time)
+CREATE INDEX phpbb_topics_last_post_time on phpbb_topics (topic_last_post_time)
 /
 
 
@@ -1686,7 +1686,7 @@ CREATE INDEX phpbb_topics_watch_topic_id on phpbb_topics_watch (topic_id)
 /
 CREATE INDEX phpbb_topics_watch_user_id on phpbb_topics_watch (user_id)
 /
-CREATE INDEX phpbb_topics_watch_notify_status on phpbb_topics_watch (notify_status)
+CREATE INDEX phpbb_topics_watch_notify_stat on phpbb_topics_watch (notify_status)
 /
 
 
@@ -1816,7 +1816,7 @@ CREATE TABLE phpbb_warnings (
   user_id number(8) DEFAULT '0' NOT NULL,
   post_id number(8) DEFAULT '0' NOT NULL,
   log_id number(8) DEFAULT '0' NOT NULL,
-  warning_time number(11) DEFAULT '0' NOT NULL
+  warning_time number(11) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_warnings PRIMARY KEY (warning_id)
 )
 /
