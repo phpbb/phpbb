@@ -692,7 +692,7 @@ CREATE TABLE phpbb_privmsgs_to (
   user_id INT4  DEFAULT '0' NOT NULL,
   author_id INT4  DEFAULT '0' NOT NULL,
   deleted INT2  DEFAULT '0' NOT NULL,
-  new INT2  DEFAULT '1' NOT NULL,
+  "new" INT2  DEFAULT '1' NOT NULL,
   unread INT2  DEFAULT '1' NOT NULL,
   replied INT2  DEFAULT '0' NOT NULL,
   marked INT2  DEFAULT '0' NOT NULL,
