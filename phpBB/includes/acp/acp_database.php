@@ -110,9 +110,9 @@ class acp_database
 						if ($download == true)
 						{
 							$name = $filename . $ext;
-							//header('Pragma: no-cache');
-							//header("Content-Type: $mimetype; name=\"$name\"");
-							//header("Content-disposition: attachment; filename=$name");
+							header('Pragma: no-cache');
+							header("Content-Type: $mimetype; name=\"$name\"");
+							header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
