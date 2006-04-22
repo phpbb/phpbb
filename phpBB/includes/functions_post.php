@@ -413,12 +413,15 @@ function update_post_stats(&$mode, &$post_data, &$forum_id, &$topic_id, &$post_i
 		$topic_update_sql .= 'topic_vote = 0';
 	}
 
-	$sql = "UPDATE " . FORUMS_TABLE . " SET 
-		$forum_update_sql 
-		WHERE forum_id = $forum_id";
-	if (!$db->sql_query($sql))
+	if ($mode != 'poll_delete')
 	{
-		message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
+		$sql = "UPDATE " . FORUMS_TABLE . " SET 
+			$forum_update_sql 
+			WHERE forum_id = $forum_id";
+		if (!$db->sql_query($sql))
+		{
+			message_die(GENERAL_ERROR, 'Error in posting', '', __LINE__, __FILE__, $sql);
+		}
 	}
 
 	if ($topic_update_sql != '')
