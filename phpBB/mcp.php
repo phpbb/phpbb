@@ -259,7 +259,7 @@ function get_post_data($post_ids, $acl_list = false)
 	$rowset = array();
 
 	$sql = 'SELECT p.*, u.*, t.*, f.*
-		FROM (' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u, ' . TOPICS_TABLE . ' t)
+		FROM (' . USERS_TABLE . ' u, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p)
 			LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = p.forum_id)
 		WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
 			AND u.user_id = p.poster_id
