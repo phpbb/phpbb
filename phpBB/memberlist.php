@@ -77,7 +77,15 @@ switch ($mode)
 		{
 			foreach ($forum_ary as $auth_option => $id_ary)
 			{
-				(!$forum_id && $auth_option == 'a_') ? $admin_id_ary += $id_ary : $mod_id_ary += $id_ary;
+				if (!$forum_id && $auth_option == 'a_')
+				{
+					$admin_id_ary = array_merge($admin_id_ary, $id_ary);
+					continue;
+				}
+				else
+				{
+					$mod_id_ary = array_merge($mod_id_ary, $id_ary);
+				}
 
 				if ($forum_id)
 				{
@@ -88,6 +96,9 @@ switch ($mode)
 				}
 			}
 		}
+
+		$admin_id_ary = array_unique($admin_id_ary);
+		$mod_id_ary = array_unique($mod_id_ary);
 
 		$sql = 'SELECT forum_id, forum_name 
 			FROM ' . FORUMS_TABLE . '
@@ -104,7 +115,7 @@ switch ($mode)
 		$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id
 			FROM (' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g)
 			LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.group_id = g.group_id AND ug.user_id = ' . $user->data['user_id'] . ')
-			WHERE u.user_id IN (' . implode(', ', $admin_id_ary + $mod_id_ary) . ')
+			WHERE u.user_id IN (' . implode(', ', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . ')
 				AND u.group_id = g.group_id
 			GROUP BY u.user_id
 			ORDER BY g.group_name ASC, u.username ASC';
@@ -492,14 +503,30 @@ switch ($mode)
 				trigger_error('NO_TOPIC');
 			}
 
-			if (!$auth->acl_get('f_read', $row['forum_id']))
+			if ($row['forum_id'])
 			{
-				trigger_error('NO_FORUM_READ');
-			}
+				if (!$auth->acl_get('f_read', $row['forum_id']))
+				{
+					trigger_error($user->lang['SORRY_AUTH_READ']);
+				}
 
-			if (!$auth->acl_get('f_email', $row['forum_id']))
+				if (!$auth->acl_get('f_email', $row['forum_id']))
+				{
+					trigger_error('NO_EMAIL');
+				}
+			}
+			else
 			{
-				trigger_error('NO_EMAIL');
+				// If global announcement, we need to check if the user is able to at least read and email in one forum...
+				if (!$auth->acl_getf_global('f_read'))
+				{
+					trigger_error($user->lang['SORRY_AUTH_READ']);
+				}
+
+				if (!$auth->acl_getf_global('f_email'))
+				{
+					trigger_error('NO_EMAIL');
+				}
 			}
 		}
 		else

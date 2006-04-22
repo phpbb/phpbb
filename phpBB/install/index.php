@@ -13,16 +13,68 @@
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 
+$phpbb_root_path = './../';
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+
 // Error reporting level and runtime escaping
 //error_reporting(E_ERROR | E_WARNING | E_PARSE);
 error_reporting(E_ALL);
-set_magic_quotes_runtime(0);
+
+// If we are on PHP >= 6.0.0 we do not need some code
+if (version_compare(phpversion(), '6.0.0', '>='))
+{
+	define('STRIP', false);
+}
+else
+{
+	set_magic_quotes_runtime(0);
+
+	// Protect against GLOBALS tricks
+	if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS']))
+	{
+		exit;
+	}
+
+	// Protect against _SESSION tricks
+	if (isset($_SESSION) && !is_array($_SESSION))
+	{
+		exit;
+	}
+
+	// Be paranoid with passed vars
+	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+	{
+		$not_unset = array('_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_SESSION', '_ENV', '_FILES', 'phpEx', 'phpbb_root_path');
+
+		// Not only will array_merge give a warning if a parameter
+		// is not an array, it will actually fail. So we check if
+		// _SESSION has been initialised.
+		if (!isset($_SESSION) || !is_array($_SESSION))
+		{
+			$_SESSION = array();
+		}
+
+		// Merge all into one extremely huge array; unset
+		// this later
+		$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_SESSION, $_ENV, $_FILES);
+
+		foreach ($input as $varname => $void)
+		{
+			if (!in_array($varname, $not_unset))
+			{
+				unset(${$varname});
+			}
+		}
+
+		unset($input);
+	}
+
+	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
+}
 
 @set_time_limit(120);
 
 // Include essential scripts
-$phpbb_root_path = './../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'includes/functions.'.$phpEx);
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.'.$phpEx);
@@ -30,48 +82,6 @@ include($phpbb_root_path . 'includes/template.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_main.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-
-// Protect against GLOBALS tricks
-if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS']))
-{
-	exit;
-}
-
-// Protect against _SESSION tricks
-if (isset($_SESSION) && !is_array($_SESSION))
-{
-	exit;
-}
-
-// Be paranoid with passed vars
-if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
-{
-	$not_unset = array('_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_SESSION', '_ENV', '_FILES', 'phpEx', 'phpbb_root_path');
-
-	// Not only will array_merge give a warning if a parameter
-	// is not an array, it will actually fail. So we check if
-	// _SESSION has been initialised.
-	if (!isset($_SESSION) || !is_array($_SESSION))
-	{
-		$_SESSION = array();
-	}
-
-	// Merge all into one extremely huge array; unset
-	// this later
-	$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_SESSION, $_ENV, $_FILES);
-
-	foreach ($input as $varname => $void)
-	{
-		if (!in_array($varname, $not_unset))
-		{
-			unset(${$varname});
-		}
-	}
-
-	unset($input);
-}
-
-define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');

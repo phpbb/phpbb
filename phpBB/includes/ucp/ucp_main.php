@@ -551,11 +551,13 @@ class ucp_main
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID' 			=> $forum_id,
 						'TOPIC_ID' 			=> $topic_id,
-						'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
 						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE' 		=> $topic_type,
 						'FORUM_NAME'		=> $row['forum_name'],
-						
+
+						'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
+						'S_GLOBAL_TOPIC'	=> (!$forum_id) ? true : false,
+
 						'TOPIC_AUTHOR' 		=> topic_topic_author($row),
 						'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time']),
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),

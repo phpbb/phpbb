@@ -29,7 +29,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 
 	$which_ary = ($user_id_ary) ? 'user_id_ary' : 'username_ary';
 
-	if ($$which_ary  && !is_array($$which_ary))
+	if ($$which_ary && !is_array($$which_ary))
 	{
 		$$which_ary = array($$which_ary);
 	}

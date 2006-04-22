@@ -115,7 +115,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 	$acl = ($ignore_acl) ? '' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel');
 
 	// This query is identical to the jumpbox one
-	$sql = 'SELECT forum_id, parent_id, forum_name, forum_type, left_id, right_id
+	$sql = 'SELECT forum_id, parent_id, forum_name, forum_type, forum_status, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
@@ -166,6 +166,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		if ($return_array)
 		{
+			// Include some more informations...
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? true : false) : (($row['forum_id'] == $select_id) ? true : false);
 			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => $selected), $row);
 		}

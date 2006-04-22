@@ -446,7 +446,7 @@ class auth
 				AND r.role_type = '" . $db->sql_escape($role_type) . "'
 				$sql_ug
 				$sql_forum
-			ORDER BY r.role_name ASC";
+			ORDER BY r.role_order ASC";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -618,7 +618,7 @@ class auth
 		// Grab group settings... 
 		$sql = 'SELECT a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting
 			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a)
-			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
+				LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
 			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
 				' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
 				$sql_forum

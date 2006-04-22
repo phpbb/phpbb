@@ -103,7 +103,7 @@ class acp_board
 						'pm_max_boxes'			=> array('lang' => 'BOXES_MAX',				'type' => 'text:4:4', 'explain' => true),
 						'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'type' => 'text:4:4', 'explain' => true),
 						'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'type' => 'select', 'method' => 'full_folder_select', 'explain' => true),
-						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'type' => 'text:3:3', 'explain' => true),
+						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'allow_mass_pm'			=> array('lang' => 'ALLOW_MASS_PM',			'type' => 'radio:yes_no', 'explain' => false),
@@ -138,7 +138,7 @@ class acp_board
 
 						'legend2'				=> 'POSTING',
 						'bump_type'				=> false,
-						'edit_time'				=> array('lang' => 'EDIT_TIME',				'type' => 'text:3:3', 'explain' => true),
+						'edit_time'				=> array('lang' => 'EDIT_TIME',				'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'type' => 'radio:yes_no', 'explain' => true),
 						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'type' => 'text:3:4', 'explain' => true),
 						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),

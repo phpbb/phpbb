@@ -25,46 +25,57 @@ $starttime = $starttime[1] + $starttime[0];
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
 //error_reporting(E_ALL);
-set_magic_quotes_runtime(0);
 
-// Protect against GLOBALS tricks
-if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS']))
+// If we are on PHP >= 6.0.0 we do not need some code
+if (version_compare(phpversion(), '6.0.0', '>='))
 {
-	exit;
+	define('STRIP', false);
 }
-
-// Protect against _SESSION tricks
-if (isset($_SESSION) && !is_array($_SESSION))
+else
 {
-	exit;
-}
+	set_magic_quotes_runtime(0);
 
-// Be paranoid with passed vars
-if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
-{
-	$not_unset = array('_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_SESSION', '_ENV', '_FILES', 'phpEx', 'phpbb_root_path');
-
-	// Not only will array_merge give a warning if a parameter
-	// is not an array, it will actually fail. So we check if
-	// _SESSION has been initialised.
-	if (!isset($_SESSION) || !is_array($_SESSION))
+	// Protect against GLOBALS tricks
+	if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS']))
 	{
-		$_SESSION = array();
+		exit;
 	}
 
-	// Merge all into one extremely huge array; unset
-	// this later
-	$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_SESSION, $_ENV, $_FILES);
-
-	foreach ($input as $varname => $void)
+	// Protect against _SESSION tricks
+	if (isset($_SESSION) && !is_array($_SESSION))
 	{
-		if (!in_array($varname, $not_unset))
+		exit;
+	}
+
+	// Be paranoid with passed vars
+	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+	{
+		$not_unset = array('_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_SESSION', '_ENV', '_FILES', 'phpEx', 'phpbb_root_path');
+
+		// Not only will array_merge give a warning if a parameter
+		// is not an array, it will actually fail. So we check if
+		// _SESSION has been initialised.
+		if (!isset($_SESSION) || !is_array($_SESSION))
 		{
-			unset(${$varname});
+			$_SESSION = array();
 		}
+
+		// Merge all into one extremely huge array; unset
+		// this later
+		$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_SESSION, $_ENV, $_FILES);
+
+		foreach ($input as $varname => $void)
+		{
+			if (!in_array($varname, $not_unset))
+			{
+				unset(${$varname});
+			}
+		}
+
+		unset($input);
 	}
 
-	unset($input);
+	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
 if (defined('IN_CRON'))
@@ -100,8 +111,6 @@ if (!empty($load_extensions))
 		@dl(trim($extension));
 	}
 }
-
-define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 
 // Include files
 require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);

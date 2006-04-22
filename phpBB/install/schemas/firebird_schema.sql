@@ -83,8 +83,7 @@ CREATE TABLE phpbb_auth_roles (
   role_name VARCHAR(255) NOT NULL,
   role_description BLOB SUB_TYPE TEXT,
   role_type VARCHAR(10) NOT NULL,
-  role_order INTEGER DEFAULT 0  NOT NULL,
-  role_group_ids VARCHAR(255) NOT NULL
+  role_order INTEGER DEFAULT 0  NOT NULL
 );;
 
 ALTER TABLE phpbb_auth_roles ADD PRIMARY KEY (role_id);;

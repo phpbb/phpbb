@@ -31,6 +31,25 @@ class acp_permissions
 
 		$this->tpl_name = 'acp_permissions';
 
+		// Trace has other vars
+		if ($mode == 'trace')
+		{
+			$user_id = request_var('u', 0);
+			$forum_id = request_var('f', 0);
+			$permission = request_var('auth', '');
+
+			$this->tpl_name = 'permission_trace';
+
+			if ($user_id && isset($auth_admin->option_ids[$permission]) && $auth->acl_get('a_viewauth'))
+			{
+				$this->page_title = sprintf($user->lang['TRACE_PERMISSION'], $user->lang['acl_' . $permission]['lang']);
+				$this->permission_trace($user_id, $forum_id, $permission);
+				return;
+			}
+			
+			trigger_error('NO_MODE');
+		}
+
 		// Set some vars
 		$action = request_var('action', array('' => 0));
 		$action = key($action);
@@ -853,6 +872,135 @@ class acp_permissions
 			$db->sql_query($sql);
 		}
 		unset($perms);
+	}
+
+	/**
+	* Display a complete trace tree for the selected permission to determine where settings are set/unset
+	*/
+	function permission_trace($user_id, $forum_id, $permission)
+	{
+		global $db, $template, $user, $auth;
+
+		$sql = 'SELECT username
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+		$username = (string) $db->sql_fetchfield('username');
+		$db->sql_freeresult($result);
+
+		if (!$username)
+		{
+			trigger_error('NO_USERS');
+		}
+
+		$template->assign_vars(array(
+			'PERMISSION'			=> $user->lang['acl_' . $permission]['lang'],
+			'PERMISSION_USERNAME'	=> $username)
+		);
+
+		$template->assign_block_vars('trace', array(
+			'WHO'			=> $user->lang['DEFAULT'],
+			'INFORMATION'	=> $user->lang['TRACE_DEFAULT'],
+
+			'S_SETTING_UNSET'	=> true,
+			'S_TOTAL_UNSET'		=> true)
+		);
+
+		$sql = 'SELECT DISTINCT g.group_name, g.group_id, g.group_type
+			FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.group_id = g.group_id)
+			WHERE ug.user_id = ' . $user_id . '
+			ORDER BY g.group_type DESC, g.group_id DESC';
+		$result = $db->sql_query($sql);
+
+		$groups = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$groups[$row['group_id']] = array(
+				'auth_setting'		=> ACL_UNSET,
+				'group_name'		=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']
+			);
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($groups))
+		{
+			// Get group auth settings
+			$hold_ary = $auth->acl_group_raw_data(array_keys($groups), $permission, $forum_id);
+
+			foreach ($hold_ary as $group_id => $forum_ary)
+			{
+				$groups[$group_id]['auth_setting'] = $hold_ary[$group_id][$forum_id][$permission];
+			}
+			unset($hold_ary);
+
+			$total = ACL_UNSET;
+			foreach ($groups as $id => $row)
+			{
+				switch ($row['auth_setting'])
+				{
+					case ACL_UNSET:
+						$information = $user->lang['TRACE_GROUP_UNSET'];
+					break;
+
+					case ACL_YES:
+						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_YES_TOTAL_YES'] : (($total == ACL_NO) ? $user->lang['TRACE_GROUP_YES_TOTAL_NO'] : $user->lang['TRACE_GROUP_YES_TOTAL_UNSET']);
+						$total = ($total == ACL_UNSET) ? ACL_YES : $total;
+					break;
+
+					case ACL_NO:
+						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_NO_TOTAL_YES'] : (($total == ACL_NO) ? $user->lang['TRACE_GROUP_NO_TOTAL_NO'] : $user->lang['TRACE_GROUP_NO_TOTAL_UNSET']);
+						$total = ACL_NO;
+					break;
+				}
+
+				$template->assign_block_vars('trace', array(
+					'WHO'			=> $row['group_name'],
+					'INFORMATION'	=> $information,
+
+					'S_SETTING_UNSET'	=> ($row['auth_setting'] == ACL_UNSET) ? true : false,
+					'S_SETTING_YES'		=> ($row['auth_setting'] == ACL_YES) ? true : false,
+					'S_SETTING_NO'		=> ($row['auth_setting'] == ACL_NO) ? true : false,
+					'S_TOTAL_UNSET'		=> ($total == ACL_UNSET) ? true : false,
+					'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
+					'S_TOTAL_NO'		=> ($total == ACL_NO) ? true : false)
+				);
+			}
+		}
+
+		// Get user specific permission...
+		$hold_ary = $auth->acl_user_raw_data($user_id, $permission, $forum_id);
+		$auth_setting = (!sizeof($hold_ary)) ? ACL_UNSET : $hold_ary[$user_id][$forum_id][$permission];
+
+		switch ($auth_setting)
+		{
+			case ACL_UNSET:
+				$information = ($total == ACL_UNSET) ? $user->lang['TRACE_USER_UNSET_TOTAL_UNSET'] : $user->lang['TRACE_USER_KEPT'];
+				$total = ($total == ACL_UNSET) ? ACL_NO : $total;
+			break;
+
+			case ACL_YES:
+				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_YES_TOTAL_YES'] : (($total == ACL_NO) ? $user->lang['TRACE_USER_YES_TOTAL_NO'] : $user->lang['TRACE_USER_YES_TOTAL_UNSET']);
+				$total = ($total == ACL_UNSET) ? ACL_YES : $total;
+			break;
+
+			case ACL_NO:
+				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_NO_TOTAL_YES'] : (($total == ACL_NO) ? $user->lang['TRACE_USER_NO_TOTAL_NO'] : $user->lang['TRACE_USER_NO_TOTAL_UNSET']);
+				$total = ACL_NO;
+			break;
+		}
+		
+		$template->assign_block_vars('trace', array(
+			'WHO'			=> $username,
+			'INFORMATION'	=> $information,
+
+			'S_SETTING_UNSET'	=> ($auth_setting == ACL_UNSET) ? true : false,
+			'S_SETTING_YES'		=> ($auth_setting == ACL_YES) ? true : false,
+			'S_SETTING_NO'		=> ($auth_setting == ACL_NO) ? true : false,
+			'S_TOTAL_UNSET'		=> ($total == ACL_UNSET) ? true : false,
+			'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
+			'S_TOTAL_NO'		=> ($total == ACL_NO) ? true : false)
+		);
 	}
 }
 

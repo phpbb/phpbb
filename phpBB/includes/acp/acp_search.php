@@ -183,7 +183,15 @@ class acp_search
 		global $db, $user, $auth, $template, $cache;
 		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
-		$action = (isset($_REQUEST['action']) && is_array($_REQUEST['action'])) ? key(request_var('action', array('' => false))) : request_var('action', '');
+		if (isset($_REQUEST['action']) && is_array($_REQUEST['action']))
+		{
+			$action = request_var('action', array('' => false));
+			$action = key($action);
+		}
+		else
+		{
+			$action = request_var('action', '');
+		}
 		$this->state = explode(',', $config['search_indexing_state']);
 
 		if ($action)

@@ -141,11 +141,11 @@ class session
 		// Load limit check (if applicable)
 		if (@file_exists('/proc/loadavg'))
 		{
-			if ($load = @file('/proc/loadavg'))
+			if ($load = @file_get_contents('/proc/loadavg'))
 			{
-				list($this->load) = explode(' ', $load[0]);
+				$this->load = floatval(array_slice(explode(' ', $load), 0, 1));
 
-				if ($config['limit_load'] && $this->load > doubleval($config['limit_load']))
+				if ($config['limit_load'] && $this->load > floatval($config['limit_load']))
 				{
 					trigger_error('BOARD_UNAVAILABLE');
 				}

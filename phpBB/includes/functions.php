@@ -425,13 +425,15 @@ function tz_select($default = '')
 /**
 * Topic and forum watching common code
 */
-function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $match_id, $notify_status = 'unset', $start = 0)
+function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
 {
 	global $template, $db, $user, $phpEx, $SID, $start, $phpbb_root_path;
 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
-	$u_url = ($mode == 'forum') ? 'f' : 't';
+	$match_id = ($mode == 'forum') ? $forum_id : $topic_id;
+
+	$u_url = ($mode == 'forum') ? 'f' : 'f=' . $forum_id . '&amp;t';
 
 	// Is user watching this thread?
 	if ($user_id != ANONYMOUS)
@@ -2113,6 +2115,16 @@ function get_backtrace()
 		$output .= '<br />';
 		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
 		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
+
+		// Do not display the users password
+		if (strpos($trace['function'], 'login') !== false)
+		{
+			if (isset($args[1]))
+			{
+				$args[1] = "'***'";
+			}
+		}
+
 		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
 	}
 	$output .= '</div>';

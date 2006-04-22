@@ -1,0 +1,49 @@
+<!-- INCLUDE simple_header.html -->
+
+<div style="background-color: #fff; padding: 10px; margin-top: 10px;" class="permissions">
+
+	<h3>Trace for: {PERMISSION_USERNAME} / {PERMISSION}</h3>
+
+	<br />
+
+	<table cellspacing="1" class="type1">
+	<thead>
+	<tr>
+		<th>Who</th>
+		<th style="width: 50px;">Setting</th>
+		<th style="width: 50px;">Total</th>
+		<th>Information</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN trace -->
+		<!-- IF trace.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
+		<td style="white-space: nowrap;"><strong>{trace.WHO}</strong></td>
+
+		<!-- IF trace.S_SETTING_NO -->
+			<td class="no">{L_ACL_NO}</td>
+		<!-- ELSEIF trace.S_SETTING_YES -->
+			<td class="yes">{L_ACL_YES}</td>
+		<!-- ELSE -->
+			<td class="unset">{L_ACL_UNSET}</td>
+		<!-- ENDIF -->
+
+		<!-- IF trace.S_TOTAL_NO -->
+			<td class="no">{L_ACL_NO}</td>
+		<!-- ELSEIF trace.S_TOTAL_YES -->
+			<td class="yes">{L_ACL_YES}</td>
+		<!-- ELSE -->
+			<td class="unset">{L_ACL_UNSET}</td>
+		<!-- ENDIF -->
+
+		<td>{trace.INFORMATION}</td>
+	</tr>
+	<!-- END trace -->
+	</tbody>
+</table>
+
+<br />
+
+<!-- INCLUDE simple_footer.html -->
+
+</div>

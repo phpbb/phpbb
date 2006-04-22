@@ -25,8 +25,8 @@
 		<td class="postdetails" style="padding: 4px" width="100%" colspan="2">{L_DELETED_TOPIC}</td>
 	<!-- ELSE -->
 		<td style="padding: 4px;" width="100%" valign="top">
-			<p class="topictitle">{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br />
-			<span class="gensmall"><b>{L_FORUM}: </b><a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></span>
+			<p class="topictitle">{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+			<!-- IF topicrow.S_GLOBAL_TOPIC --><span class="gensmall">{L_GLOBAL_ANNOUNCEMENT}</span><!-- ELSE --><span class="gensmall"><b>{L_FORUM}: </b><a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></span><!-- ENDIF -->
 			<!-- IF topicrow.PAGINATION -->
 				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 			<!-- ENDIF -->

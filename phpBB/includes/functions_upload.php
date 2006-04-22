@@ -169,19 +169,15 @@ class filespec
 	*/
 	function get_mimetype($filename)
 	{
+		$mimetype = '';
+
 		if (function_exists('mime_content_type'))
 		{
 			$mimetype = mime_content_type($filename);
 		}
-		else
-		{
-			$mimetype = 'application/octetstream';
-		}
 
-		// Opera adds the name to the mime type
-		$mimetype = (strpos($mimetype, '; name') !== false) ? str_replace(strstr($mimetype, '; name'), '', $mimetype) : $mimetype;
-
-		if (!$mimetype)
+		// Some browsers choke on a mimetype of application/octet-stream
+		if (!$mimetype || $mimetype == 'application/octet-stream')
 		{
 			$mimetype = 'application/octetstream';
 		}

@@ -63,8 +63,7 @@ CREATE TABLE phpbb_auth_roles (
   role_name varchar(50) NOT NULL DEFAULT '',
   role_description text(65535),
   role_type varchar(10) NOT NULL DEFAULT '',
-  role_order mediumint(8) NOT NULL DEFAULT '0',
-  role_group_ids varchar(255) NOT NULL DEFAULT ''
+  role_order mediumint(8) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type);

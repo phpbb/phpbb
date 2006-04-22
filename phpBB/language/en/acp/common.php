@@ -123,6 +123,7 @@ $lang = array_merge($lang, array(
 	'ACP_PERMISSION_MASKS'		=> 'Permission Masks',
 	'ACP_PERMISSION_ROLES'		=> 'Permission Roles',
 	'ACP_PERMISSION_SETTINGS'	=> 'Permission Settings',
+	'ACP_PERMISSION_TRACE'		=> 'Permission Trace',
 	'ACP_PHP_INFO'				=> 'PHP Information',
 	'ACP_POST_SETTINGS'			=> 'Post Settings',
 	'ACP_PRUNE_FORUMS'			=> 'Prune Forums',

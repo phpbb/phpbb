@@ -24,7 +24,7 @@ function jumpto()
 
 	if (page !== null && !isNaN(page) && page > 0)	
 	{
-		document.location.href = base_url.replace('&amp;', '&') + '&start=' + ((page - 1) * per_page);
+		document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
 	}
 }
 
@@ -69,6 +69,12 @@ function marklist(id, name, state)
 			rb[r].checked = state;
 		}
 	}
+}
+
+function trace(link)
+{
+	window.open(link, '_trace', 'height=515, resizable=yes, scrollbars=yes, width=680');
+	return false;
 }
 
 <!-- IF S_INCLUDE_SWATCH -->

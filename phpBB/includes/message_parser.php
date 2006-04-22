@@ -1064,7 +1064,8 @@ class parse_message extends bbcode_firstpass
 				{
 					$actual_comment_list = request_var('comment_list', array(''), true);
 
-					$edit_comment = key(request_var('edit_comment', array(0 => '')));
+					$edit_comment = request_var('edit_comment', array(0 => ''));
+					$edit_comment = key($edit_comment);
 					$this->attachment_data[$edit_comment]['comment'] = $actual_comment_list[$edit_comment];
 				}
 				

@@ -239,7 +239,10 @@ class auth_admin extends auth
 		$tpl_mask = 'mask';
 
 		$l_acl_type = (isset($user->lang['ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type)])) ? $user->lang['ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type)] : 'ACL_TYPE_' . (($local) ? 'LOCAL' : 'GLOBAL') . '_' . strtoupper($permission_type);
-		
+
+		// Allow trace for viewing permissions and in user mode
+		$show_trace = ($mode == 'view' && $user_mode == 'user') ? true : false;
+
 		// Get names
 		if ($user_mode == 'user')
 		{
@@ -293,7 +296,6 @@ class auth_admin extends auth
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$roles[$row['role_id']] = $row;
-			$roles[$row['role_id']]['groups'] = ($row['role_group_ids']) ? explode(':', $row['role_group_ids']) : array();
 		}
 		$db->sql_freeresult($result);
 
@@ -412,16 +414,13 @@ class auth_admin extends auth
 					$s_role_options = '';
 					foreach ($roles as $role_id => $role_row)
 					{
-						if ($role_id == $current_role_id || !sizeof($role_row['groups']) || ($user_mode == 'group' && in_array($ug_id, $role_row['groups'])))
-						{
-							$title = ($role_row['role_description']) ? ' title="' . nl2br($role_row['role_description']) . '"' : '';
-							$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_row['role_name'] . '</option>';
-						}
+						$title = ($role_row['role_description']) ? ' title="' . nl2br($role_row['role_description']) . '"' : '';
+						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_row['role_name'] . '</option>';
 					}
 					
 					if ($s_role_options)
 					{
-						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . '>' . $user->lang['SELECT_ROLE'] . '</option>' . $s_role_options;
+						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . '>' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
@@ -431,7 +430,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id);
+					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace);
 				}
 			}
 		}
@@ -472,10 +471,8 @@ class auth_admin extends auth
 					$s_role_options = '';
 					foreach ($roles as $role_id => $role_row)
 					{
-						if ($role_id == $current_role_id || !sizeof($role_row['groups']) || ($user_mode == 'group' && in_array($ug_id, $role_row['groups'])))
-						{
-							$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . '>' . $role_row['role_name'] . '</option>';
-						}
+						$title = ($role_row['role_description']) ? ' title="' . nl2br($role_row['role_description']) . '"' : '';
+						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_row['role_name'] . '</option>';
 					}
 
 					if ($s_role_options)
@@ -483,15 +480,40 @@ class auth_admin extends auth
 						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . '>' . $user->lang['SELECT_ROLE'] . '</option>' . $s_role_options;
 					}
 
+					if (!$forum_id)
+					{
+						$folder_image = '';
+					}
+					else
+					{
+						if ($forum_names_ary[$forum_id]['forum_status'] == ITEM_LOCKED)
+						{
+							$folder_image = '<img src="images/icon_folder_lock_small.gif" width="19" height="18" alt="' . $user->lang['FORUM_LOCKED'] . '" />';
+						}
+						else
+						{
+							switch ($forum_names_ary[$forum_id]['forum_type'])
+							{
+								case FORUM_LINK:
+									$folder_image = '<img src="images/icon_folder_link_small.gif" width="22" height="18" alt="' . $user->lang['FORUM_LINK'] . '" />';
+								break;
+
+								default:
+									$folder_image = ($forum_names_ary[$forum_id]['left_id'] + 1 != $forum_names_ary[$forum_id]['right_id']) ? '<img src="images/icon_folder_sub_small.gif" width="22" height="18" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder_small.gif" width="19" height="18" alt="' . $user->lang['FOLDER'] . '" />';
+							}
+						}
+					}
+
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
+						'FOLDER_IMAGE'		=> $folder_image,
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'UG_ID'				=> $ug_id,
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id);
+					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace);
 				}
 			}
 		}
@@ -703,6 +725,7 @@ class auth_admin extends auth
 		$id_field  = $ug_type . '_id';
 
 		// Get any flags as required
+		reset($auth);
 		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
 		
@@ -833,6 +856,7 @@ class auth_admin extends auth
 		global $db;
 
 		// Get any-flag as required
+		reset($auth);
 		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
 		
@@ -1011,9 +1035,9 @@ class auth_admin extends auth
 	* Assign category to template
 	* used by display_mask()
 	*/
-	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id)
+	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false)
 	{
-		global $template, $user;
+		global $template, $user, $phpbb_admin_path, $phpEx, $SID;
 
 		foreach ($category_array as $cat => $cat_array)
 		{
@@ -1024,7 +1048,7 @@ class auth_admin extends auth
 							
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
-				
+
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
@@ -1036,6 +1060,8 @@ class auth_admin extends auth
 					'FORUM_ID'		=> $forum_id,
 					'FIELD_NAME'	=> $permission,
 					'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
+
+					'U_TRACE'		=> ($show_trace) ? "{$phpbb_admin_path}index.$phpEx$SID&amp;i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission" : '',
 
 					'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
 				);

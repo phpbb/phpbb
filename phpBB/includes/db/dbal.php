@@ -205,7 +205,7 @@ class dbal
 			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
-			if ($auth->acl_get('a_'))
+			if ($auth->acl_get('a_') || defined('IN_INSTALL'))
 			{
 				// Print out a nice backtrace...
 				$backtrace = get_backtrace();

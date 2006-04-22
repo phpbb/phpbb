@@ -198,6 +198,8 @@ $lang = array_merge($lang, array(
 	'FWD_FROM'					=> 'From: %s',
 	'FWD_TO'					=> 'To: %s',
 
+	'GLOBAL_ANNOUNCEMENT'		=> 'Global announcement',
+
 	'HIDE_ONLINE'				=> 'Hide my online status',
 	'HOLD_NEW_MESSAGES'			=> 'Do not accept new messages (New messages will be held back until enough space is available)',
 

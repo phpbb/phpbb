@@ -162,7 +162,7 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 	if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
 	{
 		$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
-		watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, $notify_status);
+		watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, 0, $notify_status);
 	}
 
 	$s_forum_rules = '';

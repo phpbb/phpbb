@@ -58,7 +58,6 @@ CREATE TABLE phpbb_auth_roles (
   role_description text,
   role_type varchar(10) DEFAULT '' NOT NULL,
   role_order smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-  role_group_ids varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (role_id),
   KEY role_type (role_type),
   KEY role_order (role_order)

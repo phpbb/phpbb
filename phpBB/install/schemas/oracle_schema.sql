@@ -149,7 +149,6 @@ CREATE TABLE phpbb_auth_roles (
   role_description clob,
   role_type varchar2(10) DEFAULT '',
   role_order number(4) DEFAULT '0' NOT NULL,
-  role_group_ids varchar2(255) DEFAULT '' NOT NULL,
   CONSTRAINT pk_phpbb_auth_roles PRIMARY KEY (role_id)
 )
 /

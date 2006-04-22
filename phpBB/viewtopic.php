@@ -51,17 +51,14 @@ if ($view && !$post_id)
 	{
 		$sql = 'SELECT forum_id FROM ' . TOPICS_TABLE . "
 			WHERE topic_id = $topic_id";
-		$db->sql_query_limit($sql, 1);
 		$result = $db->sql_query($sql);
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$forum_id = $row['forum_id'];
-		}
-		else
+		$forum_id = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+
+		if (!$forum_id)
 		{
 			trigger_error('NO_TOPIC');
 		}
-		$db->sql_freeresult($result);
 	}
 
 	if ($view == 'unread')
@@ -80,8 +77,10 @@ if ($view && !$post_id)
 					OR p.post_id = t.topic_last_post_id)
 			ORDER BY p.post_time ASC";
 		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!$row)
 		{
 			// Setup user environment so we can process lang string
 			$user->setup('viewtopic');
@@ -90,7 +89,6 @@ if ($view && !$post_id)
 			$message = $user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id\">", '</a>');
 			trigger_error($message);
 		}
-		$db->sql_freeresult($result);
 
 		$post_id = $row['post_id'];
 		$topic_id = $row['topic_id'];
@@ -108,8 +106,10 @@ if ($view && !$post_id)
 				AND t.topic_last_post_time $sql_condition t2.topic_last_post_time
 			ORDER BY t.topic_last_post_time $sql_ordering";
 		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!$row)
 		{
 			$message = ($view == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS';
 			trigger_error($message);
@@ -140,7 +140,6 @@ if ($view && !$post_id)
 		$forum_id = $row['forum_id'];
 	}
 }
-
 
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
@@ -195,7 +194,7 @@ $sql = "SELECT $select_sql $extra_fields
 	$join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id
-			" . ((!$forum_id) ? '' : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . "
+			" . ((!$forum_id) ? ' OR t.topic_type = ' . POST_GLOBAL : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . "
 			)
 	$order_sql";
 $result = $db->sql_query($sql);
@@ -354,7 +353,7 @@ $s_watching_topic = $s_watching_topic_img = array();
 $s_watching_topic['link'] = $s_watching_topic['title'] = '';
 if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
-	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $topic_id, $topic_data['notify_status'], $start);
+	watch_topic_forum('topic', $s_watching_topic, $s_watching_topic_img, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
 }
 
 // Bookmarks

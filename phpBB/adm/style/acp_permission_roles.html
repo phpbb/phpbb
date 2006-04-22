@@ -70,13 +70,6 @@
 			<dt><label for="role_description">{L_ROLE_DESCRIPTION}:</label><br /><span>{L_ROLE_DESCRIPTION_EXPLAIN}</span></dt>
 			<dd><textarea id="role_description" name="role_description" rows="3" cols="45">{ROLE_DESCRIPTION}</textarea></dd>
 		</dl>
-		<dl>
-			<dt><label for="pre_select">{L_DISPLAY_FOR_GROUP}:</label><br /><span>{L_DISPLAY_FOR_GROUP_EXPLAIN}</span></dt>
-			<dd><select name="pre_select" id="pre_select" onchange="if(this.value=='custom'){dE('custom_group',1);}else{dE('custom_group',-1);}">{S_PRESELECT_OPTIONS}</select></dd>
-			<dd id="custom_group"<!-- IF not S_CUSTOM_GROUP_IDS --> style="display:none;"<!-- ENDIF -->>
-				<select name="role_group_ids[]" id="role_group_id" style="width: 100%;" multiple="multiple" size="10">{S_GROUP_OPTIONS}</select>
-			</dd>
-		</dl>
 	</fieldset>
 
 	<fieldset class="quick">
@@ -180,7 +173,6 @@
 	<thead>
 	<tr>
 		<th style="width: 50%">{L_ROLE_NAME}</th>
-		<th>{L_DISPLAY_FOR_GROUP}</th>
 		<th colspan="2">{L_OPTIONS}</th>
 	</tr>
 	</thead>
@@ -189,18 +181,6 @@
 	<tr>
 		<td style="vertical-align: top;"><b>{roles.ROLE_NAME}</b>
 			<!-- IF roles.ROLE_DESCRIPTION --><br /><span>{roles.ROLE_DESCRIPTION}</span><!-- ENDIF -->
-		</td>
-		<td style="vertical-align: top;">
-			<!-- IF roles.S_GROUP -->
-				<!-- a href="{roles.groups.U_GROUP}">{roles.groups.GROUP_NAME}</a><br / -->
-				<select name="r_groups">
-				<!-- BEGIN groups -->
-					<option<!-- IF roles.groups.S_SPECIAL_GROUP --> class="sep"<!-- ENDIF -->>{roles.groups.GROUP_NAME}</option>
-				<!-- END groups -->
-				</select>
-			<!-- ELSE -->
-				{L_EVERY_USER_GROUP}
-			<!-- ENDIF -->
 		</td>
 		<td style="vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
 		<td style="vertical-align: top; white-space: nowrap;">
