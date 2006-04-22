@@ -110,9 +110,9 @@ class acp_database
 						if ($download == true)
 						{
 							$name = $filename . $ext;
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
+							//header('Pragma: no-cache');
+							//header("Content-Type: $mimetype; name=\"$name\"");
+							//header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
@@ -678,7 +678,7 @@ class acp_database
 										{
 											$info = ibase_field_info($result, $i);
 											$ary_type[] = $info['type'];
-											$ary_name[] = "'" . $info['name'] . "'";
+											$ary_name[] = $info['name'];
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -688,7 +688,7 @@ class acp_database
 											// Build the SQL statement to recreate the data.
 											for ($i = 0; $i < $i_num_fields; $i++)
 											{
-												$str_val = $row[$ary_name[$i]];
+												$str_val = $row[strtolower($ary_name[$i])];
 
 												if (preg_match('#char|text|bool#i', $ary_type[$i]))
 												{
@@ -719,7 +719,7 @@ class acp_database
 												}
 
 												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = $ary_name[$i];
+												$schema_fields[] = "'" . $ary_name[$i] . "'";
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -761,7 +761,7 @@ class acp_database
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
 											$ary_type[] = ocicolumntype($result, $i);
-											$ary_name[] = "'" . ocicolumnname($result, $i) . "'";
+											$ary_name[] = ocicolumnname($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -802,7 +802,7 @@ class acp_database
 												}
 
 												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = $ary_name[$i];
+												$schema_fields[] = '"' . $ary_name[$i] . "'";
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -1570,11 +1570,17 @@ class acp_database
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$sql_data .= "\nCREATE GENERATOR " . substr($row['dname'], 2) . ";;";
-					$sql_data .= "\nSET GENERATOR  " . substr($row['dname'], 2) . " TO 0;;\n";
+					$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME AS GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE FROM RDB$DEPENDENCIES T1 WHERE (T1.RDB$DEPENDENT_NAME = \'' . $row['dname'] . '\') AND (T1.RDB$DEPENDENT_TYPE = 2 AND T1.RDB$DEPENDED_ON_TYPE = 14) UNION ALL SELECT DISTINCT D.RDB$DEPENDED_ON_NAME, D.RDB$FIELD_NAME, D.RDB$DEPENDED_ON_TYPE FROM RDB$DEPENDENCIES D, RDB$RELATION_FIELDS F WHERE (D.RDB$DEPENDENT_TYPE = 3) AND (D.RDB$DEPENDENT_NAME = F.RDB$FIELD_SOURCE) AND (F.RDB$RELATION_NAME = \'' . $row['dname'] . '\') ORDER BY 1,2';
+					$result2 = $db->sql_query($sql);
+					$row2 = $db->sql_fetchrow($result2);
+					$db->sql_freeresult($result2);
+					$gen_name = $row2['gen'];
+
+					$sql_data .= "\nCREATE GENERATOR " . $gen_name . ";;";
+					$sql_data .= "\nSET GENERATOR  " . $gen_name . " TO 0;;\n";
 					$sql_data .= "\nCREATE TRIGGER {$row['dname']} FOR $table_name";
 					$sql_data .= "\nBEFORE INSERT\nAS\nBEGIN";
-					$sql_data .= "\n  NEW.{$row['fname']} = GEN_ID(" . substr($row['dname'], 2) . ", 1);";
+					$sql_data .= "\n  NEW.{$row['fname']} = GEN_ID(" . $gen_name . ", 1);";
 					$sql_data .= "\nEND;;\n";
 				}
 
