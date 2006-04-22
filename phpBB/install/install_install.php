@@ -721,18 +721,56 @@ class install_install extends module
 			@fclose($fp);
 		}
 
-		if ($written)
+		if (isset($_POST['dldone']))
 		{
-			$config_options = array_merge($this->db_config_options, $this->admin_config_options);
-			foreach ($config_options as $config_key => $vars)
+			// Do a basic check to make sure that the file has been uploaded
+			// Note that all we check is that the file has _something_ in it
+			// We don't compare the contents exactly - if they can't upload
+			// a single file correctly, it's likely they will have other problems....
+			if (filesize($phpbb_root_path . 'config.'.$phpEx) > 10)
 			{
-				if (!is_array($vars))
-				{
-					continue;
-				}
-				$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+				$written = true;
+			}
+		}
+
+		$config_options = array_merge($this->db_config_options, $this->admin_config_options);
+		foreach ($config_options as $config_key => $vars)
+		{
+			if (!is_array($vars))
+			{
+				continue;
+			}
+			$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
+		}
+
+		if (!$written)
+		{
+			// OK, so it didn't work let's try the alternatives
+
+			if (isset($_POST['dlconfig']))
+			{
+				// They want a copy of the file to download, so send the relevant headers and dump out the data
+				header("Content-Type: text/x-delimtext; name=\"config.$phpEx\"");
+				header("Content-disposition: attachment; filename=config.$phpEx");
+				echo $config_data;
+				exit;
 			}
 
+			// The option to download the config file is always available, so output it here
+			$template->assign_vars(array(
+				'BODY'					=> $lang['CONFIG_FILE_UNABLE_WRITE'],
+				'L_DL_CONFIG'			=> $lang['DL_CONFIG'],
+				'L_DL_CONFIG_EXPLAIN'	=> $lang['DL_CONFIG_EXPLAIN'],
+				'L_DL_DONE'				=> $lang['DL_DONE'],
+				'L_DL_DOWNLOAD'			=> $lang['DL_DOWNLOAD'],
+				'S_HIDDEN'				=> $s_hidden_fields,
+				'S_SHOW_DOWNLOAD'		=> true,
+				'U_ACTION'				=> $this->p_master->module_url . "?mode=$mode&amp;sub=config_file",
+			));
+			return;
+		}
+		else
+		{
 			$template->assign_vars(array(
 				'BODY'		=> $lang['CONFIG_FILE_WRITTEN'],
 				'L_SUBMIT'	=> $lang['NEXT_STEP'],

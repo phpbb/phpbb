@@ -43,6 +43,7 @@ $lang = array_merge($lang, array(
 	'CAT_CONVERT'				=> 'Convert',
 	'CAT_INSTALL'				=> 'Install',
 	'CAT_OVERVIEW'				=> 'Overview',
+	'CONFIG_FILE_UNABLE_WRITE'	=> 'It was not possible to write the configuration file. Alternative methods for this file to be created are presented below',
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written, you may now proceed to the next step of the installation',
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL'				=> 'Contact email address',
