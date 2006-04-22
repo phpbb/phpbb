@@ -222,7 +222,7 @@ function mcp_post_details($id, $mode, $action)
 			WHERE p.poster_id = u.user_id
 				AND p.poster_ip = '{$post_info['poster_ip']}'
 				AND p.poster_id <> {$post_info['user_id']}
-			GROUP BY u.user_id
+			GROUP BY u.user_id, u.username
 			ORDER BY postings DESC";
 		$result = $db->sql_query($sql);
 
