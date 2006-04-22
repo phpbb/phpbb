@@ -118,23 +118,23 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 							WHERE user_id = ' . $row['user_id'];
 						$db->sql_query($sql);
 					}
-					
-					$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
-					$redirect = str_replace('?', '&', $redirect);
-
-					if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r"))
-					{
-						message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
-					}
-
-					$template->assign_vars(array(
-						'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
-					);
-
-					$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
-
-					message_die(GENERAL_MESSAGE, $message);
 				}
+
+				$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
+				$redirect = str_replace('?', '&', $redirect);
+
+				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r"))
+				{
+					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
+				}
+
+				$template->assign_vars(array(
+					'META' => "<meta http-equiv=\"refresh\" content=\"3;url=login.$phpEx?redirect=$redirect\">")
+				);
+
+				$message = $lang['Error_login'] . '<br /><br />' . sprintf($lang['Click_return_login'], "<a href=\"login.$phpEx?redirect=$redirect\">", '</a>') . '<br /><br />' .  sprintf($lang['Click_return_index'], '<a href="' . append_sid("index.$phpEx") . '">', '</a>');
+
+				message_die(GENERAL_MESSAGE, $message);
 			}
 		}
 		else
