@@ -82,50 +82,6 @@ class acp_language
 
 		switch ($action)
 		{
-			case 'upload_data':
-				if (!$lang_id)
-				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
-				}
-
-				$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
-					WHERE lang_id = $lang_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$file = request_var('file', '');
-				$dir = request_var('dir', '');
-
-				$old_file = '/' . $this->get_filename($row['lang_iso'], $dir, $file, false, true);
-				$lang_path = 'language/' . $row['lang_iso'] . '/' . (($dir) ? $dir . '/' : '');
-
-				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
-				$method = request_var('method', '');
-
-				switch ($method)
-				{
-					case 'ftp':
-						$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-					break;
-					default:
-						trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
-				}
-
-				if (!$transfer->open_session())
-				{
-					trigger_error($user->lang['ERR_CONNECTING_SERVER'] . adm_back_link($this->u_action));
-				}
-
-				$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
-				$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
-				$transfer->close_session();
-
-				add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
-
-				trigger_error($user->lang['UPLOAD_COMPLETED']);
-			break;
-
 			case 'upload_file':
 				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
 
@@ -142,7 +98,23 @@ class acp_language
 					));
 				}
 
-				$hidden_data = build_hidden_fields(array('file' => $this->language_file, 'dir' => $this->language_directory, 'method' => $method));
+				$entry = $_POST['entry'];
+				foreach ($entry as $key => $value)
+				{
+					if (is_array($value))
+					{
+						foreach ($value as $key2 => $data)
+						{
+							$entry[$key][$key2] = htmlentities($data);
+						}
+					}
+					else
+					{
+						$entry[$key] = htmlentities($value);
+					}
+				}
+
+				$hidden_data = build_hidden_fields(array('file' => $this->language_file, 'dir' => $this->language_directory, 'method' => $method, 'entry' => $entry));
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
@@ -185,6 +157,7 @@ class acp_language
 
 			case 'submit_file':
 			case 'download_file':
+			case 'upload_data':
 
 				if (!$lang_id || !isset($_POST['entry']) || !is_array($_POST['entry']))
 				{
@@ -327,6 +300,45 @@ class acp_language
 					fclose($fp);
 					
 					exit;
+				}
+				else if ($action == 'upload_data')
+				{
+					$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
+						WHERE lang_id = $lang_id";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					$file = request_var('file', '');
+					$dir = request_var('dir', '');
+
+					$old_file = '/' . $this->get_filename($row['lang_iso'], $dir, $file, false, true);
+					$lang_path = 'language/' . $row['lang_iso'] . '/' . (($dir) ? $dir . '/' : '');
+
+					include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+					$method = request_var('method', '');
+
+					switch ($method)
+					{
+						case 'ftp':
+							$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						break;
+						default:
+							trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
+					}
+
+					if (!$transfer->open_session())
+					{
+						trigger_error($user->lang['ERR_CONNECTING_SERVER'] . adm_back_link($this->u_action));
+					}
+
+					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
+					$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
+					$transfer->close_session();
+
+					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
+
+					trigger_error($user->lang['UPLOAD_COMPLETED']);
 				}
 			
 				$action = 'details';
