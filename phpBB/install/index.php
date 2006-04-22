@@ -11,6 +11,7 @@
 /**
 */
 define('IN_PHPBB', true);
+define('IN_INSTALL', true);
 
 // Error reporting level and runtime escaping
 //error_reporting(E_ERROR | E_WARNING | E_PARSE);

@@ -701,7 +701,7 @@ class install_install extends module
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if (filesize($phpbb_root_path . 'config.' . $phpEx) == 0 && is_writeable($phpbb_root_path . 'config.' . $phpEx))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writeable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
