@@ -124,7 +124,7 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 */
 function gen_rand_string($num_chars = 8)
 {
-	$rand_str = dss_rand();
+	$rand_str = unique_id();
 
 	return substr($rand_str, 0, $num_chars);
 }
