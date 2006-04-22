@@ -280,7 +280,7 @@ class install_install extends module
 		foreach ($directories as $dir)
 		{
 			$write = $exists = true;
-			if (file_exists($phpbb_root_path . $dir))
+			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
 				if (!is_writeable($phpbb_root_path . $dir))
 				{
