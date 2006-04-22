@@ -658,6 +658,7 @@ class acp_groups
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type, COUNT(ug.user_id) AS total_members 
 			FROM ' . GROUPS_TABLE . ' g
 			LEFT JOIN ' . USER_GROUP_TABLE . ' ug USING (group_id)
+			GROUP BY g.group_id, g.group_name, g.group_type
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $db->sql_query($sql);
 
