@@ -56,22 +56,27 @@ function generate_smilies($mode, $forum_id)
 		$db->sql_freeresult($result);
 	}
 
+	$last_url = '';
+
 	$sql = 'SELECT *
 		FROM ' . SMILIES_TABLE . 
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
-		GROUP BY smiley_url
 		ORDER BY smiley_order';
 	$result = $db->sql_query($sql, 3600);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$template->assign_block_vars('smiley', array(
-			'SMILEY_CODE' 	=> $row['code'],
-			'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
-			'SMILEY_WIDTH' 	=> $row['smiley_width'],
-			'SMILEY_HEIGHT' => $row['smiley_height'],
-			'SMILEY_DESC' 	=> $row['emotion'])
-		);
+		if ($row['smiley_url'] !== $last_url)
+		{
+			$template->assign_block_vars('smiley', array(
+				'SMILEY_CODE' 	=> $row['code'],
+				'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
+				'SMILEY_WIDTH' 	=> $row['smiley_width'],
+				'SMILEY_HEIGHT' => $row['smiley_height'],
+				'SMILEY_DESC' 	=> $row['emotion'])
+			);
+		}
+		$last_url = $row['smiley_url'];
 	}
 	$db->sql_freeresult($result);
 
