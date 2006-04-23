@@ -140,7 +140,8 @@ function adm_page_header($page_title)
 
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $SID, $user, $auth, $starttime, $phpbb_root_path, $phpEx, $cache;
+	global $db, $config, $template, $user, $auth, $cache;
+	global $SID, $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -169,7 +170,11 @@ function adm_page_footer($copyright_html = true)
 				}
 			}
 
-			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . ((strpos($_SERVER['REQUEST_URI'], '?') !== false) ? '&amp;' : '?') . 'explain=1">Explain</a>';
+			$explain_url = $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
+			$explain_url = (strpos($explain_url, '?') !== false) ? str_replace('?', $SID . '&amp;', $explain_url) : $explain_url . '?' . str_replace('?', '', $SID);
+			$explain_url .= ((strpos($explain_url, '?') === false) ? '?' : '&amp;') . 'explain=1';
+
+			$debug_output .= ' | <a href="' . $explain_url . '">Explain</a>';
 		}
 	}
 

@@ -871,6 +871,7 @@ table.pmask td.name {
 	color: #333333;
 	}
 
+/* Tooltip for permission roles */
 .tooltip {
 	width: 200px;
 	color: #000;

@@ -454,7 +454,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					'site_logo',
 				),
 				'buttons'	=> array(
-					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_ip', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline',
+					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_info', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline',
 				),
 				'icons'		=> array(
 					'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),

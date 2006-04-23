@@ -20,10 +20,12 @@
 	/* Reset browsers default margin, padding and font sizes */
 	margin: 0;
 	padding: 0;
-	}
+}
+
 html {
 	font-size: 100%;
-	}
+}
+
 body {
 	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
@@ -31,20 +33,24 @@ body {
 	background-color: #FFFFFF;
 	font-size: 62.5%; /* This sets the default font size to be equivalent to 10px */
 	margin: 0;
-	}
+}
 
 #wrapheader {
 	height: 120px;
 	background-image: url('./images/background.gif');
 	background-repeat: repeat-x;
 	padding: 0 25px 15px 25px;
-	}
+}
+
 #wrapcentre {
 	margin: 25px;
-	}
+}
+
 #wrapfooter {
 	text-align: center;
-	}
+	clear: both;
+}
+
 #wrapnav {
 	width: 100%;
 	margin: 0px;
@@ -52,22 +58,26 @@ body {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #A9B8C2;
-	}
+}
+
 #logodesc {
 	
-	}
+}
+
 #menubar {
 	
-	}
+}
+
 #datebar {
 	margin-top: 10px;
-	}
+}
+
 #findbar {
 	width: 100%;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
-	}
+}
 
 .forumrules {
 	background-color: #F9CC79;
@@ -78,7 +88,7 @@ body {
 	font-weight: normal;
 	font-size: 1.1em;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-	}
+}
 
 #pageheader { }
 #pagecontent { }

@@ -277,43 +277,42 @@ class dbal
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-				echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
-				echo '<head>';
-				echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-				echo '<title>SQL Report</title>';
-				echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
-				echo '<link href="' . $phpbb_root_path . 'adm/style/sql_report.css" rel="stylesheet" type="text/css" media="screen" />';
-				echo '</head>';
-				echo '<body id="errorpage">';
-				echo '<div id="wrap">';
-				echo '	<div id="page-header">';
-				echo '		<a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '">Return to previous page</a>';
-				echo '	</div>';
-				echo '	<div id="page-body">';
-				echo '		<div class="panel">';
-				echo '			<span class="corners-top"><span></span></span>';
-				echo '			<div id="content">';
-				echo '				<h1>SQL Report</h1>';
-				echo '				<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>
-										<td height="40" align="center" valign="middle"><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($this->cache_num_queries) ? " + {$this->cache_num_queries} " . (($this->cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></td>
-									</tr><tr>
-										<td align="center" nowrap="nowrap">Time spent on MySQL queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></td>
-									</tr></table>
-									<table width="95%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>
-										<td>' . $this->sql_report . '</td>
-									</tr></table>';
-				echo '			</div>';
-				echo '			<span class="corners-bottom"><span></span></span>';
-				echo '		</div>';
-				echo '	</div>';
-				echo '	<div id="page-footer">';
-				echo '		Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>';
-				echo '	</div>';
-				echo '</div>';
-				echo '</body>';
-				echo '</html>';
+				echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+					<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">
+					<head>
+						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+						<meta http-equiv="Content-Style-Type" content="text/css" />
+						<meta http-equiv="imagetoolbar" content="no" />
+						<title>SQL Report</title>
+						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+					</head>
+					<body id="errorpage">
+					<div id="wrap">
+						<div id="page-header">
+							<a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '">Return to previous page</a>
+						</div>
+						<div id="page-body">
+							<div class="panel">
+								<span class="corners-top"><span></span></span>
+								<div id="content">
+									<h1>SQL Report</h1>
+									<br />
+									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($this->cache_num_queries) ? " + {$this->cache_num_queries} " . (($this->cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
 
+									<p>Time spent on MySQL queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
+
+									<br /><br />
+									' . $this->sql_report . '
+								</div>
+								<span class="corners-bottom"><span></span></span>
+							</div>
+						</div>
+						<div id="page-footer">
+							Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>
+						</div>
+					</div>
+					</body>
+					</html>';
 				exit;
 				break;
 
@@ -322,17 +321,22 @@ class dbal
 				$endtime = $endtime[0] + $endtime[1];
 
 				$this->sql_report .= '
-					<hr width="100%"/><br />
 
-					<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0">
+					<table cellspacing="1">
+					<thead>
 					<tr>
 						<th>Query #' . $this->num_queries . '</th>
 					</tr>
+					</thead>
+					<tbody>
 					<tr>
-						<td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td>
+						<td class="row3"><textarea style="font-family:\'Courier New\',monospace;width:99%" rows="5" cols="10">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td>
 					</tr>
-					</table> ' . $this->html_hold . '
-					<p align="center">
+					</table>
+					
+					' . $this->html_hold . '
+
+					<p style="text-align: center;">
 				';
 
 				if ($this->query_result)
@@ -349,7 +353,7 @@ class dbal
 					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . SQL_LAYER . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
-				$this->sql_report .= '</p>';
+				$this->sql_report .= '</p><br /><br />';
 
 				$this->sql_time += $endtime - $this->curtime;
 			break;
@@ -373,11 +377,11 @@ class dbal
 				if (!$html_table && sizeof($row))
 				{
 					$html_table = true;
-					$this->html_hold .= '<table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0" align="center"><tr>';
+					$this->html_hold .= '<table cellspacing="1"><tr>';
 								
 					foreach (array_keys($row) as $val)
 					{
-						$this->html_hold .= '<th nowrap="nowrap">' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</th>';
+						$this->html_hold .= '<th>' . (($val) ? ucwords(str_replace('_', ' ', $val)) : '&nbsp;') . '</th>';
 					}
 					$this->html_hold .= '</tr>';
 				}
@@ -412,8 +416,10 @@ class dbal
 				$time_db = $splittime - $endtime;
 				$color = ($time_db > $time_cache) ? 'green' : 'red';
 
-				$this->sql_report .= '<hr width="100%"/><br /><table class="bg" width="100%" cellspacing="1" cellpadding="4" border="0"><tr><th>Query results obtained from the cache</th></tr><tr><td class="row1"><textarea style="font-family:\'Courier New\',monospace;width:100%" rows="5">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></table><p align="center">';
-				$this->sql_report .= 'Before: ' . sprintf('%.5f', $this->curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p>';
+				$this->sql_report .= '<table cellspacing="1"><thead><tr><th>Query results obtained from the cache</th></tr></thead><tbody><tr>';
+				$this->sql_report .= '<td class="row3"><textarea style="font-family:\'Courier New\',monospace;width:99%" rows="5" cols="10">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td></tr></tbody></table>';
+				$this->sql_report .= '<p style="text-align: center;">';
+				$this->sql_report .= 'Before: ' . sprintf('%.5f', $this->curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p><br /><br />';
 
 				// Pad the start time to not interfere with page timing
 				$starttime += $time_db;

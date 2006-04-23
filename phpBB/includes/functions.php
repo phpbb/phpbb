@@ -2612,7 +2612,11 @@ function page_footer()
 				}
 			}
 
-			$debug_output .= ' | <a href="' . (($_SERVER['REQUEST_URI']) ? htmlspecialchars($_SERVER['REQUEST_URI']) : "index.$phpEx$SID") . ((strpos($_SERVER['REQUEST_URI'], '?') !== false) ? '&amp;' : '?') . 'explain=1">Explain</a>';
+			$explain_url = $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
+			$explain_url = (strpos($explain_url, '?') !== false) ? str_replace('?', $SID . '&amp;', $explain_url) : $explain_url . '?' . str_replace('?', '', $SID);
+			$explain_url .= ((strpos($explain_url, '?') === false) ? '?' : '&amp;') . 'explain=1';
+
+			$debug_output .= ' | <a href="' . $explain_url . '>Explain</a>';
 		}
 	}
 
