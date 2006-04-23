@@ -243,18 +243,18 @@ if (!$user->data['is_registered'])
 // Output listing of friends online
 $update_time = $config['load_online_time'] * 60;
 
-$sql = 'SELECT DISTINCT u.user_id, u.username, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline
+$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline
 	FROM (' . USERS_TABLE . ' u, ' . ZEBRA_TABLE . ' z)
 	LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = z.zebra_id)
 	WHERE z.user_id = ' . $user->data['user_id'] . '
 		AND z.friend = 1
 		AND u.user_id = z.zebra_id
-	GROUP BY z.zebra_id, u.user_id, u.username';
+	GROUP BY z.zebra_id, u.user_id, u.username, u.user_allow_viewonline';
 $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$which = (time() - $update_time < $row['online_time'] && $row['viewonline']) ? 'online' : 'offline';
+	$which = (time() - $update_time < $row['online_time'] && $row['viewonline'] && $row['user_allow_viewonline']) ? 'online' : 'offline';
 
 	$template->assign_block_vars("friends_{$which}", array(
 		'U_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'],

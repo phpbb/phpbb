@@ -87,12 +87,15 @@ class ucp_zebra
 						$user_id_ary = array();
 						do
 						{
-							$user_id_ary[] = $row['user_id'];
+							if ($row['user_id'] != ANONYMOUS)
+							{
+								$user_id_ary[] = $row['user_id'];
+							}
 						}
 						while ($row = $db->sql_fetchrow($result));
 
 						// Remove users from foe list if they are admins or moderators
-						if ($mode == 'foes')
+						if (($mode == 'foes') && sizeof($user_id_ary))
 						{
 							$perms = array();
 							foreach ($auth->acl_get_list($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
@@ -106,29 +109,6 @@ class ucp_zebra
 							// This may not be right ... it may yield true when perms equate to deny
 							$user_id_ary = array_diff($user_id_ary, $perms);
 							unset($perms);
-						}
-
-						// Do not let add users to friends if the user is within the foes list of the to-be-added users
-						if ($mode == 'friends' && sizeof($user_id_ary))
-						{
-							$sql = 'SELECT user_id
-								FROM ' . ZEBRA_TABLE . '
-								WHERE user_id IN (' . implode(', ', $user_id_ary) . ')
-									AND zebra_id = ' . $user->data['user_id'] . '
-									AND foe = 1';
-							$result = $db->sql_query($sql);
-
-							$remove_user_ids = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$remove_user_ids[] = $row['user_id'];
-							}
-
-							if (sizeof($remove_user_ids))
-							{
-								$user_id_ary = array_diff($user_id_ary, $remove_user_ids);
-							}
-							unset($remove_user_ids);
 						}
 
 						if (sizeof($user_id_ary))
