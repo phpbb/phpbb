@@ -726,7 +726,10 @@ class fulltext_mysql extends search_backend
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if ($row['Index_type'] == 'FULLTEXT' || $row['Comment'] == 'FULLTEXT')
+			// deal with older MySQL versions which didn't use Index_type
+			$index_type = (isset($row['Index_type'])) ? $row['Index_type'] : $row['Comment'];
+
+			if ($index_type == 'FULLTEXT')
 			{
 				if ($row['Column_name'] == 'post_text')
 				{
