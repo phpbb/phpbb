@@ -368,6 +368,36 @@ class dbal_postgres extends dbal
 		switch ($mode)
 		{
 			case 'start':
+
+				$explain_query = $query;
+				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+				else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				{
+					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
+				}
+
+				if (preg_match('/^SELECT/', $explain_query))
+				{
+					$html_table = false;
+
+					if ($result = @pg_query($this->db_connect_id, "EXPLAIN $explain_query"))
+					{
+						while ($row = @pg_fetch_assoc($result, NULL))
+						{
+							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+						}
+					}
+					@pg_free_result($result);
+
+					if ($html_table)
+					{
+						$this->html_hold .= '</table>';
+					}
+				}
+
 			break;
 
 			case 'fromcache':
