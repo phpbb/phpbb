@@ -498,7 +498,7 @@ function session_clean($session_id)
 */
 function session_reset_keys($user_id, $user_ip)
 {
-	global $db, $userdata;
+	global $db, $userdata, $board_config;
 
 	$key_sql = ($user_id == $userdata['user_id'] && !empty($userdata['session_key'])) ? "AND key_id != '" . md5($userdata['session_key']) . "'" : '';
 
@@ -537,7 +537,7 @@ function session_reset_keys($user_id, $user_ip)
 
 		// And now rebuild the cookie
 		$sessiondata['userid'] = $user_id;
-		$sessiondata['autologinid'] = $autologin_id;
+		$sessiondata['autologinid'] = $auto_login_key;
 		$cookiename = $board_config['cookie_name'];
 		$cookiepath = $board_config['cookie_path'];
 		$cookiedomain = $board_config['cookie_domain'];
