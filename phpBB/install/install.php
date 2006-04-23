@@ -10,6 +10,7 @@
 
 /**
 */
+die('Please use the new installation system (install/index.php) instead of this file. This code has been deprecated and will be removed before release');
 define('IN_PHPBB', true);
 
 // Error reporting level and runtime escaping
