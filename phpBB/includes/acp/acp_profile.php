@@ -959,39 +959,217 @@ class acp_profile
 		
 		if ($action == 'create')
 		{
-			/**
-			* @todo Adjust for every database
-			*/
-
-			// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-			$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
-
-			switch ($field_type)
+			switch (SQL_LAYER)
 			{
-				case FIELD_STRING:
-					$sql .= ' VARCHAR(255) ';
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
+					switch ($field_type)
+					{
+						case FIELD_STRING:
+							$sql .= ' VARCHAR(255) ';
+						break;
+
+						case FIELD_DATE:
+							$sql .= 'VARCHAR(10) ';
+						break;
+
+						case FIELD_TEXT:
+							$sql .= "TEXT";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield INT(11) UNSIGNED";
+						break;
+
+						case FIELD_BOOL:
+							$sql .= 'TINYINT(2) ';
+						break;
+				
+						case FIELD_DROPDOWN:
+							$sql .= 'MEDIUMINT(8) ';
+						break;
+
+						case FIELD_INT:
+							$sql .= 'BIGINT(20) ';
+						break;
+					}
+
 				break;
 
-				case FIELD_DATE:
-					$sql .= 'VARCHAR(10) ';
+				case 'sqlite':
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
+
+					switch ($field_type)
+					{
+						case FIELD_STRING:
+							$sql .= ' VARCHAR(255) ';
+						break;
+
+						case FIELD_DATE:
+							$sql .= 'VARCHAR(10) ';
+						break;
+
+						case FIELD_TEXT:
+							$sql .= "TEXT(65535)";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield INT(11) UNSIGNED";
+						break;
+
+						case FIELD_BOOL:
+							$sql .= 'TINYINT(2) ';
+						break;
+				
+						case FIELD_DROPDOWN:
+							$sql .= 'MEDIUMINT(8) ';
+						break;
+
+						case FIELD_INT:
+							$sql .= 'BIGINT(20) ';
+						break;
+					}
+
 				break;
 
-				case FIELD_TEXT:
-					$sql .= "TEXT";
-//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
-//						ADD {$field_ident}_bbcode_bitfield INT(11) UNSIGNED";
+				case 'mssql':
+				case 'mssql_odbc':
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					$sql = 'ALTER TABLE [' . PROFILE_DATA_TABLE . "] ADD $field_ident ";
+
+					switch ($field_type)
+					{
+						case FIELD_STRING:
+							$sql .= ' [VARCHAR] (255) ';
+						break;
+
+						case FIELD_DATE:
+							$sql .= '[VARCHAR] (10) ';
+						break;
+
+						case FIELD_TEXT:
+							$sql .= "[TEXT]";
+		//						ADD {$field_ident}_bbcode_uid [VARCHAR] (5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield [INT] UNSIGNED";
+						break;
+
+						case FIELD_BOOL:
+						case FIELD_DROPDOWN:
+							$sql .= '[INT] ';
+						break;
+
+						case FIELD_INT:
+							$sql .= '[FLOAT] ';
+						break;
+					}
+
 				break;
 
-				case FIELD_BOOL:
-					$sql .= 'TINYINT(2) ';
-				break;
-		
-				case FIELD_DROPDOWN:
-					$sql .= 'MEDIUMINT(8) ';
+				case 'postgres':
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD COLUMN $field_ident ";
+
+					switch ($field_type)
+					{
+						case FIELD_STRING:
+							$sql .= ' VARCHAR(255) ';
+						break;
+
+						case FIELD_DATE:
+							$sql .= 'VARCHAR(10) ';
+						break;
+
+						case FIELD_TEXT:
+							$sql .= "TEXT";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield INT4 UNSIGNED";
+						break;
+
+						case FIELD_BOOL:
+							$sql .= 'INT2 ';
+						break;
+				
+						case FIELD_DROPDOWN:
+							$sql .= 'INT4 ';
+						break;
+
+						case FIELD_INT:
+							$sql .= 'INT8 ';
+						break;
+					}
+
 				break;
 
-				case FIELD_INT:
-					$sql .= 'BIGINT(20) ';
+				case 'firebird':
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
+
+					switch ($field_type)
+					{
+						case FIELD_STRING:
+							$sql .= ' VARCHAR(255) ';
+						break;
+
+						case FIELD_DATE:
+							$sql .= 'VARCHAR(10) ';
+						break;
+
+						case FIELD_TEXT:
+							$sql .= "BLOB SUB_TYPE TEXT";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield INTEGER UNSIGNED";
+						break;
+
+						case FIELD_BOOL:
+						case FIELD_DROPDOWN:
+							$sql .= 'INTEGER ';
+						break;
+
+						case FIELD_INT:
+							$sql .= 'DOUBLE PRECISION ';
+						break;
+					}
+
+				break;
+
+				case 'oracle':
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					$sql = 'ALTER TABLE ' . PROFILE_DATA_TABLE . " ADD $field_ident ";
+					switch ($field_type)
+					{
+						case FIELD_STRING:
+							$sql .= ' VARCHAR2(255) ';
+						break;
+
+						case FIELD_DATE:
+							$sql .= 'VARCHAR2(10) ';
+						break;
+
+						case FIELD_TEXT:
+							$sql .= "CLOB";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR2(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield NUMBER(11) UNSIGNED";
+						break;
+
+						case FIELD_BOOL:
+							$sql .= 'NUMBER(2) ';
+						break;
+				
+						case FIELD_DROPDOWN:
+							$sql .= 'NUMBER(8) ';
+						break;
+
+						case FIELD_INT:
+							$sql .= 'NUMBER(20) ';
+						break;
+					}
+
 				break;
 			}
 	

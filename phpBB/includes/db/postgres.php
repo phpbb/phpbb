@@ -222,7 +222,7 @@ class dbal_postgres extends dbal
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->query_result) ? @pg_cmdtuples($this->query_result) : false;
+		return ($this->query_result) ? @pg_affected_rows($this->query_result) : false;
 	}
 
 	/**
