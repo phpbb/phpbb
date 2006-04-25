@@ -1788,15 +1788,15 @@ function make_clickable($text, $server_url = false)
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/(([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
+		$magic_url_match[] = '#(^|[\n ]|\()(' . preg_quote($server_url, '#') . ')/(([^[ \t\n\r<"\'\)&]+|&(?!lt;))*)#i';
 		$magic_url_replace[] = '$1<!-- l --><a href="$2/$3">$3</a><!-- l -->';
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
+		$magic_url_match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
 		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
+		$magic_url_match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;))*)#ie';
 		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space.
