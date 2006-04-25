@@ -488,7 +488,7 @@ class template_compile
 		// Are we a string?
 		if ($match[3] && $match[5])
 		{
-			$match[4] = addslashes(str_replace(array('\\\'', '\\\\'), array('\'', '\\'), $match[4]));
+			$match[4] = str_replace(array('\\\'', '\\\\', '\''), array('\'', '\\', '\\\''), $match[4]);
 
 			// Compile reference, we allow template variables in defines...
 			$match[4] = $this->compile($match[4]);
