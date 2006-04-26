@@ -139,7 +139,7 @@ class session
 		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 		
 		// Load limit check (if applicable)
-		if (@file_exists('/proc/loadavg'))
+		if (@file_exists('/proc/loadavg') && @is_readable('/proc/loadavg'))
 		{
 			if ($load = @file_get_contents('/proc/loadavg'))
 			{

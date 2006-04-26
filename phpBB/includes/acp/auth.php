@@ -701,7 +701,7 @@ class auth_admin extends auth
 	/**
 	* Set a user or group ACL record
 	*/
-	function acl_set($ug_type, &$forum_id, &$ug_id, &$auth, $role_id = 0, $clear_prefetch = true)
+	function acl_set($ug_type, $forum_id, $ug_id, $auth, $role_id = 0, $clear_prefetch = true)
 	{
 		global $db;
 
@@ -851,7 +851,7 @@ class auth_admin extends auth
 	/**
 	* Set a role-specific ACL record
 	*/
-	function acl_set_role($role_id, &$auth)
+	function acl_set_role($role_id, $auth)
 	{
 		global $db;
 

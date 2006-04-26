@@ -564,12 +564,13 @@ class acp_modules
 	/**
 	* Get available module informations from module files
 	*/
-	function get_module_infos($module = '')
+	function get_module_infos($module = '', $module_class = false)
 	{
 		global $phpbb_root_path, $phpEx;
 		
-		$directory = $phpbb_root_path . 'includes/' . $this->module_class . '/info/';
-		
+		$module_class = ($module_class === false) ? $this->module_class : $module_class;
+
+		$directory = $phpbb_root_path . 'includes/' . $module_class . '/info/';
 		$fileinfo = array();
 
 		if (!$module)
@@ -578,7 +579,7 @@ class acp_modules
 			while (($file = readdir($dh)) !== false)
 			{
 				// Is module?
-				if (preg_match('/^' . $this->module_class . '_.+\.' . $phpEx . '$/', $file))
+				if (preg_match('/^' . $module_class . '_.+\.' . $phpEx . '$/', $file))
 				{
 					$class = str_replace(".$phpEx", '', $file) . '_info';
 
@@ -592,7 +593,7 @@ class acp_modules
 					{
 						$c_class = new $class();
 						$module_info = $c_class->module();
-						$fileinfo[str_replace($this->module_class . '_', '', $module_info['filename'])] = $module_info;
+						$fileinfo[str_replace($module_class . '_', '', $module_info['filename'])] = $module_info;
 					}
 				}
 			}
@@ -602,8 +603,8 @@ class acp_modules
 		}
 		else
 		{
-			$filename = $this->module_class . '_' . basename($module);
-			$class = $this->module_class . '_' . basename($module) . '_info';
+			$filename = $module_class . '_' . basename($module);
+			$class = $module_class . '_' . basename($module) . '_info';
 
 			if (!class_exists($class))
 			{
@@ -615,7 +616,7 @@ class acp_modules
 			{
 				$c_class = new $class();
 				$module_info = $c_class->module();
-				$fileinfo[str_replace($this->module_class . '_', '', $module_info['filename'])] = $module_info;
+				$fileinfo[str_replace($module_class . '_', '', $module_info['filename'])] = $module_info;
 			}
 		}
 		

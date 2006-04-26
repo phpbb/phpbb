@@ -96,20 +96,17 @@ class ucp_profile
 
 						if ($auth->acl_get('u_chgname') && $config['allow_namechange'] && $username != $user->data['username'])
 						{
-							add_log('admin', 'LOG_USER_UPDATE_NAME', $user->data['username'], $username);
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $username);
 						}
 
 						if ($auth->acl_get('u_chgpasswd') && $new_password && md5($new_password) != $user->data['user_password'])
 						{
 							$user->reset_login_keys();
-							add_log('admin', 'LOG_USER_NEW_PASSWORD', $username);
 							add_log('user', $user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $username);
 						}
 
 						if ($auth->acl_get('u_chgemail') && $email != $user->data['user_email'])
 						{
-							add_log('admin', 'LOG_USER_UPDATE_EMAIL', $username, $user->data['user_email'], $email);
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $username, $user->data['user_email'], $email);
 						}
 

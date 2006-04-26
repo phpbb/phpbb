@@ -38,7 +38,12 @@
 <!-- BEGIN log -->
 	<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-		<td>{log.USERNAME}</td>
+		<td>
+			{log.USERNAME}
+			<!-- IF log.REPORTEE_USERNAME -->
+			<br />&raquo; {log.REPORTEE_USERNAME}
+			<!-- ENDIF -->
+		</td>
 		<td style="text-align: center;">{log.IP}</td>
 		<td style="text-align: center;">{log.DATE}</td>
 		<td>{log.ACTION}<!-- IF log.DATA --><br />{log.DATA}</span><!-- ENDIF --></td>

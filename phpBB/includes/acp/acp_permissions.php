@@ -679,7 +679,8 @@ class acp_permissions
 			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
 		}
 		
-		$auth_settings = $_POST['setting'];
+		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
+		$auth_roles = (isset($_POST['role'])) ? $_POST['role'] : array();
 		$ug_ids = $forum_ids = array();
 
 		// We need to go through the auth settings
@@ -694,7 +695,7 @@ class acp_permissions
 				$forum_ids[] = $forum_id;
 
 				// Check role...
-				$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
+				$assigned_role = (isset($auth_roles[$ug_id][$forum_id])) ? (int) $auth_roles[$ug_id][$forum_id] : 0;
 
 				// If the auth settings differ from the assigned role, then do not set a role...
 				if ($assigned_role)

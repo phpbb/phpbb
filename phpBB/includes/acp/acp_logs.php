@@ -127,12 +127,14 @@ class acp_logs
 			}
 
 			$template->assign_block_vars('log', array(
-				'USERNAME'		=> $row['username'],
-				'IP'			=> $row['ip'],
-				'DATE'			=> $user->format_date($row['time']),
-				'ACTION'		=> $row['action'],
-				'DATA'			=> (sizeof($data)) ? implode(' | ', $data) : '',
-				'ID'			=> $row['id'],
+				'USERNAME'			=> $row['username'],
+				'REPORTEE_USERNAME'	=> ($row['reportee_username'] && $row['user_id'] != $row['reportee_id']) ? $row['reportee_username'] : '',
+
+				'IP'				=> $row['ip'],
+				'DATE'				=> $user->format_date($row['time']),
+				'ACTION'			=> $row['action'],
+				'DATA'				=> (sizeof($data)) ? implode(' | ', $data) : '',
+				'ID'				=> $row['id'],
 				)
 			);
 		}

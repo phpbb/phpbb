@@ -652,7 +652,6 @@ class acp_users
 						{
 							$sql_ary['username'] = $update_username;
 
-							add_log('admin', 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
 							add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
 						}
 
@@ -663,7 +662,6 @@ class acp_users
 								'user_email_hash'	=> crc32(strtolower($update_email)) . strlen($update_email)
 							);
 
-							add_log('admin', 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
 							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
 						}
 
@@ -675,7 +673,6 @@ class acp_users
 							);
 
 							$user->reset_login_keys($user_id);
-							add_log('admin', 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 						}
 

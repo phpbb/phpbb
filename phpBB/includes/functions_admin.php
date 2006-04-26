@@ -1920,7 +1920,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 {
 	global $db, $user, $auth, $phpEx, $SID, $phpbb_root_path, $phpbb_admin_path;
 
-	$topic_id_list = $is_auth = $is_mod = array();
+	$topic_id_list = $reportee_id_list = $is_auth = $is_mod = array();
 
 	$profile_url = (defined('IN_ADMIN')) ? "{$phpbb_admin_path}index.$phpEx$SID&amp;i=users&amp;mode=overview" : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile";
 
@@ -1929,7 +1929,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		case 'admin':
 			$log_type = LOG_ADMIN;
 			$sql_forum = '';
-			break;
+		break;
 		
 		case 'mod':
 			$log_type = LOG_MOD;
@@ -1946,17 +1946,22 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			{
 				$sql_forum = ($forum_id) ? 'AND l.forum_id = ' . intval($forum_id) : '';
 			}
-			break;
+		break;
 
 		case 'user':
 			$log_type = LOG_USERS;
 			$sql_forum = 'AND l.reportee_id = ' . intval($user_id);
-			break;
+		break;
 		
+		case 'users':
+			$log_type = LOG_USERS;
+			$sql_forum = '';
+		break;
+
 		case 'critical':
 			$log_type = LOG_CRITICAL;
 			$sql_forum = '';
-			break;
+		break;
 		
 		default:
 			return;
@@ -1980,15 +1985,27 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			$topic_id_list[] = $row['topic_id'];
 		}
 
-		$log[$i]['id'] = $row['log_id'];
-		$log[$i]['username'] = '<a href="' . $profile_url . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>';
-		$log[$i]['ip'] = $row['log_ip'];
-		$log[$i]['time'] = $row['log_time'];
-		$log[$i]['forum_id'] = $row['forum_id'];
-		$log[$i]['topic_id'] = $row['topic_id'];
-		$log[$i]['viewforum'] = ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '';
+		if ($row['reportee_id'])
+		{
+			$reportee_id_list[] = $row['reportee_id'];
+		}
 
-		$log[$i]['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
+		$log[$i] = array(
+			'id'			=> $row['log_id'],
+			
+			'reportee_id'		=> $row['reportee_id'],
+			'reportee_username'	=> '',
+
+			'user_id'			=> $row['user_id'],
+			'username'			=> '<a href="' . $profile_url . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>',
+			'ip'				=> $row['log_ip'],
+			'time'				=> $row['log_time'],
+			'forum_id'			=> $row['forum_id'],
+			'topic_id'			=> $row['topic_id'],
+			
+			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'] : '',
+			'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
+		);
 
 		if (!empty($row['log_data']))
 		{
@@ -2043,6 +2060,24 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		{
 			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id'] : '';
 			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=logs&amp;mode=topic_logs&amp;t=" . $row['topic_id'] : '';
+		}
+	}
+
+	if ($reportee_id_list)
+	{
+		$reportee_id_list = array_unique($reportee_id_list);
+		$reportee_names_list = array();
+
+		if (!function_exists('user_get_id_name'))
+		{
+			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		user_get_id_name($reportee_id_list, $reportee_names_list);
+
+		foreach ($log as $key => $row)
+		{
+			$log[$key]['reportee_username'] = (isset($reportee_names_list[$row['reportee_id']])) ? '<a href="' . $profile_url . '&amp;u=' . $row['reportee_id'] . '">' . $reportee_names_list[$row['reportee_id']] . '</a>' : '';
 		}
 	}
 
