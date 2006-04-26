@@ -35,7 +35,6 @@ class acp_database
 		switch ($mode)
 		{
 			// TODO: Check the cases of Oracle and Firebird ( they generate everything in uppercase )
-			// The queries are ugly++, they must get some love so that they follow the CS
 			// MSSQL and MSSQL-ODBC can be written in a nicer way, consider sp_help
 			case 'backup':
 
@@ -224,21 +223,21 @@ class acp_database
 											$values			= array();
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
-											while ($row = $db->sql_fetchrow($result))
+											while ($row = mysqli_fetch_row($result))
 											{
 												for ($j = 0; $j < $fields_cnt; $j++)
 												{
 													if (!isset($row[$j]) || is_null($row[$j]))
 													{
-														$values[] = 'NULL';
+														$values[$j] = 'NULL';
 													}
 													else if (($field[$j]->flags & 32768) && !($field[$j]->flags & 1024))
 													{
-														$values[] = $row[$j];
+														$values[$j] = $row[$j];
 													}
 													else
 													{
-														$values[] = "'" . str_replace($search, $replace, $row[$j]) . "'";
+														$values[$j] = "'" . str_replace($search, $replace, $row[$j]) . "'";
 													}
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
@@ -281,7 +280,7 @@ class acp_database
 											$field = array();
 											for ($i = 0; $i < $fields_cnt; $i++) 
 											{
-												$field[] = mysql_fetch_field($result, $i);
+												$field[$i] = mysql_fetch_field($result, $i);
 											}
 											$field_set = array();
 											
@@ -303,15 +302,15 @@ class acp_database
 												{
 													if (!isset($row[$j]) || is_null($row[$j]))
 													{
-														$values[] = 'NULL';
+														$values[$j] = 'NULL';
 													}
 													else if ($field[$j]->numeric && ($field[$j]->type !== 'timestamp'))
 													{
-														$values[] = $row[$j];
+														$values[$j] = $row[$j];
 													}
 													else
 													{
-														$values[] = "'" . str_replace($search, $replace, $row[$j]) . "'";
+														$values[$j] = "'" . str_replace($search, $replace, $row[$j]) . "'";
 													}
 												}
 												$sql_data .= $schema_insert . implode(', ', $values) . ");\n";
@@ -400,11 +399,29 @@ class acp_database
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = pg_num_fields($result);
+										$seq = '';
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[] = pg_field_type($result, $i);
-											$ary_name[] = pg_field_name($result, $i);
+											$ary_type[$i] = pg_field_type($result, $i);
+											$ary_name[$i] = pg_field_name($result, $i);
+
+
+											$sql = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
+												FROM pg_attrdef d, pg_class c
+												WHERE (c.relname = '{$table_name}')
+													AND (c.oid = d.adrelid)
+													AND d.adnum = " . strval($i+1);
+											$result2 = $db->sql_query($sql);
+											if ($row = $db->sql_fetchrow($result2))
+											{
+												// Determine if we must reset the sequences
+												if (strpos($row['rowdefault'], 'nextval(\'') === 0)
+												{
+													//$ary_seq[$i] = $ary_name[$i];
+													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end from {$table_name}));\n";
+												}
+											}
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -444,8 +461,8 @@ class acp_database
 													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = $ary_name[$i];
+												$schema_vals[$i] = $str_quote . $str_val . $str_quote;
+												$schema_fields[$i] = $ary_name[$i];
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -473,6 +490,25 @@ class acp_database
 
 										}
 										$db->sql_freeresult($result);
+
+										// Write out the sequence statements
+										if ($store == true)
+										{
+											$write($fp, $seq);
+										}
+
+										if ($download == true)
+										{
+											if (!empty($oper))
+											{
+												echo $oper($seq);
+											}
+											else
+											{
+												echo $seq;
+											}
+										}
+										$seq = '';
 									break;
 
 									case 'mssql_odbc':
@@ -493,8 +529,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[] = odbc_field_type($result, $i);
-											$ary_name[] = odbc_field_name($result, $i);
+											$ary_type[$i] = odbc_field_type($result, $i);
+											$ary_name[$i] = odbc_field_name($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -534,8 +570,8 @@ class acp_database
 													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = $ary_name[$i];
+												$schema_vals[$i] = $str_quote . $str_val . $str_quote;
+												$schema_fields[$i] = $ary_name[$i];
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -588,8 +624,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[] = mssql_field_type($result, $i);
-											$ary_name[] = mssql_field_name($result, $i);
+											$ary_type[$i] = mssql_field_type($result, $i);
+											$ary_name[$i] = mssql_field_name($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -629,8 +665,8 @@ class acp_database
 													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = $ary_name[$i];
+												$schema_vals[$i] = $str_quote . $str_val . $str_quote;
+												$schema_fields[$i] = $ary_name[$i];
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -678,8 +714,8 @@ class acp_database
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
 											$info = ibase_field_info($result, $i);
-											$ary_type[] = $info['type'];
-											$ary_name[] = $info['name'];
+											$ary_type[$i] = $info['type'];
+											$ary_name[$i] = $info['name'];
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -719,8 +755,8 @@ class acp_database
 													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = "'" . $ary_name[$i] . "'";
+												$schema_vals[$i] = $str_quote . $str_val . $str_quote;
+												$schema_fields[$i] = "'" . $ary_name[$i] . "'";
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -761,8 +797,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[] = ocicolumntype($result, $i);
-											$ary_name[] = ocicolumnname($result, $i);
+											$ary_type[$i] = ocicolumntype($result, $i);
+											$ary_name[$i] = ocicolumnname($result, $i);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -802,8 +838,8 @@ class acp_database
 													$str_val = $str_empty;
 												}
 
-												$schema_vals[] = $str_quote . $str_val . $str_quote;
-												$schema_fields[] = '"' . $ary_name[$i] . "'";
+												$schema_vals[$i] = $str_quote . $str_val . $str_quote;
+												$schema_fields[$i] = '"' . $ary_name[$i] . "'";
 											}
 
 											// Take the ordered fields and their associated data and build it
@@ -1241,6 +1277,19 @@ class acp_database
 			break;
 
 			case 'postgres':
+
+				// PGSQL does not "tightly" bind sequences and tables, we must guess...
+				$sql = "SELECT relname
+					FROM pg_class
+					WHERE relkind = 'S'
+						AND relname = '{$table_name}_seq'";
+				$result = $db->sql_query($sql);
+				// We don't even care about storing the results. We already know the answer if we get rows back.
+				if ($db->sql_fetchrow($result))
+				{
+					$sql_data .= "CREATE SEQUENCE {$table_name}_seq;\n";
+				}
+				$db->sql_freeresult($result);
 			
 				$field_query = "SELECT a.attnum, a.attname AS field, t.typname as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
 					FROM pg_class c, pg_attribute a, pg_type t
@@ -1256,7 +1305,7 @@ class acp_database
 				while ($row = $db->sql_fetchrow($result))
 				{
 					// Get the data from the table
-					$sql_get_default = "SELECT d.adsrc AS rowdefault
+					$sql_get_default = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
 						FROM pg_attrdef d, pg_class c
 						WHERE (c.relname = '" . $db->sql_escape($table_name) . "')
 							AND (c.oid = d.adrelid)
