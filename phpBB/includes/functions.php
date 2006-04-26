@@ -2616,7 +2616,7 @@ function page_footer()
 			$explain_url = (strpos($explain_url, '?') !== false) ? str_replace('?', $SID . '&amp;', $explain_url) : $explain_url . '?' . str_replace('?', '', $SID);
 			$explain_url .= ((strpos($explain_url, '?') === false) ? '?' : '&amp;') . 'explain=1';
 
-			$debug_output .= ' | <a href="' . $explain_url . '>Explain</a>';
+			$debug_output .= ' | <a href="' . $explain_url . '">Explain</a>';
 		}
 	}
 
