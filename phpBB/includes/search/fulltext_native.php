@@ -22,19 +22,19 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 
 /**
 * @package search
-* fulltext_phpbb
+* fulltext_native
 * phpBB's own db driven fulltext search
 */
-class fulltext_phpbb extends search_backend
+class fulltext_native extends search_backend
 {
 	var $stats;
 	var $word_length;
 
-	function fulltext_phpbb(&$error)
+	function fulltext_native(&$error)
 	{
 		global $config;
 
-		$this->word_length = array('min' => $config['fulltext_min_search_chars'], 'max' => $config['fulltext_max_search_chars']);
+		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
 
 		$error = false;
 	}
@@ -101,7 +101,7 @@ class fulltext_phpbb extends search_backend
 
 			// check word length
 			$clean_len = strlen(str_replace('*', '', $word));
-			if (($clean_len < $config['fulltext_min_search_chars']) || ($clean_len > $config['fulltext_max_search_chars']))
+			if (($clean_len < $config['fulltext_native_min_chars']) || ($clean_len > $config['fulltext_native_max_chars']))
 			{
 				if ($prefixed)
 				{
@@ -206,7 +206,7 @@ class fulltext_phpbb extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (strlen($text[$i]) < $config['fulltext_min_search_chars'] || strlen($text[$i]) > $config['fulltext_max_search_chars'])
+			if (strlen($text[$i]) < $config['fulltext_native_min_chars'] || strlen($text[$i]) > $config['fulltext_native_max_chars'])
 			{
 				unset($text[$i]);
 			}
@@ -724,7 +724,7 @@ class fulltext_phpbb extends search_backend
 
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (!$config['fulltext_load_search_upd'])
+		if (!$config['fulltext_native_load_upd'])
 		{
 			return;
 		}
@@ -894,7 +894,7 @@ class fulltext_phpbb extends search_backend
 
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (!$config['fulltext_load_search_upd'])
+		if (!$config['fulltext_native_load_upd'])
 		{
 			return;
 		}
@@ -1034,23 +1034,23 @@ class fulltext_phpbb extends search_backend
 
 		$tpl = '
 		<dl>
-			<dt><label for="fulltext_load_search_upd">' . $user->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . $user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
-			<dd><input type="radio" id="fulltext_load_search_upd" name="config[fulltext_load_search_upd]" value="1"' . (($config['fulltext_load_search_upd']) ? ' checked="checked"' : '') . ' class="radio" />&nbsp;' . $user->lang['YES'] . '&nbsp;&nbsp;<input type="radio" name="config[fulltext_load_search_upd]" value="0"' . ((!$config['fulltext_load_search_upd']) ? ' checked="checked"' : '') . ' class="radio" />&nbsp;' . $user->lang['NO'] . '</dd>
+			<dt><label for="fulltext_native_load_upd">' . $user->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . $user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
+			<dd><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" />&nbsp;' . $user->lang['YES'] . '&nbsp;&nbsp;<input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" />&nbsp;' . $user->lang['NO'] . '</dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_min_search_chars">' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_min_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_min_search_chars]" value="' . (int) $config['fulltext_min_search_chars'] . '" /></dd>
+			<dt><label for="fulltext_native_min_chars">' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_native_min_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_min_chars]" value="' . (int) $config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_max_search_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_max_search_chars" type="text" size="3" maxlength="3" name="config[fulltext_max_search_chars]" value="' . (int) $config['fulltext_max_search_chars'] . '" /></dd>
+			<dt><label for="fulltext_native_max_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) $config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		';
 
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_load_search_upd' => 'bool', 'fulltext_min_search_chars' => 'integer', 'fulltext_max_search_chars' => 'integer')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer', 'fulltext_native_max_chars' => 'integer')
 		);
 	}
 }
