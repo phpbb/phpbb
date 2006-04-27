@@ -23,7 +23,7 @@ class compress
 		$skip_files = explode(',', $skip_files);
 
 		// Remove rm prefix from src path
-		$src_path = ($src_rm_prefix) ? preg_replace('#^(' . preg_quote($src_rm_prefix) . ')#', '', $src) : $src;
+		$src_path = ($src_rm_prefix) ? preg_replace('#^(' . preg_quote($src_rm_prefix, '#') . ')#', '', $src) : $src;
 		// Add src prefix
 		$src_path = ($src_add_prefix) ? ($src_add_prefix . ((substr($src_add_prefix, -1) != '/') ? '/' : '') . $src_path) : $src_path;
 		// Remove initial "/" if present

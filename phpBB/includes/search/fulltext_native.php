@@ -50,8 +50,8 @@ class fulltext_native extends search_backend
 	{
 		global $db, $config;
 
-		$drop_char_match =   array('^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '!');
-		$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ');
+		$drop_char_match =   array('^', '$', '(', ')', '<', '>', '`', '\'', '"', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '!', "\n", "\r");
+		$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', '',  '',  ' ',  ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ', ' ', ' ',  ' ');
 
 		$this->get_ignore_words();
 		$this->get_synonyms();
@@ -65,14 +65,19 @@ class fulltext_native extends search_backend
 		}
 
 		$match = array();
-		// New lines, carriage returns
-		$match[] = "#[\n\r]+#";
 		// NCRs like &nbsp; etc.
-		$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
+		$match[] = '#(&amp;|&)[a-z0-9]+?;#i';
 
 		// Filter out as above
 		$keywords = preg_replace($match, ' ', strtolower(trim($keywords)));
+
+		// Filter out non alphabetical characters
 		$keywords = str_replace($drop_char_match, $drop_char_replace, $keywords);
+
+		// Filter out ; and # but not &#[0-9]+;
+		$keywords = preg_replace('#&\#([0-9]+);#', '<$1>', $keywords);
+		$keywords = str_replace(array(';', '&', '#'), ' ', $keywords);
+		$keywords = str_replace(array('<', '>'), array('&#', ';'), $keywords);
 
 		// Split words
 		$this->split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
@@ -100,7 +105,7 @@ class fulltext_native extends search_backend
 			}
 
 			// check word length
-			$clean_len = strlen(str_replace('*', '', $word));
+			$clean_len = $this->word_length($word);
 			if (($clean_len < $config['fulltext_native_min_chars']) || ($clean_len > $config['fulltext_native_max_chars']))
 			{
 				if ($prefixed)
@@ -152,6 +157,14 @@ class fulltext_native extends search_backend
 	}
 
 	/**
+	* Returns the string length but it counts multibyte characters as single characters and ignores "*"
+	*/
+	function word_length($word)
+	{
+		return strlen(str_replace('*', '', preg_replace('#&\#[0-9]+;#', 'x', $word)));
+	}
+
+	/**
 	* Turns text into an array of words that can be stored in the word list table
 	*/
 	function split_message($text)
@@ -165,28 +178,29 @@ class fulltext_native extends search_backend
 
 		if (!is_array($drop_char_match))
 		{
-			$drop_char_match =   array('-', '^', '$', ';', '#', '&', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*', '+');
-			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ', ' ');
+			$drop_char_match =   array('-', '^', '$', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*', '+', "\n", "\r");
+			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ', ' ', ' ',  ' ');
 		}
 
 		$match = array();
 		// Comments for hardcoded bbcode elements (urls, smilies, html)
 		$match[] = '#<!\-\- .* \-\->(.*?)<!\-\- .* \-\->#is';
-		// New lines, carriage returns
-		$match[] = "#[\n\r]+#";
 		// NCRs like &nbsp; etc.
-		$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
+		$match[] = '#(&amp;|&)[a-z0-9]+;#i';
 		// Do not index code
 		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
 		// BBcode
 		$match[] = '#\[\/?[a-z\*\+\-]+(?:=.*?)?(\:?[0-9a-z]{5,})\]#';
-		// Filter out ; and # but not &#[0-9]+;
-		//$match[] = '#(&\#[0-9]+;)|;|\#|&#';
 
 		$text = preg_replace($match, ' ', ' ' . strtolower(trim($text)) . ' ');
 
 		// Filter out non-alphabetical chars
 		$text = str_replace($drop_char_match, $drop_char_replace, $text);
+
+		// Filter out ; and # but not &#[0-9]+;
+		$text = preg_replace('#&\#([0-9]+);#', '<$1>', $text);
+		$text = str_replace(array(';', '&', '#'), ' ', $text);
+		$text = str_replace(array('<', '>'), array('&#', ';'), $text);
 
 		// Split words
 		$text = explode(' ', preg_replace('#\s+#', ' ', trim($text)));
@@ -206,7 +220,7 @@ class fulltext_native extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (strlen($text[$i]) < $config['fulltext_native_min_chars'] || strlen($text[$i]) > $config['fulltext_native_max_chars'])
+			if ($this->word_length($text[$i]) < $config['fulltext_native_min_chars'] || $this->word_length($text[$i]) > $config['fulltext_native_max_chars'])
 			{
 				unset($text[$i]);
 			}

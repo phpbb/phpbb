@@ -1227,7 +1227,7 @@ function mail_encode($str, $encoding)
 	$str = chunk_split(base64_encode($str), $length, $spacer);
 
 	// remove trailing spacer and add start and end delimiters
-	$str = preg_replace('#' . preg_quote($spacer) . '$#', '', $str);
+	$str = preg_replace('#' . preg_quote($spacer, '#') . '$#', '', $str);
 
 	return $start . $str . $end;
 }

@@ -29,8 +29,8 @@ $topic_id		= request_var('t', 0);
 $view			= request_var('view', '');
 
 $submit			= request_var('submit', false);
-$keywords		= request_var('keywords', '');
-$add_keywords	= request_var('add_keywords', '');
+$keywords		= request_var('keywords', '', true);
+$add_keywords	= request_var('add_keywords', '', true);
 $author			= request_var('author', '');
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
 $show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
@@ -657,7 +657,7 @@ if ($keywords || $author || $search_id || $submit)
 
 				if ($hilit)
 				{
-					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . preg_quote($hilit) . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
+					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . preg_quote($hilit, '#') . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
 				}
 
 				$row['post_text'] = smiley_text($row['post_text']);
