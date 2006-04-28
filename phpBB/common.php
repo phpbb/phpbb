@@ -23,8 +23,8 @@ if (!defined('IN_PHPBB'))
 $starttime = explode(' ', microtime());
 $starttime = $starttime[1] + $starttime[0];
 
-error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
-//error_reporting(E_ALL);
+//error_reporting(E_ERROR | E_WARNING | E_PARSE); // This will NOT report uninitialized variables
+error_reporting(E_ALL);
 
 /**
 * Remove variables created by register_globals from the global scope
@@ -80,7 +80,7 @@ function deregister_globals()
 }
 
 // If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(phpversion(), '6.0.0', '>='))
+if (version_compare(phpversion(), '6.0.0-dev', '>='))
 {
 	define('STRIP', false);
 }
@@ -103,38 +103,45 @@ if (defined('IN_CRON'))
 	$phpbb_root_path = getcwd() . '/';
 }
 
-require($phpbb_root_path . 'config.'.$phpEx);
-
-if (!defined('PHPBB_INSTALLED'))
+// Run the following code if not currently installing
+if (!defined('IN_INSTALL'))
 {
-	header('Location: install/index.'.$phpEx);
-	exit;
-}
+	require($phpbb_root_path . 'config.'.$phpEx);
 
-if (defined('DEBUG_EXTRA'))
-{
-	$base_memory_usage = 0;
-	if (function_exists('memory_get_usage'))
+	if (!defined('PHPBB_INSTALLED'))
 	{
-		$base_memory_usage = memory_get_usage();
+		header('Location: install/index.'.$phpEx);
+		exit;
+	}
+
+	if (defined('DEBUG_EXTRA'))
+	{
+		$base_memory_usage = 0;
+		if (function_exists('memory_get_usage'))
+		{
+			$base_memory_usage = memory_get_usage();
+		}
+	}
+
+	// Load Extensions
+	if (!empty($load_extensions))
+	{
+		$load_extensions = explode(',', $load_extensions);
+
+		foreach ($load_extensions as $extension)
+		{
+			@dl(trim($extension));
+		}
 	}
 }
-
-// Load Extensions
-if (!empty($load_extensions))
+else
 {
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
+	$acm_type = 'file';
 }
 
 // Include files
 require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 require($phpbb_root_path . 'includes/acm/acm_main.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
@@ -149,22 +156,28 @@ $user		= new user();
 $auth		= new auth();
 $template	= new template();
 $cache		= new cache();
-$db			= new $sql_db();
 
-// Connect to DB
-$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
-
-// We do not need this any longer, unset for safety purposes
-unset($dbpasswd);
-
-// Grab global variables, re-cache if necessary
-$config = $cache->obtain_config();
-$dss_seeded = false;
-
-// Warn about install/ directory
-if (file_exists('install'))
+// Initiate DBAL if not installing
+if (!defined('IN_INSTALL'))
 {
-//	trigger_error('REMOVE_INSTALL');
+	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+	$db = new $sql_db();
+
+	// Connect to DB
+	$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+
+	// We do not need this any longer, unset for safety purposes
+	unset($dbpasswd);
+
+	// Grab global variables, re-cache if necessary
+	$config = $cache->obtain_config();
+	$dss_seeded = false;
+
+	// Warn about install/ directory
+	if (file_exists('install'))
+	{
+	//	trigger_error('REMOVE_INSTALL');
+	}
 }
 
 ?>

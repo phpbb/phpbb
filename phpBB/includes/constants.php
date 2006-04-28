@@ -129,6 +129,15 @@ define('FIELD_BOOL', 4);
 define('FIELD_DROPDOWN', 5);
 define('FIELD_DATE', 6);
 
+// Additional constants
+
+
+// Table names - do not set if in installation
+if (defined('IN_INSTALL'))
+{
+	return;
+}
+
 // Table names
 define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
@@ -195,6 +204,6 @@ define('POLL_OPTIONS_TABLE', $table_prefix.'poll_results');
 define('POLL_VOTES_TABLE', $table_prefix.'poll_voters');
 define('ZEBRA_TABLE', $table_prefix.'zebra');
 
-// Additional constants
+// Additional tables
 
 ?>
