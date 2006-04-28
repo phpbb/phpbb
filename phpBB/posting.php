@@ -1118,7 +1118,8 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode ==
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,
 		'CONFIRM_ID'				=> $confirm_id,
-		'CONFIRM_IMAGE'				=> '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST . '" alt="" title="" />'
+		'CONFIRM_IMAGE'				=> '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST . '" alt="" title="" />',
+		'L_POST_CONFIRM_EXPLAIN'		=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
 	));
 }
 
