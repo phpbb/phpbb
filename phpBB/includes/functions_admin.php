@@ -1683,7 +1683,7 @@ function remove_comments(&$output)
 */
 function remove_remarks(&$sql)
 {
-	$sql = preg_replace('/(\n){2,}/', "\n", preg_replace('/^#.*/m', "\n", $sql));
+	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
 }
 
 /**
@@ -1692,88 +1692,18 @@ function remove_remarks(&$sql)
 */
 function split_sql_file($sql, $delimiter)
 {
-	// Split up our string into "possible" SQL statements.
-	$tokens = explode($delimiter, $sql);
-
-	// try to save mem.
-	$sql = '';
-	$output = array();
-
-	// we don't actually care about the matches preg gives us.
-	$matches = array();
-
-	// this is faster than calling sizeof($oktens) every time thru the loop.
-	for ($i = 0, $token_count = sizeof($tokens); $i < $token_count; $i++)
+	$sql = str_replace("\r" , '', $sql);
+	$data = preg_split('/' . $delimiter . '$/m', $sql);
+	foreach ($data as $key => $value)
 	{
-		// Don't wanna add an empty string as the last thing in the array.
-		if ($i != $token_count - 1)
-		{
-			// This is the total number of single quotes in the token.
-			$total_quotes = preg_match_all("#'#", $tokens[$i], $matches);
-			// Counts single quotes that are preceded by an odd number of backslashes,
-			// which means they're escaped quotes.
-			$escaped_quotes = preg_match_all("/(?<!\\\\)(?>\\\\{2})*\\\\'/", $tokens[$i], $matches);
-
-			$unescaped_quotes = $total_quotes - $escaped_quotes;
-
-			// If the number of unescaped quotes is even, then the delimiter did NOT occur inside a string literal.
-			if (!($unescaped_quotes % 2))
-			{
-				// It's a complete sql statement.
-				$output[] = $tokens[$i];
-				// save memory.
-				$tokens[$i] = '';
-			}
-			else
-			{
-				// incomplete sql statement. keep adding tokens until we have a complete one.
-				// $temp will hold what we have so far.
-				$temp = $tokens[$i] . $delimiter;
-				// save memory..
-				$tokens[$i] = '';
-
-				// Do we have a complete statement yet?
-				$complete_stmt = false;
-
-				for ($j = $i + 1; (!$complete_stmt && ($j < $token_count)); $j++)
-				{
-					// This is the total number of single quotes in the token.
-					$total_quotes = preg_match_all("#'#", $tokens[$j], $matches);
-					// Counts single quotes that are preceded by an odd number of backslashes,
-					// which means they're escaped quotes.
-					$escaped_quotes = preg_match_all("/(?<!\\\\)(?>\\\\{2})*\\\\'/", $tokens[$j], $matches);
-
-					$unescaped_quotes = $total_quotes - $escaped_quotes;
-
-					if (($unescaped_quotes % 2) == 1)
-					{
-						// odd number of unescaped quotes. In combination with the previous incomplete
-						// statement(s), we now have a complete statement. (2 odds always make an even)
-						$output[] = $temp . $tokens[$j];
-
-						// save memory.
-						$tokens[$j] = '';
-						$temp = '';
-
-						// exit the loop.
-						$complete_stmt = true;
-						// make sure the outer loop continues at the right point.
-						$i = $j;
-					}
-					else
-					{
-						// even number of unescaped quotes. We still don't have a complete statement.
-						// (1 odd and 1 even always make an odd)
-						$temp .= $tokens[$j] . $delimiter;
-						// save memory.
-						$tokens[$j] = '';
-					}
-				} // for..
-			} // else
-		}
+		$data[$key] = trim($value) . ';';
 	}
-
-	return $output;
+	// The empty case
+	if (end($data) == ';')
+	{
+		unset($data[key($data)]);
+	}
+	return $data;
 }
 
 /**

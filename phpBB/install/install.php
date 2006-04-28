@@ -1086,7 +1086,7 @@ if ($stage == 3)
 		$delimiter = $available_dbms[$dbms]['DELIM'];
 
 		$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
-		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
+		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
 		$remove_remarks($sql_query);
 
@@ -1116,6 +1116,8 @@ if ($stage == 3)
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
+				// Some versions of PGSQL don't like remarks, lets remove them.
+				remove_remarks($sql_query);
 			break;
 
 			case 'firebird':
@@ -1130,7 +1132,7 @@ if ($stage == 3)
 				//$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', '', $sql_query);
 		}
 
-		$sql_query = preg_replace('#phpbb_#', $table_prefix, $sql_query);
+		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
 		remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');

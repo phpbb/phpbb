@@ -42,7 +42,7 @@ CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments (poster_id);
 CREATE INDEX phpbb_attachments_physical_filename ON phpbb_attachments (physical_filename);
 CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments (filesize);
 
-SELECT SETVAL('phpbb_attachments_seq',(select case when max(attach_id)>0 then max(attach_id)+1 else 1 end from phpbb_attachments));
+
 
 
 /* Table: phpbb_auth_groups */
@@ -72,7 +72,7 @@ CREATE TABLE phpbb_auth_options (
 
 CREATE INDEX phpbb_auth_options_auth_option ON phpbb_auth_options (auth_option);
 
-SELECT SETVAL('phpbb_auth_options_seq',(select case when max(auth_option_id)>0 then max(auth_option_id)+1 else 1 end from phpbb_auth_options));
+
 
 
 /* Table: phpbb_auth_roles */
@@ -90,7 +90,7 @@ CREATE TABLE phpbb_auth_roles (
 CREATE INDEX phpbb_auth_roles_role_type ON phpbb_auth_roles (role_type);
 CREATE INDEX phpbb_auth_roles_role_order ON phpbb_auth_roles (role_order);
 
-SELECT SETVAL('phpbb_auth_roles_seq',(select case when max(role_id)>0 then max(role_id)+1 else 1 end from phpbb_auth_roles));
+
 
 
 /* Table: phpbb_auth_roles_data */
@@ -132,7 +132,7 @@ CREATE TABLE phpbb_banlist (
   CHECK (ban_userid>=0)
 );
 
-SELECT SETVAL('phpbb_banlist_seq',(select case when max(ban_id)>0 then max(ban_id)+1 else 1 end from phpbb_banlist));
+
 
 
 /* Table: phpbb_bbcodes */
@@ -180,7 +180,7 @@ CREATE TABLE phpbb_bots (
 
 CREATE INDEX phpbb_bots_bot_active ON phpbb_bots (bot_active);
 
-SELECT SETVAL('phpbb_bots_seq',(select case when max(bot_id)>0 then max(bot_id)+1 else 1 end from phpbb_bots));
+
 
 
 /* Table: phpbb_cache */
@@ -223,7 +223,7 @@ CREATE TABLE phpbb_disallow (
   PRIMARY KEY (disallow_id)
 );
 
-SELECT SETVAL('phpbb_disallow_seq',(select case when max(disallow_id)>0 then max(disallow_id)+1 else 1 end from phpbb_disallow));
+
 
 
 /* Table: phpbb_drafts */
@@ -246,7 +246,7 @@ CREATE TABLE phpbb_drafts (
 
 CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts (save_time);
 
-SELECT SETVAL('phpbb_drafts_seq',(select case when max(draft_id)>0 then max(draft_id)+1 else 1 end from phpbb_drafts));
+
 
 
 /* Table: phpbb_extensions */
@@ -260,7 +260,7 @@ CREATE TABLE phpbb_extensions (
   CHECK (group_id>=0)
 );
 
-SELECT SETVAL('phpbb_extensions_seq',(select case when max(extension_id)>0 then max(extension_id)+1 else 1 end from phpbb_extensions));
+
 
 
 /* Table: phpbb_extension_groups */
@@ -280,7 +280,7 @@ CREATE TABLE phpbb_extension_groups (
   CHECK (download_mode>=0)
 );
 
-SELECT SETVAL('phpbb_extension_groups_seq',(select case when max(group_id)>0 then max(group_id)+1 else 1 end from phpbb_extension_groups));
+
 
 
 /* Table: phpbb_forums */
@@ -344,7 +344,7 @@ CREATE TABLE phpbb_forums (
 CREATE INDEX phpbb_forums_left_right_id ON phpbb_forums (left_id, right_id);
 CREATE INDEX phpbb_forums_forum_last_post_id ON phpbb_forums (forum_last_post_id);
 
-SELECT SETVAL('phpbb_forums_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from phpbb_forums));
+
 
 
 /* Table: phpbb_forum_access */
@@ -413,7 +413,7 @@ CREATE TABLE phpbb_groups (
 
 CREATE INDEX phpbb_groups_group_legend ON phpbb_groups (group_legend);
 
-SELECT SETVAL('phpbb_groups_seq',(select case when max(group_id)>0 then max(group_id)+1 else 1 end from phpbb_groups));
+
 
 
 /* Table: phpbb_icons */
@@ -433,7 +433,7 @@ CREATE TABLE phpbb_icons (
   CHECK (display_on_posting>=0)
 );
 
-SELECT SETVAL('phpbb_icons_seq',(select case when max(icons_id)>0 then max(icons_id)+1 else 1 end from phpbb_icons));
+
 
 
 /* Table: phpbb_lang */
@@ -449,7 +449,7 @@ CREATE TABLE phpbb_lang (
   PRIMARY KEY (lang_id)
 );
 
-SELECT SETVAL('phpbb_lang_seq',(select case when max(lang_id)>0 then max(lang_id)+1 else 1 end from phpbb_lang));
+
 
 
 /* Table: phpbb_log */
@@ -479,7 +479,7 @@ CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
 CREATE INDEX phpbb_log_user_id ON phpbb_log (user_id);
 
-SELECT SETVAL('phpbb_log_seq',(select case when max(log_id)>0 then max(log_id)+1 else 1 end from phpbb_log));
+
 
 
 /* Table: phpbb_moderator_cache */
@@ -518,7 +518,7 @@ CREATE TABLE phpbb_modules (
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 
-SELECT SETVAL('phpbb_modules_seq',(select case when max(module_id)>0 then max(module_id)+1 else 1 end from phpbb_modules));
+
 
 
 /* Table: phpbb_poll_results */
@@ -595,14 +595,14 @@ CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
 CREATE INDEX phpbb_posts_post_time ON phpbb_posts (post_time);
 
-SELECT SETVAL('phpbb_posts_seq',(select case when max(post_id)>0 then max(post_id)+1 else 1 end from phpbb_posts));
+
 
 
 /* Table: phpbb_privmsgs */
 CREATE SEQUENCE phpbb_privmsgs_seq;
 
 CREATE TABLE phpbb_privmsgs (
-  msg_id INT4 DEFAULT nextval('phpbb_privmsgs_msg_id_seq'),
+  msg_id INT4 DEFAULT nextval('phpbb_privmsgs_seq'),
   root_level INT4  DEFAULT '0' NOT NULL,
   author_id INT4  DEFAULT '0' NOT NULL,
   icon_id INT2  DEFAULT '1' NOT NULL,
@@ -639,7 +639,7 @@ CREATE INDEX phpbb_privmsgs_message_time ON phpbb_privmsgs (message_time);
 CREATE INDEX phpbb_privmsgs_author_id ON phpbb_privmsgs (author_id);
 CREATE INDEX phpbb_privmsgs_root_level ON phpbb_privmsgs (root_level);
 
-SELECT SETVAL('phpbb_privmsgs_seq',(select case when max(msg_id)>0 then max(msg_id)+1 else 1 end from phpbb_privmsgs));
+
 
 
 /* Table: phpbb_privmsgs_folder */
@@ -657,7 +657,7 @@ CREATE TABLE phpbb_privmsgs_folder (
 
 CREATE INDEX phpbb_privmsgs_folder_user_id ON phpbb_privmsgs_folder (user_id);
 
-SELECT SETVAL('phpbb_privmsgs_folder_seq',(select case when max(folder_id)>0 then max(folder_id)+1 else 1 end from phpbb_privmsgs_folder));
+
 
 
 /* Table: phpbb_privmsgs_rules */
@@ -683,7 +683,7 @@ CREATE TABLE phpbb_privmsgs_rules (
   CHECK (rule_folder_id>=0)
 );
 
-SELECT SETVAL('phpbb_privmsgs_rules_seq',(select case when max(rule_id)>0 then max(rule_id)+1 else 1 end from phpbb_privmsgs_rules));
+
 
 
 /* Table: phpbb_privmsgs_to */
@@ -738,7 +738,7 @@ CREATE TABLE phpbb_profile_fields (
 CREATE INDEX phpbb_profile_fields_field_type ON phpbb_profile_fields (field_type);
 CREATE INDEX phpbb_profile_fields_field_order ON phpbb_profile_fields (field_order);
 
-SELECT SETVAL('phpbb_profile_fields_seq',(select case when max(field_id)>0 then max(field_id)+1 else 1 end from phpbb_profile_fields));
+
 
 
 /* Table: phpbb_profile_fields_data */
@@ -788,7 +788,7 @@ CREATE TABLE phpbb_ranks (
   PRIMARY KEY (rank_id)
 );
 
-SELECT SETVAL('phpbb_ranks_seq',(select case when max(rank_id)>0 then max(rank_id)+1 else 1 end from phpbb_ranks));
+
 
 
 /* Table: phpbb_reports_reasons */
@@ -802,7 +802,7 @@ CREATE TABLE phpbb_reports_reasons (
   PRIMARY KEY (reason_id)
 );
 
-SELECT SETVAL('phpbb_reports_reasons_seq',(select case when max(reason_id)>0 then max(reason_id)+1 else 1 end from phpbb_reports_reasons));
+
 
 
 /* Table: phpbb_reports */
@@ -824,7 +824,7 @@ CREATE TABLE phpbb_reports (
   CHECK (report_time>=0)
 );
 
-SELECT SETVAL('phpbb_reports_seq',(select case when max(report_id)>0 then max(report_id)+1 else 1 end from phpbb_reports));
+
 
 
 /* Table: phpbb_search_results */
@@ -850,7 +850,7 @@ CREATE TABLE phpbb_search_wordlist (
 
 CREATE INDEX phpbb_search_wordlist_word_id ON phpbb_search_wordlist (word_id);
 
-SELECT SETVAL('phpbb_search_wordlist_seq',(select case when max(word_id)>0 then max(word_id)+1 else 1 end from phpbb_search_wordlist));
+
 
 
 /* Table: phpbb_search_wordmatch */
@@ -907,7 +907,7 @@ CREATE TABLE phpbb_sitelist (
   PRIMARY KEY (site_id)
 );
 
-SELECT SETVAL('phpbb_sitelist_seq',(select case when max(site_id)>0 then max(site_id)+1 else 1 end from phpbb_sitelist));
+
 
 
 /* Table: phpbb_smilies */
@@ -929,7 +929,7 @@ CREATE TABLE phpbb_smilies (
   CHECK (display_on_posting>=0)
 );
 
-SELECT SETVAL('phpbb_smilies_seq',(select case when max(smiley_id)>0 then max(smiley_id)+1 else 1 end from phpbb_smilies));
+
 
 
 /* Table: phpbb_styles */
@@ -951,7 +951,7 @@ CREATE TABLE phpbb_styles (
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
 
-SELECT SETVAL('phpbb_styles_seq',(select case when max(style_id)>0 then max(style_id)+1 else 1 end from phpbb_styles));
+
 
 
 /* Table: phpbb_styles_template */
@@ -970,7 +970,7 @@ CREATE TABLE phpbb_styles_template (
 
 CREATE UNIQUE INDEX phpbb_styles_template_template_name ON phpbb_styles_template (template_name);
 
-SELECT SETVAL('phpbb_styles_template_seq',(select case when max(template_id)>0 then max(template_id)+1 else 1 end from phpbb_styles_template));
+
 
 
 /* Table: phpbb_styles_template_data */
@@ -999,7 +999,7 @@ CREATE TABLE phpbb_styles_theme (
 
 CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
 
-SELECT SETVAL('phpbb_styles_theme_seq',(select case when max(theme_id)>0 then max(theme_id)+1 else 1 end from phpbb_styles_theme));
+
 
 
 /* Table: phpbb_styles_imageset */
@@ -1092,7 +1092,7 @@ CREATE TABLE phpbb_styles_imageset (
 
 CREATE UNIQUE INDEX phpbb_styles_imageset_imageset_name ON phpbb_styles_imageset (imageset_name);
 
-SELECT SETVAL('phpbb_styles_imageset_seq',(select case when max(imageset_id)>0 then max(imageset_id)+1 else 1 end from phpbb_styles_imageset));
+
 
 
 /* Table: phpbb_topics */
@@ -1156,7 +1156,7 @@ CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);
 CREATE INDEX phpbb_topics_topic_last_post_time ON phpbb_topics (topic_last_post_time);
 
-SELECT SETVAL('phpbb_topics_seq',(select case when max(topic_id)>0 then max(topic_id)+1 else 1 end from phpbb_topics));
+
 
 
 /* Table: phpbb_topics_marking */
@@ -1295,7 +1295,7 @@ CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash);
 CREATE INDEX phpbb_users_username ON phpbb_users (username);
 
-SELECT SETVAL('phpbb_users_seq',(select case when max(user_id)>0 then max(user_id)+1 else 1 end from phpbb_users));
+
 
 
 /* Table: phpbb_warnings */
@@ -1310,7 +1310,7 @@ CREATE TABLE phpbb_warnings (
   PRIMARY KEY (warning_id)
 );
 
-SELECT SETVAL('phpbb_warnings_seq',(select case when max(warning_id)>0 then max(warning_id)+1 else 1 end from phpbb_warnings));
+
 
 
 /* Table: phpbb_words */
@@ -1323,7 +1323,7 @@ CREATE TABLE phpbb_words (
   PRIMARY KEY (word_id)
 );
 
-SELECT SETVAL('phpbb_words_seq',(select case when max(word_id)>0 then max(word_id)+1 else 1 end from phpbb_words));
+
 
 
 /* Table: phpbb_zebra */

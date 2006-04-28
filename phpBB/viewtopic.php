@@ -159,17 +159,18 @@ else
 	$join_sql .= ($sort_dir == 'd') ? " AND p2.post_id >= $post_id" : " AND p2.post_id <= $post_id";
 }
 $extra_fields = (!$post_id)  ? '' : ', COUNT(p2.post_id) AS prev_posts';
-$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, ' . $select_sql . ' ORDER BY p.post_id ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-
+$extra_sql = '';
 if ($user->data['is_registered'])
 {
 	$extra_fields .= ', tw.notify_status';
+	$extra_sql .= ', tw.notify_status';
 	$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON (tw.user_id = ' . $user->data['user_id'] . '
 		AND t.topic_id = tw.topic_id)';
 
 	if ($config['allow_bookmarks'])
 	{
 		$extra_fields .= ', bm.order_id as bookmarked';
+		$extra_sql .= ', bm.order_id';
 		$join_sql_table .= ' LEFT JOIN ' . BOOKMARKS_TABLE . ' bm ON (bm.user_id = ' . $user->data['user_id'] . '
 			AND t.topic_id = bm.topic_id)';
 	}
@@ -177,20 +178,24 @@ if ($user->data['is_registered'])
 	if ($config['load_db_lastread'])
 	{
 		$extra_fields .= ', tt.mark_time, ft.mark_time as forum_mark_time';
+		$extra_sql .= ', tt.mark_time, ft.mark_time';
 		$join_sql_table .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . '
 			AND t.topic_id = tt.topic_id)';
 
 		$join_sql_table .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
-			AND f.forum_id = ft.forum_id)';
+			AND t.forum_id = ft.forum_id)';
 	}
 }
+
+$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, ' . $select_sql . $extra_sql . ' ORDER BY p.post_id ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+
 
 // Join to forum table on topic forum_id unless topic forum_id is zero
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
 $sql = "SELECT $select_sql $extra_fields
-	FROM (" . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t' . ((!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2') . ') ' . 
+	FROM (" . FORUMS_TABLE . ' f' . ((!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2') . ', ' . TOPICS_TABLE . ' t) ' . 
 	$join_sql_table . "
 	WHERE $join_sql
 		AND (f.forum_id = t.forum_id

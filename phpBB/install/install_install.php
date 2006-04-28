@@ -898,8 +898,8 @@ class install_install extends module
 		$remove_remarks = $this->available_dbms[$dbms]['COMMENTS'];
 		$delimiter = $this->available_dbms[$dbms]['DELIM'];
 
-		$sql_query = @fread(@fopen($dbms_schema, 'r'), @filesize($dbms_schema));
-		$sql_query = preg_replace('#phpbb_#is', $table_prefix, $sql_query);
+		$sql_query = @file_get_contents($dbms_schema);
+		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
 		$remove_remarks($sql_query);
 
@@ -917,7 +917,7 @@ class install_install extends module
 		unset($sql_query);
 
 		// Ok tables have been built, let's fill in the basic information
-		$sql_query = fread(fopen('schemas/schema_data.sql', 'r'), filesize('schemas/schema_data.sql'));
+		$sql_query = file_get_contents('schemas/schema_data.sql');
 
 		// Deal with any special comments, used at present for mssql set identity switching
 		switch ($dbms)
@@ -929,6 +929,8 @@ class install_install extends module
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
+				// Some versions of PGSQL don't like remarks, lets remove them.
+				remove_remarks($sql_query);
 			break;
 
 			case 'firebird':
@@ -943,7 +945,7 @@ class install_install extends module
 				//$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', '', $sql_query);
 		}
 
-		$sql_query = preg_replace('#phpbb_#', $table_prefix, $sql_query);
+		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
 		$remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
