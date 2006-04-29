@@ -39,7 +39,7 @@ $lang = array_merge($lang, array(
 	'ATTACH_SIG'				=> 'Attach a signature (signatures can be altered via the UCP)',
 
 	'BBCODE_A_HELP'				=> 'Close all open bbCode tags',
-	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b] \' (alt+b)',
+	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]  (alt+b)',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]  (alt+c)',
 	'BBCODE_E_HELP'				=> 'List: Add list element',
 	'BBCODE_F_HELP'				=> 'Font size: [size=x-small]small text[/size]',

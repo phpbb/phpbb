@@ -33,17 +33,17 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $user, $template;
+		global $lang, $template;
 
 		switch ($sub)
 		{
 			case 'intro' :
-				$this->page_title = $user->lang['SUB_INTRO'];
+				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
-					'TITLE'		=> $user->lang['INSTALL_INTRO'],
-					'BODY'		=> $user->lang['INSTALL_INTRO_BODY'],
-					'L_SUBMIT'	=> $user->lang['NEXT'],
+					'TITLE'		=> $lang['INSTALL_INTRO'],
+					'BODY'		=> $lang['INSTALL_INTRO_BODY'],
+					'L_SUBMIT'	=> $lang['NEXT'],
 					'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements",
 				));
 
@@ -89,13 +89,13 @@ class install_install extends module
 	*/
 	function check_server_requirements($mode, $sub)
 	{
-		global $user, $template, $phpbb_root_path, $phpEx;
+		global $lang, $template, $phpbb_root_path, $phpEx;
 
-		$this->page_title = $user->lang['STAGE_REQUIREMENTS'];
+		$this->page_title = $lang['STAGE_REQUIREMENTS'];
 
 		$template->assign_vars(array(
-			'TITLE'		=> $user->lang['REQUIREMENTS_TITLE'],
-			'BODY'		=> $user->lang['REQUIREMENTS_EXPLAIN'],
+			'TITLE'		=> $lang['REQUIREMENTS_TITLE'],
+			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
 		$passed = array('php' => false, 'db' => false, 'files' => false);
@@ -104,8 +104,8 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
 			'S_FIRST_ROW'		=> true,
-			'LEGEND'			=> $user->lang['PHP_SETTINGS'],
-			'LEGEND_EXPLAIN'	=> $user->lang['PHP_SETTINGS_EXPLAIN'],
+			'LEGEND'			=> $lang['PHP_SETTINGS'],
+			'LEGEND_EXPLAIN'	=> $lang['PHP_SETTINGS_EXPLAIN'],
 		));
 
 		// Test the minimum PHP version
@@ -113,21 +113,21 @@ class install_install extends module
 
 		if (version_compare($php_version, '4.3.3') < 0)
 		{
-			$result = '<b style="color:red">' . $user->lang['NO'] . '</b>';
+			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
 		}
 		else
 		{
 			$passed['php'] = true;
 			// We also give feedback on whether we're running in safe mode
-			$result = '<b style="color:green">' . $user->lang['YES'];
+			$result = '<b style="color:green">' . $lang['YES'];
 			if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
 			{
-				$result .= ', ' . $user->lang['PHP_SAFE_MODE'];
+				$result .= ', ' . $lang['PHP_SAFE_MODE'];
 			}
 			$result .= '</b>';
 		}
 		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $user->lang['PHP_VERSION_REQD'],
+			'TITLE'			=> $lang['PHP_VERSION_REQD'],
 			'RESULT'		=> $result,
 
 			'S_EXPLAIN'		=> false,
@@ -137,16 +137,16 @@ class install_install extends module
 		// Check for register_globals being enabled
 		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
 		{
-			$result = '<b style="color:red">' . $user->lang['NO'] . '</b>';
+			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
 		}
 		else
 		{
-			$result = '<b style="color:green">' . $user->lang['YES'] . '</b>';
+			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
 		}
 
 		$template->assign_block_vars('checks', array(
-			'TITLE'			=> $user->lang['PHP_REGISTER_GLOBALS'],
-			'TITLE_EXPLAIN'	=> $user->lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
+			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
 			'RESULT'		=> $result,
 
 			'S_EXPLAIN'		=> true,
@@ -157,8 +157,8 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
 			'S_FIRST_ROW'		=> false,
-			'LEGEND'			=> $user->lang['PHP_SUPPORTED_DB'],
-			'LEGEND_EXPLAIN'	=> $user->lang['PHP_SUPPORTED_DB_EXPLAIN'],
+			'LEGEND'			=> $lang['PHP_SUPPORTED_DB'],
+			'LEGEND_EXPLAIN'	=> $lang['PHP_SUPPORTED_DB_EXPLAIN'],
 		));
 
 		$dlls_db = array();
@@ -172,8 +172,8 @@ class install_install extends module
 				if (!$this->can_load_dll($dll))
 				{
 					$template->assign_block_vars('checks', array(
-						'TITLE'		=> $user->lang['DLL_' . strtoupper($db_name)],
-						'RESULT'	=> '<b style="color:red">' . $user->lang['UNAVAILABLE'] . '</b>',
+						'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
+						'RESULT'	=> '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>',
 
 						'S_EXPLAIN'	=> false,
 						'S_LEGEND'	=> false,
@@ -183,8 +183,8 @@ class install_install extends module
 			}
 
 			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['DLL_' . strtoupper($db_name)],
-				'RESULT'	=> '<b style="color:green">' . $user->lang['AVAILABLE'] . '</b>',
+				'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
+				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
 
 				'S_EXPLAIN'	=> false,
 				'S_LEGEND'	=> false,
@@ -196,8 +196,8 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
 			'S_FIRST_ROW'		=> false,
-			'LEGEND'			=> $user->lang['PHP_OPTIONAL_MODULE'],
-			'LEGEND_EXPLAIN'	=> $user->lang['PHP_OPTIONAL_MODULE_EXPLAIN'],
+			'LEGEND'			=> $lang['PHP_OPTIONAL_MODULE'],
+			'LEGEND_EXPLAIN'	=> $lang['PHP_OPTIONAL_MODULE_EXPLAIN'],
 		));
 
 		foreach ($this->php_dlls_other as $dll)
@@ -207,8 +207,8 @@ class install_install extends module
 				if (!$this->can_load_dll($dll))
 				{
 					$template->assign_block_vars('checks', array(
-						'TITLE'		=> $user->lang['DLL_' . strtoupper($dll)],
-						'RESULT'	=> '<b style="color:red">' . $user->lang['UNAVAILABLE'] . '</b>',
+						'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
+						'RESULT'	=> '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>',
 
 						'S_EXPLAIN'	=> false,
 						'S_LEGEND'	=> false,
@@ -217,8 +217,8 @@ class install_install extends module
 				}
 			}
 			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['DLL_' . strtoupper($dll)],
-				'RESULT'	=> '<b style="color:green">' . $user->lang['AVAILABLE'] . '</b>',
+				'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
+				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
 
 				'S_EXPLAIN'	=> false,
 				'S_LEGEND'	=> false,
@@ -257,8 +257,8 @@ class install_install extends module
 		}
 
 		$template->assign_block_vars('checks', array(
-			'TITLE'		=> $user->lang['APP_MAGICK'],
-			'RESULT'	=> ($img_imagick) ? '<b style="color:green">' . $user->lang['AVAILABLE'] . ', ' . $img_imagick . '</b>' : '<b style="color:blue">' . $user->lang['NO_LOCATION'] . '</b>',
+			'TITLE'		=> $lang['APP_MAGICK'],
+			'RESULT'	=> ($img_imagick) ? '<b style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</b>' : '<b style="color:blue">' . $lang['NO_LOCATION'] . '</b>',
 
 			'S_EXPLAIN'	=> false,
 			'S_LEGEND'	=> false,
@@ -268,8 +268,8 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
 			'S_FIRST_ROW'		=> false,
-			'LEGEND'			=> $user->lang['FILES_REQUIRED'],
-			'LEGEND_EXPLAIN'	=> $user->lang['FILES_REQUIRED_EXPLAIN'],
+			'LEGEND'			=> $lang['FILES_REQUIRED'],
+			'LEGEND_EXPLAIN'	=> $lang['FILES_REQUIRED_EXPLAIN'],
 		));
 
 		$directories = array('cache/', 'files/', 'store/');
@@ -294,8 +294,8 @@ class install_install extends module
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
-			$exists = ($exists) ? '<b style="color:green">' . $user->lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $user->lang['FILE_NOT_FOUND'] . '</b>';
-			$write = ($write) ? ', <b style="color:green">' . $user->lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $user->lang['FILE_UNWRITEABLE'] . '</b>' : '');
+			$exists = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
+			$write = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -310,8 +310,8 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
 			'S_FIRST_ROW'		=> false,
-			'LEGEND'			=> $user->lang['FILES_OPTIONAL'],
-			'LEGEND_EXPLAIN'	=> $user->lang['FILES_OPTIONAL_EXPLAIN'],
+			'LEGEND'			=> $lang['FILES_OPTIONAL'],
+			'LEGEND_EXPLAIN'	=> $lang['FILES_OPTIONAL_EXPLAIN'],
 		));
 
 		// config.php ... let's just warn the user it's not writeable
@@ -329,8 +329,8 @@ class install_install extends module
 			$write = $exists = false;
 		}
 
-		$exists_str = ($exists) ? '<b style="color:green">' . $user->lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $user->lang['FILE_NOT_FOUND'] . '</b>';
-		$write_str = ($write) ? ', <b style="color:green">' . $user->lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $user->lang['FILE_UNWRITEABLE'] . '</b>' : '');
+		$exists_str = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
+		$write_str = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
 
 		$template->assign_block_vars('checks', array(
 			'TITLE'		=> $dir,
@@ -344,7 +344,7 @@ class install_install extends module
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
 		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $user->lang['INSTALL_START'] : $user->lang['INSTALL_TEST'];
+		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(
@@ -359,9 +359,9 @@ class install_install extends module
 	*/
 	function obtain_database_settings($mode, $sub)
 	{
-		global $user, $template, $phpEx;
+		global $lang, $template, $phpEx;
 
-		$this->page_title = $user->lang['STAGE_DATABASE'];
+		$this->page_title = $lang['STAGE_DATABASE'];
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -379,7 +379,7 @@ class install_install extends module
 			{
 				if (!$this->can_load_dll($this->available_dbms[$dbms]['MODULE']))
 				{
-					$error['db'][] = $user->lang['INST_ERR_NO_DB'];;
+					$error['db'][] = $lang['INST_ERR_NO_DB'];;
 				}
 			}
 
@@ -388,15 +388,15 @@ class install_install extends module
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
 				'S_FIRST_ROW'		=> true,
-				'LEGEND'			=> $user->lang['DB_CONNECTION'],
+				'LEGEND'			=> $lang['DB_CONNECTION'],
 				'LEGEND_EXPLAIN'	=> false,
 			));
 
 			if ($connect_test)
 			{
 				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $user->lang['DB_TEST'],
-					'RESULT'	=> '<b style="color:green">' . $user->lang['SUCCESSFUL_CONNECT'] . '</b>',
+					'TITLE'		=> $lang['DB_TEST'],
+					'RESULT'	=> '<b style="color:green">' . $lang['SUCCESSFUL_CONNECT'] . '</b>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -405,7 +405,7 @@ class install_install extends module
 			else
 			{
 				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $user->lang['DB_TEST'],
+					'TITLE'		=> $lang['DB_TEST'],
 					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
 
 					'S_EXPLAIN'	=> false,
@@ -447,7 +447,7 @@ class install_install extends module
 				{
 					$template->assign_block_vars('options', array(
 						'S_LEGEND'		=> true,
-						'LEGEND'		=> $user->lang[$vars])
+						'LEGEND'		=> $lang[$vars])
 					);
 
 					continue;
@@ -457,10 +457,10 @@ class install_install extends module
 
 				$template->assign_block_vars('options', array(
 					'KEY'			=> $config_key,
-					'TITLE'			=> $user->lang[$vars['lang']],
+					'TITLE'			=> $lang[$vars['lang']],
 					'S_EXPLAIN'		=> $vars['explain'],
 					'S_LEGEND'		=> false,
-					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '',
+					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
 					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
 					)
 				);
@@ -486,7 +486,7 @@ class install_install extends module
 		$s_hidden_fields .= ($connect_test) ? '' : '<input type="hidden" name="testdb" value="true" />';
 //		$url = ($connect_test) ? "install.$phpEx?stage=1" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
 
-		$submit = $user->lang['NEXT_STEP'];
+		$submit = $lang['NEXT_STEP'];
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $submit,
@@ -500,9 +500,9 @@ class install_install extends module
 	*/
 	function obtain_admin_settings($mode, $sub)
 	{
-		global $user, $template, $phpEx;
+		global $lang, $template, $phpEx;
 
-		$this->page_title = $user->lang['STAGE_ADMINISTRATOR'];
+		$this->page_title = $lang['STAGE_ADMINISTRATOR'];
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -520,39 +520,39 @@ class install_install extends module
 			// Check the entered email address and password
 			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
 			{
-				$error[] = $user->lang['INST_ERR_MISSING_DATA'];
+				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
 
 			if ($admin_pass1 != $admin_pass2 && $admin_pass1 != '')
 			{
-				$error[] = $user->lang['INST_ERR_PASSWORD_MISMATCH'];
+				$error[] = $lang['INST_ERR_PASSWORD_MISMATCH'];
 			}
 
 			// Test against the default password rules
 			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
 			{
-				$error[] = $user->lang['INST_ERR_PASSWORD_TOO_SHORT'];
+				$error[] = $lang['INST_ERR_PASSWORD_TOO_SHORT'];
 			}
 
 			if ($admin_pass1 != '' && strlen($admin_pass1) > 30)
 			{
-				$error[] = $user->lang['INST_ERR_PASSWORD_TOO_LONG'];
+				$error[] = $lang['INST_ERR_PASSWORD_TOO_LONG'];
 			}
 
 			if ($board_email1 != $board_email2 && $board_email1 != '')
 			{
-				$error[] = $user->lang['INST_ERR_EMAIL_MISMATCH'];
+				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
 			}
 
 			if ($board_email1 != '' && !preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $board_email1))
 			{
-				$error[] = $user->lang['INST_ERR_EMAIL_INVALID'];
+				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
 				'S_FIRST_ROW'		=> true,
-				'LEGEND'			=> $user->lang['STAGE_ADMINISTRATOR'],
+				'LEGEND'			=> $lang['STAGE_ADMINISTRATOR'],
 				'LEGEND_EXPLAIN'	=> false,
 			));
 
@@ -560,8 +560,8 @@ class install_install extends module
 			{
 				$passed = true;
 				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $user->lang['ADMIN_TEST'],
-					'RESULT'	=> '<b style="color:green">' . $user->lang['TESTS_PASSED'] . '</b>',
+					'TITLE'		=> $lang['ADMIN_TEST'],
+					'RESULT'	=> '<b style="color:green">' . $lang['TESTS_PASSED'] . '</b>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -570,7 +570,7 @@ class install_install extends module
 			else
 			{
 				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $user->lang['ADMIN_TEST'],
+					'TITLE'		=> $lang['ADMIN_TEST'],
 					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
 
 					'S_EXPLAIN'	=> false,
@@ -592,7 +592,7 @@ class install_install extends module
 				{
 					$template->assign_block_vars('options', array(
 						'S_LEGEND'		=> true,
-						'LEGEND'		=> $user->lang[$vars])
+						'LEGEND'		=> $lang[$vars])
 					);
 
 					continue;
@@ -602,10 +602,10 @@ class install_install extends module
 
 				$template->assign_block_vars('options', array(
 					'KEY'			=> $config_key,
-					'TITLE'			=> $user->lang[$vars['lang']],
+					'TITLE'			=> $lang[$vars['lang']],
 					'S_EXPLAIN'		=> $vars['explain'],
 					'S_LEGEND'		=> false,
-					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '',
+					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
 					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
 					)
 				);
@@ -634,7 +634,7 @@ class install_install extends module
 			$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
 		}
 
-		$submit = $user->lang['NEXT_STEP'];
+		$submit = $lang['NEXT_STEP'];
 
 		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=config_file" : $this->p_master->module_url . "?mode=$mode&amp;sub=administrator";
 		$s_hidden_fields .= ($passed) ? '' : '<input type="hidden" name="check" value="true" />';
@@ -651,9 +651,9 @@ class install_install extends module
 	*/
 	function create_config_file($mode, $sub)
 	{
-		global $user, $template, $phpbb_root_path, $phpEx;
+		global $lang, $template, $phpbb_root_path, $phpEx;
 
-		$this->page_title = $user->lang['STAGE_CONFIG_FILE'];
+		$this->page_title = $lang['STAGE_CONFIG_FILE'];
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -758,11 +758,11 @@ class install_install extends module
 
 			// The option to download the config file is always available, so output it here
 			$template->assign_vars(array(
-				'BODY'					=> $user->lang['CONFIG_FILE_UNABLE_WRITE'],
-				'L_DL_CONFIG'			=> $user->lang['DL_CONFIG'],
-				'L_DL_CONFIG_EXPLAIN'	=> $user->lang['DL_CONFIG_EXPLAIN'],
-				'L_DL_DONE'				=> $user->lang['DL_DONE'],
-				'L_DL_DOWNLOAD'			=> $user->lang['DL_DOWNLOAD'],
+				'BODY'					=> $lang['CONFIG_FILE_UNABLE_WRITE'],
+				'L_DL_CONFIG'			=> $lang['DL_CONFIG'],
+				'L_DL_CONFIG_EXPLAIN'	=> $lang['DL_CONFIG_EXPLAIN'],
+				'L_DL_DONE'				=> $lang['DL_DONE'],
+				'L_DL_DOWNLOAD'			=> $lang['DL_DOWNLOAD'],
 				'S_HIDDEN'				=> $s_hidden_fields,
 				'S_SHOW_DOWNLOAD'		=> true,
 				'U_ACTION'				=> $this->p_master->module_url . "?mode=$mode&amp;sub=config_file",
@@ -772,8 +772,8 @@ class install_install extends module
 		else
 		{
 			$template->assign_vars(array(
-				'BODY'		=> $user->lang['CONFIG_FILE_WRITTEN'],
-				'L_SUBMIT'	=> $user->lang['NEXT_STEP'],
+				'BODY'		=> $lang['CONFIG_FILE_WRITTEN'],
+				'L_SUBMIT'	=> $lang['NEXT_STEP'],
 				'S_HIDDEN'	=> $s_hidden_fields,
 				'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=advanced",
 			));
@@ -787,9 +787,9 @@ class install_install extends module
 	*/
 	function obtain_advanced_settings($mode, $sub)
 	{
-		global $user, $template, $phpEx;
+		global $lang, $template, $phpEx;
 
-		$this->page_title = $user->lang['STAGE_ADVANCED'];
+		$this->page_title = $lang['STAGE_ADVANCED'];
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -814,7 +814,7 @@ class install_install extends module
 				{
 					$template->assign_block_vars('options', array(
 						'S_LEGEND'		=> true,
-						'LEGEND'		=> $user->lang[$vars])
+						'LEGEND'		=> $lang[$vars])
 					);
 
 					continue;
@@ -824,10 +824,10 @@ class install_install extends module
 
 				$template->assign_block_vars('options', array(
 					'KEY'			=> $config_key,
-					'TITLE'			=> $user->lang[$vars['lang']],
+					'TITLE'			=> $lang[$vars['lang']],
 					'S_EXPLAIN'		=> $vars['explain'],
 					'S_LEGEND'		=> false,
-					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '',
+					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
 					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
 					)
 				);
@@ -844,14 +844,14 @@ class install_install extends module
 			$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $$config_key . '" />';
 		}
 
-		$submit = $user->lang['NEXT_STEP'];
+		$submit = $lang['NEXT_STEP'];
 
 //		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=final" : $this->p_master->module_url . "?mode=$mode&amp;sub=advanced";
 //		$s_hidden_fields .= ($passed) ? '' : '<input type="hidden" name="check" value="true" />';
 		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
 
 		$template->assign_vars(array(
-			'BODY'		=> $user->lang['STAGE_ADVANCED_EXPLAIN'],
+			'BODY'		=> $lang['STAGE_ADVANCED_EXPLAIN'],
 			'L_SUBMIT'	=> $submit,
 			'S_HIDDEN'	=> $s_hidden_fields,
 			'U_ACTION'	=> $url,
@@ -863,7 +863,7 @@ class install_install extends module
 	*/
 	function load_schema($mode, $sub)
 	{
-		global $db, $user, $template, $phpbb_root_path, $phpEx;
+		global $db, $lang, $template, $phpbb_root_path, $phpEx;
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -1091,9 +1091,9 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $user, $template, $user, $SID, $phpbb_root_path, $phpEx;
+		global $auth, $config, $db, $lang, $template, $user, $SID, $phpbb_root_path, $phpEx;
 
-		$this->page_title = $user->lang['STAGE_FINAL'];
+		$this->page_title = $lang['STAGE_FINAL'];
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -1153,9 +1153,9 @@ class install_install extends module
 		add_log('admin', 'LOG_INSTALL_INSTALLED', $config['version']);
 
 		$template->assign_vars(array(
-			'TITLE'		=> $user->lang['INSTALL_CONGRATS'],
-			'BODY'		=> sprintf($user->lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
-			'L_SUBMIT'	=> $user->lang['INSTALL_LOGIN'],
+			'TITLE'		=> $lang['INSTALL_CONGRATS'],
+			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
+			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> $phpbb_root_path . 'adm/index.' . $phpEx . $SID,
 		));
 	}
@@ -1176,7 +1176,7 @@ class install_install extends module
 	*/
 	function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport)
 	{
-		global $phpbb_root_path, $phpEx, $config, $user;
+		global $phpbb_root_path, $phpEx, $config, $lang;
 
 		// Include the DB layer
 		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
@@ -1190,7 +1190,7 @@ class install_install extends module
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
 		{
 			$db_error = $db->sql_error();
-			$error[] = $user->lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $user->lang['INST_ERR_DB_NO_ERROR']);
+			$error[] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
 		}
 		else
 		{
@@ -1246,7 +1246,7 @@ class install_install extends module
 					// work
 					if (in_array(strtolower($row[$field]), $table_ary))
 					{
-						$error[] = $user->lang['INST_ERR_PREFIX'];
+						$error[] = $lang['INST_ERR_PREFIX'];
 						break;
 					}
 				}
@@ -1322,14 +1322,14 @@ class install_install extends module
 	*/
 	function mail_auth_select($selected_method)
 	{
-		global $user;
+		global $lang;
 
 		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
 		$s_smtp_auth_options = '';
 
 		foreach ($auth_methods as $method)
 		{
-			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . $user->lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
+			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . $lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
 		}
 
 		return $s_smtp_auth_options;

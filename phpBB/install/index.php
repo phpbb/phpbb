@@ -15,11 +15,73 @@ define('IN_INSTALL', true);
 
 $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+
+// Error reporting level and runtime escaping
+//error_reporting(E_ERROR | E_WARNING | E_PARSE);
+error_reporting(E_ALL);
+
+// If we are on PHP >= 6.0.0 we do not need some code
+if (version_compare(phpversion(), '6.0.0', '>='))
+{
+	define('STRIP', false);
+}
+else
+{
+	set_magic_quotes_runtime(0);
+
+	// Protect against GLOBALS tricks
+	if (isset($_REQUEST['GLOBALS']) || isset($_FILES['GLOBALS']))
+	{
+		exit;
+	}
+
+	// Protect against _SESSION tricks
+	if (isset($_SESSION) && !is_array($_SESSION))
+	{
+		exit;
+	}
+
+	// Be paranoid with passed vars
+	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
+	{
+		$not_unset = array('_GET', '_POST', '_COOKIE', '_REQUEST', '_SERVER', '_SESSION', '_ENV', '_FILES', 'phpEx', 'phpbb_root_path');
+
+		// Not only will array_merge give a warning if a parameter
+		// is not an array, it will actually fail. So we check if
+		// _SESSION has been initialised.
+		if (!isset($_SESSION) || !is_array($_SESSION))
+		{
+			$_SESSION = array();
+		}
+
+		// Merge all into one extremely huge array; unset
+		// this later
+		$input = array_merge($_GET, $_POST, $_COOKIE, $_SERVER, $_SESSION, $_ENV, $_FILES);
+
+		foreach ($input as $varname => $void)
+		{
+			if (!in_array($varname, $not_unset))
+			{
+				unset(${$varname});
+			}
+		}
+
+		unset($input);
+	}
+
+	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
+}
 
 @set_time_limit(120);
 
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+// Include essential scripts
+require($phpbb_root_path . 'includes/functions.'.$phpEx);
+include($phpbb_root_path . 'includes/auth.' . $phpEx);
+include($phpbb_root_path . 'includes/session.'.$phpEx);
+include($phpbb_root_path . 'includes/template.'.$phpEx);
+include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
+include($phpbb_root_path . 'includes/acm/acm_main.'.$phpEx);
+include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');
@@ -67,14 +129,26 @@ if (!$language)
 	}
 }
 
-$user->lang_path = $phpbb_root_path . 'language/' . $language . '/';
-$user->add_lang(array('common', 'acp/common', 'acp/board', 'install', 'posting'));
+// And finally, load the relevant language files
+include($phpbb_root_path . 'language/' . $language . '/common.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/acp/common.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/acp/board.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/install.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/posting.'.$phpEx);
 
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
 
-$template->set_custom_template($phpbb_root_path . 'adm/style', 'admin');
-$template->assign_var('T_TEMPLATE_PATH', $phpbb_root_path . 'adm/style');
+// Set PHP error handler to ours
+set_error_handler('msg_handler');
+
+$user = new user();
+$auth = new auth();
+$cache = new cache();
+$template = new Template();
+
+$template->set_custom_template('../adm/style', 'admin');
+$template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
 $install = new module();
 
@@ -195,26 +269,26 @@ class module
 		{
 			return;
 		}
-		define('HEADER_INC', true);
 
-		global $template, $user, $stage;
+		define('HEADER_INC', true);
+		global $template, $lang, $stage;
 
 		$template->assign_vars(array(
-			'L_INSTALL_PANEL'		=> $user->lang['INSTALL_PANEL'],
+			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 
 			'META'					=> $this->get_meta(),
 
-			'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
-			'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
-			'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
-			'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
+			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
+			'S_CONTENT_ENCODING' 	=> $lang['ENCODING'],
+			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
+			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
 			)
 		);
 
-		if (!empty($user->lang['ENCODING']))
+		if (!empty($lang['ENCODING']))
 		{
-			header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
+			header('Content-type: text/html; charset: ' . $lang['ENCODING']);
 		}
 		header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
 		header('Expires: 0');
@@ -254,14 +328,14 @@ class module
 	*/
 	function get_page_title()
 	{
-		global $user;
+		global $lang;
 
 		if (!isset($this->module->page_title))
 		{
 			return '';
 		}
 
-		return (isset($user->lang[$this->module->page_title])) ? $user->lang[$this->module->page_title] : $this->module->page_title;
+		return (isset($lang[$this->module->page_title])) ? $lang[$this->module->page_title] : $this->module->page_title;
 	}
 
 	/**
@@ -277,7 +351,7 @@ class module
 	*/
 	function generate_navigation()
 	{
-		global $user, $template, $phpEx;
+		global $lang, $template, $phpEx;
 
 		if (is_array($this->module_ary))
 		{
@@ -285,7 +359,7 @@ class module
 			foreach ($this->module_ary as $cat_ary)
 			{
 				$cat = $cat_ary['name'];
-				$l_cat = (!empty($user->lang['CAT_' . $cat])) ? $user->lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
+				$l_cat = (!empty($lang['CAT_' . $cat])) ? $lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
 				$cat = strtolower($cat);
 				$url = $this->module_url . '?mode=' . $cat;
 				
@@ -302,7 +376,7 @@ class module
 						$subs = $this->module_ary[$this->id]['subs']; 
 						foreach ($subs as $option)
 						{
-							$l_option = (!empty($user->lang['SUB_' . $option])) ? $user->lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
+							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
 							$url = $this->module_url . '?mode=' . $this->mode . '&amp;sub=' . $option;
 
@@ -320,7 +394,7 @@ class module
 						$matched = false;
 						foreach ($subs as $option)
 						{
-							$l_option = (!empty($user->lang['STAGE_' . $option])) ? $user->lang['STAGE_' . $option] : preg_replace('#_#', ' ', $option);
+							$l_option = (!empty($lang['STAGE_' . $option])) ? $lang['STAGE_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
 							$matched = ($this->sub == $option) ? true : $matched;
 
@@ -351,7 +425,7 @@ class module
 	*/
 	function error($error, $line, $file, $skip = false)
 	{
-		global $user, $db;
+		global $lang, $db;
 
 		if (!$skip)
 		{
@@ -359,7 +433,7 @@ class module
 			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
 			echo '<head>';
 			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-			echo '<title>' . $user->lang['INST_ERR_FATAL'] . '</title>';
+			echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
 			echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
 			echo '</head>';
 			echo '<body id="errorpage">';
@@ -370,10 +444,10 @@ class module
 			echo '		<div class="panel">';
 			echo '			<span class="corners-top"><span></span></span>';
 			echo '			<div id="content">';
-			echo '				<h1>' . $user->lang['INST_ERR_FATAL'] . '</h1>';
+			echo '				<h1>' . $lang['INST_ERR_FATAL'] . '</h1>';
 		}
 
-		echo '		<p>' . $user->lang['INST_ERR_FATAL'] . "</p>\n";
+		echo '		<p>' . $lang['INST_ERR_FATAL'] . "</p>\n";
 		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
 		echo '		<p><b>' . $error . "</b></p>\n";
 
@@ -407,12 +481,12 @@ class module
 	*/
 	function db_error($error, $sql, $line, $file, $skip = false)
 	{
-		global $user, $db;
+		global $lang, $db;
 
 		$this->page_header();
 
-		echo '		<h2 style="color:red;text-align:center">' . $user->lang['INST_ERR_FATAL'] . "</h2>\n";
-		echo '		<p>' . $user->lang['INST_ERR_FATAL_DB'] . "</p>\n";
+		echo '		<h2 style="color:red;text-align:center">' . $lang['INST_ERR_FATAL'] . "</h2>\n";
+		echo '		<p>' . $lang['INST_ERR_FATAL_DB'] . "</p>\n";
 		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
 		echo '		<p>SQL : ' . $sql . "</p>\n";
 		echo '		<p><b>' . $error . "</b></p>\n";
@@ -432,7 +506,7 @@ class module
 	*/
 	function input_field($name, $type, $value='', $options='')
 	{
-		global $user;
+		global $lang;
 		$tpl_type = explode(':', $type);
 		$tpl = '';
 
@@ -460,8 +534,8 @@ class module
 				$tpl_type_cond = explode('_', $tpl_type[1]);
 				$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-				$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']);
-				$tpl_yes = '<input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']);
+				$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" />&nbsp;' . (($type_no) ? $lang['NO'] : $lang['DISABLED']);
+				$tpl_yes = '<input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $lang['YES'] : $lang['ENABLED']);
 
 				$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
 			break;

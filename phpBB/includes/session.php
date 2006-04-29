@@ -17,6 +17,7 @@ class session
 	var $session_id = '';
 	var $cookie_data = array();
 	var $browser = '';
+	var $host = '';
 	var $ip = '';
 	var $page = array();
 	var $current_page_filename = '';
@@ -112,6 +113,7 @@ class session
 		$this->time_now = time();
 		
 		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : 'localhost';
 
 		$this->page = $this->extract_current_page($phpbb_root_path);
 		$this->page['page'] .= (isset($_POST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . 'f=' . intval($_POST['f']) : '';
@@ -373,10 +375,6 @@ class session
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
-/*		echo "<br />$sql";
-		echo "<br />$user_id :: " . sizeof($this->data) . " :: " . (int) is_array($this->data) . " :: " . $db->sql_numrows();
-		print_r($this->cookie_data);
-		print_r($this->data);*/
 		
 		// If no data was returned one or more of the following occured:
 		// Key didn't match one in the DB
@@ -397,34 +395,6 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-/*		echo "<br />$sql";
-		echo "<br />$user_id :: " . sizeof($this->data) . " :: " . (int) is_array($this->data) . " :: " . $db->sql_numrows();
-		print_r($this->cookie_data);
-		print_r($this->data);
-		
-		if ($this->data['user_id'] != ANONYMOUS)
-		{
-			$sql = 'SELECT session_time, session_id
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_user_id = ' . (int) $this->data['user_id'] . '
-				ORDER BY session_time DESC';
-			$result = $db->sql_query_limit($sql, 1);
-
-			if ($sdata = $db->sql_fetchrow($result))
-			{
-				$this->data = array_merge($sdata, $this->data);
-				unset($sdata);
-				$this->session_id = $this->data['session_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
-		}
-		else
-		{
-			$this->data['session_last_visit'] = time();
-		}
-*/
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());

@@ -912,7 +912,10 @@ class smtp_class
 	// Log into server and get possible auth codes if neccessary
 	function log_into_server($hostname, $username, $password, $default_auth_method)
 	{
+		global $user;
+
 		$err_msg = '';
+		$local_host = (empty($user->page)) ? 'localhost' : $user->host;
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
@@ -923,7 +926,7 @@ class smtp_class
 		}
 
 		// Try EHLO first
-		$this->server_send("EHLO [$hostname]");
+		$this->server_send("EHLO [{$local_host}]");
 		if ($err_msg = $this->server_parse('250', __LINE__))
 		{
 			// a 503 response code means that we're already authenticated
@@ -933,7 +936,7 @@ class smtp_class
 			}
 
 			// If EHLO fails, we try HELO			
-			$this->server_send("HELO [$hostname]");
+			$this->server_send("HELO [{$local_host}]");
 			if ($err_msg = $this->server_parse('250', __LINE__))
 			{
 				return ($this->numeric_response_code == 503) ? false : $err_msg;
@@ -1148,7 +1151,7 @@ class smtp_class
 			$uname = posix_uname();
 			$tokens['realm'] = $uname['nodename'];
 		}
-        
+
 		// Maxbuf
 		if (empty($tokens['maxbuf']))
 		{
