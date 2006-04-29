@@ -218,7 +218,14 @@ class acp_board
 						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'type' => 'radio:yes_no', 'explain' => true),
 						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'type' => 'radio:yes_no', 'explain' => true),
 
-//						'legend2'				=> 'GAPTCHA_OPTIONS',
+						'legend2'						=> 'CAPTCHA_OPTIONS',
+						'policy_occlude'				=> array('lang' => 'CAPTCHA_OCCLUDE',		'type' => 'radio:yes_no', 'explain' => false),
+						'policy_occlude_noise_pixel'	=> array('lang' => 'OCCLUDE_NOISE_PIXEL',	'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
+						'policy_occlude_noise_line'		=> array('lang' => 'OCCLUDE_NOISE_LINE',	'type' => 'radio:yes_no', 'explain' => false),
+						'policy_entropy'				=> array('lang' => 'CAPTCHA_ENTROPY',		'type' => 'radio:yes_no', 'explain' => false),
+						'policy_entropy_noise_pixel'	=> array('lang' => 'ENTROPY_NOISE_PIXEL',	'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
+						'policy_entropy_noise_line'		=> array('lang' => 'ENTROPY_NOISE_LINE',	'type' => 'radio:yes_no', 'explain' => false),
+						'policy_3dbitmap'				=> array('lang' => 'CAPTCHA_3DBITMAP',		'type' => 'radio:yes_no', 'explain' => false),
 					)
 				);
 			break;
@@ -586,6 +593,13 @@ class acp_board
 		global $user;
 
 		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES'] . '</option>';
+	}
+
+	function captcha_pixel_noise_select($value, $key = '')
+	{
+		global $user;
+
+		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['LIGHT'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['MEDIUM'] . '</option><option value="3"' . (($value == 3) ? ' selected="selected"' : '') . '>' . $user->lang['HEAVY'] . '</option>';
 	}
 
 	function select_ip_check($value, $key = '')

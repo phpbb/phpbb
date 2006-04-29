@@ -87,7 +87,17 @@ $lang = array_merge($lang, array(
 	'BOXES_LIMIT'				=> 'Max private messages per box',
 	'BOXES_LIMIT_EXPLAIN'		=> 'Users may receive no more than this many messages in each of their private message boxes or zero for unlimited messages.',
 
-	'CAPTCHA'					=> 'Captcha Options',
+	'CAPTCHA_OPTIONS'			=> 'Captcha Options',
+	'CAPTCHA_OCCLUDE'			=> 'Occlude',
+	'CAPTCHA_ENTROPY'			=> 'Entropy',
+	'CAPTCHA_3DBITMAP'			=> '3D Bitmap',
+	'ENTROPY_NOISE_PIXEL'		=> 'Entropy pixel noise',
+	'ENTROPY_NOISE_LINE'		=> 'Entropy line noise',
+	'OCCLUDE_NOISE_PIXEL'		=> 'Occlude pixel noise',
+	'OCCLUDE_NOISE_LINE'		=> 'Occlude line noise',
+	'HEAVY'						=> 'Heavy',
+	'MEDIUM'					=> 'Medium',
+	'LIGHT'						=> 'Light',
 
 	'FULL_FOLDER_ACTION'		=> 'Full folder default action',
 	'FULL_FOLDER_ACTION_EXPLAIN'=> 'Default Action to take if an users folder is full and if the users folder action set is not applicable. For the special folder "SENTBOX" the default action is always deleting old messages.',
