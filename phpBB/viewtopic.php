@@ -794,7 +794,7 @@ while ($row = $db->sql_fetchrow($result))
 	$poster_id = $row['poster_id'];
 	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
 
-	if (!$view || $view != 'show' || $post_id != $row['post_id'])
+	if ($view != 'show' || $post_id != $row['post_id'])
 	{
 		if ($row['foe'])
 		{
@@ -1124,7 +1124,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true,
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], "<a href=\"viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
+			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], '<a href="' . $viewtopic_url . '&amp;p=' . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
 		);
 
 		continue;
@@ -1139,7 +1139,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		{
 			$template->assign_block_vars('postrow', array(
 				'S_IGNORE_POST'	=> true,
-				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#p' . $row['post_id'] . '">', '</a>'))
+				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="' . $viewtopic_url . '&amp;p=' . $row['post_id'] . '&amp;view=encoding#p' . $row['post_id'] . '">', '</a>'))
 			);
 
 			continue;
@@ -1312,7 +1312,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_MCP_REPORT'		=> ($auth->acl_gets('m_report', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;mode=report_details&amp;p=" . $row['post_id'] : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'] : '',
 		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],
-		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$i + 1])) ? $rowset[$i + 1]['post_id'] : '',
+		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
 		'U_NOTES'			=> ($auth->acl_gets('m_', 'a_')) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $poster_id : '',
 		'U_WARN'			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_post&amp;p=" . $row['post_id'] : '',
@@ -1358,7 +1358,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	$prev_post_id = $row['post_id'];
 
-	unset($rowset[$i]);
+	unset($rowset[$post_list[$i]]);
 	unset($attachments[$row['post_id']]);
 }
 unset($rowset);
