@@ -861,14 +861,14 @@ class acp_permissions
 		{
 			foreach ($forum_ary as $auth_option => $user_ary)
 			{
-				$perms += $user_ary;
+				$perms = array_merge($perms, $user_ary);
 			}
 		}
 
 		if (sizeof($perms))
 		{
 			$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
-				WHERE zebra_id IN (' . implode(', ', $perms) . ')
+				WHERE zebra_id IN (' . implode(', ', array_unique($perms)) . ')
 					AND foe = 1';
 			$db->sql_query($sql);
 		}
@@ -882,21 +882,21 @@ class acp_permissions
 	{
 		global $db, $template, $user, $auth;
 
-		$sql = 'SELECT username
+		$sql = 'SELECT user_id, username, user_type
 			FROM ' . USERS_TABLE . '
 			WHERE user_id = ' . $user_id;
 		$result = $db->sql_query($sql);
-		$username = (string) $db->sql_fetchfield('username');
+		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$username)
+		if (!$user_row)
 		{
 			trigger_error('NO_USERS');
 		}
 
 		$template->assign_vars(array(
 			'PERMISSION'			=> $user->lang['acl_' . $permission]['lang'],
-			'PERMISSION_USERNAME'	=> $username)
+			'PERMISSION_USERNAME'	=> $user_row['username'])
 		);
 
 		$template->assign_block_vars('trace', array(
@@ -990,9 +990,9 @@ class acp_permissions
 				$total = ACL_NO;
 			break;
 		}
-		
+
 		$template->assign_block_vars('trace', array(
-			'WHO'			=> $username,
+			'WHO'			=> $user_row['username'],
 			'INFORMATION'	=> $information,
 
 			'S_SETTING_UNSET'	=> ($auth_setting == ACL_UNSET) ? true : false,
@@ -1002,6 +1002,22 @@ class acp_permissions
 			'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
 			'S_TOTAL_NO'		=> ($total == ACL_NO) ? true : false)
 		);
+
+		// Take founder status into account, overwriting the default values
+		if ($user_row['user_type'] == USER_FOUNDER && strpos($permission, 'a_') === 0)
+		{
+			$template->assign_block_vars('trace', array(
+				'WHO'			=> $user_row['username'],
+				'INFORMATION'	=> $user->lang['TRACE_USER_FOUNDER'],
+
+				'S_SETTING_UNSET'	=> ($auth_setting == ACL_UNSET) ? true : false,
+				'S_SETTING_YES'		=> ($auth_setting == ACL_YES) ? true : false,
+				'S_SETTING_NO'		=> ($auth_setting == ACL_NO) ? true : false,
+				'S_TOTAL_UNSET'		=> false,
+				'S_TOTAL_YES'		=> true,
+				'S_TOTAL_NO'		=> false)
+			);
+		}
 	}
 }
 

@@ -70,8 +70,7 @@ class ucp_zebra
 				$db->sql_freeresult($result);
 
 				$add = array_diff($add, $friends, $foes, array($user->data['username']));
-				unset($friends);
-				unset($foes);
+				unset($friends, $foes);
 
 				$add = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $add));
 
@@ -102,9 +101,11 @@ class ucp_zebra
 							{
 								foreach ($forum_ary as $auth_option => $user_ary)
 								{
-									$perms += $user_ary;
+									$perms = array_merge($perms, $user_ary);
 								}
 							}
+
+							$perms = array_unique($perms);
 
 							// This may not be right ... it may yield true when perms equate to deny
 							$user_id_ary = array_diff($user_id_ary, $perms);
@@ -115,32 +116,33 @@ class ucp_zebra
 						{
 							$sql_mode = ($mode == 'friends') ? 'friend' : 'foe';
 
-							switch (SQL_LAYER)
+							$sql_ary = array();
+							foreach ($user_id_ary as $zebra_id)
 							{
-								case 'mysql':
-									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
-										VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
-									$db->sql_query($sql);
+								$sql_ary[] = array(
+									'user_id'		=> $user->data['user_id'],
+									'zebra_id'		=> (int) $zebra_id,
+									$sql_mode		=> 1
+								);
+							}
+
+							if (sizeof($sql_ary))
+							{
+								switch (SQL_LAYER)
+								{
+									case 'mysql':
+									case 'mysql4':
+									case 'mysqli':
+										$db->sql_query('INSERT INTO ' . ZEBRA_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
 									break;
 
-								case 'mysql4':
-								case 'mysqli':
-								case 'mssql':
-								case 'mssql_odbc':
-								case 'sqlite':
-									$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode) 
-										VALUES " . implode(' UNION ALL ', preg_replace('#^([0-9]+)$#', '(' . $user->data['user_id'] . ", \\1, 1)",  $user_id_ary));
-									$db->sql_query($sql);
+									default:
+										foreach ($sql_ary as $ary)
+										{
+											$db->sql_query('INSERT INTO ' . ZEBRA_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+										}
 									break;
-
-								default:
-									foreach ($user_id_ary as $zebra_id)
-									{
-										$sql = 'INSERT INTO ' . ZEBRA_TABLE . " (user_id, zebra_id, $sql_mode)
-											VALUES (" . $user->data['user_id'] . ", $zebra_id, 1)";
-										$db->sql_query($sql);
-									}
-									break;
+								}
 							}
 						}
 						else

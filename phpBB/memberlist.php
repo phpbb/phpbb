@@ -929,14 +929,21 @@ switch ($mode)
 		$pagination_url = "{$phpbb_root_path}memberlist.$phpEx$SID";
 
 		// Build a relevant pagination_url
-		$global_var = ($submit) ? '_POST' : '_GET';
-		foreach ($$global_var as $key => $var)
+		foreach (array('_POST', '_GET') as $global_var)
 		{
-			if (in_array($key, array('submit', 'start', 'mode')) || !$var)
+			foreach ($$global_var as $key => $var)
 			{
-				continue;
+				if ($global_var == '_POST')
+				{
+					unset($_GET[$key]);
+				}
+
+				if (in_array($key, array('submit', 'start', 'mode')) || !$var)
+				{
+					continue;
+				}
+				$pagination_url .= '&amp;' . $key . '=' . urlencode(htmlspecialchars($var));
 			}
-			$pagination_url .= '&amp;' . $key . '=' . urlencode(htmlspecialchars($var));
 		}
 
 		$u_hide_find_member = $pagination_url;

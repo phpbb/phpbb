@@ -29,7 +29,8 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ATTACHMENT'			=> 'Attachment',
+	'ATTACHMENT'						=> 'Attachment',
+	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'Attachment has been disabled',
 
 	'BOOKMARK_ADDED'		=> 'Bookmarked Topic successfully.',
 	'BOOKMARK_REMOVED'		=> 'Removed Bookmarked Topic successfully.',

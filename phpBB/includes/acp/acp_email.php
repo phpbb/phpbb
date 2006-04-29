@@ -194,14 +194,16 @@ class acp_email
 			}
 		}
 
-		// Initial selection
-		$sql = 'SELECT group_id, group_type, group_name
-			FROM ' . GROUPS_TABLE . ' 
-			ORDER BY group_type DESC, group_name ASC';
+		// Exclude bots...
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'BOTS'";
 		$result = $db->sql_query($sql);
+		$bot_group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
 
 		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_USERS'] . '</option>';
-		$select_list .= group_select_options($group_id);
+		$select_list .= group_select_options($group_id, array($bot_group_id));
 		
 		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';

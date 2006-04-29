@@ -145,6 +145,7 @@ $lang = array_merge($lang, array(
 	'TRACE_GROUP_YES_TOTAL_YES'		=> 'This group\'s permission is set to YES, and the total permission is already set to YES, so the total result is kept.',
 	'TRACE_PERMISSION'				=> 'Trace permission - %s',
 	'TRACE_SETTING'					=> 'Trace setting',
+	'TRACE_USER_FOUNDER'			=> 'The user has the founder type set, therefore admin permissions are set to YES by default.',
 	'TRACE_USER_KEPT'				=> 'The user permission is UNSET so the old total value is kept.',
 	'TRACE_USER_NO_TOTAL_NO'		=> 'The user permission is set to no and the total value is set to no, so nothing is changed.',
 	'TRACE_USER_NO_TOTAL_UNSET'		=> 'The user permission is set to no which becomes the total value because it wasn\'t set yet.',

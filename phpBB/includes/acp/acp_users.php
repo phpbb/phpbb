@@ -1302,6 +1302,10 @@ class acp_users
 							$filename = '';
 							$type = $width = $height = 0;
 						}
+						else
+						{
+							$data = array();
+						}
 					}
 
 					if (!sizeof($error))

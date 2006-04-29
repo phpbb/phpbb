@@ -141,8 +141,8 @@ function unique_id($extra = 'c')
 	$val = $config['rand_seed'] . microtime();
 	$val = md5($val);
 	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
-   
-	if($dss_seeded !== true)
+
+	if ($dss_seeded !== true)
 	{
 		set_config('rand_seed', $config['rand_seed']);
 		$dss_seeded = true;
@@ -2194,7 +2194,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '				<h1>General Error</h1>';
 			
 			echo '				<h2>' . $msg_text . '</h2>';
-			echo '				<p>Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+			
+			if (!empty($config['board_contact']))
+			{
+				echo '				<p>Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+			}
+			
 			echo '			</div>';
 			echo '			<span class="corners-bottom"><span></span></span>';
 			echo '		</div>';
@@ -2597,7 +2602,7 @@ function page_footer()
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  (($config['gzip_compress']) ? 'On' : 'Off' ) . ' | Load : '  . (($user->load) ? $user->load : 'N/A'), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{

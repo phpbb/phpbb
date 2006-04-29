@@ -82,10 +82,11 @@ $lang = array_merge($lang, array(
 	
 	'JABBER'				=> 'Jabber',
 
-	'LAST_ACTIVE'			=> 'Last active',
-	'LESS_THAN'				=> 'Less than',
-	'LIST_USER'				=> '1 User',
-	'LIST_USERS'			=> '%d Users',
+	'LAST_ACTIVE'				=> 'Last active',
+	'LESS_THAN'					=> 'Less than',
+	'LIST_USER'					=> '1 User',
+	'LIST_USERS'				=> '%d Users',
+	'LOGIN_EXPLAIN_LEADERS'		=> 'The board administrator requires you to be registered and logged in to view the team listing.',
 	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board administrator requires you to be registered and logged in to view profiles.',
 
 	'MORE_THAN'				=> 'More than',

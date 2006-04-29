@@ -196,7 +196,7 @@ class fulltext_mysql extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || strlen($text[$i]) > $this->config['fulltext_mysql_max_word_len'])
+			if (strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || strlen($text[$i]) > $config['fulltext_mysql_max_word_len'])
 			{
 				unset($text[$i]);
 			}

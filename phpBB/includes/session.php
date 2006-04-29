@@ -139,16 +139,28 @@ class session
 		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 		
 		// Load limit check (if applicable)
-		if (@file_exists('/proc/loadavg') && @is_readable('/proc/loadavg'))
+		if ($config['limit_load'])
 		{
-			if ($load = @file_get_contents('/proc/loadavg'))
+			if (@file_exists('/proc/loadavg') && @is_readable('/proc/loadavg'))
 			{
-				$this->load = floatval(array_slice(explode(' ', $load), 0, 1));
-
-				if ($config['limit_load'] && $this->load > floatval($config['limit_load']))
+				if ($load = @file_get_contents('/proc/loadavg'))
 				{
-					trigger_error('BOARD_UNAVAILABLE');
+					$this->load = array_slice(explode(' ', $load), 0, 1);
+					$this->load = floatval($this->load[0]);
+
+					if ($config['limit_load'] && $this->load > floatval($config['limit_load']))
+					{
+						trigger_error('BOARD_UNAVAILABLE');
+					}
 				}
+				else
+				{
+					set_config('limit_load', '0');
+				}
+			}
+			else
+			{
+				set_config('limit_load', '0');
 			}
 		}
 
@@ -1075,7 +1087,7 @@ class user extends session
 		{
 			global $SID;
 
-			if (strpos($this->page['page_query'], 'mode=reg_details') !== false && $this->page['page_name'] == "ucp.$phpEx")
+			if (strpos($this->page['query_string'], 'mode=reg_details') !== false && $this->page['page_name'] == "ucp.$phpEx")
 			{
 				redirect("ucp.$phpEx$SID&i=profile&mode=reg_details");
 			}

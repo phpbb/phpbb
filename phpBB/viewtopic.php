@@ -57,6 +57,9 @@ if ($view && !$post_id)
 
 		if (!$forum_id)
 		{
+			// Setup user environment so we can process lang string
+			$user->setup('viewtopic');
+
 			trigger_error('NO_TOPIC');
 		}
 	}
@@ -111,6 +114,9 @@ if ($view && !$post_id)
 
 		if (!$row)
 		{
+			// Setup user environment so we can process lang string
+			$user->setup('viewtopic');
+
 			$message = ($view == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS';
 			trigger_error($message);
 		}
@@ -121,6 +127,9 @@ if ($view && !$post_id)
 			// Check for global announcement correctness?
 			if (!$row['forum_id'] && !$forum_id)
 			{
+				// Setup user environment so we can process lang string
+				$user->setup('viewtopic');
+		
 				trigger_error('NO_TOPIC');
 			}
 			else if ($row['forum_id'])
@@ -133,6 +142,9 @@ if ($view && !$post_id)
 	// Check for global announcement correctness?
 	if ((!isset($row) || !$row['forum_id']) && !$forum_id)
 	{
+		// Setup user environment so we can process lang string
+		$user->setup('viewtopic');
+
 		trigger_error('NO_TOPIC');
 	}
 	else if (isset($row) && $row['forum_id'])
@@ -211,6 +223,10 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 	{
 		redirect("viewtopic.$phpEx$SID&f=$forum_id&t=$topic_id");
 	}
+
+	// Setup user environment so we can process lang string
+	$user->setup('viewtopic');
+
 	trigger_error('NO_TOPIC');
 }
 

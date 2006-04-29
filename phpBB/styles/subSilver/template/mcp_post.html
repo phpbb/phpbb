@@ -11,7 +11,7 @@
 	</tr>
 	<tr>
 		<td class="row1" width="20%"><b class="gen">{L_REPORTER}: </b></td>
-		<td class="row2" width="80%"><span class="gen">{REPORTER_NAME} &nbsp; [ <a href="{U_VIEW_REPORTER_PROFILE}">{L_READ_PROFILE}</a><!-- IF S_USER_NOTES --> | <a href="{U_MCP_REPORTER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_REPORTER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
+		<td class="row2" width="80%"><span class="gen">{REPORTER_NAME} &nbsp; [ <!-- IF U_VIEW_REPORTER_PROFILE --><a href="{U_VIEW_REPORTER_PROFILE}">{L_READ_PROFILE}</a><!-- ENDIF --><!-- IF S_USER_NOTES --><!-- IF U_VIEW_REPORTER_PROFILE --> | <!-- ENDIF --><a href="{U_MCP_REPORTER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_REPORTER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
 	</tr>
 	<tr>
 		<td class="row1"><b class="gen">{L_REPORTED}: </b></td>
@@ -47,7 +47,7 @@
 </tr>
 <tr>
 	<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
-	<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a><!-- IF S_USER_NOTES --> | <a href="{U_MCP_USER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_USER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
+	<td class="row2" width="80%"><span class="gen">{POSTER_NAME} &nbsp; [ <!-- IF U_VIEW_PROFILE --><a href="{U_VIEW_PROFILE}">{L_READ_PROFILE}</a><!-- ENDIF --><!-- IF S_USER_NOTES --><!-- IF U_VIEW_PROFILE --> | <!-- ENDIF --><a href="{U_MCP_USER_NOTES}">{L_VIEW_NOTES}</a> | <a href="{U_MCP_WARN_USER}">{L_WARN_USER}</a><!-- ENDIF --> ]</span></td>
 </tr>
 <!-- IF S_CAN_VIEWIP -->
 	<tr>

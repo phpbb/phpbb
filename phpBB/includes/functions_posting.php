@@ -810,10 +810,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$poster = $row['username'];
 
 		// Handle anon users posting with usernames
-		if ($poster_id == ANONYMOUS && $row['post_username'])
+		if ($poster_id == ANONYMOUS)
 		{
-			$poster = $row['post_username'];
-			$poster_rank = $user->lang['GUEST'];
+			$poster = ($row['post_username']) ? $row['post_username'] : $user->lang['GUEST'];
+			$poster_rank = ($row['post_username']) ? $user->lang['GUEST'] : '';
 		}
 
 		$post_subject = $row['post_subject'];

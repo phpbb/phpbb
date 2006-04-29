@@ -529,7 +529,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message = request_var('message', '', true);
 
 	$username			= (isset($_POST['username'])) ? request_var('username', '', true) : $username;
-	$post_edit_reason	= (isset($_POST['edit_reason']) && !empty($_POST['edit_reason']) && $mode == 'edit' && $user->data['user_id'] != $poster_id) ? request_var('edit_reason', '', true) : '';
+	$post_edit_reason	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
 
 	$topic_type			= (isset($_POST['topic_type'])) ? (int) $_POST['topic_type'] : (($mode != 'post') ? $topic_type : POST_NORMAL);
 	$topic_time_limit	= (isset($_POST['topic_time_limit'])) ? (int) $_POST['topic_time_limit'] : (($mode != 'post') ? $topic_time_limit : 0);
@@ -1156,11 +1156,11 @@ $template->assign_vars(array(
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
 	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&f=$forum_id&mode=popup", // do NOT replace & with &amp; here
 
-	'S_PRIVMSGS'			=> false,
-	'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
-	'S_EDIT_POST'			=> ($mode == 'edit'),
-	'S_EDIT_REASON'			=> ($mode == 'edit' && $user->data['user_id'] != $poster_id),
-	'S_DISPLAY_USERNAME'	=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_username)),
+	'S_PRIVMSGS'				=> false,
+	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
+	'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
+	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
+	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_username)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 	'S_DELETE_ALLOWED' 		=> ($mode == 'edit' && (($post_id == $topic_last_post_id && $poster_id == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 	'S_BBCODE_ALLOWED'		=> $bbcode_status,
@@ -1532,16 +1532,16 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		case 'post':
 			$sql_data[TOPICS_TABLE]['sql'] = array(
-				'topic_poster'		=> (int) $user->data['user_id'],
-				'topic_time'		=> $current_time,
-				'forum_id' 			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
-				'icon_id'			=> $data['icon_id'],
-				'topic_approved'	=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
-				'topic_title' 		=> $subject,
-				'topic_first_poster_name' => (!$user->data['is_registered'] && $username) ? stripslashes($username) : $user->data['username'],
-				'topic_type'		=> $topic_type,
-				'topic_time_limit'	=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'topic_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0
+				'topic_poster'				=> (int) $user->data['user_id'],
+				'topic_time'				=> $current_time,
+				'forum_id' 					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
+				'icon_id'					=> $data['icon_id'],
+				'topic_approved'			=> ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
+				'topic_title' 				=> $subject,
+				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? stripslashes($username) : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
+				'topic_type'				=> $topic_type,
+				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
+				'topic_attachment'			=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1638,7 +1638,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_post_id'	=> $data['post_id'],
 				'topic_last_post_time'	=> $current_time,
 				'topic_last_poster_id'	=> (int) $user->data['user_id'],
-				'topic_last_poster_name'=> (!$user->data['is_registered'] && $username) ? stripslashes($username) : $user->data['username']
+				'topic_last_poster_name'=> (!$user->data['is_registered'] && $username) ? stripslashes($username) : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')
 			);
 		}
 

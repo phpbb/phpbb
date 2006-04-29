@@ -396,7 +396,13 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template, $phpEx, $SID, $phpbb_root_path;
+	global $db, $user, $template, $auth;
+	global $phpEx, $SID, $phpbb_root_path;
+
+	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
+	{
+		return;
+	}
 
 	// Get forum parents
 	$forum_parents = get_forum_parents($forum_data);
@@ -405,6 +411,12 @@ function generate_forum_nav(&$forum_data)
 	foreach ($forum_parents as $parent_forum_id => $parent_data)
 	{
 		list($parent_name, $parent_type) = array_values($parent_data);
+
+		// Skip this parent if the user does not have the permission to view it
+		if (!$auth->acl_get('f_list', $parent_forum_id))
+		{
+			continue;
+		}
 
 		$template->assign_block_vars('navlinks', array(
 			'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
@@ -575,7 +587,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
-	global $SID, $template, $auth, $user;
+	global $SID, $template, $auth, $user, $config;
 
 	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
 
@@ -584,8 +596,12 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
 		($auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
 		($auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
-		($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT']
 	);
+
+	if ($config['allow_attachments'])
+	{
+		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT'];
+	}
 
 	foreach ($rules as $rule)
 	{
