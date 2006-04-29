@@ -23,11 +23,12 @@ if (!defined('IN_PHPBB'))
 class template
 {
 
-	// variable that holds all the data we'll be substituting into
-	// the compiled templates. Takes form:
-	// --> $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
-	// if it's a root-level variable, it'll be like this:
-	// --> $this->_tpldata[.][0][varname] == value
+	/** variable that holds all the data we'll be substituting into
+	* the compiled templates. Takes form:
+	* --> $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
+	* if it's a root-level variable, it'll be like this:
+	* --> $this->_tpldata[.][0][varname] == value
+	*/
 	var $_tpldata = array();
 
 	// Root dir and hash of filenames for each template handle.
@@ -38,13 +39,11 @@ class template
 	// this will hash handle names to the compiled/uncompiled code for that handle.
 	var $compiled_code = array();
 
-	var $static_lang;
-
 	/**
 	* Set template location
 	* @public
 	*/
-	function set_template($static_lang = false)
+	function set_template()
 	{
 		global $phpbb_root_path, $config, $user;
 
@@ -54,8 +53,6 @@ class template
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['template_path'] . '_';
 		}
 
-		$this->static_lang = $static_lang;
-
 		return true;
 	}
 
@@ -63,15 +60,13 @@ class template
 	* Set custom template location (able to use directory outside of phpBB)
 	* @public
 	*/
-	function set_custom_template($template_path, $template_name, $static_lang = false)
+	function set_custom_template($template_path, $template_name)
 	{
 		global $phpbb_root_path;
 
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . $template_name . '_';
 		
-		$this->static_lang = $static_lang;
-
 		return true;
 	}
 
@@ -91,7 +86,7 @@ class template
 		{
 			if (empty($filename))
 			{
-				trigger_error("template error - Empty filename specified for $handle", E_USER_ERROR);
+				trigger_error("template->set_filenames: Empty filename specified for $handle", E_USER_ERROR);
 			}
 
 			$this->filename[$handle] = $filename;
@@ -158,7 +153,7 @@ class template
 	{
 		global $user, $phpEx, $config;
 
-		$filename = $this->cachepath . $this->filename[$handle] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
+		$filename = $this->cachepath . $this->filename[$handle] . '.' . $phpEx;
 
 		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
 
@@ -227,7 +222,7 @@ class template
 					else
 					{
 						// Only bother compiling if it doesn't already exist
-						if (!file_exists($this->cachepath . $row['template_filename'] . '.' . (($this->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx))
+						if (!file_exists($this->cachepath . $row['template_filename'] . '.' . $phpEx))
 						{
 							$this->filename[$row['template_filename']] = $row['template_filename'];
 							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));

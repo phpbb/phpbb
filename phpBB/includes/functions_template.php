@@ -71,8 +71,7 @@ class template_compile
 	}
 
 	/**
-	* The all seeing all doing compile method. Parts are inspired by or directly
-	* from Smarty
+	* The all seeing all doing compile method. Parts are inspired by or directly from Smarty
 	* @private
 	*/
 	function compile($code, $no_echo = false, $echo_var = '')
@@ -169,32 +168,18 @@ class template_compile
 				break;
 
 				case 'INCLUDEPHP':
-					if ($config['tpl_php'])
-					{
-						$compile_blocks[] = '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>';
-					}
-					else
-					{
-						$compile_blocks[] = '';
-					}
-					break;
+					$compile_blocks[] = ($config['tpl_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
+				break;
 
 				case 'PHP':
-					if ($config['tpl_php'])
-					{
-						$compile_blocks[] = '<?php ' . array_shift($php_blocks) . ' ?>';
-					}
-					else
-					{
-						$compile_blocks[] = '';
-					}
-					break;
+					$compile_blocks[] = ($config['tpl_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
+				break;
 
 				default:
 					$this->compile_var_tags($blocks[0][$curr_tb]);
 					$trim_check = trim($blocks[0][$curr_tb]);
 					$compile_blocks[] = (!$no_echo) ? ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '') : ((!empty($trim_check)) ? $blocks[0][$curr_tb] : '');
-					break;
+				break;
 			}
 		}
 
@@ -235,17 +220,15 @@ class template_compile
 		}
 
 		// This will handle the remaining root-level varrefs
-		if (!$this->template->static_lang)
-		{
-			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' 	}')); ?>", $text_blocks);
-		}
-		else
-		{
-			global $user;
 
-			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]*)\}#e', "'<?php echo ((isset(\$this->_tpldata[\'.\'][0][\'L_\\1\'])) ? \$this->_tpldata[\'.\'][0][\'L_\\1\'] : \'' . ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '') . '\'); ?>'" , $text_blocks);
-		}
+		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
+		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }')); ?>", $text_blocks);
 
+		// Handle addslashed language variables prefixed with LA_
+		// If a template variable already exist, it will be used in favor of it...
+		$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['LA_\\1'])) ? \$this->_tpldata['.'][0]['LA_\\1'] : ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? addslashes(\$this->_tpldata['.'][0]['L_\\1']) : ((isset(\$user->lang['\\1'])) ? addslashes(\$user->lang['\\1']) : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }'))); ?>", $text_blocks);
+
+		// Handle remaining varrefs
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : ''; ?>", $text_blocks);
 		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
@@ -260,6 +243,7 @@ class template_compile
 	{
 		$no_nesting = false;
 
+		// Is the designer wanting to call another loop in a loop?
 		if (strpos($tag_args, '!') === 0)
 		{
 			// Count the number if ! occurrences (not allowed in vars)
@@ -364,21 +348,10 @@ class template_compile
 
 			switch ($token)
 			{
-				case '!':
-				case '%':
 				case '!==':
-				case '==':
 				case '===':
-				case '>':
-				case '<':
-				case '!=':
-				case '<>':
 				case '<<':
 				case '>>':
-				case '<=':
-				case '>=':
-				case '&&':
-				case '||':
 				case '|':
 				case '^':
 				case '&':
@@ -390,54 +363,65 @@ class template_compile
 				case '*':
 				case '/':
 				case '@':
-					break;
+				break;
 
+				case '==':
 				case 'eq':
 					$token = '==';
-					break;
+				break;
 
+				case '!=':
+				case '<>':
 				case 'ne':
 				case 'neq':
 					$token = '!=';
-					break;
+				break;
 
+				case '<':
 				case 'lt':
 					$token = '<';
-					break;
+				break;
 
+				case '<=':
 				case 'le':
 				case 'lte':
 					$token = '<=';
-					break;
+				break;
 
+				case '>':
 				case 'gt':
 					$token = '>';
-					break;
+				break;
 
+				case '>=':
 				case 'ge':
 				case 'gte':
 					$token = '>=';
-					break;
+				break;
 
+				case '&&':
 				case 'and':
 					$token = '&&';
-					break;
+				break;
 
+				case '||':
 				case 'or':
 					$token = '||';
-					break;
+				break;
 
+				case '!':
 				case 'not':
 					$token = '!';
-					break;
+				break;
 
+				case '%':
 				case 'mod':
 					$token = '%';
-					break;
+				break;
 
 				case '(':
 					array_push($is_arg_stack, $i);
-					break;
+				break;
 
 				case 'is':
 					$is_arg_start = ($tokens[$i-1] == ')') ? array_pop($is_arg_stack) : $i-1;
@@ -448,6 +432,8 @@ class template_compile
 					array_splice($tokens, $is_arg_start, sizeof($tokens), $new_tokens);
 
 					$i = $is_arg_start;
+
+				// no break
 
 				default:
 					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
@@ -460,7 +446,7 @@ class template_compile
 						$token = "(isset($_tok) && sizeof($_tok))";
 					}
 
-					break;
+				break;
 			}
 		}
 
@@ -505,13 +491,15 @@ class template_compile
 				case 'true':
 				case 'false':
 					$match[4] = strtoupper($match[4]);
-					break;
+				break;
+				
 				case '.';
 					$match[4] = doubleval($match[4]);
-					break;
+				break;
+				
 				default:
 					$match[4] = intval($match[4]);
-					break;
+				break;
 			}
 		}
 
@@ -569,7 +557,7 @@ class template_compile
 				{
 					$expr =	"!($is_arg % 2)";
 				}
-				break;
+			break;
 
 			case 'odd':
 				if (@$tokens[$expr_end] == 'by')
@@ -582,7 +570,7 @@ class template_compile
 				{
 					$expr =	"($is_arg %	2)";
 				}
-				break;
+			break;
 
 			case 'div':
 				if (@$tokens[$expr_end] == 'by')
@@ -591,10 +579,10 @@ class template_compile
 					$expr_arg =	$tokens[$expr_end++];
 					$expr =	"!($is_arg % $expr_arg)";
 				}
-				break;
+			break;
 
 			default:
-				break;
+			break;
 		}
 
 		if ($negate_expr)
@@ -673,7 +661,7 @@ class template_compile
 	{
 		global $phpEx, $user;
 
-		$filename = $this->template->cachepath . $this->template->filename[$handle] . '.' . (($this->template->static_lang) ? $user->data['user_lang'] . '.' : '') . $phpEx;
+		$filename = $this->template->cachepath . $this->template->filename[$handle] . '.' . $phpEx;
 
 		if ($fp = @fopen($filename, 'wb'))
 		{
