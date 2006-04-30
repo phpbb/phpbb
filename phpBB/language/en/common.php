@@ -189,7 +189,7 @@ $lang = array_merge($lang, array(
 	'G_INACTIVE_COPPA'			=> 'Unapproved COPPA Users',
 	'G_REGISTERED'				=> 'Registered Users',
 	'G_REGISTERED_COPPA'		=> 'Registered COPPA Users',
-	'G_SUPER_MODERATORS'		=> 'Super Moderators',
+	'G_GLOBAL_MODERATORS'		=> 'Global Moderators',
 
 	'HIDDEN_USERS_ONLINE'		=> '%d Hidden users online',
 	'HIDDEN_USERS_TOTAL'		=> '%d Hidden and ',

@@ -395,6 +395,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_SEARCH'		=> '<b>Altered search settings</b>',
 	'LOG_CONFIG_SERVER'		=> '<b>Altered server settings</b>',
 	'LOG_CONFIG_SETTINGS'	=> '<b>Altered board settings</b>',
+	'LOG_CONFIG_VISUAL'		=> '<b>Altered visual confirmation settings</b>',
 
 	'LOG_DISALLOW_ADD'		=> '<b>Added disallowed username</b><br />&#187; %s',
 	'LOG_DISALLOW_DELETE'	=> '<b>Deleted disallowed username</b>',

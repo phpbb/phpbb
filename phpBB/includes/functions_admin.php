@@ -1812,6 +1812,22 @@ function cache_moderators()
 		{
 			foreach ($forum_id_ary as $forum_id => $auth_ary)
 			{
+				$flag = false;
+				foreach ($auth_ary as $auth_option => $setting)
+				{
+					// Make sure at least one ACL_YES option is set...
+					if ($setting == ACL_YES)
+					{
+						$flag = true;
+						break;
+					}
+				}
+
+				if (!$flag)
+				{
+					continue;
+				}
+
 				$sql_ary[] = array(
 					'forum_id'		=> $forum_id,
 					'user_id'		=> 0,

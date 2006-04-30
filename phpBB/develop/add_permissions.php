@@ -101,9 +101,7 @@ $m_permissions = array(
 $a_permissions = array(
 	'a_'		=> array(0, 1),
 	'a_server'	=> array(0, 1),
-	'a_defaults'=> array(0, 1),
 	'a_board'	=> array(0, 1),
-	'a_cookies'	=> array(0, 1),
 	'a_clearlogs'	=> array(0, 1),
 	'a_words'	=> array(0, 1),
 	'a_icons'	=> array(0, 1),
@@ -219,7 +217,7 @@ foreach ($prefixes as $prefix)
 			mass_auth('group', 0, 'inactive_coppa', $auth_option, ACL_NO);
 			mass_auth('group', 0, 'registered_coppa', $auth_option, ACL_NO);
 			mass_auth('group', 0, 'registered', $auth_option, (($prefix != 'm_' && $prefix != 'a_') ? ACL_YES : ACL_NO));
-			mass_auth('group', 0, 'super_moderators', $auth_option, (($prefix != 'a_') ? ACL_YES : ACL_NO));
+			mass_auth('group', 0, 'global_moderators', $auth_option, (($prefix != 'a_') ? ACL_YES : ACL_NO));
 			mass_auth('group', 0, 'administrators', $auth_option, ACL_YES);
 			mass_auth('group', 0, 'bots', $auth_option, (($prefix != 'm_' && $prefix != 'a_') ? ACL_YES : ACL_NO));
 		}

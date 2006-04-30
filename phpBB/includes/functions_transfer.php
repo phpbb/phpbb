@@ -212,10 +212,16 @@ class transfer
 	function methods()
 	{
 		$methods = array();
+		$disabled_functions = explode(',', @ini_get('disable_functions'));
 
 		if (@extension_loaded('ftp'))
 		{
 			$methods[] = 'ftp';
+		}
+
+		if (!in_array('fsockopen', $disabled_functions))
+		{
+			$methods[] = 'ftp_fsock';
 		}
 
 		return $methods;
@@ -416,6 +422,295 @@ class ftp extends transfer
 	function _site($command)
 	{
 		return @ftp_site($this->connection, $command);
+	}
+}
+
+/**
+* @package phpBB3
+* FTP fsock transfer class
+* @author wGEric
+*/
+class ftp_fsock extends transfer
+{
+	var $data_connection;
+
+	/**
+	* Standard parameters for FTP session
+	*/
+	function ftp_fsock($host, $username, $password, $root_path, $port = 21, $timeout = 10)
+	{
+		$this->host			= $host;
+		$this->port			= $port;
+		$this->username		= $username;
+		$this->password		= $password;
+		$this->timeout		= $timeout;
+
+		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (prefixed with / and no / at the end)
+		$this->root_path	= str_replace('\\', '/', $this->root_path);
+		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path);
+
+		// Init some needed values
+		transfer::transfer();
+
+		return;
+	}
+
+	/**
+	* Requests data
+	*/
+	function data()
+	{
+		global $user;
+
+		return array('host' => 'localhost' , 'username' => 'anonymous', 'password' => '', 'root_path' => $user->page['root_script_path'], 'port' => 21, 'timeout' => 10);
+	}
+
+	/**
+	* Init FTP Session
+	*/
+	function _init()
+	{
+		$errno = 0;
+		$errstr = '';
+
+		// connect to the server
+		$this->connection = @fsockopen($this->host, $this->port, $errno, $errstr, $this->timeout);
+
+		if (!$this->connection || !$this->_check_command())
+		{
+			return false;
+		}
+
+		@stream_set_timeout($this->connection, $this->timeout);
+
+		// login
+		if (!$this->_send_command('USER', $this->username))
+		{
+			return false;
+		}
+
+		if (!$this->_send_command('PASS', $this->password))
+		{
+			return false;
+		}
+
+		// change to the root directory
+		if (!$this->_chdir($this->root_path))
+		{
+			return 'Unable to change directory';
+		}
+
+		return true;
+	}
+
+	/**
+	* Create Directory (MKDIR)
+	*/
+	function _mkdir($dir)
+	{
+		return $this->_send_command('MKD', $dir);
+	}
+
+	/**
+	* Remove directory (RMDIR)
+	*/
+	function _rmdir($dir)
+	{
+		return $this->_send_command('RMD', $dir);
+	}
+
+	/**
+	* Change current working directory (CHDIR)
+	*/
+	function _chdir($dir = '')
+	{
+		if (substr($dir, -1, 1) == '/')
+		{
+			$dir = substr($dir, 0, -1);
+		}
+
+		return $this->_send_command('CWD', $dir);
+	}
+
+	/**
+	* change file permissions (CHMOD)
+	*/
+	function _chmod($file, $perms)
+	{
+		return $this->_send_command('SITE CHMOD', $perms . ' ' . $file);;
+	}
+
+	/**
+	* Upload file to location (PUT)
+	*/
+	function _put($from_file, $to_file)
+	{
+		// We only use the BINARY file mode to cicumvent rewrite actions from ftp server (mostly linefeeds being replaced)
+		// 'I' == BINARY
+		// 'A' == ASCII
+		if (!$this->_send_command('TYPE', 'I'))
+		{
+			return false;
+		}
+
+		$this->_putcmd('STOR', $to_file, false);
+
+		// open the connection to send file over
+		if (!$this->_open_data_connection())
+		{
+			return false;
+		}
+
+		// send the file
+		$fp = @fopen($from_file, 'rb');
+		while (!@feof($fp))
+		{
+			@fwrite($$this->data_connection, @fread($fp, 4096));
+		}
+		@fclose($fp);
+
+		// close connection
+		$this->_close_data_connection();
+
+		return $this->_check_command();
+	}
+
+	/**
+	* Delete file (DELETE)
+	*/
+	function _delete($file)
+	{
+		return $this->_send_command('DELE', $file);
+	}
+
+	/**
+	* Close ftp session (CLOSE)
+	*/
+	function _close()
+	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
+		return $this->_send_command('QUIT');
+	}
+
+	/**
+	* Return current working directory (CWD)
+	* At the moment not used by parent class
+	*/
+	function _cwd()
+	{
+		$this->_send_command('PWD', '', false);
+		return preg_replace('#^[0-9]{3} "(.+)" .+\r\n#', '\\1', $this->_check_command(true));
+	}
+
+	/**
+	* Return list of files in a given directory (LS)
+	* At the moment not used by parent class
+	*/
+	function _ls($dir = './')
+	{
+		if (!$this->_open_data_connection())
+		{
+			return false;
+		}
+
+		$this->_send_command('NLST', $dir);
+
+		$list = array();
+		while (!@feof($this->data_connection))
+		{
+			$list[] = preg_replace('#[\r\n]#', '', @fgets($this->data_connection, 512));
+		}
+		$this->_close_data_connection();
+
+		return $list;
+	}
+
+	/**
+	* Send a command to server (FTP fsock only function)
+	*/
+	function _send_command($command, $args = '', $check = true)
+	{
+		if (!empty($args))
+		{
+			$command = "$command $args";
+		}
+
+		fwrite($this->connection, $command . "\r\n");
+
+		if ($check === true && !$this->_check_command())
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	* Opens a connection to send data (FTP fosck only function)
+	*/
+	function _open_data_connection()
+	{
+		$this->_send_command('PASV', '', false);
+
+		if (!$ip_port = $this->_check_command(true))
+		{
+			return false;
+		}
+
+		// open the connection to start sending the file
+		if (!preg_match('#[0-9]{1,3},[0-9]{1,3},[0-9]{1,3},[0-9]{1,3},[0-9]+,[0-9]+#', $ip_port, $temp))
+		{
+			// bad ip and port
+			return false;
+		}
+
+		$temp = explode(',', $temp[0]);
+		$server_ip = $temp[0] . '.' . $temp[1] . '.' . $temp[2] . '.' . $temp[3];
+		$server_port = $temp[4] * 256 + $temp[5];
+		$errno = 0;
+		$errstr = '';
+
+		if (!$this->data_connection = @fsockopen($server_ip, $server_port, $errno, $errstr, $this->timeout))
+		{
+			return false;
+		}
+		@stream_set_timeout($$this->data_connection, $this->timeout);
+
+		return true;
+	}
+
+	/**
+	* Closes a connection used to send data
+	*/
+	function _close_data_connection()
+	{
+		return @fclose($this->data_connecton);
+	}
+
+	/**
+	* Check to make sure command was successful (FTP fsock only function)
+	*/
+	function _check_command($return = false)
+	{
+		$response = '';
+
+		do
+		{
+			$result = @fgets($this->connection, 512);
+			$response .= $result;
+		}
+		while (substr($response, 3, 1) != ' ');
+
+		if (!preg_match('#^[123]#', $response))
+		{
+			return false;
+		}
+
+		return ($return) ? $response : true;
 	}
 }
 

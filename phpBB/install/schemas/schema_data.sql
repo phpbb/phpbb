@@ -417,7 +417,7 @@ INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, gr
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('INACTIVE_COPPA', 3, '', 0, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('REGISTERED', 3, '', 0, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('REGISTERED_COPPA', 3, '', 0, '', '', '');
-INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('SUPER_MODERATORS', 3, '00AA00', 0, '', '', '');
+INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('GLOBAL_MODERATORS', 3, '00AA00', 0, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('ADMINISTRATORS', 3, 'AA0000', 1, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('BOTS', 3, '9E8DA7', 1, '', '', '');
 
@@ -671,7 +671,7 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting)
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 
-# SUPER MODERATOR group - moderator rights
+# GLOBAL MODERATOR group - moderator rights
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 6, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chggrp', 'u_chgname');
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 6, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
 

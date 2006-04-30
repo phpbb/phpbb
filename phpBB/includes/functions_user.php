@@ -1417,7 +1417,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 {
 	global $db, $auth;
 
-	$group_order = array('ADMINISTRATORS', 'SUPER_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
+	$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
 
 	// We need both username and user_id info
 	user_get_id_name($user_id_ary, $username_ary);
