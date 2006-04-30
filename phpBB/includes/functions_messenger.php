@@ -915,7 +915,8 @@ class smtp_class
 		global $user;
 
 		$err_msg = '';
-		$local_host = (empty(php_uname('n'))) ? 'localhost' : php_uname('n');
+		$local_host = php_uname('n');
+		$local_host = (empty($local_host)) ? 'localhost' : $local_host;
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
