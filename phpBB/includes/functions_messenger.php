@@ -124,13 +124,13 @@ class messenger
 
 				if (!file_exists($tpl_file))
 				{
-					trigger_error("Could not find email template file [ $template_file ]", E_USER_ERROR);
+					trigger_error("Could not find email template file [ $tpl_file ]", E_USER_ERROR);
 				}
 			}
 
 			if (!($fd = @fopen($tpl_file, 'r')))
 			{
-				trigger_error("Failed opening template file [ $template_file ]", E_USER_ERROR);
+				trigger_error("Failed opening template file [ $tpl_file ]", E_USER_ERROR);
 			}
 
 			$this->tpl_msg[$template_lang . $template_file] = fread($fd, filesize($tpl_file));
