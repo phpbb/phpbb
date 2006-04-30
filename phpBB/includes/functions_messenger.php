@@ -915,7 +915,7 @@ class smtp_class
 		global $user;
 
 		$err_msg = '';
-		$local_host = (empty($user->page)) ? 'localhost' : $user->host;
+		$local_host = (empty(php_uname('n'))) ? 'localhost' : php_uname('n');
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
@@ -966,12 +966,7 @@ class smtp_class
 		$available_methods = explode(' ', $this->commands['AUTH']);
 
 		// Define the auth ordering if the default auth method was not found
-		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5');
-		if (function_exists('posix_uname'))
-		{
-			$auth_methods[] = 'DIGEST-MD5';
-		}
-
+		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5');
 		$method = '';
 
 		if (in_array($default_auth_method, $available_methods))
@@ -1148,8 +1143,7 @@ class smtp_class
 		// Realm
 		if (empty($tokens['realm']))
 		{
-			$uname = posix_uname();
-			$tokens['realm'] = $uname['nodename'];
+			$tokens['realm'] = php_uname('n');
 		}
 
 		// Maxbuf

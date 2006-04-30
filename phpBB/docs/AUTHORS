@@ -1,18 +1,35 @@
 /* ********************************************************************** *\
 /*                                                                        *\
-/*                   phpBB3 © Copyright 2003 phpBB Group                  *\
+/*                   phpBB3 © Copyright 2006 phpBB Group                  *\
 /*                                                                        *\
 /*                       [ http://www.phpbb.com/ ]                        *\
 /*                                                                        *\
 /* ********************************************************************** *\
 
-Please see: http://www.phpbb.com/about/ for a list of all the people involved in phpBB.
+Please see: http://www.phpbb.com/about/ for a list of all the people currently
+involved in phpBB.
+
+phpBB Project Manager : theFinn (James Atkinson)
+
+phpBB Lead Developers : Acyd Burn (Meik Sievertsen)
+                        psoTFX (Paul S. Owen) [2001 - 09/2005]
+
+phpBB Developers      : DavidMJ (David M.)
+                        GrahamJE (Graham Eames)
+                        Naderman (Nils Aderman)
+                        subBlue (Tom Beddard)
+
+                        Ashe (Ludovic Arnaud) - [10/2002 - 11/2003]
+                        BartVB (Bart van Bragt) - [11/2000 - 03/2006]
+
+
 Original subSilver by subBlue Design, Tom Beddard, © 2001 phpBB Group
 
 phpBB3 contains code from the following applications:
 
 LGPL licenced:
 Smarty © 2001, 2002 by ispi of Lincoln, Inc, http://smarty.php.net/
+Text_Diff-0.2.1 http://pear.php.net/package/Text_Diff
 
 GPL licenced:
 phpMyAdmin © 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/ 
@@ -20,3 +37,4 @@ Jabber class © 2003 Carlo Zottmann, http://phpjabber.g-blog.net
 
 PHP License, version 3.0:
 Pear © 2001-2004 PHP Group, http://pear.php.net
+
