@@ -385,7 +385,7 @@ class acp_permission_roles
 		{
 			$template->assign_block_vars('roles', array(
 				'ROLE_NAME'				=> $row['role_name'],
-				'ROLE_DESCRIPTION'		=> nl2br($row['role_description']),
+				'ROLE_DESCRIPTION'		=> (!empty($user->lang[$row['role_description']])) ? $user->lang[$row['role_description']] : nl2br($row['role_description']),
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],

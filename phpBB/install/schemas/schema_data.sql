@@ -221,7 +221,9 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('sessio
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('warnings_last_gc', '0', 1);
 
-# -- auth options
+# MSSQL IDENTITY phpbb_auth_options ON #
+
+# -- Forum related auth options
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_list', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_read', 1);
@@ -253,6 +255,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_moderate', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_report', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_subscribe', 1);
 
+# -- Moderator related auth options
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_', 1, 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_approve', 1, 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_chgposter', 1, 1);
@@ -266,13 +269,16 @@ INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_rep
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_split', 1, 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_warn', 1, 1);
 
+# -- Global moderator auth option (not a local option)
 INSERT INTO phpbb_auth_options (auth_option, is_local, is_global) VALUES ('m_ban', 0, 1);
 
+# -- Admin related auth options
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_aauth', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_attach', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authgroups', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_authusers', 1);
+INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_backup', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_ban', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_bbcode', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_board', 1);
@@ -309,6 +315,7 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_viewauth', 1)
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_viewlogs', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('a_words', 1);
 
+# -- User related auth options
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_sendemail', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_readpm', 1);
@@ -341,6 +348,37 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_forward', 
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_delete', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_img', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_flash', 1);
+
+# MSSQL IDENTITY phpbb_auth_options OFF #
+
+
+# MSSQL IDENTITY phpbb_auth_roles ON #
+
+# -- standard auth roles
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Admin', 'ROLE_DESCRIPTION_ADMIN_STANDARD', 'a_', 1);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Forum Admin', 'ROLE_DESCRIPTION_ADMIN_FORUM', 'a_', 3);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('User and Groups Admin', 'ROLE_DESCRIPTION_ADMIN_USERGROUP', 'a_', 4);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Full Admin', 'ROLE_DESCRIPTION_ADMIN_FULL', 'a_', 2);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('All Features', 'ROLE_DESCRIPTION_USER_FULL', 'u_', 3);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Features', 'ROLE_DESCRIPTION_USER_STANDARD', 'u_', 1);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Features', 'ROLE_DESCRIPTION_USER_LIMITED', 'u_', 2);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('No Private Messages', 'ROLE_DESCRIPTION_USER_NOPM', 'u_', 4);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('No Avatar', 'ROLE_DESCRIPTION_USER_NOAVATAR', 'u_', 5);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Full Moderator', 'ROLE_DESCRIPTION_MOD_FULL', 'm_', 3);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Moderator', 'ROLE_DESCRIPTION_MOD_STANDARD', 'm_', 1);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Simple Moderator', 'ROLE_DESCRIPTION_MOD_SIMPLE', 'm_', 2);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Queue Moderator', 'ROLE_DESCRIPTION_MOD_QUEUE', 'm_', 4);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Full Access', 'ROLE_DESCRIPTION_FORUM_FULL', 'f_', 6);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access', 'ROLE_DESCRIPTION_FORUM_STANDARD', 'f_', 4);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('No Access', 'ROLE_DESCRIPTION_FORUM_NOACCESS', 'f_', 1);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Read Only Access', 'ROLE_DESCRIPTION_FORUM_READONLY', 'f_', 2);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Access', 'ROLE_DESCRIPTION_FORUM_LIMITED', 'f_', 3);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Bot Access', 'ROLE_DESCRIPTION_FORUM_BOT', 'f_', 8);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('On Moderation Queue', 'ROLE_DESCRIPTION_FORUM_ONQUEUE', 'f_', 7);
+INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access + Polls', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 5);
+
+# MSSQL IDENTITY phpbb_auth_roles OFF #
+
 
 # MSSQL IDENTITY phpbb_styles ON #
 
@@ -394,7 +432,7 @@ INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, 
 
 # MSSQL IDENTITY phpbb_users ON #
 
-# -- Users
+# -- Users / Anonymous user
 INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_colour, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (2, 1, 'Anonymous', 0, '', '', 'en', 1, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 
 # -- username: Admin    password: admin (change this or remove it ON #ce everything is working!)
@@ -446,6 +484,7 @@ INSERT INTO phpbb_ranks (rank_title, rank_min, rank_special, rank_image) VALUES 
 
 # -- Bots
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Googlebot', 3, 'Googlebot/', '216.239.46.,64.68.8');
+INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Fastcrawler', 4, 'FAST MetaWeb Crawler', '66.151.181.');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Alexa', 5, 'ia_archiver', '66.28.250.,209.237.238.');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Inktomi', 6, 'Slurp/', '216.35.116.,66.196.');
 
@@ -653,51 +692,127 @@ INSERT INTO phpbb_modules (module_id, module_enabled, module_display, module_nam
 
 # MSSQL IDENTITY phpbb_modules OFF #
 
+# -- Roles data
+
+# Standard Admin (a_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm', 'a_jabber', 'a_phpinfo', 'a_server', 'a_backup', 'a_styles', 'a_clearlogs', 'a_modules', 'a_language', 'a_email', 'a_bots', 'a_search', 'a_aauth', 'a_roles');
+
+# Forum admin (a_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%' AND auth_option IN ('a_', 'a_authgroups', 'a_authusers', 'a_fauth', 'a_forum', 'a_forumadd', 'a_forumdel', 'a_mauth', 'a_prune', 'a_uauth', 'a_viewauth', 'a_viewlogs');
+
+# User and Groups Admin (a_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 3, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%' AND auth_option IN ('a_', 'a_authgroups', 'a_authusers', 'a_ban', 'a_group', 'a_groupadd', 'a_groupdel', 'a_ranks', 'a_uauth', 'a_user', 'a_viewauth', 'a_viewlogs');
+
+# Full Admin (a_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 4, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
+
+# All Features (u_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 5, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
+
+# Standard Features (u_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 6, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_flash', 'u_pm_forward');
+
+# Limited Features (u_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 7, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_pm_flash', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim');
+
+# No Private Messages (u_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_', 'u_chgavatar', 'u_chgcensors', 'u_chgemail', 'u_chgpasswd', 'u_download', 'u_hideonline', 'u_sig', 'u_viewonline', 'u_viewprofile');
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_readpm', 'u_sendpm');
+
+# No Avatar (u_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 9, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_chgavatar', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_pm_flash', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim');
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 9, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_chgavatar');
+
+# Full Moderator (m_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 10, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
+
+# Standard Moderator (m_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 11, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%' AND auth_option IN ('m_', 'm_approve', 'm_delete', 'm_edit', 'm_info', 'm_report', 'm_warn');
+
+# Simple Moderator (m_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 12, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%' AND auth_option NOT IN ('m_approve', 'm_ban', 'm_chgposter', 'm_delete', 'm_warn');
+
+# Queue Moderator (m_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 13, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%' AND auth_option IN ('m_', 'm_approve', 'm_edit');
+
+# Full Access (f_) 14
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 14, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_moderate');
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 14, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_moderate');
+
+# Standard Access (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 15, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_delete', 'f_ignoreflood', 'f_moderate', 'f_poll', 'f_sticky', 'f_user_lock');
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 15, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_moderate');
+
+# No Access (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 16, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option = 'f_';
+
+# Read Only Access (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 17, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_read', 'f_search', 'f_subscribe');
+
+# Limited Access (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 18, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_attach', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_moderate', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg');
+
+# Bot Access (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 19, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_read');
+
+# On Moderation Queue (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 20, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg');
+
+# Standard Access + Polls (f_)
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 21, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_delete', 'f_ignoreflood', 'f_moderate', 'f_sticky', 'f_user_lock');
+INSERT INTO phpbb_auth_roles_data (role_id, auth_option_id, auth_setting) SELECT 21, auth_option_id, 0 FROM phpbb_auth_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_moderate');
+
 
 # Permissions
-# Default user - admin rights
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%';
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
 
-# Default user - moderation rights
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
-INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
+# Admin user - full user features
+INSERT INTO phpbb_auth_users (user_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (2, 0, 0, 5, 0);
 
-# ADMINISTRATOR group - admin and forum rights
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%';
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 7, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_poll', 'f_announce', 'f_sticky', 'f_attach');
+# ADMINISTRATOR Group - full user features
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 0, 0, 5, 0);
 
-# GLOBAL MODERATOR group - moderator rights
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 6, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chggrp', 'u_chgname');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 6, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'm_%';
+# ADMINISTRATOR Group - standard admin
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 0, 0, 1, 0);
 
-# REGISTERED/REGISTERED COPPA groups - common forum rights
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chggrp', 'u_viewonline', 'u_chgname');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_subscribe');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 4, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_edit', 'f_delete', 'f_vote', 'f_votechg', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_report', 'f_subscribe');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 0, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_chgcensors', 'u_chggrp', 'u_viewonline', 'u_chgname');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_edit', 'f_delete', 'f_vote', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_subscribe');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 5, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_', 'f_list', 'f_read', 'f_post', 'f_reply', 'f_edit', 'f_delete', 'f_vote', 'f_votechg', 'f_download', 'f_bbcode', 'f_smilies', 'f_img', 'f_flash', 'f_sigs', 'f_search', 'f_email', 'f_print', 'f_postcount', 'f_report', 'f_subscribe');
+# REGISTERED and REGISTERED_COPPA having standard user features
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (4, 0, 0, 6, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (5, 0, 0, 6, 0);
 
-# GUESTS, INACTIVE, INACTIVE_COPPA group - basic rights
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 1, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 2, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_bbcode', 'f_search', 'f_print');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 3, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read', 'f_post', 'f_reply', 'f_bbcode', 'f_search', 'f_print');
+# GLOBAL_MODERATORS having full user features
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (6, 0, 0, 5, 0);
 
-# BOTS - read/view only
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 8, 1, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read');
-INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_setting) SELECT 8, 2, auth_option_id, 1 FROM phpbb_auth_options WHERE auth_option IN ('f_list', 'f_read');
+# GLOBAL_MODERATORS having full global moderator access
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (6, 0, 0, 10, 0);
 
+# Giving all groups read only access to the first category
+# since administrators and moderators are already within the registered users group we do not need to set them here
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (1, 1, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (2, 1, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (3, 1, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (4, 1, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (5, 1, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (8, 1, 0, 17, 0);
 
-# -- Moderator cache
-INSERT INTO phpbb_moderator_cache (user_id, forum_id, username, group_name) VALUES (2, 2, 'Admin', 'Administrators');
+# Giving access to the first forum
+
+# guests, inactive and inactive_coppa having read only access
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (1, 2, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (2, 2, 0, 17, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (3, 2, 0, 17, 0);
+
+# registered and registered_coppa having standard access
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (4, 2, 0, 15, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (5, 2, 0, 15, 0);
+
+# global moderators having standard access + polls
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (6, 2, 0, 21, 0);
+
+# administrators having full forum and full moderator access
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 2, 0, 14, 0);
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (7, 2, 0, 10, 0);
+
+# Bots having bot access
+INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (8, 2, 0, 19, 0);
 
 
 # MSSQL IDENTITY phpbb_topics ON #
