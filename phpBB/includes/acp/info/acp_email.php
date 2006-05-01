@@ -20,7 +20,7 @@ class acp_email_info
 			'title'		=> 'ACP_MASS_EMAIL',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'email'		=> array('title' => 'ACP_MASS_EMAIL', 'auth' => 'acl_a_email'),
+				'email'		=> array('title' => 'ACP_MASS_EMAIL', 'auth' => 'acl_a_email', 'cat' => array('ACP_GENERAL_TASKS')),
 			),
 		);
 	}

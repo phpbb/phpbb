@@ -20,8 +20,8 @@ class mcp_notes_info
 			'title'		=> 'MCP_NOTES',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'front'				=> array('title' => 'MCP_NOTES_FRONT', 'auth' => ''),
-				'user_notes'		=> array('title' => 'MCP_NOTES_USER', 'auth' => ''),
+				'front'				=> array('title' => 'MCP_NOTES_FRONT', 'auth' => '', 'cat' => array('MCP_NOTES')),
+				'user_notes'		=> array('title' => 'MCP_NOTES_USER', 'auth' => '', 'cat' => array('MCP_NOTES')),
 			),
 		);
 	}

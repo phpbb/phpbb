@@ -20,8 +20,8 @@ class ucp_groups_info
 			'title'		=> 'UCP_USERGROUPS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'membership'	=> array('title' => 'UCP_USERGROUPS_MEMBER', 'auth' => ''),
-				'manage'		=> array('title' => 'UCP_USERGROUPS_MANAGE', 'auth' => ''),
+				'membership'	=> array('title' => 'UCP_USERGROUPS_MEMBER', 'auth' => '', 'cat' => array('UCP_USERGROUPS')),
+				'manage'		=> array('title' => 'UCP_USERGROUPS_MANAGE', 'auth' => '', 'cat' => array('UCP_USERGROUPS')),
 			),
 		);
 	}

@@ -20,10 +20,10 @@ class acp_attachments_info
 			'title'		=> 'ACP_ATTACHMENTS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'attach'		=> array('title' => 'ACP_ATTACHMENT_SETTINGS', 'auth' => 'acl_a_attach'),
-				'extensions'	=> array('title' => 'ACP_MANAGE_EXTENSIONS', 'auth' => 'acl_a_attach'),
-				'ext_groups'	=> array('title' => 'ACP_EXTENSION_GROUPS', 'auth' => 'acl_a_attach'),
-				'orphan'		=> array('title' => 'ACP_ORPHAN_ATTACHMENTS', 'auth' => 'acl_a_attach')
+				'attach'		=> array('title' => 'ACP_ATTACHMENT_SETTINGS', 'auth' => 'acl_a_attach', 'cat' => array('ACP_BOARD_CONFIGURATION', 'ACP_ATTACHMENTS')),
+				'extensions'	=> array('title' => 'ACP_MANAGE_EXTENSIONS', 'auth' => 'acl_a_attach', 'cat' => array('ACP_ATTACHMENTS')),
+				'ext_groups'	=> array('title' => 'ACP_EXTENSION_GROUPS', 'auth' => 'acl_a_attach', 'cat' => array('ACP_ATTACHMENTS')),
+				'orphan'		=> array('title' => 'ACP_ORPHAN_ATTACHMENTS', 'auth' => 'acl_a_attach', 'cat' => array('ACP_ATTACHMENTS'))
 			),
 		);
 	}

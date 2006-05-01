@@ -76,6 +76,7 @@ class install_install extends module
 
 			case 'final' :
 				$this->load_schema($mode, $sub);
+				$this->add_modules($mode, $sub);
 				$this->email_admin($mode, $sub);
 			
 			break;
@@ -1087,6 +1088,118 @@ class install_install extends module
 	}
 
 	/**
+	* Populate the module tables
+	*/
+	function add_modules($mode, $sub)
+	{
+		global $db, $lang, $phpbb_root_path, $phpEx;
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
+		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+
+		$_module = &new acp_modules();
+		$module_classes = array('acp', 'mcp', 'ucp');
+
+		foreach ($module_classes as $module_class)
+		{
+			$categories = array();
+
+			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
+			{
+				$module_data = array(
+					'module_name'		=> '',
+					'module_enabled'	=> 1,
+					'module_display'	=> 1,
+					'parent_id'			=> 0,
+					'module_class'		=> $module_class,
+					'module_langname'	=> $cat_name,
+					'module_mode'		=> '',
+					'module_auth'		=> '',
+				);
+
+				$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
+				if (!$db->sql_query($sql))
+				{
+					$error = $db->sql_error();
+					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+				}
+				$categories[$cat_name] = $db->sql_nextid();
+
+				if (is_array($subs))
+				{
+					foreach ($subs as $level2_name)
+					{
+						$module_data = array(
+							'module_name'		=> '',
+							'module_enabled'	=> 1,
+							'module_display'	=> 1,
+							'parent_id'			=> $categories[$cat_name],
+							'module_class'		=> $module_class,
+							'module_langname'	=> $level2_name,
+							'module_mode'		=> '',
+							'module_auth'		=> '',
+						);
+
+						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
+						if (!$db->sql_query($sql))
+						{
+							$error = $db->sql_error();
+							$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+						}
+						$categories[$level2_name] = $db->sql_nextid();
+					}
+				}
+			}
+
+			// Get the modules we want to add...
+			$module_info = $_module->get_module_infos('', $module_class);
+
+			foreach ($module_info as $module_name => $fileinfo)
+			{
+				foreach ($fileinfo['modes'] as $module_mode => $row)
+				{
+					foreach ($row['cat'] as $cat_name)
+					{
+						$module_data = array(
+							'module_name'		=> $module_name,
+							'module_enabled'	=> 1,
+							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
+							'parent_id'			=> $categories[$cat_name],
+							'module_class'		=> $module_class,
+							'module_langname'	=> $row['title'],
+							'module_mode'		=> $module_mode,
+							'module_auth'		=> $row['auth'],
+						);
+
+	//					$_module->update_module_data($module_data);
+						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
+						if (!$db->sql_query($sql))
+						{
+							$error = $db->sql_error();
+							$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+						}
+					}
+				}
+			}
+
+			// recalculate binary tree
+			if (!function_exists('recalc_btree'))
+			{
+				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			}
+
+			recalc_btree('module_id', MODULES_TABLE, $module_class);
+			$_module->remove_cache_file();
+		}
+	}
+
+	/**
 	* Sends an email to the board administrator with their password and some useful links
 	*/
 	function email_admin($mode, $sub)
@@ -1452,6 +1565,73 @@ class install_install extends module
 			'MODULE'		=> 'sqlite', 
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'
+		),
+	);
+
+	/**
+	* Define the module structure so that we can populate the database without
+	* needing to hard-code module_id values
+	*/
+	var $module_categories = array(
+		'acp'	=> array(
+			'ACP_CAT_GENERAL'		=> array(
+				'ACP_BOARD_CONFIGURATION',
+				'ACP_SERVER_CONFIGURATION',
+				'ACP_CLIENT_COMMUNICATION',
+				'ACP_QUICK_ACCESS',
+			),
+			'ACP_CAT_USERGROUP'		=> array(
+				'ACP_CAT_USERS',
+				'ACP_GROUPS',
+				'ACP_USER_SECURITY',
+			),
+			'ACP_CAT_FORUMS'		=> array(
+				'ACP_CAT_FORUMS',
+				'FORUM_BASED_PERMISSIONS',
+			),
+			'ACP_CAT_POSTING'		=> array(
+				'ACP_MESSAGES',
+				'ACP_ATTACHMENTS',
+			),
+			'ACP_CAT_PERMISSIONS'	=> array(
+				'ACP_BASIC_PERMISSIONS',
+				'ACP_SPECIAL_PERMISSIONS',
+				'ACP_FORUM_BASED_PERMISSIONS',
+				'ACP_PERMISSION_ROLES',
+				'ACP_PERMISSION_MASKS',
+			),
+			'ACP_CAT_STYLES'		=> array(
+				'ACP_STYLE_MANAGEMENT',
+				'ACP_STYLE_COMPONENTS',
+			),
+			'ACP_CAT_MAINTENANCE'	=> array(
+				'ACP_FORUM_LOGS',
+				'ACP_CAT_DATABASE',
+			),
+			'ACP_CAT_SYSTEM'		=> array(
+				'ACP_AUTOMATION',
+				'ACP_GENERAL_TASKS',
+				'ACP_MODULE_MANAGEMENT',
+			),
+			'ACP_CAT_DOT_MODS'		=> null,
+		),
+		'mcp'	=> array(
+			'MCP_MAIN'		=> null,
+			'MCP_NOTES'		=> null,
+			'MCP_QUEUE'		=> null,
+			'MCP_WARN'		=> null,
+			'MCP_REPORTS'	=> null,
+			'MCP_LOGS'		=> null,
+			'MCP_BAN'		=> null,
+		),
+		'ucp'	=> array(
+			'UCP_MAIN'			=> null,
+			'UCP_PROFILE'		=> null,
+			'UCP_PREFS'			=> null,
+			'UCP_PM'			=> null,
+			'UCP_USERGROUPS'	=> null,
+			'UCP_ATTACHMENTS'	=> null,
+			'UCP_ZEBRA'			=> null,
 		),
 	);
 }

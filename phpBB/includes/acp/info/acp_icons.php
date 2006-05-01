@@ -20,8 +20,8 @@ class acp_icons_info
 			'title'		=> 'ACP_ICONS_SMILIES',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'icons'		=> array('title' => 'ACP_ICONS', 'auth' => 'acl_a_icons'),
-				'smilies'	=> array('title' => 'ACP_SMILIES', 'auth' => 'acl_a_icons'),
+				'icons'		=> array('title' => 'ACP_ICONS', 'auth' => 'acl_a_icons', 'cat' => array('ACP_MESSAGES')),
+				'smilies'	=> array('title' => 'ACP_SMILIES', 'auth' => 'acl_a_icons', 'cat' => array('ACP_MESSAGES')),
 			),
 		);
 	}

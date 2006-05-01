@@ -20,7 +20,7 @@ class acp_profile_info
 			'title'		=> 'ACP_CUSTOM_PROFILE_FIELDS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'profile'	=> array('title' => 'ACP_CUSTOM_PROFILE_FIELDS', 'auth' => 'acl_a_profile'),
+				'profile'	=> array('title' => 'ACP_CUSTOM_PROFILE_FIELDS', 'auth' => 'acl_a_profile', 'cat' => array('ACP_CAT_USERS')),
 			),
 		);
 	}

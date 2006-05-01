@@ -20,8 +20,8 @@ class acp_search_info
 			'title'		=> 'ACP_SEARCH',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'settings'	=> array('title' => 'ACP_SEARCH_SETTINGS', 'auth' => 'acl_a_search'),
-				'index'		=> array('title' => 'ACP_SEARCH_INDEX', 'auth' => 'acl_a_search'),
+				'settings'	=> array('title' => 'ACP_SEARCH_SETTINGS', 'auth' => 'acl_a_search', 'cat' => array('ACP_SERVER_CONFIGURATION')),
+				'index'		=> array('title' => 'ACP_SEARCH_INDEX', 'auth' => 'acl_a_search', 'cat' => array('ACP_CAT_DATABASE')),
 			),
 		);
 	}

@@ -20,9 +20,9 @@ class mcp_ban_info
 			'title'		=> 'MCP_BAN',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'email'		=> array('title' => 'MCP_BAN_EMAILS', 'auth' => 'acl_m_ban'),
-				'ip'		=> array('title' => 'MCP_BAN_IPS', 'auth' => 'acl_m_ban'),
-				'user'		=> array('title' => 'MCP_BAN_USERNAMES', 'auth' => 'acl_m_ban'),
+				'email'		=> array('title' => 'MCP_BAN_EMAILS', 'auth' => 'acl_m_ban', 'cat' => array('MCP_BAN')),
+				'ip'		=> array('title' => 'MCP_BAN_IPS', 'auth' => 'acl_m_ban', 'cat' => array('MCP_BAN')),
+				'user'		=> array('title' => 'MCP_BAN_USERNAMES', 'auth' => 'acl_m_ban', 'cat' => array('MCP_BAN')),
 			),
 		);
 	}
