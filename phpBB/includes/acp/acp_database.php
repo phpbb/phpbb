@@ -46,7 +46,7 @@ class acp_database
 						$format	= request_var('method', '');
 						$where	= request_var('where', '');
 
-						$store = $download = false;
+						$store = $download = $structure = $schema_data = false;
 
 						if ($where == 'store_and_download' || $where == 'store')
 						{
@@ -56,6 +56,16 @@ class acp_database
 						if ($where == 'store_and_download' || $where == 'download')
 						{
 							$download = true;
+						}
+
+						if ($type == 'full' || $type == 'structure')
+						{
+							$structure = true;
+						}
+
+						if ($type == 'full' || $type == 'data')
+						{
+							$schema_data = true;
 						}
 
 						@set_time_limit(1200);
@@ -142,7 +152,7 @@ class acp_database
 						foreach ($table as $table_name)
 						{
 							// Get the table structure
-							if ($type == 'full' || $type == 'structure')
+							if ($structure)
 							{
 								switch (SQL_LAYER)
 								{
@@ -194,7 +204,7 @@ class acp_database
 							$sql_data = '';
 
 							// Data
-							if ($type == 'full' || $type == 'data')
+							if ($schema_data)
 							{
 								$sql_data .= "\n";
 
@@ -1040,20 +1050,18 @@ class acp_database
 						}
 
 						$file = request_var('file', '');
-						$data = '';
 
 						preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
 
+						$data = file_get_contents($phpbb_root_path . 'store/' . $matches[0]);
+
 						switch ($matches[2])
 						{
-							case 'sql':
-								$data = file_get_contents($phpbb_root_path . 'store/' . $matches[0]);
-							break;
 							case 'sql.bz2':
-								$data = bzdecompress(file_get_contents($phpbb_root_path . 'store/' . $matches[0]));
+								$data = bzdecompress($data);
 							break;
 							case 'sql.gz':
-								$data = implode(gzfile($phpbb_root_path . 'store/' . $matches[0]));
+								$data = gzinflate(substr($data, 10));
 							break;
 						}
 
