@@ -632,18 +632,21 @@ function compose_pm($id, $mode, $action)
 	{
 		// Get Usernames and Group Names
 		$result = array();
-		if (isset($address_list['u']) && sizeof($address_list['u']))
+		if (!empty($address_list['u']))
 		{
-			$result['u'] = $db->sql_query('SELECT user_id as id, username as name, user_colour as colour
+			$sql = 'SELECT user_id as id, username as name, user_colour as colour
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_map('intval', array_keys($address_list['u']))) . ')');
+				WHERE user_id IN (' . implode(', ', array_map('intval', array_keys($address_list['u']))) . ')';
+			$result['u'] = $db->sql_query($sql);
 		}
 
-		if (isset($address_list['g']) && sizeof($address_list['g']))
+		if (!empty($address_list['g']))
 		{
-			$result['g'] = $db->sql_query('SELECT group_id as id, group_name as name, group_colour as colour
+			$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
 				FROM ' . GROUPS_TABLE . '
-				WHERE group_receive_pm = 1 AND group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')');
+				WHERE group_receive_pm = 1
+					AND group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')';
+			$result['g'] = $db->sql_query($sql);
 		}
 
 		$u = $g = array();
@@ -654,6 +657,11 @@ function compose_pm($id, $mode, $action)
 			{
 				while ($row = $db->sql_fetchrow($result[$type]))
 				{
+					if ($type == 'g')
+					{
+						$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+					}
+					
 					${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
 				}
 				$db->sql_freeresult($result[$type]);
@@ -834,7 +842,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		$type = ($add_to) ? 'to' : 'bcc';
 
 		// Add Selected Groups
-		$group_list = isset($_REQUEST['group_list']) ? array_map('intval', $_REQUEST['group_list']) : array();
+		$group_list = request_var('group_list', array(0));
 
 		if (sizeof($group_list))
 		{

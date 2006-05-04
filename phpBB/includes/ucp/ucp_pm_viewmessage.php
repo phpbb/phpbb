@@ -345,11 +345,11 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 
 			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),
 	
-			'U_MSG_ID'		=> $row['msg_id'],
-			'U_VIEW_MESSAGE'=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_AUTHOR_PROFILE' 	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$author_id",
-			'U_QUOTE' 		=> ($auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM' 	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
+			'U_MSG_ID'			=> $row['msg_id'],
+			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
+			'U_AUTHOR_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$author_id",
+			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
+			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
 		unset($rowset[$id]);
 		$prev_id = $id;

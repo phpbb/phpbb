@@ -696,7 +696,9 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	$db->sql_query($sql);
 }
 
-// Handle all actions possible with marked messages
+/**
+* Handle all actions possible with marked messages
+*/
 function handle_mark_actions($user_id, $mark_action)
 {
 	global $db, $user, $_POST, $phpbb_root_path, $SID, $phpEx;
@@ -936,13 +938,21 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 	
 	foreach ($check_ary as $check_type => $address_field)
 	{
-		// Split Addresses into users and groups
-		preg_match_all('/:?(u|g)_([0-9]+):?/', $address_field, $match);
-
-		$u = $g = array();
-		foreach ($match[1] as $id => $type)
+		if (!is_array($address_field))
 		{
-			${$type}[] = (int) $match[2][$id];
+			// Split Addresses into users and groups
+			preg_match_all('/:?(u|g)_([0-9]+):?/', $address_field, $match);
+
+			$u = $g = array();
+			foreach ($match[1] as $id => $type)
+			{
+				${$type}[] = (int) $match[2][$id];
+			}
+		}
+		else
+		{
+			$u = $address_field['u'];
+			$g = $address_field['g'];
 		}
 
 		$address = array();
@@ -991,7 +1001,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 			}
 			else
 			{
-				$sql = 'SELECT g.group_id, g.group_name, g.group_colour, ug.user_id
+				$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 						WHERE g.group_id IN (' . implode(', ', $g) . ')
 						AND g.group_id = ug.group_id
@@ -1004,6 +1014,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 					{
 						if ($check_type == 'to' || $author_id == $user->data['user_id'] || $row['user_id'] == $user->data['user_id'])
 						{
+							$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 							$address['group'][$row['group_id']] = array('name' => $row['group_name'], 'colour' => $row['group_colour']);
 						}
 					}
@@ -1031,7 +1042,8 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 						'IS_USER'	=> ($type == 'user'),
 						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $id)
+						'U_VIEW'	=> ($type == 'user') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $id,
+						'TYPE'		=> $type)
 					);
 				}
 			}

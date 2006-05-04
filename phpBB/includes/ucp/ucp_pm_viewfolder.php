@@ -85,10 +85,13 @@ function view_folder($id, $mode, $folder_id, $folder)
 		// Okay, lets dump out the page ...
 		if (sizeof($folder_info['pm_list']))
 		{
+			$address_list = array();
+
 			// Build Recipient List if in outbox/sentbox - max two additional queries
-			$recipient_list = $address_list = $address = array();
 			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 			{
+				$recipient_list = $address = array();
+
 				foreach ($folder_info['rowset'] as $message_id => $row)
 				{
 					$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
@@ -108,15 +111,31 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$_types = array('u', 'g');
 				foreach ($_types as $ug_type)
 				{
-					if (isset($recipient_list[$ug_type]) && sizeof($recipient_list[$ug_type]))
+					if (!empty($recipient_list[$ug_type]))
 					{
-						$sql = ($ug_type == 'u') ? 'SELECT user_id as id, username as name, user_colour as colour FROM ' . USERS_TABLE . ' WHERE user_id' : 'SELECT group_id as id, group_name as name, group_colour as colour FROM ' . GROUPS_TABLE . ' WHERE group_id';
+						if ($ug_type == 'u')
+						{
+							$sql = 'SELECT user_id as id, username as name, user_colour as colour 
+								FROM ' . USERS_TABLE . '
+								WHERE user_id';
+						}
+						else
+						{
+							$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
+								FROM ' . GROUPS_TABLE . '
+								WHERE group_id';
+						}
 						$sql .= ' IN (' . implode(', ', array_keys($recipient_list[$ug_type])) . ')';
 
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
 						{
+							if ($ug_type == 'g')
+							{
+								$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+							}
+
 							$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
 						}
 						$db->sql_freeresult($result);
@@ -133,7 +152,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 						}
 					}
 				}
-
 				unset($recipient_list, $address);
 			}
 
