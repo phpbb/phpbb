@@ -577,7 +577,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			switch ($mode)
 			{
 				case 'user':
-					$sql_where = 'WHERE session_user_id IN (' . implode(', ', $banlist_ary) . ')';
+					$sql_where = (in_array('*', $banlist_ary)) ? '' : 'WHERE session_user_id IN (' . implode(', ', $banlist_ary) . ')';
 				break;
 
 				case 'ip':

@@ -1647,7 +1647,7 @@ function decode_message(&$message, $bbcode_uid = '')
 		'#<.*?>#s'
 	);
 	
-	$replace = array('\1', '\1', '\1', '\1', '\1', '', '&lt;\1&gt;');
+	$replace = array('\1', '\1', '\1', '\1', '\1', '', '');
 	
 	$message = preg_replace($match, $replace, $message);
 

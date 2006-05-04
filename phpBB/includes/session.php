@@ -723,7 +723,7 @@ class session
 	*
 	* Checks whether the supplied user is banned by id, ip or email. If no parameters
 	* are passed to the method pre-existing session data is used. If $return is false
-	* this routine does not return on finding a banned user , it outputs a relevant 
+	* this routine does not return on finding a banned user, it outputs a relevant 
 	* message and stops execution.
 	*/
 	function check_ban($user_id = false, $user_ip = false, $user_email = false, $return = false)

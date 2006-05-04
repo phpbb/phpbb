@@ -35,6 +35,10 @@ body {
 	margin: 0;
 }
 
+ul, li {
+	margin-left: 20px;
+}
+
 #wrapheader {
 	height: 120px;
 	background-image: url('./images/background.gif');

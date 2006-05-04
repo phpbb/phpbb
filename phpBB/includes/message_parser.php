@@ -288,7 +288,7 @@ class bbcode_firstpass extends bbcode
 			'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 			'#&\#([0-9]+);#',
 		);
-		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&lt;\1&gt;', '&amp;#\1;');
+		$htm_replace = array('\1', '\1', '\1', '\1', '\1', '&amp;#\1;');
 
 		$out = '';
 
