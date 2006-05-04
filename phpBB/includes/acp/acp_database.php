@@ -304,7 +304,7 @@ class acp_database
 											$fields			= implode(', ', $field_set);
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
-											while ($row = $db->sql_fetchrow($result))
+											while ($row = mysql_fetch_row($result))
 											{
 												$values = array();
 
