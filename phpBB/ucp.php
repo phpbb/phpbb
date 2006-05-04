@@ -74,7 +74,7 @@ switch ($mode)
 			redirect("index.$phpEx$SID");
 		}
 
-		login_box("index.$phpEx$SID");
+		login_box("index.$phpEx");
 	break;
 
 	case 'logout':
@@ -86,7 +86,7 @@ switch ($mode)
 
 		meta_refresh(3, "index.$phpEx$SID");
 
-		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . "{$phpbb_root_path}index.$phpEx$SID" . '">', '</a> ');
+		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . "{$phpbb_root_path}index.$phpEx$SID" . '">', '</a> ');
 		trigger_error($message);
 	break;
 
@@ -103,7 +103,7 @@ switch ($mode)
 				redirect("index.$phpEx$SID");
 			}
 	
-			login_box("index.$phpEx$SID");
+			login_box();
 		}
 
 		$template->set_filenames(array(

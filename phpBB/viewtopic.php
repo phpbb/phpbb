@@ -284,7 +284,7 @@ if (isset($_GET['e']))
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
-		login_box("{$phpbb_root_path}$redirect_url&p=$post_id&e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
+		login_box("{$phpbb_root_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id&amp;p=$post_id&amp;e=$jump_to", $user->lang['LOGIN_NOTIFY_TOPIC']);
 	}
 
 	if ($jump_to > 0)

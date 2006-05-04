@@ -1413,20 +1413,30 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// The result parameter is always an array, holding the relevant informations...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
-			$redirect = request_var('redirect', "index.$phpEx$SID");
-			meta_refresh(3, $redirect);
-
+			$redirect = request_var('redirect', "index.$phpEx");
 			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
-			
-			if ($admin)
+			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
+
+			// append/replace SID (may change during the session for AOL users)
+			if ($redirect === "index.$phpEx")
 			{
-				$message .= '<br /><br />' . sprintf($user->lang['PROCEED_TO_ACP'], '<a href="' . $redirect . '">', '</a> ');
+				$redirect = "index.$phpEx$SID";
 			}
 			else
 			{
-				$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a> ');
+				// Remove previously added sid (should not happen)
+				if (strpos($redirect, '?sid='))
+				{
+					$redirect = preg_replace('/\?sid=[a-z0-9]+(&|&amp;)?/', $SID . '\1', $redirect);
+				}
+				else
+				{
+					$redirect = (strpos($redirect, '?') === false) ? $redirect . $SID : $redirect . str_replace('?', '&amp;', $SID);
+				}
 			}
-			trigger_error($message);
+
+			meta_refresh(3, $redirect);
+			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// The user wanted to re-authenticate, but something failed - log this
@@ -1485,10 +1495,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (!$redirect)
 	{
 		// We just use what the session code determined...
-		$redirect = htmlspecialchars($user->page['page_name'] . $SID . '&' . $user->page['query_string']);
+		$redirect = htmlspecialchars($user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : ''));
 	}
 
-	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $SID));
+	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,

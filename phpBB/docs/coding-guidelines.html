@@ -865,6 +865,8 @@ $action_ary = request_var('action', array('' => 0));
 	<h3>Login checks/redirection: </h3>
 	<p>To show a forum login box use <code>login_forum_box($forum_data)</code>, else use the <code>login_box()</code> function.</p>
 
+	<p>The <code>login_box()</code> function could have a redirect as the first parameter. As a thumb of rule, specify an empty string if you want to redirect to the users current location, else do not add the <code>$SID</code> to the redirect string (for example within the ucp/login we redirect to the board index because else the user would be redirected to the login screen).</p>
+
 	<h3>Sensitive Operations: </h3>
 	<p>For sensitive operations always let the user confirm the action. For the confirmation screens, make use of the <code>confirm_box()</code> function.</p>
 
