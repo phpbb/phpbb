@@ -35,10 +35,6 @@ body {
 	margin: 0;
 }
 
-ul, li {
-	margin-left: 20px;
-}
-
 #wrapheader {
 	height: 120px;
 	background-image: url('./images/background.gif');
@@ -191,14 +187,17 @@ p.postapprove {
 .postdetails {
 	color: #000000;
 	}
+
 .postbody {
 	font-size: 1.3em;
 	line-height: 1.4em;
 	font-family: "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
-	}
-.postbody li {
+}
+
+.postbody li, ul {
 	margin-left: 1.5em;
-	}
+}
+
 .posthilit {
 	background-color: yellow;
 	}
