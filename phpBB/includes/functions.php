@@ -2142,6 +2142,13 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	global $cache, $db, $auth, $template, $config, $user;
 	global $phpEx, $phpbb_root_path, $starttime, $msg_title, $msg_long_text;
 
+	// Check the error reporting level and return if the error level does not match
+	// This also fixes the displayed notices even if we suppress them via @
+	if (($errno & error_reporting()) == 0)
+	{
+		return;
+	}
+
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
 	{
@@ -2153,7 +2160,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_NOTICE:
 		case E_WARNING:
 
-			if (defined('DEBUG_EXTRA'))
+			/**
+			* @todo Think about removing the if-condition within the final product, since we no longer enable DEBUG by default and we will maybe adjust the error reporting level
+			*/			
+			if (defined('DEBUG'))
 			{
 				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.php') === false)
 				{
@@ -2214,6 +2224,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			exit;
 		break;
 
+		case E_USER_WARNING:
 		case E_USER_NOTICE:
 
 			define('IN_ERROR_HANDLER', true);
@@ -2597,7 +2608,7 @@ function page_footer()
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (!empty($_REQUEST['explain']) && $auth->acl_get('a_') && method_exists($db, 'sql_report'))
+		if (!empty($_REQUEST['explain']) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
 		{
 			$db->sql_report('display');
 		}
