@@ -2152,13 +2152,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	global $cache, $db, $auth, $template, $config, $user;
 	global $phpEx, $phpbb_root_path, $starttime, $msg_title, $msg_long_text;
 
-	// Check the error reporting level and return if the error level does not match
-	// This also fixes the displayed notices even if we suppress them via @
-	if (($errno & error_reporting()) == 0)
-	{
-		return;
-	}
-
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
 	{
@@ -2170,14 +2163,22 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_NOTICE:
 		case E_WARNING:
 
+			// Check the error reporting level and return if the error level does not match
+			// Additionally do not display notices if we suppress them via @
+			// If DEBUG_EXTRA is defined the default level is E_ALL
+			if (($errno & ((defined('DEBUG_EXTRA') && error_reporting()) ? E_ALL : error_reporting())) == 0)
+			{
+				return;
+			}
+
 			/**
 			* @todo Think about removing the if-condition within the final product, since we no longer enable DEBUG by default and we will maybe adjust the error reporting level
 			*/			
 			if (defined('DEBUG'))
 			{
-				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.php') === false)
+				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 				{
-					echo '<b>[phpBB Debug Extra] PHP Notice</b>: in file <b>' . str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $errfile) . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
+					echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $errfile) . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 				}
 			}
 		

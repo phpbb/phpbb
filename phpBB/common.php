@@ -23,8 +23,7 @@ if (!defined('IN_PHPBB'))
 $starttime = explode(' ', microtime());
 $starttime = $starttime[1] + $starttime[0];
 
-// error_reporting(E_ERROR | E_WARNING | E_PARSE);
-error_reporting(E_ALL);
+error_reporting(E_ERROR | E_WARNING | E_PARSE);
 
 /*
 * Remove variables created by register_globals from the global scope
