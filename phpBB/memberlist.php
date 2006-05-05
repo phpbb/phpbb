@@ -113,12 +113,27 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id
-			FROM (' . USERS_TABLE . ' u, ' . GROUPS_TABLE . ' g)
-			LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.group_id = g.group_id AND ug.user_id = ' . $user->data['user_id'] . ')
-			WHERE u.user_id IN (' . implode(', ', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . ')
-				AND u.group_id = g.group_id
-			ORDER BY g.group_name ASC, u.username ASC';
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'u.user_id, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
+
+			'FROM'		=> array(
+				USERS_TABLE		=> 'u',
+				GROUPS_TABLE	=> 'g'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
+					'ON'	=> 'ug.group_id = g.group_id AND ug.user_id = ' . $user->data['user_id']
+				)
+			),
+
+			'WHERE'		=> 'u.user_id IN (' . implode(', ', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . ')
+								AND u.group_id = g.group_id',
+
+			'GROUP_BY'	=> 'g.group_name ASC, u.username ASC'
+		));
+
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

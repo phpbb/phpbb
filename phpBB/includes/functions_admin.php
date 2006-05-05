@@ -1733,15 +1733,29 @@ function cache_moderators()
 		$ug_id_ary = array_keys($hold_ary);
 
 		// Remove users who have group memberships with DENY moderator permissions
-		$sql = 'SELECT a.forum_id, ug.user_id
-			FROM  (' . ACL_OPTIONS_TABLE . '  o, ' . ACL_GROUPS_TABLE . ' a,  ' . USER_GROUP_TABLE . '  ug)
-			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
-			WHERE (o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
-				AND ((a.auth_setting = ' . ACL_NO . ' AND r.auth_setting IS NULL)
-					OR r.auth_setting = ' . ACL_NO . ')
-				AND a.group_id = ug.group_id
-				AND ug.user_id IN (' . implode(', ', $ug_id_ary) . ")
-				AND o.auth_option LIKE 'm\_%'";
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'a.forum_id, ug.user_id',
+
+			'FROM'		=> array(
+				ACL_OPTIONS_TABLE	=> 'o',
+				USER_GROUP_TABLE	=> 'ug',
+				ACL_GROUPS_TABLE	=> 'a'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				)
+			),
+
+			'WHERE'		=> '(o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
+								AND ((a.auth_setting = ' . ACL_NO . ' AND r.auth_setting IS NULL)
+									OR r.auth_setting = ' . ACL_NO . ')
+								AND a.group_id = ug.group_id
+								AND ug.user_id IN (' . implode(', ', $ug_id_ary) . ")
+								AND o.auth_option LIKE 'm\_%'",
+		));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

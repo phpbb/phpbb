@@ -192,6 +192,67 @@ class dbal
 	}
 
 	/**
+	* Build sql statement from array for select and select distinct statements
+	*
+	* Possible query values: SELECT, SELECT_DISTINCT
+	*/
+	function sql_build_query($query, $array)
+	{
+		$sql = '';
+		switch ($query)
+		{
+			case 'SELECT':
+			case 'SELECT_DISTINCT';
+
+				if ($query == 'SELECT_DISTINCT')
+				{
+					$sql .= 'SELECT DISTINCT';
+				}
+				else
+				{
+					$sql .= 'SELECT';
+				}
+
+				$sql .= ' ' . $array['SELECT'];
+				$sql .= ' FROM ';
+
+				$table_array = array();
+				foreach ($array['FROM'] as $table_name => $alias)
+				{
+					$table_array[] = $table_name . ' ' . $alias;
+				}
+
+				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));
+
+				if (!empty($array['LEFT_JOIN']))
+				{
+					foreach ($array['LEFT_JOIN'] as $join)
+					{
+						$sql .= ' LEFT JOIN ' . key($join['FROM']) . ' ' . current($join['FROM']) . ' ON (' . $join['ON'] . ')';
+					}
+				}
+
+				if (!empty($array['WHERE']))
+				{
+					$sql .= ' WHERE ' . $this->_sql_custom_build('WHERE', $array['WHERE']);
+				}
+
+				if (!empty($array['GROUP_BY']))
+				{
+					$sql .= ' GROUP BY ' . $array['GROUP_BY'];
+				}
+
+				if (!empty($array['ORDER_BY']))
+				{
+					$sql .= ' ORDER BY ' . $array['ORDER_BY'];
+				}
+
+			break;
+		}
+		return $sql;
+	}
+
+	/**
 	* display sql error page
 	*/
 	function sql_error($sql = '')

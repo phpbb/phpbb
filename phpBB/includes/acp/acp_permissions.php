@@ -344,14 +344,29 @@ class acp_permissions
 					$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')' : 'AND a.forum_id <> 0');
 					$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
 
-					$sql = 'SELECT DISTINCT u.username, u.user_regdate, u.user_id
-						FROM (' . USERS_TABLE . ' u, ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_USERS_TABLE . ' a)
-						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
-						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
-							$sql_permission_option
-							$sql_forum_id
-							AND u.user_id = a.user_id
-						ORDER BY u.username, u.user_regdate ASC";
+					$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+						'SELECT'	=> 'u.username, u.user_regdate, u.user_id',
+
+						'FROM'		=> array(
+							USERS_TABLE			=> 'u',
+							ACL_OPTIONS_TABLE	=> 'o',
+							ACL_USERS_TABLE		=> 'a'
+						),
+
+						'LEFT_JOIN'	=> array(
+							array(
+								'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+								'ON'	=> 'a.auth_role_id = r.role_id'
+							)
+						),
+
+						'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
+											$sql_permission_option
+											$sql_forum_id
+											AND u.user_id = a.user_id",
+
+						'ORDER_BY'	=> 'u.username, u.user_regdate ASC'
+					));
 					$result = $db->sql_query($sql);
 
 					$s_defined_user_options = '';
@@ -363,14 +378,29 @@ class acp_permissions
 					}
 					$db->sql_freeresult($result);
 
-					$sql = 'SELECT DISTINCT g.group_type, g.group_name, g.group_id 
-						FROM (' . GROUPS_TABLE . ' g, ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_GROUPS_TABLE . ' a)
-						LEFT JOIN ' . ACL_ROLES_DATA_TABLE . " r ON (a.auth_role_id = r.role_id)
-						WHERE (a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
-							$sql_permission_option
-							$sql_forum_id
-							AND g.group_id = a.group_id
-						ORDER BY g.group_type DESC, g.group_name ASC";
+					$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+						'SELECT'	=> 'g.group_type, g.group_name, g.group_id',
+
+						'FROM'		=> array(
+							GROUPS_TABLE		=> 'g',
+							ACL_OPTIONS_TABLE	=> 'o',
+							ACL_USERS_TABLE		=> 'a'
+						),
+
+						'LEFT_JOIN'	=> array(
+							array(
+								'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+								'ON'	=> 'a.auth_role_id = r.role_id'
+							)
+						),
+
+						'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
+											$sql_permission_option
+											$sql_forum_id
+											AND g.group_id = a.group_id",
+
+						'ORDER_BY'	=> 'g.group_type DESC, g.group_name ASC'
+					));
 					$result = $db->sql_query($sql);
 
 					$s_defined_group_options = '';

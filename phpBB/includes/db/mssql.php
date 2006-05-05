@@ -98,7 +98,6 @@ class dbal_mssql extends dbal
 		{
 			global $cache;
 
-			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -331,6 +330,15 @@ class dbal_mssql extends dbal
 		}
 
 		return $error;
+	}
+
+	/**
+	* Build db-specific query data
+	* @private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		return $data;
 	}
 
 	/**

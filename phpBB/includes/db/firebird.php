@@ -56,6 +56,7 @@ class dbal_firebird extends dbal
 		switch ($status)
 		{
 			case 'begin':
+				$result = true;
 				$this->transaction = true;
 				break;
 
@@ -90,7 +91,6 @@ class dbal_firebird extends dbal
 		{
 			global $cache;
 
-			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
 
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
@@ -320,6 +320,15 @@ class dbal_firebird extends dbal
 	}
 
 	/**
+	* Build db-specific query data
+	* @private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		return $data;
+	}
+
+	/**
 	* return sql error array
 	* @private
 	*/
@@ -360,7 +369,7 @@ class dbal_firebird extends dbal
 				{
 					// Take the time spent on parsing rows into account
 				}
-				@ibase_freeresult($result);
+				@ibase_free_result($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

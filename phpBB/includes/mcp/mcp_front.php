@@ -123,16 +123,34 @@ function mcp_front_view($id, $mode, $action)
 
 		if ($total)
 		{
-			$sql = 'SELECT r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name
-				FROM (' . REPORTS_TABLE . ' r, ' . REASONS_TABLE . ' rr,' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u)
-				LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = p.forum_id)
-				WHERE r.post_id = p.post_id
-					AND r.report_closed = 0
-					AND r.reason_id = rr.reason_id
-					AND p.topic_id = t.topic_id
-					AND r.user_id = u.user_id
-					AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')
-				ORDER BY p.post_id DESC';
+			$sql = $db->sql_build_query('SELECT', array(
+				'SELECT'	=> 'r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+
+				'FROM'		=> array(
+					REPORTS_TABLE	=> 'r',
+					REASONS_TABLE	=> 'rr',
+					TOPICS_TABLE	=> 't',
+					USERS_TABLE		=> 'u',
+					POSTS_TABLE		=> 'p'
+
+				),
+
+				'LEFT_JOIN'	=> array(
+					array(
+						'FROM'	=> array(FORUMS_TABLE => 'f'),
+						'ON'	=> 'f.forum_id = p.forum_id'
+					)
+				),
+
+				'WHERE'		=> 'r.post_id = p.post_id
+									AND r.report_closed = 0
+									AND r.reason_id = rr.reason_id
+									AND p.topic_id = t.topic_id
+									AND r.user_id = u.user_id
+									AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')',
+
+				'ORDER_BY'	=> 'p.post_id DESC'
+			));
 			$result = $db->sql_query_limit($sql, 5);
 
 			while ($row = $db->sql_fetchrow($result))

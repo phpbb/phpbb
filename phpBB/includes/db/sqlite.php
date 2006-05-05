@@ -94,7 +94,6 @@ class dbal_sqlite extends dbal
 		{
 			global $cache;
 
-			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -283,6 +282,15 @@ class dbal_sqlite extends dbal
 			'message'	=> @sqlite_error_string(@sqlite_last_error($this->db_connect_id)),
 			'code'		=> @sqlite_last_error($this->db_connect_id)
 		);
+	}
+
+	/**
+	* Build db-specific query data
+	* @private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		return $data;
 	}
 
 	/**

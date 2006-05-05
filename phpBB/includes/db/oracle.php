@@ -90,7 +90,6 @@ class dbal_oracle extends dbal
 		{
 			global $cache;
 
-			$query = preg_replace('#FROM \(([^)]*)\)(,|[\n\r\t ]+(?:WHERE|LEFT JOIN)) #', 'FROM \1\2 ', $query);
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -359,6 +358,11 @@ class dbal_oracle extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
+	}
+
+	function _sql_custom_build($stage, $data)
+	{
+		return $data;
 	}
 
 	/**

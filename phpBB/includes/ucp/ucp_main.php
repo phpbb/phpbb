@@ -216,25 +216,36 @@ class ucp_main
 					}
 				}
 
+				$sql_array = array(
+					'SELECT'	=> 'f.*',
+
+					'FROM'		=> array(
+						FORUMS_WATCH_TABLE	=> 'fw',
+						FORUMS_TABLE		=> 'f'
+					),
+
+					'WHERE'		=> "fw.user_id = " . $user->data['user_id'] . ' 
+										AND f.forum_id = fw.forum_id',
+
+					'ORDER_BY'	=> 'left_id'
+				);
+
 				if ($config['load_db_lastread'])
 				{
-					$sql_join = ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
-					$lastread_select = ', ft.mark_time ';
+					$sql_array['LEFT_JOIN'] = array(
+						array(
+							'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+							'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
+						)
+					);
+					$sql_array['SELECT'] .= ', ft.mark_time ';
 				}
 				else
 				{
-					$sql_join = '';
-					$lastread_select = '';
-
 					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 				}
 
-				$sql = "SELECT f.*$lastread_select 
-					FROM (" . FORUMS_TABLE . ' f, ' . FORUMS_WATCH_TABLE . " fw)
-					$sql_join
-					WHERE fw.user_id = " . $user->data['user_id'] . ' 
-						AND f.forum_id = fw.forum_id 
-					ORDER BY left_id';
+				$sql = $db->sql_build_query('SELECT', $sql_array);
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
@@ -315,31 +326,34 @@ class ucp_main
 					);
 				}
 				
-				$sql_join = ($config['load_db_lastread']) ? ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id'] . ')' : '';
-				$sql_f_select = ($config['load_db_lastread']) ? ', ft.mark_time AS forum_mark_time' : '';
-				$sql_t_select = '';
+				$sql_array = array(
+					'SELECT'	=> 't.*',
 
-				if ($config['load_db_track'])
-				{
-					$sql_join .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id 
-						AND tp.user_id = ' . $user->data['user_id'] . ')';
-					$sql_t_select .= ', tp.topic_posted';
-				}
+					'FROM'		=> array(
+						TOPICS_WATCH_TABLE	=> 'tw',
+						TOPICS_TABLE		=> 't'
+					),
+
+					'WHERE'		=> "tw.user_id = " . $user->data['user_id'] . '
+										AND t.topic_id = tw.topic_id',
+
+					'ORDER_BY'	=> 't.topic_last_post_time DESC'
+				);
 
 				if ($config['load_db_lastread'])
 				{
-					$sql_join .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id
-						AND tt.user_id = ' . $user->data['user_id'] . ')';
-					$sql_t_select .= ', tt.mark_time';
+					$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id']);
+					$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']);
+					$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time AS forum_mark_time';
 				}
 
+				if ($config['load_db_track'])
+				{
+					$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . $user->data['user_id']);
+					$sql_array['SELECT'] .= ', tp.topic_posted';
+				}
 
-				$sql = "SELECT t.* $sql_f_select $sql_t_select 
-					FROM (" . TOPICS_WATCH_TABLE . ' tw, ' . TOPICS_TABLE . " t)
-					$sql_join
-					WHERE tw.user_id = " . $user->data['user_id'] . '
-						AND t.topic_id = tw.topic_id 
-					ORDER BY t.topic_last_post_time DESC';
+				$sql = $db->sql_build_query('SELECT', $sql_array);
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();

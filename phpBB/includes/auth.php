@@ -486,14 +486,29 @@ class auth
 
 		// First grab user settings ... each user has only one setting for each
 		// option ... so we shouldn't need any ACL_NO checks ... he says ...
-		$sql = 'SELECT ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting
-			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a)
-			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
-			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
-				$sql_forum
-				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option";
+		// Grab assigned roles...
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting',
+
+			'FROM'		=> array(
+				ACL_OPTIONS_TABLE	=> 'ao',
+				ACL_USERS_TABLE		=> 'a'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				)
+			),
+
+			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
+							' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+							$sql_forum
+							$sql_opts",
+
+			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
+		));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -504,15 +519,30 @@ class auth
 		$db->sql_freeresult($result);
 
 		// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
-		$sql = 'SELECT ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting
-			FROM (' . USER_GROUP_TABLE . ' ug, ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a)
-			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
-			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				AND a.group_id = ug.group_id
-				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
-				$sql_forum
-				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option";
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
+
+			'FROM'		=> array(
+				USER_GROUP_TABLE	=> 'ug',
+				ACL_OPTIONS_TABLE	=> 'ao',
+				ACL_GROUPS_TABLE	=> 'a'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				)
+			),
+
+			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
+								AND a.group_id = ug.group_id
+								' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
+								$sql_forum
+								$sql_opts",
+
+			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
+		));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -571,14 +601,28 @@ class auth
 		$hold_ary = array();
 
 		// Grab user settings...
-		$sql = 'SELECT ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting
-			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_USERS_TABLE . ' a)
-			LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
-			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
-				$sql_forum
-				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option";
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting',
+			
+			'FROM'		=> array(
+				ACL_OPTIONS_TABLE	=> 'ao',
+				ACL_USERS_TABLE		=> 'a'
+			),
+			
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				),
+			),
+
+			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
+								' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+								$sql_forum
+								$sql_opts",
+
+			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
+		));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -616,14 +660,28 @@ class auth
 		$hold_ary = array();
 
 		// Grab group settings... 
-		$sql = 'SELECT a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting
-			FROM (' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_GROUPS_TABLE . ' a)
-				LEFT JOIN ' . ACL_ROLES_DATA_TABLE . ' r ON (a.auth_role_id = r.role_id)
-			WHERE (ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
-				$sql_forum
-				$sql_opts
-			ORDER BY a.forum_id, ao.auth_option";
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
+			
+			'FROM'		=> array(
+				ACL_OPTIONS_TABLE	=> 'ao',
+				ACL_USERS_TABLE		=> 'a'
+			),
+			
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				),
+			),
+
+			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
+								' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
+								$sql_forum
+								$sql_opts",
+
+			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
+		));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

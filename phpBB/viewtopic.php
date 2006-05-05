@@ -103,11 +103,10 @@ if ($view && !$post_id)
 		$sql_ordering = ($view == 'next') ? 'ASC' : 'DESC';
 
 		$sql = 'SELECT t.topic_id, t.forum_id
-			FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . " t2
-			WHERE t2.topic_id = $topic_id
-				AND t.forum_id = t2.forum_id
+			FROM ' . TOPICS_TABLE . ' t
+			LEFT JOIN ' . TOPICS_TABLE . " t2 ON (t2.topic_id = $topic_id AND t.forum_id = t2.forum_id)
+			WHERE t.topic_last_post_time $sql_condition t2.topic_last_post_time
 				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
-				AND t.topic_last_post_time $sql_condition t2.topic_last_post_time
 			ORDER BY t.topic_last_post_time $sql_ordering";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
@@ -157,64 +156,81 @@ if ($view && !$post_id)
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
-$join_sql_table = '';
+$group = '';
 $select_sql = 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_uid, f.forum_rules_bitfield';
 
-if (!$post_id)
-{
-	$join_sql = "t.topic_id = $topic_id";
-}
-else
-{
-	$join_sql = "p.post_id = $post_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '') . ' AND t.topic_id = p.topic_id AND p2.topic_id = p.topic_id' . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p2.post_approved = 1' : '');
+$sql_array = array(
+	'SELECT'	=> $select_sql,
 
-	// This is for determining where we are (page)
-	$join_sql .= ($sort_dir == 'd') ? " AND p2.post_id >= $post_id" : " AND p2.post_id <= $post_id";
-}
-$extra_fields = (!$post_id)  ? '' : ', COUNT(p2.post_id) AS prev_posts';
-$extra_sql = '';
+	'FROM'		=> array(
+				FORUMS_TABLE	=> 'f',
+	)
+);
+
+$left_join = array();
+
 if ($user->data['is_registered'])
 {
-	$extra_fields .= ', tw.notify_status';
-	$extra_sql .= ', tw.notify_status';
-	$join_sql_table .= ' LEFT JOIN ' . TOPICS_WATCH_TABLE . ' tw ON (tw.user_id = ' . $user->data['user_id'] . '
-		AND t.topic_id = tw.topic_id)';
+	$sql_array['SELECT'] .= ', tw.notify_status';
+	$group .= ', tw.notify_status';
+	$left_join[] = array(
+		'FROM'	=> array(TOPICS_WATCH_TABLE => 'tw'),
+		'ON'	=> 'tw.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tw.topic_id'
+	);
 
 	if ($config['allow_bookmarks'])
 	{
-		$extra_fields .= ', bm.order_id as bookmarked';
-		$extra_sql .= ', bm.order_id';
-		$join_sql_table .= ' LEFT JOIN ' . BOOKMARKS_TABLE . ' bm ON (bm.user_id = ' . $user->data['user_id'] . '
-			AND t.topic_id = bm.topic_id)';
+		$sql_array['SELECT'] .= ', bm.order_id as bookmarked';
+		$group .= ', bm.order_id';
+		$left_join[] = array(
+			'FROM'	=> array(BOOKMARKS_TABLE => 'bm'),
+			'ON'	=> 'bm.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = bm.topic_id'
+		);
 	}
 
 	if ($config['load_db_lastread'])
 	{
-		$extra_fields .= ', tt.mark_time, ft.mark_time as forum_mark_time';
-		$extra_sql .= ', tt.mark_time, ft.mark_time';
-		$join_sql_table .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . '
-			AND t.topic_id = tt.topic_id)';
-
-		$join_sql_table .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
-			AND t.forum_id = ft.forum_id)';
+		$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time as forum_mark_time';
+		$group .= ', tt.mark_time, ft.mark_time';
+		$left_join[] = array(
+			'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
+			'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
+		);
+		$left_join[] = array(
+			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
+		);
 	}
 }
 
-$order_sql = (!$post_id) ? '' : 'GROUP BY p.post_id, ' . $select_sql . $extra_sql . ' ORDER BY p.post_id ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+if (!$post_id)
+{
+	$sql_array['WHERE'] = "t.topic_id = $topic_id";
+}
+else
+{
+	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
+	$sql_array['SELECT'] .= ', COUNT(p2.post_id) AS prev_posts';
+	$sql_array['GROUP_BY'] = 'p.post_id, ' . $select_sql . $group;
+	$sql_array['ORDER_BY'] = 'p.post_id ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+	$sql_array['FROM'][POSTS_TABLE] = 'p';
 
+	$left_join[] = array(
+		'FROM'	=> array(POSTS_TABLE => 'p2'),
+		'ON'	=> 'p2.topic_id = t.topic_id AND p2.post_approved = 1 ' . (($sort_dir == 'd') ? "AND p2.post_id >= $post_id" : "AND p2.post_id <= $post_id")
+	);
+}
+
+$sql_array['LEFT_JOIN'] = $left_join;
+$sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id ' . ((!$forum_id) ? 'OR t.topic_type = ' . POST_GLOBAL : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . ')';
+$sql_array['FROM'][TOPICS_TABLE] = 't';
 
 // Join to forum table on topic forum_id unless topic forum_id is zero
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = "SELECT $select_sql $extra_fields
-	FROM (" . FORUMS_TABLE . ' f' . ((!$post_id) ? '' : ', ' . POSTS_TABLE . ' p, ' . POSTS_TABLE . ' p2') . ', ' . TOPICS_TABLE . ' t) ' . 
-	$join_sql_table . "
-	WHERE $join_sql
-		AND (f.forum_id = t.forum_id
-			" . ((!$forum_id) ? ' OR t.topic_type = ' . POST_GLOBAL : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . "
-			)
-	$order_sql";
+$sql = $db->sql_build_query('SELECT', $sql_array);
+
 $result = $db->sql_query($sql);
 
 if (!($topic_data = $db->sql_fetchrow($result)))
@@ -775,11 +791,25 @@ if (!sizeof($post_list))
 // We need to grab it because we do reverse ordering sometimes
 $max_post_time = 0;
 
-$sql = 'SELECT u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_warnings, z.friend, z.foe, p.*
-	FROM (' . USERS_TABLE . ' u, ' . POSTS_TABLE . ' p)
-	LEFT JOIN ' . ZEBRA_TABLE . ' z ON (z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id)
-	WHERE p.post_id IN (' . implode(', ', $post_list) . ')
-		AND u.user_id = p.poster_id';
+$sql = $db->sql_build_query('SELECT', array(
+	'SELECT'	=> 'u.username, u.user_id, u.user_colour, u.user_posts, u.user_from, u.user_website, u.user_email, u.user_icq, u.user_aim, u.user_yim, u.user_jabber, u.user_regdate, u.user_msnm, u.user_allow_viewemail, u.user_allow_viewonline, u.user_rank, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height, u.user_warnings, z.friend, z.foe, p.*',
+
+	'FROM'		=> array(
+		USERS_TABLE		=> 'u',
+		POSTS_TABLE		=> 'p',
+	),
+
+	'LEFT_JOIN'	=> array(
+		array(
+			'FROM'	=> array(ZEBRA_TABLE => 'z'),
+			'ON'	=> 'z.user_id = ' . $user->data['user_id'] . ' AND z.zebra_id = p.poster_id'
+		)
+	),
+
+	'WHERE'		=> 'p.post_id IN (' . implode(', ', $post_list) . ')
+						AND u.user_id = p.poster_id'
+));
+
 $result = $db->sql_query($sql);
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache

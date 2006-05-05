@@ -127,10 +127,6 @@ class dbal_postgres extends dbal
 		{
 			global $cache;
 
-			if (strpos($query, 'SELECT') === 0 && strpos($query, 'FROM (') !== false)
-			{
-				$query = preg_replace('#FROM \(([^)]+)\)\s#', 'FROM \1 ', $query);
-			}
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -145,7 +141,7 @@ class dbal_postgres extends dbal
 			{
 				$this->num_queries++;
 
-				if (($this->query_result = @pg_exec($this->db_connect_id, $query)) === false)
+				if (($this->query_result = @pg_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
 				}
@@ -176,6 +172,15 @@ class dbal_postgres extends dbal
 		}
 
 		return ($this->query_result) ? $this->query_result : false;
+	}
+
+	/**
+	* Build db-specific query data
+	* @private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		return $data;
 	}
 
 	/**

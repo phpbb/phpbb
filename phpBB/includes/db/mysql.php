@@ -290,6 +290,21 @@ class dbal_mysql extends dbal
 	
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
 	}
+
+	/**
+	* Build db-specific query data
+	* @private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		switch ($stage)
+		{
+			case 'FROM':
+				$data = '(' . $data . ')';
+			break;
+		}
+		return $data;
+	}
 	
 	/**
 	* return sql error array

@@ -244,13 +244,28 @@ if (!$user->data['is_registered'])
 // Output listing of friends online
 $update_time = $config['load_online_time'] * 60;
 
-$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline
-	FROM (' . USERS_TABLE . ' u, ' . ZEBRA_TABLE . ' z)
-	LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = z.zebra_id)
-	WHERE z.user_id = ' . $user->data['user_id'] . '
-		AND z.friend = 1
-		AND u.user_id = z.zebra_id
-	GROUP BY z.zebra_id, u.user_id, u.username, u.user_allow_viewonline';
+$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+	'SELECT'	=> 'u.user_id, u.username, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+
+	'FROM'		=> array(
+		USERS_TABLE		=> 'u',
+		ZEBRA_TABLE		=> 'z'
+	),
+
+	'LEFT_JOIN'	=> array(
+		array(
+			'FROM'	=> array(SESSIONS_TABLE => 's'),
+			'ON'	=> 's.session_user_id = z.zebra_id'
+		)
+	),
+
+	'WHERE'		=> 'z.user_id = ' . $user->data['user_id'] . '
+						AND z.friend = 1
+						AND u.user_id = z.zebra_id',
+
+	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline'
+));
+
 $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))

@@ -258,12 +258,26 @@ function get_post_data($post_ids, $acl_list = false)
 	global $db, $auth;
 	$rowset = array();
 
-	$sql = 'SELECT p.*, u.*, t.*, f.*
-		FROM (' . USERS_TABLE . ' u, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p)
-			LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = p.forum_id)
-		WHERE p.post_id IN (' . implode(', ', $post_ids) . ')
-			AND u.user_id = p.poster_id
-			AND t.topic_id = p.topic_id';
+	$sql = $db->sql_build_query('SELECT', array(
+		'SELECT'	=> 'p.*, u.*, t.*, f.*',
+
+		'FROM'		=> array(
+			USERS_TABLE		=> 'u',
+			TOPICS_TABLE	=> 't',
+			POSTS_TABLE		=> 'p'
+		),
+
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(FORUMS_TABLE => 'f'),
+				'ON'	=> 'f.forum_id = p.forum_id'
+			)
+		),
+
+		'WHERE'		=> 'p.post_id IN (' . implode(', ', $post_ids) . ')
+							AND u.user_id = p.poster_id
+							AND t.topic_id = p.topic_id',
+	));
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
