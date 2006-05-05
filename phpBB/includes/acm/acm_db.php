@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package acm_db
+* @package acm
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -9,7 +9,8 @@
 */
 
 /**
-* @package acm_db
+* @package acm
+* @ignore
 * ACM Database Caching
 */
 class acm

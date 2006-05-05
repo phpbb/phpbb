@@ -77,6 +77,9 @@ function deregister_globals()
 // If we are on PHP >= 6.0.0 we do not need some code
 if (version_compare(phpversion(), '6.0.0-dev', '>='))
 {
+	/**
+	* @ignore
+	*/
 	define('STRIP', false);
 }
 else
@@ -186,6 +189,7 @@ $template->set_filenames(array(
 $install->page_footer();
 
 /**
+* @package install
 */
 class module
 {
@@ -441,7 +445,7 @@ class module
 	/**
 	* Output an error message
 	* If skip is true, return and continue execution, else exit
-	* @todo: Really should change the caption based on $skip and calling code at some point
+	* @todo Really should change the caption based on $skip and calling code at some point
 	*/
 	function error($error, $line, $file, $skip = false)
 	{

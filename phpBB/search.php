@@ -9,6 +9,7 @@
 */
 
 /**
+* @ignore
 */
 define('IN_PHPBB', true);
 $phpbb_root_path = './';

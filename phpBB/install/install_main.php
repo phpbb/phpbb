@@ -24,6 +24,10 @@ if (!empty($setmodules))
 	);
 }
 
+/**
+* @package install
+* Main Tab - Installation
+*/
 class install_main extends module
 {
 	function install_main(&$p_master)

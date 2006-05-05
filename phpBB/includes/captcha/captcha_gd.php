@@ -1352,7 +1352,6 @@ class char_cube3d
 }
 
 /**
-* @package VC
 * Return bitmaps
 */
 function captcha_bitmaps()
@@ -1962,7 +1961,6 @@ function captcha_bitmaps()
 
 /**
 * Return vectors
-* @package VC
 */
 function captcha_vectors()
 {

@@ -24,6 +24,10 @@ if (!empty($setmodules))
 	);
 }
 
+/**
+* @package install
+* Installation
+*/
 class install_install extends module
 {
 	function install_install(&$p_master)
