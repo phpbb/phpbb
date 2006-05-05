@@ -20,7 +20,7 @@ class acp_permissions_info
 			'title'		=> 'ACP_PERMISSIONS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'intro'					=> array('title' => 'ACP_PERMISSIONS', 'auth' => 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth', cat => array('ACP_CAT_PERMISSIONS')),
+				'intro'					=> array('title' => 'ACP_PERMISSIONS', 'auth' => 'acl_a_authusers || acl_a_authgroups || acl_a_viewauth', 'cat' => array('ACP_CAT_PERMISSIONS')),
 				'trace'					=> array('title' => 'ACP_PERMISSION_TRACE', 'auth' => 'acl_a_viewauth', 'display' => false, 'cat' => array('ACP_PERMISSION_MASKS')),
 
 				'setting_user_global'	=> array('title' => 'ACP_USERS_PERMISSIONS', 'auth' => 'acl_a_authusers && (acl_a_aauth || acl_a_mauth || acl_a_uauth)', 'cat' => array('ACP_BASIC_PERMISSIONS', 'ACP_CAT_USERS')),
