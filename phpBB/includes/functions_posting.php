@@ -69,11 +69,12 @@ function generate_smilies($mode, $forum_id)
 		if ($row['smiley_url'] !== $last_url)
 		{
 			$template->assign_block_vars('smiley', array(
-				'SMILEY_CODE' 	=> $row['code'],
-				'SMILEY_IMG' 	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
-				'SMILEY_WIDTH' 	=> $row['smiley_width'],
-				'SMILEY_HEIGHT' => $row['smiley_height'],
-				'SMILEY_DESC' 	=> $row['emotion'])
+				'SMILEY_CODE'	=> $row['code'],
+				'A_SMILEY_CODE'	=> addslashes($row['code']),
+				'SMILEY_IMG'	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
+				'SMILEY_WIDTH'	=> $row['smiley_width'],
+				'SMILEY_HEIGHT'	=> $row['smiley_height'],
+				'SMILEY_DESC'	=> $row['emotion'])
 			);
 		}
 		$last_url = $row['smiley_url'];
@@ -839,7 +840,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'U_POST_ID'		=> $row['post_id'],
 			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],
 			'U_MCP_DETAILS'	=> ($auth->acl_get('m_info', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
-			'U_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . str_replace("'", "\\'", $poster) . "')" : '')
+			'U_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . addslashes($poster) . "')" : '')
 		);
 		unset($rowset[$i]);
 	}

@@ -16,24 +16,24 @@ bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','
 imageTag = false;
 
 // Helpline messages
-b_help = "{L_BBCODE_B_HELP}";
-i_help = "{L_BBCODE_I_HELP}";
-u_help = "{L_BBCODE_U_HELP}";
-q_help = "{L_BBCODE_Q_HELP}";
-c_help = "{L_BBCODE_C_HELP}";
-l_help = "{L_BBCODE_L_HELP}";
-o_help = "{L_BBCODE_O_HELP}";
-p_help = "{L_BBCODE_P_HELP}";
-w_help = "{L_BBCODE_W_HELP}";
-a_help = "{L_BBCODE_A_HELP}";
-s_help = "{L_BBCODE_S_HELP}";
-f_help = "{L_BBCODE_F_HELP}";
-e_help = "{L_BBCODE_E_HELP}";
+b_help = "{LA_BBCODE_B_HELP}";
+i_help = "{LA_BBCODE_I_HELP}";
+u_help = "{LA_BBCODE_U_HELP}";
+q_help = "{LA_BBCODE_Q_HELP}";
+c_help = "{LA_BBCODE_C_HELP}";
+l_help = "{LA_BBCODE_L_HELP}";
+o_help = "{LA_BBCODE_O_HELP}";
+p_help = "{LA_BBCODE_P_HELP}";
+w_help = "{LA_BBCODE_W_HELP}";
+a_help = "{LA_BBCODE_A_HELP}";
+s_help = "{LA_BBCODE_S_HELP}";
+f_help = "{LA_BBCODE_F_HELP}";
+e_help = "{LA_BBCODE_E_HELP}";
 
 function checkForm()
 {
 	if (document.post.message.value.length < 2) {
-		alert('{L_EMPTY_MESSAGE}');
+		alert('{LA_EMPTY_MESSAGE}');
 		return false;
 	} else {
 //		document.post.post.disabled = true;
@@ -217,7 +217,7 @@ function checkForm()
 				<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
 			</tr>
 			<tr>
-				<td align="center"><!-- BEGIN smiley --><a href="javascript:smiley('{smiley.SMILEY_CODE}')" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" border="0" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" onclick="smiley('{smiley.SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END smiley --></td>
+				<td align="center"><!-- BEGIN smiley --><a href="javascript:smiley('{smiley.A_SMILEY_CODE}')" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" border="0" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" onclick="smiley('{smiley.A_SMILEY_CODE}');return false" hspace="2" vspace="2" /></a> <!-- END smiley --></td>
 			</tr>
 
 			<!-- IF S_SHOW_SMILEY_LINK -->

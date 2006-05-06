@@ -98,6 +98,11 @@ class mcp_reports
 				}
 
 				// Set some vars
+				if ($post_info['user_id'] == ANONYMOUS)
+				{
+					$poster = ($post_info['post_username']) ? $post_info['post_username'] : $user->lang['GUEST'];
+				}
+
 				$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
 
 				// Process message, leave it uncensored
@@ -119,7 +124,7 @@ class mcp_reports
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? true : false,
 
-					'U_VIEW_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'],
+					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'] : '',
 					'U_MCP_USER_NOTES'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'],
 					'U_MCP_WARN_USER'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $post_info['user_id'],
 					'U_VIEW_REPORTER_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $report['user_id'],

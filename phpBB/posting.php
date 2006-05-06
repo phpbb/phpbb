@@ -1155,7 +1155,8 @@ $template->assign_vars(array(
 
 	'U_VIEW_FORUM' 			=> "viewforum.$phpEx$SID&amp;f=" . $forum_id,
 	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
-	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&f=$forum_id&mode=popup", // do NOT replace & with &amp; here
+	'U_PROGRESS_BAR'		=> "posting.$phpEx$SID&amp;f=$forum_id&amp;mode=popup",
+	'UA_PROGRESS_BAR'		=> "posting.$phpEx$SID&f=$forum_id&mode=popup",
 
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,

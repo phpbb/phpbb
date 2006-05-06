@@ -165,6 +165,7 @@ class ucp_prefs
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
+					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
 					'S_LANG_OPTIONS'	=> language_select($lang),
 					'S_STYLE_OPTIONS'	=> style_select($style),

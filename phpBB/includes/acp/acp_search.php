@@ -399,7 +399,8 @@ class acp_search
 		$template->assign_vars(array(
 			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->u_action,
-			'U_PROGRESS_BAR'		=> $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=progress_bar") // don't use &amp; here
+			'U_PROGRESS_BAR'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=progress_bar",
+			'UA_PROGRESS_BAR'		=> $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=progress_bar")
 		);
 
 		if (isset($this->state[1]))
@@ -416,15 +417,18 @@ class acp_search
 	function display_progress_bar($type)
 	{
 		global $template, $user;
-		adm_page_header('PROGRESS_BAR');
+
+		$l_type = ($type == 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
+
+		adm_page_header($user->lang[$l_type]);
 
 		$template->set_filenames(array(
 			'body'	=> 'search_index_progress_bar.html')
 		);
 
 		$template->assign_vars(array(
-			'L_PROGRESS'			=> ($type == 'create') ? $user->lang['INDEXING_IN_PROGRESS'] : $user->lang['DELETING_INDEX_IN_PROGRESS'],
-			'L_PROGRESS_EXPLAIN'	=> ($type == 'create') ? $user->lang['INDEXING_IN_PROGRESS_EXPLAIN'] : $user->lang['DELETING_INDEX_IN_PROGRESS_EXPLAIN'])
+			'L_PROGRESS'			=> $user->lang[$l_type],
+			'L_PROGRESS_EXPLAIN'	=> $user->lang[$l_type . '_EXPLAIN'])
 		);
 
 		adm_page_footer();

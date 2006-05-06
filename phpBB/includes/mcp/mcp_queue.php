@@ -91,12 +91,12 @@ class mcp_queue
 				}
 
 				// Set some vars
-				$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
-
 				if ($post_info['user_id'] == ANONYMOUS)
 				{
 					$poster = ($post_info['post_username']) ? $post_info['post_username'] : $user->lang['GUEST'];
 				}
+
+				$poster = ($post_info['user_colour']) ? '<span style="color:#' . $post_info['user_colour'] . '">' . $post_info['username'] . '</span>' : $post_info['username'];
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];

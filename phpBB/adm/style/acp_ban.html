@@ -14,19 +14,19 @@
 	var ban_length = new Array();
 		ban_length[-1] = "";
 	<!-- BEGIN ban_length -->
-		ban_length['{ban_length.BAN_ID}'] = "{ban_length.LENGTH}";
+		ban_length['{ban_length.BAN_ID}'] = "{ban_length.A_LENGTH}";
 	<!-- END ban_length -->
 
 	var ban_reason = new Array();
 		ban_reason[-1] = "";
 	<!-- BEGIN ban_reason -->
-		ban_reason['{ban_reason.BAN_ID}'] = "{ban_reason.REASON}";
+		ban_reason['{ban_reason.BAN_ID}'] = "{ban_reason.A_REASON}";
 	<!-- END ban_reason -->
 
 	var ban_give_reason = new Array();
 		ban_give_reason[-1] = "";
 	<!-- BEGIN ban_give_reason -->
-		ban_give_reason['{ban_give_reason.BAN_ID}'] = "{ban_give_reason.REASON}";
+		ban_give_reason['{ban_give_reason.BAN_ID}'] = "{ban_give_reason.A_REASON}";
 	<!-- END ban_give_reason -->
 
 	function display_details(option)
@@ -88,15 +88,15 @@
 	</dl>
 	<dl>
 		<dt><label for="unbanlength">{L_BAN_LENGTH}:</label></dt>
-		<dd><input style="border: 0px;" type="text" name="unbanlength" id="unbanlength" class="full" /></dd>
+		<dd><input style="border: 0px;" type="text" name="unbanlength" id="unbanlength" class="full" disabled="disabled" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="unbanreason">{L_BAN_REASON}:</label></dt>
-		<dd><input style="border: 0px;" type="text" name="unbanreason" id="unbanreason" class="full" /></dd>
+		<dd><input style="border: 0px;" type="text" name="unbanreason" id="unbanreason" class="full" disabled="disabled" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="unbangivereason">{L_BAN_GIVE_REASON}:</label></dt>
-		<dd><input style="border: 0px;" type="text" name="unbangivereason" id="unbangivereason" class="full" /></dd>
+		<dd><input style="border: 0px;" type="text" name="unbangivereason" id="unbangivereason" class="full" disabled="disabled" /></dd>
 	</dl>
 </fieldset>
 

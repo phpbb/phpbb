@@ -27,7 +27,7 @@
 <!-- IF S_USER_PM_POPUP -->
 	if ({S_NEW_PM})
 	{
-		window.open('{U_JS_POPUP_PM}', '_phpbbprivmsg', 'HEIGHT=225,resizable=yes,WIDTH=400');
+		window.open('{UA_POPUP_PM}', '_phpbbprivmsg', 'HEIGHT=225,resizable=yes,WIDTH=400');
 	}
 <!-- ENDIF -->
 
@@ -39,7 +39,7 @@ function popup(url, width, height)
 
 function jumpto()
 {
-	var page = prompt('{L_JUMP_PAGE}:', '{ON_PAGE}');
+	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
 	var perpage = '{PER_PAGE}';
 	var base_url = '{BASE_URL}';
 

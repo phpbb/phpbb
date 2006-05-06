@@ -523,7 +523,8 @@ class acp_groups
 					'GROUP_HIDDEN'		=> $type_hidden,
 
 					'U_BACK'			=> $u_back,
-					'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=settings&name=group_colour",
+					'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&amp;form=settings&amp;name=group_colour",
+					'UA_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=settings&name=group_colour",
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
 					)
