@@ -178,7 +178,7 @@ class install_install extends module
 				{
 					$template->assign_block_vars('checks', array(
 						'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-						'RESULT'	=> '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>',
+						'RESULT'	=> '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>',
 
 						'S_EXPLAIN'	=> false,
 						'S_LEGEND'	=> false,
