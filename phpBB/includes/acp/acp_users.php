@@ -581,14 +581,11 @@ class acp_users
 					$data['username'] = $data['user'];
 					unset($data['user']);
 
-					/**
-					* @todo $config['max_warnings'] does not exist yet
-					*/
 					// Validation data
 					$var_ary = array(
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
-						'warnings'			=> array('num', 0, $config['max_warnings']),
+						'warnings'			=> array('num'),
 					);
 
 					// Check username if altered

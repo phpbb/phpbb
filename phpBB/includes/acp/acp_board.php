@@ -46,7 +46,6 @@ class acp_board
 
 						'legend2'				=> 'WARNINGS',
 						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'type' => 'text:3:4', 'explain' => true),
-//						'max_warnings'
 					)
 				);
 			break;
