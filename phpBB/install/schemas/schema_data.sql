@@ -625,7 +625,7 @@ INSERT INTO phpbb_topics (topic_title, topic_poster, topic_time, topic_views, to
 # MSSQL IDENTITY phpbb_posts ON #
 
 # -- Demo Post
-INSERT INTO phpbb_posts (topic_id, forum_id, poster_id, post_time, post_username, poster_ip, post_subject, post_text, post_checksum, bbcode_uid) VALUES (1, 2, 2, 972086460, NULL, '127.0.0.1', 'Welcome to phpBB 3', 'This is an example post in your phpBB 3.0 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!', '', '');
+INSERT INTO phpbb_posts (topic_id, forum_id, poster_id, icon_id, post_time, post_username, poster_ip, post_subject, post_text, post_checksum, bbcode_uid) VALUES (1, 2, 2, 1, 972086460, NULL, '127.0.0.1', 'Welcome to phpBB 3', 'This is an example post in your phpBB 3.0 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!', '', '');
 
 # MSSQL IDENTITY phpbb_posts OFF #
 

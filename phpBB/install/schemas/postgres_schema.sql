@@ -554,7 +554,7 @@ CREATE TABLE phpbb_posts (
   topic_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT2  DEFAULT '0' NOT NULL,
   poster_id INT4  DEFAULT '0' NOT NULL,
-  icon_id INT2  DEFAULT '1' NOT NULL,
+  icon_id INT2  DEFAULT '0' NOT NULL,
   poster_ip varchar(40) NOT NULL,
   post_time INT4 DEFAULT '0' NOT NULL,
   post_approved INT2 DEFAULT '1' NOT NULL,

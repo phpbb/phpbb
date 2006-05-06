@@ -425,7 +425,7 @@ CREATE TABLE phpbb_posts (
   topic_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id smallint(5) NOT NULL DEFAULT '0',
   poster_id mediumint(8) NOT NULL DEFAULT '0',
-  icon_id tinyint(4) NOT NULL DEFAULT '1',
+  icon_id tinyint(4) NOT NULL DEFAULT '0',
   poster_ip varchar(40) NOT NULL,
   post_time int(11) NOT NULL DEFAULT '0',
   post_approved tinyint(1) NOT NULL DEFAULT '1',

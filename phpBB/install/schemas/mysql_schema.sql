@@ -392,7 +392,7 @@ CREATE TABLE phpbb_posts (
    topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
    forum_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
    poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-   icon_id tinyint(4) UNSIGNED DEFAULT '1' NOT NULL,
+   icon_id tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
    poster_ip varchar(40) NOT NULL,
    post_time int(11) DEFAULT '0' NOT NULL,
    post_approved tinyint(1) DEFAULT '1' NOT NULL,

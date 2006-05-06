@@ -827,7 +827,7 @@ CREATE TABLE phpbb_posts (
   topic_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(5) DEFAULT '0' NOT NULL,
   poster_id number(8) DEFAULT '0' NOT NULL,
-  icon_id number(4) DEFAULT '1' NOT NULL,
+  icon_id number(4) DEFAULT '0' NOT NULL,
   poster_ip varchar2(40),
   post_time number(11) DEFAULT '0' NOT NULL,
   post_approved number(1) DEFAULT '1' NOT NULL,

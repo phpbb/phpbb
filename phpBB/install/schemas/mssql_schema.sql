@@ -960,7 +960,7 @@ ALTER TABLE [phpbb_posts] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_posts__topic_id] DEFAULT (0) FOR [topic_id],
 	CONSTRAINT [DF_phpbb_posts__forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_posts__poster_id] DEFAULT (0) FOR [poster_id],
-	CONSTRAINT [DF_phpbb_posts__icon_id] DEFAULT (1) FOR [icon_id],
+	CONSTRAINT [DF_phpbb_posts__icon_id] DEFAULT (0) FOR [icon_id],
 	CONSTRAINT [DF_phpbb_posts__post_time] DEFAULT (0) FOR [post_time],
 	CONSTRAINT [DF_phpbb_posts__post_approved] DEFAULT (1) FOR [post_approved],
 	CONSTRAINT [DF_phpbb_posts__post_reported] DEFAULT (0) FOR [post_reported],
