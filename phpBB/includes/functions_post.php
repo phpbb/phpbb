@@ -61,7 +61,7 @@ function prepare_message($message, $html_on, $bbcode_on, $smile_on, $bbcode_uid 
 		foreach ($message_split as $part)
 		{
 			$tag = array(array_shift($matches[0]), array_shift($matches[1]), array_shift($matches[2]));
-			$message .= htmlspecialchars($part) . clean_html($tag);
+			$message .= preg_replace($html_entities_match, $html_entities_replace, $part) . clean_html($tag);
 		}
 
 		$message = addslashes($message);
