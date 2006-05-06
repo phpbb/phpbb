@@ -34,6 +34,7 @@ $lang = array_merge($lang, array(
 	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your store/ folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats. If you wish to include any additional "custom" tables please list them in the additional tables field, separated by commas. ',
 	'BACKUP_OPTIONS'	=> 'Backup options',
 	'BACKUP_TYPE'		=> 'Backup type',
+	'BACKUP_INVALID'	=> 'The selected file to backup is invalid',
 	'START_BACKUP'		=> 'Start Backup',
 	'FULL_BACKUP'		=> 'Full',
 	'STRUCTURE_ONLY'	=> 'Structure Only',
@@ -43,7 +44,7 @@ $lang = array_merge($lang, array(
 	'STORE_LOCAL'		=> 'Store file locally',
 	'SELECT_ALL'		=> 'Select all',
 	'DESELECT_ALL'		=> 'Deselect all',
-	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully in the location you specified',
+	'BACKUP_SUCCESS'	=> 'The backup file has been created successfully',
 
 	'STORE_AND_DOWNLOAD'	=> 'Store and Download',
 	'ACP_RESTORE'			=> 'Restore',

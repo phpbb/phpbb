@@ -14,11 +14,13 @@
 		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF files.S_LAST_ROW --> selected="selected"<!-- ENDIF -->>{files.NAME}</option><!-- END files --></select></dd>
 	</dl>
 </fieldset>
+<!-- IF EXISTS -->
 <fieldset class="submit-buttons">
 	<input class="button1" type="submit" id="submit" name="submit" value="{L_START_RESTORE}" />&nbsp;
 	<input class="button2" type="submit" id="delete" name="delete" value="{L_DELETE_BACKUP}" />&nbsp;
 	<input class="button2" type="submit" id="download" name="download" value="{L_DOWNLOAD_BACKUP}" />
 </fieldset>
+<!-- ENDIF -->
 </form>
 <!-- ELSE -->
 <h1>{L_ACP_BACKUP}</h1>

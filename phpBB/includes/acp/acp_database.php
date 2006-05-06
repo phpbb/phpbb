@@ -1023,11 +1023,7 @@ class acp_database
 							{
 								continue;
 							}
-							$methods[] = $type;
-						}
 
-						foreach ($methods as $type)
-						{
 							$template->assign_block_vars('methods', array(
 								'TYPE'	=> $type
 							));
@@ -1041,15 +1037,18 @@ class acp_database
 				{
 					case 'submit':
 						$delete = request_var('delete', '');
+						$file = request_var('file', '');
+
+						if (!(file_exists($file) && is_readable($file)))
+						{
+							trigger_error($lang['BACKUP_INVALID']);
+						}
 
 						if ($delete)
 						{
-							$file = request_var('file', '');
 							unlink($phpbb_root_path . 'store/' . $file);
 							trigger_error($user->lang['BACKUP_SUCCESS']);
 						}
-
-						$file = request_var('file', '');
 
 						preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
 
@@ -1113,7 +1112,7 @@ class acp_database
 					break;
 
 					default:
-						$selected = $stop = false;
+						$selected = false;
 						$methods = array('sql');
 						$available_methods = array('sql.gz' => 'zlib', 'sql.bz2' => 'bz2');
 
@@ -1141,10 +1140,16 @@ class acp_database
 										'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
 										'SUPPORTED'	=> $supported
 									));
+									$selected = true;
 								}
 							}
 						}
 						closedir($dh);
+
+						if ($selected === true)
+						{
+							$template->assign_var('EXISTS', true);
+						}
 
 						$template->assign_vars(array(
 							'U_ACTION'	=> $this->u_action . '&amp;action=submit'
