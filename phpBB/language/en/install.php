@@ -37,6 +37,10 @@ $lang = array_merge($lang, array(
 	'ADMIN_USERNAME'			=> 'Administrator username',
 	'APP_MAGICK'				=> 'Imagemagick support [ Attachments ]',
 	'AVAILABLE'					=> 'Available',
+	'AVAILABLE_CONVERTORS'		=> 'Available Convertors',
+
+	'BEGIN_CONVERT'				=> 'Begin conversion',
+	'BLANK_PREFIX_FOUND'		=> 'A scan of your tables has shown a valid installation using no table prefix.',
 
 	'CACHE_STORE'				=> 'Cache type',
 	'CACHE_STORE_EXPLAIN'		=> 'The physical location where data is cached, filesystem is prefered.',
@@ -48,6 +52,12 @@ $lang = array_merge($lang, array(
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL'				=> 'Contact email address',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
+	'CONVERT'					=> 'Convert',
+	'CONVERT_INTRO'				=> 'Welcome to the phpBB Unified Convertor Framework',
+	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) forum systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the forum software you wish to convert from, please check our website where further conversion modules may be available for download.',
+	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist',
+	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion progress, push the button below to begin',
+	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former forum. Please check your settings and try again.<br />&#187; Specified source path was %s',
 
 	'DBMS'						=> 'Database type',
 	'DB_CONFIG'					=> 'Database Configuration',
@@ -61,6 +71,8 @@ $lang = array_merge($lang, array(
 	'DB_USERNAME'				=> 'Database username',
 	'DB_TEST'					=> 'Test Connection',
 	'DEFAULT_LANG'				=> 'Default board language',
+	'DEFAULT_PREFIX_IS'			=> 'The default table prefix for %1$s is <b>%2$s</b>',
+	'DEV_NO_TEST_FILE'			=> 'No value has been specified for the test_file variable in the convertor. If you are a user of this convertor, you should not be seeing this error, please report this message to the convertor author. If you are a convertor author, you must specify the name of a file which exists in the source forum to allow the path to it to be verified.',
 	'DIRECTORIES_AND_FILES'		=> 'Directory and file setup',
 	'DLL_FIREBIRD'				=> 'Firebird 1.5+',
 	'DLL_FTP'					=> 'Remote FTP support [ Installation ]',
@@ -88,6 +100,10 @@ $lang = array_merge($lang, array(
 	'FILES_OPTIONAL_EXPLAIN'	=> '<b>Optional</b> - These files, directories or permissions are not required. The installation routines will attempt to use various techniques to complete if they do not exist or cannot be written to. However, the presence of these files, directories or permissions will speed installation.',
 	'FILES_REQUIRED'			=> 'Files and Directories',
 	'FILES_REQUIRED_EXPLAIN'	=> '<b>Required</b> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see "Not Found" you need to create the relevant file or directory. If you see "Unwriteable" you need to change the permissions on the file or directory to allow phpBB to write to it.',
+	'FORUM_ADDRESS'				=> 'Forum address',
+	'FORUM_ADDRESS_EXPLAIN'		=> 'This is the http address of your former forum',
+	'FORUM_PATH'				=> 'Forum path',
+	'FORUM_PATH_EXPLAIN'		=> 'This is the relative -to phpBB main directory- server path to your former forum',
 	'FTP_CONFIG'				=> 'Transfer config by FTP',
 	'FTP_CONFIG_EXPLAIN'		=> 'phpBB has detected the presence of the ftp module on this server. You may attempt to install your config.php via this if you wish. You will need to supply the information listed below. Remember your username and password are those to your server! (ask your hosting provider for details if you are unsure what these are)',
 	'FTP_PASSWORD'				=> 'FTP Password',
@@ -135,6 +151,8 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
 
 	'NEXT_STEP'					=> 'Proceed to next step',
+	'NO_CONVERTORS'				=> 'No convertors are available for use',
+	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified',
 	'NO_LOCATION'				=> 'Cannot determine location',
 // TODO: Write some explanatory introduction text
 	'OVERVIEW_BODY'				=> '<p>Some brief explanatory text about phpBB will go here.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above</p>',
@@ -144,11 +162,12 @@ $lang = array_merge($lang, array(
 	'PHP_SUPPORTED_DB'			=> 'Supported Databases',
 	'PHP_SUPPORTED_DB_EXPLAIN'	=> '<b>Required</b> - You must have support for at least one compatible database within PHP. If no database modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice.',
 	'PHP_REGISTER_GLOBALS'		=> 'PHP setting "register_globals" is disabled',
-	'PHP_REGISTER_GLOBALS_EXPLAIN' => 'Put an explanation of register_globals here',
+	'PHP_REGISTER_GLOBALS_EXPLAIN' => 'phpBB will still run if this setting is enabled, but if possible, it is recommended that register_globals is disabled on your PHP install for security reasons.',
 	'PHP_SAFE_MODE'				=> 'Safe Mode',
 	'PHP_SETTINGS'				=> 'PHP Version and Settings',
 	'PHP_SETTINGS_EXPLAIN'		=> '<b>Required</b> - You must be running at least version 4.3.3 of PHP in order to install phpBB. If "safe mode" is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
 	'PHP_VERSION_REQD'			=> 'PHP version >= 4.3.3',
+	'PREFIX_FOUND'				=> 'A scan of your tables has shown a valid installation using <b>%s</b> as table prefix.',
 
 //	'REQUIRED'					=> 'Required',
 	'REQUIREMENTS_TITLE'		=> 'Installation Compatibility',
@@ -163,6 +182,8 @@ $lang = array_merge($lang, array(
 	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from',
 	'SERVER_PORT'				=> 'Server port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
+	'SOFTWARE'					=> 'Forum Software',
+	'SPECIFY_OPTIONS'			=> 'Specify Conversion Options',
 	'STAGE_ADMINISTRATOR'		=> 'Administrator Details',
 	'STAGE_ADVANCED'			=> 'Advanced Settings',
 	'STAGE_ADVANCED_EXPLAIN'	=> 'The settings on this page are only necessary to set if you know that you require something different from the default. If unsure, just proceed to the next page, this can be altered from the Administration Panel later.',
@@ -171,6 +192,7 @@ $lang = array_merge($lang, array(
 	'STAGE_FINAL'				=> 'Final Stage',
 	'STAGE_INTRO'				=> 'Introduction',
 	'STAGE_REQUIREMENTS'		=> 'Requirements',
+	'STAGE_SETTINGS'			=> 'Settings',
 	'SUB_INTRO'					=> 'Introduction',
 	'SUB_LICENSE'				=> 'License',
 	'SUB_SUPPORT'				=> 'Support',
@@ -179,10 +201,13 @@ $lang = array_merge($lang, array(
 	'SUPPORT_BODY'				=> '<p>Some text on obtaining support, etc can go here.</p><p>Probably this can be copied from the documentation</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a></p>',
 
 	'TABLE_PREFIX'				=> 'Prefix for tables in database',
+	'TABLE_PREFIX_SAME'			=> 'The table prefix needs to be the one used by the software you are converting from.<br />&#187; Specified table prefix was %s',
 	'TESTS_PASSED'				=> 'Tests passed',
 	'TESTS_FAILED'				=> 'Tests failed',
 
 	'UNAVAILABLE'				=> 'Unavailable',
+
+	'VERSION'					=> 'Version',
 
 	'WELCOME_INSTALL'			=> 'Welcome to phpBB 3 Installation',
 ));

@@ -465,6 +465,8 @@ dd { color: #000; }
 dd + dd { padding-top: 5px; }
 dt span { padding-right: 5px; }
 
+dt .explain { font-style: italic; }
+
 dt label {
 	font-size: 100%;
 	text-align: left;
