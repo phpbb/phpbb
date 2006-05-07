@@ -62,15 +62,6 @@ $lang = array_merge($lang, array(
 	'DELETE_THEME_EXPLAIN'		=> 'Here you can remove the selected theme from the database. Additionally, if you have permission you can elect to remove the theme from the filesystem. Please note that there is no undo capability. When the theme is deleted it is gone for good. It is recommended that you first export your theme for possible future use.',
 	'DETAILS'					=> 'Details',
 
-	'EDIT_IMAGESET'				=> 'Edit imageset',
-	'EDIT_IMAGESET_EXPLAIN'		=> 'Here you can edit the individual images which define the imageset. You can also specify dimensions for the image. Dimensions are optional, specifying them can overcome certain rendering issues with some browsers. By not specifying them you reduce the size of the database record a little.',
-	'IMAGE_CONFIGURATION'		=> 'Image configuration',
-	'IMAGE_WIDTH'				=> 'Image width',
-	'IMAGE_HEIGHT'				=> 'Image height',
-	'IMAGE'						=> 'Image',
-	'IMAGE_NAME'				=> 'Image name',
-	'IMAGE_LOCATION'			=> 'Image location',
-
 	'EDIT_DETAILS_IMAGESET'				=> 'Edit imageset details',
 	'EDIT_DETAILS_IMAGESET_EXPLAIN'		=> 'Here you can edit certain imageset details such as its name.',
 	'EDIT_DETAILS_STYLE'				=> 'Edit Style',
@@ -79,10 +70,21 @@ $lang = array_merge($lang, array(
 	'EDIT_DETAILS_TEMPLATE_EXPLAIN'		=> 'Here you can edit certain templates details such as its name. You may also have the option to switch storage of the stylesheet from the filesystem to the database and vice versa. This option depends on your PHP configuration and whether your template set can be written to by the webserver.',
 	'EDIT_DETAILS_THEME'				=> 'Edit theme details',
 	'EDIT_DETAILS_THEME_EXPLAIN'		=> 'Here you can edit certain theme details such as its name. You may also have the option to switch storage of the stylesheet from the filesystem to the database and vice versa. This option depends on your PHP configuration and whether your stylesheet can be written to by the webserver.',
+	'EDIT_IMAGESET'						=> 'Edit imageset',
+	'EDIT_IMAGESET_EXPLAIN'				=> 'Here you can edit the individual images which define the imageset. You can also specify dimensions for the image. Dimensions are optional, specifying them can overcome certain rendering issues with some browsers. By not specifying them you reduce the size of the database record a little.',
+	'EDIT_TEMPLATE'						=> 'Edit template',
+	'EDIT_TEMPLATE_EXPLAIN'				=> 'Here you can edit your template set directly. Please remember that these edits are permanent and cannot be undone once submitted. If PHP can write to the template files in your styles directory any changes here will be written directly to those files. If PHP cannot write to those files they will be copied into the database and all changes will only be reflected there. Please take care when editing your template set, remember to close all replacement variable terms {XXXX} and conditional statements.',
+	'EDIT_TEMPLATE_STORED_DB'	=> 'The template file was unwritable so the template set is now stored in the database containing the modified file.',
 	'EXPORT'							=> 'Export',
 
 	'FROM'					=> 'from', // "Create new style .... from ..."
 
+	'IMAGE_CONFIGURATION'		=> 'Image configuration',
+	'IMAGE_WIDTH'				=> 'Image width',
+	'IMAGE_HEIGHT'				=> 'Image height',
+	'IMAGE'						=> 'Image',
+	'IMAGE_NAME'				=> 'Image name',
+	'IMAGE_LOCATION'			=> 'Image location',
 	'IMAGESET_ADDED'			=> 'New imageset added on filesystem',
 	'IMAGESET_ADDED_DB'			=> 'New imageset added to database',
 	'IMAGESET_UPDATED'			=> 'Imageset updated successfully',
@@ -147,9 +149,10 @@ $lang = array_merge($lang, array(
 	'REQUIRES_TEMPLATE'			=> 'This style requires the %s template set to be installed.',
 	'REQUIRES_THEME'			=> 'This style requires the %s theme to be installed.',
 
+	'SELECT_TEMPLATE'			=> 'Select template file',
+	'SELECTED_TEMPLATE'			=> 'Selected template file',
 	'STORE_DATABASE'			=> 'Database',
 	'STORE_FILESYSTEM'			=> 'Filesystem',
-
 	'STYLE_ACTIVATE'			=> 'Activate',
 	'STYLE_ACTIVE'				=> 'Active',
 	'STYLE_ADDED'				=> 'Style added successfully',
@@ -175,6 +178,10 @@ $lang = array_merge($lang, array(
 	'STYLE_THEME'				=> 'Theme',
 	'STYLE_USED_BY'				=> 'Used by',
 
+	'TEMPLATE_EDITOR'			=> 'Raw HTML template editor',
+	'TEMPLATE_EDITOR_HEIGHT'	=> 'Template editor height',
+	'TEMPLATE_FILE'				=> 'Template file',
+	'TEMPLATE_FILE_UPDATED'		=> 'Template file updated successfully',
 	'TEMPLATE_ADDED'			=> 'Template set added and stored on filesystem',
 	'TEMPLATE_ADDED_DB'			=> 'Template set added and stored in database',
 	'TEMPLATE_DELETED'			=> 'Template set deleted successfully',

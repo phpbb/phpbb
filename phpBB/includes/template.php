@@ -153,7 +153,7 @@ class template
 	{
 		global $user, $phpEx, $config;
 
-		$filename = $this->cachepath . $this->filename[$handle] . '.' . $phpEx;
+		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 
 		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
 
@@ -222,7 +222,7 @@ class template
 					else
 					{
 						// Only bother compiling if it doesn't already exist
-						if (!file_exists($this->cachepath . $row['template_filename'] . '.' . $phpEx))
+						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
 						{
 							$this->filename[$row['template_filename']] = $row['template_filename'];
 							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));

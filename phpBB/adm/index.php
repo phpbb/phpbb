@@ -58,6 +58,8 @@ $mode			= request_var('mode', '');
 // Set custom template for admin area
 $template->set_custom_template($phpbb_admin_path . 'style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
+// the acp template is never stored in the database
+$user->theme['template_storedb'] = false;
 
 // Force pagination seperation for admin style
 $user->theme['pagination_sep'] = '';

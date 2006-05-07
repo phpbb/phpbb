@@ -108,6 +108,86 @@
 			</table></td>
 		</tr>
 	</table></form>
+<!-- ELSEIF S_EDIT_TEMPLATE -->
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
+	<h1>{L_EDIT_TEMPLATE}</h1>
+
+	<p>{L_EDIT_TEMPLATE_EXPLAIN}</p>
+
+	<form id="acp_styles" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_SELECT_TEMPLATE}</legend>
+		<dl>
+			<dt><label for="template_file">{L_TEMPLATE_FILE}: </label></dt>
+			<dd><select id="template_file" name="template_file" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_TEMPLATES}</select>&nbsp; <input class="btnlite" type="submit" value="{L_SELECT}" /></dd>
+		</dl>
+	</fieldset>
+
+	</form>
+
+	<!-- IF TEMPLATE_FILE -->
+	<script language="javascript" type="text/javascript" defer="defer">
+	<!--
+
+	function change_editor_height(height)
+	{
+		editor = document.getElementById('template_data');
+		editor.rows = Math.max(5, Math.min(height, 999));
+
+		append_text_rows('acp_styles', height);
+		append_text_rows('acp_template', height);
+	}
+
+	function append_text_rows(form_name, value)
+	{
+		url = document.getElementById(form_name).action;
+		var_start = url.indexOf('&text_rows=');
+		if (var_start == -1)
+		{
+			document.getElementById(form_name).action = url + "&text_rows=" + value;
+		}
+		else
+		{
+			url_start = url.substring(0, var_start + 1);
+			var_end = url.substring(var_start + 1).indexOf('&');
+			if (var_end == -1)
+			{
+				document.getElementById(form_name).action = url_start + "text_rows=" + value;
+			}
+			else
+			{
+				document.getElementById(form_name).action = url_start + url.substring(var_end + var_start + 2) + "&text_rows=" + value;
+			}
+		}
+	}
+	//-->
+	</script>
+
+	<form id="acp_template" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_TEMPLATE_EDITOR}</legend>
+		<dl>
+			<dt><label>{L_SELECTED_TEMPLATE}: </label></dt>
+			<dd>{TEMPLATE_FILE}</dd>
+		</dl>
+		<dl>
+			<dt><label for="text_rows">{L_TEMPLATE_EDITOR_HEIGHT}</label></dt>
+			<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="btnlite" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
+		</dl>
+		<textarea id="template_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}" name="template_data">{TEMPLATE_DATA}</textarea>
+	</fieldset>
+
+	<fieldset class="quick">
+		{S_HIDDEN_FIELDS}
+		<input class="button1" type="submit" name="save" value="{L_SUBMIT}" />
+	</fieldset>
+
+	</form>
+	<!-- ENDIF -->
 
 <!-- ELSEIF S_EXPORT -->
 

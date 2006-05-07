@@ -96,13 +96,13 @@ class template_compile
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
 
-		preg_match_all('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\.]+?) -->#', $code, $matches);
+		preg_match_all('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\./]+?) -->#', $code, $matches);
 		$include_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\.]+?) -->#', '<!-- INCLUDE -->', $code);
+		$code = preg_replace('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\./]+?) -->#', '<!-- INCLUDE -->', $code);
 
-		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.\\\\]+?) -->#', $code, $matches);
+		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+?) -->#', $code, $matches);
 		$includephp_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\.]+?) -->#', '<!-- INCLUDEPHP -->', $code);
+		$code = preg_replace('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+?) -->#', '<!-- INCLUDEPHP -->', $code);
 
 		preg_match_all('#<!-- (.*?) (.*?)?[ ]?-->#', $code, $blocks);
 		$text_blocks = preg_split('#<!-- (.*?) (.*?)?[ ]?-->#', $code);
@@ -220,7 +220,6 @@ class template_compile
 		}
 
 		// This will handle the remaining root-level varrefs
-
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }')); ?>", $text_blocks);
 
@@ -661,7 +660,7 @@ class template_compile
 	{
 		global $phpEx, $user;
 
-		$filename = $this->template->cachepath . $this->template->filename[$handle] . '.' . $phpEx;
+		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . $phpEx;
 
 		if ($fp = @fopen($filename, 'wb'))
 		{

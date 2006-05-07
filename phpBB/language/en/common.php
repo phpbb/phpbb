@@ -478,6 +478,7 @@ $lang = array_merge($lang, array(
 	'UNREAD_PMS'			=> '<b>%d</b> unread messages',
 	'UNWATCHED_FORUMS'		=> 'You are no longer watching the selected forums.',
 	'UNWATCHED_TOPICS'		=> 'You are no longer watching the selected topics.',
+	'UPDATE'				=> 'Update',
 	'UPLOAD_IN_PROGRESS'	=> 'The upload is currently in progress',
 	'URL_REDIRECT'			=> 'If your browser does not support meta redirection please click %sHERE%s to be redirected.',
 	'USERGROUPS'			=> 'Groups',

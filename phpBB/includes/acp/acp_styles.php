@@ -122,6 +122,24 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					return;
 				}
 			break;
+			
+			case 'edit':
+				if ($style_id)
+				{
+					switch ($mode)
+					{
+						case 'imageset':
+							return $this->edit_imageset($style_id);
+						case 'template':
+							return $this->edit_template($style_id);
+						/**
+						* @todo Implement the theme editor
+						*/
+						//case 'theme':
+						//	return $this->edit_theme($style_id);
+					}
+				}
+			break;
 		}
 
 		switch ($mode)
@@ -159,7 +177,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('style', array('export', 'delete'));
+				$this->frontend('style', array('details', 'export', 'delete'));
 			break;
 
 			case 'template':
@@ -183,7 +201,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if ($template_row['template_storedb'] && file_exists("{$phpbb_root_path}styles/{$template_row['template_path']}/template/"))
 						{
-							$filelist = array('/' => array());
+							$filelist = array('' => array());
 
 							$sql = 'SELECT template_filename, template_mtime 
 								FROM ' . STYLES_TPLDATA_TABLE . "
@@ -194,7 +212,15 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							{
 								if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
 								{
-									$filelist['/'][] = $row['template_filename'];
+									// get folder info from the filename
+									if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
+									{
+										$filelist[''][] = $row['template_filename'];
+									}
+									else
+									{
+										$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slashpos - 1);
+									}
 								}
 							}
 							$db->sql_freeresult($result);
@@ -206,7 +232,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('template', array('cache', 'details', 'refresh', 'export', 'delete'));
+				$this->frontend('template', array('cache', 'details', 'refresh', 'edit', 'export', 'delete'));
 			break;
 
 			case 'theme':
@@ -257,18 +283,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('theme', array('details', 'refresh', 'export', 'delete'));
+				$this->frontend('theme', array('details', 'refresh', 'edit', 'export', 'delete'));
 			break;
 
 			case 'imageset':
-				switch ($action)
-				{
-					case 'edit':
-						$this->edit_imageset($style_id);
-					break;
-					default:
-						$this->frontend('imageset', array('details', 'delete', 'export'));
-				}
+				$this->frontend('imageset', array('details', 'edit', 'delete', 'export'));
 			break;
 		}
 	}
@@ -417,6 +436,213 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'S_BASIS_OPTIONS'		=> $basis_options)
 		);
 
+	}
+
+	/**
+	* Provides a template editor which allows saving changes to template files on the filesystem or in the database.
+	*
+	* @param int $template_id specifies which template set is being edited
+	*/
+	function edit_template($template_id)
+	{
+		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+
+		$this->page_title = 'EDIT_TEMPLATE';
+
+		$filelist = $filelist_cats = array();
+
+		$template_data	= (!empty($_POST['template_data'])) ? ((STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data']) : '';
+		$template_file		= request_var('template_file', '');
+		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
+		$save_changes	= (isset($_POST['save'])) ? true : false;
+
+		// make sure template_file path doesn't go upwards ;-)
+		$template_file = str_replace('..', '.', $template_file);
+
+		// Retrieve some information about the template
+		$sql = 'SELECT template_storedb, template_path, template_name
+			FROM ' . STYLES_TPL_TABLE . "
+			WHERE template_id = $template_id";
+		$result = $db->sql_query($sql);
+
+		if (!($template_info = $db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['NO_TEMPLATE']);
+		}
+		$db->sql_freeresult($result);
+
+		// save changes to the template if the user submitted any
+		if ($save_changes && $template_file)
+		{
+			// Get the filesystem location of the current file
+			$file = "{$phpbb_root_path}styles/{$template_info['template_path']}/template/$template_file";
+			$additional = '';
+
+			// If the template is stored on the filesystem try to write the file else store it in the database
+			if (!$template_info['template_storedb'] && file_exists($file) && is_writeable($file))
+			{
+				if (!($fp = fopen($file, 'wb')))
+				{
+					trigger_error($user->lang['NO_TEMPLATE']);
+				}
+				fwrite($fp, $template_data);
+				fclose($fp);
+			}
+			else
+			{
+				$db->sql_transaction('begin');
+
+				// If it's not stored in the db yet, then update the template setting and store all template files in the db
+				if (!$template_info['template_storedb'])
+				{
+					$sql = 'UPDATE ' . STYLES_TPL_TABLE . ' 
+						SET template_storedb = 1 
+						WHERE template_id = ' . $template_id;
+					$db->sql_query($sql);
+
+					$filelist = filelist("{$phpbb_root_path}styles/{$template_info['template_path']}/template", '', 'html');
+					$this->store_templates('insert', $template_id, $template_info['template_path'], $filelist);
+
+					add_log('admin', 'LOG_TEMPLATE_EDIT_DETAILS', $template_info['template_name']);
+					$additional .= '<br />' . $user->lang['EDIT_TEMPLATE_STORED_DB'];
+				}
+
+				// Update the template_data table entry for this template file
+				$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . " 
+					SET template_data = '" . $db->sql_escape($template_data) . "', template_mtime = " . time() . " 
+					WHERE template_id = $template_id 
+						AND template_filename = '" . $db->sql_escape($template_file) . "'";
+				$db->sql_query($sql);
+
+				$db->sql_transaction('commit');
+			}
+
+			// destroy the cached version of the template
+			@unlink("{$phpbb_root_path}cache/tpl_{$template_info['template_name']}_" . str_replace('/', '.', $template_file) . ".$phpEx");
+
+			add_log('admin', 'LOG_EDIT_TEMPLATE', $template_info['template_name'], $template_file);
+			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
+		}
+
+		// Generate a category array containing template filenames
+		if (!$template_info['template_storedb'])
+		{
+			$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
+
+			$filelist = filelist($template_path, '', 'html');
+			$filelist[''] = array_diff($filelist[''], array('bbcode.html'));
+
+			if ($template_file)
+			{
+				if (!file_exists($template_path . "/$template_file") || !($template_data = file_get_contents($template_path . "/$template_file")))
+				{
+					trigger_error($user->lang['NO_TEMPLATE']);
+				}
+			}
+		}
+		else
+		{
+			$sql = 'SELECT * 
+				FROM ' . STYLES_TPLDATA_TABLE . " 
+				WHERE template_id = $template_id";
+			$result = $db->sql_query($sql);
+
+			$filelist = array('' => array());
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$file_info = pathinfo($row['template_filename']);
+
+				if (($file_info['basename'] != 'bbcode') && ($file_info['extension'] == 'html'))
+				{
+					if (($file_info['dirname'] == '.') || empty($file_info['dirname']))
+					{
+						$filelist[''][] = $row['template_filename'];
+					}
+					else
+					{
+						$filelist[$file_info['dirname'] . '/'][] = "{$file_info['basename']}.{$file_info['extension']}";
+					}
+				}
+
+				if ($row['template_filename'] == $template_file)
+				{
+					$template_data = $row['template_data'];
+				}
+			}
+			$db->sql_freeresult($result);
+			unset($file_info);
+		}
+
+		// Now create the categories
+		$filelist_cats[''] = array();
+		foreach ($filelist as $pathfile => $file_ary)
+		{
+			// Use the directory name as category name
+			if (!empty($pathfile))
+			{
+				$filelist_cats[$pathfile] = array();
+				foreach ($file_ary as $file)
+				{
+					$filelist_cats[$pathfile][$pathfile . $file] = $file;
+				}
+			}
+			// or if it's in the main category use the word before the first underscore to group files
+			else
+			{
+				$cats = array();
+				foreach ($file_ary as $file)
+				{
+					$cats[] = substr($file, 0, strpos($file, '_'));
+					$filelist_cats[substr($file, 0, strpos($file, '_'))][$file] = $file;
+				}
+
+				$cats = array_values(array_unique($cats));
+
+				// we don't need any single element categories so put them into the misc '' category
+				for ($i = 0, $n = sizeof($cats); $i < $n; $i++)
+				{
+					if (sizeof($filelist_cats[$cats[$i]]) == 1)
+					{
+						$filelist_cats[''][key($filelist_cats[$cats[$i]])] = current($filelist_cats[$cats[$i]]);
+						unset($filelist_cats[$cats[$i]]);
+					}
+				}
+				unset($cats);
+			}
+		}
+		unset($filelist);
+
+		// Generate list of categorised template files
+		$tpl_options = '';
+		ksort($filelist_cats);
+		foreach ($filelist_cats as $category => $tpl_ary)
+		{
+			ksort($tpl_ary);
+
+			if (!empty($category))
+			{
+				$tpl_options .= '<option class="sep" value="">' . $category . '</option>';
+			}
+
+			foreach ($tpl_ary as $filename => $file)
+			{
+				$selected = ($template_file == $filename) ? ' selected="selected"' : '';
+				$tpl_options .= '<option value="' . $filename . '"' . $selected . '>' . $file . '</option>';
+			}
+		}
+
+		$template->assign_vars(array(
+			'S_EDIT_TEMPLATE'	=> true,
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $template_file)),
+			'S_TEMPLATES'		=> $tpl_options,
+
+			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows",
+			'U_BACK'			=> $this->u_action,
+
+			'TEMPLATE_FILE'		=> $template_file,
+			'TEMPLATE_DATA'		=> htmlentities($template_data),
+			'TEXT_ROWS'			=> $text_rows)
+		);
 	}
 
 	/**
@@ -1376,10 +1602,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Store template files into db
 	*/
-	function store_templates($mode, $style_id, $path, $filelist)
+	function store_templates($mode, $style_id, $name, $filelist)
 	{
 		global $phpbb_root_path, $phpEx, $db;
 
+		$path = str_replace(' ', '_', $name) . '/template/';
 		$includes = array();
 		foreach ($filelist as $pathfile => $file_ary)
 		{
@@ -1416,7 +1643,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// heck of a lot of data ...
 				$sql_ary = array(
 					'template_id'			=> $style_id,
-					'template_filename'		=> $file,
+					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
 					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$path$pathfile$file"),
 					'template_data'			=> implode('', file("{$phpbb_root_path}styles/$path$pathfile$file")),
@@ -1430,7 +1657,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				{
 					$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
 						WHERE template_id = $style_id 
-							AND template_filename = '" . $db->sql_escape($file) . "'";
+							AND template_filename = '" . $db->sql_escape("$pathfile$file") . "'";
 				}
 				$db->sql_query($sql);
 			}
@@ -2029,7 +2256,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		if ($mode == 'template' && $store_db) 
 		{
 			$filelist = filelist("{$root_path}template", '', 'html');
-			$this->store_templates('insert', $id, $path, $filelist);
+			$this->store_templates('insert', $id, $name, $filelist);
 		}
 
 		$db->sql_transaction('commit');
