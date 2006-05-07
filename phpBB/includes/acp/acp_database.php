@@ -1041,7 +1041,7 @@ class acp_database
 
 						if (!(file_exists($file) && is_readable($file)))
 						{
-							trigger_error($lang['BACKUP_INVALID']);
+							trigger_error($user->lang['BACKUP_INVALID']);
 						}
 
 						if ($delete)
