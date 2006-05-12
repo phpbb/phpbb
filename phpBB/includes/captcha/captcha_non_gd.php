@@ -139,12 +139,9 @@ class captcha
 	*/
 	function png_chunk($length, $type, $data)
 	{
-		$raw = $type;
-		$raw .= $data;
-		$crc = crc32($raw);
-		$raw .= pack('C4', ($crc >> 24) & 255, ($crc >> 16) & 255, ($crc >> 8) & 255, $crc & 255);
+		$raw = $type . $data;
 
-		return pack('C4', ($length >> 24) & 255, ($length >> 16) & 255, ($length >> 8) & 255, $length & 255) . $raw;
+		return pack('N', $length) . $raw . pack('N', crc32($raw));
 	}
 
 	/**
@@ -159,8 +156,7 @@ class captcha
 		$image = pack('C8', 137, 80, 78, 71, 13, 10, 26, 10);
 
 		// IHDR
-		$raw = pack('C4', ($width >> 24) & 255, ($width >> 16) & 255, ($width >> 8) & 255, $width & 255);
-		$raw .= pack('C4', ($height >> 24) & 255, ($height >> 16) & 255, ($height >> 8) & 255, $height & 255);
+		$raw = pack('N2', $width, $height);
 		$raw .= pack('C5', 8, 0, 0, 0, 0);
 		$image .= $this->png_chunk(13, 'IHDR', $raw);
 
@@ -180,11 +176,11 @@ class captcha
 
 			if (@extension_loaded('hash'))
 			{
-				$adler_hash = hash('adler32', $raw_image, true);
+				$adler_hash = strrev(hash('adler32', $raw_image, true));
 			}
 			else if (@extension_loaded('mhash'))
 			{
-				$adler_hash = mhash(MHASH_ADLER32, $raw_image);
+				$adler_hash = strrev(mhash(MHASH_ADLER32, $raw_image));
 			}
 			else
 			{
@@ -212,12 +208,11 @@ class captcha
 					$s1 %= 65521;
 					$s2 %= 65521;
 				}
-				$adler = ($s2 << 16) | $s1;
-				$adler_hash = pack('C4', $adler & 255, ($adler >> 8) & 255, ($adler >> 16) & 255, ($adler >> 24) & 255);
+				$adler_hash = pack('N', ($s2 << 16) | $s1);
 			}
 
 			// This is the same thing as gzcompress($raw_image, 0) but does not need zlib
-			$raw_image = pack('C7', 0x78, 0x01, 0x01, $length, ($length >> 8) & 255, ~$length & 255, ~($length >> 8)) . $raw_image . strrev($adler_hash);
+			$raw_image = pack('C3v2', 0x78, 0x01, 0x01, $length, ~$length) . $raw_image . $adler_hash;
 
 			// The Zlib header + Adler hash make us add on 11
 			$length += 11;
