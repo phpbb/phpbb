@@ -446,40 +446,46 @@ class module
 	* Output an error message
 	* If skip is true, return and continue execution, else exit
 	* @todo Really should change the caption based on $skip and calling code at some point
+	* @todo This needs testing with a large dataset that generates multiple errors
 	*/
 	function error($error, $line, $file, $skip = false)
 	{
-		global $lang, $db;
-
-		if (!$skip)
-		{
-			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
-			echo '<head>';
-			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-			echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
-			echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
-			echo '</head>';
-			echo '<body id="errorpage">';
-			echo '<div id="wrap">';
-			echo '	<div id="page-header">';
-			echo '	</div>';
-			echo '	<div id="page-body">';
-			echo '		<div class="panel">';
-			echo '			<span class="corners-top"><span></span></span>';
-			echo '			<div id="content">';
-			echo '				<h1>' . $lang['INST_ERR_FATAL'] . '</h1>';
-		}
-
-		echo '		<p>' . $lang['INST_ERR_FATAL'] . "</p>\n";
-		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
-		echo '		<p><b>' . $error . "</b></p>\n";
+		global $lang, $db, $template;
 
 		if ($skip)
 		{
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'	=> true,
+				'LEGEND'	=> $lang['INST_ERR_FATAL'],
+			));
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'		=> basename($file) . ' [ ' . $line . ' ]',
+				'RESULT'	=> '<b style="color:red">' . $error . '</b>',
+			));
+
 			return;
 		}
 
+		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
+		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
+		echo '<head>';
+		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
+		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
+		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+		echo '</head>';
+		echo '<body id="errorpage">';
+		echo '<div id="wrap">';
+		echo '	<div id="page-header">';
+		echo '	</div>';
+		echo '	<div id="page-body">';
+		echo '		<div class="panel">';
+		echo '			<span class="corners-top"><span></span></span>';
+		echo '			<div id="content">';
+		echo '				<h1>' . $lang['INST_ERR_FATAL'] . '</h1>';
+		echo '		<p>' . $lang['INST_ERR_FATAL'] . "</p>\n";
+		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
+		echo '		<p><b>' . $error . "</b></p>\n";
 		echo '			</div>';
 		echo '			<span class="corners-bottom"><span></span></span>';
 		echo '		</div>';
@@ -505,20 +511,33 @@ class module
 	*/
 	function db_error($error, $sql, $line, $file, $skip = false)
 	{
-		global $lang, $db;
-
-		$this->page_header();
-
-		echo '		<h2 style="color:red;text-align:center">' . $lang['INST_ERR_FATAL'] . "</h2>\n";
-		echo '		<p>' . $lang['INST_ERR_FATAL_DB'] . "</p>\n";
-		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
-		echo '		<p>SQL : ' . $sql . "</p>\n";
-		echo '		<p><b>' . $error . "</b></p>\n";
+		global $lang, $db, $template;
 
 		if ($skip)
 		{
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'	=> true,
+				'LEGEND'	=> $lang['INST_ERR_FATAL'],
+			));
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'		=> basename($file) . ' [ ' . $line . ' ]',
+				'RESULT'	=> '<b style="color:red">' . $error . '</b><br />&#187; SQL:' . $sql,
+			));
+
 			return;
 		}
+
+		$template->set_filenames(array(
+			'body' => 'install_error.html')
+		);
+		$this->page_header();
+		$this->generate_navigation();
+
+		$template->assign_vars(array(
+			'MESSAGE_TITLE'		=> $lang['INST_ERR_FATAL_DB'],
+			'MESSAGE_BODY'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
+		));
 
 		$db->sql_close();
 		$this->page_footer();
