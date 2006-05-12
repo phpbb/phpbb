@@ -50,7 +50,6 @@ $lang = array_merge($lang, array(
 	'CONFIG_FILE_UNABLE_WRITE'	=> 'It was not possible to write the configuration file. Alternative methods for this file to be created are presented below',
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written, you may now proceed to the next step of the installation',
 	'CONFIG_RETRY'				=> 'Retry',
-	'CONTACT_EMAIL'				=> 'Contact email address',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',
 	'CONVERT'					=> 'Convert',
@@ -94,10 +93,6 @@ $lang = array_merge($lang, array(
 	'DL_DOWNLOAD'				=> 'Download',
 	'DONE'						=> 'Done',
 
-	'FILE_FOUND'				=> 'Found',
-	'FILE_NOT_FOUND'			=> 'Cannot find',
-	'FILE_UNWRITEABLE'			=> 'Unwriteable',
-	'FILE_WRITEABLE'			=> 'Writeable',
 	'FILES_OPTIONAL'			=> 'Optional Files and Directories',
 	'FILES_OPTIONAL_EXPLAIN'	=> '<b>Optional</b> - These files, directories or permissions are not required. The installation routines will attempt to use various techniques to complete if they do not exist or cannot be written to. However, the presence of these files, directories or permissions will speed installation.',
 	'FILES_REQUIRED'			=> 'Files and Directories',
@@ -106,13 +101,12 @@ $lang = array_merge($lang, array(
 	'FORUM_ADDRESS_EXPLAIN'		=> 'This is the http address of your former forum',
 	'FORUM_PATH'				=> 'Forum path',
 	'FORUM_PATH_EXPLAIN'		=> 'This is the relative -to phpBB main directory- server path to your former forum',
+	'FOUND'						=> 'Found',
 	'FTP_CONFIG'				=> 'Transfer config by FTP',
 	'FTP_CONFIG_EXPLAIN'		=> 'phpBB has detected the presence of the ftp module on this server. You may attempt to install your config.php via this if you wish. You will need to supply the information listed below. Remember your username and password are those to your server! (ask your hosting provider for details if you are unsure what these are)',
-	'FTP_PASSWORD'				=> 'FTP Password',
 	'FTP_PATH'					=> 'FTP Path',
 	'FTP_PATH_EXPLAIN'			=> 'This is the path from your root directory to that of phpBB2, e.g. htdocs/phpBB2/',
 	'FTP_UPLOAD'				=> 'Upload',
-	'FTP_USERNAME'				=> 'FTP Username',
 
 	'GPL'						=> 'General Public License',
 	
@@ -153,6 +147,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
 
 	'NEXT_STEP'					=> 'Proceed to next step',
+	'NOT_FOUND'					=> 'Cannot find',
 	'NO_CONVERTORS'				=> 'No convertors are available for use',
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified',
 	'NO_LOCATION'				=> 'Cannot determine location',
@@ -180,10 +175,6 @@ $lang = array_merge($lang, array(
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB2 is located relative to the domain name',
 	'SERVER_CONFIG'				=> 'Server Configuration',
-	'SERVER_NAME'				=> 'Domain name',
-	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from',
-	'SERVER_PORT'				=> 'Server port',
-	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
 	'SOFTWARE'					=> 'Forum Software',
 	'SPECIFY_OPTIONS'			=> 'Specify Conversion Options',
 	'STAGE_ADMINISTRATOR'		=> 'Administrator Details',
@@ -211,10 +202,12 @@ $lang = array_merge($lang, array(
 	'TESTS_FAILED'				=> 'Tests failed',
 
 	'UNAVAILABLE'				=> 'Unavailable',
+	'UNWRITEABLE'				=> 'Unwriteable',
 
 	'VERSION'					=> 'Version',
 
 	'WELCOME_INSTALL'			=> 'Welcome to phpBB 3 Installation',
+	'WRITEABLE'					=> 'Writeable',
 ));
 
 ?>

@@ -299,8 +299,8 @@ class install_install extends module
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
-			$exists = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
-			$write = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
+			$exists = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
+			$write = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -334,8 +334,8 @@ class install_install extends module
 			$write = $exists = false;
 		}
 
-		$exists_str = ($exists) ? '<b style="color:green">' . $lang['FILE_FOUND'] . '</b>' : '<b style="color:red">' . $lang['FILE_NOT_FOUND'] . '</b>';
-		$write_str = ($write) ? ', <b style="color:green">' . $lang['FILE_WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['FILE_UNWRITEABLE'] . '</b>' : '');
+		$exists_str = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
+		$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
 
 		$template->assign_block_vars('checks', array(
 			'TITLE'		=> $dir,
