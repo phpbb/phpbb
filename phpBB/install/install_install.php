@@ -766,7 +766,7 @@ class install_install extends module
 				'BODY'					=> $lang['CONFIG_FILE_UNABLE_WRITE'],
 				'L_DL_CONFIG'			=> $lang['DL_CONFIG'],
 				'L_DL_CONFIG_EXPLAIN'	=> $lang['DL_CONFIG_EXPLAIN'],
-				'L_DL_DONE'				=> $lang['DL_DONE'],
+				'L_DL_DONE'				=> $lang['DONE'],
 				'L_DL_DOWNLOAD'			=> $lang['DL_DOWNLOAD'],
 				'S_HIDDEN'				=> $s_hidden_fields,
 				'S_SHOW_DOWNLOAD'		=> true,
@@ -1107,6 +1107,12 @@ class install_install extends module
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
+		// recalculate binary tree
+		if (!function_exists('recalc_btree'))
+		{
+			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
+
 		$_module = &new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
 
@@ -1133,7 +1139,8 @@ class install_install extends module
 					$error = $db->sql_error();
 					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
 				}
-				$categories[$cat_name] = $db->sql_nextid();
+				$categories[$cat_name]['id'] = $db->sql_nextid();
+				$categories[$cat_name]['parent_id'] = 0;
 
 				if (is_array($subs))
 				{
@@ -1143,7 +1150,7 @@ class install_install extends module
 							'module_name'		=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
-							'parent_id'			=> $categories[$cat_name],
+							'parent_id'			=> $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $level2_name,
 							'module_mode'		=> '',
@@ -1156,10 +1163,13 @@ class install_install extends module
 							$error = $db->sql_error();
 							$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
 						}
-						$categories[$level2_name] = $db->sql_nextid();
+						$categories[$level2_name]['id'] = $db->sql_nextid();
+						$categories[$level2_name]['parent_id'] = $categories[$cat_name]['id'];
 					}
 				}
 			}
+
+			recalc_btree('module_id', MODULES_TABLE, $module_class);
 
 			// Get the modules we want to add...
 			$module_info = $_module->get_module_infos('', $module_class);
@@ -1174,7 +1184,7 @@ class install_install extends module
 							'module_name'		=> $module_name,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
-							'parent_id'			=> $categories[$cat_name],
+							'parent_id'			=> $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $row['title'],
 							'module_mode'		=> $module_mode,
@@ -1182,20 +1192,51 @@ class install_install extends module
 						);
 
 	//					$_module->update_module_data($module_data);
-						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
+/*						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
 						if (!$db->sql_query($sql))
 						{
 							$error = $db->sql_error();
 							$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+						}*/
+						$sql = 'SELECT left_id, right_id
+							FROM ' . MODULES_TABLE . "
+							WHERE module_class = '" . $module_class . "'
+								AND module_id = {$module_data['parent_id']}";
+						$result = $db->sql_query($sql);
+
+						$row = $db->sql_fetchrow($result);
+//print_r($row);
+						$db->sql_freeresult($result);
+
+						if ($categories[$cat_name]['parent_id'])
+						{
+							$sql = 'UPDATE ' . MODULES_TABLE . "
+								SET left_id = left_id + 2, right_id = right_id + 2
+								WHERE module_class = '" . $module_class . "'
+									AND left_id > {$row['right_id']}";
+							$db->sql_query($sql);
+
+							$sql = 'UPDATE ' . MODULES_TABLE . "
+								SET right_id = right_id + 2
+								WHERE module_class = '" . $module_class . "'
+									AND {$row['left_id']} BETWEEN left_id AND right_id";
+							$db->sql_query($sql);
 						}
+						else
+						{
+							$sql = 'UPDATE ' . MODULES_TABLE . "
+								SET left_id = left_id + 3, right_id = right_id + 3
+								WHERE module_class = '" . $module_class . "'
+									AND left_id > {$row['left_id']}";
+							$db->sql_query($sql);
+						}
+						$module_data['left_id'] = ($categories[$cat_name]['parent_id']) ? $row['right_id'] : $row['left_id'] + 1;
+						$module_data['right_id'] = ($categories[$cat_name]['parent_id']) ? $row['right_id'] + 1 : $row['left_id'] + 2;
+
+						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
+						$db->sql_query($sql);
 					}
 				}
-			}
-
-			// recalculate binary tree
-			if (!function_exists('recalc_btree'))
-			{
-				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
 			recalc_btree('module_id', MODULES_TABLE, $module_class);

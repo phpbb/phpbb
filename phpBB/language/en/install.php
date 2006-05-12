@@ -52,7 +52,9 @@ $lang = array_merge($lang, array(
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL'				=> 'Contact email address',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
+	'CONTINUE_CONVERT'			=> 'Continue conversion',
 	'CONVERT'					=> 'Convert',
+	'CONVERT_COMPLETE'			=> 'Conversion completed',
 	'CONVERT_INTRO'				=> 'Welcome to the phpBB Unified Convertor Framework',
 	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) forum systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the forum software you wish to convert from, please check our website where further conversion modules may be available for download.',
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist',
@@ -90,7 +92,7 @@ $lang = array_merge($lang, array(
 	'DL_CONFIG'					=> 'Download config',
 	'DL_CONFIG_EXPLAIN'			=> 'You may download the complete config.php to your own PC. You will then need to upload the file manually, replacing any existing config.php in your phpBB 3.0 root directory. Please remember to upload the file in ASCII format (see your FTP application documentation if you are unsure how to achieve this). When you have uploaded the config.php please click "Done" to move to the next stage.',
 	'DL_DOWNLOAD'				=> 'Download',
-	'DL_DONE'					=> 'Done',
+	'DONE'						=> 'Done',
 
 	'FILE_FOUND'				=> 'Found',
 	'FILE_NOT_FOUND'			=> 'Cannot find',
@@ -191,6 +193,7 @@ $lang = array_merge($lang, array(
 	'STAGE_DATABASE'			=> 'Database Settings',
 	'STAGE_FINAL'				=> 'Final Stage',
 	'STAGE_INTRO'				=> 'Introduction',
+	'STAGE_IN_PROGRESS'			=> 'Conversion in progress',
 	'STAGE_REQUIREMENTS'		=> 'Requirements',
 	'STAGE_SETTINGS'			=> 'Settings',
 	'SUB_INTRO'					=> 'Introduction',
@@ -199,6 +202,8 @@ $lang = array_merge($lang, array(
 	'SUCCESSFUL_CONNECT'		=> 'Successful Connection',
 // TODO: Write some text on obtaining support
 	'SUPPORT_BODY'				=> '<p>Some text on obtaining support, etc can go here.</p><p>Probably this can be copied from the documentation</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a></p>',
+	'SYNC_FORUMS'				=> 'Starting to sync forums',
+	'SYNC_TOPICS'				=> 'Starting to sync topics',
 
 	'TABLE_PREFIX'				=> 'Prefix for tables in database',
 	'TABLE_PREFIX_SAME'			=> 'The table prefix needs to be the one used by the software you are converting from.<br />&#187; Specified table prefix was %s',
