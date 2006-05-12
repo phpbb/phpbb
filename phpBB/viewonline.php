@@ -239,7 +239,7 @@ while ($row = $db->sql_fetchrow($result))
 		break;
 
 		case 'memberlist':
-			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
+			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
 			$location_url = "memberlist.$phpEx$SID";
 		break;
 

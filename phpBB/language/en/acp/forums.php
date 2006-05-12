@@ -55,7 +55,6 @@ $lang = array_merge($lang, array(
 	'ENABLE_RECENT_EXPLAIN'		=> 'If set to yes topics made to this forum will be shown in the active topics list.',
 	'ENABLE_TOPIC_ICONS'		=> 'Enable Topic Icons',
 
-	'FOLDER'							=> 'Folder',
 	'FORUM_ADMIN'						=> 'Forum Administration',
 	'FORUM_ADMIN_EXPLAIN'				=> 'In phpBB3 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
 	'FORUM_AUTO_PRUNE'					=> 'Enable Auto-Pruning',
@@ -70,7 +69,6 @@ $lang = array_merge($lang, array(
 	'FORUM_EDIT_EXPLAIN'				=> 'The form below will allow you to customise this forum. Please note that moderation and post count controls are set via forum permissions for each user or usergroup.',
 	'FORUM_IMAGE'						=> 'Forum Image',
 	'FORUM_IMAGE_EXPLAIN'				=> 'Location, relative to the phpBB root directory, of an image to associate with this forum.',
-	'FORUM_LINK'						=> 'Forum Link',
 	'FORUM_LINK_EXPLAIN'				=> 'Full URL (including the protocol, for example http://) to location clicking this forum will take the user.',
 	'FORUM_LINK_TRACK'					=> 'Track Link Redirects',
 	'FORUM_LINK_TRACK_EXPLAIN'			=> 'Records the number of times a forum link was clicked.',
@@ -83,7 +81,6 @@ $lang = array_merge($lang, array(
 	'FORUM_PASSWORD_EXPLAIN'			=> 'Defines a password for this forum, use the permission system in preference.',
 	'FORUM_PASSWORD_MISMATCH'			=> 'The passwords you entered did not match.',
 	'FORUM_RESYNCED'					=> 'Forum "%s" successfully resynced',
-	'FORUM_RULES'						=> 'Forum Rules',
 	'FORUM_RULES_EXPLAIN'				=> 'Forum Rules are displayed at any page within the given forum.',
 	'FORUM_RULES_LINK'					=> 'Link to Forum Rules',
 	'FORUM_RULES_LINK_EXPLAIN'			=> 'You are able to enter the URL of the page/post containing your forum rules here. This setting will override the Forum Rules text you specified.',
@@ -121,8 +118,6 @@ $lang = array_merge($lang, array(
 	
 	'REDIRECT_ACL'	=> 'Now you are able to %sset permissions%s for this forum.',
 	'RESYNC'		=> 'Sync',
-
-	'SUBFORUM'		=> 'Subforum',
 
 	'TYPE_CAT'			=> 'Category',
 	'TYPE_FORUM'		=> 'Forum',

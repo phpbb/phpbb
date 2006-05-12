@@ -56,11 +56,7 @@ $lang = array_merge($lang, array(
 	'GROUP_DETAILS'					=> 'Group details',
 	'GROUP_DST'						=> 'Group daylight savings',
 	'GROUP_EDIT_EXPLAIN'			=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Changes made here override users current settings. Please note that group members can alter their avatar unless you set appropriate user permissions.',
-	'GROUP_ERR_DESC_LONG'			=> 'Group description too long.',
-	'GROUP_ERR_TYPE'				=> 'Inappropriate group type specified.',
-	'GROUP_ERR_USERNAME'			=> 'No group name specified.',
 	'GROUP_ERR_USERS_EXIST'			=> 'The specified users are already members of this group',
-	'GROUP_ERR_USER_LONG'			=> 'Group name too long.',
 	'GROUP_HIDDEN'					=> 'Hidden',
 	'GROUP_LANG'					=> 'Group language',
 	'GROUP_LEAD'					=> 'Group leaders',
@@ -95,7 +91,6 @@ $lang = array_merge($lang, array(
 
 	'NO_GROUP'					=> 'No group specified',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
-	'NO_USERS'					=> 'The requested users do not exist',
 
 	'SPECIAL_GROUPS'			=> 'Predefined groups',
 	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings. By clicking "Default" you can set the relevant group to the default for all its members.',

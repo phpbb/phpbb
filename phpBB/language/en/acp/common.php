@@ -199,7 +199,6 @@ $lang = array_merge($lang, array(
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIMENSIONS'				=> 'Dimensions',
 	'DISABLE'					=> 'Disable',
-	'DISPLAY'					=> 'Display',
 	'DOWNLOAD'					=> 'Download',
 	'DOWNLOAD_AS'				=> 'Download as',
 	'DOWNLOAD_STORE'			=> 'Download or Store file',

@@ -78,7 +78,6 @@ $lang = array_merge($lang, array(
 	'CURRENT_ICONS'		=> 'Current icons',
 	'CURRENT_SMILIES'	=> 'Current smilies',
 
-	'DELETE_ALL'			=> 'Delete all',
 	'DISPLAY_ON_POSTING'	=> 'Display on posting',
 
 	'EDIT_ICONS'				=> 'Edit Icons',

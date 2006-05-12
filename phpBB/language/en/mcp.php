@@ -235,7 +235,6 @@ $lang = array_merge($lang, array(
 	'POST_APPROVED_SUCCESS'	=> 'The selected post has been approved',
 	'POST_DELETED_SUCCESS'	=> 'The selected post has been successfully removed from the database',
 	'POST_DISAPPROVED_SUCCESS'	=> 'The selected post has been disapproved',
-	'POST_DETAILS'			=> 'Post details',
 	'POST_LOCKED_SUCCESS'	=> 'Post locked successfully',
 	'POST_NOT_EXIST'		=> 'The post you requested does not exist',
 	'POST_REPORTED_SUCCESS'	=> 'This post has been successfully reported',

@@ -45,7 +45,6 @@ $lang = array_merge($lang, array(
 	'ALLOW_SELECTED_FORUMS'				=> 'Only Forums selected below',
 	'ASSIGNED_EXTENSIONS'				=> 'Assigned Extensions',
 	'ASSIGNED_GROUP'					=> 'Assigned Group',
-	'ATTACHMENTS'						=> 'Attachments',
 	'ATTACH_EXTENSIONS_URL'				=> 'Extensions',
 	'ATTACH_EXT_GROUPS_URL'				=> 'Extension Groups',
 	'ATTACH_MAX_FILESIZE'				=> 'Maximum filesize',

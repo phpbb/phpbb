@@ -77,8 +77,6 @@ $lang = array_merge($lang, array(
 	'EDIT_TEMPLATE_STORED_DB'	=> 'The template file was unwritable so the template set is now stored in the database containing the modified file.',
 	'EXPORT'							=> 'Export',
 
-	'FROM'					=> 'from', // "Create new style .... from ..."
-
 	'IMAGE_CONFIGURATION'		=> 'Image configuration',
 	'IMAGE_WIDTH'				=> 'Image width',
 	'IMAGE_HEIGHT'				=> 'Image height',
@@ -231,7 +229,7 @@ $lang = array_merge($lang, array(
 	'IMAGE'					=> 'Image',
 	'CURRENT_IMAGE'			=> 'Current Image',
 	'SELECTED_IMAGE'		=> 'Selected Image',
-	'DIMENSIONS'			=> 'Include dimensions',
+	'INCLUDE_DIMENSIONS'	=> 'Include dimensions',
 	'DIMENSIONS_EXPLAIN'	=> 'Selecting yes here will include width/height parameters.',
 	'IMAGE_PARAMETER'		=> 'Parameter',
 	'IMAGE_VALUE'			=> 'Value',

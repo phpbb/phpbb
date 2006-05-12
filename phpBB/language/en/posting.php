@@ -63,10 +63,8 @@ $lang = array_merge($lang, array(
 	'CANNOT_POST_STICKY'		=> 'Sorry but you cannot post sticky topics.',
 	'CHANGE_TOPIC_TO'			=> 'Change topic type to',
 	'CLOSE_TAGS'				=> 'Close Tags',
-	'CLOSE_WINDOW'				=> 'Close Window',
 	'CURRENT_TOPIC'				=> 'Current Topic',
 
-	'DAYS'						=> 'Days',
 	'DELETE_FILE'				=> 'Delete File',
 	'DELETE_MESSAGE'			=> 'Delete Message',
 	'DELETE_MESSAGE_CONFIRM'	=> 'Are you sure you want to delete this message?',
