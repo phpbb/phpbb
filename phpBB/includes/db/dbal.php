@@ -266,7 +266,9 @@ class dbal
 			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
-			if ($auth->acl_get('a_') || defined('IN_INSTALL'))
+			// Additionally show complete error on installation or if extended debug mode is enabled
+			// The DEBUG_EXTRA constant is for development only!
+			if ($auth->acl_get('a_') || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
 			{
 				// Print out a nice backtrace...
 				$backtrace = get_backtrace();
@@ -314,7 +316,7 @@ class dbal
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $user;
+		global $cache, $starttime, $phpbb_root_path, $user, $SID;
 
 		if (empty($_GET['explain']))
 		{
@@ -350,7 +352,7 @@ class dbal
 					<body id="errorpage">
 					<div id="wrap">
 						<div id="page-header">
-							<a href="' . htmlspecialchars(preg_replace('/&explain=([^&]*)/', '', $_SERVER['REQUEST_URI'])) . '">Return to previous page</a>
+							<a href="' . build_url('explain') . '">Return to previous page</a>
 						</div>
 						<div id="page-body">
 							<div class="panel">

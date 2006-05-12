@@ -14,6 +14,7 @@
 class acp_attachments
 {
 	var $u_action;
+	var $new_config;
 	
 	function main($id, $mode)
 	{
@@ -63,85 +64,6 @@ class acp_attachments
 			case 'attach':
 
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-		
-				$config_sizes = array('max_filesize' => 'size', 'attachment_quota' => 'quota_size', 'max_filesize_pm' => 'pm_size');
-				foreach ($config_sizes as $cfg_key => $var)
-				{
-					$$var = request_var($var, '');
-				}
-
-				// Pull all config data
-				$sql = 'SELECT *
-					FROM ' . CONFIG_TABLE;
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$config_name = $row['config_name'];
-					$config_value = $row['config_value'];
-
-					$default_config[$config_name] = $config_value;
-					$new[$config_name] = request_var($config_name, $default_config[$config_name]);
-
-					foreach ($config_sizes as $cfg_key => $var)
-					{
-						if (empty($$var) && !$submit && $config_name == $cfg_key)
-						{
-							$$var = (intval($default_config[$config_name]) >= 1048576) ? 'mb' : ((intval($default_config[$config_name]) >= 1024) ? 'kb' : 'b');
-						}
-
-						if (!$submit && $config_name == $cfg_key)
-						{
-							$new[$config_name] = ($new[$config_name] >= 1048576) ? round($new[$config_name] / 1048576 * 100) / 100 : (($new[$config_name] >= 1024) ? round($new[$config_name] / 1024 * 100) / 100 : $new[$config_name]);
-						}
-
-						if ($submit && $config_name == $cfg_key)
-						{
-							$old = $new[$config_name];
-							$new[$config_name] = ($$var == 'kb') ? round($new[$config_name] * 1024) : (($$var == 'mb') ? round($new[$config_name] * 1048576) : $new[$config_name]);
-						}
-					} 
-
-					if ($submit)
-					{
-						set_config($config_name, $new[$config_name]);
-				
-						if (in_array($config_name, array('max_filesize', 'attachment_quota', 'max_filesize_pm')))
-						{
-							$new[$config_name] = $old;
-						}
-					}
-				}
-				$db->sql_freeresult($result);
-
-				$this->perform_site_list();
-
-				if ($submit)
-				{
-					add_log('admin', 'LOG_CONFIG_ATTACH');
-
-					// Check Settings
-					$this->test_upload($error, $new['upload_path'], false);
-
-					if (!sizeof($error))
-					{
-						trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
-					}
-				}
-
-				$template->assign_var('S_ATTACHMENT_SETTINGS', true);
-				
-				if ($action == 'imgmagick')
-				{
-					$new['img_imagick'] = $this->search_imagemagick();
-				}
-
-				// We strip eventually manual added convert program, we only want the patch
-				$new['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $new['img_imagick']);
-
-				$s_size_options = size_select_options($size);
-				$s_quota_size_options = size_select_options($quota_size);
-				$s_pm_size_options = size_select_options($pm_size);
 
 				$sql = 'SELECT group_name, cat_id
 					FROM ' . EXTENSION_GROUPS_TABLE . '
@@ -156,48 +78,103 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NONE']) . ']';
+
+				$display_vars = array(
+					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
+					'vars'	=> array(
+						'img_max_width' => false, 'img_max_height' => false, 'img_link_width' => false, 'img_link_height' => false,
+
+						'legend1'				=> 'ACP_ATTACHMENT_SETTINGS',
+						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
+						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'type' => 'text:25:100', 'explain' => true),
+						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'type' => 'custom', 'method' => 'display_order', 'explain' => true),
+						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
+						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
+						'max_filesize_pm'		=> array('lang' => 'ATTACH_MAX_PM_FILESIZE','type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
+						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'type' => 'text:3:3', 'explain' => false),
+						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'type' => 'text:3:3', 'explain' => false),
+						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'type' => 'radio:yes_no', 'explain' => true),
+						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
+						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERER', 'type' => 'radio:yes_no', 'explain' => true),
+
+						'legend2'					=> $l_legend_cat_images,
+						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'type' => 'radio:yes_no', 'explain' => true),
+						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'type' => 'radio:yes_no', 'explain' => true),
+						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'type' => 'text:7:15', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
+						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
+						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'type' => 'dimension:3:4', 'explain' => true),
+						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'type' => 'dimension:3:4', 'explain' => true),
+					)
+				);
+
+				$this->new_config = $config;
+				$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : $this->new_config;
+
+				// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
+				foreach ($display_vars['vars'] as $config_name => $null)
+				{
+					if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+					{
+						continue;
+					}
+
+					$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
+
+					if ($config_name == 'attachment_quota')
+					{
+						$size_var = request_var($config_name, '');
+						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
+					}
+
+					if ($submit)
+					{
+						set_config($config_name, $config_value);
+					}
+				}
+
+				$this->perform_site_list();
+
+				if ($submit)
+				{
+					add_log('admin', 'LOG_CONFIG_ATTACH');
+
+					// Check Settings
+					$this->test_upload($error, $this->new_config['upload_path'], false);
+
+					if (!sizeof($error))
+					{
+						trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+					}
+				}
+
+				$template->assign_var('S_ATTACHMENT_SETTINGS', true);
+
+				if ($action == 'imgmagick')
+				{
+					$this->new_config['img_imagick'] = $this->search_imagemagick();
+				}
+
+				// We strip eventually manual added convert program, we only want the patch
+				$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
+
 				$supported_types = get_supported_image_types();
 
 				// Check Thumbnail Support
-				if (!$new['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format'])))
+				if (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format'])))
 				{
-					$new['img_create_thumbnail'] = '0';
+					$this->new_config['img_create_thumbnail'] = 0;
 				}
 
 				$template->assign_vars(array(
-					'UPLOAD_PATH'			=> $new['upload_path'],
-					'DISPLAY_ORDER'			=> $new['display_order'],
-					'ATTACHMENT_QUOTA'		=> $new['attachment_quota'],
-					'ALLOW_ATTACHMENTS'		=> $new['allow_attachments'],
-					'ALLOW_PM_ATTACH'		=> $new['allow_pm_attach'],
-					'MAX_FILESIZE'			=> $new['max_filesize'],
-					'MAX_PM_FILESIZE'		=> $new['max_filesize_pm'],
-					'MAX_ATTACHMENTS'		=> $new['max_attachments'],
-					'MAX_ATTACHMENTS_PM'	=> $new['max_attachments_pm'],
-					'SECURE_DOWNLOADS'		=> $new['secure_downloads'],
-					'SECURE_ALLOW_DENY'		=> $new['secure_allow_deny'],
-					'ALLOW_EMPTY_REFERER'	=> $new['secure_allow_empty_referer'],
-					'ASSIGNED_GROUPS'		=> (sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NONE'],
-					'DISPLAY_INLINED'		=> $new['img_display_inlined'],
-					'CREATE_THUMBNAIL'		=> $new['img_create_thumbnail'],
-					'MIN_THUMB_FILESIZE'	=> $new['img_min_thumb_filesize'],
-					'IMG_IMAGICK'			=> $new['img_imagick'],
-					'MAX_WIDTH'				=> $new['img_max_width'],
-					'MAX_HEIGHT'			=> $new['img_max_height'],
-					'LINK_WIDTH'			=> $new['img_link_width'],
-					'LINK_HEIGHT'			=> $new['img_link_height'],
-
 					'U_SEARCH_IMAGICK'		=> $this->u_action . '&amp;action=imgmagick',
-
-					'S_QUOTA_SIZE_OPTIONS'		=> $s_quota_size_options,
-					'S_MAX_FILESIZE_OPTIONS'	=> $s_size_options,
-					'S_MAX_PM_FILESIZE_OPTIONS'	=> $s_pm_size_options,
-					'S_THUMBNAIL_SUPPORT'		=> (!$new['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format']))) ? false : true,
+					'S_THUMBNAIL_SUPPORT'	=> (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format']))) ? false : true,
 					)
 				);
 
 				// Secure Download Options - Same procedure as with banning
-				$allow_deny = ($new['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
+				$allow_deny = ($this->new_config['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
 		
 				$sql = 'SELECT *
 					FROM ' . SITELIST_TABLE;
@@ -218,7 +195,7 @@ class acp_attachments
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'S_SECURE_DOWNLOADS'	=> $new['secure_downloads'],
+					'S_SECURE_DOWNLOADS'	=> $this->new_config['secure_downloads'],
 					'S_DEFINED_IPS'			=> ($defined_ips != '') ? true : false,
 
 					'DEFINED_IPS'			=> $defined_ips,
@@ -228,6 +205,48 @@ class acp_attachments
 					'L_REMOVE_IPS'			=> $user->lang['REMOVE_' . $allow_deny . '_IPS'],
 					)
 				);
+
+				// Output relevant options
+				foreach ($display_vars['vars'] as $config_key => $vars)
+				{
+					if (!is_array($vars) && strpos($config_key, 'legend') === false)
+					{
+						continue;
+					}
+
+					if (strpos($config_key, 'legend') !== false)
+					{
+						$template->assign_block_vars('options', array(
+							'S_LEGEND'		=> true,
+							'LEGEND'		=> (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
+						);
+
+						continue;
+					}
+
+					$type = explode(':', $vars['type']);
+
+					$l_explain = '';
+					if ($vars['explain'] && isset($vars['lang_explain']))
+					{
+						$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+					}
+					else if ($vars['explain'])
+					{
+						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+					}
+
+					$template->assign_block_vars('options', array(
+						'KEY'			=> $config_key,
+						'TITLE'			=> $user->lang[$vars['lang']],
+						'S_EXPLAIN'		=> $vars['explain'],
+						'TITLE_EXPLAIN'	=> $l_explain,
+						'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
+						)
+					);
+		
+					unset($display_vars['vars'][$config_key]);
+				}
 
 			break;
 
@@ -1408,6 +1427,38 @@ class acp_attachments
 
 		$cache->destroy('_extensions');
 		$cache->put('_extensions', $extensions);
+	}
+
+	/**
+	* Write display_order config field
+	*/
+	function display_order($value, $key = '')
+	{
+		$radio_ary = array(0 => 'DESCENDING', 1 => 'ASCENDING');
+
+		return h_radio('config[display_order]', $radio_ary, $value, $key);
+	}
+
+	/**
+	* Adjust all three max_filesize config vars for display
+	*/
+	function max_filesize($value, $key = '')
+	{
+		// Determine size var and adjust the value accordingly
+		$size_var = ($value >= 1048576) ? 'mb' : (($value >= 1024) ? 'kb' : 'b');
+		$value = ($value >= 1048576) ? round($value / 1048576 * 100) / 100 : (($value >= 1024) ? round($value / 1024 * 100) / 100 : $value);
+
+		return '<input type="text" id="' . $key . '" size="8" maxlength="15" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
+	}
+
+	/**
+	* Write secure_allow_deny config field
+	*/
+	function select_allow_deny($value, $key = '')
+	{
+		$radio_ary = array(1 => 'ORDER_ALLOW_DENY', 0 => 'ORDER_DENY_ALLOW');
+
+		return h_radio('config[' . $key . ']', $radio_ary, $value, $key);
 	}
 
 }

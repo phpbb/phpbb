@@ -952,7 +952,14 @@ class acp_users
 
 				if (!isset($data['bday_day']))
 				{
-					list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user_row['user_birthday']);
+					if ($user_row['user_birthday'])
+					{
+						list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user_row['user_birthday']);
+					}
+					else
+					{
+						$data['bday_day'] = $data['bday_month'] = $data['bday_year'] = 0;
+					}
 				}
 
 				$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';

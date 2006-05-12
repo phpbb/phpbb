@@ -31,6 +31,9 @@ class acp_styles
 		global $db, $user, $auth, $template;
 		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
+		// Hardcoded template bitfield to add for new templates
+		define('TEMPLATE_BITFIELD', 6921);
+
 		$user->add_lang('acp/styles');
 
 		$this->tpl_name = 'acp_styles';
@@ -2216,7 +2219,9 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			switch ($mode)
 			{
 				case 'template':
+					// We set a pre-defined bitfield here which we may use further in 3.2
 					$sql_ary += array(
+						'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
 						$mode . '_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/$mode")) ? 1 : 0
 					);
 				break;

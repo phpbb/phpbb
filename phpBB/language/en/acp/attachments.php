@@ -109,6 +109,7 @@ $lang = array_merge($lang, array(
 	'NO_EXT_GROUP_NAME'			=> 'No Group Name entered',
 	'NO_EXT_GROUP_SPECIFIED'	=> 'No Extension Group specified',
 	'NO_IMAGE'					=> 'No Image',
+	'NO_THUMBNAIL_SUPPORT'		=> 'Thumbnail support has been disabled because there is no supported GD library available and the imagemagick executable could not be found.',
 	'NO_UPLOAD_DIR'				=> 'The upload directory you specified does not exist.',
 	'NO_WRITE_UPLOAD'			=> 'The upload directory you specified cannot be written to. Please alter the permissions to allow the webserver to write to it.',
 

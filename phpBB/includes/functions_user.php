@@ -139,6 +139,7 @@ function user_delete($mode, $user_id, $post_username = false)
 				GROUP BY topic_id";
 			$result = $db->sql_query($sql);
 
+			$topic_id_ary = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$topic_id_ary[$row['topic_id']] = $row['total_posts'];
@@ -199,7 +200,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			set_config('newest_user_id', $row['user_id']);
 			set_config('newest_username', $row['username']);
 		}
-		$db->freeresult($result);
+		$db->sql_freeresult($result);
 	}
 
 	set_config('num_users', $config['num_users'] - 1, true);
@@ -1226,6 +1227,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			{
 				if (isset($group_attributes[$attribute]) && !in_array($attribute, $group_only_ary))
 				{
+					// If we are about to set an avatar, we will not overwrite user avatars if no group avatar is set...
+					if (strpos($attribute, 'group_avatar') === 0 && !$group_attributes[$attribute])
+					{
+						continue;
+					}
+
 					$sql_ary[str_replace('group', 'user', $attribute)] = $group_attributes[$attribute];
 				}
 			}
@@ -1618,6 +1625,12 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	{
 		if (isset($group_attributes[$attribute]))
 		{
+			// If we are about to set an avatar, we will not overwrite user avatars if no group avatar is set...
+			if (strpos($attribute, 'group_avatar') === 0 && !$group_attributes[$attribute])
+			{
+				continue;
+			}
+
 			settype($group_attributes[$attribute], $type);
 			$sql_ary[str_replace('group_', 'user_', $attribute)] = $group_attributes[$attribute];
 		}

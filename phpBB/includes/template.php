@@ -126,7 +126,7 @@ class template
 	}
 
 	/**
-	* Display the handle and assign the output to a template variable
+	* Display the handle and assign the output to a template variable or return the content.
 	* @public
 	*/
 	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)

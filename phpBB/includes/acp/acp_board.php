@@ -369,13 +369,13 @@ class acp_board
 				continue;
 			}
 
-			$config_value = $cfg_array[$config_name];
-			$this->new_config[$config_name] = $config_value;
+			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($config_name == 'email_function_name')
 			{
 				$this->new_config['email_function_name'] = trim(str_replace(array('(', ')'), array('', ''), $this->new_config['email_function_name']));
 				$this->new_config['email_function_name'] = (empty($this->new_config['email_function_name']) || !function_exists($this->new_config['email_function_name'])) ? 'mail' : $this->new_config['email_function_name'];
+				$config_value = $this->new_config['email_function_name'];
 			}
 
 			if ($submit)
@@ -499,7 +499,7 @@ class acp_board
 			{
 				$template->assign_block_vars('options', array(
 					'S_LEGEND'		=> true,
-					'LEGEND'		=> $user->lang[$vars])
+					'LEGEND'		=> (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
 				);
 
 				continue;
@@ -507,11 +507,21 @@ class acp_board
 
 			$type = explode(':', $vars['type']);
 
+			$l_explain = '';
+			if ($vars['explain'] && isset($vars['lang_explain']))
+			{
+				$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+			}
+			else if ($vars['explain'])
+			{
+				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+			}
+
 			$template->assign_block_vars('options', array(
 				'KEY'			=> $config_key,
-				'TITLE'			=> $user->lang[$vars['lang']],
+				'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
 				'S_EXPLAIN'		=> $vars['explain'],
-				'TITLE_EXPLAIN'	=> ($vars['explain']) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '',
+				'TITLE_EXPLAIN'	=> $l_explain,
 				'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
 				)
 			);
@@ -591,7 +601,7 @@ class acp_board
 	{
 		global $user;
 
-		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES'] . '</option>';
+		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES_SHORT'] . '</option>';
 	}
 
 	function captcha_pixel_noise_select($value, $key = '')

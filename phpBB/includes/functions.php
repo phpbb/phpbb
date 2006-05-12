@@ -1229,6 +1229,36 @@ function redirect($url)
 }
 
 /**
+* Returns url from the session/current page with an re-appended SID with optionally stripping vars from the url
+*/
+function build_url($strip_vars = false)
+{
+	global $user, $phpbb_root_path, $SID;
+
+	// Append SID
+	$redirect = (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'] . $SID . (($user->page['query_string']) ? "&{$user->page['query_string']}" : '');
+
+	// Strip vars...
+	if ($strip_vars !== false)
+	{
+		if (!is_array($strip_vars))
+		{
+			$strip_vars = array($strip_vars);
+		}
+
+		foreach ($strip_vars as $var)
+		{
+			if (strpos($redirect, $var) !== false)
+			{
+				$redirect = preg_replace('#^(.*?)&?' . preg_quote($var, '#') . '=.*(&?)(.*?)$#', '\1\3', $redirect);
+			}
+		}
+	}
+
+	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
+}
+
+/**
 * Meta refresh assignment
 */
 function meta_refresh($time, $url)
@@ -1427,7 +1457,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Remove previously added sid (should not happen)
 				if (strpos($redirect, '?sid='))
 				{
-					$redirect = preg_replace('/\?sid=[a-z0-9]+(&|&amp;)?/', $SID . '\1', $redirect);
+					$redirect = preg_replace('/\?sid=[a-z0-9]+(&amp;|&)?/', $SID . '\1', $redirect);
 				}
 				else
 				{
@@ -1495,7 +1525,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (!$redirect)
 	{
 		// We just use what the session code determined...
-		$redirect = htmlspecialchars($user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : ''));
+		$redirect = $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
@@ -1530,7 +1560,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 /**
 * Generate forum login box
 */
-function login_forum_box(&$forum_data)
+function login_forum_box($forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
@@ -1540,15 +1570,15 @@ function login_forum_box(&$forum_data)
 		FROM ' . FORUMS_ACCESS_TABLE . '
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
 			AND user_id = ' . $user->data['user_id'] . "
-			AND session_id = '$user->session_id'";
+			AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($row)
 	{
-		$db->sql_freeresult($result);
 		return true;
 	}
-	$db->sql_freeresult($result);
 
 	if ($password)
 	{
@@ -1575,9 +1605,13 @@ function login_forum_box(&$forum_data)
 
 		if ($password == $forum_data['forum_password'])
 		{
-			$sql = 'INSERT INTO ' . FORUMS_ACCESS_TABLE . ' (forum_id, user_id, session_id)
-				VALUES (' . $forum_data['forum_id'] . ', ' . $user->data['user_id'] . ", '" . $db->sql_escape($user->session_id) . "')";
-			$db->sql_query($sql);
+			$sql_ary = array(
+				'forum_id'		=> (int) $forum_data['forum_id'],
+				'user_id'		=> (int) $user->data['user_id'],
+				'session_id'	=> (string) $user->session_id,
+			);
+
+			$db->sql_query('INSERT INTO ' . FORUMS_ACCESS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
 			return true;
 		}
@@ -1586,9 +1620,11 @@ function login_forum_box(&$forum_data)
 	}
 
 	page_header();
+
 	$template->set_filenames(array(
 		'body' => 'login_forum.html')
 	);
+	
 	page_footer();
 }
 
@@ -2525,7 +2561,7 @@ function page_header($page_title = '')
 		'SITENAME' 						=> $config['sitename'],
 		'SITE_DESCRIPTION' 				=> $config['site_desc'],
 		'PAGE_TITLE' 					=> $page_title,
-		'SCRIPT_NAME'					=> str_replace($phpEx, '', $user->page['page_name']),
+		'SCRIPT_NAME'					=> str_replace('.' . $phpEx, '', $user->page['page_name']),
 		'LAST_VISIT_DATE' 				=> sprintf($user->lang['YOU_LAST_VISIT'], $s_last_visit),
 		'CURRENT_TIME' 					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time(), false, true)),
 		'TOTAL_USERS_ONLINE' 			=> $l_online_users,
@@ -2640,11 +2676,7 @@ function page_footer()
 				}
 			}
 
-			$explain_url = $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
-			$explain_url = (strpos($explain_url, '?') !== false) ? str_replace('?', $SID . '&amp;', $explain_url) : $explain_url . '?' . str_replace('?', '', $SID);
-			$explain_url .= ((strpos($explain_url, '?') === false) ? '?' : '&amp;') . 'explain=1';
-
-			$debug_output .= ' | <a href="' . $explain_url . '">Explain</a>';
+			$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
 		}
 	}
 

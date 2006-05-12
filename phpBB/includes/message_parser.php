@@ -148,6 +148,8 @@ class bbcode_firstpass extends bbcode
 
 	function check_bbcode($bbcode, &$in)
 	{
+		// when using the /e modifier, preg_replace slashes double-quotes but does not
+		// seem to slash anything else
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
@@ -266,16 +268,10 @@ class bbcode_firstpass extends bbcode
 	// Expects the argument to start right after the opening [code] tag and to end with [/code]
 	function bbcode_code($stx, $in)
 	{
-		// when using the /e modifier, preg_replace slashes double-quotes but does not
-		// seem to slash anything else
-		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
-
-		if (!$in)
+		if (!$this->check_bbcode('code', $in))
 		{
 			return '';
 		}
-
-		$this->parsed_items['code']++;
 		
 		// We remove the hardcoded elements from the code block here because it is not used in code blocks
 		// Having it here saves us one preg_replace per message containing [code] blocks
@@ -399,7 +395,6 @@ class bbcode_firstpass extends bbcode
 			return '';
 		}
 		
-		$in = str_replace('\"', '"', $in);
 		$out = '[';
 
 		// Grab item_start with no item_end
@@ -489,7 +484,7 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
-		$in = trim($in);
+		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
 		{
@@ -503,7 +498,9 @@ class bbcode_firstpass extends bbcode
 		$in = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
 		$in = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
 
-		$in = substr(str_replace('\"', '"', $in), 1);
+		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
+
+		$in = substr($in, 1);
 		$close_tags = $error_ary = array();
 		$buffer = '';
 
@@ -629,8 +626,11 @@ class bbcode_firstpass extends bbcode
 
 	function validate_email($var1, $var2)
 	{
-		$txt = stripslashes($var2);
-		$email = ($var1) ? stripslashes($var1) : stripslashes($var2);
+		$var1 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var1)));
+		$var2 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var2)));
+
+		$txt = $var2;
+		$email = ($var1) ? $var1 : $var2;
 
 		$validated = true;
 
@@ -662,10 +662,10 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config;
 		
-		$var1 = trim($var1);
-		$var2 = trim($var2);
+		$var1 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var1)));
+		$var2 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var2)));
 
-		$url = ($var1) ? stripslashes($var1) : stripslashes($var2);
+		$url = ($var1) ? $var1 : $var2;
 		$valid = false;
 
 		if (!$url || ($var1 && !$var2))
@@ -690,10 +690,10 @@ class bbcode_firstpass extends bbcode
 				$url = 'http://' . $url;
 			}
 
-			return ($var1) ? '[url=' . str_replace(array(']', '['), array('&#93;', '&#91;'), $url) . ':' . $this->bbcode_uid . ']' . stripslashes($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']'; 
+			return ($var1) ? '[url=' . str_replace(array(']', '['), array('&#93;', '&#91;'), $url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $url . '[/url:' . $this->bbcode_uid . ']'; 
 		}
 
-		return '[url' . (($var1) ? '=' . stripslashes($var1) : '') . ']' . stripslashes($var2) . '[/url]';
+		return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
 	}
 }
 

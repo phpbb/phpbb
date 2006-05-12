@@ -98,7 +98,6 @@ class dbal_mssql extends dbal
 		{
 			global $cache;
 
-
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
 			{
@@ -315,17 +314,33 @@ class dbal_mssql extends dbal
 	*/
 	function _sql_error()
 	{
-
 		$error = array(
 			'message'	=> @mssql_get_last_message($this->db_connect_id),
 			'code'		=> ''
 		);
 
-		$result_id = @mssql_query('SELECT @@ERROR as errno', $this->db_connect_id);
+		// Get error code number
+		$result_id = @mssql_query('SELECT @@ERROR as code', $this->db_connect_id);
 		if ($result_id)
 		{
 			$row = @mssql_fetch_assoc($result_id);
-			$error['code'] = $row['errno'];
+			$error['code'] = $row['code'];
+			@mssql_free_result($result_id);
+		}
+
+		// Get full error message if possible
+		$sql = 'SELECT CAST(description as varchar(255)) as message 
+			FROM master.dbo.sysmessages
+			WHERE error = ' . $error['code'];
+		$result_id = @mssql_query($sql);
+		
+		if ($result_id)
+		{
+			$row = @mssql_fetch_assoc($result_id);
+			if (!empty($row['message']))
+			{
+				$error['message'] .= '<br />' . $row['message'];
+			}
 			@mssql_free_result($result_id);
 		}
 

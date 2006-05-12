@@ -384,7 +384,7 @@ class acp_permissions
 						'FROM'		=> array(
 							GROUPS_TABLE		=> 'g',
 							ACL_OPTIONS_TABLE	=> 'o',
-							ACL_USERS_TABLE		=> 'a'
+							ACL_GROUPS_TABLE	=> 'a'
 						),
 
 						'LEFT_JOIN'	=> array(
@@ -395,9 +395,9 @@ class acp_permissions
 						),
 
 						'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
-											$sql_permission_option
-											$sql_forum_id
-											AND g.group_id = a.group_id",
+							$sql_permission_option
+							$sql_forum_id
+							AND g.group_id = a.group_id",
 
 						'ORDER_BY'	=> 'g.group_type DESC, g.group_name ASC'
 					));

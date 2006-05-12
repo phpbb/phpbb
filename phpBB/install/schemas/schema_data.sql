@@ -221,8 +221,6 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('sessio
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('warnings_last_gc', '0', 1);
 
-# MSSQL IDENTITY phpbb_auth_options ON #
-
 # -- Forum related auth options
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_local) VALUES ('f_list', 1);
@@ -349,10 +347,6 @@ INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_delete', 1
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_img', 1);
 INSERT INTO phpbb_auth_options (auth_option, is_global) VALUES ('u_pm_flash', 1);
 
-# MSSQL IDENTITY phpbb_auth_options OFF #
-
-
-# MSSQL IDENTITY phpbb_auth_roles ON #
 
 # -- standard auth roles
 INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Admin', 'ROLE_DESCRIPTION_ADMIN_STANDARD', 'a_', 1);
@@ -377,77 +371,38 @@ INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order
 INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('On Moderation Queue', 'ROLE_DESCRIPTION_FORUM_ONQUEUE', 'f_', 7);
 INSERT INTO phpbb_auth_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access + Polls', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 5);
 
-# MSSQL IDENTITY phpbb_auth_roles OFF #
-
-
-# MSSQL IDENTITY phpbb_styles ON #
 
 # -- phpbb_styles
 INSERT INTO phpbb_styles (style_name, style_copyright, template_id, theme_id, imageset_id) VALUES ('subSilver', '&copy; phpBB Group', 1, 1, 1);
 
-# MSSQL IDENTITY phpbb_styles OFF #
-
-
-# MSSQL IDENTITY phpbb_styles_imageset ON #
-
 # -- phpbb_styles_imageset
 INSERT INTO phpbb_styles_imageset (imageset_name, imageset_copyright, imageset_path, site_logo, btn_post, btn_post_pm, btn_reply, btn_reply_pm, btn_locked, btn_profile, btn_pm, btn_delete, btn_info, btn_quote, btn_search, btn_edit, btn_report, btn_email, btn_www, btn_icq, btn_aim, btn_yim, btn_msnm, btn_jabber, btn_online, btn_offline, btn_friend, btn_foe, icon_unapproved, icon_reported, icon_attach, icon_post, icon_post_new, icon_post_latest, icon_post_newest, forum, forum_new, forum_locked, forum_link, sub_forum, sub_forum_new, folder, folder_moved, folder_posted, folder_new, folder_new_posted, folder_hot, folder_hot_posted, folder_hot_new, folder_hot_new_posted, folder_locked, folder_locked_posted, folder_locked_new, folder_locked_new_posted, folder_sticky, folder_sticky_posted, folder_sticky_new, folder_sticky_new_posted, folder_announce, folder_announce_posted, folder_announce_new, folder_announce_new_posted, folder_global, folder_global_posted, folder_global_new, folder_global_new_posted, poll_left, poll_center, poll_right, attach_progress_bar, user_icon1, user_icon2, user_icon3, user_icon4, user_icon5, user_icon6, user_icon7, user_icon8, user_icon9, user_icon10) VALUES ('subSilver', '&copy; phpBB Group', 'subSilver', 'sitelogo.gif*94*170', '{LANG}/btn_post.gif*27*97', '{LANG}/btn_post_pm.gif*27*97', '{LANG}/btn_reply.gif*27*97', '{LANG}/btn_reply_pm.gif*20*90', '{LANG}/btn_locked.gif*27*97', '{LANG}/btn_profile.gif*20*72', '{LANG}/btn_pm.gif*20*72', '{LANG}/btn_delete.gif*20*20', '{LANG}/btn_info.gif*20*20', '{LANG}/btn_quote.gif*20*90', '{LANG}/btn_search.gif*20*72', '{LANG}/btn_edit.gif*20*90', '{LANG}/btn_report.gif*20*20', '{LANG}/btn_email.gif*20*72', '{LANG}/btn_www.gif*20*72', '{LANG}/btn_icq.gif*20*72', '{LANG}/btn_aim.gif*20*72', '{LANG}/btn_yim.gif*20*72', '{LANG}/btn_msnm.gif*20*72', '{LANG}/btn_jabber.gif*20*72', '{LANG}/btn_online.gif*20*72', '{LANG}/btn_offline.gif*20*72', '', '', 'icon_unapproved.gif*18*19', 'icon_reported.gif*18*19', 'icon_attach.gif*18*14', 'icon_minipost.gif*9*12', 'icon_minipost_new.gif*9*12', 'icon_latest_reply.gif*9*18', 'icon_newest_reply.gif*9*18', 'folder_big.gif*25*46', 'folder_new_big.gif*25*46', 'folder_locked_big.gif*25*46', 'folder_link_big.gif*25*46', 'subfolder_big.gif*25*46', 'subfolder_new_big.gif*25*46', 'folder.gif*18*19', 'folder_moved.gif*18*19', 'folder_posted.gif*18*19', 'folder_new.gif*18*19', 'folder_new_posted.gif*18*19', 'folder_hot.gif*18*19', 'folder_hot_posted.gif*18*19', 'folder_new_hot.gif*18*19', 'folder_new_hot_posted.gif*18*19', 'folder_lock.gif*18*19', 'folder_lock_posted.gif*18*19', 'folder_lock_new.gif*18*19', 'folder_lock_new_posted.gif*18*19', 'folder_sticky.gif*18*19', 'folder_sticky_posted.gif*18*19', 'folder_sticky_new.gif*18*19', 'folder_sticky_new_posted.gif*18*19', 'folder_announce.gif*18*19', 'folder_announce_posted.gif*18*19', 'folder_announce_new.gif*18*19', 'folder_announce_new_posted.gif*18*19', '', '', '', '', 'vote_lcap.gif*12*4', 'voting_bar.gif*12', 'vote_rcap.gif*12*4', 'progress_bar.gif*16*280', '', '', '', '', '', '', '', '', '', '');
-
-# MSSQL IDENTITY phpbb_styles_imageset OFF #
-
-
-# MSSQL IDENTITY phpbb_styles_template ON #
 
 # -- phpbb_styles_template
 INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield) VALUES ('subSilver', '&copy; phpBB Group', 'subSilver', 6921);
 
-# MSSQL IDENTITY phpbb_styles_template OFF #
-
-
-# MSSQL IDENTITY phpbb_styles_theme ON #
-
 # -- phpbb_styles_theme
 INSERT INTO phpbb_styles_theme (theme_name, theme_copyright, theme_path, theme_data) VALUES ('subSilver', '&copy; phpBB Group', 'subSilver', '');
 
-# MSSQL IDENTITY phpbb_styles_theme OFF #
-
-
-# MSSQL IDENTITY phpbb_lang ON #
-
 # -- Language
 INSERT INTO phpbb_lang (lang_iso, lang_dir, lang_english_name, lang_local_name, lang_author) VALUES ('en', 'en', 'English [ UK ]', 'English [ UK ]', 'phpBB Group');
-
-# MSSQL IDENTITY phpbb_lang OFF #
-
-
-# MSSQL IDENTITY phpbb_forums ON #
 
 # -- Forums
 INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed) VALUES ('My first Category', '', 1, 4, 0, 0, 1, 1, 1, 1, 2, 'Admin', 972086460, '', '', '', '', '', '', '', 0, 0);
 
 INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts, forum_topics, forum_topics_real, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed) VALUES ('Test Forum 1', 'This is just a test forum.', 2, 3, 1, 1, 1, 1, 1, 1, 2, 'Admin', 972086460, '', '', '', '', '', '', '', 0, 0);
 
-# MSSQL IDENTITY phpbb_forums OFF #
-
-
-# MSSQL IDENTITY phpbb_users ON #
-
 # -- Users / Anonymous user
 INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_colour, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (2, 1, 'Anonymous', 0, '', '', 'en', 1, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 
 # -- username: Admin    password: admin (change this or remove it ON #ce everything is working!)
-INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (3, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000', 1, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd) VALUES (3, 7, 'Admin', 0, '21232f297a57a5a743894a0e4a801fc3', 'admin@yourdomain.com', 'en', 1, 1, 'AA0000', 1, '', '', '', '', '', 't', 'a', 't', 'd', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 
 # -- bots
 INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd, user_email) VALUES (2, 8, 'Googlebot', 0, '', 'en', 1, 1, '9E8DA7', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd, user_email) VALUES (2, 8, 'Fastcrawler', 0, '', 'en', 1, 1, '9E8DA7', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd, user_email) VALUES (2, 8, 'Alexa', 0, '', 'en', 1, 1, '9E8DA7', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
 INSERT INTO phpbb_users (user_type, group_id, username, user_regdate, user_password, user_lang, user_style, user_rank, user_colour, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_from, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_website, user_occ, user_interests, user_actkey, user_newpasswd, user_email) VALUES (2, 8, 'Inktomi', 0, '', 'en', 1, 1, '9E8DA7', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
-
-# MSSQL IDENTITY phpbb_users OFF #
-
-
-# MSSQL IDENTITY phpbb_groups ON #
 
 # -- Groups
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('GUESTS', 3, '', 0, '', '', '');
@@ -459,9 +414,6 @@ INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, gr
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('ADMINISTRATORS', 3, 'AA0000', 1, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('BOTS', 3, '9E8DA7', 1, '', '', '');
 
-# MSSQL IDENTITY phpbb_groups OFF #
-
-
 # -- User -> Group
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (1, 1, 0, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (4, 2, 0, 0);
@@ -471,25 +423,14 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VAL
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (8, 5, 0, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (8, 6, 0, 0);
 
-
-# MSSQL IDENTITY phpbb_ranks ON #
-
 # -- Ranks
 INSERT INTO phpbb_ranks (rank_title, rank_min, rank_special, rank_image) VALUES ('Site Admin', -1, 1, NULL);
-
-# MSSQL IDENTITY phpbb_ranks OFF #
-
-
-# MSSQL IDENTITY phpbb_bots ON #
 
 # -- Bots
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Googlebot', 3, 'Googlebot/', '216.239.46.,64.68.8');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Fastcrawler', 4, 'FAST MetaWeb Crawler', '66.151.181.');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Alexa', 5, 'ia_archiver', '66.28.250.,209.237.238.');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Inktomi', 6, 'Slurp/', '216.35.116.,66.196.');
-
-# MSSQL IDENTITY phpbb_bots OFF #
-
 
 # -- Roles data
 
@@ -614,21 +555,11 @@ INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id,
 INSERT INTO phpbb_auth_groups (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (8, 2, 0, 19, 0);
 
 
-# MSSQL IDENTITY phpbb_topics ON #
-
 # -- Demo Topic
 INSERT INTO phpbb_topics (topic_title, topic_poster, topic_time, topic_views, topic_replies, topic_replies_real, forum_id, topic_status, topic_type, topic_first_post_id, topic_first_poster_name, topic_last_post_id, topic_last_poster_id, topic_last_poster_name, topic_last_post_time, topic_last_view_time, poll_title) VALUES ('Welcome to phpBB 3', 2, 972086460, 0, 0, 0, 2, 0, 0, 1, 'Admin', 1, 2, 'Admin', 972086460, 972086460, '');
 
-# MSSQL IDENTITY phpbb_topics OFF #
-
-
-# MSSQL IDENTITY phpbb_posts ON #
-
 # -- Demo Post
 INSERT INTO phpbb_posts (topic_id, forum_id, poster_id, icon_id, post_time, post_username, poster_ip, post_subject, post_text, post_checksum, bbcode_uid) VALUES (1, 2, 2, 1, 972086460, NULL, '127.0.0.1', 'Welcome to phpBB 3', 'This is an example post in your phpBB 3.0 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!', '', '');
-
-# MSSQL IDENTITY phpbb_posts OFF #
-
 
 # -- Smilies
 INSERT INTO phpbb_smilies (code, smiley_url, emotion, smiley_width, smiley_height, smiley_order) VALUES (':D', 'icon_biggrin.gif', 'Very Happy', 15, 15, 1);
@@ -669,8 +600,6 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, display_on_posting) VALUES ('smile/exclaim.gif', 19, 19, 7, 1);
 
 
-# MSSQL IDENTITY phpbb_search_wordlist ON #
-
 # -- wordlist
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('example', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('post', 0);
@@ -684,9 +613,6 @@ INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('everything',
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('seems', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('working', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('welcome', 0);
-
-# MSSQL IDENTITY phpbb_search_wordlist OFF #
-
 
 # -- wordmatch
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (1, 1, 0);
@@ -704,17 +630,11 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (12, 1
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (3, 1, 1);
 
 
-# MSSQL IDENTITY phpbb_reports_reasons ON #
-
 # -- reasons
 INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('warez', 'The reported post contains links to pirated or illegal software', 1);
 INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('spam', 'The reported post has for only purpose to advertise for a website or another product', 2);
 INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('off_topic', 'The reported post is off topic', 3);
 INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('other', 'The reported post does not fit into any other category (please use the description field)', 4);
-
-# MSSQL IDENTITY phpbb_reports_reasons OFF #
-
-# MSSQL IDENTITY phpbb_extension_groups ON #
 
 # -- extension_groups
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Images', 1, 1, 1, '', 0, '');
@@ -723,11 +643,6 @@ INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mo
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Documents', 0, 0, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Real Media', 3, 0, 2, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Windows Media', 2, 0, 1, '', 0, '');
-
-# MSSQL IDENTITY phpbb_extension_groups OFF #
-
-
-# MSSQL IDENTITY phpbb_extensions ON #
 
 # -- extensions
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'gif');
@@ -758,7 +673,5 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ppt');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'rm');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wma');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wmv');
-
-# MSSQL IDENTITY phpbb_extensions OFF #
 
 # POSTGRES COMMIT #

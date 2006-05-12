@@ -676,7 +676,7 @@ function disapprove_post($post_id_list, $mode)
 					'EMAIL_SIG'		=> $email_sig,
 					'SITENAME'		=> $config['sitename'],
 					'USERNAME'		=> $post_data['username'],
-					'REASON'		=> stripslashes($disapprove_reason),
+					'REASON'		=> $disapprove_reason,
 					'POST_SUBJECT'	=> censor_text($post_data['post_subject']),
 					'TOPIC_TITLE'	=> censor_text($post_data['topic_title']))
 				);

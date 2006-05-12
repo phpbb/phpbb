@@ -190,7 +190,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']))
+			'PM_IMG'		=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
 		);
 		break;
 
@@ -411,7 +411,7 @@ switch ($mode)
 			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '',
 
 			'AVATAR_IMG'	=> $poster_avatar,
-			'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']),
+			'PM_IMG'		=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
 			'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
 			'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
@@ -1099,7 +1099,7 @@ switch ($mode)
 			'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
 
 			'PROFILE_IMG'	=> $user->img('btn_profile', $user->lang['PROFILE']),
-			'PM_IMG'		=> $user->img('btn_pm', $user->lang['MESSAGE']),
+			'PM_IMG'		=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
 			'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
 			'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),

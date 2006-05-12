@@ -193,7 +193,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking posts
 	if ($mark_read == 'forums' || $mark_read == 'all')
 	{
-		$redirect = (!empty($_SERVER['REQUEST_URI'])) ? preg_replace('#^(.*?)&(amp;)?mark=.*$#', '\1', htmlspecialchars($_SERVER['REQUEST_URI'])) : "index.$phpEx$SID";
+		$redirect = build_url('mark');
 
 		if ($mark_read == 'all')
 		{
@@ -332,7 +332,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
 			'TOPICS'				=> $row['forum_topics'],
 			$l_post_click_count		=> $post_click_count,
-			'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['folder_alt'] . '" />' : $user->img($folder_image, $folder_alt),
+			'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $folder_alt . '" />' : $user->img($folder_image, $folder_alt),
 			'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : $user->img($folder_image, $folder_alt, false, '', 'src'),
 			'SUBFORUMS'				=> $subforums_list,
 			'LAST_POST_TIME'		=> $last_post_time,

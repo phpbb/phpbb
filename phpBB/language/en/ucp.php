@@ -202,6 +202,7 @@ $lang = array_merge($lang, array(
 
 	'HIDE_ONLINE'				=> 'Hide my online status',
 	'HOLD_NEW_MESSAGES'			=> 'Do not accept new messages (New messages will be held back until enough space is available)',
+	'HOLD_NEW_MESSAGES_SHORT'	=> 'New messages will be held back',
 
 	'IF_FOLDER_FULL'			=> 'If Folder Full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',

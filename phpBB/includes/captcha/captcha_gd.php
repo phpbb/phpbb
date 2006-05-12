@@ -14,6 +14,21 @@
 * Main gd based captcha class
 *
 * Thanks to Robert Hetzler (Xore)
+*
+* @todo see notes in includes/captcha/captcha_gd.php
+* 
+* Within the policy 'policy_occlude' the letters need to have more space in-between of them.
+* At the moment it can happen that the letters get overlapped
+*
+* Completely remove the number 0
+* Make it case-insensitive
+*
+* The policy_entropy seems to be the best readable, then follows policy_occlude and policy_3dbitmap not readable.
+*
+* Within the policy 'policy_3dbitmap':
+* The 2 and the Z seem to be very similar
+* The letters are not distinguishable(?) enough from the background, maybe related to the letters itself
+* The colors are generally a bit off making it hard to read...
 */
 class captcha
 {
@@ -24,7 +39,7 @@ class captcha
 	{
 		global $config;
 
-		$policy_modules = array('policy_occlude', 'policy_entropy', 'policy_3dbitmap');
+		$policy_modules = array('policy_entropy', 'policy_occlude'); // 'policy_3dbitmap'
 
 		// Remove all disabled policy modules
 		foreach ($policy_modules as $key => $name)

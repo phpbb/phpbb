@@ -49,6 +49,7 @@ class ucp_groups
 
 					while ($row = $db->sql_fetchrow($result))
 					{
+						$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 						$group_row[$row['group_id']] = $row;
 					}
 					$db->sql_freeresult($result);
@@ -57,10 +58,6 @@ class ucp_groups
 					{
 						trigger_error('GROUP_NOT_EXIST');
 					}
-
-					$group_row[$group_id]['group_name'] = ($group_row[$group_id]['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row[$group_id]['group_name']] : $group_row[$group_id]['group_name'];
-					$group_row[$user->data['group_id']]['group_name'] = ($group_row[$user->data['group_id']]['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row[$user->data['group_id']]['group_name']] : $group_row[$user->data['group_id']]['group_name'];
-
 
 					switch ($action)
 					{

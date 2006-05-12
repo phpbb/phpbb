@@ -512,7 +512,7 @@ function compose_pm($id, $mode, $action)
 			trigger_error($message);
 		}
 
-		$message_subject = stripslashes($subject);
+		$message_subject = $subject;
 	}
 
 	// Preview

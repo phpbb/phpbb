@@ -130,6 +130,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_LOCK'				=> '<b>User locked own topic</b><br />&#187; %s',
 	'LOG_USER_MOVE_POSTS_USER'	=> '<b>Moved all posts to forum "%s"</b>',
 	'LOG_USER_REACTIVATE_USER'	=> '<b>Forced user account re-activation</b>',
+	'LOG_USER_UNLOCK'			=> '<b>User unlocked own topic</b><br />&#187; %s',
 	'LOGIN_EXPLAIN_MCP'			=> 'To moderate this forum you must login.',
 	'LOGVIEW_VIEWTOPIC'			=> 'View Topic',
 	'LOGVIEW_VIEWLOGS'			=> 'View Topic Log',

@@ -1382,7 +1382,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	// Send Notifications
 	if ($mode != 'edit')
 	{
-		pm_notification($mode, stripslashes($data['from_username']), $recipients, stripslashes($subject), stripslashes($data['message']));
+		pm_notification($mode, $data['from_username'], $recipients, $subject, $data['message']);
 	}
 
 	return $data['msg_id'];

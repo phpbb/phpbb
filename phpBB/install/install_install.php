@@ -929,30 +929,24 @@ class install_install extends module
 		{
 			case 'mssql':
 			case 'mssql_odbc':
-				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2', $sql_query);
+				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $sql_query);
 			break;
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
-				// Some versions of PGSQL don't like remarks, lets remove them.
-				remove_remarks($sql_query);
 			break;
 
 			case 'firebird':
 				$sql_query = str_replace('module_name', '"module_name"', $sql_query);
 			break;
 
-			case 'oracle':
-				remove_remarks($sql_query);
-			break;
-
 			default:
-				//$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', '', $sql_query);
 		}
 
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
-		$remove_remarks($sql_query);
+		// Since there is only one schema file we know the comment style and are able to remove it directly with remove_remarks
+		remove_remarks($sql_query);
 		$sql_query = split_sql_file($sql_query, ';');
 
 		foreach ($sql_query as $sql)
@@ -1131,6 +1125,9 @@ class install_install extends module
 					'module_langname'	=> $cat_name,
 					'module_mode'		=> '',
 					'module_auth'		=> '',
+
+					'left_id'			=> 0,
+					'right_id'			=> 0,
 				);
 
 				$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
@@ -1155,6 +1152,9 @@ class install_install extends module
 							'module_langname'	=> $level2_name,
 							'module_mode'		=> '',
 							'module_auth'		=> '',
+
+							'left_id'			=> 0,
+							'right_id'			=> 0,
 						);
 
 						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
@@ -1189,6 +1189,9 @@ class install_install extends module
 							'module_langname'	=> $row['title'],
 							'module_mode'		=> $module_mode,
 							'module_auth'		=> $row['auth'],
+
+							'left_id'			=> 0,
+							'right_id'			=> 0,
 						);
 
 	//					$_module->update_module_data($module_data);

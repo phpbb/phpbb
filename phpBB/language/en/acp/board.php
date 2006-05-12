@@ -375,6 +375,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'User can disable word censoring.',
 	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
 	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks',
+
 ));
 
 ?>

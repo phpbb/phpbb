@@ -33,87 +33,29 @@
 
 <!-- IF S_ATTACHMENT_SETTINGS -->
 
-	<form id="attachsettings" method="post" action="{U_ACTION}">
-	<fieldset>
-		<legend>{L_ACP_ATTACHMENT_SETTINGS}</legend>
-		<dl>
-			<dt><label for="allow_attachments">{L_ALLOW_ATTACHMENTS}:</label></dt>
-			<dd><input type="radio" id="allow_attachments" name="allow_attachments" value="1"<!-- IF ALLOW_ATTACHMENTS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_attachments" value="0"<!-- IF not ALLOW_ATTACHMENTS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
-		</dl>
-		<dl>
-			<dt><label for="allow_pm_attach">{L_ALLOW_PM_ATTACHMENTS}:</label></dt>
-			<dd><input type="radio" id="allow_pm_attach" name="allow_pm_attach" value="1"<!-- IF ALLOW_PM_ATTACH --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="allow_pm_attach" value="0"<!-- IF not ALLOW_PM_ATTACH --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
-		</dl>
-		<dl>
-			<dt><label for="upload_dir">{L_UPLOAD_DIR}:</label><br /><span>{L_UPLOAD_DIR_EXPLAIN}</span></dt>
-			<dd><input type="text" id="upload_dir" size="25" maxlength="100" name="upload_path" value="{UPLOAD_PATH}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="display_order">{L_DISPLAY_ORDER}:</label><br /><span>{L_DISPLAY_ORDER_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" id="display_order" name="display_order" value="0"<!-- IF not DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> /> {L_DESCENDING} &nbsp; <input type="radio" name="display_order" value="1"<!-- IF DISPLAY_ORDER --> checked="checked"<!-- ENDIF --> class="radio" /> {L_ASCENDING}</dd>
-		</dl>
-		<dl>
-			<dt><label for="attach_quota">{L_ATTACH_QUOTA}:</label><br /><span>{L_ATTACH_QUOTA_EXPLAIN}</span></dt>
-			<dd><input type="text" id="attach_quota" size="8" maxlength="15" name="attachment_quota" value="{ATTACHMENT_QUOTA}" /> <select name="quota_size">{S_QUOTA_SIZE_OPTIONS}</select></dd>
-		</dl>
-		<dl>
-			<dt><label for="max_filesize">{L_ATTACH_MAX_FILESIZE}:</label><br /><span>{L_ATTACH_MAX_FILESIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="max_filesize" size="8" maxlength="15" name="max_filesize" value="{MAX_FILESIZE}" /> <select name="size">{S_MAX_FILESIZE_OPTIONS}</select></dd>
-		</dl>
-		<dl>
-			<dt><label for="max_pm_filesize">{L_ATTACH_MAX_PM_FILESIZE}:</label><br /><span>{L_ATTACH_MAX_PM_FILESIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="max_pm_filesize" size="8" maxlength="15" name="max_filesize_pm" value="{MAX_PM_FILESIZE}" /> <select name="pm_size">{S_MAX_PM_FILESIZE_OPTIONS}</select></dd>
-		</dl>
-		<dl>
-			<dt><label for="max_attachments">{L_MAX_ATTACHMENTS}:</label></dt>
-			<dd><input type="text" id="max_attachments" size="3" maxlength="3" name="max_attachments" value="{MAX_ATTACHMENTS}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="max_attachments_pm">{L_MAX_ATTACHMENTS_PM}:</label></dt>
-			<dd><input type="text" id="max_attachments_pm" size="3" maxlength="3" name="max_attachments_pm" value="{MAX_ATTACHMENTS_PM}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="secure_downloads">{L_SECURE_DOWNLOADS}:</label><br /><span>{L_SECURE_DOWNLOADS_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="secure_downloads" name="secure_downloads" value="1"<!-- IF SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_downloads" value="0"<!-- IF not SECURE_DOWNLOADS --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
-		</dl>
-		<dl>
-			<dt><label for="allow_deny">{L_SECURE_ALLOW_DENY}:</label><br /><span>{L_SECURE_ALLOW_DENY_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="allow_deny" name="secure_allow_deny" value="1"<!-- IF SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> class="radio" /> {L_ORDER_ALLOW_DENY}&nbsp;&nbsp;<input type="radio" name="secure_allow_deny" value="0"<!-- IF not SECURE_ALLOW_DENY --> checked="checked"<!-- ENDIF --> class="radio" /> {L_ORDER_DENY_ALLOW}</dd>
-		</dl>
-		<dl>
-			<dt><label for="referer">{L_SECURE_EMPTY_REFERER}:</label><br /><span>{L_SECURE_EMPTY_REFERER_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="referer" name="secure_allow_empty_referer" value="1"<!-- IF ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="secure_allow_empty_referer" value="0"<!-- IF not ALLOW_EMPTY_REFERER --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
-		</dl>
-	</fieldset>
-
-	<fieldset>
-		<legend>{L_SETTINGS_CAT_IMAGES} [{L_ASSIGNED_GROUP}: {ASSIGNED_GROUPS}]</legend>
-		<dl>
-			<dt><label for="display_inlined">{L_DISPLAY_INLINED}:</label><br /><span>{L_DISPLAY_INLINED_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="display_inlined" name="img_display_inlined" value="1"<!-- IF DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_display_inlined" value="0"<!-- IF not DISPLAY_INLINED --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
-		</dl>
-	<!-- IF S_THUMBNAIL_SUPPORT -->
-		<dl>
-			<dt><label for="create_thumbnail">{L_CREATE_THUMBNAIL}:</label><br /><span>{L_CREATE_THUMBNAIL_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="create_thumbnail" name="img_create_thumbnail" value="1"<!-- IF CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> class="radio" /> {L_YES}&nbsp;&nbsp;<input type="radio" name="img_create_thumbnail" value="0"<!-- IF not CREATE_THUMBNAIL --> checked="checked"<!-- ENDIF --> class="radio" /> {L_NO}</dd>
-		</dl>
-		<dl>
-			<dt><label for="thumb_filesize">{L_MIN_THUMB_FILESIZE}:</label><br /><span>{L_MIN_THUMB_FILESIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="thumb_filesize" size="7" maxlength="15" name="img_min_thumb_filesize" value="{MIN_THUMB_FILESIZE}" /> {L_BYTES}</dd>
-		</dl>
+	<!-- IF not S_THUMBNAIL_SUPPORT -->
+		<div class="errorbox">
+			<p>{L_NO_THUMBNAIL_SUPPORT}</p>
+		</div>
 	<!-- ENDIF -->
-		<dl>
-			<dt><label for="imagick_path">{L_IMAGICK_PATH}:</label><br /><span>{L_IMAGICK_PATH_EXPLAIN}</span></dt>
-			<dd><input type="text" id="imagick_path" size="20" maxlength="200" name="img_imagick" value="{IMG_IMAGICK}" />&nbsp;&nbsp;<span>[ <a href="{U_SEARCH_IMAGICK}">{L_SEARCH_IMAGICK}</a> ]</span></dd>
-		</dl>
-		<dl>
-			<dt><label for="image_size">{L_MAX_IMAGE_SIZE}:</label><br /><span>{L_MAX_IMAGE_SIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="image_size" size="3" maxlength="4" name="img_max_width" value="{MAX_WIDTH}" /> px X <input type="text" size="3" maxlength="4" name="img_max_height" value="{MAX_HEIGHT}" /> px</dd>
-		</dl>
-		<dl>
-			<dt><label for="link_size">{L_IMAGE_LINK_SIZE}:</label><br /><span>{L_IMAGE_LINK_SIZE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="link_size" size="3" maxlength="4" name="img_link_width" value="{LINK_WIDTH}" /> px X <input type="text" size="3" maxlength="4" name="img_link_height" value="{LINK_HEIGHT}" /> px</dd>
-		</dl>
+
+	<form id="attachsettings" method="post" action="{U_ACTION}">
+	<!-- BEGIN options -->
+		<!-- IF options.S_LEGEND -->
+			<!-- IF not options.S_FIRST_ROW -->
+				</fieldset>
+			<!-- ENDIF -->
+			<fieldset>
+				<legend>{options.LEGEND}</legend>
+		<!-- ELSE -->
+
+			<dl>
+				<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+				<dd>{options.CONTENT}</dd>
+			</dl>
+
+		<!-- ENDIF -->
+	<!-- END options -->
 	</fieldset>
 
 	<fieldset class="submit-buttons">

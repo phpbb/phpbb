@@ -139,7 +139,8 @@ class session
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
 		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
-		
+		$this->load = false;
+
 		// Load limit check (if applicable)
 		if ($config['limit_load'])
 		{
@@ -149,11 +150,6 @@ class session
 				{
 					$this->load = array_slice(explode(' ', $load), 0, 1);
 					$this->load = floatval($this->load[0]);
-
-					if ($config['limit_load'] && $this->load > floatval($config['limit_load']))
-					{
-						trigger_error('BOARD_UNAVAILABLE');
-					}
 				}
 				else
 				{
@@ -1043,11 +1039,19 @@ class user extends session
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		// Is board disabled and user not an admin or moderator?
-		// @todo new ACL enabling board access while offline?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
 		{
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
+		}
+
+		// Is load exceeded?
+		if ($config['limit_load'] && $this->load !== false)
+		{
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
+			{
+				trigger_error('BOARD_UNAVAILABLE');
+			}
 		}
 
 		// Does the user need to change their password? If so, redirect to the

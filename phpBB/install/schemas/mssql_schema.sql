@@ -934,18 +934,18 @@ CREATE TABLE [phpbb_posts] (
 	[enable_magic_url] [int] NOT NULL ,
 	[enable_sig] [int] NOT NULL ,
 	[post_username] [varchar] (255) NULL ,
-	[post_subject] [text] ,
-	[post_text] [text] ,
+	[post_subject] [text] NOT NULL ,
+	[post_text] [text] NOT NULL ,
 	[post_checksum] [varchar] (32) NOT NULL ,
 	[post_encoding] [varchar] (20) NOT NULL ,
 	[post_attachment] [int] NOT NULL ,
 	[bbcode_bitfield] [int] NOT NULL ,
 	[bbcode_uid] [varchar] (5) NOT NULL ,
-	[post_edit_time] [int] NOT NULL ,
-	[post_edit_reason] [text] ,
-	[post_edit_user] [int] NOT NULL ,
-	[post_edit_count] [int] NOT NULL ,
-	[post_edit_locked] [int] NOT NULL 
+	[post_edit_time] [int] NULL ,
+	[post_edit_reason] [text] NULL,
+	[post_edit_user] [int] NULL ,
+	[post_edit_count] [int] NULL ,
+	[post_edit_locked] [int] NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1533,7 +1533,7 @@ GO
 */
 CREATE TABLE [phpbb_smilies] (
 	[smiley_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[code] [varchar] (10) NULL ,
+	[code] [varchar] (50) NULL ,
 	[emotion] [varchar] (50) NULL ,
 	[smiley_url] [varchar] (50) NULL ,
 	[smiley_width] [int] NOT NULL ,
@@ -1719,7 +1719,7 @@ ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_templa_bbcode_bitfield] DEFAULT (0) FOR [bbcode_bitfield],
+	CONSTRAINT [DF_phpbb_templa_bbcode_bitfield] DEFAULT (6921) FOR [bbcode_bitfield],
 	CONSTRAINT [DF_phpbb_templa_template_storedb] DEFAULT (0) FOR [template_storedb]
 GO
 
@@ -1981,24 +1981,24 @@ CREATE TABLE [phpbb_users] (
 	[user_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[user_type] [int] NOT NULL ,
 	[group_id] [int] NOT NULL ,
-	[user_permissions] [text] ,
-	[user_perm_from] [int] NOT NULL ,
+	[user_permissions] [text] NULL ,
+	[user_perm_from] [int] NULL ,
 	[user_ip] [varchar] (40) NOT NULL ,
 	[user_regdate] [int] NOT NULL ,
 	[username] [varchar] (255) NOT NULL ,
 	[user_password] [varchar] (32) NOT NULL ,
-	[user_passchg] [int] NOT NULL ,
+	[user_passchg] [int] NULL ,
 	[user_email] [varchar] (100) NOT NULL ,
 	[user_email_hash] [float] NOT NULL ,
-	[user_birthday] [varchar] (10) NOT NULL ,
+	[user_birthday] [varchar] (10) NULL ,
 	[user_lastvisit] [int] NOT NULL ,
 	[user_lastmark] [int] NOT NULL ,
 	[user_lastpost_time] [int] NOT NULL ,
 	[user_lastpage] [varchar] (200) NOT NULL ,
-	[user_last_confirm_key] [varchar] (10) NOT NULL ,
-	[user_warnings] [int] NOT NULL ,
-	[user_last_warning] [int] NOT NULL ,
-	[user_login_attempts] [int] NOT NULL ,
+	[user_last_confirm_key] [varchar] (10) NULL ,
+	[user_warnings] [int] NULL ,
+	[user_last_warning] [int] NULL ,
+	[user_login_attempts] [int] NULL ,
 	[user_posts] [int] NOT NULL ,
 	[user_lang] [varchar] (30) NOT NULL ,
 	[user_timezone] [float] NOT NULL ,
@@ -2032,20 +2032,20 @@ CREATE TABLE [phpbb_users] (
 	[user_avatar_type] [int] NOT NULL ,
 	[user_avatar_width] [int] NOT NULL ,
 	[user_avatar_height] [int] NOT NULL ,
-	[user_sig] [text] ,
-	[user_sig_bbcode_uid] [varchar] (5) NOT NULL ,
-	[user_sig_bbcode_bitfield] [int] NOT NULL ,
-	[user_from] [varchar] (100) NOT NULL ,
-	[user_icq] [varchar] (15) NOT NULL ,
-	[user_aim] [varchar] (255) NOT NULL ,
-	[user_yim] [varchar] (255) NOT NULL ,
-	[user_msnm] [varchar] (255) NOT NULL ,
-	[user_jabber] [varchar] (255) NOT NULL ,
-	[user_website] [varchar] (200) NOT NULL ,
-	[user_occ] [varchar] (255) NOT NULL ,
-	[user_interests] [varchar] (255) NOT NULL ,
+	[user_sig] [text] NULL ,
+	[user_sig_bbcode_uid] [varchar] (5) NULL ,
+	[user_sig_bbcode_bitfield] [int] NULL ,
+	[user_from] [varchar] (100) NULL ,
+	[user_icq] [varchar] (15) NULL ,
+	[user_aim] [varchar] (255) NULL ,
+	[user_yim] [varchar] (255) NULL ,
+	[user_msnm] [varchar] (255) NULL ,
+	[user_jabber] [varchar] (255) NULL ,
+	[user_website] [varchar] (200) NULL ,
+	[user_occ] [varchar] (255) NULL ,
+	[user_interests] [varchar] (255) NULL ,
 	[user_actkey] [varchar] (32) NOT NULL ,
-	[user_newpasswd] [varchar] (32) NOT NULL 
+	[user_newpasswd] [varchar] (32) NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

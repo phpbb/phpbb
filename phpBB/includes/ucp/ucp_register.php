@@ -24,7 +24,7 @@ class ucp_register
 		{
 			trigger_error($user->lang['UCP_REGISTER_DISABLE']);
 		}
-
+$config['max_reg_attempts'] = 0;
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$confirm_id = request_var('confirm_id', '');
@@ -236,6 +236,7 @@ class ucp_register
 
 				$sql_ary = array(
 					'username'			=> $username,
+					'user_permissions'	=> '',
 					'user_password'		=> md5($new_password),
 					'user_email'		=> $email,
 					'user_email_hash'	=> (int) crc32(strtolower($email)) . strlen($email),
@@ -248,7 +249,15 @@ class ucp_register
 					'user_actkey'		=> $user_actkey,
 					'user_ip'			=> $user->ip,
 					'user_regdate'		=> time(),
-					'user_lastmark'		=> time(),
+
+					'user_lastmark'			=> time(),
+					'user_lastvisit'		=> 0,
+					'user_lastpost_time'	=> 0,
+					'user_lastpage'			=> '',
+					'user_posts'			=> 0,
+					'user_dst'				=> 0,
+					'user_colour'			=> '',
+					'user_avatar'			=> '',
 				);
 
 				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
