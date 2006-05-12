@@ -141,17 +141,21 @@ switch ($mode)
 			$which_row = (in_array($row['user_id'], $admin_id_ary)) ? 'admin' : 'mod';
 
 			$s_forum_select = '';
-			if ($which_row == 'mod' && sizeof(array_diff(array_keys($forums), $forum_id_ary[$row['user_id']])))
+
+			if (isset($forum_id_ary[$row['user_id']))
 			{
-				foreach ($forum_id_ary[$row['user_id']] as $forum_id)
+				if ($which_row == 'mod' && sizeof(array_diff(array_keys($forums), $forum_id_ary[$row['user_id']])))
 				{
-					if (isset($forums[$forum_id]) && $auth->acl_get('f_list', $forum_id))
+					foreach ($forum_id_ary[$row['user_id']] as $forum_id)
 					{
-						$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
+						if (isset($forums[$forum_id]) && $auth->acl_get('f_list', $forum_id))
+						{
+							$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
+						}
 					}
 				}
 			}
-			
+
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
 			{
 				$group_name = $user->lang['UNDISCLOSED'];
