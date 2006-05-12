@@ -20,7 +20,7 @@ include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('viewforum');
 
 display_forums('', $config['load_moderators']);
 
