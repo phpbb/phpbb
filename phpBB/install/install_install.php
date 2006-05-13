@@ -1189,18 +1189,8 @@ class install_install extends module
 							'module_langname'	=> $row['title'],
 							'module_mode'		=> $module_mode,
 							'module_auth'		=> $row['auth'],
-
-							'left_id'			=> 0,
-							'right_id'			=> 0,
 						);
 
-	//					$_module->update_module_data($module_data);
-/*						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
-						if (!$db->sql_query($sql))
-						{
-							$error = $db->sql_error();
-							$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
-						}*/
 						$sql = 'SELECT left_id, right_id
 							FROM ' . MODULES_TABLE . "
 							WHERE module_class = '" . $module_class . "'
@@ -1208,7 +1198,7 @@ class install_install extends module
 						$result = $db->sql_query($sql);
 
 						$row = $db->sql_fetchrow($result);
-//print_r($row);
+
 						$db->sql_freeresult($result);
 
 						if ($categories[$cat_name]['parent_id'])
