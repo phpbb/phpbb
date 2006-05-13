@@ -665,7 +665,7 @@ class auth
 			
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_USERS_TABLE		=> 'a'
+				ACL_GROUPS_TABLE	=> 'a'
 			),
 			
 			'LEFT_JOIN'	=> array(
