@@ -156,23 +156,20 @@ if ($view && !$post_id)
 // This rather complex gaggle of code handles querying for topics but
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
-$group = '';
-$select_sql = 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_uid, f.forum_rules_bitfield';
-
 $sql_array = array(
-	'SELECT'	=> $select_sql,
+	'SELECT'	=> 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_uid, f.forum_rules_bitfield',
 
 	'FROM'		=> array(
 				FORUMS_TABLE	=> 'f',
 	)
 );
 
-$left_join = array();
-
 if ($user->data['is_registered'])
 {
+	// We pop on left joins into the array for later insertion
+	$left_join = array();
+
 	$sql_array['SELECT'] .= ', tw.notify_status';
-	$group .= ', tw.notify_status';
 	$left_join[] = array(
 		'FROM'	=> array(TOPICS_WATCH_TABLE => 'tw'),
 		'ON'	=> 'tw.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tw.topic_id'
@@ -181,7 +178,6 @@ if ($user->data['is_registered'])
 	if ($config['allow_bookmarks'])
 	{
 		$sql_array['SELECT'] .= ', bm.order_id as bookmarked';
-		$group .= ', bm.order_id';
 		$left_join[] = array(
 			'FROM'	=> array(BOOKMARKS_TABLE => 'bm'),
 			'ON'	=> 'bm.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = bm.topic_id'
@@ -191,7 +187,6 @@ if ($user->data['is_registered'])
 	if ($config['load_db_lastread'])
 	{
 		$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time as forum_mark_time';
-		$group .= ', tt.mark_time, ft.mark_time';
 		$left_join[] = array(
 			'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
 			'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
@@ -201,6 +196,9 @@ if ($user->data['is_registered'])
 			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
 		);
 	}
+
+	// Insert the joins into the query array
+	$sql_array['LEFT_JOIN'] = $left_join;
 }
 
 if (!$post_id)
@@ -210,18 +208,9 @@ if (!$post_id)
 else
 {
 	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
-	$sql_array['SELECT'] .= ', COUNT(p2.post_id) AS prev_posts';
-	$sql_array['GROUP_BY'] = 'p.post_id, ' . $select_sql . $group;
-	$sql_array['ORDER_BY'] = 'p.post_id ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 	$sql_array['FROM'][POSTS_TABLE] = 'p';
-
-	$left_join[] = array(
-		'FROM'	=> array(POSTS_TABLE => 'p2'),
-		'ON'	=> 'p2.topic_id = t.topic_id AND p2.post_approved = 1 ' . (($sort_dir == 'd') ? "AND p2.post_id >= $post_id" : "AND p2.post_id <= $post_id")
-	);
 }
 
-$sql_array['LEFT_JOIN'] = $left_join;
 $sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id ' . ((!$forum_id) ? 'OR t.topic_type = ' . POST_GLOBAL : 'OR (t.topic_type = ' . POST_GLOBAL . " AND f.forum_id = $forum_id)") . ')';
 $sql_array['FROM'][TOPICS_TABLE] = 't';
 
@@ -245,6 +234,21 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 	$user->setup('viewtopic');
 
 	trigger_error('NO_TOPIC');
+}
+
+// This is for determining where we are (page)
+if ($post_id)
+{
+	$sql = "SELECT count(*) AS prev_posts
+		FROM " . POSTS_TABLE . " p
+		WHERE p.post_approved = 1
+			AND p.topic_id = {$topic_data['topic_id']}
+			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
+			AND " . (($sort_dir == 'd') ?  "p.post_id >= $post_id" : "p.post_id <= $post_id");
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+	$topic_data['prev_posts'] = $row['prev_posts'];
 }
 
 $old_forum_id = $forum_id;
