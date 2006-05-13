@@ -136,7 +136,8 @@ function gen_rand_string($num_chars = 8)
 */
 function unique_id($extra = 'c')
 {
-	global $db, $config, $dss_seeded;
+	global $config;
+	static $dss_seeded;
 
 	$val = $config['rand_seed'] . microtime();
 	$val = md5($val);

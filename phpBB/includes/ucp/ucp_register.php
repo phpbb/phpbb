@@ -156,7 +156,7 @@ $config['max_reg_attempts'] = 0;
 
 					if ($row = $db->sql_fetchrow($result))
 					{
-						if ($row['code'] != $confirm_code)
+						if (strcasecmp($row['code'], $confirm_code) == 0)
 						{
 							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 							$wrong_confirm = true;

@@ -161,12 +161,12 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_occlude', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_occlude_noise_pixel', '2');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_occlude_noise_pixel', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_occlude_noise_line', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy_noise_pixel', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy_noise_line', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_3dbitmap', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_3dbitmap', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');

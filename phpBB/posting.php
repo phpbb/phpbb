@@ -628,7 +628,7 @@ if ($submit || $preview || $refresh)
 		$confirm_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if ($confirm_row['code'] !== $confirm_code)
+		if (strcasecmp($confirm_row['code'], $confirm_code) == 0)
 		{
 			$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 		}

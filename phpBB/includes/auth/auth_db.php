@@ -71,7 +71,7 @@ function login_db(&$username, &$password)
 
 			if ($confirm_row)
 			{
-				if ($confirm_row['code'] != $confirm_code)
+				if (strcasecmp($confirm_row['code'], $confirm_code) == 0)
 				{
 					return array(
 						'status'		=> LOGIN_ERROR_ATTEMPTS,

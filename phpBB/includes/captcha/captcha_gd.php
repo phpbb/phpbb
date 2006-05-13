@@ -15,20 +15,6 @@
 *
 * Thanks to Robert Hetzler (Xore)
 *
-* @todo see notes in includes/captcha/captcha_gd.php
-* 
-* Within the policy 'policy_occlude' the letters need to have more space in-between of them.
-* At the moment it can happen that the letters get overlapped
-*
-* Completely remove the number 0
-* Make it case-insensitive
-*
-* The policy_entropy seems to be the best readable, then follows policy_occlude and policy_3dbitmap not readable.
-*
-* Within the policy 'policy_3dbitmap':
-* The 2 and the Z seem to be very similar
-* The letters are not distinguishable(?) enough from the background, maybe related to the letters itself
-* The colors are generally a bit off making it hard to read...
 */
 class captcha
 {
@@ -39,7 +25,7 @@ class captcha
 	{
 		global $config;
 
-		$policy_modules = array('policy_entropy', 'policy_occlude'); // 'policy_3dbitmap'
+		$policy_modules = array('policy_entropy', 'policy_occlude', 'policy_3dbitmap');
 
 		// Remove all disabled policy modules
 		foreach ($policy_modules as $key => $name)
@@ -58,7 +44,7 @@ class captcha
 	/**
 	* Send image and destroy
 	*/
-	function send_image(&$image)
+	function send_image(&$image, $array=array())
 	{
 		header('Content-Type: image/png');
 		header('Cache-control: no-cache, no-store');
@@ -215,12 +201,13 @@ class captcha
 
 		$colors = array();
 
-		$minr = mt_rand(0, 127);
-		$ming = mt_rand(0, 127);
-		$minb = mt_rand(0, 127);
-		$maxr = mt_rand(128, 256);
-		$maxg = mt_rand(128, 256);
-		$maxb = mt_rand(128, 256);
+		$minr = mt_rand(0, 8);
+		$ming = mt_rand(0, 8);
+		$minb = mt_rand(0, 8);
+
+		$maxr = mt_rand(128, 220);
+		$maxg = mt_rand(128, 220);
+		$maxb = mt_rand(128, 220);
 
 		for ($i = -30; $i <= 30; ++$i)
 		{
@@ -379,7 +366,7 @@ class captcha
 	{
 		global $config;
 		$char_size = 40;
-		$overlap_factor = .35;
+		$overlap_factor = .32;
 
 		// Generate image
 		$img_x = 250;
@@ -1545,7 +1532,7 @@ function captcha_bitmaps()
 			array(0,1,0,0,1,0,0,0,0),
 			array(0,0,1,1,0,0,0,0,0),
 		),
-		'K' => array(	// New 'K', supplied by Neothermic
+		'K' => array(	// New 'K', supplied by NeoThermic
 			array(1,0,0,0,0,0,0,0,1),
 			array(1,0,0,0,0,0,0,1,0),
 			array(1,0,0,0,0,0,1,0,0),
@@ -1800,10 +1787,10 @@ function captcha_bitmaps()
 			array(0,0,0,0,1,0,0,0,0),
 			array(0,0,0,0,1,0,0,0,0),
 		),
-		'Z' => array(
+		'Z' => array(	// New 'Z' supplied by Anon
 			array(1,1,1,1,1,1,1,1,1),
+			array(1,0,0,0,0,0,0,0,1),
 			array(0,0,0,0,0,0,0,0,1),
-			array(0,0,0,0,0,0,0,1,0),
 			array(0,0,0,0,0,0,0,1,0),
 			array(0,0,0,0,0,0,1,0,0),
 			array(0,0,0,0,0,1,0,0,0),
@@ -1813,8 +1800,8 @@ function captcha_bitmaps()
 			array(0,0,0,1,0,0,0,0,0),
 			array(0,0,1,0,0,0,0,0,0),
 			array(0,1,0,0,0,0,0,0,0),
-			array(0,1,0,0,0,0,0,0,0),
 			array(1,0,0,0,0,0,0,0,0),
+			array(1,0,0,0,0,0,0,0,1),
 			array(1,1,1,1,1,1,1,1,1),
 		),
 		'1' => array(
@@ -1834,13 +1821,13 @@ function captcha_bitmaps()
 			array(0,0,0,0,1,0,0,0,0),
 			array(0,1,1,1,1,1,1,1,0),
 		),
-		'2' => array(
-			array(0,0,1,1,1,1,1,0,0),
-			array(0,1,0,0,0,0,0,1,0),
-			array(1,0,0,0,0,0,0,0,1),
+		'2' => array(	// New '2' supplied by Anon
+			array(0,0,0,1,1,1,0,0,0),
+			array(0,0,1,0,0,0,1,0,0),
+			array(0,1,0,0,0,0,1,1,0),
 			array(0,0,0,0,0,0,0,0,1),
 			array(0,0,0,0,0,0,0,0,1),
-			array(0,0,0,0,0,0,0,0,1),
+			array(0,0,0,0,0,0,0,1,1),
 			array(0,0,0,0,0,0,0,1,0),
 			array(0,0,0,0,0,0,1,0,0),
 			array(0,0,0,0,0,1,0,0,0),
@@ -1848,8 +1835,8 @@ function captcha_bitmaps()
 			array(0,0,0,1,0,0,0,0,0),
 			array(0,0,1,0,0,0,0,0,0),
 			array(0,1,0,0,0,0,0,0,0),
-			array(1,0,0,0,0,0,0,0,0),
 			array(1,1,1,1,1,1,1,1,1),
+			array(0,0,0,0,0,0,0,0,0),
 		),
 		'3' => array(
 			array(0,0,1,1,1,1,1,0,0),
