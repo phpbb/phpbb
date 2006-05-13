@@ -1328,12 +1328,12 @@ CREATE TABLE phpbb_users (
   user_passchg INTEGER DEFAULT 0  NULL,
   user_email VARCHAR(100) NOT NULL,
   user_email_hash DOUBLE PRECISION DEFAULT 0  NOT NULL,
-  user_birthday VARCHAR(10) NULL,
+  user_birthday VARCHAR(10) DEFAULT '' NULL,
   user_lastvisit INTEGER DEFAULT 0  NOT NULL,
   user_lastmark INTEGER DEFAULT 0  NOT NULL,
   user_lastpost_time INTEGER DEFAULT 0  NOT NULL,
-  user_lastpage VARCHAR(200) NOT NULL,
-  user_last_confirm_key VARCHAR(10) NULL,
+  user_lastpage VARCHAR(200) DEFAULT '' NOT NULL,
+  user_last_confirm_key VARCHAR(10) DEFAULT '' NULL,
   user_warnings INTEGER DEFAULT 0  NULL,
   user_last_warning INTEGER DEFAULT 0  NULL,
   user_login_attempts INTEGER DEFAULT 0  NULL,
@@ -1344,7 +1344,7 @@ CREATE TABLE phpbb_users (
   user_dateformat VARCHAR(30) DEFAULT 'd M Y H:i'  NOT NULL,
   user_style INTEGER DEFAULT 0  NOT NULL,
   user_rank INTEGER DEFAULT 0 ,
-  user_colour VARCHAR(6) NOT NULL,
+  user_colour VARCHAR(6) DEFAULT '' NOT NULL,
   user_new_privmsg INTEGER DEFAULT 0  NOT NULL,
   user_unread_privmsg INTEGER DEFAULT 0  NOT NULL,
   user_last_privmsg INTEGER DEFAULT 0  NOT NULL,
@@ -1366,24 +1366,24 @@ CREATE TABLE phpbb_users (
   user_allow_viewemail INTEGER DEFAULT 1  NOT NULL,
   user_allow_massemail INTEGER DEFAULT 1  NOT NULL,
   user_options INTEGER DEFAULT 893  NOT NULL,
-  user_avatar VARCHAR(255) NOT NULL,
+  user_avatar VARCHAR(255) DEFAULT '' NOT NULL,
   user_avatar_type INTEGER DEFAULT 0  NOT NULL,
   user_avatar_width INTEGER DEFAULT 0  NOT NULL,
   user_avatar_height INTEGER DEFAULT 0  NOT NULL,
   user_sig BLOB SUB_TYPE TEXT NULL,
-  user_sig_bbcode_uid VARCHAR(5) NULL,
+  user_sig_bbcode_uid VARCHAR(5) DEFAULT '' NULL,
   user_sig_bbcode_bitfield INTEGER DEFAULT 0  NULL,
-  user_from VARCHAR(100) NULL,
-  user_icq VARCHAR(15) NULL,
-  user_aim VARCHAR(255) NULL,
-  user_yim VARCHAR(255) NULL,
-  user_msnm VARCHAR(255) NULL,
-  user_jabber VARCHAR(255) NULL,
-  user_website VARCHAR(200) NULL,
-  user_occ VARCHAR(255) NULL,
-  user_interests VARCHAR(255) NULL,
-  user_actkey VARCHAR(32) NOT NULL,
-  user_newpasswd VARCHAR(32) NULL
+  user_from VARCHAR(100) DEFAULT '' NULL,
+  user_icq VARCHAR(15) DEFAULT '' NULL,
+  user_aim VARCHAR(255) DEFAULT '' NULL,
+  user_yim VARCHAR(255) DEFAULT '' NULL,
+  user_msnm VARCHAR(255) DEFAULT '' NULL,
+  user_jabber VARCHAR(255) DEFAULT '' NULL,
+  user_website VARCHAR(200) DEFAULT '' NULL,
+  user_occ VARCHAR(255) DEFAULT '' NULL,
+  user_interests VARCHAR(255) DEFAULT '' NULL,
+  user_actkey VARCHAR(32) DEFAULT '' NOT NULL,
+  user_newpasswd VARCHAR(32) DEFAULT '' NULL
 );;
 
 ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;
@@ -1455,3 +1455,12 @@ CREATE TABLE phpbb_zebra (
 
 CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra(user_id);;
 CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra(zebra_id);;
+
+DECLARE EXTERNAL FUNCTION STRLEN
+    CSTRING(32767)
+RETURNS INTEGER BY VALUE
+ENTRY_POINT 'IB_UDF_strlen' MODULE_NAME 'ib_udf';;
+
+DECLARE EXTERNAL FUNCTION LOWER CSTRING(80)
+RETURNS CSTRING(80) FREE_IT 
+ENTRY_POINT 'IB_UDF_lower' MODULE_NAME 'ib_udf';;

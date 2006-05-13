@@ -919,14 +919,20 @@ class parse_message extends bbcode_firstpass
 					$sql = 'SELECT * 
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';
-					break;
+				break;
 	
+				case 'firebird':
+					$sql = 'SELECT * 
+						FROM ' . SMILIES_TABLE . '
+						ORDER BY STRLEN(code) DESC';
+				break;
+
 				// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
 				default:
 					$sql = 'SELECT * 
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LENGTH(code) DESC';
-					break;
+				break;
 			}
 			$result = $db->sql_query($sql, 600);
 
