@@ -1239,20 +1239,34 @@ function build_url($strip_vars = false)
 	$redirect = (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'] . $SID . (($user->page['query_string']) ? "&{$user->page['query_string']}" : '');
 
 	// Strip vars...
-	if ($strip_vars !== false)
+	if ($strip_vars !== false && strpos($redirect, '?') !== false)
 	{
 		if (!is_array($strip_vars))
 		{
 			$strip_vars = array($strip_vars);
 		}
 
-		foreach ($strip_vars as $var)
+		$query = $_query = array();
+		parse_str(substr($redirect, strpos($redirect, '?') + 1), $query);
+		$redirect = substr($redirect, 0, strpos($redirect, '?'));
+
+		// Strip the vars off
+		foreach ($strip_vars as $strip)
 		{
-			if (strpos($redirect, $var) !== false)
+			if (isset($query[$strip]))
 			{
-				$redirect = preg_replace('#^(.*?)&?' . preg_quote($var, '#') . '=.*(&?)(.*?)$#', '\1\3', $redirect);
+				unset($query[$strip]);
 			}
 		}
+	
+		// 
+		foreach ($query as $key => $value)
+		{
+			$_query[] = $key . '=' . $value;
+		}
+		$query = implode('&', $_query);
+
+		$redirect .= ($query) ? '?' . $query : '';
 	}
 
 	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
