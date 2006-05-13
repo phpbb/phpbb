@@ -142,7 +142,7 @@ switch ($mode)
 
 			$s_forum_select = '';
 
-			if (isset($forum_id_ary[$row['user_id']))
+			if (isset($forum_id_ary[$row['user_id']]))
 			{
 				if ($which_row == 'mod' && sizeof(array_diff(array_keys($forums), $forum_id_ary[$row['user_id']])))
 				{
