@@ -536,7 +536,7 @@ class module
 
 		$template->assign_vars(array(
 			'MESSAGE_TITLE'		=> $lang['INST_ERR_FATAL_DB'],
-			'MESSAGE_BODY'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
+			'MESSAGE_TEXT'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
 		));
 
 		$db->sql_close();
