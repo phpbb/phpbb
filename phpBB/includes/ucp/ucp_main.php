@@ -812,28 +812,44 @@ class ucp_main
 
 		$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
 
-		$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
+		$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
 			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
 			WHERE p.poster_id = ' . $user->data['user_id'] . " 
 				AND f.forum_id = p.forum_id 
 				$post_count_sql
-			GROUP BY f.forum_id, f.forum_name  
+			GROUP BY f.forum_id
 			ORDER BY num_posts DESC"; 
 		$result = $db->sql_query_limit($sql, 1);
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
+		$sql = 'SELECT forum_name
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $active_f_row['forum_id'];
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		$active_f_row['forum_name'] = $row['forum_name'];
+
+		$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
 			WHERE p.poster_id = ' . $user->data['user_id'] . " 
 				AND t.topic_id = p.topic_id  
 				AND f.forum_id = t.forum_id 
 				$post_count_sql
-			GROUP BY t.topic_id, t.topic_title  
+			GROUP BY t.topic_id
 			ORDER BY num_posts DESC";
 		$result = $db->sql_query_limit($sql, 1);
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		$sql = 'SELECT topic_title
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $active_t_row['topic_id'];
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		$active_t_row['topic_title'] = $row['topic_title'];
 
 		$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
 		if (!empty($active_f_row['num_posts']))
