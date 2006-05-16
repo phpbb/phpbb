@@ -818,7 +818,7 @@ class ucp_main
 				AND f.forum_id = p.forum_id 
 				$post_count_sql
 			GROUP BY f.forum_id
-			ORDER BY num_posts DESC"; 
+			ORDER BY COUNT(p.post_id) DESC";
 		$result = $db->sql_query_limit($sql, 1);
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -838,7 +838,7 @@ class ucp_main
 				AND f.forum_id = t.forum_id 
 				$post_count_sql
 			GROUP BY t.topic_id
-			ORDER BY num_posts DESC";
+			ORDER BY COUNT(p.post_id) DESC";
 		$result = $db->sql_query_limit($sql, 1);
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

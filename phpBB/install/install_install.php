@@ -1110,6 +1110,16 @@ class install_install extends module
 		$_module = &new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
 
+		switch ($dbms)
+		{
+			case 'firebird':
+				$column_name = '"module_name"';
+			break;
+
+			default:
+				$column_name = 'module_name';
+		}
+
 		foreach ($module_classes as $module_class)
 		{
 			$categories = array();
@@ -1117,7 +1127,7 @@ class install_install extends module
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
 				$module_data = array(
-					'module_name'		=> '',
+					$column_name		=> '',
 					'module_enabled'	=> 1,
 					'module_display'	=> 1,
 					'parent_id'			=> 0,
@@ -1144,7 +1154,7 @@ class install_install extends module
 					foreach ($subs as $level2_name)
 					{
 						$module_data = array(
-							'module_name'		=> '',
+							$column_name		=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1181,7 +1191,7 @@ class install_install extends module
 					foreach ($row['cat'] as $cat_name)
 					{
 						$module_data = array(
-							'module_name'		=> $module_name,
+							$column_name		=> $module_name,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
