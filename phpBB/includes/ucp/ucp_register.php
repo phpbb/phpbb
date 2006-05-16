@@ -24,7 +24,7 @@ class ucp_register
 		{
 			trigger_error($user->lang['UCP_REGISTER_DISABLE']);
 		}
-$config['max_reg_attempts'] = 0;
+
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$confirm_id = request_var('confirm_id', '');

@@ -1010,18 +1010,18 @@ CREATE TABLE [phpbb_privmsgs] (
 	[enable_smilies] [int] NOT NULL ,
 	[enable_magic_url] [int] NOT NULL ,
 	[enable_sig] [int] NOT NULL ,
-	[message_subject] [text] ,
-	[message_text] [text] ,
-	[message_edit_reason] [text] ,
-	[message_edit_user] [int] NOT NULL ,
+	[message_subject] [text] NOT NULL ,
+	[message_text] [text] NOT NULL ,
+	[message_edit_reason] [text] NULL ,
+	[message_edit_user] [int] NULL ,
 	[message_encoding] [varchar] (20) NOT NULL ,
 	[message_attachment] [int] NOT NULL ,
 	[bbcode_bitfield] [int] NOT NULL ,
 	[bbcode_uid] [varchar] (5) NOT NULL ,
-	[message_edit_time] [int] NOT NULL ,
-	[message_edit_count] [int] NOT NULL ,
-	[to_address] [text] NULL ,
-	[bcc_address] [text] NULL 
+	[message_edit_time] [int] NULL ,
+	[message_edit_count] [int] NULL ,
+	[to_address] [text] NOT NULL ,
+	[bcc_address] [text] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1035,7 +1035,7 @@ GO
 ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_privms_root_level] DEFAULT (0) FOR [root_level],
 	CONSTRAINT [DF_phpbb_privms_author_id] DEFAULT (0) FOR [author_id],
-	CONSTRAINT [DF_phpbb_privms_icon_id] DEFAULT (1) FOR [icon_id],
+	CONSTRAINT [DF_phpbb_privms_icon_id] DEFAULT (0) FOR [icon_id],
 	CONSTRAINT [DF_phpbb_privms_message_time] DEFAULT (0) FOR [message_time],
 	CONSTRAINT [DF_phpbb_privms_enable_bbcode] DEFAULT (1) FOR [enable_bbcode],
 	CONSTRAINT [DF_phpbb_privms_enable_smilies] DEFAULT (1) FOR [enable_smilies],

@@ -179,8 +179,8 @@ class ucp_groups
 										'USERNAME'		=> $row['username'],
 										'GROUP_NAME'	=> $group_row[$group_id]['group_name'],
 
-										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=usergroups&amp;mode=manage",
-										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&amp;g=$group_id")
+										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=usergroups&mode=manage",
+										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
 									);
 
 									$messenger->send($row['user_notify_type']);

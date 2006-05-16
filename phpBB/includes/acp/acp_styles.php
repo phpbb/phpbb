@@ -9,8 +9,9 @@
 */
 
 /**
-* todo:
-* templates->cache (show template files in cache)
+* @todo see /includes/acp/acp_styles.php
+* templates/themes->cache (show template files in cache, ability to remove all)
+* templates/themes->refresh (give explanation of what this is doing [confirm_box?] and printing out success message
 */
 
 /**

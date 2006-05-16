@@ -492,7 +492,7 @@ class template_compile
 					$match[4] = strtoupper($match[4]);
 				break;
 				
-				case '.';
+				case '.':
 					$match[4] = doubleval($match[4]);
 				break;
 				
