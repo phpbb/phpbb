@@ -812,12 +812,31 @@ class ucp_main
 
 		$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
 
-		$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
-			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-			WHERE p.poster_id = ' . $user->data['user_id'] . " 
-				AND f.forum_id = p.forum_id 
-				$post_count_sql
-			GROUP BY f.forum_id";
+		// Firebird does not support ORDER BY on aliased columns
+		// MySQL does not support ORDER BY on functions
+		switch (SQL_LAYER)
+		{
+			case 'firebird':
+				$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
+					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
+						AND f.forum_id = p.forum_id 
+						$post_count_sql
+					GROUP BY f.forum_id
+					ORDER BY COUNT(p.post_id) DESC";
+			break;
+
+			default:
+				$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
+					FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
+						AND f.forum_id = p.forum_id 
+						$post_count_sql
+					GROUP BY f.forum_id
+					ORDER BY num_posts DESC";
+			break;
+		}
+
 		$result = $db->sql_query_limit($sql, 1);
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -830,13 +849,33 @@ class ucp_main
 		$db->sql_freeresult($result);
 		$active_f_row['forum_name'] = $row['forum_name'];
 
-		$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-			WHERE p.poster_id = ' . $user->data['user_id'] . " 
-				AND t.topic_id = p.topic_id  
-				AND f.forum_id = t.forum_id 
-				$post_count_sql
-			GROUP BY t.topic_id";
+		// Firebird does not support ORDER BY on aliased columns
+		// MySQL does not support ORDER BY on functions
+		switch (SQL_LAYER)
+		{
+			case 'firebird':
+				$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
+						AND t.topic_id = p.topic_id  
+						AND f.forum_id = t.forum_id 
+						$post_count_sql
+					GROUP BY t.topic_id
+					ORDER BY COUNT(p.post_id) DESC";
+			break;
+
+			default:
+				$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+					WHERE p.poster_id = ' . $user->data['user_id'] . " 
+						AND t.topic_id = p.topic_id  
+						AND f.forum_id = t.forum_id 
+						$post_count_sql
+					GROUP BY t.topic_id
+					ORDER BY num_posts DESC";
+			break;
+		}
+
 		$result = $db->sql_query_limit($sql, 1);
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
