@@ -1274,28 +1274,81 @@ function show_user_activity(&$member)
 	$forum_ary = array_unique($forum_ary);
 	$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
 
-	$sql = 'SELECT f.forum_id, f.forum_name, COUNT(post_id) AS num_posts   
-		FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
-		WHERE p.poster_id = {$member['user_id']}
-			AND f.forum_id = p.forum_id 
-			$post_count_sql
-		GROUP BY f.forum_id, f.forum_name  
-		ORDER BY num_posts DESC"; 
+	// Firebird does not support ORDER BY on aliased columns
+	// MySQL does not support ORDER BY on functions
+	switch (SQL_LAYER)
+	{
+		case 'firebird':
+			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
+				WHERE p.poster_id = {$member['user_id']}
+					AND f.forum_id = p.forum_id 
+					$post_count_sql
+				GROUP BY f.forum_id
+				ORDER BY COUNT(p.post_id) DESC";
+		break;
+
+		default:
+			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
+				WHERE p.poster_id = {$member['user_id']}
+					AND f.forum_id = p.forum_id 
+					$post_count_sql
+				GROUP BY f.forum_id
+				ORDER BY num_posts DESC";
+		break;
+	}
+
 	$result = $db->sql_query_limit($sql, 1);
 	$active_f_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	$sql = 'SELECT t.topic_id, t.topic_title, COUNT(p.post_id) AS num_posts   
-		FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
-		WHERE p.poster_id = {$member['user_id']} 
-			AND t.topic_id = p.topic_id  
-			AND f.forum_id = t.forum_id 
-			$post_count_sql
-		GROUP BY t.topic_id, t.topic_title  
-		ORDER BY num_posts DESC";
+	$sql = 'SELECT forum_name
+		FROM ' . FORUMS_TABLE . '
+		WHERE forum_id = ' . $active_f_row['forum_id'];
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+	$active_f_row['forum_name'] = $row['forum_name'];
+
+	// Firebird does not support ORDER BY on aliased columns
+	// MySQL does not support ORDER BY on functions
+	switch (SQL_LAYER)
+	{
+		case 'firebird':
+			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
+				WHERE p.poster_id = {$member['user_id']} 
+					AND t.topic_id = p.topic_id  
+					AND f.forum_id = t.forum_id 
+					$post_count_sql
+				GROUP BY t.topic_id
+				ORDER BY COUNT(p.post_id) DESC";
+		break;
+
+		default:
+			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
+				WHERE p.poster_id = {$member['user_id']} 
+					AND t.topic_id = p.topic_id  
+					AND f.forum_id = t.forum_id 
+					$post_count_sql
+				GROUP BY t.topic_id
+				ORDER BY num_posts DESC";
+		break;
+	}
+
 	$result = $db->sql_query_limit($sql, 1);
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
+
+	$sql = 'SELECT topic_title
+		FROM ' . TOPICS_TABLE . '
+		WHERE topic_id = ' . $active_t_row['topic_id'];
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+	$active_t_row['topic_title'] = $row['topic_title'];
 
 	$member['active_t_row'] = $active_t_row;
 	$member['active_f_row'] = $active_f_row;
