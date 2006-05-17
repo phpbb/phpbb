@@ -841,13 +841,16 @@ class ucp_main
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT forum_name
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $active_f_row['forum_id'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		$active_f_row['forum_name'] = $row['forum_name'];
+		if (!empty($active_f_row))
+		{
+			$sql = 'SELECT forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $active_f_row['forum_id'];
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$active_f_row['forum_name'] = $row['forum_name'];
+		}
 
 		// Firebird does not support ORDER BY on aliased columns
 		// MySQL does not support ORDER BY on functions
@@ -880,13 +883,16 @@ class ucp_main
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT topic_title
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . $active_t_row['topic_id'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		$active_t_row['topic_title'] = $row['topic_title'];
+		if (!empty($active_t_row))
+		{
+			$sql = 'SELECT topic_title
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $active_t_row['topic_id'];
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			$active_t_row['topic_title'] = $row['topic_title'];
+		}
 
 		$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
 		if (!empty($active_f_row['num_posts']))
