@@ -217,13 +217,31 @@ function mcp_post_details($id, $mode, $action)
 		}
 
 		// Get other users who've posted under this IP
-		$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
-			FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
-			WHERE p.poster_id = u.user_id
-				AND p.poster_ip = '{$post_info['poster_ip']}'
-				AND p.poster_id <> {$post_info['user_id']}
-			GROUP BY u.user_id, u.username
-			ORDER BY postings DESC";
+
+		// Firebird does not support ORDER BY on aliased columns
+		// MySQL does not support ORDER BY on functions
+		switch (SQL_LAYER)
+		{
+			case 'firebird':
+				$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
+					FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
+					WHERE p.poster_id = u.user_id
+						AND p.poster_ip = '{$post_info['poster_ip']}'
+						AND p.poster_id <> {$post_info['user_id']}
+					GROUP BY u.user_id, u.username
+					ORDER BY COUNT(*) DESC";
+			break;
+
+			default:
+				$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
+					FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
+					WHERE p.poster_id = u.user_id
+						AND p.poster_ip = '{$post_info['poster_ip']}'
+						AND p.poster_id <> {$post_info['user_id']}
+					GROUP BY u.user_id, u.username
+					ORDER BY postings DESC";
+			break;
+		}
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -247,11 +265,27 @@ function mcp_post_details($id, $mode, $action)
 		$db->sql_freeresult($result);
 
 		// Get other IP's this user has posted under
-		$sql = 'SELECT poster_ip, COUNT(*) AS postings
-			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $post_info['poster_id'] . '
-			GROUP BY poster_ip
-			ORDER BY postings DESC';
+
+		// Firebird does not support ORDER BY on aliased columns
+		// MySQL does not support ORDER BY on functions
+		switch (SQL_LAYER)
+		{
+			case 'firebird':
+				$sql = 'SELECT poster_ip, COUNT(*) AS postings
+					FROM ' . POSTS_TABLE . '
+					WHERE poster_id = ' . $post_info['poster_id'] . '
+					GROUP BY poster_ip
+					ORDER BY COUNT(*) DESC';
+			break;
+
+			default:
+				$sql = 'SELECT poster_ip, COUNT(*) AS postings
+					FROM ' . POSTS_TABLE . '
+					WHERE poster_id = ' . $post_info['poster_id'] . '
+					GROUP BY poster_ip
+					ORDER BY postings DESC';
+			break;
+		}
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
