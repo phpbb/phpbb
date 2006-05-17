@@ -38,6 +38,7 @@ class auth_admin extends auth
 			$result = $db->sql_query($sql);
 
 			$global = $local = 0;
+			$this->acl_options = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['is_global'])

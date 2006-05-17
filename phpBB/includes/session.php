@@ -118,7 +118,7 @@ class session
 		$this->page = $this->extract_current_page($phpbb_root_path);
 		$this->page['page'] .= (isset($_POST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . 'f=' . intval($_POST['f']) : '';
 
-		$this->cookie_data = array();
+		$this->cookie_data = array('u' => 0, 'k' => '');
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
 			// Switch to request_var ... can this cause issues, can a _GET/_POST param

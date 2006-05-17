@@ -28,7 +28,7 @@ class cache extends acm
 	{
 		global $db;
 
-		if ($config = $this->get('config'))
+		if (($config = $this->get('config')) !== false)
 		{
 			$sql = 'SELECT config_name, config_value
 				FROM ' . CONFIG_TABLE . '
@@ -79,7 +79,7 @@ class cache extends acm
 			return false;
 		}
 
-		if (!($censors = $this->get('word_censors')))
+		if (($censors = $this->get('word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
 				FROM  ' . WORDS_TABLE;
@@ -104,7 +104,7 @@ class cache extends acm
 	*/
 	function obtain_icons(&$icons)
 	{
-		if (!($icons = $this->get('icons')))
+		if (($icons = $this->get('icons')) === false)
 		{
 			global $db;
 	
@@ -135,7 +135,7 @@ class cache extends acm
 	*/
 	function obtain_ranks(&$ranks)
 	{
-		if (!($ranks = $this->get('ranks')))
+		if (($ranks = $this->get('ranks')) === false)
 		{
 			global $db;
 	
@@ -176,7 +176,7 @@ class cache extends acm
 	*/
 	function obtain_attach_extensions(&$extensions, $forum_id = false)
 	{
-		if (!($extensions = $this->get('_extensions')))
+		if (($extensions = $this->get('_extensions')) === false)
 		{
 			global $db;
 	
@@ -257,7 +257,7 @@ class cache extends acm
 	*/
 	function obtain_bots(&$bots)
 	{
-		if (!($bots = $this->get('bots')))
+		if (($bots = $this->get('bots')) === false)
 		{
 			global $db;
 	
@@ -288,6 +288,7 @@ class cache extends acm
 			}
 			$result = $db->sql_query($sql);
 		
+			$bots = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$bots[] = $row;
@@ -317,7 +318,7 @@ class cache extends acm
 		{
 			$parsed_array = $this->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
 
-			if (!$parsed_array)
+			if ($parsed_array === false)
 			{
 				$parsed_array = array();
 			}

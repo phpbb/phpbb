@@ -29,7 +29,7 @@ class auth
 		$this->acl = $this->cache = $this->acl_options = array();
 		$this->acl_forum_ids = false;
 
-		if (!($this->acl_options = $cache->get('acl_options')))
+		if (($this->acl_options = $cache->get('acl_options')) === false)
 		{
 			$sql = 'SELECT auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
@@ -37,6 +37,7 @@ class auth
 			$result = $db->sql_query($sql);
 
 			$global = $local = 0;
+			$this->acl_options = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['is_global'])

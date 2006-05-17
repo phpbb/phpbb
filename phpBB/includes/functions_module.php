@@ -52,7 +52,7 @@ class p_master
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
 
 		// Get cached modules
-		if (!($this->module_cache = $cache->get('_modules_' . $this->p_class)))
+		if (($this->module_cache = $cache->get('_modules_' . $this->p_class)) === false)
 		{
 			// Get modules
 			$sql = 'SELECT *
