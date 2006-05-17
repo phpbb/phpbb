@@ -685,11 +685,11 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	$topic_ids = $draft_rows = array();
 
 	// Load those drafts not connected to forums/topics
+	// If forum_id == 0 AND topic_id == 0 then this is a PM draft
 	$sql = 'SELECT *
 		FROM ' . DRAFTS_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'] . '
-			AND forum_id = 0
-			OR topic_id = 0
+			AND (forum_id = 0 OR topic_id = 0)
 		ORDER BY save_time DESC';
 	$result = $db->sql_query($sql);
 
@@ -762,7 +762,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 
 			$insert_url = "{$phpbb_root_path}posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
 		}
-		else if ($auth->acl_get('f_read', $draft['forum_id']))
+		else if ($draft['forum_id'] && $auth->acl_get('f_read', $draft['forum_id']))
 		{
 			$link_forum = true;
 			$view_url = "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
@@ -772,6 +772,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 		}
 		else
 		{
+			// Either display as PM draft if forum_id and topic_id are empty or if access to the forums has been denied afterwards...
 			$link_pm = true;
 			$insert_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=compose&amp;d=" . $draft['draft_id'];
 		}

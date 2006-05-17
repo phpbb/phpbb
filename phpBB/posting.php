@@ -301,7 +301,7 @@ if (isset($post_data['post_text']))
 $message_parser->get_submitted_attachment_data();
 
 // Set some default variables
-$uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
+$uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
 foreach ($uninit as $var_name => $default_value)
 {
 	if (!isset($post_data[$var_name]))
@@ -434,9 +434,9 @@ if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 
 	if ($row)
 	{
-		$_REQUEST['subject'] = html_entity_decode($row['draft_subject']);
-		$_REQUEST['message'] = html_entity_decode($row['draft_message']);
-		$refresh = true;
+		$post_data['post_subject'] = $row['draft_subject'];
+		$message_parser->message = $row['draft_message'];
+
 		$template->assign_var('S_DRAFT_LOADED', true);
 	}
 	else
@@ -454,12 +454,12 @@ if ($load && $post_data['drafts'])
 if ($submit || $preview || $refresh)
 {
 	$post_data['topic_cur_post_id'] = request_var('topic_cur_post_id', 0);
-	$post_data['subject'] = request_var('subject', '', true);
+	$post_data['post_subject'] = request_var('subject', '', true);
 
 	// If subject is all-uppercase then we make all lowercase (we do not want to be yelled at too :P)
-	if ($post_data['subject'] && strcmp($post_data['subject'], strtoupper($post_data['subject'])) == 0)
+	if ($post_data['post_subject'] && strcmp($post_data['post_subject'], strtoupper($post_data['post_subject'])) == 0)
 	{
-		$post_data['subject'] = strtolower($post_data['subject']);
+		$post_data['post_subject'] = strtolower($post_data['post_subject']);
 	}
 
 	$message_parser->message = request_var('message', '', true);
@@ -635,7 +635,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$post_data['subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
@@ -780,7 +780,7 @@ if ($submit || $preview || $refresh)
 			}
 
 			$data = array(
-				'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['subject'] : $post_data['topic_title'],
+				'topic_title'			=> (empty($post_data['topic_title'])) ? $post_data['post_subject'] : $post_data['topic_title'],
 				'topic_first_post_id'	=> (isset($post_data['topic_first_post_id'])) ? (int) $post_data['topic_first_post_id'] : 0,
 				'topic_last_post_id'	=> (isset($post_data['topic_last_post_id'])) ? (int) $post_data['topic_last_post_id'] : 0,
 				'topic_time_limit'		=> (int) $post_data['topic_time_limit'],
@@ -813,7 +813,7 @@ if ($submit || $preview || $refresh)
 			);
 			unset($message_parser);
 
-			$redirect_url = submit_post($mode, $post_data['subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
+			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
 
 			meta_refresh(3, $redirect_url);
 
@@ -823,8 +823,6 @@ if ($submit || $preview || $refresh)
 			trigger_error($message);
 		}
 	}
-
-	$post_data['post_subject'] = $post_data['subject'];
 }
 
 // Preview
@@ -855,7 +853,7 @@ if (!sizeof($error) && $preview)
 		$preview_signature = '';
 	}
 	
-	$preview_subject = censor_text($post_data['subject']);
+	$preview_subject = censor_text($post_data['post_subject']);
 	
 	// Poll Preview
 	if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))))
