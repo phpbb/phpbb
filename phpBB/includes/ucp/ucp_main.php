@@ -817,8 +817,7 @@ class ucp_main
 			WHERE p.poster_id = ' . $user->data['user_id'] . " 
 				AND f.forum_id = p.forum_id 
 				$post_count_sql
-			GROUP BY f.forum_id
-			ORDER BY COUNT(p.post_id) DESC";
+			GROUP BY f.forum_id";
 		$result = $db->sql_query_limit($sql, 1);
 		$active_f_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -837,8 +836,7 @@ class ucp_main
 				AND t.topic_id = p.topic_id  
 				AND f.forum_id = t.forum_id 
 				$post_count_sql
-			GROUP BY t.topic_id
-			ORDER BY COUNT(p.post_id) DESC";
+			GROUP BY t.topic_id";
 		$result = $db->sql_query_limit($sql, 1);
 		$active_t_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
