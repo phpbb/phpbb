@@ -20,9 +20,9 @@ class mcp_reports_info
 			'title'		=> 'MCP_REPORTS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'report_details'	=> array('title' => 'MCP_REPORT_DETAILS', 'auth' => 'acl_m_report || aclf_m_report', 'cat' => array('MCP_REPORTS')),
 				'reports'			=> array('title' => 'MCP_REPORTS', 'auth' => 'acl_m_report ||aclf_m_report', 'cat' => array('MCP_REPORTS')),
 				'reports_closed'	=> array('title' => 'MCP_REPORTS_CLOSED', 'auth' => 'acl_m_report || aclf_m_report', 'cat' => array('MCP_REPORTS')),
+				'report_details'	=> array('title' => 'MCP_REPORT_DETAILS', 'auth' => 'acl_m_report || aclf_m_report', 'cat' => array('MCP_REPORTS')),
 			),
 		);
 	}

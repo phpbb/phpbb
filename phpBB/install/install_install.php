@@ -1211,7 +1211,7 @@ class install_install extends module
 
 						$db->sql_freeresult($result);
 
-						if ($categories[$cat_name]['parent_id'])
+						if ($categories[$cat_name]['parent_id'] || $module_class != 'acp')
 						{
 							$sql = 'UPDATE ' . MODULES_TABLE . "
 								SET left_id = left_id + 2, right_id = right_id + 2
