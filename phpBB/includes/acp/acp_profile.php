@@ -318,23 +318,31 @@ class acp_profile
 				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);
 
-				$options = request_var('lang_options', '', true);
+				// A boolean field expects an array as the lang options
+				if ($field_type == FIELD_BOOL)
+				{
+					$options = request_var('lang_options', array(''), true);
+				}
+				else
+				{
+					$options = request_var('lang_options', '', true);
+				}
 
 				// If the user has submitted a form with options (i.e. dropdown field)
 				if ($options)
 				{
-					$exploded_options = explode("\n", $options);
+					$exploded_options = (is_array($options)) ? $options : explode("\n", $options);
 
 					if (sizeof($exploded_options) == sizeof($lang_options) || $action == 'create')
 					{
 						// The number of options in the field is equal to the number of options already in the database
 						// Or we are creating a new dropdown list.
-						$cp->vars['lang_options']	= explode("\n", $options);
+						$cp->vars['lang_options']	= $exploded_options;
 					}
 					else if ($action == 'edit')
 					{
 						// Changing the number of options? (We remove and re-create the option fields)
-						$cp->vars['lang_options']	= explode("\n", $options);
+						$cp->vars['lang_options']	= $exploded_options;
 					}
 				}
 				else
@@ -526,11 +534,13 @@ class acp_profile
 				
 					foreach ($key_ary as $key)
 					{
-						$var = isset($_REQUEST[$key]) ? request_var($key, '', true) : false;
-
-						if ($var !== false)
+						if (!isset($_REQUEST[$key]))
 						{
-							$_new_key_ary[$key] = $var;
+							$var = false;
+						}
+						else
+						{
+							$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
 						}
 					}
 
