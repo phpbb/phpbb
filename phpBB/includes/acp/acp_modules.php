@@ -208,8 +208,6 @@ class acp_modules
 
 				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $move_module_name);
 
-				// recalculate binary tree
-				recalc_btree('module_id', MODULES_TABLE, $this->module_class);
 				$this->remove_cache_file();
 		
 			break;
@@ -247,8 +245,6 @@ class acp_modules
 
 						if (!sizeof($errors))
 						{
-							// recalculate binary tree
-							recalc_btree('module_id', MODULES_TABLE, $this->module_class);
 							$this->remove_cache_file();
 	
 							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
@@ -337,8 +333,6 @@ class acp_modules
 
 					if (!sizeof($errors))
 					{
-						// recalculate binary tree
-						recalc_btree('module_id', MODULES_TABLE, $this->module_class);
 						$this->remove_cache_file();
 	
 						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));

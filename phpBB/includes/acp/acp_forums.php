@@ -76,8 +76,6 @@ class acp_forums
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 
-					recalc_btree('forum_id', FORUMS_TABLE);
-
 					trigger_error($user->lang['FORUM_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 	
 				break;
@@ -223,8 +221,6 @@ class acp_forums
 						$auth->acl_clear_prefetch();
 						$cache->destroy('sql', FORUMS_TABLE);
 	
-						recalc_btree('forum_id', FORUMS_TABLE);
-
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'] . '&amp;select_all_groups=1';
 
 						// Redirect to permissions

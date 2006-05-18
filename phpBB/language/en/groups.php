@@ -66,7 +66,7 @@ $lang = array_merge($lang, array(
 	'GROUP_LIST'			=> 'Manage Users',
 
 	'LOGIN_EXPLAIN_GROUP'	=> 'You need to login to view group details',
-	
+
 	'NOT_LEADER_OF_GROUP'	=> 'The requested operation cannot be taken because you are not a leader of the selected group.',
 	'NOT_MEMBER_OF_GROUP'	=> 'The requested operation cannot be taken because you are not a member of the selected group.',
 

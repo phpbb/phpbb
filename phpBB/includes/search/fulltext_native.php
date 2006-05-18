@@ -910,6 +910,7 @@ class fulltext_native extends search_backend
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
 		if (!$config['fulltext_native_load_upd'])
 		{
+			set_config('search_last_gc', time(), true);
 			return;
 		}
 
@@ -978,6 +979,8 @@ class fulltext_native extends search_backend
 
 		// destroy cached search results containing any of the words that are now common or were removed
 		$this->destroy_cache(array_unique($destroy_cache_words));
+
+		set_config('search_last_gc', time(), true);
 	}
 
 	/**

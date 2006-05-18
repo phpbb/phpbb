@@ -350,6 +350,9 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<b>Permissions transfered from</b><br />&#187; %s',
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<b>Own permissions restored after using permissions from</b><br />&#187; %s',
 	
+	'LOG_ADMIN_AUTH_FAIL'		=> '<b>Failed administration login attempt</b>',
+	'LOG_ADMIN_AUTH_SUCCESS'	=> '<b>Sucessful administration login</b>',
+
 	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_UPDATE'		=> '<b>Updated attachment extension</b><br />&#187; %s',
@@ -399,6 +402,20 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_SETTINGS'		=> '<b>Altered board settings</b>',
 	'LOG_CONFIG_SIGNATURE'		=> '<b>Altered signature settings</b>',
 	'LOG_CONFIG_VISUAL'			=> '<b>Altered visual confirmation settings</b>',
+
+	'LOG_APPROVE_TOPIC'			=> '<b>Approved topic</b><br />&#187; %s',
+	'LOG_DELETE_POST'			=> '<b>Deleted post</b><br />&#187; %s',
+	'LOG_DELETE_TOPIC'			=> '<b>Deleted topic</b><br />&#187; %s',
+	'LOG_FORK'					=> '<b>Copied topic</b><br />&#187; from %s',
+	'LOG_LOCK'					=> '<b>Locked topic</b><br />&#187; %s',
+	'LOG_LOCK_POST'				=> '<b>Locked post</b><br />&#187; %s',
+	'LOG_MERGE'					=> '<b>Merged posts</b> into topic<br />&#187;%s',
+	'LOG_MOVE'					=> '<b>Moved topic</b><br />&#187; from %s',
+	'LOG_TOPIC_DELETED'			=> '<b>Deleted topic</b><br />&#187; %s',
+	'LOG_TOPIC_RESYNC'			=> '<b>Resynchronised topic counters</b><br />&#187; %s',
+	'LOG_TOPIC_TYPE_CHANGED'	=> '<b>Changed topic type</b><br />&#187; %s',
+	'LOG_UNLOCK'				=> '<b>Unlocked topic</b><br />&#187; %s',
+	'LOG_UNLOCK_POST'			=> '<b>Unlocked post</b><br />&#187; %s',
 
 	'LOG_DISALLOW_ADD'		=> '<b>Added disallowed username</b><br />&#187; %s',
 	'LOG_DISALLOW_DELETE'	=> '<b>Deleted disallowed username</b>',
@@ -450,6 +467,8 @@ $lang = array_merge($lang, array(
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
 	'LOG_INSTALL_INSTALLED'	=> '<b>Installed phpBB %s</b>',
+
+	'LOG_IP_BROWSER_CHECK'	=> '<b>Session IP/Browser check failed</b><br />&#187;User IP "<i>%s</i>" checked against session IP "<i>%s</i>" and user browser string "<i>%s</i>" checked against session browser string "<i>%s</i>".',
 
 	'LOG_JAB_CHANGED'			=> '<b>Jabber account changed</b>',
 	'LOG_JAB_PASSCHG'			=> '<b>Jabber password changed</b>',
@@ -531,7 +550,6 @@ $lang = array_merge($lang, array(
 	'LOG_USER_DEL_AVATAR'	=> '<b>Removed user avatar</b><br />&#187; %s',
 	'LOG_USER_DEL_POSTS'	=> '<b>Removed all posts made by the user</b><br />&#187; %s',
 	'LOG_USER_DEL_SIG'		=> '<b>Removed user signature</b><br />&#187; %s',
-	'LOG_USER_GROUP_CHANGE'	=> '<b>User changed default group</b><br />&#187; %s',
 	'LOG_USER_INACTIVE'		=> '<b>User deactivated</b><br />&#187; %s',
 	'LOG_USER_MOVE_POSTS'	=> '<b>Moved user posts</b><br />&#187; posts by "%s" to forum "%s"',
 	'LOG_USER_NEW_PASSWORD'	=> '<b>Changed user password</b><br />&#187; %s',
@@ -539,6 +557,25 @@ $lang = array_merge($lang, array(
 	'LOG_USER_UPDATE_EMAIL'	=> '<b>User "%s" changed email</b><br />&#187; from "%s" to "%s"',
 	'LOG_USER_UPDATE_NAME'	=> '<b>Changed username</b><br />&#187; from "%s" to "%s"',
 	'LOG_USER_USER_UPDATE'	=> '<b>Updated user details</b><br />&#187; %s',
+
+	'LOG_USER_ACTIVE_USER'		=> '<b>User account activated</b>',
+	'LOG_USER_DEL_AVATAR_USER'	=> '<b>User avatar removed</b>',
+	'LOG_USER_DEL_SIG_USER'		=> '<b>User signature removed</b>',
+	'LOG_USER_FEEDBACK'			=> '<b>Added user feedback</b><br />&#187; %s',
+	'LOG_USER_GENERAL'			=> '%s',
+	'LOG_USER_INACTIVE_USER'	=> '<b>User account de-activated</b>',
+	'LOG_USER_LOCK'				=> '<b>User locked own topic</b><br />&#187; %s',
+	'LOG_USER_MOVE_POSTS_USER'	=> '<b>Moved all posts to forum "%s"</b>',
+	'LOG_USER_REACTIVATE_USER'	=> '<b>Forced user account re-activation</b>',
+	'LOG_USER_UNLOCK'			=> '<b>User unlocked own topic</b><br />&#187; %s',
+	'LOG_USER_WARNING'			=> '<b>Added user warning</b><br />&#187;%s',
+	'LOG_USER_WARNING_BODY'		=> '<b>The following warning was issued to this user</b><br />&#187;%s',
+
+	'LOG_USER_GROUP_CHANGE'			=> '<b>User changed default group</b><br />&#187; %s',
+	'LOG_USER_GROUP_DEMOTE'			=> '<b>User demoted as leaders from usergroup</b><br />&#187; %s',
+	'LOG_USER_GROUP_JOIN'			=> '<b>User joined group</b><br />&#187; %s',
+	'LOG_USER_GROUP_JOIN_PENDING'	=> '<b>User joined group and needs to be approved</b><br />&#187; %s',
+	'LOG_USER_GROUP_RESIGN'			=> '<b>User resigned membership from group</b><br />&#187; %s',
 
 	'LOG_WORD_ADD'			=> '<b>Added word censor</b><br />&#187; %s',
 	'LOG_WORD_DELETE'		=> '<b>Deleted word censor</b><br />&#187; %s',

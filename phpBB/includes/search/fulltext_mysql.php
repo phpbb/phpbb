@@ -615,6 +615,8 @@ class fulltext_mysql extends search_backend
 
 		// destroy too old cached search results
 		$this->destroy_cache(array());
+
+		set_config('search_last_gc', time(), true);
 	}
 
 	/**

@@ -270,12 +270,12 @@ class session
 
 		$this->data = array();
 		
-		// Garbage collection ... remove old sessions updating user information
+		/* Garbage collection ... remove old sessions updating user information
 		// if necessary. It means (potentially) 11 queries but only infrequently
 		if ($this->time_now > $config['session_last_gc'] + $config['session_gc'])
 		{
 			$this->session_gc();
-		}
+		}*/
 		
 		// Do we allow autologin on this board? No? Then override anything
 		// that may be requested here
@@ -674,7 +674,7 @@ class session
 				{
 					// Less than 5 sessions, update gc timer ... else we want gc
 					// called again to delete other sessions
-					set_config('session_last_gc', $this->time_now);
+					set_config('session_last_gc', $this->time_now, true);
 				}
 				break;
 		}

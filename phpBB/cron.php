@@ -14,23 +14,27 @@ define('IN_PHPBB', true);
 define('IN_CRON', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'common.' . $phpEx);
 
 $cron_type = request_var('cron_type', '');
-
 $use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
 
 /**
 * Run cron-like action
 * Real cron-based layer will be introduced in 3.2
-*
-* @todo check gc-intervals here too (important!)
 */
 switch ($cron_type)
 {
 	case 'queue':
-		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+
+		if (time() - $config['queue_interval'] <= $config['last_queue_run'] || !file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		{
+			break;
+		}
+
+		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		$queue = new queue();
+
 		if ($use_shutdown_function)
 		{
 			register_shutdown_function(array(&$queue, 'process'));
@@ -39,9 +43,16 @@ switch ($cron_type)
 		{
 			$queue->process();
 		}
+
 	break;
 
 	case 'tidy_cache':
+
+		if (time() - $config['cache_gc'] <= $config['cache_last_gc'] || !method_exists($cache, 'tidy'))
+		{
+			break;
+		}
+
 		if ($use_shutdown_function)
 		{
 			register_shutdown_function(array(&$cache, 'tidy'));
@@ -50,16 +61,19 @@ switch ($cron_type)
 		{
 			$cache->tidy();
 		}
+
 	break;
 
 	case 'tidy_search':
+		
 		// Select the search method
-		$search_type = $config['search_type'];
+		$search_type = basename($config['search_type']);
 
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx) || (time() - $config['search_last_gc'] <= $config['search_gc']))
+		if (time() - $config['search_gc'] <= $config['search_last_gc'] || !file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
 		{
 			break;
 		}
+
 		include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
 
 		// We do some additional checks in the module to ensure it can actually be utilised
@@ -79,10 +93,17 @@ switch ($cron_type)
 		{
 			$search->tidy();
 		}
-		set_config('search_last_gc', time());
+
+	break;
 
 	case 'tidy_warnings':
-		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+
+		if (time() - $config['warnings_gc'] <= $config['warnings_last_gc'])
+		{
+			break;
+		}
+
+		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 		if ($use_shutdown_function)
 		{
@@ -92,10 +113,17 @@ switch ($cron_type)
 		{
 			tidy_warnings();
 		}
+
 	break;
 
 	case 'tidy_database':
-		include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+
+		if (time() - $config['database_gc'] <= $config['database_last_gc'])
+		{
+			break;
+		}
+
+		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 		if ($use_shutdown_function)
 		{
@@ -105,9 +133,16 @@ switch ($cron_type)
 		{
 			tidy_database();
 		}
+
 	break;
 
 	case 'tidy_sessions':
+
+		if (time() - $config['session_gc'] <= $config['session_last_gc'])
+		{
+			break;
+		}
+
 		if ($use_shutdown_function)
 		{
 			register_shutdown_function(array(&$user, 'session_gc'));
@@ -116,6 +151,7 @@ switch ($cron_type)
 		{
 			$user->session_gc();
 		}
+
 	break;
 
 	case 'prune_forum':
@@ -137,7 +173,7 @@ switch ($cron_type)
 		// Do the forum Prune thang
 		if ($row['prune_next'] < time() && $row['enable_prune'])
 		{
-			include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 			if ($row['prune_days'])
 			{

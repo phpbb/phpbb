@@ -2716,28 +2716,25 @@ function page_footer()
 			// Tidy the cache
 			$cron_type = 'tidy_cache';
 		}
-		else if (time() - $config['warnings_last_gc'] > $config['warnings_gc'])
+		else if (time() - $config['warnings_gc'] > $config['warnings_last_gc'])
 		{
 			$cron_type = 'tidy_warnings';
 		}
-		else if (time() - (7 * 24 * 3600) > $config['database_last_gc'])
+		else if (time() - $config['database_gc'] > $config['database_last_gc'])
 		{
-			// Tidy some table rows every week
+			// Tidy the database
+			// This includes recalculation binary trees, ...
 			$cron_type = 'tidy_database';
 		}
-		else if (time() - $config['search_last_gc'] > $config['search_gc'])
+		else if (time() - $config['search_gc'] > $config['search_last_gc'])
 		{
 			// Tidy the search
 			$cron_type = 'tidy_search';
 		}
-/**
-* @todo add session garbage collection
-
 		else if (time() - $config['session_gc'] > $config['session_last_gc'])
 		{
 			$cron_type = 'tidy_sessions';
 		}
-*/
 
 		if ($cron_type)
 		{

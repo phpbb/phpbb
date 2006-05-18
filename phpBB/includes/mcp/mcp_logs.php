@@ -28,6 +28,8 @@ class mcp_logs
 		global $auth, $db, $user, $template;
 		global $config, $phpbb_root_path, $phpEx, $SID;
 
+		$user->add_lang('acp/common');
+
 		$action = request_var('action', array('' => ''));
 
 		if (is_array($action))

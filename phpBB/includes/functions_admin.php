@@ -178,6 +178,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		$iteration++;
 	}
+	$db->sql_freeresult($result);
 	unset($padding_store);
 
 	return $forum_list;
@@ -2264,27 +2265,31 @@ function tidy_warnings()
 		$db->sql_transaction('commit');
 	}
 
-	set_config('warnings_last_gc', time());
+	set_config('warnings_last_gc', time(), true);
 }
 
 /**
-* Tidy database
-* Removes all tracking rows older than 6 months, including mark_posted informations
+* Tidy database, doing some maintanance tasks
 */
 function tidy_database()
 {
 	global $db;
-/*
-	$remove_date = time() - (3 * 62 * 24 * 3600);
 
-	$sql = 'DELETE FROM ' . FORUMS_TRACK_TABLE . '
-		WHERE mark_time < ' . $remove_date;
-	$db->sql_query($sql);
+	// Recalculate binary tree for forums
+	recalc_btree('forum_id', FORUMS_TABLE);
 
-	$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
-		WHERE mark_time < ' . $remove_date;
-	$db->sql_query($sql);
-*/
+	// Recalculate binary tree for modules
+	$sql = 'SELECT module_class
+		FROM ' . MODULES_TABLE . '
+		GROUP BY module_class';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{	
+		recalc_btree('module_id', MODULES_TABLE, $row['module_class']);
+	}
+	$db->sql_freeresult($result);
+
 	set_config('database_last_gc', time(), true);
 }
 

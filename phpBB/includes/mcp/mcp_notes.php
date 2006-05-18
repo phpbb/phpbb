@@ -45,11 +45,14 @@ class mcp_notes
 				);
 
 				$this->tpl_name = 'mcp_notes_front';
-				break;
+			break;
+
 			case 'user_notes':
+				$user->add_lang('acp/common');
+			
 				mcp_notes_user_view($id, $mode, $action);
 				$this->tpl_name = 'mcp_notes_user';
-				break;
+			break;
 		}
 	}
 }

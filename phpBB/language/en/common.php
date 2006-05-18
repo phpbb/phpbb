@@ -238,17 +238,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_VIEWFORUM'		=> 'The board administrator requires you to be registered and logged in to view this forum.',
 	'LOGOUT'				=> 'Logout',
 	'LOGOUT_USER'			=> 'Logout [ %s ]',
-	'LOG_ADMIN_AUTH_FAIL'	=> '<b>Failed administration login attempt</b>',
-	'LOG_ADMIN_AUTH_SUCCESS'=> '<b>Sucessful administration login</b>',
-	'LOG_DELETE_POST'		=> '<b>Deleted post</b><br />&#187; %s',
-	'LOG_DELETE_TOPIC'		=> '<b>Deleted topic</b><br />&#187; %s',
 	'LOG_ME_IN'				=> 'Log me on automatically each visit',
-	'LOG_USER_FEEDBACK'		=> '<b>Added user feedback</b><br />&#187; %s',
-	'LOG_USER_GENERAL'		=> '%s',
-	'LOG_USER_WARNING'		=> '<b>Added user warning</b><br />&#187;%s',
-	'LOG_USER_WARNING_BODY'	=> '<b>The following warning was issued to this user</b><br />&#187;%s',
-
-	'LOG_IP_BROWSER_CHECK'	=> '<b>Session IP/Browser check failed</b><br />&#187;User IP "<i>%s</i>" checked against session IP "<i>%s</i>" and user browser string "<i>%s</i>" checked against session browser string "<i>%s</i>".',
 
 	'MARK'				=> 'Mark',
 	'MARK_ALL'			=> 'Mark all',
