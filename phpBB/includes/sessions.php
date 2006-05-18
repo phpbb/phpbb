@@ -367,6 +367,12 @@ function session_pagestart($user_ip, $thispage_id)
 					setcookie($cookiename . '_sid', $session_id, 0, $cookiepath, $cookiedomain, $cookiesecure);
 				}
 
+				// Add the session_key to the userdata array if it is set
+				if ( isset($sessiondata['autologinid']) && $sessiondata['autologinid'] != '' )
+				{
+					$userdata['session_key'] = $sessiondata['autologinid'];
+				}
+
 				return $userdata;
 			}
 		}
