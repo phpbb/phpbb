@@ -243,12 +243,8 @@ function lock_unlock($action, $ids)
 		confirm_box(false, strtoupper($action) . '_' . $l_prefix . ((sizeof($ids) == 1) ? '' : 'S'), $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -352,12 +348,8 @@ function change_topic_type($action, $topic_ids)
 		confirm_box(false, $l_new_type, $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -501,12 +493,8 @@ function mcp_move_topic($topic_ids)
 		confirm_box(false, 'MOVE_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -567,12 +555,8 @@ function mcp_delete_topic($topic_ids)
 		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -690,12 +674,8 @@ function mcp_delete_post($post_ids)
 		confirm_box(false, (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -936,12 +916,8 @@ function mcp_fork_topic($topic_ids)
 		confirm_box(false, 'FORK_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{

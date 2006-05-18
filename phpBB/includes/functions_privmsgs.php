@@ -1311,7 +1311,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	$db->sql_transaction();
 
 	// Submit Attachments
-	if (sizeof($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
+	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
 	{
 		$space_taken = $files_added = 0;
 

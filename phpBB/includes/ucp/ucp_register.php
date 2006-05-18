@@ -471,7 +471,7 @@ class ucp_register
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> (isset($username)) ? $username : '',
-			'PASSWORD'			=> (isset($password)) ? $password : '',
+			'PASSWORD'			=> (isset($new_password)) ? $new_password : '',
 			'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '',
 			'EMAIL'				=> (isset($email)) ? $email : '',
 			'EMAIL_CONFIRM'		=> (isset($email_confirm)) ? $email_confirm : '',

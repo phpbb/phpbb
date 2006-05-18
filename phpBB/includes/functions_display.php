@@ -916,4 +916,163 @@ function display_reasons($reason_id = 0)
 	$db->sql_freeresult($result);
 }
 
+/**
+* Display user activity (action forum/topic)
+*/
+function display_user_activity(&$userdata)
+{
+	global $auth, $template, $db, $user;
+	global $phpbb_root_path, $SID, $phpEx;
+
+	// Init new auth class if user is different
+	if ($user->data['user_id'] != $userdata['user_id'])
+	{
+		$auth2 = new auth();
+		$auth2->acl($userdata);
+
+		$post_count_ary = $auth2->acl_getf('!f_postcount');
+	}
+	else
+	{
+		$post_count_ary = $auth->acl_getf('!f_postcount');
+	}
+
+	$forum_read_ary = $auth->acl_getf('!f_read');
+
+	$forum_ary = array();
+
+	// Do not include those forums the user is not having read access to...
+	foreach ($forum_read_ary as $forum_id => $not_allowed)
+	{
+		if ($not_allowed['f_read'])
+		{
+			$forum_ary[] = (int) $forum_id;
+		}
+	}
+
+	// Now do not include those forums where the posts do not count...
+	foreach ($post_count_ary as $forum_id => $not_counted)
+	{
+		if ($not_counted['f_postcount'])
+		{
+			$forum_ary[] = (int) $forum_id;
+		}
+	}
+
+	$forum_ary = array_unique($forum_ary);
+	$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
+
+	// Firebird does not support ORDER BY on aliased columns
+	// MySQL does not support ORDER BY on functions
+	switch (SQL_LAYER)
+	{
+		case 'firebird':
+			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+				WHERE p.poster_id = ' . $userdata['user_id'] . " 
+					AND f.forum_id = p.forum_id 
+					$post_count_sql
+				GROUP BY f.forum_id
+				ORDER BY COUNT(p.post_id) DESC";
+			break;
+
+		default:
+			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
+				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
+				WHERE p.poster_id = ' . $userdata['user_id'] . " 
+					AND f.forum_id = p.forum_id 
+					$post_count_sql
+				GROUP BY f.forum_id
+				ORDER BY num_posts DESC";
+		break;
+	}
+
+	$result = $db->sql_query_limit($sql, 1);
+	$active_f_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if (!empty($active_f_row))
+	{
+		$sql = 'SELECT forum_name
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $active_f_row['forum_id'];
+		$result = $db->sql_query($sql, 3600);
+		$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
+		$db->sql_freeresult($result);
+	}
+
+	// Firebird does not support ORDER BY on aliased columns
+	// MySQL does not support ORDER BY on functions
+	switch (SQL_LAYER)
+	{
+		case 'firebird':
+			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+				WHERE p.poster_id = ' . $userdata['user_id'] . " 
+					AND t.topic_id = p.topic_id  
+					AND f.forum_id = t.forum_id 
+					$post_count_sql
+				GROUP BY t.topic_id
+				ORDER BY COUNT(p.post_id) DESC";
+		break;
+
+		default:
+			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
+				WHERE p.poster_id = ' . $userdata['user_id'] . " 
+					AND t.topic_id = p.topic_id  
+					AND f.forum_id = t.forum_id 
+					$post_count_sql
+				GROUP BY t.topic_id
+				ORDER BY num_posts DESC";
+		break;
+	}
+
+	$result = $db->sql_query_limit($sql, 1);
+	$active_t_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if (!empty($active_t_row))
+	{
+		$sql = 'SELECT topic_title
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $active_t_row['topic_id'];
+		$result = $db->sql_query($sql);
+		$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
+		$db->sql_freeresult($result);
+	}
+
+	$userdata['active_t_row'] = $active_t_row;
+	$userdata['active_f_row'] = $active_f_row;
+
+	$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
+	if (!empty($active_f_row['num_posts']))
+	{
+		$active_f_name = $active_f_row['forum_name'];
+		$active_f_id = $active_f_row['forum_id'];
+		$active_f_count = $active_f_row['num_posts'];
+		$active_f_pct = ($userdata['user_posts']) ? ($active_f_count / $userdata['user_posts']) * 100 : 0;
+	}
+
+	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
+	if (!empty($active_t_row['num_posts']))
+	{
+		$active_t_name = $active_t_row['topic_title'];
+		$active_t_id = $active_t_row['topic_id'];
+		$active_t_count = $active_t_row['num_posts'];
+		$active_t_pct = ($userdata['user_posts']) ? ($active_t_count / $userdata['user_posts']) * 100 : 0;
+	}
+
+	$template->assign_vars(array(
+		'ACTIVE_FORUM'			=> $active_f_name,
+		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
+		'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT'], $active_f_pct),
+		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
+		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
+		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT'], $active_t_pct),
+		'U_ACTIVE_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$active_f_id",
+		'U_ACTIVE_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$active_t_id")
+	);
+}
+
 ?>

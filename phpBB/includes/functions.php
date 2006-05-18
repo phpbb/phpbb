@@ -1230,6 +1230,27 @@ function redirect($url)
 }
 
 /**
+* Re-Apply $SID after page reloads
+*/
+function reapply_sid($url)
+{
+	global $SID, $phpEx;
+
+	if ($url === "index.$phpEx")
+	{
+		return "index.$phpEx$SID";
+	}
+
+	// Remove previously added sid
+	if (strpos($url, '?sid='))
+	{
+		$url = preg_replace('/\?sid=[a-z0-9]+(&amp;|&)?/', $SID . '\1', $url);
+	}
+
+	return (strpos($url, '?') === false) ? $url . $SID : $url . str_replace('?', '&amp;', $SID);
+}
+
+/**
 * Returns url from the session/current page with an re-appended SID with optionally stripping vars from the url
 */
 function build_url($strip_vars = false)
@@ -1344,7 +1365,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$s_hidden_fields = build_hidden_fields(array(
 		'user_id'	=> $user->data['user_id'],
 		'sess'		=> $user->session_id,
-		'sid'		=> $SID)
+		'sid'		=> $user->session_id)
 	);
 
 	// generate activation key
@@ -1463,22 +1484,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
 
 			// append/replace SID (may change during the session for AOL users)
-			if ($redirect === "index.$phpEx")
-			{
-				$redirect = "index.$phpEx$SID";
-			}
-			else
-			{
-				// Remove previously added sid (should not happen)
-				if (strpos($redirect, '?sid='))
-				{
-					$redirect = preg_replace('/\?sid=[a-z0-9]+(&amp;|&)?/', $SID . '\1', $redirect);
-				}
-				else
-				{
-					$redirect = (strpos($redirect, '?') === false) ? $redirect . $SID : $redirect . str_replace('?', '&amp;', $SID);
-				}
-			}
+			$redirect = reapply_sid($redirect);
 
 			meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
@@ -1880,9 +1886,6 @@ function censor_text($text)
 	{
 		$censors = array();
 
-		/**
-		* @todo For ANONYMOUS censoring should be enabled by default
-		*/
 		if ($user->optionget('viewcensors'))
 		{
 			$cache->obtain_word_list($censors);

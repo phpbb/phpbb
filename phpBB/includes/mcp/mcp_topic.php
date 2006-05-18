@@ -380,12 +380,8 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		confirm_box(false, ($action == 'split_all') ? 'SPLIT_TOPIC_ALL' : 'SPLIT_TOPIC_BEYOND', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -476,12 +472,8 @@ function merge_posts($topic_id, $to_topic_id)
 		confirm_box(false, 'MERGE_POSTS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{

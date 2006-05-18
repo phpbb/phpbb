@@ -313,7 +313,7 @@ switch ($mode)
 		}
 
 		// Get user...
-		$sql = 'SELECT username, user_id, user_type, user_colour, group_id, user_permissions, user_sig, user_sig_bbcode_uid, user_sig_bbcode_bitfield, user_allow_viewemail, user_allow_viewonline, user_posts, user_warnings, user_regdate, user_rank, user_from, user_occ, user_interests, user_website, user_email, user_icq, user_aim, user_yim, user_msnm, user_jabber, user_avatar, user_avatar_width, user_avatar_height, user_avatar_type, user_lastvisit
+		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
@@ -343,7 +343,6 @@ switch ($mode)
 			FROM ' . SESSIONS_TABLE . "
 			WHERE session_user_id = $user_id";
 		$result = $db->sql_query($sql);
-
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
@@ -353,7 +352,11 @@ switch ($mode)
 
 		if ($config['load_user_activity'])
 		{
-			show_user_activity($member);
+			if (!function_exists('display_user_activity'))
+			{
+				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+			}
+			display_user_activity($member);
 		}
 
 		// Do the relevant calculations
@@ -1237,155 +1240,6 @@ function show_profile($data)
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 
 		'S_ONLINE'	=> ($online) ? true : false
-	);
-}
-
-function show_user_activity(&$member)
-{
-	global $auth, $template, $db, $user;
-	global $phpbb_root_path, $SID, $phpEx;
-
-	$auth2 = new auth();
-	$auth2->acl($member);
-
-	$post_count_ary = $auth2->acl_getf('!f_postcount');
-	$forum_read_ary = $auth->acl_getf('!f_read');
-
-	$forum_ary = array();
-
-	// Do not include those forums the user watching this profile is not having read access to...
-	foreach ($forum_read_ary as $forum_id => $not_allowed)
-	{
-		if ($not_allowed['f_read'])
-		{
-			$forum_ary[] = (int) $forum_id;
-		}
-	}
-
-	// Now do not include those forums where the posts do not count for the members profile...
-	foreach ($post_count_ary as $forum_id => $not_counted)
-	{
-		if ($not_counted['f_postcount'])
-		{
-			$forum_ary[] = (int) $forum_id;
-		}
-	}
-
-	$forum_ary = array_unique($forum_ary);
-	$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
-
-	// Firebird does not support ORDER BY on aliased columns
-	// MySQL does not support ORDER BY on functions
-	switch (SQL_LAYER)
-	{
-		case 'firebird':
-			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
-				WHERE p.poster_id = {$member['user_id']}
-					AND f.forum_id = p.forum_id 
-					$post_count_sql
-				GROUP BY f.forum_id
-				ORDER BY COUNT(p.post_id) DESC";
-		break;
-
-		default:
-			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . " f 
-				WHERE p.poster_id = {$member['user_id']}
-					AND f.forum_id = p.forum_id 
-					$post_count_sql
-				GROUP BY f.forum_id
-				ORDER BY num_posts DESC";
-		break;
-	}
-
-	$result = $db->sql_query_limit($sql, 1);
-	$active_f_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (!empty($active_f_row))
-	{
-		$sql = 'SELECT forum_name
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $active_f_row['forum_id'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		$active_f_row['forum_name'] = $row['forum_name'];
-	}
-
-	// Firebird does not support ORDER BY on aliased columns
-	// MySQL does not support ORDER BY on functions
-	switch (SQL_LAYER)
-	{
-		case 'firebird':
-			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
-				WHERE p.poster_id = {$member['user_id']} 
-					AND t.topic_id = p.topic_id  
-					AND f.forum_id = t.forum_id 
-					$post_count_sql
-				GROUP BY t.topic_id
-				ORDER BY COUNT(p.post_id) DESC";
-		break;
-
-		default:
-			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f  
-				WHERE p.poster_id = {$member['user_id']} 
-					AND t.topic_id = p.topic_id  
-					AND f.forum_id = t.forum_id 
-					$post_count_sql
-				GROUP BY t.topic_id
-				ORDER BY num_posts DESC";
-		break;
-	}
-
-	$result = $db->sql_query_limit($sql, 1);
-	$active_t_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	if (!empty($active_t_row))
-	{
-		$sql = 'SELECT topic_title
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . $active_t_row['topic_id'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		$active_t_row['topic_title'] = $row['topic_title'];
-	}
-
-	$member['active_t_row'] = $active_t_row;
-	$member['active_f_row'] = $active_f_row;
-
-	$active_f_name = $active_f_id = $active_f_count = $active_f_pct = '';
-	if (!empty($active_f_row['num_posts']))
-	{
-		$active_f_name = $active_f_row['forum_name'];
-		$active_f_id = $active_f_row['forum_id'];
-		$active_f_count = $active_f_row['num_posts'];
-		$active_f_pct = ($member['user_posts']) ? ($active_f_count / $member['user_posts']) * 100 : 0;
-	}
-
-	$active_t_name = $active_t_id = $active_t_count = $active_t_pct = '';
-	if (!empty($active_t_row['num_posts']))
-	{
-		$active_t_name = $active_t_row['topic_title'];
-		$active_t_id = $active_t_row['topic_id'];
-		$active_t_count = $active_t_row['num_posts'];
-		$active_t_pct = ($member['user_posts']) ? ($active_t_count / $member['user_posts']) * 100 : 0;
-	}
-
-	$template->assign_vars(array(
-		'ACTIVE_FORUM'			=> $active_f_name,
-		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
-		'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT'], $active_f_pct),
-		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
-		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
-		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT'], $active_t_pct),
-		'U_ACTIVE_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$active_f_id",
-		'U_ACTIVE_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$active_t_id")
 	);
 }
 

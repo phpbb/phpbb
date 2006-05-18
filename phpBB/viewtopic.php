@@ -835,6 +835,7 @@ while ($row = $db->sql_fetchrow($result))
 		{
 			$rowset[$row['post_id']] = array(
 				'foe'		=> true,
+				'user_id'	=> $row['user_id'],
 				'post_id'	=> $row['post_id'],
 				'poster'	=> $poster,
 			);

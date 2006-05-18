@@ -510,12 +510,8 @@ function approve_post($post_id_list, $mode)
 		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
@@ -714,12 +710,8 @@ function disapprove_post($post_id_list, $mode)
 		confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{

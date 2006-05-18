@@ -482,12 +482,8 @@ function close_report($post_id_list, $mode, $action)
 		confirm_box(false, $user->lang[strtoupper($action) . '_REPORT' . ((sizeof($post_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx$SID");
-
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect = substr_replace($redirect, ".$phpEx$SID&", strpos($redirect, '&'), 1);
-	}
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
 	{
