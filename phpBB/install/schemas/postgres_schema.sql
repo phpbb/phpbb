@@ -83,7 +83,7 @@ CREATE TABLE phpbb_auth_roles (
   role_name varchar(255) DEFAULT '' NOT NULL,
   role_description TEXT,
   role_type varchar(10) DEFAULT '' NOT NULL,
-  role_order INT4  DEFAULT '0' NOT NULL,
+  role_order INT2  DEFAULT '0' NOT NULL,
   PRIMARY KEY (role_id)
 );
 
@@ -120,7 +120,7 @@ CREATE SEQUENCE phpbb_banlist_seq;
 
 CREATE TABLE phpbb_banlist (
   ban_id INT4 DEFAULT nextval('phpbb_banlist_seq'),
-  ban_userid INT4  DEFAULT 0 NOT NULL,
+  ban_userid INT4  DEFAULT '0' NOT NULL,
   ban_ip varchar(40) DEFAULT '' NOT NULL,
   ban_email varchar(100) DEFAULT '' NOT NULL,
   ban_start INT4 DEFAULT '0' NOT NULL,
@@ -206,8 +206,8 @@ CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
 /* Table: phpbb_confirm */
 CREATE TABLE phpbb_confirm (
-  confirm_id varchar(32) DEFAULT '' NOT NULL,
-  session_id varchar(32) DEFAULT '' NOT NULL,
+  confirm_id char(32) DEFAULT '' NOT NULL,
+  session_id char(32) DEFAULT '' NOT NULL,
   confirm_type INT2 DEFAULT '0' NOT NULL,
   code varchar(8) DEFAULT '' NOT NULL,
   PRIMARY KEY (session_id,confirm_id)
@@ -387,7 +387,7 @@ CREATE SEQUENCE phpbb_groups_seq;
 CREATE TABLE phpbb_groups (
   group_id INT4 DEFAULT nextval('phpbb_groups_seq'),
   group_type INT2 DEFAULT '1' NOT NULL,
-  group_name varchar(255) NOT NULL,
+  group_name varchar(255) DEFAULT '' NOT NULL,
   group_desc TEXT,
   group_desc_bitfield INT4  DEFAULT '0' NOT NULL,
   group_desc_uid varchar(5) DEFAULT '' NOT NULL,
@@ -717,7 +717,7 @@ CREATE TABLE phpbb_profile_fields (
   field_minlen varchar(255) DEFAULT '' NOT NULL,
   field_maxlen varchar(255) DEFAULT '' NOT NULL,
   field_novalue varchar(255) DEFAULT '' NOT NULL,
-  field_DEFAULT_value varchar(255) DEFAULT '0' NOT NULL,
+  field_default_value varchar(255) DEFAULT '0' NOT NULL,
   field_validation varchar(20) DEFAULT '' NOT NULL,
   field_required INT2  DEFAULT '0' NOT NULL,
   field_show_on_reg INT2  DEFAULT '0' NOT NULL,
@@ -791,17 +791,6 @@ CREATE TABLE phpbb_ranks (
 
 
 
-/* Table: phpbb_reports_reasons */
-CREATE SEQUENCE phpbb_reports_reasons_seq;
-
-CREATE TABLE phpbb_reports_reasons (
-  reason_id INT2 DEFAULT nextval('phpbb_reports_reasons_seq'),
-  reason_title varchar(255) DEFAULT '' NOT NULL,
-  reason_description TEXT,
-  reason_order INT2 DEFAULT '0' NOT NULL,
-  PRIMARY KEY (reason_id)
-);
-
 
 
 
@@ -824,6 +813,18 @@ CREATE TABLE phpbb_reports (
   CHECK (report_time>=0)
 );
 
+
+
+/* Table: phpbb_reports_reasons */
+CREATE SEQUENCE phpbb_reports_reasons_seq;
+
+CREATE TABLE phpbb_reports_reasons (
+  reason_id INT2 DEFAULT nextval('phpbb_reports_reasons_seq'),
+  reason_title varchar(255) DEFAULT '' NOT NULL,
+  reason_description TEXT,
+  reason_order INT2 DEFAULT '0' NOT NULL,
+  PRIMARY KEY (reason_id)
+);
 
 
 
@@ -871,7 +872,7 @@ CREATE TABLE phpbb_sessions (
   session_start INT4 DEFAULT '0' NOT NULL,
   session_time INT4 DEFAULT '0' NOT NULL,
   session_ip varchar(40) DEFAULT '0' NOT NULL,
-  session_browser varchar(150) DEFAULT '' NULL,
+  session_browser varchar(150) DEFAULT '' NOT NULL,
   session_page varchar(200) DEFAULT '' NOT NULL,
   session_viewonline INT2 DEFAULT '1' NOT NULL,
   session_autologin INT2 DEFAULT '0' NOT NULL,
@@ -888,7 +889,7 @@ CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id);
 CREATE TABLE phpbb_sessions_keys (
   key_id varchar(32) DEFAULT '' NOT NULL,
   user_id INT4 DEFAULT '0' NOT NULL,
-  last_ip varchar(40) DEFAULT '0' NOT NULL,
+  last_ip varchar(40) DEFAULT '' NOT NULL,
   last_login INT4 DEFAULT '0' NOT NULL,
   PRIMARY KEY  (key_id,user_id)
 );
@@ -1218,7 +1219,7 @@ CREATE TABLE phpbb_users (
   user_type INT2 DEFAULT '0' NOT NULL,
   group_id INT4 DEFAULT '3' NOT NULL,
   user_permissions TEXT NULL,
-  user_perm_from INT4 DEFAULT '0' NULL,
+  user_perm_from INT4 DEFAULT '0' NOT NULL,
   user_ip varchar(40) DEFAULT '' NOT NULL,
   user_regdate INT4 DEFAULT '0' NOT NULL,
   username varchar(255) DEFAULT '' NOT NULL,
@@ -1234,7 +1235,7 @@ CREATE TABLE phpbb_users (
   user_last_confirm_key varchar(10) DEFAULT '' NULL,
   user_warnings INT2 DEFAULT '0' NULL,
   user_last_warning INT4 DEFAULT '0' NULL,
-  user_login_attempts INT4 DEFAULT '0' NULL,
+  user_login_attempts INT2 DEFAULT '0' NULL,
   user_posts INT4  DEFAULT '0' NOT NULL,
   user_lang varchar(30) DEFAULT '' NOT NULL,
   user_timezone decimal(5,2) DEFAULT '0.0' NOT NULL,
@@ -1249,10 +1250,10 @@ CREATE TABLE phpbb_users (
   user_message_rules INT2  DEFAULT '0' NOT NULL,
   user_full_folder INT4 DEFAULT '-3' NOT NULL,
   user_emailtime INT4 DEFAULT '0' NOT NULL,
-  user_topic_show_days INT4 DEFAULT '0' NOT NULL,
+  user_topic_show_days INT2 DEFAULT '0' NOT NULL,
   user_topic_sortby_type varchar(1) DEFAULT 't' NOT NULL,
   user_topic_sortby_dir varchar(1) DEFAULT 'd' NOT NULL,
-  user_post_show_days INT4 DEFAULT '0' NOT NULL,
+  user_post_show_days INT2 DEFAULT '0' NOT NULL,
   user_post_sortby_type varchar(1) DEFAULT 't' NOT NULL,
   user_post_sortby_dir varchar(1) DEFAULT 'a' NOT NULL,
   user_notify INT2 DEFAULT '0' NOT NULL,
@@ -1318,8 +1319,8 @@ CREATE SEQUENCE phpbb_words_seq;
 
 CREATE TABLE phpbb_words (
   word_id INT4 DEFAULT nextval('phpbb_words_seq'),
-  word varchar(100) NOT NULL,
-  replacement varchar(100) NOT NULL,
+  word varchar(255) NOT NULL,
+  replacement varchar(255) NOT NULL,
   PRIMARY KEY (word_id)
 );
 

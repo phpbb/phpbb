@@ -25,7 +25,7 @@ class captcha
 	{
 		global $config;
 
-		$policy_modules = array('policy_entropy', 'policy_occlude', 'policy_3dbitmap');
+		$policy_modules = array('policy_entropy', 'policy_occlude', 'policy_3dbitmap', 'policy_shape');
 
 		// Remove all disabled policy modules
 		foreach ($policy_modules as $key => $name)
@@ -66,6 +66,210 @@ class captcha
 	function grid_height($x, $y, $factor = 1, $x_grid, $y_grid)
 	{
 		return ( (!($x % ($x_grid * $factor)) || !($y % ($y_grid * $factor))) ? 3 : 0);
+	}
+
+	/**
+	*
+	*/
+	function draw_shape($type, $img, $x_min, $y_min, $x_max, $y_max, $color)
+	{
+		switch ($type)
+		{
+			case 'Square':
+				imagefilledpolygon($img, array($x_min, $y_max, $x_min, $y_min, $x_max, $y_min, $x_max, $y_max), 4, $color);
+			break;
+			
+			case 'TriangleUp':
+				imagefilledpolygon($img, array($x_min, $y_max, ($x_min + $x_max) / 2, $y_min, $x_max, $y_max), 3, $color);
+			break;
+
+			case 'TriangleDown':
+				imagefilledpolygon($img, array($x_min, $y_min, ($x_min + $x_max) / 2, $y_max, $x_max, $y_min), 3, $color);
+			break;
+
+			case 'Circle':			
+				imagefilledellipse($img, ($x_min + $x_max) / 2, ($y_min + $y_max) / 2, $x_max - $x_min, $y_max - $y_min, $color);
+			break;
+		}
+	}
+
+	/**
+	*
+	*/
+	function draw_pattern($seed, $img, $x_min, $y_min, $x_max, $y_max, $colors, $thickness = 1)
+	{
+		$x_size = ($x_max - $x_min) / 4;
+		$y_size = ($y_max - $y_min) / 4;
+		$bitmap = substr($seed, 16, 4);
+		$numcolors = sizeof($colors) - 1;
+		for ($y = 0; $y < 4; ++$y)
+		{
+			$map = hexdec(substr($bitmap, $y, 1));
+			for ($x = 0; $x < 4; ++$x)
+			{
+				if ($map & (1 << $x))
+				{
+					$char = hexdec(substr($seed, ($y * 4) + $x, 1));
+					if (!($char >> 2))
+					{
+						switch ($char % 4)
+						{
+							case 0:
+								$shape = 'Circle';
+							break;
+
+							case 1:
+								$shape = 'Square';
+							break;
+
+							case 2:
+								$shape = 'TriangleUp';
+							break;
+
+							case 3:
+								$shape = 'TriangleDown';
+							break;
+						}
+						$this->draw_shape($shape, $img, $x_min + ($x * $x_size), $y_min + ($y * $y_size), $x_min + (($x + 1) * $x_size), $y_min + (($y + 1) * $y_size), $colors[array_rand($colors)]);
+					}
+				}
+			}
+		}
+
+		$cells = array();
+		for ($i = 0; $i < 6; ++$i)
+		{
+			$cells = hexdec(substr($seed, 20 + ($i * 2), 2));
+			$x1 = $cells % 4;
+			$cells = $cells >> 2;
+			$y1 = $cells % 4;
+			$cells = $cells >> 2;
+			$x2 = $cells % 4;
+			$cells = $cells >> 2;
+			$y2 = $cells % 4;
+			$x1_real = $x_min + (($x1 + 0.5) * $x_size);
+			$y1_real = $y_min + (($y1 + 0.5) * $y_size);
+			$x2_real = $x_min + (($x2 + 0.5) * $x_size);
+			$y2_real = $y_min + (($y2 + 0.5) * $y_size);
+			if ($thickness > 1)
+			{
+				imagesetthickness($img,$thickness);
+			}
+			imageline($img, $x1_real, $y1_real, $x2_real, $y2_real, $colors[array_rand($colors)]);
+			if ($thickness > 1)
+			{
+				imagesetthickness($img, 1);
+			}
+		}
+	}
+
+	/**
+	*
+	*/
+	function get_char_string()
+	{
+		static $chars = false;
+		static $charcount = 0;
+		if (!$chars)
+		{
+			$chars = array_merge(range('A', 'Z'), range('1', '9'));
+			$charcount = sizeof($chars) - 1;
+		}
+		$word   = '';
+		for ($i = mt_rand(6, 8); $i > 0; --$i)
+		{
+			$word .= $chars[mt_rand(0, $charcount)];
+		}
+		return $word;
+	}
+
+	/**
+	* shape
+	*/
+	function policy_shape($code)
+	{
+		global $config;
+		// Generate image
+		$img_x = 800;
+		$img_y = 250;
+		$img = imagecreate($img_x, $img_y);
+
+		// Generate colors
+		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
+		imagefill($img, 0, 0, $background);
+
+		$random = array();
+		$fontcolors = array();
+		for ($i = 0; $i < 15; $i++)
+		{
+			$random[$i] = imagecolorallocate($img, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
+			$fontcolors[$i] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
+		}
+
+		// Generate code characters
+		$characters = array();
+		$sizes = array();
+		$bounding_boxes = array();
+		$width_avail = $img_x;
+		$code_num = sizeof($code);
+
+		// Add some line noise
+		if ($config['policy_shape_noise_line'])
+		{
+			$this->noise_line($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random);
+		}
+
+		$real = mt_rand(0, 3);
+		$patterns = array('', '', '', '');
+		for ($i = 32; $i > 0; --$i)
+		{
+			$patterns[$i % 4] .= str_pad(dechex(mt_rand(0, 65535)), 4, '0', STR_PAD_LEFT);
+		}
+
+		$char_class = $this->captcha_char('char_ttf');
+		for ($i = 0; $i < 4; ++$i)
+		{
+			if ($i)
+			{
+				$y = 5 + ($i * 60);
+				imageline($img, 550, $y, 650, $y, $fontcolors[0]);
+			}
+			$this->draw_pattern($patterns[$i], $img, 525, 10 + ($i * 60), 575, ($i + 1) * 60, $fontcolors);
+			if ($i == $real)
+			{
+				$this->draw_pattern($patterns[$i], $img, 25, 25, 225, 225, $fontcolors, 3);
+				for ($j = 0; $j < $code_num; ++$j)
+				{
+					$character = new $char_class($code[$j]);
+					$character->drawchar(25, 600 + ($j * 25), 35 + ($i * 60), $img, $background, $fontcolors);
+				}
+			}
+			else
+			{
+				$word = $this->get_char_string();
+				for ($j = strlen($word) - 1; $j >= 0; --$j)
+				{
+					$character = new $char_class(substr($word, $j, 1));
+					$character->drawchar(25, 600 + ($j * 25), 35 + ($i * 60), $img, $background, $fontcolors);
+				}
+			}
+		}
+
+		global $user;
+		imagestring($img, 6, 250,  50, $user->lang['CAPTCHA_LINE_1'], $fontcolors[0]);
+		imagestring($img, 6, 250, 100, $user->lang['CAPTCHA_LINE_2'], $fontcolors[0]);
+		imagestring($img, 6, 250, 150, $user->lang['CAPTCHA_LINE_3'], $fontcolors[0]);
+		imagestring($img, 6, 250, 200, $user->lang['CAPTCHA_LINE_4'], $fontcolors[0]);
+
+
+		// Add some pixel noise
+		if ($config['policy_shape_noise_pixel'])
+		{
+			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_shape_noise_pixel']);
+		}
+
+		// Send image
+		$this->send_image($img);
 	}
 
 	/**
@@ -126,7 +330,7 @@ class captcha
 
 		// Draw the text
 		$xoffset = 0;
-		for ($i = 0, $char_num = sizeof($characters); $i < $char_num; ++$i)
+		for ($i = 0; $i < $code_num; ++$i)
 		{
 			$dimm = $bounding_boxes[$i];
 			$xoffset += ($offset[$i] - $dimm[0]);
@@ -392,8 +596,9 @@ class captcha
 
 		// Get the character rendering scheme
 		$char_class = $this->captcha_char('char_ttf');
+		$code_num = sizeof($code);
 
-		for ($i = 0, $code_num = sizeof($code); $i < $code_num; ++$i)
+		for ($i = 0; $i < $code_num; ++$i)
 		{
 			$characters[$i] = new $char_class($code[$i], array('angle' => 0));
 			$box = $characters[$i]->dimensions($char_size);
@@ -417,7 +622,7 @@ class captcha
 
 		$yoffset = mt_rand($med, $max);
 
-		for ($i = 0, $char_num = sizeof($characters); $i < $char_num; ++$i)
+		for ($i = 0; $i < $code_num; ++$i)
 		{
 			$dimm = $bounding_boxes[$i];
 			$offset -= $dimm[0];

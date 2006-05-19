@@ -38,7 +38,7 @@ CREATE TABLE phpbb_auth_groups (
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
   auth_role_id mediumint(8) NOT NULL DEFAULT '0',
-  auth_setting tinyint(4) NOT NULL DEFAULT '0'
+  auth_setting tinyint(2) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_auth_groups_group_id on phpbb_auth_groups (group_id);
@@ -60,10 +60,10 @@ CREATE INDEX phpbb_auth_options_auth_option on phpbb_auth_options (auth_option);
 # Table: phpbb_auth_roles
 CREATE TABLE phpbb_auth_roles (
   role_id INTEGER PRIMARY KEY NOT NULL,
-  role_name varchar(50) NOT NULL DEFAULT '',
+  role_name varchar(255) NOT NULL DEFAULT '',
   role_description text(65535),
   role_type varchar(10) NOT NULL DEFAULT '',
-  role_order mediumint(8) NOT NULL DEFAULT '0'
+  role_order smallint(4) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type);
@@ -85,7 +85,7 @@ CREATE TABLE phpbb_auth_users (
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
   auth_role_id mediumint(8) NOT NULL DEFAULT '0',
-  auth_setting tinyint(4) NOT NULL DEFAULT '0'
+  auth_setting tinyint(2) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_auth_users_user_id on phpbb_auth_users (user_id);
@@ -170,7 +170,7 @@ CREATE INDEX phpbb_config_is_dynamic on phpbb_config (is_dynamic);
 CREATE TABLE phpbb_confirm (
   confirm_id char(32) NOT NULL DEFAULT '',
   session_id char(32) NOT NULL DEFAULT '',
-  confirm_type INTEGER NOT NULL DEFAULT '0',
+  confirm_type tinyint(3) NOT NULL DEFAULT '0',
   code varchar(8) NOT NULL DEFAULT '',
   PRIMARY KEY (session_id, confirm_id)
 );
@@ -297,7 +297,7 @@ CREATE INDEX phpbb_forums_watch_notify_status on phpbb_forums_watch (notify_stat
 CREATE TABLE phpbb_groups (
   group_id INTEGER PRIMARY KEY NOT NULL,
   group_type tinyint(4) NOT NULL DEFAULT '1',
-  group_name varchar(255) NOT NULL,
+  group_name varchar(255) NOT NULL DEFAULT '',
   group_desc text(65535),
   group_desc_bitfield int(11) NOT NULL DEFAULT '0',
   group_desc_uid varchar(5) NOT NULL DEFAULT '',
@@ -595,15 +595,6 @@ CREATE TABLE phpbb_ranks (
 );
 
 
-# Table: phpbb_reports_reasons
-CREATE TABLE phpbb_reports_reasons (
-  reason_id INTEGER PRIMARY KEY NOT NULL,
-  reason_title varchar(255) NOT NULL DEFAULT '',
-  reason_description text(65535),
-  reason_order tinyint(4) NOT NULL DEFAULT '0'
-);
-
-
 # Table: phpbb_reports
 CREATE TABLE phpbb_reports (
   report_id INTEGER PRIMARY KEY NOT NULL,
@@ -612,8 +603,17 @@ CREATE TABLE phpbb_reports (
   user_id mediumint(8) NOT NULL DEFAULT '0',
   user_notify tinyint(1) NOT NULL DEFAULT '0',
   report_closed tinyint(1) NOT NULL DEFAULT '0',
-  report_time int(10) NOT NULL DEFAULT '0',
+  report_time int(11) NOT NULL DEFAULT '0',
   report_text mediumtext(16777215)
+);
+
+
+# Table: phpbb_reports_reasons
+CREATE TABLE phpbb_reports_reasons (
+  reason_id INTEGER PRIMARY KEY NOT NULL,
+  reason_title varchar(255) NOT NULL DEFAULT '',
+  reason_description text(65535),
+  reason_order tinyint(4) NOT NULL DEFAULT '0'
 );
 
 
@@ -630,7 +630,7 @@ CREATE TABLE phpbb_search_results (
 # Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
   word_text varchar(50) NOT NULL DEFAULT '',
-  word_id mediumint NOT NULL,
+  word_id mediumint(8) NOT NULL,
   word_common tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (word_text)
 );
@@ -674,7 +674,7 @@ CREATE TABLE phpbb_sessions_keys (
   user_id mediumint(8) NOT NULL DEFAULT '0',
   last_ip varchar(40) NOT NULL DEFAULT '',
   last_login int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY  (key_id,user_id)
+  PRIMARY KEY (key_id, user_id)
 );
 
 CREATE INDEX phpbb_sessions_keys_last_login on phpbb_sessions_keys (last_login);
@@ -1021,8 +1021,8 @@ CREATE TABLE phpbb_warnings (
 # Table: phpbb_words
 CREATE TABLE phpbb_words (
   word_id INTEGER PRIMARY KEY NOT NULL,
-  word char(100) NOT NULL,
-  replacement char(100) NOT NULL
+  word varchar(255) NOT NULL,
+  replacement varchar(255) NOT NULL
 );
 
 

@@ -131,7 +131,7 @@ switch ($mode)
 			'WHERE'		=> 'u.user_id IN (' . implode(', ', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . ')
 								AND u.group_id = g.group_id',
 
-			'GROUP_BY'	=> 'g.group_name ASC, u.username ASC'
+			'ORDER_BY'	=> 'g.group_name ASC, u.username ASC'
 		));
 
 		$result = $db->sql_query($sql);

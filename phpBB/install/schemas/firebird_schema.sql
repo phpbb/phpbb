@@ -16,7 +16,7 @@ CREATE TABLE phpbb_attachments (
   comment BLOB SUB_TYPE TEXT,
   extension VARCHAR(100),
   mimetype VARCHAR(100),
-  filesize INTEGER DEFAULT 0  NOT NULL,
+  filesize INTEGER NOT NULL,
   filetime INTEGER DEFAULT 0  NOT NULL,
   thumbnail INTEGER DEFAULT 0  NOT NULL
 );;
@@ -80,9 +80,9 @@ END;;
 # phpbb_auth_roles
 CREATE TABLE phpbb_auth_roles (
   role_id INTEGER NOT NULL,
-  role_name VARCHAR(255) NOT NULL,
+  role_name VARCHAR(255) DEFAULT '' NOT NULL,
   role_description BLOB SUB_TYPE TEXT,
-  role_type VARCHAR(10) NOT NULL,
+  role_type VARCHAR(10) DEFAULT '' NOT NULL,
   role_order INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -129,8 +129,8 @@ CREATE INDEX phpbb_auth_users_user_id ON phpbb_auth_users(user_id);;
 CREATE TABLE phpbb_banlist (
   ban_id INTEGER NOT NULL,
   ban_userid INTEGER DEFAULT 0  NOT NULL,
-  ban_ip VARCHAR(40) NOT NULL,
-  ban_email VARCHAR(100) NOT NULL,
+  ban_ip VARCHAR(40) DEFAULT '' NOT NULL,
+  ban_email VARCHAR(100) DEFAULT '' NOT NULL,
   ban_start INTEGER DEFAULT 0  NOT NULL,
   ban_end INTEGER DEFAULT 0  NOT NULL,
   ban_exclude INTEGER DEFAULT 0  NOT NULL,
@@ -153,13 +153,13 @@ END;;
 # phpbb_bbcodes
 CREATE TABLE phpbb_bbcodes (
   bbcode_id INTEGER DEFAULT 0  NOT NULL,
-  bbcode_tag VARCHAR(16) NOT NULL,
+  bbcode_tag VARCHAR(16) DEFAULT '' NOT NULL,
   display_on_posting INTEGER DEFAULT 0  NOT NULL,
-  bbcode_match VARCHAR(255) NOT NULL,
+  bbcode_match VARCHAR(255) DEFAULT '' NOT NULL,
   bbcode_tpl BLOB SUB_TYPE TEXT,
-  first_pass_match VARCHAR(255) NOT NULL,
-  first_pass_replace VARCHAR(255) NOT NULL,
-  second_pass_match VARCHAR(255) NOT NULL,
+  first_pass_match VARCHAR(255) DEFAULT '' NOT NULL,
+  first_pass_replace VARCHAR(255) DEFAULT '' NOT NULL,
+  second_pass_match VARCHAR(255) DEFAULT '' NOT NULL,
   second_pass_replace BLOB SUB_TYPE TEXT
 );;
 
@@ -185,8 +185,8 @@ CREATE TABLE phpbb_bots (
   bot_active INTEGER DEFAULT 1  NOT NULL,
   bot_name BLOB SUB_TYPE TEXT,
   user_id INTEGER DEFAULT 0  NOT NULL,
-  bot_agent VARCHAR(255) NOT NULL,
-  bot_ip VARCHAR(255) NOT NULL
+  bot_agent VARCHAR(255) DEFAULT '' NOT NULL,
+  bot_ip VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_bots ADD PRIMARY KEY (bot_id);;
@@ -216,7 +216,7 @@ ALTER TABLE phpbb_cache ADD PRIMARY KEY (var_name);;
 
 # phpbb_config
 CREATE TABLE phpbb_config (
-  config_name VARCHAR(200) NOT NULL,
+  config_name VARCHAR(252) NOT NULL,
   config_value VARCHAR(255) NOT NULL,
   is_dynamic INTEGER DEFAULT 0  NOT NULL
 );;
@@ -228,10 +228,10 @@ CREATE INDEX phpbb_config_is_dynamic ON phpbb_config(is_dynamic);;
 
 # phpbb_confirm
 CREATE TABLE phpbb_confirm (
-  confirm_id VARCHAR(32) NOT NULL,
-  session_id VARCHAR(32) NOT NULL,
+  confirm_id CHAR(32) DEFAULT '' NOT NULL,
+  session_id CHAR(32) DEFAULT '' NOT NULL,
   confirm_type INTEGER DEFAULT 0  NOT NULL,
-  code VARCHAR(8) NOT NULL
+  code VARCHAR(8) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_confirm ADD PRIMARY KEY (session_id, confirm_id);;
@@ -240,7 +240,7 @@ ALTER TABLE phpbb_confirm ADD PRIMARY KEY (session_id, confirm_id);;
 # phpbb_disallow
 CREATE TABLE phpbb_disallow (
   disallow_id INTEGER NOT NULL,
-  disallow_username VARCHAR(255) NOT NULL
+  disallow_username VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_disallow ADD PRIMARY KEY (disallow_id);;
@@ -282,6 +282,26 @@ BEGIN
 END;;
 
 
+# phpbb_extensions
+CREATE TABLE phpbb_extensions (
+  extension_id INTEGER NOT NULL,
+  group_id INTEGER DEFAULT 0  NOT NULL,
+  extension VARCHAR(100) DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_extensions ADD PRIMARY KEY (extension_id);;
+
+CREATE GENERATOR phpbb_extensions_gen;;
+SET GENERATOR phpbb_extensions_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_extensions_gen FOR phpbb_extensions
+BEFORE INSERT
+AS
+BEGIN
+  NEW.extension_id = GEN_ID(phpbb_extensions_gen, 1);
+END;;
+
+
 # phpbb_extension_groups
 CREATE TABLE phpbb_extension_groups (
   group_id INTEGER NOT NULL,
@@ -289,7 +309,7 @@ CREATE TABLE phpbb_extension_groups (
   cat_id INTEGER DEFAULT 0  NOT NULL,
   allow_group INTEGER DEFAULT 0  NOT NULL,
   download_mode INTEGER DEFAULT 1  NOT NULL,
-  upload_icon VARCHAR(255) NOT NULL,
+  upload_icon VARCHAR(255) DEFAULT '' NOT NULL,
   max_filesize INTEGER DEFAULT 0  NOT NULL,
   allowed_forums BLOB SUB_TYPE TEXT,
   allow_in_pm INTEGER DEFAULT 0  NOT NULL
@@ -308,45 +328,25 @@ BEGIN
 END;;
 
 
-# phpbb_extensions
-CREATE TABLE phpbb_extensions (
-  extension_id INTEGER NOT NULL,
-  group_id INTEGER DEFAULT 0  NOT NULL,
-  extension VARCHAR(100) NOT NULL
-);;
-
-ALTER TABLE phpbb_extensions ADD PRIMARY KEY (extension_id);;
-
-CREATE GENERATOR phpbb_extensions_gen;;
-SET GENERATOR phpbb_extensions_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_extensions_gen FOR phpbb_extensions
-BEFORE INSERT
-AS
-BEGIN
-  NEW.extension_id = GEN_ID(phpbb_extensions_gen, 1);
-END;;
-
-
 # phpbb_forums
 CREATE TABLE phpbb_forums (
   forum_id INTEGER NOT NULL,
-  parent_id INTEGER DEFAULT 0  NOT NULL,
-  left_id INTEGER DEFAULT 0  NOT NULL,
-  right_id INTEGER DEFAULT 0  NOT NULL,
+  parent_id INTEGER NOT NULL,
+  left_id INTEGER NOT NULL,
+  right_id INTEGER NOT NULL,
   forum_parents BLOB SUB_TYPE TEXT,
   forum_name BLOB SUB_TYPE TEXT,
   forum_desc BLOB SUB_TYPE TEXT,
   forum_desc_bitfield INTEGER DEFAULT 0  NOT NULL,
-  forum_desc_uid VARCHAR(5) NOT NULL,
-  forum_link VARCHAR(255) NOT NULL,
-  forum_password VARCHAR(40) NOT NULL,
+  forum_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
+  forum_link VARCHAR(255) DEFAULT '' NOT NULL,
+  forum_password VARCHAR(40) DEFAULT '' NOT NULL,
   forum_style INTEGER,
-  forum_image VARCHAR(255) NOT NULL,
+  forum_image VARCHAR(255) DEFAULT '' NOT NULL,
   forum_rules BLOB SUB_TYPE TEXT,
-  forum_rules_link VARCHAR(255) NOT NULL,
+  forum_rules_link VARCHAR(255) DEFAULT '' NOT NULL,
   forum_rules_bitfield INTEGER DEFAULT 0  NOT NULL,
-  forum_rules_uid VARCHAR(5) NOT NULL,
+  forum_rules_uid VARCHAR(5) DEFAULT '' NOT NULL,
   forum_topics_per_page INTEGER DEFAULT 0  NOT NULL,
   forum_type INTEGER DEFAULT 0  NOT NULL,
   forum_status INTEGER DEFAULT 0  NOT NULL,
@@ -363,8 +363,8 @@ CREATE TABLE phpbb_forums (
   enable_icons INTEGER DEFAULT 1  NOT NULL,
   enable_prune INTEGER DEFAULT 0  NOT NULL,
   prune_next INTEGER,
-  prune_days INTEGER DEFAULT 0  NOT NULL,
-  prune_viewed INTEGER DEFAULT 0  NOT NULL,
+  prune_days INTEGER NOT NULL,
+  prune_viewed INTEGER NOT NULL,
   prune_freq INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -388,7 +388,7 @@ END;;
 CREATE TABLE phpbb_forum_access (
   forum_id INTEGER DEFAULT 0  NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
-  session_id VARCHAR(32) NOT NULL
+  session_id VARCHAR(32) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_forum_access ADD PRIMARY KEY (forum_id, user_id, session_id);;
@@ -420,17 +420,17 @@ CREATE INDEX phpbb_forums_watch_user_id ON phpbb_forums_watch(user_id);;
 CREATE TABLE phpbb_groups (
   group_id INTEGER NOT NULL,
   group_type INTEGER DEFAULT 1  NOT NULL,
-  group_name VARCHAR(255) NOT NULL,
+  group_name VARCHAR(255) DEFAULT '' NOT NULL,
   group_desc BLOB SUB_TYPE TEXT,
   group_desc_bitfield INTEGER DEFAULT 0  NOT NULL,
-  group_desc_uid VARCHAR(5) NOT NULL,
+  group_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
   group_display INTEGER DEFAULT 0  NOT NULL,
-  group_avatar VARCHAR(255) NOT NULL,
+  group_avatar VARCHAR(255) DEFAULT '' NOT NULL,
   group_avatar_type INTEGER DEFAULT 0  NOT NULL,
   group_avatar_width INTEGER DEFAULT 0  NOT NULL,
   group_avatar_height INTEGER DEFAULT 0  NOT NULL,
   group_rank INTEGER DEFAULT -1  NOT NULL,
-  group_colour VARCHAR(6) NOT NULL,
+  group_colour VARCHAR(6) DEFAULT '' NOT NULL,
   group_sig_chars INTEGER DEFAULT 0  NOT NULL,
   group_receive_pm INTEGER DEFAULT 0  NOT NULL,
   group_message_limit INTEGER DEFAULT 0  NOT NULL,
@@ -457,9 +457,9 @@ END;;
 CREATE TABLE phpbb_icons (
   icons_id INTEGER NOT NULL,
   icons_url VARCHAR(255),
-  icons_width INTEGER DEFAULT 0  NOT NULL,
-  icons_height INTEGER DEFAULT 0  NOT NULL,
-  icons_order INTEGER DEFAULT 0  NOT NULL,
+  icons_width INTEGER  NOT NULL,
+  icons_height INTEGER  NOT NULL,
+  icons_order INTEGER  NOT NULL,
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
@@ -508,7 +508,7 @@ CREATE TABLE phpbb_log (
   topic_id INTEGER DEFAULT 0  NOT NULL,
   reportee_id INTEGER DEFAULT 0  NOT NULL,
   log_ip VARCHAR(40) NOT NULL,
-  log_time INTEGER DEFAULT 0  NOT NULL,
+  log_time INTEGER  NOT NULL,
   log_operation BLOB SUB_TYPE TEXT,
   log_data BLOB SUB_TYPE TEXT
 );;
@@ -534,11 +534,11 @@ END;;
 
 # phpbb_moderator_cache
 CREATE TABLE phpbb_moderator_cache (
-  forum_id INTEGER DEFAULT 0  NOT NULL,
+  forum_id INTEGER  NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
-  username VARCHAR(255) NOT NULL,
+  username VARCHAR(255) DEFAULT '' NOT NULL,
   group_id INTEGER DEFAULT 0  NOT NULL,
-  group_name VARCHAR(255) NOT NULL,
+  group_name VARCHAR(255) DEFAULT '' NOT NULL,
   display_on_index INTEGER DEFAULT 1  NOT NULL
 );;
 
@@ -551,14 +551,14 @@ CREATE TABLE phpbb_modules (
   module_id INTEGER NOT NULL,
   module_enabled INTEGER DEFAULT 1  NOT NULL,
   module_display INTEGER DEFAULT 1  NOT NULL,
-  "module_name" VARCHAR(255) NOT NULL,
-  module_class VARCHAR(10) NOT NULL,
-  parent_id INTEGER NOT NULL,
-  left_id INTEGER NOT NULL,
-  right_id INTEGER NOT NULL,
-  module_langname VARCHAR(255) NOT NULL,
-  module_mode VARCHAR(255) NOT NULL,
-  module_auth VARCHAR(255) NOT NULL
+  "module_name" VARCHAR(255) DEFAULT '' NOT NULL,
+  module_class VARCHAR(10) DEFAULT '' NOT NULL,
+  parent_id INTEGER DEFAULT 0 NOT NULL,
+  left_id INTEGER DEFAULT 0 NOT NULL,
+  right_id INTEGER DEFAULT 0 NOT NULL,
+  module_langname VARCHAR(255) DEFAULT '' NOT NULL,
+  module_mode VARCHAR(255) DEFAULT '' NOT NULL,
+  module_auth VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_modules ADD PRIMARY KEY (module_id);;
@@ -580,7 +580,7 @@ END;;
 # phpbb_poll_results
 CREATE TABLE phpbb_poll_results (
   poll_option_id INTEGER DEFAULT 0  NOT NULL,
-  topic_id INTEGER DEFAULT 0  NOT NULL,
+  topic_id INTEGER NOT NULL,
   poll_option_text BLOB SUB_TYPE TEXT,
   poll_option_total INTEGER DEFAULT 0  NOT NULL
 );;
@@ -623,7 +623,7 @@ CREATE TABLE phpbb_posts (
   post_encoding VARCHAR(20) DEFAULT 'iso-8859-1'  NOT NULL,
   post_attachment INTEGER DEFAULT 0  NOT NULL,
   bbcode_bitfield INTEGER DEFAULT 0  NOT NULL,
-  bbcode_uid VARCHAR(5) NOT NULL,
+  bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
   post_edit_time INTEGER DEFAULT 0,
   post_edit_reason BLOB SUB_TYPE TEXT,
   post_edit_user INTEGER DEFAULT 0,
@@ -657,7 +657,7 @@ CREATE TABLE phpbb_privmsgs (
   root_level INTEGER DEFAULT 0  NOT NULL,
   author_id INTEGER DEFAULT 0  NOT NULL,
   icon_id INTEGER DEFAULT 0  NOT NULL,
-  author_ip VARCHAR(40) NOT NULL,
+  author_ip VARCHAR(40) DEFAULT '' NOT NULL,
   message_time INTEGER DEFAULT 0  NOT NULL,
   enable_bbcode INTEGER DEFAULT 1  NOT NULL,
   enable_smilies INTEGER DEFAULT 1  NOT NULL,
@@ -670,7 +670,7 @@ CREATE TABLE phpbb_privmsgs (
   message_encoding VARCHAR(20) DEFAULT 'iso-8859-1'  NOT NULL,
   message_attachment INTEGER DEFAULT 0  NOT NULL,
   bbcode_bitfield INTEGER DEFAULT 0  NOT NULL,
-  bbcode_uid VARCHAR(5) NOT NULL,
+  bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
   message_edit_time INTEGER DEFAULT 0,
   message_edit_count INTEGER DEFAULT 0,
   to_address BLOB SUB_TYPE TEXT  NOT NULL,
@@ -699,7 +699,7 @@ END;;
 CREATE TABLE phpbb_privmsgs_folder (
   folder_id INTEGER NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
-  folder_name VARCHAR(255) NOT NULL,
+  folder_name VARCHAR(255) DEFAULT '' NOT NULL,
   pm_count INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -724,7 +724,7 @@ CREATE TABLE phpbb_privmsgs_rules (
   user_id INTEGER DEFAULT 0  NOT NULL,
   rule_check INTEGER DEFAULT 0  NOT NULL,
   rule_connection INTEGER DEFAULT 0  NOT NULL,
-  rule_string VARCHAR(255) NOT NULL,
+  rule_string VARCHAR(255) DEFAULT '' NOT NULL,
   rule_user_id INTEGER DEFAULT 0  NOT NULL,
   rule_group_id INTEGER DEFAULT 0  NOT NULL,
   rule_action INTEGER DEFAULT 0  NOT NULL,
@@ -767,14 +767,14 @@ CREATE TABLE phpbb_profile_fields (
   field_id INTEGER NOT NULL,
   field_name VARCHAR(255) NOT NULL,
   field_desc BLOB SUB_TYPE TEXT,
-  field_type INTEGER DEFAULT 0  NOT NULL,
-  field_ident VARCHAR(20) NOT NULL,
-  field_length VARCHAR(20) NOT NULL,
-  field_minlen VARCHAR(255) NOT NULL,
-  field_maxlen VARCHAR(255) NOT NULL,
-  field_novalue VARCHAR(255) NOT NULL,
+  field_type INTEGER NOT NULL,
+  field_ident VARCHAR(20) DEFAULT '' NOT NULL,
+  field_length VARCHAR(20) DEFAULT '' NOT NULL,
+  field_minlen VARCHAR(255) DEFAULT '' NOT NULL,
+  field_maxlen VARCHAR(255) DEFAULT '' NOT NULL,
+  field_novalue VARCHAR(255) DEFAULT '' NOT NULL,
   field_default_value VARCHAR(255) DEFAULT '0'  NOT NULL,
-  field_validation VARCHAR(20) NOT NULL,
+  field_validation VARCHAR(20) DEFAULT '' NOT NULL,
   field_required INTEGER DEFAULT 0  NOT NULL,
   field_show_on_reg INTEGER DEFAULT 0  NOT NULL,
   field_hide INTEGER DEFAULT 0  NOT NULL,
@@ -813,7 +813,7 @@ CREATE TABLE phpbb_profile_fields_lang (
   lang_id INTEGER DEFAULT 0  NOT NULL,
   option_id INTEGER DEFAULT 0  NOT NULL,
   field_type INTEGER DEFAULT 0  NOT NULL,
-  "value" VARCHAR(255) NOT NULL
+  "value" VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_profile_fields_lang ADD PRIMARY KEY (field_id, lang_id, option_id);;
@@ -823,9 +823,9 @@ ALTER TABLE phpbb_profile_fields_lang ADD PRIMARY KEY (field_id, lang_id, option
 CREATE TABLE phpbb_profile_lang (
   field_id INTEGER DEFAULT 0  NOT NULL,
   lang_id INTEGER DEFAULT 0  NOT NULL,
-  lang_name VARCHAR(255) NOT NULL,
+  lang_name VARCHAR(255) DEFAULT '' NOT NULL,
   lang_explain BLOB SUB_TYPE TEXT,
-  lang_default_value VARCHAR(255) NOT NULL
+  lang_default_value VARCHAR(255) DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_profile_lang ADD PRIMARY KEY (field_id, lang_id);;
@@ -881,7 +881,7 @@ END;;
 # phpbb_reports_reasons
 CREATE TABLE phpbb_reports_reasons (
   reason_id INTEGER NOT NULL,
-  reason_title VARCHAR(255) NOT NULL,
+  reason_title VARCHAR(255) DEFAULT '' NOT NULL,
   reason_description BLOB SUB_TYPE TEXT,
   reason_order INTEGER DEFAULT 0  NOT NULL
 );;
@@ -901,7 +901,7 @@ END;;
 
 # phpbb_search_results
 CREATE TABLE phpbb_search_results (
-  search_key VARCHAR(32) NOT NULL,
+  search_key VARCHAR(32) DEFAULT '' NOT NULL,
   search_time INTEGER DEFAULT 0  NOT NULL,
   search_keywords BLOB SUB_TYPE TEXT,
   search_authors BLOB SUB_TYPE TEXT
@@ -912,7 +912,7 @@ ALTER TABLE phpbb_search_results ADD PRIMARY KEY (search_key);;
 
 # phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
-  word_text VARCHAR(50) NOT NULL,
+  word_text VARCHAR(50) DEFAULT '' NOT NULL,
   word_id INTEGER NOT NULL,
   word_common INTEGER DEFAULT 0  NOT NULL
 );;
@@ -943,14 +943,14 @@ CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch(word_id);;
 
 # phpbb_sessions
 CREATE TABLE phpbb_sessions (
-  session_id VARCHAR(32) NOT NULL,
+  session_id VARCHAR(32) DEFAULT '' NOT NULL,
   session_user_id INTEGER DEFAULT 0  NOT NULL,
   session_last_visit INTEGER DEFAULT 0  NOT NULL,
   session_start INTEGER DEFAULT 0  NOT NULL,
   session_time INTEGER DEFAULT 0  NOT NULL,
   session_ip VARCHAR(40) DEFAULT '0'  NOT NULL,
-  session_browser VARCHAR(150),
-  session_page VARCHAR(200) NOT NULL,
+  session_browser VARCHAR(150) DEFAULT '' NOT NULL,
+  session_page VARCHAR(200) DEFAULT '' NOT NULL,
   session_viewonline INTEGER DEFAULT 1  NOT NULL,
   session_autologin INTEGER DEFAULT 0  NOT NULL,
   session_admin INTEGER DEFAULT 0  NOT NULL
@@ -964,7 +964,7 @@ CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions(session_user_id);;
 
 # phpbb_sessions_keys
 CREATE TABLE phpbb_sessions_keys (
-  key_id VARCHAR(32) NOT NULL,
+  key_id VARCHAR(32) DEFAULT '' NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
   last_ip VARCHAR(40) DEFAULT '0'  NOT NULL,
   last_login INTEGER DEFAULT 0  NOT NULL
@@ -978,8 +978,8 @@ CREATE INDEX phpbb_sessions_keys_last_login ON phpbb_sessions_keys(last_login);;
 # phpbb_sitelist
 CREATE TABLE phpbb_sitelist (
   site_id INTEGER NOT NULL,
-  site_ip VARCHAR(40) NOT NULL,
-  site_hostname VARCHAR(255) NOT NULL,
+  site_ip VARCHAR(40) DEFAULT '' NOT NULL,
+  site_hostname VARCHAR(255) DEFAULT '' NOT NULL,
   ip_exclude INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -1002,9 +1002,9 @@ CREATE TABLE phpbb_smilies (
   code VARCHAR(50),
   emotion VARCHAR(50),
   smiley_url VARCHAR(50),
-  smiley_width INTEGER DEFAULT 0  NOT NULL,
-  smiley_height INTEGER DEFAULT 0  NOT NULL,
-  smiley_order INTEGER DEFAULT 0  NOT NULL,
+  smiley_width INTEGER NOT NULL,
+  smiley_height INTEGER NOT NULL,
+  smiley_order INTEGER NOT NULL,
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
@@ -1024,131 +1024,13 @@ END;;
 # phpbb_styles
 CREATE TABLE phpbb_styles (
   style_id INTEGER NOT NULL,
-  style_name VARCHAR(252) NOT NULL,
-  style_copyright VARCHAR(255) NOT NULL,
+  style_name VARCHAR(252) DEFAULT '' NOT NULL,
+  style_copyright VARCHAR(255) DEFAULT '' NOT NULL,
   style_active INTEGER DEFAULT 1  NOT NULL,
-  template_id INTEGER DEFAULT 0  NOT NULL,
-  theme_id INTEGER DEFAULT 0  NOT NULL,
-  imageset_id INTEGER DEFAULT 0  NOT NULL
+  template_id INTEGER NOT NULL,
+  theme_id INTEGER NOT NULL,
+  imageset_id INTEGER NOT NULL
 );;
-
-ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
-
-CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles(style_name);;
-CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles(imageset_id);;
-CREATE INDEX phpbb_styles_template_id ON phpbb_styles(template_id);;
-CREATE INDEX phpbb_styles_theme_id ON phpbb_styles(theme_id);;
-
-CREATE GENERATOR phpbb_styles_gen;;
-SET GENERATOR phpbb_styles_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_gen FOR phpbb_styles
-BEFORE INSERT
-AS
-BEGIN
-  NEW.style_id = GEN_ID(phpbb_styles_gen, 1);
-END;;
-
-
-# phpbb_styles_imageset
-CREATE TABLE phpbb_styles_imageset (
-  imageset_id INTEGER NOT NULL,
-  imageset_name VARCHAR(252) NOT NULL,
-  imageset_copyright VARCHAR(255) NOT NULL,
-  imageset_path VARCHAR(100) NOT NULL,
-  site_logo VARCHAR(200) NOT NULL,
-  btn_post VARCHAR(200) NOT NULL,
-  btn_post_pm VARCHAR(200) NOT NULL,
-  btn_reply VARCHAR(200) NOT NULL,
-  btn_reply_pm VARCHAR(200) NOT NULL,
-  btn_locked VARCHAR(200) NOT NULL,
-  btn_profile VARCHAR(200) NOT NULL,
-  btn_pm VARCHAR(200) NOT NULL,
-  btn_delete VARCHAR(200) NOT NULL,
-  btn_info VARCHAR(200) NOT NULL,
-  btn_quote VARCHAR(200) NOT NULL,
-  btn_search VARCHAR(200) NOT NULL,
-  btn_edit VARCHAR(200) NOT NULL,
-  btn_report VARCHAR(200) NOT NULL,
-  btn_email VARCHAR(200) NOT NULL,
-  btn_www VARCHAR(200) NOT NULL,
-  btn_icq VARCHAR(200) NOT NULL,
-  btn_aim VARCHAR(200) NOT NULL,
-  btn_yim VARCHAR(200) NOT NULL,
-  btn_msnm VARCHAR(200) NOT NULL,
-  btn_jabber VARCHAR(200) NOT NULL,
-  btn_online VARCHAR(200) NOT NULL,
-  btn_offline VARCHAR(200) NOT NULL,
-  btn_friend VARCHAR(200) NOT NULL,
-  btn_foe VARCHAR(200) NOT NULL,
-  icon_unapproved VARCHAR(200) NOT NULL,
-  icon_reported VARCHAR(200) NOT NULL,
-  icon_attach VARCHAR(200) NOT NULL,
-  icon_post VARCHAR(200) NOT NULL,
-  icon_post_new VARCHAR(200) NOT NULL,
-  icon_post_latest VARCHAR(200) NOT NULL,
-  icon_post_newest VARCHAR(200) NOT NULL,
-  forum VARCHAR(200) NOT NULL,
-  forum_new VARCHAR(200) NOT NULL,
-  forum_locked VARCHAR(200) NOT NULL,
-  forum_link VARCHAR(200) NOT NULL,
-  sub_forum VARCHAR(200) NOT NULL,
-  sub_forum_new VARCHAR(200) NOT NULL,
-  folder VARCHAR(200) NOT NULL,
-  folder_moved VARCHAR(200) NOT NULL,
-  folder_posted VARCHAR(200) NOT NULL,
-  folder_new VARCHAR(200) NOT NULL,
-  folder_new_posted VARCHAR(200) NOT NULL,
-  folder_hot VARCHAR(200) NOT NULL,
-  folder_hot_posted VARCHAR(200) NOT NULL,
-  folder_hot_new VARCHAR(200) NOT NULL,
-  folder_hot_new_posted VARCHAR(200) NOT NULL,
-  folder_locked VARCHAR(200) NOT NULL,
-  folder_locked_posted VARCHAR(200) NOT NULL,
-  folder_locked_new VARCHAR(200) NOT NULL,
-  folder_locked_new_posted VARCHAR(200) NOT NULL,
-  folder_sticky VARCHAR(200) NOT NULL,
-  folder_sticky_posted VARCHAR(200) NOT NULL,
-  folder_sticky_new VARCHAR(200) NOT NULL,
-  folder_sticky_new_posted VARCHAR(200) NOT NULL,
-  folder_announce VARCHAR(200) NOT NULL,
-  folder_announce_posted VARCHAR(200) NOT NULL,
-  folder_announce_new VARCHAR(200) NOT NULL,
-  folder_announce_new_posted VARCHAR(200) NOT NULL,
-  folder_global VARCHAR(200) NOT NULL,
-  folder_global_posted VARCHAR(200) NOT NULL,
-  folder_global_new VARCHAR(200) NOT NULL,
-  folder_global_new_posted VARCHAR(200) NOT NULL,
-  poll_left VARCHAR(200) NOT NULL,
-  poll_center VARCHAR(200) NOT NULL,
-  poll_right VARCHAR(200) NOT NULL,
-  attach_progress_bar VARCHAR(200) NOT NULL,
-  user_icon1 VARCHAR(200) NOT NULL,
-  user_icon2 VARCHAR(200) NOT NULL,
-  user_icon3 VARCHAR(200) NOT NULL,
-  user_icon4 VARCHAR(200) NOT NULL,
-  user_icon5 VARCHAR(200) NOT NULL,
-  user_icon6 VARCHAR(200) NOT NULL,
-  user_icon7 VARCHAR(200) NOT NULL,
-  user_icon8 VARCHAR(200) NOT NULL,
-  user_icon9 VARCHAR(200) NOT NULL,
-  user_icon10 VARCHAR(200) NOT NULL
-);;
-
-ALTER TABLE phpbb_styles_imageset ADD PRIMARY KEY (imageset_id);;
-
-CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset(imageset_name);;
-
-CREATE GENERATOR phpbb_styles_imageset_gen;;
-SET GENERATOR phpbb_styles_imageset_gen TO 0;;
-
-CREATE TRIGGER t_phpbb_styles_imageset_gen FOR phpbb_styles_imageset
-BEFORE INSERT
-AS
-BEGIN
-  NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1);
-END;;
-
 
 # phpbb_styles_template
 CREATE TABLE phpbb_styles_template (
@@ -1167,8 +1049,8 @@ CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template(tem
 
 # phpbb_styles_template_data
 CREATE TABLE phpbb_styles_template_data (
-  template_id INTEGER DEFAULT 0  NOT NULL,
-  template_filename VARCHAR(100) NOT NULL,
+  template_id INTEGER NOT NULL,
+  template_filename VARCHAR(100) DEFAULT '' NOT NULL,
   template_included BLOB SUB_TYPE TEXT,
   template_mtime INTEGER DEFAULT 0  NOT NULL,
   template_data BLOB SUB_TYPE TEXT
@@ -1191,9 +1073,9 @@ END;;
 # phpbb_styles_theme
 CREATE TABLE phpbb_styles_theme (
   theme_id INTEGER NOT NULL,
-  theme_name VARCHAR(252) NOT NULL,
-  theme_copyright VARCHAR(255) NOT NULL,
-  theme_path VARCHAR(100) NOT NULL,
+  theme_name VARCHAR(252) DEFAULT '' NOT NULL,
+  theme_copyright VARCHAR(255) DEFAULT '' NOT NULL,
+  theme_path VARCHAR(100) DEFAULT '' NOT NULL,
   theme_storedb INTEGER DEFAULT 0  NOT NULL,
   theme_mtime INTEGER DEFAULT 0  NOT NULL,
   theme_data BLOB SUB_TYPE TEXT
@@ -1213,6 +1095,122 @@ BEGIN
   NEW.theme_id = GEN_ID(phpbb_styles_theme_gen, 1);
 END;;
 
+ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles(style_name);;
+CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles(imageset_id);;
+CREATE INDEX phpbb_styles_template_id ON phpbb_styles(template_id);;
+CREATE INDEX phpbb_styles_theme_id ON phpbb_styles(theme_id);;
+
+CREATE GENERATOR phpbb_styles_gen;;
+SET GENERATOR phpbb_styles_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_gen FOR phpbb_styles
+BEFORE INSERT
+AS
+BEGIN
+  NEW.style_id = GEN_ID(phpbb_styles_gen, 1);
+END;;
+
+
+# phpbb_styles_imageset
+CREATE TABLE phpbb_styles_imageset (
+  imageset_id INTEGER NOT NULL,
+  imageset_name VARCHAR(252) DEFAULT '' NOT NULL,
+  imageset_copyright VARCHAR(255) DEFAULT '' NOT NULL,
+  imageset_path VARCHAR(100) DEFAULT '' NOT NULL,
+  site_logo VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_post VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_post_pm VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_reply VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_reply_pm VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_locked VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_profile VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_pm VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_delete VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_info VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_quote VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_search VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_edit VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_report VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_email VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_www VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_icq VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_aim VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_yim VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_msnm VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_jabber VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_online VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_offline VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_friend VARCHAR(200) DEFAULT '' NOT NULL,
+  btn_foe VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_unapproved VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_reported VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_attach VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_post VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_post_new VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_post_latest VARCHAR(200) DEFAULT '' NOT NULL,
+  icon_post_newest VARCHAR(200) DEFAULT '' NOT NULL,
+  forum VARCHAR(200) DEFAULT '' NOT NULL,
+  forum_new VARCHAR(200) DEFAULT '' NOT NULL,
+  forum_locked VARCHAR(200) DEFAULT '' NOT NULL,
+  forum_link VARCHAR(200) DEFAULT '' NOT NULL,
+  sub_forum VARCHAR(200) DEFAULT '' NOT NULL,
+  sub_forum_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_moved VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_new_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_hot VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_hot_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_hot_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_hot_new_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_locked VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_locked_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_locked_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_locked_new_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_sticky VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_sticky_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_sticky_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_sticky_new_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_announce VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_announce_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_announce_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_announce_new_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_global VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_global_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_global_new VARCHAR(200) DEFAULT '' NOT NULL,
+  folder_global_new_posted VARCHAR(200) DEFAULT '' NOT NULL,
+  poll_left VARCHAR(200) DEFAULT '' NOT NULL,
+  poll_center VARCHAR(200) DEFAULT '' NOT NULL,
+  poll_right VARCHAR(200) DEFAULT '' NOT NULL,
+  attach_progress_bar VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon1 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon2 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon3 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon4 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon5 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon6 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon7 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon8 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon9 VARCHAR(200) DEFAULT '' NOT NULL,
+  user_icon10 VARCHAR(200) DEFAULT '' NOT NULL
+);;
+
+ALTER TABLE phpbb_styles_imageset ADD PRIMARY KEY (imageset_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset(imageset_name);;
+
+CREATE GENERATOR phpbb_styles_imageset_gen;;
+SET GENERATOR phpbb_styles_imageset_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_imageset_gen FOR phpbb_styles_imageset
+BEFORE INSERT
+AS
+BEGIN
+  NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1);
+END;;
 
 # phpbb_topics
 CREATE TABLE phpbb_topics (
@@ -1320,13 +1318,13 @@ CREATE TABLE phpbb_users (
   user_type INTEGER DEFAULT 0  NOT NULL,
   group_id INTEGER DEFAULT 3  NOT NULL,
   user_permissions BLOB SUB_TYPE TEXT,
-  user_perm_from INTEGER DEFAULT 0,
-  user_ip VARCHAR(40) NOT NULL,
+  user_perm_from INTEGER DEFAULT 0 NOT NULL,
+  user_ip VARCHAR(40) DEFAULT '' NOT NULL,
   user_regdate INTEGER DEFAULT 0  NOT NULL,
-  username VARCHAR(252) NOT NULL,
-  user_password VARCHAR(40) NOT NULL,
+  username VARCHAR(252) DEFAULT '' NOT NULL,
+  user_password VARCHAR(40) DEFAULT '' NOT NULL,
   user_passchg INTEGER DEFAULT 0,
-  user_email VARCHAR(100) NOT NULL,
+  user_email VARCHAR(100) DEFAULT '' NOT NULL,
   user_email_hash DOUBLE PRECISION DEFAULT 0  NOT NULL,
   user_birthday VARCHAR(10) DEFAULT '',
   user_lastvisit INTEGER DEFAULT 0  NOT NULL,
@@ -1338,7 +1336,7 @@ CREATE TABLE phpbb_users (
   user_last_warning INTEGER DEFAULT 0,
   user_login_attempts INTEGER DEFAULT 0,
   user_posts INTEGER DEFAULT 0  NOT NULL,
-  user_lang VARCHAR(30) NOT NULL,
+  user_lang VARCHAR(30) DEFAULT '' NOT NULL,
   user_timezone DOUBLE PRECISION DEFAULT 0  NOT NULL,
   user_dst INTEGER DEFAULT 0  NOT NULL,
   user_dateformat VARCHAR(30) DEFAULT 'd M Y H:i'  NOT NULL,
@@ -1355,8 +1353,8 @@ CREATE TABLE phpbb_users (
   user_topic_sortby_type VARCHAR(1) DEFAULT 't' NOT NULL,
   user_topic_sortby_dir VARCHAR(1) DEFAULT 'd' NOT NULL,
   user_post_show_days INTEGER DEFAULT 0  NOT NULL,
-  user_post_sortby_type VARCHAR(2) DEFAULT 't' NOT NULL,
-  user_post_sortby_dir VARCHAR(2) DEFAULT 'a' NOT NULL,
+  user_post_sortby_type VARCHAR(1) DEFAULT 't' NOT NULL,
+  user_post_sortby_dir VARCHAR(1) DEFAULT 'a' NOT NULL,
   user_notify INTEGER DEFAULT 0  NOT NULL,
   user_notify_pm INTEGER DEFAULT 1  NOT NULL,
   user_notify_type INTEGER DEFAULT 0  NOT NULL,

@@ -225,6 +225,9 @@ class acp_board
 						'policy_entropy'				=> array('lang' => 'CAPTCHA_ENTROPY',		'type' => 'radio:yes_no', 'explain' => false),
 						'policy_entropy_noise_pixel'	=> array('lang' => 'ENTROPY_NOISE_PIXEL',	'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
 						'policy_entropy_noise_line'		=> array('lang' => 'ENTROPY_NOISE_LINE',	'type' => 'radio:yes_no', 'explain' => false),
+						'policy_shape'					=> array('lang' => 'CAPTCHA_SHAPE',			'type' => 'radio:yes_no', 'explain' => false),
+						'policy_shape_noise_pixel'		=> array('lang' => 'SHAPE_NOISE_PIXEL',		'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
+						'policy_shape_noise_line'		=> array('lang' => 'SHAPE_NOISE_LINE',		'type' => 'radio:yes_no', 'explain' => false),
 						'policy_3dbitmap'				=> array('lang' => 'CAPTCHA_3DBITMAP',		'type' => 'radio:yes_no', 'explain' => false),
 					)
 				);

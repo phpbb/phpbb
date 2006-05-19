@@ -43,7 +43,6 @@ ALTER TABLE [phpbb_attachments] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_attach_in_message] DEFAULT (0) FOR [in_message],
 	CONSTRAINT [DF_phpbb_attach_poster_id] DEFAULT (0) FOR [poster_id],
 	CONSTRAINT [DF_phpbb_attach_download_count] DEFAULT (0) FOR [download_count],
-	CONSTRAINT [DF_phpbb_attach_filesize] DEFAULT (0) FOR [filesize],
 	CONSTRAINT [DF_phpbb_attach_filetime] DEFAULT (0) FOR [filetime],
 	CONSTRAINT [DF_phpbb_attach_thumbnail] DEFAULT (0) FOR [thumbnail]
 GO
@@ -143,7 +142,9 @@ ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_auth_p_role_role_order] DEFAULT(0) FOR [role_order]
+	CONSTRAINT [DF_phpbb_auth_p_role_role_order] DEFAULT (0) FOR [role_order],
+	CONSTRAINT [DF_phpbb_auth_p_role_role_type] DEFAULT ('') FOR [role_type],
+	CONSTRAINT [DF_phpbb_auth_p_role_role_name] DEFAULT ('') FOR [role_name]
 GO
 
 CREATE  INDEX [role_type] ON [phpbb_auth_roles]([role_type]) ON [PRIMARY]
@@ -232,7 +233,9 @@ ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_banlis_ban_userid] DEFAULT (0) FOR [ban_userid],
 	CONSTRAINT [DF_phpbb_banlis_ban_start] DEFAULT (0) FOR [ban_start],
 	CONSTRAINT [DF_phpbb_banlis_ban_end] DEFAULT (0) FOR [ban_end],
-	CONSTRAINT [DF_phpbb_banlis_ban_exclude] DEFAULT (0) FOR [ban_exclude]
+	CONSTRAINT [DF_phpbb_banlis_ban_exclude] DEFAULT (0) FOR [ban_exclude],
+	CONSTRAINT [DF_phpbb_banlis_ban_ip] DEFAULT ('') FOR [ban_ip],
+	CONSTRAINT [DF_phpbb_banlis_ban_email] DEFAULT ('') FOR [ban_email]
 GO
 
 
@@ -261,7 +264,12 @@ GO
 
 ALTER TABLE [phpbb_bbcodes] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_bbcode_bbcode_id] DEFAULT (0) FOR [bbcode_id],
-	CONSTRAINT [DF_phpbb_bbcode_display_on_posting] DEFAULT (0) FOR [display_on_posting]
+	CONSTRAINT [DF_phpbb_bbcode_bbcode_tag] DEFAULT ('') FOR [bbcode_tag],
+	CONSTRAINT [DF_phpbb_bbcode_bbcode_match] DEFAULT ('') FOR [bbcode_match],
+	CONSTRAINT [DF_phpbb_bbcode_display_on_posting] DEFAULT (0) FOR [display_on_posting],
+	CONSTRAINT [DF_phpbb_bbcode_first_pass_match] DEFAULT ('') FOR [first_pass_match],
+	CONSTRAINT [DF_phpbb_bbcode_first_pass_replace] DEFAULT ('') FOR [first_pass_replace],
+	CONSTRAINT [DF_phpbb_bbcode_second_pass_match] DEFAULT ('') FOR [second_pass_match]
 GO
 
 CREATE  INDEX [display_on_posting] ON [phpbb_bbcodes]([display_on_posting]) ON [PRIMARY]
@@ -313,7 +321,8 @@ GO
 
 ALTER TABLE [phpbb_bots] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_bots___bot_active] DEFAULT (1) FOR [bot_active],
-	CONSTRAINT [DF_phpbb_bots___user_id] DEFAULT (0) FOR [user_id]
+	CONSTRAINT [DF_phpbb_bots___user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_phpbb_bots___bot_ip] DEFAULT ('') FOR [bot_ip]
 GO
 
 CREATE  INDEX [bot_active] ON [phpbb_bots]([bot_active]) ON [PRIMARY]
@@ -338,7 +347,8 @@ ALTER TABLE [phpbb_cache] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_cache] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_cache__var_expires] DEFAULT (0) FOR [var_expires]
+	CONSTRAINT [DF_phpbb_cache__var_expires] DEFAULT (0) FOR [var_expires],
+	CONSTRAINT [DF_phpbb_cache__var_name] DEFAULT ('') FOR [var_name]
 GO
 
 
@@ -371,8 +381,8 @@ GO
  Table: phpbb_confirm
 */
 CREATE TABLE [phpbb_confirm] (
-	[confirm_id] [varchar] (32) NOT NULL ,
-	[session_id] [varchar] (32) NOT NULL ,
+	[confirm_id] [char] (32) NOT NULL ,
+	[session_id] [char] (32) NOT NULL ,
 	[confirm_type] [int] NOT NULL ,
 	[code] [varchar] (8) NOT NULL 
 ) ON [PRIMARY]
@@ -387,7 +397,10 @@ ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
-	CONSTRAINT [DF_phpbb_confirm_confirm_type] DEFAULT (0) FOR [confirm_type]
+	CONSTRAINT [DF_phpbb_confirm_confirm_type] DEFAULT (0) FOR [confirm_type],
+	CONSTRAINT [DF_phpbb_confirm_confirm_id] DEFAULT ('') FOR [confirm_id],
+	CONSTRAINT [DF_phpbb_confirm_session_id] DEFAULT ('') FOR [session_id],
+	CONSTRAINT [DF_phpbb_confirm_code] DEFAULT ('') FOR [code]
 GO
 
 
@@ -405,6 +418,10 @@ ALTER TABLE [phpbb_disallow] WITH NOCHECK ADD
 	(
 		[disallow_id]
 	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_disallow] WITH NOCHECK ADD
+	CONSTRAINT [DF_phpbb_disallow_disallow_username] DEFAULT ('') FOR [disallow_username]
 GO
 
 
@@ -441,6 +458,30 @@ GO
 
 
 /*
+ Table: phpbb_extensions
+*/
+CREATE TABLE [phpbb_extensions] (
+	[extension_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[group_id] [int] NOT NULL ,
+	[extension] [varchar] (100) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_extensions] PRIMARY KEY  CLUSTERED 
+	(
+		[extension_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_extens_group_id] DEFAULT (0) FOR [group_id],
+	CONSTRAINT [DF_phpbb_extens_extension] DEFAULT (0) FOR [extension]
+GO
+
+
+
+/*
  Table: phpbb_extension_groups
 */
 CREATE TABLE [phpbb_extension_groups] (
@@ -468,29 +509,8 @@ ALTER TABLE [phpbb_extension_groups] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_extens_allow_group] DEFAULT (0) FOR [allow_group],
 	CONSTRAINT [DF_phpbb_extens_download_mode] DEFAULT (1) FOR [download_mode],
 	CONSTRAINT [DF_phpbb_extens_max_filesize] DEFAULT (0) FOR [max_filesize],
-	CONSTRAINT [DF_phpbb_extens_allow_in_pm] DEFAULT (0) FOR [allow_in_pm]
-GO
-
-
-/*
- Table: phpbb_extensions
-*/
-CREATE TABLE [phpbb_extensions] (
-	[extension_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[group_id] [int] NOT NULL ,
-	[extension] [varchar] (100) NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_extensions] PRIMARY KEY  CLUSTERED 
-	(
-		[extension_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [phpbb_extensions] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_extens_group_id] DEFAULT (0) FOR [group_id]
+	CONSTRAINT [DF_phpbb_extens_allow_in_pm] DEFAULT (0) FOR [allow_in_pm],
+	CONSTRAINT [DF_phpbb_extens_upload_icon] DEFAULT ('') FOR [upload_icon]
 GO
 
 
@@ -545,9 +565,6 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_forums] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_forums_parent_id] DEFAULT (0) FOR [parent_id],
-	CONSTRAINT [DF_phpbb_forums_left_id] DEFAULT (0) FOR [left_id],
-	CONSTRAINT [DF_phpbb_forums_right_id] DEFAULT (0) FOR [right_id],
 	CONSTRAINT [DF_phpbb_forums_desc_bitfield] DEFAULT (0) FOR [forum_desc_bitfield],
 	CONSTRAINT [DF_phpbb_forums_rules_bitfield] DEFAULT (0) FOR [forum_rules_bitfield],
 	CONSTRAINT [DF_phpbb_forums_topics_per_page] DEFAULT (0) FOR [forum_topics_per_page],
@@ -564,9 +581,13 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_enable_indexing] DEFAULT (1) FOR [enable_indexing],
 	CONSTRAINT [DF_phpbb_forums_enable_icons] DEFAULT (1) FOR [enable_icons],
 	CONSTRAINT [DF_phpbb_forums_enable_prune] DEFAULT (0) FOR [enable_prune],
-	CONSTRAINT [DF_phpbb_forums_prune_days] DEFAULT (0) FOR [prune_days],
-	CONSTRAINT [DF_phpbb_forums_prune_viewed] DEFAULT (0) FOR [prune_viewed],
-	CONSTRAINT [DF_phpbb_forums_prune_freq] DEFAULT (0) FOR [prune_freq]
+	CONSTRAINT [DF_phpbb_forums_prune_freq] DEFAULT (0) FOR [prune_freq],
+	CONSTRAINT [DF_phpbb_forums_forum_desc_uid] DEFAULT ('') FOR [forum_desc_uid],
+	CONSTRAINT [DF_phpbb_forums_forum_link] DEFAULT ('') FOR [forum_link],
+	CONSTRAINT [DF_phpbb_forums_forum_password] DEFAULT ('') FOR [forum_password],
+	CONSTRAINT [DF_phpbb_forums_forum_image] DEFAULT ('') FOR [forum_image],
+	CONSTRAINT [DF_phpbb_forums_forum_rules_link] DEFAULT ('') FOR [forum_rules_link],
+	CONSTRAINT [DF_phpbb_forums_forum_rules_uid] DEFAULT ('') FOR [forum_rules_uid]
 GO
 
 CREATE  INDEX [left_right_id] ON [phpbb_forums]([left_id], [right_id]) ON [PRIMARY]
@@ -597,7 +618,8 @@ GO
 
 ALTER TABLE [phpbb_forum_access] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_forum__forum_id] DEFAULT (0) FOR [forum_id],
-	CONSTRAINT [DF_phpbb_forum__user_id] DEFAULT (0) FOR [user_id]
+	CONSTRAINT [DF_phpbb_forum__user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_phpbb_forum__session_id] DEFAULT ('') FOR [session_id]
 GO
 
 
@@ -696,7 +718,11 @@ ALTER TABLE [phpbb_groups] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_groups_group_receive_pm] DEFAULT (0) FOR [group_receive_pm],
 	CONSTRAINT [DF_phpbb_groups_group_message_limit] DEFAULT (0) FOR [group_message_limit],
 	CONSTRAINT [DF_phpbb_groups_group_chgpass] DEFAULT (0) FOR [group_chgpass],
-	CONSTRAINT [DF_phpbb_groups_group_legend] DEFAULT (1) FOR [group_legend]
+	CONSTRAINT [DF_phpbb_groups_group_legend] DEFAULT (1) FOR [group_legend],
+	CONSTRAINT [DF_phpbb_groups_group_name] DEFAULT ('') FOR [group_name],
+	CONSTRAINT [DF_phpbb_groups_group_desc_uid] DEFAULT ('') FOR [group_desc_uid],
+	CONSTRAINT [DF_phpbb_groups_group_avatar] DEFAULT ('') FOR [group_avatar],
+	CONSTRAINT [DF_phpbb_groups_group_colour] DEFAULT ('') FOR [group_colour]
 GO
 
 CREATE  INDEX [group_legend] ON [phpbb_groups]([group_legend]) ON [PRIMARY]
@@ -724,9 +750,6 @@ ALTER TABLE [phpbb_icons] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_icons] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_icons__icons_width] DEFAULT (0) FOR [icons_width],
-	CONSTRAINT [DF_phpbb_icons__icons_height] DEFAULT (0) FOR [icons_height],
-	CONSTRAINT [DF_phpbb_icons__icons_order] DEFAULT (0) FOR [icons_order],
 	CONSTRAINT [DF_phpbb_icons__display_on_posting] DEFAULT (1) FOR [display_on_posting]
 GO
 
@@ -781,8 +804,7 @@ ALTER TABLE [phpbb_log] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_log____user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_log____forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_log____topic_id] DEFAULT (0) FOR [topic_id],
-	CONSTRAINT [DF_phpbb_log____reportee_id] DEFAULT (0) FOR [reportee_id],
-	CONSTRAINT [DF_phpbb_log____log_time] DEFAULT (0) FOR [log_time]
+	CONSTRAINT [DF_phpbb_log____reportee_id] DEFAULT (0) FOR [reportee_id]
 GO
 
 CREATE  INDEX [log_type] ON [phpbb_log]([log_type]) ON [PRIMARY]
@@ -815,10 +837,11 @@ CREATE TABLE [phpbb_moderator_cache] (
 GO
 
 ALTER TABLE [phpbb_moderator_cache] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_modera_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_modera_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_modera_group_id] DEFAULT (0) FOR [group_id],
-	CONSTRAINT [DF_phpbb_modera_display_on_index] DEFAULT (1) FOR [display_on_index]
+	CONSTRAINT [DF_phpbb_modera_display_on_index] DEFAULT (1) FOR [display_on_index],
+	CONSTRAINT [DF_phpbb_modera_username] DEFAULT ('') FOR [username],
+	CONSTRAINT [DF_phpbb_modera_group_name] DEFAULT ('') FOR [group_name]
 GO
 
 CREATE  INDEX [display_on_index] ON [phpbb_moderator_cache]([display_on_index]) ON [PRIMARY]
@@ -854,8 +877,16 @@ ALTER TABLE [phpbb_modules] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_modules] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_module_forums_parent_id] DEFAULT (0) FOR [parent_id],
+	CONSTRAINT [DF_phpbb_module_left_id] DEFAULT (0) FOR [left_id],
+	CONSTRAINT [DF_phpbb_module_right_id] DEFAULT (0) FOR [right_id],
 	CONSTRAINT [DF_phpbb_module_module_enabled] DEFAULT (1) FOR [module_enabled],
-	CONSTRAINT [DF_phpbb_module_module_display] DEFAULT (1) FOR [module_display]
+	CONSTRAINT [DF_phpbb_module_module_display] DEFAULT (1) FOR [module_display],
+	CONSTRAINT [DF_phpbb_module_module_name] DEFAULT ('') FOR [module_name],
+	CONSTRAINT [DF_phpbb_module_module_class] DEFAULT ('') FOR [module_class],
+	CONSTRAINT [DF_phpbb_module_module_langname] DEFAULT ('') FOR [module_langname],
+	CONSTRAINT [DF_phpbb_module_module_mode] DEFAULT ('') FOR [module_mode],
+	CONSTRAINT [DF_phpbb_module_module_auth] DEFAULT ('') FOR [module_auth]
 GO
 
 CREATE  INDEX [module_enabled] ON [phpbb_modules]([module_enabled]) ON [PRIMARY]
@@ -878,7 +909,6 @@ GO
 
 ALTER TABLE [phpbb_poll_results] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_poll_r_poll_option_id] DEFAULT (0) FOR [poll_option_id],
-	CONSTRAINT [DF_phpbb_poll_r_topic_id] DEFAULT (0) FOR [topic_id],
 	CONSTRAINT [DF_phpbb_poll_r_poll_option_total] DEFAULT (0) FOR [poll_option_total]
 GO
 
@@ -974,7 +1004,8 @@ ALTER TABLE [phpbb_posts] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_posts__post_edit_time] DEFAULT (0) FOR [post_edit_time],
 	CONSTRAINT [DF_phpbb_posts__post_edit_user] DEFAULT (0) FOR [post_edit_user],
 	CONSTRAINT [DF_phpbb_posts__post_edit_count] DEFAULT (0) FOR [post_edit_count],
-	CONSTRAINT [DF_phpbb_posts__post_edit_locked] DEFAULT (0) FOR [post_edit_locked]
+	CONSTRAINT [DF_phpbb_posts__post_edit_locked] DEFAULT (0) FOR [post_edit_locked],
+	CONSTRAINT [DF_phpbb_posts__bbcode_uid] DEFAULT ('') FOR [bbcode_uid]
 GO
 
 CREATE  INDEX [forum_id] ON [phpbb_posts]([forum_id]) ON [PRIMARY]
@@ -1046,7 +1077,9 @@ ALTER TABLE [phpbb_privmsgs] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_privms_message_attachment] DEFAULT (0) FOR [message_attachment],
 	CONSTRAINT [DF_phpbb_privms_bbcode_bitfield] DEFAULT (0) FOR [bbcode_bitfield],
 	CONSTRAINT [DF_phpbb_privms_message_edit_time] DEFAULT (0) FOR [message_edit_time],
-	CONSTRAINT [DF_phpbb_privms_message_edit_count] DEFAULT (0) FOR [message_edit_count]
+	CONSTRAINT [DF_phpbb_privms_message_edit_count] DEFAULT (0) FOR [message_edit_count],
+	CONSTRAINT [DF_phpbb_privms_author_ip] DEFAULT ('') FOR [author_ip],
+	CONSTRAINT [DF_phpbb_privms_bbcode_uid] DEFAULT ('') FOR [bbcode_uid]
 GO
 
 CREATE  INDEX [author_ip] ON [phpbb_privmsgs]([author_ip]) ON [PRIMARY]
@@ -1082,7 +1115,8 @@ GO
 
 ALTER TABLE [phpbb_privmsgs_folder] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_pmfold_user_id] DEFAULT (0) FOR [user_id],
-	CONSTRAINT [DF_phpbb_pmfold_pm_count] DEFAULT (0) FOR [pm_count]
+	CONSTRAINT [DF_phpbb_pmfold_pm_count] DEFAULT (0) FOR [pm_count],
+	CONSTRAINT [DF_phpbb_pmfold_folder_name] DEFAULT ('') FOR [folder_name]
 GO
 
 CREATE  INDEX [user_id] ON [phpbb_privmsgs_folder]([user_id]) ON [PRIMARY]
@@ -1119,7 +1153,8 @@ ALTER TABLE [phpbb_privmsgs_rules] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_pmrule_rule_user_id] DEFAULT (0) FOR [rule_user_id],
 	CONSTRAINT [DF_phpbb_pmrule_rule_group_id] DEFAULT (0) FOR [rule_group_id],
 	CONSTRAINT [DF_phpbb_pmrule_rule_action] DEFAULT (0) FOR [rule_action],
-	CONSTRAINT [DF_phpbb_pmrule_rule_folder_id] DEFAULT (0) FOR [rule_folder_id]
+	CONSTRAINT [DF_phpbb_pmrule_rule_folder_id] DEFAULT (0) FOR [rule_folder_id],
+	CONSTRAINT [DF_phpbb_pmrule_rule_string] DEFAULT ('') FOR [rule_string]
 GO
 
 
@@ -1192,14 +1227,20 @@ ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_pffiel_field_type] DEFAULT (0) FOR [field_type],
 	CONSTRAINT [DF_phpbb_pffiel_field_default_value] DEFAULT ('0') FOR [field_default_value],
 	CONSTRAINT [DF_phpbb_pffiel_field_required] DEFAULT (0) FOR [field_required],
 	CONSTRAINT [DF_phpbb_pffiel_field_show_on_reg] DEFAULT (0) FOR [field_show_on_reg],
 	CONSTRAINT [DF_phpbb_pffiel_field_hide] DEFAULT (0) FOR [field_hide],
 	CONSTRAINT [DF_phpbb_pffiel_field_no_view] DEFAULT (0) FOR [field_no_view],
 	CONSTRAINT [DF_phpbb_pffiel_field_active] DEFAULT (0) FOR [field_active],
-	CONSTRAINT [DF_phpbb_pffiel_field_order] DEFAULT (0) FOR [field_order]
+	CONSTRAINT [DF_phpbb_pffiel_field_order] DEFAULT (0) FOR [field_order],
+	CONSTRAINT [DF_phpbb_pffiel_field_name] DEFAULT ('') FOR [field_name],
+	CONSTRAINT [DF_phpbb_pffiel_field_ident] DEFAULT ('') FOR [field_ident],
+	CONSTRAINT [DF_phpbb_pffiel_field_length] DEFAULT ('') FOR [field_length],
+	CONSTRAINT [DF_phpbb_pffiel_field_minlen] DEFAULT ('') FOR [field_minlen],
+	CONSTRAINT [DF_phpbb_pffiel_field_maxlen] DEFAULT ('') FOR [field_maxlen],
+	CONSTRAINT [DF_phpbb_pffiel_field_novalue] DEFAULT ('') FOR [field_novalue],
+	CONSTRAINT [DF_phpbb_pffiel_field_validation] DEFAULT ('') FOR [field_validation]
 GO
 
 CREATE  INDEX [field_type] ON [phpbb_profile_fields]([field_type]) ON [PRIMARY]
@@ -1254,7 +1295,8 @@ ALTER TABLE [phpbb_profile_fields_lang] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_pfflan_field_id] DEFAULT (0) FOR [field_id],
 	CONSTRAINT [DF_phpbb_pfflan_lang_id] DEFAULT (0) FOR [lang_id],
 	CONSTRAINT [DF_phpbb_pfflan_option_id] DEFAULT (0) FOR [option_id],
-	CONSTRAINT [DF_phpbb_pfflan_field_type] DEFAULT (0) FOR [field_type]
+	CONSTRAINT [DF_phpbb_pfflan_field_type] DEFAULT (0) FOR [field_type],
+	CONSTRAINT [DF_phpbb_pfflan_value] DEFAULT ('') FOR [value]
 GO
 
 
@@ -1280,7 +1322,9 @@ GO
 
 ALTER TABLE [phpbb_profile_lang] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_pflang_field_id] DEFAULT (0) FOR [field_id],
-	CONSTRAINT [DF_phpbb_pflang_lang_id] DEFAULT (0) FOR [lang_id]
+	CONSTRAINT [DF_phpbb_pflang_lang_id] DEFAULT (0) FOR [lang_id],
+	CONSTRAINT [DF_phpbb_pflang_lang_name] DEFAULT ('') FOR [lang_name],
+	CONSTRAINT [DF_phpbb_pflang_lang_default_value] DEFAULT ('') FOR [lang_default_value]
 GO
 
 
@@ -1360,7 +1404,8 @@ ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_reporr_reason_order] DEFAULT (0) FOR [reason_order]
+	CONSTRAINT [DF_phpbb_reporr_reason_order] DEFAULT (0) FOR [reason_order],
+	CONSTRAINT [DF_phpbb_reporr_reason_title] DEFAULT ('') FOR [reason_title]
 GO
 
 
@@ -1383,7 +1428,8 @@ ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_search_results] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_search_search_time] DEFAULT (0) FOR [search_time]
+	CONSTRAINT [DF_phpbb_search_search_time] DEFAULT (0) FOR [search_time],
+	CONSTRAINT [DF_phpbb_search_search_key] DEFAULT ('') FOR [search_key]
 GO
 
 
@@ -1405,7 +1451,8 @@ ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_swlist_word_common] DEFAULT (0) FOR [word_common]
+	CONSTRAINT [DF_phpbb_swlist_word_common] DEFAULT (0) FOR [word_common],
+	CONSTRAINT [DF_phpbb_swlist_word_text] DEFAULT ('') FOR [word_text]
 GO
 
 CREATE  INDEX [word_id] ON [phpbb_search_wordlist]([word_id]) ON [PRIMARY]
@@ -1442,7 +1489,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_start] [int] NOT NULL ,
 	[session_time] [int] NOT NULL ,
 	[session_ip] [varchar] (40) NOT NULL ,
-	[session_browser] [varchar] (150) NULL ,
+	[session_browser] [varchar] (150) NOT NULL ,
 	[session_page] [varchar] (200) NOT NULL ,
 	[session_viewonline] [int] NOT NULL ,
 	[session_autologin] [int] NOT NULL ,
@@ -1465,7 +1512,10 @@ ALTER TABLE [phpbb_sessions] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_sessio_session_ip] DEFAULT ('0') FOR [session_ip],
 	CONSTRAINT [DF_phpbb_sessio_session_viewonline] DEFAULT (1) FOR [session_viewonline],
 	CONSTRAINT [DF_phpbb_sessio_session_autologin] DEFAULT (0) FOR [session_autologin],
-	CONSTRAINT [DF_phpbb_sessio_session_admin] DEFAULT (0) FOR [session_admin]
+	CONSTRAINT [DF_phpbb_sessio_session_admin] DEFAULT (0) FOR [session_admin],
+	CONSTRAINT [DF_phpbb_sessio_session_id] DEFAULT ('') FOR [session_id],
+	CONSTRAINT [DF_phpbb_sessio_session_browser] DEFAULT ('') FOR [session_browser],
+	CONSTRAINT [DF_phpbb_sessio_session_page] DEFAULT ('') FOR [session_page]
 GO
 
 CREATE  INDEX [session_time] ON [phpbb_sessions]([session_time]) ON [PRIMARY]
@@ -1481,7 +1531,7 @@ GO
 CREATE TABLE [phpbb_sessions_keys] (
 	[key_id] [varchar] (32) NOT NULL ,
 	[user_id] [int] NOT NULL ,
-	[last_ip] [varchar] (100) NOT NULL ,
+	[last_ip] [varchar] (40) NOT NULL ,
 	[last_login] [int] NOT NULL
 ) ON [PRIMARY]
 GO
@@ -1524,7 +1574,9 @@ ALTER TABLE [phpbb_sitelist] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_sitelist] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_siteli_ip_exclude] DEFAULT (0) FOR [ip_exclude]
+	CONSTRAINT [DF_phpbb_siteli_ip_exclude] DEFAULT (0) FOR [ip_exclude],
+	CONSTRAINT [DF_phpbb_siteli_ip_site_ip] DEFAULT ('') FOR [site_ip],
+	CONSTRAINT [DF_phpbb_siteli_ip_site_hostname] DEFAULT ('') FOR [site_hostname]
 GO
 
 
@@ -1551,9 +1603,6 @@ ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_smilie_smiley_width] DEFAULT (0) FOR [smiley_width],
-	CONSTRAINT [DF_phpbb_smilie_smiley_height] DEFAULT (0) FOR [smiley_height],
-	CONSTRAINT [DF_phpbb_smilie_smiley_order] DEFAULT (0) FOR [smiley_order],
 	CONSTRAINT [DF_phpbb_smilie_display_on_posting] DEFAULT (1) FOR [display_on_posting]
 GO
 
@@ -1581,9 +1630,8 @@ GO
 
 ALTER TABLE [phpbb_styles] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_styles_style_active] DEFAULT (1) FOR [style_active],
-	CONSTRAINT [DF_phpbb_styles_template_id] DEFAULT (0) FOR [template_id],
-	CONSTRAINT [DF_phpbb_styles_theme_id] DEFAULT (0) FOR [theme_id],
-	CONSTRAINT [DF_phpbb_styles_imageset_id] DEFAULT (0) FOR [imageset_id]
+	CONSTRAINT [DF_phpbb_styles_style_name] DEFAULT ('') FOR [style_name],
+	CONSTRAINT [DF_phpbb_styles_style_copyright] DEFAULT ('') FOR [style_copyright]
 GO
 
 CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
@@ -1598,6 +1646,91 @@ GO
 CREATE  INDEX [imageset_id] ON [phpbb_styles]([imageset_id]) ON [PRIMARY]
 GO
 
+
+/*
+ Table: phpbb_styles_template
+*/
+CREATE TABLE [phpbb_styles_template] (
+	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[template_name] [varchar] (255) NOT NULL ,
+	[template_copyright] [varchar] (255) NOT NULL ,
+	[template_path] [varchar] (100) NOT NULL ,
+	[bbcode_bitfield] [int] NOT NULL ,
+	[template_storedb] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_styles_template] PRIMARY KEY  CLUSTERED 
+	(
+		[template_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_templa_bbcode_bitfield] DEFAULT (6921) FOR [bbcode_bitfield],
+	CONSTRAINT [DF_phpbb_templa_template_storedb] DEFAULT (0) FOR [template_storedb]
+GO
+
+CREATE  UNIQUE  INDEX [template_name] ON [phpbb_styles_template]([template_name]) ON [PRIMARY]
+GO
+
+
+/*
+ Table: phpbb_styles_template_data
+*/
+CREATE TABLE [phpbb_styles_template_data] (
+	[template_id] [int] NOT NULL ,
+	[template_filename] [varchar] (100) NOT NULL ,
+	[template_included] [text] ,
+	[template_mtime] [int] NOT NULL ,
+	[template_data] [text] 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_styles_template_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_tpldat_template_mtime] DEFAULT (0) FOR [template_mtime],
+	CONSTRAINT [DF_phpbb_tpldat_template_filename] DEFAULT ('') FOR [template_filename]
+GO
+
+CREATE  INDEX [template_id] ON [phpbb_styles_template_data]([template_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [template_filename] ON [phpbb_styles_template_data]([template_filename]) ON [PRIMARY]
+GO
+
+
+/*
+ Table: phpbb_styles_theme
+*/
+CREATE TABLE [phpbb_styles_theme] (
+	[theme_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[theme_name] [varchar] (255) NOT NULL ,
+	[theme_copyright] [varchar] (255) NOT NULL ,
+	[theme_path] [varchar] (100) NOT NULL ,
+	[theme_storedb] [int] NOT NULL ,
+	[theme_mtime] [int] NOT NULL ,
+	[theme_data] [text] 
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_styles_theme] PRIMARY KEY  CLUSTERED 
+	(
+		[theme_id]
+	)  ON [PRIMARY] 
+GO
+
+ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_theme__theme_storedb] DEFAULT (0) FOR [theme_storedb],
+	CONSTRAINT [DF_phpbb_theme__theme_mtime] DEFAULT (0) FOR [theme_mtime],
+	CONSTRAINT [DF_phpbb_theme__theme_name] DEFAULT ('') FOR [theme_name],
+	CONSTRAINT [DF_phpbb_theme__theme_copyright] DEFAULT ('') FOR [theme_copyright],
+	CONSTRAINT [DF_phpbb_theme__theme_path] DEFAULT ('') FOR [theme_path]
+GO
+
+CREATE  UNIQUE  INDEX [theme_name] ON [phpbb_styles_theme]([theme_name]) ON [PRIMARY]
+GO
 
 /*
  Table: phpbb_styles_imageset
@@ -1694,91 +1827,92 @@ ALTER TABLE [phpbb_styles_imageset] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+ALTER TABLE [phpbb_styles_imageset] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_styles_imageset_imageset_name] DEFAULT ('') FOR [imageset_name],
+	CONSTRAINT [DF_phpbb_styles_imageset_imageset_copyright] DEFAULT ('') FOR [imageset_copyright],
+	CONSTRAINT [DF_phpbb_styles_imageset_imageset_path] DEFAULT ('') FOR [imageset_path],
+	CONSTRAINT [DF_phpbb_styles_imageset_site_logo] DEFAULT ('') FOR [site_logo],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_post] DEFAULT ('') FOR [btn_post],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_post_pm] DEFAULT ('') FOR [btn_post_pm],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_reply] DEFAULT ('') FOR [btn_reply],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_reply_pm] DEFAULT ('') FOR [btn_reply_pm],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_locked] DEFAULT ('') FOR [btn_locked],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_profile] DEFAULT ('') FOR [btn_profile],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_pm] DEFAULT ('') FOR [btn_pm],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_delete] DEFAULT ('') FOR [btn_delete],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_info] DEFAULT ('') FOR [btn_info],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_quote] DEFAULT ('') FOR [btn_quote],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_search] DEFAULT ('') FOR [btn_search],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_edit] DEFAULT ('') FOR [btn_edit],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_report] DEFAULT ('') FOR [btn_report],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_email] DEFAULT ('') FOR [btn_email],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_www] DEFAULT ('') FOR [btn_www],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_icq] DEFAULT ('') FOR [btn_icq],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_aim] DEFAULT ('') FOR [btn_aim],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_yim] DEFAULT ('') FOR [btn_yim],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_msnm] DEFAULT ('') FOR [btn_msnm],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_jabber] DEFAULT ('') FOR [btn_jabber],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_online] DEFAULT ('') FOR [btn_online],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_offline] DEFAULT ('') FOR [btn_offline],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_friend] DEFAULT ('') FOR [btn_friend],
+	CONSTRAINT [DF_phpbb_styles_imageset_btn_foe] DEFAULT ('') FOR [btn_foe],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_unapproved] DEFAULT ('') FOR [icon_unapproved],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_reported] DEFAULT ('') FOR [icon_reported],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_attach] DEFAULT ('') FOR [icon_attach],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_post] DEFAULT ('') FOR [icon_post],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_post_new] DEFAULT ('') FOR [icon_post_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_post_latest] DEFAULT ('') FOR [icon_post_latest],
+	CONSTRAINT [DF_phpbb_styles_imageset_icon_post_newest] DEFAULT ('') FOR [icon_post_newest],
+	CONSTRAINT [DF_phpbb_styles_imageset_forum] DEFAULT ('') FOR [forum],
+	CONSTRAINT [DF_phpbb_styles_imageset_forum_new] DEFAULT ('') FOR [forum_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_forum_locked] DEFAULT ('') FOR [forum_locked],
+	CONSTRAINT [DF_phpbb_styles_imageset_forum_link] DEFAULT ('') FOR [forum_link],
+	CONSTRAINT [DF_phpbb_styles_imageset_sub_forum] DEFAULT ('') FOR [sub_forum],
+	CONSTRAINT [DF_phpbb_styles_imageset_sub_forum_new] DEFAULT ('') FOR [sub_forum_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder] DEFAULT ('') FOR [folder],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_moved] DEFAULT ('') FOR [folder_moved],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_posted] DEFAULT ('') FOR [folder_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_new] DEFAULT ('') FOR [folder_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_new_posted] DEFAULT ('') FOR [folder_new_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_hot] DEFAULT ('') FOR [folder_hot],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_hot_posted] DEFAULT ('') FOR [folder_hot_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_hot_new] DEFAULT ('') FOR [folder_hot_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_hot_new_posted] DEFAULT ('') FOR [folder_hot_new_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_locked] DEFAULT ('') FOR [folder_locked],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_locked_posted] DEFAULT ('') FOR [folder_locked_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_locked_new] DEFAULT ('') FOR [folder_locked_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_locked_new_posted] DEFAULT ('') FOR [folder_locked_new_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_sticky] DEFAULT ('') FOR [folder_sticky],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_sticky_posted] DEFAULT ('') FOR [folder_sticky_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_sticky_new] DEFAULT ('') FOR [folder_sticky_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_sticky_new_posted] DEFAULT ('') FOR [folder_sticky_new_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_announce] DEFAULT ('') FOR [folder_announce],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_announce_posted] DEFAULT ('') FOR [folder_announce_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_announce_new] DEFAULT ('') FOR [folder_announce_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_announce_new_posted] DEFAULT ('') FOR [folder_announce_new_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_global] DEFAULT ('') FOR [folder_global],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_global_posted] DEFAULT ('') FOR [folder_global_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_global_new] DEFAULT ('') FOR [folder_global_new],
+	CONSTRAINT [DF_phpbb_styles_imageset_folder_global_new_posted] DEFAULT ('') FOR [folder_global_new_posted],
+	CONSTRAINT [DF_phpbb_styles_imageset_poll_left] DEFAULT ('') FOR [poll_left],
+	CONSTRAINT [DF_phpbb_styles_imageset_poll_center] DEFAULT ('') FOR [poll_center],
+	CONSTRAINT [DF_phpbb_styles_imageset_poll_right] DEFAULT ('') FOR [poll_right],
+	CONSTRAINT [DF_phpbb_styles_imageset_attach_progress_bar] DEFAULT ('') FOR [attach_progress_bar],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon1] DEFAULT ('') FOR [user_icon1],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon2] DEFAULT ('') FOR [user_icon2],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon3] DEFAULT ('') FOR [user_icon3],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon4] DEFAULT ('') FOR [user_icon4],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon5] DEFAULT ('') FOR [user_icon5],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon6] DEFAULT ('') FOR [user_icon6],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon7] DEFAULT ('') FOR [user_icon7],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon8] DEFAULT ('') FOR [user_icon8],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon9] DEFAULT ('') FOR [user_icon9],
+	CONSTRAINT [DF_phpbb_styles_imageset_user_icon10] DEFAULT ('') FOR [user_icon10]
+GO
+
 CREATE  UNIQUE  INDEX [imageset_name] ON [phpbb_styles_imageset]([imageset_name]) ON [PRIMARY]
 GO
 
-
-/*
- Table: phpbb_styles_template
-*/
-CREATE TABLE [phpbb_styles_template] (
-	[template_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[template_name] [varchar] (255) NOT NULL ,
-	[template_copyright] [varchar] (255) NOT NULL ,
-	[template_path] [varchar] (100) NOT NULL ,
-	[bbcode_bitfield] [int] NOT NULL ,
-	[template_storedb] [int] NOT NULL 
-) ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_template] PRIMARY KEY  CLUSTERED 
-	(
-		[template_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [phpbb_styles_template] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_templa_bbcode_bitfield] DEFAULT (6921) FOR [bbcode_bitfield],
-	CONSTRAINT [DF_phpbb_templa_template_storedb] DEFAULT (0) FOR [template_storedb]
-GO
-
-CREATE  UNIQUE  INDEX [template_name] ON [phpbb_styles_template]([template_name]) ON [PRIMARY]
-GO
-
-
-/*
- Table: phpbb_styles_template_data
-*/
-CREATE TABLE [phpbb_styles_template_data] (
-	[template_id] [int] NOT NULL ,
-	[template_filename] [varchar] (100) NOT NULL ,
-	[template_included] [text] ,
-	[template_mtime] [int] NOT NULL ,
-	[template_data] [text] 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_template_data] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_tpldat_template_id] DEFAULT (0) FOR [template_id],
-	CONSTRAINT [DF_phpbb_tpldat_template_mtime] DEFAULT (0) FOR [template_mtime]
-GO
-
-CREATE  INDEX [template_id] ON [phpbb_styles_template_data]([template_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [template_filename] ON [phpbb_styles_template_data]([template_filename]) ON [PRIMARY]
-GO
-
-
-/*
- Table: phpbb_styles_theme
-*/
-CREATE TABLE [phpbb_styles_theme] (
-	[theme_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[theme_name] [varchar] (255) NOT NULL ,
-	[theme_copyright] [varchar] (255) NOT NULL ,
-	[theme_path] [varchar] (100) NOT NULL ,
-	[theme_storedb] [int] NOT NULL ,
-	[theme_mtime] [int] NOT NULL ,
-	[theme_data] [text] 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_styles_theme] PRIMARY KEY  CLUSTERED 
-	(
-		[theme_id]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [phpbb_styles_theme] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_theme__theme_storedb] DEFAULT (0) FOR [theme_storedb],
-	CONSTRAINT [DF_phpbb_theme__theme_mtime] DEFAULT (0) FOR [theme_mtime]
-GO
-
-CREATE  UNIQUE  INDEX [theme_name] ON [phpbb_styles_theme]([theme_name]) ON [PRIMARY]
-GO
 
 
 /*
@@ -1848,7 +1982,6 @@ ALTER TABLE [phpbb_topics] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_topics_topic_moved_id] DEFAULT (0) FOR [topic_moved_id],
 	CONSTRAINT [DF_phpbb_topics_topic_bumped] DEFAULT (0) FOR [topic_bumped],
 	CONSTRAINT [DF_phpbb_topics_topic_bumper] DEFAULT (0) FOR [topic_bumper],
-	CONSTRAINT [DF_phpbb_topics_poll_title] DEFAULT ('') FOR [poll_title],
 	CONSTRAINT [DF_phpbb_topics_poll_start] DEFAULT (0) FOR [poll_start],
 	CONSTRAINT [DF_phpbb_topics_poll_length] DEFAULT (0) FOR [poll_length],
 	CONSTRAINT [DF_phpbb_topics_poll_max_options] DEFAULT (1) FOR [poll_max_options],
@@ -1982,14 +2115,14 @@ CREATE TABLE [phpbb_users] (
 	[user_type] [int] NOT NULL ,
 	[group_id] [int] NOT NULL ,
 	[user_permissions] [text] NULL ,
-	[user_perm_from] [int] NULL ,
+	[user_perm_from] [int] NOT NULL ,
 	[user_ip] [varchar] (40) NOT NULL ,
 	[user_regdate] [int] NOT NULL ,
 	[username] [varchar] (255) NOT NULL ,
-	[user_password] [varchar] (32) NOT NULL ,
+	[user_password] [varchar] (40) NOT NULL ,
 	[user_passchg] [int] NULL ,
 	[user_email] [varchar] (100) NOT NULL ,
-	[user_email_hash] [float] NOT NULL ,
+	[user_email_hash] [int] NOT NULL ,
 	[user_birthday] [varchar] (10) NULL ,
 	[user_lastvisit] [int] NOT NULL ,
 	[user_lastmark] [int] NOT NULL ,
@@ -2013,12 +2146,12 @@ CREATE TABLE [phpbb_users] (
 	[user_message_rules] [int] NOT NULL ,
 	[user_full_folder] [int] NOT NULL ,
 	[user_emailtime] [int] NOT NULL ,
-	[user_post_show_days] [int] NOT NULL ,
-	[user_post_sortby_type] [varchar] (1) NOT NULL ,
-	[user_post_sortby_dir] [varchar] (1) NOT NULL ,
 	[user_topic_show_days] [int] NOT NULL ,
 	[user_topic_sortby_type] [varchar] (1) NOT NULL ,
 	[user_topic_sortby_dir] [varchar] (1) NOT NULL ,
+	[user_post_show_days] [int] NOT NULL ,
+	[user_post_sortby_type] [varchar] (1) NOT NULL ,
+	[user_post_sortby_dir] [varchar] (1) NOT NULL ,
 	[user_notify] [int] NOT NULL ,
 	[user_notify_pm] [int] NOT NULL ,
 	[user_notify_type] [int] NOT NULL ,
@@ -2099,7 +2232,29 @@ ALTER TABLE [phpbb_users] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_users__user_avatar_type] DEFAULT (0) FOR [user_avatar_type],
 	CONSTRAINT [DF_phpbb_users__user_avatar_width] DEFAULT (0) FOR [user_avatar_width],
 	CONSTRAINT [DF_phpbb_users__user_avatar_height] DEFAULT (0) FOR [user_avatar_height],
-	CONSTRAINT [DF_phpbb_users__user_sig_bbcode_bitf] DEFAULT (0) FOR [user_sig_bbcode_bitfield]
+	CONSTRAINT [DF_phpbb_users__user_sig_bbcode_bitf] DEFAULT (0) FOR [user_sig_bbcode_bitfield],
+	CONSTRAINT [DF_phpbb_users__user_ip] DEFAULT ('') FOR [user_ip],
+	CONSTRAINT [DF_phpbb_users__username] DEFAULT ('') FOR [username],
+	CONSTRAINT [DF_phpbb_users__user_password] DEFAULT ('') FOR [user_password],
+	CONSTRAINT [DF_phpbb_users__user_email] DEFAULT ('') FOR [user_email],
+	CONSTRAINT [DF_phpbb_users__user_birthday] DEFAULT ('') FOR [user_birthday],
+	CONSTRAINT [DF_phpbb_users__user_lastpage] DEFAULT ('') FOR [user_lastpage],
+	CONSTRAINT [DF_phpbb_users__user_last_confirm_key] DEFAULT ('') FOR [user_last_confirm_key],
+	CONSTRAINT [DF_phpbb_users__user_lang] DEFAULT ('') FOR [user_lang],
+	CONSTRAINT [DF_phpbb_users__user_colour] DEFAULT ('') FOR [user_colour],
+	CONSTRAINT [DF_phpbb_users__user_avatar] DEFAULT ('') FOR [user_avatar],
+	CONSTRAINT [DF_phpbb_users__user_sig_bbcode_uid] DEFAULT ('') FOR [user_sig_bbcode_uid],
+	CONSTRAINT [DF_phpbb_users__user_from] DEFAULT ('') FOR [user_from],
+	CONSTRAINT [DF_phpbb_users__user_icq] DEFAULT ('') FOR [user_icq],
+	CONSTRAINT [DF_phpbb_users__user_aim] DEFAULT ('') FOR [user_aim],
+	CONSTRAINT [DF_phpbb_users__user_yim] DEFAULT ('') FOR [user_yim],
+	CONSTRAINT [DF_phpbb_users__user_msnm] DEFAULT ('') FOR [user_msnm],
+	CONSTRAINT [DF_phpbb_users__user_jabber] DEFAULT ('') FOR [user_jabber],
+	CONSTRAINT [DF_phpbb_users__user_website] DEFAULT ('') FOR [user_website],
+	CONSTRAINT [DF_phpbb_users__user_occ] DEFAULT ('') FOR [user_occ],
+	CONSTRAINT [DF_phpbb_users__user_interests] DEFAULT ('') FOR [user_interests],
+	CONSTRAINT [DF_phpbb_users__user_actkey] DEFAULT ('') FOR [user_actkey],
+	CONSTRAINT [DF_phpbb_users__user_newpasswd] DEFAULT ('') FOR [user_newpasswd]
 GO
 
 CREATE  INDEX [user_birthday] ON [phpbb_users]([user_birthday]) ON [PRIMARY]

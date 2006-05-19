@@ -71,21 +71,21 @@ function login_db(&$username, &$password)
 
 			if ($confirm_row)
 			{
-				if (strcasecmp($confirm_row['code'], $confirm_code) == 0)
-				{
-					return array(
-						'status'		=> LOGIN_ERROR_ATTEMPTS,
-						'error_msg'		=> 'CONFIRM_CODE_WRONG',
-						'user_row'		=> $row,
-					);
-				}
-				else
+				if (strcasecmp($confirm_row['code'], $confirm_code) === 0)
 				{
 					$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
 						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
 							AND session_id = '" . $db->sql_escape($user->session_id) . "'
 							AND confirm_type = " . CONFIRM_LOGIN;
 					$db->sql_query($sql);
+				}
+				else
+				{
+					return array(
+						'status'		=> LOGIN_ERROR_ATTEMPTS,
+						'error_msg'		=> 'CONFIRM_CODE_WRONG',
+						'user_row'		=> $row,
+					);
 				}
 			}
 			else

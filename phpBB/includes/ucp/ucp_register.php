@@ -156,18 +156,18 @@ class ucp_register
 
 					if ($row = $db->sql_fetchrow($result))
 					{
-						if (strcasecmp($row['code'], $confirm_code) == 0)
-						{
-							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-							$wrong_confirm = true;
-						}
-						else
+						if (strcasecmp($row['code'], $confirm_code) === 0)
 						{
 							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
 								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
 									AND session_id = '" . $db->sql_escape($user->session_id) . "'
 									AND confirm_type = " . CONFIRM_REG;
 							$db->sql_query($sql);
+						}
+						else
+						{
+							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+							$wrong_confirm = true;
 						}
 					}
 					else
