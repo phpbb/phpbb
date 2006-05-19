@@ -156,9 +156,10 @@ $lang = array_merge($lang, array(
 	'MCP_NOTES_FRONT'				=> 'Front Page',
 	'MCP_NOTES_USER'				=> 'User Details',
 
-	'MCP_REPORTS'					=> 'Open Reports',
+	'MCP_REPORTS'					=> 'Reported Posts',
 	'MCP_REPORT_DETAILS'			=> 'Report Details',
 	'MCP_REPORTS_CLOSED'			=> 'Closed Reports',
+	'MCP_REPORTS_OPEN'				=> 'Open Reports',
 
 	'MCP_QUEUE'						=> 'Moderation Queue',
 	'MCP_QUEUE_APPROVE_DETAILS'		=> 'Approve Details',
