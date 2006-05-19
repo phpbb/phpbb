@@ -386,8 +386,7 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 			$row = &$rowset[$topic_id];
 
 			// This will allow the style designer to output a different header
-			// or even seperate the list of announcements from sticky and normal
-			// topics
+			// or even seperate the list of announcements from sticky and normal topics
 			$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 			// Replies
@@ -396,9 +395,12 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 			if ($row['topic_status'] == ITEM_MOVED)
 			{
 				$topic_id = $row['topic_moved_id'];
+				$unread_topic = false;
 			}
-
-			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+			else
+			{
+				$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+			}
 
 			// Get folder img, topic status/type related informations
 			$folder_img = $folder_alt = $topic_type = '';
@@ -476,6 +478,7 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 					LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . ' AND tt.topic_id = t.topic_id)
 					WHERE t.forum_id = ' . $forum_id . '
 						AND t.topic_last_post_time > ' . $mark_time_forum . '
+						AND t.topic_moved_id = 0
 						AND tt.topic_id IS NULL
 					GROUP BY t.forum_id';
 				$result = $db->sql_query($sql);
@@ -497,7 +500,8 @@ if ($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16
 			{
 				$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . '
 					WHERE forum_id = ' . $forum_id . '
-						AND topic_last_post_time > ' . $mark_time_forum;
+						AND topic_last_post_time > ' . $mark_time_forum . '
+						AND topic_moved_id = 0';
 				$result = $db->sql_query($sql);
 				
 				$check_forum = $tracking_topics['tf'][$forum_id];

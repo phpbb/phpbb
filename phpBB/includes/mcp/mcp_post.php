@@ -35,6 +35,7 @@ function mcp_post_details($id, $mode, $action)
 	switch ($action)
 	{
 		case 'whois':
+
 			$ip = request_var('ip', '');
 			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 			
@@ -47,48 +48,37 @@ function mcp_post_details($id, $mode, $action)
 				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], "<a href=\"{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;p=$post_id\">", '</a>'),
 				'WHOIS'			=> trim($whois))
 			);
-		// We're done with the whois page so return
-		return;
 
-		case 'chgposter':
+			// We're done with the whois page so return
+			return;
 
-			$username = request_var('username', '', true);
-
-			$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . '
-					WHERE username = \'' . $db->sql_escape($username) . '\'';
-			$result = $db->sql_query($sql);
-
-			if (!($row = $db->sql_fetchrow($result)))
-			{
-				trigger_error($user->lang['NO_USER']);
-			}
-			$new_user = $row['user_id'];
-
-			if ($auth->acl_get('m_', $post_info['forum_id']))
-			{
-				change_poster($post_info, $new_user);
-			}
 		break;
 
+		case 'chgposter':
 		case 'chgposter_ip':
 
-			$new_user = request_var('u', 0);
+			$username = request_var('username', '', true);
+			$new_user_id = request_var('u', 0);
 
-			$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . '
-					WHERE user_id = ' . $new_user;
+			$sql_where = ($new_user_id) ? 'user_id = ' . $new_user_id : "username = '" . $db->sql_escape($username) . "'";
+
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $sql_where;
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if (!($row = $db->sql_fetchrow($result)))
+			if (!$row)
 			{
 				trigger_error($user->lang['NO_USER']);
 			}
 
 			if ($auth->acl_get('m_', $post_info['forum_id']))
 			{
-				change_poster($post_info, $new_user);
+				change_poster($post_info, $row);
 			}
+
 		break;
 	}
 
@@ -101,11 +91,12 @@ function mcp_post_details($id, $mode, $action)
 	$message = $post_info['post_text'];
 	if ($post_info['bbcode_bitfield'])
 	{
-		include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		$bbcode = new bbcode($post_info['bbcode_bitfield']);
 		$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 	}
 	$message = smiley_text($message);
+	$message = str_replace("\n", '<br />', $message);
 
 	$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters
@@ -117,15 +108,15 @@ function mcp_post_details($id, $mode, $action)
 		'S_CAN_LOCK_POST'		=> $auth->acl_get('m_lock', $post_info['forum_id']),
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
 
-		'S_POST_REPORTED'		=> $post_info['post_reported'],
-		'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
-		'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
-		'S_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? true : false,
+		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
+		'S_POST_UNAPPROVED'		=> (!$post_info['post_approved']) ? true : false,
+		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
+		'S_USER_NOTES'			=> ($auth->acl_gets('m_', 'a_')) ? true : false,
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 
 		'U_FIND_MEMBER'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp_chgposter&amp;field=username",
 		'U_VIEW_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'],
-		'U_MCP_USER_NOTES'		=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'] : '',
+		'U_MCP_USER_NOTES'		=> ($auth->acl_gets('m_', 'a_')) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'] : '',
 		'U_MCP_WARN_USER'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $post_info['user_id'],
 		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}" : '',
 
@@ -226,7 +217,7 @@ function mcp_post_details($id, $mode, $action)
 				$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
 					FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
 					WHERE p.poster_id = u.user_id
-						AND p.poster_ip = '{$post_info['poster_ip']}'
+						AND p.poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
 						AND p.poster_id <> {$post_info['user_id']}
 					GROUP BY u.user_id, u.username
 					ORDER BY COUNT(*) DESC";
@@ -236,7 +227,7 @@ function mcp_post_details($id, $mode, $action)
 				$sql = 'SELECT u.user_id, u.username, COUNT(*) as postings
 					FROM ' . USERS_TABLE . ' u, ' . POSTS_TABLE . " p
 					WHERE p.poster_id = u.user_id
-						AND p.poster_ip = '{$post_info['poster_ip']}'
+						AND p.poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
 						AND p.poster_id <> {$post_info['user_id']}
 					GROUP BY u.user_id, u.username
 					ORDER BY postings DESC";
@@ -306,6 +297,7 @@ function mcp_post_details($id, $mode, $action)
 
 		$user_select = '';
 		ksort($users_ary);
+
 		foreach ($users_ary as $row)
 		{
 			$user_select .= '<option value="' . $row['user_id'] . '">' . $row['username'] . "</option>\n";
@@ -316,37 +308,90 @@ function mcp_post_details($id, $mode, $action)
 }
 
 /**
-* Changes a post's poster_id
+* Change a post's poster
 */
-function change_poster(&$post_info, $new_user)
+function change_poster(&$post_info, $userdata)
 {
 	global $auth, $db;
 
-	if ($new_user && $new_user != $post_info['user_id'])
+	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
-		$post_id = $post_info['post_id'];
-
-		$sql = 'UPDATE ' . POSTS_TABLE . "
-			SET poster_id = $new_user
-			WHERE post_id = " . $post_id;
-		$db->sql_query($sql);
-
-		if ($post_info['topic_last_post_id'] == $post_id || $post_info['forum_last_post_id'] == $post_id)
-		{
-			sync('topic', 'topic_id', $post_info['topic_id'], false, false);
-			sync('forum', 'forum_id', $post_info['forum_id'], false, false);
-		}
-
-		// Renew post info
-		$post_info = get_post_data(array($post_id));
-
-		if (!sizeof($post_info))
-		{
-			trigger_error($user->lang['POST_NOT_EXIST']);
-		}
-
-		$post_info = $post_info[$post_id];
+		return;
 	}
+
+	$post_id = $post_info['post_id'];
+
+	$sql = 'UPDATE ' . POSTS_TABLE . "
+		SET poster_id = {$userdata['user_id']}
+		WHERE post_id = $post_id";
+	$db->sql_query($sql);
+
+	// Resync topic/forum if needed
+	if ($post_info['topic_last_post_id'] == $post_id || $post_info['forum_last_post_id'] == $post_id)
+	{
+		sync('topic', 'topic_id', $post_info['topic_id'], false, false);
+		sync('forum', 'forum_id', $post_info['forum_id'], false, false);
+	}
+
+	// Adjust post counts
+	$auth_user_from = new auth();
+	$auth_user_from->acl($post_info);
+
+	$auth_user_to = new auth();
+	$auth_user_to->acl($userdata);
+
+	// Decrease post count by one for the old user
+	if ($auth_user_from->acl_get('f_postcount', $post_info['forum_id']))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_posts = user_posts - 1
+			WHERE user_id = ' . $post_info['user_id'];
+		$db->sql_query($sql);
+	}
+
+	// Increase post count by one for the new user
+	if ($auth_user_to->acl_get('f_postcount', $post_info['forum_id']))
+	{
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_posts = user_posts + 1
+			WHERE user_id = ' . $userdata['user_id'];
+		$db->sql_query($sql);
+	}
+
+	// Add posted to information for this topic for the new user
+	markread('post', $post_info['forum_id'], $post_info['topic_id'], time(), $userdata['user_id']);
+
+	// Remove the dotted topic option if the old user has no more posts within this topic
+	$sql = 'SELECT topic_id
+		FROM ' . POSTS_TABLE . '
+		WHERE topic_id = ' . $post_info['topic_id'] . '
+			AND poster_id = ' . $post_info['user_id'];
+	$result = $db->sql_query_limit($sql, 1);
+	$topic_id = (int) $db->sql_fetchfield('topic_id');
+	$db->sql_freeresult($result);
+
+	if (!$topic_id)
+	{
+		$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
+			WHERE user_id = ' . $post_info['user_id'] . '
+				AND topic_id = ' . $post_info['topic_id'];
+		$db->sql_query($sql);
+	}
+
+	// Do not change the poster_id within the attachments table, since they were still posted by the original user
+
+	// Renew post info
+	$post_info = get_post_data(array($post_id));
+
+	if (!sizeof($post_info))
+	{
+		trigger_error($user->lang['POST_NOT_EXIST']);
+	}
+
+	$post_info = $post_info[$post_id];
+
+	// Now add log entry
+	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $post_info['username'], $userdata['username']);
 }
 
 ?>

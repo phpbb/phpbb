@@ -367,12 +367,21 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 {
 	global $db;
 
-	$forum_ids = array($forum_id);
-	$sql_where = (is_array($topic_ids)) ? 'IN (' . implode(', ', $topic_ids) . ')' : '= ' . $topic_ids;
+	if (empty($topic_ids))
+	{
+		return;
+	}
 
-	$sql = 'DELETE FROM ' . TOPICS_TABLE . "
-		WHERE topic_moved_id $sql_where
-			AND forum_id = " . $forum_id;
+	$forum_ids = array($forum_id);
+	
+	if (!is_array($topic_ids))
+	{
+		$topic_ids = array($topic_ids);
+	}
+
+	$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+		WHERE topic_moved_id IN (' . implode(', ', $topic_ids) . ')
+			AND forum_id = ' . $forum_id;
 	$db->sql_query($sql);
 
 	if ($auto_sync)
@@ -388,13 +397,16 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 		}
 		$db->sql_freeresult($result);
 	}
-	
-	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE);
+
+	/**
+	* @todo watch for undesired results on marked topics for moving topics, maybe handle it seperatly to cover cookie tracking
+	*/
+	$table_ary = array(TOPICS_TABLE, POSTS_TABLE, LOG_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 	foreach ($table_ary as $table)
 	{
 		$sql = "UPDATE $table
 			SET forum_id = $forum_id
-			WHERE topic_id " . $sql_where;
+			WHERE topic_id IN (" . implode(', ', $topic_ids) . ')';
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
@@ -418,54 +430,54 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		$post_ids = array($post_ids);
 	}
 
-	if ($auto_sync)
+	$forum_ids = array();
+	$topic_ids = array($topic_id);
+
+	$sql = 'SELECT DISTINCT topic_id, forum_id
+		FROM ' . POSTS_TABLE . '
+		WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_ids = array();
-		$topic_ids = array($topic_id);
-
-		$sql = 'SELECT DISTINCT topic_id, forum_id
-			FROM ' . POSTS_TABLE . '
-			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_ids[] = $row['forum_id'];
-			$topic_ids[] = $row['topic_id'];
-		}
-		$db->sql_freeresult($result);
+		$forum_ids[] = $row['forum_id'];
+		$topic_ids[] = $row['topic_id'];
 	}
+	$db->sql_freeresult($result);
 
 	$sql = 'SELECT forum_id 
 		FROM ' . TOPICS_TABLE . ' 
 		WHERE topic_id = ' . $topic_id;
 	$result = $db->sql_query($sql);
+	$forum_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if (!$row = $db->sql_fetchrow($result))
+	if (!$forum_row)
 	{
 		trigger_error('NO_TOPIC');
 	}
-	$db->sql_freeresult($result);
 
 	$sql = 'UPDATE ' . POSTS_TABLE . '
-		SET forum_id = ' . $row['forum_id'] . ", topic_id = $topic_id
+		SET forum_id = ' . $forum_row['forum_id'] . ", topic_id = $topic_id
 		WHERE post_id IN (" . implode(', ', $post_ids) . ')';
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-		SET topic_id = $topic_id
-			AND in_message = 0
+		SET topic_id = $topic_id, in_message = 0
 		WHERE post_msg_id IN (" . implode(', ', $post_ids) . ')';
 	$db->sql_query($sql);
 
 	if ($auto_sync)
 	{
-		$forum_ids[] = $row['forum_id'];
+		$forum_ids[] = $forum_row['forum_id'];
 
 		sync('topic_reported', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true);
 	}
+
+	// Update posted informations
+	update_posted_info($topic_ids);
 }
 
 /**
@@ -861,6 +873,76 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 	{
 		$where_type = ($forum_id) ? 'forum_id' : '';
 		sync('forum', $where_type, $forum_id, true);
+	}
+}
+
+/**
+* Update/Sync posted informations for topics
+*/
+function update_posted_info($topic_ids)
+{
+	global $db;
+
+	if (empty($topic_ids))
+	{
+		return;
+	}
+
+	// First of all, let us remove any posted information for these topics
+	$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
+		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+	$db->sql_query($sql);
+
+	// Now, let us collect the user/topic combos for rebuilding the information
+	$sql = 'SELECT topic_id, poster_id
+		FROM ' . POSTS_TABLE . '
+		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+	$result = $db->sql_query($sql);
+
+	$posted = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (empty($posted[$row['topic_id']]))
+		{
+			$posted[$row['topic_id']] = array();
+		}
+	
+		// Add as key to make them unique (grouping by) and circumvent empty keys on array_unique
+		$posted[$row['topic_id']][$row['poster_id']] = 1;
+	}
+	$db->sql_freeresult($result);
+
+	// Now add the information...
+	$sql_ary = array();
+	foreach ($posted as $topic_id => $poster_row)
+	{
+		foreach ($poster_row as $user_id => $null)
+		{
+			$sql_ary[] = array(
+				'user_id'		=> $user_id,
+				'topic_id'		=> $topic_id,
+				'topic_posted'	=> 1,
+			);
+		}
+	}
+
+	if (sizeof($sql_ary))
+	{
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+			break;
+
+			default:
+				foreach ($sql_ary as $ary)
+				{
+					$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+				}
+			break;
+		}
 	}
 }
 
@@ -1365,8 +1447,19 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
 			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
-				$where_sql
-				GROUP BY t.topic_id"; //, t.post_approved";
+				$where_sql";
+
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql-odbc':
+					$sql .= 'GROUP BY t.topic_id, t.post_approved';
+				break;
+
+				default:
+					$sql .= 'GROUP BY t.topic_id';
+				break;
+			}
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1485,7 +1578,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 					$where_sql_and p.topic_id = t.topic_id
 						AND p.post_reported = 1
-					GROUP BY t.topic_id";
+					GROUP BY t.topic_id, p.post_id";
 				$result = $db->sql_query($sql);
 
 				$fieldnames[] = 'reported';
@@ -1501,7 +1594,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 					$where_sql_and p.topic_id = t.topic_id
 						AND p.post_attachment = 1
-					GROUP BY t.topic_id";
+					GROUP BY t.topic_id, p.post_id";
 				$result = $db->sql_query($sql);
 
 				$fieldnames[] = 'attachment';

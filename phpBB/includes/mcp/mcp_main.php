@@ -469,10 +469,6 @@ function mcp_move_topic($topic_ids)
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
-
-				// $next_id = $db->sql_nextid();
-				// Mark Shadow topic read
-				// markread('topic', $row['forum_id'], $next_id);
 			}
 		}
 		unset($topic_data);

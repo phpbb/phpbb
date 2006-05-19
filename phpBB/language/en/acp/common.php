@@ -482,6 +482,8 @@ $lang = array_merge($lang, array(
 
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
 
+	'LOG_MCP_CHANGE_POSTER'	=> '<b>Changed poster in topic "%s"</b><br />&#187; from %s to %s',
+
 	'LOG_MODULE_DISABLE'	=> '<b>Module disabled</b>',
 	'LOG_MODULE_ENABLE'		=> '<b>Module enabled</b>',
 	'LOG_MODULE_MOVE_DOWN'	=> '<b>Module moved down</b><br />&#187; %s',
