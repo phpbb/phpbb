@@ -822,6 +822,9 @@ class fulltext_native extends search_backend
 					case 'mssql':
 					case 'mssql_odbc':
 					case 'sqlite':
+						// make sure the longest word comes first, so nothing will be truncated
+						usort($new_words, array(&$this, 'strlencmp'));
+
 						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
 						$db->sql_query($sql);
 					break;
@@ -880,6 +883,22 @@ class fulltext_native extends search_backend
 		unset($unique_add_words);
 		unset($words);
 		unset($cur_words);
+	}
+
+	/**
+	* Used by index() to sort strings by string length, longest first
+	*/
+	function strlencmp($a, $b)
+	{
+		$len_a = strlen($a);
+		$len_b = strlen($b);
+
+		if ($len_a == $len_b)
+		{
+			return 0;
+		}
+
+		return ($len_a > $len_b) ? -1 : 1;
 	}
 
 	/**
