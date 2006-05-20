@@ -104,8 +104,8 @@ class template_compile
 		$includephp_blocks = $matches[1];
 		$code = preg_replace('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+?) -->#', '<!-- INCLUDEPHP -->', $code);
 
-		preg_match_all('#<!-- (.*?) (.*?)?[ ]?-->#', $code, $blocks);
-		$text_blocks = preg_split('#<!-- (.*?) (.*?)?[ ]?-->#', $code);
+		preg_match_all('#<!-- ([^<!--].*?) (.*?)?[ ]?-->#', $code, $blocks);
+		$text_blocks = preg_split('#<!-- ([^<!--].*?) (.*?)?[ ]?-->#', $code);
 		
 		for ($i = 0, $j = sizeof($text_blocks); $i < $j; $i++)
 		{
