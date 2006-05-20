@@ -535,6 +535,7 @@ $lang = array_merge($lang, array(
 	'LOG_TEMPLATE_ADD_DB'		=> '<b>Added new template set to database</b><br />&#187; %s',
 	'LOG_TEMPLATE_ADD_FS'		=> '<b>Add new template set on filesystem</b><br />&#187; %s',
 	'LOG_TEMPLATE_DELETE'		=> '<b>Deleted template set</b><br />&#187; %s',
+	'LOG_TEMPLATE_EDIT'			=> '<b>Edited template set <i>%s</i></b><br />&#187; %s',
 	'LOG_TEMPLATE_EDIT_DETAILS'	=> '<b>Edited template details</b><br />&#187; %s',
 	'LOG_TEMPLATE_EXPORT'		=> '<b>Exported template set</b><br />&#187; %s',
 	
@@ -542,6 +543,8 @@ $lang = array_merge($lang, array(
 	'LOG_THEME_ADD_FS'			=> '<b>Add new theme on filesystem</b><br />&#187; %s',
 	'LOG_THEME_DELETE'			=> '<b>Theme deleted</b><br />&#187; %s',
 	'LOG_THEME_EDIT_DETAILS'	=> '<b>Edited theme details</b><br />&#187; %s',
+	'LOG_THEME_EDIT'			=> '<b>Edited theme <i>%s</i></b><br />&#187; Modified class <i>%s</i>',
+	'LOG_THEME_EDIT_ADD'		=> '<b>Edited theme <i>%s</i></b><br />&#187; Added class <i>%s</i>',
 	'LOG_THEME_EXPORT'			=> '<b>Exported theme</b><br />&#187; %s',
 
 	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s',

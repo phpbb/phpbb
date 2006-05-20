@@ -83,8 +83,8 @@ if ($id && $sid)
 		{
 			exit;
 		}
-		
-		$force_load = true;	// Ideally this needs to be based on $config['load_tplcompile']
+
+		/*$force_load = true;	// Ideally this needs to be based on $config['load_tplcompile']
 
 		if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css')  || $force_load)
 		{
@@ -103,10 +103,10 @@ if ($id && $sid)
 			}
 			
 			$sql = "UPDATE {$table_prefix}styles_theme 
-				SET theme_data = '" . $db->sql_escape($theme['theme_data']) . "', theme_mtime = " . time() . "
+				SET theme_data = '" . $db->sql_escape(str_replace('./', "styles/{$theme['theme_path']}/theme/", $theme['theme_data'])) . "', theme_mtime = " . time() . "
 				WHERE theme_id = $id";
 			$db->sql_query($sql);
-		}
+		}*/
 
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');

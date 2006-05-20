@@ -108,7 +108,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					return;
 				}
 			break;
-		
+
 			case 'install':
 				$this->install($mode);
 				return;
@@ -118,7 +118,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$this->add($mode);
 				return;
 			break;
-			
+
 			case 'details':
 				if ($style_id)
 				{
@@ -126,7 +126,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					return;
 				}
 			break;
-			
+
 			case 'edit':
 				if ($style_id)
 				{
@@ -136,11 +136,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							return $this->edit_imageset($style_id);
 						case 'template':
 							return $this->edit_template($style_id);
-						/**
-						* @todo Implement the theme editor
-						*/
-						//case 'theme':
-						//	return $this->edit_theme($style_id);
+						case 'theme':
+							return $this->edit_theme($style_id);
 					}
 				}
 			break;
@@ -149,7 +146,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		switch ($mode)
 		{
 			case 'style':
-		
+
 				switch ($action)
 				{
 					case 'activate':
@@ -161,19 +158,19 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						}
 
 						$sql = 'UPDATE ' . STYLES_TABLE . '
-							SET style_active = ' . (($action == 'activate') ? 1 : 0) . ' 
+							SET style_active = ' . (($action == 'activate') ? 1 : 0) . '
 							WHERE style_id = ' . $style_id;
 						$db->sql_query($sql);
 
 						// Set style to default for any member using deactivated style
 						if ($action == 'deactivate')
 						{
-							$sql = 'UPDATE ' . USERS_TABLE . ' 
-								SET user_style = ' . $config['default_style'] . " 
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET user_style = ' . $config['default_style'] . "
 								WHERE user_style = $style_id";
 							$db->sql_query($sql);
 
-							$sql = 'UPDATE ' . FORUMS_TABLE . ' 
+							$sql = 'UPDATE ' . FORUMS_TABLE . '
 								SET forum_style = 0
 								WHERE forum_style = ' . $style_id;
 							$db->sql_query($sql);
@@ -207,7 +204,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						{
 							$filelist = array('' => array());
 
-							$sql = 'SELECT template_filename, template_mtime 
+							$sql = 'SELECT template_filename, template_mtime
 								FROM ' . STYLES_TPLDATA_TABLE . "
 								WHERE template_id = $style_id";
 							$result = $db->sql_query($sql);
@@ -232,7 +229,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							$this->store_templates('update', $style_id, $template_row['template_path'], $filelist);
 							unset($filelist);
 						}
-	
+
 					break;
 				}
 
@@ -245,7 +242,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				{
 					// Refresh/Renew theme cache
 					case 'refresh':
-	
+
 						$sql = 'SELECT *
 							FROM ' . STYLES_CSS_TABLE . "
 							WHERE theme_id = $style_id";
@@ -260,12 +257,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
 						{
-							$theme_data = implode('', file("{$phpbb_root_path}styles/" . $theme_row['theme_path'] . '/theme/stylesheet.css'));
+							$theme_data = file_get_contents("{$phpbb_root_path}styles/" . $theme_row['theme_path'] . '/theme/stylesheet.css');
 
 							// Match CSS imports
 							$matches = array();
 							preg_match_all('/@import url\(\"(.*)\"\);/i', $theme_data, $matches);
-				
+
 							if (sizeof($matches))
 							{
 								foreach ($matches[0] as $idx => $match)
@@ -273,11 +270,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 									$theme_data = str_replace($match, $this->load_css_file($theme_row['theme_path'], $matches[1][$idx]), $theme_data);
 								}
 							}
-							
+
 							// Save CSS contents
 							$sql_ary = array(
 								'theme_mtime'	=> @filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
-								'theme_data'	=> $theme_data
+								'theme_data'	=> str_replace('./', 'styles/' . $theme_info['theme_path'] . '/theme/', $theme_data)
 							);
 
 							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
@@ -312,7 +309,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$sql_from = STYLES_TABLE;
 
 				$sql = 'SELECT user_style, COUNT(user_style) AS style_count
-					FROM ' . USERS_TABLE . ' 
+					FROM ' . USERS_TABLE . '
 					GROUP BY user_style';
 				$result = $db->sql_query($sql);
 
@@ -323,7 +320,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$db->sql_freeresult($result);
 
 			break;
-	
+
 			case 'template':
 				$sql_from = STYLES_TPL_TABLE;
 			break;
@@ -357,7 +354,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			)
 		);
 
-		$sql = "SELECT *  
+		$sql = "SELECT *
 			FROM $sql_from";
 		$result = $db->sql_query($sql);
 
@@ -368,7 +365,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			$installed[] = $row[$mode . '_name'];
 			$basis_options .= '<option value="' . $row[$mode . '_id'] . '">' . $row[$mode . '_name'] . '</option>';
-			
+
 			$stylevis = ($mode == 'style' && !$row['style_active']) ? 'activate' : 'deactivate';
 
 			$s_options = array();
@@ -376,14 +373,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				$s_options[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
 			}
-			
+
 			$template->assign_block_vars('installed', array(
 				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == $config['default_style']) ? true : false,
 				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
 				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
 				'S_OPTIONS'				=> implode(' | ', $s_options),
-				'U_PREVIEW'				=> "{$phpbb_root_path}index.$phpEx$SID&amp;$mode=" . $row[$mode . '_id'],
+				'U_PREVIEW'				=> ($mode == 'style') ? "{$phpbb_root_path}index.$phpEx$SID&amp;$mode=" . $row[$mode . '_id'] : '',
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
@@ -394,7 +391,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Grab uninstalled items
 		$new_ary = $cfg = array();
-		
+
 		/**
 		* @todo grab templates/themes/imagesets from style directories
 		*/
@@ -460,8 +457,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
-		// make sure template_file path doesn't go upwards ;-)
+		// make sure template_file path doesn't go upwards
 		$template_file = str_replace('..', '.', $template_file);
+		// we want newlines no carriage returns!
+		$template_data = str_replace(array("\n\r", "\r"), array("\n", "\n"), $template_data);
 
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
@@ -499,8 +498,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// If it's not stored in the db yet, then update the template setting and store all template files in the db
 				if (!$template_info['template_storedb'])
 				{
-					$sql = 'UPDATE ' . STYLES_TPL_TABLE . ' 
-						SET template_storedb = 1 
+					$sql = 'UPDATE ' . STYLES_TPL_TABLE . '
+						SET template_storedb = 1
 						WHERE template_id = ' . $template_id;
 					$db->sql_query($sql);
 
@@ -512,9 +511,9 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				}
 
 				// Update the template_data table entry for this template file
-				$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . " 
-					SET template_data = '" . $db->sql_escape($template_data) . "', template_mtime = " . time() . " 
-					WHERE template_id = $template_id 
+				$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . "
+					SET template_data = '" . $db->sql_escape($template_data) . "', template_mtime = " . time() . "
+					WHERE template_id = $template_id
 						AND template_filename = '" . $db->sql_escape($template_file) . "'";
 				$db->sql_query($sql);
 
@@ -524,7 +523,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			// destroy the cached version of the template
 			@unlink("{$phpbb_root_path}cache/tpl_{$template_info['template_name']}_" . str_replace('/', '.', $template_file) . ".$phpEx");
 
-			add_log('admin', 'LOG_EDIT_TEMPLATE', $template_info['template_name'], $template_file);
+			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
 			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
 		}
 
@@ -546,8 +545,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		else
 		{
-			$sql = 'SELECT * 
-				FROM ' . STYLES_TPLDATA_TABLE . " 
+			$sql = 'SELECT *
+				FROM ' . STYLES_TPLDATA_TABLE . "
 				WHERE template_id = $template_id";
 			$result = $db->sql_query($sql);
 
@@ -643,6 +642,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows",
 			'U_BACK'			=> $this->u_action,
 
+			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
 			'TEMPLATE_FILE'		=> $template_file,
 			'TEMPLATE_DATA'		=> htmlentities($template_data),
 			'TEXT_ROWS'			=> $text_rows)
@@ -650,9 +650,430 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	}
 
 	/**
-	* Edit imagesets
+	* Provides a css editor and a basic easier to use stylesheet editing tool for less experienced (or lazy) users
+	*
+	* @param int $theme_id specifies which theme is being edited
 	*/
-	function edit_imageset($style_id)
+	function edit_theme($theme_id)
+	{
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+
+		$this->page_title = 'EDIT_THEME';
+
+		// get user input
+		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
+		$hide_css		= request_var('hidecss', false);
+		$show_css		= !$hide_css && request_var('showcss', false);
+		$edit_class		= request_var('css_class', '');
+		$custom_class	= request_var('custom_class', '');
+		$css_data		= (!empty($_POST['css_data'])) ? ((STRIP) ? stripslashes($_POST['css_data']) : $_POST['css_data']) : '';
+		$submit			= isset($_POST['submit']) ? true : false;
+		$add_custom		= isset($_POST['add_custom']) ? true : false;
+		$matches		= array();
+
+		// we want newlines no carriage returns!
+		$css_data = str_replace(array("\n\r", "\r"), array("\n", "\n"), $css_data);
+
+		// Retrieve some information about the theme
+		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
+			FROM ' . STYLES_CSS_TABLE . "
+			WHERE theme_id = $theme_id";
+		$result = $db->sql_query($sql);
+
+		if (!($theme_info = $db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['NO_THEME']);
+		}
+		$db->sql_freeresult($result);
+
+		$stylesheet_path = $phpbb_root_path . 'styles/' . $theme_info['theme_path'] . '/theme/stylesheet.css';
+		// Get the CSS data from either database or filesystem
+		if (!$theme_info['theme_storedb'])
+		{
+			if (!file_exists($stylesheet_path) || !($stylesheet = file_get_contents($stylesheet_path)))
+			{
+				trigger_error($user->lang['NO_THEME']);
+			}
+		}
+		else
+		{
+			$stylesheet = &$theme_info['theme_data'];
+		}
+
+		// Pull out a list of classes
+		$classes = array();
+		if (preg_match_all('/^([a-z0-9\.:#> \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
+		{
+			$classes = $matches[1];
+		}
+
+		// Generate html for the list of classes
+		$s_hidden_fields = array();
+		$s_classes = '';
+		sort($classes);
+		foreach ($classes as $class)
+		{
+			$selected = ($class == $edit_class) ? ' selected="selected"' : '';
+			$s_classes .= '<option value="' . $class . '"' . $selected . '>' . $class . '</option>';
+		}
+
+		$template->assign_vars(array(
+			'S_EDIT_THEME'		=> true,
+			'S_SHOWCSS'			=> $show_css,
+			'S_CLASSES'			=> $s_classes,
+			'S_CLASS'			=> $edit_class,
+
+			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;showcss=$show_css&amp;text_rows=$text_rows",
+			'U_BACK'			=> $this->u_action,
+
+			'SELECTED_THEME'	=> $theme_info['theme_name'],
+			'TEXT_ROWS'			=> $text_rows)
+		);
+
+		// only continue if we are really editing anything
+		if (!$edit_class && !$add_custom)
+		{
+			return;
+		}
+
+		// These are the elements for the simple view
+		$match_elements = array(
+			'colors'	=> array('background-color', 'color',),
+			'sizes'		=> array('font-size', 'line-height',),
+			'images'	=> array('background-image',),
+			'repeat'	=> array('background-repeat',),
+			'other'		=> array('font-weight', 'font-family', 'font-style', 'text-decoration',),
+		);
+
+		// Used in an sprintf statement to generate appropriate output for rawcss mode
+		$map_elements = array(
+			'colors'	=> '%s',
+			'sizes'		=> '%d',
+			'images'	=> 'url(\'./%s\')',
+			'repeat'	=> '%s',
+			'other'		=> '%s',
+		);
+
+		$units = array('px', '%', 'em', 'pt');
+		$repeat_types = array(
+				''			=> $user->lang['UNSET'],
+				'none'		=> $user->lang['REPEAT_NO'],
+				'repeat-x'	=> $user->lang['REPEAT_X'],
+				'repeat-y'	=> $user->lang['REPEAT_Y'],
+				'both'	=> $user->lang['REPEAT_ALL'],
+		);
+
+		// Fill css_data with the class contents from the stylesheet
+		// in case we just selected a class and it's not filled yet
+		if (!$css_data && !$submit && !isset($_POST['hidecss']) && !isset($_POST['showcss']) && !$add_custom)
+		{
+			preg_match('#^[ \t]*?' . preg_quote($edit_class, '#') . '[ \t\n]*?\{(.*?)\}#ms', $stylesheet, $matches);
+
+			if (!isset($matches[1]))
+			{
+				trigger_error($user->lang['NO_CLASS']);
+			}
+
+			$css_data = implode(";\n", array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $matches[1]))), array('')));
+			if ($css_data)
+			{
+				$css_data .= ';';
+			}
+		}
+
+		// If we don't show raw css and the user did not submit any modification
+		// then generate a list of css elements and output them via the template
+		if (!$show_css && !$submit && !$add_custom)
+		{
+			$css_elements = array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $css_data))), array(''));
+
+			// Grab list of potential images for the "images" type
+			$imglist = filelist($phpbb_root_path . 'styles/' . $theme_info['theme_name'] . '/theme');
+
+			foreach ($match_elements as $type => $match_ary)
+			{
+				foreach ($match_ary as $match)
+				{
+					$var = str_replace('-', '_', $match);
+					$value = '';
+					$unit = '';
+
+					if (sizeof($css_elements))
+					{
+						// first read in the setting
+						foreach ($css_elements as $key => $element)
+						{
+							if (preg_match('#^' . preg_quote($match, '#') . ':[ \t\n]*?(.*?)$#', $element, $matches))
+							{
+								switch ($type)
+								{
+									case 'sizes':
+										$value = trim($matches[1]);
+
+										if (preg_match('#(.*?)(px|%|em|pt)#', $matches[1], $matches))
+										{
+											$unit = trim($matches[2]);
+											$value = trim($matches[1]);
+										}
+									break;
+
+									case 'images':
+										if (preg_match('#url\(\'(.*?)\'\)#', $matches[1], $matches))
+										{
+											$value = trim($matches[1]);
+										}
+									break;
+
+									case 'colors':
+										$value = trim($matches[1]);
+										if ($value[0] == '#')
+										{
+											$value = substr($value, 1);
+										}
+									break;
+
+									default:
+										$value = trim($matches[1]);
+								}
+
+								// Remove this element from array
+								unset($css_elements[$key]);
+								break;
+							}
+						}
+					}
+
+					// then display it in the template
+					switch ($type)
+					{
+						case 'sizes':
+							// generate a list of units
+							$s_units = '';
+							foreach ($units as $unit_option)
+							{
+								$selected = ($unit_option == $unit) ? ' selected="selected"' : '';
+								$s_units .= "<option value=\"$unit_option\"$selected>$unit_option</option>";
+							}
+							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $s_units;
+
+							$template->assign_vars(array(
+								strtoupper($var) => $value,
+								'S_' . strtoupper($var) . '_UNITS' => $s_units)
+							);
+						break;
+
+						case 'images':
+							// generate a list of images for this setting
+							$s_imglist = '';
+							foreach ($imglist as $path => $img_ary)
+							{
+								foreach ($img_ary as $img)
+								{
+									$img = htmlspecialchars(((substr($path, 0, 1) == '/') ? substr($path, 1) : $path) . $img);
+
+									$selected = (preg_match('#' . preg_quote($img) . '$#', $value)) ? ' selected="selected"' : '';
+									$s_imglist .= "<option value=\"$img\"$selected>$img</option>";
+								}
+							}
+							$s_imglist = '<option value=""' . (($value == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $s_imglist;
+
+							$template->assign_vars(array(
+								'S_' . strtoupper($var) => $s_imglist)
+							);
+							unset($s_imglist);
+						break;
+
+						case 'repeat':
+							// generate a list of repeat options
+							$s_repeat_types = '';
+							foreach ($repeat_types as $repeat_type => $repeat_lang)
+							{
+								$selected = ($value == $repeat_type) ? ' selected="selected"' : '';
+								$s_repeat_types .= "<option value=\"$repeat_type\"$selected>$repeat_lang</option>";
+							}
+
+							$template->assign_vars(array(
+								'S_' . strtoupper($var) => $s_repeat_types)
+							);
+
+						default:
+							$template->assign_vars(array(
+								strtoupper($var) => $value)
+							);
+					}
+				}
+			}
+
+			// Any remaining elements must be custom data so we save that in a hidden field
+			if (sizeof($css_elements))
+			{
+				$s_hidden_fields['cssother'] = implode(' ;; ', $css_elements);
+			}
+
+			unset($imglist, $css_elements);
+		}
+		// else if we are showing raw css or the user submitted data from the simple view
+		// then we need to turn the given information into raw css
+		elseif (!$css_data && !$add_custom)
+		{
+			foreach ($match_elements as $type => $match_ary)
+			{
+				foreach ($match_ary as $match)
+				{
+					$var = str_replace('-', '_', $match);
+					$value = '';
+					$unit = '';
+
+					// retrieve and validate date for this setting
+					switch ($type)
+					{
+						case 'sizes':
+							$value = request_var($var, 0);
+							$unit = request_var($var . '_unit', '');
+
+							if ((request_var($var, '') === '') || !in_array($unit, $units))
+							{
+								continue 2;
+							}
+						break;
+
+						case 'images':
+							$value = str_replace('..', '.', request_var($var, ''));
+							if (!file_exists($value))
+							{
+								continue 2;
+							}
+						break;
+
+						case 'colors':
+							$value = request_var($var, '');
+							if (preg_match('#^(?:[A-Z0-9]{6}|[A-Z]{3})$#', $value))
+							{
+								$value = '#' . $value;
+							}
+						break;
+
+						default:
+							$value = request_var($var, '');
+					}
+
+					// use the element mapping to create raw css code
+					if ($value !== '')
+					{
+						$css_data .= $match . ': ' . sprintf($map_elements[$type], $value) . $unit . ";\n";
+					}
+				}
+			}
+
+			// append additional data sent to us
+			if ($other = request_var('cssother', ''))
+			{
+				$css_data .= str_replace(' ;; ', ";\n", $other) . ';';
+				$css_data = preg_replace("#\*/;\n#", "*/\n", $css_data);
+			}
+		}
+		// make sure we have $show_css set, so we can link to the show_css page if we need to
+		elseif (!$hide_css)
+		{
+			$show_css = true;
+		}
+
+		if ($submit || $add_custom)
+		{
+			if ($submit)
+			{
+				// if the user submitted a modification replace the old class definition in the stylesheet
+				// with the new one
+				if (preg_match('#^' . preg_quote($edit_class, '#') . '[ \t\n]*?\{(.*?)\}#ms', $stylesheet))
+				{
+					$stylesheet = preg_replace('#^(' . preg_quote($edit_class, '#') . '[ \t\n]*?\{).*?(\})#ms', "$1\n\t" . str_replace("\n", "\n\t", $css_data) . "\n$2", $stylesheet);
+				}
+				$message = $user->lang['THEME_UPDATED'];
+			}
+			else
+			{
+				// check whether the custom class name is valid
+				if (!preg_match('/^[a-z0-9#:.\- ]+$/i', $add_custom))
+				{
+					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"));
+				}
+				else
+				{
+					// append an empty class definition to the stylesheet
+					$stylesheet .= "\n$custom_class\n{\n}";
+					$message = $user->lang['THEME_CLASS_ADDED'];
+				}
+			}
+
+			// where should we store the CSS?
+			if (!$theme_info['theme_storedb'] && file_exists($stylesheet_path) && is_writeable($stylesheet_path))
+			{
+				// write stylesheet to file
+				if (!($fp = fopen($stylesheet_path, 'wb')))
+				{
+					trigger_error($user->lang['NO_THEME']);
+				}
+				fwrite($fp, $stylesheet);
+				fclose($fp);
+			}
+			else
+			{
+				// match CSS imports
+				preg_match_all('/@import url\(\"(.*)\"\);/i', $stylesheet, $matches);
+
+				if (sizeof($matches))
+				{
+					foreach ($matches[0] as $idx => $match)
+					{
+						$stylesheet = str_replace($match, $this->load_css_file($style_row['theme_path'], $matches[1][$idx]), $stylesheet);
+					}
+				}
+
+				// Write stylesheet to db
+				$sql_ary = array(
+					'theme_mtime'		=> time(),
+					'theme_storedb'		=> 1,
+					'theme_data'		=> str_replace('./', 'styles/' . $theme_info['theme_path'] . '/theme/', $stylesheet),
+				);
+				$sql = 'UPDATE ' . STYLES_CSS_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE theme_id = ' . $theme_id;
+				$db->sql_query($sql);
+
+				// notify the user if the template was not stored in the db before the mofication
+				if (!$theme_info['theme_storedb'])
+				{
+					add_log('admin', 'LOG_THEME_EDIT_DETAILS', $theme_info['theme_name']);
+					$message .= '<br />' . $user->lang['EDIT_THEME_STORED_DB'];
+				}
+			}
+
+			$cache->destroy('sql', STYLES_CSS_TABLE);
+			add_log('admin', ($add_custom) ? 'LOG_THEME_EDIT_ADD' : 'LOG_THEME_EDIT', $theme_info['theme_name'], ($add_custom) ? $custom_class : $edit_class);
+
+			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;css_class=$edit_class&amp;showcss=$show_css&amp;text_rows=$text_rows"));
+		}
+		unset($matches);
+
+		$s_hidden_fields['css_class'] = $edit_class;
+
+		$template->assign_vars(array(
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
+
+			'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&amp;form=acp_theme&amp;name=",
+			'UA_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=acp_theme&name=",
+
+			'CSS_DATA'			=> htmlspecialchars($css_data))
+		);
+	}
+
+
+	/**
+	* Edit imagesets
+	*
+	* @param int $imageset_id specifies which imageset is being edited
+	*/
+	function edit_imageset($imageset_id)
 	{
 		global $db, $user, $phpbb_root_path, $cache, $template;
 
@@ -663,12 +1084,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$imgsize = (!empty($_POST['imgsize'])) ? true : false;
 		$imgwidth = (isset($_POST['imgwidth'])) ? intval($_POST['imgwidth']) : '';
 
-		if ($style_id)
+		if ($imageset_id)
 		{
 			$sql_select = ($imgname) ? ", $imgname" : '';
 			$sql = "SELECT imageset_path, imageset_name, imageset_copyright$sql_select
 				FROM " . STYLES_IMAGE_TABLE . "
-				WHERE imageset_id = $style_id";
+				WHERE imageset_id = $imageset_id";
 			$result = $db->sql_query($sql);
 
 			if (!extract($db->sql_fetchrow($result)))
@@ -693,7 +1114,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				'folders'	=> array(
 					'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
 				'polls'		=> array(
-					'poll_left', 'poll_center', 'poll_right',), 
+					'poll_left', 'poll_center', 'poll_right',),
 			);
 
 			foreach ($imglist as $category => $img_ary)
@@ -724,7 +1145,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 					$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . "
 						SET $imgname = '" . $db->sql_escape($imgpath) . "'
-						WHERE imageset_id = $style_id";
+						WHERE imageset_id = $imageset_id";
 					$db->sql_query($sql);
 
 					$cache->destroy('sql', STYLES_IMAGE_TABLE);
@@ -816,7 +1237,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
 			'IMAGE_SIZE'		=> $imgsize_bool,
 			'IMAGE_REQUEST'		=> (!empty($imgname)) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, current(explode('*', $$imgname))) : '',
-			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$style_id",
+			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
 			'ERROR'				=> !$valid_name
@@ -829,7 +1250,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	function remove($mode, $style_id)
 	{
 		global $db, $template, $user, $phpbb_root_path, $cache;
-	
+
 		$new_id = request_var('new_id', 0);
 		$update = (isset($_POST['update'])) ? true : false;
 
@@ -857,9 +1278,9 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 
 		$l_prefix = strtoupper($mode);
-		
+
 		$sql = "SELECT $sql_select
-			FROM $sql_from 
+			FROM $sql_from
 			WHERE {$mode}_id = $style_id";
 		$result = $db->sql_query($sql);
 		$style_row = $db->sql_fetchrow($result);
@@ -869,10 +1290,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
 		}
-		
-		$sql = "SELECT {$mode}_id, {$mode}_name 
-			FROM $sql_from  
-			WHERE {$mode}_id <> $style_id 
+
+		$sql = "SELECT {$mode}_id, {$mode}_name
+			FROM $sql_from
+			WHERE {$mode}_id <> $style_id
 			ORDER BY {$mode}_name ASC";
 		$result = $db->sql_query($sql);
 
@@ -894,26 +1315,26 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if ($update)
 		{
-			$sql = "DELETE FROM $sql_from 
+			$sql = "DELETE FROM $sql_from
 				WHERE {$mode}_id = $style_id";
 			$db->sql_query($sql);
 
 			if ($mode == 'style')
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . " 
+				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_style = $new_id
 					WHERE user_style = $style_id";
 				$db->sql_query($sql);
 
-				$sql = 'UPDATE ' . FORUMS_TABLE . " 
+				$sql = 'UPDATE ' . FORUMS_TABLE . "
 					SET forum_style = $new_id
 					WHERE forum_style = $style_id";
 				$db->sql_query($sql);
 			}
 			else
 			{
-				$sql = 'UPDATE ' . STYLES_TABLE . " 
-					SET {$mode}_id = $new_id 
+				$sql = 'UPDATE ' . STYLES_TABLE . "
+					SET {$mode}_id = $new_id
 					WHERE {$mode}_id = $style_id";
 				$db->sql_query($sql);
 			}
@@ -939,7 +1360,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			'U_ACTION'		=> $this->u_action . "&amp;action=delete&amp;id=$style_id",
 			'U_BACK'		=> $this->u_action,
-			
+
 			'NAME'			=> $style_row[$mode . '_name'],
 			)
 		);
@@ -1029,11 +1450,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$l_prefix = 'IMAGESET';
 			break;
 		}
-		
+
 		if ($update && !sizeof($error))
 		{
-			$sql = "SELECT $sql_select 
-				FROM $sql_from 
+			$sql = "SELECT $sql_select
+				FROM $sql_from
 				WHERE $sql_where";
 			$result = $db->sql_query($sql);
 			$style_row = $db->sql_fetchrow($result);
@@ -1053,19 +1474,19 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					$style_row[$var] = '';
 				}
 			}
-		
+
 			$files = $data = array();
 
 			if ($mode == 'style')
 			{
 				$style_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['style_name'], $style_row['style_copyright'], $config['version']), $this->style_cfg);
-				
+
 				$style_cfg .= (!$inc_template) ? "\ntemplate = {$style_row['template_name']}" : '';
 				$style_cfg .= (!$inc_theme) ? "\ntheme = {$style_row['theme_name']}" : '';
 				$style_cfg .= (!$inc_imageset) ? "\nimageset = {$style_row['imageset_name']}" : '';
 
 				$data[] = array(
-					'src'		=> $style_cfg, 
+					'src'		=> $style_cfg,
 					'prefix'	=> 'style.cfg'
 				);
 
@@ -1079,7 +1500,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$template_cfg .= "\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
 
 				$data[] = array(
-					'src'		=> $template_cfg, 
+					'src'		=> $template_cfg,
 					'prefix'	=> 'template/template.cfg'
 				);
 
@@ -1087,23 +1508,23 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				if (!$style_row['template_storedb'])
 				{
 					$files[] = array(
-						'src'		=> "styles/{$style_row['template_path']}/template/", 
-						'prefix-'	=> "styles/{$style_row['template_path']}/", 
-						'prefix+'	=> false, 
+						'src'		=> "styles/{$style_row['template_path']}/template/",
+						'prefix-'	=> "styles/{$style_row['template_path']}/",
+						'prefix+'	=> false,
 						'exclude'	=> 'template.cfg'
 					);
 				}
 				else
 				{
-					$sql = 'SELECT template_filename, template_data  
-						FROM ' . STYLES_TPLDATA_TABLE . " 
+					$sql = 'SELECT template_filename, template_data
+						FROM ' . STYLES_TPLDATA_TABLE . "
 						WHERE template_id = {$style_row['template_id']}";
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$data[] = array(
-							'src' => $row['template_data'], 
+							'src' => $row['template_data'],
 							'prefix' => 'template/' . $row['template_filename']
 						);
 					}
@@ -1116,7 +1537,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			if ($mode == 'theme' || $inc_theme)
 			{
 				$theme_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['theme_name'], $style_row['theme_copyright'], $config['version']), $this->theme_cfg);
-				
+
 				// Read old cfg file
 				$items = $cache->obtain_cfg_items($style_row);
 				$items = $items['theme'];
@@ -1134,21 +1555,21 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$theme_cfg = str_replace(array('{PARSE_CSS_FILE}', '{PAGINATION_SEP}'), array($items['parse_css_file'], $items['pagination_sep']), $theme_cfg);
 
 				$files[] = array(
-					'src'		=> "styles/{$style_row['theme_path']}/theme/", 
-					'prefix-'	=> "styles/{$style_row['theme_path']}/", 
-					'prefix+'	=> false, 
-					'exclude'	=> ($style_row['theme_storedb']) ? 'stylesheet.css,theme.cfg' : 'theme.cfg' 
+					'src'		=> "styles/{$style_row['theme_path']}/theme/",
+					'prefix-'	=> "styles/{$style_row['theme_path']}/",
+					'prefix+'	=> false,
+					'exclude'	=> ($style_row['theme_storedb']) ? 'stylesheet.css,theme.cfg' : 'theme.cfg'
 				);
 
 				$data[] = array(
-					'src'		=> $theme_cfg, 
+					'src'		=> $theme_cfg,
 					'prefix'	=> 'theme/theme.cfg'
 				);
 
 				if ($style_row['theme_storedb'])
 				{
 					$data[] = array(
-						'src'		=> $style_row['theme_data'], 
+						'src'		=> $style_row['theme_data'],
 						'prefix'	=> 'theme/stylesheet.css'
 					);
 				}
@@ -1162,24 +1583,24 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
 
 				$imageset_definitions = explode(', ', $this->imageset_keys);
-				
+
 				foreach ($imageset_definitions as $key)
 				{
 					$imageset_cfg .= "\n" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
 				}
 
 				$files[] = array(
-					'src'		=> "styles/{$style_row['imageset_path']}/imageset/", 
-					'prefix-'	=> "styles/{$style_row['imageset_path']}/", 
-					'prefix+'	=> false, 
+					'src'		=> "styles/{$style_row['imageset_path']}/imageset/",
+					'prefix-'	=> "styles/{$style_row['imageset_path']}/",
+					'prefix+'	=> false,
 					'exclude'	=> 'imageset.cfg'
 				);
 
 				$data[] = array(
-					'src'		=> trim($imageset_cfg), 
+					'src'		=> trim($imageset_cfg),
 					'prefix'	=> 'imageset/imageset.cfg'
 				);
-		
+
 				unset($imageset_cfg);
 			}
 
@@ -1224,7 +1645,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				{
 					$compress = new compress_tar('w', $phpbb_root_path . "store/$path$ext", $ext);
 				}
-				
+
 				if (sizeof($files))
 				{
 					foreach ($files as $file_ary)
@@ -1256,13 +1677,13 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 		}
 
-		$sql = "SELECT {$mode}_id, {$mode}_name 
+		$sql = "SELECT {$mode}_id, {$mode}_name
 			FROM " . (($mode == 'style') ? STYLES_TABLE : $sql_from) . "
 			WHERE {$mode}_id = $style_id";
 		$result = $db->sql_query($sql);
 		$style_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-		
+
 		if (!$style_row)
 		{
 			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
@@ -1312,7 +1733,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			case 'style':
 				$sql_from = STYLES_TABLE;
 			break;
-		
+
 			case 'template':
 				$sql_from = STYLES_TPL_TABLE;
 			break;
@@ -1326,7 +1747,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 		}
 
-		$sql = "SELECT * 
+		$sql = "SELECT *
 			FROM $sql_from
 			WHERE {$mode}_id = $style_id";
 		$result = $db->sql_query($sql);
@@ -1388,7 +1809,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				}
 			}
 		}
-		
+
 		if ($update && sizeof($error))
 		{
 			$style_row = array_merge($style_row, array(
@@ -1431,14 +1852,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					{
 						$theme_data = '';
 
-						if ($style_row['theme_storedb'])
+						if (!$style_row['theme_storedb'])
 						{
-							$theme_data = implode('', file("{$phpbb_root_path}styles/" . $style_row['theme_path'] . '/theme/stylesheet.css'));
-			
+							$theme_data = file_get_contents("{$phpbb_root_path}styles/" . $style_row['theme_path'] . '/theme/stylesheet.css');
+
 							// Match CSS imports
 							$matches = array();
 							preg_match_all('/@import url\(\"(.*)\"\);/i', $theme_data, $matches);
-				
+
 							if (sizeof($matches))
 							{
 								foreach ($matches[0] as $idx => $match)
@@ -1451,7 +1872,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
 						{
 							$store_db = 1;
-							
+
 							if ($fp = @fopen("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css", 'wb'))
 							{
 								$store_db = (@fwrite($fp, str_replace("styles/{$style_row['theme_path']}/theme/", './', $theme_data))) ? 0 : 1;
@@ -1461,13 +1882,13 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						$theme_data = str_replace('./', "styles/{$style_row['theme_path']}/theme/", $theme_data);
 
 						$sql_ary += array(
-							'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css") : 0, 
-							'theme_storedb'	=> $store_db, 
+							'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css") : 0,
+							'theme_storedb'	=> $store_db,
 							'theme_data'	=> ($store_db) ? $theme_data : '',
 						);
 					}
 				break;
-					
+
 				case 'template':
 
 					if ($style_row['template_storedb'] != $store_db)
@@ -1476,8 +1897,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
 						{
-							$sql = 'SELECT * 
-								FROM ' . STYLES_TPLDATA_TABLE . " 
+							$sql = 'SELECT *
+								FROM ' . STYLES_TPLDATA_TABLE . "
 								WHERE template_id = $style_id";
 							$result = $db->sql_query($sql);
 
@@ -1496,14 +1917,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 							if (!$store_db)
 							{
-								$sql = 'DELETE FROM ' . STYLES_TPLDATA_TABLE . " 
+								$sql = 'DELETE FROM ' . STYLES_TPLDATA_TABLE . "
 									WHERE template_id = $style_id";
 								$db->sql_query($sql);
 							}
 						}
 
 						$sql_ary += array(
-							'template_storedb'	=> $store_db, 
+							'template_storedb'	=> $store_db,
 						);
 					}
 				break;
@@ -1511,8 +1932,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			if (sizeof($sql_ary))
 			{
-				$sql = "UPDATE $sql_from 
-					SET " . $db->sql_build_array('UPDATE', $sql_ary) . " 
+				$sql = "UPDATE $sql_from
+					SET " . $db->sql_build_array('UPDATE', $sql_ary) . "
 					WHERE {$mode}_id = $style_id";
 				$db->sql_query($sql);
 
@@ -1534,7 +1955,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			foreach ($element_ary as $element => $table)
 			{
 				$sql = "SELECT {$element}_id, {$element}_name
-					FROM $table 
+					FROM $table
 					ORDER BY {$element}_id ASC";
 				$result = $db->sql_query($sql);
 
@@ -1587,19 +2008,18 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	function load_css_file($path, $filename)
 	{
 		global $phpbb_root_path;
-	
-		$handle = "{$phpbb_root_path}styles/$path/theme/$filename";
-	
-		if ($fp = @fopen($handle, 'r'))
+
+		$file = "{$phpbb_root_path}styles/$path/theme/$filename";
+
+		if (file_exists($file) && ($content = file_get_contents($file)))
 		{
-			$content = trim(@fread($fp, filesize($handle)));
-			@fclose($fp);
+			$content = trim($content);
 		}
 		else
 		{
 			$content = '';
 		}
-	
+
 		return $content;
 	}
 
@@ -1650,7 +2070,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
 					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$path$pathfile$file"),
-					'template_data'			=> implode('', file("{$phpbb_root_path}styles/$path$pathfile$file")),
+					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$path$pathfile$file"),
 				);
 
 				if ($mode == 'insert')
@@ -1659,8 +2079,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				}
 				else
 				{
-					$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " 
-						WHERE template_id = $style_id 
+					$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+						WHERE template_id = $style_id
 							AND template_filename = '" . $db->sql_escape("$pathfile$file") . "'";
 				}
 				$db->sql_query($sql);
@@ -1738,7 +2158,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			 			$this->test_installed($element, $error, $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
 					}
-	
+
 				break;
 
 				case 'template':
@@ -1762,7 +2182,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$style_row['store_db'] = request_var('store_db', 0);
 		$style_row['style_active'] = request_var('style_active', 1);
 		$style_row['style_default'] = request_var('style_default', 0);
-	
+
 		// User has submitted form and no errors have occured
 		if ($update && !sizeof($error))
 		{
@@ -1797,7 +2217,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'S_STORE_DB'			=> (isset($style_row[$mode . '_storedb'])) ? $style_row[$mode . '_storedb'] : 0,
 			'S_STYLE_ACTIVE'		=> (isset($style_row['style_active'])) ? $style_row['style_active'] : 0,
 			'S_STYLE_DEFAULT'		=> (isset($style_row['style_default'])) ? $style_row['style_default'] : 0,
-			
+
 			'U_ACTION'			=> $this->u_action . "&amp;action=install&amp;path=" . urlencode($install_path),
 			'U_BACK'			=> $this->u_action,
 
@@ -1866,14 +2286,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				break;
 			}
 
-			$sql = "SELECT $sql_select  
-				FROM $sql_from  
+			$sql = "SELECT $sql_select
+				FROM $sql_from
 				WHERE {$mode}_id = $basis";
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			if (!$row) 
+			if (!$row)
 			{
 				$error[] = $user->lang['NO_' . $l_type];
 			}
@@ -1922,7 +2342,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			foreach ($element_ary as $element => $table)
 			{
 				$sql = "SELECT {$element}_id, {$element}_name
-					FROM $table 
+					FROM $table
 					ORDER BY {$element}_id ASC";
 				$result = $db->sql_query($sql);
 
@@ -1969,7 +2389,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		);
 
 	}
-		
+
 	/**
 	* Is this element installed? If not, grab its cfg details
 	*/
@@ -1982,7 +2402,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			case 'template':
 				$sql_from = STYLES_TPL_TABLE;
 			break;
-	
+
 			case 'theme':
 				$sql_from = STYLES_CSS_TABLE;
 			break;
@@ -1996,7 +2416,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$chk_name = ($reqd_name !== false) ? $reqd_name : $name;
 
-		$sql = "SELECT {$element}_id, {$element}_name  
+		$sql = "SELECT {$element}_id, {$element}_name
 			FROM $sql_from
 			WHERE {$element}_name = '" . $db->sql_escape($chk_name) . "'";
 		$result = $db->sql_query($sql);
@@ -2015,7 +2435,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 
 			$cfg = parse_cfg_file("$root_path$element/$element.cfg", $cfg);
-			
+
 			$name = $cfg['name'];
 			$copyright = $cfg['copyright'];
 			$id = 0;
@@ -2097,15 +2517,15 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$db->sql_transaction('begin');
 
 		$sql_ary = array(
-			'style_name'		=> $name, 
-			'style_copyright'	=> $copyright, 
-			'style_active'		=> $active, 
-			'template_id'		=> $style_row['template_id'], 
-			'theme_id'			=> $style_row['theme_id'], 
-			'imageset_id'		=> $style_row['imageset_id'], 
+			'style_name'		=> $name,
+			'style_copyright'	=> $copyright,
+			'style_active'		=> $active,
+			'template_id'		=> $style_row['template_id'],
+			'theme_id'			=> $style_row['theme_id'],
+			'imageset_id'		=> $style_row['imageset_id'],
 		);
 
-		$sql = 'INSERT INTO ' . STYLES_TABLE . ' 
+		$sql = 'INSERT INTO ' . STYLES_TABLE . '
 			' .  $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
@@ -2113,8 +2533,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if ($default)
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . " 
-				SET user_style = $id 
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_style = $id
 				WHERE user_style = " . $config['default_style'];
 			$db->sql_query($sql);
 
@@ -2142,7 +2562,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			case 'theme':
 				$sql_from = STYLES_CSS_TABLE;
 			break;
-	
+
 			case 'imageset':
 				$sql_from = STYLES_IMAGE_TABLE;
 			break;
@@ -2202,7 +2622,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			@mkdir("{$phpbb_root_path}styles/$path", 0777);
 			@chmod("{$phpbb_root_path}styles/$path", 0777);
-		
+
 			if ($root_path)
 			{
 				$this->copy_files("$root_path$type", filelist("$root_path$type", '', '*'), "$path/$type");
@@ -2211,7 +2631,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 */
 		$sql_ary = array(
 			$mode . '_name'			=> $name,
-			$mode . '_copyright'	=> $copyright, 
+			$mode . '_copyright'	=> $copyright,
 			$mode . '_path'			=> $path,
 		);
 
@@ -2229,8 +2649,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 				case 'theme':
 					$sql_ary += array(
-						'theme_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db, 
-						'theme_data'	=> ($store_db) ? (($root_path) ? str_replace('./', "styles/$path/theme/", implode('', file("$root_path/$mode/stylesheet.css"))) : '') : '', 
+						'theme_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db,
+						'theme_data'	=> ($store_db) ? (($root_path) ? str_replace('./', "styles/$path/theme/", file_get_contents("$root_path/$mode/stylesheet.css")) : '') : '',
 						'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css") : 0
 					);
 				break;
@@ -2253,13 +2673,13 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$db->sql_transaction('begin');
 
-		$sql = "INSERT INTO $sql_from 
+		$sql = "INSERT INTO $sql_from
 			" . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
 		$id = $db->sql_nextid();
 
-		if ($mode == 'template' && $store_db) 
+		if ($mode == 'template' && $store_db)
 		{
 			$filelist = filelist("{$root_path}template", '', 'html');
 			$this->store_templates('insert', $id, $name, $filelist);
