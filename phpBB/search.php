@@ -218,7 +218,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 			{
 				$search_author = str_replace('*', '%', trim($search_author));
 
-				if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < 3 ) )
+				if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
 				{
 					$search_author = '';
 				}
@@ -290,7 +290,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 
 			for($i = 0; $i < count($split_search); $i++)
 			{
-				if (preg_match('#^[\*%]+$#', trim($split_search[$i])) || preg_match('#^[^\*]{1,2}$#', str_replace(array('*', '%'), '', trim($split_search[$i]))))
+				if ( strlen(str_replace(array('*', '%'), '', trim($split_search[$i]))) < $board_config['search_min_chars'] )
 				{
 					$split_search[$i] = '';
 					continue;
@@ -441,7 +441,7 @@ else if ( $search_keywords != '' || $search_author != '' || $search_id )
 		{
 			$search_author = str_replace('*', '%', trim($search_author));
 
-			if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < 3 ) )
+			if( ( strpos($search_author, '%') !== false ) && ( strlen(str_replace('%', '', $search_author)) < $board_config['search_min_chars'] ) )
 			{
 				$search_author = '';
 			}

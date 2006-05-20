@@ -46,6 +46,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('sendmail_fix','0')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation','0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval','15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_flood_interval','15');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_min_chars','3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('login_reset_time', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form','0');
