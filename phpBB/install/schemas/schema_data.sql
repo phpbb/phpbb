@@ -167,9 +167,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_occlude_noi
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy_noise_pixel', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy_noise_line', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy_noise_pixel', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_entropy_noise_line', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_shape', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_shape_noise_pixel', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_shape_noise_line', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('policy_3dbitmap', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
