@@ -20,10 +20,10 @@ class mcp_main_info
 			'title'		=> 'MCP_MAIN',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'forum_view'	=> array('title' => 'MCP_MAIN_FORUM_VIEW', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_MAIN')),
 				'front'			=> array('title' => 'MCP_MAIN_FRONT', 'auth' => 'acl_m_', 'cat' => array('MCP_MAIN')),
-				'post_details'	=> array('title' => 'MCP_MAIN_POST_DETAILS', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_MAIN')),
+				'forum_view'	=> array('title' => 'MCP_MAIN_FORUM_VIEW', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_MAIN')),
 				'topic_view'	=> array('title' => 'MCP_MAIN_TOPIC_VIEW', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_MAIN')),
+				'post_details'	=> array('title' => 'MCP_MAIN_POST_DETAILS', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_MAIN')),
 			),
 		);
 	}

@@ -130,6 +130,8 @@ class mcp_main
 			case 'front':
 				include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
 
+				$user->add_lang('acp/common');
+
 				mcp_front_view($id, $mode, $action);
 
 				$this->tpl_name = 'mcp_front';
