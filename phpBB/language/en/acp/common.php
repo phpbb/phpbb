@@ -86,6 +86,7 @@ $lang = array_merge($lang, array(
 	'ACP_GENERAL_CONFIGURATION'		=> 'General Configuration',
 	'ACP_GENERAL_TASKS'				=> 'General Tasks',
 	'ACP_GLOBAL_MODERATORS'			=> 'Global Moderators',
+	'ACP_GLOBAL_PERMISSIONS'		=> 'Global Permissions',
 	'ACP_GROUPS'					=> 'Groups',
 	'ACP_GROUPS_FORUM_PERMISSIONS'	=> 'Groups Forum Permissions',
 	'ACP_GROUPS_MANAGE'				=> 'Manage Groups',

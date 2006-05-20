@@ -1623,15 +1623,10 @@ class install_install extends module
 	var $module_categories = array(
 		'acp'	=> array(
 			'ACP_CAT_GENERAL'		=> array(
-				'ACP_BOARD_CONFIGURATION',
-				'ACP_SERVER_CONFIGURATION',
-				'ACP_CLIENT_COMMUNICATION',
 				'ACP_QUICK_ACCESS',
-			),
-			'ACP_CAT_USERGROUP'		=> array(
-				'ACP_CAT_USERS',
-				'ACP_GROUPS',
-				'ACP_USER_SECURITY',
+				'ACP_BOARD_CONFIGURATION',
+				'ACP_CLIENT_COMMUNICATION',
+				'ACP_SERVER_CONFIGURATION',
 			),
 			'ACP_CAT_FORUMS'		=> array(
 				'ACP_CAT_FORUMS',
@@ -1641,9 +1636,13 @@ class install_install extends module
 				'ACP_MESSAGES',
 				'ACP_ATTACHMENTS',
 			),
+			'ACP_CAT_USERGROUP'		=> array(
+				'ACP_CAT_USERS',
+				'ACP_GROUPS',
+				'ACP_USER_SECURITY',
+			),
 			'ACP_CAT_PERMISSIONS'	=> array(
-				'ACP_BASIC_PERMISSIONS',
-				'ACP_SPECIAL_PERMISSIONS',
+				'ACP_GLOBAL_PERMISSIONS',
 				'ACP_FORUM_BASED_PERMISSIONS',
 				'ACP_PERMISSION_ROLES',
 				'ACP_PERMISSION_MASKS',
@@ -1665,10 +1664,10 @@ class install_install extends module
 		),
 		'mcp'	=> array(
 			'MCP_MAIN'		=> null,
-			'MCP_NOTES'		=> null,
 			'MCP_QUEUE'		=> null,
-			'MCP_WARN'		=> null,
 			'MCP_REPORTS'	=> null,
+			'MCP_NOTES'		=> null,
+			'MCP_WARN'		=> null,
 			'MCP_LOGS'		=> null,
 			'MCP_BAN'		=> null,
 		),
