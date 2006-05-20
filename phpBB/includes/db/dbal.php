@@ -19,20 +19,31 @@ class dbal
 	var $return_on_error = false;
 	var $transaction = false;
 	var $sql_time = 0;
-	var $num_queries = 0;
+	var $num_queries = array();
 	var $open_queries = array();
 
 	var $curtime = 0;
 	var $query_hold = '';
 	var $html_hold = '';
 	var $sql_report = '';
-	var $cache_num_queries = 0;
 	
 	var $persistency = false;
 	var $user = '';
 	var $server = '';
 	var $dbname = '';
 	
+	/**
+	* Constructor
+	*/
+	function dbal()
+	{
+		$this->num_queries = array(
+			'cached'		=> 0,
+			'normal'		=> 0,
+			'total'			=> 0,
+		);
+	}
+
 	/**
 	* return on error or display error message
 	*/
@@ -42,11 +53,21 @@ class dbal
 	}
 
 	/**
-	* Return number of sql queries used (cached and real queries are counted the same)
+	* Return number of sql queries and cached sql queries used
 	*/
-	function sql_num_queries()
+	function sql_num_queries($cached = false)
 	{
-		return $this->num_queries;
+		return ($cached) ? $this->num_queries['cached'] : $this->num_queries['normal'];
+	}
+
+	/**
+	* Add to query count
+	*/
+	function sql_add_num_queries($cached = false)
+	{
+		$this->num_queries['cached'] += ($cached) ? 1 : 0;
+		$this->num_queries['normal'] += ($cached) ? 0 : 1;
+		$this->num_queries['total'] += 1;
 	}
 
 	/**
@@ -360,7 +381,7 @@ class dbal
 								<div id="content">
 									<h1>SQL Report</h1>
 									<br />
-									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries} queries" . (($this->cache_num_queries) ? " + {$this->cache_num_queries} " . (($this->cache_num_queries == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
+									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries['normal']} queries" . (($this->num_queries['cached']) ? " + {$this->num_queries['cached']} " . (($this->num_queries['cached'] == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
 
 									<p>Time spent on ' . SQL_LAYER . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
 
@@ -388,7 +409,7 @@ class dbal
 					<table cellspacing="1">
 					<thead>
 					<tr>
-						<th>Query #' . $this->num_queries . '</th>
+						<th>Query #' . $this->num_queries['total'] . '</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -466,7 +487,7 @@ class dbal
 
 				$this->_sql_report($mode, $query);
 
-				$this->cache_num_queries++;
+//				$this->num_queries['cache']++;
 
 			break;
 

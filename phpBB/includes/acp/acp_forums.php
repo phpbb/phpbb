@@ -952,10 +952,17 @@ class acp_forums
 				$db->sql_query($sql);
 			}
 
+			// Setting the forum id to the forum id is not really received well by some dbs. ;)
+			$forum_id = $forum_data['forum_id'];
+			unset($forum_data['forum_id']);
+
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $forum_data) . '
-				WHERE forum_id = ' . $forum_data['forum_id'];
+				WHERE forum_id = ' . $forum_id;
 			$db->sql_query($sql);
+
+			// Add it back
+			$forum_data['forum_id'] = $forum_id;
 
 			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
 		}

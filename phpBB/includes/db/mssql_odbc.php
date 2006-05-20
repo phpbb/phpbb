@@ -104,11 +104,10 @@ class dbal_mssql_odbc extends dbal
 
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
+			$this->sql_add_num_queries($this->query_result);
 
 			if (!$this->query_result)
 			{
-				$this->num_queries++;
-
 				if (($this->query_result = @odbc_exec($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
@@ -160,7 +159,14 @@ class dbal_mssql_odbc extends dbal
 			$row_offset = ($total) ? $offset : '';
 			$num_rows = ($total) ? $total : $offset;
 
-			$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
+			if (strpos($query, 'SELECT DISTINCT') === 0)
+			{
+				$query = 'SELECT DISTINCT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 15);
+			}
+			else
+			{
+				$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
+			}
 
 			return $this->sql_query($query, $cache_ttl); 
 		} 
