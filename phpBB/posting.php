@@ -364,7 +364,7 @@ if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 $check_value = (($post_data['enable_bbcode']+1) << 8) + (($post_data['enable_smilies']+1) << 4) + (($post_data['enable_urls']+1) << 2) + (($post_data['enable_sig']+1) << 1);
 
 // Check if user is watching this topic
-if ($mode != 'post')
+if ($mode != 'post' && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_WATCH_TABLE . '
@@ -476,7 +476,15 @@ if ($submit || $preview || $refresh)
 	$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$post_data['enable_sig']		= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
-	$notify				= (isset($_POST['notify'])) ? true : false;
+	if ($config['allow_topic_notify'] && $user->data['is_registered'])
+	{
+		$notify = (isset($_POST['notify'])) ? true : false;
+	}
+	else
+	{
+		$notify = false;
+	}
+
 	$topic_lock			= (isset($_POST['lock_topic'])) ? true : false;
 	$post_lock			= (isset($_POST['lock_post'])) ? true : false;
 	$poll_delete		= (isset($_POST['poll_delete'])) ? true : false;
@@ -1093,7 +1101,7 @@ $template->assign_vars(array(
 	'S_SMILIES_CHECKED'			=> ($smilies_checked) ? ' checked="checked"' : '',
 	'S_SIG_ALLOWED'				=> ($auth->acl_get('f_sigs', $forum_id) && $config['allow_sig'] && $user->data['is_registered']) ? true : false,
 	'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
-	'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id'])) ? false : true,
+	'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id']) || !$config['allow_topic_notify']) ? false : true,
 	'S_NOTIFY_CHECKED' 			=> ($notify_checked) ? ' checked="checked"' : '',
 	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster']))) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',

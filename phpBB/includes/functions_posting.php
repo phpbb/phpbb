@@ -896,6 +896,11 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		trigger_error('WRONG_NOTIFICATION_MODE');
 	}
 
+	if (!$config['allow_topic_notify'])
+	{
+		return;
+	}
+
 	$topic_title = ($topic_notification) ? $topic_title : $subject;
 	$topic_title = censor_text($topic_title);
 
