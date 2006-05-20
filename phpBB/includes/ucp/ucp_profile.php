@@ -406,7 +406,7 @@ class ucp_profile
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
-				$signature		= request_var('signature', $user->data['user_sig'], true);
+				$signature		= request_var('signature', (string) $user->data['user_sig'], true);
 
 				if ($submit || $preview)
 				{

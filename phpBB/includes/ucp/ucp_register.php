@@ -258,6 +258,10 @@ class ucp_register
 					'user_dst'				=> 0,
 					'user_colour'			=> '',
 					'user_avatar'			=> '',
+
+					'user_sig'					=> '',
+					'user_sig_bbcode_uid'		=> '',
+					'user_sig_bbcode_bitfield'	=> 0,
 				);
 
 				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
