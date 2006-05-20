@@ -19,7 +19,7 @@ CREATE TABLE phpbb_attachments (
   physical_filename varchar(255) NOT NULL,
   real_filename varchar(255) NOT NULL,
   download_count INT4  DEFAULT '0' NOT NULL,
-  comment TEXT,
+  comment varchar(8000),
   extension varchar(100),
   mimetype varchar(100),
   filesize INT4  NOT NULL,
@@ -81,7 +81,7 @@ CREATE SEQUENCE phpbb_auth_roles_seq;
 CREATE TABLE phpbb_auth_roles (
   role_id INT4 DEFAULT nextval('phpbb_auth_roles_seq'),
   role_name varchar(255) DEFAULT '' NOT NULL,
-  role_description TEXT,
+  role_description varchar(8000),
   role_type varchar(10) DEFAULT '' NOT NULL,
   role_order INT2  DEFAULT '0' NOT NULL,
   PRIMARY KEY (role_id)
@@ -126,8 +126,8 @@ CREATE TABLE phpbb_banlist (
   ban_start INT4 DEFAULT '0' NOT NULL,
   ban_end INT4 DEFAULT '0' NOT NULL,
   ban_exclude INT2 DEFAULT '0' NOT NULL,
-  ban_reason TEXT,
-  ban_give_reason TEXT,
+  ban_reason varchar(3000),
+  ban_give_reason varchar(3000),
   PRIMARY KEY (ban_id),
   CHECK (ban_userid>=0)
 );
@@ -170,7 +170,7 @@ CREATE SEQUENCE phpbb_bots_seq;
 CREATE TABLE phpbb_bots (
   bot_id INT2 DEFAULT nextval('phpbb_bots_seq'),
   bot_active INT2 DEFAULT '1' NOT NULL,
-  bot_name TEXT,
+  bot_name varchar(3000),
   user_id INT4  DEFAULT '0' NOT NULL,
   bot_agent varchar(255)  DEFAULT '' NOT NULL,
   bot_ip varchar(255) DEFAULT '' NOT NULL,
@@ -235,7 +235,7 @@ CREATE TABLE phpbb_drafts (
   topic_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   save_time INT4  DEFAULT '0' NOT NULL,
-  draft_subject TEXT,
+  draft_subject varchar(1000),
   draft_message TEXT,
   PRIMARY KEY (draft_id),
   CHECK (user_id>=0),
@@ -464,7 +464,7 @@ CREATE TABLE phpbb_log (
   reportee_id INT4  DEFAULT '0' NOT NULL,
   log_ip varchar(40) NOT NULL,
   log_time INT4 NOT NULL,
-  log_operation TEXT,
+  log_operation varchar(8000),
   log_data TEXT,
   PRIMARY KEY (log_id),
   CHECK (log_type>=0),
@@ -525,7 +525,7 @@ CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE TABLE phpbb_poll_results (
   poll_option_id INT2  DEFAULT '0' NOT NULL,
   topic_id INT4  NOT NULL,
-  poll_option_text TEXT,
+  poll_option_text varchar(3000),
   poll_option_total INT4  DEFAULT '0' NOT NULL
 );
 
@@ -564,7 +564,7 @@ CREATE TABLE phpbb_posts (
   enable_magic_url INT2 DEFAULT '1' NOT NULL,
   enable_sig INT2 DEFAULT '1' NOT NULL,
   post_username varchar(255) NULL,
-  post_subject TEXT NOT NULL,
+  post_subject varchar(1000) NOT NULL,
   post_text TEXT NOT NULL,
   post_checksum varchar(32) NOT NULL,
   post_encoding varchar(20) DEFAULT 'iso-8859-1' NOT NULL,
@@ -572,7 +572,7 @@ CREATE TABLE phpbb_posts (
   bbcode_bitfield INT4  DEFAULT '0' NOT NULL,
   bbcode_uid varchar(5) DEFAULT '' NOT NULL,
   post_edit_time INT4  DEFAULT '0' NULL,
-  post_edit_reason TEXT NULL,
+  post_edit_reason varchar(3000) NULL,
   post_edit_user INT4  DEFAULT '0' NULL,
   post_edit_count INT2  DEFAULT '0' NULL,
   post_edit_locked INT2  DEFAULT '0' NULL,
@@ -612,9 +612,9 @@ CREATE TABLE phpbb_privmsgs (
   enable_smilies INT2 DEFAULT '1' NOT NULL,
   enable_magic_url INT2 DEFAULT '1' NOT NULL,
   enable_sig INT2 DEFAULT '1' NOT NULL,
-  message_subject TEXT NOT NULL,
+  message_subject varchar(1000) NOT NULL,
   message_text TEXT NOT NULL,
-  message_edit_reason TEXT NULL,
+  message_edit_reason varchar(3000) NULL,
   message_edit_user INT4  DEFAULT '0' NULL,
   message_encoding varchar(20) DEFAULT 'iso-8859-1' NOT NULL,
   message_attachment INT2 DEFAULT '0' NOT NULL,
@@ -710,7 +710,7 @@ CREATE SEQUENCE phpbb_profile_fields_seq;
 CREATE TABLE phpbb_profile_fields (
   field_id INT4 DEFAULT nextval('phpbb_profile_fields_seq'),
   field_name varchar(255) DEFAULT '' NOT NULL,
-  field_desc TEXT,
+  field_desc varchar(8000),
   field_type INT4  NOT NULL,
   field_ident varchar(20) DEFAULT '' NOT NULL,
   field_length varchar(20) DEFAULT '' NOT NULL,
@@ -768,7 +768,7 @@ CREATE TABLE phpbb_profile_lang (
   field_id INT4  DEFAULT '0' NOT NULL,
   lang_id INT2  DEFAULT '0' NOT NULL,
   lang_name varchar(255) DEFAULT '' NOT NULL,
-  lang_explain TEXT,
+  lang_explain varchar(8000),
   lang_default_value varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (field_id,lang_id),
   CHECK (field_id>=0),
@@ -821,7 +821,7 @@ CREATE SEQUENCE phpbb_reports_reasons_seq;
 CREATE TABLE phpbb_reports_reasons (
   reason_id INT2 DEFAULT nextval('phpbb_reports_reasons_seq'),
   reason_title varchar(255) DEFAULT '' NOT NULL,
-  reason_description TEXT,
+  reason_description varchar(8000),
   reason_order INT2 DEFAULT '0' NOT NULL,
   PRIMARY KEY (reason_id)
 );
@@ -1106,7 +1106,7 @@ CREATE TABLE phpbb_topics (
   topic_attachment INT2 DEFAULT '0' NOT NULL,
   topic_approved INT2  DEFAULT '1' NOT NULL,
   topic_reported INT2  DEFAULT '0' NOT NULL,
-  topic_title TEXT,
+  topic_title varchar(1000),
   topic_poster INT4  DEFAULT '0' NOT NULL,
   topic_time INT4 DEFAULT '0' NOT NULL,
   topic_time_limit INT4 DEFAULT '0' NOT NULL,
@@ -1125,7 +1125,7 @@ CREATE TABLE phpbb_topics (
   topic_moved_id INT4  DEFAULT '0' NOT NULL,
   topic_bumped INT2  DEFAULT '0' NOT NULL,
   topic_bumper INT4  DEFAULT '0' NOT NULL,
-  poll_title TEXT,
+  poll_title varchar(3000),
   poll_start INT4 DEFAULT '0' NOT NULL,
   poll_length INT4 DEFAULT '0' NOT NULL,
   poll_max_options INT2  DEFAULT '1' NOT NULL,

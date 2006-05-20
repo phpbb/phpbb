@@ -21,7 +21,7 @@ CREATE TABLE [phpbb_attachments] (
 	[physical_filename] [varchar] (255) NOT NULL ,
 	[real_filename] [varchar] (255) NOT NULL ,
 	[download_count] [int] NOT NULL ,
-	[comment] [text] ,
+	[comment] [varchar] (8000) ,
 	[extension] [varchar] (100) NULL ,
 	[mimetype] [varchar] (100) NULL ,
 	[filesize] [int] NOT NULL ,
@@ -128,7 +128,7 @@ GO
 CREATE TABLE [phpbb_auth_roles] (
 	[role_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[role_name] [varchar] (255) NOT NULL ,
-	[role_description] [text] ,
+	[role_description] [varchar] (8000) ,
 	[role_type] [varchar] (10) NOT NULL ,
 	[role_order] [int] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
@@ -217,8 +217,8 @@ CREATE TABLE [phpbb_banlist] (
 	[ban_start] [int] NOT NULL ,
 	[ban_end] [int] NOT NULL ,
 	[ban_exclude] [int] NOT NULL ,
-	[ban_reason] [text] ,
-	[ban_give_reason] [text] 
+	[ban_reason] [varchar] (3000) ,
+	[ban_give_reason] [varchar] (3000) 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -305,7 +305,7 @@ GO
 CREATE TABLE [phpbb_bots] (
 	[bot_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[bot_active] [int] NOT NULL ,
-	[bot_name] [text] ,
+	[bot_name] [varchar] (1000) ,
 	[user_id] [int] NOT NULL ,
 	[bot_agent] [varchar] (255) NOT NULL ,
 	[bot_ip] [varchar] (255) NOT NULL 
@@ -434,7 +434,7 @@ CREATE TABLE [phpbb_drafts] (
 	[topic_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[save_time] [int] NOT NULL ,
-	[draft_subject] [text] ,
+	[draft_subject] [varchar] (1000) ,
 	[draft_message] [text] 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -523,7 +523,7 @@ CREATE TABLE [phpbb_forums] (
 	[left_id] [int] NOT NULL ,
 	[right_id] [int] NOT NULL ,
 	[forum_parents] [text] NULL ,
-	[forum_name] [text] ,
+	[forum_name] [varchar] (3000) ,
 	[forum_desc] [text] ,
 	[forum_desc_bitfield] [int] NOT NULL ,
 	[forum_desc_uid] [varchar] (5) NOT NULL ,
@@ -787,7 +787,7 @@ CREATE TABLE [phpbb_log] (
 	[reportee_id] [int] NOT NULL ,
 	[log_ip] [varchar] (40) NOT NULL ,
 	[log_time] [int] NOT NULL ,
-	[log_operation] [text] ,
+	[log_operation] [varchar] (8000) ,
 	[log_data] [text] 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -902,7 +902,7 @@ GO
 CREATE TABLE [phpbb_poll_results] (
 	[poll_option_id] [int] NOT NULL ,
 	[topic_id] [int] NOT NULL ,
-	[poll_option_text] [text] ,
+	[poll_option_text] [varchar] (3000) ,
 	[poll_option_total] [int] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -964,7 +964,7 @@ CREATE TABLE [phpbb_posts] (
 	[enable_magic_url] [int] NOT NULL ,
 	[enable_sig] [int] NOT NULL ,
 	[post_username] [varchar] (255) NULL ,
-	[post_subject] [text] NOT NULL ,
+	[post_subject] [varchar] (1000) NOT NULL ,
 	[post_text] [text] NOT NULL ,
 	[post_checksum] [varchar] (32) NOT NULL ,
 	[post_encoding] [varchar] (20) NOT NULL ,
@@ -972,7 +972,7 @@ CREATE TABLE [phpbb_posts] (
 	[bbcode_bitfield] [int] NOT NULL ,
 	[bbcode_uid] [varchar] (5) NOT NULL ,
 	[post_edit_time] [int] NULL ,
-	[post_edit_reason] [text] NULL,
+	[post_edit_reason] [varchar] (3000) NULL,
 	[post_edit_user] [int] NULL ,
 	[post_edit_count] [int] NULL ,
 	[post_edit_locked] [int] NULL 
@@ -1041,9 +1041,9 @@ CREATE TABLE [phpbb_privmsgs] (
 	[enable_smilies] [int] NOT NULL ,
 	[enable_magic_url] [int] NOT NULL ,
 	[enable_sig] [int] NOT NULL ,
-	[message_subject] [text] NOT NULL ,
+	[message_subject] [varchar] (1000) NOT NULL ,
 	[message_text] [text] NOT NULL ,
-	[message_edit_reason] [text] NULL ,
+	[message_edit_reason] [varchar] (3000) NULL ,
 	[message_edit_user] [int] NULL ,
 	[message_encoding] [varchar] (20) NOT NULL ,
 	[message_attachment] [int] NOT NULL ,
@@ -1201,7 +1201,7 @@ GO
 CREATE TABLE [phpbb_profile_fields] (
 	[field_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[field_name] [varchar] (255) NOT NULL ,
-	[field_desc] [text] ,
+	[field_desc] [varchar] (8000) ,
 	[field_type] [int] NOT NULL ,
 	[field_ident] [varchar] (20) NOT NULL ,
 	[field_length] [varchar] (20) NOT NULL ,
@@ -1391,7 +1391,7 @@ GO
 CREATE TABLE [phpbb_reports_reasons] (
 	[reason_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[reason_title] [varchar] (255) NOT NULL ,
-	[reason_description] [text] ,
+	[reason_description] [varchar] (8000) ,
 	[reason_order] [int] NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -1925,7 +1925,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_attachment] [int] NOT NULL ,
 	[topic_approved] [int] NOT NULL ,
 	[topic_reported] [int] NOT NULL ,
-	[topic_title] [text] ,
+	[topic_title] [varchar] (1000) ,
 	[topic_poster] [int] NOT NULL ,
 	[topic_time] [int] NOT NULL ,
 	[topic_time_limit] [int] NOT NULL ,
@@ -1944,7 +1944,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_moved_id] [int] NOT NULL ,
 	[topic_bumped] [int] NOT NULL ,
 	[topic_bumper] [int] NOT NULL ,
-	[poll_title] [text] ,
+	[poll_title] [varchar] (3000) ,
 	[poll_start] [int] NOT NULL ,
 	[poll_length] [int] NOT NULL ,
 	[poll_max_options] [int] NOT NULL ,

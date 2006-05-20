@@ -626,10 +626,21 @@ class acp_modules
 	{
 		global $db, $user, $auth, $config;
 
-		$sql = 'SELECT module_id, module_enabled, module_name, parent_id, module_langname, left_id, right_id, module_auth
-			FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-			ORDER BY left_id ASC";
+		switch (SQL_LAYER)
+		{
+			case 'firebird':
+				$sql = 'SELECT module_id, module_enabled, "module_name", parent_id, module_langname, left_id, right_id, module_auth
+					FROM ' . MODULES_TABLE . "
+					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					ORDER BY left_id ASC";
+			break;
+			default:
+				$sql = 'SELECT module_id, module_enabled, module_name, parent_id, module_langname, left_id, right_id, module_auth
+					FROM ' . MODULES_TABLE . "
+					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					ORDER BY left_id ASC";
+			break;
+		}
 		$result = $db->sql_query($sql);
 
 		$right = $iteration = 0;

@@ -215,8 +215,8 @@ CREATE TABLE phpbb_banlist (
   ban_start number(11) DEFAULT '0' NOT NULL,
   ban_end number(11) DEFAULT '0' NOT NULL,
   ban_exclude number(1) DEFAULT '0' NOT NULL,
-  ban_reason varchar2(1000),
-  ban_give_reason varchar2(1000),
+  ban_reason varchar2(3000),
+  ban_give_reason varchar2(3000),
   CONSTRAINT pk_phpbb_banlist PRIMARY KEY (ban_id)
 )
 /
@@ -476,7 +476,7 @@ CREATE TABLE phpbb_forums (
   left_id number(5) NOT NULL,
   right_id number(5) NOT NULL,
   forum_parents clob,
-  forum_name varchar2(1000),
+  forum_name varchar2(3000),
   forum_desc clob,
   forum_desc_bitfield number(11) DEFAULT '0' NOT NULL,
   forum_desc_uid varchar2(5) DEFAULT '' NOT NULL,
@@ -789,7 +789,7 @@ CREATE INDEX phpbb_modules_left_right_id on phpbb_modules (left_id, right_id)
 CREATE TABLE phpbb_poll_results (
   poll_option_id number(4) DEFAULT '0' NOT NULL,
   topic_id number(8) NOT NULL,
-  poll_option_text clob,
+  poll_option_text varchar2(3000),
   poll_option_total number(8) DEFAULT '0' NOT NULL
 )
 /
@@ -896,9 +896,9 @@ CREATE TABLE phpbb_privmsgs (
   enable_smilies number(1) DEFAULT '1' NOT NULL,
   enable_magic_url number(1) DEFAULT '1' NOT NULL,
   enable_sig number(1) DEFAULT '1' NOT NULL,
-  message_subject varchar2(1000) NOT NULL,
+  message_subject varchar2(3000) NOT NULL,
   message_text clob NOT NULL,
-  message_edit_reason varchar2(1000) NULL,
+  message_edit_reason varchar2(3000) NULL,
   message_edit_user number(8) DEFAULT '0' NULL,
   message_encoding varchar2(20) DEFAULT 'iso-8859-1' NOT NULL,
   message_attachment number(1) DEFAULT '0' NOT NULL,
@@ -1610,7 +1610,7 @@ CREATE TABLE phpbb_topics (
   topic_moved_id number(8) DEFAULT '0' NOT NULL,
   topic_bumped number(1) DEFAULT '0' NOT NULL,
   topic_bumper number(8) DEFAULT '0' NOT NULL,
-  poll_title varchar2(1000),
+  poll_title varchar2(3000),
   poll_start number(11) DEFAULT '0' NOT NULL,
   poll_length number(11) DEFAULT '0' NOT NULL,
   poll_max_options number(4) DEFAULT '1' NOT NULL,
