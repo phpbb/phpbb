@@ -1811,8 +1811,7 @@ function cache_moderators()
 	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
 
 	// Clear table
-	$sql = (SQL_LAYER != 'sqlite') ? 'TRUNCATE ' . MODERATOR_TABLE : 'DELETE FROM ' . MODERATOR_TABLE;
-	$db->sql_query($sql);
+	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NO setting
 	$hold_ary = $ug_id_ary = $sql_ary = array();

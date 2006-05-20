@@ -27,6 +27,7 @@ class acp_icons
 		$action = request_var('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 		$action = (isset($_POST['edit'])) ? 'edit' : $action;
+		$action = (isset($_POST['import'])) ? 'import' : $action;
 		$icon_id = request_var('id', 0);
 
 		$this->tpl_name = 'acp_icons';
@@ -328,7 +329,7 @@ class acp_icons
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						$db->sql_query("TRUNCATE $table");
+						$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . $table);
 
 						switch ($mode)
 						{

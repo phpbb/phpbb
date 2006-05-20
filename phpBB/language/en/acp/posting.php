@@ -74,9 +74,11 @@ $lang = array_merge($lang, array(
 	'AFTER_ICONS'			=> 'After %s',
 	'AFTER_SMILIES'			=> 'After %s',
 
-	'CODE'				=> 'Code',
-	'CURRENT_ICONS'		=> 'Current icons',
-	'CURRENT_SMILIES'	=> 'Current smilies',
+	'CODE'						=> 'Code',
+	'CURRENT_ICONS'				=> 'Current icons',
+	'CURRENT_ICONS_EXPLAIN'		=> 'Choose what to do with the currently installed icons',
+	'CURRENT_SMILIES'			=> 'Current smilies',
+	'CURRENT_SMILIES_EXPLAIN'	=> 'Choose what to do with the currently installed smilies',
 
 	'DISPLAY_ON_POSTING'	=> 'Display on posting',
 

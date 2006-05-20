@@ -990,9 +990,9 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE ' : 'DELETE FROM ') . SEARCH_WORD_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE ' : 'DELETE FROM ') . SEARCH_MATCH_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE ' : 'DELETE FROM ') . SEARCH_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORD_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_MATCH_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_TABLE);
 	}
 
 	/**
