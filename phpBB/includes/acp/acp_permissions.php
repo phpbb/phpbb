@@ -135,6 +135,7 @@ class acp_permissions
 		// Showing introductionary page?
 		if ($mode == 'intro')
 		{
+			$this->page_title = 'ACP_PERMISSIONS';
 			$template->assign_vars(array(
 				'S_INTRO'		=> true)
 			);
