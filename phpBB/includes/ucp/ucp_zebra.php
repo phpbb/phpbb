@@ -23,6 +23,8 @@ class ucp_zebra
 
 		if ($submit)
 		{
+			$data = array();
+
 			$var_ary = array(
 				'usernames'	=> array(0),
 				'add'		=> '', 
@@ -38,12 +40,10 @@ class ucp_zebra
 			);
 
 			$error = validate_data($data, $var_ary);
-			extract($data);
-			unset($data);
 
-			if ($add && !sizeof($error))
+			if ($data['add'] && !sizeof($error))
 			{
-				$add = explode("\n", $add);
+				$data['add'] = explode("\n", $data['add']);
 
 				// Do these name/s exist on a list already? If so, ignore ... we could be
 				// 'nice' and automatically handle names added to one list present on 
@@ -51,8 +51,8 @@ class ucp_zebra
 				// may lead to complaints
 				$sql = 'SELECT z.*, u.username 
 					FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u 
-					WHERE z.user_id = ' . $user->data['user_id'] . "
-						AND u.user_id = z.zebra_id";
+					WHERE z.user_id = ' . $user->data['user_id'] . '
+						AND u.user_id = z.zebra_id';
 				$result = $db->sql_query($sql);
 
 				$friends = $foes = array();
@@ -69,32 +69,33 @@ class ucp_zebra
 				}
 				$db->sql_freeresult($result);
 
-				$add = array_diff($add, $friends, $foes, array($user->data['username']));
+				$data['add'] = array_diff($data['add'], $friends, $foes, array($user->data['username']));
 				unset($friends, $foes);
 
-				$add = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $add));
+				$data['add'] = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $data['add']));
 
-				if ($add)
+				if ($data['add'])
 				{
-					$sql = 'SELECT user_id
+					$sql = 'SELECT user_id, user_type
 						FROM ' . USERS_TABLE . ' 
-						WHERE username IN (' . $add . ')';
+						WHERE username IN (' . $data['add'] . ')
+							AND user_type NOT IN (' . USER_IGNORE . ', ' . USER_INACTIVE . ')';
 					$result = $db->sql_query($sql);
 
-					if ($row = $db->sql_fetchrow($result))
+					$user_id_ary = array();
+					while ($row = $db->sql_fetchrow($result))
 					{
-						$user_id_ary = array();
-						do
+						if ($row['user_id'] != ANONYMOUS)
 						{
-							if ($row['user_id'] != ANONYMOUS)
-							{
-								$user_id_ary[] = $row['user_id'];
-							}
+							$user_id_ary[] = $row['user_id'];
 						}
-						while ($row = $db->sql_fetchrow($result));
+					}
+					$db->sql_freeresult($result);
 
+					if (sizeof($user_id_ary))
+					{
 						// Remove users from foe list if they are admins or moderators
-						if (($mode == 'foes') && sizeof($user_id_ary))
+						if ($mode == 'foes')
 						{
 							$perms = array();
 							foreach ($auth->acl_get_list($user_id_ary, array('a_', 'm_')) as $forum_id => $forum_ary)
@@ -153,25 +154,23 @@ class ucp_zebra
 					}
 					else
 					{
-						$error[] = 'USER_NOT_FOUND';
+						$error[] = 'USER_NOT_FOUND_OR_INACTIVE';
 					}
-
-					$db->sql_freeresult($result);
 				}
 			}
-			else if ($usernames && !sizeof($error))
+			else if (sizeof($data['usernames']) && !sizeof($error))
 			{
 				// Force integer values
-				$usernames = array_map('intval', $usernames);
+				$data['usernames'] = array_map('intval', $data['usernames']);
 
 				$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
 					WHERE user_id = ' . $user->data['user_id'] . ' 
-						AND zebra_id IN (' . implode(', ', $usernames) . ')';
+						AND zebra_id IN (' . implode(', ', $data['usernames']) . ')';
 				$db->sql_query($sql);
 			}
 
 			if (!sizeof($error))
-			{			
+			{
 				meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
 				$message = $user->lang[strtoupper($mode) . '_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
 				trigger_error($message);
@@ -200,7 +199,7 @@ class ucp_zebra
 		$template->assign_vars(array( 
 			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . strtoupper($mode)],
 
-			'U_SEARCH_USER'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=ucp&amp;field=add", 
+			'U_SEARCH_USER'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=ucp&amp;field=add", 
 
 			'S_USERNAME_OPTIONS'	=> $s_username_options,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,

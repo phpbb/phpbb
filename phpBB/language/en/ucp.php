@@ -415,7 +415,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$d and %2$d characters.',
 	'USERNAME_TAKEN_USERNAME'		=> 'The username you entered is already in use, please select an alternative.',
 	'USERNAME_USERNAME_DISALLOWED'	=> 'The username you entered has been banned.',
-	'USER_NOT_FOUND'				=> 'The usernames you specified could not be found.',
+	'USER_NOT_FOUND_OR_INACTIVE'	=> 'The usernames you specified could either not be found or are not activated users.',
 
 	'VIEW_AVATARS'				=> 'Display Avatars',
 	'VIEW_EDIT'					=> 'View/Edit',
