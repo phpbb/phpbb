@@ -263,7 +263,7 @@ class acp_users
 								$messenger->assign_vars(array(
 									'SITENAME'		=> $config['sitename'],
 									'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-									'USERNAME'		=> $user_row['username'],
+									'USERNAME'		=> html_entity_decode($user_row['username']),
 									'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
@@ -1277,7 +1277,7 @@ class acp_users
 					{
 						$data['user_id'] = $user_id;
 
-						if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
+						if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload && $config['allow_avatar_upload'])
 						{
 							list($type, $filename, $width, $height) = avatar_upload($data, $error);
 						}
@@ -1347,6 +1347,8 @@ class acp_users
 				// Generate users avatar
 				if ($user_row['user_avatar'])
 				{
+					$avatar_img = '';
+
 					switch ($user_row['user_avatar_type'])
 					{
 						case AVATAR_UPLOAD:
@@ -1357,8 +1359,8 @@ class acp_users
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 						break;
 					}
-					$avatar_img .= $user_row['user_avatar'];
 
+					$avatar_img .= $user_row['user_avatar'];
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
 				}
 				else
@@ -1375,7 +1377,8 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_AVATAR'			=> true,
-					'S_CAN_UPLOAD'		=> $can_upload,
+					'S_CAN_UPLOAD'		=> ($can_upload && $config['allow_avatar_upload']) ? true : false,
+					'S_ALLOW_REMOTE'	=> ($config['allow_avatar_remote']) ? true : false,
 					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
 					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
 

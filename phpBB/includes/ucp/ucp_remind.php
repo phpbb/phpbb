@@ -69,8 +69,8 @@ class ucp_remind
 
 			$messenger->assign_vars(array(
 				'SITENAME'	=> $config['sitename'],
-				'USERNAME'	=> $username,
-				'PASSWORD'	=> $user_password,
+				'USERNAME'	=> html_entity_decode($username),
+				'PASSWORD'	=> html_entity_decode($user_password),
 				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")

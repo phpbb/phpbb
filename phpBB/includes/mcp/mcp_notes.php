@@ -116,7 +116,7 @@ function mcp_notes_user_view($id, $mode, $action)
 
 			add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
 
-			$msg = ($deletemark) ? 'MARKED_DELETED' : 'ALL_DELETED';
+			$msg = ($deletemark) ? 'MARKED_NOTES_DELETED' : 'ALL_NOTES_DELETED';
 			$redirect = "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id";
 			meta_refresh(2, $redirect);
 			trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));

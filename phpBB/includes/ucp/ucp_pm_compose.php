@@ -332,7 +332,8 @@ function compose_pm($id, $mode, $action)
 	{
 		$sql = 'SELECT draft_id
 			FROM ' . DRAFTS_TABLE . '
-			WHERE (forum_id = 0 AND topic_id = 0)
+			WHERE forum_id = 0
+				AND topic_id = 0
 				AND user_id = ' . $user->data['user_id'] .
 				(($draft_id) ? " AND draft_id <> $draft_id" : '');
 		$result = $db->sql_query_limit($sql, 1);
@@ -397,7 +398,7 @@ function compose_pm($id, $mode, $action)
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$_REQUEST['subject'] = $row['draft_subject'];
-			$_POST['message'] = $row['draft_message'];
+			$_REQUEST['message'] = $row['draft_message'];
 			$refresh = true;
 			$template->assign_var('S_DRAFT_LOADED', true);
 		}

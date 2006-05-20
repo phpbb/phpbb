@@ -35,6 +35,7 @@ $lang = array_merge($lang, array(
 	'ADD_WARNING'			=> 'Add warning',
 	'ADD_WARNING_EXPLAIN'	=> 'To send a warning to this user please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.',
 	'ALL_ENTRIES'			=> 'All entries',
+	'ALL_NOTES_DELETED'		=> 'Sucessfully removed all user notes',
 	'ALL_REPORTS'			=> 'All reports',
 	'ALREADY_REPORTED'		=> 'This post has already been reported',
 	'ALREADY_WARNED'		=> 'A warning has already been issued for this post',
@@ -117,6 +118,8 @@ $lang = array_merge($lang, array(
 	'LOGVIEW_VIEWFORUM'			=> 'View Forum',
 	'LOOKUP_ALL'				=> 'Look up all IP',
 	'LOOKUP_IP'					=> 'Look up IP',
+
+	'MARKED_NOTES_DELETED'		=> 'Sucessfully removed all marked user notes',
 
 	'MCP_ADD'						=> 'Add a warning',
 

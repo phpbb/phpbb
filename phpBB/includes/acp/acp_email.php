@@ -36,8 +36,8 @@ class acp_email
 		{
 			// Error checking needs to go here ... if no subject and/or no message then skip 
 			// over the send and return to the form
-			$subject		= html_entity_decode(request_var('subject', '', true));
-			$message		= html_entity_decode(request_var('message', '', true));
+			$subject		= request_var('subject', '', true);
+			$message		= request_var('message', '', true);
 			$use_queue		= (isset($_POST['send_immediatly'])) ? false : true;
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
@@ -150,14 +150,14 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 			
-					$messenger->subject($subject);
+					$messenger->subject(html_entity_decode($subject));
 					$messenger->replyto($config['board_email']);
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'CONTACT_EMAIL' => $config['board_contact'],
-						'MESSAGE'		=> $message)
+						'MESSAGE'		=> html_entity_decode($message))
 					);
 	
 					if (!($messenger->send($used_method)))
@@ -216,8 +216,8 @@ class acp_email
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> $usernames,
 			'U_FIND_USERNAME'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_email&amp;field=usernames",
-			'SUBJECT'				=> request_var('subject', '', true),
-			'MESSAGE'				=> request_var('message', '', true),
+			'SUBJECT'				=> $subject,
+			'MESSAGE'				=> $message,
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options)
 		);
 

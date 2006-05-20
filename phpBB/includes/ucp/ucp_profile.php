@@ -136,7 +136,7 @@ class ucp_profile
 
 							$messenger->assign_vars(array(
 								'SITENAME'		=> $config['sitename'],
-								'USERNAME'		=> $username,
+								'USERNAME'		=> html_entity_decode($username),
 								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
@@ -162,7 +162,7 @@ class ucp_profile
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> $username,
+										'USERNAME'		=> html_entity_decode($username),
 										'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")

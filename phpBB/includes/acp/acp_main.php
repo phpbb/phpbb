@@ -127,7 +127,7 @@ class acp_main
 
 							$messenger->assign_vars(array(
 								'EMAIL_SIG'		=> $sig,
-								'USERNAME'		=> $row['username'],
+								'USERNAME'		=> html_entity_decode($row['username']),
 								'SITENAME'		=> $config['sitename'],
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
 							

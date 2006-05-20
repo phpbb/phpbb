@@ -604,6 +604,7 @@ class ucp_main
 			case 'drafts':
 				
 				$pm_drafts = ($this->p_master->p_name == 'pm') ? true : false;
+				$template->assign_var('S_SHOW_DRAFTS', true);
 
 				$user->add_lang('posting');
 

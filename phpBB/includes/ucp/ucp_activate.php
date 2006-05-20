@@ -87,7 +87,7 @@ class ucp_activate
 
 			$messenger->assign_vars(array(
 				'SITENAME'	=> $config['sitename'],
-				'USERNAME'	=> $row['username'],
+				'USERNAME'	=> html_entity_decode($row['username']),
 
 				'EMAIL_SIG' => str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']))
 			);

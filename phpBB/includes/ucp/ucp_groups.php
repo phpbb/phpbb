@@ -176,8 +176,8 @@ class ucp_groups
 									$messenger->assign_vars(array(
 										'EMAIL_SIG'		=> $email_sig,
 										'SITENAME'		=> $config['sitename'],
-										'USERNAME'		=> $row['username'],
-										'GROUP_NAME'	=> $group_row[$group_id]['group_name'],
+										'USERNAME'		=> html_entity_decode($row['username']),
+										'GROUP_NAME'	=> html_entity_decode($group_row[$group_id]['group_name']),
 
 										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=usergroups&mode=manage",
 										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")

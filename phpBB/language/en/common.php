@@ -73,7 +73,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_URL_INVALID'			=> 'The URL you specified is invalid.',
 	'AVATAR_URL_NOT_FOUND'			=> 'The file specified could not be found.',
 	'AVATAR_WRONG_FILESIZE'			=> 'The avatar must be between 0 and %1d %2s.',
-	'AVATAR_WRONG_SIZE'				=> 'The avatar must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high.',
+	'AVATAR_WRONG_SIZE'				=> 'The avatar must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high. The submitted avatar is %5$d pixels wide and %6$d pixels high.',
 
 	'BACK_TO_TOP'			=> 'Top',
 	'BBCODE_GUIDE'			=> 'BBCode Guide',

@@ -1462,9 +1462,9 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		$messenger->assign_vars(array(
 			'EMAIL_SIG'		=> $email_sig,
 			'SITENAME'		=> $config['sitename'],
-			'SUBJECT'		=> $subject,
-			'AUTHOR_NAME'	=> $author,
-			'USERNAME'		=> $addr['name'],
+			'SUBJECT'		=> html_entity_decode($subject),
+			'AUTHOR_NAME'	=> html_entity_decode($author),
+			'USERNAME'		=> html_entity_decode($addr['name']),
 
 			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
 		);

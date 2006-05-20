@@ -79,7 +79,7 @@ class ucp_resend
 				$messenger->assign_vars(array(
 					'SITENAME'		=> $config['sitename'],
 					'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-					'USERNAME'		=> $row['username'],
+					'USERNAME'		=> html_entity_decode($row['username']),
 					'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 					'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$row['user_id']}&k={$row['user_actkey']}")
@@ -117,7 +117,7 @@ class ucp_resend
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
-						'USERNAME'		=> $row['username'],
+						'USERNAME'		=> html_entity_decode($row['username']),
 						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$row['user_id']}&k={$row['user_actkey']}")

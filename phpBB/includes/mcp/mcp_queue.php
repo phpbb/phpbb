@@ -458,12 +458,12 @@ function approve_post($post_id_list, $mode)
 				$messenger->assign_vars(array(
 					'EMAIL_SIG'		=> $email_sig,
 					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> $post_data['username'],
-					'POST_SUBJECT'	=> censor_text($post_data['post_subject']),
-					'TOPIC_TITLE'	=> censor_text($post_data['topic_title']),
+					'USERNAME'		=> html_entity_decode($post_data['username']),
+					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_data['topic_title'])),
 
-					'U_VIEW_TOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&e=0",
-					'U_VIEW_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
+					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&e=0",
+					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
 				);
 
 				$messenger->send($post_data['user_notify_type']);
@@ -550,6 +550,7 @@ function disapprove_post($post_id_list, $mode)
 	);
 
 	$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
+	$disapprove_reason = '';
 
 	if ($reason_id)
 	{
@@ -569,8 +570,7 @@ function disapprove_post($post_id_list, $mode)
 		{
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
 			$disapprove_reason = ($row['reason_title'] != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
-			$disapprove_reason .= ($reason) ? "\n\n" . $_REQUEST['reason'] : '';
-			unset($reason);
+			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
 		}
 	}
 
@@ -671,10 +671,10 @@ function disapprove_post($post_id_list, $mode)
 				$messenger->assign_vars(array(
 					'EMAIL_SIG'		=> $email_sig,
 					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> $post_data['username'],
-					'REASON'		=> $disapprove_reason,
-					'POST_SUBJECT'	=> censor_text($post_data['post_subject']),
-					'TOPIC_TITLE'	=> censor_text($post_data['topic_title']))
+					'USERNAME'		=> html_entity_decode($post_data['username']),
+					'REASON'		=> html_entity_decode($disapprove_reason),
+					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_data['topic_title'])))
 				);
 
 				$messenger->send($post_data['user_notify_type']);

@@ -1301,8 +1301,8 @@ class install_install extends module
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 			$messenger->assign_vars(array(
-				'USERNAME'		=> $admin_name,
-				'PASSWORD'		=> $admin_pass1,
+				'USERNAME'		=> html_entity_decode($admin_name),
+				'PASSWORD'		=> html_entity_decode($admin_pass1),
 				'U_BOARD'		=> generate_board_url(),
 				'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']))
 			);

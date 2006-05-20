@@ -982,25 +982,38 @@ function avatar_remote($data, &$error)
 		return false;
 	}
 
-	if ((!($data['width'] || $data['height']) || $data['remotelink'] != $user->data['user_avatar']) && ($config['avatar_max_width'] || $config['avatar_max_height']))
+	// Make sure getimagesize works...
+	if (($image_data = @getimagesize($data['remotelink'])) === false)
 	{
-		list($width, $height) = @getimagesize($data['remotelink']);
+		$error[] = $user->lang['AVATAR_URL_INVALID'];
+		return false;
+	}
 
-		if (!$width || !$height)
+	$width = ($data['width'] && $data['height']) ? $data['width'] : $image_data[0];
+	$height = ($data['width'] && $data['height']) ? $data['height'] : $image_data[1];
+
+	if (!$width || !$height)
+	{
+		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		return false;
+	}
+
+	if ($config['avatar_max_width'] || $config['avatar_max_height'])
+	{
+		if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
 		{
-			$error[] = $user->lang['AVATAR_NO_SIZE'];
-			return false;
-		}
-		else if ($width > $config['avatar_max_width'] || $height > $config['avatar_max_height'])
-		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
+			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
 			return false;
 		}
 	}
-	else if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+
+	if ($config['avatar_min_width'] || $config['avatar_min_height'])
 	{
-		$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
-		return false;
+		if ($width < $config['avatar_min_width'] || $height < $config['avatar_min_height'])
+		{
+			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $width, $height);
+			return false;
+		}
 	}
 
 	return array(AVATAR_REMOTE, $data['remotelink'], $width, $height);

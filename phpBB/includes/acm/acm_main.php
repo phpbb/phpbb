@@ -187,7 +187,7 @@ class cache extends acm
 					AND g.allow_group = 1';
 			$result = $db->sql_query($sql);
 
-			$extensions = array();
+			$extensions = array('_allowed_' => array());
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$extension = strtolower(trim($row['extension']));

@@ -461,10 +461,10 @@ function close_report($post_id_list, $mode, $action)
 				$messenger->assign_vars(array(
 					'EMAIL_SIG'		=> $email_sig,
 					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> $reporter['username'],
-					'CLOSER_NAME'	=> $user->data['username'],
-					'POST_SUBJECT'	=> censor_text($post_info[$post_id]['post_subject']),
-					'TOPIC_TITLE'	=> censor_text($post_info[$post_id]['topic_title']))
+					'USERNAME'		=> html_entity_decode($reporter['username']),
+					'CLOSER_NAME'	=> html_entity_decode($user->data['username']),
+					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_info[$post_id]['post_subject'])),
+					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_info[$post_id]['topic_title'])))
 				);
 
 				$messenger->send($reporter['user_notify_type']);

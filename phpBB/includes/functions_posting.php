@@ -682,15 +682,27 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	global $user, $db, $template, $auth;
 	global $phpbb_root_path, $phpEx, $SID;
 
-	$topic_ids = $draft_rows = array();
+	$topic_ids = $forum_ids = $draft_rows = array();
 
 	// Load those drafts not connected to forums/topics
 	// If forum_id == 0 AND topic_id == 0 then this is a PM draft
-	$sql = 'SELECT *
-		FROM ' . DRAFTS_TABLE . '
-			WHERE user_id = ' . $user->data['user_id'] . '
-			AND (forum_id = 0 OR topic_id = 0)
-		ORDER BY save_time DESC';
+	if (!$topic_id && !$forum_id)
+	{
+		$sql_and = 'AND d.forum_id = 0 AND d.topic_id = 0';
+	}
+	else
+	{
+		$sql_and = '';
+		$sql_and .= ($forum_id) ? 'AND d.forum_id = ' . $forum_id : '';
+		$sql_and .= ($topic_id) ? 'AND d.topic_id = ' . $topic_id : '';
+	}
+
+	$sql = 'SELECT d.*, f.forum_id, f.forum_name
+		FROM ' . DRAFTS_TABLE . ' d
+		LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = d.forum_id)
+			WHERE d.user_id = ' . $user->data['user_id'] . "
+			$sql_and
+		ORDER BY d.save_time DESC";
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -703,35 +715,12 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	}
 	$db->sql_freeresult($result);
 
-	// Only those fitting into this forum now...
-	if ($forum_id || $topic_id)
-	{
-		$sql = 'SELECT d.draft_id, d.topic_id, d.forum_id, d.draft_subject, d.save_time, f.forum_name
-			FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
-				WHERE d.user_id = ' . $user->data['user_id'] . '
-				AND d.forum_id = f.forum_id ' . 
-				(($forum_id) ? " AND d.forum_id = $forum_id" : '') . '
-			ORDER BY d.save_time DESC';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['topic_id'])
-			{
-				$topic_ids[] = (int) $row['topic_id'];
-			}
-			$draft_rows[] = $row;
-		}
-		$db->sql_freeresult($result);
-	}
-
 	if (!sizeof($draft_rows))
 	{
 		return;
 	}
 
 	$topic_rows = array();
-
 	if (sizeof($topic_ids))
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title
@@ -746,7 +735,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 		$db->sql_freeresult($result);
 	}
 	unset($topic_ids);
-	
+
 	$template->assign_var('S_SHOW_DRAFTS', true);
 
 	foreach ($draft_rows as $draft)

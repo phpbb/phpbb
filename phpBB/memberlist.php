@@ -260,12 +260,12 @@ switch ($mode)
 					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
 					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-					$message = $_POST['message'];
+					$message = request_var('message', '', true);
 
 					$messenger = new messenger();
 
 					$messenger->template('profile_send_email', $row['user_lang']);
-					$messenger->subject($subject);
+					$messenger->subject(html_entity_decode($subject));
 
 					$messenger->replyto($user->data['user_email']);
 					$messenger->im($row['user_jabber'], $row['username']);
@@ -273,9 +273,9 @@ switch ($mode)
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'BOARD_EMAIL'	=> $config['board_contact'],
-						'FROM_USERNAME' => $user->data['username'],
-						'TO_USERNAME'	=> $row['username'],
-						'MESSAGE'		=> $message)
+						'FROM_USERNAME' => html_entity_decode($user->data['username']),
+						'TO_USERNAME'	=> html_entity_decode($row['username']),
+						'MESSAGE'		=> html_entity_decode($message))
 					);
 
 					$messenger->send(NOTIFY_IM);
@@ -289,10 +289,10 @@ switch ($mode)
 		// Send vars to the template
 		$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
-			'USERNAME'		=> addslashes($row['username']),
+			'USERNAME'		=> $row['username'],
 			'EMAIL'			=> $row['user_email'],
 			'CONTACT_NAME'	=> $row[$sql_field],
-			'SITENAME'		=> addslashes($config['sitename']),
+			'SITENAME'		=> $config['sitename'],
 
 			'PRESENCE_IMG'		=> $presence_img,
 
@@ -616,7 +616,7 @@ switch ($mode)
 
 				if ($user_id)
 				{
-					$messenger->subject($subject);
+					$messenger->subject(html_entity_decode($subject));
 					$messenger->im($row['user_jabber'], $row['username']);
 					$notify_type = $row['user_notify_type'];
 				}
