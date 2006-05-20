@@ -431,7 +431,7 @@ INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VAL
 INSERT INTO phpbb_ranks (rank_title, rank_min, rank_special, rank_image) VALUES ('Site Admin', -1, 1, NULL);
 
 # -- Bots
-INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Googlebot', 3, 'Googlebot/', '216.239.46.,64.68.8');
+INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Googlebot', 3, 'Googlebot', '');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Fastcrawler', 4, 'FAST MetaWeb Crawler', '66.151.181.');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Alexa', 5, 'ia_archiver', '66.28.250.,209.237.238.');
 INSERT INTO phpbb_bots (bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES (1, 'Inktomi', 6, 'Slurp/', '216.35.116.,66.196.');
