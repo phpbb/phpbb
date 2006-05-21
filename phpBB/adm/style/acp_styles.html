@@ -251,8 +251,8 @@
 	<p>{L_SELECTED_THEME}: <b>{SELECTED_THEME}</b></p>
 
 	<!-- IF S_SHOWCSS -->
-	<h3>{L_SHOW_RAW_CSS_NOTE}</h3>
-	<p>{L_SHOW_RAW_CSS_EXPLAIN}</p>
+	<h3>{L_SHOW_CSS_NOTE}</h3>
+	<p>{L_SHOW_CSS_EXPLAIN}</p>
 	<!-- ENDIF -->
 
 	<form id="acp_styles" method="post" action="{U_ACTION}">
@@ -292,7 +292,7 @@
 		<legend>{L_BACKGROUND}</legend>
 		<dl>
 			<dt><label for="background_color">{L_BACKGROUND_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
-			<dd><input id="background_color" name="background_color" type="text" value="{BACKGROUND_COLOR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('background_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+			<dd><input id="background_color" name="background_color" type="text" value="{BACKGROUND_COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('background_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 		</dl>
 		<dl>
 			<dt><label for="backround_image">{L_BACKGROUND_IMAGE}:</label></td>
@@ -307,8 +307,8 @@
 	<fieldset>
 		<legend>{L_FOREGROUND}</legend>
 		<dl>
-			<dt><label for="font_color">{L_FONT_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
-			<dd><input id="font_color" name="font_color" type="text" value="{FONT_COLOR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('font_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+			<dt><label for="color">{L_FONT_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
+			<dd><input id="color" name="color" type="text" value="{COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 		</dl>
 		<dl>
 			<dt><label for="font_family">{L_FONT_FACE}:</label><br /><span>{L_FONT_FACE_EXPLAIN}</span></dt>

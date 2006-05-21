@@ -933,7 +933,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 							if ((request_var($var, '') === '') || !in_array($unit, $units))
 							{
-								continue 2;
+								$value = '';
 							}
 						break;
 
@@ -941,7 +941,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							$value = str_replace('..', '.', request_var($var, ''));
 							if (!file_exists($value))
 							{
-								continue 2;
+								$value = '';
 							}
 						break;
 
@@ -950,6 +950,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							if (preg_match('#^(?:[A-Z0-9]{6}|[A-Z]{3})$#', $value))
 							{
 								$value = '#' . $value;
+							}
+						break;
+
+						case 'repeat':
+							$value = request_var($var, '');
+							if (!isset($repeat_types[$value]))
+							{
+								$value = '';
 							}
 						break;
 
