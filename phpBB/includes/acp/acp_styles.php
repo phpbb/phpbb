@@ -939,7 +939,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						case 'images':
 							$value = str_replace('..', '.', request_var($var, ''));
-							if (!file_exists($value))
+							if (!file_exists("{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/" . $value))
 							{
 								$value = '';
 							}
