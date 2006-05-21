@@ -395,11 +395,9 @@ function compose_pm($id, $mode, $action)
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-//			$_REQUEST['subject'] = $row['draft_subject'];
-//			$_REQUEST['message'] = $row['draft_message'];
-//			$refresh = false;
 			$message_parser->message = $row['draft_message'];
 			$message_subject = $row['draft_subject'];
+
 			$template->assign_var('S_DRAFT_LOADED', true);
 		}
 		else
