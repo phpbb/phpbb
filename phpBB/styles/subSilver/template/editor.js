@@ -106,17 +106,25 @@ function bbfontstyle(bbopen, bbclose) {
 	return;
 }
 
-function insert_text(text) {
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos) {
+function insert_text(text)
+{
+	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
+	{
 		var caretPos = document.forms[form_name].elements[text_name].caretPos;
 		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
-	} else {
+	}
+	else if (document.forms[form_name].elements[text_name].selectionStart)
+	{
 		var selStart = document.forms[form_name].elements[text_name].selectionStart;
 		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
 
 		mozWrap(document.forms[form_name].elements[text_name], text, '')
 		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
 		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
+	}
+	else
+	{
+		document.forms[form_name].elements[text_name].value = document.forms[form_name].elements[text_name].value + text;
 	}
 }
 
@@ -204,12 +212,15 @@ function bbstyle(bbnumber) {
 		return;
 	}
 
+	// [*] doesn't have an end tag
+	noEndTag = (bbtags[bbnumber] == "[*]")
+
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
 		theSelection = document.selection.createRange().text; // Get text selection
 		if (theSelection) {
 			// Add tags around selection
-			document.selection.createRange().text = bbtags[bbnumber] + theSelection + bbtags[bbnumber+1];
+			document.selection.createRange().text = bbtags[bbnumber] + theSelection + ((!noEndTag) ? bbtags[bbnumber+1] : '');
 			document.forms[form_name].elements[text_name].focus();
 			theSelection = '';
 			return;
@@ -217,7 +228,7 @@ function bbstyle(bbnumber) {
 	}
 	else if (document.forms[form_name].elements[text_name].selectionEnd && (document.forms[form_name].elements[text_name].selectionEnd - document.forms[form_name].elements[text_name].selectionStart > 0))
 	{
-		mozWrap(document.forms[form_name].elements[text_name], bbtags[bbnumber], bbtags[bbnumber+1]);
+		mozWrap(document.forms[form_name].elements[text_name], bbtags[bbnumber], ((!noEndTag) ? bbtags[bbnumber+1] : ''));
 		document.forms[form_name].elements[text_name].focus();
 		theSelection = '';
 		return;
