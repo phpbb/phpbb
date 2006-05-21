@@ -251,7 +251,6 @@ if ($post_id)
 	$topic_data['prev_posts'] = $row['prev_posts'];
 }
 
-$old_forum_id = $forum_id;
 $forum_id = (int) $topic_data['forum_id'];
 $topic_id = (int) $topic_data['topic_id'];
 
@@ -1423,12 +1422,6 @@ if (isset($user->data['session_page']) && !preg_match("#&t=$topic_id#", $user->d
 if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id])
 {
 	markread('topic', $forum_id, $topic_id, $max_post_time);
-
-	// The topic has two different forum_id numbers, we have to update the other forum
-	if ($old_forum_id !== $forum_id)
-	{
-		markread('topic', $old_forum_id, $topic_id, $max_post_time);
-	}
 }
 
 // Change encoding if appropriate
