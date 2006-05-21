@@ -26,13 +26,13 @@ class acp_prune
 		{
 			case 'forums':
 				$this->tpl_name = 'acp_prune_forums';
-				$this->page_header = 'ACP_PRUNE_FORUMS';
+				$this->page_title = 'ACP_PRUNE_FORUMS';
 				$this->prune_forums($id, $mode);
 			break;
 
 			case 'users':
 				$this->tpl_name = 'acp_prune_users';
-				$this->page_header = 'ACP_PRUNE_USERS';
+				$this->page_title = 'ACP_PRUNE_USERS';
 				$this->prune_users($id, $mode);
 			break;
 		}

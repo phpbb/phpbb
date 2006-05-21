@@ -157,7 +157,7 @@ if ($view && !$post_id)
 // also allows for direct linking to a post (and the calculation of which
 // page the post is on and the correct display of viewtopic)
 $sql_array = array(
-	'SELECT'	=> 't.topic_id, t.forum_id, t.topic_title, t.topic_attachment, t.topic_status, t.topic_approved, t.topic_replies_real, t.topic_replies, t.topic_first_post_id, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_post_time, t.topic_poster, t.topic_time, t.topic_time_limit, t.topic_type, t.topic_bumped, t.topic_bumper, t.poll_max_options, t.poll_start, t.poll_length, t.poll_title, t.poll_vote_change, f.forum_name, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_parents, f.parent_id, f.left_id, f.right_id, f.forum_status, f.forum_type, f.forum_id, f.forum_style, f.forum_password, f.forum_rules, f.forum_rules_link, f.forum_rules_uid, f.forum_rules_bitfield',
+	'SELECT'	=> 't.*, f.*',
 
 	'FROM'		=> array(
 				FORUMS_TABLE	=> 'f',

@@ -263,7 +263,9 @@ $sql = $db->sql_build_query('SELECT_DISTINCT', array(
 						AND z.friend = 1
 						AND u.user_id = z.zebra_id',
 
-	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline'
+	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline',
+
+	'ORDER_BY'	=> 'u.username ASC',
 ));
 
 $result = $db->sql_query($sql);

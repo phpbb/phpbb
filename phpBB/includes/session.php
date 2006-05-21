@@ -1237,13 +1237,22 @@ class user extends session
 				return $imgs[$img . $suffix];
 			}
 
-			if ($width === false)
+			// Do not include dimensions?
+			if (strpos($this->theme[$img], '*') === false)
 			{
-				list($imgsrc, $height, $width) = explode('*', $this->theme[$img]);
+				$imgsrc = trim($this->theme[$img]);
+				$width = $height = false;
 			}
 			else
 			{
-				list($imgsrc, $height) = explode('*', $this->theme[$img]);
+				if ($width === false)
+				{
+					list($imgsrc, $height, $width) = explode('*', $this->theme[$img]);
+				}
+				else
+				{
+					list($imgsrc, $height) = explode('*', $this->theme[$img]);
+				}
 			}
 
 			if ($suffix !== '')
@@ -1262,19 +1271,19 @@ class user extends session
 		{
 			case 'src':
 				return $imgs[$img . $suffix]['src'];
-				break;
+			break;
 			
 			case 'width':
 				return $imgs[$img . $suffix]['width'];
-				break;
+			break;
 
 			case 'height':
 				return $imgs[$img . $suffix]['height'];
-				break;
+			break;
 
 			default:
 				return '<img src="' . $imgs[$img . $suffix]['src'] . '"' . (($imgs[$img . $suffix]['width']) ? ' width="' . $imgs[$img . $suffix]['width'] . '"' : '') . (($imgs[$img . $suffix]['height']) ? ' height="' . $imgs[$img . $suffix]['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
-				break;
+			break;
 		}
 	}
 

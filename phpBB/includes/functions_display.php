@@ -765,7 +765,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							list($width, $height) = getimagesize($filename);
+							list($width, $height) = @getimagesize($filename);
 
 							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
 						}

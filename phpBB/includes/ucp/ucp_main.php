@@ -137,7 +137,7 @@ class ucp_main
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
 
-						'U_LAST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'],
+						'U_LAST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] : '',
 						'U_NEWEST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;view=unread#unread",
 						'U_VIEW_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id")
@@ -287,7 +287,7 @@ class ucp_main
 						$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
 						$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['forum_last_poster_id'];
 
-						$last_post_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['forum_last_post_id'] . '#' . $row['forum_last_post_id'];
+						$last_post_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['forum_last_post_id'] . '#p' . $row['forum_last_post_id'];
 					}
 					else
 					{
@@ -444,7 +444,7 @@ class ucp_main
 						'S_UNREAD_TOPIC'		=> $unread_topic,
 
 						'U_NEWEST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread",
-						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'],
+						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
 						'U_VIEW_TOPIC'		=> $view_topic_url)
 					);
@@ -590,7 +590,7 @@ class ucp_main
 						'ATTACH_ICON_IMG'	=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
 						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 
-						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#' . $row['topic_last_post_id'],
+						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
 						'U_VIEW_TOPIC'		=> $view_topic_url,
 						'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$forum_id}",

@@ -688,13 +688,13 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	// If forum_id == 0 AND topic_id == 0 then this is a PM draft
 	if (!$topic_id && !$forum_id)
 	{
-		$sql_and = 'AND d.forum_id = 0 AND d.topic_id = 0';
+		$sql_and = ' AND d.forum_id = 0 AND d.topic_id = 0';
 	}
 	else
 	{
 		$sql_and = '';
-		$sql_and .= ($forum_id) ? 'AND d.forum_id = ' . $forum_id : '';
-		$sql_and .= ($topic_id) ? 'AND d.topic_id = ' . $topic_id : '';
+		$sql_and .= ($forum_id) ? ' AND d.forum_id = ' . $forum_id : '';
+		$sql_and .= ($topic_id) ? ' AND d.topic_id = ' . $topic_id : '';
 	}
 
 	$sql = 'SELECT d.*, f.forum_id, f.forum_name
@@ -1580,7 +1580,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			if (trim($poll['poll_options'][$i]))
 			{
-				if (!$cur_poll_options[$i])
+				if (empty($cur_poll_options[$i]))
 				{
 					$sql_insert_ary[] = array(
 						'poll_option_id'	=> (int) $i,

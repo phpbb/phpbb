@@ -234,7 +234,9 @@
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td><a href="{groups.U_EDIT}">{groups.GROUP_NAME}</a></td>
+				<td><a href="{groups.U_EDIT}">{groups.GROUP_NAME}</a>
+					<!-- IF groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM}</span><!-- ENDIF -->
+				</td>
 				<td>{groups.CATEGORY}</td>
 				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{L_EDIT}</a> | <a href="{groups.U_DELETE}">{L_DELETE}</a> | <a href="{groups.U_ACT_DEACT}">{groups.L_ACT_DEACT}</a>&nbsp;</td>
 			</tr>

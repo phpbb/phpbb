@@ -107,7 +107,7 @@ class ucp_attachments
 				}
 				else
 				{
-					$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}";
+					$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t={$row['topic_id']}&amp;p={$row['post_msg_id']}#p{$row['post_msg_id']}";
 				}
 
 				$template->assign_block_vars('attachrow', array(

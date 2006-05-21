@@ -59,7 +59,11 @@ function compose_pm($id, $mode, $action)
 	// Was cancel pressed? If so then redirect to the appropriate page
 	if ($cancel || ($current_time - $lastclick < 2 && $submit))
 	{
-		redirect("ucp.$phpEx$SID&i=pm&mode=view&action=view_message" . (($msg_id) ? "&p=$msg_id" : ''));
+		if ($msg_id)
+		{
+			redirect("ucp.$phpEx$SID&i=pm&mode=view&action=view_message&p=$msg_id");
+		}
+		redirect("ucp.$phpEx$SID&i=pm");
 	}
 
 	$sql = '';
@@ -79,12 +83,6 @@ function compose_pm($id, $mode, $action)
 		case 'quote':
 		case 'forward':
 		case 'quotepost':
-			if ($submit)
-			{
-				// We don't need to retrieve the post text again when the user is submitting.
-				break;
-			}
-			
 			if (!$msg_id)
 			{
 				trigger_error('NO_MESSAGE');
@@ -167,13 +165,13 @@ function compose_pm($id, $mode, $action)
 	if ($sql)
 	{
 		$result = $db->sql_query_limit($sql, 1);
+		$post = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($post = $db->sql_fetchrow($result)))
+		if (!$post)
 		{
 			trigger_error('NO_MESSAGE');
 		}
-
-		$db->sql_freeresult($result);
 
 		$msg_id			= (int) $post['msg_id'];
 		$folder_id		= (isset($post['folder_id'])) ? $post['folder_id'] : 0;
@@ -397,9 +395,11 @@ function compose_pm($id, $mode, $action)
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$_REQUEST['subject'] = $row['draft_subject'];
-			$_REQUEST['message'] = $row['draft_message'];
-			$refresh = true;
+//			$_REQUEST['subject'] = $row['draft_subject'];
+//			$_REQUEST['message'] = $row['draft_message'];
+//			$refresh = false;
+			$message_parser->message = $row['draft_message'];
+			$message_subject = $row['draft_subject'];
 			$template->assign_var('S_DRAFT_LOADED', true);
 		}
 		else
@@ -445,7 +445,7 @@ function compose_pm($id, $mode, $action)
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
-		// Check checksum ... don't re-parse message if the same
+		// Parse message
 		$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
 
 		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
@@ -578,7 +578,7 @@ function compose_pm($id, $mode, $action)
 		if ($action == 'quotepost')
 		{
 			$post_id = request_var('p', 0);
-			$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#{$post_id}]{$message_subject}[/url]\n";
+			$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$message_subject}[/url]\n";
 		}
 		else 
 		{
@@ -592,7 +592,7 @@ function compose_pm($id, $mode, $action)
 		$message_subject = ((!preg_match('/^Re:/', $message_subject)) ? 'Re: ' : '') . censor_text($message_subject);
 	}
 
-	if ($action == 'forward' && !$preview && !$refresh)
+	if ($action == 'forward' && !$preview && !$refresh && !$submit)
 	{
 		$fwd_to_field = write_pm_addresses(array('to' => $post['to_address']), 0, true);
 

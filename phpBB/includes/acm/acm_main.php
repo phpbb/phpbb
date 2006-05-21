@@ -249,6 +249,11 @@ class cache extends acm
 			$extensions = $return;
 		}
 
+		if (!isset($extensions['_allowed_']))
+		{
+			$extensions['_allowed_'] = array();
+		}
+
 		return;
 	}
 

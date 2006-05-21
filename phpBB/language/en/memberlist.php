@@ -87,6 +87,7 @@ $lang = array_merge($lang, array(
 	'LIST_USER'					=> '1 User',
 	'LIST_USERS'				=> '%d Users',
 	'LOGIN_EXPLAIN_LEADERS'		=> 'The board administrator requires you to be registered and logged in to view the team listing.',
+	'LOGIN_EXPLAIN_SEARCHUSER'	=> 'The board administrator requires you to be registered and logged in to search users.',
 	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board administrator requires you to be registered and logged in to view profiles.',
 
 	'MORE_THAN'				=> 'More than',

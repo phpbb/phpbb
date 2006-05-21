@@ -105,6 +105,11 @@ class bbcode
 		{
 			$this->template_bitfield = $user->theme['bbcode_bitfield'];
 			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
+
+			if (!@file_exists($this->template_filename))
+			{
+				trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
+			}
 		}
 
 		$sql = '';

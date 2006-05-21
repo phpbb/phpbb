@@ -28,16 +28,16 @@ class acp_email
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = array();
 
-		$usernames = request_var('usernames', '');
-		$group_id = request_var('g', 0);
+		$usernames	= request_var('usernames', '');
+		$group_id	= request_var('g', 0);
+		$subject	= request_var('subject', '', true);
+		$message	= request_var('message', '', true);
 
 		// Do the job ...
 		if ($submit)
 		{
 			// Error checking needs to go here ... if no subject and/or no message then skip 
 			// over the send and return to the form
-			$subject		= request_var('subject', '', true);
-			$message		= request_var('message', '', true);
 			$use_queue		= (isset($_POST['send_immediatly'])) ? false : true;
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 

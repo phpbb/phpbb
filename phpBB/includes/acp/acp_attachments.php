@@ -785,7 +785,9 @@ class acp_attachments
 					$act_deact = ($row['allow_group']) ? 'deactivate' : 'activate';
 			
 					$template->assign_block_vars('groups', array(
-						'S_ADD_SPACER'	=> $s_add_spacer,
+						'S_ADD_SPACER'		=> $s_add_spacer,
+						'S_ALLOWED_IN_PM'	=> ($row['allow_in_pm']) ? true : false,
+						'S_GROUP_ALLOWED'	=> ($row['allow_group']) ? true : false,
 
 						'U_EDIT'		=> $this->u_action . "&amp;action=edit&amp;g={$row['group_id']}",
 						'U_DELETE'		=> $this->u_action . "&amp;action=delete&amp;g={$row['group_id']}",

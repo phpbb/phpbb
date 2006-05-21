@@ -16,6 +16,9 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
+$user->session_begin();
+$auth->acl($user->data);
+
 $cron_type = request_var('cron_type', '');
 $use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
 

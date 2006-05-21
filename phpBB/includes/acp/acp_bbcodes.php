@@ -71,8 +71,8 @@ class acp_bbcodes
 			case 'create':
 				$display_on_posting = request_var('display_on_posting', 0);
 
-				$bbcode_match = (isset($_POST['bbcode_match'])) ? htmlspecialchars(stripslashes($_POST['bbcode_match'])) : '';
-				$bbcode_tpl = (isset($_POST['bbcode_tpl'])) ? stripslashes($_POST['bbcode_tpl']) : '';
+				$bbcode_match = request_var('bbcode_match', '');
+				$bbcode_tpl = html_entity_decode(request_var('bbcode_tpl', ''));
 			break;
 		}
 
@@ -207,19 +207,19 @@ class acp_bbcodes
 	/*
 	* Build regular expression for custom bbcode
 	*/
-	function build_regexp($msg_bbcode, $msg_html)
+	function build_regexp(&$bbcode_match, &$bbcode_tpl)
 	{
-		$msg_bbcode = trim($msg_bbcode);
-		$msg_html = trim($msg_html);
+		$bbcode_match = trim($bbcode_match);
+		$bbcode_tpl = trim($bbcode_tpl);
 
-		$fp_match = preg_quote($msg_bbcode, '!');
-		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $msg_bbcode);
+		$fp_match = preg_quote($bbcode_match, '!');
+		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
 		$fp_replace = preg_replace('#\[/(.*?)\]$#', '[/$1:$uid]', $fp_replace);
 
-		$sp_match = preg_quote($msg_bbcode, '!');
+		$sp_match = preg_quote($bbcode_match, '!');
 		$sp_match = preg_replace('#^\\\\\[(.*?)\\\\\]#', '\[$1:$uid\]', $sp_match);
 		$sp_match = preg_replace('#\\\\\[/(.*?)\\\\\]$#', '\[/$1:$uid\]', $sp_match);
-		$sp_replace = $msg_html;
+		$sp_replace = $bbcode_tpl;
 
 		// @todo Make sure to change this too if something changed in message parsing
 		$tokens = array(
@@ -236,7 +236,7 @@ class acp_bbcodes
 				'!(.*?)!es'	 =>	"str_replace('\\\"', '&quot;', str_replace('\\'', '&#39;', '\$1'))"
 			),
 			'COLOR' => array(
-				'!([a-z]+|#[0-9abcdef]+!i'	=>	'$1'
+				'!([a-z]+|#[0-9abcdef]+)!i'	=>	'$1'
 			),
 			'NUMBER' => array(
 				'!([0-9]+)!'	=>	'$1'
@@ -246,7 +246,7 @@ class acp_bbcodes
 		$pad = 0;
 		$modifiers = 'i';
 
-		if (preg_match_all('/\{(' . implode('|', array_keys($tokens)) . ')[0-9]*\}/i', $msg_bbcode, $m))
+		if (preg_match_all('/\{(' . implode('|', array_keys($tokens)) . ')[0-9]*\}/i', $bbcode_match, $m))
 		{
 			foreach ($m[0] as $n => $token)
 			{
@@ -311,7 +311,7 @@ class acp_bbcodes
 		}
 
 		// Lowercase tags
-		$bbcode_tag = preg_replace('/.*?\[([a-z]+=?).*/i', '$1', $msg_bbcode);
+		$bbcode_tag = preg_replace('/.*?\[([a-z]+=?).*/i', '$1', $bbcode_match);
 		$fp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_match);
 		$fp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_replace);
 		$sp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_match);

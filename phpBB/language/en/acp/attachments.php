@@ -104,6 +104,7 @@ $lang = array_merge($lang, array(
 	'MODE_INLINE'					=> 'Inline',
 	'MODE_PHYSICAL'					=> 'Physical',
 
+	'NOT_ALLOWED_IN_PM'			=> 'Not allowed in private messages',
 	'NOT_ASSIGNED'				=> 'Not assigned',
 	'NO_EXT_GROUP_NAME'			=> 'No Group Name entered',
 	'NO_EXT_GROUP_SPECIFIED'	=> 'No Extension Group specified',

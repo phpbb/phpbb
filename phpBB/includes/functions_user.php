@@ -1211,11 +1211,11 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		if (sizeof($group_attributes))
 		{
-			foreach ($attribute_ary as $attribute => $type)
+			foreach ($attribute_ary as $attribute => $_type)
 			{
 				if (isset($group_attributes[$attribute]))
 				{
-					settype($group_attributes[$attribute], $type);
+					settype($group_attributes[$attribute], $_type);
 					$sql_ary[$attribute] = $group_attributes[$attribute];
 				}
 			}
@@ -1224,7 +1224,16 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		// Setting the log message before we set the group id (if group gets added)
 		$log = ($group_id) ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
 
-		$sql = ($group_id) ? 'UPDATE ' . GROUPS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "	WHERE group_id = $group_id" : 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		if ($group_id)
+		{
+			$sql = 'UPDATE ' . GROUPS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+				WHERE group_id = $group_id";
+		}
+		else
+		{
+			$sql = 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		}
 		$db->sql_query($sql);
 
 		if (!$group_id)
@@ -1236,7 +1245,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$sql_ary = array();
 		if (sizeof($group_attributes))
 		{
-			foreach ($attribute_ary as $attribute => $type)
+			foreach ($attribute_ary as $attribute => $_type)
 			{
 				if (isset($group_attributes[$attribute]) && !in_array($attribute, $group_only_ary))
 				{
@@ -1258,6 +1267,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$db->sql_query($sql);
 		}
 
+		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
 		add_log('admin', $log, $name);
 	}
 

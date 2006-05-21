@@ -307,13 +307,20 @@ class auth_admin extends auth
 		
 		if (sizeof($roles))
 		{
+			$s_role_js_array = array();
+
+			// Make sure every role (even if empty) has its array defined
+			foreach ($roles as $_role_id => $null)
+			{
+				$s_role_js_array[$_role_id] = "\n" . 'role_options[' . $_role_id . '] = new Array();' . "\n";
+			}
+
 			$sql = 'SELECT r.role_id, o.auth_option, r.auth_setting
 				FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
 				WHERE o.auth_option_id = r.auth_option_id
 					AND r.role_id IN (' . implode(', ', array_keys($roles)) . ')';
 			$result = $db->sql_query($sql);
 
-			$s_role_js_array = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
@@ -322,10 +329,6 @@ class auth_admin extends auth
 					continue;
 				}
 
-				if (!isset($s_role_js_array[$row['role_id']]))
-				{
-					$s_role_js_array[$row['role_id']] = "\n" . 'role_options[' . $row['role_id'] . '] = new Array();' . "\n";
-				}
 				$s_role_js_array[$row['role_id']] .= 'role_options[' . $row['role_id'] . '][\'' . $row['auth_option'] . '\'] = ' . $row['auth_setting'] . '; ';
 			}
 			$db->sql_freeresult($result);

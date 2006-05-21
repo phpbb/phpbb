@@ -186,7 +186,8 @@ class ucp_zebra
 			FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u 
 			WHERE z.user_id = ' . $user->data['user_id'] . "
 				AND $sql_and 
-				AND u.user_id = z.zebra_id";
+				AND u.user_id = z.zebra_id
+			ORDER BY u.username ASC";
 		$result = $db->sql_query($sql);
 
 		$s_username_options = '';

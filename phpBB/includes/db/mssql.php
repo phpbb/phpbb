@@ -312,7 +312,7 @@ class dbal_mssql extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
+		return str_replace("'", "''", $msg);
 	}
 
 	/**

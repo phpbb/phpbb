@@ -1961,7 +1961,7 @@ function add_log()
 	$data			= (!sizeof($args)) ? '' : serialize($args);
 
 	$sql_ary = array(
-		'user_id'		=> $user->data['user_id'],
+		'user_id'		=> (empty($user->data)) ? ANONYMOUS : $user->data['user_id'],
 		'log_ip'		=> $user->ip,
 		'log_time'		=> time(),
 		'log_operation'	=> $action,
