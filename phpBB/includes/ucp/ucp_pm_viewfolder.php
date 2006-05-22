@@ -309,7 +309,10 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							foreach ($value['to'] as $key => $values)
 							{
-								$value['bcc'] = implode(',', $values['bcc']);
+								if (!empty($values['bcc']) && is_array($values['bcc']))
+								{
+									$value['bcc'] = implode(',', $values['bcc']);
+								}
 								$value['to'] = implode(',', $values['to']);
 							}
 						}
