@@ -303,18 +303,19 @@ function view_folder($id, $mode, $folder_id, $folder)
 					$string = '';
 					foreach ($data as $value)
 					{
+						$recipients = $value['to'];
+						$value['to'] = $value['bcc'] = '';
 
-						$value['bcc'] = '';
-						if (is_array($value['to']))
+						if (is_array($recipients))
 						{
-							foreach ($value['to'] as $key => $values)
+							foreach ($recipients as $values)
 							{
-								if (!empty($values['bcc']) && is_array($values['bcc']))
-								{
-									$value['bcc'] = implode(',', $values['bcc']);
-								}
-								$value['to'] = implode(',', $values['to']);
+								$value['bcc'] .= (isset($values['bcc']) && is_array($values['bcc'])) ? ',' . implode(',', $values['bcc']) : '';
+								$value['to'] .= (isset($values['to']) && is_array($values['to'])) ? ',' . implode(',', $values['to']) : '';
 							}
+							// Remove the commas which will appear before the first entry.
+							$value['to'] = substr($value['to'], 1);
+							$value['bcc'] = substr($value['bcc'], 1);
 						}
 
 						foreach ($value as $tag => $text)
