@@ -122,7 +122,7 @@ function user_avatar_upload($mode, $avatar_mode, &$current_avatar, &$current_typ
 	$width = $height = 0;
 	$type = '';
 
-	if ( $avatar_mode == 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/(.*)$/', $avatar_filename, $url_ary) )
+	if ( $avatar_mode == 'remote' && preg_match('/^(http:\/\/)?([\w\-\.]+)\:?([0-9]*)\/([^ \?&=\#\"\n\r\t<]*?(\.(jpg|jpeg|gif|png)))$/', $avatar_filename, $url_ary) )
 	{
 		if ( empty($url_ary[4]) )
 		{
