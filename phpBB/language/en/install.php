@@ -36,6 +36,7 @@ $lang = array_merge($lang, array(
 	'ADMIN_TEST'				=> 'Check administrator settings',
 	'ADMIN_USERNAME'			=> 'Administrator username',
 	'APP_MAGICK'				=> 'Imagemagick support [ Attachments ]',
+	'AUTHOR_NOTES'				=> 'Author Notes<br />&#187; %s',
 	'AVAILABLE'					=> 'Available',
 	'AVAILABLE_CONVERTORS'		=> 'Available Convertors',
 
@@ -47,11 +48,15 @@ $lang = array_merge($lang, array(
 	'CAT_CONVERT'				=> 'Convert',
 	'CAT_INSTALL'				=> 'Install',
 	'CAT_OVERVIEW'				=> 'Overview',
+	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
+	'CLEAN_VERIFY'				=> 'Cleaning up and verifying the final structure',
+	'CONFIG_CONVERT'			=> 'Converting the configuration',
 	'CONFIG_FILE_UNABLE_WRITE'	=> 'It was not possible to write the configuration file. Alternative methods for this file to be created are presented below',
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written, you may now proceed to the next step of the installation',
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',
+	'CONTINUE_LAST'				=> 'Continue last statements',
 	'CONVERT'					=> 'Convert',
 	'CONVERT_COMPLETE'			=> 'Conversion completed',
 	'CONVERT_INTRO'				=> 'Welcome to the phpBB Unified Convertor Framework',
@@ -97,6 +102,8 @@ $lang = array_merge($lang, array(
 	'FILES_OPTIONAL_EXPLAIN'	=> '<b>Optional</b> - These files, directories or permissions are not required. The installation routines will attempt to use various techniques to complete if they do not exist or cannot be written to. However, the presence of these files, directories or permissions will speed installation.',
 	'FILES_REQUIRED'			=> 'Files and Directories',
 	'FILES_REQUIRED_EXPLAIN'	=> '<b>Required</b> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see "Not Found" you need to create the relevant file or directory. If you see "Unwriteable" you need to change the permissions on the file or directory to allow phpBB to write to it.',
+	'FILLING_TABLE'				=> 'Filling table <b>%s</b>',
+	'FILLING_TABLES'			=> 'Filling Tables',
 	'FORUM_ADDRESS'				=> 'Forum address',
 	'FORUM_ADDRESS_EXPLAIN'		=> 'This is the http address of your former forum',
 	'FORUM_PATH'				=> 'Forum path',
@@ -146,11 +153,15 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PASSWORD_TOO_SHORT' => 'The password you entered is too short. The minimum length is 6 characters.',
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
 
+	'MAKE_FOLDER_WRITABLE'		=> 'Please make sure that this folder exists and is writable by the webserver then try again:<br />&#187;<b>%s</b>',
+	'MAKE_FOLDERS_WRITABLE'		=> 'Please make sure that these folders exist and are writable by the webserver then try again:<br />&#187;<b>%s</b>',
+
 	'NEXT_STEP'					=> 'Proceed to next step',
 	'NOT_FOUND'					=> 'Cannot find',
 	'NO_CONVERTORS'				=> 'No convertors are available for use',
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified',
 	'NO_LOCATION'				=> 'Cannot determine location',
+	'NO_TABLES_FOUND'			=> 'No tables found.',
 // TODO: Write some explanatory introduction text
 	'OVERVIEW_BODY'				=> '<p>Some brief explanatory text about phpBB will go here.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above</p>',
 
@@ -165,6 +176,8 @@ $lang = array_merge($lang, array(
 	'PHP_SETTINGS_EXPLAIN'		=> '<b>Required</b> - You must be running at least version 4.3.3 of PHP in order to install phpBB. If "safe mode" is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
 	'PHP_VERSION_REQD'			=> 'PHP version >= 4.3.3',
 	'PREFIX_FOUND'				=> 'A scan of your tables has shown a valid installation using <b>%s</b> as table prefix.',
+	'PREPROCESS_STEP'			=> 'Executing pre-processing functions/queries',
+	'PRE_CONVERT_COMPLETE'		=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process.',
 
 //	'REQUIRED'					=> 'Required',
 	'REQUIREMENTS_TITLE'		=> 'Installation Compatibility',
@@ -187,6 +200,7 @@ $lang = array_merge($lang, array(
 	'STAGE_IN_PROGRESS'			=> 'Conversion in progress',
 	'STAGE_REQUIREMENTS'		=> 'Requirements',
 	'STAGE_SETTINGS'			=> 'Settings',
+	'STARTING_CONVERT'			=> 'Starting Conversion Process',
 	'SUB_INTRO'					=> 'Introduction',
 	'SUB_LICENSE'				=> 'License',
 	'SUB_SUPPORT'				=> 'Support',
@@ -196,6 +210,7 @@ $lang = array_merge($lang, array(
 	'SYNC_FORUMS'				=> 'Starting to sync forums',
 	'SYNC_TOPICS'				=> 'Starting to sync topics',
 
+	'TABLES_MISSING'			=> 'Could not find these tables<br />&#187; <b>%s</b>.',
 	'TABLE_PREFIX'				=> 'Prefix for tables in database',
 	'TABLE_PREFIX_SAME'			=> 'The table prefix needs to be the one used by the software you are converting from.<br />&#187; Specified table prefix was %s',
 	'TESTS_PASSED'				=> 'Tests passed',

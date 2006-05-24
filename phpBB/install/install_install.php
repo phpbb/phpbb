@@ -1207,7 +1207,7 @@ class install_install extends module
 								AND module_id = {$module_data['parent_id']}";
 						$result = $db->sql_query($sql);
 
-						$row = $db->sql_fetchrow($result);
+						$row2 = $db->sql_fetchrow($result);
 
 						$db->sql_freeresult($result);
 
@@ -1216,13 +1216,13 @@ class install_install extends module
 							$sql = 'UPDATE ' . MODULES_TABLE . "
 								SET left_id = left_id + 2, right_id = right_id + 2
 								WHERE module_class = '" . $module_class . "'
-									AND left_id > {$row['right_id']}";
+									AND left_id > {$row2['right_id']}";
 							$db->sql_query($sql);
 
 							$sql = 'UPDATE ' . MODULES_TABLE . "
 								SET right_id = right_id + 2
 								WHERE module_class = '" . $module_class . "'
-									AND {$row['left_id']} BETWEEN left_id AND right_id";
+									AND {$row2['left_id']} BETWEEN left_id AND right_id";
 							$db->sql_query($sql);
 						}
 						else
@@ -1230,11 +1230,11 @@ class install_install extends module
 							$sql = 'UPDATE ' . MODULES_TABLE . "
 								SET left_id = left_id + 3, right_id = right_id + 3
 								WHERE module_class = '" . $module_class . "'
-									AND left_id > {$row['left_id']}";
+									AND left_id > {$row2['left_id']}";
 							$db->sql_query($sql);
 						}
-						$module_data['left_id'] = ($categories[$cat_name]['parent_id']) ? $row['right_id'] : $row['left_id'] + 1;
-						$module_data['right_id'] = ($categories[$cat_name]['parent_id']) ? $row['right_id'] + 1 : $row['left_id'] + 2;
+						$module_data['left_id'] = ($categories[$cat_name]['parent_id']) ? $row2['right_id'] : $row2['left_id'] + 1;
+						$module_data['right_id'] = ($categories[$cat_name]['parent_id']) ? $row2['right_id'] + 1 : $row2['left_id'] + 2;
 
 						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
 						$db->sql_query($sql);
