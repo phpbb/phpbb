@@ -106,6 +106,36 @@ class template
 	}
 
 	/**
+	* Reset/empty complete block
+	* @public
+	*/
+	function destroy_block_vars($blockname)
+	{
+		if (strpos($blockname, '.') !== false)
+		{
+			// Nested block.
+			$blocks = explode('.', $blockname);
+			$blockcount = sizeof($blocks) - 1;
+
+			$str = &$this->_tpldata;
+			for ($i = 0; $i < $blockcount; $i++)
+			{
+				$str = &$str[$blocks[$i]];
+				$str = &$str[sizeof($str) - 1];
+			}
+
+			unset($str[$blocks[$blockcount]]);
+		}
+		else
+		{
+			// Top-level block.
+			unset($this->_tpldata[$blockname]);
+		}
+
+		return true;
+	}
+
+	/**
 	* Display handle
 	* @public
 	*/
@@ -328,36 +358,6 @@ class template
 			// Add a new iteration to this block with the variable assignments
 			// we were given.
 			$this->_tpldata[$blockname][] = $vararray;
-		}
-
-		return true;
-	}
-
-	/**
-	* Reset/empty complete block
-	* @public
-	*/
-	function reset_block_vars($blockname)
-	{
-		if (strpos($blockname, '.') !== false)
-		{
-			// Nested block.
-			$blocks = explode('.', $blockname);
-			$blockcount = sizeof($blocks) - 1;
-
-			$str = &$this->_tpldata;
-			for ($i = 0; $i < $blockcount; $i++)
-			{
-				$str = &$str[$blocks[$i]];
-				$str = &$str[sizeof($str) - 1];
-			}
-
-			unset($str[$blocks[$blockcount]]);
-		}
-		else
-		{
-			// Top-level block.
-			unset($this->_tpldata[$blockname]);
 		}
 
 		return true;

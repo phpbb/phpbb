@@ -223,7 +223,8 @@ class acp_profile
 				$step = request_var('step', 1);
 
 				$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
-				$update = (isset($_REQUEST['update'])) ? true : false;
+				$update_preview = (isset($_REQUEST['update_preview'])) ? true : false;
+				$update = (isset($_REQUEST['update']) || $update_preview) ? true : false;
 				$save = (isset($_REQUEST['save'])) ? true : false;
 
 				// We are editing... we need to grab basic things
@@ -294,10 +295,10 @@ class acp_profile
 					$s_hidden_fields = '<input type="hidden" name="field_type" value="' . $field_type . '" />';
 				}
 
-				// $exclude contains the data that we gather in each step
+				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain'),
-					2	=> array('field_length', 'pf_preview', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value', 'field_required', 'field_show_on_reg', 'field_hide', 'field_no_view'),
+					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option', 'field_no_view'),
+					2	=> array('field_length', 'pf_preview', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
 
@@ -317,6 +318,26 @@ class acp_profile
 				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name'], true);
 				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);
+				
+				// Field option...
+				if (isset($_REQUEST['field_option']))
+				{
+					$field_option = request_var('field_option', '');
+
+					$cp->vars['field_required'] = ($field_option == 'field_required') ? 1 : 0;
+					$cp->vars['field_show_on_reg'] = ($field_option == 'field_show_on_reg') ? 1 : 0;
+					$cp->vars['field_hide'] = ($field_option == 'field_hide') ? 1 : 0;
+				}
+				else
+				{
+					$cp->vars['field_required'] = $field_row['field_required'];
+					$cp->vars['field_show_on_reg'] = $field_row['field_show_on_reg'];
+					$cp->vars['field_hide'] = $field_row['field_hide'];
+
+					$field_option = ($field_row['field_required']) ? 'field_required' : (($field_row['field_show_on_reg']) ? 'field_show_on_reg' : (($field_row['field_hide']) ? 'field_hide' : ''));
+				}
+
+				$cp->vars['field_no_view'] = request_var('field_no_view', $field_row['field_no_view']);
 
 				// A boolean field expects an array as the lang options
 				if ($field_type == FIELD_BOOL)
@@ -353,21 +374,7 @@ class acp_profile
 				// step 2
 				foreach ($exclude[2] as $key)
 				{
-					if ($key == 'field_required' || $key == 'field_show_on_reg' || $key == 'field_hide' || $key == 'field_no_view')
-					{
-						// Are we creating or editing a field?
-						$var = (!$submit && $step == 1) ? $field_row[$key] : request_var($key, 0);
-				
-						// Damn checkboxes...
-						if (!$submit && $step == 1)
-						{
-							$_REQUEST[$key] = $var;
-						}
-					}
-					else
-					{
-						$var = request_var($key, $field_row[$key], true);
-					}
+					$var = request_var($key, $field_row[$key], true);
 
 					// Manipulate the intended variables a little bit if needed
 					if ($field_type == FIELD_DROPDOWN && $key == 'field_maxlen')
@@ -394,7 +401,9 @@ class acp_profile
 
 					if ($field_type == FIELD_DATE && $key == 'field_default_value')
 					{
-						if (isset($_REQUEST['always_now']) || $var == 'now')
+						$always_now = request_var('always_now', 0);
+
+						if ($always_now || $var == 'now')
 						{
 							$now = getdate();
 
@@ -529,9 +538,9 @@ class acp_profile
 					{
 						continue;
 					}
-					
+
 					$_new_key_ary = array();
-				
+
 					foreach ($key_ary as $key)
 					{
 						if (!isset($_REQUEST[$key]))
@@ -553,10 +562,15 @@ class acp_profile
 					{
 						$this->save_profile_field($cp, $field_type, $lang_defs, $action);
 					}
+					else if ($action == 'edit' && $save)
+					{
+						$this->save_profile_field($cp, $field_type, $lang_defs, $action);
+					}
 				}
 
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
+					'S_EDIT_MODE'		=> ($action == 'edit') ? true : false,
 					'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'L_TITLE'			=> $user->lang['STEP_' . $step . '_TITLE_' . strtoupper($action)],
@@ -575,7 +589,10 @@ class acp_profile
 						// Build common create options
 						$template->assign_vars(array(
 							'S_STEP_ONE'		=> true,
-							'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
+							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
+							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
+							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
 
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
 							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper($cp->profile_types[$field_type])],
@@ -631,12 +648,6 @@ class acp_profile
 						
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
-							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
-							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
-							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
-							'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-							
 							'L_NEXT'			=> (sizeof($lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
 						);
 
@@ -692,8 +703,8 @@ class acp_profile
 
 							$template->assign_var('USER_ERROR', $user_error);
 						}
-			
-						$preview_field = $cp->process_field_row('preview', array(
+
+						$preview_field = array(
 							'lang_name'		=> $cp->vars['lang_name'],
 							'lang_explain'	=> $cp->vars['lang_explain'],
 							'lang_id'		=> $lang_defs['iso'][$config['default_lang']],
@@ -706,13 +717,18 @@ class acp_profile
 
 							'field_length'	=> $cp->vars['field_length'],
 							'field_maxlen'	=> $cp->vars['field_maxlen'],
-							'lang_options'	=> $cp->vars['lang_options'])
+							'lang_options'	=> $cp->vars['lang_options'],
 						);
-						
+
+						if ($update_preview)
+						{
+							$preview_field['acp_preview'] = true;
+						}
+
 						$template->assign_vars(array(
 							'PREVIEW_LANG_NAME'		=> $cp->vars['lang_name'],
 							'PREVIEW_LANG_EXPLAIN'	=> $cp->vars['lang_explain'],
-							'PREVIEW_FIELD'			=> $preview_field)
+							'PREVIEW_FIELD'			=> $cp->process_field_row(($update_preview) ? 'change' : 'preview', $preview_field))
 						);
 
 					break;
@@ -720,11 +736,7 @@ class acp_profile
 					// Define remaining language variables
 					case 3: 
 
-						$template->assign_vars(array(
-							'S_STEP_THREE'		=> true,
-							'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
-						);
-						
+						$template->assign_var('S_STEP_THREE', true);
 						$options = $this->build_language_options($cp, $field_type, $action);
 
 						foreach ($options as $lang_id => $lang_ary)
@@ -745,7 +757,11 @@ class acp_profile
 		
 					break;
 				}
-			
+
+				$template->assign_vars(array(
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
+				);
+
 				return;
 
 			break;

@@ -31,7 +31,37 @@
 				<dt><label for="field_ident">{L_FIELD_IDENT}:</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
 				<dd><input class="medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
 			</dl>
+			<dl>
+				<dt><label for="field_no_view">{L_DISPLAY_PROFILE_FIELD}:</label><br /><span>{L_DISPLAY_PROFILE_FIELD_EXPLAIN}</span></dt>
+				<dd><input type="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES} <input type="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			</dl>
 		</fieldset>
+
+		<fieldset>
+			<legend>{L_VISIBILITY_OPTION}</legend>
+			<dl>
+				<dt><label for="field_option_none">{L_DISPLAY_AT_PROFILE}:</label></dt>
+				<dd><input type="radio" id="field_option_none" name="field_option" value="none"<!-- IF not S_SHOW_ON_REG and not S_FIELD_REQUIRED and not S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+			</dl>
+			<dl>
+				<dt><label for="field_show_on_reg">{L_DISPLAY_AT_REGISTER}:</label><br /><span>{L_DISPLAY_AT_REGISTER_EXPLAIN}</span></dt>
+				<dd><input type="radio" id="field_show_on_reg" name="field_option" value="field_show_on_reg"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
+			</dl>
+			<dl>
+				<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
+				<dd><input type="radio" id="field_required" name="field_option" value="field_required"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
+			</dl>
+			<dl>
+				<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}:</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
+				<dd><input type="radio" id="field_hide" name="field_option" value="field_hide"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+			</dl>
+		</fieldset>
+
+		<!-- IF S_EDIT_MODE -->
+			<fieldset class="quick">
+				<input class="button1" type="submit" name="save" value="{L_SAVE}" />
+			</fieldset>
+		<!-- ENDIF -->
 
 		<fieldset>
 			<legend>{L_LANG_SPECIFIC}</legend>
@@ -71,22 +101,6 @@
 
 		<fieldset>
 			<legend>{L_TITLE}</legend>
-		<dl>
-			<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
-			<dd><input type="checkbox" id="field_required" name="field_required" value="1"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
-		</dl>
-		<dl>
-			<dt><label for="field_show_on_reg">{L_DISPLAY_AT_REGISTRATION}:</label></dt>
-			<dd><input type="checkbox" id="field_show_on_reg" name="field_show_on_reg" value="1"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
-		</dl>
-		<dl>
-			<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}:</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
-			<dd><input type="checkbox" id="field_hide" name="field_hide" value="1"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
-		</dl>
-		<dl>
-			<dt><label for="field_no_view">{L_EXCLUDE_FROM_VIEW}:</label><br /><span>{L_EXCLUDE_FROM_VIEW_EXPLAIN}</span></dt>
-			<dd><input type="checkbox" id="field_no_view" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /></dd>
-		</dl>
 		<!-- BEGIN option -->
 			<dl>
 				<dt><label>{option.TITLE}:</label><!-- IF option.EXPLAIN --><br /><span>{option.EXPLAIN}</span><!-- ENDIF --></dt>
@@ -117,7 +131,7 @@
 		</fieldset>
 
 		<fieldset class="quick">
-			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+			<input class="button1" type="submit" name="update_preview" value="{L_SUBMIT}" />
 		</fieldset>
 
 	<!-- ELSEIF S_STEP_THREE -->
@@ -156,8 +170,8 @@
 	<tr>
 		<th>{L_FIELD_IDENT}</th>
 		<th>{L_FIELD_TYPE}</th>
-		<th colspan="3">{L_OPTIONS}</th>
-		<th>{L_REORDER}</th>
+		<th>&nbsp;</th>
+		<th>{L_OPTIONS}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -166,10 +180,15 @@
 
 		<td>{fields.FIELD_IDENT}</td>
 		<td>{fields.FIELD_TYPE}</td>
-		<td><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a></td>
-		<td><a href="{fields.U_EDIT}"><!-- IF fields.S_NEED_EDIT --><span style="color:red">{L_EDIT}</span><!-- ELSE -->{L_EDIT}<!-- ENDIF --></a></td>
-		<td><a href="{fields.U_DELETE}">{L_DELETE}</a></td>
-		<td style="text-align: center;"><a href="{fields.U_MOVE_UP}">{L_MOVE_UP}</a> | <a href="{fields.U_MOVE_DOWN}">{L_MOVE_DOWN}</a></td>
+		<td><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_EDIT}"><span style="color:red;">{L_EDIT}</span><!-- ENDIF --></td>
+
+		<td style="width: 15%; text-align: right; white-space: nowrap;">
+			<!-- IF not fields.S_FIRST_ROW --><a href="{fields.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
+			<!-- IF not fields.S_LAST_ROW --><a href="{fields.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
+			<!-- IF not fields.S_NEED_EDIT --><a href="{fields.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT}" title="{L_EDIT}" width="16" height="16" /></a> <!-- ENDIF -->
+			<a href="{fields.U_DELETE}"><img src="images/icon_delete.gif" alt="{L_DELETE}" title="{L_DELETE}" width="16" height="16" /></a>
+		</td>
+
 	</tr>
 	<!-- END fields -->
 	</tbody>

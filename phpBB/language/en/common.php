@@ -426,6 +426,7 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
 	'TOO_LONG_USERNAME'				=> 'The username you entered is too long.',
 	'TOO_MANY_VOTE_OPTIONS'			=> 'You have tried to vote for too many options.',
+	'TOO_SHORT_CONFIRM_CODE'		=> 'The confirm code you entered is too short.',
 	'TOO_SHORT_NEW_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_PASSWORD_CONFIRM'	=> 'The password confirmation you entered is too short.',
 	'TOO_SHORT_USER_PASSWORD'		=> 'The password you entered is too short.',

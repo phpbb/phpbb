@@ -703,7 +703,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 	foreach ($attachment_data as $attachment)
 	{
 		// We need to reset/empty the _file block var, because this function might be called more than once
-		$template->reset_block_vars('_file');
+		$template->destroy_block_vars('_file');
 
 		$block_array = array();
 		

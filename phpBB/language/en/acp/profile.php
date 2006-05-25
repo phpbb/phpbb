@@ -53,15 +53,17 @@ $lang = array_merge($lang, array(
 	'DEFAULT_VALUE'					=> 'Default Value',
 	'DELETE_PROFILE_FIELD'			=> 'Remove profile field',
 	'DELETE_PROFILE_FIELD_CONFIRM'	=> 'Are you sure you want to delete this profile field?',
-	'DISPLAY_AT_REGISTRATION'		=> 'Display at registration screen',
+	'DISPLAY_AT_PROFILE'			=> 'Display at users profile',
+	'DISPLAY_AT_REGISTER'			=> 'Display at registration screen',
+	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be additionally displayed on registration.',
+	'DISPLAY_PROFILE_FIELD'			=> 'Display profile field',
+	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown on viewtopic/viewprofile/memberlist/etc.',
 	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line',
 
 	'EMPTY_FIELD_IDENT'			=> 'Empty field name',
 	'EMPTY_USER_FIELD_NAME'		=> 'Empty Field Name presented to the user',
 	'ENTRIES'					=> 'Entries',
 	'EVERYTHING_OK'				=> 'Everything OK',
-	'EXCLUDE_FROM_VIEW'			=> 'Do not display profile field',
-	'EXCLUDE_FROM_VIEW_EXPLAIN'	=> 'The profile field will not be shown on viewtopic/viewprofile/memberlist/etc.',
 
 	'FIELD_BOOL'				=> 'Boolean (Yes/No)',
 	'FIELD_DATE'				=> 'Date',
@@ -81,7 +83,7 @@ $lang = array_merge($lang, array(
 	'FIRST_OPTION'				=> 'First Option',
 
 	'HIDE_PROFILE_FIELD'			=> 'Hide Profile Field',
-	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only Administrators and Moderators are able to see/fill out this profile field',
+	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only Administrators and Moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in user profiles.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field name can only contain lowercase a-z and _',
 	'ISO_LANGUAGE'				=> 'Language [%s]',
@@ -110,7 +112,7 @@ $lang = array_merge($lang, array(
 	'RADIO_BUTTONS'				=> 'Radio Buttons',
 	'REMOVED_PROFILE_FIELD'		=> 'Successfully removed profile field.',
 	'REQUIRED_FIELD'			=> 'Required Field',
-	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user',
+	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user. This will display the profile field at registration too.',
 	'ROWS'						=> 'Rows',
 
 	'SAVE'							=> 'Save',
@@ -133,6 +135,8 @@ $lang = array_merge($lang, array(
 
 	'UPDATE_PREVIEW'	=> 'Update Preview',
 	'USER_FIELD_NAME'	=> 'Field Name presented to the user',
+
+	'VISIBILITY_OPTION'				=> 'Visibility Option',
 ));
 
 ?>
