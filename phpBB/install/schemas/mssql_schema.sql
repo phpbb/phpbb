@@ -27,7 +27,7 @@ CREATE TABLE [phpbb_attachments] (
 	[filesize] [int] NOT NULL ,
 	[filetime] [int] NOT NULL ,
 	[thumbnail] [int] NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_attachments] WITH NOCHECK ADD 
@@ -131,7 +131,7 @@ CREATE TABLE [phpbb_auth_roles] (
 	[role_description] [varchar] (8000) ,
 	[role_type] [varchar] (10) NOT NULL ,
 	[role_order] [int] NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
@@ -219,7 +219,7 @@ CREATE TABLE [phpbb_banlist] (
 	[ban_exclude] [int] NOT NULL ,
 	[ban_reason] [varchar] (3000) ,
 	[ban_give_reason] [varchar] (3000) 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD 
@@ -309,7 +309,7 @@ CREATE TABLE [phpbb_bots] (
 	[user_id] [int] NOT NULL ,
 	[bot_agent] [varchar] (255) NOT NULL ,
 	[bot_ip] [varchar] (255) NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_bots] WITH NOCHECK ADD 
@@ -904,7 +904,7 @@ CREATE TABLE [phpbb_poll_results] (
 	[topic_id] [int] NOT NULL ,
 	[poll_option_text] [varchar] (3000) ,
 	[poll_option_total] [int] NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_poll_results] WITH NOCHECK ADD 
@@ -1216,7 +1216,7 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_no_view] [int] NOT NULL ,
 	[field_active] [int] NOT NULL ,
 	[field_order] [int] NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD 
@@ -1393,7 +1393,7 @@ CREATE TABLE [phpbb_reports_reasons] (
 	[reason_title] [varchar] (255) NOT NULL ,
 	[reason_description] [varchar] (8000) ,
 	[reason_order] [int] NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_reports_reasons] WITH NOCHECK ADD 
@@ -1415,7 +1415,7 @@ GO
 CREATE TABLE [phpbb_search_results] (
 	[search_key] [varchar] (32) NOT NULL ,
 	[search_time] [int] NOT NULL ,
-	[search_keywords] [text] ,
+	[search_keywords] [varchar] (8000) ,
 	[search_authors] [text] 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
@@ -1950,7 +1950,7 @@ CREATE TABLE [phpbb_topics] (
 	[poll_max_options] [int] NOT NULL ,
 	[poll_last_vote] [int] NULL ,
 	[poll_vote_change] [int] NOT NULL 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
 ALTER TABLE [phpbb_topics] WITH NOCHECK ADD 
