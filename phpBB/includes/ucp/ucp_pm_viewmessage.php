@@ -376,7 +376,7 @@ function get_user_informations($user_id, $user_row)
 
 	if (!$user_id)
 	{
-		return;
+		return array();
 	}
 
 	if (empty($user_row))

@@ -37,6 +37,8 @@ class acm
 		{
 			return false;
 		}
+
+		return true;
 	}
 
 	function unload()

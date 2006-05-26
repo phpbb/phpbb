@@ -32,28 +32,28 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use Jabber for instant messaging and board notices. Jabber is an opensource protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, do not stop the script till completed!',
 
-	'JAB_ENABLE'			=> 'Enable Jabber',
-	'JAB_ENABLE_EXPLAIN'	=> 'Enables use of jabber messaging and notifications',
-
-	'JAB_SERVER'			=> 'Jabber server',
-	'JAB_SERVER_EXPLAIN'	=> 'See %sjabber.org%s for a list of servers',
-	'JAB_PORT'				=> 'Jabber port',
-	'JAB_PORT_EXPLAIN'		=> 'Leave blank unless you know it is not 5222',
-	'JAB_USERNAME'			=> 'Jabber username',
-	'JAB_USERNAME_EXPLAIN'	=> 'If this user is not registered it will be created if possible.',
-	'JAB_PASSWORD'			=> 'Jabber password',
-	'JAB_RESOURCE'			=> 'Jabber resource',
-	'JAB_RESOURCE_EXPLAIN'	=> 'The resource locates this particular connection, e.g. board, home, etc.',
-
-	'JAB_PASS_CHANGED'		=> 'Jabber password changed successfully',
-	'JAB_REGISTERED'		=> 'New account registered successfully',
-	'JAB_CHANGED'			=> 'Jabber account changed successfully',
-	'JAB_SETTINGS_CHANGED'	=> 'Jabber settings changed successfully',
-
-	'ERR_JAB_USERNAME'		=> 'The username specified already exists, please choose an alternative.',
-	'ERR_JAB_REGISTER'		=> 'An error occured trying to register this account, %s',
 	'ERR_JAB_PASSCHG'		=> 'Could not change password',
 	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s',
+	'ERR_JAB_REGISTER'		=> 'An error occured trying to register this account, %s',
+	'ERR_JAB_USERNAME'		=> 'The username specified already exists, please choose an alternative.',
+
+	'JAB_CHANGED'				=> 'Jabber account changed successfully',
+	'JAB_ENABLE'				=> 'Enable Jabber',
+	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of jabber messaging and notifications',
+	'JAB_PACKAGE_SIZE'			=> 'Jabber Package Size',
+	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediatly and gets not queued for later sending.',
+	'JAB_PASSWORD'				=> 'Jabber password',
+	'JAB_PASS_CHANGED'			=> 'Jabber password changed successfully',
+	'JAB_PORT'					=> 'Jabber port',
+	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not 5222',
+	'JAB_REGISTERED'			=> 'New account registered successfully',
+	'JAB_RESOURCE'				=> 'Jabber resource',
+	'JAB_RESOURCE_EXPLAIN'		=> 'The resource locates this particular connection, e.g. board, home, etc.',
+	'JAB_SERVER'				=> 'Jabber server',
+	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers',
+	'JAB_SETTINGS_CHANGED'		=> 'Jabber settings changed successfully',
+	'JAB_USERNAME'				=> 'Jabber username',
+	'JAB_USERNAME_EXPLAIN'		=> 'If this user is not registered it will be created if possible.',
 ));
 
 // Auth settings

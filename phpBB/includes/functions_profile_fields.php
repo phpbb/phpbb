@@ -414,6 +414,10 @@ class custom_profile
 		
 			return $tpl_fields;
 		}
+		else
+		{
+			trigger_error('Wrong mode for custom profile', E_USER_ERROR);
+		}
 	}
 
 	/**

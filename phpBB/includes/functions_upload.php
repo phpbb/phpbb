@@ -114,16 +114,11 @@ class filespec
 
 	function get($property)
 	{
-		if ($this->init_error)
-		{
-			return;
-		}
-		
-		if (!isset($this->$property))
+		if ($this->init_error || !isset($this->$property))
 		{
 			return false;
 		}
-		
+
 		return $this->$property;
 	}
 
@@ -284,6 +279,8 @@ class filespec
 		$this->file_moved = true;
 		$this->additional_checks();
 		unset($this->upload);
+
+		return true;
 	}
 
 	function additional_checks()
@@ -302,13 +299,18 @@ class filespec
 			$max_filesize = ($this->upload->max_filesize >= 1048576) ? round($this->upload->max_filesize / 1048576 * 100) / 100 : (($this->upload->max_filesize >= 1024) ? round($this->upload->max_filesize / 1024 * 100) / 100 : $this->upload->max_filesize);
 			
 			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
-			return;
+
+			return false;
 		}
 
 		if (!$this->upload->valid_dimensions($this))
 		{
 			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height, $this->width, $this->height);
+
+			return false;
 		}
+
+		return true;
 	}
 }
 

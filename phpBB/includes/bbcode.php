@@ -50,7 +50,13 @@ class bbcode
 
 		if (!$this->bbcode_bitfield)
 		{
-			return $message;
+			// Remove the uid from tags that have not been transformed into HTML
+			if ($this->bbcode_uid)
+			{
+				$message = str_replace(':' . $this->bbcode_uid, '', $message);
+			}
+
+			return;
 		}
 
 		$str = array('search' => array(), 'replace' => array());

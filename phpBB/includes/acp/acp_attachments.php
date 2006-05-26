@@ -1323,7 +1323,7 @@ class acp_attachments
 					{
 						$hostlist_tmp[] = "'" . $row['site_hostname'] . "'";
 					}
-					break;
+					// break;
 				}
 				while ($row = $db->sql_fetchrow($result));
 

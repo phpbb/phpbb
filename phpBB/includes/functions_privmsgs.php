@@ -270,7 +270,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 	if (!$user->data['user_new_privmsg'])
 	{
-		return;
+		return 0;
 	}
 
 	$user_new_privmsg = (int) $user->data['user_new_privmsg'];
@@ -709,7 +709,7 @@ function handle_mark_actions($user_id, $mark_action)
 
 	if (!sizeof($msg_ids))
 	{
-		return;
+		return false;
 	}
 
 	switch ($mark_action)
@@ -889,6 +889,8 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 			WHERE msg_id IN (' . $delete_ids . ')';
 		$db->sql_query($sql);
 	}
+
+	return true;
 }
 
 /**
@@ -1099,7 +1101,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
 	{
-		return;
+		return false;
 	}
 
 	$current_time = time();

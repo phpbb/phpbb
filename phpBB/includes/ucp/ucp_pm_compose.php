@@ -39,8 +39,7 @@ function compose_pm($id, $mode, $action)
 	$preview	= (isset($_POST['preview']));
 	$save		= (isset($_POST['save']));
 	$load		= (isset($_POST['load']));
-	$cancel		= (isset($_POST['cancel']));
-	$confirm	= (isset($_POST['confirm']));
+	$cancel		= (isset($_POST['cancel']) && !isset($_POST['save']));
 	$delete		= (isset($_POST['delete']));
 
 	$remove_u	= (isset($_REQUEST['remove_u']));
@@ -362,24 +361,41 @@ function compose_pm($id, $mode, $action)
 
 		if ($subject && $message)
 		{
-			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'	=> $user->data['user_id'],
-				'topic_id'	=> 0,
-				'forum_id'	=> 0,
-				'save_time'	=> $current_time,
-				'draft_subject' => $subject,
-				'draft_message' => $message));
-			$db->sql_query($sql);
+			if (confirm_box(true))
+			{
+				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'user_id'	=> $user->data['user_id'],
+					'topic_id'	=> 0,
+					'forum_id'	=> 0,
+					'save_time'	=> $current_time,
+					'draft_subject' => $subject,
+					'draft_message' => $message));
+				$db->sql_query($sql);
 
-			meta_refresh(3, "ucp.$phpEx$SID&i=pm&mode=$mode");
+				meta_refresh(3, "ucp.$phpEx$SID&i=pm&mode=$mode");
 
-			$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode\">", '</a>');
+				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode\">", '</a>');
 
-			trigger_error($message);
+				trigger_error($message);
+			}
+			else
+			{
+				$s_hidden_fields = build_hidden_fields(array(
+					'mode'		=> $mode,
+					'action'	=> $action,
+					'save'		=> true,
+					'subject'	=> $subject,
+					'message'	=> $message,
+					'u'			=> $to_user_id,
+					'g'			=> $to_group_id,
+					'p'			=> $msg_id)
+				);
+
+				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
+			}
 		}
 
-		unset($subject);
-		unset($message);
+		unset($subject, $message);
 	}
 
 	// Load Draft

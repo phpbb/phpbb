@@ -442,6 +442,7 @@ $lang = array_merge($lang, array(
 	'WATCHED_FORUMS'				=> 'Watched Forums',
 	'WATCHED_TOPICS'				=> 'Watched Topics',
 	'WRONG_ACTIVATION'			=> 'The activation key you supplied does not match any in the database',
+	'WRONG_DATA_WEBSITE'		=> 'The website address has to be a valid url, including the protocol. For example http://www.example.com/.',
 
 	'YOUR_DETAILS'				=> 'Your activity',
 	'YOUR_FOES'					=> 'Your foes',

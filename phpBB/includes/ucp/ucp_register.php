@@ -183,12 +183,12 @@ class ucp_register
 			{
 				if ($new_password != $password_confirm)
 				{
-					$error[] = 'NEW_PASSWORD_ERROR';
+					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
 				}
 
 				if ($email != $email_confirm)
 				{
-					$error[] = 'NEW_EMAIL_ERROR';
+					$error[] = $user->lang['NEW_EMAIL_ERROR'];
 				}
 			}
 			

@@ -823,7 +823,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$this->message_status = 'parsed';
-		return;
+		return false;
 	}
 
 	// Formatting text for display
@@ -864,7 +864,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$this->message_status = 'display';
-		return;
+		return false;
 	}	
 	
 	// Decode message to be placed back into form box
@@ -887,6 +887,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$this->message_status = 'plain';
+		return false;
 	}
 	
 	// Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.

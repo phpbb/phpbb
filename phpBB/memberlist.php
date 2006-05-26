@@ -225,7 +225,7 @@ switch ($mode)
 			case 'jabber':
 				$lang = 'JABBER';
 				$sql_field = 'user_jabber';
-				$s_select = (@extension_loaded('xml')) ? 'S_SEND_JABBER' : 'S_NO_SEND_JABBER';
+				$s_select = (@extension_loaded('xml') && $config['jab_enable']) ? 'S_SEND_JABBER' : 'S_NO_SEND_JABBER';
 				$s_action = "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=$action&amp;u=$user_id";
 				break;
 
@@ -255,16 +255,16 @@ switch ($mode)
 				break;
 
 			case 'jabber':
-				if ($submit && @extension_loaded('xml'))
+				if ($submit && @extension_loaded('xml') && $config['jab_enable'])
 				{
 					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
 					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
 					$message = request_var('message', '', true);
 
-					$messenger = new messenger();
+					$messenger = new messenger(false);
 
-					$messenger->template('profile_send_email', $row['user_lang']);
+					$messenger->template('profile_send_im', $row['user_lang']);
 					$messenger->subject(html_entity_decode($subject));
 
 					$messenger->replyto($user->data['user_email']);
@@ -279,7 +279,6 @@ switch ($mode)
 					);
 
 					$messenger->send(NOTIFY_IM);
-					$messenger->save_queue();
 
 					$s_select = 'S_SENT_JABBER';
 				}
@@ -1217,11 +1216,12 @@ function show_profile($data)
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
   		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
-		'ONLINE_IMG'	=> ($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE'),
-		'S_ONLINE'	=> ($online) ? true : false,
-		'RANK_IMG'		=> $rank_img,
-		'RANK_IMG_SRC'	=> $rank_img_src,
-		'ICQ_STATUS_IMG'=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
+		'ONLINE_IMG'		=> ($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE'),
+		'S_ONLINE'			=> ($online) ? true : false,
+		'RANK_IMG'			=> $rank_img,
+		'RANK_IMG_SRC'		=> $rank_img_src,
+		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" border="0" />' : '',
+		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
 		'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;author=" . urlencode($username) . "&amp;sr=posts" : '',

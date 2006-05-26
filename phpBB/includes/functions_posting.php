@@ -178,6 +178,8 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			WHERE {$type}_id = $update_id";
 		$db->sql_query($sql);
 	}
+
+	return;
 }
 
 /**
@@ -1263,7 +1265,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
 	{
-		return;
+		return false;
 	}
 
 	$current_time = time();

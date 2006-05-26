@@ -159,6 +159,8 @@ $lang = array_merge($lang, array(
 
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
+	'SAVE_DRAFT'				=> 'Save Draft',
+	'SAVE_DRAFT_CONFIRM'		=> 'Please note that saved drafts only include the subject and the message, any other element will be removed. Do you want to save your draft now?',
 	'SMILIES'					=> 'Smilies',
 	'SMILIES_ARE_OFF'			=> 'Smilies are <u>OFF</u>',
 	'SMILIES_ARE_ON'			=> 'Smilies are <u>ON</u>',

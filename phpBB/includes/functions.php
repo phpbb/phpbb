@@ -1994,7 +1994,7 @@ function add_log()
 		break;
 		
 		default:
-			return;
+			return false;
 	}
 
 	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));

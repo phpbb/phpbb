@@ -37,8 +37,7 @@ $preview	= (isset($_POST['preview'])) ? true : false;
 $save		= (isset($_POST['save'])) ? true : false;
 $load		= (isset($_POST['load'])) ? true : false;
 $delete		= (isset($_POST['delete'])) ? true : false;
-$cancel		= (isset($_POST['cancel'])) ? true : false;
-$confirm	= (isset($_POST['confirm'])) ? true : false;
+$cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
@@ -397,25 +396,42 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 
 	if ($subject && $message)
 	{
-		$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'user_id'		=> $user->data['user_id'],
-			'topic_id'		=> $topic_id,
-			'forum_id'		=> $forum_id,
-			'save_time'		=> $current_time,
-			'draft_subject'	=> $subject,
-			'draft_message'	=> $message)
-		);
-		$db->sql_query($sql);
+		if (confirm_box(true))
+		{
+			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'user_id'		=> $user->data['user_id'],
+				'topic_id'		=> $topic_id,
+				'forum_id'		=> $forum_id,
+				'save_time'		=> $current_time,
+				'draft_subject'	=> $subject,
+				'draft_message'	=> $message)
+			);
+			$db->sql_query($sql);
 
-		$meta_info = ($mode == 'post') ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+			$meta_info = ($mode == 'post') ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
 
-		meta_refresh(3, $meta_info);
+			meta_refresh(3, $meta_info);
 
-		$message = $user->lang['DRAFT_SAVED'] . '<br /><br />';
-		$message .= ($mode != 'post') ? sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
-		$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="' . $phpbb_root_path . 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			$message = $user->lang['DRAFT_SAVED'] . '<br /><br />';
+			$message .= ($mode != 'post') ? sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
+			$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="' . $phpbb_root_path . 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
 
-		trigger_error($message);
+			trigger_error($message);
+		}
+		else
+		{
+			$s_hidden_fields = build_hidden_fields(array(
+				'mode'		=> $mode,
+				'save'		=> true,
+				'f'			=> $forum_id,
+				't'			=> $topic_id,
+				'subject'	=> $subject,
+				'message'	=> $message,
+				)
+			);
+
+			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
+		}
 	}
 
 	unset($subject, $message);
@@ -618,7 +634,7 @@ if ($submit || $preview || $refresh)
 
 		if (($result = validate_username(($mode == 'edit' && $post_data['post_username']) ? $post_data['post_username'] : $post_data['username'])) != false)
 		{
-			$error[] = $result;
+			$error[] = $user->lang[$result];
 		}
 	}
 

@@ -36,12 +36,13 @@ class acp_jabber
 		$this->tpl_name = 'acp_jabber';
 		$this->page_title = 'ACP_JABBER_SETTINGS';
 
-		$jab_enable		= request_var('jab_enable', $config['jab_enable']);
-		$jab_host		= request_var('jab_host', $config['jab_host']);
-		$jab_port		= request_var('jab_port', $config['jab_port']);
-		$jab_username	= request_var('jab_username', $config['jab_username']);
-		$jab_password	= request_var('jab_password', $config['jab_password']);
-		$jab_resource	= request_var('jab_resource', $config['jab_resource']);
+		$jab_enable			= request_var('jab_enable', $config['jab_enable']);
+		$jab_host			= request_var('jab_host', $config['jab_host']);
+		$jab_port			= request_var('jab_port', $config['jab_port']);
+		$jab_username		= request_var('jab_username', $config['jab_username']);
+		$jab_password		= request_var('jab_password', $config['jab_password']);
+		$jab_resource		= request_var('jab_resource', $config['jab_resource']);
+		$jab_package_size	= request_var('jab_package_size', $config['jab_package_size']);
 
 		$jabber = new jabber();
 		$error = array();
@@ -160,7 +161,8 @@ class acp_jabber
 			'JAB_PORT'				=> $new['jab_port'],
 			'JAB_USERNAME'			=> $new['jab_username'],
 			'JAB_PASSWORD'			=> $new['jab_password'],
-			'JAB_RESOURCE'			=> $new['jab_resource'])
+			'JAB_RESOURCE'			=> $new['jab_resource'],
+			'JAB_PACKAGE_SIZE'		=> $new['jab_package_size'])
 		);		
 	}
 }

@@ -760,7 +760,7 @@ class jabber
 
 	function get_info_from_iq_key($packet = NULL)
 	{
-		return (is_array($packet)) ? $packet['iq']['#']['query'][0]['#']['key'][0]['#'] : false;
+		return (is_array($packet) && isset($packet['iq']['#']['query'][0]['#']['key'][0]['#'])) ? $packet['iq']['#']['query'][0]['#']['key'][0]['#'] : false;
 	}
 
 	function get_info_from_iq_error($packet = NULL)
@@ -1020,6 +1020,8 @@ class make_xml extends jabber
 
 			return $text;
 		}
+
+		return false;
 	}
 
 	function _preg_grep_keys($pattern, $array)

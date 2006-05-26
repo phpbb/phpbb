@@ -40,12 +40,13 @@ $sql = 'SELECT attach_id, in_message, post_msg_id, extension
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
 $result = $db->sql_query_limit($sql, 1);
+$attachment = $db->sql_fetchrow($result);
+$db->sql_freeresult($result);
 
-if (!($attachment = $db->sql_fetchrow($result)))
+if (!$attachment)
 {
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
-$db->sql_freeresult($result);
 
 if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach']))
 {
@@ -105,12 +106,14 @@ $sql = 'SELECT attach_id, in_message, post_msg_id, extension, physical_filename,
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
 $result = $db->sql_query_limit($sql, 1);
+$attachment = $db->sql_fetchrow($result);
+$db->sql_freeresult($result);
 
-if (!($attachment = $db->sql_fetchrow($result)))
+if (!$attachment)
 {
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
-$db->sql_freeresult($result);
+
 
 $attachment['physical_filename'] = basename($attachment['physical_filename']);
 
@@ -136,6 +139,7 @@ if ($download_mode == PHYSICAL_LINK)
 	}
 
 	redirect($config['upload_path'] . '/' . $attachment['physical_filename']);
+	exit;
 }
 else
 {
@@ -160,7 +164,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Determine the Browser the User is using, because of some nasty incompatibilities.
 	// borrowed from phpMyAdmin. :)
-	$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
+	$user_agent = $user->browser;
 
 	if (ereg('Opera(/| )([0-9].[0-9]{1,2})', $user_agent, $log_version))
 	{
@@ -278,7 +282,15 @@ function download_allowed()
 	}
 	
 	// Check for own server...
-	if (preg_match('#^.*?' . $config['server_name'] . '.*?$#i', $hostname))
+	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+
+	// Forcing server vars is the only way to specify/override the protocol
+	if ($config['force_server_vars'] || !$server_name)
+	{
+		$server_name = $config['server_name'];
+	}
+
+	if (preg_match('#^.*?' . preg_quote($server_name, '#') . '.*?$#i', $hostname))
 	{
 		$allowed = true;
 	}

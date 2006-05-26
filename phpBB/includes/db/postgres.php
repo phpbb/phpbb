@@ -331,6 +331,8 @@ class dbal_postgres extends dbal
 			unset($this->open_queries[(int) $query_id]);
 			return @pg_free_result($query_id);
 		}
+
+		return false;
 	}
 
 	/**

@@ -483,6 +483,8 @@ class template
 			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], $vararray);
 			return true;
 		}
+
+		return false;
 	}
 
 	/**

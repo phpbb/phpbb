@@ -648,6 +648,8 @@ class fulltext_mysql extends search_backend
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_TABLE);
+
+		return false;
 	}
 
 	/**
@@ -679,6 +681,8 @@ class fulltext_mysql extends search_backend
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_TABLE);
+
+		return false;
 	}
 
 	/**

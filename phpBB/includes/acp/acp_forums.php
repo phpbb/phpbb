@@ -966,6 +966,8 @@ class acp_forums
 
 			add_log('admin', 'LOG_FORUM_EDIT', $forum_data['forum_name']);
 		}
+
+		return $errors;
 	}
 
 	/**

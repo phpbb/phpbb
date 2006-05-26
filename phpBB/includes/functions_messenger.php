@@ -202,7 +202,7 @@ class messenger
 
 		if ($break)
 		{
-			return;
+			return true;
 		}
 
 		switch ($method)

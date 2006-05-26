@@ -20,7 +20,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 	// are neither array filled?
 	if ($user_id_ary && $username_ary)
 	{
-		return;
+		return false;
 	}
 	else if (!$user_id_ary && !$username_ary)
 	{

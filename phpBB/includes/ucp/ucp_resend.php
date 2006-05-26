@@ -51,6 +51,7 @@ class ucp_resend
 			{
 				$email_template = 'coppa_welcome_inactive';
 			}*/
+/*
 			if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 			{
 				$email_template = 'admin_welcome_inactive';
@@ -59,6 +60,7 @@ class ucp_resend
 			{
 				$email_template = 'user_welcome_inactive';
 			}
+*/
 
 			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 

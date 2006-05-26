@@ -106,6 +106,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_password', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_port', '5222');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_resource', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username', '');

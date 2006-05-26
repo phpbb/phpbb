@@ -341,7 +341,7 @@ class dbal
 
 		if (empty($_GET['explain']))
 		{
-			return;
+			return false;
 		}
 
 		if (!$query && $this->query_hold != '')
@@ -516,6 +516,8 @@ class dbal
 
 			break;
 		}
+
+		return true;
 	}
 }
 
