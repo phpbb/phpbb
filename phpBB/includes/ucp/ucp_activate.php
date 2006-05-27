@@ -26,12 +26,13 @@ class ucp_activate
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if (!($row = $db->sql_fetchrow($result)))
+		if (!$row)
 		{
 			trigger_error($user->lang['NO_USER']);
 		}
-		$db->sql_freeresult($result);
 
 		if ($row['user_type'] <> USER_INACTIVE && !$row['user_newpasswd'])
 		{
@@ -66,7 +67,7 @@ class ucp_activate
 			// Now we need to demote the user from the inactive group and add him to the registered group
 
 			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-			user_active_flip($row['user_id'], $row['user_type'], '', $row['username']);
+			user_active_flip($row['user_id'], $row['user_type'], '', $row['username'], true);
 		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)

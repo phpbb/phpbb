@@ -264,6 +264,85 @@ class acp_main
 				set_config('board_startdate', time() - 1);
 				add_log('admin', 'LOG_RESET_DATE');
 			break;
+		
+			case 'db_track':
+				$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
+
+				// This can get really nasty... therefore we only do the last six months
+				$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
+
+				// Select forum ids, do not include categories
+				$sql = 'SELECT forum_id
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_type <> ' . FORUM_CAT;
+				$result = $db->sql_query($sql);
+		
+				$forum_ids = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_ids[] = $row['forum_id'];
+				}
+				$db->sql_freeresult($result);
+
+				// Any global announcements? ;)
+				$forum_ids[] = 0;
+
+				// Now go through the forums and get us some topics...
+				foreach ($forum_ids as $forum_id)
+				{
+					$sql = 'SELECT p.poster_id, p.topic_id
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+						WHERE t.forum_id = ' . $forum_id . '
+							AND t.topic_moved_id = 0
+							AND t.topic_last_post_time > ' . $get_from_time . '
+							AND t.topic_id = p.topic_id
+							AND p.poster_id <> ' . ANONYMOUS . '
+						GROUP BY p.poster_id, p.topic_id';
+					$result = $db->sql_query($sql);
+
+					$posted = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$posted[$row['poster_id']][] = $row['topic_id'];
+					}
+					$db->sql_freeresult($result);
+
+					$sql_ary = array();
+					foreach ($posted as $user_id => $topic_row)
+					{
+						foreach ($topic_row as $topic_id)
+						{
+							$sql_ary[] = array(
+								'user_id'		=> $user_id,
+								'topic_id'		=> $topic_id,
+								'topic_posted'	=> 1,
+							);
+						}
+					}
+					unset($posted);
+
+					if (sizeof($sql_ary))
+					{
+						switch (SQL_LAYER)
+						{
+							case 'mysql':
+							case 'mysql4':
+							case 'mysqli':
+								$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+							break;
+
+							default:
+								foreach ($sql_ary as $ary)
+								{
+									$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+								}
+							break;
+						}
+					}
+				}
+	
+				add_log('admin', 'LOG_RESYNC_POST_MARKING');
+			break;
 		}
 
 		// Get forum statistics
@@ -328,7 +407,7 @@ class acp_main
 		}
 
 		$dbsize = get_database_size();
-		$s_action_options = build_select(array('online' => 'RESET_ONLINE', 'date' => 'RESET_DATE', 'stats' => 'RESYNC_STATS', 'user' => 'RESYNC_POSTCOUNTS'));
+		$s_action_options = build_select(array('online' => 'RESET_ONLINE', 'date' => 'RESET_DATE', 'stats' => 'RESYNC_STATS', 'user' => 'RESYNC_POSTCOUNTS', 'db_track' => 'RESYNC_POST_MARKING'));
 
 		$template->assign_vars(array(
 			'TOTAL_POSTS'		=> $total_posts,
@@ -398,7 +477,13 @@ class acp_main
 				'S_INACTIVE_OPTIONS'	=> build_select($option_ary))
 			);
 		}
-		
+
+		// Display debug_extra notice
+		if (defined('DEBUG_EXTRA'))
+		{
+			$template->assign_var('S_DEBUG_EXTRA', true);
+		}
+
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
 	}

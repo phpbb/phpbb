@@ -952,16 +952,16 @@ class acp_profile
 
 		// Save the field
 		$profile_fields = array(
-			'field_length'		=> $cp->vars['field_length'],
-			'field_minlen'		=> $cp->vars['field_minlen'],
-			'field_maxlen'		=> $cp->vars['field_maxlen'],
-			'field_novalue'		=> $cp->vars['field_novalue'],
+			'field_length'			=> $cp->vars['field_length'],
+			'field_minlen'			=> $cp->vars['field_minlen'],
+			'field_maxlen'			=> $cp->vars['field_maxlen'],
+			'field_novalue'			=> $cp->vars['field_novalue'],
 			'field_default_value'	=> $cp->vars['field_default_value'],
-			'field_validation'	=> $cp->vars['field_validation'],
-			'field_required'	=> $cp->vars['field_required'],
-			'field_show_on_reg'	=> $cp->vars['field_show_on_reg'],
-			'field_hide'		=> $cp->vars['field_hide'],
-			'field_no_view'		=> $cp->vars['field_no_view']
+			'field_validation'		=> $cp->vars['field_validation'],
+			'field_required'		=> $cp->vars['field_required'],
+			'field_show_on_reg'		=> $cp->vars['field_show_on_reg'],
+			'field_hide'			=> $cp->vars['field_hide'],
+			'field_no_view'			=> $cp->vars['field_no_view']
 		);
 
 		if ($action == 'create')
@@ -969,6 +969,7 @@ class acp_profile
 			$profile_fields += array(
 				'field_type'		=> $field_type,
 				'field_ident'		=> $field_ident,
+				'field_name'		=> $field_ident,
 				'field_order'		=> $new_field_order + 1,
 				'field_active'		=> 1
 			);

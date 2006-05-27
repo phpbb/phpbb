@@ -685,20 +685,30 @@ if (!empty($topic_data['poll_start']))
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
 		$poll_bbcode = new bbcode();
+	}
+	else
+	{
+		$poll_bbcode = false;
+	}
 
-		for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
+	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
+	{
+		if ($poll_bbcode !== false)
 		{
 			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
-			$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
-			$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', censor_text($poll_info[$i]['poll_option_text']));
 		}
-
-		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
-		$poll_title = smiley_text($topic_data['poll_title']);
-		$poll_title = str_replace("\n", '<br />', censor_text($topic_data['poll_title']));
-
-		unset($poll_bbcode);
+		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
+		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', censor_text($poll_info[$i]['poll_option_text']));
 	}
+
+	if ($poll_bbcode !== false)
+	{
+		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
+	}
+	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
+	$topic_data['poll_title'] = str_replace("\n", '<br />', censor_text($topic_data['poll_title']));
+
+	unset($poll_bbcode);
 
 	foreach ($poll_info as $poll_option)
 	{

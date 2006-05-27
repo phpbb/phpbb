@@ -766,7 +766,6 @@ CREATE INDEX phpbb_privmsgs_to_user_id ON phpbb_privmsgs_to(user_id, folder_id);
 CREATE TABLE phpbb_profile_fields (
   field_id INTEGER NOT NULL,
   field_name VARCHAR(255) NOT NULL,
-  field_desc BLOB SUB_TYPE TEXT,
   field_type INTEGER NOT NULL,
   field_ident VARCHAR(20) DEFAULT '' NOT NULL,
   field_length VARCHAR(20) DEFAULT '' NOT NULL,

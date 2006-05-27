@@ -254,6 +254,8 @@ $lang = array_merge($lang, array(
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
 	'WARNING'				=> 'Warning',
+
+	'DEBUG_EXTRA_WARNING'	=> 'The DEBUG_EXTRA constant is defined which is only meant for development purposes by the developers.<br />The board is running additional code to display sql reports, which slows down the board in a significant manner. Additionally sql errors are always displayed with a full backtrace to all users instead of displaying it solely to administrators, which is the default setting.<br /><br />With this said, please be aware that you are currently running your installation in <b>Debug Mode</b> and should you take this board live, please remove the constant from the config file.',
 ));
 
 // PHP info
@@ -306,10 +308,11 @@ $lang = array_merge($lang, array(
 
 	'POSTS_PER_DAY'		=> 'Posts per day',
 
-	'RESET_DATE'		=> 'Reset Date',
-	'RESET_ONLINE'		=> 'Reset Online',
-	'RESYNC_POSTCOUNTS'	=> 'Resync Postcounts',
-	'RESYNC_STATS'		=> 'Resync Stats',
+	'RESET_DATE'			=> 'Reset Date',
+	'RESET_ONLINE'			=> 'Reset Online',
+	'RESYNC_POSTCOUNTS'		=> 'Resync Postcounts',
+	'RESYNC_POST_MARKING'	=> 'Resync dotted topics',
+	'RESYNC_STATS'			=> 'Resync Stats',
 
 	'STATISTIC'			=> 'Statistic',
 
@@ -522,10 +525,11 @@ $lang = array_merge($lang, array(
 	'LOG_REASON_REMOVED'	=> '<b>Removed report/denial reason</b><br />&#187; %s',
 	'LOG_REASON_UPDATED'	=> '<b>Updated report/denial reason</b><br />&#187; %s',
 
-	'LOG_RESET_DATE'		=> '<b>Board start date reset</b>',
-	'LOG_RESET_ONLINE'		=> '<b>Most users online reset</b>',
-	'LOG_RESYNC_POSTCOUNTS'	=> '<b>User postcounts synced</b>',
-	'LOG_RESYNC_STATS'		=> '<b>Post, topic and user stats reset</b>',
+	'LOG_RESET_DATE'			=> '<b>Board start date reset</b>',
+	'LOG_RESET_ONLINE'			=> '<b>Most users online reset</b>',
+	'LOG_RESYNC_POSTCOUNTS'		=> '<b>User postcounts synced</b>',
+	'LOG_RESYNC_POST_MARKING'	=> '<b>Dotted topics synced</b>',
+	'LOG_RESYNC_STATS'			=> '<b>Post, topic and user stats reset</b>',
 
 	'LOG_STYLE_ADD'				=> '<b>Added new style</b><br />&#187; %s',
 	'LOG_STYLE_DELETE'			=> '<b>Deleted style</b><br />&#187; %s',

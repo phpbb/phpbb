@@ -1030,7 +1030,6 @@ CREATE INDEX phpbb_privmsgs_to_user_id on phpbb_privmsgs_to (user_id, folder_id)
 CREATE TABLE phpbb_profile_fields (
   field_id number(8) NOT NULL,
   field_name varchar2(255) DEFAULT '' NOT NULL,
-  field_desc clob,
   field_type number(8) NOT NULL,
   field_ident varchar2(20) DEFAULT '' NOT NULL,
   field_length varchar2(20) DEFAULT '' NOT NULL,

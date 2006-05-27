@@ -668,18 +668,23 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
-		$db->sql_return_on_error(true);
+		$use_user_id = (!$user_id) ? $user->data['user_id'] : $user_id;
 
-		$sql_ary = array(
-			'user_id'		=> (!$user_id) ? $user->data['user_id'] : $user_id,
-			'topic_id'		=> $topic_id,
-			'topic_posted'	=> 1
-		);
+		if ($config['load_db_track'] && $use_user_id != ANONYMOUS)
+		{
+			$db->sql_return_on_error(true);
 
-		$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-	
-		$db->sql_return_on_error(false);
+			$sql_ary = array(
+				'user_id'		=> $use_user_id,
+				'topic_id'		=> $topic_id,
+				'topic_posted'	=> 1
+			);
+
+			$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 		
+			$db->sql_return_on_error(false);
+		}
+
 		return;
 	}
 }
@@ -2024,62 +2029,31 @@ function get_backtrace()
 		// Strip the current directory from path
 		$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
 		$trace['file'] = substr($trace['file'], 1);
-		
 		$args = array();
-		foreach ($trace['args'] as $argument)
+
+		// If include/require/include_once is not called, do not show arguments - they may contain sensible informations
+		if (!in_array($trace['function'], array('include', 'require', 'include_once')))
 		{
-			switch (gettype($argument)) 
+			unset($trace['args']);
+		}
+		else
+		{
+			// Path...
+			if (!empty($trace['args'][0]))
 			{
-				case 'integer':
-				case 'double':
-					$args[] = $argument;
-				break;
-				
-				case 'string':
-					$argument = htmlspecialchars(substr($argument, 0, 64)) . ((strlen($argument) > 64) ? '...' : '');
-					$args[] = "'{$argument}'";
-				break;
-				
-				case 'array':
-					$args[] = 'Array(' . sizeof($argument) . ')';
-				break;
-				
-				case 'object':
-					$args[] = 'Object(' . get_class($argument) . ')';
-				break;
-				
-				case 'resource':
-					$args[] = 'Resource(' . strstr($argument, '#') . ')';
-				break;
-				
-				case 'boolean':
-					$args[] = ($argument) ? 'true' : 'false';
-				break;
-				
-				case 'NULL':
-					$args[] = 'NULL';
-				break;
-				
-				default:
-					$args[] = 'Unknown';
+				$argument = htmlspecialchars($trace['args'][0]);
+				$argument = str_replace(array($path, '\\'), array('', '/'), $argument);
+				$argument = substr($argument, 1);
+				$args[] = "'{$argument}'";
 			}
 		}
-		
+
 		$trace['class'] = (!isset($trace['class'])) ? '' : $trace['class'];
 		$trace['type'] = (!isset($trace['type'])) ? '' : $trace['type'];
 
 		$output .= '<br />';
 		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
 		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
-
-		// Do not display the users password
-		if (strpos($trace['function'], 'login') !== false)
-		{
-			if (isset($args[1]))
-			{
-				$args[1] = "'***'";
-			}
-		}
 
 		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
 	}

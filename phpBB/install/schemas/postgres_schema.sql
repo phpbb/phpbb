@@ -783,7 +783,6 @@ CREATE SEQUENCE phpbb_profile_fields_seq;
 CREATE TABLE phpbb_profile_fields (
   field_id INT4 DEFAULT nextval('phpbb_profile_fields_seq'),
   field_name varchar(255) DEFAULT '' NOT NULL,
-  field_desc varchar(8000),
   field_type INT4  NOT NULL,
   field_ident varchar(20) DEFAULT '' NOT NULL,
   field_length varchar(20) DEFAULT '' NOT NULL,

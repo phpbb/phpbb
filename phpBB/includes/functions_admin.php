@@ -499,7 +499,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 	}
 
 	$return = array(
-		'posts'	=>	delete_posts($where_type, $where_ids, false)
+		'posts'	=>	delete_posts($where_type, $where_ids, false, false)
 	);
 
 	$sql = 'SELECT topic_id, forum_id
@@ -528,6 +528,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 	$db->sql_transaction('begin');
 
 	$table_ary = array(TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, POLL_VOTES_TABLE, POLL_OPTIONS_TABLE, TOPICS_WATCH_TABLE, TOPICS_TABLE);
+
 	foreach ($table_ary as $table)
 	{
 		$sql = "DELETE FROM $table 
@@ -554,7 +555,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 /**
 * Remove post(s)
 */
-function delete_posts($where_type, $where_ids, $auto_sync = true)
+function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true)
 {
 	global $db, $config, $phpbb_root_path, $phpEx;
 
@@ -623,6 +624,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true)
 	delete_attachments('post', $post_ids, false);
 
 	$db->sql_transaction('commit');
+
+	// Resync topics_posted table
+	if ($posted_sync)
+	{
+		update_posted_info($topic_ids);
+	}
 
 	if ($auto_sync)
 	{
@@ -879,11 +886,11 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 /**
 * Update/Sync posted informations for topics
 */
-function update_posted_info($topic_ids)
+function update_posted_info(&$topic_ids)
 {
-	global $db;
+	global $db, $config;
 
-	if (empty($topic_ids))
+	if (empty($topic_ids) || !$config['load_db_track'])
 	{
 		return;
 	}
@@ -894,29 +901,26 @@ function update_posted_info($topic_ids)
 	$db->sql_query($sql);
 
 	// Now, let us collect the user/topic combos for rebuilding the information
-	$sql = 'SELECT topic_id, poster_id
+	$sql = 'SELECT poster_id, topic_id
 		FROM ' . POSTS_TABLE . '
-		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')
+			AND poster_id <> ' . ANONYMOUS . '
+		GROUP BY poster_id, topic_id';
 	$result = $db->sql_query($sql);
 
 	$posted = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (empty($posted[$row['topic_id']]))
-		{
-			$posted[$row['topic_id']] = array();
-		}
-	
 		// Add as key to make them unique (grouping by) and circumvent empty keys on array_unique
-		$posted[$row['topic_id']][$row['poster_id']] = 1;
+		$posted[$row['poster_id']][] = $row['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
 	// Now add the information...
 	$sql_ary = array();
-	foreach ($posted as $topic_id => $poster_row)
+	foreach ($posted as $user_id => $topic_row)
 	{
-		foreach ($poster_row as $user_id => $null)
+		foreach ($topic_row as $topic_id)
 		{
 			$sql_ary[] = array(
 				'user_id'		=> $user_id,
@@ -925,6 +929,7 @@ function update_posted_info($topic_ids)
 			);
 		}
 	}
+	unset($posted);
 
 	if (sizeof($sql_ary))
 	{

@@ -1118,7 +1118,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 	$db->sql_transaction();
 
-	if (!delete_posts('post_id', array($post_id), false))
+	if (!delete_posts('post_id', array($post_id), false, false))
 	{
 		// Try to delete topic, we may had an previous error causing inconsistency
 		if ($post_mode = 'delete_topic')
@@ -1251,6 +1251,27 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	}
 
 	$db->sql_transaction('commit');
+
+	// Adjust posted info for this user by looking for a post by him/her within this topic...
+	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $user->data['is_registered'])
+	{
+		$sql = 'SELECT poster_id
+			FROM ' . POSTS_TABLE . '
+			WHERE topic_id = ' . $topic_id . '
+				AND poster_id = ' . $user->data['user_id'];
+		$result = $db->sql_query_limit($sql, 1);
+		$poster_id = (int) $db->sql_fetchfield('poster_id');
+		$db->sql_freeresult($result);
+
+		// The user is not having any more posts within this topic
+		if (!$poster_id)
+		{
+			$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
+				WHERE topic_id = ' . $topic_id . '
+					AND user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
+		}
+	}
 
 	return $next_post_id;
 }

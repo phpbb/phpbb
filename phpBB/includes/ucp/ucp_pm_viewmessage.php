@@ -434,7 +434,7 @@ function get_user_informations($user_id, $user_row)
 	
 	if (!empty($user_row['user_rank']))
 	{
-		$user_row['rank_title'] = $ranks['special'][$user_row['user_rank']]['rank_title'];
+		$user_row['rank_title'] = (isset($ranks['special'][$user_row['user_rank']])) ? $ranks['special'][$user_row['user_rank']]['rank_title'] : '';
 		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
 	}
 	else

@@ -1201,7 +1201,6 @@ GO
 CREATE TABLE [phpbb_profile_fields] (
 	[field_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[field_name] [varchar] (255) NOT NULL ,
-	[field_desc] [varchar] (8000) ,
 	[field_type] [int] NOT NULL ,
 	[field_ident] [varchar] (20) NOT NULL ,
 	[field_length] [varchar] (20) NOT NULL ,

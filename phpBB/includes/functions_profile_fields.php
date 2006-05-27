@@ -520,15 +520,16 @@ class custom_profile
 		global $user;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$user_ident = str_replace('pf_', '', $profile_row['field_ident']);
 
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]) || $preview) ? $default_value : $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 		}
 		else
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]) || $preview) ? $default_value : $user->profile_fields[str_replace('pf_', '', $profile_row['field_ident'])]);
+			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 		}
 
 		switch ($field_validation)
@@ -562,6 +563,8 @@ class custom_profile
 		global $user, $template;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$user_ident = str_replace('pf_', '', $profile_row['field_ident']);
+
 		$now = getdate();
 
 		if (!isset($_REQUEST[$profile_row['field_ident'] . '_day']))
@@ -570,14 +573,14 @@ class custom_profile
 			{
 				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
-			list($day, $month, $year) = explode('-', ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $profile_row['field_default_value'] : $user->profile_fields[$profile_row['field_ident']]));
+			list($day, $month, $year) = explode('-', ((!isset($user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $user->profile_fields[$user_ident]));
 		}
 		else
 		{
 			if ($preview && $profile_row['field_default_value'] == 'now')
 			{
 				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
-				list($day, $month, $year) = explode('-', ((!isset($user->profile_fields[$profile_row['field_ident']]) || $preview) ? $profile_row['field_default_value'] : $user->profile_fields[$profile_row['field_ident']]));
+				list($day, $month, $year) = explode('-', ((!isset($user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $user->profile_fields[$user_ident]));
 			}
 			else
 			{

@@ -498,7 +498,6 @@ CREATE TABLE phpbb_privmsgs_to (
 CREATE TABLE phpbb_profile_fields (
   field_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   field_name varchar(255) DEFAULT '' NOT NULL,
-  field_desc text,
   field_type mediumint(8) UNSIGNED NOT NULL,
   field_ident varchar(20) DEFAULT '' NOT NULL,
   field_length varchar(20) DEFAULT '' NOT NULL,

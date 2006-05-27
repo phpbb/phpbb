@@ -485,13 +485,15 @@ class acp_icons
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$pak .= "'" . addslashes($row[$fields . '_url']) . "', ";
-					$pak .= "'" . addslashes($row[$fields . '_height']) . "', ";
 					$pak .= "'" . addslashes($row[$fields . '_width']) . "', ";
+					$pak .= "'" . addslashes($row[$fields . '_height']) . "', ";
+
 					if ($mode == 'smilies')
 					{
 						$pak .= "'" . addslashes($row['emotion']) . "', ";
 						$pak .= "'" . addslashes($row['code']) . "', ";
 					}
+
 					$pak .= "\n";
 				}
 				$db->sql_freeresult($result);

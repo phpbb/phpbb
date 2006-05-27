@@ -625,7 +625,7 @@ class queue
 		
 		$file = '<?php $this->queue_data = ' . $this->format_array($this->data) . '; ?>';
 
-		if ($fp = fopen($this->cache_file, 'w'))
+		if ($fp = @fopen($this->cache_file, 'w'))
 		{
 			@flock($fp, LOCK_EX);
 			fwrite($fp, $file);
