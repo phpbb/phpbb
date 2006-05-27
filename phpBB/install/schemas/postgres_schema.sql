@@ -6,6 +6,79 @@
 
 BEGIN;
 
+/* Domain definition */
+CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT ''::character varying;
+CREATE CAST (varchar_ci AS varchar) WITHOUT FUNCTION AS IMPLICIT;
+CREATE CAST (varchar AS varchar_ci) WITHOUT FUNCTION AS IMPLICIT;
+CREATE CAST (varchar_ci AS text) WITHOUT FUNCTION AS IMPLICIT;
+CREATE CAST (text AS varchar_ci) WITHOUT FUNCTION AS IMPLICIT;
+
+/* Operation Functions */
+CREATE FUNCTION _varchar_ci_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) = LOWER($2)' LANGUAGE SQL STRICT;
+CREATE FUNCTION _varchar_ci_not_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) != LOWER($2)' LANGUAGE SQL STRICT;
+CREATE FUNCTION _varchar_ci_less_than(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) < LOWER($2)' LANGUAGE SQL STRICT;
+CREATE FUNCTION _varchar_ci_less_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) <= LOWER($2)' LANGUAGE SQL STRICT;
+CREATE FUNCTION _varchar_ci_greater_than(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) > LOWER($2)' LANGUAGE SQL STRICT;
+CREATE FUNCTION _varchar_ci_greater_equals(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) >= LOWER($2)' LANGUAGE SQL STRICT;
+
+/* Operators */
+CREATE OPERATOR <(
+  PROCEDURE = _varchar_ci_less_than,
+  LEFTARG = varchar_ci,
+  RIGHTARG = varchar_ci,
+  COMMUTATOR = >,
+  NEGATOR = >=,
+  RESTRICT = scalarltsel,
+  JOIN = scalarltjoinsel);
+
+CREATE OPERATOR <=(
+  PROCEDURE = _varchar_ci_less_equal,
+  LEFTARG = varchar_ci,
+  RIGHTARG = varchar_ci,
+  COMMUTATOR = >=,
+  NEGATOR = >,
+  RESTRICT = scalarltsel,
+  JOIN = scalarltjoinsel);
+
+CREATE OPERATOR >(
+  PROCEDURE = _varchar_ci_greater_than,
+  LEFTARG = varchar_ci,
+  RIGHTARG = varchar_ci,
+  COMMUTATOR = <,
+  NEGATOR = <=,
+  RESTRICT = scalargtsel,
+  JOIN = scalargtjoinsel);
+
+CREATE OPERATOR >=(
+  PROCEDURE = _varchar_ci_greater_equals,
+  LEFTARG = varchar_ci,
+  RIGHTARG = varchar_ci,
+  COMMUTATOR = <=,
+  NEGATOR = <,
+  RESTRICT = scalargtsel,
+  JOIN = scalargtjoinsel);
+
+CREATE OPERATOR <>(
+  PROCEDURE = _varchar_ci_not_equal,
+  LEFTARG = varchar_ci,
+  RIGHTARG = varchar_ci,
+  COMMUTATOR = <>,
+  NEGATOR = =,
+  RESTRICT = neqsel,
+  JOIN = neqjoinsel);
+
+CREATE OPERATOR =(
+  PROCEDURE = _varchar_ci_equal,
+  LEFTARG = varchar_ci,
+  RIGHTARG = varchar_ci,
+  COMMUTATOR = =,
+  NEGATOR = <>,
+  RESTRICT = eqsel,
+  JOIN = eqjoinsel,
+  HASHES,
+  MERGES,
+  SORT1= <);
+
 /* Table: phpbb_attachments */
 
 CREATE SEQUENCE phpbb_attachments_seq;
@@ -387,7 +460,7 @@ CREATE SEQUENCE phpbb_groups_seq;
 CREATE TABLE phpbb_groups (
   group_id INT4 DEFAULT nextval('phpbb_groups_seq'),
   group_type INT2 DEFAULT '1' NOT NULL,
-  group_name varchar(255) DEFAULT '' NOT NULL,
+  group_name varchar_ci,
   group_desc TEXT,
   group_desc_bitfield INT4  DEFAULT '0' NOT NULL,
   group_desc_uid varchar(5) DEFAULT '' NOT NULL,
@@ -1222,7 +1295,7 @@ CREATE TABLE phpbb_users (
   user_perm_from INT4 DEFAULT '0' NOT NULL,
   user_ip varchar(40) DEFAULT '' NOT NULL,
   user_regdate INT4 DEFAULT '0' NOT NULL,
-  username varchar(255) DEFAULT '' NOT NULL,
+  username varchar_ci,
   user_password varchar(40) DEFAULT '' NOT NULL,
   user_passchg INT4 DEFAULT '0' NULL,
   user_email varchar(100) DEFAULT '' NOT NULL,
@@ -1295,6 +1368,7 @@ CREATE TABLE phpbb_users (
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash);
 CREATE INDEX phpbb_users_username ON phpbb_users (username);
+CREATE INDEX phpbb_users_lower_username ON phpbb_users (LOWER(username));
 
 
 
