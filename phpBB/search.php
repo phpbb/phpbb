@@ -658,7 +658,15 @@ if ($keywords || $author || $search_id || $submit)
 
 				if ($hilit)
 				{
-					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . preg_quote($hilit, '#') . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
+					// Remove bad highlights
+					$hilit_array = array_filter(explode('|', $hilit), 'strlen');
+					foreach ($hilit_array as $key => $value)
+					{
+						$hilit_array[$key] = preg_quote($value, '#');
+					}
+					$hilit = implode('|', $hilit_array);
+
+					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
 				}
 
 				$row['post_text'] = smiley_text($row['post_text']);
