@@ -160,6 +160,7 @@ class fulltext_mysql extends search_backend
 		if (sizeof($this->split_words))
 		{
 			$this->split_words = array_values($this->split_words);
+			sort($this->split_words);
 			return true;
 		}
 		return false;

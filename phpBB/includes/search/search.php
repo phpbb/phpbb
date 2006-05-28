@@ -43,31 +43,21 @@ class search_backend
 	}
 
 	/**
-	* Stores a list of common words that should be ignored in $this->ignore_words and caches them
+	* Retrieves a language dependend list of words that should be ignored by the search
 	*/
 	function get_ignore_words()
 	{
 		if (!sizeof($this->ignore_words))
 		{
-			global $user, $cache;
+			global $user, $phpEx;
 
-			$ignore_words = $cache->get('_ignore_words');
+			$words = array();
 
-			if (!$ignore_words)
-			{
-				$ignore_words = array();
-			}
+			// include the file containing ignore words
+			include("{$user->lang_path}/search_ignore_words.$phpEx");
 
-			if (!isset($ignore_words[$user->lang_name]))
-			{
-				$ignore_words[$user->lang_name] = explode("\n", str_replace("\n\n", "\n", str_replace("\r", "\n", file_get_contents($user->lang_path . '/search_ignore_words.txt'))));
-
-				$cache->put('_ignore_words', $ignore_words, 7200);
-			}
-
-			$this->ignore_words = $ignore_words[$user->lang_name];
-
-			unset($ignore_words);
+			$this->ignore_words = $words;
+			unset($words);
 		}
 	}
 
@@ -78,28 +68,17 @@ class search_backend
 	{
 		if (!sizeof($this->match_synonym))
 		{
-			global $user, $cache;
+			global $user, $phpEx;
 
-			$match_synonym = $cache->get('_match_synonym');
+			$synonyms = array();
 
-			if (!$match_synonym)
-			{
-				$match_synonym = array();
-			}
+			// include the file containing synonyms
+			include("{$user->lang_path}/search_synonyms.$phpEx");
 
-			if (!isset($match_synonym[$user->lang_name]))
-			{
-				preg_match_all('#^\s*(\S+)\s+(\S+)\s*$#m', file_get_contents($user->lang_path . '/search_synonyms.txt'), $match);
-				$match_synonym[$user->lang_name]['replace']= &$match[1];
-				$match_synonym[$user->lang_name]['match'] = &$match[2];
+			$this->match_synonym = array_keys($synonyms);
+			$this->replace_synonym = array_values($synonyms);
 
-				$cache->put('_match_synonym', $match_synonym, 7200);
-			}
-
-			$this->replace_synonym = $match_synonym[$user->lang_name]['replace'];
-			$this->match_synonym = $match_synonym[$user->lang_name]['match'];
-
-			unset($match_synonym);
+			unset($synonyms);
 		}
 	}
 
@@ -173,7 +152,7 @@ class search_backend
 	*/
 	function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
 	{
-		global $cache, $config, $db;
+		global $cache, $config, $db, $user;
 
 		$length = min(sizeof($id_ary), $config['search_block_size']);
 
@@ -211,7 +190,11 @@ class search_backend
 				}
 				$db->sql_freeresult($result);
 			}
-			set_config('last_search_time', time());
+			//set_config('last_search_time', time());
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_last_search = ' . time() . '
+				WHERE user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
 
 			$store = array(-1 => $result_count, -2 => $sort_dir);
 			$id_range = range($start, $start + $length - 1);

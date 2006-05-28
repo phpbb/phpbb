@@ -20,6 +20,10 @@
 		<dd><input id="search_interval" type="text" size="4" maxlength="4" name="config[search_interval]" value="{SEARCH_INTERVAL}" /></dd>
 	</dl>
 	<dl>
+		<dt><label for="search_anonymous_interval">{L_SEARCH_GUEST_INTERVAL}:</label><br /><span>{L_SEARCH_GUEST_INTERVAL_EXPLAIN}</span></dt>
+		<dd><input id="search_anonymous_interval" type="text" size="4" maxlength="4" name="config[search_anonymous_interval]" value="{SEARCH_GUEST_INTERVAL}" /></dd>
+	</dl>
+	<dl>
 		<dt><label for="limit_search_load">{L_LIMIT_SEARCH_LOAD}:</label><br /><span>{L_LIMIT_SEARCH_LOAD_EXPLAIN}</span></dt>
 		<dd><input id="limit_search_load" type="text" size="4" maxlength="4" name="config[limit_search_load]" value="{LIMIT_SEARCH_LOAD}" /></dd>
 	</dl>
@@ -63,7 +67,7 @@
 	function popup_progress_bar(progress_type)
 	{
 	    close_waitscreen = 0;
-		window.open('{UA_PROGRESS_BAR}&type=' + progress_type, '_index', 'HEIGHT=300,resizable=yes,scrollbars=no,WIDTH=400');
+		window.open('{UA_PROGRESS_BAR}&type=' + progress_type, '_index', 'HEIGHT=240,resizable=yes,scrollbars=no,WIDTH=400');
 	}
 //-->
 </script>

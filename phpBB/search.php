@@ -33,6 +33,7 @@ $submit			= request_var('submit', false);
 $keywords		= request_var('keywords', '', true);
 $add_keywords	= request_var('add_keywords', '', true);
 $author			= request_var('author', '');
+$author_id		= request_var('author_id', 0);
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
 $show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
 $search_terms	= request_var('terms', 'all');
@@ -63,10 +64,11 @@ if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($con
 	trigger_error($user->lang['NO_SEARCH_TIME']);
 }
 
-// Check last search time ... if applicable
-if ($config['search_interval'])
+// Check flood limit ... if applicable
+$interval = ($user->data['user_id'] == ANONYMOUS) ? $config['search_anonymous_interval'] : $config['search_interval'];
+if ($interval && !$auth->acl_get('u_ignoreflood'))
 {
-	if ($config['last_search_time'] > time() - $config['search_interval'])
+	if ($user->data['user_last_search'] > time() - $interval)
 	{
 		trigger_error($user->lang['NO_SEARCH_TIME']);
 	}
@@ -79,7 +81,7 @@ $sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SOR
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
-if ($keywords || $author || $search_id || $submit)
+if ($keywords || $author || $author_id || $search_id || $submit)
 {
 	// clear arrays
 	$id_ary = array();
@@ -91,7 +93,7 @@ if ($keywords || $author || $search_id || $submit)
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
-			AND fa.session_id = '" . $db->sql_escape($user->data['session_id']) . "')
+			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
 		WHERE $not_in_fid(f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')
 		ORDER BY f.left_id';
 	$result = $db->sql_query($sql);
@@ -159,14 +161,18 @@ if ($keywords || $author || $search_id || $submit)
 
 	// If we are looking for authors get their ids
 	$author_id_ary = array();
-	if ($author)
+	if ($author_id)
 	{
-		if ((strstr($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
+		$author_id_ary[] = $author_id;
+	}
+	elseif ($author)
+	{
+		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
 		{
 			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
 		}
 
-		$sql_where = (strstr($author, '*') !== false) ? ' LIKE ' : ' = ';
+		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
 			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
@@ -226,19 +232,19 @@ if ($keywords || $author || $search_id || $submit)
 		$search->split_keywords($keywords, $search_terms);
 		if (!sizeof($search->split_words) && !sizeof($author_id_ary) && !$search_id)
 		{
-			trigger_error(sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
+			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words))) . '<br />' : '';
+			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
 		}
 	}
 
 	if (!$keywords && sizeof($author_id_ary))
 	{
-		// default to showing results as posts when performing an author search
+		// if it is an author search we want to show topics by default
 		$show_results = ($topic_id) ? 'posts' : request_var('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
 		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information
-	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
 	$sort_by_sql = array('a' => 'u.username', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
 
 	// pre-made searches
@@ -356,7 +362,13 @@ if ($keywords || $author || $search_id || $submit)
 				}
 			break;
 		}
+	}
 
+	// show_results should not change after this
+	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
+
+	if ($search_id)
+	{
 		if ($sql)
 		{
 			// only return up to 1000 ids (the last one will be removed later)
@@ -376,6 +388,11 @@ if ($keywords || $author || $search_id || $submit)
 			$search_id = '';
 		}
 	}
+
+	// make sure that some arrays are always in the same order
+	sort($ex_fid_ary);
+	sort($m_approve_fid_ary);
+	sort($author_id_ary);
 
 	if (sizeof($search->split_words))
 	{
@@ -432,6 +449,7 @@ if ($keywords || $author || $search_id || $submit)
 	$u_search .= ($u_hilit) ? '&amp;keywords=' . $u_hilit : '';
 	$u_search .= ($topic_id) ? '&amp;ch=' . $topic_id : '';
 	$u_search .= ($author) ? '&amp;author=' . urlencode($author) : '';
+	$u_search .= ($author_id) ? '&amp;author_id=' . $author_id : '';
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
@@ -459,7 +477,7 @@ if ($keywords || $author || $search_id || $submit)
 		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
 
-		'U_SEARCH_WORDS'	=> "{$phpbb_root_path}search.$phpEx$SID$u_show_results&amp;keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : ''))
+		'U_SEARCH_WORDS'	=> "{$phpbb_root_path}search.$phpEx$SID$u_show_results&amp;keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : '') . (($author_id) ? '&amp;author_id=' . $author_id : ''))
 	);
 
 	if ($sql_where)
@@ -722,7 +740,7 @@ $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, fa.user_id
 	FROM ' . FORUMS_TABLE . ' f
 	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
-		AND fa.session_id = '" . $db->sql_escape($user->data['session_id']) . "')
+		AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
 	ORDER BY f.left_id ASC";
 $result = $db->sql_query($sql);
 

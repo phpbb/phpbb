@@ -1224,7 +1224,7 @@ function show_profile($data)
 		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
 		'U_PROFILE'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$user_id",
-		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;author=" . urlencode($username) . "&amp;sr=posts" : '',
+		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;author_id=$user_id&amp;sr=posts" : '',
 		'U_NOTES'		=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=$user_id" : '',
 		'U_WARN'		=> $auth->acl_gets('m_', 'a_') ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=$user_id" : '',
 		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;u=$user_id" : '',

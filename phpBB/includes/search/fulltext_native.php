@@ -88,14 +88,17 @@ class fulltext_native extends search_backend
 			$this->split_words = array_diff($this->split_words, $this->ignore_words);
 		}
 
-		if (sizeof($this->replace_synonym))
+		if (sizeof($this->match_synonym))
 		{
-			$this->split_words = str_replace($this->replace_synonym, $this->match_synonym, $this->split_words);
+			$this->split_words = str_replace($this->match_synonym, $this->replace_synonym, $this->split_words);
 		}
 
 		$prefixes = array('+', '-', '|');
 		$prefixed = false;
 		$in_words = '';
+
+		$lengths = $this->get_word_lengths($this->split_words);
+
 		foreach ($this->split_words as $i => $word)
 		{
 			if (in_array($word, $prefixes))
@@ -105,8 +108,7 @@ class fulltext_native extends search_backend
 			}
 
 			// check word length
-			$clean_len = $this->word_length($word);
-			if (($clean_len < $config['fulltext_native_min_chars']) || ($clean_len > $config['fulltext_native_max_chars']))
+			if (($lengths[$i] < $config['fulltext_native_min_chars']) || ($lengths[$i] > $config['fulltext_native_max_chars']))
 			{
 				if ($prefixed)
 				{
@@ -123,6 +125,8 @@ class fulltext_native extends search_backend
 
 			$prefixed = false;
 		}
+
+		unset($lengths);
 
 		if ($in_words)
 		{
@@ -151,17 +155,23 @@ class fulltext_native extends search_backend
 		if (sizeof($this->split_words))
 		{
 			$this->split_words = array_values($this->split_words);
+			sort($this->split_words);
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	* Returns the string length but it counts multibyte characters as single characters and ignores "*"
+	* Returns any array of string lengths for the given array of strings
+	* It counts multibyte entities as single characters and ignores "*"
+	*
+	*	@param array $words an array of strings
+	*
+	*	@return Array of string lengths
 	*/
-	function word_length($word)
+	function get_word_lengths($words)
 	{
-		return strlen(str_replace('*', '', preg_replace('#&\#[0-9]+;#', 'x', $word)));
+		return array_map('strlen', str_replace('*', '', preg_replace('#&\#[0-9]+;#', 'x', $words)));
 	}
 
 	/**
@@ -210,17 +220,19 @@ class fulltext_native extends search_backend
 			$text = array_diff($text, $this->ignore_words);
 		}
 
-		if (sizeof($this->replace_synonym))
+		if (sizeof($this->match_synonym))
 		{
-			$text = str_replace($this->replace_synonym, $this->match_synonym, $text);
+			$text = str_replace($this->match_synonym, $this->replace_synonym, $text);
 		}
 
 		// remove too short or too long words
-		$text = array_values($text);
+		$text = array_map('trim', array_values($text));
+
+		$lengths = $this->get_word_lengths($text);
+
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
-			$text[$i] = trim($text[$i]);
-			if ($this->word_length($text[$i]) < $config['fulltext_native_min_chars'] || $this->word_length($text[$i]) > $config['fulltext_native_max_chars'])
+			if ($lengths[$i] < $config['fulltext_native_min_chars'] || $lengths[$i] > $config['fulltext_native_max_chars'])
 			{
 				unset($text[$i]);
 			}

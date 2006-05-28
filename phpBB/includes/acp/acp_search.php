@@ -47,11 +47,12 @@ class acp_search
 		$search_types = $this->get_search_types();
 
 		$settings = array(
-			'search_interval'	=> 'float',
-			'load_search'		=> 'bool',
-			'limit_search_load'	=> 'float',
+			'search_interval'			=> 'float',
+			'search_anonymous_interval'	=> 'float',
+			'load_search'				=> 'bool',
+			'limit_search_load'			=> 'float',
 			'min_search_author_chars'	=> 'integer',
-			'search_store_results' => 'integer',
+			'search_store_results'		=> 'integer',
 		);
 
 		$search = null;
@@ -168,6 +169,7 @@ class acp_search
 			'LIMIT_SEARCH_LOAD'		=> (float) $config['limit_search_load'],
 			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) $config['min_search_author_chars'],
 			'SEARCH_INTERVAL'		=> (float) $config['search_interval'],
+			'SEARCH_GUEST_INTERVAL'	=> (float) $config['search_anonymous_interval'],
 			'SEARCH_STORE_RESULTS'	=> (int) $config['search_store_results'],
 
 			'S_SEARCH_TYPES'		=> $search_options,
