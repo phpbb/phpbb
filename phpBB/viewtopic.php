@@ -239,7 +239,7 @@ if (!($topic_data = $db->sql_fetchrow($result)))
 // This is for determining where we are (page)
 if ($post_id)
 {
-	$sql = "SELECT COUNT(*) AS prev_posts
+	$sql = "SELECT COUNT(p.post_id) AS prev_posts
 		FROM " . POSTS_TABLE . " p
 		WHERE p.post_approved = 1
 			AND p.topic_id = {$topic_data['topic_id']}
