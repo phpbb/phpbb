@@ -348,7 +348,7 @@ class ...
 
 <a name="code"></a><h1>2. Code Layout/Guidelines</h1>
 
-	<p>Please note that these Guidelines also applies to js code.</p>
+	<p>Please note that these Guidelines also applies to javascript code.</p>
 
 	<a name="namingvars"></a><b>2.i. Variable/Function Naming</b>
 	<br /><br />
@@ -691,6 +691,7 @@ switch ($mode)
 }
 	</pre></blockquote>
 
+
 	</div>
 	<a href="#top">Top</a>
 	<br /><br />
@@ -892,10 +893,21 @@ trigger_error('NO_FORUM');
 
 	<p>All urls pointing to internal files need to be prepended by the <code>$phpbb_root_path</code> variable. Within the administration control panel all urls pointing to internal files need to be prepended by the <code>$phpbb_admin_path</code> variable. This makes sure the path is always correct and users being able to just rename the admin folder and the acp still working as intended.</p>
 	
-	<h3>General Functions: </h3>
-	<p>Use <code>sizeof</code> instead of <code>count</code>, this is just a general preference and guideline and has no other benefit than to be consistent.</p>
+	<h3>General function usage: </h3>
 
-	<p>Use <code>strpos</code> instead of <code>strstr</code>.</p>
+	<p>Some of these functions are only chosen over others because of a personal preference and are having no other benefit than to be consistant over the code.</p>
+
+	<ul>
+		<li>
+			<p>Use <code>sizeof</code> instead of <code>count</code></p>
+		</li>
+		<li>
+			<p>Use <code>strpos</code> instead of <code>strstr</code></p>
+		</li>
+		<li>
+			<p>Use <code>else if</code> instead of <code>elseif</code></p>
+		</li>
+	</ul>
 
 	</div>
 	<a href="#top">Top</a>
@@ -1158,33 +1170,12 @@ markup
 <a name="changes"></a><h1>5. Guidelines Changelog</h1>
 <div class="paragraph">
 
-<h2>Revision 1.7</h2>
-
-<ul class="menu">
-	<li>Updated <a href="#locations">1.iii. File Locations</a> to reflect recent updates</li>
-	<li>Added paragraph about switch statements to <a href="#codelayout">2.ii. Code Layout</a></li>
-	<li>Updated <a href="#sql">2.iii. SQL/SQL Layout</a></li>
-	<li>Added paragraph about url formatting to <a href="#general">2.v. General Guidelines</a></li>
-</ul>
-
-<h2>Revision 1.6</h2>
-
-<ul class="menu">
-	<li>Added more information to Tabs vs. Spaces paragraph</li>
-</ul>
-
 <h2>Revision 1.5</h2>
 
 <ul class="menu">
-	<li>$user->start now $user->session_begin</li>
+	<li>Changed General function usage paragraph in <a href="#general">2.v. General Guidelines</a></li>
 </ul>
 
-<h2>Revision 1.3</h2>
-
-<ul class="menu">
-	<li>Updated Section 1.iii. - dbal layout</li>
-	<li>Extended Section 2.v. - usage of request_var()</li>
-</ul>
 
 </div>
 <a href="#top">Top</a>

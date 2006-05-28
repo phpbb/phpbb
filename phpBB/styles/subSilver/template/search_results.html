@@ -36,8 +36,8 @@
 		<td class="row1">
 			<!-- IF searchresults.S_UNREAD_TOPIC --><a href="{searchresults.U_NEWEST_POST}">{NEWEST_POST_IMG}</a><!-- ENDIF -->
 			{topicrow.ATTACH_ICON_IMG} <a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
-			<!-- IF searchresults.S_TOPIC_UNAPPROVED -->
-				<a href="{searchresults.U_MCP_QUEUE}">{UNAPPROVED_IMG}</a>&nbsp;
+			<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
+				<a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a>&nbsp;
 			<!-- ENDIF -->
 			<!-- IF searchresults.S_TOPIC_REPORTED -->
 				<a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a>&nbsp;

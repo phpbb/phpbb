@@ -312,7 +312,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db;
+	global $auth, $db, $config;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -383,6 +383,9 @@ function change_poster(&$post_info, $userdata)
 
 	// Do not change the poster_id within the attachments table, since they were still posted by the original user
 
+	$from_username = $post_info['username'];
+	$to_username = $userdata['username'];
+
 	// Renew post info
 	$post_info = get_post_data(array($post_id));
 
@@ -394,7 +397,7 @@ function change_poster(&$post_info, $userdata)
 	$post_info = $post_info[$post_id];
 
 	// Now add log entry
-	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $post_info['username'], $userdata['username']);
+	add_log('mod', $post_info['forum_id'], $post_info['topic_id'], 'LOG_MCP_CHANGE_POSTER', $post_info['topic_title'], $from_username, $to_username);
 }
 
 ?>

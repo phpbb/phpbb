@@ -107,11 +107,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		$topic_title = '';
 
-		if ($auth->acl_get('m_approve', $row['forum_id']))
-		{
-			$row['topic_replies'] = $row['topic_replies_real'];
-		}
-
 		if ($row['topic_status'] == ITEM_LOCKED)
 		{
 			$folder_img = 'folder_locked';
@@ -165,12 +160,16 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_title = censor_text($row['topic_title']);
 
+		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_gets('m_approve', $row['forum_id'])) ? true : false;
+		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_gets('m_approve', $row['forum_id'])) ? true : false;
+		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
+
 		$template->assign_block_vars('topicrow', array(
 			'U_VIEW_TOPIC'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view",
 
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
 			'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
-			'U_MCP_QUEUE'		=> $url . '&amp;i=queue&amp;mode=approve_details&amp;t=' . $row['topic_id'],
+			'U_MCP_QUEUE'		=> $u_mcp_queue,
 			'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
 
 			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
@@ -179,16 +178,18 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
+			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'TOPIC_TYPE'		=>	$topic_type,
 			'TOPIC_TITLE'		=>	$topic_title,
-			'REPLIES'			=>	$row['topic_replies'],
+			'REPLIES'			=>	($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
 			'LAST_POST_TIME'	=>	$user->format_date($row['topic_last_post_time']),
 			'TOPIC_ID'			=>	$row['topic_id'],
 			'S_TOPIC_CHECKED'	=>	($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? 'checked="checked" ' : '',
 
-			'S_TOPIC_REPORTED'	=>	($row['topic_reported']) ? true : false,
-			'S_TOPIC_UNAPPROVED'=>	($row['topic_approved']) ? false : true)
+			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_report', $row['forum_id'])) ? true : false,
+			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
+			'S_POSTS_UNAPPROVED'	=> $posts_unapproved)
 		);
 	}
 	unset($topic_rows);

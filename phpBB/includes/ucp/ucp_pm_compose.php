@@ -800,7 +800,8 @@ function compose_pm($id, $mode, $action)
 		'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
-		'U_PROGRESS_BAR'			=> "{$phpbb_root_path}posting.$phpEx$SID&f=0&mode=popup", // do NOT replace & with &amp; here
+		'U_PROGRESS_BAR'			=> "{$phpbb_root_path}posting.$phpEx$SID&amp;f=0&amp;mode=popup",
+		'UA_PROGRESS_BAR'			=> "{$phpbb_root_path}posting.$phpEx$SID&f=0&mode=popup",
 		)
 	);
 

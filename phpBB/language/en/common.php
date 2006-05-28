@@ -312,6 +312,7 @@ $lang = array_merge($lang, array(
 	'POST_STICKY'		=> 'Sticky',
 	'POSTED'			=> 'Posted',
 	'POSTS'				=> 'Posts',
+	'POSTS_UNAPPROVED'	=> 'At least one post in this topic has not been approved',
 	'POST_BY_FOE'		=> 'This post was made by <b>%1$s</b> who is currently on your ignore list. To display this post click %2$sHERE%3$s.',
 	'POST_DAY'			=> '%.2f posts per day',
 	'POST_DETAILS'		=> 'Post details',
