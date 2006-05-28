@@ -250,9 +250,11 @@ class acp_prune
 					$bot_ids[] = $row['user_id'];
 				}
 				$db->sql_freeresult($result);
-				
+
+				// Do not prune founder members
 				$sql = 'SELECT username, user_id FROM ' . USERS_TABLE . '
-					WHERE user_id <> ' . ANONYMOUS . "
+					WHERE user_id <> ' . ANONYMOUS . '
+						AND user_type <> ' . USER_FOUNDER . "
 					$where_sql";
 				$result = $db->sql_query($sql);
 
