@@ -904,6 +904,20 @@ class install_install extends module
 		$delimiter = $this->available_dbms[$dbms]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
+
+		switch ($dbms)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				// We don't want MySQL mixing up collations
+				if (version_compare(mysql_get_server_info(), '4.1.2', '>='))
+				{
+					$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
+				}
+			break;
+		}
+
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
 		$remove_remarks($sql_query);
@@ -924,7 +938,7 @@ class install_install extends module
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
 
-		// Deal with any special comments, used at present for mssql set identity switching
+		// Deal with any special comments
 		switch ($dbms)
 		{
 			case 'mssql':
@@ -939,8 +953,6 @@ class install_install extends module
 			case 'firebird':
 				$sql_query = str_replace('module_name', '"module_name"', $sql_query);
 			break;
-
-			default:
 		}
 
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);

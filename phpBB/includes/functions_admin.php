@@ -1795,10 +1795,10 @@ function split_sql_file($sql, $delimiter)
 	$data = preg_split('/' . $delimiter . '$/m', $sql);
 	foreach ($data as $key => $value)
 	{
-		$data[$key] = trim($value) . ';';
+		$data[$key] = trim($value);
 	}
 	// The empty case
-	if (end($data) == ';')
+	if (empty(end($data)))
 	{
 		unset($data[key($data)]);
 	}

@@ -27,7 +27,7 @@ CREATE TABLE phpbb_attachments (
   KEY poster_id (poster_id),
   KEY physical_filename (physical_filename(10)),
   KEY filesize (filesize)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_auth_groups'
 CREATE TABLE phpbb_auth_groups (
@@ -38,7 +38,7 @@ CREATE TABLE phpbb_auth_groups (
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   KEY group_id (group_id),
   KEY auth_option_id (auth_option_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_auth_options'
 CREATE TABLE phpbb_auth_options (
@@ -49,7 +49,7 @@ CREATE TABLE phpbb_auth_options (
   founder_only tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (auth_option_id),
   KEY auth_option (auth_option)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_auth_roles'
 CREATE TABLE phpbb_auth_roles (
@@ -61,7 +61,7 @@ CREATE TABLE phpbb_auth_roles (
   PRIMARY KEY (role_id),
   KEY role_type (role_type),
   KEY role_order (role_order)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_auth_roles_data'
 CREATE TABLE phpbb_auth_roles_data (
@@ -69,7 +69,7 @@ CREATE TABLE phpbb_auth_roles_data (
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   PRIMARY KEY  (role_id, auth_option_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_auth_users'
 CREATE TABLE phpbb_auth_users (
@@ -80,7 +80,7 @@ CREATE TABLE phpbb_auth_users (
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   KEY user_id (user_id),
   KEY auth_option_id (auth_option_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
@@ -94,7 +94,7 @@ CREATE TABLE phpbb_banlist (
   ban_reason text,
   ban_give_reason text,
   PRIMARY KEY (ban_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_bbcodes'
 CREATE TABLE phpbb_bbcodes (
@@ -109,7 +109,7 @@ CREATE TABLE phpbb_bbcodes (
   second_pass_replace text,
   PRIMARY KEY (bbcode_id),
   KEY display_in_posting (display_on_posting)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_bookmarks'
 CREATE TABLE phpbb_bookmarks (
@@ -118,7 +118,7 @@ CREATE TABLE phpbb_bookmarks (
   order_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   KEY order_id (order_id),
   KEY topic_user_id (topic_id, user_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_bots'
 CREATE TABLE phpbb_bots (
@@ -130,7 +130,7 @@ CREATE TABLE phpbb_bots (
   bot_ip varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (bot_id),
   KEY bot_active (bot_active)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_cache'
 CREATE TABLE phpbb_cache (
@@ -138,7 +138,7 @@ CREATE TABLE phpbb_cache (
   var_expires int(10) UNSIGNED DEFAULT '0' NOT NULL,
   var_data mediumtext,
   PRIMARY KEY (var_name)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
@@ -147,7 +147,7 @@ CREATE TABLE phpbb_config (
   is_dynamic tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (config_name),
   KEY is_dynamic (is_dynamic)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
@@ -156,14 +156,14 @@ CREATE TABLE phpbb_confirm (
   confirm_type tinyint(3) DEFAULT '0' NOT NULL,
   code varchar(8) DEFAULT '' NOT NULL,
   PRIMARY KEY (session_id, confirm_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
   disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   disallow_username varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (disallow_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_drafts'
 CREATE TABLE phpbb_drafts (
@@ -176,7 +176,7 @@ CREATE TABLE phpbb_drafts (
   draft_message mediumtext,
   PRIMARY KEY (draft_id),
   KEY save_time (save_time)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_extensions'
 CREATE TABLE phpbb_extensions (
@@ -184,7 +184,7 @@ CREATE TABLE phpbb_extensions (
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   extension varchar(100) DEFAULT '' NOT NULL,
   PRIMARY KEY (extension_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_extension_groups'
 CREATE TABLE phpbb_extension_groups (
@@ -198,7 +198,7 @@ CREATE TABLE phpbb_extension_groups (
   allowed_forums text,
   allow_in_pm tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (group_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_forums'
 CREATE TABLE phpbb_forums (
@@ -241,7 +241,7 @@ CREATE TABLE phpbb_forums (
   PRIMARY KEY (forum_id),
   KEY left_right_id (left_id, right_id),
   KEY forum_last_post_id (forum_last_post_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_forum_access'
 CREATE TABLE phpbb_forum_access (
@@ -249,7 +249,7 @@ CREATE TABLE phpbb_forum_access (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   session_id varchar(32) DEFAULT '' NOT NULL,
   PRIMARY KEY (forum_id, user_id, session_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_forums_marking'
 CREATE TABLE phpbb_forums_marking (
@@ -257,7 +257,7 @@ CREATE TABLE phpbb_forums_marking (
   forum_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
   mark_time int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY (user_id, forum_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_forums_watch'
 CREATE TABLE phpbb_forums_watch (
@@ -267,7 +267,7 @@ CREATE TABLE phpbb_forums_watch (
   KEY forum_id (forum_id),
   KEY user_id (user_id),
   KEY notify_status (notify_status)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_groups'
 CREATE TABLE phpbb_groups (
@@ -291,7 +291,7 @@ CREATE TABLE phpbb_groups (
   group_legend tinyint(1) DEFAULT '1' NOT NULL,
   PRIMARY KEY (group_id),
   KEY group_legend (group_legend)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_icons'
 CREATE TABLE phpbb_icons (
@@ -302,7 +302,7 @@ CREATE TABLE phpbb_icons (
   icons_order tinyint(4) UNSIGNED NOT NULL,
   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   PRIMARY KEY (icons_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_lang'
 CREATE TABLE phpbb_lang (
@@ -313,7 +313,7 @@ CREATE TABLE phpbb_lang (
   lang_local_name varchar(255),
   lang_author varchar(255),
   PRIMARY KEY (lang_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_log'
 CREATE TABLE phpbb_log (
@@ -333,7 +333,7 @@ CREATE TABLE phpbb_log (
   KEY topic_id (topic_id),
   KEY reportee_id (reportee_id),
   KEY user_id (user_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
@@ -345,7 +345,7 @@ CREATE TABLE phpbb_moderator_cache (
   display_on_index tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   KEY display_on_index (display_on_index),
   KEY forum_id (forum_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_modules'
 CREATE TABLE phpbb_modules (
@@ -363,7 +363,7 @@ CREATE TABLE phpbb_modules (
   PRIMARY KEY  (module_id),
   KEY left_right_id (left_id, right_id),
   KEY module_enabled (module_enabled)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_poll_results'
 CREATE TABLE phpbb_poll_results (
@@ -373,7 +373,7 @@ CREATE TABLE phpbb_poll_results (
   poll_option_total mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   KEY poll_option_id (poll_option_id),
   KEY topic_id (topic_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_poll_voters'
 CREATE TABLE phpbb_poll_voters (
@@ -384,7 +384,7 @@ CREATE TABLE phpbb_poll_voters (
   KEY topic_id (topic_id),
   KEY vote_user_id (vote_user_id),
   KEY vote_user_ip (vote_user_ip)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_posts'
 CREATE TABLE phpbb_posts (
@@ -421,7 +421,7 @@ CREATE TABLE phpbb_posts (
   KEY poster_id (poster_id),
   KEY post_approved (post_approved),
   KEY post_time (post_time)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
@@ -452,7 +452,7 @@ CREATE TABLE phpbb_privmsgs (
   KEY message_time (message_time),
   KEY author_id (author_id),
   KEY root_level (root_level)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_privmsgs_folder'
 CREATE TABLE phpbb_privmsgs_folder (
@@ -462,7 +462,7 @@ CREATE TABLE phpbb_privmsgs_folder (
   pm_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY  (folder_id),
   KEY user_id (user_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_privmsgs_rules'
 CREATE TABLE phpbb_privmsgs_rules (
@@ -476,7 +476,7 @@ CREATE TABLE phpbb_privmsgs_rules (
   rule_action mediumint(4) UNSIGNED DEFAULT '0' NOT NULL,
   rule_folder_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY  (rule_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_privmsgs_to'
 CREATE TABLE phpbb_privmsgs_to (
@@ -492,7 +492,7 @@ CREATE TABLE phpbb_privmsgs_to (
   folder_id int(10) DEFAULT '0' NOT NULL,
   KEY msg_id (msg_id),
   KEY user_id (user_id, folder_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_profile_fields'
 CREATE TABLE phpbb_profile_fields (
@@ -515,13 +515,13 @@ CREATE TABLE phpbb_profile_fields (
   PRIMARY KEY (field_id),
   KEY field_type (field_type),
   KEY field_order (field_order)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY (user_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_profile_fields_lang'
 CREATE TABLE phpbb_profile_fields_lang (
@@ -531,7 +531,7 @@ CREATE TABLE phpbb_profile_fields_lang (
   field_type tinyint(4) DEFAULT '0' NOT NULL,
   value varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (field_id, lang_id, option_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_profile_lang'
 CREATE TABLE phpbb_profile_lang (
@@ -541,7 +541,7 @@ CREATE TABLE phpbb_profile_lang (
   lang_explain text,
   lang_default_value varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY (field_id, lang_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_ranks'
 CREATE TABLE phpbb_ranks (
@@ -551,7 +551,7 @@ CREATE TABLE phpbb_ranks (
   rank_special tinyint(1) DEFAULT '0',
   rank_image varchar(255),
   PRIMARY KEY (rank_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_reports'
 CREATE TABLE phpbb_reports (
@@ -564,7 +564,7 @@ CREATE TABLE phpbb_reports (
   report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
   report_text mediumtext,
   PRIMARY KEY (report_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
@@ -573,7 +573,7 @@ CREATE TABLE phpbb_reports_reasons (
   reason_description text,
   reason_order tinyint(4) DEFAULT '0' NOT NULL,
   PRIMARY KEY (reason_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_search_results'
 CREATE TABLE phpbb_search_results (
@@ -582,7 +582,7 @@ CREATE TABLE phpbb_search_results (
   search_keywords mediumtext,
   search_authors mediumtext,
   PRIMARY KEY (search_key)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_search_wordlist'
 CREATE TABLE phpbb_search_wordlist (
@@ -591,7 +591,7 @@ CREATE TABLE phpbb_search_wordlist (
   word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY (word_text),
   KEY word_id (word_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_search_wordmatch'
 CREATE TABLE phpbb_search_wordmatch (
@@ -599,7 +599,7 @@ CREATE TABLE phpbb_search_wordmatch (
   word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   title_match tinyint(1) DEFAULT '0' NOT NULL,
   KEY word_id (word_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_sessions'
 CREATE TABLE phpbb_sessions (
@@ -617,7 +617,7 @@ CREATE TABLE phpbb_sessions (
   PRIMARY KEY (session_id),
   KEY session_time (session_time),
   KEY session_user_id (session_user_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_sessions_keys'
 CREATE TABLE phpbb_sessions_keys (
@@ -627,7 +627,7 @@ CREATE TABLE phpbb_sessions_keys (
   last_login int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY  (key_id, user_id),
   KEY last_login (last_login)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_sitelist'
 CREATE TABLE phpbb_sitelist (
@@ -636,7 +636,7 @@ CREATE TABLE phpbb_sitelist (
   site_hostname varchar(255) DEFAULT '' NOT NULL,
   ip_exclude tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (site_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
@@ -649,7 +649,7 @@ CREATE TABLE phpbb_smilies (
   smiley_order tinyint(4) UNSIGNED NOT NULL,
   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   PRIMARY KEY (smiley_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
@@ -665,7 +665,7 @@ CREATE TABLE phpbb_styles (
   KEY (template_id),
   KEY (theme_id),
   KEY (imageset_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
@@ -677,7 +677,7 @@ CREATE TABLE phpbb_styles_template (
   template_storedb tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (template_id),
   UNIQUE template_name (template_name)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
@@ -688,7 +688,7 @@ CREATE TABLE phpbb_styles_template_data (
   template_data mediumtext,
   KEY (template_id),
   KEY (template_filename)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
@@ -701,7 +701,7 @@ CREATE TABLE phpbb_styles_theme (
   theme_data mediumtext,
   PRIMARY KEY (theme_id),
   UNIQUE theme_name (theme_name)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
@@ -788,7 +788,7 @@ CREATE TABLE phpbb_styles_imageset (
   user_icon10 varchar(200) DEFAULT '' NOT NULL,
   PRIMARY KEY (imageset_id),
   UNIQUE imageset_name (imageset_name)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
@@ -827,7 +827,7 @@ CREATE TABLE phpbb_topics (
   KEY forum_id (forum_id),
   KEY forum_id_type (forum_id, topic_type),
   KEY topic_last_post_time (topic_last_post_time)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_topic_marking'
 CREATE TABLE phpbb_topics_marking (
@@ -837,7 +837,7 @@ CREATE TABLE phpbb_topics_marking (
   mark_time int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY (user_id, topic_id),
   KEY forum_id (forum_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_topic_posted'
 CREATE TABLE phpbb_topics_posted (
@@ -845,7 +845,7 @@ CREATE TABLE phpbb_topics_posted (
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   topic_posted tinyint(4) DEFAULT '0' NOT NULL,
   PRIMARY KEY (user_id, topic_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_topics_watch'
 CREATE TABLE phpbb_topics_watch (
@@ -855,7 +855,7 @@ CREATE TABLE phpbb_topics_watch (
   KEY topic_id (topic_id),
   KEY user_id (user_id),
   KEY notify_status (notify_status)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
@@ -866,7 +866,7 @@ CREATE TABLE phpbb_user_group (
   KEY group_id (group_id),
   KEY user_id (user_id),
   KEY group_leader (group_leader)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_users'
 CREATE TABLE phpbb_users (
@@ -943,7 +943,7 @@ CREATE TABLE phpbb_users (
   KEY user_email_hash (user_email_hash),
   KEY user_type (user_type),
   KEY username (username)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_warnings'
 CREATE TABLE phpbb_warnings (
@@ -953,7 +953,7 @@ CREATE TABLE phpbb_warnings (
   log_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   warning_time int(11) DEFAULT '0' NOT NULL,
   PRIMARY KEY  (`warning_id`)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
@@ -961,7 +961,7 @@ CREATE TABLE phpbb_words (
   word varchar(255) NOT NULL,
   replacement varchar(255) NOT NULL,
   PRIMARY KEY (word_id)
-) DEFAULT CHARACTER SET latin1;
+);
 
 # Table: 'phpbb_zebra'
 CREATE TABLE phpbb_zebra (
@@ -971,4 +971,4 @@ CREATE TABLE phpbb_zebra (
   foe tinyint(1) DEFAULT '0' NOT NULL,
   KEY user_id (user_id),
   KEY zebra_id (zebra_id)
-) DEFAULT CHARACTER SET latin1;
+);
