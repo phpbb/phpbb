@@ -369,8 +369,13 @@ class bbcode
 
 			$matches = preg_match_all('#<!-- BEGIN (.*?) -->(.*?)<!-- END (?:.*?) -->#', $tpl, $match);
 
-			for ($i = 0; $i < $matches - 1; $i++)
+			for ($i = 0; $i < $matches; $i++)
 			{
+				if (empty($match[1][$i]))
+				{
+					continue;
+				}
+
 				$this->bbcode_template[$match[1][$i]] = $this->bbcode_tpl_replace($match[1][$i], $match[2][$i]);
 			}
 		}

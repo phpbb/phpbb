@@ -76,7 +76,7 @@ class session
 		// We are on the base level (phpBB root == webroot), lets adjust the variables a bit...
 		if (!$root_script_path)
 		{
-			$root_script_path = ($page_dir) ? str_replace($page_dir, '', $script_path) : $script_path;;
+			$root_script_path = ($page_dir) ? str_replace($page_dir, '', $script_path) : $script_path;
 		}
 
 		$page_array += array(
