@@ -1729,7 +1729,7 @@ CREATE TABLE phpbb_users (
   user_lastpost_time number(11) DEFAULT '0' NOT NULL,
   user_lastpage varchar2(200) DEFAULT '' NOT NULL,
   user_last_confirm_key varchar2(10) DEFAULT '' NULL,
-  user_last_search number(11) DEFAULT '0' NOT NULL,
+  user_last_search number(11) DEFAULT '0' NULL,
   user_warnings number(4) DEFAULT '0' NULL,
   user_last_warning number(11) DEFAULT '0' NULL,
   user_login_attempts number(4) DEFAULT '0' NULL,

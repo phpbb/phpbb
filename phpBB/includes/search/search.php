@@ -53,8 +53,11 @@ class search_backend
 
 			$words = array();
 
-			// include the file containing ignore words
-			include("{$user->lang_path}/search_ignore_words.$phpEx");
+			if (file_exists("{$user->lang_path}/search_ignore_words.$phpEx"))
+			{
+				// include the file containing ignore words
+				include("{$user->lang_path}/search_ignore_words.$phpEx");
+			}
 
 			$this->ignore_words = $words;
 			unset($words);
@@ -72,8 +75,11 @@ class search_backend
 
 			$synonyms = array();
 
-			// include the file containing synonyms
-			include("{$user->lang_path}/search_synonyms.$phpEx");
+			if (file_exists("{$user->lang_path}/search_synonyms.$phpEx"))
+			{
+				// include the file containing synonyms
+				include("{$user->lang_path}/search_synonyms.$phpEx");
+			}
 
 			$this->match_synonym = array_keys($synonyms);
 			$this->replace_synonym = array_values($synonyms);

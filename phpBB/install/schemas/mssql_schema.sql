@@ -2128,7 +2128,7 @@ CREATE TABLE [phpbb_users] (
 	[user_lastpost_time] [int] NOT NULL ,
 	[user_lastpage] [varchar] (200) NOT NULL ,
 	[user_last_confirm_key] [varchar] (10) NULL ,
-	[user_last_search] [int] NOT NULL ,
+	[user_last_search] [int] NULL ,
 	[user_warnings] [int] NULL ,
 	[user_last_warning] [int] NULL ,
 	[user_login_attempts] [int] NULL ,

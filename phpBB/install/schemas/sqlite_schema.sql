@@ -950,7 +950,7 @@ CREATE TABLE phpbb_users (
   user_lastpost_time int(11) NOT NULL DEFAULT '0',
   user_lastpage varchar(200) NOT NULL DEFAULT '',
   user_last_confirm_key varchar(10) NULL DEFAULT '',
-  user_last_search int(11) NOT NULL DEFAULT '0',
+  user_last_search int(11) NULL DEFAULT '0',
   user_warnings tinyint(4) NULL DEFAULT '0',
   user_last_warning int(11) NULL DEFAULT '0',
   user_login_attempts smallint(4) NULL DEFAULT '0',

@@ -1331,7 +1331,7 @@ CREATE TABLE phpbb_users (
   user_lastpost_time INTEGER DEFAULT 0  NOT NULL,
   user_lastpage VARCHAR(200) DEFAULT '' NOT NULL,
   user_last_confirm_key VARCHAR(10) DEFAULT '',
-  user_last_search INTEGER DEFAULT 0  NOT NULL,
+  user_last_search INTEGER DEFAULT 0,
   user_warnings INTEGER DEFAULT 0,
   user_last_warning INTEGER DEFAULT 0,
   user_login_attempts INTEGER DEFAULT 0,
