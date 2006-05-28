@@ -1797,8 +1797,11 @@ function split_sql_file($sql, $delimiter)
 	{
 		$data[$key] = trim($value);
 	}
+
 	// The empty case
-	if (empty(end($data)))
+	$end_data = end($data);
+
+	if (empty($end_data))
 	{
 		unset($data[key($data)]);
 	}
