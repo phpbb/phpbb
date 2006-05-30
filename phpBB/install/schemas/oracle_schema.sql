@@ -1213,7 +1213,7 @@ CREATE TABLE phpbb_search_results (
  Table: phpbb_search_wordlist
 */
 CREATE TABLE phpbb_search_wordlist (
-  word_text varchar2(50) DEFAULT '' NOT NULL,
+  word_text varchar2(252) DEFAULT '' NOT NULL,
   word_id number(8) NOT NULL,
   word_common number(1) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_search_wordlist PRIMARY KEY (word_text)

@@ -628,7 +628,7 @@ CREATE TABLE phpbb_search_results (
 
 # Table: phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
-  word_text varchar(50) NOT NULL DEFAULT '',
+  word_text varchar(252) NOT NULL DEFAULT '',
   word_id mediumint(8) NOT NULL,
   word_common tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (word_text)

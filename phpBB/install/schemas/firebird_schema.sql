@@ -911,7 +911,7 @@ ALTER TABLE phpbb_search_results ADD PRIMARY KEY (search_key);;
 
 # phpbb_search_wordlist
 CREATE TABLE phpbb_search_wordlist (
-  word_text VARCHAR(50) DEFAULT '' NOT NULL,
+  word_text VARCHAR(252) DEFAULT '' NOT NULL,
   word_id INTEGER NOT NULL,
   word_common INTEGER DEFAULT 0  NOT NULL
 );;

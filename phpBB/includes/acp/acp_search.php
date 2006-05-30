@@ -99,10 +99,24 @@ class acp_search
 				continue;
 			}
 
-			$config_value = $cfg_array[$config_name];
-			settype($config_value, $var_type);
+			// e.g. integer:4:12 (min 4, max 12)
+			$var_type = explode(':', $var_type);
 
-			if ($submit)
+			$config_value = $cfg_array[$config_name];
+			settype($config_value, $var_type[0]);
+
+			if (isset($var_type[1]))
+			{
+				$config_value = max($var_type[1], $config_value);
+			}
+
+			if (isset($var_type[2]))
+			{
+				$config_value = min($var_type[2], $config_value);
+			}
+
+			// only change config if anything was actually changed
+			if ($submit && ($config[$config_name] != $config_value))
 			{
 				set_config($config_name, $config_value);
 				$updated = true;

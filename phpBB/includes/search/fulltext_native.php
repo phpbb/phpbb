@@ -1098,7 +1098,7 @@ class fulltext_native extends search_backend
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer', 'fulltext_native_max_chars' => 'integer')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:252', 'fulltext_native_max_chars' => 'integer:0:252')
 		);
 	}
 }

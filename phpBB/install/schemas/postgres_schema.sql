@@ -915,7 +915,7 @@ CREATE SEQUENCE phpbb_search_wordlist_seq;
 
 CREATE TABLE phpbb_search_wordlist (
   word_id INT4 DEFAULT nextval('phpbb_search_wordlist_seq'),
-  word_text varchar(50) DEFAULT '' NOT NULL,
+  word_text varchar(252) DEFAULT '' NOT NULL,
   word_common INT2  DEFAULT '0' NOT NULL,
   PRIMARY KEY (word_text),
   CHECK (word_common>=0)
