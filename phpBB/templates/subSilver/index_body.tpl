@@ -41,7 +41,11 @@
 
 <table width="100%" cellspacing="0" border="0" align="center" cellpadding="2">
   <tr> 
-	<td align="left"><span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span></td>
+ 	<td align="left">
+ 	<!-- BEGIN switch_user_logged_in -->
+ 		<span class="gensmall"><a href="{U_MARK_READ}" class="gensmall">{L_MARK_FORUMS_READ}</a></span>
+ 	<!-- END switch_user_logged_in -->
+ 	</td>
 	<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
   </tr>
 </table>
@@ -61,7 +65,9 @@
 </table>
 
 <table width="100%" cellpadding="1" cellspacing="1" border="0">
+<tr>
 	<td align="left" valign="top"><span class="gensmall">{L_ONLINE_EXPLAIN}</span></td>
+</tr>
 </table>
 
 <!-- BEGIN switch_user_logged_out -->
@@ -74,9 +80,11 @@
 	  <td class="row1" align="center" valign="middle" height="28"><span class="gensmall">{L_USERNAME}: 
 		<input class="post" type="text" name="username" size="10" />
 		&nbsp;&nbsp;&nbsp;{L_PASSWORD}: 
-		<input class="post" type="password" name="password" size="10" />
+		<input class="post" type="password" name="password" size="10" maxlength="32" />
+		<!-- BEGIN switch_allow_autologin -->
 		&nbsp;&nbsp; &nbsp;&nbsp;{L_AUTO_LOGIN} 
 		<input class="text" type="checkbox" name="autologin" />
+		<!-- END switch_allow_autologin -->
 		&nbsp;&nbsp;&nbsp; 
 		<input type="submit" class="mainoption" name="login" value="{L_LOGIN}" />
 		</span> </td>
@@ -89,13 +97,13 @@
 
 <table cellspacing="3" border="0" align="center" cellpadding="0">
   <tr> 
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_new.gif" alt="{L_NEW_POSTS}"/></td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder_new_big.gif" alt="{L_NEW_POSTS}"/></td>
 	<td><span class="gensmall">{L_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder.gif" alt="{L_NO_NEW_POSTS}" /></td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder_big.gif" alt="{L_NO_NEW_POSTS}" /></td>
 	<td><span class="gensmall">{L_NO_NEW_POSTS}</span></td>
 	<td>&nbsp;&nbsp;</td>
-	<td width="20" align="center"><img src="templates/subSilver/images/folder_lock.gif" alt="{L_FORUM_LOCKED}" /></td>
+	<td width="20" align="center"><img src="templates/subSilver/images/folder_locked_big.gif" alt="{L_FORUM_LOCKED}" /></td>
 	<td><span class="gensmall">{L_FORUM_LOCKED}</span></td>
   </tr>
 </table>

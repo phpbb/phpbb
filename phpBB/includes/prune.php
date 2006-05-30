@@ -27,20 +27,34 @@ if ( !defined('IN_PHPBB') )
 
 require($phpbb_root_path . 'includes/functions_search.'.$phpEx);
 
-function prune($forum_id, $prune_date)
+function prune($forum_id, $prune_date, $prune_all = false)
 {
 	global $db, $lang;
 
+	// Before pruning, lets try to clean up the invalid topic entries
+	$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . '
+		WHERE topic_last_post_id = 0';
+	if ( !($result = $db->sql_query($sql)) )
+	{
+		message_die(GENERAL_ERROR, 'Could not obtain lists of topics to sync', '', __LINE__, __FILE__, $sql);
+	}
+
+	while( $row = $db->sql_fetchrow($result) )
+	{
+		sync('topic', $row['topic_id']);
+	}
+
+	$db->sql_freeresult($result);
+
+	$prune_all = ($prune_all) ? '' : 'AND t.topic_vote = 0 AND t.topic_type <> ' . POST_ANNOUNCE;
 	//
-	// Those without polls ...
+	// Those without polls and announcements ... unless told otherwise!
 	//
 	$sql = "SELECT t.topic_id 
 		FROM " . POSTS_TABLE . " p, " . TOPICS_TABLE . " t
 		WHERE t.forum_id = $forum_id
-			AND t.topic_vote = 0 
-			AND t.topic_type <> " . POST_ANNOUNCE . " 
-			AND ( p.post_id = t.topic_last_post_id 
-				OR t.topic_last_post_id = 0 )";
+			$prune_all 
+			AND p.post_id = t.topic_last_post_id";
 	if ( $prune_date != '' )
 	{
 		$sql .= " AND p.post_time < $prune_date";
@@ -56,6 +70,7 @@ function prune($forum_id, $prune_date)
 	{
 		$sql_topics .= ( ( $sql_topics != '' ) ? ', ' : '' ) . $row['topic_id'];
 	}
+	$db->sql_freeresult($result);
 		
 	if( $sql_topics != '' )
 	{
@@ -73,12 +88,20 @@ function prune($forum_id, $prune_date)
 		{
 			$sql_post .= ( ( $sql_post != '' ) ? ', ' : '' ) . $row['post_id'];
 		}
+		$db->sql_freeresult($result);
 
 		if ( $sql_post != '' )
 		{
-			$sql = "DELETE FROM " . TOPICS_TABLE . " 
+			$sql = "DELETE FROM " . TOPICS_WATCH_TABLE . " 
 				WHERE topic_id IN ($sql_topics)";
 			if ( !$db->sql_query($sql, BEGIN_TRANSACTION) )
+			{
+				message_die(GENERAL_ERROR, 'Could not delete watched topics during prune', '', __LINE__, __FILE__, $sql);
+			}
+
+			$sql = "DELETE FROM " . TOPICS_TABLE . " 
+				WHERE topic_id IN ($sql_topics)";
+			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete topics during prune', '', __LINE__, __FILE__, $sql);
 			}
@@ -99,13 +122,6 @@ function prune($forum_id, $prune_date)
 			if ( !$db->sql_query($sql) )
 			{
 				message_die(GENERAL_ERROR, 'Could not delete post during prune', '', __LINE__, __FILE__, $sql);
-			}
-
-			$sql = "DELETE FROM " . SEARCH_MATCH_TABLE . " 
-				WHERE post_id IN ($sql_post)";
-			if ( !$db->sql_query($sql) )
-			{
-				message_die(GENERAL_ERROR, 'Could not delete search matches', '', __LINE__, __FILE__, $sql);
 			}
 
 			remove_search_post($sql_post);
