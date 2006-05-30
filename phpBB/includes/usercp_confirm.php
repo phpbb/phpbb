@@ -66,107 +66,88 @@ else
 	exit;
 }
 
-// If we can we will generate a single filtered png else we will have to simply
-// output six seperate original pngs ... first way is preferable!
-if (@extension_loaded('zlib'))
+// We can we will generate a single filtered png 
+// Thanks to DavidMJ for emulating zlib within the code :)
+$_png = define_filtered_pngs();
+
+$total_width = 320;
+$total_height = 50;
+$img_height = 40;
+$img_width = 0;
+$l = 0;
+
+list($usec, $sec) = explode(' ', microtime()); 
+mt_srand($sec * $usec); 
+
+$char_widths = array();
+for ($i = 0; $i < strlen($code); $i++)
 {
-	$_png = define_filtered_pngs();
+	$char = $code{$i};
 
-	$total_width = 320;
-	$total_height = 50;
-	$img_height = 40;
-	$img_width = 0;
-	$l = 0;
-
-	list($usec, $sec) = explode(' ', microtime()); 
-	mt_srand($sec * $usec); 
-
-	$char_widths = array();
-	for ($i = 0; $i < strlen($code); $i++)
-	{
-		$char = $code{$i};
-
-		$width = mt_rand(0, 4);
-		$char_widths[] = $width;
-		$img_width += $_png[$char]['width'] - $width;
-	}
-
-	$offset_x = mt_rand(0, $total_width - $img_width);
-	$offset_y = mt_rand(0, $total_height - $img_height);
-
-	$image = '';
-	$hold_chars = array();
-	for ($i = 0; $i < $total_height; $i++)
-	{
-		$image .= chr(0);
-
-		if ($i > $offset_y && $i < $offset_y + $img_height)
-		{
-			$j = 0;
-
-			for ($k = 0; $k < $offset_x; $k++)
-			{
-				$image .= chr(mt_rand(140, 255));
-			}
-
-			for ($k = 0; $k < strlen($code); $k++)
-			{
-				$char = $code{$k};
-
-				if (empty($hold_chars[$char]))
-				{
-					$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
-				}
-				$image .= randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
-				$j++;
-			}
-
-			for ($k = $offset_x + $img_width; $k < $total_width; $k++)
-			{
-				$image .= chr(mt_rand(140, 255));
-			}
-
-			$l++;
-		}
-		else
-		{
-			for ($k = 0; $k < $total_width; $k++)
-			{
-				$image .= chr(mt_rand(140, 255));
-			}
-		}
-
-	}
-	unset($hold);
-
-	$image = create_png(gzcompress($image), $total_width, $total_height);
-
-	// Output image
-	header('Content-Type: image/png');
-	header('Cache-control: no-cache, no-store');
-	echo $image;
-
-	unset($image);
-	unset($_png);
-	exit;
-
-}
-else
-{
-	$_png = define_raw_pngs();
-
-	$c = intval($HTTP_GET_VARS['c']);
-	$char = substr($code, $c - 1, 1);
-	
-	header('Content-Type: image/png');
-	header('Cache-control: no-cache, no-store');
-	echo base64_decode($_png[$char]);
-
-	unset($_png);
-	exit;
+	$width = mt_rand(0, 4);
+	$char_widths[] = $width;
+	$img_width += $_png[$char]['width'] - $width;
 }
 
+$offset_x = mt_rand(0, $total_width - $img_width);
+$offset_y = mt_rand(0, $total_height - $img_height);
+
+$image = '';
+$hold_chars = array();
+for ($i = 0; $i < $total_height; $i++)
+{
+	$image .= chr(0);
+
+	if ($i > $offset_y && $i < $offset_y + $img_height)
+	{
+		$j = 0;
+
+		for ($k = 0; $k < $offset_x; $k++)
+		{
+			$image .= chr(mt_rand(140, 255));
+		}
+
+		for ($k = 0; $k < strlen($code); $k++)
+		{
+			$char = $code{$k};
+
+			if (empty($hold_chars[$char]))
+			{
+				$hold_chars[$char] = explode("\n", chunk_split(base64_decode($_png[$char]['data']), $_png[$char]['width'] + 1, "\n"));
+			}
+			$image .= randomise(substr($hold_chars[$char][$l], 1), $char_widths[$j]);
+			$j++;
+		}
+
+		for ($k = $offset_x + $img_width; $k < $total_width; $k++)
+		{
+			$image .= chr(mt_rand(140, 255));
+		}
+
+		$l++;
+	}
+	else
+	{
+		for ($k = 0; $k < $total_width; $k++)
+		{
+			$image .= chr(mt_rand(140, 255));
+		}
+	}
+
+}
+unset($hold);
+
+$image = create_png($image, $total_width, $total_height);
+
+// Output image
+header('Content-Type: image/png');
+header('Cache-control: no-cache, no-store');
+echo $image;
+
+unset($image);
+unset($_png);
 exit;
+
 
 // This is designed to randomise the pixels of the image data within
 // certain limits so as to keep it readable. It also varies the image
@@ -214,7 +195,7 @@ function png_chunk($length, $type, $data)
 // http://www.libpng.org/pub/png/spec/PNG-Contents.html we use
 // png because it's a fully recognised open standard and supported
 // by practically all modern browsers and OSs
-function create_png($gzimage, $width, $height)
+function create_png($raw_image, $width, $height)
 {
 	// SIG
 	$image = pack('C8', 137, 80, 78, 71, 13, 10, 26, 10);
@@ -223,8 +204,53 @@ function create_png($gzimage, $width, $height)
 	$raw .= pack('C4', $height >> 24, $height >> 16, $height >> 8, $height);
 	$raw .= pack('C5', 8, 0, 0, 0, 0);
 	$image .= png_chunk(13, 'IHDR', $raw);
+
+	if (@extension_loaded('zlib'))
+	{
+		$raw_image = gzcompress($raw_image);
+		$length = strlen($raw_image);
+	}
+	else
+	{
+		// The total length of this image, uncompressed, is just a calculation of pixels
+		$length = ($width + 1) * $height;
+
+		// Adler-32 hash generation
+		// Optimized Adler-32 loop ported from the GNU Classpath project
+		$temp_length = $length;
+		$s1 = 1;
+		$s2 = $index = 0;
+
+		while ($temp_length > 0)
+		{
+			// We can defer the modulo operation:
+			// s1 maximally grows from 65521 to 65521 + 255 * 3800
+			// s2 maximally grows by 3800 * median(s1) = 2090079800 < 2^31
+			$substract_value = ($temp_length < 3800) ? $temp_length : 3800;
+			$temp_length -= $substract_value;
+
+			while (--$substract_value >= 0)
+			{
+				$s1 += ord($raw_image[$index]);
+				$s2 += $s1;
+
+				$index++;
+			}
+
+			$s1 %= 65521;
+			$s2 %= 65521;
+		}
+		$adler_hash = pack('N', ($s2 << 16) | $s1);
+
+		// This is the same thing as gzcompress($raw_image, 0) but does not need zlib
+		$raw_image = pack('C3v2', 0x78, 0x01, 0x01, $length, ~$length) . $raw_image . $adler_hash;
+
+		// The Zlib header + Adler hash make us add on 11
+		$length += 11;
+	}
+
 	// IDAT
-	$image .= png_chunk(strlen($gzimage), 'IDAT', $gzimage);
+	$image .= png_chunk($length, 'IDAT', $raw_image);
 	// IEND
 	$image .= png_chunk(0, 'IEND', '');
 
