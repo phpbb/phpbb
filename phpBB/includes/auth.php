@@ -89,6 +89,9 @@ class auth
 	/**
 	* Look up an option
 	* if the option is prefixed with !, then the result becomes negated
+	*
+	* If a forum id is specified the local option will be combined with a global option if one exist.
+	* If a forum id is not specified, only the global option will be checked.
 	*/
 	function acl_get($opt, $f = 0)
 	{
@@ -116,7 +119,8 @@ class auth
 			}
 
 			// Is this option a local permission setting?
-			if (isset($this->acl_options['local'][$opt]))
+			// But if we check for a global option only, we won't combine the options...
+			if ($f != 0 && isset($this->acl_options['local'][$opt]))
 			{
 				if (isset($this->acl[$f]))
 				{
