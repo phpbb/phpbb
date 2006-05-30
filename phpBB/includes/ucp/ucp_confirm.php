@@ -24,7 +24,7 @@ class ucp_confirm
 {
 	function main($id, $mode)
 	{
-		global $db, $user, $phpbb_root_path;
+		global $db, $user, $phpbb_root_path, $config;
 
 		// Do we have an id? No, then just exit
 		$confirm_id = request_var('id', '');
@@ -51,9 +51,31 @@ class ucp_confirm
 			exit;
 		}
 
-		if (extension_loaded('gd'))
+		// Some people might want the olde style CAPTCHA even if they have GD enabled, this also saves us from people who have GD but no TTF
+		$policy_modules = array('policy_entropy', 'policy_3dbitmap');
+
+		if (function_exists('imagettfbbox') && function_exists('imagettftext'))
+		{
+			$policy_modules[] = 'policy_overlap';
+			$policy_modules[] = 'policy_shape';
+			$policy_modules[] = 'policy_cells';
+			$policy_modules[] = 'policy_stencil';
+			$policy_modules[] = 'policy_composite';
+		}
+
+		foreach ($policy_modules as $key => $name)
+		{
+			if ($config[$name] === '0')
+			{
+				unset($policy_modules[$key]);
+			}
+		}
+
+		$policy = '';
+		if (extension_loaded('gd') && sizeof($policy_modules))
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_gd.php');
+			$policy = $policy_modules[array_rand($policy_modules)];
 		}
 		else
 		{
@@ -61,7 +83,7 @@ class ucp_confirm
 		}
 
 		$captcha = new captcha();
-		$captcha->execute($row['code']);
+		$captcha->execute($row['code'], $policy);
 		exit;
 	}
 }

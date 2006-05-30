@@ -1084,6 +1084,14 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
+		// This is for people who have TTF disabled
+		if (!(@function_exists('imagettfbbox') && @function_exists('imagettftext')))
+		{
+			$sql_ary[] = 'UPDATE ' . $table_prefix . "config
+					SET config_value = '0'
+					WHERE config_name = 'policy_shape'";
+		}
+
 		foreach ($sql_ary as $sql)
 		{
 			$sql = trim(str_replace('|', ';', $sql));

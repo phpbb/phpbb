@@ -21,30 +21,15 @@ class captcha
 	/**
 	* Create the image containing $code
 	*/
-	function execute($code)
+	function execute($code, $policy)
 	{
-		global $config;
-
-		$policy_modules = array('policy_entropy', 'policy_occlude', 'policy_3dbitmap', 'policy_shape');
-
-		// Remove all disabled policy modules
-		foreach ($policy_modules as $key => $name)
-		{
-			if ($config[$name] === '0')
-			{
-				unset($policy_modules[$key]);
-			}
-		}
-
-		$policy = $policy_modules[array_rand($policy_modules)];
-
 		$this->$policy(str_split($code));
 	}
 
 	/**
 	* Send image and destroy
 	*/
-	function send_image(&$image, $array=array())
+	function send_image(&$image)
 	{
 		header('Content-Type: image/png');
 		header('Cache-control: no-cache, no-store');
@@ -173,12 +158,11 @@ class captcha
 		if (!$chars)
 		{
 			$chars = array_merge(range('A', 'Z'), range('1', '9'));
-			$charcount = sizeof($chars) - 1;
 		}
 		$word   = '';
 		for ($i = mt_rand(6, 8); $i > 0; --$i)
 		{
-			$word .= $chars[mt_rand(0, $charcount)];
+			$word .= $chars[array_rand($chars)];
 		}
 		return $word;
 	}
@@ -188,7 +172,7 @@ class captcha
 	*/
 	function policy_shape($code)
 	{
-		global $config;
+		global $config, $user;
 		// Generate image
 		$img_x = 800;
 		$img_y = 250;
@@ -207,10 +191,6 @@ class captcha
 		}
 
 		// Generate code characters
-		$characters = array();
-		$sizes = array();
-		$bounding_boxes = array();
-		$width_avail = $img_x;
 		$code_num = sizeof($code);
 
 		// Add some line noise
@@ -227,6 +207,7 @@ class captcha
 		}
 
 		$char_class = $this->captcha_char('char_ttf');
+
 		for ($i = 0; $i < 4; ++$i)
 		{
 			if ($i)
@@ -254,8 +235,6 @@ class captcha
 				}
 			}
 		}
-
-		global $user;
 		imagestring($img, 6, 250,  50, $user->lang['CAPTCHA_LINE_1'], $fontcolors[0]);
 		imagestring($img, 6, 250, 100, $user->lang['CAPTCHA_LINE_2'], $fontcolors[0]);
 		imagestring($img, 6, 250, 150, $user->lang['CAPTCHA_LINE_3'], $fontcolors[0]);
@@ -266,6 +245,367 @@ class captcha
 		if ($config['policy_shape_noise_pixel'])
 		{
 			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_shape_noise_pixel']);
+		}
+
+		// Send image
+		$this->send_image($img);
+	}
+
+	function policy_composite($code)
+	{
+		// Generate image
+		$img_x = 800;
+		$img_y = 250;
+		$img = imagecreate($img_x, $img_y);
+
+		$map = captcha_vectors();
+		$fonts = captcha_load_ttf_fonts();
+
+		// Generate basic colors
+		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
+		imagefill($img, 0, 0, $background);
+		$black = imagecolorallocate($img, 0, 0, 0);
+		$random = array();
+		$fontcolors = array();
+		for ($i = 0; $i < 15; ++$i)
+		{
+			$random[$i] = imagecolorallocate($img, mt_rand(120, 255), mt_rand(120, 255), mt_rand(120, 255));
+		}
+		$fontcolors[0] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
+
+		// Specificy image portion dimensions.
+		$count = sizeof($code);
+		$cellsize = $img_x / $count;
+		$y_range = min($cellsize, $img_y);
+		$y_max = $img_y - $y_range;
+		$y_off = array(); // consecutive vertical offset of characters
+		$y_off[0] = mt_rand(0, $y_max);
+		for ($i = 1; $i < $count; ++$i)
+		{
+			// each consective character can be as much as 50% closer to the top or bottom of the image as the previous
+			$diff = mt_rand(-50, 50);
+			if ($diff > 0)
+			{
+				$y_off[$i] = $y_off[$i - 1] + ((($y_max - $y_off[$i - 1]) * $diff) / 100);
+			}
+			else
+			{
+				$y_off[$i] = $y_off[$i - 1] * ((100 + $diff) / 100);
+			}
+		}
+
+
+		$range = 0.1;
+
+		$chars = array_merge(range('A', 'Z'), range('0', '9'));
+
+		// draw some characters. if they're within the vector spec of the code character, color them differently
+		for ($i = 0; $i < 5000; ++$i)
+		{
+			$degree = mt_rand(-30, 30);
+			$x = mt_rand(0, $img_x - 1);
+			$y = mt_rand(0, $img_y);
+			$c = $chars[array_rand($chars)];
+			$char = $x / $cellsize;
+			$meta_x = ((($x % $cellsize) / $cellsize) * 1.5) - 0.25;
+			$meta_y = (($img_y - $y) - $y_off[$char]) / $y_range;
+			$font = $fonts[array_rand($fonts)];
+
+			// distance check
+			$distance = 2;
+			$show = false;
+			foreach ($map[$code[$char]] AS $vector)
+			{
+				switch ($vector[0])
+				{
+					case 'line':
+
+						$c_theta = cos($vector[5]);
+						$s_theta = sin($vector[5]);
+						$bx = $meta_x - $vector[1]; 
+						$by = $meta_y - $vector[2]; 
+						$r = ($by * $c_theta) - ($bx * $s_theta);
+						if ($r < $range && $r > -$range)
+						{
+							if (abs($c_theta) > abs($s_theta))
+							{
+								$s = (($bx + ($s_theta * $r)) / $c_theta);								
+							}
+							else
+							{
+								$s = (($by + ($c_theta * $r)) / $s_theta);
+							}
+							if ($s > -$range)
+							{
+								if ($s < 0)
+								{
+									$distance = min($distance, sqrt(pow($s, 2) + pow($r, 2)));
+								}
+								elseif ($s < $vector[6])
+								{
+									$distance = min($distance, $r);
+								}
+								elseif ($s < $vector[6] + $range)
+								{
+									$distance = min($distance, sqrt(pow($s - $vector[6], 2) + pow($r, 2)));
+								}
+							}
+						}
+
+					break;
+
+					case 'arc':
+
+						$dx = $meta_x - $vector[1];
+						$dy = -($meta_y - $vector[2]); // because our arcs are upside-down
+						if ( abs($dx) > abs($dy) )
+						{
+							$phi = rad2deg(atan(($dy * $vector[3]) / ($dx * $vector[4])));
+							$phi += ($dx < 0) ? 180 : 360;
+							$phi %= 360;
+						}
+						else
+						{
+							$phi = 90 - rad2deg(atan(($dx * $vector[4]) / ($dy * $vector[3])));
+							$phi += ($dy < 0) ? 180 : 360;
+							$phi %= 360;
+						}
+
+						$internal = $vector[6] > $vector[5]; // external wraps over the 360 point
+						$low = $phi >= $vector[5]; // phi is above our low range
+						$high = $phi <= $vector[6]; // phi is below our high range.
+						if ($internal ? ($low && $high) : ($low || $high)) // if it wraps, it can only be one or the other
+						{
+							$radphi = deg2rad($phi);
+							$px = cos($radphi) * 0.5 * $vector[3];
+							$py = sin($radphi) * 0.5 * $vector[4];
+							$distance = min($distance, sqrt(pow($px - $dx, 2) + pow($py - $dy, 2)));
+						}
+
+					break;
+				}
+			}
+
+			if ($distance <= $range)
+			{
+				imagettftext($img, 10, $degree, $x, $y, $black, $font, $c);
+			}
+			else
+			{
+				imagettftext($img, 10, $degree, $x, $y, $random[$char], $font, $c);
+			}
+
+		}
+
+		// Send image
+		$this->send_image($img);
+	}
+
+	function policy_stencil($code)
+	{
+		// Generate image
+		$img_x = 800;
+		$img_y = 250;
+		$img = imagecreate($img_x, $img_y);
+		$stencil = imagecreate($img_x, $img_y);
+
+		$map = captcha_vectors();
+		$fonts = captcha_load_ttf_fonts();
+
+		// Generate colors
+		$white1 = imagecolorallocate($img, 255, 255, 255);
+		$black2 = imagecolorallocate($stencil, 0, 0, 0);
+		$black1 = imagecolorallocate($img, 0, 0, 0);
+		$white2 = imagecolorallocate($stencil, 255, 255, 255);
+		$channel = mt_rand(0,2);
+		$c1 = (!($channel % 3)) ? 255 : 0;
+		$c2 = (!(($channel + 1) % 3)) ? 255 : 0;
+		$c3 = (!(($channel + 2) % 3)) ? 255 : 0;
+		$primary = imagecolorallocate($img, $c1, $c2, $c3);
+		$second = imagecolorallocate($img, $c2, $c3, $c1);
+		$third = imagecolorallocate($img, $c3, $c1, $c2);
+
+		imagefill($stencil, 0, 0, $black2);
+		imagefill($img, 0, 0, $white1);
+
+		$chars = array_merge(range('A', 'Z'), range('1', '9'));
+
+		for ($i = 0; $i < 1000; ++$i)
+		{
+			$degree = mt_rand(-30, 30);
+			$x = mt_rand(0, $img_x - 1);
+			$y = mt_rand(0, $img_y);
+			$c = $chars[array_rand($chars)];
+			$font = $fonts[array_rand($fonts)];
+
+			imagettftext($stencil, mt_rand(20, 30), $degree, $x, $y, $white2, $font, $c);
+		}
+
+		for ($i = 0; $i < 3; ++$i)
+		{
+			$degree1 = mt_rand(-30, 30);
+			$degree2 = mt_rand(-30, 30);
+			$x1 = mt_rand(0, $img_x - 1);
+			$x2 = mt_rand(0, $img_x - 1);
+			$y1 = mt_rand(0, $img_y);
+			$y2 = mt_rand(0, $img_y);
+			$c1 = $chars[array_rand($chars)];
+			$c2 = $chars[array_rand($chars)];
+			$font1 = $fonts[array_rand($fonts)];
+			$font2 = $fonts[array_rand($fonts)];
+			
+			imagettftext($img, 150, $degree1, $x1, $y1, $second, $font1, $c1);
+			imagettftext($img, 150, $degree2, $x2, $y2, $third, $font2, $c2);
+		}
+
+		$text = implode('', $code);
+		$font = $fonts[array_rand($fonts)];
+		imagettftext($img, 150, mt_rand(-5, 5), mt_rand(0, $img_x / 4), mt_rand(150, $img_y), $primary, $font, $text);
+
+		for ($i = 0; $i < $img_x; ++$i)
+		{
+			for ($j = 0; $j < $img_y; ++$j)
+			{
+				// if the stencil is black, set the pixel in the image black
+				if (!imagecolorat($stencil, $i, $j))
+				{
+					imagesetpixel($img, $i, $j, $black1);
+				}
+			}
+		}
+
+		// Send image
+		$this->send_image($img);
+	}
+
+	function policy_cells($code)
+	{
+		// Generate image
+		$img_x = 800;
+		$img_y = 250;
+		$img = imagecreate($img_x, $img_y);
+
+		$fonts = captcha_load_ttf_fonts();
+
+		$map = captcha_vectors();
+
+		//
+		// Generate colors
+		//
+		$white = imagecolorallocate($img, 255, 255, 255);
+		$black = imagecolorallocate($img, 0, 0, 0);
+		$colors = array(
+			imagecolorallocate($img, 128, 0, 0),
+			imagecolorallocate($img, 0, 128, 0),
+			imagecolorallocate($img, 0, 0, 128),
+			imagecolorallocate($img, 90, 90, 90)
+		);
+						
+		$red = mt_rand(0,3);
+
+		imagefill($img, 10, 10, $white);
+
+		$offset1 = 50;
+		$offset2 = 550;
+
+		// draw the cell grid
+		for ($i = 0; $i < 4; ++$i)
+		{
+			imageline($img, $offset1 + 40 + ($i * 40), 25, $offset1 + 40 + ($i * 40), 225, $black);
+			imageline($img, $offset1, 65 + ($i * 40), $offset1 + 200, 65 + ($i * 40), $black);
+			imageline($img, $offset2 + 40 + ($i * 40), 25, $offset2 + 40 + ($i * 40), 225, $black);
+			imageline($img, $offset2, 65 + ($i * 40), $offset2 + 200, 65 + ($i * 40), $black);
+		}
+
+		$code_count = sizeof($code);
+
+		$characters = array();
+		$bitmap = array_fill(0, 25, 0);
+		$cellorder = array();
+		$xs = array();
+		$ys = array();
+
+		$chars = array_merge(range('A', 'Z'), range('1', '9'));
+
+		for ($i = 0, $count = sizeof($chars) - 1; $i < 25; ++$i)
+		{
+			// Put a character in this cell
+			$characters[$i] = $chars[array_rand($chars)];
+			$xs[$i] = $offset1 + 20 + (($i % 5) * 40) + mt_rand(-13, 13);
+			$ys[$i] = 45 + (intval($i / 5) * 40) + mt_rand(-13, 13);
+			
+			// Generate a pastel color
+			$color = array(255, 255, 255);
+			for ($j = 0; $j < 3; ++$j)
+			{
+				$color[array_rand($color)] -= 25;
+			}
+			$bg = imagecolorallocate($img, $color[0], $color[1], $color[2]);
+			
+			// fill the cells with the background colors
+			imagefilledrectangle($img, $offset1 + 1 + (($i % 5) * 40), 26 + (intval($i / 5) * 40), $offset1 + 39 + (($i % 5) * 40), 64 + (intval($i / 5) * 40), $bg);
+			imagefilledrectangle($img, $offset2 + 1 + (($i % 5) * 40), 26 + (intval($i / 5) * 40), $offset2 + 39 + (($i % 5) * 40), 64 + (intval($i / 5) * 40), $bg);
+		}
+
+		// assign the code to some cells
+		$cellorder = range(0, 24);
+		shuffle($cellorder);
+		array_splice($cellorder, $code_count);
+		for ($i = 0; $i < $code_count; ++$i)
+		{
+			$bitmap[$cellorder[$i]] = $i + 1;
+			$characters[$cellorder[$i]] = $code[$i];
+		}
+
+		// assign the remaning cells to three separate colors
+		$spares = array(array(), array(), array());
+		for ($i = 0; $i < 25; ++$i)
+		{
+			if (!$bitmap[$i])
+			{
+				$spares[array_rand($spares)][] = $i;
+			}
+		}
+		shuffle($spares[0]);
+		shuffle($spares[1]);
+		shuffle($spares[2]);
+
+		// draw circles and lines for our fake entries
+		for ($k = 0; $k < 3; ++$k )
+		{
+			for ($i = 0, $size = sizeof($spares[$k]); $i < $size; ++$i )
+			{
+				imagefilledellipse($img, $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], 20, 20, $colors[($red + $k + 1) % 4]);
+				if ($i)
+				{
+					imageline($img, $xs[$spares[$k][$i - 1]], $ys[$spares[$k][$i - 1]], $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], $colors[($red + $k + 1) % 4]);
+				}
+			}
+		}
+
+		// draw lines for our real entries
+		for ($i = 1; $i < $code_count; ++$i )
+		{
+			imageline($img, $xs[$cellorder[$i - 1]], $ys[$cellorder[$i - 1]], $xs[$cellorder[$i]], $ys[$cellorder[$i]], $colors[$red]);
+		}
+
+		// write characters into the text cells & put white dots (change this?) on our fake entry circles
+		for ($i = 0; $i < 25; ++$i)
+		{
+			if (!$bitmap[$i])
+			{
+				imagefilledellipse($img, $xs[$i], $ys[$i], 9, 9, $white);
+			}
+			$level = intval($i / 5);
+			$pos = $i % 5;
+			imagettftext($img, 12, 0, $offset2 + 15 + ($pos * 40), 50 + ($level * 40), $black, $fonts[array_rand($fonts)], $characters[$i]);
+		}
+
+		// draw our real entries in
+		for ($i = 0; $i < $code_count; ++$i )
+		{
+			imagefilledellipse($img, $xs[$cellorder[$i]], $ys[$cellorder[$i]], 20, 20, $colors[$red]);
+			imagettftext($img, 12, 0, $xs[$cellorder[$i]] - 5, $ys[$cellorder[$i]] + 5, $white, $fonts[array_rand($fonts)], ($i + 1));
 		}
 
 		// Send image
@@ -392,7 +732,7 @@ class captcha
 		// Bottom right
 		$box[2][0] = mt_rand($img_x - 40, $img_x - 20);
 		$box[2][1] = mt_rand($img_y - 50, $img_y - 30);
-		
+
 		// Bottom left.
 		// because we want to be able to make shortcuts in the 3d->2d,
 		// we'll calculate the 4th point so that it forms a proper trapezoid
@@ -424,11 +764,11 @@ class captcha
 		// (using this means we don't need to recalculate all 4 positions for each new polygon,
 		// merely the newest point that we're adding, which is then cached.
 		$img_buffer = array(array(), array());
-		
+
 		// In image-space, the x- and y-offset necessary to move one unit in the x-direction in planar-space
 		$dxx = ($box[1][0] - $box[0][0]) / ($subdivision_factor * $plane_x);
 		$dxy = ($box[1][1] - $box[0][1]) / ($subdivision_factor * $plane_x);
-		
+
 		// In image-space, the x- and y-offset necessary to move one unit in the y-direction in planar-space
 		$dyx = ($box[3][0] - $box[0][0]) / ($subdivision_factor * $plane_y);
 		$dyy = ($box[3][1] - $box[0][1]) / ($subdivision_factor * $plane_y);
@@ -564,9 +904,9 @@ class captcha
 	}
 
 	/**
-	* occlude
+	* overlap
 	*/
-	function policy_occlude($code)
+	function policy_overlap($code)
 	{
 		global $config;
 		$char_size = 40;
@@ -610,7 +950,7 @@ class captcha
 		$offset = mt_rand(0, $width_avail);
 
 		// Add some line noise
-		if ($config['policy_occlude_noise_line'])
+		if ($config['policy_overlap_noise_line'])
 		{
 			$this->noise_line($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random);
 		}
@@ -633,9 +973,9 @@ class captcha
 		}
 
 		// Add some medium pixel noise
-		if ($config['policy_occlude_noise_pixel'])
+		if ($config['policy_overlap_noise_pixel'])
 		{
-			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_occlude_noise_pixel']);
+			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_overlap_noise_pixel']);
 		}
 
 		// Send image
@@ -793,8 +1133,19 @@ class captcha
 	*/
 	function captcha_char($override = false)
 	{
-		$character_classes = array('char_vector', 'char_ttf', 'char_hatches', 'char_cube3d', 'char_dots');
+		static $character_classes = array();
 
+		// Some people have GD but no TTF support
+		if (sizeof($character_classes) == 0)
+		{
+			$character_classes = array('char_vector', 'char_hatches', 'char_cube3d', 'char_dots');
+
+			if (function_exists('imagettfbbox') && function_exists('imagettftext'))
+			{
+				$character_classes[] = 'char_ttf';
+			}
+		}
+//$character_classes = array('char_dots');
 		// Use the module $override, else a random picked one...
 		$class = ($override !== false && in_array($override, $character_classes)) ? $override : $character_classes[array_rand($character_classes)];
 
@@ -828,7 +1179,7 @@ class char_dots
 		$this->width_percent = (!empty($width_percent)) ? max(25, min(150, intval($width_percent))) : mt_rand(60, 90);
 
 		$this->space = 10;
-		$this->radius = 3;
+		$this->radius = 1;
 		$this->letter = $letter;
 	}
 	
@@ -875,16 +1226,16 @@ class char_dots
 						}
 						
 					break;
-					
+
 					case 'arc':
 					
 						$arclengthdeg = $veclist[6] - $veclist[5];
 						$arclengthdeg += ( $arclengthdeg < 0 ) ? 360 : 0;
 						
 						$arclength = ((($veclist[3] * $width) + ($veclist[4] * $height)) * M_PI) / 2;
-						
+
 						$arclength = ($arclength * $arclengthdeg) / 360;
-						
+
 						$x_c = $veclist[1] * $width;
 						$y_c = (1 - $veclist[2]) * $height;
 						$increment = ($arclengthdeg / $arclength);
@@ -909,7 +1260,7 @@ class char_dots
 										$yoff + $y_c + $y_o2,
 										$color);
 						}
-						
+
 					break;
 					
 					default:
@@ -982,7 +1333,7 @@ class char_vector
 					$yp = ($i - $xp) / 3;
 					$xp--;
 					$yp--;
-					
+
 					switch ($veclist[0])
 					{
 						case 'line':
@@ -1051,7 +1402,7 @@ class char_ttf
 			$angle = (isset($args['angle'])) ? $args['angle'] : false;
 		}
 
-		$fonts = $this->captcha_load_ttf_fonts();
+		$fonts = captcha_load_ttf_fonts();
 
 		if (empty($font) || !isset($fonts[$font]))
 		{
@@ -1087,33 +1438,6 @@ class char_ttf
 	{
 		$data = imagettfbbox($scale, $this->angle, $this->fontfile, $this->letter);
 		return ($this->angle > 0) ? array($data[6], $data[5], $data[2], $data[1]) : array($data[0], $data[7], $data[4], $data[3]);
-	}
-
-	/**
-	* Load True Type Fonts
-	*/
-	function captcha_load_ttf_fonts()
-	{
-		static $load_files = array();
-
-		if (sizeof($load_files) > 0)
-		{
-			return $load_files;
-		}
-
-		global $phpbb_root_path;
-
-		$dr = opendir($phpbb_root_path . 'includes/captcha/fonts');
-		while (false !== ($entry = readdir($dr)))
-		{
-			if (strtolower(pathinfo($entry, PATHINFO_EXTENSION)) == 'ttf')
-			{
-				$load_files[$entry] = $phpbb_root_path . 'includes/captcha/fonts/' . $entry;
-			}
-		}
-		closedir($dr);
-
-		return $load_files;
 	}
 }
 
@@ -2166,193 +2490,212 @@ function captcha_bitmaps()
 	);
 }
 
+
+/**
+* Load True Type Fonts
+*/
+function captcha_load_ttf_fonts()
+{
+	static $load_files = array();
+
+	if (sizeof($load_files) > 0)
+	{
+		return $load_files;
+	}
+
+	global $phpbb_root_path;
+
+	$dr = opendir($phpbb_root_path . 'includes/captcha/fonts');
+	while (false !== ($entry = readdir($dr)))
+	{
+		if (strtolower(pathinfo($entry, PATHINFO_EXTENSION)) == 'ttf')
+		{
+			$load_files[$entry] = $phpbb_root_path . 'includes/captcha/fonts/' . $entry;
+		}
+	}
+	closedir($dr);
+
+	return $load_files;
+}
+
+
 /**
 * Return vectors
 */
 function captcha_vectors()
 {
 	return array(
-
 		'A' => array(
-			array('line',	0.00,0.00,	0.50,1.00),
-			array('line',	1.00,0.00,	0.50,1.00),
-			array('line',	0.25,0.50,	0.75,0.50),
+			array('line',	0.00,	0.00,	0.50,	1.00,	1.10714871779,		1.11803398875),
+			array('line',	1.00,	0.00,	0.50,	1.00,	2.0344439358,		1.11803398875),
+			array('line',	0.25,	0.50,	0.75,	0.50,	0.00,				0.50),
 		),
 		'B' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,1.00,	0.70,1.00),
-			array('line',	0.00,0.50,	0.70,0.50),
-			array('line',	0.00,0.00,	0.70,0.00),
-			array('arc',	0.70,0.75,	0.60,0.50,	270,90),
-			array('arc',	0.70,0.25,	0.60,0.50,	270,90),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	1.00,	0.70,	1.00,	0.00,				0.70),
+			array('line',	0.00,	0.50,	0.70,	0.50,	0.00,				0.70),
+			array('line',	0.00,	0.00,	0.70,	0.00,	0.00,				0.70),
+			array('arc',	0.70,	0.75,	0.60,	0.50,	270,	90),
+			array('arc',	0.70,	0.25,	0.60,	0.50,	270,	90),
 		),
 		'C' => array(
-			array('arc',	0.50,0.50,	1.00,1.00,	45,315),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	45,		315),
 		),
 		'D' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,0.00,	0.50,0.00),
-			array('line',	0.00,1.00,	0.50,1.00),
-			array('arc',	0.50,0.50,	1.00,1.00,	270,90),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	0.00,	0.50,	0.00,	0.00,				0.50),
+			array('line',	0.00,	1.00,	0.50,	1.00,	0.00,				0.50),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	270,	90),
 		),
 		'E' => array(
-			array('line',	0.00,0.00,	1.00,0.00),
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.00,0.50,	0.50,0.50),
+			array('line',	0.00,	0.00,	1.00,	0.00,	0.00,				1.00),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.00,	0.50,	0.50,	0.50,	0.00,				0.50),
 		),
 		'F' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.00,0.50,	0.50,0.50),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.00,	0.50,	0.50,	0.50,	0.00,				0.50),
 		),
 		'G' => array(
-			array('line',	0.50,0.50,	1.00,0.50),
-			array('line',	1.00,0.00,	1.00,0.50),
-			array('arc',	0.50,0.50,	1.00,1.00,	0,315),
+			array('line',	0.50,	0.50,	1.00,	0.50,	0.00,				0.50),
+			array('line',	1.00,	0.00,	1.00,	0.50,	1.57079632679,		0.50),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	0,		315),
 		),
 		'H' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	1.00,0.00,	1.00,1.00),
-			array('line',	0.00,0.50,	1.00,0.50),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	1.00,	0.00,	1.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	0.50,	1.00,	0.50,	0.00,	1.00),
 		),
 		'I' => array(
-			array('line',	0.00,0.00,	1.00,0.00),
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.50,0.00,	0.50,1.00),
+			array('line',	0.00,	0.00,	1.00,	0.00,	0.00,				1.00),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.50,	0.00,	0.50,	1.00,	1.57079632679,		1.00),
 		),
 		'J' => array(
-//			array('line',	0.00,1.00,	1.00,1.00),
-//			array('line',	0.50,1.00,	0.50,0.25),
-//			array('arc',	0.25,0.25,	0.50,0.50,	0,180),
-			array('line',	1.00,1.00,	1.00,0.25),
-			array('arc',	0.50,0.25,	1.00,0.50,	0,180),
+			array('line',	1.00,	1.00,	1.00,	0.25,	-1.57079632679,		0.75),
+			array('arc',	0.50,	0.25,	1.00,	0.50,	0,		180),
 		),
 		'K' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,0.50,	1.00,1.00),
-			array('line',	0.00,0.50,	1.00,0.00),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	0.50,	1.00,	1.00,	0.463647609001,		1.11803398875),
+			array('line',	0.00,	0.50,	1.00,	0.00,	-0.463647609001,	1.11803398875),
 		),
 		'L' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,0.00,	1.00,0.00),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	0.00,	1.00,	0.00,	0.00,				1.00),
 		),
 		'M' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.50,0.50,	0.00,1.00),
-			array('line',	0.50,0.50,	1.00,1.00),
-			array('line',	1.00,0.00,	1.00,1.00),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.50,	0.50,	0.00,	1.00,	2.35619449019,		0.707106781187),
+			array('line',	0.50,	0.50,	1.00,	1.00,	0.785398163397,		0.707106781187),
+			array('line',	1.00,	0.00,	1.00,	1.00,	1.57079632679,		1.00),
 		),
 		'N' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,1.00,	1.00,0.00),
-			array('line',	1.00,0.00,	1.00,1.00),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	1.00,	1.00,	0.00,	-0.785398163397,	1.41421356237),
+			array('line',	1.00,	0.00,	1.00,	1.00,	1.57079632679,		1.00),
 		),
 		'O' => array(
-			array('arc',	0.50,0.50,	1.00,1.00,	0,360),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	0,		360),
 		),
 		'P' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,1.00,	0.70,1.00),
-			array('line',	0.00,0.50,	0.70,0.50),
-			array('arc',	0.70,0.75,	0.60,0.50,	270,90),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	1.00,	0.70,	1.00,	0.00,				0.70),
+			array('line',	0.00,	0.50,	0.70,	0.50,	0.00,				0.70),
+			array('arc',	0.70,	0.75,	0.60,	0.50,	270,	90),
 		),
 		'Q' => array(
-			array('line',	0.70,0.30,	1.00,0.00),
-			array('arc',	0.50,0.50,	1.00,1.00,	0,360),
+			array('line',	0.70,	0.30,	1.00,	0.00,	-0.785398163397,	0.424264068712),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	0,		360),
 		),
 		'R' => array(
-			array('line',	0.00,0.00,	0.00,1.00),
-			array('line',	0.00,1.00,	0.70,1.00),
-			array('line',	0.00,0.50,	0.70,0.50),
-			array('line',	0.50,0.50,	1.00,0.00),
-			array('arc',	0.70,0.75,	0.60,0.50,	270,90),
+			array('line',	0.00,	0.00,	0.00,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	1.00,	0.70,	1.00,	0.00,				0.70),
+			array('line',	0.00,	0.50,	0.70,	0.50,	0.00,				0.70),
+			array('line',	0.50,	0.50,	1.00,	0.00,	-0.785398163397,	0.707106781187),
+			array('arc',	0.70,	0.75,	0.60,	0.50,	270,	90),
 		),
 		'S' => array(
-			array('arc',	0.50,0.75,	1.00,0.50,	90,360),
-			array('arc',	0.50,0.25,	1.00,0.50,	270,180),
+			array('arc',	0.50,	0.75,	1.00,	0.50,	90,		360),
+			array('arc',	0.50,	0.25,	1.00,	0.50,	270,	180),
 		),
 		'T' => array(
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.50,0.00,	0.50,1.00),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.50,	0.00,	0.50,	1.00,	1.57079632679,		1.00),
 		),
 		'U' => array(
-			array('line',	0.00,1.00,	0.00,0.25),
-			array('line',	1.00,1.00,	1.00,0.25),
-			array('arc',	0.50,0.25,	1.00,0.50,	0,180),
+			array('line',	0.00,	1.00,	0.00,	0.25,	-1.57079632679,		0.75),
+			array('line',	1.00,	1.00,	1.00,	0.25,	-1.57079632679,		0.75),
+			array('arc',	0.50,	0.25,	1.00,	0.50,	0,		180),
 		),
 		'V' => array(
-			array('line',	0.00,1.00,	0.50,0.00),
-			array('line',	1.00,1.00,	0.50,0.00),
+			array('line',	0.00,	1.00,	0.50,	0.00,	-1.10714871779,		1.11803398875),
+			array('line',	1.00,	1.00,	0.50,	0.00,	-2.0344439358,		1.11803398875),
 		),
 		'W' => array(
-			array('line',	0.00,1.00,	0.25,0.00),
-			array('line',	0.50,0.50,	0.25,0.00),
-			array('line',	0.50,0.50,	0.75,0.00),
-			array('line',	1.00,1.00,	0.75,0.00),
+			array('line',	0.00,	1.00,	0.25,	0.00,	-1.32581766367,		1.0307764064),
+			array('line',	0.50,	0.50,	0.25,	0.00,	-2.0344439358,		0.559016994375),
+			array('line',	0.50,	0.50,	0.75,	0.00,	-1.10714871779,		0.559016994375),
+			array('line',	1.00,	1.00,	0.75,	0.00,	-1.81577498992,		1.0307764064),
 		),
 		'X' => array(
-			array('line',	0.00,1.00,	1.00,0.00),
-			array('line',	0.00,0.00,	1.00,1.00),
+			array('line',	0.00,	1.00,	1.00,	0.00,	-0.785398163397,	1.41421356237),
+			array('line',	0.00,	0.00,	1.00,	1.00,	0.785398163397,		1.41421356237),
 		),
 		'Y' => array(
-			array('line',	0.00,1.00,	0.50,0.50),
-			array('line',	1.00,1.00,	0.50,0.50),
-			array('line',	0.50,0.50,	0.50,0.00),
+			array('line',	0.00,	1.00,	0.50,	0.50,	-0.785398163397,	0.707106781187),
+			array('line',	1.00,	1.00,	0.50,	0.50,	-2.35619449019,		0.707106781187),
+			array('line',	0.50,	0.50,	0.50,	0.00,	-1.57079632679,		0.50),
 		),
 		'Z' => array(
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.00,0.00,	1.00,1.00),
-			array('line',	0.00,0.00,	1.00,0.00),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.00,	0.00,	1.00,	1.00,	0.785398163397,		1.41421356237),
+			array('line',	0.00,	0.00,	1.00,	0.00,	0.00,				1.00),
 		),
 		'1' => array(
-			array('line',	0.00,0.75,	0.50,1.00),
-			array('line',	0.50,0.00,	0.50,1.00),
-			array('line',	0.00,0.00,	1.00,0.00),
+			array('line',	0.00,	0.75,	0.50,	1.00,	0.463647609001,		0.559016994375),
+			array('line',	0.50,	0.00,	0.50,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	0.00,	1.00,	0.00,	0.00,				1.00),
 		),
 		'2' => array(
-			array('line',	0.00,0.00,	1.00,0.00),
-			array('arc',	0.50,0.70,	1.00,0.60,	180,360),
-			array('arc',	0.50,0.70,	1.00,0.70,	0,90),
-			array('arc',	0.50,0.00,	1.00,0.70,	180,270),
+			array('line',	0.00,	0.00,	1.00,	0.00,	0.00,				1.00),
+			array('arc',	0.50,	0.70,	1.00,	0.60,	180,	360),
+			array('arc',	0.50,	0.70,	1.00,	0.70,	0,		90),
+			array('arc',	0.50,	0.00,	1.00,	0.70,	180,	270),
 		),
 		'3' => array(
-			array('arc',	0.50,0.75,	1.00,0.50,	180,90),
-			array('arc',	0.50,0.25,	1.00,0.50,	270,180),
+			array('arc',	0.50,	0.75,	1.00,	0.50,	180,	90),
+			array('arc',	0.50,	0.25,	1.00,	0.50,	270,	180),
 		),
 		'4' => array(
-			array('line',	0.70,0.00,	0.70,1.00),
-			array('line',	0.00,0.50,	0.70,1.00),
-			array('line',	0.00,0.50,	1.00,0.50),
+			array('line',	0.70,	0.00,	0.70,	1.00,	1.57079632679,		1.00),
+			array('line',	0.00,	0.50,	0.70,	1.00,	0.620249485983,		0.860232526704),
+			array('line',	0.00,	0.50,	1.00,	0.50,	0.00,				1.00),
 		),
 		'5' => array(
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.00,1.00,	0.00,0.60),
-			array('line',	0.00,0.60,	0.50,0.60),
-			array('arc',	0.50,0.30,	1.00,0.60,	270,180),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.00,	1.00,	0.00,	0.60,	-1.57079632679,		0.4),
+			array('line',	0.00,	0.60,	0.50,	0.60,	0.00,				0.50),
+			array('arc',	0.50,	0.30,	1.00,	0.60,	270,	180),
 		),
 		'6' => array(
-//			array('line',	0.00,0.50,	0.00,0.30),
-//			array('arc',	0.50,0.50,	1.00,1.00,	180,315),
-//			array('arc',	0.50,0.30,	1.00,0.60,	0,360),
-			array('arc',	0.50,0.50,	1.00,1.00,	90,315),
-			array('arc',	0.50,0.30,	0.80,0.60,	0,360),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	90,		315),
+			array('arc',	0.50,	0.30,	0.80,	0.60,	0,		360),
 		),
 		'7' => array(
-			array('line',	0.00,1.00,	1.00,1.00),
-			array('line',	0.50,0.00,	1.00,1.00),
+			array('line',	0.00,	1.00,	1.00,	1.00,	0.00,				1.00),
+			array('line',	0.50,	0.00,	1.00,	1.00,	1.10714871779,		1.11803398875),
 		),
 		'8' => array(
-			array('arc',	0.50,0.75,	1.00,0.50,	0,360),
-			array('arc',	0.50,0.25,	1.00,0.50,	0,360),
+			array('arc',	0.50,	0.75,	1.00,	0.50,	0,		360),
+			array('arc',	0.50,	0.25,	1.00,	0.50,	0,		360),
 		),
 		'9' => array(
-//			array('line',	1.00,0.50,	1.00,0.70),
-//			array('arc',	0.50,0.50,	1.00,1.00,	0,135),
-//			array('arc',	0.50,0.70,	1.00,0.60,	0,360),
-			array('arc',	0.50,0.50,	1.00,1.00,	270,135),
-			array('arc',	0.50,0.70,	0.80,0.60,	0,360),
-		),
+			array('arc',	0.50,	0.50,	1.00,	1.00,	270,	135),
+			array('arc',	0.50,	0.70,	0.80,	0.60,	0,		360),
+		)
 	);
 }
 
