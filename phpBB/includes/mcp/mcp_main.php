@@ -210,7 +210,7 @@ function lock_unlock($action, $ids)
 		$l_prefix = 'POST';
 	}
 
-	if (!($forum_id = check_ids($ids, $table, $sql_id, 'm_lock')))
+	if (!($forum_id = check_ids($ids, $table, $sql_id, array('f_user_lock', 'm_lock'))))
 	{
 		return;
 	}
@@ -266,7 +266,7 @@ function change_topic_type($action, $topic_ids)
 {
 	global $auth, $user, $db, $SID, $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
+	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('f_announce', 'f_sticky', 'm_'))))
 	{
 		return;
 	}

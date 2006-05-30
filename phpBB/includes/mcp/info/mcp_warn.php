@@ -20,10 +20,10 @@ class mcp_warn_info
 			'title'		=> 'MCP_WARN',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'front'				=> array('title' => 'MCP_WARN_FRONT', 'auth' => '', 'cat' => array('MCP_WARN')),
-				'list'				=> array('title' => 'MCP_WARN_LIST', 'auth' => '', 'cat' => array('MCP_WARN')),
-				'warn_user'			=> array('title' => 'MCP_WARN_USER', 'auth' => '', 'cat' => array('MCP_WARN')),
-				'warn_post'			=> array('title' => 'MCP_WARN_POST', 'auth' => 'acl_m_,$id', 'cat' => array('MCP_WARN')),
+				'front'				=> array('title' => 'MCP_WARN_FRONT', 'auth' => 'aclf_m_warn', 'cat' => array('MCP_WARN')),
+				'list'				=> array('title' => 'MCP_WARN_LIST', 'auth' => 'aclf_m_warn', 'cat' => array('MCP_WARN')),
+				'warn_user'			=> array('title' => 'MCP_WARN_USER', 'auth' => 'acl_m_warn', 'cat' => array('MCP_WARN')),
+				'warn_post'			=> array('title' => 'MCP_WARN_POST', 'auth' => 'acl_m_warn,$id', 'cat' => array('MCP_WARN')),
 			),
 		);
 	}

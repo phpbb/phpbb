@@ -199,7 +199,8 @@ function adm_page_footer($copyright_html = true)
 
 function adm_back_link($u_action)
 {
-	return '<br /><br /><a href="' . $u_action . '">&laquo; Back to previous page</a>';
+	global $user;
+	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $user->lang['BACK_TO_PREV'] . '</a>';
 }
 
 function build_select($option_ary, $option_default = false)

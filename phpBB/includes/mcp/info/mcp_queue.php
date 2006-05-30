@@ -20,9 +20,9 @@ class mcp_queue_info
 			'title'		=> 'MCP_QUEUE',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'unapproved_topics'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_TOPICS', 'auth' => 'acl_m_approve || aclf_m_approve', 'cat' => array('MCP_QUEUE')),
-				'unapproved_posts'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_POSTS', 'auth' => 'acl_m_approve || aclf_m_approve', 'cat' => array('MCP_QUEUE')),
-				'approve_details'	=> array('title' => 'MCP_QUEUE_APPROVE_DETAILS', 'auth' => 'acl_m_approve || aclf_m_approve', 'cat' => array('MCP_QUEUE')),
+				'unapproved_topics'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_TOPICS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
+				'unapproved_posts'	=> array('title' => 'MCP_QUEUE_UNAPPROVED_POSTS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
+				'approve_details'	=> array('title' => 'MCP_QUEUE_APPROVE_DETAILS', 'auth' => 'aclf_m_approve', 'cat' => array('MCP_QUEUE')),
 			),
 		);
 	}

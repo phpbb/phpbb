@@ -858,7 +858,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 			'U_POST_ID'		=> $row['post_id'],
 			'U_MINI_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'	=> ($auth->acl_get('m_info', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
+			'U_MCP_DETAILS'	=> ($auth->acl_get('m_info', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=post_details&amp;p=" . $row['post_id'] : '',
 			'U_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . addslashes($poster) . "')" : '')
 		);
 		unset($rowset[$i]);

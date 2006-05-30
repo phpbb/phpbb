@@ -200,11 +200,13 @@ $lang = array_merge($lang, array(
 	'NO_FEEDBACK'			=> 'No feedback exists for this user',
 	'NO_FINAL_TOPIC_SELECTED'	=> 'You have to select a destination topic for merging posts',
 	'NO_MATCHES_FOUND'		=> 'No matches found',
+	'NO_POST'				=> 'You have to select a post in order to warn the user for a post',
 	'NO_POST_REPORT'		=> 'This post was not reported.',
 	'NO_POST_SELECTED'		=> 'You must select at least one post to perform this action',
 	'NO_TOPIC_SELECTED'		=> 'You must select at least one topic to perform this action',
 
 	'OTHER_IPS'				=> 'Other IP addresses this user has posted from',
+	'ONLY_TOPIC'			=> 'Only topic "%s"',
 	'OTHER_USERS'			=> 'Users posting from this IP',
 
 	'POSTER'				=> 'Poster',
@@ -286,7 +288,6 @@ $lang = array_merge($lang, array(
 	'TOPIC_LOCKED_SUCCESS'	=> 'The selected topic has been locked',
 	'TOPIC_MOVED_SUCCESS'	=> 'The selected topic has been moved successfully',
 	'TOPIC_NOT_EXIST'		=> 'The topic you selected does not exist',
-	'TOPIC_REPORTED'		=> 'This topic has been reported',
 	'TOPIC_RESYNC_SUCCESS'	=> 'The selected topic has been resynchronised',
 	'TOPIC_SPLIT_SUCCESS'	=> 'The selected topic has been split successfully',
 	'TOPIC_TIME'			=> 'Topic time',

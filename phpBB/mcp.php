@@ -101,9 +101,31 @@ if ($topic_id && !$forum_id)
 }
 
 // If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
-if (!$forum_id && !$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
+if (!$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
 {
-	trigger_error('MODULE_NOT_EXIST');
+	// Except he is using one of the quickmod tools for users
+	$user_quickmod_actions = array(
+		'lock'			=> 'f_user_lock',
+		'unlock'		=> 'f_user_lock',
+		'make_sticky'	=> 'f_sticky',
+		'make_announce'	=> 'f_announce',
+		'make_global'	=> 'f_announce',
+		'make_normal'	=> array('f_announce', 'f_sticky'));
+
+	$allow_user = false;
+	if ($quickmod && isset($user_quickmod_actions[$action]) && $user->data['is_registered'] && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
+	{
+		$topic_info = get_topic_data(array($topic_id));
+		if ($topic_info[$topic_id]['topic_poster'] == $user->data['user_id'])
+		{
+			$allow_user = true;
+		}
+	}
+
+	if (!$allow_user)
+	{
+		trigger_error($user->lang['NOT_AUTHORIZED']);
+	}
 }
 
 if ($forum_id)
@@ -139,6 +161,11 @@ if ($quickmod)
 			$module->set_active('logs', 'topic_logs');
 		break;
 
+		case 'split':
+		case 'merge':
+			$module->set_active('main', 'topic_view');
+		break;
+
 		default:
 			trigger_error("$action not allowed as quickmod");
 	}
@@ -155,17 +182,17 @@ if (!$post_id)
 	$module->set_display('reports', 'report_details', false);
 	$module->set_display('main', 'post_details', false);
 	$module->set_display('warn', 'warn_post', false);
+
+	if (!$topic_id || $mode == 'unapproved_posts')
+	{
+		$module->set_display('queue', 'approve_details', false);
+	}
 }
 
 if (!$topic_id)
 {
 	$module->set_display('main', 'topic_view', false);
 	$module->set_display('logs', 'topic_logs', false);
-}
-
-if (!$topic_id && !$post_id)
-{
-	$module->set_display('queue', 'approve_details', false);
 }
 
 if (!$forum_id)
@@ -224,30 +251,47 @@ function extra_url()
 function get_topic_data($topic_ids, $acl_list = false)
 {
 	global $auth, $db;
-	$rowset = array();
+	static $rowset = array();
+	$topics = array();
 
-	if (implode(', ', $topic_ids) == '')
+	if (!sizeof($topic_ids))
 	{
 		return array();
 	}
 
-	$sql = 'SELECT f.*, t.*
-		FROM ' . TOPICS_TABLE . ' t
-			LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
-		WHERE t.topic_id IN (' . implode(', ', $topic_ids) . ')';
-	$result = $db->sql_query($sql);
+	$cache_topic_ids = array_intersect($topic_ids, array_keys($rowset));
+	$topic_ids = array_diff($topic_ids, array_keys($rowset));
 
-	while ($row = $db->sql_fetchrow($result))
+	if (sizeof($topic_ids))
 	{
-		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		$sql = 'SELECT f.*, t.*
+			FROM ' . TOPICS_TABLE . ' t
+				LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
+			WHERE t.topic_id IN (' . implode(', ', $topic_ids) . ')';
+		$result = $db->sql_query($sql);
+	
+		while ($row = $db->sql_fetchrow($result))
 		{
-			continue;
-		}
+			$rowset[$row['topic_id']] = $row;
 
-		$rowset[$row['topic_id']] = $row;
+			if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
+			{
+				continue;
+			}
+
+			$topics[$row['topic_id']] = $row;
+		}
 	}
 
-	return $rowset;
+	foreach ($cache_topic_ids as $id)
+	{
+		if (!$acl_list || $auth->acl_gets($acl_list, $rowset[$id]['forum_id']))
+		{
+			$topics[$id] = $rowset[$id];
+		}
+	}
+
+	return $topics;
 }
 
 /**
@@ -257,6 +301,11 @@ function get_post_data($post_ids, $acl_list = false)
 {
 	global $db, $auth;
 	$rowset = array();
+
+	if (!sizeof($post_ids))
+	{
+		return array();
+	}
 
 	$sql = $db->sql_build_query('SELECT', array(
 		'SELECT'	=> 'p.*, u.*, t.*, f.*',
@@ -282,7 +331,7 @@ function get_post_data($post_ids, $acl_list = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
@@ -307,6 +356,11 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 	global $auth, $db;
 	$rowset = array();
 
+	if (!sizeof($forum_id))
+	{
+		return array();
+	}
+
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
 		WHERE forum_id ' . ((is_array($forum_id)) ? 'IN (' . implode(', ', $forum_id) . ')' : "= $forum_id");
@@ -314,7 +368,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($acl_list && !$auth->acl_get($acl_list, $row['forum_id']))
+		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
@@ -331,6 +385,8 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 /**
 * sorting in mcp
+*
+* @param string $where_sql should either be WHERE (default if ommited) or end with AND or OR
 */
 function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
@@ -375,6 +431,8 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
+			$where_sql .= ($topic_id) ? ' topic_id = ' . $topic_id . ' AND' : '';
+
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
@@ -546,7 +604,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 		$db->sql_freeresult($result);
 	}
 
-	if ($acl_list && !$auth->acl_get($acl_list, $forum_id))
+	if ($acl_list && !$auth->acl_gets($acl_list, $forum_id))
 	{
 		trigger_error('NOT_AUTHORIZED');
 	}

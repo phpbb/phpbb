@@ -239,9 +239,9 @@ class mcp_reports
 					WHERE p.forum_id IN ($forum_list)
 						$report_state
 						AND r.post_id = p.post_id
-						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . "
-						" . (($sort_order_sql[0] == 'r') ? 'AND ru.user_id = p.poster_id' : '') . "
-						" . (($topic_id) ? "AND p.topic_id = $topic_id" : '') . "
+						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
+						' . (($sort_order_sql[0] == 'r') ? 'AND ru.user_id = p.poster_id' : '') . '
+						' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 						AND t.topic_id = p.topic_id
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
@@ -291,7 +291,9 @@ class mcp_reports
 
 						$template->assign_block_vars('postrow', array(
 							'U_VIEWFORUM'				=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
-							'U_VIEWTOPIC'				=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;t=' . $row['topic_id'],
+							// Q: Why accessing the topic by a post_id instead of its topic_id?
+							// A: To prevent the post from being hidden because of wrong encoding or different charset
+							'U_VIEWTOPIC'				=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id'],
 							'U_VIEW_DETAILS'			=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;start=$start&amp;mode=report_details&amp;f={$forum_id}&amp;p={$row['post_id']}",
 							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['reporter_id']}" : '',
@@ -312,12 +314,16 @@ class mcp_reports
 
 				// Now display the page
 				$template->assign_vars(array(
+					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
+
+					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
+					'S_FORUM_OPTIONS'		=> $forum_options,
+					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
+
 					'PAGINATION'			=> generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;f=$forum_id&amp;t=$topic_id", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
-					'TOTAL'					=> $total,
-					'S_MCP_ACTION'			=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;t=0",
-					'S_FORUM_OPTIONS'		=> $forum_options,
-					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false)
+					'TOPIC_ID'				=> $topic_id,
+					'TOTAL'					=> $total)
 				);
 
 				$this->tpl_name = 'mcp_reports';

@@ -142,7 +142,21 @@ class mcp_queue
 
 			case 'unapproved_topics':
 			case 'unapproved_posts':
+				$topic_id = request_var('t', 0);
 				$forum_info = array();
+
+				if ($topic_id)
+				{
+					$topic_info = get_topic_data(array($topic_id));
+
+					if (!sizeof($topic_info))
+					{
+						trigger_error($user->lang['TOPIC_NOT_EXIST']);
+					}
+
+					$topic_info = $topic_info[$topic_id];
+					$forum_id = $topic_info['forum_id'];
+				}
 
 				$forum_list_approve = get_forum_list('m_approve', false, true);
 
@@ -189,7 +203,7 @@ class mcp_queue
 				$sort_days = $total = 0;
 				$sort_key = $sort_dir = '';
 				$sort_by_sql = $sort_order_sql = array();
-				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id);
+				mcp_sorting($mode, $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $forum_id, $topic_id);
 
 				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -200,7 +214,8 @@ class mcp_queue
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql{0} == 'u') ? ', ' . USERS_TABLE . ' u' : '') . "
 						WHERE p.forum_id IN ($forum_list)
 							AND p.post_approved = 0
-							" . (($sort_order_sql{0} == 'u') ? 'AND u.user_id = p.poster_id' : '') . "
+							" . (($sort_order_sql{0} == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
+							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
 							AND t.topic_id = p.topic_id
 							AND t.topic_first_post_id <> p.post_id
 							$limit_time_sql
@@ -295,10 +310,14 @@ class mcp_queue
 				// Now display the page
 				$template->assign_vars(array(
 					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
+					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
+
 					'S_FORUM_OPTIONS'		=> $forum_options,
+					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 
 					'PAGINATION'			=> generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total)
 				);
 

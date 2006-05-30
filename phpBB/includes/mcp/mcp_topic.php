@@ -119,7 +119,7 @@ function mcp_topic_view($id, $mode, $action)
 		$message = str_replace("\n", '<br />', $message);
 
 		$checked = ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? 'checked="checked" ' : '';
-		$s_checkbox = ($row['post_id'] == $topic_info['topic_first_post_id'] && $action == 'split') ? '&nbsp;' : '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
+		$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
 
 		if (!$row['post_approved'])
 		{
@@ -141,7 +141,8 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_MCP_APPROVE'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'])
+			'U_MCP_APPROVE'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'],
+			'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;mode=report_details&amp;p=" . $row['post_id'])
 		);
 
 		unset($rowset[$i]);
@@ -185,15 +186,15 @@ function mcp_topic_view($id, $mode, $action)
 
 		'SPLIT_SUBJECT'		=> $subject,
 		'POSTS_PER_PAGE'	=> $posts_per_page,
-		'MODE'				=> $mode,
+		'ACTION'			=> $action,
 
 		'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED', false, true),
 		'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED', false, true),
 
 		'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
 		'S_FORUM_SELECT'	=> '<select name="to_forum_id">' . (($to_forum_id) ? make_forum_select($to_forum_id) : make_forum_select($topic_info['forum_id'])) . '</select>',
-		'S_CAN_SPLIT'		=> ($auth->acl_get('m_split', $topic_info['forum_id']) && $action != 'merge') ? true : false,
-		'S_CAN_MERGE'		=> ($auth->acl_get('m_merge', $topic_info['forum_id']) && $action != 'split') ? true : false,
+		'S_CAN_SPLIT'		=> ($auth->acl_get('m_split', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_MERGE'		=> ($auth->acl_get('m_merge', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_DELETE'		=> ($auth->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
@@ -225,7 +226,8 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if (!sizeof($post_id_list))
 	{
-		trigger_error('NO_POST_SELECTED');
+		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		return;
 	}
 
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_split')))
