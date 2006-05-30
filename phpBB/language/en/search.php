@@ -66,7 +66,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_FORUMS'			=> 'Search in forums',
 	'SEARCH_FORUMS_EXPLAIN'	=> 'Select the forum or forums you wish to search in. For speed all subforums can be searched by selecting the parent and setting enable search subforums below.',
 	'SEARCH_IN_RESULTS'		=> 'Search these results',
-	'SEARCH_KEYWORDS_EXPLAIN'	=> 'Place <b>+</b> in front of a word which must be found and <b>-</b> in front of a word which must not be found. If you place <b>|</b> in front of words, each result has to contain at least one of these words. Use * as a wildcard for partial matches',
+	'SEARCH_KEYWORDS_EXPLAIN'	=> 'Place <strong>+</strong> in front of a word which must be found and <strong>-</strong> in front of a word which must not be found. If you place <strong>|</strong> in front of words, each result has to contain at least one of these words. Use * as a wildcard for partial matches',
 	'SEARCH_MSG_ONLY'		=> 'Message text only',
 	'SEARCH_OPTIONS'		=> 'Search Options',
 	'SEARCH_QUERY'			=> 'Search Query',
@@ -78,8 +78,8 @@ $lang = array_merge($lang, array(
 	'SORT_AUTHOR'			=> 'Author',
 	'SORT_DESCENDING'		=> 'Descending',
 	'SORT_FORUM'			=> 'Forum',
-	'SORT_POST_SUBJECT'		=> 'Post Subject',
-	'SORT_TIME'				=> 'Post Time',
+	'SORT_POST_SUBJECT'		=> 'Post subject',
+	'SORT_TIME'				=> 'Post time',
 
 	'TOO_FEW_AUTHOR_CHARS'	=> 'You must specify at least %d characters of the authors name.',
 ));
