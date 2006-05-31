@@ -1262,6 +1262,53 @@ class install_install extends module
 				}
 			}
 
+			// And now for the special ones
+			// (these are modules which appear in multiple categories and thus get added manually to some for more control)
+			if (isset($this->module_extras[$module_class]))
+			{
+				foreach ($this->module_extras[$module_class] as $cat_name => $mods)
+				{
+					$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
+						WHERE module_langname = '$cat_name'
+						AND module_class = '$module_class'
+						LIMIT 1";
+					$result = $db->sql_query($sql);
+					$row2 = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					foreach ($mods as $mod_name)
+					{
+						$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
+							WHERE module_langname = '$mod_name'
+							AND module_class = '$module_class'
+							LIMIT 1";
+						$result = $db->sql_query($sql);
+						$module_data = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						$sql = 'UPDATE ' . MODULES_TABLE . "
+							SET left_id = left_id + 2, right_id = right_id + 2
+							WHERE module_class = '" . $module_class . "'
+								AND left_id > {$row2['right_id']}";
+						$db->sql_query($sql);
+
+						$sql = 'UPDATE ' . MODULES_TABLE . "
+							SET right_id = right_id + 2
+							WHERE module_class = '" . $module_class . "'
+								AND {$row2['left_id']} BETWEEN left_id AND right_id";
+						$db->sql_query($sql);
+
+						unset($module_data['module_id']);
+						$module_data['parent_id'] = $row2['module_id'];
+						$module_data['left_id'] = $row2['right_id'];
+						$module_data['right_id'] = $row2['right_id'] + 1;
+
+						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
+						$db->sql_query($sql);
+					}
+				}
+			}
+
 			recalc_btree('module_id', MODULES_TABLE, $module_class);
 			$_module->remove_cache_file();
 		}
@@ -1649,8 +1696,8 @@ class install_install extends module
 				'ACP_SERVER_CONFIGURATION',
 			),
 			'ACP_CAT_FORUMS'		=> array(
-				'ACP_CAT_FORUMS',
-				'FORUM_BASED_PERMISSIONS',
+				'ACP_MANAGE_FORUMS',
+				'ACP_FORUM_BASED_PERMISSIONS',
 			),
 			'ACP_CAT_POSTING'		=> array(
 				'ACP_MESSAGES',
@@ -1699,6 +1746,24 @@ class install_install extends module
 			'UCP_USERGROUPS'	=> null,
 			'UCP_ATTACHMENTS'	=> null,
 			'UCP_ZEBRA'			=> null,
+		),
+	);
+	var $module_extras = array(
+		'acp'	=> array(
+			'ACP_QUICK_ACCESS' => array(
+				'ACP_MANAGE_USERS',
+				'ACP_GROUPS_MANAGE',
+				'ACP_MANAGE_FORUMS',
+				'ACP_MOD_LOGS',
+				'ACP_BOTS',
+				'ACP_PHP_INFO',
+			),
+			'ACP_FORUM_BASED_PERMISSIONS' => array(
+				'ACP_FORUM_PERMISSIONS',
+				'ACP_FORUM_MODERATORS',
+				'ACP_USERS_FORUM_PERMISSIONS',
+				'ACP_GROUPS_FORUM_PERMISSIONS',
+			),
 		),
 	);
 }
