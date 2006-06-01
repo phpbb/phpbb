@@ -621,7 +621,6 @@ class acp_users
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
 					}
-					$error[] = 'NEW_EMAIL_ERROR';
 
 					// Which updates do we need to do?
 					$update_warning = ($user_row['user_warnings'] != $data['warnings']) ? true : false;
