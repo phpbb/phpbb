@@ -230,11 +230,13 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT)
 		{
 			$template->assign_block_vars('forumrow', array(
-				'S_IS_CAT'			=>	true,
-				'FORUM_ID'			=>	$row['forum_id'],
-				'FORUM_NAME'		=>	$row['forum_name'],
-				'FORUM_DESC'		=>	generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
-				'U_VIEWFORUM'		=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'])
+				'S_IS_CAT'				=>	true,
+				'FORUM_ID'				=>	$row['forum_id'],
+				'FORUM_NAME'			=>	$row['forum_name'],
+				'FORUM_DESC'			=>	generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
+				'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
+				'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
+				'U_VIEWFORUM'			=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'])
 			);
 
 			continue;

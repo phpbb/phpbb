@@ -873,9 +873,9 @@ CREATE TABLE phpbb_topics (
   topic_moved_id mediumint(8) NOT NULL DEFAULT '0',
   topic_bumped tinyint(1) NOT NULL DEFAULT '0',
   topic_bumper mediumint(8) NOT NULL DEFAULT '0',
-  poll_title text(65535),
-  poll_start int(11) NOT NULL DEFAULT '0',
-  poll_length int(11) NOT NULL DEFAULT '0',
+  poll_title text(65535) NULL,
+  poll_start int(11) NULL DEFAULT '0',
+  poll_length int(11) NULL DEFAULT '0',
   poll_max_options tinyint(4) NOT NULL DEFAULT '1',
   poll_last_vote int(11) DEFAULT '0',
   poll_vote_change tinyint(1) NOT NULL DEFAULT '0'

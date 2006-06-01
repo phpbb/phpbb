@@ -303,7 +303,7 @@ class p_master
 	*
 	* @final
 	*/
-	function load_active($mode = false)
+	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $user;
 
@@ -338,16 +338,33 @@ class p_master
 			// We pre-define the action parameter we are using all over the place
 			if (defined('IN_ADMIN'))
 			{
+				// Not being able to overwrite ;)
 				$this->module->u_action = "{$phpbb_admin_path}index.$phpEx$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
 			}
 			else
 			{
-				$this->module->u_action = "{$phpbb_root_path}{$user->page['page_dir']}{$user->page['page_name']}$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+				// If user specified the module url we will use it...
+				if ($module_url !== false)
+				{
+					$this->module->u_action = $module_url;
+				}
+				else
+				{
+					$this->module->u_action = "{$user->page['script_path']}/{$user->page['page_name']}";
+				}
+
+				$this->module->u_action = $SID . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
 			}
 
-			// Execute the main method for the new instance, we send the module
-			// id and mode as parameters
-			$this->module->main(($this->p_name) ? $this->p_name : $this->p_id, $this->p_mode);
+			// Assign the module path for re-usage
+			$this->module->module_path = $module_path . '/';
+
+			// Execute the main method for the new instance, we send the module id and mode as parameters
+			// Users are able to call the main method after this function to be able to assign additional parameters manually
+			if ($execute_module)
+			{
+				$this->module->main(($this->p_name) ? $this->p_name : $this->p_id, $this->p_mode);
+			}
 
 			return;
 		}
@@ -403,6 +420,7 @@ class p_master
 
 	/**
 	* Build true binary tree from given array
+	* Not in use
 	*/
 	function build_tree(&$modules, &$parents)
 	{
@@ -447,6 +465,9 @@ class p_master
 
 		$current_id = false;
 
+		// Make sure the module_url has a question mark set, effectively determining the delimiter to use
+		$delim = (strpos($module_url, '?') === false) ? '?' : '&amp;';
+
 		$current_padding = $current_depth = 0;
 		$linear_offset 	= 'l_block1';
 		$tabular_offset = 't_block2';
@@ -484,14 +505,14 @@ class p_master
 				}
 			}
 
-			$u_title = $module_url . (($itep_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . '&amp;mode=' . $itep_ary['mode']);
+			$u_title = $module_url . $delim . 'i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . (($itep_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $itep_ary['mode']);
 			$u_title .= (!$itep_ary['cat'] && isset($itep_ary['url_extra'])) ? $itep_ary['url_extra'] : '';
-			
+
 			// Only output a categories items if it's currently selected
 			if (!$depth || ($depth && (in_array($itep_ary['parent'], array_values($this->module_cache['parents'])) || $itep_ary['parent'] == $this->p_parent)))
 			{
 				$use_tabular_offset = (!$depth) ? 't_block1' : $tabular_offset;
-				
+
 				$tpl_ary = array(
 					'L_TITLE'		=> $itep_ary['lang'],
 					'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,

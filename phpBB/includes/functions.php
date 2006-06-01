@@ -1435,6 +1435,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// Username, password, etc...
 			default:
 				$err = $user->lang[$result['error_msg']];
+
+				// Assign admin contact to some error messages
+				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
+				{
+					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>');
+				}
 			break;
 		}
 	}

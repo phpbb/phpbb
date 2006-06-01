@@ -146,6 +146,7 @@ $lang = array_merge($lang, array(
 	'FORUM'					=> 'Forum',
 	'FORUMS'				=> 'Forums',
 	'FORUMS_MARKED'			=> 'All forums have been marked read',
+	'FORUM_CAT'				=> 'Forum category',
 	'FORUM_INDEX'			=> 'Board index',
 	'FORUM_LINK'			=> 'Forum link',
 	'FORUM_LOCATION'		=> 'Forum location',
@@ -217,6 +218,7 @@ $lang = array_merge($lang, array(
 
 	'ICQ_STATUS'			=> 'ICQ status',
 	'IF'					=> 'if',
+	'IMAGE'					=> 'Image',
 	'IN'					=> 'in',
 	'INDEX'					=> 'Index page',
 	'INFORMATION'			=> 'Information',

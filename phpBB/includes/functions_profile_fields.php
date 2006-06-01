@@ -355,14 +355,8 @@ class custom_profile
 				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
 			$result = $db->sql_query($sql);
 
-			if (!($row = $db->sql_fetchrow($result)))
-			{
-				$db->sql_freeresult($result);
-				return array();
-			}
-
 			$user_fields = array();
-			do
+			while ($row = $db->sql_fetchrow($result))
 			{
 				foreach ($row as $ident => $value)
 				{
@@ -372,8 +366,7 @@ class custom_profile
 						$user_fields[$row['user_id']][$ident]['data'] = $this->profile_cache[$ident];
 					}
 				}
-			} 
-			while ($row = $db->sql_fetchrow($result));
+			}
 			$db->sql_freeresult($result);
 
 			return $user_fields;
@@ -431,6 +424,10 @@ class custom_profile
 		switch ($this->profile_types[$field_type])
 		{
 			case 'int':
+				if ($value == '')
+				{
+					return NULL;
+				}
 				return (int) $value;
 			break;
 
@@ -493,7 +490,7 @@ class custom_profile
 
 				if ($ident_ary['data']['field_length'] == 1)
 				{
-					$this->options_lang[$field_id][$lang_id][(int) $value];
+					return (isset($this->options_lang[$field_id][$lang_id][(int) $value])) ? $this->options_lang[$field_id][$lang_id][(int) $value] : NULL;
 				}
 				else if (!$value)
 				{
@@ -526,6 +523,30 @@ class custom_profile
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
 			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+		}
+		else if ($profile_row['field_type'] == FIELD_INT)
+		{
+			if (isset($_REQUEST[$profile_row['field_ident']]))
+			{
+				$value = ($_REQUEST[$profile_row['field_ident']] === '') ? NULL : request_var($profile_row['field_ident'], $default_value);
+			}
+			else
+			{
+				if (is_null($user->profile_fields[$user_ident]) && !$preview)
+				{
+					$value = NULL;
+				}
+				else if (!isset($user->profile_fields[$user_ident]) || $preview)
+				{
+					$value = $default_value;
+				}
+				else
+				{
+					$value = $user->profile_fields[$user_ident];
+				}
+			}
+
+			return (is_null($value)) ? '' : (int) $value;
 		}
 		else
 		{
@@ -816,6 +837,17 @@ class custom_profile
 			case FIELD_STRING:
 			case FIELD_TEXT:
 				$var = request_var($var_name, $profile_row['field_default_value'], true);
+			break;
+
+			case FIELD_INT:
+				if (isset($_REQUEST[$var_name]) && $_REQUEST[$var_name] === '')
+				{
+					$var = NULL;
+				}
+				else
+				{
+					$var = request_var($var_name, $profile_row['field_default_value']);
+				}
 			break;
 
 			default:

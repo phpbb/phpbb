@@ -1457,12 +1457,12 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			switch (SQL_LAYER)
 			{
 				case 'mssql':
-				case 'mssql-odbc':
-					$sql .= 'GROUP BY t.topic_id, t.post_approved';
+				case 'mssql_odbc':
+					$sql .= ' GROUP BY t.topic_id, t.post_approved';
 				break;
 
 				default:
-					$sql .= 'GROUP BY t.topic_id';
+					$sql .= ' GROUP BY t.topic_id';
 				break;
 			}
 			$result = $db->sql_query($sql);

@@ -495,6 +495,9 @@ class acp_modules
 
 			$template->assign_vars(array(
 				'S_NO_MODULES'		=> true,
+				'MODULE_TITLE'		=> $langname,
+				'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
+				'MODULE_DISPLAYED'	=> ($row['module_display']) ? true : false,
 
 				'U_EDIT'			=> $url . '&amp;action=edit',
 				'U_DELETE'			=> $url . '&amp;action=delete',

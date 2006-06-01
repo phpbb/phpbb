@@ -55,6 +55,8 @@ class session
 			}
 		}
 
+		// The following examples given are for an request uri of {path to the phpbb directory}/adm/index.php?i=10&b=2
+
 		// The current query string
 		$query_string = trim(implode('&', $args));
 
@@ -62,16 +64,30 @@ class session
 		$page_name = htmlspecialchars(basename($script_name));
 
 		// current directory within the phpBB root (for example: adm)
-		$page_dir = substr(str_replace(str_replace('\\', '/', realpath($root_path)), '', str_replace('\\', '/', realpath('./'))), 1);
+		$root_dirs = explode('/', str_replace('\\', '/', realpath($root_path)));
+		$page_dirs = explode('/', str_replace('\\', '/', realpath('./')));
+		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
-		// Current page from phpBB root (for example: adm/index.php?i=10)
+		$root_dirs = array_diff_assoc($root_dirs, $intersection);
+		$page_dirs = array_diff_assoc($page_dirs, $intersection);
+
+		$page_dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
+
+		if ($page_dir && $page_dir{strlen($page_dir) - 1} == '/')
+		{
+			$page_dir = substr($page_dir, 0, -1);
+		}
+
+		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
 		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
 
 		// The script path from the webroot to the current directory (for example: /phpBB2/adm) : always prefixed with /
 		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
 
 		// The script path from the webroot to the phpBB root (for example: /phpBB2)
-		$root_script_path = ($page_dir) ? str_replace('/' . $page_dir, '', $script_path) : $script_path;
+		$script_dirs = explode('/', $script_path);
+		array_splice($script_dirs, -sizeof($page_dirs));
+		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ?  '/' . implode('/', $root_dirs) : '');
 
 		// We are on the base level (phpBB root == webroot), lets adjust the variables a bit...
 		if (!$root_script_path)

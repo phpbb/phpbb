@@ -85,7 +85,7 @@ class acp_forums
 						'forum_id'		=>	$forum_id
 					);
 
-					// No break here
+				// No break here
 
 				case 'add':
 
@@ -416,7 +416,7 @@ class acp_forums
 					{
 						$forum_data = array(
 							'parent_id'				=> $this->parent_id,
-							'forum_type'			=> FORUM_CAT,
+							'forum_type'			=> FORUM_POST,
 							'forum_status'			=> ITEM_UNLOCKED,
 							'forum_name'			=> request_var('forum_name', '', true),
 							'forum_link'			=> '',

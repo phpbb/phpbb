@@ -42,7 +42,7 @@ switch ($mode)
 				trigger_error('NO_VIEW_USERS');
 			}
 
-			login_box('', $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)]);
+			login_box('', ((isset($user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)])) ? $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)] : $user->lang['LOGIN_EXPLAIN_MEMBERLIST']));
 		}
 		break;
 }
