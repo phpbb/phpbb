@@ -2174,6 +2174,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$user->session_begin();
 			}
 
+			// We re-init the auth array to get correct results on login/logout
+			$auth->acl($user->data);
+
 			if (empty($user->lang))
 			{
 				$user->setup();
