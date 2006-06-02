@@ -353,7 +353,7 @@ class p_master
 					$this->module->u_action = "{$user->page['script_path']}/{$user->page['page_name']}";
 				}
 
-				$this->module->u_action = $SID . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+				$this->module->u_action .= $SID . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
 			}
 
 			// Assign the module path for re-usage
