@@ -65,7 +65,7 @@ class dbal_mysql extends dbal
 			case 'begin':
 				$result = @mysql_query('BEGIN', $this->db_connect_id);
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @mysql_query('COMMIT', $this->db_connect_id);
@@ -75,12 +75,12 @@ class dbal_mysql extends dbal
 				{
 					@mysql_query('ROLLBACK', $this->db_connect_id);
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @mysql_query('ROLLBACK', $this->db_connect_id);
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -146,10 +146,10 @@ class dbal_mysql extends dbal
 	* Build LIMIT query
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
-	{ 
-		if ($query != '') 
+	{
+		if ($query != '')
 		{
-			$this->query_result = false; 
+			$this->query_result = false;
 
 			// if $total is set to 0 we do not want to limit the number of rows
 			if ($total == 0)
@@ -159,12 +159,12 @@ class dbal_mysql extends dbal
 
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
-			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
-			return false; 
-		} 
+			return $this->sql_query($query, $cache_ttl);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -302,9 +302,10 @@ class dbal_mysql extends dbal
 				$data = '(' . $data . ')';
 			break;
 		}
+
 		return $data;
 	}
-	
+
 	/**
 	* return sql error array
 	* @private
@@ -318,7 +319,7 @@ class dbal_mysql extends dbal
 				'code'		=> @mysql_errno()
 			);
 		}
-		
+
 		return array(
 			'message'	=> @mysql_error($this->db_connect_id),
 			'code'		=> @mysql_errno($this->db_connect_id)

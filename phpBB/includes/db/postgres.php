@@ -94,7 +94,7 @@ class dbal_postgres extends dbal
 			case 'begin':
 				$result = @pg_query($this->db_connect_id, 'BEGIN');
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @pg_query($this->db_connect_id, 'COMMIT');
@@ -104,12 +104,12 @@ class dbal_postgres extends dbal
 				{
 					@pg_query($this->db_connect_id, 'ROLLBACK');
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @pg_query($this->db_connect_id, 'ROLLBACK');
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -126,7 +126,6 @@ class dbal_postgres extends dbal
 		if ($query != '')
 		{
 			global $cache;
-
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -187,7 +186,7 @@ class dbal_postgres extends dbal
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
 	{ 
-		if ($query != '') 
+		if ($query != '')
 		{
 			$this->query_result = false; 
 
@@ -200,11 +199,11 @@ class dbal_postgres extends dbal
 			$query .= "\n LIMIT $total OFFSET $offset";
 
 			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
+		}
+		else
+		{
 			return false; 
-		} 
+		}
 	}
 
 	/**
@@ -266,7 +265,7 @@ class dbal_postgres extends dbal
 			{
 				$this->sql_rowseek($rownum, $query_id);
 			}
-			
+
 			$row = $this->sql_fetchrow($query_id);
 			return isset($row[$field]) ? $row[$field] : false;
 		}
@@ -301,6 +300,7 @@ class dbal_postgres extends dbal
 			{
 				$query = "SELECT currval('" . $tablename[1] . "_seq') AS last_value";
 				$temp_q_id =  @pg_query($this->db_connect_id, $query);
+
 				if (!$temp_q_id)
 				{
 					return false;
@@ -325,7 +325,7 @@ class dbal_postgres extends dbal
 		{
 			$query_id = $this->query_result;
 		}
-		
+
 		if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
@@ -337,10 +337,10 @@ class dbal_postgres extends dbal
 
 	/**
 	* Escape string used in sql query
+	* Note: Do not use for bytea values if we may use them at a later stage
 	*/
 	function sql_escape($msg)
 	{
-		// Do not use for bytea values
 		return @pg_escape_string($msg);
 	}
 

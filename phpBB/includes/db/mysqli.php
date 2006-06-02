@@ -67,7 +67,7 @@ class dbal_mysqli extends dbal
 			case 'begin':
 				$result = @mysqli_autocommit($this->db_connect_id, false);
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @mysqli_commit($this->db_connect_id);
@@ -79,13 +79,13 @@ class dbal_mysqli extends dbal
 					@mysqli_rollback($this->db_connect_id);
 					@mysqli_autocommit($this->db_connect_id, true);
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @mysqli_rollback($this->db_connect_id);
 				@mysqli_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -146,10 +146,10 @@ class dbal_mysqli extends dbal
 	* Build LIMIT query
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
-	{ 
-		if ($query != '') 
+	{
+		if ($query != '')
 		{
-			$this->query_result = false; 
+			$this->query_result = false;
 
 			// if $total is set to 0 we do not want to limit the number of rows
 			if ($total == 0)
@@ -160,12 +160,12 @@ class dbal_mysqli extends dbal
 
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
-			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
-			return false; 
-		} 
+			return $this->sql_query($query, $cache_ttl);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -227,7 +227,7 @@ class dbal_mysqli extends dbal
 			{
 				$this->sql_rowseek($rownum, $query_id);
 			}
-			
+
 			$row = $this->sql_fetchrow($query_id);
 			return isset($row[$field]) ? $row[$field] : false;
 		}
@@ -296,9 +296,10 @@ class dbal_mysqli extends dbal
 				$data = '(' . $data . ')';
 			break;
 		}
+
 		return $data;
 	}
-	
+
 	/**
 	* return sql error array
 	* @private

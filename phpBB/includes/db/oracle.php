@@ -57,7 +57,7 @@ class dbal_oracle extends dbal
 			case 'begin':
 				$result = true;
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @ocicommit($this->db_connect_id);
@@ -67,12 +67,12 @@ class dbal_oracle extends dbal
 				{
 					@ocirollback($this->db_connect_id);
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @ocirollback($this->db_connect_id);
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -90,13 +90,12 @@ class dbal_oracle extends dbal
 		{
 			global $cache;
 
-
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
 			{
 				$this->sql_report('start', $query);
 			}
-		
+
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
@@ -128,7 +127,7 @@ class dbal_oracle extends dbal
 						$this->sql_transaction('commit');
 					}
 				}
-				
+
 				if (defined('DEBUG_EXTRA'))
 				{
 					$this->sql_report('stop', $query);
@@ -161,19 +160,19 @@ class dbal_oracle extends dbal
 	* Build LIMIT query
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
-	{ 
-		if ($query != '') 
+	{
+		if ($query != '')
 		{
 			$this->query_result = false; 
 
 			$query = 'SELECT * FROM (SELECT /*+ FIRST_ROWS */ rownum AS xrownum, a.* FROM (' . $query . ') a WHERE rownum <= ' . ($offset + $total) . ') WHERE xrownum >= ' . $offset;
 
 			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
+		}
+		else
+		{
 			return false; 
-		} 
+		}
 	}
 
 	/**
@@ -220,7 +219,7 @@ class dbal_oracle extends dbal
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
-		
+
 		$row = array();
 		$result = @ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
 
@@ -261,11 +260,11 @@ class dbal_oracle extends dbal
 			{
 				$this->sql_rowseek($rownum, $query_id);
 			}
-			
+
 			$row = $this->sql_fetchrow($query_id);
 			return isset($row[$field]) ? $row[$field] : false;
 		}
-		
+
 		return false;
 	}
 

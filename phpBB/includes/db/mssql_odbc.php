@@ -59,7 +59,7 @@ class dbal_mssql_odbc extends dbal
 			case 'begin':
 				$result = @odbc_autocommit($this->db_connect_id, false);
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @odbc_commit($this->db_connect_id);
@@ -71,13 +71,13 @@ class dbal_mssql_odbc extends dbal
 					@odbc_rollback($this->db_connect_id);
 					@odbc_autocommit($this->db_connect_id, true);
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @odbc_rollback($this->db_connect_id);
 				@odbc_autocommit($this->db_connect_id, true);
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -100,7 +100,6 @@ class dbal_mssql_odbc extends dbal
 			{
 				$this->sql_report('start', $query);
 			}
-			
 
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
@@ -145,10 +144,10 @@ class dbal_mssql_odbc extends dbal
 	* Build LIMIT query
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
-	{ 
-		if ($query != '') 
+	{
+		if ($query != '')
 		{
-			$this->query_result = false; 
+			$this->query_result = false;
 
 			// if $total is set to 0 we do not want to limit the number of rows
 			if ($total == 0)
@@ -168,12 +167,12 @@ class dbal_mssql_odbc extends dbal
 				$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
 			}
 
-			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
-			return false; 
-		} 
+			return $this->sql_query($query, $cache_ttl);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -214,7 +213,7 @@ class dbal_mssql_odbc extends dbal
 		{
 			return $cache->sql_fetchrow($query_id);
 		}
-		
+
 		return ($query_id) ? @odbc_fetch_array($query_id) : false;
 	}
 
@@ -235,7 +234,7 @@ class dbal_mssql_odbc extends dbal
 			{
 				$this->sql_rowseek($rownum, $query_id);
 			}
-			
+
 			$row = $this->sql_fetchrow($query_id);
 			return isset($row[$field]) ? $row[$field] : false;
 		}

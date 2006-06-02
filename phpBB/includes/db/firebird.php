@@ -58,7 +58,7 @@ class dbal_firebird extends dbal
 			case 'begin':
 				$result = true;
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @ibase_commit();
@@ -68,12 +68,12 @@ class dbal_firebird extends dbal
 				{
 					@ibase_rollback();
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @ibase_rollback();
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -91,7 +91,6 @@ class dbal_firebird extends dbal
 		{
 			global $cache;
 
-
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
@@ -103,7 +102,6 @@ class dbal_firebird extends dbal
 					$this->sql_error($query);
 				}
 
-				// TODO: have to debug the commit states in firebird
 				if (!$this->transaction)
 				{
 					@ibase_commit_ret();
@@ -132,19 +130,19 @@ class dbal_firebird extends dbal
 	* Build LIMIT query
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
-	{ 
-		if ($query != '') 
+	{
+		if ($query != '')
 		{
-			$this->query_result = false; 
+			$this->query_result = false;
 
 			$query = 'SELECT FIRST ' . $total . ((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
 
 			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
-			return false; 
-		} 
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -222,7 +220,7 @@ class dbal_firebird extends dbal
 			{
 				$this->sql_rowseek($rownum, $query_id);
 			}
-			
+
 			$row = $this->sql_fetchrow($query_id);
 			return isset($row[$field]) ? $row[$field] : false;
 		}
@@ -240,16 +238,6 @@ class dbal_firebird extends dbal
 		{
 			$query_id = $this->query_result;
 		}
-
-/*
-		$this->sql_freeresult($query_id);
-		$query_id = $this->sql_query($this->last_query_text);
-
-		if (!$query_id)
-		{
-			return false;
-		}
-*/
 
 		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
 		for ($i = 0; $i < $rownum; $i++)
@@ -274,9 +262,9 @@ class dbal_firebird extends dbal
 		{
 			if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
-				$query = "SELECT GEN_ID(" . $tablename[1] . "_gen, 0) AS new_id  
-					FROM RDB\$DATABASE";
-				if (!($temp_q_id =  @ibase_query($this->db_connect_id, $query)))
+				$sql = "SELECT GEN_ID(" . $tablename[1] . "_gen, 0) AS new_id FROM RDB\$DATABASE";
+
+				if (!($temp_q_id =  @ibase_query($this->db_connect_id, $sql)))
 				{
 					return false;
 				}
@@ -287,7 +275,7 @@ class dbal_firebird extends dbal
 				return ($temp_result) ? $temp_result->NEW_ID : false;
 			}
 		}
-	
+
 		return false;
 	}
 

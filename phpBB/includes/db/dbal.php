@@ -225,17 +225,7 @@ class dbal
 			case 'SELECT':
 			case 'SELECT_DISTINCT';
 
-				if ($query == 'SELECT_DISTINCT')
-				{
-					$sql .= 'SELECT DISTINCT';
-				}
-				else
-				{
-					$sql .= 'SELECT';
-				}
-
-				$sql .= ' ' . $array['SELECT'];
-				$sql .= ' FROM ';
+				$sql = str_replace('_', ' ', $query) . ' ' . $array['SELECT'] . ' FROM ';
 
 				$table_array = array();
 				foreach ($array['FROM'] as $table_name => $alias)
@@ -270,6 +260,7 @@ class dbal
 
 			break;
 		}
+
 		return $sql;
 	}
 
@@ -316,7 +307,7 @@ class dbal
 			{
 				$this->sql_transaction('rollback');
 			}
-			
+
 			if (strlen($message) > 1024)
 			{
 				// We need to define $msg_long_text here to circumvent text stripping.
@@ -486,8 +477,6 @@ class dbal
 			case 'fromcache':
 
 				$this->_sql_report($mode, $query);
-
-//				$this->num_queries['cache']++;
 
 			break;
 

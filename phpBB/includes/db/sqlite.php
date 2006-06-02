@@ -61,7 +61,7 @@ class dbal_sqlite extends dbal
 			case 'begin':
 				$result = @sqlite_query('BEGIN', $this->db_connect_id);
 				$this->transaction = true;
-				break;
+			break;
 
 			case 'commit':
 				$result = @sqlite_query('COMMIT', $this->db_connect_id);
@@ -71,12 +71,12 @@ class dbal_sqlite extends dbal
 				{
 					@sqlite_query('ROLLBACK', $this->db_connect_id);
 				}
-				break;
+			break;
 
 			case 'rollback':
 				$result = @sqlite_query('ROLLBACK', $this->db_connect_id);
 				$this->transaction = false;
-				break;
+			break;
 
 			default:
 				$result = true;
@@ -93,7 +93,6 @@ class dbal_sqlite extends dbal
 		if ($query != '')
 		{
 			global $cache;
-
 
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
@@ -143,8 +142,8 @@ class dbal_sqlite extends dbal
 	* Build LIMIT query
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
-	{ 
-		if ($query != '') 
+	{
+		if ($query != '')
 		{
 			$this->query_result = false; 
 
@@ -157,11 +156,11 @@ class dbal_sqlite extends dbal
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
 
 			return $this->sql_query($query, $cache_ttl); 
-		} 
-		else 
-		{ 
-			return false; 
-		} 
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	/**
@@ -225,7 +224,7 @@ class dbal_sqlite extends dbal
 			}
 			else
 			{
-				@sqlite_seek($query_id, $rownum);
+				$this->sql_rowseek($rownum, $query_id);
 				return @sqlite_column($query_id, $field);
 			}
 		}

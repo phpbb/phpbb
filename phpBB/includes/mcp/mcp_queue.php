@@ -367,7 +367,10 @@ function approve_post($post_id_list, $mode)
 			$topic_id_list[$post_data['topic_id']] = 1;
 
 			// Topic or Post. ;)
-			if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_last_post_id'] == $post_id)
+			/**
+			* @todo What happens if a user posts a new topic which is not approved, then a second user replies and the post is automatically approved ;)
+			*/
+			if ($post_data['topic_first_post_id'] == $post_id/* && $post_data['topic_last_post_id'] == $post_id*/)
 			{
 				if ($post_data['forum_id'])
 				{
