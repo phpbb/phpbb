@@ -962,7 +962,7 @@ function avatar_delete($id)
 	}
 
 	return false;
- }
+}
 
 /**
 * Remote avatar linkage
@@ -1039,7 +1039,7 @@ function avatar_upload($data, &$error)
 		$file = $upload->remote_upload($data['uploadurl']);
 	}
 
-	$file->clean_filename('real', $user->data['user_id'] . '_');
+	$file->clean_filename('real', $data['user_id'] . '_');
 	$file->move_file($config['avatar_path']);
 
 	if (sizeof($file->error))
