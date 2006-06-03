@@ -536,13 +536,15 @@ $lang = array_merge($lang, array(
 	'LOG_STYLE_EDIT_DETAILS'	=> '<b>Edited style</b><br />&#187; %s',
 	'LOG_STYLE_EXPORT'			=> '<b>Exported style</b><br />&#187; %s',
 
-	'LOG_TEMPLATE_ADD_DB'		=> '<b>Added new template set to database</b><br />&#187; %s',
-	'LOG_TEMPLATE_ADD_FS'		=> '<b>Add new template set on filesystem</b><br />&#187; %s',
-	'LOG_TEMPLATE_DELETE'		=> '<b>Deleted template set</b><br />&#187; %s',
-	'LOG_TEMPLATE_EDIT'			=> '<b>Edited template set <i>%s</i></b><br />&#187; %s',
-	'LOG_TEMPLATE_EDIT_DETAILS'	=> '<b>Edited template details</b><br />&#187; %s',
-	'LOG_TEMPLATE_EXPORT'		=> '<b>Exported template set</b><br />&#187; %s',
-	
+	'LOG_TEMPLATE_ADD_DB'			=> '<b>Added new template set to database</b><br />&#187; %s',
+	'LOG_TEMPLATE_ADD_FS'			=> '<b>Add new template set on filesystem</b><br />&#187; %s',
+	'LOG_TEMPLATE_CACHE_CLEARED'	=> '<b>Deleted cached versions of template files in template set <i>%s</i></b><br />&#187; %s',
+	'LOG_TEMPLATE_DELETE'			=> '<b>Deleted template set</b><br />&#187; %s',
+	'LOG_TEMPLATE_EDIT'				=> '<b>Edited template set <i>%s</i></b><br />&#187; %s',
+	'LOG_TEMPLATE_EDIT_DETAILS'		=> '<b>Edited template details</b><br />&#187; %s',
+	'LOG_TEMPLATE_EXPORT'			=> '<b>Exported template set</b><br />&#187; %s',
+	'LOG_TEMPLATE_REFRESHED'		=> '<b>Refreshed template set</b><br />&#187; %s',
+
 	'LOG_THEME_ADD_DB'			=> '<b>Added new theme to database</b><br />&#187; %s',
 	'LOG_THEME_ADD_FS'			=> '<b>Add new theme on filesystem</b><br />&#187; %s',
 	'LOG_THEME_DELETE'			=> '<b>Theme deleted</b><br />&#187; %s',

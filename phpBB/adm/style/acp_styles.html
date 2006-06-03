@@ -244,6 +244,8 @@
 	//-->
 	</script>
 
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+
 	<h1>{L_EDIT_THEME}</h1>
 
 	<p>{L_EDIT_THEME_EXPLAIN}</p>
@@ -374,6 +376,59 @@
 
 	</form>
 <!-- ENDIF -->
+<!-- ELSEIF S_CACHE -->
+	<script language="Javascript" type="text/javascript">
+	<!--
+
+	function viewsource(url)
+	{
+		window.open(url, '_source', 'HEIGHT=550,resizable=yes,scrollbars=yes,WIDTH=750');
+		return false;
+	}
+	
+	//-->
+	</script>
+
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	
+	<h1>{L_TEMPLATE_CACHE}</h1>
+	
+	<p>{L_TEMPLATE_CACHE_EXPLAIN}</p>
+	
+	<form name="acp_styles" method="post" action="{U_ACTION}">
+
+	<table cellspacing="1">
+		<thead>
+		<tr>
+			<th>{L_CACHE_FILENAME}</th>
+			<th>{L_CACHE_FILESIZE}</th>
+			<th>{L_CACHE_CACHED}</th>
+			<th>{L_CACHE_MODIFIED}</th>
+			<th>{L_MARK}</th>
+		</tr>
+		</thead>
+		<tbody>
+		<!-- BEGIN file -->
+		<!-- IF file.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td><a href="{file.U_VIEWSOURCE}" onclick="viewsource('{file.UA_VIEWSOURCE}');return false">{file.FILENAME}</a></td>
+			<td>{file.FILESIZE}</td>
+			<td>{file.CACHED}</td>
+			<td>{file.MODIFIED}</td>
+			<td><input type="checkbox" name="delete[]" value="{file.FILENAME}" /></td>
+		</tr>
+		<!-- BEGINELSE -->
+		<tr class="row1">
+			<td colspan="5">{L_TEMPLATE_CACHE_EMPTY}</td>
+		</tr>
+		<!-- END file -->
+	</table>
+
+	<fieldset class="quick">
+		<span class="small"><a href="javascript:marklist('acp_styles', 'delete', true);">Mark all</a> :: <a href="javascript:marklist('acp_styles', 'delete', false);">Unmark all</a></span><br />
+
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_DELETE_MARKED}" />
+	</fieldset>
+	</form>
 <!-- ELSEIF S_EXPORT -->
 
 	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>

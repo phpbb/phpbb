@@ -51,6 +51,7 @@ $lang = array_merge($lang, array(
 	'ADMINISTRATOR'					=> 'Administrator',
 	'ADMINISTRATORS'				=> 'Administrators',
 	'ALLOWED'						=> 'Allowed',
+	'ALL_FILES'						=> 'All files',
 	'ALL_FORUMS'					=> 'All forums',
 	'ALL_MESSAGES'					=> 'All messages',
 	'ALL_POSTS'						=> 'All posts',

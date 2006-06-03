@@ -915,3 +915,39 @@ table.pmask td.name {
 	height: 1%;
 }
 /* End hide */
+
+/* Syntax Highlighting
+---------------------------------------- */
+.sourcenum {
+	color: gray;
+	font-family: 'Courier New', monospace;
+	font-size: 125%;
+	font-weight: bold;
+	line-height: 120%;
+	text-align: right;
+	padding: 0px;
+}
+.source {
+	font-family: 'Courier New', monospace;
+	font-size: 125%;
+	line-height: 120%;
+	padding: 0px;
+}
+.syntaxbg {
+	color: #FFFFFF;
+	}
+.syntaxcomment {
+	color: #FF8000;
+	}
+.syntaxdefault {
+	color: #0000BB;
+	}
+.syntaxhtml {
+	color: #000000;
+	}
+.syntaxkeyword {
+	color: #007700;
+	}
+.syntaxstring {
+	color: #DD0000;
+	}

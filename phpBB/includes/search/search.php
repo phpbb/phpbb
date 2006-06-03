@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @ignore
 */
-define('SEARCH_RESULT_NOT_IN_CACHE', 2);
+define('SEARCH_RESULT_NOT_IN_CACHE', 0);
 define('SEARCH_RESULT_IN_CACHE', 1);
 define('SEARCH_RESULT_INCOMPLETE', 2);
 
@@ -94,7 +94,7 @@ class search_backend
 	* @param int result_count will contain the number of all results for the search (not only for the current page)
 	* @param array id_ary is filled with the ids belonging to the requested page that are stored in the cache
 	*
-	* @return SEARCH_RESULT_NOT_IN_CACHE or SEARCH_RESULT_IN_CACHE or SEARCH_RESULT_INCOMPLETE
+	* @return int SEARCH_RESULT_NOT_IN_CACHE or SEARCH_RESULT_IN_CACHE or SEARCH_RESULT_INCOMPLETE
 	*/
 	function obtain_ids($search_key, &$result_count, &$id_ary, $start, $per_page, $sort_dir)
 	{

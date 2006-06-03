@@ -9,12 +9,6 @@
 */
 
 /**
-* @todo see /includes/acp/acp_styles.php
-* templates/themes->cache (show template files in cache, ability to remove all)
-* templates/themes->refresh (give explanation of what this is doing [confirm_box?] and printing out success message
-*/
-
-/**
 * @package acp
 */
 class acp_styles
@@ -29,7 +23,7 @@ class acp_styles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $cache;
 		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Hardcoded template bitfield to add for new templates
@@ -141,6 +135,17 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					}
 				}
 			break;
+
+			case 'cache':
+				if ($style_id)
+				{
+					switch ($mode)
+					{
+						case 'template':
+							return $this->template_cache($style_id);
+					}
+				}
+			break;
 		}
 
 		switch ($mode)
@@ -185,7 +190,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 				switch ($action)
 				{
-					// Refresh/Renew template cache
+					// Refresh template data stored in db and clear cache
 					case 'refresh':
 
 						$sql = 'SELECT *
@@ -200,34 +205,56 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action));
 						}
 
-						if ($template_row['template_storedb'] && file_exists("{$phpbb_root_path}styles/{$template_row['template_path']}/template/"))
+						if (confirm_box(true))
 						{
-							$filelist = array('' => array());
+							$template_refreshed = '';
 
-							$sql = 'SELECT template_filename, template_mtime
-								FROM ' . STYLES_TPLDATA_TABLE . "
-								WHERE template_id = $style_id";
-							$result = $db->sql_query($sql);
-
-							while ($row = $db->sql_fetchrow($result))
+							// Only refresh database if the template is stored in the database
+							if ($template_row['template_storedb'] && file_exists("{$phpbb_root_path}styles/{$template_row['template_path']}/template/"))
 							{
-								if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
+								$filelist = array('' => array());
+
+								$sql = 'SELECT template_filename, template_mtime
+									FROM ' . STYLES_TPLDATA_TABLE . "
+									WHERE template_id = $style_id";
+								$result = $db->sql_query($sql);
+
+								while ($row = $db->sql_fetchrow($result))
 								{
-									// get folder info from the filename
-									if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
+									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
 									{
-										$filelist[''][] = $row['template_filename'];
-									}
-									else
-									{
-										$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slashpos - 1);
+										// get folder info from the filename
+										if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
+										{
+											$filelist[''][] = $row['template_filename'];
+										}
+										else
+										{
+											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slashpos - 1);
+										}
 									}
 								}
-							}
-							$db->sql_freeresult($result);
+								$db->sql_freeresult($result);
 
-							$this->store_templates('update', $style_id, $template_row['template_path'], $filelist);
-							unset($filelist);
+								$this->store_templates('update', $style_id, $template_row['template_path'], $filelist);
+								unset($filelist);
+
+								$template_refreshed = $user->lang['TEMPLATE_REFRESHED'] . '<br />';
+								add_log('admin', 'LOG_TEMPLATE_REFRESHED', $template_row['template_name']);
+							}
+
+							$this->clear_template_cache($template_row);
+
+							trigger_error($template_refreshed . $user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action));
+						}
+						else
+						{
+							confirm_box(false, ($template_row['template_storedb']) ? $user->lang['CONFIRM_TEMPLATE_REFRESH'] : $user->lang['CONFIRM_TEMPLATE_CLEAR_CACHE'], build_hidden_fields(array(
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+								'id'		=> $style_id
+							)));
 						}
 
 					break;
@@ -240,7 +267,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 				switch ($action)
 				{
-					// Refresh/Renew theme cache
+					// Refresh theme data stored in the database
 					case 'refresh':
 
 						$sql = 'SELECT *
@@ -255,31 +282,38 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action));
 						}
 
-						if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
+						if (!$theme_row['theme_storedb'])
 						{
-							$theme_data = file_get_contents("{$phpbb_root_path}styles/" . $theme_row['theme_path'] . '/theme/stylesheet.css');
+							trigger_error($user->lang['THEME_ERR_REFRESH_FS'] . adm_back_link($this->u_action));
+						}
 
-							// Match CSS imports
-							$matches = array();
-							preg_match_all('/@import url\(\"(.*)\"\);/i', $theme_data, $matches);
-
-							if (sizeof($matches))
+						if (confirm_box(true))
+						{
+							if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
 							{
-								foreach ($matches[0] as $idx => $match)
-								{
-									$theme_data = str_replace($match, $this->load_css_file($theme_row['theme_path'], $matches[1][$idx]), $theme_data);
-								}
+								// Save CSS contents
+								$sql_ary = array(
+									'theme_mtime'	=> @filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
+									'theme_data'	=> $this->db_theme_data($theme_row)
+								);
+
+								$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+									WHERE theme_id = $style_id";
+								$db->sql_query($sql);
+
+								$cache->destroy('sql', STYLES_CSS_TABLE);
+
+								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
 							}
-
-							// Save CSS contents
-							$sql_ary = array(
-								'theme_mtime'	=> @filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
-								'theme_data'	=> str_replace('./', 'styles/' . $theme_info['theme_path'] . '/theme/', $theme_data)
-							);
-
-							$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-								WHERE theme_id = $style_id";
-							$db->sql_query($sql);
+						}
+						else
+						{
+							confirm_box(false, $user->lang['CONFIRM_THEME_REFRESH'], build_hidden_fields(array(
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+								'id'		=> $style_id
+							)));
 						}
 					break;
 				}
@@ -392,9 +426,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// Grab uninstalled items
 		$new_ary = $cfg = array();
 
-		/**
-		* @todo grab templates/themes/imagesets from style directories
-		*/
 		$dp = opendir("{$phpbb_root_path}styles");
 		while (($file = readdir($dp)) !== false)
 		{
@@ -446,7 +477,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function edit_template($template_id)
 	{
-		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_TEMPLATE';
 
@@ -482,7 +513,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$additional = '';
 
 			// If the template is stored on the filesystem try to write the file else store it in the database
-			if (!$template_info['template_storedb'] && file_exists($file) && is_writeable($file))
+			if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && is_writeable($file))
 			{
 				if (!($fp = fopen($file, 'wb')))
 				{
@@ -520,8 +551,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$db->sql_transaction('commit');
 			}
 
-			// destroy the cached version of the template
-			@unlink("{$phpbb_root_path}cache/tpl_{$template_info['template_name']}_" . str_replace('/', '.', $template_file) . ".$phpEx");
+			// destroy the cached version of the template (filename without extension)
+			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
 
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
 			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
@@ -650,13 +681,137 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	}
 
 	/**
+	* Allows the admin to view cached versions of template files and clear single template cache files
+	*
+	* @param int $template_id specifies which template's cache is shown
+	*/
+	function template_cache($template_id)
+	{
+		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+
+		$source		= str_replace('/', '.', request_var('source', ''));
+		$file_ary	= array_diff(request_var('delete', array('')), array(''));
+		$submit		= isset($_POST['submit']) ? true : false;
+
+		$sql = 'SELECT *
+			FROM ' . STYLES_TPL_TABLE . "
+			WHERE template_id = $template_id";
+		$result = $db->sql_query($sql);
+
+		if (!($template_row = $db->sql_fetchrow($result)))
+		{
+			trigger_error($user->lang['NO_TEMPLATE']);
+		}
+		$db->sql_freeresult($result);
+
+		// User wants to delete one or more files ...
+		if ($submit && $file_ary)
+		{
+			$this->clear_template_cache($template_row, $file_ary);
+			trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action . "&amp;action=cache&amp;id=$template_id"));
+		}
+
+		$cache_prefix = 'tpl_' . $template_row['template_path'];
+
+		// Someone wants to see the cached source ... so we'll highlight it,
+		// add line numbers and indent it appropriately. This could be nasty
+		// on larger source files ...
+		if ($source && file_exists("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"))
+		{
+			adm_page_header($user->lang['TEMPLATE_CACHE']);
+
+			$template->set_filenames(array(
+				'body'	=> 'viewsource.html')
+			);
+
+			$template->assign_vars(array(
+				'FILENAME'	=> str_replace('.', '/', $source) . '.html')
+			);
+
+			$code = str_replace(array("\n\r", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
+
+			$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
+			foreach ($conf as $ini_var)
+			{
+				@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
+			}
+
+			$marker = 'MARKER' . time();
+			$code = highlight_string(str_replace("\n", $marker, $code), true);
+			$code = str_replace($marker, "\n", $code);
+
+			$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
+			$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
+
+			$code = str_replace($str_from, $str_to, $code);
+			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
+
+			$code = explode("\n", $code);
+
+			foreach ($code as $key => $line)
+			{
+				$template->assign_block_vars('source', array(
+					'LINENUM'	=> $key + 1,
+					'LINE'		=> preg_replace('#([^ ;])&nbsp;([^ &])#', '$1 $2', $line))
+				);
+				unset($code[$key]);
+			}
+
+			adm_page_footer();
+		}
+
+		$filemtime = array();
+		if ($template_row['template_storedb'])
+		{
+			$sql = 'SELECT template_filename, template_mtime
+				FROM ' . STYLES_TPLDATA_TABLE . "
+				WHERE template_id = $template_id";
+			$result = $db->sql_query($sql);
+
+			$filemtime = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$filemtime[$row['template_filename']] = $row['template_mtime'];
+			}
+			$db->sql_freeresult($result);
+		}
+
+		// Get a list of cached template files and then retrieve additional information about them
+		$file_ary = $this->template_cache_filelist($template_row['template_path']);
+
+		foreach ($file_ary as $file)
+		{
+			$filename = "{$cache_prefix}_$file.html.$phpEx";
+
+			$template->assign_block_vars('file', array(
+				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
+				'UA_VIEWSOURCE'	=> str_replace('&amp;', '&', $this->u_action) . "&action=cache&id=$template_id&source=$file",
+
+				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
+				'FILENAME'		=> $file,
+				'FILESIZE'		=> sprintf('%.1f KB', filesize("{$phpbb_root_path}cache/$filename") / 1024),
+				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/$file.html") : $filemtime[$file . '.html']))
+			);
+		}
+		unset($filemtime);
+
+		$template->assign_vars(array(
+			'S_CACHE'			=> true,
+			'S_TEMPLATE'		=> true,
+
+			'U_ACTION'			=> $this->u_action . "&amp;action=cache&amp;id=$template_id",
+			'U_BACK'			=> $this->u_action)
+		);
+	}
+
+	/**
 	* Provides a css editor and a basic easier to use stylesheet editing tool for less experienced (or lazy) users
 	*
 	* @param int $theme_id specifies which theme is being edited
 	*/
 	function edit_theme($theme_id)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
@@ -947,7 +1102,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						case 'colors':
 							$value = request_var($var, '');
-							if (preg_match('#^(?:[A-Z0-9]{6}|[A-Z]{3})$#', $value))
+							if (preg_match('#^(?:[A-F0-9]{6}|[A-F0-9]{3})$#', $value))
 							{
 								$value = '#' . $value;
 							}
@@ -1014,7 +1169,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 
 			// where should we store the CSS?
-			if (!$theme_info['theme_storedb'] && file_exists($stylesheet_path) && is_writeable($stylesheet_path))
+			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($stylesheet_path) && is_writeable($stylesheet_path))
 			{
 				// write stylesheet to file
 				if (!($fp = fopen($stylesheet_path, 'wb')))
@@ -1026,29 +1181,20 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 			else
 			{
-				// match CSS imports
-				preg_match_all('/@import url\(\"(.*)\"\);/i', $stylesheet, $matches);
-
-				if (sizeof($matches))
-				{
-					foreach ($matches[0] as $idx => $match)
-					{
-						$stylesheet = str_replace($match, $this->load_css_file($style_row['theme_path'], $matches[1][$idx]), $stylesheet);
-					}
-				}
-
 				// Write stylesheet to db
 				$sql_ary = array(
 					'theme_mtime'		=> time(),
 					'theme_storedb'		=> 1,
-					'theme_data'		=> str_replace('./', 'styles/' . $theme_info['theme_path'] . '/theme/', $stylesheet),
+					'theme_data'		=> $this->db_theme_data($theme_info, $stylesheet),
 				);
 				$sql = 'UPDATE ' . STYLES_CSS_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE theme_id = ' . $theme_id;
 				$db->sql_query($sql);
 
-				// notify the user if the template was not stored in the db before the mofication
+				$cache->destroy('sql', STYLES_CSS_TABLE);
+
+				// notify the user if the template was not stored in the db before his modification
 				if (!$theme_info['theme_storedb'])
 				{
 					add_log('admin', 'LOG_THEME_EDIT_DETAILS', $theme_info['theme_name']);
@@ -1862,24 +2008,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if (!$style_row['theme_storedb'])
 						{
-							$theme_data = file_get_contents("{$phpbb_root_path}styles/" . $style_row['theme_path'] . '/theme/stylesheet.css');
-
-							// Match CSS imports
-							$matches = array();
-							preg_match_all('/@import url\(\"(.*)\"\);/i', $theme_data, $matches);
-
-							if (sizeof($matches))
-							{
-								foreach ($matches[0] as $idx => $match)
-								{
-									$theme_data = str_replace($match, $this->load_css_file($style_row['theme_path'], $matches[1][$idx]), $theme_data);
-								}
-							}
+							$theme_data = $this->db_theme_data($style_row);
 						}
-
-						if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
+						else if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
 						{
 							$store_db = 1;
+							$theme_data = $style_row['theme_data'];
 
 							if ($fp = @fopen("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css", 'wb'))
 							{
@@ -1887,7 +2021,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							}
 							fclose($fp);
 						}
-						$theme_data = str_replace('./', "styles/{$style_row['theme_path']}/theme/", $theme_data);
 
 						$sql_ary += array(
 							'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css") : 0,
@@ -1901,8 +2034,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 					if ($style_row['template_storedb'] != $store_db)
 					{
-						$filelist = filelist("{$phpbb_root_path}styles/{$style_row['template_path']}/template", '', 'html');
-
 						if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
 						{
 							$sql = 'SELECT *
@@ -1929,6 +2060,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 									WHERE template_id = $style_id";
 								$db->sql_query($sql);
 							}
+						}
+						else if ($store_db)
+						{
+							$filelist = filelist("{$phpbb_root_path}styles/{$style_row['template_path']}/template", '', 'html');
+							$this->store_templates('insert', $style_id, $style_row['template_path'], $filelist);
 						}
 
 						$sql_ary += array(
@@ -2032,6 +2168,50 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	}
 
 	/**
+	* Returns a string containing the value that should be used for the theme_data column in the theme database table.
+	* Includes contents of files loaded via @import
+	*
+	* @param array $theme_row is an associative array containing the theme's current database entry
+	* @param mixed $stylesheet can either be the new content for the stylesheet or false to load from the standard file
+	* @param string $root_path should only be used in case you want to use a different root path than "{$phpbb_root_path}styles/{$theme_row['theme_path']}"
+	*
+	* @return string Stylesheet data for theme_data column in the theme table
+	*/
+	function db_theme_data($theme_row, $stylesheet = false, $root_path = '')
+	{
+		global $phpbb_root_path;
+
+		if (!$root_path)
+		{
+			$root_path = $phpbb_root_path . 'styles/' . $theme_row['theme_path'];
+		}
+
+		if (!$stylesheet)
+		{
+			$stylesheet = '';
+			if (file_exists($root_path . '/theme/stylesheet.css'))
+			{
+				$stylesheet = file_get_contents($root_path . '/theme/stylesheet.css');
+			}
+		}
+
+		// Match CSS imports
+		$matches = array();
+		preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
+
+		if (sizeof($matches))
+		{
+			foreach ($matches[0] as $idx => $match)
+			{
+				$stylesheet = str_replace($match, $this->load_css_file($theme_row['theme_path'], $matches[1][$idx]), $stylesheet);
+			}
+		}
+
+		// adjust paths
+		return str_replace('./', 'styles/' . $theme_row['theme_path'] . '/theme/', $stylesheet);
+	}
+
+	/**
 	* Store template files into db
 	*/
 	function store_templates($mode, $style_id, $name, $filelist)
@@ -2094,6 +2274,75 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$db->sql_query($sql);
 			}
 		}
+	}
+
+	/**
+	* Returns an array containing all template filenames for one template that are currently cached.
+	*
+	* @param string $template_path contains the name of the template's folder in /styles/
+	*
+	* @return array of filenames that exist in /styles/$template_path/template/ (without extension!)
+	*/
+	function template_cache_filelist($template_path)
+	{
+		global $phpbb_root_path, $phpEx, $user;
+
+		$cache_prefix = 'tpl_' . $template_path;
+
+		if (!($dp = @opendir("{$phpbb_root_path}cache")))
+		{
+			trigger_error($user->lang['TEMPLATE_ERR_CACHE_READ']);
+		}
+
+		$file_ary = array();
+		while ($file = readdir($dp))
+		{
+			if (is_file($phpbb_root_path . 'cache/' . $file) && (strpos($file, $cache_prefix) === 0))
+			{
+				$file_ary[] = str_replace('.', '/', preg_replace('#^' . preg_quote($cache_prefix, '#') . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file));
+			}
+		}
+		closedir($dp);
+
+		return $file_ary;
+	}
+
+	/**
+	* Destroys cached versions of template files
+	*
+	* @param array $template_row contains the template's row in the STYLES_TPL_TABLE database table
+	* @param mixed $file_ary is optional and may contain an array of template file names which should be refreshed in the cache.
+	*	The file names should be the original template file names and not the cache file names.
+	*/
+	function clear_template_cache($template_row, $file_ary = false)
+	{
+		global $phpbb_root_path, $phpEx, $user;
+
+		$cache_prefix = 'tpl_' . $template_row['template_path'];
+
+		if (!$file_ary || !is_array($file_ary))
+		{
+			$file_ary = $this->template_cache_filelist($template_row['template_path']);
+			$log_file_list = $user->lang['ALL_FILES'];
+		}
+		else
+		{
+			$log_file_list = implode(', ', $file_ary);
+		}
+
+		foreach ($file_ary as $file)
+		{
+			$file = str_replace('/', '.', $file);
+
+			$file = "{$phpbb_root_path}cache/{$cache_prefix}_$file.html.$phpEx";
+			if (file_exists($file) && is_file($file))
+			{
+				@unlink($file);
+			}
+		}
+		unset($file_ary);
+
+		add_log('admin', 'LOG_TEMPLATE_CACHE_CLEARED', $template_row['template_name'], $log_file_list);
 	}
 
 	/**
@@ -2200,7 +2449,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 			else
 			{
-				$this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $style_row[$mode . '_copyright'], $style_row['store_db']);
+				$style_row['store_db'] = $this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $style_row[$mode . '_copyright'], $style_row['store_db']);
 			}
 
 			if (!sizeof($error))
@@ -2625,18 +2874,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			return false;
 		}
-/*
-		if ($action != 'install')
-		{
-			@mkdir("{$phpbb_root_path}styles/$path", 0777);
-			@chmod("{$phpbb_root_path}styles/$path", 0777);
 
-			if ($root_path)
-			{
-				$this->copy_files("$root_path$type", filelist("$root_path$type", '', '*'), "$path/$type");
-			}
-		}
-*/
 		$sql_ary = array(
 			$mode . '_name'			=> $name,
 			$mode . '_copyright'	=> $copyright,
@@ -2648,18 +2886,22 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			switch ($mode)
 			{
 				case 'template':
+					$store_db = (!is_writeable("{$phpbb_root_path}styles/$path/template")) ? 1 : $store_db;
+
 					// We set a pre-defined bitfield here which we may use further in 3.2
 					$sql_ary += array(
 						'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
-						$mode . '_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/$mode")) ? 1 : 0
+						'template_storedb'	=> $store_db
 					);
 				break;
 
 				case 'theme':
+					$store_db = (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db;
+
 					$sql_ary += array(
-						'theme_storedb'	=> (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db,
-						'theme_data'	=> ($store_db) ? (($root_path) ? str_replace('./', "styles/$path/theme/", file_get_contents("$root_path/$mode/stylesheet.css")) : '') : '',
-						'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css") : 0
+						'theme_storedb'	=> $store_db,
+						'theme_data'	=> ($store_db) ? (($root_path) ? $this->db_theme_data($sql_ary, false, $root_path) : '') : '',
+						'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
 					);
 				break;
 			}
@@ -2697,6 +2939,9 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$log = ($store_db) ? 'LOG_' . $l_type . '_ADD_DB' : 'LOG_' . $l_type . '_ADD_FS';
 		add_log('admin', $log, $name);
+
+		// Return store_db in case it had to be altered
+		return $store_db;
 	}
 
 }

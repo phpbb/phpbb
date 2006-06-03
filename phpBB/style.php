@@ -33,7 +33,7 @@ if (!empty($load_extensions))
 $sid = (isset($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
-if (!preg_match('/^[A-Za-z0-9]*$/', $sid)) 
+if (!preg_match('/^[A-Za-z0-9]*$/', $sid))
 {
 	$sid = '';
 }
@@ -52,7 +52,7 @@ if ($id && $sid)
 
 	$db = new $sql_db();
 	$cache = new cache();
-	
+
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
 	{
@@ -66,7 +66,7 @@ if ($id && $sid)
 	$result = $db->sql_query($sql);
 	$user = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
-	
+
 	if ($user)
 	{
 		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.imageset_path, t.template_path
@@ -84,33 +84,9 @@ if ($id && $sid)
 			exit;
 		}
 
-		/*$force_load = true;	// Ideally this needs to be based on $config['load_tplcompile']
-
-		if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css')  || $force_load)
-		{
-			$theme['theme_data'] = file_get_contents("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
-			
-			// Match CSS imports
-			$matches = array();
-			preg_match_all('/@import url\(\"(.*)\"\);/i', $theme['theme_data'], $matches);
-			
-			if (sizeof($matches))
-			{
-				foreach ($matches[0] as $idx => $match)
-				{
-					$theme['theme_data'] = str_replace($match, file_get_contents("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/' . $matches[1][$idx]), $theme['theme_data']);
-				}
-			}
-			
-			$sql = "UPDATE {$table_prefix}styles_theme 
-				SET theme_data = '" . $db->sql_escape(str_replace('./', "styles/{$theme['theme_path']}/theme/", $theme['theme_data'])) . "', theme_mtime = " . time() . "
-				WHERE theme_id = $id";
-			$db->sql_query($sql);
-		}*/
-
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
-		
+
 		// Parse Theme Data
 		$replace = array(
 			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
