@@ -16,9 +16,8 @@ define('IN_INSTALL', true);
 $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Error reporting level and runtime escaping
-//error_reporting(E_ERROR | E_WARNING | E_PARSE);
-error_reporting(E_ALL);
+// Report all errors, except notices
+error_reporting(E_ALL ^ E_NOTICE);
 
 /*
 * Remove variables created by register_globals from the global scope
