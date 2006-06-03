@@ -1262,6 +1262,41 @@ class install_install extends module
 				}
 			}
 
+			// This is a one off move of a single ACP module since the sort algorithm puts it in the wrong place
+			// Manage Users should ideally be the first thing you see on the Users & groups tab
+			if ($module_class == 'acp')
+			{
+				$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
+					WHERE module_langname = 'ACP_CAT_USERS'
+					AND module_class = 'acp'
+					LIMIT 1";
+				$result = $db->sql_query($sql);
+				$row2 = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sql = 'UPDATE ' . MODULES_TABLE . "
+					SET left_id = left_id + 3, right_id = right_id + 3
+					WHERE module_class = 'acp'
+						AND left_id > {$row2['left_id']}
+						AND left_id < {$row2['right_id']}";
+				$db->sql_query($sql);
+
+				$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
+					WHERE module_langname = 'ACP_MANAGE_USERS'
+					AND module_class = 'acp'
+					LIMIT 1";
+				$result = $db->sql_query($sql);
+				$module_data = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$module_data['left_id'] = $row2['left_id'] + 1;
+				$module_data['right_id'] = $row2['left_id'] + 2;
+
+				$sql = 'UPDATE ' . MODULES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $module_data) . "
+					WHERE module_id = {$module_data['module_id']}";
+				$db->sql_query($sql);
+			}
+	
 			// And now for the special ones
 			// (these are modules which appear in multiple categories and thus get added manually to some for more control)
 			if (isset($this->module_extras[$module_class]))
