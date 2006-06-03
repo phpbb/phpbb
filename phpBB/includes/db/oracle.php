@@ -314,12 +314,12 @@ class dbal_oracle extends dbal
 				$stmt = @ociparse($this->db_connect_id, $query);
 				@ociexecute($stmt, OCI_DEFAULT );
 
-				$temp_result = @ocifetchinto($stmt, $temp_result, OCI_ASSOC + OCI_RETURN_NULLS);
+				$temp_result = @ocifetchinto($stmt, $temp_array, OCI_ASSOC + OCI_RETURN_NULLS);
 				@ocifreestatement($stmt);
 
 				if ($temp_result)
 				{
-					return $temp_result['CURRVAL'];
+					return $temp_array['CURRVAL'];
 				}
 				else
 				{
