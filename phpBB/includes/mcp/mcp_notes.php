@@ -41,6 +41,7 @@ class mcp_notes
 		{
 			case 'front':
 				$template->assign_vars(array(
+					'L_TITLE'			=> $user->lang['MCP_NOTES'],
 					'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp&amp;field=username",
 					'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes",
 					)
@@ -197,6 +198,7 @@ function mcp_notes_user_view($id, $mode, $action)
 		'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 		'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 
+		'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 		'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
 		'PAGINATION'		=> generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
 		'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),

@@ -162,12 +162,16 @@ $lang = array_merge($lang, array(
 	'MCP_REPORTS'					=> 'Reported posts',
 	'MCP_REPORT_DETAILS'			=> 'Report details',
 	'MCP_REPORTS_CLOSED'			=> 'Closed reports',
+	'MCP_REPORTS_CLOSED_EXPLAIN'	=> 'This is a list of all reports about posts which have previously been resolved',
 	'MCP_REPORTS_OPEN'				=> 'Open reports',
+	'MCP_REPORTS_OPEN_EXPLAIN'		=> 'This is a list of all reported posts which are still to be handled',
 
-	'MCP_QUEUE'						=> 'Moderation queue',
-	'MCP_QUEUE_APPROVE_DETAILS'		=> 'Approve details',
-	'MCP_QUEUE_UNAPPROVED_POSTS'	=> 'Posts awaiting approval',
-	'MCP_QUEUE_UNAPPROVED_TOPICS'	=> 'Topics awaiting approval',
+	'MCP_QUEUE'								=> 'Moderation queue',
+	'MCP_QUEUE_APPROVE_DETAILS'				=> 'Approve details',
+	'MCP_QUEUE_UNAPPROVED_POSTS'			=> 'Posts awaiting approval',
+	'MCP_QUEUE_UNAPPROVED_POSTS_EXPLAIN'	=> 'This is a list of all posts which require approving before they will be visible to users',
+	'MCP_QUEUE_UNAPPROVED_TOPICS'			=> 'Topics awaiting approval',
+	'MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'	=> 'This is a list of all topics which require approving before they will be visible to users',
 
 	'MCP_VIEW_ALL'			=> 'View all (%s)',
 	'MCP_VIEW_LOGS'			=> 'View logs',
@@ -319,6 +323,7 @@ $lang = array_merge($lang, array(
 	'VIEW_DETAILS'			=> 'View details',
 
 	'WARNED_USERS'			=> 'Warned users',
+	'WARNED_USERS_EXPLAIN'	=> 'This is a list of users with unexpired warnings issued to them',
 	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
 	'WARNING_PM_SUBJECT'	=> 'Board Warning Issued',
 	'WARNINGS_ZERO_TOTAL'	=> 'No warnings exists',
