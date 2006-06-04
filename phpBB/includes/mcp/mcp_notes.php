@@ -35,6 +35,8 @@ class mcp_notes
 			list($action, ) = each($action);
 		}
 
+		$this->page_title = 'MCP_NOTES';
+
 		switch ($mode)
 		{
 			case 'front':

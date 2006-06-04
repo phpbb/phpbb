@@ -35,6 +35,8 @@ class mcp_warn
 			list($action, ) = each($action);
 		}
 
+		$this->page_title = 'MCP_WARN';
+
 		switch ($mode)
 		{
 			case 'front':

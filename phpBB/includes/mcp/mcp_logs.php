@@ -53,6 +53,7 @@ class mcp_logs
 		$sort_dir	= request_var('sd', 'd');
 
 		$this->tpl_name = 'mcp_logs';
+		$this->page_title = 'MCP_LOGS';
 
 		$forum_id = $topic_id = 0;
 		switch ($mode)

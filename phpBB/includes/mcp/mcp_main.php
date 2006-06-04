@@ -135,6 +135,7 @@ class mcp_main
 				mcp_front_view($id, $mode, $action);
 
 				$this->tpl_name = 'mcp_front';
+				$this->page_title = 'MCP_MAIN';
 			break;
 
 			case 'forum_view':
@@ -157,6 +158,7 @@ class mcp_main
 				mcp_forum_view($id, $mode, $action, $forum_info);
 
 				$this->tpl_name = 'mcp_forum';
+				$this->page_title = 'MCP_MAIN_FORUM_VIEW';
 			break;
 
 			case 'topic_view':
@@ -165,6 +167,7 @@ class mcp_main
 				mcp_topic_view($id, $mode, $action);
 
 				$this->tpl_name = 'mcp_topic';
+				$this->page_title = 'MCP_MAIN_TOPIC_VIEW';
 			break;
 
 			case 'post_details':
@@ -180,6 +183,7 @@ class mcp_main
 				{
 					$this->tpl_name = 'mcp_post';
 				}
+				$this->page_title = 'MCP_MAIN_POST_DETAILS';
 			break;
 
 			default:

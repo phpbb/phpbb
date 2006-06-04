@@ -33,6 +33,8 @@ class mcp_queue
 		$forum_id = request_var('f', 0);
 		$start = request_var('start', 0);
 
+		$this->page_title = 'MCP_QUEUE';
+
 		switch ($action)
 		{
 			case 'approve':

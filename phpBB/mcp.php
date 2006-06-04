@@ -214,13 +214,8 @@ $module->load_active();
 $module->assign_tpl_vars("mcp.$phpEx$SID");
 
 // Generate the page
-page_header($user->lang['MCP_MAIN']);
+$module->display($module->get_page_title());
 
-$template->set_filenames(array(
-	'body' => $module->get_tpl_name())
-);
-
-page_footer();
 
 /**
 * Functions used to generate additional URL paramters
