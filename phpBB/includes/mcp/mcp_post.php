@@ -74,7 +74,7 @@ function mcp_post_details($id, $mode, $action)
 				trigger_error($user->lang['NO_USER']);
 			}
 
-			if ($auth->acl_get('m_', $post_info['forum_id']))
+			if ($auth->acl_get('m_chgposter', $post_info['forum_id']))
 			{
 				change_poster($post_info, $row);
 			}
@@ -104,14 +104,14 @@ function mcp_post_details($id, $mode, $action)
 		'U_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id",
 
 		'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
-		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_', $post_info['forum_id']),
+		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_chgposter', $post_info['forum_id']),
 		'S_CAN_LOCK_POST'		=> $auth->acl_get('m_lock', $post_info['forum_id']),
 		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
 
 		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
 		'S_POST_UNAPPROVED'		=> (!$post_info['post_approved']) ? true : false,
 		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
-		'S_USER_NOTES'			=> ($auth->acl_gets('m_', 'a_')) ? true : false,
+		'S_USER_NOTES'			=> true,
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 
 		'U_FIND_MEMBER'			=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp_chgposter&amp;field=username",

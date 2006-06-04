@@ -546,7 +546,7 @@ class acp_users
 							$sql = 'SELECT forum_name
 								FROM ' . FORUMS_TABLE . "
 								WHERE forum_id = $new_forum_id";
-							$result = $db->sql_query($sql);
+							$result = $db->sql_query($sql, 3600);
 							$forum_info = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
 

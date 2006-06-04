@@ -913,21 +913,44 @@ class acp_permissions
 	{
 		global $db, $template, $user, $auth;
 
-		$sql = 'SELECT user_id, username, user_type
-			FROM ' . USERS_TABLE . '
-			WHERE user_id = ' . $user_id;
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		if ($user_id != $user->data['user_id'])
+		{
+			$sql = 'SELECT user_id, user_permissions, user_type
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$userdata = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+		else
+		{
+			$userdata = $user->data;
+		}
 
-		if (!$user_row)
+		if (!$userdata)
 		{
 			trigger_error('NO_USERS');
 		}
 
+		$forum_name = false;
+
+		if ($forum_id)
+		{
+			$sql = 'SELECT forum_name
+				FROM ' . FORUMS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$result = $db->sql_query($sql, 3600);
+			$forum_name = $db->sql_fetchfield('forum_name', false, $result);
+			$db->sql_freeresult($result);
+		}
+
+		$back = request_var('back', 0);
+
 		$template->assign_vars(array(
 			'PERMISSION'			=> $user->lang['acl_' . $permission]['lang'],
-			'PERMISSION_USERNAME'	=> $user_row['username'])
+			'PERMISSION_USERNAME'	=> $userdata['username'],
+			'FORUM_NAME'			=> $forum_name,
+			'U_BACK'					=> ($back) ? build_url(array('f', 'back')) . "&amp;f=$back" : '')
 		);
 
 		$template->assign_block_vars('trace', array(
@@ -1023,19 +1046,56 @@ class acp_permissions
 		}
 
 		$template->assign_block_vars('trace', array(
-			'WHO'			=> $user_row['username'],
+			'WHO'			=> $userdata['username'],
 			'INFORMATION'	=> $information,
 
 			'S_SETTING_UNSET'	=> ($auth_setting == ACL_UNSET) ? true : false,
 			'S_SETTING_YES'		=> ($auth_setting == ACL_YES) ? true : false,
 			'S_SETTING_NO'		=> ($auth_setting == ACL_NO) ? true : false,
-			'S_TOTAL_UNSET'		=> ($total == ACL_UNSET) ? true : false,
+			'S_TOTAL_UNSET'		=> false,
 			'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
 			'S_TOTAL_NO'		=> ($total == ACL_NO) ? true : false)
 		);
 
+		// global permission might overwrite local permission
+		if (($forum_id != 0) && isset($auth->acl_options['global'][$permission]))
+		{
+			if ($user_id != $user->data['user_id'])
+			{
+				$auth2 = new auth();
+				$auth2->acl($userdata);
+				$auth_setting = $auth2->acl_get($permission);
+			}
+			else
+			{
+				$auth_setting = $auth->acl_get($permission);
+			}
+
+			if ($auth_setting)
+			{
+				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_YES'] : $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_NO'];
+				$total = ACL_YES;
+			}
+			else
+			{
+				$information = $user->lang['TRACE_USER_GLOBAL_NO_TOTAL_KEPT'];
+			}
+
+			$template->assign_block_vars('trace', array(
+				'WHO'			=> sprintf($user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
+				'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
+
+				'S_SETTING_UNSET'	=> false,
+				'S_SETTING_YES'		=> $auth_setting,
+				'S_SETTING_NO'		=> !$auth_setting,
+				'S_TOTAL_UNSET'		=> false,
+				'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
+				'S_TOTAL_NO'		=> ($total == ACL_NO) ? true : false)
+			);
+		}
+
 		// Take founder status into account, overwriting the default values
-		if ($user_row['user_type'] == USER_FOUNDER && strpos($permission, 'a_') === 0)
+		if ($userdata['user_type'] == USER_FOUNDER && strpos($permission, 'a_') === 0)
 		{
 			$template->assign_block_vars('trace', array(
 				'WHO'			=> $user_row['username'],

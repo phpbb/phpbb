@@ -86,7 +86,7 @@ class acm
 			include($this->cache_dir . $entry);
 			if ($expired)
 			{
-				unlink($this->cache_dir . $entry);
+				@unlink($this->cache_dir . $entry);
 			}
 		}
 		@closedir($dir);
@@ -174,7 +174,7 @@ class acm
 
 				if (preg_match('#/\*.*?\W' . $regex . '\W.*?\*/#s', $file, $m))
 				{
-					unlink($this->cache_dir . $entry);
+					@unlink($this->cache_dir . $entry);
 				}
 			}
 			@closedir($dir);
@@ -271,7 +271,7 @@ class acm
 		}
 		else if ($expired)
 		{
-			unlink($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+			@unlink($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
 			return false;
 		}
 

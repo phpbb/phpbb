@@ -2,17 +2,19 @@
 
 <div style="background-color: #fff; padding: 10px; margin-top: 10px;" class="permissions">
 
-	<h3>Trace for: {PERMISSION_USERNAME} / {PERMISSION}</h3>
+	<!-- IF U_BACK --><a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a><!-- ENDIF -->
+
+	<h3>{L_TRACE_FOR}: {PERMISSION_USERNAME} / <!-- IF FORUM_NAME -->{FORUM_NAME} / <!-- ENDIF -->{PERMISSION} </h3>
 
 	<br />
 
 	<table cellspacing="1" class="type1">
 	<thead>
 	<tr>
-		<th>Who</th>
-		<th style="width: 50px;">Setting</th>
-		<th style="width: 50px;">Total</th>
-		<th>Information</th>
+		<th>{L_TRACE_WHO}</th>
+		<th style="width: 50px;">{L_ACL_SETTING}</th>
+		<th style="width: 50px;">{L_TRACE_TOTAL}</th>
+		<th>{L_INFORMATION}</th>
 	</tr>
 	</thead>
 	<tbody>

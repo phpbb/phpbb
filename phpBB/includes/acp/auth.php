@@ -85,9 +85,10 @@ class auth_admin extends auth
 	*/
 	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NO)
 	{
-		global $db;
+		global $db, $user;
 
 		$hold_ary = array();
+		$view_user_mask = ($mode == 'view' && $group_id === false) ? true : false;
 
 		if ($auth_option === false || $scope === false)
 		{
@@ -96,18 +97,60 @@ class auth_admin extends auth
 
 		$acl_user_function = ($mode == 'set') ? 'acl_user_raw_data' : 'acl_raw_data';
 
-		if ($forum_id !== false)
+		if (!$view_user_mask)
 		{
-			$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', $forum_id) : $this->$acl_user_function($user_id, $auth_option . '%', $forum_id);
-		}
-		else
-		{
-			$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', ($scope == 'global') ? 0 : false) : $this->$acl_user_function($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
+			if ($forum_id !== false)
+			{
+				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', $forum_id) : $this->$acl_user_function($user_id, $auth_option . '%', $forum_id);
+			}
+			else
+			{
+				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', ($scope == 'global') ? 0 : false) : $this->$acl_user_function($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
+			}
 		}
 
 		// Make sure hold_ary is filled with every setting (prevents missing forums/users/groups)
 		$ug_id = ($group_id !== false) ? ((!is_array($group_id)) ? array($group_id) : $group_id) : ((!is_array($user_id)) ? array($user_id) : $user_id);
 		$forum_ids = ($forum_id !== false) ? ((!is_array($forum_id)) ? array($forum_id) : $forum_id) : (($scope == 'global') ? array(0) : array());
+
+		// Only those options we need
+		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), array(''));
+
+		if ($view_user_mask)
+		{
+			$auth2 = null;
+
+			$sql = 'SELECT user_id, user_permissions, user_type
+				FROM ' . USERS_TABLE . '
+				WHERE user_id IN (' . implode(',', $ug_id) . ')';
+			$result = $db->sql_query($sql);
+			while ($userdata = $db->sql_fetchrow($result))
+			{
+				if ($user->data['user_id'] != $user_id)
+				{
+					$auth2 = new auth();
+					$auth2->acl($userdata);
+				}
+				else
+				{
+					global $auth;
+					$auth2 = &$auth;
+				}
+
+				$hold_ary[$userdata['user_id']] = array();
+				foreach ($forum_ids as $f_id)
+				{
+					$hold_ary[$userdata['user_id']][$f_id] = array();
+					foreach ($compare_options as $option)
+					{
+						$hold_ary[$userdata['user_id']][$f_id][$option] = $auth2->acl_get($option, $f_id);
+					}
+				}
+			}
+			$db->sql_freeresult($result);
+			unset($userdata);
+			unset($auth2);
+		}
 
 		// If forum_ids is false and the scope is local we actually want to have all forums within the array
 		if ($scope == 'local' && !sizeof($forum_ids))
@@ -140,9 +183,6 @@ class auth_admin extends auth
 		}
 
 		// Now, we need to fill the gaps with $acl_fill. ;)
-
-		// Only those options we need
-		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), array(''));
 
 		// Now switch back to keys
 		if (sizeof($compare_options))
@@ -422,7 +462,7 @@ class auth_admin extends auth
 						$title = ($role_description) ? ' title="' . $role_description . '"' : '';
 						$s_role_options .= '<option value="' . $role_id . '"' . (($role_id == $current_role_id) ? ' selected="selected"' : '') . $title . '>' . $role_row['role_name'] . '</option>';
 					}
-					
+
 					if ($s_role_options)
 					{
 						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . '>' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;

@@ -1721,7 +1721,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 	$sql = 'SELECT forum_name
 		FROM ' . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
-	$result = $db->sql_query($sql);
+	$result = $db->sql_query($sql, 3600);
 
 	if ($row = $db->sql_fetchrow($result))
 	{
