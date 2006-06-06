@@ -24,45 +24,48 @@
 </div>
 
 <!-- IF .log -->
-<table cellspacing="1">
-<thead>
-<tr>
-	<th>{L_USERNAME}</th>
-	<th>{L_IP}</th>
-	<th>{L_TIME}</th>
-	<th>{L_ACTION}</th>
-	<th>{L_MARK}</th>
-</tr>
-</thead>
-<tbody>
-<!-- BEGIN log -->
-	<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
-		<td>
-			{log.USERNAME}
-			<!-- IF log.REPORTEE_USERNAME -->
-			<br />&raquo; {log.REPORTEE_USERNAME}
-			<!-- ENDIF -->
-		</td>
-		<td style="text-align: center;">{log.IP}</td>
-		<td style="text-align: center;">{log.DATE}</td>
-		<td>{log.ACTION}<!-- IF log.DATA --><br />{log.DATA}</span><!-- ENDIF --></td>
-		<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{log.ID}" /></td>
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_USERNAME}</th>
+		<th>{L_IP}</th>
+		<th>{L_TIME}</th>
+		<th>{L_ACTION}</th>
+		<th>{L_MARK}</th>
 	</tr>
-<!-- END log -->
-</tbody>
-</table>
+	</thead>
+	<tbody>
+	<!-- BEGIN log -->
+		<!-- IF log.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+
+			<td>
+				{log.USERNAME}
+				<!-- IF log.REPORTEE_USERNAME -->
+				<br />&raquo; {log.REPORTEE_USERNAME}
+				<!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">{log.IP}</td>
+			<td style="text-align: center;">{log.DATE}</td>
+			<td>{log.ACTION}<!-- IF log.DATA --><br />{log.DATA}</span><!-- ENDIF --></td>
+			<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{log.ID}" /></td>
+		</tr>
+	<!-- END log -->
+	</tbody>
+	</table>
+
 <!-- ELSE -->
+
 	<div class="errorbox">
 		<p>{L_NO_ENTRIES}</p>
 	</div>
+
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_FORUMS -->
-<fieldset class="quick" style="float: left;">
-	{L_SELECT_FORUM}: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{S_FORUM_BOX}</select>
-	<input class="button2" type="submit" value="{L_GO}" />
-</fieldset>
+	<fieldset class="quick" style="float: left;">
+		{L_SELECT_FORUM}: <select name="f" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{S_FORUM_BOX}</select>
+		<input class="button2" type="submit" value="{L_GO}" />
+	</fieldset>
 <!-- ENDIF -->
 
 <!-- IF S_CLEARLOGS -->

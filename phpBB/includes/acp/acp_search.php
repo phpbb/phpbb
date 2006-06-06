@@ -40,7 +40,7 @@ class acp_search
 	function settings($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
@@ -148,7 +148,7 @@ class acp_search
 							{
 								add_log('admin', 'LOG_CONFIG_SEARCH');
 							}
-							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . "<br /><a href=\"{$phpbb_admin_path}index.$phpEx$SID&amp;i=search&amp;mode=index\">&raquo; " . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
+							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
 						}
 						else
 						{
@@ -197,7 +197,7 @@ class acp_search
 	function index($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		if (isset($_REQUEST['action']) && is_array($_REQUEST['action']))
 		{
@@ -258,7 +258,7 @@ class acp_search
 				if (method_exists($this->search, 'delete_index'))
 				{
 					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->delete_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=delete"))
+					if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete", false)))
 					{
 						$this->state = array('');
 						$this->save_state();
@@ -293,7 +293,7 @@ class acp_search
 	
 					if ($post_counter <= $this->max_post_id)
 					{
-						redirect($phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=delete", 3);
+						redirect($this->u_action . '&amp;action=delete', 3);
 					}
 				}
 	
@@ -309,7 +309,7 @@ class acp_search
 				if (method_exists($this->search, 'create_index'))
 				{
 					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->create_index($this, $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=create"))
+					if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create", false)))
 					{
 						$this->state = array('');
 						$this->save_state();
@@ -337,7 +337,7 @@ class acp_search
 	
 					if ($post_counter <= $this->max_post_id)
 					{
-						redirect($phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=create", 3);
+						redirect($this->u_action . '&amp;action=create', 3);
 					}
 				}
 	
@@ -415,15 +415,15 @@ class acp_search
 		$template->assign_vars(array(
 			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->u_action,
-			'U_PROGRESS_BAR'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=progress_bar",
-			'UA_PROGRESS_BAR'		=> $phpbb_admin_path . "index.$phpEx$SID&i=$id&mode=$mode&action=progress_bar")
+			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
+			'UA_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=progress_bar", false))
 		);
 
 		if (isset($this->state[1]))
 		{
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
-				'U_CONTINUE_INDEXING'	=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;action=" . $this->state[1],
+				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1],
 				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_INDEX_DELETING'],
 				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_INDEX_DELETING_EXPLAIN'])
 			);

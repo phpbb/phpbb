@@ -16,9 +16,9 @@ define('NEED_SID', true);
 // Include files
 $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-require($phpbb_root_path . 'common.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_module.'.$phpEx);
+require($phpbb_root_path . 'common.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -58,6 +58,7 @@ $mode			= request_var('mode', '');
 // Set custom template for admin area
 $template->set_custom_template($phpbb_admin_path . 'style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
+
 // the acp template is never stored in the database
 $user->theme['template_storedb'] = false;
 
@@ -75,7 +76,7 @@ $module->set_active($module_id, $mode);
 
 // Assign data to the template engine for the list of modules
 // We do this before loading the active module for correct menu display in trigger_error
-$module->assign_tpl_vars("{$phpbb_admin_path}index.$phpEx$SID");
+$module->assign_tpl_vars(append_sid("{$phpbb_admin_path}index.$phpEx"));
 
 // Load and execute the relevant module
 $module->load_active();
@@ -89,19 +90,19 @@ $template->set_filenames(array(
 
 adm_page_footer();
 
-// ---------
-// FUNCTIONS
-//
+/**
+* Header for acp pages
+*/
 function adm_page_header($page_title)
 {
 	global $config, $db, $user, $template;
-	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID;
+	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
 
 	if (defined('HEADER_INC'))
 	{
 		return;
 	}
-	
+
 	define('HEADER_INC', true);
 
 	// gzip_compression
@@ -116,17 +117,20 @@ function adm_page_header($page_title)
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
 		'USERNAME'				=> $user->data['username'],
+
+		'SID'					=> $SID,
+		'_SID'					=> $_SID,
+		'SESSION_ID'			=> $user->session_id,
 		'ROOT_PATH'				=> $phpbb_admin_path,
 
-		'U_LOGOUT'				=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=logout",
-		'U_ADM_INDEX'			=> "{$phpbb_admin_path}index.$phpEx$SID",
-		'U_INDEX'				=> "{$phpbb_root_path}index.$phpEx$SID",
+		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
+		'U_ADM_INDEX'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
+		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 
-		'S_CONTENT_DIRECTION' 	=> $user->lang['DIRECTION'],
-		'S_CONTENT_ENCODING' 	=> $user->lang['ENCODING'],
-		'S_CONTENT_DIR_LEFT' 	=> $user->lang['LEFT'],
-		'S_CONTENT_DIR_RIGHT' 	=> $user->lang['RIGHT'],
-		)
+		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_CONTENT_ENCODING'	=> $user->lang['ENCODING'],
+		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
+		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'])
 	);
 
 	if (!empty($config['send_encoding']))
@@ -140,10 +144,13 @@ function adm_page_header($page_title)
 	return;
 }
 
+/**
+* Page footer for acp pages
+*/
 function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth, $cache;
-	global $SID, $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+	global $starttime, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -179,8 +186,7 @@ function adm_page_footer($copyright_html = true)
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
-		'VERSION'			=> $config['version']
-		)
+		'VERSION'			=> $config['version'])
 	);
 
 	$template->display('body');
@@ -197,12 +203,18 @@ function adm_page_footer($copyright_html = true)
 	exit;
 }
 
+/**
+* Generate back link for acp pages
+*/
 function adm_back_link($u_action)
 {
 	global $user;
 	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $user->lang['BACK_TO_PREV'] . '</a>';
 }
 
+/**
+* Build select field options in acp pages
+*/
 function build_select($option_ary, $option_default = false)
 {
 	global $user;
@@ -217,6 +229,9 @@ function build_select($option_ary, $option_default = false)
 	return $html;
 }
 
+/**
+* Build radio fields in acp pages
+*/
 function h_radio($name, &$input_ary, $input_default = false, $id = false, $key = false)
 {
 	global $user;
@@ -234,6 +249,9 @@ function h_radio($name, &$input_ary, $input_default = false, $id = false, $key =
 	return $html;
 }
 
+/**
+* Build configuration template for acp configuration pages
+*/
 function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 {
 	global $user, $module;
@@ -249,21 +267,21 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$maxlength = (int) $tpl_type[2];
 
 			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new[$config_key] . '" />';
-			break;
+		break;
 
 		case 'dimension':
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
 			$tpl = '<input id="' . $key . '" type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="config[' . $config_key . '_height]" value="' . $new[$config_key . '_height'] . '" /> x <input type="text"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="config[' . $config_key . '_width]" value="' . $new[$config_key . '_width'] . '" />';
-			break;
+		break;
 
 		case 'textarea':
 			$rows = (int) $tpl_type[1];
 			$cols = (int) $tpl_type[2];
 
 			$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new[$config_key] . '</textarea>';
-			break;
+		break;
 
 		case 'radio':
 			$key_yes	= ($new[$config_key]) ? ' checked="checked"' : '';
@@ -276,7 +294,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$tpl_yes = '<input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']);
 
 			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
-			break;
+		break;
 
 		case 'select':
 		case 'custom':
@@ -295,7 +313,7 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			{
 				break;
 			}
-			
+
 			if (isset($vars['params']))
 			{
 				$args = array();
@@ -331,17 +349,17 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 				$tpl = $return;
 			}
 
-			break;
+		break;
 
 		default:
-			break;
+		break;
 	}
 
 	if (isset($vars['append']))
 	{
 		$tpl .= $vars['append'];
 	}
-	
+
 	return $tpl;
 }
 

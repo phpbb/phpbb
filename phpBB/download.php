@@ -14,7 +14,7 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'common.' . $phpEx);
 
 $download_id = request_var('id', 0);
 
@@ -65,7 +65,7 @@ if (!$attachment['in_message'])
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if ($auth->acl_gets('f_download', 'u_download', $row['forum_id']))
+	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
 	{
 		if ($row['forum_password'])
 		{
@@ -138,7 +138,7 @@ if ($download_mode == PHYSICAL_LINK)
 		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 	}
 
-	redirect($config['upload_path'] . '/' . $attachment['physical_filename']);
+	redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
 	exit;
 }
 else
@@ -234,10 +234,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		// PHP track_errors setting On?
 		if (!empty($php_errormsg))
 		{
-			trigger_error('Unable to deliver file.<br />Error was: ' . $php_errormsg, E_USER_WARNING);
+			trigger_error('Unable to deliver file.<br />Error was: ' . $php_errormsg, E_USER_ERROR);
 		}
 
-		trigger_error('Unable to deliver file.', E_USER_WARNING);
+		trigger_error('Unable to deliver file.', E_USER_ERROR);
 	}
 
 	flush();
@@ -342,7 +342,6 @@ function download_allowed()
 				}
 			}
 		}
-
 		$db->sql_freeresult($result);
 	}
 	

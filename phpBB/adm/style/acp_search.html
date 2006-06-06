@@ -3,14 +3,14 @@
 <a name="maincontent"></a>
 
 <!-- IF S_SETTINGS -->
-<h1>{L_ACP_SEARCH_SETTINGS}</h1>
+	<h1>{L_ACP_SEARCH_SETTINGS}</h1>
 
-<p>{L_ACP_SEARCH_SETTINGS_EXPLAIN}</p>
+	<p>{L_ACP_SEARCH_SETTINGS_EXPLAIN}</p>
 
-<form id="acp_search" method="post" action="{U_ACTION}">
-<fieldset>
-	<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
+	<form id="acp_search" method="post" action="{U_ACTION}">
 
+	<fieldset>
+		<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
 	<dl>
 		<dt><label for="load_search">{L_YES_SEARCH}:</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
 		<dd><input type="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_YES}&nbsp;&nbsp;<input type="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> class="radio" />&nbsp;{L_NO}</dd>
@@ -35,89 +35,103 @@
 		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}:</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
 		<dd><input id="search_store_results" type="text" size="4" maxlength="6" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /></dd>
 	</dl>
-</fieldset>
+	</fieldset>
 
-<fieldset>
-	<legend>{L_SEARCH_TYPE}</legend>
-
+	<fieldset>
+		<legend>{L_SEARCH_TYPE}</legend>
 	<dl>
 		<dt><label for="search_type">{L_SEARCH_TYPE}:</label><br /><span>{L_SEARCH_TYPE_EXPLAIN}</span></dt>
 		<dd><select id="search_type" name="config[search_type]">{S_SEARCH_TYPES}</select></dd>
 	</dl>
-</fieldset>
+	</fieldset>
 
-<!-- BEGIN backend -->
-<fieldset>
-	<legend>{backend.NAME}</legend>
+	<!-- BEGIN backend -->
 
-	{backend.SETTINGS}
-</fieldset>
-<!-- END backend -->
+		<fieldset>
+			<legend>{backend.NAME}</legend>
+		{backend.SETTINGS}
+		</fieldset>
 
-<fieldset class="submit-buttons">
-	<input class="button1" type="submit" id="submit" name="submit" value="Submit" />&nbsp;
-	<input class="button2" type="reset" id="reset" name="reset" value="Reset" />
-</fieldset>
+	<!-- END backend -->
 
-</form>
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="Submit" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="Reset" />
+	</fieldset>
+
+	</form>
 
 <!-- ELSEIF S_INDEX -->
-<script language="javascript" type="text/javascript">
-<!--
-	function popup_progress_bar(progress_type)
-	{
-	    close_waitscreen = 0;
-		window.open('{UA_PROGRESS_BAR}&type=' + progress_type, '_index', 'HEIGHT=240,resizable=yes,scrollbars=no,WIDTH=400');
-	}
-//-->
-</script>
 
-<h1>{L_ACP_SEARCH_INDEX}</h1>
+	<script type="text/javascript">
+	<!--
 
-<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
+		/**
+		* Popup search progress bar
+		*/
+		function popup_progress_bar(progress_type)
+		{
+			close_waitscreen = 0;
+			window.open('{UA_PROGRESS_BAR}&type=' + progress_type, '_index', 'HEIGHT=240,resizable=yes,scrollbars=no,WIDTH=400');
+		}
+	//-->
+	</script>
 
-<!-- IF S_CONTINUE_INDEXING -->
-	<a href="{U_CONTINUE_INDEXING}" onclick="javascript:popup_progress_bar('{S_CONTINUE_INDEXING}');">{L_CONTINUE}</a>
+	<h1>{L_ACP_SEARCH_INDEX}</h1>
 
-	<p>{L_CONTINUE_EXPLAIN}</p>
-<!-- ELSE -->
-<!-- BEGIN backend -->
-<!-- IF backend.S_STATS -->
-<table cellspacing="1">
-	<caption>&raquo; {L_INDEX_STATS}: {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></caption>
-	<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
-	<thead>
-	<tr>
-		<th>{L_STATISTIC}</th>
-		<th>{L_VALUE}</th>
-		<th>{L_STATISTIC}</th>
-		<th>{L_VALUE}</th>
-	</tr>
-	</thead>
-	<tbody>
-	<!-- BEGIN data -->
-	<tr>
-		<td>{backend.data.STATISTIC_1}:</td>
-		<td>{backend.data.VALUE_1}</td>
-		<td>{backend.data.STATISTIC_2}<!-- IF backend.data.STATISTIC_2 -->:<!-- ENDIF --></td>
-		<td>{backend.data.VALUE_2}</td>
-	</tr>
-	<!-- END data -->
-	</tbody>
-</table>
-<!-- ENDIF -->
-<form id="acp_search_index_{backend.NAME}" method="post" action="{U_ACTION}">
-{backend.S_HIDDEN_FIELDS}
-	<fieldset class="quick">
-		<!-- IF backend.S_INDEXED -->
-			<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="javascript:popup_progress_bar('delete')" />
-		<!-- ELSE -->
-			<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="javascript:popup_progress_bar('create')" />
-		<!-- ENDIF -->
-	</fieldset>
-</form>
-<!-- END backend -->
-<!-- ENDIF -->
+	<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
+
+	<!-- IF S_CONTINUE_INDEXING -->
+		<a href="{U_CONTINUE_INDEXING}" onclick="javascript:popup_progress_bar('{S_CONTINUE_INDEXING}');">{L_CONTINUE}</a>
+
+		<p>{L_CONTINUE_EXPLAIN}</p>
+	<!-- ELSE -->
+
+		<!-- BEGIN backend -->
+
+			<!-- IF backend.S_STATS -->
+			
+				<table cellspacing="1">
+					<caption>&raquo; {L_INDEX_STATS}: {backend.L_NAME} <!-- IF backend.S_ACTIVE -->({L_ACTIVE}) <!-- ENDIF --></caption>
+					<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
+				<thead>
+				<tr>
+					<th>{L_STATISTIC}</th>
+					<th>{L_VALUE}</th>
+					<th>{L_STATISTIC}</th>
+					<th>{L_VALUE}</th>
+				</tr>
+				</thead>
+				<tbody>
+				<!-- BEGIN data -->
+					<tr>
+						<td>{backend.data.STATISTIC_1}:</td>
+						<td>{backend.data.VALUE_1}</td>
+						<td>{backend.data.STATISTIC_2}<!-- IF backend.data.STATISTIC_2 -->:<!-- ENDIF --></td>
+						<td>{backend.data.VALUE_2}</td>
+					</tr>
+				<!-- END data -->
+				</tbody>
+				</table>
+			
+			<!-- ENDIF -->
+			
+			<form id="acp_search_index_{backend.NAME}" method="post" action="{U_ACTION}">
+				{backend.S_HIDDEN_FIELDS}
+		
+			<fieldset class="quick">
+			<!-- IF backend.S_INDEXED -->
+				<input class="button2" type="submit" name="action[delete]" value="{L_DELETE_INDEX}" onclick="javascript:popup_progress_bar('delete')" />
+			<!-- ELSE -->
+				<input class="button2" type="submit" name="action[create]" value="{L_CREATE_INDEX}" onclick="javascript:popup_progress_bar('create')" />
+			<!-- ENDIF -->
+			</fieldset>
+			
+			</form>
+		<!-- END backend -->
+
+	<!-- ENDIF -->
+
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

@@ -33,9 +33,11 @@
 */
 class ucp_pm
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
-		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $SID, $config;
+		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config;
 		
 		if (!$user->data['is_registered'])
 		{
@@ -95,8 +97,9 @@ class ucp_pm
 				$template->assign_vars(array(
 					'MESSAGE'			=> $l_new_message,
 					'S_NOT_LOGGED_IN'	=> ($user->data['user_id'] == ANONYMOUS) ? true : false,
-					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;i=pm&amp;folder=inbox" onclick="jump_to_inbox();return false;" target="_new">', '</a>'),
-					'U_INBOX'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox")
+					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>'),
+					'U_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
+					'UA_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false))
 				);
 				
 				$tpl_file = 'ucp_pm_popup';
@@ -330,24 +333,23 @@ class ucp_pm
 
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);
-				$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode";
 
 				$template->assign_vars(array(
 					'CUR_FOLDER_ID'			=> $folder_id,
 					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
 					'NUM_NOT_MOVED'			=> $num_not_moved,
-					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $url . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
+					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
 					'NOT_MOVED_MESSAGES'	=> ($num_not_moved == 1) ? $user->lang['NOT_MOVED_MESSAGE'] : sprintf($user->lang['NOT_MOVED_MESSAGES'], $num_not_moved),
 
 					'S_FOLDER_OPTIONS'		=> $s_folder_options,
 					'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,
-					'S_FOLDER_ACTION'		=> "$url&amp;action=view_folder",
-					'S_PM_ACTION'			=> "$url&amp;action=$action",
+					'S_FOLDER_ACTION'		=> $this->u_action . '&amp;action=view_folder',
+					'S_PM_ACTION'			=> $this->u_action . '&amp;action=' . $action,
 
-					'U_INBOX'				=> "$url&amp;folder=inbox",
-					'U_OUTBOX'				=> "$url&amp;folder=outbox",
-					'U_SENTBOX'				=> "$url&amp;folder=sentbox",
-					'U_CREATE_FOLDER'		=> "$url&amp;mode=options",
+					'U_INBOX'				=> $this->u_action . '&amp;folder=inbox',
+					'U_OUTBOX'				=> $this->u_action . '&amp;folder=outbox',
+					'U_SENTBOX'				=> $this->u_action . '&amp;folder=sentbox',
+					'U_CREATE_FOLDER'		=> $this->u_action . '&amp;mode=options',
 
 					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,
@@ -393,7 +395,7 @@ class ucp_pm
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_PM_' . strtoupper($mode)],
-			'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode" . ((isset($action)) ? "&amp;action=$action" : ''))
+			'S_UCP_ACTION'		=> $this->u_action . ((isset($action)) ? "&amp;action=$action" : ''))
 		);
 
 		// Set desired template

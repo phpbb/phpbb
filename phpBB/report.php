@@ -14,8 +14,8 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_display.'.$phpEx);
+include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -26,13 +26,14 @@ $post_id = request_var('p', 0);
 $reason_id = request_var('reason_id', 0);
 $report_text = request_var('report_text', '', true);
 $user_notify = (isset($_POST['notify']) && $user->data['is_registered']) ? true : false;
+$submit = (isset($_POST['submit'])) ? true : false;
 
 if (!$post_id)
 {
 	trigger_error('INVALID_MODE');
 }
 
-$redirect_url = "viewtopic.$phpEx$SID&p=$post_id#p$post_id";
+$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=$post_id") . "#p$post_id";
 
 // Has the report been cancelled?
 if (isset($_POST['cancel']))
@@ -73,12 +74,12 @@ unset($acl_check_ary);
 if ($report_data['post_reported'])
 {
 	$message = $user->lang['ALREADY_REPORTED'];
-	$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $phpbb_root_path . $redirect_url . '">', '</a>');
+	$message .= '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
 	trigger_error($message);
 }
 
 // Submit report?
-if (isset($_POST['submit']) && $reason_id)
+if ($submit && $reason_id)
 {
 	$sql = 'SELECT *
 		FROM ' . REASONS_TABLE . "
@@ -124,7 +125,7 @@ if (isset($_POST['submit']) && $reason_id)
 
 	meta_refresh(3, $redirect_url);
 
-	$message = $user->lang['POST_REPORTED_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $phpbb_root_path . $redirect_url . '">', '</a>');
+	$message = $user->lang['POST_REPORTED_SUCCESS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
 	trigger_error($message);
 }
 
@@ -133,7 +134,7 @@ display_reasons($reason_id);
 
 $template->assign_vars(array(
 	'REPORT_TEXT'		=> $report_text,
-	'S_REPORT_ACTION'	=> "{$phpbb_root_path}report.$phpEx$SID&amp;p=$post_id",
+	'S_REPORT_ACTION'	=> append_sid("{$phpbb_root_path}report.$phpEx", 'p=' . $post_id),
 
 	'S_NOTIFY'			=> $user_notify,
 	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false)

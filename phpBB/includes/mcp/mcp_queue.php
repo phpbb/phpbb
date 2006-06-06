@@ -15,8 +15,8 @@
 */
 class mcp_queue
 {
-
 	var $p_master;
+	var $u_action;
 
 	function mcp_main(&$p_master)
 	{
@@ -26,7 +26,7 @@ class mcp_queue
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx, $SID, $action;
+		global $config, $phpbb_root_path, $phpEx, $action;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -112,19 +112,19 @@ class mcp_queue
 
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
-					'S_APPROVE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;p=$post_id&amp;f=$forum_id",
+					'S_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? true : false,
 
-					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'] : '',
-					'U_MCP_USER_NOTES'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'],
-					'U_MCP_WARN_USER'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $post_info['user_id'],
-					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}" : '',
+					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
+					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_WARN_USER'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']),
+					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 
-					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], "<a href=\"{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue" . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts') . "&amp;start=$start\">", '</a>'),
+					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
 					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
 					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
@@ -293,12 +293,12 @@ class mcp_queue
 					$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" />';
 
 					$template->assign_block_vars('postrow', array(
-						'U_VIEWFORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
+						'U_VIEWFORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 						// Q: Why accessing the topic by a post_id instead of its topic_id?
 						// A: To prevent the post from being hidden because of wrong encoding or different charset
-						'U_VIEWTOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
-						'U_VIEW_DETAILS'=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '' ),
-						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
+						'U_VIEWTOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
+						'U_VIEW_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
+						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 
 						'FORUM_NAME'	=> $row['forum_name'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
@@ -319,7 +319,7 @@ class mcp_queue
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 
-					'PAGINATION'			=> generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total)
@@ -335,7 +335,7 @@ class mcp_queue
 function approve_post($post_id_list, $mode)
 {
 	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path, $SID;
+	global $phpEx, $phpbb_root_path;
 
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_approve')))
 	{
@@ -551,7 +551,7 @@ function approve_post($post_id_list, $mode)
 function disapprove_post($post_id_list, $mode)
 {
 	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path, $SID;
+	global $phpEx, $phpbb_root_path;
 
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_approve')))
 	{

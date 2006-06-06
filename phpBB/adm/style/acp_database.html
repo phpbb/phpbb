@@ -1,51 +1,57 @@
 <!-- INCLUDE overall_header.html -->
 
 <a name="maincontent"></a>
+
 <!-- IF MODE eq 'restore' -->
-<h1>{L_ACP_RESTORE}</h1>
+	<h1>{L_ACP_RESTORE}</h1>
 
-<p>{L_ACP_RESTORE_EXPLAIN}</p>
+	<p>{L_ACP_RESTORE_EXPLAIN}</p>
 
-<form id="acp_backup" method="post" action="{U_ACTION}">
-<fieldset>
-	<legend>{L_RESTORE_OPTIONS}</legend>
+	<form id="acp_backup" method="post" action="{U_ACTION}">
+	
+	<fieldset>
+		<legend>{L_RESTORE_OPTIONS}</legend>
 	<dl>
 		<dt><label for="user">{L_SELECT_FILE}:</label></dt>
 		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF files.S_LAST_ROW --> selected="selected"<!-- ENDIF -->>{files.NAME}</option><!-- END files --></select></dd>
 	</dl>
-</fieldset>
-<!-- IF EXISTS -->
-<fieldset class="submit-buttons">
-	<input class="button1" type="submit" id="submit" name="submit" value="{L_START_RESTORE}" />&nbsp;
-	<input class="button2" type="submit" id="delete" name="delete" value="{L_DELETE_BACKUP}" />&nbsp;
-	<input class="button2" type="submit" id="download" name="download" value="{L_DOWNLOAD_BACKUP}" />
-</fieldset>
-<!-- ENDIF -->
-</form>
+	</fieldset>
+
+	<!-- IF EXISTS -->
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_START_RESTORE}" />&nbsp;
+			<input class="button2" type="submit" id="delete" name="delete" value="{L_DELETE_BACKUP}" />&nbsp;
+			<input class="button2" type="submit" id="download" name="download" value="{L_DOWNLOAD_BACKUP}" />
+		</fieldset>
+	<!-- ENDIF -->
+
+	</form>
+
 <!-- ELSE -->
-<h1>{L_ACP_BACKUP}</h1>
+	<h1>{L_ACP_BACKUP}</h1>
 
-<p>{L_ACP_BACKUP_EXPLAIN}</p>
+	<p>{L_ACP_BACKUP_EXPLAIN}</p>
 
-<script type="text/javascript">
-<!--
+	<script type="text/javascript">
+	<!--
 
-	function selector(bool)
-	{
-		var table = document.getElementById('table');
-
-		for (var i = 0; i < table.options.length; i++)
+		function selector(bool)
 		{
-			table.options[i].selected = bool;
+			var table = document.getElementById('table');
+
+			for (var i = 0; i < table.options.length; i++)
+			{
+				table.options[i].selected = bool;
+			}
 		}
-	}
 
-//-->
-</script>
+	//-->
+	</script>
 
-<form id="acp_backup" method="post" action="{U_ACTION}">
-<fieldset>
-	<legend>{L_BACKUP_OPTIONS}</legend>
+	<form id="acp_backup" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_BACKUP_OPTIONS}</legend>
 	<dl>
 		<dt><label for="user">{L_BACKUP_TYPE}:</label></dt>
 		<dd><input type="radio" name="type" value="full" id="type" checked="checked" />&nbsp;{L_FULL_BACKUP}&nbsp;&nbsp;<input type="radio" name="type" value="structure" id="type" />&nbsp;{L_STRUCTURE_ONLY}&nbsp;&nbsp;<input type="radio" name="type" value="data" id="type" />&nbsp;{L_DATA_ONLY}</dd>
@@ -68,11 +74,15 @@
 		<!-- END tables -->
 		</select><br /><br /><div align="right"><a href="#" onclick="selector(true)">{L_SELECT_ALL}</a><br /><a href="#" onclick="selector(false)">{L_DESELECT_ALL}</a></div></dd>
 	</dl>
-</fieldset>
-<fieldset class="submit-buttons">
-	<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-</fieldset>
-</form>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</fieldset>
+
+	</form>
+
 <!-- ENDIF -->
+
 <!-- INCLUDE overall_footer.html -->

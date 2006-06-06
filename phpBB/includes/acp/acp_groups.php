@@ -18,7 +18,7 @@ class acp_groups
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -473,7 +473,7 @@ class acp_groups
 				switch ($back_link)
 				{
 					case 'acp_users_groups':
-						$u_back = $phpbb_admin_path . "index.$phpEx$SID&amp;i=users&amp;mode=groups&amp;u=" . request_var('u', 0);
+						$u_back = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=groups&amp;u=' . request_var('u', 0));
 					break;
 
 					default:
@@ -523,8 +523,8 @@ class acp_groups
 					'GROUP_HIDDEN'		=> $type_hidden,
 
 					'U_BACK'			=> $u_back,
-					'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&amp;form=settings&amp;name=group_colour",
-					'UA_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=settings&name=group_colour",
+					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
+					'UA_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&name=group_colour', false),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
 					)
@@ -607,13 +607,13 @@ class acp_groups
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
-					'U_FIND_USERNAME'	=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=list&amp;field=usernames")
+					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'))
 				);
 
 				foreach ($group_data['leader'] as $row)
 				{
 					$template->assign_block_vars('leader', array(
-						'U_USER_EDIT'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=users&amp;action=edit&amp;u={$row['user_id']}",
+						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
@@ -637,7 +637,7 @@ class acp_groups
 					}
 
 					$template->assign_block_vars('member', array(
-						'U_USER_EDIT'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=users&amp;action=edit&amp;u={$row['user_id']}",
+						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,

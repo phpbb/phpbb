@@ -64,7 +64,7 @@
 							<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
 						</tr>
 						<tr>
-							<td align="center"><table cellspacing="0" cellpadding="2" border="0">
+							<td align="left"><table cellspacing="0" cellpadding="2" border="0">
 								<!-- BEGIN poll_option -->
 								<tr>
 									<!-- IF S_CAN_VOTE -->
@@ -79,7 +79,7 @@
 									<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 									<!-- IF S_DISPLAY_RESULTS -->
 									<td>{POLL_LEFT_CAP_IMG}{poll_option.POLL_OPTION_IMG}{POLL_RIGHT_CAP_IMG}</td>
-									<td class="gen" align="center"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
+									<td class="gen" align="right"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
 									<td class="gen" align="center">[ {poll_option.POLL_OPTION_RESULT} ]</td>
 									<!-- IF poll_option.POLL_OPTION_VOTED -->
 									<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>

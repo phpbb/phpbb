@@ -17,7 +17,7 @@ class acp_prune
 
 	function main($id, $mode)
 	{
-		global $user, $phpEx, $SID, $phpbb_admin_path, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_admin_path, $phpbb_root_path;
 
 		$user->add_lang('acp/prune');
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -44,7 +44,7 @@ class acp_prune
 	function prune_forums($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$forum_id = request_var('f', array(0));
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -186,7 +186,7 @@ class acp_prune
 	function prune_users($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('memberlist');
 
@@ -359,7 +359,7 @@ class acp_prune
 			'S_JOINED_OPTIONS'	=> $s_find_join_time,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
-			'U_FIND_USER'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_prune&amp;field=users")
+			'U_FIND_USER'		=> append_sid($phpbb_root_path . "memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'))
 		);
 
 	}

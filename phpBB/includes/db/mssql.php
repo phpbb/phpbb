@@ -56,37 +56,27 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = @mssql_query('BEGIN TRANSACTION', $this->db_connect_id);
-				$this->transaction = true;
+				return @mssql_query('BEGIN TRANSACTION', $this->db_connect_id);
 			break;
 
 			case 'commit':
-				$result = @mssql_query('commit', $this->db_connect_id);
-				$this->transaction = false;
-
-				if (!$result)
-				{
-					@mssql_query('ROLLBACK', $this->db_connect_id);
-				}
+				return @mssql_query('commit', $this->db_connect_id);
 			break;
 
 			case 'rollback':
-				$result = @mssql_query('ROLLBACK', $this->db_connect_id);
-				$this->transaction = false;
+				return @mssql_query('ROLLBACK', $this->db_connect_id);
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**

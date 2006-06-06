@@ -19,7 +19,7 @@ class acp_icons
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/posting');
 
@@ -374,6 +374,7 @@ class acp_icons
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action));
 							}
 
+							// Stripslash here because it got addslashed before... (on export)
 							$img = stripslashes($data[1][0]);
 							$width = stripslashes($data[1][1]);
 							$height = stripslashes($data[1][2]);

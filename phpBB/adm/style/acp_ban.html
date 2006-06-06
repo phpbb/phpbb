@@ -43,28 +43,28 @@
 
 <fieldset>
 	<legend>{L_TITLE}</legend>
-	<dl>
-		<dt><label for="ban">{L_BAN_CELL}:</label></dt>
-		<dd><textarea name="ban" cols="40" rows="3" id="ban"></textarea></dd>
-		<!-- IF S_USERNAME_BAN --><dd>[ <a href="#" onclick="window.open('{U_FIND_USER}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd><!-- ENDIF -->
-	</dl>
-	<dl>
-		<dt><label for="banlength">{L_BAN_LENGTH}:</label></dt>
-		<dd><select name="banlength" id="banlength">{S_BAN_END_OPTIONS}</select></dd>
-		<dd><input type="text" name="banlengthother" /> (YYYY-MM-DD)</dd>
-	</dl>
-	<dl>
-		<dt><label for="banexclude">{L_BAN_EXCLUDE}:</label><br /><span>{L_BAN_EXCLUDE_EXPLAIN}</span></dt>
-		<dd><input type="radio" name="banexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="banexclude" id="banexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
-	</dl>
-	<dl>
-		<dt><label for="banreason">{L_BAN_REASON}:</label></dt>
-		<dd><input name="banreason" type="text" id="banreason" class="medium" /></dd>
-	</dl>
-	<dl>
-		<dt><label for="bangivereason">{L_BAN_GIVE_REASON}:</label></dt>
-		<dd><input name="bangivereason" type="text" id="bangivereason" class="medium" /></dd>
-	</dl>
+<dl>
+	<dt><label for="ban">{L_BAN_CELL}:</label></dt>
+	<dd><textarea name="ban" cols="40" rows="3" id="ban"></textarea></dd>
+	<!-- IF S_USERNAME_BAN --><dd>[ <a href="#" onclick="window.open('{U_FIND_USER}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd><!-- ENDIF -->
+</dl>
+<dl>
+	<dt><label for="banlength">{L_BAN_LENGTH}:</label></dt>
+	<dd><select name="banlength" id="banlength">{S_BAN_END_OPTIONS}</select></dd>
+	<dd><input type="text" name="banlengthother" /> (YYYY-MM-DD)</dd>
+</dl>
+<dl>
+	<dt><label for="banexclude">{L_BAN_EXCLUDE}:</label><br /><span>{L_BAN_EXCLUDE_EXPLAIN}</span></dt>
+	<dd><input type="radio" name="banexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="banexclude" id="banexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
+</dl>
+<dl>
+	<dt><label for="banreason">{L_BAN_REASON}:</label></dt>
+	<dd><input name="banreason" type="text" id="banreason" class="medium" /></dd>
+</dl>
+<dl>
+	<dt><label for="bangivereason">{L_BAN_GIVE_REASON}:</label></dt>
+	<dd><input name="bangivereason" type="text" id="bangivereason" class="medium" /></dd>
+</dl>
 </fieldset>
 
 <fieldset class="submit-buttons">
@@ -98,17 +98,18 @@
 		<dt><label for="unbangivereason">{L_BAN_GIVE_REASON}:</label></dt>
 		<dd><input style="border: 0px;" type="text" name="unbangivereason" id="unbangivereason" class="full" disabled="disabled" /></dd>
 	</dl>
-</fieldset>
+	</fieldset>
 
-<fieldset class="submit-buttons">
-	<input class="button1" type="submit" id="unbansubmit" name="unbansubmit" value="{L_SUBMIT}" />&nbsp;
-	<input class="button2" type="reset" id="unbanreset" name="unbanreset" value="{L_RESET}" />
-</fieldset>
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" id="unbansubmit" name="unbansubmit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="unbanreset" name="unbanreset" value="{L_RESET}" />
+	</fieldset>
 
 <!-- ELSE -->
 
 	<p>{L_NO_BAN_CELL}</p>
 </fieldset>
+
 <!-- ENDIF -->
 
 </form>

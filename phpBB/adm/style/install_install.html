@@ -54,22 +54,24 @@
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_DOWNLOAD -->
-<fieldset>
-	<legend>{L_DL_CONFIG}</legend>
-	<p>{L_DL_CONFIG_EXPLAIN}</p>
-</fieldset>
-<fieldset class="submit-buttons">
-	{S_HIDDEN}
-	<input class="button1" type="submit" id="dlconfig" name="dlconfig" value="{L_DL_DOWNLOAD}" />&nbsp;<input class="button1" type="submit" id="dldone" name="dldone" value="{L_DL_DONE}" />
-</fieldset>
+	<fieldset>
+		<legend>{L_DL_CONFIG}</legend>
+		<p>{L_DL_CONFIG_EXPLAIN}</p>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		{S_HIDDEN}
+		<input class="button1" type="submit" id="dlconfig" name="dlconfig" value="{L_DL_DOWNLOAD}" />&nbsp;<input class="button1" type="submit" id="dldone" name="dldone" value="{L_DL_DONE}" />
+	</fieldset>
 <!-- ENDIF -->
 
 <!-- IF L_SUBMIT -->
-<fieldset class="submit-buttons">
-	{S_HIDDEN}
-	<!-- IF L_SUBMIT --><input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
-</fieldset>
+	<fieldset class="submit-buttons">
+		{S_HIDDEN}
+		<!-- IF L_SUBMIT --><input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
+	</fieldset>
 <!-- ENDIF -->
 
 </form>
+
 <!-- INCLUDE install_footer.html -->

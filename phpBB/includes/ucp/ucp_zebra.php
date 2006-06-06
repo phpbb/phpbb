@@ -14,9 +14,11 @@
 */
 class ucp_zebra
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		$submit	= (isset($_POST['submit']) || isset($_GET['add'])) ? true : false;
 		$s_hidden_fields = '';
@@ -171,8 +173,8 @@ class ucp_zebra
 
 			if (!sizeof($error))
 			{
-				meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
-				$message = $user->lang[strtoupper($mode) . '_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+				meta_refresh(3, $this->u_action);
+				$message = $user->lang[strtoupper($mode) . '_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -200,11 +202,11 @@ class ucp_zebra
 		$template->assign_vars(array( 
 			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . strtoupper($mode)],
 
-			'U_SEARCH_USER'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=ucp&amp;field=add", 
+			'U_SEARCH_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'), 
 
 			'S_USERNAME_OPTIONS'	=> $s_username_options,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
-			'S_UCP_ACTION'			=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_UCP_ACTION'			=> $this->u_action)
 		);
 
 		$this->tpl_name = 'ucp_zebra_' . $mode;

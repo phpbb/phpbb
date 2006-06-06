@@ -18,7 +18,7 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		$user->add_lang('groups');
 
@@ -47,8 +47,8 @@ class ucp_groups
 						FROM ' . GROUPS_TABLE . "
 						WHERE group_id IN ($group_id, {$user->data['group_id']})";
 					$result = $db->sql_query($sql);
-					$group_row = array();
 
+					$group_row = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$row['group_name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
@@ -86,7 +86,7 @@ class ucp_groups
 								group_user_attributes('default', $group_id, $user->data['user_id']);
 
 								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_CHANGE', sprintf($user->lang['USER_GROUP_CHANGE'], $group_row[$group_id]['group_name'], $group_row[$user->data['group_id']]['group_name']));
-								
+
 								meta_refresh(3, $this->u_action);
 								trigger_error($user->lang['CHANGED_DEFAULT_GROUP'] . $return_page);
 							}
@@ -96,7 +96,7 @@ class ucp_groups
 									'default'		=> $group_id,
 									'change_default'=> true
 								);
-								
+
 								confirm_box(false, sprintf($user->lang['GROUP_CHANGE_DEFAULT'], $group_row[$group_id]['group_name']), build_hidden_fields($s_hidden_fields));
 							}
 
@@ -115,13 +115,13 @@ class ucp_groups
 								trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 							}
 							list(, $row) = each($row);
-							
+
 							if (confirm_box(true))
 							{
 								group_user_del($group_id, $user->data['user_id']);
-								
+
 								add_log('user', $user->data['user_id'], 'LOG_USER_GROUP_RESIGN', $group_row[$group_id]['group_name']);
-								
+
 								meta_refresh(3, $this->u_action);
 								trigger_error($user->lang[($row['user_pending']) ? 'GROUP_RESIGNED_PENDING' : 'GROUP_RESIGNED_MEMBERSHIP'] . $return_page);
 							}
@@ -132,7 +132,7 @@ class ucp_groups
 									'action'		=> 'resign',
 									'submit'		=> true
 								);
-								
+
 								confirm_box(false, ($row['user_pending']) ? 'GROUP_RESIGN_PENDING' : 'GROUP_RESIGN_MEMBERSHIP', build_hidden_fields($s_hidden_fields));
 							}
 
@@ -192,7 +192,7 @@ class ucp_groups
 										'USERNAME'		=> html_entity_decode($row['username']),
 										'GROUP_NAME'	=> html_entity_decode($group_row[$group_id]['group_name']),
 
-										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=usergroups&mode=manage",
+										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
 										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
 									);
 
@@ -301,7 +301,7 @@ class ucp_groups
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
 
-						'U_VIEW_GROUP'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g={$row['group_id']}",
+						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $user->data['group_id']) ? true : false,
 						'S_ROW_COUNT'		=> ${$block . '_count'}++)
@@ -355,7 +355,7 @@ class ucp_groups
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 
-						'U_VIEW_GROUP'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g={$row['group_id']}",
+						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_ROW_COUNT'	=> $nonmember_count++)
 					);
@@ -637,8 +637,8 @@ class ucp_groups
 							'GROUP_CLOSED'		=> $type_closed,
 							'GROUP_HIDDEN'		=> $type_hidden,
 
-							'U_SWATCH'			=> "{$phpbb_root_path}adm/swatch.$phpEx$SID&amp;form=ucp&amp;name=group_colour",
-							'UA_SWATCH'			=> "{$phpbb_root_path}adm/swatch.$phpEx$SID&form=ucp&name=group_colour",
+							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
+							'UA_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&name=group_colour', false),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
 						);
@@ -693,7 +693,7 @@ class ucp_groups
 
 							$template->assign_block_vars($row['group_leader'] ? 'leader' : 'member', array(
 								'USERNAME'			=> $row['username'],
-								'U_USER_VIEW'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['user_id']}",
+								'U_USER_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
@@ -717,7 +717,7 @@ class ucp_groups
 							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
-							'U_FIND_USERNAME'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=list&amp;field=usernames")
+							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'))
 						);
 
 					break;

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <meta http-equiv="imagetoolbar" content="no" />
-<title>phpBB3 Color Swatch</title>
+<title>Color Swatch</title>
 
 <style type="text/css">
 <!--

@@ -19,7 +19,7 @@ class acp_attachments
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_admin_path, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -684,7 +684,7 @@ class acp_attachments
 							'S_NO_IMAGE'				=> $no_image_select,
 							'S_FORUM_IDS'				=> (sizeof($forum_ids)) ? true : false,
 
-							'U_EXTENSIONS'		=> $phpbb_admin_path . "index.$phpEx$SID&amp;i=$id&amp;mode=extensions",
+							'U_EXTENSIONS'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=extensions"),
 
 							'L_LEGEND'			=> $user->lang[strtoupper($action) . '_EXTENSION_GROUP'],
 							)
@@ -1108,7 +1108,7 @@ class acp_attachments
 			// Submit Attachment
 			$attach_sql = $message_parser->attachment_data;
 
-			$db->sql_transaction();
+			$db->sql_transaction('begin');
 
 			$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
 			$db->sql_query($sql);

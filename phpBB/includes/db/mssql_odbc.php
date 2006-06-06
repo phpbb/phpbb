@@ -50,40 +50,31 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = @odbc_autocommit($this->db_connect_id, false);
-				$this->transaction = true;
+				return @odbc_autocommit($this->db_connect_id, false);
 			break;
 
 			case 'commit':
 				$result = @odbc_commit($this->db_connect_id);
 				@odbc_autocommit($this->db_connect_id, true);
-				$this->transaction = false;
-
-				if (!$result)
-				{
-					@odbc_rollback($this->db_connect_id);
-					@odbc_autocommit($this->db_connect_id, true);
-				}
+				return $result;
 			break;
 
 			case 'rollback':
 				$result = @odbc_rollback($this->db_connect_id);
 				@odbc_autocommit($this->db_connect_id, true);
-				$this->transaction = false;
+				return $result;
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**

@@ -20,10 +20,8 @@ if (!defined('IN_PHPBB'))
 *
 * Extension of template class - Functions needed for compiling templates only.
 *
-* psoTFX - Completion of file caching, decompilation routines and implementation of
-* conditionals/keywords and associated changes
-*
-* phpBB Development Team - further additions and fixes
+* psoTFX, phpBB Development Team - Completion of file caching, decompilation
+* routines and implementation of conditionals/keywords and associated changes
 *
 * The interface was inspired by PHPLib templates,  and the template file (formats are
 * quite similar)
@@ -106,7 +104,7 @@ class template_compile
 
 		preg_match_all('#<!-- ([^<].*?) (.*?)?[ ]?-->#', $code, $blocks);
 		$text_blocks = preg_split('#<!-- ([^<].*?) (.*?)?[ ]?-->#', $code);
-		
+
 		for ($i = 0, $j = sizeof($text_blocks); $i < $j; $i++)
 		{
 			$this->compile_var_tags($text_blocks[$i]);
@@ -168,11 +166,11 @@ class template_compile
 				break;
 
 				case 'INCLUDEPHP':
-					$compile_blocks[] = ($config['tpl_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
+					$compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
 				break;
 
 				case 'PHP':
-					$compile_blocks[] = ($config['tpl_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
+					$compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
 				break;
 
 				default:
@@ -221,11 +219,17 @@ class template_compile
 
 		// This will handle the remaining root-level varrefs
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
-		$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }')); ?>", $text_blocks);
+		if (strpos($text_blocks, '{L_') !== false)
+		{
+			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? \$this->_tpldata['.'][0]['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }')); ?>", $text_blocks);
+		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
-		$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['LA_\\1'])) ? \$this->_tpldata['.'][0]['LA_\\1'] : ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? addslashes(\$this->_tpldata['.'][0]['L_\\1']) : ((isset(\$user->lang['\\1'])) ? addslashes(\$user->lang['\\1']) : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }'))); ?>", $text_blocks);
+		if (strpos($text_blocks, '{LA_') !== false)
+		{
+			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_tpldata['.'][0]['LA_\\1'])) ? \$this->_tpldata['.'][0]['LA_\\1'] : ((isset(\$this->_tpldata['.'][0]['L_\\1'])) ? addslashes(\$this->_tpldata['.'][0]['L_\\1']) : ((isset(\$user->lang['\\1'])) ? addslashes(\$user->lang['\\1']) : '{ ' . ucfirst(strtolower(str_replace('_', ' ', '\\1'))) . ' }'))); ?>", $text_blocks);
+		}
 
 		// Handle remaining varrefs
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['.'][0]['\\1'])) ? \$this->_tpldata['.'][0]['\\1'] : ''; ?>", $text_blocks);
@@ -258,7 +262,7 @@ class template_compile
 		if (preg_match('#^([^()]*)\(([\-\d]+)(?:,([\-\d]+))?\)$#', $tag_args, $match))
 		{
 			$tag_args = $match[1];
-			
+
 			if ($match[2] < 0)
 			{
 				$loop_start = '($_' . $tag_args . '_count ' . $match[2] . ' < 0 ? 0 : $_' . $tag_args . '_count ' . $match[2] . ')';
@@ -333,10 +337,10 @@ class template_compile
 	{
 		// Tokenize args for 'if' tag.
 		preg_match_all('/(?:
-						"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
-						\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
-						[(),]                                  |
-						[^\s(),]+)/x', $tag_args, $match);
+			"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
+			\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
+			[(),]                                  |
+			[^\s(),]+)/x', $tag_args, $match);
 
 		$tokens = $match[0];
 		$is_arg_stack = array();
@@ -491,11 +495,11 @@ class template_compile
 				case 'false':
 					$match[4] = strtoupper($match[4]);
 				break;
-				
+
 				case '.':
 					$match[4] = doubleval($match[4]);
 				break;
-				
+
 				default:
 					$match[4] = intval($match[4]);
 				break;
@@ -578,9 +582,6 @@ class template_compile
 					$expr_arg =	$tokens[$expr_end++];
 					$expr =	"!($is_arg % $expr_arg)";
 				}
-			break;
-
-			default:
 			break;
 		}
 

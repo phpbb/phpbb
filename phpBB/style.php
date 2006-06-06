@@ -14,7 +14,7 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-require($phpbb_root_path . 'config.'.$phpEx);
+require($phpbb_root_path . 'config.' . $phpEx);
 
 set_magic_quotes_runtime(0);
 
@@ -45,10 +45,15 @@ if (!preg_match('/^[A-Za-z0-9]*$/', $sid))
 // server a little
 if ($id && $sid)
 {
+	if (empty($acm_type) || empty($dbms))
+	{
+		die('Hacking attempt');
+	}
+
 	// Include files
-	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
+	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/acm/acm_main.' . $phpEx);
-	require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
+	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	$db = new $sql_db();
 	$cache = new cache();
@@ -83,6 +88,12 @@ if ($id && $sid)
 		{
 			exit;
 		}
+
+		/**
+		* What happens if the theme_data value is older than the file?
+		* It should be re-cached as is done with templates and the template cache
+		* if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+		*/
 
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');

@@ -60,6 +60,9 @@ function enable_tooltips_link(id, headline, sub_id)
 	tooltip_mode = 'link';
 }
 
+/**
+* Enable tooltip replacements for selects
+*/
 function enable_tooltips_select(id, headline, sub_id)
 {
 	var links, i, hold;
@@ -105,6 +108,9 @@ function enable_tooltips_select(id, headline, sub_id)
 	tooltip_mode = 'select';
 }
 
+/**
+* Prepare elements to replace
+*/
 function prepare(element)
 {
 	var tooltip, text, desc, title;
@@ -132,14 +138,25 @@ function prepare(element)
 	element.tooltip = tooltip;
 	element.onmouseover = show_tooltip;
 	element.onmouseout = hide_tooltip;
+
+	if (tooltip_mode == 'link')
+	{
+		element.onmousemove = locate;
+	}
 }
 
+/**
+* Show tooltip
+*/
 function show_tooltip(e)
 {
 	document.getElementById('_tooltip_container').appendChild(this.tooltip);
 	locate(this);
 }
 
+/**
+* Hide tooltip
+*/
 function hide_tooltip(e)
 {
 	var d = document.getElementById('_tooltip_container');
@@ -149,6 +166,9 @@ function hide_tooltip(e)
 	}
 }
 
+/**
+* Set opacity on tooltip element
+*/
 function set_opacity(element)
 {
 	element.style.filter = 'alpha(opacity:95)';
@@ -157,6 +177,9 @@ function set_opacity(element)
 	element.style.opacity = '0.95';
 }
 
+/**
+* Create new element
+*/
 function create_element(tag, c)
 {
 	var x = document.createElement(tag);
@@ -165,59 +188,64 @@ function create_element(tag, c)
 	return x;
 }
 
+/**
+* Correct positioning of tooltip container
+*/
 function locate(e)
 {
 	var posx = 0;
 	var posy = 0;
 
+	e = e.parentNode;
+
+	if (e.offsetParent)
+	{
+		for (var posx = 0, posy = 0; e.offsetParent; e = e.offsetParent)
+		{
+			posx += e.offsetLeft;
+			posy += e.offsetTop;
+		}
+	}
+	else
+	{
+		posx = e.offsetLeft;
+		posy = e.offsetTop;
+	}
+
 	if (tooltip_mode == 'link')
 	{
-		if (e == null)
-		{
-			e = window.event;
-		}
-
-		if (e.pageX || e.pageY)
-		{
-			posx = e.pageX;
-			posy = e.pageY;
-		}
-		else if (e.clientX || e.clientY)
-		{
-			if (document.documentElement.scrollTop)
-			{
-				posx = e.clientX+document.documentElement.scrollLeft;
-				posy = e.clientY+document.documentElement.scrollTop;
-			}
-			else
-			{
-				posx = e.clientX+document.body.scrollLeft;
-				posy = e.clientY+document.body.scrollTop;
-			}
-		}
-
-		document.getElementById('_tooltip_container').style.top=(posy+10) + 'px';
+		document.getElementById('_tooltip_container').style.top=(posy+20) + 'px';
 		document.getElementById('_tooltip_container').style.left=(posx-20) + 'px';
 	}
 	else
 	{
-		e = e.parentNode;
-
-		if (e.offsetParent)
-		{
-			for (var posx = 0, posy = 0; e.offsetParent; e = e.offsetParent)
-			{
-				posx += e.offsetLeft;
-				posy += e.offsetTop;
-			}
-		}
-		else
-		{
-			posx = e.offsetLeft;
-			posy = e.offsetTop;
-		}
-
 		document.getElementById('_tooltip_container').style.top=(posy+30) + 'px';
 		document.getElementById('_tooltip_container').style.left=(posx-205) + 'px';
 	}
+
+/*
+	if (e == null)
+	{
+		e = window.event;
+	}
+
+	if (e.pageX || e.pageY)
+	{
+		posx = e.pageX;
+		posy = e.pageY;
+	}
+	else if (e.clientX || e.clientY)
+	{
+		if (document.documentElement.scrollTop)
+		{
+			posx = e.clientX+document.documentElement.scrollLeft;
+			posy = e.clientY+document.documentElement.scrollTop;
+		}
+		else
+		{
+			posx = e.clientX+document.body.scrollLeft;
+			posy = e.clientY+document.body.scrollTop;
+		}
+	}
+*/
 }

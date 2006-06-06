@@ -20,7 +20,7 @@ class acp_board
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
 
@@ -61,6 +61,7 @@ class acp_board
 						'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'type' => 'radio:yes_no', 'explain' => false),
@@ -112,9 +113,7 @@ class acp_board
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
 						'auth_download_pm'		=> array('lang' => 'ALLOW_DOWNLOAD_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'type' => 'radio:yes_no', 'explain' => false),
-//						'auth_quote_pm'			=> array('lang' => 'ALLOW_QUOTE_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'type' => 'radio:yes_no', 'explain' => false),
-//						'email_pm'				=> array('lang' => 'ALLOW_EMAIL_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'auth_img_pm'			=> array('lang' => 'ALLOW_IMG_PM',			'type' => 'radio:yes_no', 'explain' => false),
 						'auth_flash_pm'			=> array('lang' => 'ALLOW_FLASH_PM',		'type' => 'radio:yes_no', 'explain' => false),
@@ -263,6 +262,7 @@ class acp_board
 						'load_db_track'			=> array('lang' => 'YES_POST_MARKING',	'type' => 'radio:yes_no', 'explain' => true),
 						'load_db_lastread'		=> array('lang' => 'YES_READ_MARKING',	'type' => 'radio:yes_no', 'explain' => true),
 						'load_online'			=> array('lang' => 'YES_ONLINE',		'type' => 'radio:yes_no', 'explain' => true),
+						'load_online_guests'	=> array('lang' => 'YES_ONLINE_GUESTS',	'type' => 'radio:yes_no', 'explain' => true),
 						'load_onlinetrack'		=> array('lang' => 'YES_ONLINE_TRACK',	'type' => 'radio:yes_no', 'explain' => true),
 						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',		'type' => 'radio:yes_no', 'explain' => false),
 						'load_moderators'		=> array('lang' => 'YES_MODERATORS',	'type' => 'radio:yes_no', 'explain' => false),
@@ -323,6 +323,7 @@ class acp_board
 						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
 						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'type' => 'text:3:3', 'explain' => true),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS','type' => 'text:3:3', 'explain' => true),
+						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',		'type' => 'radio:yes_no', 'explain' => true),
 					)
 				);
 			break;
@@ -339,7 +340,8 @@ class acp_board
 						'board_contact'			=> array('lang' => 'CONTACT_EMAIL',			'type' => 'text:25:100', 'explain' => true),
 						'board_email'			=> array('lang' => 'ADMIN_EMAIL',			'type' => 'text:25:100', 'explain' => true),
 						'board_email_sig'		=> array('lang' => 'EMAIL_SIG',				'type' => 'textarea:5:30', 'explain' => true),
-						
+						'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'type' => 'radio:yes_no', 'explain' => true),
+
 						'legend2'				=> 'SMTP_SETTINGS',
 						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'type' => 'radio:yes_no', 'explain' => true),
 						'smtp_host'				=> array('lang' => 'SMTP_SERVER',			'type' => 'text:25:50', 'explain' => false),

@@ -21,15 +21,15 @@
 
 	<fieldset>
 		<legend>{L_GROUP_DETAILS}</legend>
-		<dl>
-			<dt><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></dt>
-			<dd><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="group_desc">{L_GROUP_DESC}:</label></dt>
-			<dd><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
-			<dd><input type="checkbox" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
-		</dl>
+	<dl>
+		<dt><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></dt>
+		<dd><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="group_desc">{L_GROUP_DESC}:</label></dt>
+		<dd><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
+		<dd><input type="checkbox" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+	</dl>
 	<!-- IF not S_SPECIAL_GROUP -->
 		<dl>
 			<dt><label for="group_type">{L_GROUP_TYPE}:</label><br /><span>{L_GROUP_TYPE_EXPLAIN}</span></dt>
@@ -45,44 +45,44 @@
 	<!-- ENDIF -->
 
 	<!-- IF S_ADD_GROUP -->
-	<dl>
-		<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
-		<dd><select id="group_perm_from" name="group_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_GROUP_OPTIONS}</select></dd>
-	</dl>
+		<dl>
+			<dt><label for="group_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+			<dd><select id="group_perm_from" name="group_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_GROUP_OPTIONS}</select></dd>
+		</dl>
 	<!-- ENDIF -->
 	</fieldset>
 
 	<fieldset>
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
-		<dl>
-			<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
-			<dd><input name="group_legend" type="checkbox" id="group_legend"{GROUP_LEGEND} /></dd>
-		</dl>
-		<dl>
-			<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}:</label></dt>
-			<dd><input name="group_receive_pm" type="checkbox" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
-		</dl>
-		<dl>
-			<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}:</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
-			<dd><input name="group_message_limit" type="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-			<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
-		</dl>
-		<dl>
-			<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
-			<dd><select name="group_rank" id="group_rank">{S_RANK_OPTIONS}</select></dd>
-		</dl>
+	<dl>
+		<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
+		<dd><input name="group_legend" type="checkbox" id="group_legend"{GROUP_LEGEND} /></dd>
+	</dl>
+	<dl>
+		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}:</label></dt>
+		<dd><input name="group_receive_pm" type="checkbox" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
+	</dl>
+	<dl>
+		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}:</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
+		<dd><input name="group_message_limit" type="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
+		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+	</dl>
+	<dl>
+		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
+		<dd><select name="group_rank" id="group_rank">{S_RANK_OPTIONS}</select></dd>
+	</dl>
 	</fieldset>
 
 	<fieldset>
 		<legend>{L_GROUP_AVATAR}</legend>
-		<dl>
-			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
-			<dd>{AVATAR_IMAGE}</dd>
-			<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
-		</dl>
+	<dl>
+		<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+		<dd>{AVATAR_IMAGE}</dd>
+		<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
+	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
 		<!-- IF S_CAN_UPLOAD -->
 			<dl> 
@@ -94,14 +94,14 @@
 				<dd><input name="uploadurl" type="text" id="uploadurl" value="" /></dd>
 			</dl>
 		<!-- ENDIF -->
-			<dl>
-				<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
-				<dd><input name="remotelink" type="text" id="remotelink" value="" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></dt>
-				<dd><input name="width" type="text" id="width" size="3" value="{GROUP_AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{GROUP_AVATAR_HEIGHT}" /> <span>px</span></dd>
-			</dl>
+		<dl>
+			<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
+			<dd><input name="remotelink" type="text" id="remotelink" value="" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></dt>
+			<dd><input name="width" type="text" id="width" size="3" value="{GROUP_AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{GROUP_AVATAR_HEIGHT}" /> <span>px</span></dd>
+		</dl>
 		<!-- IF S_DISPLAY_GALLERY -->
 			<dl> 
 				<dt><label>{L_AVATAR_GALLERY}:</label></dt>
@@ -113,26 +113,26 @@
 
 		<fieldset>
 			<legend>{L_AVATAR_GALLERY}</legend>
-			<dl>
-				<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
-				<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
-			</dl>
-			<dl>
-				<table cellspacing="1">
-				<!-- BEGIN avatar_row -->
-				<tr> 
-					<!-- BEGIN avatar_column -->
-						<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
-					<!-- END avatar_column -->
-				</tr>
-				<tr>
-					<!-- BEGIN avatar_option_column -->
-						<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
-					<!-- END avatar_option_column -->
-				</tr>
-				<!-- END avatar_row -->
-				</table>
-			</dl>
+		<dl>
+			<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
+			<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
+		</dl>
+		<dl>
+			<table cellspacing="1">
+			<!-- BEGIN avatar_row -->
+			<tr> 
+				<!-- BEGIN avatar_column -->
+					<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
+				<!-- END avatar_column -->
+			</tr>
+			<tr>
+				<!-- BEGIN avatar_option_column -->
+					<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+				<!-- END avatar_option_column -->
+			</tr>
+			<!-- END avatar_row -->
+			</table>
+		</dl>
 		</fieldset>
 		
 		<fieldset class="quick" style="margin-top: -15px;">

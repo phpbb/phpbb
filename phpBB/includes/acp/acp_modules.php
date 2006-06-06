@@ -29,7 +29,7 @@ class acp_modules
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template;
-		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx, $SID;
+		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		// Set a global define for modules we might include (the author is able to prevent executing of code with this)
 		define('MODULE_INCLUDE', true);

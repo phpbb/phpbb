@@ -148,7 +148,7 @@ $lang = array_merge($lang, array(
 	'acl_f_search'		=> array('lang' => 'Can search the forum', 'cat' => 'misc'),
 	'acl_f_ignoreflood' => array('lang' => 'Can ignore flood limit', 'cat' => 'misc'),
 	'acl_f_postcount'	=> array('lang' => 'Increment post counter', 'cat' => 'misc'),
-	'acl_f_moderate'	=> array('lang' => 'Posts are moderated', 'cat' => 'misc'),
+	'acl_f_noapprove'	=> array('lang' => 'Can post without approval', 'cat' => 'misc'),
 ));
 
 // Moderator Permissions

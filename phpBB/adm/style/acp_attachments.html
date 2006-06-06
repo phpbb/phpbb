@@ -64,22 +64,22 @@
 	</fieldset>
 
 	<!-- IF not S_SECURE_DOWNLOADS -->
-	<div class="errorbox">
-		<p>{L_SECURE_DOWNLOAD_NOTICE}</p>
-	</div>
+		<div class="errorbox">
+			<p>{L_SECURE_DOWNLOAD_NOTICE}</p>
+		</div>
 	<!-- ENDIF -->
 
 	<fieldset>
 		<legend>{L_SECURE_TITLE}</legend>
 		<p>{L_DOWNLOAD_ADD_IPS_EXPLAIN}</p>
-		<dl>
-			<dt><label for="ip_hostname">{L_IP_HOSTNAME}:</label></dt>
-			<dd><textarea id="ip_hostname" cols="40" rows="3" name="ips"></textarea></dd>
-		</dl>
-		<dl>
-			<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
-			<dd><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
-		</dl>
+	<dl>
+		<dt><label for="ip_hostname">{L_IP_HOSTNAME}:</label></dt>
+		<dd><textarea id="ip_hostname" cols="40" rows="3" name="ips"></textarea></dd>
+	</dl>
+	<dl>
+		<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
+		<dd><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
+	</dl>
 	</fieldset>
 
 	<fieldset class="quick">
@@ -89,16 +89,16 @@
 	<fieldset>
 		<legend>{L_REMOVE_IPS}</legend>
 	<!-- IF S_DEFINED_IPS -->
-		<p>{L_DOWNLOAD_REMOVE_IPS_EXPLAIN}</p>
+			<p>{L_DOWNLOAD_REMOVE_IPS_EXPLAIN}</p>
 		<dl>
 			<dt><label for="remove_ip_hostname">{L_IP_HOSTNAME}:</label></dt>
 			<dd><select name="unip[]" id="remove_ip_hostname" multiple="multiple" size="10">{DEFINED_IPS}</select></dd>
 		</dl>
-	</fieldset>
+		</fieldset>
 
-	<fieldset class="quick">
-		<input class="button1" type="submit" id="unsecuresubmit" name="unsecuresubmit" value="{L_SUBMIT}" />
-	</fieldset>
+		<fieldset class="quick">
+			<input class="button1" type="submit" id="unsecuresubmit" name="unsecuresubmit" value="{L_SUBMIT}" />
+		</fieldset>
 
 	<!-- ELSE -->
 		<p>{L_NO_IPS_DEFINED}</p>
@@ -166,47 +166,47 @@
 			<input type="hidden" name="g" value="{GROUP_ID}" />
 
 			<legend>{L_LEGEND}</legend>
-			<dl>
-				<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
-				<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="category">{L_SPECIAL_CATEGORY}:</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
-				<dd>{S_CATEGORY_SELECT}</dd>
-			</dl>
-			<dl>
-				<dt><label for="allowed">{L_ALLOWED}:</label></dt>
-				<dd><input type="checkbox" id="allowed" name="allow_group" value="1"<!-- IF ALLOW_GROUP --> checked="checked"<!-- ENDIF --> /></dd>
-			</dl>
-			<dl>
-				<dt><label for="allow_in_pm">{L_ALLOW_IN_PM}:</label></dt>
-				<dd><input type="checkbox" id="allow_in_pm" name="allow_in_pm" value="1"<!-- IF ALLOW_IN_PM --> checked="checked"<!-- ENDIF --> /></dd>
-			</dl>
-			<dl>
-				<dt><label for="download_mode">{L_DOWNLOAD_MODE}:</label><br /><span>{L_DOWNLOAD_MODE_EXPLAIN}</span></dt>
-				<dd>{S_DOWNLOAD_SELECT}</dd>
-			</dl>
-			<dl>
-				<dt><label for="upload_icon">{L_UPLOAD_ICON}:</label></dt>
-				<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
-						<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}
-				</select></dd>
-				<dd>&nbsp;<img <!-- IF S_NO_IMAGE -->src="{PHPBB_ROOT_PATH}images/spacer.gif"<!-- ELSE -->src="{UPLOAD_ICON_SRC}"<!-- ENDIF --> name="image_upload_icon" alt="" title="" />&nbsp;</dd>
-			</dl>
-			<dl>
-				<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>
-				<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
-			</dl>
-			<dl>
-				<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}:</label></dt>
-				<dd><div id="ext">{ASSIGNED_EXTENSIONS}</div> <span>[<a href="{U_EXTENSIONS}">{L_GO_TO_EXTENSIONS}</a> ]</span></dd>
-				<dd><select name="extensions[]" id="assigned_extensions" class="narrow" onchange="show_extensions(this);" multiple="multiple" size="8">{S_EXTENSION_OPTIONS}</select></dd>
-			</dl>
-			<dl>
-				<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
-				<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
-			</dl>
+		<dl>
+			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
+			<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="category">{L_SPECIAL_CATEGORY}:</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
+			<dd>{S_CATEGORY_SELECT}</dd>
+		</dl>
+		<dl>
+			<dt><label for="allowed">{L_ALLOWED}:</label></dt>
+			<dd><input type="checkbox" id="allowed" name="allow_group" value="1"<!-- IF ALLOW_GROUP --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="allow_in_pm">{L_ALLOW_IN_PM}:</label></dt>
+			<dd><input type="checkbox" id="allow_in_pm" name="allow_in_pm" value="1"<!-- IF ALLOW_IN_PM --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="download_mode">{L_DOWNLOAD_MODE}:</label><br /><span>{L_DOWNLOAD_MODE_EXPLAIN}</span></dt>
+			<dd>{S_DOWNLOAD_SELECT}</dd>
+		</dl>
+		<dl>
+			<dt><label for="upload_icon">{L_UPLOAD_ICON}:</label></dt>
+			<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
+					<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}
+			</select></dd>
+			<dd>&nbsp;<img <!-- IF S_NO_IMAGE -->src="{PHPBB_ROOT_PATH}images/spacer.gif"<!-- ELSE -->src="{UPLOAD_ICON_SRC}"<!-- ENDIF --> name="image_upload_icon" alt="" title="" />&nbsp;</dd>
+		</dl>
+		<dl>
+			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>
+			<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
+		</dl>
+		<dl>
+			<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}:</label></dt>
+			<dd><div id="ext">{ASSIGNED_EXTENSIONS}</div> <span>[<a href="{U_EXTENSIONS}">{L_GO_TO_EXTENSIONS}</a> ]</span></dd>
+			<dd><select name="extensions[]" id="assigned_extensions" class="narrow" onchange="show_extensions(this);" multiple="multiple" size="8">{S_EXTENSION_OPTIONS}</select></dd>
+		</dl>
+		<dl>
+			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
+			<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
+		</dl>
 		</fieldset>
 
 		<fieldset class="submit-buttons">
@@ -258,14 +258,14 @@
 	<form id="add_ext" method="post" action="{U_ACTION}">
 	<fieldset>
 		<legend>{L_ADD_EXTENSION}</legend>
-		<dl>
-			<dt><label for="add_extension">{L_EXTENSION}</label></dt>
-			<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
-			<dd>{GROUP_SELECT_OPTIONS}</dd>
-		</dl>
+	<dl>
+		<dt><label for="add_extension">{L_EXTENSION}</label></dt>
+		<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
+		<dd>{GROUP_SELECT_OPTIONS}</dd>
+	</dl>
 	</fieldset>
 
 	<fieldset class="quick">

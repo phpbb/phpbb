@@ -14,10 +14,10 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 
 // Start session management
@@ -48,7 +48,7 @@ $current_time = time();
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
-	$redirect = ($post_id) ? "viewtopic.$phpEx$SID&p=$post_id#p$post_id" : (($topic_id) ? "viewtopic.$phpEx$SID&t=$topic_id" : (($forum_id) ? "viewforum.$phpEx$SID&f=$forum_id" : "index.$phpEx$SID"));
+	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
 	redirect($redirect);
 }
 
@@ -57,8 +57,7 @@ if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$foru
 	trigger_error('NO_FORUM');
 }
 
-// What is all this following SQL for? Well, we need to know
-// some basic information in all cases before we do anything.
+// We need to know some basic information in all cases before we do anything.
 switch ($mode)
 {
 	case 'post':
@@ -223,24 +222,27 @@ if ($mode == 'bump')
 {
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id']))
 	{
-		$db->sql_transaction();
+		$db->sql_transaction('begin');
 
-		$db->sql_query('UPDATE ' . POSTS_TABLE . "
+		$sql = 'UPDATE ' . POSTS_TABLE . "
 			SET post_time = $current_time
 			WHERE post_id = {$post_data['topic_last_post_id']}
-				AND topic_id = $topic_id");
+				AND topic_id = $topic_id";
+		$db->sql_query($sql);
 
-		$db->sql_query('UPDATE ' . TOPICS_TABLE . "
+		$sql = 'UPDATE ' . TOPICS_TABLE . "
 			SET topic_last_post_time = $current_time,
 				topic_bumped = 1,
 				topic_bumper = " . $user->data['user_id'] . "
-			WHERE topic_id = $topic_id");
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
 
 		update_post_information('forum', $forum_id);
 
-		$db->sql_query('UPDATE ' . USERS_TABLE . "
+		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_lastpost_time = $current_time
-			WHERE user_id = " . $user->data['user_id']);
+			WHERE user_id = " . $user->data['user_id'];
+		$db->sql_query($sql);
 
 		$db->sql_transaction('commit');
 
@@ -248,15 +250,15 @@ if ($mode == 'bump')
 
 		add_log('mod', $forum_id, $topic_id, sprintf($user->lang['LOGM_BUMP'], $post_data['topic_title']));
 
-		$meta_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}#p{$post_data['topic_last_post_id']}";
+		$meta_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 		meta_refresh(3, $meta_url);
 
 		$message = $user->lang['TOPIC_BUMPED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $meta_url . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $phpbb_root_path . 'viewforum.' . $phpEx . $SID .'&amp;f=' . $forum_id . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 		trigger_error($message);
 	}
-	
+
 	trigger_error('BUMP_ERROR');
 }
 
@@ -313,6 +315,7 @@ $message_parser->get_submitted_attachment_data($post_data['poster_id']);
 
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
+	// Do not change to SELECT *
 	$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id
@@ -409,13 +412,13 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 			);
 			$db->sql_query($sql);
 
-			$meta_info = ($mode == 'post') ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id" : "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+			$meta_info = ($mode == 'post') ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 
 			meta_refresh(3, $meta_info);
 
 			$message = $user->lang['DRAFT_SAVED'] . '<br /><br />';
 			$message .= ($mode != 'post') ? sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>') . '<br /><br />' : '';
-			$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="' . $phpbb_root_path . 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			$message .= sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 
 			trigger_error($message);
 		}
@@ -474,7 +477,8 @@ if ($submit || $preview || $refresh)
 	$post_data['post_subject'] = request_var('subject', '', true);
 
 	// If subject is all-uppercase then we make all lowercase (we do not want to be yelled at too :P)
-	if ($post_data['post_subject'] && strcmp($post_data['post_subject'], strtoupper($post_data['post_subject'])) == 0)
+	// Admins/Mods might want to create all-uppercase topics, therefore we do not apply this check to them (they should know better ;))
+	if ($post_data['post_subject'] && !$auth->acl_gets('a_', 'm_', $forum_id) && strcmp($post_data['post_subject'], strtoupper($post_data['post_subject'])) == 0)
 	{
 		$post_data['post_subject'] = strtolower($post_data['post_subject']);
 	}
@@ -653,7 +657,7 @@ if ($submit || $preview || $refresh)
 		$confirm_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (strcasecmp($confirm_row['code'], $confirm_code) !== 0)
+		if (empty($confirm_row['code']) || strcasecmp($confirm_row['code'], $confirm_code) !== 0)
 		{
 			$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 		}
@@ -686,7 +690,7 @@ if ($submit || $preview || $refresh)
 		);
 
 		$message_parser->parse_poll($poll);
-	
+
 		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 
@@ -713,7 +717,7 @@ if ($submit || $preview || $refresh)
 			case POST_STICKY:
 				$auth_option = 'f_sticky';
 			break;
-			
+
 			default:
 				$auth_option = '';
 			break;
@@ -842,9 +846,9 @@ if ($submit || $preview || $refresh)
 
 			meta_refresh(3, $redirect_url);
 
-			$message = ($auth->acl_get('f_moderate', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? (($mode == 'edit') ? 'POST_EDITED_MOD' : 'POST_STORED_MOD') : (($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED');
-			$message = $user->lang[$message] . ((!$auth->acl_get('f_moderate', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>') : '');
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $phpbb_root_path . 'viewforum.' . $phpEx . $SID .'&amp;f=' . $data['forum_id'] . '">', '</a>');
+			$message = (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? (($mode == 'edit') ? 'POST_EDITED_MOD' : 'POST_STORED_MOD') : (($mode == 'edit') ? 'POST_EDITED' : 'POST_STORED');
+			$message = $user->lang[$message] . (($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $redirect_url . '">', '</a>') : '');
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']) . '">', '</a>');
 			trigger_error($message);
 		}
 	}
@@ -877,9 +881,9 @@ if (!sizeof($error) && $preview)
 	{
 		$preview_signature = '';
 	}
-	
+
 	$preview_subject = censor_text($post_data['post_subject']);
-	
+
 	// Poll Preview
 	if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))))
 	&& $auth->acl_get('f_poll', $forum_id))
@@ -889,10 +893,10 @@ if (!sizeof($error) && $preview)
 		$parse_poll->bbcode_bitfield = $message_parser->bbcode_bitfield;
 
 		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
-		
+
 		$template->assign_vars(array(
-			'S_HAS_POLL_OPTIONS'=> (sizeof($post_data['poll_options'])),
-			'S_IS_MULTI_CHOICE'	=> ($post_data['poll_max_options'] > 1) ? true : false,
+			'S_HAS_POLL_OPTIONS'	=> (sizeof($post_data['poll_options'])),
+			'S_IS_MULTI_CHOICE'		=> ($post_data['poll_max_options'] > 1) ? true : false,
 
 			'POLL_QUESTION'		=> $parse_poll->message,
 			
@@ -907,7 +911,9 @@ if (!sizeof($error) && $preview)
 
 		foreach ($preview_poll_options as $option)
 		{
-			$template->assign_block_vars('poll_option', array('POLL_OPTION_CAPTION' => $option));
+			$template->assign_block_vars('poll_option', array(
+				'POLL_OPTION_CAPTION'	=> $option)
+			);
 		}
 		unset($preview_poll_options);
 	}
@@ -1017,7 +1023,7 @@ $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_lo
 $notify_checked		= (isset($notify)) ? $notify : (($mode != 'edit') ? $user->data['user_notify'] : $post_data['notify_set']);
 
 // Page title & action URL, include session_id for security purpose
-$s_action = "posting.$phpEx?sid=" . $user->session_id . "&amp;mode=$mode&amp;f=$forum_id";
+$s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id", true, $user->session_id);
 $s_action .= ($topic_id) ? "&amp;t=$topic_id" : '';
 $s_action .= ($post_id) ? "&amp;p=$post_id" : '';
 
@@ -1067,7 +1073,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode ==
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,
 		'CONFIRM_ID'				=> $confirm_id,
-		'CONFIRM_IMAGE'				=> '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST . '" alt="" title="" />',
+		'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
 		'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
 	));
 }
@@ -1080,18 +1086,18 @@ $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_up
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(
-	'L_POST_A'				=> $page_title,
-	'L_ICON'				=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
-	'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+	'L_POST_A'					=> $page_title,
+	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? $user->lang['POST_ICON'] : $user->lang['TOPIC_ICON'],
+	'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
-	'FORUM_NAME' 			=> $post_data['forum_name'],
+	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield']) : '',
-	'TOPIC_TITLE' 			=> $post_data['topic_title'],
-	'MODERATORS' 			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
+	'TOPIC_TITLE'			=> $post_data['topic_title'],
+	'MODERATORS'			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
-	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
+	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
@@ -1100,10 +1106,10 @@ $template->assign_vars(array(
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
 	'EDIT_REASON'			=> $post_data['post_edit_reason'],
-	'U_VIEW_FORUM' 			=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id",
-	'U_VIEWTOPIC' 			=> ($mode != 'post') ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;$forum_id&amp;t=$topic_id" : '',
-	'U_PROGRESS_BAR'		=> "{$phpbb_root_path}posting.$phpEx$SID&amp;f=$forum_id&amp;mode=popup",
-	'UA_PROGRESS_BAR'		=> "{$phpbb_root_path}posting.$phpEx$SID&f=$forum_id&mode=popup",
+	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
+	'U_VIEWTOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
+	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
+	'UA_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&mode=popup", false),
 
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
@@ -1111,15 +1117,15 @@ $template->assign_vars(array(
 	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['post_username'])) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
-	'S_DELETE_ALLOWED' 			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
+	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_BBCODE_ALLOWED'			=> $bbcode_status,
-	'S_BBCODE_CHECKED' 			=> ($bbcode_checked) ? ' checked="checked"' : '',
+	'S_BBCODE_CHECKED'			=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'			=> $smilies_status,
 	'S_SMILIES_CHECKED'			=> ($smilies_checked) ? ' checked="checked"' : '',
 	'S_SIG_ALLOWED'				=> ($auth->acl_get('f_sigs', $forum_id) && $config['allow_sig'] && $user->data['is_registered']) ? true : false,
 	'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'			=> (!$user->data['is_registered'] || ($mode == 'edit' && $user->data['user_id'] != $post_data['poster_id']) || !$config['allow_topic_notify']) ? false : true,
-	'S_NOTIFY_CHECKED' 			=> ($notify_checked) ? ' checked="checked"' : '',
+	'S_NOTIFY_CHECKED'			=> ($notify_checked) ? ' checked="checked"' : '',
 	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && !empty($post_data['topic_poster']) && $user->data['user_id'] == $post_data['topic_poster']))) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
@@ -1134,7 +1140,7 @@ $template->assign_vars(array(
 	'S_BBCODE_FLASH'		=> $flash_status,
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
-	'S_POST_ACTION' 		=> $s_action,
+	'S_POST_ACTION'			=> $s_action,
 	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 );
 
@@ -1166,13 +1172,13 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id)),
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
 
-		'L_POLL_OPTIONS_EXPLAIN'=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
+		'L_POLL_OPTIONS_EXPLAIN'	=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
 
 		'VOTE_CHANGE_CHECKED'	=> (!empty($post_data['poll_vote_change'])) ? ' checked="checked"' : '',
-		'POLL_TITLE' 			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
+		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
 		'POLL_OPTIONS'			=> (!empty($post_data['poll_options'])) ? implode("\n", $post_data['poll_options']) : '',
 		'POLL_MAX_OPTIONS'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
-		'POLL_LENGTH' 			=> $post_data['poll_length'])
+		'POLL_LENGTH'			=> $post_data['poll_length'])
 	);
 }
 
@@ -1190,7 +1196,7 @@ $template->set_filenames(array(
 	'body' => 'posting_body.html')
 );
 
-make_jumpbox('viewforum.' . $phpEx);
+make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 // Topic review
 if ($mode == 'reply' || $mode == 'quote')
@@ -1231,8 +1237,8 @@ function upload_popup($forum_style = 0)
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 {
 	global $user, $db, $auth;
-	global $phpbb_root_path, $phpEx, $SID;
-	
+	global $phpbb_root_path, $phpEx;
+
 	// If moderator removing post or user itself removing post, present a confirmation screen
 	if ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id) && $post_id == $post_data['topic_last_post_id']))
 	{
@@ -1260,19 +1266,19 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			{
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title']);
 
-				$meta_info = "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id";
+				$meta_info = append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id");
 				$message = $user->lang['POST_DELETED'];
 			}
 			else
 			{
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_POST', $post_data['post_subject']);
 
-				$meta_info = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id#p$next_post_id";
+				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
 				$message = $user->lang['POST_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $meta_info . '">', '</a>');
 			}
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $phpbb_root_path . 'viewforum.' . $phpEx . $SID . '&amp;f=' . $forum_id . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
 			trigger_error($message);
 		}
 		else

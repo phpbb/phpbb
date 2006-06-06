@@ -11,8 +11,10 @@
 		{S_ROLE_JS_ARRAY}
 	<!-- ENDIF -->
 
-	// Show/hide option panels
-	// value = suffix for ID to show
+	/**
+	* Show/hide option panels
+	* value = suffix for ID to show
+	*/
 	function swap_options(pmask, fmask, cat)
 	{
 		id = pmask + fmask + cat;
@@ -38,19 +40,21 @@
 		active_cat = cat;
 	}
 
-	// Mark all radio buttons in one panel
-	// id = table ID container, s = status ['y'/'u'/'n']
+	/**
+	* Mark all radio buttons in one panel
+	* id = table ID container, s = status ['y'/'u'/'n']
+	*/
 	function mark_options(id, s)
 	{
 		var t = document.getElementById(id);
-		
+
 		if (!t)
 		{
 			return;
 		}
-	
+
 		var rb = t.getElementsByTagName('input');
-	
+
 		for (var r = 0; r < rb.length; r++ )
 		{
 			if (rb[r].id.substr(rb[r].id.length-1) == s)
@@ -60,19 +64,21 @@
 		}
 	}
 
-	// Mark one radio button in one panel
-	// id = table ID container, field_name = the auth option, s = status ['y'/'u'/'n']
+	/**
+	* Mark one radio button in one panel
+	* id = table ID container, field_name = the auth option, s = status ['y'/'u'/'n']
+	*/
 	function mark_one_option(id, field_name, s)
 	{
 		var t = document.getElementById(id);
-		
+
 		if (!t)
 		{
 			return;
 		}
 
 		var rb = t.getElementsByTagName('input');
-	
+
 		for (var r = 0; r < rb.length; r++ )
 		{
 			if (rb[r].id.substr(rb[r].id.length-field_name.length-3, field_name.length) == field_name && rb[r].id.substr(rb[r].id.length-1) == s)
@@ -82,7 +88,9 @@
 		}
 	}
 
-	// Reset role dropdown field to Select role... if an option gets changed
+	/**
+	* Reset role dropdown field to Select role... if an option gets changed
+	*/
 	function reset_role(id)
 	{
 		var t = document.getElementById(id);
@@ -95,7 +103,9 @@
 		t.options[0].selected = true;
 	}
 
-	// Load role and set options accordingly
+	/**
+	* Load role and set options accordingly
+	*/
 	function set_role_settings(role_id, target_id)
 	{
 		settings = role_options[role_id];

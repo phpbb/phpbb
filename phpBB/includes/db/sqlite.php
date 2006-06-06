@@ -52,37 +52,27 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = @sqlite_query('BEGIN', $this->db_connect_id);
-				$this->transaction = true;
+				return @sqlite_query('BEGIN', $this->db_connect_id);
 			break;
 
 			case 'commit':
-				$result = @sqlite_query('COMMIT', $this->db_connect_id);
-				$this->transaction = false;
-				
-				if (!$result)
-				{
-					@sqlite_query('ROLLBACK', $this->db_connect_id);
-				}
+				return @sqlite_query('COMMIT', $this->db_connect_id);
 			break;
 
 			case 'rollback':
-				$result = @sqlite_query('ROLLBACK', $this->db_connect_id);
-				$this->transaction = false;
+				return @sqlite_query('ROLLBACK', $this->db_connect_id);
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**

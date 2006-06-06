@@ -49,37 +49,27 @@ class dbal_firebird extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = true;
-				$this->transaction = true;
+				return true;
 			break;
 
 			case 'commit':
-				$result = @ibase_commit();
-				$this->transaction = false;
-
-				if (!$result)
-				{
-					@ibase_rollback();
-				}
+				return @ibase_commit();
 			break;
 
 			case 'rollback':
-				$result = @ibase_rollback();
-				$this->transaction = false;
+				return @ibase_rollback();
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**

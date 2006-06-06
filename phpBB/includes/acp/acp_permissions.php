@@ -19,7 +19,7 @@ class acp_permissions
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
@@ -304,7 +304,7 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_USER'			=> true,
-						'U_FIND_USERNAME'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=select_victim&amp;field=username")
+						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username'))
 					);
 
 				break;
@@ -435,7 +435,7 @@ class acp_permissions
 						'S_DEFINED_USER_OPTIONS'	=> $s_defined_user_options,
 						'S_DEFINED_GROUP_OPTIONS'	=> $s_defined_group_options,
 						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $defined_group_ids),
-						'U_FIND_USERNAME'			=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=add_user&amp;field=username")
+						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username'))
 					);
 
 				break;

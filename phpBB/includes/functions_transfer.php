@@ -47,7 +47,7 @@ class transfer
 	{
 		global $phpbb_root_path;
 
-		$destination_file = $this->root_path . '/' . str_replace($phpbb_root_path, '', $destination_file);
+		$destination_file = $this->root_path . str_replace($phpbb_root_path, '', $destination_file);
 
 		// need to create a temp file and then move that temp file.
 		// ftp functions can only move files around and can't create.
@@ -121,7 +121,7 @@ class transfer
 				$this->_chmod($dir[$i], $this->dir_perms);
 			}
 
-			$this->_chdir($this->root_path . '/' . $dirs . $dir[$i]);
+			$this->_chdir($this->root_path . $dirs . $dir[$i]);
 			$dirs .= $cur_dir;
 		}
 
@@ -141,7 +141,7 @@ class transfer
 		global $phpbb_root_path;
 
 		$from_loc = ((strpos($from_loc, $phpbb_root_path) !== 0) ? $phpbb_root_path : '') . $from_loc;
-		$to_loc = $this->root_path . '/' . str_replace($phpbb_root_path, '', $to_loc);
+		$to_loc = $this->root_path . str_replace($phpbb_root_path, '', $to_loc);
 
 		if (!file_exists($from_loc))
 		{
@@ -160,7 +160,7 @@ class transfer
 	{
 		global $phpbb_root_path;
 		
-		$file = $this->root_path . '/' . str_replace($phpbb_root_path, '', $file);
+		$file = $this->root_path . str_replace($phpbb_root_path, '', $file);
 
 		return $this->_delete($file);
 	}
@@ -173,7 +173,7 @@ class transfer
 	{
 		global $phpbb_root_path;
 		
-		$dir = $this->root_path . '/' . str_replace($phpbb_root_path, '', $dir);
+		$dir = $this->root_path . str_replace($phpbb_root_path, '', $dir);
 		
 		return $this->_rmdir($dir);
 	}
@@ -185,7 +185,7 @@ class transfer
 	{
 		global $phpbb_root_path;
 
-		$old_handle = $this->root_path . '/' . str_replace($phpbb_root_path, '', $old_handle);
+		$old_handle = $this->root_path . str_replace($phpbb_root_path, '', $old_handle);
 		
 		return $this->_rename($old_handle, $new_handle);
 	}
@@ -245,9 +245,9 @@ class ftp extends transfer
 		$this->password		= $password;
 		$this->timeout		= $timeout;
 
-		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (prefixed with / and no / at the end)
+		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path);
+		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? '' : '/') . $root_path;
 
 		// Init some needed values
 		transfer::transfer();
@@ -447,7 +447,7 @@ class ftp_fsock extends transfer
 
 		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (prefixed with / and no / at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? substr($root_path, 0, -1) : $root_path);
+		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? '' : '/') . $root_path;
 
 		// Init some needed values
 		transfer::transfer();

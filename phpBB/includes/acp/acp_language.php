@@ -24,7 +24,7 @@ class acp_language
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 		global $safe_mode, $file_uploads;
 
 		include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -702,9 +702,9 @@ class acp_language
 
 				$lang_pack = array(
 					'iso'		=> $lang_iso,
-					'name'		=> trim(htmlspecialchars(stripslashes($file[0]))),
-					'local_name'=> trim(htmlspecialchars(stripslashes($file[1]))),
-					'author'	=> trim(htmlspecialchars(stripslashes($file[2])))
+					'name'		=> trim(htmlspecialchars($file[0])),
+					'local_name'=> trim(htmlspecialchars($file[1])),
+					'author'	=> trim(htmlspecialchars($file[2]))
 				);
 				unset($file);
 

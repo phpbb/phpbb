@@ -15,9 +15,11 @@
 */
 class ucp_resend
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
@@ -130,9 +132,9 @@ class ucp_resend
 				$db->sql_freeresult($result);
 			}
 
-			meta_refresh(3, "index.$phpEx$SID");
+			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang['ACTIVATION_EMAIL_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . "index.$phpEx$SID" . '">', '</a>');
+			$message = $user->lang['ACTIVATION_EMAIL_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 		else

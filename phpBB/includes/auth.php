@@ -310,17 +310,17 @@ class auth
 	function acl_cache(&$userdata)
 	{
 		global $db;
-		
+
 		// Empty user_permissions
 		$userdata['user_permissions'] = '';
-		
+
 		$hold_ary = $this->acl_raw_data($userdata['user_id'], false, false);
 
 		if (isset($hold_ary[$userdata['user_id']]))
 		{
 			$hold_ary = $hold_ary[$userdata['user_id']];
 		}
-		
+
 		// Key 0 in $hold_ary are global options, all others are forum_ids
 
 		// If this user is founder we're going to force fill the admin options ...
@@ -508,9 +508,9 @@ class auth
 			),
 
 			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-							' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
-							$sql_forum
-							$sql_opts",
+				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts",
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
@@ -541,10 +541,10 @@ class auth
 			),
 
 			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-								AND a.group_id = ug.group_id
-								' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
-								$sql_forum
-								$sql_opts",
+				AND a.group_id = ug.group_id
+				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts",
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
@@ -561,7 +561,7 @@ class auth
 				if ($setting == ACL_NO)
 				{
 					$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
-				
+
 					if (isset($hold_ary[$row['user_id']][$row['forum_id']][$flag]) && $hold_ary[$row['user_id']][$row['forum_id']][$flag] == ACL_YES)
 					{
 						unset($hold_ary[$row['user_id']][$row['forum_id']][$flag]);
@@ -622,9 +622,9 @@ class auth
 			),
 
 			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-								' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
-								$sql_forum
-								$sql_opts",
+				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts",
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
@@ -667,12 +667,12 @@ class auth
 		// Grab group settings... 
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
-			
+
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'ao',
 				ACL_GROUPS_TABLE	=> 'a'
 			),
-			
+
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
@@ -681,9 +681,9 @@ class auth
 			),
 
 			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-								' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
-								$sql_forum
-								$sql_opts",
+				' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
+				$sql_forum
+				$sql_opts",
 
 			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
@@ -701,13 +701,12 @@ class auth
 
 	/**
 	* Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
-	* @todo replace this with a new system
 	*/
 	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
-		$method = trim($config['auth_method']);
+		$method = trim(basename($config['auth_method']));
 
 		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 		{

@@ -15,7 +15,7 @@
 function compose_pm($id, $mode, $action)
 {
 	global $template, $db, $auth, $user;
-	global $phpbb_root_path, $phpEx, $config, $SID;
+	global $phpbb_root_path, $phpEx, $config;
 
 	include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
 	include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
@@ -60,9 +60,9 @@ function compose_pm($id, $mode, $action)
 	{
 		if ($msg_id)
 		{
-			redirect("ucp.$phpEx$SID&i=pm&mode=view&action=view_message&p=$msg_id");
+			redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
 		}
-		redirect("ucp.$phpEx$SID&i=pm");
+		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm'));
 	}
 
 	$sql = '';
@@ -253,7 +253,7 @@ function compose_pm($id, $mode, $action)
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
-	$s_action = "{$phpbb_root_path}ucp.$phpEx?sid={$user->session_id}&amp;i=$id&amp;mode=$mode&amp;action=$action";
+	$s_action = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
 	$s_action .= ($msg_id) ? "&amp;p=$msg_id" : '';
 
 	// Delete triggered ?
@@ -268,7 +268,7 @@ function compose_pm($id, $mode, $action)
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
 
 			// TODO - jump to next message in "history"?
-			$meta_info = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=$folder_id";
+			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
 			$message = $user->lang['MESSAGE_DELETED'];
 
 			meta_refresh(3, $meta_info);
@@ -283,7 +283,7 @@ function compose_pm($id, $mode, $action)
 				'action'=> 'delete'
 			);
 
-			// "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose"
+			// "{$phpbb_root_path}ucp.$phpEx?i=pm&amp;mode=compose"
 			confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 		}
 	}
@@ -372,9 +372,10 @@ function compose_pm($id, $mode, $action)
 					'draft_message' => $message));
 				$db->sql_query($sql);
 
-				meta_refresh(3, "ucp.$phpEx$SID&i=pm&mode=$mode");
+				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 
-				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=pm&amp;mode=$mode\">", '</a>');
+				meta_refresh(3, $redirect_url);
+				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 
 				trigger_error($message);
 			}
@@ -519,8 +520,8 @@ function compose_pm($id, $mode, $action)
 			// ((!$message_subject) ? $subject : $message_subject)
 			$msg_id = submit_pm($action, $subject, $pm_data, true);
 
-			$return_message_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=view&amp;p=" . $msg_id;
-			$return_folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=outbox";
+			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
+			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');
 			meta_refresh(3, $return_message_url);
 
 			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
@@ -617,7 +618,7 @@ function compose_pm($id, $mode, $action)
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
-		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx$SID&mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
+		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
 	}
 
@@ -705,7 +706,7 @@ function compose_pm($id, $mode, $action)
 					'IS_USER'	=> ($type == 'u'),
 					'COLOUR'	=> (${$type}[$id]['colour']) ? ${$type}[$id]['colour'] : '',
 					'UG_ID'		=> $id,
-					'U_VIEW'	=> ($type == 'u') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $id,
+					'U_VIEW'	=> ($type == 'u') ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
 					'TYPE'		=> $type)
 				);
 			}
@@ -771,7 +772,7 @@ function compose_pm($id, $mode, $action)
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
-		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
+		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
@@ -800,8 +801,8 @@ function compose_pm($id, $mode, $action)
 		'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
-		'U_PROGRESS_BAR'			=> "{$phpbb_root_path}posting.$phpEx$SID&amp;f=0&amp;mode=popup",
-		'UA_PROGRESS_BAR'			=> "{$phpbb_root_path}posting.$phpEx$SID&f=0&mode=popup",
+		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
+		'UA_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&mode=popup', false),
 		)
 	);
 

@@ -437,11 +437,11 @@
 
 	<fieldset>
 		<legend>{L_ACP_USER_AVATAR}</legend>
-		<dl>
-			<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
-			<dd>{AVATAR_IMAGE}</dd>
-			<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
-		</dl>
+	<dl>
+		<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
+		<dd>{AVATAR_IMAGE}</dd>
+		<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
+	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
 		<!-- IF S_CAN_UPLOAD -->
 			<dl> 
@@ -474,26 +474,26 @@
 
 		<fieldset>
 			<legend>{L_AVATAR_GALLERY}</legend>
-			<dl>
-				<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
-				<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
-			</dl>
-			<dl>
-				<table cellspacing="1">
-				<!-- BEGIN avatar_row -->
-				<tr> 
-					<!-- BEGIN avatar_column -->
-						<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
-					<!-- END avatar_column -->
-				</tr>
-				<tr>
-					<!-- BEGIN avatar_option_column -->
-						<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
-					<!-- END avatar_option_column -->
-				</tr>
-				<!-- END avatar_row -->
-				</table>
-			</dl>
+		<dl>
+			<dt><label for="category">{L_AVATAR_CATEGORY}:</label></dt>
+			<dd><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></dd>
+		</dl>
+		<dl>
+			<table cellspacing="1">
+			<!-- BEGIN avatar_row -->
+			<tr> 
+				<!-- BEGIN avatar_column -->
+					<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
+				<!-- END avatar_column -->
+			</tr>
+			<tr>
+				<!-- BEGIN avatar_option_column -->
+					<td class="row2" style="text-align: center;"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+				<!-- END avatar_option_column -->
+			</tr>
+			<!-- END avatar_row -->
+			</table>
+		</dl>
 		</fieldset>
 		
 		<fieldset class="quick" style="margin-top: -15px;">
@@ -515,10 +515,10 @@
 
 	<fieldset>
 		<legend>{L_ACP_USER_RANK}</legend>
-		<dl>
-			<dt><label for="user_rank">{L_USER_RANK}:</label></dt>
-			<dd><select name="user_rank" id="user_rank">{S_RANK_OPTIONS}</select></dd>
-		</dl>
+	<dl>
+		<dt><label for="user_rank">{L_USER_RANK}:</label></dt>
+		<dd><select name="user_rank" id="user_rank">{S_RANK_OPTIONS}</select></dd>
+	</dl>
 	</fieldset>
 
 	<fieldset class="quick">
@@ -562,10 +562,10 @@
 	<form id="user_signature" method="post" action="{U_ACTION}">
 
 	<!-- IF SIGNATURE_PREVIEW -->
-	<fieldset>
-		<legend>{L_ADMIN_SIG_PREVIEW}</legend>
-		<p>{SIGNATURE_PREVIEW}</p>
-	</fieldset>
+		<fieldset>
+			<legend>{L_ADMIN_SIG_PREVIEW}</legend>
+			<p>{SIGNATURE_PREVIEW}</p>
+		</fieldset>
 	<!-- ENDIF -->
 
 	<fieldset>
@@ -591,19 +591,19 @@
 			<a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a>
 		</div>
 		<p><input type="text" name="helpbox" value="{L_STYLES_TIP}" class="full" style="border: 0; background: none;" /></p>
-		<dl>
-			<dt style="width: 110px;"><script type="text/javascript"><!-- 
-				colorPalette('v', 17, 5); 
-				//--></script>
-			</dt>
-			<dd style="text-align: left; margin-left: 110px;"><textarea name="signature" rows="10" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
-			<dd style="text-align: left; margin-left: 110px;">
-				<!-- IF S_BBCODE_ALLOWED --><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;<!-- ENDIF -->
-				<!-- IF S_SMILIES_ALLOWED --><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;<!-- ENDIF -->
-				<input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
-				<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {SMILIES_STATUS}
-			</dd>
-		</dl>
+	<dl>
+		<dt style="width: 110px;"><script type="text/javascript"><!-- 
+			colorPalette('v', 17, 5); 
+			//--></script>
+		</dt>
+		<dd style="text-align: left; margin-left: 110px;"><textarea name="signature" rows="10" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
+		<dd style="text-align: left; margin-left: 110px;">
+			<!-- IF S_BBCODE_ALLOWED --><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;<!-- ENDIF -->
+			<!-- IF S_SMILIES_ALLOWED --><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;<!-- ENDIF -->
+			<input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
+			<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {SMILIES_STATUS}
+		</dd>
+	</dl>
 	</fieldset>
 
 	<fieldset class="quick">

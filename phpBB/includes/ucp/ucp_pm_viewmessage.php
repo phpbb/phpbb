@@ -14,7 +14,7 @@
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $phpEx, $SID, $config;
+	global $phpbb_root_path, $phpEx, $config;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
@@ -159,7 +159,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		$signature = str_replace("\n", '<br />', censor_text($signature));
 	}
 
-	$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm";
+	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
 
 	$template->assign_vars(array(
 		'AUTHOR_NAME'		=> ($user_info['user_colour']) ? '<span style="color:#' . $user_info['user_colour'] . '">' . $user_info['username'] . '</span>' : $user_info['username'],
@@ -187,9 +187,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'SIGNATURE' 		=> ($message_row['enable_sig']) ? $signature : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
 
-		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['forwarded']) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;mode=pm_details&amp;p=" . $message_row['msg_id'] : '',
+		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE' 			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_AUTHOR_PROFILE' 		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $author_id,
+		'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id),
 		'U_EMAIL' 			=> $user_info['email'],
 		'U_QUOTE' 			=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EDIT' 			=> (($message_row['message_time'] > time() - $config['pm_edit_time'] || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
@@ -235,7 +235,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function message_history($msg_id, $user_id, $message_row, $folder)
 {
-	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $SID, $auth, $bbcode;
+	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth, $bbcode;
 
 	// Get History Messages (could be newer)
 	$sql = 'SELECT t.*, p.*, u.*
@@ -266,7 +266,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 
 	$rowset = array();
 	$bbcode_bitfield = 0;
-	$folder_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=";
+	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
 	$title = ($sort_dir == 'd') ? $row['message_subject'] : '';
 	do
@@ -307,7 +307,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 
 	$title = censor_text($title);
 
-	$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm";
+	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
 	$next_history_pm = $previous_history_pm = $prev_id = 0;
 
 	foreach ($rowset as $id => $row)
@@ -347,7 +347,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	
 			'U_MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_AUTHOR_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$author_id",
+			'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$author_id"),
 			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
@@ -372,7 +372,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 function get_user_informations($user_id, $user_row)
 {
 	global $db, $auth, $user, $cache;
-	global $phpbb_root_path, $phpEx, $SID, $config;
+	global $phpbb_root_path, $phpEx, $config;
 
 	if (!$user_id)
 	{
@@ -455,7 +455,7 @@ function get_user_informations($user_id, $user_row)
 
 	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
-		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;u=$user_id" : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $user_row['user_email']);
+		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $user_row['user_email']);
 	}
 	else
 	{

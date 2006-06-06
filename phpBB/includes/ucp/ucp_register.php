@@ -15,9 +15,11 @@
 */
 class ucp_register
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -60,11 +62,11 @@ class ucp_register
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register&amp;coppa=0",
-					'U_COPPA_YES'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register&amp;coppa=1",
+					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0'),
+					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1'),
 
 					'S_SHOW_COPPA'		=> true,
-					'S_REGISTER_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
+					'S_REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
 				);
 			}
 			else
@@ -74,7 +76,7 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
-					'S_REGISTER_ACTION'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
+					'S_REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
 				);
 			}
 
@@ -232,7 +234,7 @@ class ucp_register
 				}
 
 				// Begin transaction ... should this screw up we can rollback
-				$db->sql_transaction();
+				$db->sql_transaction('begin');
 
 				$sql_ary = array(
 					'username'			=> $username,
@@ -404,7 +406,7 @@ class ucp_register
 				}
 				unset($data);
 
-				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  "<a href=\"index.$phpEx$SID\">", '</a>');
+				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
 		}
@@ -468,7 +470,7 @@ class ucp_register
 				$db->sql_query($sql);
 			}
 
-			$confirm_image = '<img src="' . $phpbb_root_path . 'ucp.' . $phpEx . $SID . '&amp;mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . '" alt="" title="" />';
+			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG) . '" alt="" title="" />';
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 
@@ -510,7 +512,7 @@ class ucp_register
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=register")
+			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
 		);
 
 		//

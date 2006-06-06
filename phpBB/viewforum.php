@@ -49,7 +49,6 @@ if ($config['load_db_lastread'] && $user->data['is_registered'])
 else
 {
 	$lastread_select = '';
-	$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
 }
 
 if ($user->data['is_registered'])
@@ -62,12 +61,14 @@ $sql = "SELECT f.* $lastread_select
 	FROM $sql_from
 	WHERE f.forum_id = $forum_id";
 $result = $db->sql_query($sql);
+$forum_data = $db->sql_fetchrow($result);
+$db->sql_freeresult($result);
 
-if (!($forum_data = $db->sql_fetchrow($result)))
+if (!$forum_data)
 {
 	trigger_error('NO_FORUM');
 }
-$db->sql_freeresult($result);
+
 
 // Configure style, language, etc.
 $user->setup('viewforum', $forum_data['forum_style']);
@@ -138,7 +139,7 @@ $template->set_filenames(array(
 	'body' => 'viewforum_body.html')
 );
 
-make_jumpbox("{$phpbb_root_path}viewforum.$phpEx$SID", $forum_id);
+make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 // Not postable forum or showing active topics?
 if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16) && $forum_data['forum_type'] == FORUM_CAT)))
@@ -151,7 +152,7 @@ if ($mark_read == 'topics')
 {
 	markread('topics', $forum_id);
 
-	$redirect_url = "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id";
+	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
 
 	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
@@ -234,7 +235,7 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LO
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & 16)) ? true : false;
 
 $template->assign_vars(array(
-	'PAGINATION'	=> generate_pagination("{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;$u_sort_param", $topics_count, $config['topics_per_page'], $start),
+	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),
 	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
 	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
@@ -267,14 +268,14 @@ $template->assign_vars(array(
 	'S_TOPIC_ICONS'			=> ($s_display_active && sizeof($active_forum_ary)) ? max($active_forum_ary['enable_icons']) : (($forum_data['enable_icons']) ? true : false),
 	'S_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
-	'S_FORUM_ACTION'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;start=$start",
+	'S_FORUM_ACTION'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;start=$start"),
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false,
-	'S_SEARCHBOX_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;fid[]=$forum_id",
+	'S_SEARCHBOX_ACTION'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'fid[]=' . $forum_id),
 
-	'U_MCP'				=> ($auth->acl_gets('m_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx?sid=$user->session_id&amp;f=$forum_id&amp;i=main&amp;mode=forum_view" : '',
-	'U_POST_NEW_TOPIC'	=> "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
-	'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;$u_sort_param&amp;start=$start",
-	'U_MARK_TOPICS'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id&amp;mark=topics")
+	'U_MCP'				=> ($auth->acl_gets('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
+	'U_POST_NEW_TOPIC'	=> append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id),
+	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param&amp;start=$start"),
+	'U_MARK_TOPICS'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;mark=topics"))
 );
 
 // Grab icons
@@ -438,9 +439,9 @@ if (sizeof($topic_list))
 
 			if (!$user->data['is_registered'])
 			{
-				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
 			}
-			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'] : $user->data['user_lastmark'];
+			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
 		}
 	}
 
@@ -471,11 +472,11 @@ if (sizeof($topic_list))
 		topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 
 		// Generate all the URIs ...
-		$view_topic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id";
+		$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $topic_id);
 
 		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
 		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
-		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=queue&amp;mode=" . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id" : '';
+		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
 
 		// Send vars to template
 		$template->assign_block_vars('topicrow', array(
@@ -514,9 +515,9 @@ if (sizeof($topic_list))
 
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 			'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-			'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
+			'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
 			'U_VIEW_TOPIC'			=> $view_topic_url,
-			'U_MCP_REPORT'			=> "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=reports&amp;mode=reports&amp;t=$topic_id",
+			'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $topic_id, true, $user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,
 
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test)

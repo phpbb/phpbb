@@ -15,8 +15,8 @@
 */
 class mcp_reports
 {
-
 	var $p_master;
+	var $u_action;
 
 	function mcp_main(&$p_master)
 	{
@@ -26,7 +26,7 @@ class mcp_reports
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx, $SID, $action;
+		global $config, $phpbb_root_path, $phpEx, $action;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 
@@ -119,24 +119,24 @@ class mcp_reports
 
 				$template->assign_vars(array(
 					'S_MCP_REPORT'			=> true,
-					'S_CLOSE_ACTION'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;p=$post_id&amp;f=$forum_id",
+					'S_CLOSE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? true : false,
 
-					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $post_info['user_id'] : '',
-					'U_MCP_USER_NOTES'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $post_info['user_id'],
-					'U_MCP_WARN_USER'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $post_info['user_id'],
-					'U_VIEW_REPORTER_PROFILE'	=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $report['user_id'],
-					'U_MCP_REPORTER_NOTES'	=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $report['user_id'],
-					'U_MCP_WARN_REPORTER'	=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user&amp;u=" . $report['user_id'],
-					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}" : '',
+					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
+					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_WARN_USER'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']),
+					'U_VIEW_REPORTER_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']),
+					'U_MCP_REPORTER_NOTES'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
+					'U_MCP_WARN_REPORTER'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']),
+					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 
 					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
 
-					'RETURN_REPORTS'		=> sprintf($user->lang['RETURN_REPORTS'], "<a href=\"{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports" . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . "&amp;start=$start\">", '</a>'),
+					'RETURN_REPORTS'		=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
 					'REPORT_REASON_TITLE'	=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
@@ -292,13 +292,13 @@ class mcp_reports
 						$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" />';
 
 						$template->assign_block_vars('postrow', array(
-							'U_VIEWFORUM'				=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'],
+							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 							// Q: Why accessing the topic by a post_id instead of its topic_id?
 							// A: To prevent the post from being hidden because of wrong encoding or different charset
-							'U_VIEWTOPIC'				=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id'],
-							'U_VIEW_DETAILS'			=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;start=$start&amp;mode=report_details&amp;f={$forum_id}&amp;p={$row['post_id']}",
-							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
-							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['reporter_id']}" : '',
+							'U_VIEWTOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
+							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$forum_id}&amp;p={$row['post_id']}"),
+							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
+							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['reporter_id']) : '',
 
 							'S_CHECKBOX'	=> $s_checkbox,
 
@@ -324,7 +324,7 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;f=$forum_id&amp;t=$topic_id", $total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total)
@@ -342,7 +342,7 @@ class mcp_reports
 function close_report($post_id_list, $mode, $action)
 {
 	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path, $SID;
+	global $phpEx, $phpbb_root_path;
 
 	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_report')))
 	{

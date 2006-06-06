@@ -18,7 +18,7 @@ class mcp_ban
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx;
 
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -103,7 +103,7 @@ class mcp_ban
 			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
 
 			'U_ACTION'			=> $this->u_action,
-			'U_FIND_USER'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp_ban&amp;field=ban",
+			'U_FIND_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
 			)
 		);
 	}

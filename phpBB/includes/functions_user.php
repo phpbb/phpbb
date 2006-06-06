@@ -46,6 +46,7 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 
 	if (!($row = $db->sql_fetchrow($result)))
 	{
+		$db->sql_freeresult($result);
 		return 'NO_USERS';
 	}
 
@@ -63,6 +64,9 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 
 /**
 * Updates a username across all relevant tables/fields
+*
+* @param string $old_name the old/current username
+* @param string $new_name the new username
 */
 function user_update_name($old_name, $new_name)
 {
@@ -99,7 +103,7 @@ function user_delete($mode, $user_id, $post_username = false)
 {
 	global $config, $db, $user, $auth;
 
-	$db->sql_transaction();
+	$db->sql_transaction('begin');
 
 	switch ($mode)
 	{
@@ -130,7 +134,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			if (!function_exists('delete_posts'))
 			{
 				global $phpbb_root_path, $phpEx;
-				include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
 			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
@@ -174,7 +178,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			// Delete posts, attachments, etc.
 			delete_posts('poster_id', $user_id);
 
-			break;
+		break;
 	}
 
 	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE);
@@ -295,16 +299,16 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 }
 
 /**
- * Add a ban or ban exclusion to the banlist. Bans either a user, an IP or an email address
- *
- * @param string $mode Type of ban. One of the following: user, ip, email
- * @param mixed $ban Banned entity. Either string or array with usernames, ips or email addresses
- * @param int $ban_len Ban length in minutes
- * @param string $ban_len_other Ban length as a date (YYYY-MM-DD)
- * @param boolean $ban_exclude Exclude these entities from banning?
- * @param string $ban_reason String describing the reason for this ban
- * @return boolean
- */
+* Add a ban or ban exclusion to the banlist. Bans either a user, an IP or an email address
+*
+* @param string $mode Type of ban. One of the following: user, ip, email
+* @param mixed $ban Banned entity. Either string or array with usernames, ips or email addresses
+* @param int $ban_len Ban length in minutes
+* @param string $ban_len_other Ban length as a date (YYYY-MM-DD)
+* @param boolean $ban_exclude Exclude these entities from banning?
+* @param string $ban_reason String describing the reason for this ban
+* @return boolean
+*/
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
 	global $db, $user, $auth;
@@ -538,7 +542,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	// We have some entities to ban
 	if (sizeof($banlist_ary))
 	{
-		$sql = '';
 		$sql_ary = array();
 
 		foreach ($banlist_ary as $ban_entry)
@@ -605,7 +608,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$result = $db->sql_query($sql);
 
 					$sql_in = array();
-					$sql = '';
 
 					if ($row = $db->sql_fetchrow($result))
 					{
@@ -656,7 +658,7 @@ function user_unban($mode, $ban)
 	{
 		$ban = array($ban);
 	}
-	
+
 	$unban_sql = implode(', ', array_map('intval', $ban));
 
 	if ($unban_sql)
@@ -748,8 +750,7 @@ function user_ipwhois($ip)
 }
 
 /**
-* Data validation ... used primarily but not exclusively by
-* ucp modules
+* Data validation ... used primarily but not exclusively by ucp modules
 *
 * "Master" function for validating a range of data types
 */
@@ -837,6 +838,7 @@ function validate_match($string, $optional = false, $match)
 	{
 		return 'WRONG_DATA';
 	}
+
 	return false;
 }
 
@@ -863,23 +865,25 @@ function validate_username($username)
 		FROM ' . USERS_TABLE . "
 		WHERE LOWER(username) = '" . strtolower($db->sql_escape($username)) . "'";
 	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($row)
 	{
 		return 'USERNAME_TAKEN';
 	}
-	$db->sql_freeresult($result);
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
 		WHERE LOWER(group_name) = '" . strtolower($db->sql_escape($username)) . "'";
 	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($row)
 	{
 		return 'USERNAME_TAKEN';
 	}
-	$db->sql_freeresult($result);
 
 	$sql = 'SELECT disallow_username
 		FROM ' . DISALLOW_TABLE;
@@ -889,6 +893,7 @@ function validate_username($username)
 	{
 		if (preg_match('#^' . str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')) . '#i', $username))
 		{
+			$db->sql_freeresult($result);
 			return 'USERNAME_DISALLOWED';
 		}
 	}
@@ -902,6 +907,7 @@ function validate_username($username)
 	{
 		if (preg_match('#(' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . ')#i', $username))
 		{
+			$db->sql_freeresult($result);
 			return 'USERNAME_DISALLOWED';
 		}
 	}
@@ -938,12 +944,13 @@ function validate_email($email)
 			FROM ' . USERS_TABLE . "
 			WHERE user_email_hash = " . crc32(strtolower($email)) . strlen($email);
 		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row)
 		{
 			return 'EMAIL_TAKEN';
 		}
-		$db->sql_freeresult($result);
 	}
 
 	return false;
@@ -1024,10 +1031,10 @@ function avatar_remote($data, &$error)
 */
 function avatar_upload($data, &$error)
 {
-	global $phpbb_root_path, $config, $db, $user;
+	global $phpbb_root_path, $config, $db, $user, $phpEx;
 
 	// Init upload class
-	include_once($phpbb_root_path . 'includes/functions_upload.php');
+	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
 
 	if (!empty($_FILES['uploadfile']['name']))
@@ -1262,6 +1269,23 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		if (sizeof($sql_ary))
 		{
+			// Before we update the user attributes, we will make a list of those having now the group avatar assigned
+			if (in_array('user_avatar', array_keys($sql_ary)))
+			{
+				// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
+				$sql = 'SELECT user_id, user_avatar
+					FROM ' . USERS_TABLE . '
+					WHERE group_id = ' . $group_id . '
+						AND user_avatar_type = ' . AVATAR_UPLOAD;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					avatar_delete($row['user_avatar']);
+				}
+				$db->sql_freeresult($result);
+			}
+
 			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 				WHERE group_id = $group_id";
 			$db->sql_query($sql);
@@ -1358,18 +1382,14 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	$result = $db->sql_query($sql);
 
 	$add_id_ary = $update_id_ary = array();
-	if ($row = $db->sql_fetchrow($result))
+	while ($row = $db->sql_fetchrow($result))
 	{
-		do
-		{
-			$add_id_ary[] = $row['user_id'];
+		$add_id_ary[] = $row['user_id'];
 
-			if ($leader && !$row['group_leader'])
-			{
-				$update_id_ary[] = $row['user_id'];
-			}
+		if ($leader && !$row['group_leader'])
+		{
+			$update_id_ary[] = $row['user_id'];
 		}
-		while ($row = $db->sql_fetchrow($result));
 	}
 	$db->sql_freeresult($result);
 
@@ -1396,7 +1416,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
 					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader, $pending)",  $add_id_ary));
 				$db->sql_query($sql);
-				break;
+			break;
 
 			default:
 				foreach ($add_id_ary as $user_id)
@@ -1405,7 +1425,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 						VALUES ($user_id, $group_id, $leader, $pending)";
 					$db->sql_query($sql);
 				}
-				break;
+			break;
 		}
 	}
 
@@ -1468,13 +1488,20 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		$group_order_id[$row['group_name']] = $row['group_id'];
 
 		$special_group_data[$row['group_id']] = array(
-			'user_colour'		=> $row['group_colour'],
-			'user_rank'			=> $row['group_rank'],
-			'user_avatar'		=> $row['group_avatar'],
-			'user_avatar_type'	=> $row['group_avatar_type'],
-			'user_avatar_width'	=> $row['group_avatar_width'],
-			'user_avatar_height'=> $row['group_avatar_height'],
+			'user_colour'			=> $row['group_colour'],
+			'user_rank'				=> $row['group_rank'],
 		);
+
+		// Only set the group avatar if one is defined...
+		if ($row['group_avatar'])
+		{
+			$special_group_data[$row['group_id']] = array_merge($special_group_data[$row['group_id']], array(
+				'user_avatar'			=> $row['group_avatar'],
+				'user_avatar_type'		=> $row['group_avatar_type'],
+				'user_avatar_width'		=> $row['group_avatar_width'],
+				'user_avatar_height'	=> $row['group_avatar_height'])
+			);
+		}
 	}
 	$db->sql_freeresult($result);
 
@@ -1524,6 +1551,23 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		{
 			$special_group_data[$gid]['group_id'] = $gid;
 
+			// Before we update the user attributes, we will make a list of those having now the group avatar assigned
+			if (in_array('user_avatar', array_keys($special_group_data[$gid])))
+			{
+				// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
+				$sql = 'SELECT user_id, user_avatar
+					FROM ' . USERS_TABLE . '
+					WHERE user_id IN (' . implode(', ', $sql_where_ary[$gid]) . ')
+						AND user_avatar_type = ' . AVATAR_UPLOAD;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					avatar_delete($row['user_avatar']);
+				}
+				$db->sql_freeresult($result);
+			}
+
 			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $special_group_data[$gid]) . '
 				WHERE user_id IN (' . implode(', ', $sql_where_ary[$gid]) . ')';
 			$db->sql_query($sql);
@@ -1556,7 +1600,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth;
+	global $db, $auth, $phpbb_root_path, $phpEx, $config;
 
 	// We need both username and user_id info
 	user_get_id_name($user_id_ary, $username_ary);
@@ -1564,6 +1608,11 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	if (!sizeof($user_id_ary))
 	{
 		return false;
+	}
+
+	if (!$group_name)
+	{
+		$group_name = get_group_name($group_id);
 	}
 
 	switch ($action)
@@ -1580,28 +1629,74 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 		break;
 
 		case 'approve':
+			// Make sure we only approve those which are pending ;)
+			$sql = 'SELECT u.user_id, u.user_email, u.username, u.user_notify_type, u.user_jabber, u.user_lang
+				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
+				WHERE ug.group_id = ' . $group_id . '
+					AND ug.user_pending = 1
+					AND ug.user_id = u.user_id
+					AND ug.user_id IN (' . implode(', ', $user_id_ary) . ')';
+			$result = $db->sql_query($sql);
+
+			$user_id_ary = $email_users = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$user_id_ary[] = $row['user_id'];
+				$email_users[] = $row;
+			}
+			$db->sql_freeresult($result);
+
+			if (!sizeof($user_id_ary))
+			{
+				return false;
+			}
+
 			$sql = 'UPDATE ' . USER_GROUP_TABLE . "
 				SET user_pending = 0
 				WHERE group_id = $group_id
 					AND user_id IN (" . implode(', ', $user_id_ary) . ')';
 			$db->sql_query($sql);
 
-			$log = 'LOG_GROUP_APPROVE';
+			// Send approved email to users...
+			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			$messenger = new messenger();
+
+			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+
+			foreach ($email_users as $row)
+			{
+				$messenger->template('group_approved', $row['user_lang']);
+
+				$messenger->replyto($config['board_email']);
+				$messenger->to($row['user_email'], $row['username']);
+				$messenger->im($row['user_jabber'], $row['username']);
+
+				$messenger->assign_vars(array(
+					'EMAIL_SIG'		=> $email_sig,
+					'SITENAME'		=> $config['sitename'],
+					'USERNAME'		=> html_entity_decode($row['username']),
+					'GROUP_NAME'	=> html_entity_decode($group_name),
+
+					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
+				);
+
+				$messenger->send($row['user_notify_type']);
+				$messenger->reset();
+			}
+
+			$messenger->save_queue();
+
+			$log = 'LOG_USERS_APPROVED';
 		break;
 
 		case 'default':
 			group_set_user_default($group_id, $user_id_ary, $group_attributes);
 			$log = 'LOG_GROUP_DEFAULTS';
-			break;
+		break;
 	}
 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);
-
-	if (!$group_name)
-	{
-		$group_name = get_group_name($group_id);
-	}
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
@@ -1657,6 +1752,23 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			settype($group_attributes[$attribute], $type);
 			$sql_ary[str_replace('group_', 'user_', $attribute)] = $group_attributes[$attribute];
 		}
+	}
+
+	// Before we update the user attributes, we will make a list of those having now the group avatar assigned
+	if (in_array('user_avatar', array_keys($sql_ary)))
+	{
+		// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
+		$sql = 'SELECT user_id, user_avatar
+			FROM ' . USERS_TABLE . '
+			WHERE user_id IN (' . implode(', ', $user_id_ary) . ')
+				AND user_avatar_type = ' . AVATAR_UPLOAD;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			avatar_delete($row['user_avatar']);
+		}
+		$db->sql_freeresult($result);
 	}
 
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '

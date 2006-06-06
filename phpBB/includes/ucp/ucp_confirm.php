@@ -24,7 +24,7 @@ class ucp_confirm
 {
 	function main($id, $mode)
 	{
-		global $db, $user, $phpbb_root_path, $config;
+		global $db, $user, $phpbb_root_path, $config, $phpEx;
 
 		// Do we have an id? No, then just exit
 		$confirm_id = request_var('id', '');
@@ -74,12 +74,12 @@ class ucp_confirm
 		$policy = '';
 		if (extension_loaded('gd') && sizeof($policy_modules))
 		{
-			include($phpbb_root_path . 'includes/captcha/captcha_gd.php');
+			include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
 			$policy = $policy_modules[array_rand($policy_modules)];
 		}
 		else
 		{
-			include($phpbb_root_path . 'includes/captcha/captcha_non_gd.php');
+			include($phpbb_root_path . 'includes/captcha/captcha_non_gd.' . $phpEx);
 		}
 
 		$captcha = new captcha();

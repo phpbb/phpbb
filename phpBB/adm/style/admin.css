@@ -1,8 +1,6 @@
 /*  phpBB 3.0 Admin Style Sheet
     ------------------------------------------------------------------------
 	Original author:	subBlue ( http://www.subBlue.com/ )
-	Official update:	$Id$
-	
 	Copyright 2006 phpBB Group ( http://www.phpbb.com/ )
     ------------------------------------------------------------------------
 */
@@ -14,12 +12,14 @@
 	/* Reset browsers default margin, padding and font sizes */
 	margin: 0;
 	padding: 0;
-	}
+}
+
 html {
 	font-size: 100%;
 	height: 100%;
 	margin-bottom: 1px;
-	}
+}
+
 body {
 	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
 	font-family: Verdana, Helvetica, Arial, sans-serif;
@@ -27,48 +27,55 @@ body {
 	background: #E4EDF0 url("../images/bg_header.gif") 0 0 repeat-x;
 	font-size: 62.5%;			/* This sets the default font size to be equivalent to 10px */
 	margin: 0;
-	}
+}
+
 img {
 	border: 0;
-	}
+}
+
 h1 {
 	font: bold 1.8em 'Trebuchet MS', Verdana, sans-serif;
 	text-decoration: none; 
 	color: #333333;
-	}
+}
+
 h2, caption {
 	font: bold 1.2em Arial, Helvetica, sans-serif;
 	text-decoration: none; 
 	line-height: 120%; 
 	text-align: left;
 	margin-top: 25px;
-	}
+}
+
 p {
 	margin-bottom: 0.7em;
 	line-height: 1.4em;
 	font-size: 1.1em;
-	}
+}
+
 hr {
 	border: 0 none;
 	border-top: 1px solid #999999;
 	margin-bottom: 5px;
 	padding-bottom: 5px;
 	height: 1px;
-	}
+}
+
 .small { 
 	font-size: 1em; 
-	}
+}
 
 
 /* General links  */
 a:link, a:active, a:visited { 
 	color: #006699; 
 	text-decoration: none; 
-	}
+}
+
 a:hover { 
 	color: #DD6900; 
 	text-decoration: underline; 
-	}
+}
 
 
 /* Main blocks
@@ -76,45 +83,54 @@ a:hover {
 #wrap {
 	padding: 0 20px 15px 20px;
 	min-width: 615px;
-	}
+}
+
 #page-header {
 	text-align: right;
 	background: url("../images/phpbb_logo.gif") 0 0 no-repeat;
 	height: 84px;
-	}
+}
+
 #page-header h1 {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 1.5em;
 	font-weight: normal;
 	padding-top: 15px;
-	}
+}
+
 #page-header p {
 	font-size: 1.1em;
-	}
+}
+
 #page-body {
 	clear: both;
-	}
+}
+
 #page-footer {
 	clear: both;
 	font-size: 1em;
 	text-align: center;
-	}
+}
+
 #content {
 	padding: 30px 10px 10px 10px;
-	}
+}
+
 #content h1 {
 	line-height: 1.2em; 
 	margin-bottom: 0px;
-	}
+}
+
 #main {
 	float:left;
 	width: 76%;
 	margin-left: 3%;
 	min-height: 350px;
-	}
+}
+
 * html #main { 
 	height: 350px; 
-	}
+}
 
 
 /* Tabbed menu
@@ -124,19 +140,22 @@ a:hover {
 	line-height: normal;
 	margin: 0 0 -6px 7px;
 	min-width: 570px;
-	}
+}
+
 #tabs ul {
 	margin:0;
 	padding: 0;
 	list-style: none;
-	}
+}
+
 #tabs li {
 	display: inline;
 	margin: 0;
 	padding: 0;
 	font-size: 1em;
 	font-weight: bold;
-	}
+}
+
 #tabs a {
 	float:left;
 	background:url("../images/bg_tabs1.gif") no-repeat 0% -35px;
@@ -144,7 +163,8 @@ a:hover {
 	padding: 0 0 0 6px;
 	text-decoration: none;
 	position: relative;
-	}
+}
+
 #tabs a span {
 	float: left;
 	display: block;
@@ -153,32 +173,38 @@ a:hover {
 	color: #536482;
 	white-space: nowrap;
 	text-transform: uppercase;
-	}
+}
+
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
 #tabs a span { float:none; }
 /* End hack */
 
 #tabs a:hover span {
 	color: #DD6900;
-	}
+}
+
 #tabs #activetab a {
 	background-position: 0 0px;
 	border-bottom: 1px solid #FFFFFF;
-	}
+}
+
 #tabs #activetab a span {
 	background-position: 100% 0px;
 	padding-bottom: 7px;
 	color: #333333;
-	}
+}
+
 #tabs a:hover {
 	background-position: 0 -70px;
-	}
+}
+
 #tabs a:hover span {
 	background-position:100% -70px;
-	}
+}
+
 #tabs #activetab a:hover span {
 	color: #333333;
-	}
+}
 
 
 /* Main Panel
@@ -187,11 +213,12 @@ a:hover {
 	margin: 4px 0;
 	background-color: #FFFFFF;
 	border: solid 1px  #A9B8C2;
-	}
+}
+
 span.corners-top, span.corners-bottom, 
 span.corners-top span, span.corners-bottom span {
 	display: none;
-	}
+}
 
 
 /* Sub-navigation Menu
@@ -201,20 +228,22 @@ span.corners-top span, span.corners-bottom span {
 	width: 20%;
 	font-size: 100%;
 	padding: 0;
-	}
+}
+
 #menu p {
 	font-size: 1em;
-	}
+}
+
 #menu ul {
 	list-style: none;
-	}
+}
 
 /* Default list state */
 #menu li {
 	font-size: 1em;
 	font-weight: bold;
 	display: inline;
-	}
+}
 
 /* Link styles for the sub-section links */
 #menu li span {
@@ -226,17 +255,20 @@ span.corners-top span, span.corners-bottom span {
 	font-weight: bold;
 	background-color: #ECECEC;
 	border-top: 1px solid #FFFFFF;
-	}
+}
+
 #menu li a:hover span, #menu li#activemenu span {
 	text-decoration: none;
 	background-color: #FFA34F;
 	color: #FFFFFF;
-	}
+}
+
 #menu li span.completed {
 	text-decoration: none;
 	background-color: #B9DBB3;
 	color: #006699;
-	}
+}
+
 #menu li.header {
 	display: block;
 	padding: 5px;
@@ -247,17 +279,19 @@ span.corners-top span, span.corners-bottom span {
 	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
 	margin-top: 5px;
 	text-transform: uppercase;
-	}
+}
+
 #menu li#activemenu a span {
 	text-decoration: none;
 	font-weight: bold;
 	color: #000;
 	background-color: #DADFE4;
-	}
+}
+
 #menu li#activemenu a:hover span {
 	text-decoration: none;
 	color: #000;
-	}
+}
 
 
 /* Table styles
@@ -266,22 +300,25 @@ span.corners-top span, span.corners-bottom span {
 table {
 	width: 100%;
 	/*background-color: #ACBBC6;*/
-	}
+}
+
 th, td { 
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 1.1em;
 	text-align: left;
-	}
-th	{
+}
+
+th {
 	padding: 6px 4px;
 	color: #FFA34F;
 	font-weight: bold;
 	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
-	}
+}
+
 td {
 	padding: 4px;
 	line-height: 1.2em;
-	}
+}
 
 .row1 { background-color: #EFEFEF; }
 .row2 { background-color: #DEE3E7; }
@@ -294,24 +331,26 @@ td {
 	background-color: #D1D7DC;
 	height: 1px;
 	line-height: 1px;
-	}
+}
 
 table.type2 {
 	border: none;
 	background: none;
 	padding: 0;
 	width: 0;
-	}
+}
+
 table.type2 th {
 	background: none;
 	border-top: none;
 	text-align: center;
 	color: #FFA34F;
 	padding: 2px 0;
-	}
+}
+
 table.type2 td {
 	padding: 0;
-	}
+}
 
 
 /* General form styles
@@ -325,13 +364,16 @@ fieldset {
 	border-top: 1px solid #D5D5C8;
 	background-color: #ECECEC;
 	position: relative;
-	}
+}
+
 * html fieldset { 
 	padding: 0 10px 5px 10px; 
-	}
+}
+
 fieldset p {
 	font-size: 1.1em;
-	}
+}
+
 legend {
 	padding: 1px 0; 
 	font-family: arial,Verdana,Sans-serif;
@@ -343,12 +385,13 @@ legend {
 	line-height: 100%;
 	top: 0em;
 	vertical-align:middle;
-	}
+}
+
 * html legend { 
 	margin-bottom: -10px; 
 	margin-left: -7px;
 	top: -1.2em;
-	}
+}
 
 input {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
@@ -363,7 +406,8 @@ input {
 	padding: 2px;
 	cursor: text;
 	vertical-align: middle;
-	}
+}
+
 select {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 100%;
@@ -375,17 +419,21 @@ select {
 	border: 1px solid #666666;
 	padding: 1px;
 	background-color: #FAFAFA;
-	}
+}
+
 optgroup {
 	font-weight: bold;
-	}
+}
+
 option {
 	padding-right: 1em;
-	}
+}
+
 .sep {
 	color: black;
 	background-color: #FFA34F;
-	}
+}
+
 textarea {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 100%;
@@ -397,19 +445,22 @@ textarea {
 	border-right: 1px solid #D5D5C8;
 	border-bottom: 1px solid #D5D5C8;
 	cursor: text;
-	}
+}
+
 label {
 	cursor:pointer;
 	font-size: 1.1em;
 	padding-right: 5px;
-	}
+}
+
 label input {
 	font-size: 100%;
 	vertical-align: middle;
-	}
+}
+
 label img {
 	vertical-align: middle;
-	}
+}
 
 fieldset.quick {
 	margin: 0 0 5px 0;
@@ -418,14 +469,16 @@ fieldset.quick {
 	background-color: transparent;
 	text-align: right;
 	font-size: 1.1em;
-	}
+}
+
 fieldset.nobg {
 	margin: 15px 0 0 0;
 	padding: 0;
 	border: none;
 	background-color: transparent;
 	font-size: 1.1em;
-	}
+}
+
 fieldset.display-options {
 	margin: 15px 0 2px 0;
 	padding: 0 0 4px 0;
@@ -433,21 +486,23 @@ fieldset.display-options {
 	background-color: transparent;
 	text-align: center;
 	font-size: 1.1em;
-	}
+}
+
 fieldset.display-options select, fieldset.display-options input, fieldset.display-options label {
 	font-size: 100%;
 	vertical-align: middle;
-	}
+}
+
 select option.disabled {
 	background-color: #bbb;
 	color: #fff;
-	}
+}
 
 /* Special case inputs */
 select#board_timezone, 
 select#full_folder_action {
 	width: 95%;
-	}
+}
 
 
 /* Definition list layout for forms
@@ -455,11 +510,12 @@ select#full_folder_action {
 ---------------------------------------- */
 dl {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	}
+}
+
 dt {
 	float: left;
 	width: auto;
-	}
+}
 
 dd { color: #000; }
 dd + dd { padding-top: 5px; }
@@ -471,46 +527,55 @@ dt label {
 	font-size: 100%;
 	text-align: left;
 	font-weight: bold;
-	}
+}
+
 dd label {
 	white-space: nowrap;
 	margin-right: 10px;
-	}
+}
 
 html>body dd label input { vertical-align: text-bottom; }	/* Tweak for Moz to align checkboxes/radio buttons nicely */
+
 dd input, 
 dd select {
 	max-width: 100%;
-	}
+}
+
 dd textarea {
 	width: 100%;
-	}
+}
+
 input.radio {
 	width: auto !important;
 	background-color: transparent;
 	border: none;
 	cursor: default;
-	}
+}
+
 dd select {
 	width: auto;
 	font-size: 100%;
-	}
+}
+
 fieldset dl {
 	margin-bottom: 10px;
 	font-size: 1.1em;
-	}
+}
+
 fieldset dt {
 	width: 45%;
 	text-align: left;
 	border-right: 1px solid #CCC;
 	padding-top: 3px;
-	}
+}
+
 fieldset dd {
 	margin-left: 45%;
 	padding-left: 5px;
 	border-left: 1px solid #CCC;
 	vertical-align: top;
-	}
+}
+
 dd.full {
 	margin-left: 0;
 	border: 0;
@@ -518,15 +583,16 @@ dd.full {
 	padding-top: 3px;
 	text-align: center;
 	width: 95%;
-	}
+}
 
 /* Hover highlights for form rows */
 fieldset dl:hover dt label {
 	color: #000000;
-	}
+}
+
 input:focus, textarea:focus {
 	color: #000000;
-	}
+}
 
 
 /* Submit button fieldset
@@ -537,10 +603,11 @@ fieldset.submit-buttons {
 	margin: 0;
 	padding: 4px;
 	margin-top: -1px;
-	}
+}
+
 fieldset.submit-buttons input {
 	padding: 3px 2px;
-	}
+}
 
 
 /* Input field styles
@@ -556,29 +623,33 @@ fieldset.submit-buttons input {
 	padding:2px;
 	cursor: text;
 	width: 75%;
-	}
+}
+
 select.inputbox {
 	cursor: pointer;
 	padding: 0;
 	width: auto;
-	}
+}
+
 .inputbox:hover {
 	border-left: 1px solid #AFAEAA;
 	border-top: 1px solid #AFAEAA;
 	border-right: 1px solid #AFAEAA;
 	border-bottom: 1px solid #AFAEAA;
 	background-color: #E9E9E2;
-	}
+}
+
 .inputbox:focus {
 	border: 1px solid #BC2A4D;
 	background-color: #E9E9E2;
 	color: #BC2A4D;
-	}
+}
 
 input.full,
 textarea.full {
 	width: 99%;
-	}
+}
+
 * html input.full, * html textarea.full { width: 95%; }
 input.medium { width: 50%; }
 input.narrow { width: 25%; }
@@ -596,11 +667,13 @@ input.autowidth { width: auto !important; }
 	margin-top: 5px;
 	font-size: 1em;
 	padding-bottom: 2px;
-	}
+}
+
 .pagination strong,
 .pagination b {
 	font-weight: normal;
-	}
+}
+
 .pagination span strong {
 	padding: 0 2px;
 	margin: 0 2px;
@@ -608,7 +681,8 @@ input.autowidth { width: auto !important; }
 	color: #FFFFFF;
 	background: #069;
 	border: 1px solid #069;
-	}
+}
+
 .pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
 	font-weight: normal;
 	text-decoration: none;
@@ -617,16 +691,18 @@ input.autowidth { width: auto !important; }
 	padding: 0 2px;
 	background: #ECEDEE;
 	border: 1px solid #B4BAC0;
-	}
+}
+
 .pagination span a:hover {
 	border-color: #069;
 	background: #069;
 	color: #FFF;
 	text-decoration: none;
-	}
+}
+
 .pagination img {
 	vertical-align: middle;
-	}
+}
 
 
 /* Form button styles
@@ -639,14 +715,16 @@ a.button2, input.button2  {
 	color: #000;
 	background-color: #EFEFEF;
 	cursor: pointer;
-	}
+}
+
 a.button1, input.button1 {
 	font-weight: bold;
 	border: 1px solid #666666; 
-	}
+}
+
 a.button2, input.button2 {
 	border: 1px solid #666666;
-	}
+}
 
 /* <a> button in the style of the form buttons */
 a.button1, a.button1:link, a.button1:visited, a.button1:active,
@@ -654,7 +732,7 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	text-decoration: none;
 	color: #000000;
 	padding: 4px 8px;
-	}
+}
 
 /* Permission related
 ---------------------------------------- */
@@ -823,55 +901,65 @@ table.pmask td.name {
 ---------------------------------------- */
 .success {
 	color: #282 !important;
-	}
+}
+
 .error {
 	color: #BC2A4D !important;
-	}
+}
+
 .successbox, .errorbox {
 	padding: 10px;
 	margin: 20px 0;
 	color: #1F5B13;
 	text-align: center;
-	}
+}
+
 .successbox {
 	background-color: #B9DBB3;
-	}
+}
+
 .errorbox {
 	background-color: #ECECEC;
-	}
+}
+
 .successbox h3, .errorbox h3 {
 	font-weight: bold;
 	font-size: 1.4em;
 	margin-bottom: 0.5em;
-	}
+}
+
 .successbox p, .errorbox p {
 	font-size: 1.1em;
 	margin-bottom: 0;
-	}
+}
+
 .successbox a, .errorbox a {
 	font-weight: bold;
 	text-decoration: none;
-	}
+}
 
 
 /* Special cases for the error page */
 #errorpage #page-header a {
 	font-weight: bold;
 	line-height: 6em;
-	}
+}
+
 #errorpage #content {
 	padding-top: 10px;
-	}
+}
+
 #errorpage #content h1 {
 	color: #DF075C;
-	}
+}
+
 #errorpage #content h2 {
 	margin-top: 20px;
 	margin-bottom: 5px;
 	border-bottom: 1px solid #CCCCCC;
 	padding-bottom: 5px;
 	color: #333333;
-	}
+}
 
 /* Tooltip for permission roles */
 .tooltip {
@@ -896,10 +984,11 @@ table.pmask td.name {
 */
 #format-buttons {
 	margin: 15px 0 2px 0;
-	}
+}
+
 #format-buttons input, #format-buttons select {
 	vertical-align: middle;
-	}
+}
 
 /* Nice method for clearing floated blocks without having to insert any extra markup
    From http://www.positioniseverything.net/easyclearing.html */
@@ -910,6 +999,7 @@ table.pmask td.name {
 	clear: both; 
 	visibility: hidden;
 }
+
 /* Hide from Mac IE, Windows IE uses this as it doesn't support the :after method above \*/
 .clearfix, #tabs, .row, #content, fieldset dl, #page-body {
 	height: 1%;
@@ -927,27 +1017,34 @@ table.pmask td.name {
 	text-align: right;
 	padding: 0px;
 }
+
 .source {
 	font-family: 'Courier New', monospace;
 	font-size: 125%;
 	line-height: 120%;
 	padding: 0px;
 }
+
 .syntaxbg {
 	color: #FFFFFF;
-	}
+}
+
 .syntaxcomment {
 	color: #FF8000;
-	}
+}
+
 .syntaxdefault {
 	color: #0000BB;
-	}
+}
+
 .syntaxhtml {
 	color: #000000;
-	}
+}
+
 .syntaxkeyword {
 	color: #007700;
-	}
+}
+
 .syntaxstring {
 	color: #DD0000;
-	}
+}

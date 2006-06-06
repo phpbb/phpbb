@@ -18,7 +18,7 @@ class acp_bots
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -86,7 +86,7 @@ class acp_bots
 					}
 					$db->sql_freeresult($result);
 
-					$db->sql_transaction();
+					$db->sql_transaction('begin');
 
 					$sql = 'DELETE FROM ' . BOTS_TABLE . " 
 						WHERE bot_id $sql_id";
@@ -142,7 +142,7 @@ class acp_bots
 
 					if (!sizeof($error))
 					{
-						$db->sql_transaction();
+						$db->sql_transaction('begin');
 
 						// New bot? Create a new user and group entry
 						if ($action == 'add')

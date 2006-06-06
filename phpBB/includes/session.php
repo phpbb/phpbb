@@ -73,7 +73,7 @@ class session
 
 		$page_dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
 
-		if ($page_dir && $page_dir{strlen($page_dir) - 1} == '/')
+		if ($page_dir && substr($page_dir, -1, 1) == '/')
 		{
 			$page_dir = substr($page_dir, 0, -1);
 		}
@@ -81,10 +81,10 @@ class session
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
 		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
 
-		// The script path from the webroot to the current directory (for example: /phpBB2/adm) : always prefixed with /
+		// The script path from the webroot to the current directory (for example: /phpBB2/adm/) : always prefixed with / and ends in /
 		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
 
-		// The script path from the webroot to the phpBB root (for example: /phpBB2)
+		// The script path from the webroot to the phpBB root (for example: /phpBB2/)
 		$script_dirs = explode('/', $script_path);
 		array_splice($script_dirs, -sizeof($page_dirs));
 		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ?  '/' . implode('/', $root_dirs) : '');
@@ -94,6 +94,9 @@ class session
 		{
 			$root_script_path = ($page_dir) ? str_replace($page_dir, '', $script_path) : $script_path;
 		}
+
+		$script_path .= (substr($script_path, -1, 1) == '/') ? '' : '/';
+		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
 		$page_array += array(
 			'page_name'			=> $page_name,
@@ -124,7 +127,7 @@ class session
 	*/
 	function session_begin()
 	{
-		global $phpEx, $SID, $db, $config, $phpbb_root_path;
+		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
 
 		$this->time_now = time();
 		
@@ -143,12 +146,13 @@ class session
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '');
 			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '');
-			
+
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
+			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
 		}
 		else
 		{
-			$this->session_id = request_var('sid', '');
+			$this->session_id = $_SID = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
 		
@@ -282,7 +286,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
 
 		$this->data = array();
 		
@@ -490,6 +494,7 @@ class session
 		}
 		
 		$SID = '?sid=';
+		$_SID = '';
 		if (!$bot)
 		{
 			$cookie_expire = $this->time_now + (($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000);
@@ -499,6 +504,7 @@ class session
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
 			$SID = '?sid=' . $this->session_id;
+			$_SID = $this->session_id;
 
 			if ($this->data['user_id'] != ANONYMOUS)
 			{
@@ -521,7 +527,7 @@ class session
 	*/
 	function session_kill()
 	{
-		global $SID, $db, $config, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -583,7 +589,7 @@ class session
 		unset($cookie_expire);
 		
 		$SID = '?sid=';
-		$this->session_id = '';
+		$this->session_id = $_SID = '';
 
 		return true;
 	}
@@ -966,10 +972,11 @@ class user extends session
 
 		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
 		{
-			global $SID;
+			global $SID, $_EXTRA_URL;
 
 			$style = request_var('style', 0);
 			$SID .= '&amp;style=' . $style;
+			$_EXTRA_URL = array('style=' . $style);
 		}
 		else
 		{
@@ -1075,11 +1082,9 @@ class user extends session
 		// already in the ucp
 		if (!defined('IN_ADMIN') && $config['chg_passforce'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
-			global $SID;
-
 			if (strpos($this->page['query_string'], 'mode=reg_details') !== false && $this->page['page_name'] == "ucp.$phpEx")
 			{
-				redirect("ucp.$phpEx$SID&i=profile&mode=reg_details");
+				redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=reg_details'));
 			}
 		}
 

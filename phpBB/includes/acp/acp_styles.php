@@ -24,7 +24,7 @@ class acp_styles
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
-		global $config, $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Hardcoded template bitfield to add for new templates
 		define('TEMPLATE_BITFIELD', 6921);
@@ -332,7 +332,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function frontend($mode, $options)
 	{
-		global $user, $template, $db, $config, $phpbb_root_path, $phpEx, $SID;
+		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
 		$sql_from = '';
 		$style_count = array();
@@ -414,7 +414,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
 				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
 				'S_OPTIONS'				=> implode(' | ', $s_options),
-				'U_PREVIEW'				=> ($mode == 'style') ? "{$phpbb_root_path}index.$phpEx$SID&amp;$mode=" . $row[$mode . '_id'] : '',
+				'U_PREVIEW'				=> ($mode == 'style') ? append_sid("{$phpbb_root_path}index.$phpEx", "$mode=" . $row[$mode . '_id']) : '',
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
@@ -477,7 +477,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function edit_template($template_id)
 	{
-		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template, $safe_mode;
+		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_TEMPLATE';
 
@@ -687,7 +687,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function template_cache($template_id)
 	{
-		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
 
 		$source		= str_replace('/', '.', request_var('source', ''));
 		$file_ary	= array_diff(request_var('delete', array('')), array(''));
@@ -811,7 +811,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function edit_theme($theme_id)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $config, $db, $cache, $user, $template, $safe_mode;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
@@ -1214,8 +1214,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$template->assign_vars(array(
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 
-			'U_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&amp;form=acp_theme&amp;name=",
-			'UA_SWATCH'			=> "{$phpbb_admin_path}swatch.$phpEx$SID&form=acp_theme&name=",
+			'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=acp_theme') . '&amp;name=',
+			'UA_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=acp_theme', false) . '&name=',
 
 			'CSS_DATA'			=> htmlspecialchars($css_data))
 		);
@@ -2350,7 +2350,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function install($mode)
 	{
-		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
 
 		$l_type = strtoupper($mode);
 
@@ -2498,7 +2498,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function add($mode)
 	{
-		global $phpbb_root_path, $phpEx, $SID, $config, $db, $cache, $user, $template;
+		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
 
 		$l_type = strtoupper($mode);
 		$element_ary = array('template' => STYLES_TPL_TABLE, 'theme' => STYLES_CSS_TABLE, 'imageset' => STYLES_IMAGE_TABLE);

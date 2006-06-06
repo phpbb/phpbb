@@ -85,37 +85,27 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = @pg_query($this->db_connect_id, 'BEGIN');
-				$this->transaction = true;
+				return @pg_query($this->db_connect_id, 'BEGIN');
 			break;
 
 			case 'commit':
-				$result = @pg_query($this->db_connect_id, 'COMMIT');
-				$this->transaction = false;
-
-				if (!$result)
-				{
-					@pg_query($this->db_connect_id, 'ROLLBACK');
-				}
+				return @pg_query($this->db_connect_id, 'COMMIT');
 			break;
 
 			case 'rollback':
-				$result = @pg_query($this->db_connect_id, 'ROLLBACK');
-				$this->transaction = false;
+				return @pg_query($this->db_connect_id, 'ROLLBACK');
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**

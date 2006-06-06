@@ -20,25 +20,25 @@ if (!defined('IN_PHPBB'))
 		1) Add an appropiate constant
 		2) Add a new check array to the global_privmsgs_rules variable and the condition array (if one is required)
 		3) Add a new language variable to ucp.php
-		
+
 		The user is then able to select the new rule. It will be checked against and handled as specified.
 		To add new actions (yes, checks can be added here too) to the rule management, the core code has to be modified.
 */
 
-define('RULE_IS_LIKE', 1); // Is Like
-define('RULE_IS_NOT_LIKE', 2); // Is Not Like
-define('RULE_IS', 3); // Is
-define('RULE_IS_NOT', 4); // Is Not
-define('RULE_BEGINS_WITH', 5); // Begins with
-define('RULE_ENDS_WITH', 6); // Ends with
-define('RULE_IS_FRIEND', 7); // Is Friend
-define('RULE_IS_FOE', 8); // Is Foe
-define('RULE_IS_USER', 9); // Is User
-define('RULE_IS_GROUP', 10); // Is In Usergroup
-define('RULE_ANSWERED', 11); // Answered
-define('RULE_FORWARDED', 12); // Forwarded
-define('RULE_TO_GROUP', 14); // Usergroup
-define('RULE_TO_ME', 15); // Me
+define('RULE_IS_LIKE', 1);		// Is Like
+define('RULE_IS_NOT_LIKE', 2);	// Is Not Like
+define('RULE_IS', 3);			// Is
+define('RULE_IS_NOT', 4);		// Is Not
+define('RULE_BEGINS_WITH', 5);	// Begins with
+define('RULE_ENDS_WITH', 6);	// Ends with
+define('RULE_IS_FRIEND', 7);	// Is Friend
+define('RULE_IS_FOE', 8);		// Is Foe
+define('RULE_IS_USER', 9);		// Is User
+define('RULE_IS_GROUP', 10);	// Is In Usergroup
+define('RULE_ANSWERED', 11);	// Answered
+define('RULE_FORWARDED', 12);	// Forwarded
+define('RULE_TO_GROUP', 14);	// Usergroup
+define('RULE_TO_ME', 15);		// Me
 
 define('ACTION_PLACE_INTO_FOLDER', 1);
 define('ACTION_MARK_AS_READ', 2);
@@ -51,6 +51,10 @@ define('CHECK_MESSAGE', 3);
 define('CHECK_STATUS', 4);
 define('CHECK_TO', 5);
 
+/**
+* Global private message rules
+* These rules define what to do if a rule is hit
+*/
 $global_privmsgs_rules = array(
 	CHECK_SUBJECT	=> array(
 		RULE_IS_LIKE		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
@@ -71,23 +75,25 @@ $global_privmsgs_rules = array(
 		RULE_IS_FOE			=> array('check0' => 'foe', 'function' => '{CHECK0} == 1'),
 		RULE_IS_USER		=> array('check0' => 'author_id', 'function' => '{CHECK0} == {USER_ID}'),
 		RULE_IS_GROUP		=> array('check0' => 'author_in_group', 'function' => 'in_array({GROUP_ID}, {CHECK0})')),
-		
+
 	CHECK_MESSAGE	=> array(
 		RULE_IS_LIKE		=> array('check0' => 'message_text', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
 		RULE_IS_NOT_LIKE	=> array('check0' => 'message_text', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
 		RULE_IS				=> array('check0' => 'message_text', 'function' => '{CHECK0} == {STRING}'),
 		RULE_IS_NOT			=> array('check0' => 'message_text', 'function' => '{CHECK0} != {STRING}')),
-		
+
 	CHECK_STATUS	=> array(
 		RULE_ANSWERED		=> array('check0' => 'replied', 'function' => '{CHECK0} == 1'),
 		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1')),
-		
+
 	CHECK_TO		=> array(
 		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group', 'function' => 'in_array("g_" . {CHECK2}, {CHECK0}) || in_array("g_" . {CHECK2}, {CHECK1})'),
 		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc', 'function' => 'in_array("u_" . $user_id, {CHECK0}) || in_array("u_" . $user_id, {CHECK1})'))
 );
 
-// This is for defining which condition fields to show for which Rule
+/**
+* This is for defining which condition fields to show for which Rule
+*/
 $global_rule_conditions = array(
 	RULE_IS_LIKE		=> 'text',
 	RULE_IS_NOT_LIKE	=> 'text',
@@ -105,7 +111,7 @@ $global_rule_conditions = array(
 function get_folder($user_id, $folder_id = false)
 {
 	global $db, $user, $template;
-	global $phpbb_root_path, $phpEx, $SID;
+	global $phpbb_root_path, $phpEx;
 
 	$folder = array();
 
@@ -143,23 +149,40 @@ function get_folder($user_id, $folder_id = false)
 
 	// Adjust unread status for outbox
 	$num_unread[PRIVMSGS_OUTBOX] = $num_messages[PRIVMSGS_OUTBOX];
-	
-	$folder[PRIVMSGS_INBOX] = array('folder_name' => $user->lang['PM_INBOX'], 'num_messages' => $num_messages[PRIVMSGS_INBOX], 'unread_messages' => $num_unread[PRIVMSGS_INBOX]);
+
+	$folder[PRIVMSGS_INBOX] = array(
+		'folder_name'		=> $user->lang['PM_INBOX'],
+		'num_messages'		=> $num_messages[PRIVMSGS_INBOX],
+		'unread_messages'	=> $num_unread[PRIVMSGS_INBOX]
+	);
 
 	// Custom Folder
 	$sql = 'SELECT folder_id, folder_name, pm_count
 		FROM ' . PRIVMSGS_FOLDER_TABLE . "
 			WHERE user_id = $user_id";
 	$result = $db->sql_query($sql);
-			
+
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$folder[$row['folder_id']] = array('folder_name' => $row['folder_name'], 'num_messages' => $row['pm_count'], 'unread_messages' => ((isset($num_unread[$row['folder_id']])) ? $num_unread[$row['folder_id']] : 0));
+		$folder[$row['folder_id']] = array(
+			'folder_name'		=> $row['folder_name'],
+			'num_messages'		=> $row['pm_count'],
+			'unread_messages'	=> ((isset($num_unread[$row['folder_id']])) ? $num_unread[$row['folder_id']] : 0)
+		);
 	}
 	$db->sql_freeresult($result);
 
-	$folder[PRIVMSGS_OUTBOX] = array('folder_name' => $user->lang['PM_OUTBOX'], 'num_messages' => $num_messages[PRIVMSGS_OUTBOX], 'unread_messages' => $num_unread[PRIVMSGS_OUTBOX]);
-	$folder[PRIVMSGS_SENTBOX] = array('folder_name' => $user->lang['PM_SENTBOX'], 'num_messages' => $num_messages[PRIVMSGS_SENTBOX], 'unread_messages' => $num_unread[PRIVMSGS_SENTBOX]);
+	$folder[PRIVMSGS_OUTBOX] = array(
+		'folder_name'		=> $user->lang['PM_OUTBOX'],
+		'num_messages'		=> $num_messages[PRIVMSGS_OUTBOX],
+		'unread_messages'	=> $num_unread[PRIVMSGS_OUTBOX]
+	);
+
+	$folder[PRIVMSGS_SENTBOX] = array(
+		'folder_name'		=> $user->lang['PM_SENTBOX'],
+		'num_messages'		=> $num_messages[PRIVMSGS_SENTBOX],
+		'unread_messages'	=> $num_unread[PRIVMSGS_SENTBOX]
+	);
 
 	// Define Folder Array for template designers (and for making custom folders usable by the template too)
 	foreach ($folder as $f_id => $folder_ary)
@@ -172,7 +195,7 @@ function get_folder($user_id, $folder_id = false)
 			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
 			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
 
-			'U_FOLDER'			=> ($f_id > 0) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder={$f_id}" : "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder={$folder_id_name}",
+			'U_FOLDER'			=> ($f_id > 0) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $f_id) : append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id_name),
 
 			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
 			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
@@ -184,13 +207,14 @@ function get_folder($user_id, $folder_id = false)
 }
 
 /**
-* Delete Messages From Sentbox - we are doing this here because this saves us a bunch of checks and queries
+* Delete Messages From Sentbox
+* we are doing this here because this saves us a bunch of checks and queries
 */
 function clean_sentbox($num_sentbox_messages)
 {
 	global $db, $user, $config;
 
-	// Check Message Limit - 
+	// Check Message Limit
 	if ($user->data['message_limit'] && $num_sentbox_messages > $user->data['message_limit'])
 	{
 		// Delete old messages
@@ -236,7 +260,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 	// Eval Statement
 	$result = false;
 	eval('$result = (' . $evaluate . ') ? true : false;');
-		
+
 	if (!$result)
 	{
 		return false;
@@ -284,7 +308,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			FROM ' . PRIVMSGS_RULES_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
-
 		$user_rules = $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
@@ -313,7 +336,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	}
 
 	// Get those messages not yet placed into any box
-	// NOTE: Expand Group Information to all groups the user/author is in? 
+	// @todo question: expand group information to all groups the user/author is in on private message folder?? (user_in_group)
 	$sql = 'SELECT t.*, p.*, u.username, u.group_id as author_in_group
 		FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . " u
 		WHERE t.user_id = $user_id
@@ -373,7 +396,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					$_folder_id = (int) $rule_ary['folder_id'];
 					$move_into_folder[$_folder_id][] = $msg_id;
 					$num_new++;
-					break;
+				break;
 
 				case ACTION_MARK_AS_READ:
 					if ($rule_ary['unread'])
@@ -381,11 +404,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 						$unread_ids[] = $msg_id;
 					}
 					$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
-					break;
+				break;
 
 				case ACTION_DELETE_MESSAGE:
 					$delete_ids[] = $msg_id;
-					break;
+				break;
 
 				case ACTION_MARK_AS_IMPORTANT:
 					if (!$rule_ary['important'])
@@ -393,9 +416,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 						$important_ids[] = $msg_id;
 					}
 					$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
-					break;
-
-				default:
+				break;
 			}
 		}
 	}
@@ -585,7 +606,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_folder_id)
 {
 	global $db, $user;
-	global $phpbb_root_path, $phpEx, $SID;
+	global $phpbb_root_path, $phpEx;
 
 	$num_moved = 0;
 
@@ -605,17 +626,18 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 				WHERE folder_id = $dest_folder
 					AND user_id = $user_id";
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if (!($row = $db->sql_fetchrow($result)))
+			if (!$row)
 			{
 				trigger_error('NOT_AUTHORIZED');
 			}
-			$db->sql_freeresult($result);
 
 			if ($row['pm_count'] + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $row['folder_name']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], "<a href=\"{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder={$row['folder_id']}\">", '</a>', $row['folder_name']);
+				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
 				trigger_error($message);
 			}
 		}
@@ -632,7 +654,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			if ($num_messages + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $user->lang['PM_INBOX']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], "<a href=\"{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=inbox\">", '</a>', $user->lang['PM_INBOX']);
+				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang['PM_INBOX']);
 				trigger_error($message);
 			}
 		}
@@ -701,7 +723,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 */
 function handle_mark_actions($user_id, $mark_action)
 {
-	global $db, $user, $_POST, $phpbb_root_path, $SID, $phpEx;
+	global $db, $user, $_POST, $phpbb_root_path, $phpEx;
 
 	$msg_ids		= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
@@ -732,7 +754,7 @@ function handle_mark_actions($user_id, $mark_action)
 				delete_pm($user_id, $msg_ids, $cur_folder_id);
 				
 				$success_msg = (sizeof($msg_ids) == 1) ? 'MESSAGE_DELETED' : 'MESSAGES_DELETED';
-				$redirect = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;folder=$cur_folder_id";
+				$redirect = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $cur_folder_id);
 
 				meta_refresh(3, $redirect);
 				trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $redirect . '">', '</a>'));
@@ -865,7 +887,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 			$set_sql .= ($set_sql != '') ? ', ' : '';
 			$set_sql .= 'user_new_privmsg = user_new_privmsg - ' . $num_new;
 		}
-		
+
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET $set_sql WHERE user_id = $user_id");
 	}
 	
@@ -912,7 +934,7 @@ function rebuild_header($check_ary)
 		{
 			${$type}[] = (int) $match[2][$id];
 		}
-		
+
 		$_types = array('u', 'g');
 		foreach ($_types as $type)
 		{
@@ -930,14 +952,14 @@ function rebuild_header($check_ary)
 }
 
 /**
-* Print out/Assign recipient informations
+* Print out/assign recipient informations
 */
 function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 {
-	global $db, $user, $template, $phpbb_root_path, $SID, $phpEx;
+	global $db, $user, $template, $phpbb_root_path, $phpEx;
 
 	$addresses = array();
-	
+
 	foreach ($check_ary as $check_type => $address_field)
 	{
 		if (!is_array($address_field))
@@ -1020,7 +1042,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 							$address['group'][$row['group_id']] = array('name' => $row['group_name'], 'colour' => $row['group_colour']);
 						}
 					}
-	
+
 					if (isset($address['user'][$row['user_id']]))
 					{
 						$address['user'][$row['user_id']]['in_group'] = $row['group_id'];
@@ -1044,7 +1066,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 						'IS_USER'	=> ($type == 'user'),
 						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $id : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $id,
+						'U_VIEW'	=> ($type == 'user') ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
 						'TYPE'		=> $type)
 					);
 				}
@@ -1072,17 +1094,16 @@ function get_folder_status($folder_id, $folder)
 	{
 		return false;
 	}
-	$return = array();
 
 	$return = array(
 		'folder_name'	=> $folder['folder_name'], 
 		'cur'			=> $folder['num_messages'],
 		'remaining'		=> $user->data['message_limit'] - $folder['num_messages'],
 		'max'			=> $user->data['message_limit'],
-		'percent'		=> ($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100
-	);
+		'percent'		=> ($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100,
 
-	$return['message'] = sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']);
+		'message'		=> sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']),
+	);
 
 	return $return;
 }
@@ -1096,9 +1117,9 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $SID, $template, $user;
+	global $db, $auth, $config, $phpEx, $template, $user;
 
-	// We do not handle erasing posts here
+	// We do not handle erasing pms here
 	if ($mode == 'delete')
 	{
 		return false;
@@ -1165,7 +1186,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	}
 
 	$sql = '';
-	
+
 	switch ($mode)
 	{
 		case 'reply':
@@ -1178,6 +1199,8 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				WHERE user_id = ' . $data['from_user_id'] . '
 					AND msg_id = ' . $data['reply_from_msg_id'];
 
+		// no break
+
 		case 'forward':
 		case 'post':
 		case 'quotepost':
@@ -1185,14 +1208,14 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'root_level'		=> $root_level,
 				'author_id'			=> $data['from_user_id'],
 				'icon_id'			=> $data['icon_id'], 
-				'author_ip' 		=> $data['from_user_ip'],
+				'author_ip'			=> $data['from_user_ip'],
 				'message_time'		=> $current_time,
-				'enable_bbcode' 	=> $data['enable_bbcode'],
-				'enable_smilies' 	=> $data['enable_smilies'],
-				'enable_magic_url' 	=> $data['enable_urls'],
-				'enable_sig' 		=> $data['enable_sig'],
+				'enable_bbcode'		=> $data['enable_bbcode'],
+				'enable_smilies'	=> $data['enable_smilies'],
+				'enable_magic_url'	=> $data['enable_urls'],
+				'enable_sig'		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
-				'message_text' 		=> $data['message'],
+				'message_text'		=> $data['message'],
 				'message_encoding'	=> $user->lang['ENCODING'],
 				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
@@ -1200,24 +1223,24 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'to_address'		=> implode(':', $to),
 				'bcc_address'		=> implode(':', $bcc)
 			);
-			break;
+		break;
 
 		case 'edit':
 			$sql_data = array(
 				'icon_id'			=> $data['icon_id'],
 				'message_edit_time'	=> $current_time,
-				'enable_bbcode' 	=> $data['enable_bbcode'],
-				'enable_smilies' 	=> $data['enable_smilies'],
-				'enable_magic_url' 	=> $data['enable_urls'],
-				'enable_sig' 		=> $data['enable_sig'],
+				'enable_bbcode'		=> $data['enable_bbcode'],
+				'enable_smilies'	=> $data['enable_smilies'],
+				'enable_magic_url'	=> $data['enable_urls'],
+				'enable_sig'		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
-				'message_text' 		=> $data['message'],
+				'message_text'		=> $data['message'],
 				'message_encoding'	=> $user->lang['ENCODING'],
 				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid']
 			);
-			break;
+		break;
 	}
 
 	if (sizeof($sql_data))
@@ -1235,11 +1258,11 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 			$db->sql_query($sql);
 		}
 	}
-	
+
 	if ($mode != 'edit')
 	{
-		$db->sql_transaction();
-	
+		$db->sql_transaction('begin');
+
 		if ($sql)
 		{
 			$db->sql_query($sql);
@@ -1310,7 +1333,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		$db->sql_query($sql);
 	}
 
-	$db->sql_transaction();
+	$db->sql_transaction('begin');
 
 	// Submit Attachments
 	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
@@ -1353,7 +1376,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				$files_added++;
 			}
 		}
-		
+
 		if (sizeof($data['attachment_data']))
 		{
 			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
@@ -1398,7 +1421,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
 	$subject = censor_text($subject);
-	
+
 	// Get banned User ID's
 	$sql = 'SELECT ban_userid 
 		FROM ' . BANLIST_TABLE;
@@ -1442,13 +1465,13 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		}
 	}
 	$db->sql_freeresult($result);
-	
+
 	if (!sizeof($msg_list_ary))
 	{
 		return;
 	}
 
-	include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+	include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 	$messenger = new messenger();
 
 	$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);

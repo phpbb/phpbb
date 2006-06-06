@@ -121,6 +121,48 @@ class dbal
 	}
 
 	/**
+	* SQL Transaction
+	* @private
+	*/
+	function sql_transaction($status = 'begin')
+	{
+		switch ($status)
+		{
+			case 'begin':
+				// Commit previously opened transaction before opening another transaction
+				if ($this->transaction)
+				{
+					$this->_sql_transaction('commit');
+				}
+
+				$result = $this->_sql_transaction('begin');
+				$this->transaction = true;
+			break;
+
+			case 'commit':
+				$result = $this->_sql_transaction('commit');
+				$this->transaction = false;
+
+				if (!$result)
+				{
+					$this->_sql_transaction('rollback');
+				}
+			break;
+
+			case 'rollback':
+				$result = $this->_sql_transaction('rollback');
+				$this->transaction = false;
+			break;
+
+			default:
+				$result = $this->_sql_transaction($status);
+			break;
+		}
+
+		return $result;
+	}
+
+	/**
 	* Build sql statement from array for insert/update/select statements
 	*
 	* Idea for this from Ikonboard
@@ -328,7 +370,7 @@ class dbal
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $user, $SID;
+		global $cache, $starttime, $phpbb_root_path, $user;
 
 		if (empty($_GET['explain']))
 		{

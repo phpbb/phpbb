@@ -15,9 +15,9 @@
 */
 class mcp_warn
 {
-
 	var $p_master;
-	
+	var $u_action;
+
 	function mcp_main(&$p_master)
 	{
 		$this->p_master = &$p_master;
@@ -26,7 +26,7 @@ class mcp_warn
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $phpbb_root_path, $phpEx, $SID;
+		global $config, $phpbb_root_path, $phpEx;
 
 		$action = request_var('action', array('' => ''));
 
@@ -59,21 +59,17 @@ class mcp_warn
 	}
 }
 
-//
-// Functions
-//
-
 /**
 * Generates the summary on the main page of the warning module
 */
 function mcp_warn_front_view($id, $mode)
 {
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
 	$template->assign_vars(array(
-		'U_FIND_MEMBER'		=> "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=mcp&amp;field=username",
-		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_user",
+		'U_FIND_MEMBER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username'),
+		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user'),
 		)
 	);
 
@@ -88,8 +84,8 @@ function mcp_warn_front_view($id, $mode)
 	foreach ($highest as $row)
 	{
 		$template->assign_block_vars('highest', array(
-			'U_NOTES'		=> 'mcp.' . $phpEx . $SID . '&amp;i=notes&amp;mode=user_notes&amp;u=' . $row['user_id'],
-			'U_USER'		=> 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
+			'U_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
+			'U_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
 			'USERNAME'		=> $row['username'],
 			'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
@@ -109,8 +105,8 @@ function mcp_warn_front_view($id, $mode)
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$template->assign_block_vars('latest', array(
-			'U_NOTES'		=> 'mcp.' . $phpEx . $SID . '&amp;i=notes&amp;mode=user_notes&amp;u=' . $row['user_id'],
-			'U_USER'		=> 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
+			'U_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
+			'U_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
 			'USERNAME'		=> $row['username'],
 			'WARNING_TIME'	=> $user->format_date($row['warning_time']),
@@ -126,7 +122,7 @@ function mcp_warn_front_view($id, $mode)
 */
 function mcp_warn_list_view($id, $mode, $action)
 {
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
 	$user->add_lang('memberlist');
@@ -155,8 +151,8 @@ function mcp_warn_list_view($id, $mode, $action)
 	foreach ($users as $row)
 	{
 		$template->assign_block_vars('user', array(
-			'U_NOTES'		=> 'mcp.' . $phpEx . $SID . '&amp;i=notes&amp;mode=user_notes&amp;u=' . $row['user_id'],
-			'U_USER'		=> 'memberlist.' . $phpEx . $SID . '&amp;mode=viewprofile&amp;u=' . $row['user_id'],
+			'U_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
+			'U_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
 			'USERNAME'		=> $row['username'],
 			'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
@@ -166,14 +162,14 @@ function mcp_warn_list_view($id, $mode, $action)
 	}
 
 	$template->assign_vars(array(
-		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode",
+		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode"),
 		'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,
 		'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 		'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 		'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
 
 		'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
-		'PAGINATION'		=> generate_pagination("mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $user_count, $config['topics_per_page'], $start),
+		'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, $config['topics_per_page'], $start),
 		'TOTAL_USERS'		=> ($user_count == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $user_count),
 		)
 	);
@@ -185,7 +181,7 @@ function mcp_warn_list_view($id, $mode, $action)
 */
 function mcp_warn_post_view($id, $mode, $action)
 {
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
 	$post_id = request_var('p', 0);
@@ -227,7 +223,7 @@ function mcp_warn_post_view($id, $mode, $action)
 	{
 		add_warning($userrow, $warning, $notify, $post_id);
 
-		$redirect = "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=$user_id";
+		$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 		meta_refresh(2, $redirect);
 		trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 	}
@@ -274,11 +270,11 @@ function mcp_warn_post_view($id, $mode, $action)
 	}
 	else
 	{
-		$avatar_img = '<img src="adm/images/no_avatar.gif" alt="" />';
+		$avatar_img = '<img src="' . $phpbb_root_path . 'images/no_avatar.gif" alt="" />';
 	}
 
 	$template->assign_vars(array(
-		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;p=$post_id",
+		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
 
 		'POST'				=> $message,
 		'USERNAME'			=> $userrow['username'],
@@ -298,7 +294,7 @@ function mcp_warn_post_view($id, $mode, $action)
 */
 function mcp_warn_user_view($id, $mode, $action)
 {
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);
@@ -321,7 +317,7 @@ function mcp_warn_user_view($id, $mode, $action)
 	{
 		add_warning($userrow, $warning, $notify);
 
-		$redirect = "mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=$user_id";
+		$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 		meta_refresh(2, $redirect);
 		trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 	}
@@ -353,7 +349,7 @@ function mcp_warn_user_view($id, $mode, $action)
 
 	// OK, they didn't submit a warning so lets build the page for them to do so
 	$template->assign_vars(array(
-		'U_POST_ACTION'		=> "mcp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;u=$user_id",
+		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;u=$user_id"),
 
 		'USERNAME'			=> $userrow['username'],
 		'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
@@ -373,7 +369,7 @@ function mcp_warn_user_view($id, $mode, $action)
 */
 function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 {
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
 	if ($send_pm)

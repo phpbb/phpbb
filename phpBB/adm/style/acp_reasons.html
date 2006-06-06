@@ -22,14 +22,14 @@
 	<fieldset>
 		<legend>{L_TITLE}</legend>
 		<p><!-- IF S_TRANSLATED -->{L_IS_TRANSLATED}<!-- ELSE -->{L_IS_NOT_TRANSLATED}<!-- ENDIF --></p>
-		<dl>
-			<dt><label for="reason_title">{L_REASON_TITLE}:</label></dt>
-			<dd><input name="reason_title" type="text" id="reason_title" value="{REASON_TITLE}" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="reason_description">{L_REASON_DESCRIPTION}:</label></dt>
-			<dd><textarea name="reason_description" id="reason_description" rows="8">{REASON_DESCRIPTION}</textarea></dd>
-		</dl>
+	<dl>
+		<dt><label for="reason_title">{L_REASON_TITLE}:</label></dt>
+		<dd><input name="reason_title" type="text" id="reason_title" value="{REASON_TITLE}" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="reason_description">{L_REASON_DESCRIPTION}:</label></dt>
+		<dd><textarea name="reason_description" id="reason_description" rows="8">{REASON_DESCRIPTION}</textarea></dd>
+	</dl>
 	</fieldset>
 
 	<fieldset class="submit-buttons">
@@ -45,36 +45,37 @@
 
 	<p>{L_ACP_REASONS_EXPLAIN}</p>
 
-<!-- IF reasons -->
-	<table cellspacing="1">
-		<col class="row1" /><col class="row1" /><col class="row2" />
-	<thead>
-	<tr>
-		<th>{L_REASON}</th>
-		<th>{L_USED_IN_REPORTS}</th>
-		<th>{L_OPTIONS}</th>
-	</tr>
-	</thead>
-	<tbody>
-	<!-- BEGIN reasons -->
+	<!-- IF .reasons -->
+		<table cellspacing="1">
+			<col class="row1" /><col class="row1" /><col class="row2" />
+		<thead>
 		<tr>
-			<td>
-				<i style="float: right; font-size: .9em;"><!-- IF reasons.S_TRANSLATED -->{L_IS_TRANSLATED}<!-- ELSE -->{L_IS_NOT_TRANSLATED}<!-- ENDIF --></i>
-				<strong>{reasons.REASON_TITLE}<!-- IF reasons.S_OTHER_REASON --> *<!-- ENDIF --></strong>
-				<br /><span>{reasons.REASON_DESCRIPTION}</span>
-			</td>
-			<td style="width: 100px;">{reasons.REASON_COUNT}</td>
-			<td style="width: 15%; text-align: right; white-space: nowrap;">
-				<!-- IF not reasons.S_FIRST_ROW --><a href="{reasons.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
-				<!-- IF not reasons.S_LAST_ROW --><a href="{reasons.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
-				<a href="{reasons.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT}" title="{L_EDIT}" width="16" height="16" /></a> 
-				<!-- IF reasons.U_DELETE --><a href="{reasons.U_DELETE}"><img src="images/icon_delete.gif" alt="{L_DELETE}" title="{L_DELETE}" width="16" height="16" /></a><!-- ENDIF -->
-			</td>
+			<th>{L_REASON}</th>
+			<th>{L_USED_IN_REPORTS}</th>
+			<th>{L_OPTIONS}</th>
 		</tr>
-	<!-- END reasons -->
-	</tbody>
-	</table>
-<!-- ENDIF -->
+		</thead>
+		<tbody>
+		<!-- BEGIN reasons -->
+			<tr>
+				<td>
+					<i style="float: right; font-size: .9em;"><!-- IF reasons.S_TRANSLATED -->{L_IS_TRANSLATED}<!-- ELSE -->{L_IS_NOT_TRANSLATED}<!-- ENDIF --></i>
+					<strong>{reasons.REASON_TITLE}<!-- IF reasons.S_OTHER_REASON --> *<!-- ENDIF --></strong>
+					<br /><span>{reasons.REASON_DESCRIPTION}</span>
+				</td>
+				<td style="width: 100px;">{reasons.REASON_COUNT}</td>
+				<td style="width: 15%; text-align: right; white-space: nowrap;">
+					<!-- IF not reasons.S_FIRST_ROW --><a href="{reasons.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
+					<!-- IF not reasons.S_LAST_ROW --><a href="{reasons.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
+					<a href="{reasons.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT}" title="{L_EDIT}" width="16" height="16" /></a> 
+					<!-- IF reasons.U_DELETE --><a href="{reasons.U_DELETE}"><img src="images/icon_delete.gif" alt="{L_DELETE}" title="{L_DELETE}" width="16" height="16" /></a><!-- ENDIF -->
+				</td>
+			</tr>
+		<!-- END reasons -->
+		</tbody>
+		</table>
+
+	<!-- ENDIF -->
 
 	<form id="reasons" method="post" action="{U_ACTION}">
 

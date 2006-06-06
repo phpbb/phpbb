@@ -14,7 +14,7 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
+include($phpbb_root_path . 'common.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -90,6 +90,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 
 	$not_in_fid = (sizeof($ex_fid_ary)) ? 'f.forum_id NOT IN (' . implode(', ', $ex_fid_ary) . ') OR ' : '';
+
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
@@ -165,7 +166,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	{
 		$author_id_ary[] = $author_id;
 	}
-	elseif ($author)
+	else if ($author)
 	{
 		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
 		{
@@ -183,7 +184,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		{
 			$author_id_ary[] = (int) $row['user_id'];
 		}
-
 		$db->sql_freeresult($result);
 
 		if (!sizeof($author_id_ary))
@@ -208,7 +208,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Select which method we'll use to obtain the post_id or topic_id information
-	$search_type = $config['search_type'];
+	$search_type = basename($config['search_type']);
 
 	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
 	{
@@ -290,6 +290,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
 				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
+
 				if ($show_results == 'posts')
 				{
 					if ($sort_key == 'a')
@@ -297,6 +298,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						$sort_join = USERS_TABLE . ' u, ';
 						$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
 					}
+
 					$sql = "SELECT p.post_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
@@ -328,6 +330,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
 				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
+
 				if ($show_results == 'posts')
 				{
 					if ($sort_key == 'i')
@@ -335,7 +338,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						$sort_join = TOPICS_TABLE . ' t, ';
 						$sql_sort = ' AND t.topic_id = p.topic_id ' . $sql_sort;
 					}
-					elseif ($sort_key == 'a')
+					else if ($sort_key == 'a')
 					{
 						$sort_join = USERS_TABLE . ' u, ';
 						$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
@@ -444,18 +447,16 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
-	$u_search = "{$phpbb_root_path}search.$phpEx$SID";
+	$u_search = append_sid("{$phpbb_root_path}search.$phpEx", $u_sort_param . $u_show_results);
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
 	$u_search .= ($u_hilit) ? '&amp;keywords=' . $u_hilit : '';
-	$u_search .= ($topic_id) ? '&amp;ch=' . $topic_id : '';
+	$u_search .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 	$u_search .= ($author) ? '&amp;author=' . urlencode($author) : '';
 	$u_search .= ($author_id) ? '&amp;author_id=' . $author_id : '';
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
-	$u_search .= '&amp;' . $u_sort_param . $u_show_results;
 	$u_search .= ($return_chars != 200) ? '&amp;ch=' . $return_chars : '';
-
 
 	$template->assign_vars(array(
 		'SEARCH_MATCHES'	=> $l_search_matches,
@@ -477,7 +478,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
 
-		'U_SEARCH_WORDS'	=> "{$phpbb_root_path}search.$phpEx$SID$u_show_results&amp;keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : '') . (($author_id) ? '&amp;author_id=' . $author_id : ''))
+		'U_SEARCH_WORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", "keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : '') . (($author_id) ? '&amp;author_id=' . $author_id : '') . $u_show_results))
 	);
 
 	if ($sql_where)
@@ -512,6 +513,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = t.forum_id)
 				' . (($sort_key == 'a') ? ' LEFT JOIN ' . USERS_TABLE . ' u ON (u.user_id = t.topic_poster) ' : '');
 			$sql_select = 't.*, f.forum_id, f.forum_name';
+
 			if ($user->data['is_registered'])
 			{
 				if ($config['load_db_track'])
@@ -533,7 +535,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if (!$user->data['is_registered'] || !$config['load_db_lastread'])
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
 			}
 
 			$sql = "SELECT $sql_select
@@ -572,7 +575,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		
 					if (!$user->data['is_registered'])
 					{
-						$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+						$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
 					}
 				}
 			}
@@ -607,7 +610,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$u_forum_id = $forum_id;
 			}
 
-			$view_topic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$u_forum_id&amp;t=$result_topic_id&amp;hilit=$u_hilit";
+			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$u_forum_id&amp;t=$result_topic_id&amp;hilit=$u_hilit");
 
 			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
@@ -620,20 +623,20 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
 				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
-				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=queue&amp;mode=" . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id" : '';
+				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
 
 				$tpl_ary = array(
-					'TOPIC_AUTHOR' 		=> topic_topic_author($row),
-					'FIRST_POST_TIME' 	=> $user->format_date($row['topic_time']),
+					'TOPIC_AUTHOR'		=> topic_topic_author($row),
+					'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
 					'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 					'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-					'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-					'PAGINATION' 		=> topic_generate_pagination($replies, $view_topic_url),
-					'TOPIC_TYPE' 		=> $topic_type,
+					'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
+					'TOPIC_TYPE'		=> $topic_type,
 
 					'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 					'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'TOPIC_FOLDER_IMG_SRC' 	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+					'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
@@ -649,11 +652,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 
-					'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-					'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
-					'U_NEWEST_POST'		=> $view_topic_url . '&amp;view=unread#unread',
-					'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx?sid={$user->session_id}&amp;i=reports&amp;mode=reports&amp;t=$result_topic_id",
-					'U_MCP_QUEUE'		=> $u_mcp_queue,
+					'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
+					'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
+					'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
+					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
+					'U_MCP_QUEUE'			=> $u_mcp_queue,
 				);
 			}
 			else
@@ -697,26 +700,26 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$tpl_ary = array(
 					'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
-					'U_PROFILE'			=> ($row['poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['poster_id']}" : '',
+					'U_PROFILE'			=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
-					'MESSAGE' 			=> $row['post_text']
+					'MESSAGE'			=> $row['post_text']
 				);
 			}
 
 			$template->assign_block_vars('searchresults', array_merge($tpl_ary, array(
-				'FORUM_ID' 			=> $forum_id,
-				'TOPIC_ID' 			=> $result_topic_id,
+				'FORUM_ID'			=> $forum_id,
+				'TOPIC_ID'			=> $result_topic_id,
 				'POST_ID'			=> ($show_results == 'posts') ? $row['post_id'] : false,
 
 				'FORUM_TITLE'		=> $row['forum_name'],
-				'TOPIC_TITLE' 		=> $topic_title,
-				'TOPIC_REPLIES' 	=> $replies,
-				'TOPIC_VIEWS' 		=> $row['topic_views'],
+				'TOPIC_TITLE'		=> $topic_title,
+				'TOPIC_REPLIES'		=> $replies,
+				'TOPIC_VIEWS'		=> $row['topic_views'],
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
-				'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id",
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;hilit=' . $u_hilit . '#p' . $row['post_id'] : '')
+				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
+				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '&amp;hilit=' . $u_hilit) . '#p' . $row['post_id'] : '')
 			));
 		}
 
@@ -735,7 +738,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$template->set_filenames(array(
 		'body' =>  'search_results.html')
 	);
-	make_jumpbox('viewforum.'.$phpEx);
+	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 	page_footer();
 }
@@ -851,7 +854,7 @@ while ($row = $db->sql_fetchrow($result))
 		'KEYWORDS'	=> $keywords,
 		'TIME'		=> $user->format_date($row['search_time']),
 
-		'U_KEYWORDS'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;keywords=" . urlencode($keywords))
+		'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode($keywords)))
 	);
 }
 $db->sql_freeresult($result);
@@ -862,7 +865,7 @@ page_header($user->lang['SEARCH']);
 $template->set_filenames(array(
 	'body' => 'search_body.html')
 );
-make_jumpbox('viewforum.'.$phpEx);
+make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();
 

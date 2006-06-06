@@ -18,7 +18,7 @@ class acp_email
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
@@ -188,7 +188,7 @@ class acp_email
 				}
 				else
 				{
-					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . $phpbb_admin_path . "index.$phpEx$SID&amp;i=logs&amp;mode=critical" . '">', '</a>');
+					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
 				}
 				trigger_error($message . adm_back_link($this->u_action));
 			}
@@ -215,7 +215,7 @@ class acp_email
 			'U_ACTION'				=> $this->u_action,
 			'S_GROUP_OPTIONS'		=> $select_list,
 			'USERNAMES'				=> $usernames,
-			'U_FIND_USERNAME'		=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=acp_email&amp;field=usernames",
+			'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_email&amp;field=usernames'),
 			'SUBJECT'				=> $subject,
 			'MESSAGE'				=> $message,
 			'S_PRIORITY_OPTIONS'	=> $s_priority_options)

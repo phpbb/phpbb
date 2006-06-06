@@ -14,23 +14,15 @@
 */
 class p_master
 {
-	/**#@+
-	* @access private
-	*/
 	var $p_id;
 	var $p_class;
 	var $p_name;
 	var $p_mode;
 	var $p_parent;
 
-	var $acl_forup_id = false;
-	/**#@-*/
+	var $acl_forum_id = false;
 
-	/**#@+
-	* This array holds information on the list of modules
-	*/
 	var $module_ary = array();
-	/**#@-*/
 
 	/**
 	* List modules
@@ -40,8 +32,6 @@ class p_master
 	* $this->module_y_ary is created with indentation information for
 	* displaying the module list appropriately. Only modules for which
 	* the user has access rights are included in these lists.
-	*
-	* @final
 	*/
 	function list_modules($p_class)
 	{
@@ -238,7 +228,7 @@ class p_master
 		}
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', '(int) $this->acl_forup_id', '(int) $auth->acl_getf_global("\\1")', '(int) $config["\\1"]'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', '(int) $this->acl_forum_id', '(int) $auth->acl_getf_global("\\1")', '(int) $config["\\1"]'), $module_auth) . ');');
 
 		return $is_auth;
 	}
@@ -300,12 +290,10 @@ class p_master
 	* Loads currently active module
 	*
 	* This method loads a given module, passing it the relevant id and mode.
-	*
-	* @final
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $user;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $user;
 
 		$module_path = $phpbb_root_path . 'includes/' . $this->p_class;
 		$icat = request_var('icat', '');
@@ -339,7 +327,7 @@ class p_master
 			if (defined('IN_ADMIN'))
 			{
 				// Not being able to overwrite ;)
-				$this->module->u_action = "{$phpbb_admin_path}index.$phpEx$SID" . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_id}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 			else
 			{
@@ -350,10 +338,10 @@ class p_master
 				}
 				else
 				{
-					$this->module->u_action = "{$user->page['script_path']}/{$user->page['page_name']}";
+					$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 				}
 
-				$this->module->u_action .= $SID . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;i={$this->p_id}&amp;mode={$this->p_mode}";
+				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_id}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 
 			// Assign the module path for re-usage
@@ -414,7 +402,7 @@ class p_master
 			}
 			break;
 		}
-		
+
 		return $branch;
 	}
 
@@ -434,7 +422,7 @@ class p_master
 			{
 				// Go through the tree to find our branch
 				$parent_tree = $parents[$row['module_id']];
-					
+
 				foreach ($parent_tree as $id => $value)
 				{
 					if (!isset($branch[$id]) && isset($branch['child']))
@@ -452,7 +440,7 @@ class p_master
 				$branch[$row['module_id']]['child'] = array();
 			}
 		}
-		
+
 		return $tree;
 	}
 

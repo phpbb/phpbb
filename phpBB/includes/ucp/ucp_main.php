@@ -16,6 +16,7 @@
 class ucp_main
 {
 	var $p_master;
+	var $u_action;
 	
 	function ucp_main(&$p_master)
 	{
@@ -24,7 +25,7 @@ class ucp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		switch ($mode)
 		{
@@ -137,10 +138,10 @@ class ucp_main
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
 
-						'U_LAST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['topic_last_poster_id'] : '',
-						'U_NEWEST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id&amp;view=unread#unread",
-						'U_VIEW_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$g_forum_id&amp;t=$topic_id")
+						'U_LAST_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
+						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u='  . $row['topic_last_poster_id']) : '',
+						'U_NEWEST_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$g_forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
+						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$g_forum_id&amp;t=$topic_id"))
 					);
 				}
 
@@ -173,7 +174,7 @@ class ucp_main
 //					'S_GROUP_OPTIONS'	=> $group_options, 
 					'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
-					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;author_id=" . $user->data['user_id'] . "&amp;sr=posts" : '',
+					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user->data['user_id'] . '&amp;sr=posts') : '',
 					)
 				);
 				break;
@@ -213,9 +214,9 @@ class ucp_main
 							$l_unwatch .= '_TOPICS';
 						}
 
-						$message = $user->lang['UNWATCHED' . $l_unwatch] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=subscribed\">", '</a>');
+						$message = $user->lang['UNWATCHED' . $l_unwatch] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed") . '">', '</a>');
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=subscribed");
+						meta_refresh(3, append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=subscribed"));
 						trigger_error($message);
 					}
 				}
@@ -246,7 +247,8 @@ class ucp_main
 				}
 				else
 				{
-					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+					$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
 				}
 
 				$sql = $db->sql_build_query('SELECT', $sql_array);
@@ -262,7 +264,7 @@ class ucp_main
 					}
 					else
 					{
-						$forum_check = (isset($tracking_topics['f'][$forum_id])) ? base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'] : $user->data['user_lastmark'];
+						$forum_check = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
 					}
 
 					$unread_forum = ($row['forum_last_post_time'] > $forum_check) ? true : false;
@@ -285,9 +287,9 @@ class ucp_main
 						$last_post_time = $user->format_date($row['forum_last_post_time']);
 
 						$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
-						$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u="  . $row['forum_last_poster_id'];
+						$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u='  . $row['forum_last_poster_id']);
 
-						$last_post_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;p=" . $row['forum_last_post_id'] . '#p' . $row['forum_last_post_id'];
+						$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=" . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 					}
 					else
 					{
@@ -305,7 +307,7 @@ class ucp_main
 						
 						'U_LAST_POST_AUTHOR'=> $last_poster_url, 
 						'U_LAST_POST'		=> $last_post_url, 
-						'U_VIEWFORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'])
+						'U_VIEWFORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
 					);
 				}
 				$db->sql_freeresult($result);
@@ -324,7 +326,7 @@ class ucp_main
 				if ($topics_count)
 				{
 					$template->assign_vars(array(
-						'PAGINATION'	=> generate_pagination("ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode", $topics_count, $config['topics_per_page'], $start),
+						'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
 						'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
 						'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
 					);
@@ -413,7 +415,7 @@ class ucp_main
 					$folder_img = $folder_alt = $topic_type = '';
 					topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 					
-					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+					$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 					
 					// Send vars to template
 					$template->assign_block_vars('topicrow', array(
@@ -424,7 +426,7 @@ class ucp_main
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 						'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-						'PAGINATION' 		=> topic_generate_pagination($replies, "viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id"),
+						'PAGINATION' 		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id")),
 						'REPLIES' 			=> $replies,
 						'VIEWS' 			=> $row['topic_views'],
 						'TOPIC_TITLE' 		=> censor_text($row['topic_title']),
@@ -443,9 +445,9 @@ class ucp_main
 						'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
 						'S_UNREAD_TOPIC'		=> $unread_topic,
 
-						'U_NEWEST_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread",
+						'U_NEWEST_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
+						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
 						'U_VIEW_TOPIC'		=> $view_topic_url)
 					);
 
@@ -495,7 +497,7 @@ class ucp_main
 				{
 					$s_hidden_fields = '<input type="hidden" name="unbookmark" value="1" />';
 					$topics = (isset($_POST['t'])) ? array_map('intval', array_keys($_POST['t'])) : array();
-					$url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode";
+					$url = $this->u_action;
 					
 					if (!sizeof($topics))
 					{
@@ -564,7 +566,7 @@ class ucp_main
 					$unread_topic = false;
 					
 					topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
-					$view_topic_url = "viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+					$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 					
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID' 			=> $forum_id,
@@ -581,7 +583,7 @@ class ucp_main
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 						'LAST_POST_AUTHOR' 	=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
-						'PAGINATION' 		=> topic_generate_pagination($replies, "viewtopic.$phpEx$SID&amp;f=" . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id"),
+						'PAGINATION' 		=> topic_generate_pagination($replies, append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . "&amp;t=$topic_id")),
 
 						'POSTED_AT'			=> $user->format_date($row['topic_time']),
 						
@@ -591,11 +593,11 @@ class ucp_main
 						'LAST_POST_IMG' 	=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
 
 						'U_LAST_POST'		=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
-						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['topic_last_poster_id']}" : '',
+						'U_LAST_POST_AUTHOR'=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
 						'U_VIEW_TOPIC'		=> $view_topic_url,
-						'U_VIEW_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$forum_id}",
-						'U_MOVE_UP'			=> ($row['order_id'] != 1) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_up={$row['order_id']}" : '',
-						'U_MOVE_DOWN'		=> ($row['order_id'] != $max_order_id) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=main&amp;mode=bookmarks&amp;move_down={$row['order_id']}" : '')
+						'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
+						'U_MOVE_UP'			=> ($row['order_id'] != 1) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=main&amp;mode=bookmarks&amp;move_up=' . $row['order_id']) : '',
+						'U_MOVE_DOWN'		=> ($row['order_id'] != $max_order_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=main&amp;mode=bookmarks&amp;move_down=' . $row['order_id']) : '')
 					);
 				}
 
@@ -627,9 +629,9 @@ class ucp_main
 								AND user_id = " .$user->data['user_id'];
 						$db->sql_query($sql);
 
-						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						meta_refresh(3, $this->u_action);
 						trigger_error($message);
 					}
 				}
@@ -652,9 +654,9 @@ class ucp_main
 								AND user_id = " . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+						$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
+						meta_refresh(3, $this->u_action);
 						trigger_error($message);
 					}
 					else
@@ -721,23 +723,23 @@ class ucp_main
 					if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 					{
 						$link_topic = true;
-						$view_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . "&amp;t=" . $draft['topic_id'];
+						$view_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id']);
 						$title = $topic_rows[$draft['topic_id']]['topic_title'];
 
-						$insert_url = "{$phpbb_root_path}posting.$phpEx$SID&amp;f=" . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id'];
+						$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
 					}
 					else if ($auth->acl_get('f_read', $draft['forum_id']))
 					{
 						$link_forum = true;
-						$view_url = "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $draft['forum_id'];
+						$view_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $draft['forum_id']);
 						$title = $draft['forum_name'];
 
-						$insert_url = "{$phpbb_root_path}posting.$phpEx$SID&amp;f=" . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id'];
+						$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $draft['forum_id'] . '&amp;mode=post&amp;d=' . $draft['draft_id']);
 					}
 					else if ($pm_drafts)
 					{
 						$link_pm = true;
-						$insert_url = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=compose&amp;d=" . $draft['draft_id'];
+						$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d=" . $draft['draft_id']);
 					}
 						
 					$template_row = array(
@@ -751,7 +753,7 @@ class ucp_main
 						'TOPIC_ID'	=> $draft['topic_id'],
 
 						'U_VIEW'		=> $view_url,
-						'U_VIEW_EDIT'	=> "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode&amp;edit=" . $draft['draft_id'],
+						'U_VIEW_EDIT'	=> $this->u_action . '&amp;edit=' . $draft['draft_id'],
 						'U_INSERT'		=> $insert_url,
 
 						'S_LINK_TOPIC'		=> $link_topic,
@@ -778,7 +780,7 @@ class ucp_main
 
 			'S_DISPLAY_MARK_ALL'=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
 			'S_HIDDEN_FIELDS'	=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
-			'S_UCP_ACTION'		=> $phpbb_root_path . "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_UCP_ACTION'		=> $this->u_action)
 		);
 
 		// Set desired template

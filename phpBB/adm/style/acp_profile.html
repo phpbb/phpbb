@@ -11,10 +11,10 @@
 	<p>{L_EXPLAIN}</p>
 
 	<!-- IF ERROR_MSG -->
-	<div class="errorbox">
-		<h3>{L_WARNING}</h3>
-		<p>{ERROR_MSG}</p>
-	</div>
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
 	<!-- ENDIF -->
 
 	<form id="add_profile_field" method="post" action="{U_ACTION}">
@@ -23,38 +23,38 @@
 
 		<fieldset>
 			<legend>{L_TITLE}</legend>
-			<dl>
-				<dt><label>{L_FIELD_TYPE}:</label><br /><span>{L_FIELD_TYPE_EXPLAIN}</span></dt>
-				<dd><b>{FIELD_TYPE}</b></dd>
-			</dl>
-			<dl>
-				<dt><label for="field_ident">{L_FIELD_IDENT}:</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
-				<dd><input class="medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
-			</dl>
-			<dl>
-				<dt><label for="field_no_view">{L_DISPLAY_PROFILE_FIELD}:</label><br /><span>{L_DISPLAY_PROFILE_FIELD_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES} <input type="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
-			</dl>
+		<dl>
+			<dt><label>{L_FIELD_TYPE}:</label><br /><span>{L_FIELD_TYPE_EXPLAIN}</span></dt>
+			<dd><b>{FIELD_TYPE}</b></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_ident">{L_FIELD_IDENT}:</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
+			<dd><input class="medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_no_view">{L_DISPLAY_PROFILE_FIELD}:</label><br /><span>{L_DISPLAY_PROFILE_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES} <input type="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
 		</fieldset>
 
 		<fieldset>
 			<legend>{L_VISIBILITY_OPTION}</legend>
-			<dl>
-				<dt><label for="field_option_none">{L_DISPLAY_AT_PROFILE}:</label></dt>
-				<dd><input type="radio" id="field_option_none" name="field_option" value="none"<!-- IF not S_SHOW_ON_REG and not S_FIELD_REQUIRED and not S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
-			</dl>
-			<dl>
-				<dt><label for="field_show_on_reg">{L_DISPLAY_AT_REGISTER}:</label><br /><span>{L_DISPLAY_AT_REGISTER_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="field_show_on_reg" name="field_option" value="field_show_on_reg"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
-			</dl>
-			<dl>
-				<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="field_required" name="field_option" value="field_required"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
-			</dl>
-			<dl>
-				<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}:</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
-				<dd><input type="radio" id="field_hide" name="field_option" value="field_hide"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
-			</dl>
+		<dl>
+			<dt><label for="field_option_none">{L_DISPLAY_AT_PROFILE}:</label></dt>
+			<dd><input type="radio" id="field_option_none" name="field_option" value="none"<!-- IF not S_SHOW_ON_REG and not S_FIELD_REQUIRED and not S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_show_on_reg">{L_DISPLAY_AT_REGISTER}:</label><br /><span>{L_DISPLAY_AT_REGISTER_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="field_show_on_reg" name="field_option" value="field_show_on_reg"<!-- IF S_SHOW_ON_REG --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_required">{L_REQUIRED_FIELD}:</label><br /><span>{L_REQUIRED_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="field_required" name="field_option" value="field_required"<!-- IF S_FIELD_REQUIRED --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
+		<dl>
+			<dt><label for="field_hide">{L_HIDE_PROFILE_FIELD}:</label><br /><span>{L_HIDE_PROFILE_FIELD_EXPLAIN}</span></dt>
+			<dd><input type="radio" id="field_hide" name="field_option" value="field_hide"<!-- IF S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
+		</dl>
 		</fieldset>
 
 		<!-- IF S_EDIT_MODE -->
@@ -65,31 +65,31 @@
 
 		<fieldset>
 			<legend>{L_LANG_SPECIFIC}</legend>
+		<dl>
+			<dt><label for="lang_name">{L_USER_FIELD_NAME}:</label></dt>
+			<dd><input class="medium" type="text" id="lang_name" name="lang_name" value="{LANG_NAME}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="lang_explain">{L_FIELD_DESCRIPTION}:</label><br /><span>{L_FIELD_DESCRIPTION_EXPLAIN}</span></dt>
+			<dd><textarea id="lang_explain" name="lang_explain" rows="3" cols="80">{LANG_EXPLAIN}</textarea></dd>
+		</dl>
+		<!-- IF S_TEXT or S_STRING -->
 			<dl>
-				<dt><label for="lang_name">{L_USER_FIELD_NAME}:</label></dt>
-				<dd><input class="medium" type="text" id="lang_name" name="lang_name" value="{LANG_NAME}" /></dd>
+				<dt><label for="lang_default_value">{L_DEFAULT_VALUE}:</label><br /><span>{L_DEFAULT_VALUE_EXPLAIN}</span></dt>
+				<dd><!-- IF S_STRING --><input class="medium" type="text" id="lang_default_value" name="lang_default_value" value="{LANG_DEFAULT_VALUE}" /><!-- ELSE --><textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">{LANG_DEFAULT_VALUE}</textarea><!-- ENDIF --></dd>
 			</dl>
+		<!-- ENDIF -->
+		<!-- IF S_BOOL or S_DROPDOWN -->
 			<dl>
-				<dt><label for="lang_explain">{L_FIELD_DESCRIPTION}:</label><br /><span>{L_FIELD_DESCRIPTION_EXPLAIN}</span></dt>
-				<dd><textarea id="lang_explain" name="lang_explain" rows="3" cols="80">{LANG_EXPLAIN}</textarea></dd>
+				<dt><label for="lang_options">{L_ENTRIES}:</label><br /><span>{L_LANG_OPTIONS_EXPLAIN}</span></dt>
+			<!-- IF S_DROPDOWN -->
+				<dd><textarea id="lang_options" name="lang_options" rows="5" cols="80">{LANG_OPTIONS}</textarea></dd>
+			<!-- ELSE -->
+				<dd><input class="medium" id="lang_options" name="lang_options[0]" value="{FIRST_LANG_OPTION}" /> {L_FIRST_OPTION}</dd>
+				<dd><input class="medium" name="lang_options[1]" value="{SECOND_LANG_OPTION}" /> {L_SECOND_OPTION}</dd>
+			<!-- ENDIF -->
 			</dl>
-			<!-- IF S_TEXT or S_STRING -->
-				<dl>
-					<dt><label for="lang_default_value">{L_DEFAULT_VALUE}:</label><br /><span>{L_DEFAULT_VALUE_EXPLAIN}</span></dt>
-					<dd><!-- IF S_STRING --><input class="medium" type="text" id="lang_default_value" name="lang_default_value" value="{LANG_DEFAULT_VALUE}" /><!-- ELSE --><textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">{LANG_DEFAULT_VALUE}</textarea><!-- ENDIF --></dd>
-				</dl>
-			<!-- ENDIF -->
-			<!-- IF S_BOOL or S_DROPDOWN -->
-				<dl>
-					<dt><label for="lang_options">{L_ENTRIES}:</label><br /><span>{L_LANG_OPTIONS_EXPLAIN}</span></dt>
-				<!-- IF S_DROPDOWN -->
-					<dd><textarea id="lang_options" name="lang_options" rows="5" cols="80">{LANG_OPTIONS}</textarea></dd>
-				<!-- ELSE -->
-					<dd><input class="medium" id="lang_options" name="lang_options[0]" value="{FIRST_LANG_OPTION}" /> {L_FIRST_OPTION}</dd>
-					<dd><input class="medium" name="lang_options[1]" value="{SECOND_LANG_OPTION}" /> {L_SECOND_OPTION}</dd>
-				<!-- ENDIF -->
-				</dl>
-			<!-- ENDIF -->
+		<!-- ENDIF -->
 		</fieldset>
 
 		<fieldset class="quick">

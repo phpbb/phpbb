@@ -18,7 +18,7 @@ class acp_profile
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
@@ -1386,7 +1386,7 @@ class acp_profile
 			}
 		}
 
-		$db->sql_transaction();
+		$db->sql_transaction('begin');
 
 		if ($action == 'create')
 		{

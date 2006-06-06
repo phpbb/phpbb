@@ -14,12 +14,9 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
-require($phpbb_root_path . 'includes/functions_module.'.$phpEx);
-
-/**
-*/
+include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -46,7 +43,7 @@ if (!$user->data['is_registered'])
 {
 	if ($user->data['is_bot'])
 	{
-		redirect("index.$phpEx$SID");
+		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 	}
 
 	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
@@ -110,7 +107,8 @@ if (!$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
 		'make_sticky'	=> 'f_sticky',
 		'make_announce'	=> 'f_announce',
 		'make_global'	=> 'f_announce',
-		'make_normal'	=> array('f_announce', 'f_sticky'));
+		'make_normal'	=> array('f_announce', 'f_sticky')
+	);
 
 	$allow_user = false;
 	if ($quickmod && isset($user_quickmod_actions[$action]) && $user->data['is_registered'] && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
@@ -130,7 +128,7 @@ if (!$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
 
 if ($forum_id)
 {
-	$module->acl_forup_id = $forum_id;
+	$module->acl_forum_id = $forum_id;
 }
 
 // Instantiate module system and generate list of available modules
@@ -155,7 +153,8 @@ if ($quickmod)
 		case 'delete_post':
 		case 'delete_topic':
 			$module->load('mcp', 'main', 'quickmod');
-		exit;
+			exit;
+		break;
 
 		case 'topic_logs':
 			$module->set_active('logs', 'topic_logs');
@@ -211,7 +210,7 @@ if (!$user_id && $username == '')
 $module->load_active();
 
 // Assign data to the template engine for the list of modules
-$module->assign_tpl_vars("mcp.$phpEx$SID");
+$module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 
 // Generate the page
 $module->display($module->get_page_title());
@@ -233,10 +232,12 @@ function _module_logs_url($mode)
 function extra_url()
 {
 	global $forum_id, $topic_id, $post_id;
+
 	$url_extra = '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
 	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
 	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+
 	return $url_extra;
 }
 
@@ -247,6 +248,7 @@ function get_topic_data($topic_ids, $acl_list = false)
 {
 	global $auth, $db;
 	static $rowset = array();
+
 	$topics = array();
 
 	if (!sizeof($topic_ids))
@@ -276,6 +278,7 @@ function get_topic_data($topic_ids, $acl_list = false)
 
 			$topics[$row['topic_id']] = $row;
 		}
+		$db->sql_freeresult($result);
 	}
 
 	foreach ($cache_topic_ids as $id)
@@ -295,6 +298,7 @@ function get_topic_data($topic_ids, $acl_list = false)
 function get_post_data($post_ids, $acl_list = false)
 {
 	global $db, $auth;
+
 	$rowset = array();
 
 	if (!sizeof($post_ids))
@@ -319,8 +323,8 @@ function get_post_data($post_ids, $acl_list = false)
 		),
 
 		'WHERE'		=> 'p.post_id IN (' . implode(', ', $post_ids) . ')
-							AND u.user_id = p.poster_id
-							AND t.topic_id = p.topic_id',
+			AND u.user_id = p.poster_id
+			AND t.topic_id = p.topic_id',
 	));
 	$result = $db->sql_query($sql);
 
@@ -339,6 +343,7 @@ function get_post_data($post_ids, $acl_list = false)
 
 		$rowset[$row['post_id']] = $row;
 	}
+	$db->sql_freeresult($result);
 
 	return $rowset;
 }
@@ -349,6 +354,7 @@ function get_post_data($post_ids, $acl_list = false)
 function get_forum_data($forum_id, $acl_list = 'f_list')
 {
 	global $auth, $db;
+
 	$rowset = array();
 
 	if (!sizeof($forum_id))
@@ -367,6 +373,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 		{
 			continue;
 		}
+
 		if ($auth->acl_get('m_approve', $row['forum_id']))
 		{
 			$row['forum_topics'] = $row['forum_topics_real'];
@@ -374,6 +381,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 		$rowset[$row['forum_id']] = $row;
 	}
+	$db->sql_freeresult($result);
 
 	return $rowset;
 }
@@ -396,6 +404,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$type = 'topics';
 			$default_key = 't';
 			$default_dir = 'd';
+
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql forum_id = $forum_id
@@ -406,21 +415,23 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			{
 				$sql .= 'AND topic_approved = 1';
 			}
-			break;
+		break;
 
 		case 'viewtopic':
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'a';
+
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
 				$where_sql topic_id = $topic_id
 					AND post_time >= $min_time";
+
 			if (!$auth->acl_get('m_approve', $forum_id))
 			{
 				$sql .= 'AND post_approved = 1';
 			}
-			break;
+		break;
 
 		case 'unapproved_posts':
 			$type = 'posts';
@@ -433,18 +444,19 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
 					AND post_approved = 0
 					AND post_time >= ' . $min_time;
-			break;
+		break;
 
 		case 'unapproved_topics':
 			$type = 'topics';
 			$default_key = 't';
 			$default_dir = 'd';
+
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
 					AND topic_approved = 0
 					AND topic_time >= ' . $min_time;
-			break;
+		break;
 
 		case 'reports':
 		case 'reports_closed':
@@ -480,18 +492,19 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 				$where_sql
 					AND p.post_id = r.post_id
 					$limit_time_sql";
-			break;
+		break;
 
 		case 'viewlogs':
 			$type = 'logs';
 			$default_key = 't';
 			$default_dir = 'd';
+
 			$sql = 'SELECT COUNT(log_id) AS total
 				FROM ' . LOG_TABLE . "
 				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
 					AND log_time >= ' . $min_time . '
 					AND log_type = ' . LOG_MOD;
-			break;
+		break;
 	}
 
 	$sort_key = request_var('sk', $default_key);
@@ -506,20 +519,20 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
 			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
-			break;
+		break;
 
 		case 'posts':
 			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
 			$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
 			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
-			break;
+		break;
 
 		case 'reports':
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
 			$sort_by_sql = array('a' => 'u.username', 'r' => 'ru.username', 'p' => 'p.post_id', 't' => 'r.report_time', 's' => 'p.post_subject');
-			break;
+		break;
 
 		case 'logs':
 			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
@@ -527,7 +540,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
-			break;
+		break;
 	}
 
 	$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
@@ -536,15 +549,16 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $sort_url);
 
 	$template->assign_vars(array(
-		'S_SELECT_SORT_DIR'	=>	$s_sort_dir,
-		'S_SELECT_SORT_KEY' =>	$s_sort_key,
-		'S_SELECT_SORT_DAYS'=>	$s_limit_days)
+		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+		'S_SELECT_SORT_KEY'		=> $s_sort_key,
+		'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 	);
 
 	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
 	{
 		$result = $db->sql_query($sql);
-		$total = ($row = $db->sql_fetchrow($result)) ? $row['total'] : 0;
+		$total = (int) $db->sql_fetchfield('total');
+		$db->sql_freeresult($result);
 	}
 	else
 	{
@@ -606,7 +620,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 
 	if (!$forum_id)
 	{
-		trigger_error('Missing forum_id, has to be in url if global announcement...');
+		trigger_error('Missing forum_id, has to be in url if global announcement...', E_USER_ERROR);
 	}
 
 	$sql = "SELECT $sql_id FROM $table

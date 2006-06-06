@@ -17,7 +17,7 @@ class ucp_activate
 {
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
@@ -36,7 +36,7 @@ class ucp_activate
 
 		if ($row['user_type'] <> USER_INACTIVE && !$row['user_newpasswd'])
 		{
-			meta_refresh(3, "index.$phpEx$SID");
+			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 			trigger_error($user->lang['ALREADY_ACTIVATED']);
 		}
 		
@@ -110,7 +110,7 @@ class ucp_activate
 			set_config('num_users', $config['num_users'] + 1, true);
 		}
 
-		meta_refresh(3, "{$phpbb_root_path}index.$phpEx$SID");
+		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 		trigger_error($user->lang[$message]);
 	}
 }

@@ -58,40 +58,31 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = @mysqli_autocommit($this->db_connect_id, false);
-				$this->transaction = true;
+				return @mysqli_autocommit($this->db_connect_id, false);
 			break;
 
 			case 'commit':
 				$result = @mysqli_commit($this->db_connect_id);
 				@mysqli_autocommit($this->db_connect_id, true);
-				$this->transaction = false;
-
-				if (!$result)
-				{
-					@mysqli_rollback($this->db_connect_id);
-					@mysqli_autocommit($this->db_connect_id, true);
-				}
+				return $result;
 			break;
 
 			case 'rollback':
 				$result = @mysqli_rollback($this->db_connect_id);
 				@mysqli_autocommit($this->db_connect_id, true);
-				$this->transaction = false;
+				return $result;
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**

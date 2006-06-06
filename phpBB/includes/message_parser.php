@@ -250,7 +250,21 @@ class bbcode_firstpass extends bbcode
 		{
 			return '';
 		}
-	
+
+		// Apply the same size checks on flash files as on images
+		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
+		{
+			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
+			{
+				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+			}
+
+			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
+			{
+				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+			}
+		}
+
 		return '[flash=' . $width . ',' . $height . ':' . $this->bbcode_uid . ']' . $in . '[/flash:' . $this->bbcode_uid . ']';
 	}
 

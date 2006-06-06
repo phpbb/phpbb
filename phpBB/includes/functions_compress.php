@@ -16,6 +16,9 @@ class compress
 {
 	var $fp = 0;
 
+	/**
+	* Add file to archive
+	*/
 	function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
 	{
 		global $phpbb_root_path;
@@ -68,17 +71,23 @@ class compress
 					$this->data("$src_path$path$file", file_get_contents("$phpbb_root_path$src$path$file"), false, stat("$phpbb_root_path$src$path$file"));
 				}
 			}
-
 		}
+
 		return true;
 	}
 
+	/**
+	* Add custom file (the filepath will not be adjusted)
+	*/
 	function add_custom_file($src, $filename)
 	{
 		$this->data($filename, file_get_contents($src), false, stat($src));
 		return true;
 	}
-	
+
+	/**
+	* Add file data
+	*/
 	function add_data($src, $name)
 	{
 		$stat = array();
@@ -90,6 +99,9 @@ class compress
 		return true;
 	}
 
+	/**
+	* Return available methods
+	*/
 	function methods()
 	{
 		$methods = array('.tar');
@@ -111,7 +123,7 @@ class compress
 /**
 * @package phpBB3
 *
-* Zip creation class from phpMyAdmin 2.3.0 © Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
+* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
 * Marc Delisle, http://www.phpmyadmin.net/
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
@@ -130,11 +142,17 @@ class compress_zip extends compress
 	var $old_offset = 0;
 	var $datasec_len = 0;
 
+	/**
+	* Constructor
+	*/
 	function compress_zip($mode, $file)
 	{
 		return $this->fp = @fopen($file, $mode . 'b');
 	}
 
+	/**
+	* Convert unix to dos time
+	*/
 	function unix_to_dos_time($time)
 	{
 		$timearray = (!$time) ? getdate() : getdate($time);
@@ -149,6 +167,9 @@ class compress_zip extends compress
 		return (($timearray['year'] - 1980) << 25) | ($timearray['mon'] << 21) | ($timearray['mday'] << 16) | ($timearray['hours'] << 11) | ($timearray['minutes'] << 5) | ($timearray['seconds'] >> 1);
 	}
 
+	/**
+	* Extract archive
+	*/
 	function extract($dst)
 	{		
 		// Loop the file, looking for files and folders
@@ -276,10 +297,14 @@ class compress_zip extends compress
 					trigger_error("Unexpected header, ending loop");
 				break 2;
 			}
+
 			$dd_try = false;
 		}
 	}
 
+	/**
+	* Close archive
+	*/
 	function close()
 	{
 		// Write out central file directory and footer ... if it exists
@@ -290,7 +315,9 @@ class compress_zip extends compress
 		fclose($this->fp);
 	}
 
-	// Create the structures ... note we assume version made by is MSDOS
+	/**
+	* Create the structures ... note we assume version made by is MSDOS
+	*/
 	function data($name, $data, $is_dir = false, $stat)
 	{
 		$name = str_replace('\\', '/', $name);
@@ -327,6 +354,7 @@ class compress_zip extends compress
 
 		// Are we a file or a directory? Set archive for file
 		$attrib = ($is_dir) ? 16 : 32;
+
 		// File Record Header
 		$fr = "\x50\x4b\x03\x04";		// Local file header 4bytes
 		$fr .= pack('v', $var_ext);		// ver needed to extract 2bytes
@@ -351,21 +379,21 @@ class compress_zip extends compress
 
 		// Central Directory Header
 		$cdrec = "\x50\x4b\x01\x02";		// header 4bytes
-		$cdrec .= "\x00\x00";               // version made by
+		$cdrec .= "\x00\x00";				// version made by
 		$cdrec .= pack('v', $var_ext);		// version needed to extract
-		$cdrec .= "\x00\x00";               // gen purpose bit flag
+		$cdrec .= "\x00\x00";				// gen purpose bit flag
 		$cdrec .= $c_method;				// compression method
-		$cdrec .= $hexdtime;                // last mod time & date
-		$cdrec .= pack('V', $crc);          // crc32
-		$cdrec .= pack('V', $c_len);        // compressed filesize
-		$cdrec .= pack('V', $unc_len);      // uncompressed filesize
-		$cdrec .= pack('v', strlen($name)); // length of filename
-		$cdrec .= pack('v', 0);             // extra field length
-		$cdrec .= pack('v', 0);             // file comment length
-		$cdrec .= pack('v', 0);             // disk number start
-		$cdrec .= pack('v', 0);             // internal file attributes
+		$cdrec .= $hexdtime;				// last mod time & date
+		$cdrec .= pack('V', $crc);			// crc32
+		$cdrec .= pack('V', $c_len);		// compressed filesize
+		$cdrec .= pack('V', $unc_len);		// uncompressed filesize
+		$cdrec .= pack('v', strlen($name));	// length of filename
+		$cdrec .= pack('v', 0);				// extra field length
+		$cdrec .= pack('v', 0);				// file comment length
+		$cdrec .= pack('v', 0);				// disk number start
+		$cdrec .= pack('v', 0);				// internal file attributes
 		$cdrec .= pack('V', $attrib);		// external file attributes
-		$cdrec .= pack('V', $this->old_offset); // relative offset of local header
+		$cdrec .= pack('V', $this->old_offset);	// relative offset of local header
 		$cdrec .= $name;
 
 		// Save to central directory
@@ -374,6 +402,9 @@ class compress_zip extends compress
 		$this->old_offset = $this->datasec_len;
 	}
 
+	/**
+	* file
+	*/
 	function file()
 	{
 		$ctrldir = implode('', $this->ctrl_dir);
@@ -386,6 +417,9 @@ class compress_zip extends compress
 			"\x00\x00";								// .zip file comment length
 	}
 
+	/**
+	* Download archive
+	*/
 	function download($filename)
 	{
 		global $phpbb_root_path;
@@ -409,7 +443,7 @@ class compress_zip extends compress
 * @package phpBB3
 *
 * Tar/tar.gz compression routine
-* Header/checksum creation derived from tarfile.pl, © Tom Horsley, 1994
+* Header/checksum creation derived from tarfile.pl, (c) Tom Horsley, 1994
 */
 class compress_tar extends compress 
 {
@@ -420,6 +454,9 @@ class compress_tar extends compress
 	var $type = '';
 	var $wrote = false;
 
+	/**
+	* Constructor
+	*/
 	function compress_tar($mode, $file, $type = '')
 	{
 		$type = (!$type) ? $file : $type;
@@ -432,6 +469,9 @@ class compress_tar extends compress
 		$this->open();
 	}
 
+	/**
+	* Extract archive
+	*/
 	function extract($dst)
 	{
 		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && extension_loaded('zlib')) ? 'gzread' : 'fread');
@@ -491,6 +531,9 @@ class compress_tar extends compress
 		}
 	}
 
+	/**
+	* Close archive
+	*/
 	function close()
 	{
 		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
@@ -498,12 +541,17 @@ class compress_tar extends compress
 		if ($this->wrote) 
 		{
 			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
-			$fzwrite($this->fp, pack("a512", "")); // Symbolizes that there are no more files
+
+			// Symbolizes that there are no more files
+			$fzwrite($this->fp, pack("a512", ""));
 		}
 
 		$fzclose($this->fp);
 	}
 
+	/**
+	* Create the structures
+	*/
 	function data($name, $data, $is_dir = false, $stat)
 	{
 		$this->wrote = true;
@@ -513,12 +561,12 @@ class compress_tar extends compress
 
 		// This is the header data, it contains all the info we know about the file or folder that we are about to archive
 		$header = '';
-		$header .= pack("a100", $name); // file name
-		$header .= pack("a8", sprintf("%07o", $stat[2])); // file mode
-		$header .= pack("a8", sprintf("%07o", $stat[4])); // owner id
-		$header .= pack("a8", sprintf("%07o", $stat[5])); // group id
-		$header .= pack("a12", sprintf("%011o", $stat[7])); // file size
-		$header .= pack("a12", sprintf("%011o", $stat[9])); // last mod time
+		$header .= pack("a100", $name);						// file name
+		$header .= pack("a8", sprintf("%07o", $stat[2]));	// file mode
+		$header .= pack("a8", sprintf("%07o", $stat[4]));	// owner id
+		$header .= pack("a8", sprintf("%07o", $stat[5]));	// group id
+		$header .= pack("a12", sprintf("%011o", $stat[7]));	// file size
+		$header .= pack("a12", sprintf("%011o", $stat[9]));	// last mod time
 
 		// Checksum
 		$checksum = 0;
@@ -530,23 +578,26 @@ class compress_tar extends compress
 		// We precompute the rest of the hash, this saves us time in the loop and allows us to insert our hash without resorting to string functions
 		$checksum += 2415 + (($is_dir) ? 53 : 0);
 
-		$header .= pack("a8", sprintf("%07o", $checksum)); // checksum
-		$header .= pack("a1", $typeflag); // link indicator
-		$header .= pack("a100", ''); // name of linked file
-		$header .= pack("a6", 'ustar'); // ustar indicator
-		$header .= pack("a2", '00'); // ustar version
-		$header .= pack("a32", 'Unknown'); // owner name
-		$header .= pack("a32", 'Unknown'); // group name
-		$header .= pack("a8", ''); // device major number
-		$header .= pack("a8", ''); // device minor number
-		$header .= pack("a155", ''); // filename prefix
-		$header .= pack("a12", ''); // end
+		$header .= pack("a8", sprintf("%07o", $checksum));	// checksum
+		$header .= pack("a1", $typeflag);					// link indicator
+		$header .= pack("a100", '');						// name of linked file
+		$header .= pack("a6", 'ustar');						// ustar indicator
+		$header .= pack("a2", '00');						// ustar version
+		$header .= pack("a32", 'Unknown');					// owner name
+		$header .= pack("a32", 'Unknown');					// group name
+		$header .= pack("a8", '');							// device major number
+		$header .= pack("a8", '');							// device minor number
+		$header .= pack("a155", '');						// filename prefix
+		$header .= pack("a12", '');							// end
 
 		// This writes the entire file in one shot. Header, followed by data and then null padded to a multiple of 512
 		$fzwrite($this->fp, $header . (($stat[7] !== 0 && !$is_dir) ? $data . (($stat[7] % 512 > 0) ? str_repeat("\0", 512 - $stat[7] % 512) : '') : ''));
 		unset($data);
 	}
 
+	/**
+	* Open archive
+	*/
 	function open()
 	{
 		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
@@ -558,6 +609,9 @@ class compress_tar extends compress
 		}
 	}
 
+	/**
+	* Download archive
+	*/
 	function download($filename)
 	{
 		global $phpbb_root_path;

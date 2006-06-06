@@ -21,6 +21,9 @@ class messenger
 	var $use_queue = true;
 	var $tpl_msg = array();
 
+	/**
+	* Constructor
+	*/
 	function messenger($use_queue = true)
 	{
 		global $config;
@@ -36,7 +39,9 @@ class messenger
 		$this->subject = '';
 	}
 
-	// Resets all the data (address, template file, etc etc) to default
+	/**
+	* Resets all the data (address, template file, etc etc) to default
+	*/
 	function reset()
 	{
 		$this->addresses = array();
@@ -44,7 +49,9 @@ class messenger
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
-	// Sets an email address to send to
+	/**
+	* Sets an email address to send to
+	*/
 	function to($address, $realname = '')
 	{
 		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
@@ -52,6 +59,9 @@ class messenger
 		$this->addresses['to'][$pos]['name'] = trim($realname);
 	}
 
+	/**
+	* Sets an cc address to send to
+	*/
 	function cc($address, $realname = '')
 	{
 		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
@@ -59,6 +69,9 @@ class messenger
 		$this->addresses['cc'][$pos]['name'] = trim($realname);
 	}
 
+	/**
+	* Sets an bcc address to send to
+	*/
 	function bcc($address, $realname = '')
 	{
 		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
@@ -66,6 +79,9 @@ class messenger
 		$this->addresses['bcc'][$pos]['name'] = trim($realname);
 	}
 
+	/**
+	* Sets a im contact to send to
+	*/
 	function im($address, $realname = '')
 	{
 		$pos = isset($this->addresses['im']) ? sizeof($this->addresses['im']) : 0;
@@ -73,33 +89,49 @@ class messenger
 		$this->addresses['im'][$pos]['name'] = trim($realname);
 	}
 
+	/**
+	* Set the reply to address
+	*/
 	function replyto($address)
 	{
 		$this->replyto = trim($address);
 	}
 
+	/**
+	* Set the from address
+	*/
 	function from($address)
 	{
 		$this->from = trim($address);
 	}
 
-	// set up subject for mail
+	/**
+	* set up subject for mail
+	*/
 	function subject($subject = '')
 	{
 		$this->subject = trim($subject);
 	}
 
-	// set up extra mail headers
+	/**
+	* set up extra mail headers
+	*/
 	function headers($headers)
 	{
 		$this->extra_headers .= trim($headers) . "\n";
 	}
 
+	/**
+	* Set the email priority
+	*/
 	function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
 	{
 		$this->mail_priority = $priority;
 	}
 
+	/**
+	* Set email template to use
+	*/
 	function template($template_file, $template_lang = '')
 	{
 		global $config, $phpbb_root_path;
@@ -111,7 +143,7 @@ class messenger
 
 		if (!trim($template_lang))
 		{
-			$template_lang = $config['default_lang'];
+			$template_lang = basename($config['default_lang']);
 		}
 
 		if (empty($this->tpl_msg[$template_lang . $template_file]))
@@ -142,13 +174,17 @@ class messenger
 		return true;
 	}
 
-	// assign variables
+	/**
+	* assign variables to email template
+	*/
 	function assign_vars($vars)
 	{
 		$this->vars = (empty($this->vars)) ? $vars : $this->vars + $vars;
 	}
 
-	// Send the mail out to the recipients set previously in var $this->address
+	/**
+	* Send the mail out to the recipients set previously in var $this->addresses
+	*/
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		global $config, $user;
@@ -214,7 +250,7 @@ class messenger
 			case NOTIFY_IM:
 				$result = $this->msg_jabber();
 			break;
-			
+
 			case NOTIFY_BOTH:
 				$result = $this->msg_email();
 				$this->msg_jabber();
@@ -225,6 +261,9 @@ class messenger
 		return $result;
 	}
 
+	/**
+	* Add error message to log
+	*/
 	function error($type, $msg)
 	{
 		global $user, $phpEx, $phpbb_root_path;
@@ -235,9 +274,9 @@ class messenger
 		add_log('critical', 'LOG_ERROR_' . $type, $msg);
 	}
 
-	//
-	// Messenger methods
-	//
+	/**
+	* Save to queue
+	*/
 	function save_queue()
 	{
 		global $config;
@@ -248,6 +287,9 @@ class messenger
 		}
 	}
 
+	/**
+	* Send out emails
+	*/
 	function msg_email()
 	{
 		global $config, $user;
@@ -343,6 +385,9 @@ class messenger
 		return true;
 	}
 
+	/**
+	* Send jabber message out
+	*/
 	function msg_jabber()
 	{
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
@@ -406,8 +451,8 @@ class messenger
 		{
 			$this->queue->put('jabber', array(
 				'addresses'		=> $addresses,
-				'subject'		=> htmlentities($this->subject),
-				'msg'			=> htmlentities($this->msg))
+				'subject'		=> $this->subject,
+				'msg'			=> $this->msg)
 			);
 		}
 		unset($addresses);
@@ -417,8 +462,7 @@ class messenger
 
 /**
 * @package phpBB3
-* Queue
-* At the moment it is only handling the email queue
+* handling email and jabber queue
 */
 class queue
 {
@@ -427,6 +471,9 @@ class queue
 	var $package_size = 0;
 	var $cache_file = '';
 
+	/**
+	* constructor
+	*/
 	function queue()
 	{
 		global $phpEx, $phpbb_root_path;
@@ -434,7 +481,10 @@ class queue
 		$this->data = array();
 		$this->cache_file = "{$phpbb_root_path}cache/queue.$phpEx";
 	}
-	
+
+	/**
+	* Init a queue object
+	*/
 	function init($object, $package_size)
 	{
 		$this->data[$object] = array();
@@ -442,12 +492,18 @@ class queue
 		$this->data[$object]['data'] = array();
 	}
 
+	/**
+	* Put object in queue
+	*/
 	function put($object, $scope)
 	{
 		$this->data[$object]['data'][] = $scope;
 	}
 
-	// Using lock file...
+	/**
+	* Process queue
+	* Using lock file
+	*/
 	function process()
 	{
 		global $db, $config, $phpEx, $phpbb_root_path;
@@ -599,6 +655,9 @@ class queue
 		@unlink($this->cache_file . '.lock');
 	}
 
+	/**
+	* Save queue
+	*/
 	function save()
 	{
 		if (!sizeof($this->data))
@@ -634,6 +693,10 @@ class queue
 		}
 	}
 
+	/**
+	* Format array
+	* @private
+	*/
 	function format_array($array)
 	{
 		$lines = array();
@@ -703,13 +766,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 
 	if (trim($subject) == '')
 	{
-		$err_msg = 'No email Subject specified';
+		$err_msg = (isset($user->lang['NO_EMAIL_SUBJECT'])) ? $user->lang['NO_EMAIL_SUBJECT'] : 'No email subject specified';
 		return false;
 	}
 
 	if (trim($message) == '')
 	{
-		$err_msg = 'Email message was blank';
+		$err_msg = (isset($user->lang['NO_EMAIL_MESSAGE'])) ? $user->lang['NO_EMAIL_MESSAGE'] : 'Email message was blank';
 		return false;
 	}
 
@@ -741,11 +804,10 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 
 	$smtp = new smtp_class;
 
-	// Ok we have error checked as much as we can to this point let's get on
-	// it already.
+	// Ok we have error checked as much as we can to this point let's get on it already.
 	if (!$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
-		$err_msg = "Could not connect to smtp host : $errno : $errstr";
+		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		return false;
 	}
 
@@ -807,7 +869,8 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	if (!$rcpt)
 	{
 		$user->session_begin();
-		$err_msg .= '<br /><br />' . sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address));
+		$err_msg .= '<br /><br />';
+		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
 		$smtp->close_session();
 		return false;
 	}
@@ -870,7 +933,9 @@ class smtp_class
 	var $commands = array();
 	var $numeric_response_code = 0;
 
-	// Send command to smtp server
+	/**
+	* Send command to smtp server
+	*/
 	function server_send($command)
 	{
 		fputs($this->socket, $command . "\r\n");
@@ -878,9 +943,13 @@ class smtp_class
 		// We could put additional code here
 	}
 	
-	// We use the line to give the support people an indication at which command the error occurred
+	/**
+	* We use the line to give the support people an indication at which command the error occurred
+	*/
 	function server_parse($response, $line)
 	{
+		global $user;
+
 		$this->server_response = '';
 		$this->responses = array();
 		$this->numeric_response_code = 0;
@@ -889,7 +958,7 @@ class smtp_class
 		{
 			if (!($this->server_response = fgets($this->socket, 256)))
 			{
-				return 'Could not get mail server response codes';
+				return (isset($user->lang['NO_EMAIL_RESPONSE_CODE'])) ? $user->lang['NO_EMAIL_RESPONSE_CODE'] : 'Could not get mail server response codes';
 			}
 			$this->responses[] = substr(rtrim($this->server_response), 4);
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
@@ -898,18 +967,23 @@ class smtp_class
 		if (!(substr($this->server_response, 0, 3) == $response))
 		{
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
-			return "Ran into problems sending Mail at <b>Line $line</b>. Response: $this->server_response";
+			return (isset($user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? sprintf($user->lang['EMAIL_SMTP_ERROR_RESPONSE'], $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
 		}
 
 		return 0;
 	}
 
+	/**
+	* Close session
+	*/
 	function close_session()
 	{
 		fclose($this->socket);
 	}
 	
-	// Log into server and get possible auth codes if neccessary
+	/**
+	* Log into server and get possible auth codes if neccessary
+	*/
 	function log_into_server($hostname, $username, $password, $default_auth_method)
 	{
 		global $user;
@@ -960,7 +1034,7 @@ class smtp_class
 		
 		if (!isset($this->commands['AUTH']))
 		{
-			return 'SMTP server does not support authentication';
+			return (isset($user->lang['SMTP_NO_AUTH_SUPPORT'])) ? $user->lang['SMTP_NO_AUTH_SUPPORT'] : 'SMTP server does not support authentication';
 		}
 
 		// Get best authentication method
@@ -988,23 +1062,28 @@ class smtp_class
 
 		if (!$method)
 		{
-			return 'No supported authentication methods';
+			return (isset($user->lang['NO_SUPPORTED_AUTH_METHODS'])) ? $user->lang['NO_SUPPORTED_AUTH_METHODS'] : 'No supported authentication methods';
 		}
 
 		$method = strtolower(str_replace('-', '_', $method));
 		return $this->$method($username, $password);
 	}
 
+	/**
+	* Pop before smtp authentication
+	*/
 	function pop_before_smtp($hostname, $username, $password)
 	{
+		global $user;
+
 		$old_socket = $this->socket;
-		
+
 		if (!$this->socket = fsockopen($hostname, 110, $errno, $errstr, 20))
 		{
 			$this->socket = $old_socket;
-			return "Could not connect to smtp host : $errno : $errstr";
+			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
-		
+
 		$this->server_parse('0', __LINE__);
 		if (substr($this->server_response, 0, 3) == '+OK')
 		{
@@ -1025,7 +1104,10 @@ class smtp_class
 
 		return false;
 	}
-	
+
+	/**
+	* Plain authentication method
+	*/
 	function plain($username, $password)
 	{
 		$this->server_send('AUTH PLAIN');
@@ -1044,6 +1126,9 @@ class smtp_class
 		return false;
 	}
 
+	/**
+	* Login authentication method
+	*/
 	function login($username, $password)
 	{
 		$this->server_send('AUTH LOGIN');
@@ -1067,7 +1152,9 @@ class smtp_class
 		return false;
 	}
 
-	// The last two authentication mechanisms are a little bit tricky...
+	/**
+	* cram_md5 authentication method
+	*/
 	function cram_md5($username, $password)
 	{
 		$this->server_send('AUTH CRAM-MD5');
@@ -1091,10 +1178,13 @@ class smtp_class
 		return false;
 	}
 
-	// A real pain in the ***
+	/**
+	* digest_md5 authentication method
+	* A real pain in the ***
+	*/
 	function digest_md5($username, $password)
 	{
-		global $config;
+		global $config, $user;
 
 		$this->server_send('AUTH DIGEST-MD5');
 		if ($err_msg = $this->server_parse('334', __LINE__))
@@ -1179,9 +1269,9 @@ class smtp_class
 		}
 		else
 		{
-			return 'Invalid digest challenge';
+			return (isset($user->lang['INVALID_DIGEST_CHALLENGE'])) ? $user->lang['INVALID_DIGEST_CHALLENGE'] : 'Invalid digest challenge';
 		}
-		
+
 		$base64_method_digest_md5 = base64_encode($input_string);
 		$this->server_send($base64_method_digest_md5);
 		if ($err_msg = $this->server_parse('334', __LINE__))
@@ -1194,7 +1284,7 @@ class smtp_class
 		{
 			return $err_msg;
 		}
-		
+
 		return false;
 	}
 }

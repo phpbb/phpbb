@@ -10,10 +10,10 @@
 
 <fieldset>
 	<legend>{L_ADD_DISALLOW_TITLE}</legend>
-	<dl>
-		<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_ADD_DISALLOW_EXPLAIN}</span></dt>
-		<dd><input id="user" type="text" name="disallowed_user" class="medium" /></dd>
-	</dl>
+<dl>
+	<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_ADD_DISALLOW_EXPLAIN}</span></dt>
+	<dd><input id="user" type="text" name="disallowed_user" class="medium" /></dd>
+</dl>
 </fieldset>
 
 <fieldset class="quick">
@@ -31,16 +31,14 @@
 		<dt><label for="disallowed">{L_USERNAME}:</label></dt>
 		<dd><select name="disallowed_id" id="disallowed">{S_DISALLOWED_NAMES}</select></dd>
 	</dl>
-</fieldset>
+	</fieldset>
 
-<fieldset class="quick">
-	<input class="button1" type="submit" name="allow" value="{L_SUBMIT}" />
-</fieldset>
-
+	<fieldset class="quick">
+		<input class="button1" type="submit" name="allow" value="{L_SUBMIT}" />
 <!-- ELSE -->
 	<p>{L_NO_DISALLOWED}</p>
-</fieldset>
 <!-- ENDIF -->
+</fieldset>
 
 </form>
 

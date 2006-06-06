@@ -15,9 +15,11 @@
 */
 class ucp_prefs
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $SID, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();
@@ -84,8 +86,8 @@ class ucp_prefs
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+						meta_refresh(3, $this->u_action);
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
@@ -240,8 +242,8 @@ class ucp_prefs
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+						meta_refresh(3, $this->u_action);
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
@@ -379,8 +381,8 @@ class ucp_prefs
 							WHERE user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
-						meta_refresh(3, "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode");
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], "<a href=\"ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode\">", '</a>');
+						meta_refresh(3, $this->u_action);
+						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
@@ -420,7 +422,7 @@ class ucp_prefs
 			'L_TITLE'			=> $user->lang['UCP_PREFS_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> "ucp.$phpEx$SID&amp;i=$id&amp;mode=$mode")
+			'S_UCP_ACTION'		=> $this->u_action)
 		);
 
 		$this->tpl_name = 'ucp_prefs_' . $mode;

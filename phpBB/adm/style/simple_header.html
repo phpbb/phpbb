@@ -17,7 +17,9 @@ var on_page = '{ON_PAGE}';
 var per_page = '{PER_PAGE}';
 var base_url = '{BASE_URL}';
 
-// Jump to page
+/**
+* Jump to page
+*/
 function jumpto()
 {
 	var page = prompt(jump_page, on_page);
@@ -28,8 +30,10 @@ function jumpto()
 	}
 }
 
-// Set display of page element
-// s[-1,0,1] = hide,toggle display,show
+/**
+* Set display of page element
+* s[-1,0,1] = hide,toggle display,show
+*/
 function dE(n, s, type)
 {
 	if (!type)
@@ -45,8 +49,10 @@ function dE(n, s, type)
 	e.style.display = (s == 1) ? type : 'none';
 }
 
-// Mark/unmark checkboxes
-// id = ID of parent container, name = name prefix, state = state [true/false]
+/**
+* Mark/unmark checkboxes
+* id = ID of parent container, name = name prefix, state = state [true/false]
+*/
 function marklist(id, name, state)
 {
 	var parent = document.getElementById(id);
@@ -67,6 +73,9 @@ function marklist(id, name, state)
 }
 
 <!-- IF S_INCLUDE_SWATCH -->
+	/**
+	* Color swatch
+	*/
 	function swatch()
 	{
 		window.open('{UA_SWATCH}', '_swatch', 'height=115, resizable=yes, scrollbars=no, width=636');

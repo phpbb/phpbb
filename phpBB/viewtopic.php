@@ -86,7 +86,7 @@ if ($view && !$post_id)
 			// Setup user environment so we can process lang string
 			$user->setup('viewtopic');
 
-			$redirect = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+			$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 
 			meta_refresh(3, $redirect);
 			trigger_error($user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect . '">', '</a>'));
@@ -215,7 +215,7 @@ if (!$topic_data)
 	// If post_id was submitted, we try at least to display the topic as a last resort...
 	if ($post_id && $forum_id && $topic_id)
 	{
-		redirect("{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id");
+		redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id"));
 	}
 
 	trigger_error('NO_TOPIC');
@@ -286,7 +286,7 @@ if (isset($_GET['e']))
 {
 	$jump_to = request_var('e', 0);
 
-	$redirect_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+	$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 
 	if ($user->data['user_id'] == ANONYMOUS)
 	{
@@ -296,7 +296,7 @@ if (isset($_GET['e']))
 	if ($jump_to > 0)
 	{
 		// We direct the already logged in user to the correct post...
-		redirect($redirect_url . ((!$post_id) ? "&p=$jump_to" : "&p=$post_id") . "#p$jump_to");
+		redirect($redirect_url . ((!$post_id) ? "&amp;p=$jump_to" : "&amp;p=$post_id") . "#p$jump_to");
 	}
 }
 
@@ -375,7 +375,7 @@ if ($hilit_words)
 }
 
 // General Viewtopic URL for return links
-$viewtopic_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : '');
+$viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
 
 // Are we watching this topic?
 $s_watching_topic = $s_watching_topic_img = array();
@@ -461,7 +461,7 @@ $topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && 
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="topic_logs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination = generate_pagination("{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : ''), $total_posts, $config['posts_per_page'], $start);
+$pagination = generate_pagination(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : '')), $total_posts, $config['posts_per_page'], $start);
 
 // Navigation links
 generate_forum_nav($topic_data);
@@ -489,7 +489,7 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts),
-	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx?sid=" . $user->session_id . "&amp;i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" : '',
+	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param", true, $user->session_id) : '',
 	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($topic_data['forum_status'] == ITEM_LOCKED) ? $user->img('btn_locked', 'FORUM_LOCKED') : $user->img('btn_post', 'POST_NEW_TOPIC'),
@@ -516,22 +516,22 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
 	'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
-	'S_TOPIC_ACTION' 		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start",
+	'S_TOPIC_ACTION' 		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start"),
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="action">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> "{$phpbb_root_path}mcp.$phpEx?sid=" . $user->session_id . "&amp;t=$topic_id&amp;f=$forum_id&amp;quickmod=1",
+	'S_MOD_ACTION' 			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "t=$topic_id&amp;f=$forum_id&amp;quickmod=1", true, $user->session_id),
 
 	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false,
-	'S_SEARCHBOX_ACTION'	=> "{$phpbb_root_path}search.$phpEx$SID&amp;t=$topic_id",
+	'S_SEARCHBOX_ACTION'	=> append_sid("{$phpbb_root_path}search.$phpEx", 't=' . $topic_id),
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
-	'U_VIEW_UNREAD_POST'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=unread#unread",
+	'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 	'U_VIEW_TOPIC' 			=> $viewtopic_url,
-	'U_VIEW_FORUM' 			=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$forum_id",
-	'U_VIEW_OLDER_TOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=previous",
-	'U_VIEW_NEWER_TOPIC'	=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id&amp;view=next",
+	'U_VIEW_FORUM' 			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
+	'U_VIEW_OLDER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=previous"),
+	'U_VIEW_NEWER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=next"),
 	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
-	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;t=$topic_id" : '',
+	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;t=$topic_id") : '',
 
 	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'],
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
@@ -539,9 +539,9 @@ $template->assign_vars(array(
 	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
 	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 
-	'U_POST_NEW_TOPIC' 		=> "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=post&amp;f=$forum_id",
-	'U_POST_REPLY_TOPIC' 	=> "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=reply&amp;f=$forum_id&amp;t=$topic_id",
-	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=bump&amp;f=$forum_id&amp;t=$topic_id" : '')
+	'U_POST_NEW_TOPIC' 		=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=post&amp;f=$forum_id"),
+	'U_POST_REPLY_TOPIC' 	=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
+	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;f=$forum_id&amp;t=$topic_id") : '')
 );
 
 // Does this topic contain a poll?
@@ -600,7 +600,7 @@ if (!empty($topic_data['poll_start']))
 	{
 		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'])
 		{
-			$redirect_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 
 			meta_refresh(5, $redirect_url);
 
@@ -668,7 +668,7 @@ if (!empty($topic_data['poll_start']))
 		//, topic_last_post_time = ' . time() . " -- for bumping topics with new votes, ignore for now
 		$db->sql_query($sql);
 
-		$redirect_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$forum_id&amp;t=$topic_id";
+		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
 
 		meta_refresh(5, $redirect_url);
 		trigger_error($user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>'));
@@ -961,13 +961,13 @@ while ($row = $db->sql_fetchrow($result))
 				'avatar'		=> '',
 
 				'online'		=> false,
-				'profile'		=> "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=$poster_id",
+				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
 				'www'			=> $row['user_website'],
-				'aim'			=> ($row['user_aim']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=aim&amp;u=$poster_id" : '',
-				'msn'			=> ($row['user_msnm']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=msnm&amp;u=$poster_id" : '',
+				'aim'			=> ($row['user_aim']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=aim&amp;u=$poster_id") : '',
+				'msn'			=> ($row['user_msnm']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=msnm&amp;u=$poster_id") : '',
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg' : '',
-				'jabber'		=> ($row['user_jabber']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=jabber&amp;u=$poster_id" : '',
-				'search'		=> ($auth->acl_get('u_search')) ? "{$phpbb_root_path}search.$phpEx$SID&amp;search_author=" . urlencode($row['username']) .'&amp;showresults=posts' : '',
+				'jabber'		=> ($row['user_jabber']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
+				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'search_author=' . urlencode($row['username']) .'&amp;showresults=posts') : '',
 				'username'		=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster
 			);
 
@@ -1020,7 +1020,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 			{
-				$user_cache[$poster_id]['email'] = ($config['board_email_form'] && $config['email_enable']) ? "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=email&amp;u=$poster_id" : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
+				$user_cache[$poster_id]['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$poster_id") : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
 			}
 			else
 			{
@@ -1029,7 +1029,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_icq']))
 			{
-				$user_cache[$poster_id]['icq'] =  "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=contact&amp;action=icq&amp;u=$poster_id";
+				$user_cache[$poster_id]['icq'] =  append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=icq&amp;u=$poster_id");
 				$user_cache[$poster_id]['icq_status_img'] = '<img src="http://web.icq.com/whitepages/online?icq=' . $row['user_icq'] . '&amp;img=5" width="18" height="18" alt="" />';
 			}
 			else
@@ -1338,14 +1338,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'U_EDIT'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}" : '',
-		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}" : '',
-		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=post_details&amp;p={$row['post_id']}" : '',
-		'U_DELETE'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? "{$phpbb_root_path}posting.$phpEx$SID&amp;mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}" : '',
+		'U_EDIT'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+		'U_DELETE'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && ($row['post_time'] > time() - $config['edit_time'] || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 
 		'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
-		'U_PM'			=> ($poster_id != ANONYMOUS) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;mode=compose&amp;action=quotepost&amp;p={$row['post_id']}" : '',
+		'U_PM'			=> ($poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_WWW'			=> $user_cache[$poster_id]['www'],
 		'U_ICQ'			=> $user_cache[$poster_id]['icq'],
@@ -1354,14 +1354,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_YIM'			=> $user_cache[$poster_id]['yim'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
-		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? "{$phpbb_root_path}report.$phpEx$SID&amp;p=" . $row['post_id'] : '',
-		'U_MCP_REPORT'		=> ($auth->acl_gets('m_report', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;mode=report_details&amp;p=" . $row['post_id'] : '',
-		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'] : '',
-		'U_MINI_POST'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;p=" . $row['post_id'] . '#p' . $row['post_id'],
+		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid("{$phpbb_root_path}report.$phpEx", 'p=' . $row['post_id']) : '',
+		'U_MCP_REPORT'		=> ($auth->acl_gets('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=' . $row['post_id'], true, $user->session_id) : '',
+		'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
-		'U_NOTES'			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=notes&amp;mode=user_notes&amp;u=" . $poster_id : '',
-		'U_WARN'			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=warn&amp;mode=warn_post&amp;p=" . $row['post_id'] : '',
+		'U_NOTES'			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, $user->session_id) : '',
+		'U_WARN'			=> ($auth->acl_gets('m_', 'a_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 
 		'POST_ID'			=> $row['post_id'],
 
@@ -1445,7 +1445,7 @@ page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_data['topic_title']);
 $template->set_filenames(array(
 	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
 );
-make_jumpbox('viewforum.' . $phpEx, $forum_id);
+make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 page_footer();
 

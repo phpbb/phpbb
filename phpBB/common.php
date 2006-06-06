@@ -33,17 +33,17 @@ error_reporting(E_ALL ^ E_NOTICE);
 function deregister_globals()
 {
 	$not_unset = array(
-		'GLOBALS' => true,
-		'_GET' => true,
-		'_POST' => true,
-		'_COOKIE' => true,
-		'_REQUEST' => true,
-		'_SERVER' => true,
-		'_SESSION' => true,
-		'_ENV' => true,
-		'_FILES' => true,
-		'phpEx' => true,
-		'phpbb_root_path' => true
+		'GLOBALS'	=> true,
+		'_GET'		=> true,
+		'_POST'		=> true,
+		'_COOKIE'	=> true,
+		'_REQUEST'	=> true,
+		'_SERVER'	=> true,
+		'_SESSION'	=> true,
+		'_ENV'		=> true,
+		'_FILES'	=> true,
+		'phpEx'		=> true,
+		'phpbb_root_path'	=> true
 	);
 
 	// Not only will array_merge and array_keys give a warning if
@@ -54,8 +54,7 @@ function deregister_globals()
 		$_SESSION = array();
 	}
 
-	// Merge all into one extremely huge array; unset
-	// this later
+	// Merge all into one extremely huge array; unset this later
 	$input = array_merge(
 		array_keys($_GET),
 		array_keys($_POST),
@@ -107,11 +106,11 @@ if (defined('IN_CRON'))
 	$phpbb_root_path = getcwd() . '/';
 }
 
-require($phpbb_root_path . 'config.'.$phpEx);
+require($phpbb_root_path . 'config.' . $phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
 {
-	header('Location: install/index.'.$phpEx);
+	redirect($phpbb_root_path . 'install/index.' . $phpEx);
 	exit;
 }
 

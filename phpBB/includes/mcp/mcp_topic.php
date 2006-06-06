@@ -13,10 +13,10 @@
 */
 function mcp_topic_view($id, $mode, $action)
 {
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
-	$url = "{$phpbb_root_path}mcp.$phpEx$SID" . extra_url();
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
 	$user->add_lang('viewtopic');
 
@@ -132,7 +132,7 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_SUBJECT'	=> $post_subject,
 			'MESSAGE'		=> $message,
 			'POST_ID'		=> $row['post_id'],
-			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$topic_id\">", '</a>'),
+			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
 
 			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 
@@ -141,8 +141,8 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_MCP_APPROVE'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=" . $row['post_id'],
-			'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=reports&amp;mode=report_details&amp;p=" . $row['post_id'])
+			'U_MCP_APPROVE'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=' . $row['post_id']),
+			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;p=' . $row['post_id']))
 		);
 
 		unset($rowset[$i]);
@@ -179,10 +179,10 @@ function mcp_topic_view($id, $mode, $action)
 
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
-		'U_VIEWTOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id'],
+		'U_VIEWTOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
 		'TO_TOPIC_ID'		=> $to_topic_id,
-		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . $phpbb_root_path . "viewtopic.$phpEx$SID&amp;f=" . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id . '" target="_new">' . $to_topic_info['topic_title'] . '</a>') : '',
+		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '" target="_new">' . $to_topic_info['topic_title'] . '</a>') : '',
 
 		'SPLIT_SUBJECT'		=> $subject,
 		'POSTS_PER_PAGE'	=> $posts_per_page,
@@ -205,11 +205,11 @@ function mcp_topic_view($id, $mode, $action)
 
 		'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select",
 
-		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start\">", '</a>'),
-		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], "<a href=\"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$topic_info['forum_id']}&amp;start=$start\">", '</a>'),
+		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
+		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
 		'PAGE_NUMBER'		=> on_page($total, $posts_per_page, $start),
-		'PAGINATION'		=> (!$posts_per_page) ? '' : generate_pagination("{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;t=" . $topic_info['topic_id'] . "&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $posts_per_page, $start),
+		'PAGINATION'		=> (!$posts_per_page) ? '' : generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir"), $total, $posts_per_page, $start),
 		'TOTAL'				=> $total)
 	);
 }
@@ -219,7 +219,7 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $SID, $phpbb_root_path, $auth;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
 
 	$post_id_list	= request_var('post_id_list', array(0));
 	$start			= request_var('start', 0);
@@ -375,7 +375,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
 		// Link back to both topics
-		$return_link = sprintf($user->lang['RETURN_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id'] . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], "<a href=\"{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $to_forum_id . '&amp;t=' . $to_topic_id . '">', '</a>');
+		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
 	else
 	{
@@ -391,7 +391,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	}
 	else
 	{
-		meta_refresh(3, "viewtopic.$phpEx$SID&amp;f=$to_forum_id&amp;t=$to_topic_id");
+		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
@@ -401,7 +401,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $phpEx, $SID, $phpbb_root_path, $auth;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
 
 	if (!$to_topic_id)
 	{
@@ -463,11 +463,11 @@ function merge_posts($topic_id, $to_topic_id)
 
 		if (sizeof($topic_data))
 		{
-			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $forum_id . '&amp;t=' . $topic_id . '">', '</a>');
+			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $forum_id . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="viewtopic.' . $phpEx . $SID . '&amp;f=' . $to_forum_id . '&amp;t=' . $to_topic_id . '">', '</a>');
+		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
 	else
 	{
@@ -483,7 +483,7 @@ function merge_posts($topic_id, $to_topic_id)
 	}
 	else
 	{
-		meta_refresh(3, "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=$to_forum_id&amp;t=$to_topic_id");
+		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }

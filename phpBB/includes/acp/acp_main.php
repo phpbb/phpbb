@@ -18,7 +18,7 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
 		$mark	= (isset($_REQUEST['mark'])) ? implode(', ', request_var('mark', array(0))) : '';
@@ -49,7 +49,7 @@ class acp_main
 
 					if ($action == 'activate')
 					{
-						include($phpbb_root_path . 'includes/functions_user.php');
+						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 						$mark_ary = explode(', ', $mark);
 
 						foreach ($mark_ary as $user_id)
@@ -424,7 +424,7 @@ class acp_main
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
 
-			'U_ACTION'			=> "{$phpbb_admin_path}index.$phpEx$SID",
+			'U_ACTION'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
 			)
@@ -462,7 +462,7 @@ class acp_main
 					'DATE'			=> $user->format_date($row['user_regdate']),
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
-					'U_USER_ADMIN'	=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=users&amp;mode=overview&amp;u={$row['user_id']}")
+					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
 				);
 			}
 

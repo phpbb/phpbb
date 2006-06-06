@@ -14,7 +14,7 @@
 function display_forums($root_data = '', $display_moderators = true, $return_moderators = false)
 {
 	global $db, $auth, $user, $template;
-	global $phpbb_root_path, $phpEx, $SID, $config;
+	global $phpbb_root_path, $phpEx, $config;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -56,11 +56,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$sql_from = FORUMS_TABLE . ' f ';
 		$lastread_select = $sql_lastread = '';
 
-		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? unserialize(stripslashes($_COOKIE[$config['cookie_name'] . '_track'])) : array();
+		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+		$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
 
 		if (!$user->data['is_registered'])
 		{
-			$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+			$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
 		}
 	}
 
@@ -108,7 +109,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$right_id = $row['right_id'];
 			continue;
 		}
-		
+
 		$forum_ids[] = $forum_id;
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -119,9 +120,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			if (!$user->data['is_registered'])
 			{
-				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate'] : 0;
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
 			}
-			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'] : $user->data['user_lastmark'];
+			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
 		}
 
 		// Display active topics from this forum?
@@ -138,7 +139,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 
 			$active_forum_ary['forum_id'][]		= $forum_id;
-			$active_forum_ary['enable_icons'][] = $row['enable_icons'];
+			$active_forum_ary['enable_icons'][]	= $row['enable_icons'];
 			$active_forum_ary['forum_topics']	+= ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 			$active_forum_ary['forum_posts']	+= $row['forum_posts'];
 		}
@@ -162,7 +163,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$subforums[$parent_id][$forum_id]['display'] = ($row['display_on_index']) ? true : false;
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
-			
+
 			$forum_rows[$parent_id]['forum_topics'] += ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 
 			// Do not list redirects in LINK Forums as Posts.
@@ -186,7 +187,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 
 		$forum_ids_moderator[$parent_id] = $forum_rows[$parent_id]['forum_id_last_post'];
-
 	}
 	$db->sql_freeresult($result);
 
@@ -207,11 +207,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 		}
-		
+
 		meta_refresh(3, $redirect);
-		
-		$message = $user->lang['FORUMS_MARKED'] . '<br /><br />' . $message;
-		trigger_error($message);
+		trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 	}
 
 	// Grab moderators ... if necessary
@@ -230,13 +228,13 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT)
 		{
 			$template->assign_block_vars('forumrow', array(
-				'S_IS_CAT'				=>	true,
-				'FORUM_ID'				=>	$row['forum_id'],
-				'FORUM_NAME'			=>	$row['forum_name'],
-				'FORUM_DESC'			=>	generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
+				'S_IS_CAT'				=> true,
+				'FORUM_ID'				=> $row['forum_id'],
+				'FORUM_NAME'			=> $row['forum_name'],
+				'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
 				'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
 				'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
-				'U_VIEWFORUM'			=>	"{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $row['forum_id'])
+				'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
 			);
 
 			continue;
@@ -263,14 +261,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
 					$subforums_list .= ($subforums_list == '') ? '' : ', ';
-					$subforums_list .= '<a href="' . $phpbb_root_path . "viewforum.$phpEx$SID&amp;f=$subforum_id\">{$subforum_row['name']}</a>";
+					$subforums_list .= '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id) . '">' . $subforum_row['name'] . '</a>';
 				}
 				else
 				{
 					unset($subforums[$forum_id][$subforum_id]);
 				}
 			}
-			
+
 			$l_subforums = (sizeof($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
 			$folder_image = ($forum_unread) ? 'sub_forum_new' : 'sub_forum';
 		}
@@ -305,9 +303,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 
 			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
-			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : "{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u={$row['forum_last_poster_id']}";
+			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['forum_last_poster_id']);
 
-			$last_post_url = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;f=" . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id'] . '#p' . $row['forum_last_post_id'];
+			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 		}
 		else
 		{
@@ -328,6 +326,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=> false,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
+			'S_UNREAD_FORUM'	=> $forum_unread,
+			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],
 			'FORUM_NAME'			=> $row['forum_name'],
@@ -341,23 +341,21 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'LAST_POSTER'			=> $last_poster,
 			'MODERATORS'			=> $moderators_list,
 
-			'L_SUBFORUM_STR'	=> $l_subforums,
-			'L_FORUM_FOLDER_ALT'=> $folder_alt,
-			'L_MODERATOR_STR'	=> $l_moderator,
+			'L_SUBFORUM_STR'		=> $l_subforums,
+			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
+			'L_MODERATOR_STR'		=> $l_moderator,
 
-			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f={$row['forum_id']}" : $row['forum_link'],
+			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & 1) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
 			'U_LAST_POSTER'		=> $last_poster_url,
-			'U_LAST_POST'		=> $last_post_url,
-			)
+			'U_LAST_POST'		=> $last_post_url)
 		);
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $root_data['forum_id'] . '&amp;mark=forums',
+		'U_MARK_FORUMS'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $root_data['forum_id'] . '&amp;mark=forums'),
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
-		'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
-		)
+		'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'))
 	);
 
 	if ($return_moderators)
@@ -399,7 +397,7 @@ function generate_forum_rules(&$forum_data)
 function generate_forum_nav(&$forum_data)
 {
 	global $db, $user, $template, $auth;
-	global $phpEx, $SID, $phpbb_root_path;
+	global $phpEx, $phpbb_root_path;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
 	{
@@ -426,7 +424,7 @@ function generate_forum_nav(&$forum_data)
 			'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 			'FORUM_NAME'	=> $parent_name,
 			'FORUM_ID'		=> $parent_forum_id,
-			'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$parent_forum_id")
+			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
 		);
 	}
 
@@ -436,7 +434,7 @@ function generate_forum_nav(&$forum_data)
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
-		'U_VIEW_FORUM'	=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_data['forum_id'])
+		'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_data['forum_id']))
 	);
 
 	$template->assign_vars(array(
@@ -495,9 +493,9 @@ function get_forum_parents(&$forum_data)
 */
 function topic_topic_author(&$topic_row)
 {
-	global $phpEx, $SID, $phpbb_root_path, $user;
+	global $phpEx, $phpbb_root_path, $user;
 
-	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? "<a href=\"{$phpbb_root_path}memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $topic_row['topic_poster'] . '">' : '';
+	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $topic_row['topic_poster']) . '">' : '';
 	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? $topic_row['topic_first_poster_name'] : (($topic_row['topic_first_poster_name'] != '') ? $topic_row['topic_first_poster_name'] : $user->lang['GUEST']);
 	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
 
@@ -519,7 +517,7 @@ function topic_generate_pagination($replies, $url)
 		$times = 1;
 		for ($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
 		{
-			$pagination .= "<a href=\"$url&amp;start=$j\">$times</a>";
+			$pagination .= '<a href="' . $url . '&amp;start=' . $j . '">' . $times . '</a>';
 			if ($times == 1 && $total_pages > 4)
 			{
 				$pagination .= ' ... ';
@@ -546,7 +544,7 @@ function topic_generate_pagination($replies, $url)
 */
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $config, $template, $db, $phpbb_root_path, $phpEx, $SID;
+	global $config, $template, $db, $phpbb_root_path, $phpEx;
 
 	// Have we disabled the display of moderators? If so, then return
 	// from whence we came ...
@@ -577,7 +575,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="' . $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=viewprofile&amp;u=" . $row['user_id'] . '">' . $row['username'] . '</a>' : '<a href="' . $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=group&amp;g=" . $row['group_id'] . '">' . $row['group_name'] . '</a>';
+		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>' : '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $row['group_name'] . '</a>';
 	}
 	$db->sql_freeresult($result);
 
@@ -589,7 +587,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
-	global $SID, $template, $auth, $user, $config;
+	global $template, $auth, $user, $config;
 
 	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
 
@@ -637,13 +635,13 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'folder_announce';
 				$folder_new = 'folder_announce_new';
-				break;
+			break;
 
 			case POST_STICKY:
 				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
 				$folder = 'folder_sticky';
 				$folder_new = 'folder_sticky_new';
-				break;
+			break;
 
 			default:
 				if ($replies >= $config['hot_threshold'])
@@ -656,7 +654,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 					$folder = 'folder';
 					$folder_new = 'folder_new';
 				}
-				break;
+			break;
 		}
 
 		if ($topic_row['topic_status'] == ITEM_LOCKED)
@@ -688,7 +686,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 function display_attachments($forum_id, $blockname, &$attachment_data, &$update_count, $force_physical = false, $return = false)
 {
 	global $template, $cache, $user;
-	global $extensions, $config, $phpbb_root_path, $phpEx, $SID;
+	global $extensions, $config, $phpbb_root_path, $phpEx;
 
 	$return_tpl = array();
 
@@ -715,13 +713,17 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
 
 		$upload_icon = '';
-		if ($user->img('icon_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+
+		if (isset($extensions[$attachment['extension']]))
 		{
-			$upload_icon = $user->img('icon_attach', '');
-		}
-		else if ($extensions[$attachment['extension']]['upload_icon'])
-		{
-			$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+			if ($user->img('icon_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+			{
+				$upload_icon = $user->img('icon_attach', '');
+			}
+			else if ($extensions[$attachment['extension']]['upload_icon'])
+			{
+				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+			}
 		}
 
 		$filesize = $attachment['filesize'];
@@ -796,7 +798,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = (!$force_physical && $attachment['attach_id']) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
+					$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']) : $filename;
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
@@ -830,7 +832,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 					// Viewed/Heared File ... update the download count (download.php is not called here)
 					$update_count[] = $attachment['attach_id'];
-					break;
+				break;
 
 /*				// Macromedia Flash Files
 				case SWF_CAT:
@@ -851,7 +853,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 */
 				default:
 					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-					$download_link = (!$force_physical && $attachment['attach_id']) ? $phpbb_root_path . "download.$phpEx$SID&amp;id=" . $attachment['attach_id'] : $filename;
+					$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']) : $filename;
 
 					$block_array += array(
 						'S_FILE'		=> true,
@@ -924,7 +926,7 @@ function display_reasons($reason_id = 0)
 function display_user_activity(&$userdata)
 {
 	global $auth, $template, $db, $user;
-	global $phpbb_root_path, $SID, $phpEx;
+	global $phpbb_root_path, $phpEx;
 
 	// Init new auth class if user is different
 	if ($user->data['user_id'] != $userdata['user_id'])
@@ -976,7 +978,7 @@ function display_user_activity(&$userdata)
 					$post_count_sql
 				GROUP BY f.forum_id
 				ORDER BY COUNT(p.post_id) DESC";
-			break;
+		break;
 
 		default:
 			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
@@ -1072,8 +1074,8 @@ function display_user_activity(&$userdata)
 		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
 		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT'], $active_t_pct),
-		'U_ACTIVE_FORUM'		=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=$active_f_id",
-		'U_ACTIVE_TOPIC'		=> "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t=$active_t_id")
+		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
+		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id))
 	);
 }
 
@@ -1082,7 +1084,7 @@ function display_user_activity(&$userdata)
 */
 function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
 {
-	global $template, $db, $user, $phpEx, $SID, $start, $phpbb_root_path;
+	global $template, $db, $user, $phpEx, $start, $phpbb_root_path;
 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
@@ -1121,9 +1123,11 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 					$db->sql_query($sql);
 				}
 
-				meta_refresh(3, "view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;start=$start");
+				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 
-				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
+				meta_refresh(3, $redirect_url);
+
+				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -1153,9 +1157,10 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 					$db->sql_query($sql);
 				}
 
-				meta_refresh(3, "view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;start=$start");
+				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
+				meta_refresh(3, $redirect_url);
 
-				$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . "view$mode.$phpEx$SID&amp;" . $u_url . "=$match_id&amp;start=$start" . '">', '</a>');
+				$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -1179,7 +1184,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 
 	if ($can_watch)
 	{
-		$s_watching['link'] = "{$phpbb_root_path}view$mode.$phpEx$SID&amp;$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start";
+		$s_watching['link'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start");
 		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 	}
 

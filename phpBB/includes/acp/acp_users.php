@@ -18,7 +18,7 @@ class acp_users
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $SID, $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -68,7 +68,7 @@ class acp_users
 				'ANONYMOUS_USER_ID'	=> ANONYMOUS,
 
 				'S_SELECT_USER'		=> true,
-				'U_FIND_USERNAME'	=> $phpbb_root_path . "memberlist.$phpEx$SID&amp;mode=searchuser&amp;form=select_user&amp;field=username",
+				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username'),
 				)
 			);
 
@@ -125,7 +125,7 @@ class acp_users
 
 		$template->assign_vars(array(
 			'U_BACK'			=> $this->u_action,
-			'U_MODE_SELECT'		=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=$id&amp;u=$user_id",
+			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
 			'S_FORM_OPTIONS'	=> $s_form_options)
 		);
@@ -729,7 +729,7 @@ class acp_users
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
 
-					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? "{$phpbb_root_path}ucp.$phpEx$SID&amp;mode=switch_perm&amp;u={$user_row['user_id']}" : '',
+					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_row['user_id']}") : '',
 
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
@@ -1494,7 +1494,7 @@ class acp_users
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . $phpbb_root_path . "faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . "{$phpbb_root_path}faq.$phpEx$SID&amp;mode=bbcode" . '" onclick="target=\'_phpbbcode\';">', '</a>'),
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
@@ -1596,11 +1596,11 @@ class acp_users
 				{
 					if ($row['in_message'])
 					{
-						$view_topic = "{$phpbb_root_path}ucp.$phpEx$SID&amp;i=pm&amp;p={$row['post_msg_id']}";
+						$view_topic = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;p={$row['post_msg_id']}");
 					}
 					else
 					{
-						$view_topic = "{$phpbb_root_path}viewtopic.$phpEx$SID&amp;t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}";
+						$view_topic = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}");
 					}
 
 					$template->assign_block_vars('attach', array(
@@ -1618,7 +1618,7 @@ class acp_users
 				
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> $phpbb_root_path . 'download.' . $phpEx . $SID . '&amp;id=' . $row['attach_id'],
+						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $row['attach_id']),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}
@@ -1757,7 +1757,7 @@ class acp_users
 					foreach ($data_ary as $data)
 					{
 						$template->assign_block_vars('group', array(
-							'U_EDIT_GROUP'		=> "{$phpbb_admin_path}index.$phpEx$SID&amp;i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g=" . $data['group_id'] . '&amp;back_link=acp_users_groups',
+							'U_EDIT_GROUP'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
 							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
@@ -1819,8 +1819,8 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_PERMISSIONS'				=> true,
-					'U_USER_PERMISSIONS'		=> $phpbb_admin_path . 'index.' . $phpEx . $SID . '&amp;i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id,
-					'U_USER_FORUM_PERMISSIONS'	=> $phpbb_admin_path . 'index.' . $phpEx . $SID . '&amp;i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id)
+					'U_USER_PERMISSIONS'		=> append_sid("{$phpbb_admin_path}index.$phpEx" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
+					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id))
 				);
 			
 			break;

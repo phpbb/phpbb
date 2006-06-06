@@ -78,7 +78,7 @@ $f_permissions = array(
 	'f_print'	=> array(1, 0),
 	'f_ignoreflood'	=> array(1, 0),
 	'f_postcount'	=> array(1, 0),
-	'f_moderate'=> array(1, 0),
+	'f_noapprove'=> array(1, 0),
 	'f_report'	=> array(1, 0),
 	'f_subscribe'	=> array(1, 0),
 );

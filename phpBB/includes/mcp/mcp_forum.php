@@ -14,9 +14,9 @@
 function mcp_forum_view($id, $mode, $action, $forum_info)
 {
 	global $template, $db, $user, $auth, $cache;
-	global $SID, $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config;
 
-	$url = "{$phpbb_root_path}mcp.$phpEx$SID" . extra_url();
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
 	if ($action == 'merge_select')
 	{
@@ -73,8 +73,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
 
-		'U_VIEW_FORUM'			=> "{$phpbb_root_path}viewforum.$phpEx$SID&amp;f=" . $forum_id,
-		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=logs&amp;mode=forum_logs&amp;f=" . $forum_id : '',
+		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
+		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
 		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
 
@@ -165,12 +165,12 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
 
 		$template->assign_block_vars('topicrow', array(
-			'U_VIEW_TOPIC'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view",
+			'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view"),
 
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
 			'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
 			'U_MCP_QUEUE'		=> $u_mcp_queue,
-			'U_MCP_REPORT'		=> "{$phpbb_root_path}mcp.$phpEx$SID&amp;i=main&amp;mode=topic_view&amp;t={$row['topic_id']}&amp;action=reports",
+			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports'),
 
 			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
@@ -200,7 +200,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 */
 function mcp_resync_topics($topic_ids)
 {
-	global $auth, $db, $template, $phpEx, $user, $SID, $phpbb_root_path;
+	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path;
 
 	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
 	{

@@ -48,37 +48,27 @@ class dbal_oracle extends dbal
 	}
 
 	/**
-	* sql transaction
+	* SQL Transaction
+	* @private
 	*/
-	function sql_transaction($status = 'begin')
+	function _sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
 			case 'begin':
-				$result = true;
-				$this->transaction = true;
+				return true;
 			break;
 
 			case 'commit':
-				$result = @ocicommit($this->db_connect_id);
-				$this->transaction = false;
-
-				if (!$result)
-				{
-					@ocirollback($this->db_connect_id);
-				}
+				return @ocicommit($this->db_connect_id);
 			break;
 
 			case 'rollback':
-				$result = @ocirollback($this->db_connect_id);
-				$this->transaction = false;
+				return @ocirollback($this->db_connect_id);
 			break;
-
-			default:
-				$result = true;
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**
@@ -355,7 +345,7 @@ class dbal_oracle extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return str_replace("'", "''", str_replace('\\', '\\\\', $msg));
+		return str_replace("'", "''", $msg);
 	}
 
 	function _sql_custom_build($stage, $data)
