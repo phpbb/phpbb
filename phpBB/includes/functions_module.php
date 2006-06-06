@@ -463,7 +463,7 @@ class p_master
 	{
 		global $template;
 
-		$current_id = false;
+		$current_id = $right_id = false;
 
 		// Make sure the module_url has a question mark set, effectively determining the delimiter to use
 		$delim = (strpos($module_url, '?') === false) ? '?' : '&amp;';
@@ -478,9 +478,50 @@ class p_master
 		//    and a linear list for subcategories/items
 		foreach ($this->module_ary as $row_id => $itep_ary)
 		{
+			// Skip hidden modules
 			if (!$itep_ary['display'])
 			{
 				continue;
+			}
+
+			// Skip branch
+			if ($right_id !== false)
+			{
+				if ($itep_ary['left'] < $right_id)
+				{
+					continue;
+				}
+
+				$right_id = false;
+			}
+
+			// Category with no members on their way down (we have to check every level)
+			if (!$itep_ary['name'])
+			{
+				$empty_category = true;
+
+				// We go through the branch and look for an activated module
+				foreach (array_slice($this->module_ary, $row_id + 1) as $temp_row)
+				{
+					if ($temp_row['left'] > $itep_ary['left'] && $temp_row['left'] < $itep_ary['right'])
+					{
+						// Module there and displayed?
+						if ($temp_row['name'] && $temp_row['display'])
+						{
+							$empty_category = false;
+							break;
+						}
+						continue;
+					}
+					break;
+				}
+
+				// Skip the branch
+				if ($empty_category)
+				{
+					$right_id = $itep_ary['right'];
+					continue;
+				}
 			}
 
 			// Select first id we can get
