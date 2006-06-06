@@ -1116,12 +1116,14 @@ class parse_message extends bbcode_firstpass
 	/**
 	* Get Attachment Data
 	*/
-	function get_submitted_attachment_data()
+	function get_submitted_attachment_data($check_user_id = false)
 	{
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
 
 		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
 		$this->attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
+
+		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;
 
 		// Regenerate data array...
 		$attach_ids = $filenames = array();
@@ -1149,7 +1151,7 @@ class parse_message extends bbcode_firstpass
 			$sql = 'SELECT attach_id, physical_filename, real_filename, extension, mimetype, filesize, filetime, thumbnail
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE attach_id IN (' . implode(', ', array_keys($attach_ids)) . ')
-					AND poster_id = ' . $user->data['user_id'];
+					AND poster_id = ' . $check_user_id;
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1167,7 +1169,7 @@ class parse_message extends bbcode_firstpass
 
 			if (sizeof($attach_ids))
 			{
-				trigger_error('NO_ACCESS_ATTACHMENT');
+				trigger_error($user->lang['NO_ACCESS_ATTACHMENT'], E_USER_ERROR);
 			}
 		}
 
@@ -1175,7 +1177,7 @@ class parse_message extends bbcode_firstpass
 		if (sizeof($filenames))
 		{
 			include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-			
+
 			$sql = 'SELECT attach_id
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE LOWER(physical_filename) IN ('" . implode("', '", array_map('strtolower', $filenames)) . "')";
@@ -1185,7 +1187,7 @@ class parse_message extends bbcode_firstpass
 
 			if ($row)
 			{
-				trigger_error('NO_ACCESS_ATTACHMENT');
+				trigger_error($user->lang['NO_ACCESS_ATTACHMENT'], E_USER_ERROR);
 			}
 
 			foreach ($filenames as $pos => $physical_filename)

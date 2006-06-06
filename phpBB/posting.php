@@ -297,10 +297,9 @@ if (isset($post_data['post_text']))
 	unset($post_data['post_text']);
 }
 
-$message_parser->get_submitted_attachment_data();
-
 // Set some default variables
 $uninit = array('post_attachment' => 0, 'poster_id' => $user->data['user_id'], 'enable_magic_url' => 0, 'topic_status' => 0, 'topic_type' => POST_NORMAL, 'post_subject' => '', 'topic_title' => '', 'post_time' => 0, 'post_edit_reason' => '', 'notify_set' => 0);
+
 foreach ($uninit as $var_name => $default_value)
 {
 	if (!isset($post_data[$var_name]))
@@ -309,6 +308,8 @@ foreach ($uninit as $var_name => $default_value)
 	}
 }
 unset($uninit);
+
+$message_parser->get_submitted_attachment_data($post_data['poster_id']);
 
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
