@@ -154,8 +154,8 @@ class p_master
 				{
 					if ($temp_row['left_id'] > $row['left_id'] && $temp_row['left_id'] < $row['right_id'])
 					{
-						// Module there
-						if ($temp_row['module_name'] && $temp_row['module_enabled'])
+						// Module there and not hidden?
+						if ($temp_row['module_name'] && $temp_row['module_enabled'] && $temp_row['module_display'])
 						{
 							$empty_category = false;
 							break;
