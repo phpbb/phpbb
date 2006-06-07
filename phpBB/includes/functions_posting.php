@@ -445,25 +445,29 @@ function get_supported_image_types($type = false)
 		{
 			switch ($type)
 			{
+				// GIF
 				case 1:
-					$new_type = ($format & IMG_GIF) ? IMG_GIF : 0;
+					$new_type = ($format & IMG_GIF) ? IMG_GIF : false;
 				break;
 
+				// JPG, JPC, JP2
 				case 2:
 				case 9:
 				case 10:
 				case 11:
 				case 12:
-					$new_type = ($format & IMG_JPG) ? IMG_JPG : 0;
+					$new_type = ($format & IMG_JPG) ? IMG_JPG : false;
 				break;
 
+				// PNG
 				case 3:
-					$new_type = ($format & IMG_PNG) ? IMG_PNG : 0;
+					$new_type = ($format & IMG_PNG) ? IMG_PNG : false;
 				break;
 
+				// BMP, WBMP
 				case 6:
 				case 15:
-					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : 0;
+					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
 				break;
 			}
 		}
@@ -532,22 +536,28 @@ function create_thumbnail($source, $destination, $mimetype)
 
 		if ($type['gd'])
 		{
+			// If the type is not supported, we are not able to create a thumbnail
+			if ($type['format'] === false)
+			{
+				return false;
+			}
+
 			switch ($type['format']) 
 			{
 				case IMG_GIF:
-					$image = imagecreatefromgif($source);
+					$image = @imagecreatefromgif($source);
 				break;
 
 				case IMG_JPG:
-					$image = imagecreatefromjpeg($source);
+					$image = @imagecreatefromjpeg($source);
 				break;
 
 				case IMG_PNG:
-					$image = imagecreatefrompng($source);
+					$image = @imagecreatefrompng($source);
 				break;
 
 				case IMG_WBMP:
-					$image = imagecreatefromwbmp($source);
+					$image = @imagecreatefromwbmp($source);
 				break;
 			}
 
@@ -582,6 +592,10 @@ function create_thumbnail($source, $destination, $mimetype)
 			}
 
 			imagedestroy($new_image);
+		}
+		else
+		{
+			return false;
 		}
 	}
 
