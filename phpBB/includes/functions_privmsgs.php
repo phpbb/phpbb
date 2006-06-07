@@ -1101,9 +1101,9 @@ function get_folder_status($folder_id, $folder)
 		'remaining'		=> $user->data['message_limit'] - $folder['num_messages'],
 		'max'			=> $user->data['message_limit'],
 		'percent'		=> ($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100,
-
-		'message'		=> sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']),
 	);
+
+	$return['message']	= sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']);
 
 	return $return;
 }
