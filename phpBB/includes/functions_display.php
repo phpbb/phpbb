@@ -147,6 +147,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		//
 		if ($row['parent_id'] == $root_data['forum_id'] || $row['parent_id'] == $branch_root_id)
 		{
+			if ($row['forum_type'] != FORUM_CAT)
+			{
+				$forum_ids_moderator[] = $forum_id;
+			}
+
 			// Direct child of current branch
 			$parent_id = $forum_id;
 			$forum_rows[$forum_id] = $row;
@@ -185,8 +190,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 		}
-
-		$forum_ids_moderator[$parent_id] = $forum_rows[$parent_id]['forum_id_last_post'];
 	}
 	$db->sql_freeresult($result);
 

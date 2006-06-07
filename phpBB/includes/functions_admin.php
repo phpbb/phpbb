@@ -1872,6 +1872,9 @@ function cache_moderators()
 {
 	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
 
+	// Remove cached sql results
+	$cache->destroy('sql', MODERATOR_TABLE);
+
 	// Clear table
 	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_TABLE);
 
