@@ -181,6 +181,12 @@ function compose_pm($id, $mode, $action)
 			trigger_error('NO_AUTHOR');
 		}
 
+		if ($action == 'quotepost')
+		{
+			// Decode text for message display
+			decode_message($message_text, $post['bbcode_uid']);
+		}
+
 		if ($action != 'delete')
 		{
 			$enable_urls = $post['enable_magic_url'];
