@@ -73,10 +73,10 @@ function user_update_name($old_name, $new_name)
 	global $config, $db, $cache;
 
 	$update_ary = array(
-		FORUMS_TABLE	=> array('forum_last_poster_name'),
-		MODERATOR_TABLE	=> array('username'),
-		POSTS_TABLE		=> array('post_username'),
-		TOPICS_TABLE	=> array('topic_first_poster_name', 'topic_last_poster_name'),
+		FORUMS_TABLE			=> array('forum_last_poster_name'),
+		MODERATOR_CACHE_TABLE	=> array('username'),
+		POSTS_TABLE				=> array('post_username'),
+		TOPICS_TABLE			=> array('topic_first_poster_name', 'topic_last_poster_name'),
 	);
 
 	foreach ($update_ary as $table => $field_ary)

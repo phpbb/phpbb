@@ -29,8 +29,8 @@ CREATE TABLE phpbb_attachments (
   KEY filesize (filesize)
 );
 
-# Table: 'phpbb_auth_groups'
-CREATE TABLE phpbb_auth_groups (
+# Table: 'phpbb_acl_groups'
+CREATE TABLE phpbb_acl_groups (
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -40,8 +40,8 @@ CREATE TABLE phpbb_auth_groups (
   KEY auth_option_id (auth_option_id)
 );
 
-# Table: 'phpbb_auth_options'
-CREATE TABLE phpbb_auth_options (
+# Table: 'phpbb_acl_options'
+CREATE TABLE phpbb_acl_options (
   auth_option_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   auth_option varchar(20) NOT NULL,
   is_global tinyint(1) DEFAULT '0' NOT NULL,
@@ -51,8 +51,8 @@ CREATE TABLE phpbb_auth_options (
   KEY auth_option (auth_option)
 );
 
-# Table: 'phpbb_auth_roles'
-CREATE TABLE phpbb_auth_roles (
+# Table: 'phpbb_acl_roles'
+CREATE TABLE phpbb_acl_roles (
   role_id mediumint(8) UNSIGNED NOT NULL auto_increment,
   role_name varchar(255) DEFAULT '' NOT NULL,
   role_description text,
@@ -63,16 +63,16 @@ CREATE TABLE phpbb_auth_roles (
   KEY role_order (role_order)
 );
 
-# Table: 'phpbb_auth_roles_data'
-CREATE TABLE phpbb_auth_roles_data (
+# Table: 'phpbb_acl_roles_data'
+CREATE TABLE phpbb_acl_roles_data (
   role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_setting tinyint(2) DEFAULT '0' NOT NULL,
   PRIMARY KEY  (role_id, auth_option_id)
 );
 
-# Table: 'phpbb_auth_users'
-CREATE TABLE phpbb_auth_users (
+# Table: 'phpbb_acl_users'
+CREATE TABLE phpbb_acl_users (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -243,16 +243,16 @@ CREATE TABLE phpbb_forums (
   KEY forum_last_post_id (forum_last_post_id)
 );
 
-# Table: 'phpbb_forum_access'
-CREATE TABLE phpbb_forum_access (
+# Table: 'phpbb_forums_access'
+CREATE TABLE phpbb_forums_access (
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   session_id varchar(32) DEFAULT '' NOT NULL,
   PRIMARY KEY (forum_id, user_id, session_id)
 );
 
-# Table: 'phpbb_forums_marking'
-CREATE TABLE phpbb_forums_marking (
+# Table: 'phpbb_forums_track'
+CREATE TABLE phpbb_forums_track (
   user_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(9) UNSIGNED DEFAULT '0' NOT NULL,
   mark_time int(11) DEFAULT '0' NOT NULL,
@@ -365,8 +365,8 @@ CREATE TABLE phpbb_modules (
   KEY module_enabled (module_enabled)
 );
 
-# Table: 'phpbb_poll_results'
-CREATE TABLE phpbb_poll_results (
+# Table: 'phpbb_poll_options'
+CREATE TABLE phpbb_poll_options (
   poll_option_id tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED NOT NULL,
   poll_option_text text,
@@ -375,8 +375,8 @@ CREATE TABLE phpbb_poll_results (
   KEY topic_id (topic_id)
 );
 
-# Table: 'phpbb_poll_voters'
-CREATE TABLE phpbb_poll_voters (
+# Table: 'phpbb_poll_votes'
+CREATE TABLE phpbb_poll_votes (
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   poll_option_id tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   vote_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -829,8 +829,8 @@ CREATE TABLE phpbb_topics (
   KEY topic_last_post_time (topic_last_post_time)
 );
 
-# Table: 'phpbb_topic_marking'
-CREATE TABLE phpbb_topics_marking (
+# Table: 'phpbb_topics_track'
+CREATE TABLE phpbb_topics_track (
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,

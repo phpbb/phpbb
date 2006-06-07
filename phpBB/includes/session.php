@@ -985,7 +985,7 @@ class user extends session
 		}
 
 		$sql = 'SELECT s.style_id, t.*, c.*, i.*
-			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
 			WHERE s.style_id = $style
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
@@ -1004,7 +1004,7 @@ class user extends session
 			$db->sql_query($sql);
 
 			$sql = 'SELECT s.style_id, t.*, c.*, i.*
-				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . " i
+				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
 				WHERE s.style_id = $style
 					AND t.template_id = s.template_id
 					AND c.theme_id = s.theme_id
@@ -1051,7 +1051,7 @@ class user extends session
 				'theme_storedb'	=> 1
 			);
 
-			$db->sql_query('UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			$db->sql_query('UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE theme_id = ' . $this->theme['theme_id']);
 
 			unset($sql_ary);
@@ -1238,7 +1238,7 @@ class user extends session
 			return;
 		}
 
-		$sql = 'SELECT * FROM ' . PROFILE_DATA_TABLE . "
+		$sql = 'SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query_limit($sql, 1);
 

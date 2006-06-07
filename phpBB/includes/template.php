@@ -219,7 +219,7 @@ class template
 
 		if (isset($user->theme['template_storedb']) && $user->theme['template_storedb'])
 		{
-			$sql = 'SELECT * FROM ' . STYLES_TPLDATA_TABLE . '
+			$sql = 'SELECT * FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
 				WHERE template_id = ' . $user->theme['template_id'] . "
 					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
 						OR template_included LIKE '%" . $db->sql_escape($this->filename[$handle]) . ":%')";

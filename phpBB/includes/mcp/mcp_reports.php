@@ -71,7 +71,7 @@ class mcp_reports
 				$post_info = $post_info[$post_id];
 
 				$sql = 'SELECT r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username
-					FROM ' . REPORTS_TABLE . ' r, ' . REASONS_TABLE . ' rr, ' . USERS_TABLE . " u
+					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . " u
 					WHERE r.post_id = $post_id
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id";

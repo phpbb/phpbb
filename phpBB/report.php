@@ -82,7 +82,7 @@ if ($report_data['post_reported'])
 if ($submit && $reason_id)
 {
 	$sql = 'SELECT *
-		FROM ' . REASONS_TABLE . "
+		FROM ' . REPORTS_REASONS_TABLE . "
 		WHERE reason_id = $reason_id";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);

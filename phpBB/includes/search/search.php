@@ -178,7 +178,7 @@ class search_backend
 			if (!empty($keywords) || sizeof($author_ary))
 			{
 				$sql = 'SELECT search_time
-					FROM ' . SEARCH_TABLE . '
+					FROM ' . SEARCH_RESULTS_TABLE . '
 					WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
 				$result = $db->sql_query($sql);
 
@@ -191,7 +191,7 @@ class search_backend
 						'search_authors'	=> ' ' . implode(' ', $author_ary) . ' '
 					);
 
-					$sql = 'INSERT INTO ' . SEARCH_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+					$sql = 'INSERT INTO ' . SEARCH_RESULTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 					$db->sql_query($sql);
 				}
 				$db->sql_freeresult($result);
@@ -251,7 +251,7 @@ class search_backend
 			}
 			$cache->put('_search_results_' . $search_key, $store, $config['search_store_results']);
 
-			$sql = 'UPDATE ' . SEARCH_TABLE . ' 
+			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . ' 
 				SET search_time = ' . time() . '
 				WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
 			$db->sql_query($sql);
@@ -279,7 +279,7 @@ class search_backend
 			}
 
 			$sql = 'SELECT search_key
-				FROM ' . SEARCH_TABLE . "
+				FROM ' . SEARCH_RESULTS_TABLE . "
 				WHERE search_keywords LIKE '%*%' $sql_where";
 			$result = $db->sql_query($sql);
 
@@ -300,7 +300,7 @@ class search_backend
 			}
 
 			$sql = 'SELECT search_key
-				FROM ' . SEARCH_TABLE . "
+				FROM ' . SEARCH_RESULTS_TABLE . "
 				WHERE $sql_where";
 			$result = $db->sql_query($sql);
 
@@ -312,7 +312,7 @@ class search_backend
 		}
 
 		$sql = 'DELETE
-			FROM ' . SEARCH_TABLE . '
+			FROM ' . SEARCH_RESULTS_TABLE . '
 			WHERE search_time < ' . (time() - $config['search_store_results']);
 		$db->sql_query($sql);
 	}

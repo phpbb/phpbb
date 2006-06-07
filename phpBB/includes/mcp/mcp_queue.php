@@ -578,7 +578,7 @@ function disapprove_post($post_id_list, $mode)
 	if ($reason_id)
 	{
 		$sql = 'SELECT reason_title, reason_description
-			FROM ' . REASONS_TABLE . "
+			FROM ' . REPORTS_REASONS_TABLE . "
 			WHERE reason_id = $reason_id";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);

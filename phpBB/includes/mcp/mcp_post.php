@@ -159,7 +159,7 @@ function mcp_post_details($id, $mode, $action)
 	if ($auth->acl_get('m_', $post_info['forum_id']))
 	{
 		$sql = 'SELECT r.*, re.*, u.user_id, u.username
-			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . REASONS_TABLE . " re
+			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . REPORTS_REASONS_TABLE . " re
 			WHERE r.post_id = $post_id
 				AND r.reason_id = re.reason_id
 				AND u.user_id = r.user_id

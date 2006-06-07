@@ -571,7 +571,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 	}
 
 	$sql = 'SELECT *
-		FROM ' . MODERATOR_TABLE . "
+		FROM ' . MODERATOR_CACHE_TABLE . "
 		WHERE display_on_index = 1
 			$forum_sql";
 	$result = $db->sql_query($sql, 3600);
@@ -900,7 +900,7 @@ function display_reasons($reason_id = 0)
 	global $db, $user, $template;
 
 	$sql = 'SELECT * 
-		FROM ' . REASONS_TABLE . ' 
+		FROM ' . REPORTS_REASONS_TABLE . ' 
 		ORDER BY reason_order ASC';
 	$result = $db->sql_query($sql);
 

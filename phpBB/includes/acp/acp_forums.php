@@ -1064,7 +1064,7 @@ class acp_forums
 		}
 		unset($table_ary);
 
-		$table_ary = array(FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, MODERATOR_TABLE);
+		$table_ary = array(FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, MODERATOR_CACHE_TABLE);
 
 		foreach ($table_ary as $table)
 		{
@@ -1338,7 +1338,7 @@ class acp_forums
 
 				// Delete everything else and thank MySQL for offering multi-table deletion
 				$tables_ary = array(
-					SEARCH_MATCH_TABLE		=> 'post_id',
+					SEARCH_WORDMATCH_TABLE	=> 'post_id',
 					REPORTS_TABLE			=> 'post_id',
 					WARNINGS_TABLE			=> 'post_id',
 					BOOKMARKS_TABLE			=> 'topic_id',
@@ -1368,7 +1368,7 @@ class acp_forums
 				// Delete everything else and curse your DB for not offering multi-table deletion
 				$tables_ary = array(
 					'post_id'	=>	array(
-						SEARCH_MATCH_TABLE,
+						SEARCH_WORDMATCH_TABLE,
 						REPORTS_TABLE,
 						WARNINGS_TABLE,
 					),
@@ -1418,7 +1418,7 @@ class acp_forums
 			break;
 		}
 
-		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{

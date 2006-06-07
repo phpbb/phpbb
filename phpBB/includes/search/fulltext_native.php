@@ -132,7 +132,7 @@ class fulltext_native extends search_backend
 		{
 			// identify common words and ignore them
 			$sql = 'SELECT word_text
-				FROM ' . SEARCH_WORD_TABLE . "
+				FROM ' . SEARCH_WORDLIST_TABLE . "
 				WHERE word_text IN ($in_words)
 					AND word_common = 1";
 			$result = $db->sql_query($sql);
@@ -388,7 +388,7 @@ class fulltext_native extends search_backend
 				if (strstr($word, '%'))
 				{
 					$sql = "SELECT $sql_select
-						FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
+						FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
 						WHERE w.word_text LIKE $word
 							AND m.word_id = w.word_id
 							AND w.word_common <> 1
@@ -432,7 +432,7 @@ class fulltext_native extends search_backend
 			if ($sql_in)
 			{
 				$sql = "SELECT $sql_select, COUNT(DISTINCT m.word_id) as matches, " . $sort_by_sql[$sort_key] . "
-					FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
+					FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
 					WHERE w.word_text IN ($sql_in)
 						AND m.word_id = w.word_id
 						AND w.word_common <> 1
@@ -493,7 +493,7 @@ class fulltext_native extends search_backend
 			$sql_where = ($sql_in) ? $sql_where . (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
 
 			$sql = "SELECT $sql_select
-				FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
+				FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
 				WHERE ($sql_where)
 					AND m.word_id = w.word_id
 					AND w.word_common <> 1
@@ -540,7 +540,7 @@ class fulltext_native extends search_backend
 			$sql_where = ($sql_in) ? $sql_where . (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
 
 			$sql = "SELECT $sql_select
-				FROM $sql_from" . POSTS_TABLE . ' p, ' . SEARCH_MATCH_TABLE . ' m, ' . SEARCH_WORD_TABLE . " w
+				FROM $sql_from" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
 				WHERE ($sql_where)
 					AND m.word_id = w.word_id
 					AND w.word_common <> 1
@@ -769,7 +769,7 @@ class fulltext_native extends search_backend
 			$words['del']['title'] = array();
 
 			$sql = 'SELECT w.word_id, w.word_text, m.title_match
-				FROM ' . SEARCH_WORD_TABLE . ' w, ' . SEARCH_MATCH_TABLE . " m
+				FROM ' . SEARCH_WORDLIST_TABLE . ' w, ' . SEARCH_WORDMATCH_TABLE . " m
 				WHERE m.post_id = $post_id
 					AND w.word_id = m.word_id";
 			$result = $db->sql_query($sql);
@@ -806,7 +806,7 @@ class fulltext_native extends search_backend
 		if (sizeof($unique_add_words))
 		{
 			$sql = 'SELECT word_id, word_text
-				FROM ' . SEARCH_WORD_TABLE . '
+				FROM ' . SEARCH_WORDLIST_TABLE . '
 				WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $unique_add_words)) . ')';
 			$result = $db->sql_query($sql);
 
@@ -824,7 +824,7 @@ class fulltext_native extends search_backend
 				switch (SQL_LAYER)
 				{
 					case 'mysql':
-						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text)
+						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . ' (word_text)
 							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'$1\')', $new_words));
 						$db->sql_query($sql);
 					break;
@@ -837,14 +837,14 @@ class fulltext_native extends search_backend
 						// make sure the longest word comes first, so nothing will be truncated
 						usort($new_words, array(&$this, 'strlencmp'));
 
-						$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
+						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
 						$db->sql_query($sql);
 					break;
 
 					default:
 						foreach ($new_words as $word)
 						{
-							$sql = 'INSERT INTO ' . SEARCH_WORD_TABLE . " (word_text)
+							$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
 								VALUES ('$word')";
 							$db->sql_query($sql);
 						}
@@ -866,7 +866,7 @@ class fulltext_native extends search_backend
 					$sql_in[] = $cur_words[$word_in][$word];
 				}
 
-				$sql = 'DELETE FROM ' . SEARCH_MATCH_TABLE . '
+				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
 					WHERE word_id IN (' . implode(', ', $sql_in) . ')
 						AND post_id = ' . intval($post_id) . "
 						AND title_match = $title_match";
@@ -881,9 +881,9 @@ class fulltext_native extends search_backend
 
 			if (sizeof($word_ary))
 			{
-				$sql = 'INSERT INTO ' . SEARCH_MATCH_TABLE . " (post_id, word_id, title_match)
+				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . " (post_id, word_id, title_match)
 					SELECT $post_id, word_id, $title_match
-					FROM " . SEARCH_WORD_TABLE . '
+					FROM " . SEARCH_WORDLIST_TABLE . '
 					WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $word_ary)) . ')';
 				$db->sql_query($sql);
 			}
@@ -920,11 +920,11 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$sql = 'DELETE FROM ' . SEARCH_MATCH_TABLE . '
+		$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
 			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
 		$db->sql_query($sql);
 
-		// SEARCH_WORD_TABLE will be updated by tidy()
+		// SEARCH_WORDLIST_TABLE will be updated by tidy()
 
 		$this->destroy_cache(array(), $author_ids);
 	}
@@ -951,7 +951,7 @@ class fulltext_native extends search_backend
 		if ($config['num_posts'] >= 100)
 		{
 			$sql = 'SELECT word_id
-				FROM ' . SEARCH_MATCH_TABLE . '
+				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
 				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
 			$result = $db->sql_query($sql);
@@ -969,12 +969,12 @@ class fulltext_native extends search_backend
 
 				$sql_in = implode(', ', $sql_in);
 
-				$sql = 'UPDATE ' . SEARCH_WORD_TABLE . "
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . "
 					SET word_common = 1
 					WHERE word_id IN ($sql_in)";
 				$db->sql_query($sql);
 
-				$sql = 'DELETE FROM ' . SEARCH_MATCH_TABLE . "
+				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . "
 					WHERE word_id IN ($sql_in)";
 				$db->sql_query($sql);
 				unset($sql_in);
@@ -984,8 +984,8 @@ class fulltext_native extends search_backend
 
 		// Remove words with no matches ... this is a potentially nasty query
 		$sql = 'SELECT w.word_id
-			FROM ' . SEARCH_WORD_TABLE . ' w
-			LEFT JOIN ' . SEARCH_MATCH_TABLE . ' m ON (w.word_id = m.word_id)
+			FROM ' . SEARCH_WORDLIST_TABLE . ' w
+			LEFT JOIN ' . SEARCH_WORDMATCH_TABLE . ' m ON (w.word_id = m.word_id)
 			WHERE w.word_common = 0 AND m.word_id IS NULL
 			GROUP BY w.word_id';
 		$result = $db->sql_query($sql);
@@ -1001,7 +1001,7 @@ class fulltext_native extends search_backend
 
 			$destroy_cache_words = array_merge($destroy_cache_words, $sql_in);
 
-			$sql = 'DELETE FROM ' . SEARCH_WORD_TABLE . '
+			$sql = 'DELETE FROM ' . SEARCH_WORDLIST_TABLE . '
 				WHERE word_id IN (' . implode(', ', $sql_in) . ')';
 			$db->sql_query($sql);
 			unset($sql_in);
@@ -1021,9 +1021,9 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORD_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_MATCH_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDLIST_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDMATCH_TABLE);
+		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_RESULTS_TABLE);
 	}
 
 	/**
@@ -1061,13 +1061,13 @@ class fulltext_native extends search_backend
 		global $db;
 
 		$sql = 'SELECT COUNT(*) as total_words
-			FROM ' . SEARCH_WORD_TABLE;
+			FROM ' . SEARCH_WORDLIST_TABLE;
 		$result = $db->sql_query($sql);
 		$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(*) as total_matches
-			FROM ' . SEARCH_MATCH_TABLE;
+			FROM ' . SEARCH_WORDMATCH_TABLE;
 		$result = $db->sql_query($sql);
 		$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
 		$db->sql_freeresult($result);

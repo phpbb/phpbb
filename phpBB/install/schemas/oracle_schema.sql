@@ -91,9 +91,9 @@ CREATE INDEX phpbb_attachments_filesize on phpbb_attachments (filesize)
 
 
 /*
- Table: phpbb_auth_groups
+ Table: phpbb_acl_groups
 */
-CREATE TABLE phpbb_auth_groups (
+CREATE TABLE phpbb_acl_groups (
   group_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
@@ -102,94 +102,94 @@ CREATE TABLE phpbb_auth_groups (
 )
 /
 
-CREATE INDEX phpbb_auth_groups_group_id on phpbb_auth_groups (group_id)
+CREATE INDEX phpbb_acl_groups_group_id on phpbb_acl_groups (group_id)
 /
-CREATE INDEX phpbb_auth_groups_auth_opt_id on phpbb_auth_groups (auth_option_id)
+CREATE INDEX phpbb_acl_groups_auth_opt_id on phpbb_acl_groups (auth_option_id)
 /
 
 
 /*
- Table: phpbb_auth_options
+ Table: phpbb_acl_options
 */
-CREATE TABLE phpbb_auth_options (
+CREATE TABLE phpbb_acl_options (
   auth_option_id number(8) NOT NULL,
   auth_option varchar2(20) NOT NULL,
   is_global number(1) DEFAULT '0' NOT NULL,
   is_local number(1) DEFAULT '0' NOT NULL,
   founder_only number(1) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_auth_options PRIMARY KEY (auth_option_id)
+  CONSTRAINT pk_phpbb_acl_options PRIMARY KEY (auth_option_id)
 )
 /
 
-CREATE SEQUENCE phpbb_auth_options_seq
+CREATE SEQUENCE phpbb_acl_options_seq
 /
 
-CREATE OR REPLACE TRIGGER ai_phpbb_auth_options_seq
-BEFORE INSERT ON phpbb_auth_options
+CREATE OR REPLACE TRIGGER ai_phpbb_acl_options_seq
+BEFORE INSERT ON phpbb_acl_options
 FOR EACH ROW WHEN (
  new.auth_option_id IS NULL OR new.auth_option_id = 0
 )
 BEGIN
- SELECT phpbb_auth_options_seq.nextval
+ SELECT phpbb_acl_options_seq.nextval
  INTO :new.auth_option_id
  FROM dual;
 END;
 /
 
-CREATE INDEX phpbb_auth_options_auth_option on phpbb_auth_options (auth_option)
+CREATE INDEX phpbb_acl_options_auth_option on phpbb_acl_options (auth_option)
 /
 
 
 /*
- Table: phpbb_auth_roles
+ Table: phpbb_acl_roles
 */
-CREATE TABLE phpbb_auth_roles (
+CREATE TABLE phpbb_acl_roles (
   role_id number(8) NOT NULL,
   role_name varchar2(255) DEFAULT '',
   role_description clob,
   role_type varchar2(10) DEFAULT '',
   role_order number(4) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_auth_roles PRIMARY KEY (role_id)
+  CONSTRAINT pk_phpbb_acl_roles PRIMARY KEY (role_id)
 )
 /
 
-CREATE SEQUENCE phpbb_auth_roles_seq
+CREATE SEQUENCE phpbb_acl_roles_seq
 /
 
-CREATE OR REPLACE TRIGGER ai_phpbb_auth_roles_seq
-BEFORE INSERT ON phpbb_auth_roles
+CREATE OR REPLACE TRIGGER ai_phpbb_acl_roles_seq
+BEFORE INSERT ON phpbb_acl_roles
 FOR EACH ROW WHEN (
  new.role_id IS NULL OR new.role_id = 0
 )
 BEGIN
- SELECT phpbb_auth_roles_seq.nextval
+ SELECT phpbb_acl_roles_seq.nextval
  INTO :new.role_id
  FROM dual;
 END;
 /
 
-CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type)
+CREATE INDEX phpbb_acl_roles_role_type on phpbb_acl_roles (role_type)
 /
 
-CREATE INDEX phpbb_auth_roles_role_order on phpbb_auth_roles (role_order)
+CREATE INDEX phpbb_acl_roles_role_order on phpbb_acl_roles (role_order)
 /
 
 /*
- Table: phpbb_auth_roles_data
+ Table: phpbb_acl_roles_data
 */
-CREATE TABLE phpbb_auth_roles_data (
+CREATE TABLE phpbb_acl_roles_data (
   role_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
   auth_setting number(2) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_auth_roles_data PRIMARY KEY (role_id, auth_option_id)
+  CONSTRAINT pk_phpbb_acl_roles_data PRIMARY KEY (role_id, auth_option_id)
 )
 /
 
 
 /*
- Table: phpbb_auth_users
+ Table: phpbb_acl_users
 */
-CREATE TABLE phpbb_auth_users (
+CREATE TABLE phpbb_acl_users (
   user_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
   auth_option_id number(8) DEFAULT '0' NOT NULL,
@@ -198,9 +198,9 @@ CREATE TABLE phpbb_auth_users (
 )
 /
 
-CREATE INDEX phpbb_auth_users_user_id on phpbb_auth_users (user_id)
+CREATE INDEX phpbb_acl_users_user_id on phpbb_acl_users (user_id)
 /
-CREATE INDEX phpbb_auth_users_auth_opt_id on phpbb_auth_users (auth_option_id)
+CREATE INDEX phpbb_acl_users_auth_opt_id on phpbb_acl_users (auth_option_id)
 /
 
 
@@ -533,25 +533,25 @@ CREATE INDEX phpbb_forums_forum_last_pst_id on phpbb_forums (forum_last_post_id)
 
 
 /*
- Table: phpbb_forum_access
+ Table: phpbb_forums_access
 */
-CREATE TABLE phpbb_forum_access (
+CREATE TABLE phpbb_forums_access (
   forum_id number(8) DEFAULT '0' NOT NULL,
   user_id number(8) DEFAULT '0' NOT NULL,
   session_id varchar2(32) DEFAULT '',
-  CONSTRAINT pk_phpbb_forum_access PRIMARY KEY (forum_id, user_id, session_id)
+  CONSTRAINT pk_phpbb_forums_access PRIMARY KEY (forum_id, user_id, session_id)
 )
 /
 
 
 /*
- Table: phpbb_forums_marking
+ Table: phpbb_forums_track
 */
-CREATE TABLE phpbb_forums_marking (
+CREATE TABLE phpbb_forums_track (
   user_id number(9) DEFAULT '0' NOT NULL,
   forum_id number(9) DEFAULT '0' NOT NULL,
   mark_time number(11) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_forums_marking PRIMARY KEY (user_id, forum_id)
+  CONSTRAINT pk_phpbb_forums_track PRIMARY KEY (user_id, forum_id)
 )
 /
 
@@ -784,9 +784,9 @@ CREATE INDEX phpbb_modules_left_right_id on phpbb_modules (left_id, right_id)
 
 
 /*
- Table: phpbb_poll_results
+ Table: phpbb_poll_options
 */
-CREATE TABLE phpbb_poll_results (
+CREATE TABLE phpbb_poll_options (
   poll_option_id number(4) DEFAULT '0' NOT NULL,
   topic_id number(8) NOT NULL,
   poll_option_text varchar2(3000),
@@ -794,16 +794,16 @@ CREATE TABLE phpbb_poll_results (
 )
 /
 
-CREATE INDEX phpbb_poll_results_poll_opt_id on phpbb_poll_results (poll_option_id)
+CREATE INDEX phpbb_poll_options_poll_opt_id on phpbb_poll_options (poll_option_id)
 /
-CREATE INDEX phpbb_poll_results_topic_id on phpbb_poll_results (topic_id)
+CREATE INDEX phpbb_poll_options_topic_id on phpbb_poll_options (topic_id)
 /
 
 
 /*
- Table: phpbb_poll_voters
+ Table: phpbb_poll_votes
 */
-CREATE TABLE phpbb_poll_voters (
+CREATE TABLE phpbb_poll_votes (
   topic_id number(8) DEFAULT '0' NOT NULL,
   poll_option_id number(4) DEFAULT '0' NOT NULL,
   vote_user_id number(8) DEFAULT '0' NOT NULL,
@@ -811,11 +811,11 @@ CREATE TABLE phpbb_poll_voters (
 )
 /
 
-CREATE INDEX phpbb_poll_voters_topic_id on phpbb_poll_voters (topic_id)
+CREATE INDEX phpbb_poll_votes_topic_id on phpbb_poll_votes (topic_id)
 /
-CREATE INDEX phpbb_poll_voters_vote_user_id on phpbb_poll_voters (vote_user_id)
+CREATE INDEX phpbb_poll_votes_vote_user_id on phpbb_poll_votes (vote_user_id)
 /
-CREATE INDEX phpbb_poll_voters_vote_user_ip on phpbb_poll_voters (vote_user_ip)
+CREATE INDEX phpbb_poll_votes_vote_user_ip on phpbb_poll_votes (vote_user_ip)
 /
 
 
@@ -1643,18 +1643,18 @@ CREATE INDEX phpbb_topics_last_post_time on phpbb_topics (topic_last_post_time)
 
 
 /*
- Table: phpbb_topics_marking
+ Table: phpbb_topics_track
 */
-CREATE TABLE phpbb_topics_marking (
+CREATE TABLE phpbb_topics_track (
   user_id number(8) DEFAULT '0' NOT NULL,
   topic_id number(8) DEFAULT '0' NOT NULL,
   forum_id number(8) DEFAULT '0' NOT NULL,
   mark_time number(11) DEFAULT '0' NOT NULL,
-  CONSTRAINT pk_phpbb_topics_marking PRIMARY KEY (user_id, topic_id)
+  CONSTRAINT pk_phpbb_topics_track PRIMARY KEY (user_id, topic_id)
 )
 /
 
-CREATE INDEX phpbb_topics_marking_forum_id on phpbb_topics_marking (forum_id)
+CREATE INDEX phpbb_topics_track_forum_id on phpbb_topics_track (forum_id)
 /
 
 

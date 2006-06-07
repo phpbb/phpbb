@@ -648,7 +648,7 @@ class fulltext_mysql extends search_backend
 			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_text)');
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_TABLE);
+		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -681,7 +681,7 @@ class fulltext_mysql extends search_backend
 			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_text');
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_TABLE);
+		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}

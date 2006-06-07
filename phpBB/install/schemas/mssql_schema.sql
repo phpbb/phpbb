@@ -67,9 +67,9 @@ GO
 
 
 /*
- Table: phpbb_auth_groups
+ Table: phpbb_acl_groups
 */
-CREATE TABLE [phpbb_auth_groups] (
+CREATE TABLE [phpbb_acl_groups] (
 	[group_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
@@ -78,25 +78,25 @@ CREATE TABLE [phpbb_auth_groups] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_auth_groups] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_auth_g_group_id] DEFAULT (0) FOR [group_id],
-	CONSTRAINT [DF_phpbb_auth_g_forum_id] DEFAULT (0) FOR [forum_id],
-	CONSTRAINT [DF_phpbb_auth_g_auth_option_id] DEFAULT (0) FOR [auth_option_id],
-	CONSTRAINT [DF_phpbb_auth_g_auth_role_id] DEFAULT (0) FOR [auth_role_id],
-	CONSTRAINT [DF_phpbb_auth_g_auth_setting] DEFAULT (0) FOR [auth_setting]
+ALTER TABLE [phpbb_acl_groups] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_acl_g_group_id] DEFAULT (0) FOR [group_id],
+	CONSTRAINT [DF_phpbb_acl_g_forum_id] DEFAULT (0) FOR [forum_id],
+	CONSTRAINT [DF_phpbb_acl_g_auth_option_id] DEFAULT (0) FOR [auth_option_id],
+	CONSTRAINT [DF_phpbb_acl_g_auth_role_id] DEFAULT (0) FOR [auth_role_id],
+	CONSTRAINT [DF_phpbb_acl_g_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
 
-CREATE  INDEX [group_id] ON [phpbb_auth_groups]([group_id]) ON [PRIMARY]
+CREATE  INDEX [group_id] ON [phpbb_acl_groups]([group_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [auth_option_id] ON [phpbb_auth_groups]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [auth_option_id] ON [phpbb_acl_groups]([auth_option_id]) ON [PRIMARY]
 GO
 
 
 /*
- Table: phpbb_auth_options
+ Table: phpbb_acl_options
 */
-CREATE TABLE [phpbb_auth_options] (
+CREATE TABLE [phpbb_acl_options] (
 	[auth_option_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[auth_option] [varchar] (20) NOT NULL ,
 	[is_global] [int] NOT NULL ,
@@ -105,27 +105,27 @@ CREATE TABLE [phpbb_auth_options] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_auth_options] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_auth_options] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_acl_options] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_options] PRIMARY KEY  CLUSTERED 
 	(
 		[auth_option_id]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_auth_options] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_auth_o_is_global] DEFAULT (0) FOR [is_global],
-	CONSTRAINT [DF_phpbb_auth_o_is_local] DEFAULT (0) FOR [is_local],
-	CONSTRAINT [DF_phpbb_auth_o_founder_only] DEFAULT (0) FOR [founder_only]
+ALTER TABLE [phpbb_acl_options] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_acl_o_is_global] DEFAULT (0) FOR [is_global],
+	CONSTRAINT [DF_phpbb_acl_o_is_local] DEFAULT (0) FOR [is_local],
+	CONSTRAINT [DF_phpbb_acl_o_founder_only] DEFAULT (0) FOR [founder_only]
 GO
 
-CREATE  INDEX [auth_option] ON [phpbb_auth_options]([auth_option]) ON [PRIMARY]
+CREATE  INDEX [auth_option] ON [phpbb_acl_options]([auth_option]) ON [PRIMARY]
 GO
 
 
 /*
- Table: phpbb_auth_roles
+ Table: phpbb_acl_roles
 */
-CREATE TABLE [phpbb_auth_roles] (
+CREATE TABLE [phpbb_acl_roles] (
 	[role_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[role_name] [varchar] (255) NOT NULL ,
 	[role_description] [varchar] (8000) ,
@@ -134,55 +134,55 @@ CREATE TABLE [phpbb_auth_roles] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_auth_roles] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_acl_roles] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_roles] PRIMARY KEY  CLUSTERED 
 	(
 		[role_id]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_auth_roles] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_auth_p_role_role_order] DEFAULT (0) FOR [role_order],
-	CONSTRAINT [DF_phpbb_auth_p_role_role_type] DEFAULT ('') FOR [role_type],
-	CONSTRAINT [DF_phpbb_auth_p_role_role_name] DEFAULT ('') FOR [role_name]
+ALTER TABLE [phpbb_acl_roles] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_acl_p_role_role_order] DEFAULT (0) FOR [role_order],
+	CONSTRAINT [DF_phpbb_acl_p_role_role_type] DEFAULT ('') FOR [role_type],
+	CONSTRAINT [DF_phpbb_acl_p_role_role_name] DEFAULT ('') FOR [role_name]
 GO
 
-CREATE  INDEX [role_type] ON [phpbb_auth_roles]([role_type]) ON [PRIMARY]
+CREATE  INDEX [role_type] ON [phpbb_acl_roles]([role_type]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [role_order] ON [phpbb_auth_roles]([role_order]) ON [PRIMARY]
+CREATE  INDEX [role_order] ON [phpbb_acl_roles]([role_order]) ON [PRIMARY]
 GO
 
 
 /*
- Table: phpbb_auth_roles_data
+ Table: phpbb_acl_roles_data
 */
-CREATE TABLE [phpbb_auth_roles_data] (
+CREATE TABLE [phpbb_acl_roles_data] (
 	[role_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
 	[auth_setting] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_auth_roles_data] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_auth_roles_data] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_acl_roles_data] PRIMARY KEY  CLUSTERED 
 	(
 		[role_id],
 		[auth_option_id]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_auth_roles_data] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_auth_d_role_id] DEFAULT (0) FOR [role_id],
-	CONSTRAINT [DF_phpbb_auth_d_auth_option_id] DEFAULT (0) FOR [auth_option_id],
-	CONSTRAINT [DF_phpbb_auth_d_auth_setting] DEFAULT (0) FOR [auth_setting]
+ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_acl_d_role_id] DEFAULT (0) FOR [role_id],
+	CONSTRAINT [DF_phpbb_acl_d_auth_option_id] DEFAULT (0) FOR [auth_option_id],
+	CONSTRAINT [DF_phpbb_acl_d_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
 
 
 /*
- Table: phpbb_auth_users
+ Table: phpbb_acl_users
 */
-CREATE TABLE [phpbb_auth_users] (
+CREATE TABLE [phpbb_acl_users] (
 	[user_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[auth_option_id] [int] NOT NULL ,
@@ -191,18 +191,18 @@ CREATE TABLE [phpbb_auth_users] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_auth_users] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_auth_u_user_id] DEFAULT (0) FOR [user_id],
-	CONSTRAINT [DF_phpbb_auth_u_forum_id] DEFAULT (0) FOR [forum_id],
-	CONSTRAINT [DF_phpbb_auth_u_auth_option_id] DEFAULT (0) FOR [auth_option_id],
-	CONSTRAINT [DF_phpbb_auth_u_auth_role_id] DEFAULT (0) FOR [auth_role_id],
-	CONSTRAINT [DF_phpbb_auth_u_auth_setting] DEFAULT (0) FOR [auth_setting]
+ALTER TABLE [phpbb_acl_users] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_acl_u_user_id] DEFAULT (0) FOR [user_id],
+	CONSTRAINT [DF_phpbb_acl_u_forum_id] DEFAULT (0) FOR [forum_id],
+	CONSTRAINT [DF_phpbb_acl_u_auth_option_id] DEFAULT (0) FOR [auth_option_id],
+	CONSTRAINT [DF_phpbb_acl_u_auth_role_id] DEFAULT (0) FOR [auth_role_id],
+	CONSTRAINT [DF_phpbb_acl_u_auth_setting] DEFAULT (0) FOR [auth_setting]
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_auth_users]([user_id]) ON [PRIMARY]
+CREATE  INDEX [user_id] ON [phpbb_acl_users]([user_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [auth_option_id] ON [phpbb_auth_users]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [auth_option_id] ON [phpbb_acl_users]([auth_option_id]) ON [PRIMARY]
 GO
 
 
@@ -598,17 +598,17 @@ GO
 
 
 /*
- Table: phpbb_forum_access
+ Table: phpbb_forums_access
 */
-CREATE TABLE [phpbb_forum_access] (
+CREATE TABLE [phpbb_forums_access] (
 	[forum_id] [int] NOT NULL ,
 	[user_id] [int] NOT NULL ,
 	[session_id] [varchar] (32) NOT NULL 
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_forum_access] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_forum_access] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_forums_access] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_forums_access] PRIMARY KEY  CLUSTERED 
 	(
 		[forum_id],
 		[user_id],
@@ -616,7 +616,7 @@ ALTER TABLE [phpbb_forum_access] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_forum_access] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_forums_access] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_forum__forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_forum__user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_forum__session_id] DEFAULT ('') FOR [session_id]
@@ -624,24 +624,24 @@ GO
 
 
 /*
- Table: phpbb_forums_marking
+ Table: phpbb_forums_track
 */
-CREATE TABLE [phpbb_forums_marking] (
+CREATE TABLE [phpbb_forums_track] (
 	[user_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
 	[mark_time] [int] NOT NULL 
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_forums_marking] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_forums_marking] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_forums_track] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_forums_track] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[forum_id]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_forums_marking] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_forums_track] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_forumm_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_forumm_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_forumm_mark_time] DEFAULT (0) FOR [mark_time]
@@ -897,9 +897,9 @@ GO
 
 
 /*
- Table: phpbb_poll_results
+ Table: phpbb_poll_options
 */
-CREATE TABLE [phpbb_poll_results] (
+CREATE TABLE [phpbb_poll_options] (
 	[poll_option_id] [int] NOT NULL ,
 	[topic_id] [int] NOT NULL ,
 	[poll_option_text] [varchar] (3000) ,
@@ -907,22 +907,22 @@ CREATE TABLE [phpbb_poll_results] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_poll_results] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_poll_r_poll_option_id] DEFAULT (0) FOR [poll_option_id],
-	CONSTRAINT [DF_phpbb_poll_r_poll_option_total] DEFAULT (0) FOR [poll_option_total]
+ALTER TABLE [phpbb_poll_options] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_poll_o_poll_option_id] DEFAULT (0) FOR [poll_option_id],
+	CONSTRAINT [DF_phpbb_poll_o_poll_option_total] DEFAULT (0) FOR [poll_option_total]
 GO
 
-CREATE  INDEX [poll_option_id] ON [phpbb_poll_results]([poll_option_id]) ON [PRIMARY]
+CREATE  INDEX [poll_option_id] ON [phpbb_poll_options]([poll_option_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_poll_results]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_poll_options]([topic_id]) ON [PRIMARY]
 GO
 
 
 /*
- Table: phpbb_poll_voters
+ Table: phpbb_poll_votes
 */
-CREATE TABLE [phpbb_poll_voters] (
+CREATE TABLE [phpbb_poll_votes] (
 	[topic_id] [int] NOT NULL ,
 	[poll_option_id] [int] NOT NULL ,
 	[vote_user_id] [int] NOT NULL ,
@@ -930,19 +930,19 @@ CREATE TABLE [phpbb_poll_voters] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_poll_voters] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_poll_votes] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_poll_v_topic_id] DEFAULT (0) FOR [topic_id],
 	CONSTRAINT [DF_phpbb_poll_v_poll_option_id] DEFAULT (0) FOR [poll_option_id],
 	CONSTRAINT [DF_phpbb_poll_v_vote_user_id] DEFAULT (0) FOR [vote_user_id]
 GO
 
-CREATE  INDEX [topic_id] ON [phpbb_poll_voters]([topic_id]) ON [PRIMARY]
+CREATE  INDEX [topic_id] ON [phpbb_poll_votes]([topic_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [vote_user_id] ON [phpbb_poll_voters]([vote_user_id]) ON [PRIMARY]
+CREATE  INDEX [vote_user_id] ON [phpbb_poll_votes]([vote_user_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [vote_user_ip] ON [phpbb_poll_voters]([vote_user_ip]) ON [PRIMARY]
+CREATE  INDEX [vote_user_ip] ON [phpbb_poll_votes]([vote_user_ip]) ON [PRIMARY]
 GO
 
 
@@ -1999,9 +1999,9 @@ GO
 
 
 /*
- Table: phpbb_topics_marking
+ Table: phpbb_topics_track
 */
-CREATE TABLE [phpbb_topics_marking] (
+CREATE TABLE [phpbb_topics_track] (
 	[user_id] [int] NOT NULL ,
 	[topic_id] [int] NOT NULL ,
 	[forum_id] [int] NOT NULL ,
@@ -2009,22 +2009,22 @@ CREATE TABLE [phpbb_topics_marking] (
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [phpbb_topics_marking] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_topics_marking] PRIMARY KEY  CLUSTERED 
+ALTER TABLE [phpbb_topics_track] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_topics_track] PRIMARY KEY  CLUSTERED 
 	(
 		[user_id],
 		[topic_id]
 	)  ON [PRIMARY] 
 GO
 
-ALTER TABLE [phpbb_topics_marking] WITH NOCHECK ADD 
+ALTER TABLE [phpbb_topics_track] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_tmarki_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_tmarki_topic_id] DEFAULT (0) FOR [topic_id],
 	CONSTRAINT [DF_phpbb_tmarki_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_tmarki_mark_time] DEFAULT (0) FOR [mark_time]
 GO
 
-CREATE  INDEX [forum_id] ON [phpbb_topics_marking]([forum_id]) ON [PRIMARY]
+CREATE  INDEX [forum_id] ON [phpbb_topics_track]([forum_id]) ON [PRIMARY]
 GO
 
 

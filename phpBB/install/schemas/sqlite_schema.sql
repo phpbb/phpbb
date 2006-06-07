@@ -32,8 +32,8 @@ CREATE INDEX phpbb_attachments_physical_filename on phpbb_attachments (physical_
 CREATE INDEX phpbb_attachments_filesize on phpbb_attachments (filesize);
 
 
-# Table: phpbb_auth_groups
-CREATE TABLE phpbb_auth_groups (
+# Table: phpbb_acl_groups
+CREATE TABLE phpbb_acl_groups (
   group_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
@@ -41,12 +41,12 @@ CREATE TABLE phpbb_auth_groups (
   auth_setting tinyint(2) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_auth_groups_group_id on phpbb_auth_groups (group_id);
-CREATE INDEX phpbb_auth_groups_auth_option_id on phpbb_auth_groups (auth_option_id);
+CREATE INDEX phpbb_acl_groups_group_id on phpbb_acl_groups (group_id);
+CREATE INDEX phpbb_acl_groups_auth_option_id on phpbb_acl_groups (auth_option_id);
 
 
-# Table: phpbb_auth_options
-CREATE TABLE phpbb_auth_options (
+# Table: phpbb_acl_options
+CREATE TABLE phpbb_acl_options (
   auth_option_id INTEGER PRIMARY KEY NOT NULL,
   auth_option varchar(20) NOT NULL,
   is_global tinyint(1) NOT NULL DEFAULT '0',
@@ -54,11 +54,11 @@ CREATE TABLE phpbb_auth_options (
   founder_only tinyint(1) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_auth_options_auth_option on phpbb_auth_options (auth_option);
+CREATE INDEX phpbb_acl_options_auth_option on phpbb_acl_options (auth_option);
 
 
-# Table: phpbb_auth_roles
-CREATE TABLE phpbb_auth_roles (
+# Table: phpbb_acl_roles
+CREATE TABLE phpbb_acl_roles (
   role_id INTEGER PRIMARY KEY NOT NULL,
   role_name varchar(255) NOT NULL DEFAULT '',
   role_description text(65535),
@@ -66,12 +66,12 @@ CREATE TABLE phpbb_auth_roles (
   role_order smallint(4) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_auth_roles_role_type on phpbb_auth_roles (role_type);
-CREATE INDEX phpbb_auth_roles_role_order on phpbb_auth_roles (role_order);
+CREATE INDEX phpbb_acl_roles_role_type on phpbb_acl_roles (role_type);
+CREATE INDEX phpbb_acl_roles_role_order on phpbb_acl_roles (role_order);
 
 
-# Table: phpbb_auth_roles_data
-CREATE TABLE phpbb_auth_roles_data (
+# Table: phpbb_acl_roles_data
+CREATE TABLE phpbb_acl_roles_data (
   role_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
   auth_setting tinyint(2) NOT NULL DEFAULT '0',
@@ -79,8 +79,8 @@ CREATE TABLE phpbb_auth_roles_data (
 );
 
 
-# Table: phpbb_auth_users
-CREATE TABLE phpbb_auth_users (
+# Table: phpbb_acl_users
+CREATE TABLE phpbb_acl_users (
   user_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   auth_option_id mediumint(8) NOT NULL DEFAULT '0',
@@ -88,8 +88,8 @@ CREATE TABLE phpbb_auth_users (
   auth_setting tinyint(2) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_auth_users_user_id on phpbb_auth_users (user_id);
-CREATE INDEX phpbb_auth_users_auth_option_id on phpbb_auth_users (auth_option_id);
+CREATE INDEX phpbb_acl_users_user_id on phpbb_acl_users (user_id);
+CREATE INDEX phpbb_acl_users_auth_option_id on phpbb_acl_users (auth_option_id);
 
 
 # Table: phpbb_banlist
@@ -263,8 +263,8 @@ CREATE INDEX phpbb_forums_left_right_id on phpbb_forums (left_id, right_id);
 CREATE INDEX phpbb_forums_forum_last_post_id on phpbb_forums (forum_last_post_id);
 
 
-# Table: phpbb_forum_access
-CREATE TABLE phpbb_forum_access (
+# Table: phpbb_forums_access
+CREATE TABLE phpbb_forums_access (
   forum_id mediumint(8) NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
   session_id varchar(32) NOT NULL DEFAULT '',
@@ -272,8 +272,8 @@ CREATE TABLE phpbb_forum_access (
 );
 
 
-# Table: phpbb_forums_marking
-CREATE TABLE phpbb_forums_marking (
+# Table: phpbb_forums_track
+CREATE TABLE phpbb_forums_track (
   user_id mediumint(9) NOT NULL DEFAULT '0',
   forum_id mediumint(9) NOT NULL DEFAULT '0',
   mark_time int(11) NOT NULL DEFAULT '0',
@@ -394,29 +394,29 @@ CREATE INDEX phpbb_modules_module_enabled on phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_left_right_id on phpbb_modules (left_id, right_id);
 
 
-# Table: phpbb_poll_results
-CREATE TABLE phpbb_poll_results (
+# Table: phpbb_poll_options
+CREATE TABLE phpbb_poll_options (
   poll_option_id tinyint(4) NOT NULL DEFAULT '0',
   topic_id mediumint(8) NOT NULL,
   poll_option_text text(65535),
   poll_option_total mediumint(8) NOT NULL DEFAULT '0'
 );
 
-CREATE INDEX phpbb_poll_results_poll_option_id on phpbb_poll_results (poll_option_id);
-CREATE INDEX phpbb_poll_results_topic_id on phpbb_poll_results (topic_id);
+CREATE INDEX phpbb_poll_options_poll_option_id on phpbb_poll_options (poll_option_id);
+CREATE INDEX phpbb_poll_options_topic_id on phpbb_poll_options (topic_id);
 
 
-# Table: phpbb_poll_voters
-CREATE TABLE phpbb_poll_voters (
+# Table: phpbb_poll_votes
+CREATE TABLE phpbb_poll_votes (
   topic_id mediumint(8) NOT NULL DEFAULT '0',
   poll_option_id tinyint(4) NOT NULL DEFAULT '0',
   vote_user_id mediumint(8) NOT NULL DEFAULT '0',
   vote_user_ip varchar(40) NOT NULL
 );
 
-CREATE INDEX phpbb_poll_voters_topic_id on phpbb_poll_voters (topic_id);
-CREATE INDEX phpbb_poll_voters_vote_user_id on phpbb_poll_voters (vote_user_id);
-CREATE INDEX phpbb_poll_voters_vote_user_ip on phpbb_poll_voters (vote_user_ip);
+CREATE INDEX phpbb_poll_votes_topic_id on phpbb_poll_votes (topic_id);
+CREATE INDEX phpbb_poll_votes_vote_user_id on phpbb_poll_votes (vote_user_id);
+CREATE INDEX phpbb_poll_votes_vote_user_ip on phpbb_poll_votes (vote_user_ip);
 
 
 # Table: phpbb_posts
@@ -886,8 +886,8 @@ CREATE INDEX phpbb_topics_forum_topic_type on phpbb_topics (forum_id, topic_type
 CREATE INDEX phpbb_topics_topic_last_post_time on phpbb_topics (topic_last_post_time);
 
 
-# Table: phpbb_topics_marking
-CREATE TABLE phpbb_topics_marking (
+# Table: phpbb_topics_track
+CREATE TABLE phpbb_topics_track (
   user_id mediumint(8) NOT NULL DEFAULT '0',
   topic_id mediumint(8) NOT NULL DEFAULT '0',
   forum_id mediumint(8) NOT NULL DEFAULT '0',

@@ -841,7 +841,7 @@ $template->assign_vars(array(
 );
 
 $sql = 'SELECT search_time, search_keywords
-	FROM ' . SEARCH_TABLE . '
+	FROM ' . SEARCH_RESULTS_TABLE . '
 	WHERE search_keywords <> \'\'
 	ORDER BY search_time DESC';
 $result = $db->sql_query_limit($sql, 5);

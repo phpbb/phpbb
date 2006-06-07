@@ -127,11 +127,11 @@ function mcp_front_view($id, $mode, $action)
 				'SELECT'	=> 'r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 				'FROM'		=> array(
-					REPORTS_TABLE	=> 'r',
-					REASONS_TABLE	=> 'rr',
-					TOPICS_TABLE	=> 't',
-					USERS_TABLE		=> 'u',
-					POSTS_TABLE		=> 'p'
+					REPORTS_TABLE			=> 'r',
+					REPORTS_REASONS_TABLE	=> 'rr',
+					TOPICS_TABLE			=> 't',
+					USERS_TABLE				=> 'u',
+					POSTS_TABLE				=> 'p'
 
 				),
 

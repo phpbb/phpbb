@@ -40,8 +40,8 @@ BEGIN
 END;;
 
 
-# phpbb_auth_groups
-CREATE TABLE phpbb_auth_groups (
+# phpbb_acl_groups
+CREATE TABLE phpbb_acl_groups (
   group_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
@@ -49,12 +49,12 @@ CREATE TABLE phpbb_auth_groups (
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
-CREATE INDEX phpbb_auth_groups_auth_opt_id ON phpbb_auth_groups(auth_option_id);;
-CREATE INDEX phpbb_auth_groups_group_id ON phpbb_auth_groups(group_id);;
+CREATE INDEX phpbb_acl_groups_auth_opt_id ON phpbb_acl_groups(auth_option_id);;
+CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups(group_id);;
 
 
-# phpbb_auth_options
-CREATE TABLE phpbb_auth_options (
+# phpbb_acl_options
+CREATE TABLE phpbb_acl_options (
   auth_option_id INTEGER NOT NULL,
   auth_option VARCHAR(20) NOT NULL,
   is_global INTEGER DEFAULT 0  NOT NULL,
@@ -62,23 +62,23 @@ CREATE TABLE phpbb_auth_options (
   founder_only INTEGER DEFAULT 0  NOT NULL
 );;
 
-ALTER TABLE phpbb_auth_options ADD PRIMARY KEY (auth_option_id);;
+ALTER TABLE phpbb_acl_options ADD PRIMARY KEY (auth_option_id);;
 
-CREATE INDEX phpbb_auth_options_auth_option ON phpbb_auth_options(auth_option);;
+CREATE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options(auth_option);;
 
-CREATE GENERATOR phpbb_auth_options_gen;;
-SET GENERATOR phpbb_auth_options_gen TO 0;;
+CREATE GENERATOR phpbb_acl_options_gen;;
+SET GENERATOR phpbb_acl_options_gen TO 0;;
 
-CREATE TRIGGER t_phpbb_auth_options_gen FOR phpbb_auth_options
+CREATE TRIGGER t_phpbb_acl_options_gen FOR phpbb_acl_options
 BEFORE INSERT
 AS
 BEGIN
-  NEW.auth_option_id = GEN_ID(phpbb_auth_options_gen, 1);
+  NEW.auth_option_id = GEN_ID(phpbb_acl_options_gen, 1);
 END;;
 
 
-# phpbb_auth_roles
-CREATE TABLE phpbb_auth_roles (
+# phpbb_acl_roles
+CREATE TABLE phpbb_acl_roles (
   role_id INTEGER NOT NULL,
   role_name VARCHAR(255) DEFAULT '' NOT NULL,
   role_description BLOB SUB_TYPE TEXT,
@@ -86,34 +86,34 @@ CREATE TABLE phpbb_auth_roles (
   role_order INTEGER DEFAULT 0  NOT NULL
 );;
 
-ALTER TABLE phpbb_auth_roles ADD PRIMARY KEY (role_id);;
+ALTER TABLE phpbb_acl_roles ADD PRIMARY KEY (role_id);;
 
-CREATE INDEX phpbb_auth_roles_role_type ON phpbb_auth_roles(role_type);;
-CREATE INDEX phpbb_auth_roles_role_order ON phpbb_auth_roles(role_order);;
+CREATE INDEX phpbb_acl_roles_role_type ON phpbb_acl_roles(role_type);;
+CREATE INDEX phpbb_acl_roles_role_order ON phpbb_acl_roles(role_order);;
 
-CREATE GENERATOR phpbb_auth_roles_gen;;
-SET GENERATOR phpbb_auth_roles_gen TO 0;;
+CREATE GENERATOR phpbb_acl_roles_gen;;
+SET GENERATOR phpbb_acl_roles_gen TO 0;;
 
-CREATE TRIGGER t_phpbb_auth_roles_gen FOR phpbb_auth_roles
+CREATE TRIGGER t_phpbb_acl_roles_gen FOR phpbb_acl_roles
 BEFORE INSERT
 AS
 BEGIN
-  NEW.role_id = GEN_ID(phpbb_auth_roles_gen, 1);
+  NEW.role_id = GEN_ID(phpbb_acl_roles_gen, 1);
 END;;
 
 
-# phpbb_auth_roles_data
-CREATE TABLE phpbb_auth_roles_data (
+# phpbb_acl_roles_data
+CREATE TABLE phpbb_acl_roles_data (
   role_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
-ALTER TABLE phpbb_auth_roles_data ADD PRIMARY KEY (role_id, auth_option_id);;
+ALTER TABLE phpbb_acl_roles_data ADD PRIMARY KEY (role_id, auth_option_id);;
 
 
-# phpbb_auth_users
-CREATE TABLE phpbb_auth_users (
+# phpbb_acl_users
+CREATE TABLE phpbb_acl_users (
   user_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   auth_option_id INTEGER DEFAULT 0  NOT NULL,
@@ -121,8 +121,8 @@ CREATE TABLE phpbb_auth_users (
   auth_setting INTEGER DEFAULT 0  NOT NULL
 );;
 
-CREATE INDEX phpbb_auth_users_auth_opt_id ON phpbb_auth_users(auth_option_id);;
-CREATE INDEX phpbb_auth_users_user_id ON phpbb_auth_users(user_id);;
+CREATE INDEX phpbb_acl_users_auth_opt_id ON phpbb_acl_users(auth_option_id);;
+CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users(user_id);;
 
 
 # phpbb_banlist
@@ -384,24 +384,24 @@ BEGIN
 END;;
 
 
-# phpbb_forum_access
-CREATE TABLE phpbb_forum_access (
+# phpbb_forums_access
+CREATE TABLE phpbb_forums_access (
   forum_id INTEGER DEFAULT 0  NOT NULL,
   user_id INTEGER DEFAULT 0  NOT NULL,
   session_id VARCHAR(32) DEFAULT '' NOT NULL
 );;
 
-ALTER TABLE phpbb_forum_access ADD PRIMARY KEY (forum_id, user_id, session_id);;
+ALTER TABLE phpbb_forums_access ADD PRIMARY KEY (forum_id, user_id, session_id);;
 
 
-# phpbb_forums_marking
-CREATE TABLE phpbb_forums_marking (
+# phpbb_forums_track
+CREATE TABLE phpbb_forums_track (
   user_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   mark_time INTEGER DEFAULT 0  NOT NULL
 );;
 
-ALTER TABLE phpbb_forums_marking ADD PRIMARY KEY (user_id, forum_id);;
+ALTER TABLE phpbb_forums_track ADD PRIMARY KEY (user_id, forum_id);;
 
 
 # phpbb_forums_watch
@@ -577,28 +577,28 @@ BEGIN
 END;;
 
 
-# phpbb_poll_results
-CREATE TABLE phpbb_poll_results (
+# phpbb_poll_options
+CREATE TABLE phpbb_poll_options (
   poll_option_id INTEGER DEFAULT 0  NOT NULL,
   topic_id INTEGER NOT NULL,
   poll_option_text BLOB SUB_TYPE TEXT,
   poll_option_total INTEGER DEFAULT 0  NOT NULL
 );;
 
-CREATE INDEX phpbb_poll_results_poll_opt_id ON phpbb_poll_results(poll_option_id);;
-CREATE INDEX phpbb_poll_results_topic_id ON phpbb_poll_results(topic_id);;
+CREATE INDEX phpbb_poll_options_poll_opt_id ON phpbb_poll_options(poll_option_id);;
+CREATE INDEX phpbb_poll_options_topic_id ON phpbb_poll_options(topic_id);;
 
 
-# phpbb_poll_voters
-CREATE TABLE phpbb_poll_voters (
+# phpbb_poll_votes
+CREATE TABLE phpbb_poll_votes (
   topic_id INTEGER DEFAULT 0  NOT NULL,
   poll_option_id INTEGER DEFAULT 0  NOT NULL,
   vote_user_id INTEGER DEFAULT 0  NOT NULL,
   vote_user_ip VARCHAR(40) NOT NULL
 );;
 
-CREATE INDEX phpbb_poll_voters_vote_user_id ON phpbb_poll_voters(vote_user_id);;
-CREATE INDEX phpbb_poll_voters_vote_user_ip ON phpbb_poll_voters(vote_user_ip);;
+CREATE INDEX phpbb_poll_votes_vote_user_id ON phpbb_poll_votes(vote_user_id);;
+CREATE INDEX phpbb_poll_votes_vote_user_ip ON phpbb_poll_votes(vote_user_ip);;
 
 
 # phpbb_posts
@@ -1263,17 +1263,17 @@ BEGIN
 END;;
 
 
-# phpbb_topics_marking
-CREATE TABLE phpbb_topics_marking (
+# phpbb_topics_track
+CREATE TABLE phpbb_topics_track (
   user_id INTEGER DEFAULT 0  NOT NULL,
   topic_id INTEGER DEFAULT 0  NOT NULL,
   forum_id INTEGER DEFAULT 0  NOT NULL,
   mark_time INTEGER DEFAULT 0  NOT NULL
 );;
 
-ALTER TABLE phpbb_topics_marking ADD PRIMARY KEY (user_id, topic_id);;
+ALTER TABLE phpbb_topics_track ADD PRIMARY KEY (user_id, topic_id);;
 
-CREATE INDEX phpbb_topics_marking_forum_id ON phpbb_topics_marking(forum_id);;
+CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track(forum_id);;
 
 
 # phpbb_topics_posted

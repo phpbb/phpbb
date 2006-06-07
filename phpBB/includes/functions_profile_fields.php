@@ -351,7 +351,7 @@ class custom_profile
 			}
 
 			$sql = 'SELECT *
-				FROM ' . PROFILE_DATA_TABLE . '
+				FROM ' . PROFILE_FIELDS_DATA_TABLE . '
 				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
 			$result = $db->sql_query($sql);
 

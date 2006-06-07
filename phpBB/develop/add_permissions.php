@@ -37,9 +37,9 @@ define('ACL_NO', 0);
 define('ACL_YES', 1);
 define('ACL_UNSET', -1);
 
-define('ACL_GROUPS_TABLE', $table_prefix.'auth_groups');
-define('ACL_OPTIONS_TABLE', $table_prefix.'auth_options');
-define('ACL_USERS_TABLE', $table_prefix.'auth_users');
+define('ACL_GROUPS_TABLE', $table_prefix.'acl_groups');
+define('ACL_OPTIONS_TABLE', $table_prefix.'acl_options');
+define('ACL_USERS_TABLE', $table_prefix.'acl_users');
 define('GROUPS_TABLE', $table_prefix.'groups');
 define('USERS_TABLE', $table_prefix.'users');
 

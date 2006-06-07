@@ -313,7 +313,7 @@ class ucp_profile
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
-							$sql = 'UPDATE ' . PROFILE_DATA_TABLE . '
+							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
 								WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
@@ -324,7 +324,7 @@ class ucp_profile
 
 								$db->return_on_error = true;
 
-								$sql = 'INSERT INTO ' . PROFILE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
+								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
 								$db->sql_query($sql);
 
 								$db->return_on_error = false;

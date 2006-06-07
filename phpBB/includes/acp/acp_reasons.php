@@ -56,7 +56,7 @@ class acp_reasons
 					if ($action == 'edit')
 					{
 						$sql = 'SELECT reason_title
-							FROM ' . REASONS_TABLE . "
+							FROM ' . REPORTS_REASONS_TABLE . "
 							WHERE reason_id = $reason_id";
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
@@ -76,7 +76,7 @@ class acp_reasons
 					if ($check_double)
 					{
 						$sql = 'SELECT reason_id
-							FROM ' . REASONS_TABLE . "
+							FROM ' . REPORTS_REASONS_TABLE . "
 							WHERE LOWER(reason_title) = '" . strtolower($reason_row['reason_title']) . "'";
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
@@ -95,7 +95,7 @@ class acp_reasons
 						{
 							// Get new order...
 							$sql = 'SELECT MAX(reason_order) as max_reason_order
-								FROM ' . REASONS_TABLE;
+								FROM ' . REPORTS_REASONS_TABLE;
 							$result = $db->sql_query($sql);
 							$max_order = (int) $db->sql_fetchfield('max_reason_order');
 							$db->sql_freeresult($result);
@@ -106,7 +106,7 @@ class acp_reasons
 								'reason_order'			=> $max_order + 1
 							);
 
-							$db->sql_query('INSERT INTO ' . REASONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+							$db->sql_query('INSERT INTO ' . REPORTS_REASONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
 							$log = 'ADDED';
 						}
@@ -117,7 +117,7 @@ class acp_reasons
 								'reason_description'	=> (string) $reason_row['reason_description'],
 							);
 
-							$db->sql_query('UPDATE ' . REASONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							$db->sql_query('UPDATE ' . REPORTS_REASONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE reason_id = ' . $reason_id);
 
 							$log = 'UPDATED';
@@ -130,7 +130,7 @@ class acp_reasons
 				else if ($reason_id)
 				{
 					$sql = 'SELECT *
-						FROM ' . REASONS_TABLE . '
+						FROM ' . REPORTS_REASONS_TABLE . '
 						WHERE reason_id = ' . $reason_id;
 					$result = $db->sql_query($sql);
 					$reason_row = $db->sql_fetchrow($result);
@@ -173,7 +173,7 @@ class acp_reasons
 			case 'delete':
 
 				$sql = 'SELECT *
-					FROM ' . REASONS_TABLE . '
+					FROM ' . REPORTS_REASONS_TABLE . '
 					WHERE reason_id = ' . $reason_id;
 				$result = $db->sql_query($sql);
 				$reason_row = $db->sql_fetchrow($result);
@@ -193,7 +193,7 @@ class acp_reasons
 				if (confirm_box(true))
 				{
 					$sql = 'SELECT reason_id
-						FROM ' . REASONS_TABLE . "
+						FROM ' . REPORTS_REASONS_TABLE . "
 						WHERE reason_title = 'other'";
 					$result = $db->sql_query($sql);
 					$other_reason_id = (int) $db->sql_fetchfield('reason_id');
@@ -205,7 +205,7 @@ class acp_reasons
 						WHERE reason_id = $reason_id";
 					$db->sql_query($sql);
 
-					$db->sql_query('DELETE FROM ' . REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
+					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
 
 					add_log('admin', 'LOG_REASON_REMOVED', $reason_row['reason_title']);
 					trigger_error($user->lang['REASON_REMOVED'] . adm_back_link($this->u_action));
@@ -228,7 +228,7 @@ class acp_reasons
 				$order = request_var('order', 0);
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
-				$sql = 'UPDATE ' . REASONS_TABLE . '
+				$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . '
 					SET reason_order = ' . $order_total  . ' - reason_order
 					WHERE reason_order IN (' . $order . ', ' . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
@@ -238,7 +238,7 @@ class acp_reasons
 
 		// By default, check that order is valid and fix it if necessary
 		$sql = 'SELECT reason_id, reason_order
-			FROM ' . REASONS_TABLE . '
+			FROM ' . REPORTS_REASONS_TABLE . '
 			ORDER BY reason_order';
 		$result = $db->sql_query($sql);
 
@@ -251,7 +251,7 @@ class acp_reasons
 				
 				if ($row['reason_order'] != $order)
 				{
-					$sql = 'UPDATE ' . REASONS_TABLE . "
+					$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . "
 						SET reason_order = $order
 						WHERE reason_id = {$row['reason_id']}";
 					$db->sql_query($sql);
@@ -280,7 +280,7 @@ class acp_reasons
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT *
-			FROM ' . REASONS_TABLE . '
+			FROM ' . REPORTS_REASONS_TABLE . '
 			ORDER BY reason_order ASC';
 		$result = $db->sql_query($sql);
 

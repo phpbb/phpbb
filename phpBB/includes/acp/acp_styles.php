@@ -194,7 +194,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					case 'refresh':
 
 						$sql = 'SELECT *
-							FROM ' . STYLES_TPL_TABLE . "
+							FROM ' . STYLES_TEMPLATE_TABLE . "
 							WHERE template_id = $style_id";
 						$result = $db->sql_query($sql);
 						$template_row = $db->sql_fetchrow($result);
@@ -215,7 +215,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 								$filelist = array('' => array());
 
 								$sql = 'SELECT template_filename, template_mtime
-									FROM ' . STYLES_TPLDATA_TABLE . "
+									FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 									WHERE template_id = $style_id";
 								$result = $db->sql_query($sql);
 
@@ -271,7 +271,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					case 'refresh':
 
 						$sql = 'SELECT *
-							FROM ' . STYLES_CSS_TABLE . "
+							FROM ' . STYLES_THEME_TABLE . "
 							WHERE theme_id = $style_id";
 						$result = $db->sql_query($sql);
 						$theme_row = $db->sql_fetchrow($result);
@@ -297,11 +297,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 									'theme_data'	=> $this->db_theme_data($theme_row)
 								);
 
-								$sql = 'UPDATE ' . STYLES_CSS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 									WHERE theme_id = $style_id";
 								$db->sql_query($sql);
 
-								$cache->destroy('sql', STYLES_CSS_TABLE);
+								$cache->destroy('sql', STYLES_THEME_TABLE);
 
 								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
 							}
@@ -356,15 +356,15 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 
 			case 'template':
-				$sql_from = STYLES_TPL_TABLE;
+				$sql_from = STYLES_TEMPLATE_TABLE;
 			break;
 
 			case 'theme':
-				$sql_from = STYLES_CSS_TABLE;
+				$sql_from = STYLES_THEME_TABLE;
 			break;
 
 			case 'imageset':
-				$sql_from = STYLES_IMAGE_TABLE;
+				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
 
@@ -495,7 +495,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
-			FROM ' . STYLES_TPL_TABLE . "
+			FROM ' . STYLES_TEMPLATE_TABLE . "
 			WHERE template_id = $template_id";
 		$result = $db->sql_query($sql);
 
@@ -529,7 +529,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// If it's not stored in the db yet, then update the template setting and store all template files in the db
 				if (!$template_info['template_storedb'])
 				{
-					$sql = 'UPDATE ' . STYLES_TPL_TABLE . '
+					$sql = 'UPDATE ' . STYLES_TEMPLATE_TABLE . '
 						SET template_storedb = 1
 						WHERE template_id = ' . $template_id;
 					$db->sql_query($sql);
@@ -542,7 +542,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				}
 
 				// Update the template_data table entry for this template file
-				$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . "
+				$sql = 'UPDATE ' . STYLES_TEMPLATE_DATA_TABLE . "
 					SET template_data = '" . $db->sql_escape($template_data) . "', template_mtime = " . time() . "
 					WHERE template_id = $template_id
 						AND template_filename = '" . $db->sql_escape($template_file) . "'";
@@ -577,7 +577,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		else
 		{
 			$sql = 'SELECT *
-				FROM ' . STYLES_TPLDATA_TABLE . "
+				FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 				WHERE template_id = $template_id";
 			$result = $db->sql_query($sql);
 
@@ -694,7 +694,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$submit		= isset($_POST['submit']) ? true : false;
 
 		$sql = 'SELECT *
-			FROM ' . STYLES_TPL_TABLE . "
+			FROM ' . STYLES_TEMPLATE_TABLE . "
 			WHERE template_id = $template_id";
 		$result = $db->sql_query($sql);
 
@@ -764,7 +764,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		if ($template_row['template_storedb'])
 		{
 			$sql = 'SELECT template_filename, template_mtime
-				FROM ' . STYLES_TPLDATA_TABLE . "
+				FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 				WHERE template_id = $template_id";
 			$result = $db->sql_query($sql);
 
@@ -831,7 +831,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
-			FROM ' . STYLES_CSS_TABLE . "
+			FROM ' . STYLES_THEME_TABLE . "
 			WHERE theme_id = $theme_id";
 		$result = $db->sql_query($sql);
 
@@ -1187,12 +1187,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					'theme_storedb'		=> 1,
 					'theme_data'		=> $this->db_theme_data($theme_info, $stylesheet),
 				);
-				$sql = 'UPDATE ' . STYLES_CSS_TABLE . '
+				$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE theme_id = ' . $theme_id;
 				$db->sql_query($sql);
 
-				$cache->destroy('sql', STYLES_CSS_TABLE);
+				$cache->destroy('sql', STYLES_THEME_TABLE);
 
 				// notify the user if the template was not stored in the db before his modification
 				if (!$theme_info['theme_storedb'])
@@ -1202,7 +1202,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				}
 			}
 
-			$cache->destroy('sql', STYLES_CSS_TABLE);
+			$cache->destroy('sql', STYLES_THEME_TABLE);
 			add_log('admin', ($add_custom) ? 'LOG_THEME_EDIT_ADD' : 'LOG_THEME_EDIT', $theme_info['theme_name'], ($add_custom) ? $custom_class : $edit_class);
 
 			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;css_class=$edit_class&amp;showcss=$show_css&amp;text_rows=$text_rows"));
@@ -1242,7 +1242,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			$sql_select = ($imgname) ? ", $imgname" : '';
 			$sql = "SELECT imageset_path, imageset_name, imageset_copyright$sql_select
-				FROM " . STYLES_IMAGE_TABLE . "
+				FROM " . STYLES_IMAGESET_TABLE . "
 				WHERE imageset_id = $imageset_id";
 			$result = $db->sql_query($sql);
 
@@ -1297,12 +1297,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 					$imgpath = preg_replace('/^([^\/]+\/)/', '{LANG}/', $imgpath) . $imgheight . $imgwidth;
 
-					$sql = 'UPDATE ' . STYLES_IMAGE_TABLE . "
+					$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . "
 						SET $imgname = '" . $db->sql_escape($imgpath) . "'
 						WHERE imageset_id = $imageset_id";
 					$db->sql_query($sql);
 
-					$cache->destroy('sql', STYLES_IMAGE_TABLE);
+					$cache->destroy('sql', STYLES_IMAGESET_TABLE);
 
 					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
 
@@ -1416,17 +1416,17 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 
 			case 'template':
-				$sql_from = STYLES_TPL_TABLE;
+				$sql_from = STYLES_TEMPLATE_TABLE;
 				$sql_select = 'template_name, template_path, template_storedb';
 			break;
 
 			case 'theme':
-				$sql_from = STYLES_CSS_TABLE;
+				$sql_from = STYLES_THEME_TABLE;
 				$sql_select = 'theme_name, theme_path, theme_storedb';
 			break;
 
 			case 'imageset':
-				$sql_from = STYLES_IMAGE_TABLE;
+				$sql_from = STYLES_IMAGESET_TABLE;
 				$sql_select = 'imageset_name, imageset_path';
 			break;
 		}
@@ -1568,7 +1568,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$sql_select .= ($inc_template) ? ', t.*' : ', t.template_name';
 				$sql_select .= ($inc_theme) ? ', c.*' : ', c.theme_name';
 				$sql_select .= ($inc_imageset) ? ', i.*' : ', i.imageset_name';
-				$sql_from = STYLES_TABLE . ' s, ' . STYLES_TPL_TABLE . ' t, ' . STYLES_CSS_TABLE . ' c, ' . STYLES_IMAGE_TABLE . ' i';
+				$sql_from = STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . ' i';
 				$sql_where = "s.style_id = $style_id AND t.template_id = s.template_id AND c.theme_id = s.theme_id AND i.imageset_id = s.imageset_id";
 
 				$l_prefix = 'STYLE';
@@ -1578,7 +1578,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$name = 'template_name';
 
 				$sql_select = '*';
-				$sql_from = STYLES_TPL_TABLE;
+				$sql_from = STYLES_TEMPLATE_TABLE;
 				$sql_where = "template_id = $style_id";
 
 				$l_prefix = 'TEMPLATE';
@@ -1588,7 +1588,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$name = 'theme_name';
 
 				$sql_select = '*';
-				$sql_from = STYLES_CSS_TABLE;
+				$sql_from = STYLES_THEME_TABLE;
 				$sql_where = "theme_id = $style_id";
 
 				$l_prefix = 'THEME';
@@ -1598,7 +1598,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$name = 'imageset_name';
 
 				$sql_select = '*';
-				$sql_from = STYLES_IMAGE_TABLE;
+				$sql_from = STYLES_IMAGESET_TABLE;
 				$sql_where = "imageset_id = $style_id";
 
 				$l_prefix = 'IMAGESET';
@@ -1671,7 +1671,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				else
 				{
 					$sql = 'SELECT template_filename, template_data
-						FROM ' . STYLES_TPLDATA_TABLE . "
+						FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 						WHERE template_id = {$style_row['template_id']}";
 					$result = $db->sql_query($sql);
 
@@ -1880,7 +1880,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$l_type = strtoupper($mode);
 
 		$error = array();
-		$element_ary = array('template' => STYLES_TPL_TABLE, 'theme' => STYLES_CSS_TABLE, 'imageset' => STYLES_IMAGE_TABLE);
+		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
 
 		switch ($mode)
 		{
@@ -1889,15 +1889,15 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 
 			case 'template':
-				$sql_from = STYLES_TPL_TABLE;
+				$sql_from = STYLES_TEMPLATE_TABLE;
 			break;
 
 			case 'theme':
-				$sql_from = STYLES_CSS_TABLE;
+				$sql_from = STYLES_THEME_TABLE;
 			break;
 
 			case 'imageset':
-				$sql_from = STYLES_IMAGE_TABLE;
+				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
 
@@ -2037,7 +2037,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
 						{
 							$sql = 'SELECT *
-								FROM ' . STYLES_TPLDATA_TABLE . "
+								FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 								WHERE template_id = $style_id";
 							$result = $db->sql_query($sql);
 
@@ -2056,7 +2056,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 							if (!$store_db)
 							{
-								$sql = 'DELETE FROM ' . STYLES_TPLDATA_TABLE . "
+								$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 									WHERE template_id = $style_id";
 								$db->sql_query($sql);
 							}
@@ -2263,11 +2263,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 				if ($mode == 'insert')
 				{
-					$sql = 'INSERT INTO ' . STYLES_TPLDATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+					$sql = 'INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 				}
 				else
 				{
-					$sql = 'UPDATE ' . STYLES_TPLDATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					$sql = 'UPDATE ' . STYLES_TEMPLATE_DATA_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 						WHERE template_id = $style_id
 							AND template_filename = '" . $db->sql_escape("$pathfile$file") . "'";
 				}
@@ -2310,7 +2310,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Destroys cached versions of template files
 	*
-	* @param array $template_row contains the template's row in the STYLES_TPL_TABLE database table
+	* @param array $template_row contains the template's row in the STYLES_TEMPLATE_TABLE database table
 	* @param mixed $file_ary is optional and may contain an array of template file names which should be refreshed in the cache.
 	*	The file names should be the original template file names and not the cache file names.
 	*/
@@ -2356,7 +2356,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$error = $installcfg = $style_row = array();
 		$root_path = $cfg_file = '';
-		$element_ary = array('template' => STYLES_TPL_TABLE, 'theme' => STYLES_CSS_TABLE, 'imageset' => STYLES_IMAGE_TABLE);
+		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
 
 		$install_path = request_var('path', '');
 		$update = (isset($_POST['update'])) ? true : false;
@@ -2501,7 +2501,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
 
 		$l_type = strtoupper($mode);
-		$element_ary = array('template' => STYLES_TPL_TABLE, 'theme' => STYLES_CSS_TABLE, 'imageset' => STYLES_IMAGE_TABLE);
+		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
 		$error = array();
 
 		$style_row = array(
@@ -2529,17 +2529,17 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 				case 'template':
 					$sql_select = 'template_id';
-					$sql_from = STYLES_TPL_TABLE;
+					$sql_from = STYLES_TEMPLATE_TABLE;
 				break;
 
 				case 'theme':
 					$sql_select = 'theme_id';
-					$sql_from = STYLES_CSS_TABLE;
+					$sql_from = STYLES_THEME_TABLE;
 				break;
 
 				case 'imageset':
 					$sql_select = 'imageset_id';
-					$sql_from = STYLES_IMAGE_TABLE;
+					$sql_from = STYLES_IMAGESET_TABLE;
 				break;
 			}
 
@@ -2657,15 +2657,15 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		switch ($element)
 		{
 			case 'template':
-				$sql_from = STYLES_TPL_TABLE;
+				$sql_from = STYLES_TEMPLATE_TABLE;
 			break;
 
 			case 'theme':
-				$sql_from = STYLES_CSS_TABLE;
+				$sql_from = STYLES_THEME_TABLE;
 			break;
 
 			case 'imageset':
-				$sql_from = STYLES_IMAGE_TABLE;
+				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
 
@@ -2813,15 +2813,15 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		switch ($mode)
 		{
 			case 'template':
-				$sql_from = STYLES_TPL_TABLE;
+				$sql_from = STYLES_TEMPLATE_TABLE;
 			break;
 
 			case 'theme':
-				$sql_from = STYLES_CSS_TABLE;
+				$sql_from = STYLES_THEME_TABLE;
 			break;
 
 			case 'imageset':
-				$sql_from = STYLES_IMAGE_TABLE;
+				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
 

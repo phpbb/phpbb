@@ -118,8 +118,8 @@ CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments (filesize);
 
 
 
-/* Table: phpbb_auth_groups */
-CREATE TABLE phpbb_auth_groups (
+/* Table: phpbb_acl_groups */
+CREATE TABLE phpbb_acl_groups (
   group_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT4  DEFAULT '0' NOT NULL,
@@ -127,15 +127,15 @@ CREATE TABLE phpbb_auth_groups (
   auth_setting INT2 DEFAULT '0' NOT NULL
 );
 
-CREATE INDEX phpbb_auth_groups_group_id ON phpbb_auth_groups (group_id);
-CREATE INDEX phpbb_auth_groups_auth_option_id ON phpbb_auth_groups (auth_option_id);
+CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups (group_id);
+CREATE INDEX phpbb_acl_groups_auth_option_id ON phpbb_acl_groups (auth_option_id);
 
 
-/* Table: phpbb_auth_options */
-CREATE SEQUENCE phpbb_auth_options_seq;
+/* Table: phpbb_acl_options */
+CREATE SEQUENCE phpbb_acl_options_seq;
 
-CREATE TABLE phpbb_auth_options (
-  auth_option_id INT4 DEFAULT nextval('phpbb_auth_options_seq'),
+CREATE TABLE phpbb_acl_options (
+  auth_option_id INT4 DEFAULT nextval('phpbb_acl_options_seq'),
   auth_option varchar(20) NOT NULL,
   is_global INT2 DEFAULT '0' NOT NULL,
   is_local INT2 DEFAULT '0' NOT NULL,
@@ -143,16 +143,16 @@ CREATE TABLE phpbb_auth_options (
   PRIMARY KEY (auth_option_id)
 );
 
-CREATE INDEX phpbb_auth_options_auth_option ON phpbb_auth_options (auth_option);
+CREATE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options (auth_option);
 
 
 
 
-/* Table: phpbb_auth_roles */
-CREATE SEQUENCE phpbb_auth_roles_seq;
+/* Table: phpbb_acl_roles */
+CREATE SEQUENCE phpbb_acl_roles_seq;
 
-CREATE TABLE phpbb_auth_roles (
-  role_id INT4 DEFAULT nextval('phpbb_auth_roles_seq'),
+CREATE TABLE phpbb_acl_roles (
+  role_id INT4 DEFAULT nextval('phpbb_acl_roles_seq'),
   role_name varchar(255) DEFAULT '' NOT NULL,
   role_description varchar(8000),
   role_type varchar(10) DEFAULT '' NOT NULL,
@@ -160,14 +160,14 @@ CREATE TABLE phpbb_auth_roles (
   PRIMARY KEY (role_id)
 );
 
-CREATE INDEX phpbb_auth_roles_role_type ON phpbb_auth_roles (role_type);
-CREATE INDEX phpbb_auth_roles_role_order ON phpbb_auth_roles (role_order);
+CREATE INDEX phpbb_acl_roles_role_type ON phpbb_acl_roles (role_type);
+CREATE INDEX phpbb_acl_roles_role_order ON phpbb_acl_roles (role_order);
 
 
 
 
-/* Table: phpbb_auth_roles_data */
-CREATE TABLE phpbb_auth_roles_data (
+/* Table: phpbb_acl_roles_data */
+CREATE TABLE phpbb_acl_roles_data (
   role_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT4  DEFAULT '0' NOT NULL,
   auth_setting INT2  DEFAULT '0' NOT NULL,
@@ -175,8 +175,8 @@ CREATE TABLE phpbb_auth_roles_data (
 );
 
 
-/* Table: phpbb_auth_users */
-CREATE TABLE phpbb_auth_users (
+/* Table: phpbb_acl_users */
+CREATE TABLE phpbb_acl_users (
   user_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   auth_option_id INT4  DEFAULT '0' NOT NULL,
@@ -184,8 +184,8 @@ CREATE TABLE phpbb_auth_users (
   auth_setting INT2 DEFAULT '0' NOT NULL
 );
 
-CREATE INDEX phpbb_auth_users_user_id ON phpbb_auth_users (user_id);
-CREATE INDEX phpbb_auth_users_auth_option_id ON phpbb_auth_users (auth_option_id);
+CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
+CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 
 
 /* Table: phpbb_banlist */
@@ -420,8 +420,8 @@ CREATE INDEX phpbb_forums_forum_last_post_id ON phpbb_forums (forum_last_post_id
 
 
 
-/* Table: phpbb_forum_access */
-CREATE TABLE phpbb_forum_access (
+/* Table: phpbb_forums_access */
+CREATE TABLE phpbb_forums_access (
   forum_id INT4  DEFAULT '0' NOT NULL,
   user_id INT4  DEFAULT '0' NOT NULL,
   session_id varchar(32) DEFAULT '' NOT NULL,
@@ -431,8 +431,8 @@ CREATE TABLE phpbb_forum_access (
 );
 
 
-/* Table: phpbb_forums_marking */
-CREATE TABLE phpbb_forums_marking (
+/* Table: phpbb_forums_track */
+CREATE TABLE phpbb_forums_track (
   user_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
   mark_time INT4 DEFAULT '0' NOT NULL,
@@ -594,29 +594,29 @@ CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 
 
 
-/* Table: phpbb_poll_results */
-CREATE TABLE phpbb_poll_results (
+/* Table: phpbb_poll_options */
+CREATE TABLE phpbb_poll_options (
   poll_option_id INT2  DEFAULT '0' NOT NULL,
   topic_id INT4  NOT NULL,
   poll_option_text varchar(3000),
   poll_option_total INT4  DEFAULT '0' NOT NULL
 );
 
-CREATE INDEX phpbb_poll_results_poll_option_id ON phpbb_poll_results (poll_option_id);
-CREATE INDEX phpbb_poll_results_topic_id ON phpbb_poll_results (topic_id);
+CREATE INDEX phpbb_poll_options_poll_option_id ON phpbb_poll_options (poll_option_id);
+CREATE INDEX phpbb_poll_options_topic_id ON phpbb_poll_options (topic_id);
 
 
-/* Table: phpbb_poll_voters */
-CREATE TABLE phpbb_poll_voters (
+/* Table: phpbb_poll_votes */
+CREATE TABLE phpbb_poll_votes (
   topic_id INT4  DEFAULT '0' NOT NULL,
   poll_option_id INT2  DEFAULT '0' NOT NULL,
   vote_user_id INT4  DEFAULT '0' NOT NULL,
   vote_user_ip varchar(40) NOT NULL
 );
 
-CREATE INDEX phpbb_poll_voters_topic_id ON phpbb_poll_voters (topic_id);
-CREATE INDEX phpbb_poll_voters_vote_user_id ON phpbb_poll_voters (vote_user_id);
-CREATE INDEX phpbb_poll_voters_vote_user_ip ON phpbb_poll_voters (vote_user_ip);
+CREATE INDEX phpbb_poll_votes_topic_id ON phpbb_poll_votes (topic_id);
+CREATE INDEX phpbb_poll_votes_vote_user_id ON phpbb_poll_votes (vote_user_id);
+CREATE INDEX phpbb_poll_votes_vote_user_ip ON phpbb_poll_votes (vote_user_ip);
 
 
 /* Table: phpbb_posts */
@@ -1232,8 +1232,8 @@ CREATE INDEX phpbb_topics_topic_last_post_time ON phpbb_topics (topic_last_post_
 
 
 
-/* Table: phpbb_topics_marking */
-CREATE TABLE phpbb_topics_marking (
+/* Table: phpbb_topics_track */
+CREATE TABLE phpbb_topics_track (
   user_id INT4  DEFAULT '0' NOT NULL,
   topic_id INT4  DEFAULT '0' NOT NULL,
   forum_id INT4  DEFAULT '0' NOT NULL,
@@ -1244,7 +1244,7 @@ CREATE TABLE phpbb_topics_marking (
   CHECK (forum_id>=0)
 );
 
-CREATE INDEX phpbb_topics_marking_forum_id ON phpbb_topics_marking (forum_id);
+CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track (forum_id);
 
 
 /* Table: phpbb_topics_posted */

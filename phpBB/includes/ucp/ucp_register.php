@@ -294,7 +294,7 @@ class ucp_register
 				if (sizeof($cp_data))
 				{
 					$cp_data['user_id'] = (int) $user_id;
-					$sql = 'INSERT INTO ' . PROFILE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+					$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
 					$db->sql_query($sql);
 				}
 

@@ -1873,10 +1873,10 @@ function cache_moderators()
 	global $db, $cache, $auth, $phpbb_root_path, $phpEx;
 
 	// Remove cached sql results
-	$cache->destroy('sql', MODERATOR_TABLE);
+	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_TABLE);
+	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NO setting
 	$hold_ary = $ug_id_ary = $sql_ary = array();
@@ -2018,13 +2018,13 @@ function cache_moderators()
 			case 'mysql':
 			case 'mysql4':
 			case 'mysqli':
-				$db->sql_query('INSERT INTO ' . MODERATOR_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
+				$db->sql_query('INSERT INTO ' . MODERATOR_CACHE_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
 			break;
 
 			default:
 				foreach ($sql_ary as $ary)
 				{
-					$db->sql_query('INSERT INTO ' . MODERATOR_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
+					$db->sql_query('INSERT INTO ' . MODERATOR_CACHE_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
 				}
 			break;
 		}
