@@ -110,7 +110,7 @@ require($phpbb_root_path . 'config.' . $phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
 {
-	redirect($phpbb_root_path . 'install/index.' . $phpEx);
+	header('Location: install/index.' . $phpEx);
 	exit;
 }
 
