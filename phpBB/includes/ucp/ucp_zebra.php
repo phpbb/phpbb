@@ -45,7 +45,7 @@ class ucp_zebra
 
 			if ($data['add'] && !sizeof($error))
 			{
-				$data['add'] = explode("\n", $data['add']);
+				$data['add'] = array_map('strtolower', explode("\n", $data['add']));
 
 				// Do these name/s exist on a list already? If so, ignore ... we could be
 				// 'nice' and automatically handle names added to one list present on 
@@ -62,16 +62,16 @@ class ucp_zebra
 				{
 					if ($row['friend'])
 					{
-						$friends[] = $row['username'];
+						$friends[] = strtolower($row['username']);
 					}
 					else
 					{
-						$foes[] = $row['username'];
+						$foes[] = strtolower($row['username']);
 					}
 				}
 				$db->sql_freeresult($result);
 
-				$data['add'] = array_diff($data['add'], $friends, $foes, array($user->data['username']));
+				$data['add'] = array_diff($data['add'], $friends, $foes, array(strtolower($user->data['username'])));
 				unset($friends, $foes);
 
 				$data['add'] = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $data['add']));
@@ -80,7 +80,7 @@ class ucp_zebra
 				{
 					$sql = 'SELECT user_id, user_type
 						FROM ' . USERS_TABLE . ' 
-						WHERE username IN (' . $data['add'] . ')
+						WHERE LOWER(username) IN (' . $data['add'] . ')
 							AND user_type NOT IN (' . USER_IGNORE . ', ' . USER_INACTIVE . ')';
 					$result = $db->sql_query($sql);
 

@@ -738,9 +738,11 @@ class acp_permissions
 				}
 
 				// Update the permission set...
-				$auth_admin->acl_set($ug_type, $forum_id, $ug_id, $auth_options, $assigned_role);
+				$auth_admin->acl_set($ug_type, $forum_id, $ug_id, $auth_options, $assigned_role, false);
 			}
 		}
+
+		$auth_admin->acl_clear_prefetch();
 
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')

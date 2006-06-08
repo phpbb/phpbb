@@ -288,6 +288,30 @@ class acp_users
 
 							add_log('user', $user_id, $log . '_USER');
 
+							if ($user_row['user_type'] == USER_INACTIVE)
+							{
+								set_config('num_users', $config['num_users'] + 1, true);
+							}
+							else
+							{
+								set_config('num_users', $config['num_users'] - 1, true);
+							}
+
+							// Get latest username
+							$sql = 'SELECT user_id, username
+								FROM ' . USERS_TABLE . '
+								WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+								ORDER BY user_id DESC';
+							$result = $db->sql_query_limit($sql, 1);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							if ($row)
+							{
+								set_config('newest_user_id', $row['user_id'], true);
+								set_config('newest_username', $row['username'], true);
+							}
+
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;

@@ -60,15 +60,17 @@ class mcp_logs
 		{
 			case 'front':
 				$where_sql = '';
-				break;
+			break;
+
 			case 'forum_logs':
 				$forum_id = request_var('f', 0);
 				$where_sql = " AND forum_id = $forum_id";
-				break;
+			break;
+
 			case 'topic_logs':
 				$topic_id = request_var('t', 0);
 				$where_sql = " AND topic_id = $topic_id";
-				break;
+			break;
 		}
 
 		// Delete entries if requested and able
@@ -81,6 +83,7 @@ class mcp_logs
 				{
 					$sql_in[] = $mark;
 				}
+
 				$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
 				unset($sql_in);
 			}
@@ -111,13 +114,12 @@ class mcp_logs
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-
 		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, $topic_id, 0, $sql_where, $sql_sort);
 
 		$template->assign_vars(array(
-			'S_ON_PAGE'			=> on_page($log_count, $config['topics_per_page'], $start),
-			'TOTAL_LOGS'		=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
+			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
 
 			'U_POST_ACTION'		=> $this->u_action,
 			'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,

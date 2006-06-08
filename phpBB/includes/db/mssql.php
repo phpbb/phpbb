@@ -159,7 +159,15 @@ class dbal_mssql extends dbal
 				$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
 			}
 
-			return $this->sql_query($query, $cache_ttl); 
+			$result = $this->sql_query($query, $cache_ttl);
+
+			// Seek by $row_offset rows
+			if ($row_offset)
+			{
+				$this->sql_rowseek($result, $row_offset);
+			}
+
+			return $result;
 		}
 		else
 		{

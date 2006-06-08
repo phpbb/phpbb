@@ -146,7 +146,7 @@ class dbal_mssql_odbc extends dbal
 				$total = -1;
 			}
 
-			$row_offset = ($total) ? $offset : '';
+			$row_offset = ($total) ? $offset : 0;
 			$num_rows = ($total) ? $total : $offset;
 
 			if (strpos($query, 'SELECT DISTINCT') === 0)
@@ -158,7 +158,18 @@ class dbal_mssql_odbc extends dbal
 				$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
 			}
 
-			return $this->sql_query($query, $cache_ttl);
+			$result = $this->sql_query($query, $cache_ttl);
+
+			// Seek by $row_offset rows
+			if ($row_offset)
+			{
+				for ($i = 0; $i < $row_offset; $i++)
+				{
+					$this->sql_fetchrow($result);
+				}
+			}
+
+			return $result;
 		}
 		else
 		{
