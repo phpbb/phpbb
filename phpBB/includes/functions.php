@@ -368,10 +368,9 @@ function init_userprefs($userdata)
 			message_die(CRITICAL_ERROR, 'Could not update user language info');
 		}
 
-		$board_config['default_lang'] = $default_lang;
 		$userdata['user_lang'] = $default_lang;
 	}
-	elseif ( $board_config['default_lang'] !== $default_lang )
+	elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang )
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '" . $default_lang . "'
@@ -381,9 +380,9 @@ function init_userprefs($userdata)
 		{
 			message_die(CRITICAL_ERROR, 'Could not update user language info');
 		}
-
-		$board_config['default_lang'] = $default_lang;
 	}
+
+	$board_config['default_lang'] = $default_lang;
 
 	include($phpbb_root_path . 'language/lang_' . $board_config['default_lang'] . '/lang_main.' . $phpEx);
 
