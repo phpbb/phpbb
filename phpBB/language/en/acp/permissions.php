@@ -102,6 +102,7 @@ $lang = array_merge($lang, array(
 
 	'NO_AUTH_SETTING_FOUND'		=> 'Permission settings not defined.',
 	'NO_ROLE_ASSIGNED'			=> 'No role assigned...',
+	'NO_ROLE_ASSIGNED_EXPLAIN'	=> 'Setting to this role does not change permissions on the right. If you want to unset/remove all permissions you should use the "All Unset" link.',
 	'NO_ROLE_AVAILABLE'			=> 'No role available',
 	'NO_ROLE_NAME_SPECIFIED'	=> 'Please give the role a name.',
 	'NO_ROLE_SELECTED'			=> 'Role could not be found.',
