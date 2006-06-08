@@ -223,8 +223,6 @@ class acp_profile
 				$step = request_var('step', 1);
 
 				$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
-				$update_preview = (isset($_REQUEST['update_preview'])) ? true : false;
-				$update = (isset($_REQUEST['update']) || $update_preview) ? true : false;
 				$save = (isset($_REQUEST['save'])) ? true : false;
 
 				// We are editing... we need to grab basic things
@@ -264,8 +262,6 @@ class acp_profile
 					}
 					$db->sql_freeresult($result);
 
-					$field_row['pf_preview'] = '';
-
 					$s_hidden_fields = '<input type="hidden" name="field_id" value="' . $field_id . '" />';
 				}
 				else
@@ -288,8 +284,7 @@ class acp_profile
 						'field_show_on_reg'	=> 0,
 						'lang_name'			=> '',
 						'lang_explain'		=> '',
-						'lang_default_value'=> '',
-						'pf_preview'		=> '')
+						'lang_default_value'=> '')
 					);
 
 					$s_hidden_fields = '<input type="hidden" name="field_type" value="' . $field_type . '" />';
@@ -298,7 +293,7 @@ class acp_profile
 				// $exclude contains the data we gather in each step
 				$exclude = array(
 					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option', 'field_no_view'),
-					2	=> array('field_length', 'pf_preview', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
+					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
 
@@ -509,26 +504,12 @@ class acp_profile
 					}	
 				}
 
-				$user_error = '';
-				if ($update && $step == 2)
-				{
-					// Validate Field
-					$user_error = $cp->validate_profile_field($field_type, $cp->vars['pf_preview'], $cp->vars);
-				}
-
 				$step = (isset($_REQUEST['next'])) ? $step + 1 : ((isset($_REQUEST['prev'])) ? $step - 1 : $step);
 
 				if (sizeof($error))
 				{
 					$step--;
 					$submit = false;
-				}
-
-				if (isset($_REQUEST['prev']) || isset($_REQUEST['next']))
-				{
-					$update = false;
-					$pf_preview = '';
-					unset($_REQUEST['pf_preview']);
 				}
 
 				// Build up the specific hidden fields
@@ -659,77 +640,6 @@ class acp_profile
 						{
 							$template->assign_block_vars('option', $option_ary);
 						}
-
-						if ($user_error || $update) 
-						{
-							// If not and only showing common error messages, use this one
-							switch ($user_error)
-							{
-								case 'FIELD_INVALID_DATE':
-								case 'FIELD_REQUIRED':
-									$user_error = sprintf($user->lang[$user_error], $cp->vars['lang_name']);
-								break;
-								
-								case 'FIELD_TOO_SHORT':
-								case 'FIELD_TOO_SMALL':
-									$user_error = sprintf($user->lang[$user_error], $cp->vars['lang_name'], $cp->vars['field_minlen']);
-								break;
-								
-								case 'FIELD_TOO_LONG':
-								case 'FIELD_TOO_LARGE':
-									$user_error = sprintf($user->lang[$user_error], $cp->vars['lang_name'], $cp->vars['field_maxlen']);
-								break;
-								
-								case 'FIELD_INVALID_CHARS':
-									switch ($cp->vars['field_validation'])
-									{
-										case '[0-9]+':
-											$user_error = sprintf($user->lang[$user_error . '_NUMBERS_ONLY'], $cp->vars['lang_name']);
-										break;
-	
-										case '[\w]+':
-											$user_error = sprintf($user->lang[$user_error . '_ALPHA_ONLY'], $cp->vars['lang_name']);
-										break;
-										
-										case '[\w_\+\. \-\[\]]+':
-											$user_error = sprintf($user->lang[$user_error . '_SPACERS_ONLY'], $cp->vars['lang_name']);
-										break;
-									}
-								break;
-
-								default:
-									$user_error = '';
-							}
-
-							$template->assign_var('USER_ERROR', $user_error);
-						}
-
-						$preview_field = array(
-							'lang_name'		=> $cp->vars['lang_name'],
-							'lang_explain'	=> $cp->vars['lang_explain'],
-							'lang_id'		=> $lang_defs['iso'][$config['default_lang']],
-							'field_id'		=> 1,
-
-							'lang_default_value'	=> $cp->vars['lang_default_value'],
-							'field_default_value'	=> $cp->vars['field_default_value'],
-							'field_ident'			=> 'preview',
-							'field_type'			=> $field_type,
-
-							'field_length'	=> $cp->vars['field_length'],
-							'field_maxlen'	=> $cp->vars['field_maxlen'],
-							'lang_options'	=> $cp->vars['lang_options'],
-						);
-
-						if ($update_preview)
-						{
-							$preview_field['acp_preview'] = true;
-						}
-
-						$template->assign_vars(array(
-							'PREVIEW_LANG_NAME'		=> $cp->vars['lang_name'],
-							'PREVIEW_LANG_EXPLAIN'	=> $cp->vars['lang_explain'],
-							'PREVIEW_FIELD'			=> $cp->process_field_row(($update_preview) ? 'change' : 'preview', $preview_field))
-						);
 
 					break;
 

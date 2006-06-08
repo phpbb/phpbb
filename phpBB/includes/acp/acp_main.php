@@ -68,8 +68,8 @@ class acp_main
 
 						if ($row = $db->sql_fetchrow($result))
 						{
-							set_config('newest_user_id', $row['user_id']);
-							set_config('newest_username', $row['username']);
+							set_config('newest_user_id', $row['user_id'], true);
+							set_config('newest_username', $row['username'], true);
 						}
 						$db->sql_freeresult($result);
 					}
@@ -368,7 +368,7 @@ class acp_main
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
-				if ($file{0} != '.')
+				if ($file{0} != '.' && strpos($file, 'index.') === false)
 				{
 					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 				}

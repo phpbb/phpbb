@@ -201,8 +201,8 @@ function user_delete($mode, $user_id, $post_username = false)
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			set_config('newest_user_id', $row['user_id']);
-			set_config('newest_username', $row['username']);
+			set_config('newest_user_id', $row['user_id'], true);
+			set_config('newest_username', $row['username'], true);
 		}
 		$db->sql_freeresult($result);
 	}

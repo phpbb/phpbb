@@ -767,8 +767,8 @@ class parse_message extends bbcode_firstpass
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
 		// Transform \r\n and \r into \n
-		$match = array('#\r\n?#', '#sid=[a-z0-9]*?&amp;?#', "#([\n][\s]+){3,}#", '#(script|about|applet|activex|chrome):#i');
-		$replace = array("\n", '', "\n\n", "\\1&#058;");
+		$match = array('#\r\n?#', "#([\n][\s]+){3,}#", '#(script|about|applet|activex|chrome):#i');
+		$replace = array("\n", "\n\n", "\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely.

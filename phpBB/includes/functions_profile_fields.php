@@ -65,7 +65,8 @@ class custom_profile
 			$template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $row['lang_name'],
 				'LANG_EXPLAIN'	=> $row['lang_explain'],
-				'FIELD'			=> $tpl_snippet)
+				'FIELD'			=> $tpl_snippet,
+				'S_REQUIRED'	=> ($row['field_required']) ? true : false)
 			);
 		}
 		$db->sql_freeresult($result);
@@ -355,19 +356,24 @@ class custom_profile
 				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
 			$result = $db->sql_query($sql);
 
-			$user_fields = array();
+			$field_data = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				foreach ($row as $ident => $value)
-				{
-					if (isset($this->profile_cache[$ident]))
-					{
-						$user_fields[$row['user_id']][$ident]['value'] = $value;
-						$user_fields[$row['user_id']][$ident]['data'] = $this->profile_cache[$ident];
-					}
-				}
+				$field_data[$row['user_id']] = $row;
 			}
 			$db->sql_freeresult($result);
+
+			$user_fields = array();
+
+			// Go through the fields in correct order
+			foreach (array_keys($this->profile_cache) as $used_ident)
+			{
+				foreach ($field_data as $user_id => $row)
+				{
+					$user_fields[$user_id][$used_ident]['value'] = $row[$used_ident];
+					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
+				}
+			}
 
 			return $user_fields;
 		}
@@ -444,6 +450,7 @@ class custom_profile
 				return $value;
 			break;
 
+			// case 'datetime':
 			case 'date':
 				$date = explode('-', $value);
 				$month = (isset($date[0])) ? (int) $date[0] : 0;
@@ -456,14 +463,12 @@ class custom_profile
 				}
 				else if ($day && $month && $year)
 				{
-					global $user;
-
-					return $user->format_date(mktime(0, 0, 1, $day, $month, $year));
+					return sprintf('%4d-%02d-%02d', $year, $month, $day);
 				}
 
 				return $value;
 			break;
-			
+
 			case 'dropdown':
 				$field_id = $ident_ary['data']['field_id'];
 				$lang_id = $ident_ary['data']['lang_id'];
@@ -479,7 +484,7 @@ class custom_profile
 
 				return $this->options_lang[$field_id][$lang_id][(int) $value];
 			break;
-			
+
 			case 'bool':
 				$field_id = $ident_ary['data']['field_id'];
 				$lang_id = $ident_ary['data']['lang_id'];
@@ -501,7 +506,7 @@ class custom_profile
 					return $this->options_lang[$field_id][$lang_id][(int) ($value + 1)];
 				}
 			break;
-			
+
 			default:
 				trigger_error('Unknown profile type', E_USER_ERROR);
 			break;
@@ -532,7 +537,7 @@ class custom_profile
 			}
 			else
 			{
-				if (is_null($user->profile_fields[$user_ident]) && !$preview)
+				if (!$preview && is_null($user->profile_fields[$user_ident]))
 				{
 					$value = NULL;
 				}
@@ -651,8 +656,7 @@ class custom_profile
 		{
 			if (!isset($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]) || !sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
 			{
-				$s_preview = ($preview || isset($profile_row['acp_preview'])) ? true : false;
-				$this->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_BOOL, $s_preview);
+				$this->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_BOOL, $preview);
 			}
 
 			foreach ($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
@@ -707,8 +711,7 @@ class custom_profile
 
 		if (!isset($this->options_lang[$profile_row['field_id']]) || !isset($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]) || !sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
 		{
-			$s_preview = ($preview || isset($profile_row['acp_preview'])) ? true : false;
-			$this->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_DROPDOWN, $s_preview);
+			$this->get_option_lang($profile_row['field_id'], $profile_row['lang_id'], FIELD_DROPDOWN, $preview);
 		}
 
 		$profile_row['field_value'] = $value;
@@ -1026,7 +1029,7 @@ class custom_profile_admin extends custom_profile
 
 		$options = array(
 			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
-			1 => array('TITLE' => $user->lang['ALWAYS_TODAY'],	'FIELD' => '<input type="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' /> ' . $user->lang['YES'] . ' <input type="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' /> ' . $user->lang['NO']),
+			1 => array('TITLE' => $user->lang['ALWAYS_TODAY'],	'FIELD' => '<input type="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['YES'] . ' <input type="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['NO']),
 		);
 
 		return $options;

@@ -54,7 +54,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_form',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_email_sig', 'Thanks, The Management');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_hide_emails', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_timezone', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_type', 'd');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cache_gc', '7200');

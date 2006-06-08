@@ -105,8 +105,8 @@ class ucp_activate
 
 		if (!$update_password)
 		{
-			set_config('newest_user_id', $row['user_id']);
-			set_config('newest_username', $row['username']);
+			set_config('newest_user_id', $row['user_id'], true);
+			set_config('newest_username', $row['username'], true);
 			set_config('num_users', $config['num_users'] + 1, true);
 		}
 

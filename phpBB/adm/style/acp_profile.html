@@ -115,23 +115,7 @@
 		
 		<fieldset class="quick" style="float: right">
 			{S_HIDDEN_FIELDS}
-			<input class="button1" type="submit" name="update" value="{L_UPDATE_PREVIEW}" />&nbsp;
 			<input class="button1" type="submit" name="next" value="{L_NEXT}" />
-		</fieldset>
-
-		<br /><br />
-
-		<fieldset>
-			<legend>{L_PREVIEW_PROFILE_FIELD}</legend>
-			<!-- IF USER_ERROR --><p style="color: red;">{USER_ERROR}</p><!-- ELSE --><p style="color: green;">{L_EVERYTHING_OK}</p><!-- ENDIF -->
-		<dl>
-			<dt><label>{PREVIEW_LANG_NAME}:</label><!-- IF PREVIEW_LANG_EXPLAIN --><br /><span>{PREVIEW_LANG_EXPLAIN}</span><!-- ENDIF --></dt>
-			<dd>{PREVIEW_FIELD}</dd> 
-		</dl>
-		</fieldset>
-
-		<fieldset class="quick">
-			<input class="button1" type="submit" name="update_preview" value="{L_SUBMIT}" />
 		</fieldset>
 
 	<!-- ELSEIF S_STEP_THREE -->

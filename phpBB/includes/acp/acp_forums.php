@@ -825,12 +825,14 @@ class acp_forums
 		$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
 
 		// Unset data that are not database fields
-		unset($forum_data['forum_link_track']);
-		unset($forum_data['prune_old_polls']);
-		unset($forum_data['prune_announce']);
-		unset($forum_data['prune_sticky']);
-		unset($forum_data['show_active']);
-		unset($forum_data['forum_password_confirm']);
+		$forum_data_sql = $forum_data;
+
+		unset($forum_data_sql['forum_link_track']);
+		unset($forum_data_sql['prune_old_polls']);
+		unset($forum_data_sql['prune_announce']);
+		unset($forum_data_sql['prune_sticky']);
+		unset($forum_data_sql['show_active']);
+		unset($forum_data_sql['forum_password_confirm']);
 
 		// What are we going to do tonight Brain? The same thing we do everynight,
 		// try to take over the world ... or decide whether to continue update
@@ -840,16 +842,16 @@ class acp_forums
 			return $errors;
 		}
 
-		if (!isset($forum_data['forum_id']))
+		if (!isset($forum_data_sql['forum_id']))
 		{
 			// no forum_id means we're creating a new forum
-			unset($forum_data['type_action']);
+			unset($forum_data_sql['type_action']);
 
-			if ($forum_data['parent_id'])
+			if ($forum_data_sql['parent_id'])
 			{
 				$sql = 'SELECT left_id, right_id
 					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id = ' . $forum_data['parent_id'];
+					WHERE forum_id = ' . $forum_data_sql['parent_id'];
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -869,8 +871,8 @@ class acp_forums
 					WHERE ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
 				$db->sql_query($sql);
 
-				$forum_data['left_id'] = $row['right_id'];
-				$forum_data['right_id'] = $row['right_id'] + 1;
+				$forum_data_sql['left_id'] = $row['right_id'];
+				$forum_data_sql['right_id'] = $row['right_id'] + 1;
 			}
 			else
 			{
@@ -880,11 +882,11 @@ class acp_forums
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$forum_data['left_id'] = $row['right_id'] + 1;
-				$forum_data['right_id'] = $row['right_id'] + 2;
+				$forum_data_sql['left_id'] = $row['right_id'] + 1;
+				$forum_data_sql['right_id'] = $row['right_id'] + 2;
 			}
 
-			$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $forum_data);
+			$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $forum_data_sql);
 			$db->sql_query($sql);
 
 			$forum_data['forum_id'] = $db->sql_nextid();
@@ -893,34 +895,34 @@ class acp_forums
 		}
 		else
 		{
-			$row = $this->get_forum_info($forum_data['forum_id']);
+			$row = $this->get_forum_info($forum_data_sql['forum_id']);
 
-			if ($forum_data['forum_type'] != FORUM_POST && $row['forum_type'] != $forum_data['forum_type'])
+			if ($row['forum_type'] == FORUM_POST && $row['forum_type'] != $forum_data_sql['forum_type'])
 			{
 				// we're turning a postable forum into a non-postable forum
-				if ($forum_data['type_action'] == 'move')
+				if ($forum_data_sql['type_action'] == 'move')
 				{
-					if ($forum_data['to_forum_id'])
+					$to_forum_id = request_var('to_forum_id', 0);
+
+					if ($to_forum_id)
 					{
-						$errors = $this->move_forum_content($forum_data['forum_id'], $forum_data['to_forum_id']);
+						$errors = $this->move_forum_content($forum_data_sql['forum_id'], $to_forum_id);
 					}
 					else
 					{
 						return array($user->lang['NO_DESTINATION_FORUM']);
 					}
 				}
-				else if ($forum_data['type_action'] == 'delete')
+				else if ($forum_data_sql['type_action'] == 'delete')
 				{
-					$errors = $this->delete_forum_content($forum_data['forum_id']);
+					$errors = $this->delete_forum_content($forum_data_sql['forum_id']);
 				}
 				else
 				{
 					return array($user->lang['NO_FORUM_ACTION']);
 				}
 
-				$forum_data['forum_posts'] = 0;
-				$forum_data['forum_topics'] = 0;
-				$forum_data['forum_topics_real'] = 0;
+				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = 0;
 			}
 
 			if (sizeof($errors))
@@ -928,9 +930,9 @@ class acp_forums
 				return $errors;
 			}
 
-			if ($row['parent_id'] != $forum_data['parent_id'])
+			if ($row['parent_id'] != $forum_data_sql['parent_id'])
 			{
-				$errors = $this->move_forum($forum_data['forum_id'], $forum_data['parent_id']);
+				$errors = $this->move_forum($forum_data_sql['forum_id'], $forum_data_sql['parent_id']);
 			}
 
 			if (sizeof($errors))
@@ -938,9 +940,9 @@ class acp_forums
 				return $errors;
 			}
 
-			unset($forum_data['type_action']);
+			unset($forum_data_sql['type_action']);
 
-			if ($row['forum_name'] != $forum_data['forum_name'])
+			if ($row['forum_name'] != $forum_data_sql['forum_name'])
 			{
 				// the forum name has changed, clear the parents list of child forums
 				$sql = 'UPDATE ' . FORUMS_TABLE . "
@@ -951,11 +953,11 @@ class acp_forums
 			}
 
 			// Setting the forum id to the forum id is not really received well by some dbs. ;)
-			$forum_id = $forum_data['forum_id'];
-			unset($forum_data['forum_id']);
+			$forum_id = $forum_data_sql['forum_id'];
+			unset($forum_data_sql['forum_id']);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $forum_data) . '
+				SET ' . $db->sql_build_array('UPDATE', $forum_data_sql) . '
 				WHERE forum_id = ' . $forum_id;
 			$db->sql_query($sql);
 

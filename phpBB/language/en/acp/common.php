@@ -408,6 +408,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_VISUAL'			=> '<b>Altered visual confirmation settings</b>',
 
 	'LOG_APPROVE_TOPIC'			=> '<b>Approved topic</b><br />&#187; %s',
+	'LOG_BUMP_TOPIC'			=> '<b>User bumped topic</b><br />&#187; %s',
 	'LOG_DELETE_POST'			=> '<b>Deleted post</b><br />&#187; %s',
 	'LOG_DELETE_TOPIC'			=> '<b>Deleted topic</b><br />&#187; %s',
 	'LOG_FORK'					=> '<b>Copied topic</b><br />&#187; from %s',

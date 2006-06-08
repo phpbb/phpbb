@@ -248,7 +248,7 @@ if ($mode == 'bump')
 
 		markread('post', $forum_id, $topic_id, $current_time);
 
-		add_log('mod', $forum_id, $topic_id, sprintf($user->lang['LOGM_BUMP'], $post_data['topic_title']));
+		add_log('mod', $forum_id, $topic_id, 'LOG_BUMP_TOPIC', $post_data['topic_title']);
 
 		$meta_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 		meta_refresh(3, $meta_url);
@@ -958,12 +958,12 @@ if (!sizeof($error) && $preview)
 $post_data['bbcode_uid'] = ($mode == 'quote' && !$preview && !$refresh && !sizeof($error)) ? $post_data['bbcode_uid'] : $message_parser->bbcode_uid;
 $message_parser->decode_message($post_data['bbcode_uid']);
 
-if ($mode == 'quote' && !$preview && !$refresh)
+if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 {
 	$message_parser->message = '[quote="' . $post_data['quote_username'] . '"]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
 }
 
-if (($mode == 'reply' || $mode == 'quote') && !$preview && !$refresh)
+if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
 {
 	$post_data['post_subject'] = ((!preg_match('/^Re:/', $post_data['post_subject'])) ? 'Re: ' : '') . censor_text($post_data['post_subject']);
 }
