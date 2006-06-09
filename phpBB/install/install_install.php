@@ -81,6 +81,7 @@ class install_install extends module
 			case 'final' :
 				$this->load_schema($mode, $sub);
 				$this->add_modules($mode, $sub);
+				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 			
 			break;
@@ -1268,9 +1269,8 @@ class install_install extends module
 			{
 				$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
 					WHERE module_langname = 'ACP_CAT_USERS'
-					AND module_class = 'acp'
-					LIMIT 1";
-				$result = $db->sql_query($sql);
+					AND module_class = 'acp'";
+				$result = $db->sql_query_limit($sql, 1);
 				$row2 = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
@@ -1283,9 +1283,8 @@ class install_install extends module
 
 				$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
 					WHERE module_langname = 'ACP_MANAGE_USERS'
-					AND module_class = 'acp'
-					LIMIT 1";
-				$result = $db->sql_query($sql);
+					AND module_class = 'acp'";
+				$result = $db->sql_query_limit($sql,a);
 				$module_data = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
@@ -1305,9 +1304,8 @@ class install_install extends module
 				{
 					$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
 						WHERE module_langname = '$cat_name'
-						AND module_class = '$module_class'
-						LIMIT 1";
-					$result = $db->sql_query($sql);
+						AND module_class = '$module_class'";
+					$result = $db->sql_query_limit($sql, 1);
 					$row2 = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
@@ -1346,6 +1344,69 @@ class install_install extends module
 
 			recalc_btree('module_id', MODULES_TABLE, $module_class);
 			$_module->remove_cache_file();
+		}
+	}
+
+	/**
+	* Add search robots to the database
+	*/
+	function add_bots($mode, $sub)
+	{
+		global $db;
+
+		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
+		$db->sql_freeresult($result);
+
+		if (!$group_id)
+		{
+			// If we reach this point then something has gone very wrong
+			$this->p_master->error($lang['NO_GROUP'], __LINE__, __FILE__);
+		}
+
+		foreach ($this->bot_list as $bot_name => $bot_ary)
+		{
+			$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'user_type'		=> GROUP_HIDDEN,
+				'group_id'		=> $group_id,
+				'username'		=> $bot_name,
+				'user_regdate'	=> time(),
+				'user_password'	=> '',
+				'user_lang'		=> 'en',
+				'user_style'	=> 1,
+				'user_rank'		=> 0,
+				'user_colour'	=> '9E8DA7',
+			));
+
+			$result = $db->sql_query($sql);
+
+			if (!$result)
+			{
+				// If we can't insert this user then continue to the next one to avoid inconsistant data
+				$this->p_master->db_error('Unable to insert bot into users table', $sql, __LINE__, __FILE__, true);
+				continue;
+			}
+
+			$user_id = $db->sql_nextid();
+
+			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'group_id'		=> $group_id,
+				'user_id'		=> $user_id,
+				'group_leader'	=> 0,
+				'user_pending'	=> 0,
+			));
+			$result = $db->sql_query($sql);
+
+			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'bot_active'	=> 1,
+				'bot_name'		=> $bot_name,
+				'user_id'		=> $user_id,
+				'bot_agent'		=> $bot_ary[0],
+				'bot_ip'		=> $bot_ary[1],
+			));
+
+			$result = $db->sql_query($sql);
 		}
 	}
 
@@ -1716,6 +1777,16 @@ class install_install extends module
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'
 		),
+	);
+
+	/**
+	* A list of the web-crawlers/bots we recognise by default
+	*/
+	var $bot_list = array(
+		'Alexa'			=> array('ia_archiver', '66.28.250.,209.237.238.'),
+		'Fastcrawler'	=> array('FAST MetaWeb Crawler', '66.151.181.'),
+		'Googlebot'		=> array('Googlebot/', ''),
+		'Inktomi'		=> array('Slurp/', '216.35.116.,66.196.'),
 	);
 
 	/**
