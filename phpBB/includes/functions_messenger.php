@@ -425,6 +425,7 @@ class messenger
 			$this->jabber->username = $config['jab_username'];
 			$this->jabber->password = $config['jab_password'];
 			$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
+			$this->jabber->encoding = $this->encoding;
 
 			if (!$this->jabber->connect())
 			{
@@ -441,7 +442,7 @@ class messenger
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, 'normal', NULL, array('body' => htmlentities($this->msg)));
+				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg));
 			}
 
 			sleep(1);
