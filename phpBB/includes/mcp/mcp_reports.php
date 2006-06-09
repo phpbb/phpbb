@@ -213,11 +213,16 @@ class mcp_reports
 					$forum_list = $forum_id;
 				}
 
+				$forum_list .= ', 0';
+				$forum_data = array();
+
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
 				{
 					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . $row['forum_name'] . '</option>';
+					$forum_data[$row['forum_id']] = $row;
 				}
+				unset($forum_list_reports);
 
 				$sort_days = $total = 0;
 				$sort_key = $sort_dir = '';
@@ -259,12 +264,11 @@ class mcp_reports
 
 				if (sizeof($post_ids))
 				{
-					$sql = 'SELECT f.forum_id, f.forum_name, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time
-						FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . USERS_TABLE . " ru
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time
+						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . USERS_TABLE . " ru
 						WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
 							AND t.topic_id = p.topic_id
 							AND r.post_id = p.post_id
-							AND f.forum_id = p.forum_id
 							AND u.user_id = p.poster_id
 							AND ru.user_id = r.user_id";
 
@@ -302,7 +306,7 @@ class mcp_reports
 
 							'S_CHECKBOX'	=> $s_checkbox,
 
-							'FORUM_NAME'	=> $row['forum_name'],
+							'FORUM_NAME'	=> ($row['forum_id']) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['ALL_FORUMS'],
 							'POSTER'		=> $poster,
 							'POST_SUBJECT'	=> $row['post_subject'],
 							'POST_TIME'		=> $user->format_date($row['post_time']),

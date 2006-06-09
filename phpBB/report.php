@@ -22,6 +22,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('mcp');
 
+$forum_id = request_var('f', 0);
 $post_id = request_var('p', 0);
 $reason_id = request_var('reason_id', 0);
 $report_text = request_var('report_text', '', true);
@@ -33,7 +34,7 @@ if (!$post_id)
 	trigger_error('INVALID_MODE');
 }
 
-$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=$post_id") . "#p$post_id";
+$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=$post_id") . "#p$post_id";
 
 // Has the report been cancelled?
 if (isset($_POST['cancel']))
@@ -42,11 +43,10 @@ if (isset($_POST['cancel']))
 }
 
 // Grab all relevant data
-$sql = 'SELECT f.*, t.*, p.*
-	FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
+$sql = 'SELECT t.*, p.*
+	FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 	WHERE p.post_id = $post_id
-		AND p.topic_id = t.topic_id
-		AND p.forum_id = f.forum_id";
+		AND p.topic_id = t.topic_id";
 $result = $db->sql_query($sql);
 $report_data = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
@@ -56,8 +56,8 @@ if (!$report_data)
 	trigger_error('POST_NOT_EXIST');
 }
 
-$forum_id = $report_data['forum_id'];
-$topic_id = $report_data['topic_id'];
+$forum_id = (int) ($report_data['forum_id']) ? $report_data['forum_id'] : $forum_id;
+$topic_id = (int) $report_data['topic_id'];
 
 // Check required permissions
 $acl_check_ary = array('f_list' => 'POST_NOT_EXIST', 'f_read' => 'USER_CANNOT_READ', 'f_report' => 'USER_CANNOT_REPORT');
@@ -134,7 +134,7 @@ display_reasons($reason_id);
 
 $template->assign_vars(array(
 	'REPORT_TEXT'		=> $report_text,
-	'S_REPORT_ACTION'	=> append_sid("{$phpbb_root_path}report.$phpEx", 'p=' . $post_id),
+	'S_REPORT_ACTION'	=> append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $post_id),
 
 	'S_NOTIFY'			=> $user_notify,
 	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false)
