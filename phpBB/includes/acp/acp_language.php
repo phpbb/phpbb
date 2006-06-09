@@ -797,11 +797,11 @@ class acp_language
 
 				if ($use_method == 'zip')
 				{
-					$compress = new compress_zip('w', $phpbb_root_path . 'store/lang_' . $row['lang_iso'] . '.' . $use_method);
+					$compress = new compress_zip('w', $phpbb_root_path . 'store/lang_' . $row['lang_iso'] . $use_method);
 				}
 				else
 				{
-					$compress = new compress_tar('w', $phpbb_root_path . 'store/lang_' . $row['lang_iso'] . '.' . $use_method, $use_method);
+					$compress = new compress_tar('w', $phpbb_root_path . 'store/lang_' . $row['lang_iso'] . $use_method, $use_method);
 				}
 
 				// Get email templates
