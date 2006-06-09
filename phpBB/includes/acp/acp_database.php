@@ -34,8 +34,6 @@ class acp_database
 
 		switch ($mode)
 		{
-			// TODO: Check the cases of Oracle and Firebird ( they generate everything in uppercase )
-			// MSSQL and MSSQL-ODBC can be written in a nicer way, consider sp_help
 			case 'backup':
 
 				switch ($action)
@@ -428,7 +426,6 @@ class acp_database
 												// Determine if we must reset the sequences
 												if (strpos($row['rowdefault'], 'nextval(\'') === 0)
 												{
-													//$ary_seq[$i] = $ary_name[$i];
 													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end from {$table_name}));\n";
 												}
 											}
@@ -1014,7 +1011,6 @@ class acp_database
 							'U_ACTION'	=> $this->u_action . '&amp;action=download'
 						));
 						
-						$methods = array('text');
 						$available_methods = array('gzip' => 'zlib', 'bzip2' => 'bz2');
 
 						foreach ($available_methods as $type => $module)
@@ -1028,6 +1024,10 @@ class acp_database
 								'TYPE'	=> $type
 							));
 						}
+
+						$template->assign_block_vars('methods', array(
+							'TYPE'	=> 'text'
+						));
 					break;
 				}
 			break;
@@ -1039,20 +1039,21 @@ class acp_database
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
 
-						if (!(file_exists($file) && is_readable($file)))
+						preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
+						$file_name = $phpbb_root_path . 'store/' . $matches[0];
+
+						if (!(file_exists($file_name) && is_readable($file_name)))
 						{
 							trigger_error($user->lang['BACKUP_INVALID']);
 						}
 
 						if ($delete)
 						{
-							unlink($phpbb_root_path . 'store/' . $file);
+							unlink($file_name);
 							trigger_error($user->lang['BACKUP_SUCCESS']);
 						}
 
-						preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
-
-						$data = file_get_contents($phpbb_root_path . 'store/' . $matches[0]);
+						$data = file_get_contents($file_name);
 
 						switch ($matches[2])
 						{
@@ -1165,7 +1166,7 @@ class acp_database
 	*/
 	function get_table_structure($table_name)
 	{
-		global $db;
+		global $db, $domains_created;
 
 		$sql_data = '';
 
@@ -1290,6 +1291,34 @@ class acp_database
 			break;
 
 			case 'postgres':
+				if (empty($domains_created))
+				{
+					$domains_created = array();
+				}
+
+				$sql = "SELECT a.domain_name, a.data_type, a.character_maximum_length, a.domain_default
+					FROM INFORMATION_SCHEMA.domains a, INFORMATION_SCHEMA.column_domain_usage b
+					WHERE a.domain_name = b.domain_name
+						AND b.table_name = '{$table_name}'";
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if (empty($domains_created[$row['domain_name']]))
+					{
+						$domains_created[$row['domain_name']] = true;
+						$sql_data .= "CREATE DOMAIN {$row['domain_name']} as {$row['data_type']}";
+						if (!empty($row['character_maximum_length']))
+						{
+							$sql_data .= '(' . $row['character_maximum_length'] . ')';
+						}
+						$sql_data .= ' NOT NULL';
+						if (!empty($row['domain_default']))
+						{
+							$sql_data .= 'DEFAULT ' . $row['domain_default'];
+						}
+						$sql_data .= ";\n";
+					}
+				}
 
 				// PGSQL does not "tightly" bind sequences and tables, we must guess...
 				$sql = "SELECT relname
