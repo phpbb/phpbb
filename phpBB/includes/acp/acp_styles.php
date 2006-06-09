@@ -740,8 +740,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$code = highlight_string(str_replace("\n", $marker, $code), true);
 			$code = str_replace($marker, "\n", $code);
 
-			$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
-			$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
+			$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
+			$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
 			$code = str_replace($str_from, $str_to, $code);
 			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
@@ -1383,6 +1383,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$imgsize_bool = (!empty($imgname) && ($imgsize || preg_match('#\*\d+#', $$imgname))) ? true : false;
 
+		$img_info = explode('*', $$imgname);
+
 		$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
 			'L_TITLE'			=> $user->lang[$this->page_title],
@@ -1390,7 +1392,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'IMAGE_OPTIONS'		=> $img_options,
 			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
 			'IMAGE_SIZE'		=> $imgsize_bool,
-			'IMAGE_REQUEST'		=> (!empty($imgname)) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, current(explode('*', $$imgname))) : '',
+			'IMAGE_REQUEST'		=> (!empty($imgname)) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, $img_info[0]) : '',
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
@@ -2886,8 +2888,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			switch ($mode)
 			{
 				case 'template':
-					$store_db = (!is_writeable("{$phpbb_root_path}styles/$path/template")) ? 1 : $store_db;
-
 					// We set a pre-defined bitfield here which we may use further in 3.2
 					$sql_ary += array(
 						'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
@@ -2896,8 +2896,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				break;
 
 				case 'theme':
-					$store_db = (!is_writeable("{$phpbb_root_path}styles/$path/theme/stylesheet.css")) ? 1 : $store_db;
-
 					$sql_ary += array(
 						'theme_storedb'	=> $store_db,
 						'theme_data'	=> ($store_db) ? (($root_path) ? $this->db_theme_data($sql_ary, false, $root_path) : '') : '',

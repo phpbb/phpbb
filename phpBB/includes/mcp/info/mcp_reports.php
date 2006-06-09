@@ -22,7 +22,7 @@ class mcp_reports_info
 			'modes'		=> array(
 				'reports'			=> array('title' => 'MCP_REPORTS_OPEN', 'auth' => 'aclf_m_report', 'cat' => array('MCP_REPORTS')),
 				'reports_closed'	=> array('title' => 'MCP_REPORTS_CLOSED', 'auth' => 'aclf_m_report', 'cat' => array('MCP_REPORTS')),
-				'report_details'	=> array('title' => 'MCP_REPORT_DETAILS', 'auth' => 'aclf_m_report', 'cat' => array('MCP_REPORTS')),
+				'report_details'	=> array('title' => 'MCP_REPORT_DETAILS', 'auth' => 'acl_m_report,$id || (!$id && aclf_m_report)', 'cat' => array('MCP_REPORTS')),
 			),
 		);
 	}

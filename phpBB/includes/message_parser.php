@@ -354,8 +354,8 @@ class bbcode_firstpass extends bbcode
 
 					$code = highlight_string($code, true);
 
-					$str_from = array('<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
-					$str_to = array('<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
+					$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
+					$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
 					if ($remove_tags)
 					{

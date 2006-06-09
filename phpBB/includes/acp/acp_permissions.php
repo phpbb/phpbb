@@ -917,7 +917,7 @@ class acp_permissions
 
 		if ($user_id != $user->data['user_id'])
 		{
-			$sql = 'SELECT user_id, user_permissions, user_type
+			$sql = 'SELECT user_id, username, user_permissions, user_type
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
 			$result = $db->sql_query($sql);
@@ -1100,7 +1100,7 @@ class acp_permissions
 		if ($userdata['user_type'] == USER_FOUNDER && strpos($permission, 'a_') === 0)
 		{
 			$template->assign_block_vars('trace', array(
-				'WHO'			=> $user_row['username'],
+				'WHO'			=> $userdata['username'],
 				'INFORMATION'	=> $user->lang['TRACE_USER_FOUNDER'],
 
 				'S_SETTING_UNSET'	=> ($auth_setting == ACL_UNSET) ? true : false,

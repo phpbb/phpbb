@@ -98,7 +98,7 @@ if ($topic_id && !$forum_id)
 }
 
 // If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
-if (!$auth->acl_get('m_') && !$auth->acl_getf_global('m_'))
+if (!$auth->acl_getf_global('m_'))
 {
 	// Except he is using one of the quickmod tools for users
 	$user_quickmod_actions = array(
