@@ -320,31 +320,34 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['FILES_OPTIONAL_EXPLAIN'],
 		));
 
-		// config.php ... let's just warn the user it's not writeable
-		$dir = 'config.'.$phpEx;
-		$write = $exists = true;
-		if (file_exists($phpbb_root_path . $dir))
+		$directories = array('config.'.$phpEx, 'images/avatars/upload/');
+
+		foreach ($directories as $dir)
 		{
-			if (!is_writeable($phpbb_root_path . $dir))
+			$write = $exists = true;
+			if (file_exists($phpbb_root_path . $dir))
 			{
-				$write = false;
+				if (!is_writeable($phpbb_root_path . $dir))
+				{
+					$write = false;
+				}
 			}
+			else
+			{
+				$write = $exists = false;
+			}
+
+			$exists_str = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
+			$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'		=> $dir,
+				'RESULT'	=> $exists_str . $write_str,
+
+				'S_EXPLAIN'	=> false,
+				'S_LEGEND'	=> false,
+			));
 		}
-		else
-		{
-			$write = $exists = false;
-		}
-
-		$exists_str = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-		$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
-
-		$template->assign_block_vars('checks', array(
-			'TITLE'		=> $dir,
-			'RESULT'	=> $exists_str . $write_str,
-
-			'S_EXPLAIN'	=> false,
-			'S_LEGEND'	=> false,
-		));
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
