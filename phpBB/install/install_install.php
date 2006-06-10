@@ -1287,7 +1287,7 @@ class install_install extends module
 				$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
 					WHERE module_langname = 'ACP_MANAGE_USERS'
 					AND module_class = 'acp'";
-				$result = $db->sql_query_limit($sql,a);
+				$result = $db->sql_query_limit($sql, 1);
 				$module_data = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
