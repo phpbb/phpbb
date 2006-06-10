@@ -324,7 +324,8 @@ $pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpE
 // Grab group details for legend display
 $sql = 'SELECT group_id, group_name, group_colour, group_type
 	FROM ' . GROUPS_TABLE . '
-	WHERE group_legend = 1';
+	WHERE group_legend = 1
+	ORDER BY group_name ASC';
 $result = $db->sql_query($sql);
 
 $legend = '';
