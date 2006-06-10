@@ -738,7 +738,7 @@ switch ($mode)
 			$count_select	= request_var('count_select', 'eq');
 			$joined			= explode('-', request_var('joined', ''));
 			$active			= explode('-', request_var('active', ''));
-			$count			= (request_var('count', '')) ? request_var('count', 0) : '';
+			$count			= (request_var('count', '') !== '') ? request_var('count', 0) : '';
 			$ipdomain		= request_var('ip', '');
 
 			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
@@ -783,13 +783,15 @@ switch ($mode)
 				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
 			}
 
-			if ($ipdomain && $auth->acl_get('m_info'))
+			if ($ipdomain && $auth->acl_getf_global('m_info'))
 			{
 				$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
 
+				$ip_forums = array_keys($auth->acl_getf('m_info', true));
 				$sql = 'SELECT DISTINCT poster_id
 					FROM ' . POSTS_TABLE . '
-					WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)";
+					WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)
+						AND forum_id IN (0, " . implode(',', $ip_forums) . ')';
 				$result = $db->sql_query($sql);
 
 				if ($row = $db->sql_fetchrow($result))
@@ -808,6 +810,7 @@ switch ($mode)
 					// A minor fudge but it does the job :D
 					$sql_where .= " AND u.user_id IN ('-1')";
 				}
+				unset($ip_forums);
 			}
 		}
 
