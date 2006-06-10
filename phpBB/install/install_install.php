@@ -517,6 +517,14 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
+		if ($dbname == '')
+		{
+			// Someone's been silly and tried calling this page direct
+			// So we send them back to the start to do it again properly
+			header('Location: index.' . $phpEx . '?mode=install');
+			exit;
+		}
+
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$passed = false;
 
@@ -668,6 +676,14 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
+		if ($dbname == '')
+		{
+			// Someone's been silly and tried calling this page direct
+			// So we send them back to the start to do it again properly
+			header('Location: index.' . $phpEx . '?mode=install');
+			exit;
+		}
+
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$written = false;
 
@@ -804,6 +820,14 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
+		if ($dbname == '')
+		{
+			// Someone's been silly and tried calling this page direct
+			// So we send them back to the start to do it again properly
+			header('Location: index.' . $phpEx . '?mode=install');
+			exit;
+		}
+
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$email_enable = ($email_enable !== '') ? $email_enable : true;
 		
@@ -870,6 +894,14 @@ class install_install extends module
 		foreach ($this->request_vars as $var)
 		{
 			$$var = request_var($var, '');
+		}
+
+		if ($dbname == '')
+		{
+			// Someone's been silly and tried calling this page direct
+			// So we send them back to the start to do it again properly
+			header('Location: index.' . $phpEx . '?mode=install');
+			exit;
 		}
 
 		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
