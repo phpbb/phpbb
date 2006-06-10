@@ -124,15 +124,17 @@ class mcp_reports
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
-					'S_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? true : false,
+					'S_USER_NOTES'			=> true,
 
-					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
-					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_USER'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']),
-					'U_VIEW_REPORTER_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']),
-					'U_MCP_REPORTER_NOTES'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
-					'U_MCP_WARN_REPORTER'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']),
 					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORTER_NOTES'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
+					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_WARN_REPORTER'	=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
+					'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_REPORTER_PROFILE'	=> ($report['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']) : '',
 
 					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
 
@@ -164,7 +166,7 @@ class mcp_reports
 				$topic_id = request_var('t', 0);
 
 				$forum_info = array();
-				$forum_list_reports = get_forum_list('m_report', false, true); /** @todo m_reports? **/
+				$forum_list_reports = get_forum_list('m_report', false, true);
 
 				if ($topic_id)
 				{
@@ -406,12 +408,11 @@ function close_report($post_id_list, $mode, $action)
 			$close_report_topics = array_unique($close_report_topics);
 
 			// Get a list of topics that still contain reported posts
-			$sql = 'SELECT DISTINCT t.topic_id
-				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-				WHERE t.topic_id IN (' . implode(', ', $close_report_topics) . ')
-					AND p.post_reported = 1
-					AND p.post_id NOT IN (' . implode(', ', $close_report_posts) . ')
-					AND t.topic_id = p.topic_id';
+			$sql = 'SELECT DISTINCT topic_id
+				FROM ' . POSTS_TABLE . '
+				WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')
+					AND post_reported = 1
+					AND post_id NOT IN (' . implode(', ', $close_report_posts) . ')';
 			$result = $db->sql_query($sql);
 
 			$keep_report_topics = array();

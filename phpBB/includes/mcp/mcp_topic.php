@@ -141,8 +141,8 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_MCP_APPROVE'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_posts&amp;action=approve&amp;post_id_list[]=' . $row['post_id']),
-			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;p=' . $row['post_id']))
+			'U_MCP_APPROVE'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']),
+			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']))
 		);
 
 		unset($rowset[$i]);

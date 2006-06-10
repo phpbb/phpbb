@@ -98,15 +98,10 @@
 					<td valign="bottom">
 						<table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr valign="middle">
-								<!-- IF postrow.S_POST_UNAPPROVED -->
-								<td width="5">{UNAPPROVED_IMG}</td>
-								<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:green"  href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></b>&nbsp;&nbsp;</td>
-								<!-- ENDIF -->
-								<!-- IF postrow.S_POST_REPORTED -->
-								<td width="5">{REPORTED_IMG}</td>
-								<td class="gensmall" nowrap="nowrap">&nbsp;<b><a style="color:red" href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></b>&nbsp;</td>
-								<!-- ENDIF -->
-								<td width="100%">&nbsp;</td>
+								<td width="100%">
+									<!-- IF postrow.S_POST_UNAPPROVED -->{UNAPPROVED_IMG} <span class="postapprove"><a href="{postrow.U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span><!-- ENDIF -->
+									<!-- IF postrow.S_POST_REPORTED -->{REPORTED_IMG}<span class="postreported"><a href="{postrow.U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF -->
+								</td>
 								<td width="10" nowrap="nowrap">{postrow.MINI_POST_IMG}</td>
 								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {postrow.POST_DATE}</td>
 							</tr>

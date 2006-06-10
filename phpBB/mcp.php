@@ -126,6 +126,12 @@ if (!$auth->acl_getf_global('m_'))
 	}
 }
 
+// if the user cannot read the forum he tries to access then we won't allow mcp access either
+if ($forum_id && !$auth->acl_get('f_read', $forum_id))
+{
+	trigger_error($user->lang['NOT_AUTHORIZED']);
+}
+
 if ($forum_id)
 {
 	$module->acl_forum_id = $forum_id;

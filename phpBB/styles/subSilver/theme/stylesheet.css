@@ -172,13 +172,17 @@ p.topicauthor {
 p.topicdetails {
 	margin: 1px 0px;
 	}
-p.postreported {
+.postreported, .postreported a:visited, .postreported a:hover, .postreported a:link, .postreported a:active {
 	margin: 1px 0px;
 	color: red;
+	font-weight:bold;
 	}
-p.postapprove {
-	margin: 1px 0px;
+.postapprove, .postapprove a:visited, .postapprove a:hover, .postapprove a:link, .postapprove a:active {
 	color: green;
+	font-weight:bold;
+	}
+.postapprove img, .postreported img {
+	vertical-align: bottom;
 	}
 
 .postauthor {

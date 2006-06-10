@@ -16,8 +16,6 @@ function mcp_front_view($id, $mode, $action)
 	global $phpEx, $phpbb_root_path, $config;
 	global $template, $db, $user, $auth;
 
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
-
 	// Latest 5 unapproved
 	$forum_list = get_forum_list('m_approve');
 	$post_list = array();
@@ -39,6 +37,8 @@ function mcp_front_view($id, $mode, $action)
 
 		if ($total)
 		{
+			$global_id = $forum_list[0];
+
 			$sql = 'SELECT forum_id, forum_name
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_id IN (' . implode(', ', $forum_list) . ')';
@@ -72,15 +72,21 @@ function mcp_front_view($id, $mode, $action)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$global_topic = ($row['forum_id']) ? false : true;
+				if ($global_topic)
+				{
+					$row['forum_id'] = $global_id;
+				}
+
 				$template->assign_block_vars('unapproved', array(
-					'U_POST_DETAILS'=> $url . '&amp;i=main&amp;mode=post_details&amp;p=' . $row['post_id'],
-					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;i=main&amp;mode=forum_view&amp;f=' . $row['forum_id'] : '',
-					'U_MCP_TOPIC'	=> $url . '&amp;i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'],
-					'U_FORUM'		=> ($row['forum_id']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
-					'U_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $row['topic_id']),
+					'U_POST_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
+					'U_MCP_FORUM'	=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']) : '',
+					'U_MCP_TOPIC'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+					'U_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+					'U_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 					'U_AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']),
 
-					'FORUM_NAME'	=> ($row['forum_id']) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+					'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
 					'AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? (($row['post_username']) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
@@ -123,6 +129,8 @@ function mcp_front_view($id, $mode, $action)
 
 		if ($total)
 		{
+			$global_id = $forum_list[0];
+
 			$sql = $db->sql_build_query('SELECT', array(
 				'SELECT'	=> 'r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
@@ -155,15 +163,21 @@ function mcp_front_view($id, $mode, $action)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$global_topic = ($row['forum_id']) ? false : true;
+				if ($global_topic)
+				{
+					$row['forum_id'] = $global_id;
+				}
+
 				$template->assign_block_vars('report', array(
-					'U_POST_DETAILS'=> $url . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details",
-					'U_MCP_FORUM'	=> ($row['forum_id']) ? $url . '&amp;f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view" : '',
-					'U_MCP_TOPIC'	=> $url . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view",
-					'U_FORUM'		=> ($row['forum_id']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+					'U_POST_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details"),
+					'U_MCP_FORUM'	=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view") : '',
+					'U_MCP_TOPIC'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
+					'U_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 					'U_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 					'U_REPORTER'	=> ($row['user_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
-					'FORUM_NAME'	=> ($row['forum_id']) ? $row['forum_name'] : $user->lang['POST_GLOBAL'],
+					'FORUM_NAME'	=> (!$global_topic) ? $row['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
 					'REPORTER'		=> ($row['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
@@ -218,8 +232,8 @@ function mcp_front_view($id, $mode, $action)
 		'S_HAS_LOGS'	=> (!empty($log)) ? true : false)
 	);
 
-	$template->assign_var('S_MCP_ACTION', $url);
-	make_jumpbox($url . '&amp;i=main&amp;mode=forum_view', 0, false, 'm_');
+	$template->assign_var('S_MCP_ACTION', append_sid("{$phpbb_root_path}mcp.$phpEx"));
+	make_jumpbox(append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=forum_view'), 0, false, 'm_');
 }
 
 ?>

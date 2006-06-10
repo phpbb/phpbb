@@ -872,7 +872,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 			'U_POST_ID'		=> $row['post_id'],
 			'U_MINI_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'	=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+			'U_MCP_DETAILS'	=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 			'U_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . addslashes($poster) . "')" : '')
 		);
 		unset($rowset[$i]);
@@ -1359,7 +1359,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'edit_first_post':
 		case 'edit':
 
-			if (!$auth->acl_gets('m_', 'a_') || $data['post_edit_reason'])
+			if (!$auth->acl_get('m_edit', $data['forum_id']) || $data['post_edit_reason'])
 			{
 				$sql_data[POSTS_TABLE]['sql'] = array(
 					'post_edit_time'	=> $current_time

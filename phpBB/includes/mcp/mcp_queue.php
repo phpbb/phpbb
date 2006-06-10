@@ -72,7 +72,14 @@ class mcp_queue
 				if ($topic_id)
 				{
 					$topic_info = get_topic_data(array($topic_id), 'm_approve');
-					$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
+					if (isset($topic_info[$topic_id]['topic_first_post_id']))
+					{
+						$post_id = (int) $topic_info[$topic_id]['topic_first_post_id'];
+					}
+					else
+					{
+						$topic_id = 0;
+					}
 				}
 
 				$post_info = get_post_data(array($post_id), 'm_approve');
@@ -117,12 +124,14 @@ class mcp_queue
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
-					'S_USER_NOTES'			=> $auth->acl_gets('m_', 'a_') ? true : false,
+					'S_USER_NOTES'			=> true,
 
-					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
-					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_USER'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']),
 					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
 
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
@@ -177,11 +186,12 @@ class mcp_queue
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . "
-						WHERE forum_id IN ($forum_list)";
+						WHERE forum_id IN (0, $forum_list)";
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
 
+					$global_id = $forum_list[0];
 				}
 				else
 				{
@@ -194,6 +204,7 @@ class mcp_queue
 
 					$forum_info = $forum_info[$forum_id];
 					$forum_list = $forum_id;
+					$global_id = $forum_id;
 				}
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
@@ -210,11 +221,13 @@ class mcp_queue
 				$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 				$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
+				$forum_names = array();
+
 				if ($mode == 'unapproved_posts')
 				{
 					$sql = 'SELECT p.post_id
 						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t' . (($sort_order_sql{0} == 'u') ? ', ' . USERS_TABLE . ' u' : '') . "
-						WHERE p.forum_id IN ($forum_list)
+						WHERE p.forum_id IN (0, $forum_list)
 							AND p.post_approved = 0
 							" . (($sort_order_sql{0} == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
 							' . (($topic_id) ? 'AND p.topic_id = ' . $topic_id : '') . "
@@ -234,17 +247,20 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT f.forum_id, f.forum_name, t.topic_id, t.topic_title, p.post_id, p.post_username, p.poster_id, p.post_time, u.username
-							FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_username, p.poster_id, p.post_time, u.username
+							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 							WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
 								AND t.topic_id = p.topic_id
-								AND f.forum_id = p.forum_id
 								AND u.user_id = p.poster_id";
 
 						$result = $db->sql_query($sql);
 						$post_data = $rowset = array();
 						while ($row = $db->sql_fetchrow($result))
 						{
+							if ($row['forum_id'])
+							{
+								$forum_names[] = $row['forum_id'];
+							}
 							$post_data[$row['post_id']] = $row;
 						}
 						$db->sql_freeresult($result);
@@ -262,11 +278,10 @@ class mcp_queue
 				}
 				else
 				{
-					$sql = 'SELECT f.forum_id, f.forum_name, t.topic_id, t.topic_title, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
-						FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
-						WHERE t.topic_approved = 0
-							AND t.forum_id IN ($forum_list)
-							AND f.forum_id = t.forum_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
+						FROM ' . TOPICS_TABLE . " t
+						WHERE topic_approved = 0
+							AND forum_id IN (0, $forum_list)
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -274,9 +289,28 @@ class mcp_queue
 					$rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
+						if ($row['forum_id'])
+						{
+							$forum_names[] = $row['forum_id'];
+						}
 						$rowset[] = $row;
 					}
 					$db->sql_freeresult($result);
+				}
+
+				if (sizeof($forum_names))
+				{
+					// Select the names for the forum_ids
+					$sql = 'SELECT forum_id, forum_name
+						FROM ' . FORUMS_TABLE . '
+						WHERE forum_id IN (' . implode(',', $forum_names) . ')';
+					$result = $db->sql_query($sql, 3600);
+
+					$forum_names = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$forum_names[$row['forum_id']] = $row['forum_name'];
+					}
 				}
 
 				foreach ($rowset as $row)
@@ -292,15 +326,21 @@ class mcp_queue
 
 					$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" />';
 
+					$global_topic = ($row['forum_id']) ? false : true;
+					if ($global_topic)
+					{
+						$row['forum_id'] = $global_id;
+					}
+
 					$template->assign_block_vars('postrow', array(
-						'U_VIEWFORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
+						'U_VIEWFORUM'	=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 						// Q: Why accessing the topic by a post_id instead of its topic_id?
 						// A: To prevent the post from being hidden because of wrong encoding or different charset
 						'U_VIEWTOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
-						'U_VIEW_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$forum_id}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
+						'U_VIEW_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
 						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 
-						'FORUM_NAME'	=> $row['forum_name'],
+						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POSTER'		=> $poster,
 						'POST_TIME'		=> $user->format_date($row['post_time']),
@@ -308,6 +348,7 @@ class mcp_queue
 					);
 				}
 				unset($rowset);
+				unset($forum_names);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -558,7 +599,7 @@ function disapprove_post($post_id_list, $mode)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('t', 'mode')) . '&amp;mode=unapproved_topics');
 	$reason = request_var('reason', '', true);
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';
