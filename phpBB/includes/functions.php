@@ -352,6 +352,30 @@ if (!function_exists('str_split'))
 	}
 }
 
+if (!function_exists('stripos'))
+{
+	/**
+	* A wrapper for the PHP5 function stripos
+	* Find position of first occurrence of a case-insensitive string
+	*
+	* @param string $haystack is the string to search in
+	* @param string needle is the string to search for
+	*
+	* @return Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
+	* Note that the needle may be a string of one or more characters.
+	* If needle is not found, stripos() will return boolean FALSE. 
+	*/
+	function stripos($haystack, $needle)
+	{
+		if (preg_match('#' . preg_quote($needle, '#') . '#i', $haystack, $m))
+		{
+			return strpos($haystack, $m[0]);
+		}
+
+		return false;
+	}
+}
+
 // functions used for building option fields
 
 /**
