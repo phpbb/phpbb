@@ -2266,66 +2266,110 @@ function get_database_size()
 	global $db, $user, $table_prefix;
 	
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-	if (preg_match('#^mysql#', SQL_LAYER))
+	switch (SQL_LAYER)
 	{
-		$sql = 'SELECT VERSION() AS mysql_version';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		case 'mysql':
+		case 'mysql4':
+		case 'mysqli':
+		
+			$sql = 'SELECT VERSION() AS mysql_version';
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-		if ($row)
-		{
-			$version = $row['mysql_version'];
-
-			if (preg_match('#(3\.23|[45]\.)#', $version))
+			if ($row)
 			{
-				$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`{$db->dbname}`" : $db->dbname;
+				$version = $row['mysql_version'];
 
-				$sql = "SHOW TABLE STATUS
-					FROM " . $db_name;
-				$result = $db->sql_query($sql);
-
-				$dbsize = 0;
-				while ($row = $db->sql_fetchrow($result))
+				if (preg_match('#(3\.23|[45]\.)#', $version))
 				{
-					if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
+					$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`{$db->dbname}`" : $db->dbname;
+
+					$sql = 'SHOW TABLE STATUS
+						FROM ' . $db_name;
+					$result = $db->sql_query($sql);
+
+					$dbsize = 0;
+					while ($row = $db->sql_fetchrow($result))
 					{
-						if ($table_prefix != '')
+						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
 						{
-							if (strstr($row['Name'], $table_prefix))
+							if ($table_prefix != '')
+							{
+								if (strstr($row['Name'], $table_prefix))
+								{
+									$dbsize += $row['Data_length'] + $row['Index_length'];
+								}
+							}
+							else
 							{
 								$dbsize += $row['Data_length'] + $row['Index_length'];
 							}
 						}
-						else
-						{
-							$dbsize += $row['Data_length'] + $row['Index_length'];
-						}
 					}
+					$db->sql_freeresult($result);
 				}
-				$db->sql_freeresult($result);
+				else
+				{
+					$dbsize = $user->lang['NOT_AVAILABLE'];
+				}
 			}
 			else
 			{
 				$dbsize = $user->lang['NOT_AVAILABLE'];
 			}
-		}
-		else
-		{
+		
+		break;
+
+		case 'mssql':
+		case 'mssql_odbc':
+		
+			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
+				FROM sysfiles';
+			$result = $db->sql_query($sql);
+			$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['NOT_AVAILABLE'];
+			$db->sql_freeresult($result);
+		
+		break;
+
+		case 'postgres':
+
+			$sql = "SELECT proname
+				FROM pg_proc
+				WHERE proname = 'pg_database_size'";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row['proname'] == 'pg_database_size')
+			{
+
+				$sql = "SELECT oid
+					FROM pg_database
+					WHERE datname = '" . $db->dbname . "'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$oid = $row['oid'];
+
+				$sql = 'SELECT pg_database_size(' . $oid . ') as size';
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$dbsize = $row['size'];
+			}
+			else
+			{
+				$dbsize = $user->lang['NOT_AVAILABLE'];
+			}
+
+		break;
+
+		default:
+		
 			$dbsize = $user->lang['NOT_AVAILABLE'];
-		}
-	}
-	else if (preg_match('#^mssql#', SQL_LAYER))
-	{
-		$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
-			FROM sysfiles';
-		$result = $db->sql_query($sql);
-		$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['NOT_AVAILABLE'];
-		$db->sql_freeresult($result);
-	}
-	else
-	{
-		$dbsize = $user->lang['NOT_AVAILABLE'];
 	}
 
 	if (is_int($dbsize))

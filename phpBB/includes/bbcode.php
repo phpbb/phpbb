@@ -466,6 +466,7 @@ class bbcode
 		// when using the /e modifier, preg_replace slashes double-quotes but does not
 		// seem to slash anything else
 		$quote = str_replace('\"', '"', $quote);
+		$username = str_replace('\"', '"', $username);
 
 		// remove newline at the beginning
 		if ($quote{0} == "\n")

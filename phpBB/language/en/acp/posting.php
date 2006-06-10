@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 // BBCodes 
 // Note to translators: you can translate everything but what's between { and }
 $lang = array_merge($lang, array(
-	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. Additionnally, you can save users from typing sometimes very long HTML code by providing them a single BBCode as replacement. From this page you can add, remove and edit custom BBCodes',
+	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes',
 	'ADD_BBCODE'				=> 'Add a new BBCode',
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully',
