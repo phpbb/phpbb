@@ -491,9 +491,7 @@ class install_install extends module
 		}
 
 		$url = ($connect_test) ? $this->p_master->module_url . "?mode=$mode&amp;sub=administrator" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
-// The road ahead is still under construction, follow the diversion back to the old installer..... ;)
 		$s_hidden_fields .= ($connect_test) ? '' : '<input type="hidden" name="testdb" value="true" />';
-//		$url = ($connect_test) ? "install.$phpEx?stage=1" : $this->p_master->module_url . "?mode=$mode&amp;sub=database";
 
 		$submit = $lang['NEXT_STEP'];
 
@@ -519,7 +517,7 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		$s_hidden_fields = '';
+		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$passed = false;
 
 		if (isset($_POST['check']))
@@ -670,7 +668,7 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		$s_hidden_fields = '';
+		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$written = false;
 
 		// Create a list of any PHP modules we wish to have loaded
@@ -806,42 +804,38 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		$s_hidden_fields = '';
-//		$passed = false;
-
-//		if (!$passed)
-//		{
-			$email_enable = ($email_enable !== '') ? $email_enable : true;
-			foreach ($this->advanced_config_options as $config_key => $vars)
+		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$email_enable = ($email_enable !== '') ? $email_enable : true;
+		
+		foreach ($this->advanced_config_options as $config_key => $vars)
+		{
+			if (!is_array($vars) && strpos($config_key, 'legend') === false)
 			{
-				if (!is_array($vars) && strpos($config_key, 'legend') === false)
-				{
-					continue;
-				}
-
-				if (strpos($config_key, 'legend') !== false)
-				{
-					$template->assign_block_vars('options', array(
-						'S_LEGEND'		=> true,
-						'LEGEND'		=> $lang[$vars])
-					);
-
-					continue;
-				}
-
-				$options = isset($vars['options']) ? $vars['options'] : '';
-
-				$template->assign_block_vars('options', array(
-					'KEY'			=> $config_key,
-					'TITLE'			=> $lang[$vars['lang']],
-					'S_EXPLAIN'		=> $vars['explain'],
-					'S_LEGEND'		=> false,
-					'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
-					'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
-					)
-				);
+				continue;
 			}
-//		}
+
+			if (strpos($config_key, 'legend') !== false)
+			{
+				$template->assign_block_vars('options', array(
+					'S_LEGEND'		=> true,
+					'LEGEND'		=> $lang[$vars])
+				);
+
+				continue;
+			}
+
+			$options = isset($vars['options']) ? $vars['options'] : '';
+
+			$template->assign_block_vars('options', array(
+				'KEY'			=> $config_key,
+				'TITLE'			=> $lang[$vars['lang']],
+				'S_EXPLAIN'		=> $vars['explain'],
+				'S_LEGEND'		=> false,
+				'TITLE_EXPLAIN'	=> ($vars['explain']) ? $lang[$vars['lang'] . '_EXPLAIN'] : '',
+				'CONTENT'		=> $this->p_master->input_field($config_key, $vars['type'], $$config_key, $options),
+				)
+			);
+		}
 
 		$config_options = array_merge($this->db_config_options, $this->admin_config_options);
 		foreach ($config_options as $config_key => $vars)
@@ -855,8 +849,6 @@ class install_install extends module
 
 		$submit = $lang['NEXT_STEP'];
 
-//		$url = ($passed) ? $this->p_master->module_url . "?mode=$mode&amp;sub=final" : $this->p_master->module_url . "?mode=$mode&amp;sub=advanced";
-//		$s_hidden_fields .= ($passed) ? '' : '<input type="hidden" name="check" value="true" />';
 		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
 
 		$template->assign_vars(array(
