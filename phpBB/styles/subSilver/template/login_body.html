@@ -39,7 +39,7 @@
 				<td>
 					<input class="post" type="password" name="password" size="25" maxlength="100" tabindex="2" />
 					<!-- IF U_SEND_PASSWORD --><br /><a class="gensmall" href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a><!-- ENDIF -->
-					<!-- IF U_RESEND_ACTIVATION --><br /><a class="gensmall" href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a><!-- ENDIF -->
+					<!-- IF U_RESEND_ACTIVATION and not S_ADMIN_AUTH --><br /><a class="gensmall" href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a><!-- ENDIF -->
 				</td>
 			</tr>
 			<!-- IF S_DISPLAY_FULL_LOGIN -->

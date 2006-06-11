@@ -10,7 +10,6 @@
 
 /**
 * @package acm
-* @ignore
 * ACM Database Caching
 */
 class acm

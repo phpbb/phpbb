@@ -827,11 +827,12 @@ class jabber
 
 	/**
 	* Converts a string to utf8 encoding.
-	* @private
 	*
 	* @param string $string has to have the same encoding as {@link encoding the encoding attribute} is set to.
 	*
 	* @return boolean True on success, false on failure.
+	*
+	* @private
 	*/
 	function _conv_utf8(&$string)
 	{

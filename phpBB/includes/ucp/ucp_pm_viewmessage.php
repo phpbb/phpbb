@@ -38,10 +38,12 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$icons = array();
 	$cache->obtain_icons($icons);
 
+	$bbcode = false;
+
 	// Instantiate BBCode if need be
 	if ($message_row['bbcode_bitfield'])
 	{
-		include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		$bbcode = new bbcode($message_row['bbcode_bitfield']);
 	}
 
@@ -146,9 +148,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 		if ($user_info['user_sig_bbcode_bitfield'])
 		{
-			if (!isset($bbcode) || !$bbcode)
+			if ($bbcode === false)
 			{
-				include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 				$bbcode = new bbcode($user_info['user_sig_bbcode_bitfield']);
 			}
 
@@ -163,41 +165,41 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$template->assign_vars(array(
 		'AUTHOR_NAME'		=> ($user_info['user_colour']) ? '<span style="color:#' . $user_info['user_colour'] . '">' . $user_info['username'] . '</span>' : $user_info['username'],
-		'AUTHOR_RANK' 		=> $user_info['rank_title'],
-		'RANK_IMAGE' 		=> $user_info['rank_image'],
+		'AUTHOR_RANK'		=> $user_info['rank_title'],
+		'RANK_IMAGE'		=> $user_info['rank_image'],
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
-		'AUTHOR_POSTS' 		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
-		'AUTHOR_FROM' 		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
+		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
+		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
-		'DELETE_IMG' 		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
-		'INFO_IMG' 			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
+		'DELETE_IMG'		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
+		'INFO_IMG'			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
 		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']),
-		'EMAIL_IMG' 		=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
-		'QUOTE_IMG' 		=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
+		'EMAIL_IMG'			=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
+		'QUOTE_IMG'			=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
 		'REPLY_IMG'			=> $user->img('btn_reply_pm', $user->lang['POST_REPLY_PM']),
-		'EDIT_IMG' 			=> $user->img('btn_edit', $user->lang['POST_EDIT_PM']),
+		'EDIT_IMG'			=> $user->img('btn_edit', $user->lang['POST_EDIT_PM']),
 		'MINI_POST_IMG'		=> $user->img('icon_post', $user->lang['PM']),
 
-		'SENT_DATE' 		=> $user->format_date($message_row['message_time']),
+		'SENT_DATE'			=> $user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
-		'MESSAGE' 			=> $message,
-		'SIGNATURE' 		=> ($message_row['enable_sig']) ? $signature : '',
+		'MESSAGE'			=> $message,
+		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
 
 		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
-		'U_DELETE' 			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id),
-		'U_EMAIL' 			=> $user_info['email'],
-		'U_QUOTE' 			=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_EDIT' 			=> (($message_row['message_time'] > time() - $config['pm_edit_time'] || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_POST_REPLY_PM' 	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_EMAIL'			=> $user_info['email'],
+		'U_QUOTE'			=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_EDIT'			=> (($message_row['message_time'] > time() - $config['pm_edit_time'] || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
 
-		'S_HAS_ATTACHMENTS' => (sizeof($attachments)) ? true : false,
+		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
@@ -253,9 +255,11 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	$sql .= ($sort_dir == 'd') ? 'ASC' : 'DESC';
 
 	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
 
-	if (!($row = $db->sql_fetchrow($result)))
+	if (!$row)
 	{
+		$db->sql_freeresult($result);
 		return false;
 	}
 
@@ -291,11 +295,11 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	// Instantiate BBCode class
-	if (!isset($bbcode) && $bbcode_bitfield)
+	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield)
 	{
 		if (!class_exists('bbcode'))
 		{
-			include($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		}
 		$bbcode = new bbcode($bbcode_bitfield);
 	}
@@ -332,10 +336,10 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		}
 
 		$template->assign_block_vars('history_row', array(
-			'AUTHOR_NAME' 	=> $author,
-			'SUBJECT'	 	=> $subject,
-			'SENT_DATE' 	=> $user->format_date($row['message_time']),
-			'MESSAGE' 		=> str_replace("\n", '<br />', $message),
+			'AUTHOR_NAME'	=> $author,
+			'SUBJECT'		=> $subject,
+			'SENT_DATE'		=> $user->format_date($row['message_time']),
+			'MESSAGE'		=> str_replace("\n", '<br />', $message),
 			'FOLDER'		=> implode(', ', $row['folder']),
 
 			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),
@@ -351,7 +355,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	$template->assign_vars(array(
-		'QUOTE_IMG' => $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']),
+		'QUOTE_IMG'	=> $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']),
 		'TITLE'		=> $title,
 
 		'U_VIEW_NEXT_HISTORY'		=> "$url&amp;p=" . (($next_history_pm) ? $next_history_pm : $msg_id),
@@ -396,9 +400,11 @@ function get_user_informations($user_id, $user_row)
 			WHERE session_user_id = $user_id
 			GROUP BY session_user_id";
 		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		$update_time = $config['load_online_time'] * 60;
-		if ($row = $db->sql_fetchrow($result))
+		if ($row)
 		{
 			$user_row['online'] = (time() - $update_time < $row['online_time'] && ($row['viewonline'] && $user_row['user_allow_viewonline'])) ? true : false;
 		}
@@ -415,10 +421,11 @@ function get_user_informations($user_id, $user_row)
 		{
 			case AVATAR_UPLOAD:
 				$avatar_img = $config['avatar_path'] . '/';
-				break;
+			break;
+
 			case AVATAR_GALLERY:
 				$avatar_img = $config['avatar_gallery_path'] . '/';
-				break;
+			break;
 		}
 		$avatar_img .= $user_row['user_avatar'];
 
@@ -426,7 +433,7 @@ function get_user_informations($user_id, $user_row)
 	}
 
 	$user_row['rank_title'] = $user_row['rank_image'] = '';
-	
+
 	if (!empty($user_row['user_rank']))
 	{
 		$user_row['rank_title'] = (isset($ranks['special'][$user_row['user_rank']])) ? $ranks['special'][$user_row['user_rank']]['rank_title'] : '';

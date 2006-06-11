@@ -28,10 +28,12 @@ class ucp_attachments
 		$delete		= (isset($_POST['delete'])) ? true : false;
 		$confirm	= (isset($_POST['confirm'])) ? true : false;
 		$delete_ids	= isset($_REQUEST['attachment']) ? array_keys(array_map('intval', $_REQUEST['attachment'])) : array();
-		
+
 		if ($delete && sizeof($delete_ids))
 		{
-			$s_hidden_fields = array('delete' => 1);
+			$s_hidden_fields = array(
+				'delete'	=> 1
+			);
 
 			foreach ($delete_ids as $attachment_id)
 			{
@@ -55,13 +57,13 @@ class ucp_attachments
 				confirm_box(false, (sizeof($delete_ids) == 1) ? 'DELETE_ATTACHMENT' : 'DELETE_ATTACHMENTS', build_hidden_fields($s_hidden_fields));
 			}
 		}
-		
+
 		// Select box eventually
 		$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
 		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
-	
+
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
 		{
@@ -77,20 +79,18 @@ class ucp_attachments
 		}
 
 		$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
-		
+
 		$sql = 'SELECT COUNT(attach_id) as num_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE poster_id = ' . $user->data['user_id'];
-		$result = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_query($sql);
 		$num_attachments = $db->sql_fetchfield('num_attachments');
 		$db->sql_freeresult($result);
-		
+
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
 			FROM ' . ATTACHMENTS_TABLE . ' a 
-				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id
-					AND a.in_message = 0)
-				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id
-					AND a.in_message = 1)
+				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
+				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id AND a.in_message = 1)
 			WHERE a.poster_id = ' . $user->data['user_id'] . "
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
@@ -124,7 +124,7 @@ class ucp_attachments
 					'ATTACH_ID'			=> $row['attach_id'],
 					'POST_ID'			=> $row['post_msg_id'],
 					'TOPIC_ID'			=> $row['topic_id'],
-				
+
 					'S_IN_MESSAGE'		=> $row['in_message'],
 
 					'U_VIEW_ATTACHMENT'	=> append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $row['attach_id']),
@@ -146,7 +146,7 @@ class ucp_attachments
 
 			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'), 
 			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'), 
-			'U_SORT_EXTENSION'		=> $this->u_action . "&amp;i=$id&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'), 
+			'U_SORT_EXTENSION'		=> $this->u_action . "&amp;sk=c&amp;sd=" . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a'), 
 			'U_SORT_FILESIZE'		=> $this->u_action . "&amp;sk=d&amp;sd=" . (($sort_key == 'd' && $sort_dir == 'a') ? 'd' : 'a'), 
 			'U_SORT_DOWNLOADS'		=> $this->u_action . "&amp;sk=e&amp;sd=" . (($sort_key == 'e' && $sort_dir == 'a') ? 'd' : 'a'), 
 			'U_SORT_POST_TIME'		=> $this->u_action . "&amp;sk=f&amp;sd=" . (($sort_key == 'f' && $sort_dir == 'a') ? 'd' : 'a'), 

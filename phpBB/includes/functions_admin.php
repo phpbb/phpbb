@@ -2264,7 +2264,9 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 function get_database_size()
 {
 	global $db, $user, $table_prefix;
-	
+
+	$database_size = false;
+
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
 	switch (SQL_LAYER)
 	{
@@ -2289,7 +2291,7 @@ function get_database_size()
 						FROM ' . $db_name;
 					$result = $db->sql_query($sql);
 
-					$dbsize = 0;
+					$database_size = 0;
 					while ($row = $db->sql_fetchrow($result))
 					{
 						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
@@ -2298,27 +2300,19 @@ function get_database_size()
 							{
 								if (strstr($row['Name'], $table_prefix))
 								{
-									$dbsize += $row['Data_length'] + $row['Index_length'];
+									$database_size += $row['Data_length'] + $row['Index_length'];
 								}
 							}
 							else
 							{
-								$dbsize += $row['Data_length'] + $row['Index_length'];
+								$database_size += $row['Data_length'] + $row['Index_length'];
 							}
 						}
 					}
 					$db->sql_freeresult($result);
 				}
-				else
-				{
-					$dbsize = $user->lang['NOT_AVAILABLE'];
-				}
 			}
-			else
-			{
-				$dbsize = $user->lang['NOT_AVAILABLE'];
-			}
-		
+
 		break;
 
 		case 'mssql':
@@ -2327,9 +2321,9 @@ function get_database_size()
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
 			$result = $db->sql_query($sql);
-			$dbsize = ($row = $db->sql_fetchrow($result)) ? intval($row['dbsize']) : $user->lang['NOT_AVAILABLE'];
+			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);
-		
+
 		break;
 
 		case 'postgres':
@@ -2343,7 +2337,6 @@ function get_database_size()
 
 			if ($row['proname'] == 'pg_database_size')
 			{
-
 				$sql = "SELECT oid
 					FROM pg_database
 					WHERE datname = '" . $db->dbname . "'";
@@ -2358,26 +2351,22 @@ function get_database_size()
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$dbsize = $row['size'];
-			}
-			else
-			{
-				$dbsize = $user->lang['NOT_AVAILABLE'];
+				$database_size = $row['size'];
 			}
 
 		break;
-
-		default:
-		
-			$dbsize = $user->lang['NOT_AVAILABLE'];
 	}
 
-	if (is_int($dbsize))
+	if ($database_size !== false)
 	{
-		$dbsize = ($dbsize >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($dbsize / 1048576)) : (($dbsize >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($dbsize / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $dbsize));
+		$database_size = ($database_size >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($database_size / 1048576)) : (($database_size >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($database_size / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $database_size));
+	}
+	else
+	{
+		$database_size = $user->lang['NOT_AVAILABLE'];
 	}
 
-	return $dbsize;
+	return $database_size;
 }
 
 /**

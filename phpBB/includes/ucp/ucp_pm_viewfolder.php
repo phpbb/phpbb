@@ -35,7 +35,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		{
 			$template->assign_block_vars('pm_colour_info', array(
 				'IMG'	=> $user->img("pm_{$var}", ''),
-				'CLASS' => "pm_{$var}_colour",
+				'CLASS'	=> "pm_{$var}_colour",
 				'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
 			);
 		}
@@ -125,7 +125,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 								FROM ' . GROUPS_TABLE . '
 								WHERE group_id';
 						}
-						$sql .= ' IN (' . implode(', ', array_keys($recipient_list[$ug_type])) . ')';
+						$sql .= ' IN (' . implode(', ', array_map('intval', array_keys($recipient_list[$ug_type]))) . ')';
 
 						$result = $db->sql_query($sql);
 
@@ -185,16 +185,16 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$template->assign_block_vars('messagerow', array(
 					'PM_CLASS'			=> ($row_indicator) ? 'pm_' . $row_indicator . '_colour' : '',
 
-					'FOLDER_ID' 		=> $folder_id,
+					'FOLDER_ID'			=> $folder_id,
 					'MESSAGE_ID'		=> $message_id,
 					'MESSAGE_AUTHOR'	=> $message_author,
-					'SENT_TIME'		 	=> $user->format_date($row['message_time']),
+					'SENT_TIME'			=> $user->format_date($row['message_time']),
 					'SUBJECT'			=> censor_text($row['message_subject']),
 					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
 					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'folder=' . $row['folder_id']) : '',
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'PM_IMG'	 		=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
+					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 					'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
@@ -207,7 +207,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 			unset($folder_info['rowset']);
 
 			$template->assign_vars(array(
-				'S_SHOW_RECIPIENTS'	=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
+				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
 				'S_SHOW_COLOUR_LEGEND'	=> true)
 			);
 		}
@@ -238,7 +238,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 			{
 				$row = &$folder_info['rowset'][$message_id];
 
-				include_once($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+
 				$sql = 'SELECT p.message_text, p.bbcode_uid
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE t.user_id = ' . $user->data['user_id'] . "
@@ -255,8 +256,19 @@ function view_folder($id, $mode, $folder_id, $folder)
 				{
 					if (isset($address[$message_id][$ug_type]) && sizeof($address[$message_id][$ug_type]))
 					{
-						$sql = ($ug_type == 'u') ? 'SELECT user_id as id, username as name FROM ' . USERS_TABLE . ' WHERE user_id' : 'SELECT group_id as id, group_name as name FROM ' . GROUPS_TABLE . ' WHERE group_id';
-						$sql .= ' IN (' . implode(', ', array_keys($address[$message_id][$ug_type])) . ')';
+						if ($ug_type == 'u')
+						{
+							$sql = 'SELECT user_id as id, username as name
+								FROM ' . USERS_TABLE . '
+								WHERE user_id';
+						}
+						else
+						{
+							$sql = 'SELECT group_id as id, group_name as name
+								FROM ' . GROUPS_TABLE . '
+								WHERE group_id';
+						}
+						$sql .= ' IN (' . implode(', ', array_map('intval', array_keys($address[$message_id][$ug_type]))) . ')';
 
 						$result = $db->sql_query($sql);
 
@@ -311,6 +323,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 								$value['bcc'] .= (isset($values['bcc']) && is_array($values['bcc'])) ? ',' . implode(',', $values['bcc']) : '';
 								$value['to'] .= (isset($values['to']) && is_array($values['to'])) ? ',' . implode(',', $values['to']) : '';
 							}
+
 							// Remove the commas which will appear before the first entry.
 							$value['to'] = substr($value['to'], 1);
 							$value['bcc'] = substr($value['bcc'], 1);
@@ -332,14 +345,15 @@ function view_folder($id, $mode, $folder_id, $folder)
 						$string = substr($string, 0, -1) . $newline;
 					}
 				break;
+
 				case 'XML':
 					$mimetype = 'application/xml';
 					$filetype = 'xml';
 					$string = '<?xml version="1.0"?>' . "\n";
 					$string .= "<phpbb>\n";
+
 					foreach ($data as $value)
 					{
-
 						$string .= "\t<privmsg>\n";
 
 						if (is_array($value['to']))
@@ -366,7 +380,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 						$string .= "\t</privmsg>\n";
 					}
 					$string .= '</phpbb>';
+				break;
 			}
+
 			header('Pragma: no-cache');
 			header("Content-Type: $mimetype; name=\"data.$filetype\"");
 			header("Content-disposition: attachment; filename=data.$filetype");
@@ -407,6 +423,11 @@ function get_pm_from($folder_id, $folder, $user_id)
 	{
 		$min_post_time = time() - ($sort_days * 86400);
 
+		if (isset($_POST['sort']))
+		{
+			$start = 0;
+		}
+
 		$sql = 'SELECT COUNT(t.msg_id) AS pm_count
 			FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . " p
 			WHERE $folder_sql
@@ -414,13 +435,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 				AND t.msg_id = p.msg_id
 				AND p.message_time >= $min_post_time";
 		$result = $db->sql_query_limit($sql, 1);
-
-		if (isset($_POST['sort']))
-		{
-			$start = 0;
-		}
-
-		$pm_count = ($row = $db->sql_fetchrow($result)) ? $row['pm_count'] : 0;
+		$pm_count = (int) $db->sql_fetchfield('pm_count');
 		$db->sql_freeresult($result);
 
 		$sql_limit_time = "AND p.message_time >= $min_post_time";
@@ -432,9 +447,9 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$template->assign_vars(array(
-		'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
-		'PAGE_NUMBER'	=> on_page($pm_count, $config['topics_per_page'], $start),
-		'TOTAL_MESSAGES'=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
+		'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
+		'PAGE_NUMBER'		=> on_page($pm_count, $config['topics_per_page'], $start),
+		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('btn_locked', 'PM_LOCKED') : $user->img('btn_post_pm', 'POST_PM'),
 
@@ -483,7 +498,6 @@ function get_pm_from($folder_id, $folder, $user_id)
 			AND t.msg_id = p.msg_id
 			$sql_limit_time
 		ORDER BY $sql_sort_order";
-
 	$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 	while ($row = $db->sql_fetchrow($result))

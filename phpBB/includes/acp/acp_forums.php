@@ -222,12 +222,16 @@ class acp_forums
 	
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'] . '&amp;select_all_groups=1';
 
-						// Redirect to permissions
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
-						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 
-						// redirect directly to permission settings screen
-						if ($action == 'add' && !$forum_perm_from)
+						// Redirect to permissions
+						if ($auth->acl_get('a_fauth'))
+						{
+							$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+						}
+
+						// redirect directly to permission settings screen if authed
+						if ($action == 'add' && !$forum_perm_from && $auth->acl_get('a_fauth'))
 						{
 							meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
 						}

@@ -27,15 +27,19 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			case 1:
 				$set_folder_id = FULL_FOLDER_DELETE;
-				break;
+			break;
+
 			case 2:
 				$set_folder_id = request_var('full_move_to', PRIVMSGS_INBOX);
-				break;
+			break;
+
 			case 3:
 				$set_folder_id = FULL_FOLDER_HOLD;
-				break;
+			break;
+
 			default:
 				$full_action = 0;
+			break;
 		}
 
 		if ($full_action)
@@ -46,7 +50,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$db->sql_query($sql);
 
 			$user->data['user_full_folder'] = $set_folder_id;
-			
+
 			$message = $user->lang['FULL_FOLDER_OPTION_CHANGED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 			meta_refresh(3, $redirect_url);
 			trigger_error($message);
@@ -65,12 +69,13 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
 					AND user_id = " . $user->data['user_id'];
 			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if ($db->sql_fetchrow($result))
+			if ($row)
 			{
 				trigger_error(sprintf($user->lang['FOLDER_NAME_EXIST'], $folder_name));
 			}
-			$db->sql_freeresult($result);
 
 			$sql = 'SELECT COUNT(folder_id) as num_folder
 				FROM ' . PRIVMSGS_FOLDER_TABLE . '
@@ -85,7 +90,9 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			}
 
 			$sql = 'INSERT INTO ' . PRIVMSGS_FOLDER_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id' => (int) $user->data['user_id'], 'folder_name' => $folder_name));
+				'user_id'		=> (int) $user->data['user_id'],
+				'folder_name'	=> $folder_name)
+			);
 			$db->sql_query($sql);
 
 			$message = $user->lang['FOLDER_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
@@ -93,7 +100,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			trigger_error($message);
 		}
 	}
-	
+
 	// Rename folder
 	if (isset($_POST['rename_folder']))
 	{
@@ -144,7 +151,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			trigger_error('CANNOT_MOVE_TO_SAME_FOLDER');
 		}
-		
+
 		// Select custom folder
 		$sql = 'SELECT folder_name, pm_count
 			FROM ' . PRIVMSGS_FOLDER_TABLE . "
@@ -195,12 +202,12 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 					{
 						trigger_error(sprintf($user->lang['MOVE_PM_ERROR'], $num_moved, $folder_row['pm_count']));
 					}
-					break;
+				break;
 
 				// Remove Messages
 				case 2:
 					delete_pm($user->data['user_id'], $msg_ids, $remove_folder_id);
-					break;
+				break;
 			}
 
 			// Remove folder
@@ -256,7 +263,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			trigger_error('RULE_NOT_DEFINED');
 		}
-		
+
 		$rule_ary = array(
 			'user_id'			=> $user->data['user_id'],
 			'rule_check'		=> $check_option,
@@ -272,20 +279,23 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			FROM ' . PRIVMSGS_RULES_TABLE . '
 			WHERE ' . $db->sql_build_array('SELECT', $rule_ary);
 		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if ($db->sql_fetchrow($result))
+		if ($row)
 		{
 			trigger_error('RULE_ALREADY_DEFINED');
 		}
-		$db->sql_freeresult($result);
-		
+
 		$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
 		$db->sql_query($sql);
 
 		// Update users message rules
-		$sql = 'UPDATE ' . USERS_TABLE . ' SET user_message_rules = 1 WHERE user_id = ' . $user->data['user_id'];
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_message_rules = 1
+			WHERE user_id = ' . $user->data['user_id'];
 		$db->sql_query($sql);
-		
+
 		$message = $user->lang['RULE_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
@@ -322,9 +332,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$db->sql_freeresult($result);
 
 			// Update users message rules
-			if ($row)
+			if (!$row)
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_message_rules = 0 WHERE user_id = ' . $user->data['user_id'];
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_message_rules = 0
+					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 			}
 
@@ -337,7 +349,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			confirm_box(false, 'DELETE_RULE', build_hidden_fields(array('delete_rule' => array($delete_id => 1))));
 		}
 	}
-	
+
 	$folder = array();
 
 	$sql = 'SELECT COUNT(msg_id) as num_messages
@@ -349,8 +361,8 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$db->sql_freeresult($result);
 	
 	$folder[PRIVMSGS_INBOX] = array(
-		'folder_name'	=> $user->lang['PM_INBOX'], 
-		'message_status'=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
+		'folder_name'		=> $user->lang['PM_INBOX'], 
+		'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
 	);
 
 	$sql = 'SELECT folder_id, folder_name, pm_count 
@@ -363,8 +375,8 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
-			'folder_name'	=> $row['folder_name'], 
-			'message_status'=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
+			'folder_name'		=> $row['folder_name'], 
+			'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
 		);
 	}
 	$db->sql_freeresult($result);
@@ -385,7 +397,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		$s_full_folder_options .= '<option value="' . $folder_id . '"' . (($user->data['user_full_folder'] == $folder_id) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . ' (' . $folder_ary['message_status'] . ')</option>';
 		$s_to_folder_options .= '<option value="' . $folder_id . '"' . (($to_folder_id == $folder_id) ? ' selected="selected"' : '') . '>' . $folder_ary['folder_name'] . ' (' . $folder_ary['message_status'] . ')</option>';
-			
+
 		if ($folder_id != PRIVMSGS_INBOX)
 		{
 			$s_folder_options .= '<option value="' . $folder_id . '">' . $folder_ary['folder_name'] . ' (' . $folder_ary['message_status'] . ')</option>';
@@ -402,11 +414,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			case 1:
 				$s_delete_checked = ' checked="checked"';
-				break;
+			break;
 
 			case 2:
 				$s_hold_checked = ' checked="checked"';
-				break;
+			break;
 		}
 	}
 
@@ -420,7 +432,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		'S_MAX_FOLDER_REACHED'	=> ($num_user_folder >= $config['pm_max_boxes']) ? true : false,
 
 		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
-			
+
 		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string'))
 	);
 
@@ -490,7 +502,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		define_action_option(false, $action_option, $action_lang, $folder);
 	}
-	
+
 	show_defined_rules($user->data['user_id'], $check_lang, $rule_lang, $action_lang, $folder);
 }
 
@@ -612,7 +624,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		);
 		return;
 	}
-	
+
 	// Define Condition
 	$condition = $global_rule_conditions[$rule_option];
 	$current_value = '';
@@ -630,7 +642,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			);
 
 			$current_value = $rule_string;
-			break;
+		break;
 
 		case 'user':
 			$rule_user_id = request_var('rule_user_id', 0);
@@ -640,7 +652,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . "
-					WHERE username = '" . $db->sql_escape($rule_string) . "'";
+					WHERE LOWER(username) = '" . $db->sql_escape(strtolower($rule_string)) . "'";
 				$result = $db->sql_query($sql);
 				$rule_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);
@@ -673,7 +685,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			);
 
 			$current_value = $rule_string;
-			break;
+		break;
 
 		case 'group':
 			$rule_group_id = request_var('rule_group_id', 0);
@@ -708,7 +720,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			);
 
 			$current_value = $rule_string;
-			break;
+		break;
 
 		default:
 			return;

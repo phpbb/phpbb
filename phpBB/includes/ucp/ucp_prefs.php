@@ -29,6 +29,14 @@ class ucp_prefs
 		{
 			case 'personal':
 
+				$data = array(
+					'notifymethod'	=> $user->data['user_notify_type'],
+					'dateformat'	=> $user->data['user_dateformat'],
+					'lang'			=> $user->data['user_lang'],
+					'style'			=> $user->data['user_style'],
+					'tz'			=> $user->data['user_timezone'],
+				);
+
 				if ($submit)
 				{
 					$var_ary = array(
@@ -58,27 +66,25 @@ class ucp_prefs
 					);
 
 					$error = validate_data($data, $var_ary);
-					extract($data);
-					unset($data);
 
 					if (!sizeof($error))
 					{
-						$user->optionset('popuppm', $popuppm);
+						$user->optionset('popuppm', $data['popuppm']);
 
 						$sql_ary = array(
-							'user_allow_pm'			=> $allowpm,
-							'user_allow_viewemail'	=> $viewemail,
-							'user_allow_massemail'	=> $massemail,
-							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$hideonline : $user->data['user_allow_viewonline'],
-							'user_notify_type'		=> $notifymethod,
-							'user_notify_pm'		=> $notifypm,
+							'user_allow_pm'			=> $data['allowpm'],
+							'user_allow_viewemail'	=> $data['viewemail'],
+							'user_allow_massemail'	=> $data['massemail'],
+							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'],
+							'user_notify_type'		=> $data['notifymethod'],
+							'user_notify_pm'		=> $data['notifypm'],
 							'user_options'			=> $user->data['user_options'],
 
-							'user_dst'				=> $dst,
-							'user_dateformat'		=> $dateformat,
-							'user_lang'				=> $lang,
-							'user_timezone'			=> $tz,
-							'user_style'			=> $style,
+							'user_dst'				=> $data['dst'],
+							'user_dateformat'		=> $data['dateformat'],
+							'user_lang'				=> $data['lang'],
+							'user_timezone'			=> $data['tz'],
+							'user_style'			=> $data['style'],
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -95,39 +101,11 @@ class ucp_prefs
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				$viewemail = (isset($viewemail)) ? $viewemail : $user->data['user_allow_viewemail'];
-				$view_email_yes = ($viewemail) ? ' checked="checked"' : '';
-				$view_email_no = (!$viewemail) ? ' checked="checked"' : '';
-				$massemail = (isset($massemail)) ? $massemail : $user->data['user_allow_massemail'];
-				$mass_email_yes = ($massemail) ? ' checked="checked"' : '';
-				$mass_email_no = (!$massemail) ? ' checked="checked"' : '';
-				$allowpm = (isset($allowpm)) ? $allowpm : $user->data['user_allow_pm'];
-				$allow_pm_yes = ($allowpm) ? ' checked="checked"' : '';
-				$allow_pm_no = (!$allowpm) ? ' checked="checked"' : '';
-				$hideonline = (isset($hideonline)) ? $hideonline : !$user->data['user_allow_viewonline'];
-				$hide_online_yes = ($hideonline) ? ' checked="checked"' : '';
-				$hide_online_no = (!$hideonline) ? ' checked="checked"' : '';
-				$notifypm = (isset($notifypm)) ? $notifypm : $user->data['user_notify_pm'];
-				$notify_pm_yes = ($notifypm) ? ' checked="checked"' : '';
-				$notify_pm_no = (!$notifypm) ? ' checked="checked"' : '';
-				$popuppm = (isset($popuppm)) ? $popuppm : $user->optionget('popuppm');
-				$popup_pm_yes = ($popuppm) ? ' checked="checked"' : '';
-				$popup_pm_no = (!$popuppm) ? ' checked="checked"' : '';
-				$dst = (isset($dst)) ? $dst : $user->data['user_dst'];
-				$dst_yes = ($dst) ? ' checked="checked"' : '';
-				$dst_no = (!$dst) ? ' checked="checked"' : '';
-
-				$notifymethod = (isset($notifymethod)) ? $notifymethod : $user->data['user_notify_type'];
-				$dateformat = (isset($dateformat)) ? $dateformat : $user->data['user_dateformat'];
-				$lang = (isset($lang)) ? $lang : $user->data['user_lang'];
-				$style = (isset($style)) ? $style : $user->data['user_style'];
-				$tz = (isset($tz)) ? $tz : $user->data['user_timezone'];
-
 				$dateformat_options = '';
 
 				foreach ($user->lang['dateformats'] as $format => $null)
 				{
-					$dateformat_options .= '<option value="' . $format . '"' . (($format == $dateformat) ? ' selected="selected"' : '') . '>';
+					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
 					$dateformat_options .= $user->format_date(time(), $format, true) . ((strpos($format, '|') !== false) ? ' [' . $user->lang['RELATIVE_DAYS'] . ']' : '');
 					$dateformat_options .= '</option>';
 				}
@@ -135,7 +113,7 @@ class ucp_prefs
 				$s_custom = false;
 
 				$dateformat_options .= '<option value="custom"';
-				if (!in_array($dateformat, array_keys($user->lang['dateformats'])))
+				if (!in_array($data['dateformat'], array_keys($user->lang['dateformats'])))
 				{
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
@@ -145,58 +123,54 @@ class ucp_prefs
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'VIEW_EMAIL_YES'	=> $view_email_yes,
-					'VIEW_EMAIL_NO'		=> $view_email_no,
-					'ADMIN_EMAIL_YES'	=> $mass_email_yes,
-					'ADMIN_EMAIL_NO'	=> $mass_email_no,
-					'HIDE_ONLINE_YES'	=> $hide_online_yes,
-					'HIDE_ONLINE_NO'	=> $hide_online_no,
-					'ALLOW_PM_YES'		=> $allow_pm_yes,
-					'ALLOW_PM_NO'		=> $allow_pm_no,
-					'NOTIFY_PM_YES'		=> $notify_pm_yes,
-					'NOTIFY_PM_NO'		=> $notify_pm_no,
-					'POPUP_PM_YES'		=> $popup_pm_yes,
-					'POPUP_PM_NO'		=> $popup_pm_no,
-					'DST_YES'			=> $dst_yes,
-					'DST_NO'			=> $dst_no,
-					'NOTIFY_EMAIL'		=> ($notifymethod == NOTIFY_EMAIL) ? 'checked="checked"' : '',
-					'NOTIFY_IM'			=> ($notifymethod == NOTIFY_IM) ? 'checked="checked"' : '',
-					'NOTIFY_BOTH'		=> ($notifymethod == NOTIFY_BOTH) ? 'checked="checked"' : '',
+					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
+					'S_NOTIFY_IM'		=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
+					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
+					'S_VIEW_EMAIL'		=> (isset($data['viewemail'])) ? $data['viewemail'] : $user->data['user_allow_viewemail'],
+					'S_MASS_EMAIL'		=> (isset($data['massemail'])) ? $data['massemail'] : $user->data['user_allow_massemail'],
+					'S_ALLOW_PM'		=> (isset($data['allowpm'])) ? $data['allowpm'] : $user->data['user_allow_pm'],
+					'S_HIDE_ONLINE'		=> (isset($data['hideonline'])) ? $data['hideonline'] : !$user->data['user_allow_viewonline'],
+					'S_NOTIFY_PM'		=> (isset($data['notifypm'])) ? $data['notifypm'] : $user->data['user_notify_pm'],
+					'S_POPUP_PM'		=> (isset($data['popuppm'])) ? $data['popuppm'] : $user->optionget('popuppm'),
+					'S_DST'				=> (isset($data['dst'])) ? $data['dst'] : $user->data['user_dst'],
 
-					'DATE_FORMAT'			=> $dateformat,
+					'DATE_FORMAT'			=> $data['dateformat'],
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
-					'S_LANG_OPTIONS'	=> language_select($lang),
-					'S_STYLE_OPTIONS'	=> style_select($style),
-					'S_TZ_OPTIONS'		=> tz_select($tz),
-					'S_CAN_HIDE_ONLINE'	=> true, 
+					'S_LANG_OPTIONS'	=> language_select($data['lang']),
+					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'S_TZ_OPTIONS'		=> tz_select($data['tz']),
+					'S_CAN_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
-				break;
+
+			break;
 
 			case 'view':
 
+				$data = array(
+					'topic_sk'		=> (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't',
+					'topic_sd'		=> (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd',
+					'topic_st'		=> (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0,
+
+					'post_sk'		=> (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't',
+					'post_sd'		=> (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a',
+					'post_st'		=> (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0,
+				);
+
 				if ($submit)
 				{
-					$var_ary = array(
-						'topic_sk'	=> (string) 't',
-						'topic_sd'	=> (string) 'd',
-						'topic_st'	=> 0,
-
-						'post_sk'	=> (string) 't',
-						'post_sd'	=> (string) 'a',
-						'post_st'	=> 0,
-
+					$var_ary = array_merge($data, array(
 						'images'	=> true,
 						'flash'		=> false,
 						'smilies'	=> true,
 						'sigs'		=> true,
 						'avatars'	=> true,
 						'wordcensor'=> false,
-					);
+					));
 
 					foreach ($var_ary as $var => $default)
 					{
@@ -211,30 +185,29 @@ class ucp_prefs
 					);
 
 					$error = validate_data($data, $var_ary);
-					extract($data);
-					unset($data);
 
 					if (!sizeof($error))
 					{
-						$user->optionset('viewimg', $images);
-						$user->optionset('viewflash', $flash);
-						$user->optionset('viewsmilies', $smilies);
-						$user->optionset('viewsigs', $sigs);
-						$user->optionset('viewavatars', $avatars);
+						$user->optionset('viewimg', $data['images']);
+						$user->optionset('viewflash', $data['flash']);
+						$user->optionset('viewsmilies', $data['smilies']);
+						$user->optionset('viewsigs', $data['sigs']);
+						$user->optionset('viewavatars', $data['avatars']);
+
 						if ($auth->acl_get('u_chgcensors'))
 						{
-							$user->optionset('viewcensors', $wordcensor);
+							$user->optionset('viewcensors', $data['wordcensor']);
 						}
 
 						$sql_ary = array(
-							'user_options'			=> $user->data['user_options'],
-							'user_topic_sortby_type'=> $topic_sk,
-							'user_post_sortby_type'	=> $post_sk,
-							'user_topic_sortby_dir'	=> $topic_sd,
-							'user_post_sortby_dir'	=> $post_sd,
+							'user_options'				=> $user->data['user_options'],
+							'user_topic_sortby_type'	=> $data['topic_sk'],
+							'user_post_sortby_type'		=> $data['post_sk'],
+							'user_topic_sortby_dir'		=> $data['topic_sd'],
+							'user_post_sortby_dir'		=> $data['post_sd'],
 
-							'user_topic_show_days'	=> $topic_st,
-							'user_post_show_days'	=> $post_st,
+							'user_topic_show_days'	=> $data['topic_st'],
+							'user_post_show_days'	=> $data['post_st'],
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
@@ -250,15 +223,6 @@ class ucp_prefs
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
-
-				$topic_sk = (isset($topic_sk)) ? $topic_sk : ((!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't');
-				$post_sk = (isset($post_sk)) ? $post_sk : ((!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't');
-
-				$topic_sd = (isset($topic_sd)) ? $topic_sd : ((!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd');
-				$post_sd = (isset($post_sd)) ? $post_sd : ((!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'd');
-				
-				$topic_st = (isset($topic_st)) ? $topic_st : ((!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0);
-				$post_st = (isset($post_st)) ? $post_st : ((!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0);
 
 				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -280,7 +244,7 @@ class ucp_prefs
 					${'s_limit_' . $sort_option . '_days'} = '<select name="' . $sort_option . '_st">';
 					foreach (${'limit_' . $sort_option . '_days'} as $day => $text)
 					{
-						$selected = (${$sort_option . '_st'} == $day) ? ' selected="selected"' : '';
+						$selected = ($data[$sort_option . '_st'] == $day) ? ' selected="selected"' : '';
 						${'s_limit_' . $sort_option . '_days'} .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
 					}
 					${'s_limit_' . $sort_option . '_days'} .= '</select>';
@@ -288,7 +252,7 @@ class ucp_prefs
 					${'s_sort_' . $sort_option . '_key'} = '<select name="' . $sort_option . '_sk">';
 					foreach (${'sort_by_' . $sort_option . '_text'} as $key => $text)
 					{
-						$selected = (${$sort_option . '_sk'} == $key) ? ' selected="selected"' : '';
+						$selected = ($data[$sort_option . '_sk'] == $key) ? ' selected="selected"' : '';
 						${'s_sort_' . $sort_option . '_key'} .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
 					}
 					${'s_sort_' . $sort_option . '_key'} .= '</select>';
@@ -296,46 +260,21 @@ class ucp_prefs
 					${'s_sort_' . $sort_option . '_dir'} = '<select name="' . $sort_option . '_sd">';
 					foreach ($sort_dir_text as $key => $value)
 					{
-						$selected = (${$sort_option . '_sd'} == $key) ? ' selected="selected"' : '';
+						$selected = ($data[$sort_option . '_sd'] == $key) ? ' selected="selected"' : '';
 						${'s_sort_' . $sort_option . '_dir'} .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 					}
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				$images = (isset($images)) ? $images : $user->optionget('viewimg');
-				$images_yes = ($images) ? ' checked="checked"' : '';
-				$images_no = (!$images) ? ' checked="checked"' : '';
-				$flash = (isset($flash)) ? $flash : $user->optionget('viewflash');
-				$flash_yes = ($flash) ? ' checked="checked"' : '';
-				$flash_no = (!$flash) ? ' checked="checked"' : '';
-				$smilies = (isset($smilies)) ? $smilies : $user->optionget('viewsmilies');
-				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
-				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
-				$sigs = (isset($sigs)) ? $sigs : $user->optionget('viewsigs');
-				$sigs_yes = ($sigs) ? ' checked="checked"' : '';
-				$sigs_no = (!$sigs) ? ' checked="checked"' : '';
-				$avatars = (isset($avatars)) ? $avatars : $user->optionget('viewavatars');
-				$avatars_yes = ($avatars) ? ' checked="checked"' : '';
-				$avatars_no = (!$avatars) ? ' checked="checked"' : '';
-				$wordcensor = (isset($wordcensor)) ? $wordcensor : $user->optionget('viewcensors');
-				$wordcensor_yes = ($wordcensor) ? ' checked="checked"' : '';
-				$wordcensor_no = (!$wordcensor) ? ' checked="checked"' : '';
-
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
-					'VIEW_IMAGES_YES'		=> $images_yes,
-					'VIEW_IMAGES_NO'		=> $images_no,
-					'VIEW_FLASH_YES'		=> $flash_yes,
-					'VIEW_FLASH_NO'			=> $flash_no,
-					'VIEW_SMILIES_YES'		=> $smilies_yes,
-					'VIEW_SMILIES_NO'		=> $smilies_no,
-					'VIEW_SIGS_YES'			=> $sigs_yes,
-					'VIEW_SIGS_NO'			=> $sigs_no,
-					'VIEW_AVATARS_YES'		=> $avatars_yes,
-					'VIEW_AVATARS_NO'		=> $avatars_no,
-					'DISABLE_CENSORS_YES'	=> $wordcensor_yes,
-					'DISABLE_CENSORS_NO'	=> $wordcensor_no,
+					'S_IMAGES'			=> (isset($data['images'])) ? $data['images'] : $user->optionget('viewimg'),
+					'S_FLASH'			=> (isset($data['flash'])) ? $data['flash'] : $user->optionget('viewflash'),
+					'S_SMILIES'			=> (isset($data['smilies'])) ? $data['smilies'] : $user->optionget('viewsmilies'),
+					'S_SIGS'			=> (isset($data['sigs'])) ? $data['sigs'] : $user->optionget('viewsigs'),
+					'S_AVATARS'			=> (isset($data['avatars'])) ? $data['avatars'] : $user->optionget('viewavatars'),
+					'S_DISABLE_CENSORS'	=> (isset($data['wordcensor'])) ? $data['wordcensor'] : $user->optionget('viewcensors'),
 
 					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false,
 
@@ -347,75 +286,52 @@ class ucp_prefs
 					'S_POST_SORT_DIR'		=> $s_sort_post_dir)
 				);
 
-				break;
+			break;
 
 			case 'post':
 
+				$data = array(
+					'bbcode'	=> $user->optionget('bbcode'),
+					'smilies'	=> $user->optionget('smilies'),
+					'sig'		=> $user->optionget('attachsig'),
+					'notify'	=> $user->data['user_notify'],
+				);
+
 				if ($submit)
 				{
-					$var_ary = array(
-						'bbcode'	=> true,
-						'smilies'	=> true,
-						'sig'		=> true,
-						'notify'	=> false,
-					);
+					$var_ary = $data;
 
 					foreach ($var_ary as $var => $default)
 					{
-						$$var = request_var($var, $default);
+						$data[$var] = request_var($var, $default);
 					}
 
-					$user->optionset('bbcode', $bbcode);
-					$user->optionset('smilies', $smilies);
-					$user->optionset('attachsig', $sig);
+					$user->optionset('bbcode', $data['bbcode']);
+					$user->optionset('smilies', $data['smilies']);
+					$user->optionset('attachsig', $data['sig']);
 
-					if (!sizeof($error))
-					{
-						$sql_ary = array(
-							'user_options'	=> $user->data['user_options'],
-							'user_notify'	=> $notify,
-						);
+					$sql_ary = array(
+						'user_options'	=> $user->data['user_options'],
+						'user_notify'	=> $data['notify'],
+					);
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = ' . $user->data['user_id'];
+					$db->sql_query($sql);
 
-						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
-					}
-
-					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					meta_refresh(3, $this->u_action);
+					$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					trigger_error($message);
 				}
 
-				$bbcode = (isset($bbcode)) ? $bbcode : $user->optionget('bbcode');
-				$bbcode_yes = ($bbcode) ? ' checked="checked"' : '';
-				$bbcode_no = (!$bbcode) ? ' checked="checked"' : '';
-				$smilies = (isset($smilies)) ? $smilies : $user->optionget('smilies');
-				$smilies_yes = ($smilies) ? ' checked="checked"' : '';
-				$smilies_no = (!$smilies) ? ' checked="checked"' : '';
-				$sig = (isset($sig)) ? $sig : $user->optionget('attachsig');
-				$sig_yes = ($sig) ? ' checked="checked"' : '';
-				$sig_no = (!$sig) ? ' checked="checked"' : '';
-				$notify = (isset($notify)) ? $notify : $user->data['user_notify'];
-				$notify_yes = ($notify) ? ' checked="checked"' : '';
-				$notify_no = (!$notify) ? ' checked="checked"' : '';
-
 				$template->assign_vars(array(
-					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-
-					'DEFAULT_BBCODE_YES'	=> $bbcode_yes,
-					'DEFAULT_BBCODE_NO'		=> $bbcode_no,
-					'DEFAULT_SMILIES_YES'	=> $smilies_yes,
-					'DEFAULT_SMILIES_NO'	=> $smilies_no,
-					'DEFAULT_SIG_YES'		=> $sig_yes,
-					'DEFAULT_SIG_NO'		=> $sig_no,
-					'DEFAULT_NOTIFY_YES'	=> $notify_yes,
-					'DEFAULT_NOTIFY_NO'		=> $notify_no,)
+					'S_BBCODE'	=> $data['bbcode'],
+					'S_SMILIES'	=> $data['smilies'],
+					'S_SIG'		=> $data['sig'],
+					'S_NOTIFY'	=> $data['notify'])
 				);
-				break;
+			break;
 		}
 
 		$template->assign_vars(array(

@@ -132,7 +132,9 @@ $lang = array_merge($lang, array(
 	'EMPTY_SUBJECT'						=> 'You must specify a subject when posting a new topic.',
 	'ENABLED'							=> 'Enabled',
 	'ENCLOSURE'							=> 'Enclosure',
+	'ERR_CHANGING_DIRECTORY'			=> 'Unable to change directory',
 	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server',
+	'ERR_UNABLE_TO_LOGIN'				=> 'Error on login. Supplied username or password wrong.',
 	'EXTENSION'							=> 'Extension',
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <strong>%s</strong> has been deactivated and can no longer be displayed',
 

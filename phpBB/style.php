@@ -90,7 +90,7 @@ if ($id && $sid)
 		}
 
 		/**
-		* What happens if the theme_data value is older than the file?
+		* @todo What happens if the theme_data value is older than the file?
 		* It should be re-cached as is done with templates and the template cache
 		* if ($theme['theme_mtime'] < filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
 		*/

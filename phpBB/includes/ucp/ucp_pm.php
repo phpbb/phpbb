@@ -38,7 +38,7 @@ class ucp_pm
 	function main($id, $mode)
 	{
 		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config;
-		
+
 		if (!$user->data['is_registered'])
 		{
 			trigger_error('NO_MESSAGE');
@@ -101,7 +101,7 @@ class ucp_pm
 					'U_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 					'UA_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false))
 				);
-				
+
 				$tpl_file = 'ucp_pm_popup';
 			break;
 
@@ -116,7 +116,7 @@ class ucp_pm
 					trigger_error('NO_AUTH_SEND_MESSAGE');
 				}
 
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.'.$phpEx);
+				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
 				compose_pm($id, $mode, $action);
 
 				$tpl_file = 'posting_body';
@@ -134,7 +134,7 @@ class ucp_pm
 
 				get_folder($user->data['user_id']);
 
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.'.$phpEx);
+				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 
 				$tpl_file = 'ucp_pm_options';
@@ -144,21 +144,21 @@ class ucp_pm
 
 				get_folder($user->data['user_id']);
 				$this->p_name = 'pm';
-				
+
 				// Call another module... please do not try this at home... Hoochie Coochie Man
-				include($phpbb_root_path . 'includes/ucp/ucp_main.'.$phpEx);
+				include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
 
 				$module = new ucp_main($this);
 				$module->main($id, $mode);
 				$this->tpl_name = $module->tpl_name;
-				
+
 				unset($module);
 				return;
 
 			break;
 
 			case 'view':
-				
+
 				$sql = 'SELECT group_message_limit
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
@@ -203,8 +203,8 @@ class ucp_pm
 				// First Handle Mark actions and moving messages
 				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
 				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
-				$mark_option = request_var('mark_option', '');
-				$dest_folder = request_var('dest_folder', PRIVMSGS_NO_BOX);
+				$mark_option	= request_var('mark_option', '');
+				$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
 
 				// Is moving PM triggered through mark options?
 				if (!in_array($mark_option, array('mark_important', 'delete_marked')) && $submit_mark)
@@ -364,7 +364,7 @@ class ucp_pm
 
 				if ($action == 'view_folder')
 				{
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.'.$phpEx);
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
 					view_folder($id, $mode, $folder_id, $folder);
 
 					$tpl_file = 'ucp_pm_viewfolder';
@@ -381,7 +381,7 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.'.$phpEx);
+					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 
 					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';
@@ -391,6 +391,7 @@ class ucp_pm
 
 			default:
 				trigger_error('NO_ACTION_MODE');
+			break;
 		}
 
 		$template->assign_vars(array(

@@ -14,18 +14,21 @@
 */
 class session
 {
-	var $session_id = '';
 	var $cookie_data = array();
+	var $page = array();
+	var $data = array();
 	var $browser = '';
 	var $host = '';
+	var $session_id = '';
 	var $ip = '';
-	var $page = array();
-	var $current_page_filename = '';
-	var $load;
+	var $load = 0;
 	var $time_now = 0;
+	var $update_session_page = true;
 
 	/**
 	* Extract current session page
+	*
+	* @param string $root_path current root path (phpbb_root_path)
 	*/
 	function extract_current_page($root_path)
 	{
@@ -39,7 +42,7 @@ class session
 		if (!$script_name)
 		{
 			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
-			$page['failover'] = 1;
+			$page_array['failover'] = 1;
 		}
 
 		// Replace backslashes and doubled slashes (could happen on some proxy setups)
@@ -122,22 +125,26 @@ class session
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
 	*
+	* @param bool $update_session_page if true the session page gets updated.
+	*			This can be set to circumvent certain scripts to update the users last visited page.
+	*
 	* @todo Introduce further user types, bot, guest
 	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
-	function session_begin()
+	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
 
-		$this->time_now = time();
-		
-		$this->browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? $_SERVER['HTTP_USER_AGENT'] : '';
-		$this->host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : 'localhost';
+		// Give us some basic informations
+		$this->time_now				= time();
+		$this->cookie_data			= array('u' => 0, 'k' => '');
+		$this->update_session_page	= $update_session_page;
+		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
+		$this->page					= $this->extract_current_page($phpbb_root_path);
 
-		$this->page = $this->extract_current_page($phpbb_root_path);
 		$this->page['page'] .= (isset($_POST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . 'f=' . intval($_POST['f']) : '';
 
-		$this->cookie_data = array('u' => 0, 'k' => '');
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
 			// Switch to request_var ... can this cause issues, can a _GET/_POST param
@@ -155,7 +162,7 @@ class session
 			$this->session_id = $_SID = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
-		
+
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
 		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
@@ -190,7 +197,6 @@ class session
 				WHERE s.session_id = '" . $db->sql_escape($this->session_id) . "'
 					AND u.user_id = s.session_user_id";
 			$result = $db->sql_query($sql);
-
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
@@ -204,15 +210,15 @@ class session
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
-				$s_browser = ($config['browser_check']) ? substr($this->data['session_browser'], 0, 149) : '';
-				$u_browser = ($config['browser_check']) ? substr($this->browser, 0, 149) : '';
+				$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
+				$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
 
 				if ($u_ip === $s_ip && $s_browser === $u_browser)
 				{
 					$session_expired = false;
 
 					// Check whether the session is still valid if we have one
-					$method = trim($config['auth_method']);
+					$method = basename(trim($config['auth_method']));
 
 					if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 					{
@@ -248,10 +254,16 @@ class session
 					if (!$session_expired)
 					{
 						// Only update session DB a minute or so after last update or if page changes
-						if ($this->time_now - $this->data['session_time'] > 60 || $this->data['session_page'] != $this->page['page'])
+						if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 						{
-							$sql = 'UPDATE ' . SESSIONS_TABLE . "
-								SET session_time = $this->time_now, session_page = '" . $db->sql_escape(substr($this->page['page'], 0, 199)) . "'
+							$sql_ary = array('session_time' => $this->time_now);
+
+							if ($this->update_session_page)
+							{
+								$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
+							}
+
+							$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 								WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 							$db->sql_query($sql);
 						}
@@ -289,14 +301,14 @@ class session
 		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
 
 		$this->data = array();
-		
+
 		/* Garbage collection ... remove old sessions updating user information
 		// if necessary. It means (potentially) 11 queries but only infrequently
 		if ($this->time_now > $config['session_last_gc'] + $config['session_gc'])
 		{
 			$this->session_gc();
 		}*/
-		
+
 		// Do we allow autologin on this board? No? Then override anything
 		// that may be requested here
 		if (!$config['allow_autologin'])
@@ -320,7 +332,7 @@ class session
 			{
 				$bot = $row['user_id'];
 			}
-			
+
 			// If ip is supplied, we will make sure the ip is matching too...
 			if ($row['bot_ip'] && ($bot || !$row['bot_agent']))
 			{
@@ -343,7 +355,7 @@ class session
 			}
 		}
 
-		$method = trim($config['auth_method']);
+		$method = basename(trim($config['auth_method']));
 
 		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 		{
@@ -373,7 +385,6 @@ class session
 					AND k.user_id = u.user_id
 					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
 			$result = $db->sql_query($sql);
-
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
@@ -387,11 +398,10 @@ class session
 				WHERE user_id = ' . (int) $this->cookie_data['u'] . '
 					AND user_type <> ' . USER_INACTIVE;
 			$result = $db->sql_query($sql);
-
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
-		
+
 		// If no data was returned one or more of the following occured:
 		// Key didn't match one in the DB
 		// User does not exist
@@ -406,7 +416,6 @@ class session
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . (int) $this->cookie_data['u'];
 			$result = $db->sql_query($sql);
-
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
@@ -430,7 +439,7 @@ class session
 		{
 			$this->check_ban();
 		}
-		
+
 		//
 		// Do away with ultimately?
 		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS) ? true : false;
@@ -448,12 +457,16 @@ class session
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) $this->browser,
-			'session_page'			=> (string) substr($this->page['page'], 0, 199),
 			'session_ip'			=> (string) $this->ip,
 			'session_autologin'		=> ($session_autologin) ? 1 : 0,
 			'session_admin'			=> ($set_admin) ? 1 : 0,
 			'session_viewonline'	=> ($viewonline) ? 1 : 0,
 		);
+
+		if ($this->update_session_page)
+		{
+			$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
+		}
 
 		$db->sql_return_on_error(true);
 
@@ -465,25 +478,26 @@ class session
 			// Limit new sessions in 1 minute period (if required)
 			if ((!isset($this->data['session_time']) || !$this->data['session_time']) && $config['active_sessions'])
 			{
-				$sql = 'SELECT COUNT(*) AS sessions
+				$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
 					WHERE session_time >= ' . ($this->time_now - 60);
 				$result = $db->sql_query($sql);
-	
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				if ((int) $row['sessions'] > (int) $config['active_sessions'])
 				{
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
-			
+
 			$this->session_id = $this->data['session_id'] = md5(unique_id());
 
 			$sql_ary['session_id'] = (string) $this->session_id;
+			$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
 
-			$db->sql_query('INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			$db->sql_query($sql);
 		}
 		$db->sql_return_on_error(false);
 
@@ -492,13 +506,14 @@ class session
 		{
 			$this->set_login_key();
 		}
-		
+
 		$SID = '?sid=';
 		$_SID = '';
+
 		if (!$bot)
 		{
 			$cookie_expire = $this->time_now + (($config['max_autologin_time']) ? 86400 * (int) $config['max_autologin_time'] : 31536000);
-			
+
 			$this->set_cookie('u', $this->cookie_data['u'], $cookie_expire);
 			$this->set_cookie('k', $this->cookie_data['k'], $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
@@ -506,17 +521,12 @@ class session
 			$SID = '?sid=' . $this->session_id;
 			$_SID = $this->session_id;
 
-			if ($this->data['user_id'] != ANONYMOUS)
-			{
-//				global $evt;
-//				$evt->trigger(EVT_NEW_SESSION, $this->data);
-			}
 			unset($cookie_expire);
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	* Kills a session
 	*
@@ -535,7 +545,7 @@ class session
 		$db->sql_query($sql);
 
 		// Allow connecting logout with external auth method logout
-		$method = trim($config['auth_method']);
+		$method = basename(trim($config['auth_method']));
 
 		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 		{
@@ -555,7 +565,7 @@ class session
 			{
 				$this->data['session_time'] = time();
 			}
-			
+
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
 				WHERE user_id = ' . (int) $this->data['user_id'];
@@ -568,26 +578,24 @@ class session
 						AND key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
 				$db->sql_query($sql);
 			}
-			
+
 			// Reset the data array
-			$this->data = array();			
-			
+			$this->data = array();
+
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . ANONYMOUS;
 			$result = $db->sql_query($sql);
-		
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			
 		}
-		
+
 		$cookie_expire = $this->time_now - 31536000;
 		$this->set_cookie('u', '', $cookie_expire);
 		$this->set_cookie('k', '', $cookie_expire);
 		$this->set_cookie('sid', '', $cookie_expire);
 		unset($cookie_expire);
-		
+
 		$SID = '?sid=';
 		$this->session_id = $_SID = '';
 
@@ -603,8 +611,6 @@ class session
 	* data before those sessions are destroyed. In addition this method
 	* removes autologin key information that is older than an admin defined
 	* limit.
-	*
-	* @todo add to cron
 	*/
 	function session_gc()
 	{
@@ -614,7 +620,7 @@ class session
 		{
 			$this->time_now = time();
 		}
-		
+
 		switch (SQL_LAYER)
 		{
 			case 'mysql4':
@@ -652,7 +658,7 @@ class session
 				$db->sql_query($sql);
 
 				set_config('session_last_gc', $this->time_now);
-				break;
+			break;
 
 			default:
 
@@ -682,6 +688,7 @@ class session
 					}
 					while ($row = $db->sql_fetchrow($result));
 				}
+				$db->sql_freeresult($result);
 
 				if ($del_user_id)
 				{
@@ -698,7 +705,7 @@ class session
 					// called again to delete other sessions
 					set_config('session_last_gc', $this->time_now, true);
 				}
-				break;
+			break;
 		}
 
 		if ($config['max_autologin_time'])
@@ -747,11 +754,11 @@ class session
 	function check_ban($user_id = false, $user_ip = false, $user_email = false, $return = false)
 	{
 		global $config, $db;
-		
+
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
 		$user_email = ($user_email === false) ? $this->data['user_email'] : $user_email;
-		
+
 		$banned = false;
 
 		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
@@ -791,6 +798,7 @@ class session
 			{
 				$this->session_kill();
 			}
+
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
 			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
@@ -799,15 +807,10 @@ class session
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
 			trigger_error($message);
 		}
-		
-		if ($banned)
-		{
-			return true;
-		}
 
-		return false;
+		return ($banned) ? true : false;
 	}
-	
+
 	/**
 	* Set/Update a persistent login key
 	*
@@ -816,20 +819,18 @@ class session
 	* DB. When they revisit with the same key it's automatically updated in both the
 	* DB and cookie. Multiple keys may exist for each user representing different
 	* browsers or locations. As with _any_ non-secure-socket no passphrase login this
-	* remains vulnerable to exploit. However, by rotating the keys and seperating them
-	* from the password hash it's more secure than 2.0.x. Don't be surprised to see
-	* this backported!
+	* remains vulnerable to exploit.
 	*/
 	function set_login_key($user_id = false, $key = false, $user_ip = false)
 	{
 		global $config, $db;
-		
+
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
 		$key = ($key === false) ? (($this->cookie_data['k']) ? $this->cookie_data['k'] : false) : $key;
-		
+
 		$key_id = unique_id(hexdec(substr($this->session_id, 0, 8)));
-		
+
 		$sql_ary = array(
 			'key_id'		=> (string) md5($key_id),
 			'last_ip'		=> (string) $this->ip,
@@ -842,13 +843,22 @@ class session
 				'user_id'	=> (int) $user_id
 			);
 		}
-		
-		$sql = ($key) ? 'UPDATE ' . SESSIONS_KEYS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . (int) $user_id . " AND key_id = '" . $db->sql_escape(md5($key)) . "'" : 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+
+		if ($key)
+		{
+			$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE user_id = ' . (int) $user_id . "
+					AND key_id = '" . $db->sql_escape(md5($key)) . "'";
+		}
+		else
+		{
+			$sql = 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		}
 		$db->sql_query($sql);
-		
+
 		$this->cookie_data['k'] = $key_id;
-		unset($sql_ary, $key_id);
-		
+
 		return false;
 	}
 
@@ -864,13 +874,14 @@ class session
 
 		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
 
-		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' WHERE user_id = ' . (int) $user_id;
+		$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+			WHERE user_id = ' . (int) $user_id;
 		$db->sql_query($sql);
 
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
 		$sql_where = 'session_user_id = ' . (int) $user_id;
-		$sql_where .= ($user_id === $this->data['user_id']) ? " AND session_id <> '" . $this->session_id . "'" : '';
+		$sql_where .= ($user_id === $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . " 
 			WHERE $sql_where";
@@ -910,6 +921,9 @@ class user extends session
 	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'popuppm' => 10);
 	var $keyvalues = array();
 
+	/**
+	* Setup basic user-specific items (style, language, ...)
+	*/
 	function setup($lang_set = false, $style = false)
 	{
 		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
@@ -930,6 +944,8 @@ class user extends session
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
+
+/*			Browser-specific language setting removed - might re-appear later
 
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{
@@ -957,6 +973,7 @@ class user extends session
 					}
 				}
 			}
+*/
 		}
 
 		// We include common language file here to not load it every time a custom language file is included
@@ -965,7 +982,6 @@ class user extends session
 		{
 			die("Language file " . $this->lang_path . "common.$phpEx" . " couldn't be opened.");
 		}
-
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
@@ -992,6 +1008,7 @@ class user extends session
 				AND i.imageset_id = s.imageset_id";
 		$result = $db->sql_query($sql, 3600);
 		$this->theme = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		// User has wrong style
 		if (!$this->theme && $style == $this->data['user_style'])
@@ -1041,6 +1058,9 @@ class user extends session
 			}
 		}
 
+		// If the style author specified the theme needs to be cached
+		// (because of the used paths and variables) than make sure it is the case.
+		// For example, if the theme uses language-specific images it needs to be stored in db.
 		if (!$this->theme['theme_storedb'] && $this->theme['parse_css_file'])
 		{
 			$this->theme['theme_storedb'] = 1;
@@ -1051,8 +1071,10 @@ class user extends session
 				'theme_storedb'	=> 1
 			);
 
-			$db->sql_query('UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE theme_id = ' . $this->theme['theme_id']);
+			$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE theme_id = ' . $this->theme['theme_id'];
+			$db->sql_query($sql);
 
 			unset($sql_ary);
 		}
@@ -1078,8 +1100,7 @@ class user extends session
 		}
 
 		// Does the user need to change their password? If so, redirect to the
-		// ucp profile reg_details page ... of course do not redirect if we're
-		// already in the ucp
+		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
 		if (!defined('IN_ADMIN') && $config['chg_passforce'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
 			if (strpos($this->page['query_string'], 'mode=reg_details') !== false && $this->page['page_name'] == "ucp.$phpEx")
@@ -1091,13 +1112,22 @@ class user extends session
 		return;
 	}
 
-	// Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
-	//
-	// $lang_set = array('posting', 'help' => 'faq');
-	// $lang_set = array('posting', 'viewtopic', 'help' => array('bbcode', 'faq'))
-	// $lang_set = array(array('posting', 'viewtopic'), 'help' => array('bbcode', 'faq'))
-	// $lang_set = 'posting'
-	// $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
+	/**
+	* Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
+	*
+	* @param mixed $lang_set specifies the language entries to include
+	* @param bool $use_db internal variable for recursion, do not use
+	* @param bool $use_help internal variable for recursion, do not use
+	*
+	* Examples:
+	* <code>
+	* $lang_set = array('posting', 'help' => 'faq');
+	* $lang_set = array('posting', 'viewtopic', 'help' => array('bbcode', 'faq'))
+	* $lang_set = array(array('posting', 'viewtopic'), 'help' => array('bbcode', 'faq'))
+	* $lang_set = 'posting'
+	* $lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
+	* </code>
+	*/
 	function add_lang($lang_set, $use_db = false, $use_help = false)
 	{
 		global $phpEx;
@@ -1135,6 +1165,10 @@ class user extends session
 		}
 	}
 
+	/**
+	* Set language entry (called by add_lang)
+	* @private
+	*/
 	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{
 		global $phpEx;
@@ -1154,7 +1188,7 @@ class user extends session
 		{
 			if ((include($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx")) === false)
 			{
-				trigger_error("Language file {$this->lang_path}" . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx couldn't be opened.");
+				trigger_error("Language file {$this->lang_path}" . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx couldn't be opened.", E_USER_ERROR);
 			}
 		}
 		else if ($use_db)
@@ -1165,6 +1199,9 @@ class user extends session
 		}
 	}
 
+	/**
+	* Format user date
+	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
 		static $lang_dates, $midnight;
@@ -1204,6 +1241,9 @@ class user extends session
 		return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
 	}
 
+	/**
+	* Get language id currently used by the user
+	*/
 	function get_iso_lang_id()
 	{
 		global $config, $db;
@@ -1228,7 +1268,9 @@ class user extends session
 		return $lang_id;
 	}
 
-	// Get profile fields for user
+	/**
+	* Get users profile fields
+	*/
 	function get_profile_fields($user_id)
 	{
 		global $db;
@@ -1238,14 +1280,17 @@ class user extends session
 			return;
 		}
 
-		$sql = 'SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE . "
+		$sql = 'SELECT *
+			FROM ' . PROFILE_FIELDS_DATA_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query_limit($sql, 1);
-
 		$this->profile_fields = (!($row = $db->sql_fetchrow($result))) ? array() : $row;
 		$db->sql_freeresult($result);
 	}
 
+	/**
+	* Specify/Get image
+	*/
 	function img($img, $alt = '', $width = false, $suffix = '', $type = 'full_tag')
 	{
 		static $imgs;
@@ -1289,7 +1334,7 @@ class user extends session
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
-		
+
 		switch ($type)
 		{
 			case 'src':
@@ -1310,7 +1355,9 @@ class user extends session
 		}
 	}
 
-	// Start code for checking/setting option bit field for user table
+	/**
+	* Get option bit field from user options
+	*/
 	function optionget($key, $data = false)
 	{
 		if (!isset($this->keyvalues[$key]))
@@ -1318,9 +1365,13 @@ class user extends session
 			$var = ($data) ? $data : $this->data['user_options'];
 			$this->keyvalues[$key] = ($var & 1 << $this->keyoptions[$key]) ? true : false;
 		}
+
 		return $this->keyvalues[$key];
 	}
 
+	/**
+	* Set option bit field for user options
+	*/
 	function optionset($key, $value, $data = false)
 	{
 		$var = ($data) ? $data : $this->data['user_options'];

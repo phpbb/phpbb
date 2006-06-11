@@ -16,7 +16,8 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
-$user->session_begin();
+// Do not update users last page entry
+$user->session_begin(false);
 $auth->acl($user->data);
 
 $cron_type = request_var('cron_type', '');

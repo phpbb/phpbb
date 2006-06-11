@@ -59,19 +59,8 @@ class acp_main
 
 						set_config('num_users', $config['num_users'] + sizeof($mark_ary), true);
 
-						// Get latest username
-						$sql = 'SELECT user_id, username
-							FROM ' . USERS_TABLE . '
-							WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-							ORDER BY user_id DESC';
-						$result = $db->sql_query_limit($sql, 1);
-
-						if ($row = $db->sql_fetchrow($result))
-						{
-							set_config('newest_user_id', $row['user_id'], true);
-							set_config('newest_username', $row['username'], true);
-						}
-						$db->sql_freeresult($result);
+						// Update latest username
+						update_last_username();
 					}
 					else if ($action == 'delete')
 					{
@@ -368,7 +357,7 @@ class acp_main
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
-				if ($file{0} != '.' && strpos($file, 'index.') === false)
+				if ($file{0} != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
 				{
 					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 				}

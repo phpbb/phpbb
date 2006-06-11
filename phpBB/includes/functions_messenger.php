@@ -1002,7 +1002,7 @@ class smtp_class
 		}
 
 		// Try EHLO first
-		$this->server_send("EHLO [{$local_host}]");
+		$this->server_send("EHLO {$local_host}");
 		if ($err_msg = $this->server_parse('250', __LINE__))
 		{
 			// a 503 response code means that we're already authenticated
@@ -1012,7 +1012,7 @@ class smtp_class
 			}
 
 			// If EHLO fails, we try HELO			
-			$this->server_send("HELO [{$local_host}]");
+			$this->server_send("HELO {$local_host}");
 			if ($err_msg = $this->server_parse('250', __LINE__))
 			{
 				return ($this->numeric_response_code == 503) ? false : $err_msg;

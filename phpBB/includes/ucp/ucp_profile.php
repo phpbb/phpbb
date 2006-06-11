@@ -220,7 +220,7 @@ class ucp_profile
 					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
-					'S_FORCE_PASSWORD'	=> ($config['chg_passforce'] && $this->data['user_passchg'] < time() - $config['chg_passforce']) ? true : false,
+					'S_FORCE_PASSWORD'	=> ($config['chg_passforce'] && $user->data['user_passchg'] < time() - $config['chg_passforce']) ? true : false,
 					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
 					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)

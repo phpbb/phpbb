@@ -184,13 +184,14 @@ body {
 <h1>Coding Guidelines</h1>
 
 <ol class="menu">
-	<li><a href="#defaults">Defaults</a></li>
+	<li><a href="#defaults">Defaults</a>
 	<ol type="i">
 		<li><a href="#editorsettings">Editor Settings</a></li>
 		<li><a href="#fileheader">File Header</a></li>
 		<li><a href="#locations">File Locations</a></li>
 	</ol>
-	<li><a href="#code">Code Layout/Guidelines</a></li>
+	</li>
+	<li><a href="#code">Code Layout/Guidelines</a>
 	<ol type="i">
 		<li><a href="#namingvars">Variable/Function Naming</a></li>
 		<li><a href="#codelayout">Code Layout</a></li>
@@ -198,6 +199,7 @@ body {
 		<li><a href="#optimizing">Optimizations</a></li>
 		<li><a href="#general">General Guidelines</a></li>
 	</ol>
+	</li>
 	<li><a href="#styling">Styling</a></li>
 	<li><a href="#templating">Templating</a></li>
 	<li><a href="#changes">Guidelines Changelog</a></li>
@@ -218,7 +220,7 @@ body {
 	<blockquote><pre>
 $mode{TAB}{TAB}= request_var('mode', '');
 $search_id{TAB}= request_var('search_id', '');
-	</blockquote></pre>
+	</pre></blockquote>
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
 
@@ -853,15 +855,15 @@ $submit = (isset($_POST['submit'])) ? true : false;
 $start = request_var('start', '0');
 	</pre></blockquote>
 
-	<p class="good">// Getting an array, keys are integers, value defaults to 0
+	<p class="good">// Getting an array, keys are integers, value defaults to 0</p>
 	<blockquote><pre>
 $mark_array = request_var('mark', array(0));
-	</blockquote></pre>
+	</pre></blockquote>
 
-	<p class="good">// Getting an array, keys are strings, value defaults to 0
+	<p class="good">// Getting an array, keys are strings, value defaults to 0</p>
 	<blockquote><pre>
 $action_ary = request_var('action', array('' => 0));
-	</blockquote></pre>
+	</pre></blockquote>
 
 	<h3>Login checks/redirection: </h3>
 	<p>To show a forum login box use <code>login_forum_box($forum_data)</code>, else use the <code>login_box()</code> function.</p>
@@ -918,7 +920,6 @@ trigger_error('NO_FORUM');
 <a name="styling"></a><h1>3. Styling</h1>
 <div class="paragraph">
 
-<a name="styling"></a>
 <h3>General things</h3>
 <p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms).</p>
 

@@ -63,6 +63,29 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 }
 
 /**
+* Get latest registered username and update database to reflect it
+*/
+function update_last_username()
+{
+	global $db;
+
+	// Get latest username
+	$sql = 'SELECT user_id, username
+		FROM ' . USERS_TABLE . '
+		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+		ORDER BY user_id DESC';
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($row)
+	{
+		set_config('newest_user_id', $row['user_id'], true);
+		set_config('newest_username', $row['username'], true);
+	}
+}
+
+/**
 * Updates a username across all relevant tables/fields
 *
 * @param string $old_name the old/current username
@@ -94,6 +117,105 @@ function user_update_name($old_name, $new_name)
 	{
 		set_config('newest_username', $new_name);
 	}
+}
+
+/**
+* Add User
+*/
+function user_add($user_row, $cp_data = false)
+{
+	global $db, $config;
+
+	if (empty($user_row['username']) || empty($user_row['group_id']) || empty($user_row['user_email']) || empty($user_row['user_type']))
+	{
+		return false;
+	}
+
+	$sql_ary = array(
+		'username'			=> $user_row['username'],
+		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
+		'user_email'		=> $user_row['user_email'],
+		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
+		'group_id'			=> $user_row['group_id'],
+		'user_type'			=> $user_row['user_type'],
+	);
+
+	// These are the additional vars able to be specified
+	$additional_vars = array(
+		'user_permissions'	=> '',
+		'user_timezone'		=> 0,
+		'user_dateformat'	=> $config['default_dateformat'],
+		'user_lang'			=> $config['default_lang'],
+		'user_style'		=> $config['default_style'],
+		'user_allow_pm'		=> 1,
+		'user_actkey'		=> '',
+		'user_ip'			=> '',
+		'user_regdate'		=> time(),
+
+		'user_lastmark'			=> time(),
+		'user_lastvisit'		=> 0,
+		'user_lastpost_time'	=> 0,
+		'user_lastpage'			=> '',
+		'user_posts'			=> 0,
+		'user_dst'				=> 0,
+		'user_colour'			=> '',
+		'user_avatar'			=> '',
+		'user_avatar_type'		=> 0,
+		'user_avatar_width'		=> 0,
+		'user_avatar_height'	=> 0,
+		'user_new_privmsg'		=> 0,
+		'user_unread_privmsg'	=> 0,
+		'user_last_privmsg'		=> 0,
+		'user_message_rules'	=> 0,
+		'user_full_folder'		=> PRIVMSGS_NO_BOX,
+		'user_emailtime'		=> 0,
+
+		'user_notify'			=> 0,
+		'user_notify_pm'		=> 1,
+		'user_notify_type'		=> NOTIFY_EMAIL,
+		'user_allow_pm'			=> 1,
+		'user_allow_email'		=> 1,
+		'user_allow_viewonline'	=> 1,
+		'user_allow_viewemail'	=> 1,
+		'user_allow_massemail'	=> 1,
+
+		'user_sig'					=> '',
+		'user_sig_bbcode_uid'		=> '',
+		'user_sig_bbcode_bitfield'	=> 0,
+	);
+
+	// Now fill the sql array with not required variables
+	foreach ($additional_vars as $key => $default_value)
+	{
+		$sql_ary[$key] = (isset($user_row[$key])) ? $user_row[$key] : $default_value;
+	}
+
+	$db->sql_transaction('begin');
+
+	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+	$db->sql_query($sql);
+
+	$user_id = $db->sql_nextid();
+
+	// Insert Custom Profile Fields
+	if ($cp_data !== false && sizeof($cp_data))
+	{
+		$cp_data['user_id'] = (int) $user_id;
+		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+		$db->sql_query($sql);
+	}
+
+	// Place into appropriate group...
+	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		'user_id'		=> (int) $user_id,
+		'group_id'		=> (int) $user_row['group_id'],
+		'user_pending'	=> 0)
+	);
+	$db->sql_query($sql);
+
+	$db->sql_transaction('commit');
+
+	return $user_id;
 }
 
 /**
@@ -193,18 +315,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
 	{
-		$sql = 'SELECT user_id, username
-			FROM ' . USERS_TABLE . '
-			WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-			ORDER BY user_id DESC';
-		$result = $db->sql_query_limit($sql, 1);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			set_config('newest_user_id', $row['user_id'], true);
-			set_config('newest_username', $row['username'], true);
-		}
-		$db->sql_freeresult($result);
+		update_last_username();
 	}
 
 	set_config('num_users', $config['num_users'] - 1, true);

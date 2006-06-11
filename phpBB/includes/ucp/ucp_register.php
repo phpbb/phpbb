@@ -24,16 +24,16 @@ class ucp_register
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
 		{
-			trigger_error($user->lang['UCP_REGISTER_DISABLE']);
+			trigger_error('UCP_REGISTER_DISABLE');
 		}
 
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
-		$confirm_id = request_var('confirm_id', '');
-		$coppa		= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed		= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit		= (isset($_POST['submit'])) ? true : false;
-		$change_lang = request_var('change_lang', '');
+		$confirm_id		= request_var('confirm_id', '');
+		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
+		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
+		$submit			= (isset($_POST['submit'])) ? true : false;
+		$change_lang	= request_var('change_lang', '');
 
 		if ($change_lang)
 		{
@@ -155,8 +155,10 @@ class ucp_register
 							AND session_id = '" . $db->sql_escape($user->session_id) . "'
 							AND confirm_type = " . CONFIRM_REG;
 					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
 
-					if ($row = $db->sql_fetchrow($result))
+					if ($row)
 					{
 						if (strcasecmp($row['code'], $confirm_code) === 0)
 						{
@@ -177,7 +179,6 @@ class ucp_register
 						$error[] = $user->lang['CONFIRM_CODE_WRONG'];
 						$wrong_confirm = true;
 					}
-					$db->sql_freeresult($result);
 				}
 			}
 
@@ -193,7 +194,7 @@ class ucp_register
 					$error[] = $user->lang['NEW_EMAIL_ERROR'];
 				}
 			}
-			
+
 			if (!sizeof($error))
 			{
 				$server_url = generate_board_url();
@@ -208,12 +209,13 @@ class ucp_register
 					WHERE group_name = '" . $db->sql_escape($group_name) . "'
 						AND group_type = " . GROUP_SPECIAL;
 				$result = $db->sql_query($sql);
-
-				if (!($row = $db->sql_fetchrow($result)))
-				{
-					trigger_error($user->lang['NO_GROUP']);
-				}
+				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
+					trigger_error('NO_GROUP');
+				}
 
 				$group_id = $row['group_id'];
 
@@ -223,7 +225,7 @@ class ucp_register
 				{
 					$user_actkey = gen_rand_string(10);
 					$key_len = 54 - (strlen($server_url));
-					$key_len = ($key_len > 6) ? $key_len : 6;
+					$key_len = ($key_len < 6) ? 6 : $key_len;
 					$user_actkey = substr($user_actkey, 0, $key_len);
 					$user_type = USER_INACTIVE;
 				}
@@ -233,80 +235,21 @@ class ucp_register
 					$user_actkey = '';
 				}
 
-				// Begin transaction ... should this screw up we can rollback
-				$db->sql_transaction('begin');
-
-				$sql_ary = array(
-					'username'			=> $username,
-					'user_permissions'	=> '',
-					'user_password'		=> md5($new_password),
-					'user_email'		=> $email,
-					'user_email_hash'	=> (int) crc32(strtolower($email)) . strlen($email),
-					'group_id'			=> (int) $group_id,
-					'user_timezone'		=> (float) $tz,
-					'user_dateformat'	=> $config['default_dateformat'],
-					'user_lang'			=> $lang,
-					'user_style'		=> $config['default_style'],
-					'user_allow_pm'		=> 1,
-					'user_type'			=> $user_type,
-					'user_actkey'		=> $user_actkey,
-					'user_ip'			=> $user->ip,
-					'user_regdate'		=> time(),
-
-					'user_lastmark'			=> time(),
-					'user_lastvisit'		=> 0,
-					'user_lastpost_time'	=> 0,
-					'user_lastpage'			=> '',
-					'user_posts'			=> 0,
-					'user_dst'				=> 0,
-					'user_colour'			=> '',
-					'user_avatar'			=> '',
-					'user_avatar_type'		=> 0,
-					'user_avatar_width'		=> 0,
-					'user_avatar_height'	=> 0,
-					'user_new_privmsg'		=> 0,
-					'user_unread_privmsg'	=> 0,
-					'user_last_privmsg'		=> 0,
-					'user_message_rules'	=> 0,
-					'user_full_folder'		=> PRIVMSGS_NO_BOX,
-					'user_emailtime'		=> 0,
-
-					'user_notify'			=> 0,
-					'user_notify_pm'		=> 1,
-					'user_notify_type'		=> NOTIFY_EMAIL,
-					'user_allow_pm'			=> 1,
-					'user_allow_email'		=> 1,
-					'user_allow_viewonline'	=> 1,
-					'user_allow_viewemail'	=> 1,
-					'user_allow_massemail'	=> 1,
-
-					'user_sig'					=> '',
-					'user_sig_bbcode_uid'		=> '',
-					'user_sig_bbcode_bitfield'	=> 0,
-				);
-
-				$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-				$db->sql_query($sql);
-
-				$user_id = $db->sql_nextid();
-
-				// Insert Custom Profile Fields
-				if (sizeof($cp_data))
-				{
-					$cp_data['user_id'] = (int) $user_id;
-					$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
-					$db->sql_query($sql);
-				}
-
-				// Place into appropriate group, either REGISTERED(_COPPA) or INACTIVE(_COPPA) depending on config
-				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'user_id'		=> (int) $user_id,
+				$user_row = array(
+					'username'		=> $username,
+					'user_password'	=> md5($new_password),
+					'user_email'	=> $email,
 					'group_id'		=> (int) $group_id,
-					'user_pending'	=> 0)
+					'user_timezone'	=> (float) $tz,
+					'user_lang'		=> $lang,
+					'user_type'		=> $user_type,
+					'user_actkey'	=> $user_actkey,
+					'user_ip'		=> $user->ip,
+					'user_regdate'	=> time(),
 				);
-				$db->sql_query($sql);
 
-				$db->sql_transaction('commit');
+				// Register user...
+				$user_id = user_add($user_row, $cp_data);
 
 				if ($coppa && $config['email_enable'])
 				{
@@ -331,7 +274,7 @@ class ucp_register
 
 				if ($config['email_enable'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 					$messenger = new messenger(false);
 
@@ -360,7 +303,7 @@ class ucp_register
 						$messenger->assign_vars(array(
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
-							'EMAIL_ADDRESS' => $email,
+							'EMAIL_ADDRESS'	=> $email,
 							'SITENAME'		=> $config['sitename'])
 						);
 					}
@@ -369,8 +312,7 @@ class ucp_register
 
 					if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
-						// Grab an array of user_id's with a_user permissions ... these users
-						// can activate a user
+						// Grab an array of user_id's with a_user permissions ... these users can activate a user
 						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
@@ -412,12 +354,13 @@ class ucp_register
 		}
 
 		$s_hidden_fields = build_hidden_fields(array(
-			'agreed'	=> 'true', 
-			'coppa'		=> $coppa,
+			'agreed'		=> 'true', 
+			'coppa'			=> $coppa,
 			'change_lang'	=> 0)
 		);
 
 		$confirm_image = '';
+
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'])
 		{
@@ -448,16 +391,14 @@ class ucp_register
 					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
 						AND confirm_type = " . CONFIRM_REG;
 				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
-				{
-					if ($config['max_reg_attempts'] && $row['attempts'] >= $config['max_reg_attempts'])
-					{
-						trigger_error($user->lang['TOO_MANY_REGISTERS']);
-					}
-				}
+				$attempts = (int) $db->sql_fetchfield('attempts');
 				$db->sql_freeresult($result);
-		
+
+				if ($config['max_reg_attempts'] && $attempts > $config['max_reg_attempts'])
+				{
+					trigger_error($user->lang['TOO_MANY_REGISTERS']);
+				}
+
 				$code = gen_rand_string(mt_rand(5, 8));
 				$confirm_id = md5(unique_id($user->ip));
 
@@ -480,11 +421,11 @@ class ucp_register
 		{
 			case USER_ACTIVATION_SELF:
 				$l_reg_cond = $user->lang['UCP_EMAIL_ACTIVATE'];
-				break;
+			break;
 
 			case USER_ACTIVATION_ADMIN:
 				$l_reg_cond = $user->lang['UCP_ADMIN_ACTIVATE'];
-				break;
+			break;
 		}
 
 		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
@@ -502,10 +443,10 @@ class ucp_register
 			'EMAIL_CONFIRM'		=> (isset($email_confirm)) ? $email_confirm : '',
 			'CONFIRM_IMG'		=> $confirm_image,
 
-			'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
-			'L_ITEMS_REQUIRED'		=> $l_reg_cond,
-			'L_USERNAME_EXPLAIN'	=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-			'L_NEW_PASSWORD_EXPLAIN'=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+			'L_ITEMS_REQUIRED'			=> $l_reg_cond,
+			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
+			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($lang),
 			'S_TZ_OPTIONS'		=> tz_select($tz),

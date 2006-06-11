@@ -22,6 +22,8 @@
 */
 class ucp_confirm
 {
+	var $u_action;
+
 	function main($id, $mode)
 	{
 		global $db, $user, $phpbb_root_path, $config, $phpEx;
@@ -56,11 +58,7 @@ class ucp_confirm
 
 		if (function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
-			$policy_modules[] = 'policy_overlap';
-			$policy_modules[] = 'policy_shape';
-			$policy_modules[] = 'policy_cells';
-			$policy_modules[] = 'policy_stencil';
-			$policy_modules[] = 'policy_composite';
+			$policy_modules += array('policy_overlap', 'policy_shape', 'policy_cells', 'policy_stencil', 'policy_composite');
 		}
 
 		foreach ($policy_modules as $key => $name)
@@ -87,4 +85,5 @@ class ucp_confirm
 		exit;
 	}
 }
+
 ?>

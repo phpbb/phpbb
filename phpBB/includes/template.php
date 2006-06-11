@@ -17,12 +17,10 @@ if (!defined('IN_PHPBB'))
 
 /**
 * @package phpBB3
-*
 * Base Template class.
 */
 class template
 {
-
 	/** variable that holds all the data we'll be substituting into
 	* the compiled templates. Takes form:
 	* --> $this->_tpldata[block.][iteration#][child.][iteration#][child2.][iteration#][variablename] == value
@@ -66,7 +64,7 @@ class template
 
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . $template_name . '_';
-		
+
 		return true;
 	}
 
@@ -156,7 +154,7 @@ class template
 	}
 
 	/**
-	* Display the handle and assign the output to a template variable or return the content.
+	* Display the handle and assign the output to a template variable or return the compiled result.
 	* @public
 	*/
 	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
@@ -171,7 +169,7 @@ class template
 		}
 
 		$this->assign_var($template_var, $contents);
-		
+
 		return true;
 	}
 
@@ -225,44 +223,41 @@ class template
 						OR template_included LIKE '%" . $db->sql_escape($this->filename[$handle]) . ":%')";
 			$result = $db->sql_query($sql);
 
-			if ($row = $db->sql_fetchrow($result))
+			while ($row = $db->sql_fetchrow($result))
 			{
-				do
+				if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
 				{
-					if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
-					{
-						if ($row['template_filename'] == $this->filename[$handle])
-						{
-							$compile->_tpl_load_file($handle);
-						}
-						else
-						{
-							$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
-							$compile->_tpl_load_file($row['template_filename']);
-							unset($this->compiled_code[$row['template_filename']]);
-							unset($this->files[$row['template_filename']]);
-						}
-					}
-
 					if ($row['template_filename'] == $this->filename[$handle])
 					{
-						$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
-						$compile->compile_write($handle, $this->compiled_code[$handle]);
+						$compile->_tpl_load_file($handle);
 					}
 					else
 					{
-						// Only bother compiling if it doesn't already exist
-						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
-						{
-							$this->filename[$row['template_filename']] = $row['template_filename'];
-							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
-							unset($this->filename[$row['template_filename']]);
-						}
+						$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
+						$compile->_tpl_load_file($row['template_filename']);
+						unset($this->compiled_code[$row['template_filename']]);
+						unset($this->files[$row['template_filename']]);
 					}
 				}
-				while ($row = $db->sql_fetchrow($result));
+
+				if ($row['template_filename'] == $this->filename[$handle])
+				{
+					$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
+					$compile->compile_write($handle, $this->compiled_code[$handle]);
+				}
+				else
+				{
+					// Only bother compiling if it doesn't already exist
+					if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
+					{
+						$this->filename[$row['template_filename']] = $row['template_filename'];
+						$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
+						unset($this->filename[$row['template_filename']]);
+					}
+				}
 			}
 			$db->sql_freeresult($result);
+
 			return false;
 		}
 
@@ -316,7 +311,7 @@ class template
 
 			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
 			$vararray['S_ROW_COUNT'] = $s_row_count;
-			
+
 			// Assign S_FIRST_ROW
 			if (!$s_row_count)
 			{
@@ -355,8 +350,7 @@ class template
 				unset($this->_tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
 			}
 			
-			// Add a new iteration to this block with the variable assignments
-			// we were given.
+			// Add a new iteration to this block with the variable assignments we were given.
 			$this->_tpldata[$blockname][] = $vararray;
 		}
 
@@ -368,7 +362,6 @@ class template
 	*
 	* Some Examples:
 	* <code>
-	*
 	* alter_block_array('loop', $vararray); // Insert vararray at the beginning
 	* alter_block_array('loop', $vararray, 2); // Insert vararray at position 2
 	* alter_block_array('loop', $vararray, array('KEY' => 'value')); // Insert vararray at the position where the key 'KEY' has the value of 'value' 
@@ -379,7 +372,6 @@ class template
 	* alter_block_array('loop', $vararray, array('KEY' => 'value'), 'change'); // Change/Merge vararray with existing array at the position where the key 'KEY' has the value of 'value' 
 	* alter_block_array('loop', $vararray, false, 'change'); // Change/Merge vararray with existing array at first position
 	* alter_block_array('loop', $vararray, true, 'change'); // Change/Merge vararray with existing array at last position
-	*
 	* </code>
 	*
 	* @param string $blockname the blockname, for example 'loop'
@@ -391,18 +383,17 @@ class template
 	* int: Position [the position to change or insert at directly given]
 	*
 	* If key is false the position is set to 0
-	*
 	* If key is true the position is set to the last entry
 	* 
 	* @param insert|change $mode Mode to execute
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero). 
-	*
 	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
 	*
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
 	*
+	* @return false on error, true on success
 	* @public
 	*/
 	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
@@ -441,7 +432,7 @@ class template
 				return false;
 			}
 		}
-		
+
 		// Insert Block
 		if ($mode == 'insert')
 		{
@@ -468,10 +459,10 @@ class template
 			// Insert vararray at given position
 			$vararray['S_ROW_COUNT'] = $key;
 			$this->_tpldata[$blockname][$key] = $vararray;
-		
+
 			return true;
 		}
-		
+
 		// Which block to change?
 		if ($mode == 'change')
 		{

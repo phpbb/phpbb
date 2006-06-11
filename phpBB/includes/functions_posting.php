@@ -510,7 +510,7 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	list($width, $height, $type, ) = getimagesize($source);
+	list($width, $height, $type, ) = @getimagesize($source);
 
 	if (!$width || !$height)
 	{

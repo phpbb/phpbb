@@ -123,7 +123,7 @@ class acp_language
 					'HIDDEN'	=> $hidden_data,
 
 					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
-					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection === false) ? true : false
+					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection !== true) ? true : false
 				));
 			break;
 
@@ -327,9 +327,9 @@ class acp_language
 							trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
 					}
 
-					if (!$transfer->open_session())
+					if (($result = $transfer->open_session()) !== true)
 					{
-						trigger_error($user->lang['ERR_CONNECTING_SERVER'] . adm_back_link($this->u_action));
+						trigger_error($user->lang[$result] . adm_back_link($this->u_action));
 					}
 
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
