@@ -744,10 +744,29 @@ class bbcode_firstpass extends bbcode
 		if ($valid)
 		{
 			$this->parsed_items['url']++;
-		
+
 			if (!preg_match('#^[\w]+?://.*?#i', $url))
 			{
 				$url = 'http://' . $url;
+			}
+
+			$url_info = parse_url($url);
+			$script_test_path = explode('/', $url_info['path']);
+			$test_url = $url_info['scheme'] . '://' . $url_info['host'];
+			if (!empty($url_info['port']))
+			{
+				$test_url .= ':' . $url_info['port'];
+			}
+
+			// We take our test url and stick on the first bit of text we get to check if we are really at the domain. If so, lets go!
+			if ($test_url . '/' . $script_test_path[1] == generate_board_url())
+			{
+				$url_info['query'] = preg_replace('/(?:&amp;|^)sid=[0-9a-f]{32}/', '', $url_info['query']);
+				$url = $test_url . $url_info['path'] . '?' . $url_info['query'];
+				if (!empty($url_info['fragment']))
+				{
+					$url .= $url_info['fragment'];
+				}
 			}
 
 			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
