@@ -32,6 +32,7 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
 
+	'CUSTOM_DATEFORMAT'				=> 'Custom...',
 	'DEFAULT_DATE_FORMAT'			=> 'Date Format',
 	'DEFAULT_DATE_FORMAT_EXPLAIN'	=> 'The date format is the same as the PHP date function.',
 	'DEFAULT_LANGUAGE'				=> 'Default Language',
@@ -40,6 +41,7 @@ $lang = array_merge($lang, array(
 	'DISABLE_BOARD_EXPLAIN'			=> 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.',
 	'OVERRIDE_STYLE'				=> 'Override user style',
 	'OVERRIDE_STYLE_EXPLAIN'		=> 'Replaces users style with the default.',
+	'RELATIVE_DAYS'					=> 'Relative days',
 	'SITE_DESC'						=> 'Site description',
 	'SITE_NAME'						=> 'Site name',
 	'SYSTEM_DST'					=> 'Enable Daylight Savings Time',

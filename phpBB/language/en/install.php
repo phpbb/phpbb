@@ -219,6 +219,7 @@ $lang = array_merge($lang, array(
 	'SUPPORT_BODY'				=> 'Some text on obtaining support, etc can go here.</p><p>Probably this can be copied from the documentation</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a>',
 	'SYNC_FORUMS'				=> 'Starting to sync forums',
 	'SYNC_TOPICS'				=> 'Starting to sync topics',
+	'SYNC_TOPIC_ID'				=> 'Synchronising topics from topic_id $1%s to $2%s',
 
 	'TABLES_MISSING'			=> 'Could not find these tables<br />&#187; <b>%s</b>.',
 	'TABLE_PREFIX'				=> 'Prefix for tables in database',

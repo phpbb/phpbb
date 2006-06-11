@@ -39,7 +39,7 @@ class acp_board
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
 						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
-						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'type' => 'text::255', 'explain' => true),
+						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'type' => 'select', 'function' => 'tz_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'board_dst'				=> array('lang' => 'SYSTEM_DST',			'type' => 'radio:yes_no', 'explain' => false),
 						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', true), 'explain' => false),
@@ -706,6 +706,30 @@ class acp_board
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
+	}
+
+	function dateformat_select($value, $key)
+	{
+		global $user;
+
+		$dateformat_options = '';
+
+		foreach ($user->lang['dateformats'] as $format => $null)
+		{
+			$dateformat_options .= '<option value="' . $format . '"' . (($format == $value) ? ' selected="selected"' : '') . '>';
+			$dateformat_options .= $user->format_date(time(), $format, true) . ((strpos($format, '|') !== false) ? ' [' . $user->lang['RELATIVE_DAYS'] . ']' : '');
+			$dateformat_options .= '</option>';
+		}
+
+		$dateformat_options .= '<option value="custom"';
+		if (!in_array($value, array_keys($user->lang['dateformats'])))
+		{
+			$dateformat_options .= ' selected="selected"';
+		}
+		$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+
+		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('$key').value = '$value'; } else { document.getElementById('$key').value = this.value; }\">$dateformat_options</select>
+		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";
 	}
 }
 
