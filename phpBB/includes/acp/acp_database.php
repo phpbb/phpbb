@@ -176,6 +176,7 @@ class acp_database
 									case 'mssql':
 									case 'mssql_odbc':
 										$sql_data .= '# Table: ' . $table_name . "\n";
+										$sql_data .= "IF OBJECT_ID(N'$table_name', N'U') IS NOT NULL\n";
 										$sql_data .= "DROP TABLE $table_name;\nGO\n";
 									break;
 								}
@@ -520,6 +521,7 @@ class acp_database
 
 									case 'mssql_odbc':
 										$ary_type = $ary_name = array();
+										$ident_set = false;
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT * FROM {$table_name}";
@@ -529,7 +531,17 @@ class acp_database
 
 										if ($retrieved_data)
 										{
-											$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\n";
+											$sql = "SELECT 1 as has_identity
+														FROM INFORMATION_SCHEMA.COLUMNS
+														WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+											$result2 = $db->sql_query($sql);
+											$row2 = $db->sql_fetchrow($result2);
+											if (!empty($row2['has_identity']))
+											{
+												$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
+												$ident_set = true;
+											}
+											$db->sql_freeresult($result2);
 										}
 
 										$i_num_fields = odbc_num_fields($result);
@@ -572,7 +584,7 @@ class acp_database
 													$str_empty = 'NULL';
 												}
 
-												if (empty($str_val) && $str_val !== '0')
+												if (empty($str_val) && $str_val !== '0' && !(is_int($str_val) || is_float($str_val)))
 												{
 													$str_val = $str_empty;
 												}
@@ -609,12 +621,17 @@ class acp_database
 
 										if ($retrieved_data)
 										{
-											$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\n";
+											$sql_data = "\nGO\n";
+											if ($ident_set)
+											{
+												$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
+											}
 										}
 									break;
 
 									case 'mssql':
 										$ary_type = $ary_name = array();
+										$ident_set = false;
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT * FROM {$table_name}";
@@ -622,17 +639,27 @@ class acp_database
 
 										$retrieved_data = mssql_num_rows($result);
 
-										if ($retrieved_data)
-										{
-											$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\n";
-										}
-
 										$i_num_fields = mssql_num_fields($result);
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
 											$ary_type[$i] = mssql_field_type($result, $i);
 											$ary_name[$i] = mssql_field_name($result, $i);
+										}
+
+										if ($retrieved_data)
+										{
+											$sql = "SELECT 1 as has_identity
+														FROM INFORMATION_SCHEMA.COLUMNS
+														WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+											$result2 = $db->sql_query($sql);
+											$row2 = $db->sql_fetchrow($result2);
+											if (!empty($row2['has_identity']))
+											{
+												$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
+												$ident_set = true;
+											}
+											$db->sql_freeresult($result2);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -667,7 +694,7 @@ class acp_database
 													$str_empty = 'NULL';
 												}
 
-												if (empty($str_val) && $str_val !== '0')
+												if (empty($str_val) && $str_val !== '0' && !(is_int($str_val) || is_float($str_val)))
 												{
 													$str_val = $str_empty;
 												}
@@ -704,7 +731,11 @@ class acp_database
 
 										if ($retrieved_data)
 										{
-											$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\n";
+											$sql_data = "\nGO\n";
+											if ($ident_set)
+											{
+												$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";
+											}
 										}
 									break;
 
@@ -1095,7 +1126,30 @@ class acp_database
 						{
 							// Strip out sql comments...
 							remove_remarks($data);
-							$pieces = split_sql_file($data, ';');
+							switch (SQL_LAYER)
+							{
+								case 'firebird':
+									$delim = ';;';
+								break;
+
+								case 'mysql':
+								case 'mysql4':
+								case 'mysqli':
+								case 'sqlite':
+								case 'postgres':
+									$delim = ';';
+								break;
+
+								case 'oracle':
+									$delim = '/';
+								break;
+
+								case 'mssql':
+								case 'mssql-odbc':
+									$delim = 'GO';
+								break;
+							}
+							$pieces = split_sql_file($data, $delim);
 
 							$sql_count = count($pieces);
 							for($i = 0; $i < $sql_count; $i++)
@@ -1556,8 +1610,11 @@ class acp_database
 					}
 					$rows[] = "\t\t[{$row['COLUMN_NAME']}]";
 				}
-				$sql_data .= implode(",\n", $rows);
-				$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
+				if (sizeof($rows))
+				{
+					$sql_data .= implode(",\n", $rows);
+					$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
+				}
 				$db->sql_freeresult($result);
 
 				$index = array();
@@ -1567,7 +1624,7 @@ class acp_database
 				{
 					if ($row['TYPE'] == 3)
 					{
-						$index[$row['INDEX_NAME']][] = $row['COLUMN_NAME'];
+						$index[$row['INDEX_NAME']][] = '[' . $row['COLUMN_NAME'] . ']';
 					}
 				}
 				$db->sql_freeresult($result);
@@ -1579,7 +1636,7 @@ class acp_database
 
 				foreach ($index as $index_name => $columns)
 				{
-					$sql_data .= "\nCREATE  INDEX [$index_name] ON [$table_name]([$columns]) ON [PRIMARY]\nGO\n";
+					$sql_data .= "\nCREATE  INDEX [$index_name] ON [$table_name]($columns) ON [PRIMARY]\nGO\n";
 				}
 			break;
 
