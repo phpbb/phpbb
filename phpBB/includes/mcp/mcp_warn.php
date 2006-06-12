@@ -268,10 +268,6 @@ function mcp_warn_post_view($id, $mode, $action)
 
 		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" border="0" alt="" />';
 	}
-	else
-	{
-		$avatar_img = '<img src="' . $phpbb_root_path . 'images/no_avatar.gif" alt="" />';
-	}
 
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
@@ -341,10 +337,6 @@ function mcp_warn_user_view($id, $mode, $action)
 		$avatar_img .= $userrow['user_avatar'];
 
 		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" border="0" alt="" />';
-	}
-	else
-	{
-		$avatar_img = '<img src="adm/images/no_avatar.gif" alt="" />';
 	}
 
 	// OK, they didn't submit a warning so lets build the page for them to do so

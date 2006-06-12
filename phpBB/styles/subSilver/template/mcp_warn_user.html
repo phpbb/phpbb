@@ -19,11 +19,9 @@
 				<td align="center">{RANK_IMG}</td>
 			</tr>
 			<!-- ENDIF -->
-			<!-- IF AVATAR_IMG -->
 			<tr>
-				<td align="center">{AVATAR_IMG}</td>
+				<td align="center"><!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --></td>
 			</tr>
-			<!-- ENDIF -->
 		</table></td>
 		<td class="row1"><table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr> 
