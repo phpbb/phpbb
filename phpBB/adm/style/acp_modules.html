@@ -155,6 +155,19 @@
 		</table>
 	<!-- ENDIF -->
 
+	<div class="clearfix">&nbsp;</div>
+
+	<form id="quick" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick" style="float: right;">
+		<input type="hidden" name="action" value="quickadd" />
+
+		<select name="quick_install">{S_INSTALL_OPTIONS}</select>
+		<input class="button2" name="quickadd" type="submit" value="{L_ADD_MODULE}" />
+	</fieldset>
+	
+	</form>
+
 	<form id="module" method="post" action="{U_ACTION}">
 
 	<fieldset class="quick" style="float: left;">
@@ -167,16 +180,7 @@
 
 	</form>
 
-	<form id="quick" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick">
-		<input type="hidden" name="action" value="quickadd" />
-
-		<select name="quick_install">{S_INSTALL_OPTIONS}</select>
-		<input class="button2" name="quickadd" type="submit" value="{L_ADD_MODULE}" />
-	</fieldset>
-	
-	</form>
+	<div class="clearfix">&nbsp;</div>
 	
 	<form id="mselect" method="post" action="{U_SEL_ACTION}">
 	<fieldset class="quick">

@@ -251,6 +251,12 @@ class ucp_register
 				// Register user...
 				$user_id = user_add($user_row, $cp_data);
 
+				// This should not happen, because the required variables are listed above...
+				if ($user_id === false)
+				{
+					trigger_error($user->lang['NO_USER'], E_USER_ERROR);
+				}
+
 				if ($coppa && $config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_COPPA'];

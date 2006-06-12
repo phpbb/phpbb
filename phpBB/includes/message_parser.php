@@ -613,8 +613,8 @@ class bbcode_firstpass extends bbcode
 				if ($buffer == '/quote' && sizeof($close_tags))
 				{
 					// we have found a closing tag
-
-					$out .= array_pop($close_tags) . ']';
+					// Add space at the end of the closing tag to allow following urls/smilies to be parsed correctly
+					$out .= array_pop($close_tags) . '] ';
 					$tok = '[';
 					$buffer = '';
 				}
@@ -740,7 +740,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($var1)
 		{
-			$retval = '[email=' . $this->bbcode_specialchars($email) . ':' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($txt) . '[/email:' . $this->bbcode_uid . ']';
+			$retval = '[email=' . $this->bbcode_specialchars($email) . ':' . $this->bbcode_uid . ']' . $txt . '[/email:' . $this->bbcode_uid . ']';
 		}
 		else
 		{
@@ -768,7 +768,7 @@ class bbcode_firstpass extends bbcode
 			return '';
 		}
 
-		// relative urls for this board
+		// Checking urls
 		if (preg_match('#' . preg_quote(generate_board_url(), '#') . '/([^ \t\n\r<"\']+)#i', $url) ||
 			preg_match('#([\w]+?://.*?[^ \t\n\r<"\']*)#i', $url) ||
 			preg_match('#(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#i', $url))
@@ -785,26 +785,13 @@ class bbcode_firstpass extends bbcode
 				$url = 'http://' . $url;
 			}
 
-			$url_info = parse_url($url);
-			$script_test_path = explode('/', $url_info['path']);
-			$test_url = $url_info['scheme'] . '://' . $url_info['host'];
-			if (!empty($url_info['port']))
-			{
-				$test_url .= ':' . $url_info['port'];
-			}
-
 			// We take our test url and stick on the first bit of text we get to check if we are really at the domain. If so, lets go!
-			if ($test_url . '/' . $script_test_path[1] == generate_board_url())
+			if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
 			{
-				$url_info['query'] = preg_replace('/(?:&amp;|^)sid=[0-9a-f]{32}/', '', $url_info['query']);
-				$url = $test_url . $url_info['path'] . '?' . $url_info['query'];
-				if (!empty($url_info['fragment']))
-				{
-					$url .= $url_info['fragment'];
-				}
+				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\1', $url);
 			}
 
-			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
+			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
 		}
 
 		return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
