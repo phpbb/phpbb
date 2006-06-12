@@ -126,7 +126,7 @@ function user_add($user_row, $cp_data = false)
 {
 	global $db, $config;
 
-	if (empty($user_row['username']) || empty($user_row['group_id']) || empty($user_row['user_email']) || empty($user_row['user_type']))
+	if (empty($user_row['username']) || !isset($user_row['group_id']) || empty($user_row['user_email']) || !isset($user_row['user_type']))
 	{
 		return false;
 	}
