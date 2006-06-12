@@ -62,7 +62,8 @@ $global_privmsgs_rules = array(
 		RULE_IS				=> array('check0' => 'message_subject', 'function' => '{CHECK0} == {STRING}'),
 		RULE_IS_NOT			=> array('check0' => 'message_subject', 'function' => '{CHECK0} != {STRING}'),
 		RULE_BEGINS_WITH	=> array('check0' => 'message_subject', 'function' => 'preg_match("/^" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
-		RULE_ENDS_WITH		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "$/i", {CHECK0})')),
+		RULE_ENDS_WITH		=> array('check0' => 'message_subject', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "$/i", {CHECK0})'),
+	),
 
 	CHECK_SENDER	=> array(
 		RULE_IS_LIKE		=> array('check0' => 'username', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
@@ -74,21 +75,25 @@ $global_privmsgs_rules = array(
 		RULE_IS_FRIEND		=> array('check0' => 'friend', 'function' => '{CHECK0} == 1'),
 		RULE_IS_FOE			=> array('check0' => 'foe', 'function' => '{CHECK0} == 1'),
 		RULE_IS_USER		=> array('check0' => 'author_id', 'function' => '{CHECK0} == {USER_ID}'),
-		RULE_IS_GROUP		=> array('check0' => 'author_in_group', 'function' => 'in_array({GROUP_ID}, {CHECK0})')),
+		RULE_IS_GROUP		=> array('check0' => 'author_in_group', 'function' => 'in_array({GROUP_ID}, {CHECK0})'),
+	),
 
 	CHECK_MESSAGE	=> array(
 		RULE_IS_LIKE		=> array('check0' => 'message_text', 'function' => 'preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0})'),
 		RULE_IS_NOT_LIKE	=> array('check0' => 'message_text', 'function' => '!(preg_match("/" . preg_quote({STRING}, "/") . "/i", {CHECK0}))'),
 		RULE_IS				=> array('check0' => 'message_text', 'function' => '{CHECK0} == {STRING}'),
-		RULE_IS_NOT			=> array('check0' => 'message_text', 'function' => '{CHECK0} != {STRING}')),
+		RULE_IS_NOT			=> array('check0' => 'message_text', 'function' => '{CHECK0} != {STRING}'),
+	),
 
 	CHECK_STATUS	=> array(
 		RULE_ANSWERED		=> array('check0' => 'replied', 'function' => '{CHECK0} == 1'),
-		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1')),
+		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1'),
+	),
 
 	CHECK_TO		=> array(
 		RULE_TO_GROUP		=> array('check0' => 'to', 'check1' => 'bcc', 'check2' => 'user_in_group', 'function' => 'in_array("g_" . {CHECK2}, {CHECK0}) || in_array("g_" . {CHECK2}, {CHECK1})'),
-		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc', 'function' => 'in_array("u_" . $user_id, {CHECK0}) || in_array("u_" . $user_id, {CHECK1})'))
+		RULE_TO_ME			=> array('check0' => 'to', 'check1' => 'bcc', 'function' => 'in_array("u_" . $user_id, {CHECK0}) || in_array("u_" . $user_id, {CHECK1})'),
+	)
 );
 
 /**
@@ -301,9 +306,43 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	$user_message_rules = (int) $user->data['user_message_rules'];
 	$user_id = (int) $user->data['user_id'];
 
-	$user_rules = $zebra = array();
-	if ($user_message_rules)
+	$action_ary = $move_into_folder = array();
+
+	if ($release)
 	{
+		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
+			SET folder_id = ' . PRIVMSGS_NO_BOX . '
+			WHERE folder_id = ' . PRIVMSGS_HOLD_BOX . "
+				AND user_id = $user_id";
+		$db->sql_query($sql);
+	}
+
+	// Get those messages not yet placed into any box
+	$retrieve_sql = 'SELECT t.*, p.*, u.username, u.user_id, u.group_id
+		FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . " u
+		WHERE t.user_id = $user_id
+			AND p.author_id = u.user_id
+			AND t.folder_id = " . PRIVMSGS_NO_BOX . '
+			AND t.msg_id = p.msg_id';
+
+	// Just place into the appropiate arrays if no rules need to be checked
+	if (!$user_message_rules)
+	{
+		$result = $db->sql_query($retrieve_sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$action_ary[$row['msg_id']][] = array('action' => false);
+			$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
+		}
+		$db->sql_freeresult($result);
+	}
+	else
+	{
+		$user_rules = $zebra = $check_rows = array();
+		$user_ids = $memberships = array();
+
+		// First of all, grab all rules and retrieve friends/foes
 		$sql = 'SELECT * 
 			FROM ' . PRIVMSGS_RULES_TABLE . "
 			WHERE user_id = $user_id";
@@ -324,54 +363,69 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			}
 			$db->sql_freeresult($result);
 		}
-	}
 
-	if ($release)
-	{
-		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
-			SET folder_id = ' . PRIVMSGS_NO_BOX . '
-			WHERE folder_id = ' . PRIVMSGS_HOLD_BOX . "
-				AND user_id = $user_id";
-		$db->sql_query($sql);
-	}
+		// Now build a bare-bone check_row array
+		$result = $db->sql_query($retrieve_sql);
 
-	// Get those messages not yet placed into any box
-	// @todo question: expand group information to all groups the user/author is in on private message folder?? (user_in_group)
-	$sql = 'SELECT t.*, p.*, u.username, u.group_id as author_in_group
-		FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . " u
-		WHERE t.user_id = $user_id
-			AND p.author_id = u.user_id
-			AND t.folder_id = " . PRIVMSGS_NO_BOX . '
-			AND t.msg_id = p.msg_id';
-	$result = $db->sql_query($sql);
-
-	$action_ary = $move_into_folder = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$row['to']		= explode(':', $row['to_address']);
-		$row['bcc']		= explode(':', $row['bcc_address']);
-		$row['friend']	= (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['friend'] : 0;
-		$row['foe']		= (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['foe'] : 0;
-		$row['user_in_group'] = $user->data['group_id'];
-
-		// Check Rule - this should be very quick since we have all informations we need
-		$is_match = false;
-		foreach ($user_rules as $rule_row)
+		while ($row = $db->sql_fetchrow($result))
 		{
-			if (($action = check_rule($global_privmsgs_rules, $rule_row, $row, $user_id)) !== false)
+			$check_rows[] = array_merge($row, array(
+				'to'				=> explode(':', $row['to_address']),
+				'bcc'				=> explode(':', $row['bcc_address']),
+				'friend'			=> (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['friend'] : 0,
+				'foe'				=> (isset($zebra[$row['author_id']])) ? $zebra[$row['author_id']]['foe'] : 0,
+				'user_in_group'		=> array($user->data['group_id']),
+				'author_in_group'	=> array())
+			);
+
+			$user_ids[] = $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Retrieve user memberships
+		if (sizeof($user_ids))
+		{
+			$sql = 'SELECT *
+				FROM ' . USER_GROUP_TABLE . ' 
+				WHERE user_id IN (' . implode(', ', $user_ids) . ')';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$is_match = true;
-				$action_ary[$row['msg_id']][] = $action;
+				$memberships[$row['user_id']][] = $row['group_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+
+		// Now place into the appropiate folder
+		foreach ($check_rows as $row)
+		{
+			// Add membership if set
+			if (isset($memberships[$row['author_id']]))
+			{
+				$row['author_in_group'] = $memberships[$row['user_id']];
+			}
+
+			// Check Rule - this should be very quick since we have all informations we need
+			$is_match = false;
+			foreach ($user_rules as $rule_row)
+			{
+				if (($action = check_rule($global_privmsgs_rules, $rule_row, $row, $user_id)) !== false)
+				{
+					$is_match = true;
+					$action_ary[$row['msg_id']][] = $action;
+				}
+			}
+
+			if (!$is_match)
+			{
+				$action_ary[$row['msg_id']][] = array('action' => false);
+				$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
 			}
 		}
-	
-		if (!$is_match)
-		{
-			$action_ary[$row['msg_id']][] = array('action' => false);
-			$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
-		}
+
+		unset($user_rules, $zebra, $check_rows, $user_ids, $memberships);
 	}
-	$db->sql_freeresult($result);
 
 	// We place actions into arrays, to save queries.
 	$num_new = $num_unread = 0;
@@ -388,7 +442,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			{
 				continue;
 			}
-	
+
 			switch ($rule_ary['action'])
 			{
 				case ACTION_PLACE_INTO_FOLDER:

@@ -126,7 +126,7 @@ class ucp_pm
 				$sql = 'SELECT group_message_limit
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
-				$result = $db->sql_query($sql);
+				$result = $db->sql_query($sql, 3600);
 				$message_limit = (int) $db->sql_fetchfield('group_message_limit');
 				$db->sql_freeresult($result);
 
@@ -162,7 +162,7 @@ class ucp_pm
 				$sql = 'SELECT group_message_limit
 					FROM ' . GROUPS_TABLE . '
 					WHERE group_id = ' . $user->data['group_id'];
-				$result = $db->sql_query($sql);
+				$result = $db->sql_query($sql, 3600);
 				$message_limit = (int) $db->sql_fetchfield('group_message_limit');
 				$db->sql_freeresult($result);
 
@@ -401,6 +401,7 @@ class ucp_pm
 
 		// Set desired template
 		$this->tpl_name = $tpl_file;
+		$this->page_title = 'UCP_PM_' . strtoupper($mode);
 	}
 }
 

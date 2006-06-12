@@ -210,6 +210,7 @@ class ucp_zebra
 		);
 
 		$this->tpl_name = 'ucp_zebra_' . $mode;
+		$this->page_title = 'UCP_ZEBRA_' . strtoupper($mode);
 	}
 }
 

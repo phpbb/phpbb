@@ -94,6 +94,7 @@ $lang = array_merge($lang, array(
 	'CHANGE'				=> 'Change',
 	'CLICK_VIEW_PRIVMSG'	=> '%sReturn to your Inbox%s',
 	'CLOSE_WINDOW'			=> 'Close window',
+	'COLOUR_SWATCH'			=> 'Colour swatch',
 	'CONFIRM'				=> 'Confirm',
 	'CONFIRM_CODE'			=> 'Confirmation code',
 	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as you see it in the image, it is case insensitive.',

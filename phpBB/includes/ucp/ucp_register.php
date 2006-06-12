@@ -470,6 +470,7 @@ class ucp_register
 
 		//
 		$this->tpl_name = 'ucp_register';
+		$this->page_title = 'UCP_REGISTRATION';
 	}
 }
 

@@ -672,6 +672,7 @@ class ucp_profile
 
 		// Set desired template
 		$this->tpl_name = 'ucp_profile_' . $mode;
+		$this->page_title = 'UCP_PROFILE_' . strtoupper($mode);
 	}
 }
 

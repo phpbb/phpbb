@@ -342,6 +342,7 @@ class ucp_prefs
 		);
 
 		$this->tpl_name = 'ucp_prefs_' . $mode;
+		$this->page_title = 'UCP_PREFS_' . strtoupper($mode);
 	}
 }
 

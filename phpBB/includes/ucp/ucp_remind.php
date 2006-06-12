@@ -92,6 +92,7 @@ class ucp_remind
 		);
 
 		$this->tpl_name = 'ucp_remind';
+		$this->page_title = 'UCP_REMIND';
 	}
 }
 

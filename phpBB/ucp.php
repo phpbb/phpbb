@@ -111,7 +111,8 @@ switch ($mode)
 			'body'		=> 'ucp_agreement.html')
 		);
 
-		page_header($user->lang[$title]);
+		// Disable online list
+		page_header($user->lang[$title], false);
 
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
@@ -318,15 +319,8 @@ $module->load_active();
 // Assign data to the template engine for the list of modules
 $module->assign_tpl_vars(append_sid("{$phpbb_root_path}ucp.$phpEx"));
 
-// Generate the page
-page_header($user->lang['UCP_MAIN']);
-
-$template->set_filenames(array(
-	'body' => $module->get_tpl_name())
-);
-
-page_footer();
-
+// Generate the page, do not display/query online list
+$module->display($module->get_page_title(), false);
 
 /**
 * Function for assigning a template var if the zebra module got included

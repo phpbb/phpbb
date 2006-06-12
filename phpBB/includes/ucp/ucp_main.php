@@ -181,6 +181,7 @@ class ucp_main
 			case 'subscribed':
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				$user->add_lang('viewforum');
 
 				$unwatch = (isset($_POST['unwatch'])) ? true : false;
@@ -464,6 +465,7 @@ class ucp_main
 				}
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				$user->add_lang('viewforum');
 
 				$move_up = request_var('move_up', 0);
@@ -785,6 +787,7 @@ class ucp_main
 
 		// Set desired template
 		$this->tpl_name = 'ucp_main_' . $mode;
+		$this->page_title = 'UCP_MAIN_' . strtoupper($mode);
 	}
 }
 

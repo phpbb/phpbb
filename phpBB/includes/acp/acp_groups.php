@@ -384,6 +384,8 @@ class acp_groups
 								$auth->acl_clear_prefetch();
 							}
 
+							$cache->destroy('sql', GROUPS_TABLE);
+
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
 						}

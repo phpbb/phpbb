@@ -207,6 +207,15 @@ switch ($cron_type)
 	break;
 }
 
+// Unload cache, must be done before the DB connection is closed
+if (!empty($cache))
+{
+	$cache->unload();
+}
+
+// Close our DB connection.
+$db->sql_close();
+
 // Output transparent gif
 header('Cache-Control: no-cache');
 header('Content-type: image/gif');

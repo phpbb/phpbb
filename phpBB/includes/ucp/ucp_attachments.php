@@ -160,6 +160,7 @@ class ucp_attachments
 		);
 
 		$this->tpl_name = 'ucp_attachments';
+		$this->page_title = 'UCP_ATTACHMENTS';
 	}
 }
 

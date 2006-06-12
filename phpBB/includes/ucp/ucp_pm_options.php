@@ -741,7 +741,8 @@ function show_defined_rules($user_id, $check_lang, $rule_lang, $action_lang, $fo
 
 	$sql = 'SELECT *
 		FROM ' . PRIVMSGS_RULES_TABLE . '
-		WHERE user_id = ' . $user_id;
+		WHERE user_id = ' . $user_id . '
+		ORDER BY rule_id ASC';
 	$result = $db->sql_query($sql);
 	
 	$count = 0;

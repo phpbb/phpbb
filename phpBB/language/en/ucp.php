@@ -477,7 +477,7 @@ $lang = array_merge($lang, array(
 		'ANSWERED'		=> 'answered',
 		'FORWARDED'		=> 'forwarded',
 		'REPORTED'		=> 'reported',
-		'TO_GROUP'		=> 'to usergroup',
+		'TO_GROUP'		=> 'to my default usergroup',
 		'TO_ME'			=> 'to me'
 	),
 

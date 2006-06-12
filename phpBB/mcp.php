@@ -218,8 +218,8 @@ $module->load_active();
 // Assign data to the template engine for the list of modules
 $module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 
-// Generate the page
-$module->display($module->get_page_title());
+// Generate the page, do not display/query online list
+$module->display($module->get_page_title(), false);
 
 
 /**

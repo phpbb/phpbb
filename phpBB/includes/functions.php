@@ -2343,7 +2343,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 /**
 * Generate page header
 */
-function page_header($page_title = '')
+function page_header($page_title = '', $display_online_list = true)
 {
 	global $db, $config, $template, $SID, $_SID, $user, $auth, $phpEx, $phpbb_root_path;
 
@@ -2381,7 +2381,7 @@ function page_header($page_title = '')
 	// Get users online list ... if required
 	$l_online_users = $online_userlist = $l_online_record = '';
 
-	if ($config['load_online'] && $config['load_online_time'])
+	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
 		$userlist_ary = $userlist_visible = array();
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
@@ -2635,6 +2635,7 @@ function page_header($page_title = '')
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
 		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
 		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
+		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
 		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",

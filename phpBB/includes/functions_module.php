@@ -600,7 +600,7 @@ class p_master
 	/**
 	* Display module
 	*/
-	function display($page_title)
+	function display($page_title, $display_online_list = true)
 	{
 		global $template, $user;
 
@@ -611,7 +611,7 @@ class p_master
 		}
 		else
 		{
-			page_header($page_title);
+			page_header($page_title, $display_online_list);
 		}
 
 		$template->set_filenames(array(
