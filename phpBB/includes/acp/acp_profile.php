@@ -903,7 +903,7 @@ class acp_profile
 				case 'mysqli':
 
 					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident ";
+					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD `$field_ident` ";
 					switch ($field_type)
 					{
 						case FIELD_STRING:

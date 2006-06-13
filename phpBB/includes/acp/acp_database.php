@@ -404,7 +404,8 @@ class acp_database
 										$ary_type = $ary_name = array();
 										
 										// Grab all of the data from current table.
-										$sql = "SELECT * FROM {$table_name}";
+										$sql = "SELECT *
+											FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = pg_num_fields($result);
@@ -524,7 +525,8 @@ class acp_database
 										$ident_set = false;
 										
 										// Grab all of the data from current table.
-										$sql = "SELECT * FROM {$table_name}";
+										$sql = "SELECT *
+											FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
 										$retrieved_data = odbc_num_rows($result);
@@ -634,7 +636,8 @@ class acp_database
 										$ident_set = false;
 										
 										// Grab all of the data from current table.
-										$sql = "SELECT * FROM {$table_name}";
+										$sql = "SELECT *
+											FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
 										$retrieved_data = mssql_num_rows($result);
@@ -744,7 +747,8 @@ class acp_database
 										$ary_type = $ary_name = array();
 										
 										// Grab all of the data from current table.
-										$sql = "SELECT * FROM {$table_name}";
+										$sql = "SELECT *
+											FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = ibase_num_fields($result);
@@ -828,7 +832,8 @@ class acp_database
 										$ary_type = $ary_name = array();
 										
 										// Grab all of the data from current table.
-										$sql = "SELECT * FROM {$table_name}";
+										$sql = "SELECT *
+											FROM {$table_name}";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = ocinumcols($result);
@@ -953,7 +958,10 @@ class acp_database
 						switch (SQL_LAYER)
 						{
 							case 'sqlite':
-								$sql = "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name";
+								$sql = "SELECT name
+									FROM sqlite_master
+									WHERE type='table'
+									ORDER BY name";
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -968,7 +976,8 @@ class acp_database
 							case 'mysqli':
 							case 'mysql4':
 							case 'mysql':
-								$sql = "SHOW TABLES LIKE '{$table_prefix}%'";
+								$sql = "SHOW TABLES
+									LIKE '{$table_prefix}%'";
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -978,7 +987,9 @@ class acp_database
 							break;
 
 							case 'postgres':
-								$sql = "SELECT relname FROM pg_stat_user_tables ORDER BY relname;";
+								$sql = "SELECT relname
+									FROM pg_stat_user_tables
+									ORDER BY relname;";
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -992,7 +1003,10 @@ class acp_database
 
 							case 'mssql':
 							case 'mssql_odbc':
-								$sql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' ORDER BY TABLE_NAME";
+								$sql = "SELECT TABLE_NAME
+									FROM INFORMATION_SCHEMA.TABLES
+									WHERE TABLE_TYPE = 'BASE TABLE'
+									ORDER BY TABLE_NAME";
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -1005,7 +1019,10 @@ class acp_database
 							break;
 
 							case 'firebird':
-								$sql = 'SELECT RDB$RELATION_NAME as TABLE_NAME FROM RDB$RELATIONS WHERE RDB$SYSTEM_FLAG=0 AND RDB$VIEW_BLR IS NULL';
+								$sql = 'SELECT RDB$RELATION_NAME as TABLE_NAME
+									FROM RDB$RELATIONS
+									WHERE RDB$SYSTEM_FLAG=0
+										AND RDB$VIEW_BLR IS NULL';
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -1018,7 +1035,8 @@ class acp_database
 							break;
 
 							case 'oracle':
-								$sql = 'SELECT TNAME as table_name FROM TAB';
+								$sql = 'SELECT TNAME as table_name
+									FROM TAB';
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -1233,7 +1251,9 @@ class acp_database
 				$sql_data .= "CREATE TABLE $table_name(\n";
 				$rows = array();
 
-				$result = $db->sql_query("SHOW FIELDS FROM $table_name");
+				$sql = "SHOW FIELDS
+					FROM $table_name";
+				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
