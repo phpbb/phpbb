@@ -269,7 +269,10 @@ class messenger
 		global $user, $phpEx, $phpbb_root_path;
 
 		// Session doesn't exist, create it
-		$user->session_begin();
+		if (!isset($user->session_id) || $user->session_id === '')
+		{
+			$user->session_begin();
+		}
 
 		add_log('critical', 'LOG_ERROR_' . $type, $msg);
 	}
