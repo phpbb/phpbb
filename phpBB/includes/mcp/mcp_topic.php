@@ -119,7 +119,7 @@ function mcp_topic_view($id, $mode, $action)
 		$message = str_replace("\n", '<br />', $message);
 
 		$checked = ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? 'checked="checked" ' : '';
-		$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
+		$s_checkbox = '<input type="checkbox" class="radio" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
 
 		if (!$row['post_approved'])
 		{

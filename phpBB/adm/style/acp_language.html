@@ -132,7 +132,7 @@
 	<!-- ENDIF -->
 	<tr>
 		<td class="row3"><b>{PRINT_MESSAGE}<!-- IF S_FROM_STORE --><br /><span style="color: red;">{L_FILE_FROM_STORAGE}</span><!-- ENDIF --></b></td>
-		<td class="row3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio"<!-- IF buttons.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> value="{buttons.VALUE}" name="method">&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
+		<td class="row3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio" class="radio"<!-- IF buttons.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> value="{buttons.VALUE}" name="method">&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
 	</tr>
 	</thead>
 	<tbody>
@@ -144,7 +144,7 @@
 		{TPL}
 	<!-- ENDIF -->
 	<tr>
-		<td class="row3" colspan="3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio" value="{buttons.VALUE}" name="method">&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
+		<td class="row3" colspan="3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio" class="radio" value="{buttons.VALUE}" name="method">&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
 	</tr>
 	</tbody>
 	</table>

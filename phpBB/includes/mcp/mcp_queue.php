@@ -324,7 +324,7 @@ class mcp_queue
 						$poster = $row['username'];
 					}
 
-					$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" />';
+					$s_checkbox = '<input type="checkbox" class="radio" name="post_id_list[]" value="' . $row['post_id'] . '" />';
 
 					$global_topic = ($row['forum_id']) ? false : true;
 					if ($global_topic)

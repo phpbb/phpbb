@@ -1850,7 +1850,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$format_buttons = '';
 		foreach ($methods as $method)
 		{
-			$format_buttons .= '<input type="radio"' . ((!$format_buttons) ? ' id="format"' : '') . ' value="' . $method . '" name="format"' . (($method == $format) ? ' checked="checked"' : '') . ' />&nbsp;' . $method . '&nbsp;';
+			$format_buttons .= '<input type="radio"' . ((!$format_buttons) ? ' id="format"' : '') . ' class="radio" value="' . $method . '" name="format"' . (($method == $format) ? ' checked="checked"' : '') . ' />&nbsp;' . $method . '&nbsp;';
 		}
 
 		$template->assign_vars(array(

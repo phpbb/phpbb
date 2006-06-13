@@ -54,17 +54,17 @@
 		<legend>{L_BACKUP_OPTIONS}</legend>
 	<dl>
 		<dt><label for="user">{L_BACKUP_TYPE}:</label></dt>
-		<dd><input type="radio" name="type" value="full" id="type" checked="checked" />&nbsp;{L_FULL_BACKUP}&nbsp;&nbsp;<input type="radio" name="type" value="structure" id="type" />&nbsp;{L_STRUCTURE_ONLY}&nbsp;&nbsp;<input type="radio" name="type" value="data" id="type" />&nbsp;{L_DATA_ONLY}</dd>
+		<dd><input type="radio" class="radio" name="type" value="full" id="type" checked="checked" />&nbsp;{L_FULL_BACKUP}&nbsp;&nbsp;<input type="radio" name="type" value="structure" id="type" />&nbsp;{L_STRUCTURE_ONLY}&nbsp;&nbsp;<input type="radio" class="radio" name="type" value="data" id="type" />&nbsp;{L_DATA_ONLY}</dd>
 	</dl>
 	<dl>
 		<dt><label for="user">{L_FILE_TYPE}:</label></dt>
 		<dd><!-- BEGIN methods -->
-		<input name="method" id="method" type="radio" value="{methods.TYPE}"<!-- IF methods.S_FIRST_ROW -->checked="checked"<!-- ENDIF --> />&nbsp;{methods.TYPE}
+		<input name="method" id="method" type="radio" class="radio" value="{methods.TYPE}"<!-- IF methods.S_FIRST_ROW -->checked="checked"<!-- ENDIF --> />&nbsp;{methods.TYPE}
 		<!-- END methods --></dd>
 	</dl>
 	<dl>
 		<dt><label for="user">{L_ACTION}:</label></dt>
-		<dd><input type="radio" name="where" value="store_and_download" id="where" checked="checked" />&nbsp;{L_STORE_AND_DOWNLOAD}&nbsp;&nbsp;<input type="radio" name="where" value="store" id="where" />&nbsp;{L_STORE_LOCAL}&nbsp;&nbsp;<input type="radio" name="where" value="download" id="where" />&nbsp;{L_DOWNLOAD}</dd>
+		<dd><input type="radio" class="radio" name="where" value="store_and_download" id="where" checked="checked" />&nbsp;{L_STORE_AND_DOWNLOAD}&nbsp;&nbsp;<input type="radio" class="radio" name="where" value="store" id="where" />&nbsp;{L_STORE_LOCAL}&nbsp;&nbsp;<input type="radio" class="radio" name="where" value="download" id="where" />&nbsp;{L_DOWNLOAD}</dd>
 	</dl>
 	<dl>
 		<dt><label for="user">{L_TABLE_SELECT}:</label></dt>

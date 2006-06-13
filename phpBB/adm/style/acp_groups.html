@@ -28,7 +28,7 @@
 	<dl>
 		<dt><label for="group_desc">{L_GROUP_DESC}:</label></dt>
 		<dd><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
-		<dd><input type="checkbox" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+		<dd><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
 	</dl>
 	<!-- IF not S_SPECIAL_GROUP -->
 		<dl>
@@ -56,11 +56,11 @@
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
 	<dl>
 		<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
-		<dd><input name="group_legend" type="checkbox" id="group_legend"{GROUP_LEGEND} /></dd>
+		<dd><input name="group_legend" type="checkbox" class="radio" id="group_legend"{GROUP_LEGEND} /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}:</label></dt>
-		<dd><input name="group_receive_pm" type="checkbox" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
+		<dd><input name="group_receive_pm" type="checkbox" class="radio" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}:</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
@@ -81,7 +81,7 @@
 	<dl>
 		<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
 		<dd>{AVATAR_IMAGE}</dd>
-		<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
+		<dd><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
 	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
 		<!-- IF S_CAN_UPLOAD -->
@@ -179,7 +179,7 @@
 			<td style="text-align: center;"><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{leader.JOINED}</td>
 			<td style="text-align: center;">{leader.USER_POSTS}</td>
-			<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{leader.USER_ID}" /></td>
+			<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{leader.USER_ID}" /></td>
 		</tr>
 	<!-- BEGINELSE -->
 		<tr>
@@ -200,7 +200,7 @@
 			<td style="text-align: center;"><!-- IF member.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{member.JOINED}</td>
 			<td style="text-align: center;">{member.USER_POSTS}</td>
-			<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{member.USER_ID}" /></td>
+			<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{member.USER_ID}" /></td>
 		</tr>
 		<!-- ENDIF -->
 	<!-- BEGINELSE -->

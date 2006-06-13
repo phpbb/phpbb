@@ -18,7 +18,8 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_root_path, $phpEx;
+		global $db, $user, $auth, $cache, $template;
 
 		$user->add_lang('groups');
 

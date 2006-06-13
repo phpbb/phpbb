@@ -5,7 +5,7 @@
 	<script type="text/javascript">
 	function swatch()
 	{
-		window.open('{UA_SWATCH}', '_swatch', 'height=115, resizable=yes, scrollbars=no, width=636');
+		window.open('{UA_SWATCH}', '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
 		return false;
 	}
 	</script>
@@ -35,7 +35,7 @@
 		<tr>
 			<td class="row1" width="35%"><label for="group_desc">{L_GROUP_DESC}:</label></td>
 			<td class="row2"><textarea id="group_desc" name="group_desc" rows="5" cols="45">{GROUP_DESC}</textarea></dd>
-				<br /><input type="checkbox" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+				<br /><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
 			</td>
 		</tr>
 		<!-- IF not S_SPECIAL_GROUP -->
@@ -69,7 +69,7 @@
 		<tr>
 		<tr>
 			<td class="row1" width="35%"><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></td>
-			<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
+			<td class="row2">{AVATAR_IMAGE}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></td>
 		</tr>
 		<!-- IF not S_IN_AVATAR_GALLERY -->
 			<!-- IF S_CAN_UPLOAD -->
@@ -174,7 +174,7 @@
 					<td style="text-align: center;"><!-- IF member.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 					<td style="text-align: center;">{member.JOINED}</td>
 					<td style="text-align: center;">{member.USER_POSTS}</td>
-					<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{member.USER_ID}" /></td>
+					<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{member.USER_ID}" /></td>
 				</tr>
 			<!-- ENDIF -->
 		<!-- BEGINELSE -->

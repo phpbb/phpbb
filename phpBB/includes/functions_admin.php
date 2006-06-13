@@ -2119,7 +2119,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			'forum_id'			=> $row['forum_id'],
 			'topic_id'			=> $row['topic_id'],
 
-			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : false,
 			'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
 		);
 
@@ -2195,8 +2195,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		foreach ($log as $key => $row)
 		{
-			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id']) : '';
-			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $user->session_id) : '';
+			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
+			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $user->session_id) : false;
 		}
 	}
 
@@ -2214,7 +2214,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		foreach ($log as $key => $row)
 		{
-			$log[$key]['reportee_username'] = (isset($reportee_names_list[$row['reportee_id']])) ? '<a href="' . $profile_url . '&amp;u=' . $row['reportee_id'] . '">' . $reportee_names_list[$row['reportee_id']] . '</a>' : '';
+			$log[$key]['reportee_username'] = (isset($reportee_names_list[$row['reportee_id']])) ? '<a href="' . $profile_url . '&amp;u=' . $row['reportee_id'] . '">' . $reportee_names_list[$row['reportee_id']] . '</a>' : false;
 		}
 	}
 

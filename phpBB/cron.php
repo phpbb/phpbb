@@ -207,14 +207,15 @@ switch ($cron_type)
 	break;
 }
 
-// Unload cache, must be done before the DB connection is closed
-if (!empty($cache))
+// Unloading cache and closing db after having done the dirty work.
+if ($use_shutdown_function)
 {
-	$cache->unload();
+	register_shutdown_function('garbage_collection');
 }
-
-// Close our DB connection.
-$db->sql_close();
+else
+{
+	garbage_collection();
+}
 
 // Output transparent gif
 header('Cache-Control: no-cache');

@@ -48,7 +48,7 @@
 		<td><input class="post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
 		<td>
-			<input type="checkbox" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} />
+			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} />
 			<!-- IF items.S_ID -->
 				<input type="hidden" name="id[{items.IMG}]" value="{items.ID}" />
 			<!-- ENDIF -->
@@ -57,7 +57,7 @@
 			<td><select name="order[{items.IMG}]">{S_ORDER_LIST}</select></td>
 		<!-- ENDIF -->	
 		<!-- IF S_ADD -->
-			<td><input type="checkbox" name="add_img[{items.IMG}]" value="1" /></td>
+			<td><input type="checkbox" class="radio" name="add_img[{items.IMG}]" value="1" /></td>
 		<!-- ENDIF -->
 		</tr>
 	<!-- END items -->

@@ -42,7 +42,7 @@ e_help = "{LA_BBCODE_E_HELP}";
 	<!-- ENDIF -->
 
 	<tr> 
-		<td class="row1" width="35%"><b class="genmed">{L_SIGNATURE}: </b><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}</span></td>
+		<td class="row1" width="20%"><b class="genmed">{L_SIGNATURE}: </b><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}</span></td>
 		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
 			<tr valign="middle" align="left">
 				<td colspan="2"><input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" />
@@ -80,14 +80,14 @@ e_help = "{LA_BBCODE_E_HELP}";
 				<td colspan="9"><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
 			</tr>
 			<tr>
-				<td colspan="9"><textarea class="post" name="signature" rows="10" cols="70" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>
+				<td colspan="9"><textarea class="post" name="signature" rows="10" cols="80" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>
 			</tr>
 			<tr>
 				<td colspan="9"><table cellspacing="0" cellpadding="0" border="0" width="100%">
 					<tr>
-						<td bgcolor="black"><script language="javascript" type="text/javascript"><!--
+						<td bgcolor="black" align="center"><script language="javascript" type="text/javascript"><!--
 
-						colorPalette('h', 17, 5)
+						colorPalette('h', 18, 5)
 
 						//--></script></td>
 					</tr>
@@ -113,18 +113,18 @@ e_help = "{LA_BBCODE_E_HELP}";
 		<td class="row2" valign="top"><table cellspacing="0" cellpadding="1" border="0">
 			<!-- IF S_BBCODE_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
+				<td><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_BBCODE}</td>
 			</tr>
 			<!-- ENDIF -->
 			<!-- IF S_SMILIES_ALLOWED -->
 			<tr>
-				<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
+				<td><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_SMILIES}</td>
 			</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td><input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
+				<td><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
 			</tr>
 		</table></td>

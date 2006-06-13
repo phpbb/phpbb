@@ -158,7 +158,7 @@ function checkForm()
 	<!-- IF S_DELETE_ALLOWED -->
 		<tr>
 			<td class="row1"><b class="genmed">{L_DELETE_POST}:</b></td>
-			<td class="row2"><input type="checkbox" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
+			<td class="row2"><input type="checkbox" class="radio" name="delete" /> <span class="gensmall">[ {L_DELETE_POST_WARN} ]</span></td>
 		</tr>
 	<!-- ENDIF -->
 
@@ -167,7 +167,7 @@ function checkForm()
 			<td class="row1"><b class="genmed">{L_ICON}:</b></td>
 			<td class="row2"><table width="100%" cellspacing="0" cellpadding="0" border="0">
 				<tr>
-					<td><input type="radio" name="icon" value="0"{S_NO_ICON_CHECKED} class="radio" /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} class="radio" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+					<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 				</tr>
 			</table></td>
 		</tr>
@@ -297,33 +297,33 @@ function checkForm()
 		<td class="row2"><table cellpadding="1">
 			<!-- IF S_BBCODE_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} class="radio" /></td>
+					<td><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
 					<td class="gen">{L_DISABLE_BBCODE}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_SMILIES_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} class="radio" /></td>
+					<td><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
 					<td class="gen">{L_DISABLE_SMILIES}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<tr>
-				<td><input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} class="radio" /></td>
+				<td><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
 			</tr>
 
 			<!-- IF S_SIG_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="attach_sig"{S_SIGNATURE_CHECKED} class="radio" /></td>
+					<td><input type="checkbox" class="radio" name="attach_sig"{S_SIGNATURE_CHECKED} /></td>
 					<td class="gen">{L_ATTACH_SIG}</td>
 				</tr>
 			<!-- ENDIF -->
 
 			<!-- IF S_NOTIFY_ALLOWED -->
 				<tr>
-					<td><input type="checkbox" name="notify"{S_NOTIFY_CHECKED} class="radio" /></td>
+					<td><input type="checkbox" class="radio" name="notify"{S_NOTIFY_CHECKED} /></td>
 					<td class="gen">{L_NOTIFY_REPLY}</td>
 				</tr>
 			<!-- ENDIF -->
@@ -331,14 +331,14 @@ function checkForm()
 			<!-- IF not S_PRIVMSGS -->
 				<!-- IF S_LOCK_TOPIC_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="lock_topic"{S_LOCK_TOPIC_CHECKED} class="radio" /></td>
+						<td><input type="checkbox" class="radio" name="lock_topic"{S_LOCK_TOPIC_CHECKED} /></td>
 						<td class="gen">{L_LOCK_TOPIC}</td>
 					</tr>
 				<!-- ENDIF -->
 	
 				<!-- IF S_LOCK_POST_ALLOWED -->
 					<tr>
-						<td><input type="checkbox" name="lock_post"{S_LOCK_POST_CHECKED} class="radio" /></td>
+						<td><input type="checkbox" class="radio" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
 						<td class="gen">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</td>
 					</tr>
 				<!-- ENDIF -->
@@ -346,7 +346,7 @@ function checkForm()
 				<!-- IF S_TYPE_TOGGLE -->
 					<tr>
 						<td>&nbsp;</td>
-						<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
+						<td class="gen"><!-- IF S_EDIT_POST -->{L_CHANGE_TOPIC_TO}<!-- ELSE -->{L_POST_TOPIC_AS}<!-- ENDIF -->: <!-- BEGIN topic_type --><input type="radio" class="radio" name="topic_type" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}&nbsp;&nbsp;<!-- END topic_type --></td>
 					</tr>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
@@ -404,7 +404,7 @@ function checkForm()
 		<!-- ELSEIF S_POLL_DELETE -->
 			<tr>
 				<td class="row1"><span class="genmed"><b>{L_POLL_DELETE}:</b></span></td>
-				<td class="row2"><input type="checkbox" name="poll_delete" /></td>
+				<td class="row2"><input type="checkbox" class="radio" name="poll_delete" /></td>
 			</tr>
 		<!-- ENDIF -->
 	<!-- ENDIF -->

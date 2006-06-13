@@ -16,7 +16,7 @@
 		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 		<dd><input class="medium" type="text" id="username" name="username" /></dd>
 		<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
-		<dd class="full" style="text-align: left;"><input type="checkbox" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+		<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 	</dl>
 	</fieldset>
 
@@ -136,7 +136,7 @@
 	</dl>
 	<dl>
 		<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
-		<dd><input type="checkbox" name="delete" value="1" /></dd>
+		<dd><input type="checkbox" class="radio" name="delete" value="1" /></dd>
 		<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
 	</dl>
 	<!-- ENDIF -->
@@ -191,7 +191,7 @@
 				{log.ACTION}
 				<!-- IF log.DATA --><br />&#187; <span class="gensmall">[ {log.DATA} ]</span><!-- ENDIF -->
 			</td>
-			<td style="text-align: center;"><input type="checkbox" name="mark[]" value="{log.ID}" /></td>
+			<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{log.ID}" /></td>
 		</tr>
 	<!-- END log -->
 	</tbody>
@@ -440,7 +440,7 @@
 	<dl>
 		<dt><label>{L_CURRENT_IMAGE}:</label><br /><span>{L_AVATAR_EXPLAIN}</span></dt>
 		<dd>{AVATAR_IMAGE}</dd>
-		<dd><input type="checkbox" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
+		<dd><input type="checkbox" class="radio" name="delete" />&nbsp;<span>{L_DELETE_AVATAR}</span></dd>
 	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
 		<!-- IF S_CAN_UPLOAD -->
@@ -592,15 +592,15 @@
 		</div>
 		<p><input type="text" name="helpbox" value="{L_STYLES_TIP}" class="full" style="border: 0; background: none;" /></p>
 	<dl>
-		<dt style="width: 110px;"><script type="text/javascript"><!-- 
-			colorPalette('v', 17, 5); 
+		<dt style="width: 95px;"><script type="text/javascript"><!-- 
+			colorPalette('v', 17, 13); 
 			//--></script>
 		</dt>
-		<dd style="text-align: left; margin-left: 110px;"><textarea name="signature" rows="10" cols="60" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
-		<dd style="text-align: left; margin-left: 110px;">
-			<!-- IF S_BBCODE_ALLOWED --><input type="checkbox" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;<!-- ENDIF -->
-			<!-- IF S_SMILIES_ALLOWED --><input type="checkbox" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;<!-- ENDIF -->
-			<input type="checkbox" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
+		<dd style="text-align: left; margin-left: 95px;"><textarea name="signature" rows="10" cols="60" style="width: 80%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
+		<dd style="text-align: left; margin-left: 95px;">
+			<!-- IF S_BBCODE_ALLOWED --><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;<!-- ENDIF -->
+			<!-- IF S_SMILIES_ALLOWED --><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;<!-- ENDIF -->
+			<input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
 			<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {SMILIES_STATUS}
 		</dd>
 	</dl>
@@ -678,7 +678,7 @@
 		<td>{attach.POST_TIME}</td>
 		<td>{attach.SIZE}</td>
 		<td>{attach.DOWNLOAD_COUNT}</td>
-		<td><input type="checkbox" name="mark[]" value="{attach.ATTACH_ID}" /></td>
+		<td><input type="checkbox" class="radio" name="mark[]" value="{attach.ATTACH_ID}" /></td>
 	</tr>
 	<!-- END attach -->
 	</tbody>

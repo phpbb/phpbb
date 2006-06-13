@@ -140,9 +140,9 @@
 				<!-- BEGIN mask -->
 					<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 					<th>{auth.mask.PERMISSION}</th>
-					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
-					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" type="radio"<!-- IF auth.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
-					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
+					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
+					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
+					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
 				</tr>
 				<!-- END mask -->
 				</tbody>

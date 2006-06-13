@@ -223,8 +223,8 @@ class acp_users
 
 							user_ban(substr($action, 3), $ban, 0, 0, 0, $user->lang[$reason]);
 
-							add_log('admin', $log, $user->lang['reason']);
-							add_log('user', $user_id, $log, $user->lang['reason']);
+							add_log('admin', $log, $user->lang[$reason]);
+							add_log('user', $user_id, $log, $user->lang[$reason]);
 
 							trigger_error($user->lang['BAN_SUCCESSFUL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 

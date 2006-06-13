@@ -465,7 +465,7 @@ function colorPalette(dir, width, height)
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
+	document.write('<table cellspacing="1" cellpadding="0" border="0" class="type2">');
 
 	for (r = 0; r < 5; r++)
 	{
@@ -484,8 +484,8 @@ function colorPalette(dir, width, height)
 			for (b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" border="0" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<td style="line-height: ' + height + 'px; background-color:#' + color + '; width: ' + width + 'px; height: ' + height + 'px;">');
+				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 

@@ -11,7 +11,7 @@
 	<!-- ENDIF -->
 	<tr> 
 		<td class="row1" width="35%"><b class="genmed">{L_CURRENT_IMAGE}: </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-		<td class="row2" align="center"><br /><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --><br /><br /><input type="checkbox" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+		<td class="row2" align="center"><br /><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --><br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
 	</tr>
 	<!-- IF S_UPLOAD_AVATAR_FILE -->
 	<tr> 
@@ -59,7 +59,7 @@
 			</tr>
 			<tr>
 				<!-- BEGIN avatar_option_column -->
-				<td class="row2" align="center"><input type="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
+				<td class="row2" align="center"><input type="radio" class="radio" name="avatar_select" value="{avatar_row.avatar_option_column.S_OPTIONS_AVATAR}" /></td>
 				<!-- END avatar_option_column -->
 			</tr>
 			<!-- END avatar_row -->

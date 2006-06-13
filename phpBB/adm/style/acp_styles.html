@@ -106,7 +106,7 @@
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><b>{L_INCLUDE_DIMENSIONS}: </b><br /><span class="gensmall">{L_DIMENSIONS_EXPLAIN}</span></td>
-				<td class="row2"><input type="radio" name="imgsize" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" name="imgsize" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</td>
+				<td class="row2"><input type="radio" class="radio" name="imgsize" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="imgsize" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</td>
 			</tr>
 			<tr>
 				<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnmain" type="reset" value="{L_RESET}" /></td>
@@ -237,7 +237,7 @@
 
 			function swatch(field)
 			{
-				window.open('{UA_SWATCH}' + field, '_swatch', 'HEIGHT=115,resizable=yes,scrollbars=no,WIDTH=636');
+				window.open('{UA_SWATCH}' + field, '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
 				return false;
 			}
 
@@ -334,15 +334,15 @@
 				</dl>
 				<dl>
 					<dt><label for="font_weight">{L_BOLD}:</label></dt>
-					<dd><input id="font_weight" type="radio" name="font_weight" value="bold"<!-- IF FONT_WEIGHT eq "bold" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="font_weight" value="normal"<!-- IF FONT_WEIGHT eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" name="font_weight" value=""<!-- IF not FONT_WEIGHT --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
+					<dd><input id="font_weight" type="radio" class="radio" name="font_weight" value="bold"<!-- IF FONT_WEIGHT eq "bold" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="font_weight" value="normal"<!-- IF FONT_WEIGHT eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="font_weight" value=""<!-- IF not FONT_WEIGHT --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
 				</dl>
 				<dl>
 					<dt><label for="font_style">{L_ITALIC}:</label></dt>
-					<dd><input id="font_style" type="radio" name="font_style" value="italic"<!-- IF FONT_STYLE eq "italic" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="font_style" value="normal"<!-- IF FONT_STYLE eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" name="font_style" value=""<!-- IF not FONT_STYLE --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
+					<dd><input id="font_style" type="radio" class="radio" name="font_style" value="italic"<!-- IF FONT_STYLE eq "italic" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="font_style" value="normal"<!-- IF FONT_STYLE eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="font_style" value=""<!-- IF not FONT_STYLE --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
 				</dl>
 				<dl>
 					<dt><label for="text_decoration">{L_UNDERLINE}:</label></dt>
-					<dd><input id="text_decoration" type="radio" name="text_decoration" value="underline"<!-- IF TEXT_DECORATION eq "underline" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" name="text_decoration" value="normal"<!-- IF TEXT_DECORATION eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" name="text_decoration" value=""<!-- IF not TEXT_DECORATION --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
+					<dd><input id="text_decoration" type="radio" class="radio" name="text_decoration" value="underline"<!-- IF TEXT_DECORATION eq "underline" --> checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="text_decoration" value="normal"<!-- IF TEXT_DECORATION eq "normal" --> checked="checked"<!-- ENDIF --> /> {L_NO} &nbsp; <input type="radio" class="radio" name="text_decoration" value=""<!-- IF not TEXT_DECORATION --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</dd>
 				</dl>
 				<dl>
 					<dt><label for="line_height">{L_LINE_SPACING}</label></dt>
@@ -429,7 +429,7 @@
 			<td>{file.FILESIZE}</td>
 			<td>{file.CACHED}</td>
 			<td>{file.MODIFIED}</td>
-			<td><input type="checkbox" name="delete[]" value="{file.FILENAME}" /></td>
+			<td><input type="checkbox" class="radio" name="delete[]" value="{file.FILENAME}" /></td>
 		</tr>
 	<!-- BEGINELSE -->
 		<tr class="row1">

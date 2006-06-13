@@ -2747,6 +2747,19 @@ function page_footer()
 
 	$template->display('body');
 
+	garbage_collection();
+
+	exit;
+}
+
+/**
+* Closing the cache object and the database
+* Cool function name, eh? We might want to add operations to it later
+*/
+function garbage_collection()
+{
+	global $cache, $db;
+
 	// Unload cache, must be done before the DB connection if closed
 	if (!empty($cache))
 	{
@@ -2755,8 +2768,6 @@ function page_footer()
 
 	// Close our DB connection.
 	$db->sql_close();
-
-	exit;
 }
 
 ?>

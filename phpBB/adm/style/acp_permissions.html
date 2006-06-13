@@ -32,7 +32,7 @@
 		<dl>
 			<dt><label for="forum">{L_LOOK_UP_FORUM}:</label></dt>
 			<dd><select id="forum" name="forum_id[]"<!-- IF S_FORUM_MULTIPLE --> multiple="multiple"<!-- ENDIF --> size="10">{S_FORUM_OPTIONS}</select></dd>
-			<!-- IF S_FORUM_ALL --><dd><input type="checkbox" name="all_forums" value="1" />&nbsp; {L_ALL_FORUMS}</dd><!-- ENDIF -->
+			<!-- IF S_FORUM_ALL --><dd><input type="checkbox" class="radio" name="all_forums" value="1" />&nbsp; {L_ALL_FORUMS}</dd><!-- ENDIF -->
 		</dl>
 		</fieldset>
 
@@ -92,7 +92,7 @@
 			<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 			<dd><input class="medium" type="text" id="username" name="username[]" /></dd>
 			<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
-			<dd class="full" style="text-align: left;"><input type="checkbox" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+			<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 		</dl>
 		</fieldset>
 
@@ -136,7 +136,7 @@
 				<legend>{L_MANAGE_USERS}</legend>
 			<dl>
 				<dd class="full"><select style="width: 100%;" name="user_id[]" multiple="multiple" size="5">{S_DEFINED_USER_OPTIONS}</select></dd>
-				<dd class="full" style="text-align: right;"><input type="checkbox" name="all_users" value="1" />&nbsp; {L_ALL_USERS}</dd>
+				<dd class="full" style="text-align: right;"><input type="checkbox" class="radio" name="all_users" value="1" />&nbsp; {L_ALL_USERS}</dd>
 			</dl>
 			</fieldset>
 			
@@ -155,7 +155,7 @@
 				<p>{L_USERNAMES_EXPLAIN}</p>
 			<dl>
 				<dd class="full"><textarea id="username" name="usernames" rows="5" cols="5" style="width: 100%; height: 60px;"></textarea></dd>
-				<dd class="full" style="text-align: left;"><input type="checkbox" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+				<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>
 
@@ -183,7 +183,7 @@
 				<legend>{L_MANAGE_GROUPS}</legend>
 			<dl>
 				<dd class="full"><select style="width: 100%;" name="group_id[]" multiple="multiple" size="5">{S_DEFINED_GROUP_OPTIONS}</select></dd>
-				<dd class="full" style="text-align: right;"><input type="checkbox" name="all_groups" value="1" />&nbsp; {L_ALL_GROUPS}</dd>
+				<dd class="full" style="text-align: right;"><input type="checkbox" class="radio" name="all_groups" value="1" />&nbsp; {L_ALL_GROUPS}</dd>
 			</dl>
 			</fieldset>
 			
@@ -245,7 +245,7 @@
 				<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 				<dd><input type="text" id="username" name="username[]" /></dd>
 				<dd>[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
-				<dd class="full" style="text-align: left;"><input type="checkbox" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+				<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>
 

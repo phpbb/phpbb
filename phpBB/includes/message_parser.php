@@ -269,21 +269,9 @@ class bbcode_firstpass extends bbcode
 			}
 		}
 
-		// Is the user trying to link to a php file in this domain and script path?
-		if (strpos($in, ".{$phpEx}") !== false && strpos($in, substr($user->page['root_script_path'], 0, -1)) !== false)
+		if ($this->path_in_domain($in))
 		{
-			$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
-
-			// Forcing server vars is the only way to specify/override the protocol
-			if ($config['force_server_vars'] || !$server_name)
-			{
-				$server_name = $config['server_name'];
-			}
-		
-			if (strpos($in, $server_name) !== false)
-			{
-				return '[img]' . $in . '[/img]';
-			}
+			return '[img]' . $in . '[/img]';
 		}
 
 		return '[img:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($in) . '[/img:' . $this->bbcode_uid . ']';
@@ -317,21 +305,9 @@ class bbcode_firstpass extends bbcode
 			}
 		}
 
-		// Is the user trying to link to a php file in this domain and script path?
-		if (strpos($in, ".{$phpEx}") !== false && strpos($in, substr($user->page['root_script_path'], 0, -1)) !== false)
+		if ($this->path_in_domain($in))
 		{
-			$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
-
-			// Forcing server vars is the only way to specify/override the protocol
-			if ($config['force_server_vars'] || !$server_name)
-			{
-				$server_name = $config['server_name'];
-			}
-		
-			if (strpos($in, $server_name) !== false)
-			{
-				return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
-			}
+			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}
 
 		return '[flash=' . $width . ',' . $height . ':' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($in) . '[/flash:' . $this->bbcode_uid . ']';
@@ -795,6 +771,43 @@ class bbcode_firstpass extends bbcode
 		}
 
 		return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
+	}
+
+	/**
+	* Check if url is pointing to this domain/script_path/php-file
+	*
+	* @param string $url the url to check
+	* @return true if the url is pointing to this domain/script_path/php-file, false if not
+	*
+	* @private
+	*/
+	function path_in_domain($url)
+	{
+		global $config, $phpEx, $user;
+
+		// Is the user trying to link to a php file in this domain and script path?
+		if (strpos($url, ".{$phpEx}") !== false && strpos($url, substr($user->page['root_script_path'], 0, -1)) !== false)
+		{
+			$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+
+			// Forcing server vars is the only way to specify/override the protocol
+			if ($config['force_server_vars'] || !$server_name)
+			{
+				$server_name = $config['server_name'];
+			}
+
+			// Check again in correct order...
+			$pos_ext = strpos($url, ".{$phpEx}");
+			$pos_path = strpos($url, substr($user->page['root_script_path'], 0, -1));
+			$pos_domain = strpos($url, $server_name);
+
+			if ($pos_domain !== false && $pos_path >= $pos_domain && $pos_ext >= $pos_path)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 

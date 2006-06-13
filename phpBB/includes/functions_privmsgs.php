@@ -280,7 +280,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		case ACTION_MARK_AS_READ:
 		case ACTION_MARK_AS_IMPORTANT:
 		case ACTION_DELETE_MESSAGE:
-			return array('action' => $rule_row['rule_action'], 'unread' => $message_row['unread'], 'important' => $message_row['important']);
+			return array('action' => $rule_row['rule_action'], 'unread' => $message_row['unread'], 'marked' => $message_row['marked']);
 		break;
 		
 		default:
@@ -465,7 +465,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				break;
 
 				case ACTION_MARK_AS_IMPORTANT:
-					if (!$rule_ary['important'])
+					if (!$rule_ary['marked'])
 					{
 						$important_ids[] = $msg_id;
 					}

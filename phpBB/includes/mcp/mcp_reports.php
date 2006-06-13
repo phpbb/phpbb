@@ -295,7 +295,7 @@ class mcp_reports
 							$poster = $row['username'];
 						}
 
-						$s_checkbox = '<input type="checkbox" name="post_id_list[]" value="' . $row['post_id'] . '" />';
+						$s_checkbox = '<input type="checkbox" class="radio" name="post_id_list[]" value="' . $row['post_id'] . '" />';
 
 						$template->assign_block_vars('postrow', array(
 							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
