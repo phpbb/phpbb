@@ -126,7 +126,7 @@ function user_add($user_row, $cp_data = false)
 {
 	global $db, $config;
 
-	if (empty($user_row['username']) || !isset($user_row['group_id']) || empty($user_row['user_email']) || !isset($user_row['user_type']))
+	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
 		return false;
 	}
@@ -182,6 +182,8 @@ function user_add($user_row, $cp_data = false)
 		'user_sig'					=> '',
 		'user_sig_bbcode_uid'		=> '',
 		'user_sig_bbcode_bitfield'	=> 0,
+
+		'user_rank'			=> 0,
 	);
 
 	// Now fill the sql array with not required variables

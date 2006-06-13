@@ -25,8 +25,8 @@ if (!empty($setmodules))
 }
 
 /**
-* @package install
 * Installation
+* @package install
 */
 class install_install extends module
 {
@@ -1379,11 +1379,13 @@ class install_install extends module
 	*/
 	function add_bots($mode, $sub)
 	{
-		global $db;
+		global $db, $phpbb_root_path, $phpEx;
 
-		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'BOTS'";
 		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
+		$group_id = (int) $db->sql_fetchfield('group_id');
 		$db->sql_freeresult($result);
 
 		if (!$group_id)
@@ -1392,38 +1394,31 @@ class install_install extends module
 			$this->p_master->error($lang['NO_GROUP'], __LINE__, __FILE__);
 		}
 
+		if (!function_exists('user_add'))
+		{
+			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
 		foreach ($this->bot_list as $bot_name => $bot_ary)
 		{
-			$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$user_row = array(
 				'user_type'		=> GROUP_HIDDEN,
 				'group_id'		=> $group_id,
 				'username'		=> $bot_name,
 				'user_regdate'	=> time(),
 				'user_password'	=> '',
-				'user_lang'		=> 'en',
-				'user_style'	=> 1,
-				'user_rank'		=> 0,
 				'user_colour'	=> '9E8DA7',
-			));
+				'user_email'	=> ''
+			);
+			
+			$user_id = user_add($user_row);
 
-			$result = $db->sql_query($sql);
-
-			if (!$result)
+			if (!$user_id)
 			{
 				// If we can't insert this user then continue to the next one to avoid inconsistant data
 				$this->p_master->db_error('Unable to insert bot into users table', $sql, __LINE__, __FILE__, true);
 				continue;
 			}
-
-			$user_id = $db->sql_nextid();
-
-			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'group_id'		=> $group_id,
-				'user_id'		=> $user_id,
-				'group_leader'	=> 0,
-				'user_pending'	=> 0,
-			));
-			$result = $db->sql_query($sql);
 
 			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'bot_active'	=> 1,
@@ -1770,7 +1765,7 @@ class install_install extends module
 			'COMMENTS'		=> 'remove_remarks'
 		),
 		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 7/2000',
+			'LABEL'			=> 'MS SQL Server 2000+',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql', 
 			'DELIM'			=> 'GO',

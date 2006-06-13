@@ -68,6 +68,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_INVALID_FILENAME'		=> '%s is an invalid filename',
 	'AVATAR_NOT_UPLOADED'			=> 'Avatar could not be uploaded.',
 	'AVATAR_NO_SIZE'				=> 'Could not obtain width or height of linked avatar, please enter them manually.',
+	'AVATAR_PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
 	'AVATAR_PHP_SIZE_NA'			=> 'The avatar\'s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
 	'AVATAR_PHP_SIZE_OVERRUN'		=> 'The avatar\'s filesize is too large, maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
 	'AVATAR_URL_INVALID'			=> 'The URL you specified is invalid.',

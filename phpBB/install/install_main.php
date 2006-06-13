@@ -25,8 +25,8 @@ if (!empty($setmodules))
 }
 
 /**
-* @package install
 * Main Tab - Installation
+* @package install
 */
 class install_main extends module
 {

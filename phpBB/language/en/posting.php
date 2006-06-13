@@ -124,6 +124,7 @@ $lang = array_merge($lang, array(
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified',
 
+	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
 	'PHP_SIZE_NA'				=> 'The attachment\'s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
 	'PHP_SIZE_OVERRUN'			=> 'The attachment\'s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
 	'PLACE_INLINE'				=> 'Place inline',
