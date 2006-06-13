@@ -21,9 +21,9 @@ if (!defined('IN_PHPBB'))
 include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 
 /**
-* @package search
 * fulltext_native
 * phpBB's own db driven fulltext search
+* @package search
 */
 class fulltext_native extends search_backend
 {

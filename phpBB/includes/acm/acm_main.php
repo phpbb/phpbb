@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package acm
 * Class for grabbing/handling cached entries, extends acm_file or acm_db depending on the setup
+* @package acm
 */
 class cache extends acm
 {
@@ -238,7 +238,7 @@ class cache extends acm
 				{
 					$allowed = ($forum_id === 0) ? false : true;
 				}
-			
+
 				if ($allowed)
 				{
 					$return['_allowed_'][$extension] = 0;
@@ -282,7 +282,7 @@ class cache extends acm
 						WHERE bot_active = 1
 					ORDER BY STRLEN(bot_agent) DESC';
 				break;
-	
+
 				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...
 				default:
 					$sql = 'SELECT user_id, bot_agent, bot_ip 
@@ -292,7 +292,7 @@ class cache extends acm
 				break;
 			}
 			$result = $db->sql_query($sql);
-		
+
 			$bots = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -330,7 +330,7 @@ class cache extends acm
 
 			$reparse = false;
 			$filename = $phpbb_root_path . 'styles/' . $theme[$key . '_path'] . '/' . $key . '/' . $key . '.cfg';
-		
+
 			if (!file_exists($filename))
 			{
 				continue;
@@ -340,7 +340,7 @@ class cache extends acm
 			{
 				$reparse = true;
 			}
-		
+
 			// Re-parse cfg file
 			if ($reparse)
 			{

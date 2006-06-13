@@ -25,9 +25,9 @@ if (!defined('SQL_LAYER'))
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* @package dbal
 * Firebird/Interbase Database Abstraction Layer
 * Minimum Requirement is Firebird 1.5+/Interbase 7.1+
+* @package dbal
 */
 class dbal_firebird extends dbal
 {
@@ -50,7 +50,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -298,7 +298,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* Build db-specific query data
-	* @private
+	* @access: private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -307,7 +307,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* return sql error array
-	* @private
+	* @access: private
 	*/
 	function _sql_error()
 	{
@@ -319,7 +319,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* Close sql connection
-	* @private
+	* @access: private
 	*/
 	function _sql_close()
 	{
@@ -328,7 +328,7 @@ class dbal_firebird extends dbal
 
 	/**
 	* Build db-specific report
-	* @private
+	* @access: private
 	*/
 	function _sql_report($mode, $query = '')
 	{

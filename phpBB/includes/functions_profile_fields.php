@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * Custom Profile Fields
+* @package phpBB3
 */
 class custom_profile
 {
@@ -21,7 +21,7 @@ class custom_profile
 	/**
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
 	* Called by ucp_profile and ucp_register
-	* @public
+	* @access: public
 	*/
 	function generate_profile_fields($mode, $lang_id)
 	{
@@ -74,7 +74,7 @@ class custom_profile
 
 	/**
 	* Validate entered profile field data
-	* @public
+	* @access: public
 	*/
 	function validate_profile_field($field_type, &$field_value, $field_data)
 	{
@@ -174,7 +174,7 @@ class custom_profile
 
 	/**
 	* Build profile cache, used for display
-	* @private
+	* @access: private
 	*/
 	function build_cache()
 	{
@@ -236,7 +236,7 @@ class custom_profile
 
 	/**
 	* Submit profile field
-	* @public
+	* @access: public
 	*/
 	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
 	{
@@ -328,7 +328,7 @@ class custom_profile
 	/**
 	* Assign fields to template, used for viewprofile, viewtopic and memberlist (if load setting is enabled)
 	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
-	* @public
+	* @access: public
 	*/
 	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
 	{
@@ -515,7 +515,7 @@ class custom_profile
 
 	/**
 	* Get field value for registration/profile
-	* @private
+	* @access: private
 	*/
 	function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
@@ -570,7 +570,7 @@ class custom_profile
 
 	/**
 	* Process int-type
-	* @private
+	* @access: private
 	*/
 	function generate_int($profile_row, $preview = false)
 	{
@@ -582,7 +582,7 @@ class custom_profile
 
 	/**
 	* Process date-type
-	* @private
+	* @access: private
 	*/
 	function generate_date($profile_row, $preview = false)
 	{
@@ -641,7 +641,7 @@ class custom_profile
 
 	/**
 	* Process bool-type
-	* @private
+	* @access: private
 	*/
 	function generate_bool($profile_row, $preview = false)
 	{
@@ -672,7 +672,7 @@ class custom_profile
 
 	/**
 	* Process string-type
-	* @private
+	* @access: private
 	*/
 	function generate_string($profile_row, $preview = false)
 	{
@@ -684,7 +684,7 @@ class custom_profile
 
 	/**
 	* Process text-type
-	* @private
+	* @access: private
 	*/
 	function generate_text($profile_row, $preview = false)
 	{
@@ -701,7 +701,7 @@ class custom_profile
 
 	/**
 	* Process dropdown-type
-	* @private
+	* @access: private
 	*/
 	function generate_dropdown($profile_row, $preview = false)
 	{
@@ -730,7 +730,7 @@ class custom_profile
 	/**
 	* Return Templated value/field. Possible values for $mode are:
 	* change == user is able to set/enter profile values; preview == just show the value
-	* @private
+	* @access: private
 	*/
 	function process_field_row($mode, $profile_row)
 	{
@@ -793,7 +793,7 @@ class custom_profile
 
 	/**
 	* Get profile field value on submit
-	* @private
+	* @access: private
 	*/
 	function get_profile_field($profile_row)
 	{
@@ -863,8 +863,8 @@ class custom_profile
 }
 
 /**
-* @package phpBB3
 * Custom Profile Fields ACP
+* @package phpBB3
 */
 class custom_profile_admin extends custom_profile
 {

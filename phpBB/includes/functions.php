@@ -15,7 +15,7 @@
 *
 * Set variable, used by {@link request_var the request_var function}
 *
-* @private
+* @access: private
 */
 function set_var(&$result, $var, $type, $multibyte = false)
 {

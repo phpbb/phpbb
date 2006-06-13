@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_profile
 * Changing profile settings
+* @package ucp
 */
 class ucp_profile
 {

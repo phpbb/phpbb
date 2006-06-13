@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_activate
 * User activation
+* @package ucp
 */
 class ucp_activate
 {

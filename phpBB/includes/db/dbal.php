@@ -9,8 +9,8 @@
 */
 
 /**
-* @package dbal
 * Database Abstraction Layer
+* @package dbal
 */
 class dbal
 {
@@ -122,7 +122,7 @@ class dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function sql_transaction($status = 'begin')
 	{

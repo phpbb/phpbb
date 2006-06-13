@@ -9,9 +9,9 @@
 */
 
 /**
-* @package mcp
 * mcp_logs
 * Handling warning the users
+* @package mcp
 */
 class mcp_logs
 {

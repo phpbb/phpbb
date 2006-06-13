@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_prefs
 * Changing user preferences
+* @package ucp
 */
 class ucp_prefs
 {

@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package phpBB3
 * ACP Permission/Auth class
+* @package phpBB3
 */
 class auth_admin extends auth
 {

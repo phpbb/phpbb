@@ -9,9 +9,9 @@
 */
 
 /**
-* @package mcp
 * mcp_main
 * Handling mcp actions
+* @package mcp
 */
 class mcp_main
 {

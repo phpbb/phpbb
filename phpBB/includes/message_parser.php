@@ -22,9 +22,9 @@ if (!class_exists('bbcode'))
 }
 
 /**
-* @package phpBB3
 * BBCODE FIRSTPASS
 * BBCODE first pass class (functions for parsing messages for db storage)
+* @package phpBB3
 */
 class bbcode_firstpass extends bbcode
 {
@@ -779,7 +779,7 @@ class bbcode_firstpass extends bbcode
 	* @param string $url the url to check
 	* @return true if the url is pointing to this domain/script_path/php-file, false if not
 	*
-	* @private
+	* @access: private
 	*/
 	function path_in_domain($url)
 	{
@@ -812,9 +812,9 @@ class bbcode_firstpass extends bbcode
 }
 
 /**
-* @package phpBB3
 * Main message parser for posting, pm, etc. takes raw message
 * and parses it for attachments, bbcode and smilies
+* @package phpBB3
 */
 class parse_message extends bbcode_firstpass
 {

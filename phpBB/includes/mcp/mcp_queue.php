@@ -9,9 +9,9 @@
 */
 
 /**
-* @package mcp
 * mcp_queue
 * Handling the moderation queue
+* @package mcp
 */
 class mcp_queue
 {

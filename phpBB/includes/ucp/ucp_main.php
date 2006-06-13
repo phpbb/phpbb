@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_main
 * UCP Front Panel
+* @package ucp
 */
 class ucp_main
 {

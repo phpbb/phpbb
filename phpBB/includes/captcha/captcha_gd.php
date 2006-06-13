@@ -10,11 +10,11 @@
 
 
 /**
-* @package VC
 * Main gd based captcha class
 *
 * Thanks to Robert Hetzler (Xore)
 *
+* @package VC
 */
 class captcha
 {

@@ -9,9 +9,9 @@
 */
 
 /**
-* @package mcp
 * mcp_reports
 * Handling the reports queue
+* @package mcp
 */
 class mcp_reports
 {

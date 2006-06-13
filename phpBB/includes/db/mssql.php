@@ -25,9 +25,9 @@ if (!defined('SQL_LAYER'))
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* @package dbal
 * MSSQL Database Abstraction Layer
 * Minimum Requirement is MSSQL 2000+
+* @package dbal
 */
 class dbal_mssql extends dbal
 {
@@ -57,7 +57,7 @@ class dbal_mssql extends dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -315,7 +315,7 @@ class dbal_mssql extends dbal
 
 	/**
 	* return sql error array
-	* @private
+	* @access: private
 	*/
 	function _sql_error()
 	{
@@ -354,7 +354,7 @@ class dbal_mssql extends dbal
 
 	/**
 	* Build db-specific query data
-	* @private
+	* @access: private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -363,7 +363,7 @@ class dbal_mssql extends dbal
 
 	/**
 	* Close sql connection
-	* @private
+	* @access: private
 	*/
 	function _sql_close()
 	{
@@ -372,7 +372,7 @@ class dbal_mssql extends dbal
 
 	/**
 	* Build db-specific report
-	* @private
+	* @access: private
 	*/
 	function _sql_report($mode, $query = '')
 	{

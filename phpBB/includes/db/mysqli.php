@@ -25,10 +25,10 @@ if (!defined('SQL_LAYER'))
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* @package dbal
 * MySQLi Database Abstraction Layer
 * mysqli-extension has to be compiled with:
 * MySQL 4.1+ or MySQL 5.0+
+* @package dbal
 */
 class dbal_mysqli extends dbal
 {
@@ -59,7 +59,7 @@ class dbal_mysqli extends dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -277,7 +277,7 @@ class dbal_mysqli extends dbal
 
 	/**
 	* Build db-specific query data
-	* @private
+	* @access: private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -293,7 +293,7 @@ class dbal_mysqli extends dbal
 
 	/**
 	* return sql error array
-	* @private
+	* @access: private
 	*/
 	function _sql_error()
 	{
@@ -313,7 +313,7 @@ class dbal_mysqli extends dbal
 
 	/**
 	* Close sql connection
-	* @private
+	* @access: private
 	*/
 	function _sql_close()
 	{
@@ -322,7 +322,7 @@ class dbal_mysqli extends dbal
 
 	/**
 	* Build db-specific report
-	* @private
+	* @access: private
 	*/
 	function _sql_report($mode, $query = '')
 	{

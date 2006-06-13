@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_remind
 * Sending password reminders
+* @package ucp
 */
 class ucp_remind
 {

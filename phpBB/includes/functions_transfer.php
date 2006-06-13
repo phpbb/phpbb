@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * Transfer class, wrapper for ftp/sftp/ssh
+* @package phpBB3
 */
 class transfer
 {
@@ -227,8 +227,8 @@ class transfer
 }
 
 /**
-* @package phpBB3
 * FTP transfer class
+* @package phpBB3
 */
 class ftp extends transfer
 {
@@ -272,7 +272,7 @@ class ftp extends transfer
 
 	/**
 	* Init FTP Session
-	* @private
+	* @access: private
 	*/
 	function _init()
 	{
@@ -304,7 +304,7 @@ class ftp extends transfer
 
 	/**
 	* Create Directory (MKDIR)
-	* @private
+	* @access: private
 	*/
 	function _mkdir($dir)
 	{
@@ -313,7 +313,7 @@ class ftp extends transfer
 
 	/**
 	* Remove directory (RMDIR)
-	* @private
+	* @access: private
 	*/
 	function _rmdir($dir)
 	{
@@ -322,7 +322,7 @@ class ftp extends transfer
 
 	/**
 	* Remove directory (RMDIR)
-	* @private
+	* @access: private
 	*/
 	function _rename($old_handle, $new_handle)
 	{
@@ -331,7 +331,7 @@ class ftp extends transfer
 
 	/**
 	* Change current working directory (CHDIR)
-	* @private
+	* @access: private
 	*/
 	function _chdir($dir = '')
 	{
@@ -345,7 +345,7 @@ class ftp extends transfer
 
 	/**
 	* change file permissions (CHMOD)
-	* @private
+	* @access: private
 	*/
 	function _chmod($file, $perms)
 	{
@@ -364,7 +364,7 @@ class ftp extends transfer
 
 	/**
 	* Upload file to location (PUT)
-	* @private
+	* @access: private
 	*/
 	function _put($from_file, $to_file)
 	{
@@ -386,7 +386,7 @@ class ftp extends transfer
 
 	/**
 	* Delete file (DELETE)
-	* @private
+	* @access: private
 	*/
 	function _delete($file)
 	{
@@ -395,7 +395,7 @@ class ftp extends transfer
 
 	/**
 	* Close ftp session (CLOSE)
-	* @private
+	* @access: private
 	*/
 	function _close()
 	{
@@ -410,7 +410,7 @@ class ftp extends transfer
 	/**
 	* Return current working directory (CWD)
 	* At the moment not used by parent class
-	* @private
+	* @access: private
 	*/
 	function _cwd()
 	{
@@ -420,7 +420,7 @@ class ftp extends transfer
 	/**
 	* Return list of files in a given directory (LS)
 	* At the moment not used by parent class
-	* @private
+	* @access: private
 	*/
 	function _ls($dir = './')
 	{
@@ -429,7 +429,7 @@ class ftp extends transfer
 
 	/**
 	* FTP SITE command (ftp-only function)
-	* @private
+	* @access: private
 	*/
 	function _site($command)
 	{
@@ -438,9 +438,10 @@ class ftp extends transfer
 }
 
 /**
-* @package phpBB3
 * FTP fsock transfer class
+*
 * @author wGEric
+* @package phpBB3
 */
 class ftp_fsock extends transfer
 {
@@ -486,7 +487,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Init FTP Session
-	* @private
+	* @access: private
 	*/
 	function _init()
 	{
@@ -525,7 +526,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Create Directory (MKDIR)
-	* @private
+	* @access: private
 	*/
 	function _mkdir($dir)
 	{
@@ -534,7 +535,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Remove directory (RMDIR)
-	* @private
+	* @access: private
 	*/
 	function _rmdir($dir)
 	{
@@ -543,7 +544,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Change current working directory (CHDIR)
-	* @private
+	* @access: private
 	*/
 	function _chdir($dir = '')
 	{
@@ -557,7 +558,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* change file permissions (CHMOD)
-	* @private
+	* @access: private
 	*/
 	function _chmod($file, $perms)
 	{
@@ -566,7 +567,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Upload file to location (PUT)
-	* @private
+	* @access: private
 	*/
 	function _put($from_file, $to_file)
 	{
@@ -602,7 +603,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Delete file (DELETE)
-	* @private
+	* @access: private
 	*/
 	function _delete($file)
 	{
@@ -611,7 +612,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Close ftp session (CLOSE)
-	* @private
+	* @access: private
 	*/
 	function _close()
 	{
@@ -626,7 +627,7 @@ class ftp_fsock extends transfer
 	/**
 	* Return current working directory (CWD)
 	* At the moment not used by parent class
-	* @private
+	* @access: private
 	*/
 	function _cwd()
 	{
@@ -637,7 +638,7 @@ class ftp_fsock extends transfer
 	/**
 	* Return list of files in a given directory (LS)
 	* At the moment not used by parent class
-	* @private
+	* @access: private
 	*/
 	function _ls($dir = './')
 	{
@@ -660,7 +661,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Send a command to server (FTP fsock only function)
-	* @private
+	* @access: private
 	*/
 	function _send_command($command, $args = '', $check = true)
 	{
@@ -681,7 +682,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Opens a connection to send data (FTP fosck only function)
-	* @private
+	* @access: private
 	*/
 	function _open_data_connection()
 	{
@@ -716,7 +717,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Closes a connection used to send data
-	* @private
+	* @access: private
 	*/
 	function _close_data_connection()
 	{
@@ -725,7 +726,7 @@ class ftp_fsock extends transfer
 
 	/**
 	* Check to make sure command was successful (FTP fsock only function)
-	* @private
+	* @access: private
 	*/
 	function _check_command($return = false)
 	{

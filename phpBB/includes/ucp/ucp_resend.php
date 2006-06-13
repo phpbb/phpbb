@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_resend
 * Resending activation emails
+* @package ucp
 */
 class ucp_resend
 {

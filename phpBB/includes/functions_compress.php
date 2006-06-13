@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * Class for handling archives (compression/decompression)
+* @package phpBB3
 */
 class compress 
 {
@@ -121,8 +121,6 @@ class compress
 }
 
 /**
-* @package phpBB3
-*
 * Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
 * Marc Delisle, http://www.phpmyadmin.net/
 *
@@ -132,6 +130,8 @@ class compress
 *
 * Based on work by Eric Mueller and Denis125
 * Official ZIP file format: http://www.pkware.com/appnote.txt
+*
+* @package phpBB3
 */
 class compress_zip extends compress
 {
@@ -440,10 +440,10 @@ class compress_zip extends compress
 }
 
 /**
-* @package phpBB3
-*
 * Tar/tar.gz compression routine
 * Header/checksum creation derived from tarfile.pl, (c) Tom Horsley, 1994
+*
+* @package phpBB3
 */
 class compress_tar extends compress 
 {

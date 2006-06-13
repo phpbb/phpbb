@@ -8,8 +8,6 @@
 */
 
 /** 
-* @package ucp
-*
 * Private Message Class
 *
 * @param int $folder display folder with the id used
@@ -30,6 +28,7 @@
 *		Quoting a PM (action=quote&p=[msg_id])
 *		Forwarding a PM (action=forward&p=[msg_id])
 *
+* @package ucp
 */
 class ucp_pm
 {

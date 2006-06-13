@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * Session class
+* @package phpBB3
 */
 class session
 {
@@ -898,11 +898,12 @@ class session
 
 
 /**
-* @package phpBB3
 * Base user class
 *
 * This is the overarching class which contains (through session extend)
 * all methods utilised for user functionality during a session.
+*
+* @package phpBB3
 */
 class user extends session
 {
@@ -1167,7 +1168,7 @@ class user extends session
 
 	/**
 	* Set language entry (called by add_lang)
-	* @private
+	* @access: private
 	*/
 	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{

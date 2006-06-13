@@ -10,8 +10,8 @@
 
 
 /**
-* @package VC
 * Main non-gd captcha class
+* @package VC
 */
 class captcha
 {

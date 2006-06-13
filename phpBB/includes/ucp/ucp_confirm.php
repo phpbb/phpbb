@@ -9,7 +9,6 @@
 */
 
 /**
-* @package VC
 * ucp_confirm
 * Visual confirmation
 *
@@ -19,6 +18,8 @@
 * to that licence. Do not incorporate this within software 
 * released or distributed in any way under a licence other
 * than the GPL. We will be watching ... ;)
+*
+* @package VC
 */
 class ucp_confirm
 {

@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * BBCode class
+* @package phpBB3
 */
 class bbcode
 {

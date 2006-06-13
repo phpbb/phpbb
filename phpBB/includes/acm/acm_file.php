@@ -9,8 +9,8 @@
 */
 
 /**
-* @package acm
 * ACM File Based Caching
+* @package acm
 */
 class acm
 {
@@ -20,12 +20,18 @@ class acm
 
 	var $sql_rowset = array();
 
+	/**
+	* Set cache path
+	*/
 	function acm()
 	{
 		global $phpbb_root_path;
 		$this->cache_dir = $phpbb_root_path . 'cache/';
 	}
 
+	/**
+	* Load global cache
+	*/
 	function load()
 	{
 		global $phpEx;
@@ -41,6 +47,9 @@ class acm
 		return true;
 	}
 
+	/**
+	* Unload cache object
+	*/
 	function unload()
 	{
 		$this->save();
@@ -49,6 +58,9 @@ class acm
 		unset($this->sql_rowset);
 	}
 
+	/**
+	* Save modified objects
+	*/
 	function save() 
 	{
 		if (!$this->is_modified)
@@ -70,6 +82,9 @@ class acm
 		$this->is_modified = false;
 	}
 
+	/**
+	* Tidy cache
+	*/
 	function tidy()
 	{
 		global $phpEx;
@@ -110,6 +125,9 @@ class acm
 		set_config('cache_last_gc', time(), true);
 	}
 
+	/**
+	* Get saved cache object
+	*/
 	function get($var_name)
 	{
 		if ($var_name{0} == '_')
@@ -130,6 +148,9 @@ class acm
 		}
 	}
 
+	/**
+	* Put data into cache
+	*/
 	function put($var_name, $var, $ttl = 31536000)
 	{
 		if ($var_name{0} == '_')
@@ -152,6 +173,9 @@ class acm
 		}
 	}
 
+	/**
+	* Destroy cache data
+	*/
 	function destroy($var_name, $table = '')
 	{
 		global $phpEx;
@@ -202,6 +226,9 @@ class acm
 		}
 	}
 
+	/**
+	* Check if a given cache entry exist
+	*/
 	function _exists($var_name)
 	{
 		if ($var_name{0} == '_')
@@ -225,6 +252,9 @@ class acm
 		}
 	}
 
+	/**
+	* Format an array to be stored on filesystem
+	*/
 	function format_array($array)
 	{
 		$lines = array();
@@ -232,24 +262,28 @@ class acm
 		{
 			if (is_array($v))
 			{
-				$lines[] = "'$k'=>" . $this->format_array($v);
+				$lines[] = "\n'$k' => " . $this->format_array($v);
 			}
 			else if (is_int($v))
 			{
-				$lines[] = "'$k'=>$v";
+				$lines[] = "\n'$k' => $v";
 			}
 			else if (is_bool($v))
 			{
-				$lines[] = "'$k'=>" . (($v) ? 'true' : 'false');
+				$lines[] = "\n'$k' => " . (($v) ? 'true' : 'false');
 			}
 			else
 			{
-				$lines[] = "'$k'=>'" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
+				$lines[] = "\n'$k' => '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
 			}
 		}
+
 		return 'array(' . implode(',', $lines) . ')';
 	}
 
+	/**
+	* Load cached sql query
+	*/
 	function sql_load($query)
 	{
 		global $phpEx;
@@ -278,6 +312,9 @@ class acm
 		return $query_id;
 	}
 
+	/**
+	* Save sql query
+	*/
 	function sql_save($query, &$query_result, $ttl)
 	{
 		global $db, $phpEx;
@@ -309,11 +346,17 @@ class acm
 		}
 	}
 
+	/**
+	* Ceck if a given sql query exist in cache
+	*/
 	function sql_exists($query_id)
 	{
 		return isset($this->sql_rowset[$query_id]);
 	}
 
+	/**
+	* Fetch row from cache (database)
+	*/
 	function sql_fetchrow($query_id)
 	{
 		return array_shift($this->sql_rowset[$query_id]);

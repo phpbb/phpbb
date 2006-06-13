@@ -25,8 +25,8 @@ if(!defined('SQL_LAYER'))
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* @package dbal
 * Oracle Database Abstraction Layer
+* @package dbal
 */
 class dbal_oracle extends dbal
 {
@@ -49,7 +49,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -355,7 +355,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* return sql error array
-	* @private
+	* @access: private
 	*/
 	function _sql_error()
 	{
@@ -377,7 +377,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* Close sql connection
-	* @private
+	* @access: private
 	*/
 	function _sql_close()
 	{
@@ -386,7 +386,7 @@ class dbal_oracle extends dbal
 
 	/**
 	* Build db-specific report
-	* @private
+	* @access: private
 	*/
 	function _sql_report($mode, $query = '')
 	{

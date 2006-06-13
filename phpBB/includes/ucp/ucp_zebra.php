@@ -9,8 +9,8 @@
 */
 
 /**
-* @package ucp
 * ucp_zebra
+* @package ucp
 */
 class ucp_zebra
 {

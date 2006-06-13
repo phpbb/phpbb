@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_attachments
 * User attachments
+* @package ucp
 */
 class ucp_attachments
 {

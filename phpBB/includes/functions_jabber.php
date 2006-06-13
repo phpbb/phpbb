@@ -9,7 +9,6 @@
 */
 
 /**
-* @package phpBB3
 *
 *	Class.Jabber.PHP v0.4
 *	(c) 2002 Carlo "Gossip" Zottmann
@@ -24,6 +23,7 @@
 *	Modified by psoTFX, phpBB Group, 2003.
 *	Removed functions/support not critical to integration with phpBB
 *
+* @package phpBB3
 */
 class jabber
 {
@@ -629,7 +629,7 @@ class jabber
 
 	/**
 	* Send auth
-	* @private
+	* @access: private
 	*/
 	function _sendauth_ok($zerok_token, $zerok_sequence)
 	{
@@ -657,7 +657,7 @@ class jabber
 
 	/**
 	* Send auth digest
-	* @private
+	* @access: private
 	*/
 	function _sendauth_digest()
 	{
@@ -673,7 +673,7 @@ class jabber
 
 	/**
 	* Send auth plain
-	* @private
+	* @access: private
 	*/
 	function _sendauth_plaintext()
 	{
@@ -689,7 +689,7 @@ class jabber
 
 	/**
 	* Listen on socket
-	* @private
+	* @access: private
 	*/
 	function _listen_incoming()
 	{
@@ -706,7 +706,7 @@ class jabber
 
 	/**
 	* Check if connected
-	* @private
+	* @access: private
 	*/
 	function _check_connected()
 	{
@@ -735,7 +735,7 @@ class jabber
 
 	/**
 	* Split incoming packet
-	* @private
+	* @access: private
 	*/
 	function _split_incoming($incoming)
 	{
@@ -752,7 +752,7 @@ class jabber
 
 	/**
 	* Get packet type
-	* @private
+	* @access: private
 	*/
 	function _get_packet_type($packet = NULL)
 	{
@@ -767,7 +767,7 @@ class jabber
 
 	/**
 	* Recursively prepares the strings in an array to be used in XML data.
-	* @private
+	* @access: private
 	*/
 	function _array_xmlspecialchars(&$array)
 	{
@@ -789,7 +789,7 @@ class jabber
 
 	/**
 	* Prepares a string for usage in XML data.
-	* @private
+	* @access: private
 	*/
 	function _xmlspecialchars(&$string)
 	{
@@ -799,7 +799,7 @@ class jabber
 
 	/**
 	* Recursively converts all elements in an array to UTF-8 from the encoding stored in {@link encoding the encoding attribute}.
-	* @private
+	* @access: private
 	*/
 	function _array_conv_utf8(&$array)
 	{
@@ -832,7 +832,7 @@ class jabber
 	*
 	* @return boolean True on success, false on failure.
 	*
-	* @private
+	* @access: private
 	*/
 	function _conv_utf8(&$string)
 	{
@@ -1149,9 +1149,9 @@ class jabber
 }
 
 /**
-* @package phpBB3
 * make_xml
 * Currently not in use
+* @package phpBB3
 class make_xml extends jabber
 {
 	var $nodes;
@@ -1255,8 +1255,8 @@ class make_xml extends jabber
 */
 
 /**
-* @package phpBB3
 * connector
+* @package phpBB3
 */
 class cjp_standard_connector
 {

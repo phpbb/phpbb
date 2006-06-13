@@ -25,10 +25,10 @@ if (!defined('SQL_LAYER'))
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* @package dbal
 * Unified ODBC functions
 * Unified ODBC functions support any database having ODBC driver, for example Adabas D, IBM DB2, iODBC, Solid, Sybase SQL Anywhere...
 * Here we only support MSSQL Server 2000+ because of the provided schema
+* @package dbal
 */
 class dbal_mssql_odbc extends dbal
 {
@@ -51,7 +51,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -325,7 +325,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Build db-specific query data
-	* @private
+	* @access: private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -334,7 +334,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* return sql error array
-	* @private
+	* @access: private
 	*/
 	function _sql_error()
 	{
@@ -346,7 +346,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Close sql connection
-	* @private
+	* @access: private
 	*/
 	function _sql_close()
 	{
@@ -355,7 +355,7 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Build db-specific report
-	* @private
+	* @access: private
 	*/
 	function _sql_report($mode, $query = '')
 	{

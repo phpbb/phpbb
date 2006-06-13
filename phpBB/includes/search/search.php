@@ -23,10 +23,10 @@ define('SEARCH_RESULT_IN_CACHE', 1);
 define('SEARCH_RESULT_INCOMPLETE', 2);
 
 /**
-* @package search
 * search_backend
 * optional base class for search plugins providing simple caching based on ACM
 * and functions to retrieve ignore_words and synonyms
+* @package search
 */
 class search_backend
 {

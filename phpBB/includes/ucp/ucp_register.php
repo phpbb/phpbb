@@ -9,9 +9,9 @@
 */
 
 /**
-* @package ucp
 * ucp_register
 * Board registration
+* @package ucp
 */
 class ucp_register
 {

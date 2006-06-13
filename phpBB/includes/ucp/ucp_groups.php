@@ -9,8 +9,8 @@
 */
 
 /**
-* @package ucp
 * ucp_groups
+* @package ucp
 */
 class ucp_groups
 {

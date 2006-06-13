@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * Messenger
+* @package phpBB3
 */
 class messenger
 {
@@ -465,8 +465,8 @@ class messenger
 }
 
 /**
-* @package phpBB3
 * handling email and jabber queue
+* @package phpBB3
 */
 class queue
 {
@@ -699,7 +699,7 @@ class queue
 
 	/**
 	* Format array
-	* @private
+	* @access: private
 	*/
 	function format_array($array)
 	{
@@ -924,10 +924,10 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 }
 
 /**
-* @package phpBB3
 * SMTP Class
 * Auth Mechanisms originally taken from the AUTH Modules found within the PHP Extension and Application Repository (PEAR)
 * See docs/AUTHORS for more details
+* @package phpBB3
 */
 class smtp_class
 {

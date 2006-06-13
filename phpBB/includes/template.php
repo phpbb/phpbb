@@ -16,8 +16,8 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @package phpBB3
 * Base Template class.
+* @package phpBB3
 */
 class template
 {
@@ -39,7 +39,7 @@ class template
 
 	/**
 	* Set template location
-	* @public
+	* @access: public
 	*/
 	function set_template()
 	{
@@ -56,7 +56,7 @@ class template
 
 	/**
 	* Set custom template location (able to use directory outside of phpBB)
-	* @public
+	* @access: public
 	*/
 	function set_custom_template($template_path, $template_name)
 	{
@@ -71,7 +71,7 @@ class template
 	/**
 	* Sets the template filenames for handles. $filename_array
 	* should be a hash of handle => filename pairs.
-	* @public
+	* @access: public
 	*/
 	function set_filenames($filename_array)
 	{
@@ -96,7 +96,7 @@ class template
 
 	/**
 	* Destroy template data set
-	* @public
+	* @access: public
 	*/
 	function destroy()
 	{
@@ -105,7 +105,7 @@ class template
 
 	/**
 	* Reset/empty complete block
-	* @public
+	* @access: public
 	*/
 	function destroy_block_vars($blockname)
 	{
@@ -135,7 +135,7 @@ class template
 
 	/**
 	* Display handle
-	* @public
+	* @access: public
 	*/
 	function display($handle, $include_once = true)
 	{
@@ -155,7 +155,7 @@ class template
 
 	/**
 	* Display the handle and assign the output to a template variable or return the compiled result.
-	* @public
+	* @access: public
 	*/
 	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
@@ -175,7 +175,7 @@ class template
 
 	/**
 	* Load a compiled template if possible, if not, recompile it
-	* @private
+	* @access: private
 	*/
 	function _tpl_load(&$handle)
 	{
@@ -267,7 +267,7 @@ class template
 
 	/**
 	* Assign key variable pairs from an array
-	* @public
+	* @access: public
 	*/
 	function assign_vars($vararray)
 	{
@@ -281,7 +281,7 @@ class template
 
 	/**
 	* Assign a single variable to a single key
-	* @public
+	* @access: public
 	*/
 	function assign_var($varname, $varval)
 	{
@@ -292,7 +292,7 @@ class template
 
 	/**
 	* Assign key variable pairs from an array to a specified block
-	* @public
+	* @access: public
 	*/
 	function assign_block_vars($blockname, $vararray)
 	{
@@ -394,7 +394,7 @@ class template
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
 	*
 	* @return false on error, true on success
-	* @public
+	* @access: public
 	*/
 	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
 	{
@@ -480,7 +480,7 @@ class template
 
 	/**
 	* Include a seperate template
-	* @private
+	* @access: private
 	*/
 	function _tpl_include($filename, $include = true)
 	{

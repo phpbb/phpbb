@@ -9,9 +9,9 @@
 */
 
 /**
-* @package mcp
 * mcp_notes
 * Displays notes about a user
+* @package mcp
 */
 class mcp_notes
 {

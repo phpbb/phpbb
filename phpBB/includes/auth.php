@@ -9,8 +9,8 @@
 */
 
 /**
-* @package phpBB3
 * Permission/Auth class
+* @package phpBB3
 */
 class auth
 {

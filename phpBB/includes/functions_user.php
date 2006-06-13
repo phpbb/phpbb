@@ -124,7 +124,7 @@ function user_update_name($old_name, $new_name)
 */
 function user_add($user_row, $cp_data = false)
 {
-	global $db, $config;
+	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
@@ -182,14 +182,24 @@ function user_add($user_row, $cp_data = false)
 		'user_sig'					=> '',
 		'user_sig_bbcode_uid'		=> '',
 		'user_sig_bbcode_bitfield'	=> 0,
-
-		'user_rank'			=> 0,
 	);
 
 	// Now fill the sql array with not required variables
 	foreach ($additional_vars as $key => $default_value)
 	{
 		$sql_ary[$key] = (isset($user_row[$key])) ? $user_row[$key] : $default_value;
+	}
+
+	// Any additional variables in $user_row not covered above?
+	$remaining_vars = array_diff(array_keys($user_row), array_keys($sql_ary));
+
+	// Now fill our sql array with the remaining vars
+	if (sizeof($remaining_vars))
+	{
+		foreach ($remaining_vars as $key)
+		{
+			$sql_ary[$key] = $user_row[$key];
+		}
 	}
 
 	$db->sql_transaction('begin');
@@ -203,7 +213,14 @@ function user_add($user_row, $cp_data = false)
 	if ($cp_data !== false && sizeof($cp_data))
 	{
 		$cp_data['user_id'] = (int) $user_id;
-		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp->build_insert_sql_array($cp_data));
+
+		if (!class_exists('custom_profile'))
+		{
+			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+		}
+
+		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . 
+			$db->sql_build_array('INSERT', custom_profile::build_insert_sql_array($cp_data));
 		$db->sql_query($sql);
 	}
 

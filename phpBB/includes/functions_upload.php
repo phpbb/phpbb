@@ -9,9 +9,9 @@
 */
 
 /**
-* @package phpBB3
 * Responsible for holding all file relevant informations, as well as doing file-specific operations.
 * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
+* @package phpBB3
 */
 class filespec
 {
@@ -23,6 +23,7 @@ class filespec
 	var $filesize = 0;
 	var $width = 0;
 	var $height = 0;
+	var $image_info = array();
 
 	var $destination_file = '';
 	var $destination_path = '';
@@ -37,9 +38,7 @@ class filespec
 
 	/**
 	* File Class
-	*
-	* @access private
-	*
+	* @access: private
 	*/
 	function filespec($upload_ary, $upload_namespace)
 	{
@@ -61,7 +60,7 @@ class filespec
 		{
 			$this->mimetype = 'application/octetstream';
 		}
-		
+
 		$this->extension = strtolower($this->get_extension($this->realname));
 
 		// Try to get real filesize from temporary folder (not always working) ;)
@@ -77,9 +76,9 @@ class filespec
 	/**
 	* Cleans destination filename
 	* 
-	* @access public
 	* @param real|unique $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
 	* @param string $prefix Prefix applied to filename
+	* @access public
 	*/
 	function clean_filename($mode = 'unique', $prefix = '')
 	{
@@ -87,7 +86,7 @@ class filespec
 		{
 			return;
 		}
-		
+
 		switch ($mode)
 		{
 			case 'real':
@@ -104,14 +103,18 @@ class filespec
 				$this->realname = preg_replace("/%(\w{2})/", '_', $this->realname);
 
 				$this->realname = $prefix . $this->realname . '.' . $this->extension;
-				break;
+			break;
 
 			case 'unique':
 			default:
 				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;
+			break;
 		}
 	}
 
+	/**
+	* Get property from file object
+	*/
 	function get($property)
 	{
 		if ($this->init_error || !isset($this->$property))
@@ -122,11 +125,21 @@ class filespec
 		return $this->$property;
 	}
 
+	/**
+	* Check if file is an image (mimetype)
+	*
+	* @return true if it is an image, false if not
+	*/
 	function is_image()
 	{
 		return (strpos($this->mimetype, 'image/') !== false) ? true : false;
 	}
 
+	/**
+	* Check if the file got correctly uploaded
+	*
+	* @return true if it is a valid upload and the file exist, false if not
+	*/
 	function is_uploaded()
 	{
 		if (!$this->local && !is_uploaded_file($this->filename))
@@ -137,6 +150,9 @@ class filespec
 		return (file_exists($this->filename)) ? true : false;
 	}
 
+	/**
+	* Remove file
+	*/
 	function remove()
 	{
 		if ($this->file_moved)
@@ -160,7 +176,7 @@ class filespec
 	}
 
 	/**
-	* Get mimetype
+	* Get mimetype. Utilize mime_content_type if the function exist.
 	*/
 	function get_mimetype($filename)
 	{
@@ -190,12 +206,11 @@ class filespec
 
 	/**
 	* Move file to destination folder
-	* 
 	* The phpbb_root_path variable will be applied to the destination path
 	*
-	* @access public
 	* @param string $destination_path Destination path, for example $config['avatar_path']
 	* @param octal $chmod Permission mask for chmodding the file after a successful move
+	* @access public
 	*/
 	function move_file($destination, $chmod = 0666)
 	{
@@ -211,7 +226,7 @@ class filespec
 		{
 			$destination = substr($destination, 0, sizeof($destination)-2);
 		}
-		
+
 		$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
 		if ($destination && ($destination{0} == '/' || $destination{0} == "\\"))
 		{
@@ -227,6 +242,7 @@ class filespec
 		switch ($upload_mode)
 		{
 			case 'copy':
+
 				if (!@copy($this->filename, $this->destination_file)) 
 				{
 					if (!@move_uploaded_file($this->filename, $this->destination_file)) 
@@ -239,11 +255,13 @@ class filespec
 				{
 					@unlink($this->filename);
 				}
-				break;
+
+			break;
 
 			case 'move':
+
 				if (!@move_uploaded_file($this->filename, $this->destination_file)) 
-				{ 
+				{
 					if (!@copy($this->filename, $this->destination_file)) 
 					{
 						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
@@ -253,27 +271,41 @@ class filespec
 					{
 						@unlink($this->filename);
 					}
-				} 
-				break;
+				}
+
+			break;
 
 			case 'local':
+
 				if (!@copy($this->filename, $this->destination_file)) 
 				{
 					$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 					return false;
 				}
 				@unlink($this->filename);
-				break;
+
+			break;
 		}
 
 		@chmod($this->destination_file, $chmod);
-		
+
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
 
 		if ($this->is_image())
 		{
-			list($this->width, $this->height) = @getimagesize($this->destination_file);
+			$this->width = $this->height = 0;
+
+			if (($this->image_info = @getimagesize($this->destination_file)) !== false)
+			{
+				$this->width = $this->image_info[0];
+				$this->height = $this->image_info[1];
+
+				if (!empty($this->image_info['mime']))
+				{
+					$this->mimetype = $this->image_info['mime'];
+				}
+			}
 		}
 
 		$this->file_moved = true;
@@ -283,6 +315,9 @@ class filespec
 		return true;
 	}
 
+	/**
+	* Performing additional checks
+	*/
 	function additional_checks()
 	{
 		global $user;
@@ -291,13 +326,13 @@ class filespec
 		{
 			return false;
 		}
-		
+
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->upload->max_filesize && ($this->get('filesize') > $this->upload->max_filesize || $this->filesize == 0))
 		{
 			$size_lang = ($this->upload->max_filesize >= 1048576) ? $user->lang['MB'] : (($this->upload->max_filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 			$max_filesize = ($this->upload->max_filesize >= 1048576) ? round($this->upload->max_filesize / 1048576 * 100) / 100 : (($this->upload->max_filesize >= 1024) ? round($this->upload->max_filesize / 1024 * 100) / 100 : $this->upload->max_filesize);
-			
+	
 			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 
 			return false;
@@ -315,8 +350,9 @@ class filespec
 }
 
 /**
-* @package phpBB3
 * Class for assigning error messages before a real filespec class can be assigned
+*
+* @package phpBB3
 */
 class fileerror extends filespec
 {
@@ -327,10 +363,10 @@ class fileerror extends filespec
 }
 
 /**
-* @package phpBB3
 * File upload class
-*
 * Init class (all parameters optional and able to be set/overwritten seperatly) - scope is global and valid for all uploads
+*
+* @package phpBB3
 */
 class fileupload
 {
@@ -343,6 +379,7 @@ class fileupload
 	var $error_prefix = '';
 
 	/**
+	* Init file upload class.
 	*
 	* @param string $error_prefix Used error messages will get prefixed by this string
 	* @param array $allowed_extensions Array of allowed extensions, for example array('jpg', 'jpeg', 'gif', 'png')
@@ -361,7 +398,9 @@ class fileupload
 		$this->set_error_prefix($error_prefix);
 	}
 
-	// Reset vars
+	/**
+	* Reset vars
+	*/
 	function reset_vars()
 	{
 		$this->max_filesize = 0;
@@ -370,7 +409,9 @@ class fileupload
 		$this->allowed_extensions = array();
 	}
 
-	// Set allowed extensions
+	/**
+	* Set allowed extensions
+	*/
 	function set_allowed_extensions($allowed_extensions)
 	{
 		if ($allowed_extensions !== false && is_array($allowed_extensions))
@@ -379,7 +420,9 @@ class fileupload
 		}
 	}
 
-	// Set allowed dimensions
+	/**
+	* Set allowed dimensions
+	*/
 	function set_allowed_dimensions($min_width, $min_height, $max_width, $max_height)
 	{
 		$this->min_width = (int) $min_width;
@@ -388,7 +431,9 @@ class fileupload
 		$this->max_height = (int) $max_height;
 	}
 
-	// Set maximum allowed filesize
+	/**
+	* Set maximum allowed filesize
+	*/
 	function set_max_filesize($max_filesize)
 	{
 		if ($max_filesize !== false && (int) $max_filesize)
@@ -397,7 +442,9 @@ class fileupload
 		}
 	}
 
-	// Set error prefix
+	/**
+	* Set error prefix
+	*/
 	function set_error_prefix($error_prefix)
 	{
 		$this->error_prefix = $error_prefix;
@@ -405,12 +452,11 @@ class fileupload
 
 	/**
 	* Form upload method
-	*
 	* Upload file from users harddisk
 	*
-	* @access public
 	* @param string $form_name Form name assigned to the file input field (if it is an array, the key has to be specified)
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
+	* @access public
 	*/
 	function form_upload($form_name)
 	{
@@ -424,7 +470,7 @@ class fileupload
 			$file->error[] = '';
 			return $file;
 		}
-			
+
 		// Error array filled?
 		if (isset($_FILES[$form_name]['error']))
 		{
@@ -463,7 +509,9 @@ class fileupload
 		return $file;
 	}
 
-	// Move file from another location to phpBB
+	/**
+	* Move file from another location to phpBB
+	*/
 	function local_upload($source_file, $filedata = false)
 	{
 		global $user;
@@ -484,7 +532,7 @@ class fileupload
 			$_FILES[$form_name]['name'] = $filedata['realname'];
 			$_FILES[$form_name]['size'] = $filedata['size'];
 			$_FILES[$form_name]['type'] = $filedata['type'];
-		}		
+		}
 
 		$file = new filespec($_FILES[$form_name], $this);
 
@@ -493,7 +541,7 @@ class fileupload
 			$file->error[] = '';
 			return $file;
 		}
-			
+
 		if (isset($_FILES[$form_name]['error']))
 		{
 			$error = $this->assign_internal_error($_FILES[$form_name]['error']);
@@ -526,21 +574,20 @@ class fileupload
 
 	/**
 	* Remote upload method
-	*
 	* Uploads file from given url
 	*
-	* @access public
 	* @param string $upload_url URL pointing to file to upload, for example http://www.foobar.com/example.gif
 	* @return object $file Object "filespec" is returned, all further operations can be done with this object
+	* @access public
 	*/
 	function remote_upload($upload_url)
 	{
 		global $user, $phpbb_root_path;
-		
+
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
 
-		if (!preg_match('#^(http://).*?\.(' . implode('|', $this->allowed_extensions) . ')$#i', $upload_url, $match))
+		if (!preg_match('#^(https?://).*?\.(' . implode('|', $this->allowed_extensions) . ')$#i', $upload_url, $match))
 		{
 			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
 			return $file;
@@ -557,12 +604,12 @@ class fileupload
 		$host = $url['host'];
 		$path = $url['path'];
 		$port = (!empty($url['port'])) ? (int) $url['port'] : 80;
-			
+
 		$upload_ary['type'] = 'application/octet-stream';
-		
+
 		$url['path'] = explode('.', $url['path']);
 		$ext = array_pop($url['path']);
-		
+
 		$url['path'] = implode('', $url['path']);
 		$upload_ary['name'] = basename($url['path']) . (($ext) ? '.' . $ext : '');
 		$filename = $url['path'];
@@ -600,7 +647,7 @@ class fileupload
 					{
 						$upload_ary['type'] = rtrim(str_replace('Content-Type: ', '', $line));
 					}
-					else if (strpos($line, 'HTTP/1.1 404 Not Found') !== false)
+					else if (strpos($line, '404 Not Found') !== false)
 					{
 						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
 						return $file;
@@ -624,6 +671,7 @@ class fileupload
 			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
 			return $file;
 		}
+
 		$upload_ary['size'] = fwrite($fp, $data);
 		fclose($fp);
 		unset($data);
@@ -636,7 +684,10 @@ class fileupload
 		return $file;
 	}
 
-	// Private::assign_internal_error
+	/**
+	* Assign internal error
+	* @access private
+	*/
 	function assign_internal_error($errorcode)
 	{
 		global $user;
@@ -655,22 +706,28 @@ class fileupload
 			break;
 
 			case 3:
-				$error = 'The uploaded file was only partially uploaded';
-				break;
+				$error = $user->lang[$this->error_prefix . 'PARTIAL_UPLOAD'];
+			break;
+
 			case 4:
 				$error = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
-				break;
+			break;
+
 			case 6:
 				$error = 'Temporary folder could not be found. Please check your PHP installation.';
-				break;
+			break;
+
 			default:
 				$error = false;
+			break;
 		}
 
 		return $error;
 	}
-	
-	// Private::common_checks
+
+	/**
+	* Perform common checks
+	*/
 	function common_checks(&$file)
 	{
 		global $user;
@@ -697,18 +754,24 @@ class fileupload
 		}
 	}
 
+	/**
+	* Check for allowed extension
+	*/
 	function valid_extension(&$file)
 	{
 		return (in_array($file->get('extension'), $this->allowed_extensions)) ? true : false;
 	}
 
+	/**
+	* Check for allowed dimension
+	*/
 	function valid_dimensions(&$file)
 	{
 		if (!$this->max_width && !$this->max_height && !$this->min_width && !$this->min_height)
 		{
 			return true;
 		}
-		
+
 		if (($file->get('width') > $this->max_width && $this->max_width) || 
 			($file->get('height') > $this->max_height && $this->max_height) || 
 			($file->get('width') < $this->min_width && $this->min_width) ||
@@ -720,6 +783,9 @@ class fileupload
 		return true;
 	}
 
+	/**
+	* Check if form upload is valid
+	*/
 	function is_valid($form_name)
 	{
 		return (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none') ? true : false;

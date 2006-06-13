@@ -9,8 +9,8 @@
 */
 
 /**
-* @package acp
 * @todo [words] check regular expressions for special char replacements (stored specialchared in db)
+* @package acp
 */
 class acp_words
 {

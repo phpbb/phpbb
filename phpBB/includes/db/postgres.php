@@ -25,9 +25,9 @@ if (!defined('SQL_LAYER'))
 	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* @package dbal
 * PostgreSQL Database Abstraction Layer
 * Minimum Requirement is Version 7.3+
+* @package dbal
 */
 class dbal_postgres extends dbal
 {
@@ -86,7 +86,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* SQL Transaction
-	* @private
+	* @access: private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -164,7 +164,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* Build db-specific query data
-	* @private
+	* @access: private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -336,7 +336,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* return sql error array
-	* @private
+	* @access: private
 	*/
 	function _sql_error()
 	{
@@ -348,7 +348,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* Close sql connection
-	* @private
+	* @access: private
 	*/
 	function _sql_close()
 	{
@@ -357,7 +357,7 @@ class dbal_postgres extends dbal
 
 	/**
 	* Build db-specific report
-	* @private
+	* @access: private
 	*/
 	function _sql_report($mode, $query = '')
 	{
