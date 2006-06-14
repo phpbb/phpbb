@@ -59,6 +59,17 @@ if (!$report_data)
 $forum_id = (int) ($report_data['forum_id']) ? $report_data['forum_id'] : $forum_id;
 $topic_id = (int) $report_data['topic_id'];
 
+$sql = 'SELECT *
+	FROM ' . FORUMS_TABLE . '
+	WHERE forum_id = ' . $forum_id;
+$result = $db->sql_query($sql);
+$forum_data = $db->sql_fetchrow($result);
+
+if (!$forum_data)
+{
+	trigger_error('FORUM_NOT_EXIST');
+}
+
 // Check required permissions
 $acl_check_ary = array('f_list' => 'POST_NOT_EXIST', 'f_read' => 'USER_CANNOT_READ', 'f_report' => 'USER_CANNOT_REPORT');
 
@@ -140,7 +151,7 @@ $template->assign_vars(array(
 	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false)
 );
 
-generate_forum_nav($report_data);
+generate_forum_nav($forum_data);
 
 // Start output of page
 page_header($user->lang['REPORT_POST']);

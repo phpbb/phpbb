@@ -1139,7 +1139,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	if (!delete_posts('post_id', array($post_id), false, false))
 	{
 		// Try to delete topic, we may had an previous error causing inconsistency
-		if ($post_mode = 'delete_topic')
+		if ($post_mode == 'delete_topic')
 		{
 			delete_topics('topic_id', array($topic_id), false);
 		}
@@ -1148,7 +1148,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 	$db->sql_transaction('commit');
 
-	// Collect the necessary informations for updating the tables
+	// Collect the necessary information for updating the tables
 	$sql_data[FORUMS_TABLE] = '';
 	switch ($post_mode)
 	{
@@ -1168,8 +1168,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql_data[FORUMS_TABLE] .= ($sql_data[FORUMS_TABLE]) ? ', ' : '';
 				$sql_data[FORUMS_TABLE] .= implode(', ', $update_sql[$forum_id]);
 			}
-
-			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 		break;
 
 		case 'delete_first_post':
@@ -1289,6 +1287,11 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 					AND user_id = ' . $user->data['user_id'];
 			$db->sql_query($sql);
 		}
+	}
+
+	if ($data['post_reported'] && ($post_mode != 'delete_topic'))
+	{
+		sync('topic_reported', 'topic_id', array($topic_id));
 	}
 
 	return $next_post_id;

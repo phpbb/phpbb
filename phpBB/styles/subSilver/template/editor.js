@@ -147,12 +147,12 @@ function bbfontstyle(bbopen, bbclose)
 */
 function insert_text(text)
 {
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
+	if (document.forms[form_name].elements[text_name].createTextRange && !isNaN(document.forms[form_name].elements[text_name].caretPos))
 	{
 		var caretPos = document.forms[form_name].elements[text_name].caretPos;
 		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
 	}
-	else if (document.forms[form_name].elements[text_name].selectionStart)
+	else if (!isNaN(document.forms[form_name].elements[text_name].selectionStart))
 	{
 		var selStart = document.forms[form_name].elements[text_name].selectionStart;
 		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;

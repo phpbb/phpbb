@@ -18,10 +18,8 @@
 *	http://phpjabber.g-blog.net (not many doc comments in here, sorry)
 *
 *	last modified: 27.04.2003 13:01:53 CET
-*
 * 
-*	Modified by psoTFX, phpBB Group, 2003.
-*	Removed functions/support not critical to integration with phpBB
+*	Modified by members of the phpBB Group
 *
 * @package phpBB3
 */

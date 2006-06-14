@@ -1256,6 +1256,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'topic_approved'		=> $post_data['topic_approved'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_approved'			=> $post_data['post_approved'],
+				'post_reported'			=> $post_data['post_reported'],
 				'post_time'				=> $post_data['post_time'],
 				'poster_id'				=> $post_data['poster_id']
 			);

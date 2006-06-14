@@ -1157,7 +1157,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			$sql = 'SELECT DISTINCT(post_id)
 				FROM ' . REPORTS_TABLE . '
-				WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+				WHERE post_id IN (' . implode(', ', $post_ids) . ')
+					AND report_closed = 0';
 			$result = $db->sql_query($sql);
 
 			$post_ids = array();

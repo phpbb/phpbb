@@ -57,10 +57,16 @@ function mcp_post_details($id, $mode, $action)
 		case 'chgposter':
 		case 'chgposter_ip':
 
-			$username = request_var('username', '', true);
-			$new_user_id = request_var('u', 0);
-
-			$sql_where = ($new_user_id) ? 'user_id = ' . $new_user_id : "username = '" . $db->sql_escape($username) . "'";
+			if ($action == 'chgposter')
+			{
+				$username = request_var('username', '', true);
+				$sql_where = "username = '" . $db->sql_escape($username) . "'";
+			}
+			else
+			{
+				$new_user_id = request_var('u', 0);
+				$sql_where = 'user_id = ' . $new_user_id;
+			}
 
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '

@@ -1383,7 +1383,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$imgsize_bool = (!empty($imgname) && ($imgsize || preg_match('#\*\d+#', $$imgname))) ? true : false;
 
-		$img_info = explode('*', $$imgname);
+		$img_info = explode('*', $imgname);
 
 		$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
@@ -1791,7 +1791,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
-				$path = str_replace(' ', '_', $style_row[$mode . '_name']);
+				$path = $style_row[$mode . '_path'];
 
 				if ($format == 'zip')
 				{
@@ -1947,12 +1947,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			if (!sizeof($error))
 			{
-				// Check if the character set is allowed
-				if (!preg_match('/^[a-z0-9_\-\+ ]+$/i', $name))
-				{
-					$error[] = $user->lang[$l_type . '_ERR_NAME_CHARS'];
-				}
-
 				// Check length settings
 				if (strlen($name) > 30)
 				{
@@ -2216,21 +2210,21 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Store template files into db
 	*/
-	function store_templates($mode, $style_id, $name, $filelist)
+	function store_templates($mode, $style_id, $template_path, $filelist)
 	{
 		global $phpbb_root_path, $phpEx, $db;
 
-		$path = str_replace(' ', '_', $name) . '/template/';
+		$template_path = $template_path . '/template/';
 		$includes = array();
 		foreach ($filelist as $pathfile => $file_ary)
 		{
 			foreach ($file_ary as $file)
 			{
-				if (!($fp = fopen("{$phpbb_root_path}styles/$path$pathfile$file", 'r')))
+				if (!($fp = fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
 				{
-					trigger_error("Could not open {$phpbb_root_path}styles/$path$pathfile$file");
+					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file");
 				}
-				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$path$pathfile$file"));
+				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$template_path$pathfile$file"));
 				fclose($fp);
 
 				if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
@@ -2257,10 +2251,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// heck of a lot of data ...
 				$sql_ary = array(
 					'template_id'			=> $style_id,
-					'template_filename'		=> "$pathfile$file",
+					'template_filename'		=> "$template_pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
-					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$path$pathfile$file"),
-					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$path$pathfile$file"),
+					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
+					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
 				);
 
 				if ($mode == 'insert')
@@ -2447,11 +2441,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			if ($mode == 'style')
 			{
-				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $install_path, $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
 			}
 			else
 			{
-				$style_row['store_db'] = $this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $style_row[$mode . '_copyright'], $style_row['store_db']);
+				$style_row['store_db'] = $this->install_element($mode, $error, 'install', $root_path, $style_row[$mode . '_id'], $style_row[$mode . '_name'], $install_path, $style_row[$mode . '_copyright'], $style_row['store_db']);
 			}
 
 			if (!sizeof($error))
@@ -2707,7 +2701,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Install/Add style
 	*/
-	function install_style(&$error, $action, $root_path, &$id, $name, $copyright, $active, $default, &$style_row)
+	function install_style(&$error, $action, $root_path, &$id, $name, $path, $copyright, $active, $default, &$style_row)
 	{
 		global $config, $db, $user;
 
@@ -2716,12 +2710,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		if (!$name)
 		{
 			$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
-		}
-
-		// Check if the character set is allowed
-		if (!preg_match('/^[a-z0-9_\-\+ ]+$/i', $name))
-		{
-			$error[] = $user->lang['STYLE_ERR_NAME_CHARS'];
 		}
 
 		// Check length settings
@@ -2759,7 +2747,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			// and do the install if necessary
 			if (!$style_row[$element . '_id'])
 			{
-				$this->install_element($element, $error, $action, $root_path, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
+				$this->install_element($element, $error, $action, $root_path, $style_row[$element . '_id'], $style_row[$element . '_name'], $path, $style_row[$element . '_copyright']);
 			}
 		}
 
@@ -2808,7 +2796,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Install/add an element, doing various checks as we go
 	*/
-	function install_element($mode, &$error, $action, $root_path, &$id, $name, $copyright, $store_db = 0)
+	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright, $store_db = 0)
 	{
 		global $phpbb_root_path, $db, $user;
 
@@ -2828,17 +2816,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 
 		$l_type = strtoupper($mode);
-		$path = str_replace(' ', '_', $name);
 
 		if (!$name)
 		{
 			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
-		}
-
-		// Check if the character set is allowed
-		if (!preg_match('/^[a-z0-9_\-\+ ]+$/i', $name))
-		{
-			$error[] = $user->lang[$l_type . '_ERR_NAME_CHARS'];
 		}
 
 		// Check length settings
@@ -2930,7 +2911,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		if ($mode == 'template' && $store_db)
 		{
 			$filelist = filelist("{$root_path}template", '', 'html');
-			$this->store_templates('insert', $id, $name, $filelist);
+			$this->store_templates('insert', $id, $path, $filelist);
 		}
 
 		$db->sql_transaction('commit');
