@@ -1343,6 +1343,12 @@ class install_install extends module
 	{
 		global $db, $phpbb_root_path, $phpEx;
 
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
+
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
 			WHERE group_name = 'BOTS'";
@@ -1364,13 +1370,16 @@ class install_install extends module
 		foreach ($this->bot_list as $bot_name => $bot_ary)
 		{
 			$user_row = array(
-				'user_type'		=> GROUP_HIDDEN,
-				'group_id'		=> $group_id,
-				'username'		=> $bot_name,
-				'user_regdate'	=> time(),
-				'user_password'	=> '',
-				'user_colour'	=> '9E8DA7',
-				'user_email'	=> ''
+				'user_type'			=> GROUP_HIDDEN,
+				'group_id'			=> $group_id,
+				'username'			=> $bot_name,
+				'user_regdate'		=> time(),
+				'user_password'		=> '',
+				'user_colour'		=> '9E8DA7',
+				'user_email'		=> '',
+				'user_lang'			=> $language,
+				'user_style'		=> 1,
+				'user_dateformat'	=> 'D M d, Y g:i a',
 			);
 			
 			$user_id = user_add($user_row);
