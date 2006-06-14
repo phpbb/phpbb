@@ -69,6 +69,7 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_USER_PERMISSIONS_EXPLAIN'			=> 'Here you can view the effective user permissions assigned to the selected users/groups',
 
 	'ADD_GROUPS'				=> 'Add Groups',
+	'ADD_PERMISSIONS'			=> 'Add Permissions',
 	'ADD_USERS'					=> 'Add Users',
 	'ALL_GROUPS'				=> 'Select all groups',
 	'ALL_NO'					=> 'All No',
@@ -89,6 +90,7 @@ $lang = array_merge($lang, array(
 	'DELETE_ROLE_CONFIRM'		=> 'Are you sure you want to remove this role? Items having this role assigned will <strong>not</strong> loosing their permission settings.',
 	'DISPLAY_ROLE_ITEMS'		=> 'View Items using this role',
 
+	'EDIT_PERMISSIONS'			=> 'Edit Permissions',
 	'EDIT_ROLE'					=> 'Edit Role',
 
 	'GROUPS_NOT_ASSIGNED'		=> 'No group assigned to this role',
@@ -112,6 +114,7 @@ $lang = array_merge($lang, array(
 	'PERMISSION_APPLIED_TO_ALL'		=> 'Permissions and Role will also be applied to all checked objects',
 	'PLUS_SUBFORUMS'				=> '+Subforums',
 
+	'REMOVE_PERMISSIONS'			=> 'Remove Permissions',
 	'REMOVE_ROLE'					=> 'Remove Role',
 	'ROLE'							=> 'Role',
 	'ROLE_ADD_SUCCESS'				=> 'Role successfully added.',
