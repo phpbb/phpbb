@@ -712,6 +712,10 @@ $lang = array_merge($lang, array(
 		'F j, Y, g:i a'			=> 'January 10, 2005, 5:57 pm'
 	),
 
+	// The default dateformat which will be used on new installs in this language
+	// Translators should change this if a the usual date format is different
+	'default_dateformat'	=> 'D M d, Y g:i a', // Mon Jan 10, 2005 5:57 pm
+
 ));
 
 ?>

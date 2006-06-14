@@ -85,6 +85,7 @@ $lang = array_merge($lang, array(
 	'DEFAULT_PREFIX_IS'			=> 'The default table prefix for %1$s is <strong>%2$s</strong>',
 	'DEV_NO_TEST_FILE'			=> 'No value has been specified for the test_file variable in the convertor. If you are a user of this convertor, you should not be seeing this error, please report this message to the convertor author. If you are a convertor author, you must specify the name of a file which exists in the source forum to allow the path to it to be verified.',
 	'DIRECTORIES_AND_FILES'		=> 'Directory and file setup',
+	'DISABLE_KEYS'				=> 'Disabling keys',
 	'DLL_FIREBIRD'				=> 'Firebird 1.5+',
 	'DLL_FTP'					=> 'Remote FTP support [ Installation ]',
 	'DLL_MBSTRING'				=> 'Multi-byte character support',
@@ -102,6 +103,8 @@ $lang = array_merge($lang, array(
 	'DL_CONFIG_EXPLAIN'			=> 'You may download the complete config.php to your own PC. You will then need to upload the file manually, replacing any existing config.php in your phpBB 3.0 root directory. Please remember to upload the file in ASCII format (see your FTP application documentation if you are unsure how to achieve this). When you have uploaded the config.php please click "Done" to move to the next stage.',
 	'DL_DOWNLOAD'				=> 'Download',
 	'DONE'						=> 'Done',
+
+	'ENABLE_KEYS'				=> 'Re-enabling keys. This can take a while',
 
 	'FILES_OPTIONAL'			=> 'Optional Files and Directories',
 	'FILES_OPTIONAL_EXPLAIN'	=> '<strong>Optional</strong> - These files, directories or permissions are not required. The installation routines will attempt to use various techniques to complete if they do not exist or cannot be written to. However, the presence of these files, directories or permissions will speed installation.',
@@ -158,6 +161,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PASSWORD_TOO_LONG' => 'The password you entered is too long. The maximum length is 30 characters.',
 	'INST_ERR_PASSWORD_TOO_SHORT' => 'The password you entered is too short. The minimum length is 6 characters.',
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
+	'INVALID_PRIMARY_KEY'		=> 'Invalid primary key : %s',
 
 	'MAKE_FOLDER_WRITABLE'		=> 'Please make sure that this folder exists and is writable by the webserver then try again:<br />&#187;<b>%s</b>',
 	'MAKE_FOLDERS_WRITABLE'		=> 'Please make sure that these folders exist and are writable by the webserver then try again:<br />&#187;<b>%s</b>',

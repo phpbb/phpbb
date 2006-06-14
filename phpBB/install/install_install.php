@@ -1035,6 +1035,10 @@ class install_install extends module
 				WHERE config_name = 'cookie_domain'",
 
 			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . $db->sql_escape($lang['default_dateformat']) . "'
+				WHERE config_name = 'default_dateformat'",
+
+			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($email_enable) . "'
 				WHERE config_name = 'email_enable'",
 
@@ -1083,7 +1087,7 @@ class install_install extends module
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
@@ -1341,7 +1345,7 @@ class install_install extends module
 	*/
 	function add_bots($mode, $sub)
 	{
-		global $db, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx;
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -1379,7 +1383,7 @@ class install_install extends module
 				'user_email'		=> '',
 				'user_lang'			=> $language,
 				'user_style'		=> 1,
-				'user_dateformat'	=> 'D M d, Y g:i a',
+				'user_dateformat'	=> $lang['default_dateformat'],
 			);
 			
 			$user_id = user_add($user_row);
@@ -1387,7 +1391,7 @@ class install_install extends module
 			if (!$user_id)
 			{
 				// If we can't insert this user then continue to the next one to avoid inconsistant data
-				$this->p_master->db_error('Unable to insert bot into users table', $sql, __LINE__, __FILE__, true);
+				$this->p_master->db_error('Unable to insert bot into users table', $db->sql_error_sql, __LINE__, __FILE__, true);
 				continue;
 			}
 

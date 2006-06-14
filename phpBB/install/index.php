@@ -102,7 +102,7 @@ include($phpbb_root_path . 'includes/auth.' . $phpEx);
 include($phpbb_root_path . 'includes/session.'.$phpEx);
 include($phpbb_root_path . 'includes/template.'.$phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
-include($phpbb_root_path . 'includes/acm/acm_main.'.$phpEx);
+include($phpbb_root_path . 'includes/cache.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
 
 // Try and load an appropriate language if required
