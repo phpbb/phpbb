@@ -1136,15 +1136,9 @@ class install_install extends module
 	/**
 	* Populate the module tables
 	*/
-	function add_modules($mode, $sub)
+	function add_modules()
 	{
 		global $db, $lang, $phpbb_root_path, $phpEx;
-
-		// Obtain any submitted data
-		foreach ($this->request_vars as $var)
-		{
-			$$var = request_var($var, '');
-		}
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1158,24 +1152,18 @@ class install_install extends module
 		$_module = &new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
 
-		switch ($dbms)
-		{
-			case 'firebird':
-				$column_name = '"module_name"';
-			break;
-
-			default:
-				$column_name = 'module_name';
-		}
-
+		// Add categories
 		foreach ($module_classes as $module_class)
 		{
 			$categories = array();
 
+			// Set the module class
+			$_module->module_class = $module_class;
+
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
 				$module_data = array(
-					$column_name		=> '',
+					'module_name'		=> '',
 					'module_enabled'	=> 1,
 					'module_display'	=> 1,
 					'parent_id'			=> 0,
@@ -1183,26 +1171,28 @@ class install_install extends module
 					'module_langname'	=> $cat_name,
 					'module_mode'		=> '',
 					'module_auth'		=> '',
-
-					'left_id'			=> 0,
-					'right_id'			=> 0,
 				);
 
-				$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
-				if (!$db->sql_query($sql))
+				// Add category
+				$_module->update_module_data($module_data, true);
+
+				// Check for last sql error happened
+				if ($db->sql_error_triggered)
 				{
-					$error = $db->sql_error();
-					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+					$error = $db->sql_error($db->sql_error_sql);
+					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 				}
-				$categories[$cat_name]['id'] = $db->sql_nextid();
+
+				$categories[$cat_name]['id'] = $module_data['module_id'];
 				$categories[$cat_name]['parent_id'] = 0;
 
+				// Create sub-categories...
 				if (is_array($subs))
 				{
 					foreach ($subs as $level2_name)
 					{
 						$module_data = array(
-							$column_name		=> '',
+							'module_name'		=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1210,26 +1200,24 @@ class install_install extends module
 							'module_langname'	=> $level2_name,
 							'module_mode'		=> '',
 							'module_auth'		=> '',
-
-							'left_id'			=> 0,
-							'right_id'			=> 0,
 						);
 
-						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
-						if (!$db->sql_query($sql))
+						$_module->update_module_data($module_data, true);
+
+						// Check for last sql error happened
+						if ($db->sql_error_triggered)
 						{
-							$error = $db->sql_error();
-							$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+							$error = $db->sql_error($db->sql_error_sql);
+							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 						}
-						$categories[$level2_name]['id'] = $db->sql_nextid();
+
+						$categories[$level2_name]['id'] = $module_data['module_id'];
 						$categories[$level2_name]['parent_id'] = $categories[$cat_name]['id'];
 					}
 				}
 			}
 
-			recalc_btree('module_id', MODULES_TABLE, $module_class);
-
-			// Get the modules we want to add...
+			// Get the modules we want to add... returned sorted by name
 			$module_info = $_module->get_module_infos('', $module_class);
 
 			foreach ($module_info as $module_name => $fileinfo)
@@ -1239,7 +1227,7 @@ class install_install extends module
 					foreach ($row['cat'] as $cat_name)
 					{
 						$module_data = array(
-							$column_name		=> $module_name,
+							'module_name'		=> $module_name,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1249,43 +1237,14 @@ class install_install extends module
 							'module_auth'		=> $row['auth'],
 						);
 
-						$sql = 'SELECT left_id, right_id
-							FROM ' . MODULES_TABLE . "
-							WHERE module_class = '" . $module_class . "'
-								AND module_id = {$module_data['parent_id']}";
-						$result = $db->sql_query($sql);
+						$_module->update_module_data($module_data, true);
 
-						$row2 = $db->sql_fetchrow($result);
-
-						$db->sql_freeresult($result);
-
-						if ($categories[$cat_name]['parent_id'] || $module_class != 'acp')
+						// Check for last sql error happened
+						if ($db->sql_error_triggered)
 						{
-							$sql = 'UPDATE ' . MODULES_TABLE . "
-								SET left_id = left_id + 2, right_id = right_id + 2
-								WHERE module_class = '" . $module_class . "'
-									AND left_id > {$row2['right_id']}";
-							$db->sql_query($sql);
-
-							$sql = 'UPDATE ' . MODULES_TABLE . "
-								SET right_id = right_id + 2
-								WHERE module_class = '" . $module_class . "'
-									AND {$row2['left_id']} BETWEEN left_id AND right_id";
-							$db->sql_query($sql);
+							$error = $db->sql_error($db->sql_error_sql);
+							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 						}
-						else
-						{
-							$sql = 'UPDATE ' . MODULES_TABLE . "
-								SET left_id = left_id + 3, right_id = right_id + 3
-								WHERE module_class = '" . $module_class . "'
-									AND left_id > {$row2['left_id']}";
-							$db->sql_query($sql);
-						}
-						$module_data['left_id'] = ($categories[$cat_name]['parent_id']) ? $row2['right_id'] : $row2['left_id'] + 1;
-						$module_data['right_id'] = ($categories[$cat_name]['parent_id']) ? $row2['right_id'] + 1 : $row2['left_id'] + 2;
-
-						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
-						$db->sql_query($sql);
 					}
 				}
 			}
@@ -1294,33 +1253,35 @@ class install_install extends module
 			// Manage Users should ideally be the first thing you see on the Users & groups tab
 			if ($module_class == 'acp')
 			{
-				$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
-					WHERE module_langname = 'ACP_CAT_USERS'
-					AND module_class = 'acp'";
-				$result = $db->sql_query_limit($sql, 1);
-				$row2 = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				// Move main module 4 up...
+				for ($i = 1; $i <= 4; $i++)
+				{
+					$sql = 'SELECT *
+						FROM ' . MODULES_TABLE . "
+						WHERE module_name = 'main'
+							AND module_class = 'acp'
+							AND module_mode = 'main'";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+	
+					$_module->move_module_by($row, 'move_up', 1);
+				}
 
-				$sql = 'UPDATE ' . MODULES_TABLE . "
-					SET left_id = left_id + 3, right_id = right_id + 3
-					WHERE module_class = 'acp'
-						AND left_id > {$row2['left_id']}
-						AND left_id < {$row2['right_id']}";
-				$db->sql_query($sql);
-
-				$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
-					WHERE module_langname = 'ACP_MANAGE_USERS'
-					AND module_class = 'acp'";
-				$result = $db->sql_query_limit($sql, 1);
-				$module_data = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$module_data['left_id'] = $row2['left_id'] + 1;
-				$module_data['right_id'] = $row2['left_id'] + 2;
-
-				$sql = 'UPDATE ' . MODULES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $module_data) . "
-					WHERE module_id = {$module_data['module_id']}";
-				$db->sql_query($sql);
+				// Move permissions intro screen module 4 up...
+				for ($i = 1; $i <= 4; $i++)
+				{
+					$sql = 'SELECT *
+						FROM ' . MODULES_TABLE . "
+						WHERE module_name = 'permissions'
+							AND module_class = 'acp'
+							AND module_mode = 'intro'";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+	
+					$_module->move_module_by($row, 'move_up', 1);
+				}
 			}
 	
 			// And now for the special ones
@@ -1340,36 +1301,31 @@ class install_install extends module
 					{
 						$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
 							WHERE module_langname = '$mod_name'
-							AND module_class = '$module_class'
+								AND module_class = '$module_class'
+								AND module_name <> ''
 							LIMIT 1";
 						$result = $db->sql_query($sql);
 						$module_data = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						$sql = 'UPDATE ' . MODULES_TABLE . "
-							SET left_id = left_id + 2, right_id = right_id + 2
-							WHERE module_class = '" . $module_class . "'
-								AND left_id > {$row2['right_id']}";
-						$db->sql_query($sql);
-
-						$sql = 'UPDATE ' . MODULES_TABLE . "
-							SET right_id = right_id + 2
-							WHERE module_class = '" . $module_class . "'
-								AND {$row2['left_id']} BETWEEN left_id AND right_id";
-						$db->sql_query($sql);
-
 						unset($module_data['module_id']);
-						$module_data['parent_id'] = $row2['module_id'];
-						$module_data['left_id'] = $row2['right_id'];
-						$module_data['right_id'] = $row2['right_id'] + 1;
+						unset($module_data['left_id']);
+						unset($module_data['right_id']);
 
-						$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
-						$db->sql_query($sql);
+						$module_data['parent_id'] = $row2['module_id'];
+
+						$_module->update_module_data($module_data, true);
+
+						// Check for last sql error happened
+						if ($db->sql_error_triggered)
+						{
+							$error = $db->sql_error($db->sql_error_sql);
+							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+						}
 					}
 				}
 			}
 
-			recalc_btree('module_id', MODULES_TABLE, $module_class);
 			$_module->remove_cache_file();
 		}
 	}
@@ -1876,6 +1832,7 @@ class install_install extends module
 			'UCP_ZEBRA'			=> null,
 		),
 	);
+
 	var $module_extras = array(
 		'acp'	=> array(
 			'ACP_QUICK_ACCESS' => array(

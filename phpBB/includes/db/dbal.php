@@ -31,7 +31,13 @@ class dbal
 	var $user = '';
 	var $server = '';
 	var $dbname = '';
-	
+
+	// Set to true if error triggered
+	var $sql_error_triggered = false;
+
+	// Holding the last sql query on sql error
+	var $sql_error_sql = '';
+
 	/**
 	* Constructor
 	*/
@@ -49,6 +55,9 @@ class dbal
 	*/
 	function sql_return_on_error($fail = false)
 	{
+		$this->sql_error_triggered = false;
+		$this->sql_error_sql = '';
+
 		$this->return_on_error = $fail;
 	}
 
@@ -167,6 +176,9 @@ class dbal
 	*
 	* Idea for this from Ikonboard
 	* Possible query values: INSERT, INSERT_SELECT, MULTI_INSERT, UPDATE, SELECT
+	*
+	* If a key is 'module_name' and firebird used it gets adjusted to '"module_name"'
+	* on INSERT, INSERT_SELECT, UPDATE and SELECT
 	*/
 	function sql_build_array($query, $assoc_ary = false)
 	{
@@ -175,13 +187,13 @@ class dbal
 			return false;
 		}
 
-		$fields = array();
-		$values = array();
+		$fields = $values = array();
+
 		if ($query == 'INSERT' || $query == 'INSERT_SELECT')
 		{
 			foreach ($assoc_ary as $key => $var)
 			{
-				$fields[] = $key;
+				$fields[] = ($key == 'module_name' && SQL_LAYER == 'firebird') ? '"' . $key . '"' : $key;
 
 				if (is_null($var))
 				{
@@ -235,6 +247,8 @@ class dbal
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
+				$key = ($key == 'module_name' && SQL_LAYER == 'firebird') ? '"' . $key . '"' : $key;
+
 				if (is_null($var))
 				{
 					$values[] = "$key = NULL";
@@ -312,6 +326,10 @@ class dbal
 	function sql_error($sql = '')
 	{
 		global $auth, $user;
+
+		// Set var to retrieve errored status
+		$this->sql_error_triggered = true;
+		$this->sql_error_sql = $sql;
 
 		$error = $this->_sql_error();
 

@@ -124,91 +124,13 @@ class acp_modules
 				}
 				$db->sql_freeresult($result);
 
-				$module_info = array($module_id => $row);
+				$move_module_name = $this->move_module_by($row, $action, 1);
 
-				// Get the adjacent forum
-				$sql = 'SELECT module_id, left_id, right_id, module_langname
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-						AND parent_id = {$row['parent_id']}
-						AND " . (($action == 'move_up') ? "right_id < {$row['right_id']} ORDER BY right_id DESC" : "left_id > {$row['left_id']} ORDER BY left_id ASC");
-				$result = $db->sql_query_limit($sql, 1);
-
-				if (!($row = $db->sql_fetchrow($result)))
+				if ($move_module_name !== false)
 				{
-					// already on top or at bottom
-					break;
+					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $move_module_name);
+					$this->remove_cache_file();
 				}
-				$db->sql_freeresult($result);
-
-				$module_info[$row['module_id']] = $row;
-
-				if ($action == 'move_up')
-				{
-					$up_id = $module_id;
-					$down_id = $row['module_id'];
-				}
-				else
-				{
-					$up_id = $row['module_id'];
-					$down_id = $module_id;
-				}
-
-				$move_module_name = $this->lang_name($row['module_langname']);
-				$diff_up = $module_info[$up_id]['right_id'] - $module_info[$up_id]['left_id'];
-				$diff_down = $module_info[$down_id]['right_id'] - $module_info[$down_id]['left_id'];
-
-				$ids = array();
-		
-				$sql = 'SELECT module_id
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-						AND left_id > " . $module_info[$up_id]['left_id'] . '
-						AND right_id < ' . $module_info[$up_id]['right_id'];
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$ids[] = $row['module_id'];
-				}
-				$db->sql_freeresult($result);
-
-				// Start transaction
-				$db->sql_transaction('begin');
-
-				$sql = 'UPDATE ' . MODULES_TABLE . '
-					SET left_id = left_id + ' . ($diff_up + 1) . ', right_id = right_id + ' . ($diff_up + 1) . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-						AND left_id > " . $module_info[$down_id]['left_id'] . '
-						AND right_id < ' . $module_info[$down_id]['right_id'];
-				$db->sql_query($sql);
-
-				if (sizeof($ids))
-				{
-					$sql = 'UPDATE ' . MODULES_TABLE . '
-						SET left_id = left_id - ' . ($diff_down + 1) . ', right_id = right_id - ' . ($diff_down + 1) . "
-						WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-							AND module_id IN (" . implode(', ', $ids) . ')';
-					$db->sql_query($sql);
-				}
-
-				$sql = 'UPDATE ' . MODULES_TABLE . '
-					SET left_id = ' . $module_info[$down_id]['left_id'] . ', right_id = ' . ($module_info[$down_id]['left_id'] + $diff_up) . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-						AND module_id = $up_id";
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . MODULES_TABLE . '
-					SET left_id = ' . ($module_info[$up_id]['right_id'] - $diff_down) . ', right_id = ' . $module_info[$up_id]['right_id'] . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-						AND module_id = $down_id";
-				$db->sql_query($sql);
-
-				$db->sql_transaction('commit');
-
-				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $move_module_name);
-
-				$this->remove_cache_file();
 		
 			break;
 
@@ -781,16 +703,16 @@ class acp_modules
 
 	/**
 	* Update/Add module
+	* 
+	* @param bool $run_inline if set to true errors will be returned and no logs being written
 	*/
-	function update_module_data(&$module_data)
+	function update_module_data(&$module_data, $run_inline = false)
 	{
 		global $db, $user;
 
 		if (!isset($module_data['module_id']))
 		{
 			// no module_id means we're creating a new category/module
-
-			$db->sql_transaction('begin');
 
 			if ($module_data['parent_id'])
 			{
@@ -802,6 +724,11 @@ class acp_modules
 
 				if (!$row = $db->sql_fetchrow($result))
 				{
+					if ($run_inline)
+					{
+						return 'PARENT_NO_EXIST';
+					}
+
 					trigger_error($user->lang['PARENT_NO_EXIST']);
 				}
 				$db->sql_freeresult($result);
@@ -836,11 +763,13 @@ class acp_modules
 
 			$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
 			$db->sql_query($sql);
-		
-			$db->sql_transaction('commit');
 
 			$module_data['module_id'] = $db->sql_nextid();
-			add_log('admin', 'LOG_MODULE_ADD', $this->lang_name($module_data['module_langname']));
+
+			if (!$run_inline)
+			{
+				add_log('admin', 'LOG_MODULE_ADD', $this->lang_name($module_data['module_langname']));
+			}
 		}
 		else
 		{
@@ -868,7 +797,10 @@ class acp_modules
 					AND module_id = {$module_data['module_id']}";
 			$db->sql_query($sql);
 
-			add_log('admin', 'LOG_MODULE_EDIT', $this->lang_name($module_data['module_langname']));
+			if (!$run_inline)
+			{
+				add_log('admin', 'LOG_MODULE_EDIT', $this->lang_name($module_data['module_langname']));
+			}
 		}
 
 		return array();
@@ -997,6 +929,101 @@ class acp_modules
 
 		return array();
 
+	}
+
+	/**
+	* Move module position by $amount up/down
+	* @todo support more than one step up/down (at the moment $amount needs to be 1)!
+	*/
+	function move_module_by($module_row, $action = 'move_up', $amount)
+	{
+		global $db;
+
+		$module_id = $module_row['module_id'];
+		$module_info = array($module_row['module_id'] => $module_row);
+
+		// Get the adjacent module
+		$sql = 'SELECT module_id, left_id, right_id, module_langname
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND parent_id = {$module_row['parent_id']}
+				AND " . (($action == 'move_up') ? "right_id < {$module_row['right_id']} ORDER BY right_id DESC" : "left_id > {$module_row['left_id']} ORDER BY left_id ASC");
+		$result = $db->sql_query_limit($sql, 1, ($amount - 1));
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			// already on top or at bottom
+			return false;
+		}
+
+		$module_info[$row['module_id']] = $row;
+
+		if ($action == 'move_up')
+		{
+			$up_id = $module_id;
+			$down_id = $row['module_id'];
+		}
+		else
+		{
+			$up_id = $row['module_id'];
+			$down_id = $module_id;
+		}
+
+		$move_module_name = $this->lang_name($row['module_langname']);
+		$diff_up = $module_info[$up_id]['right_id'] - $module_info[$up_id]['left_id'];
+		$diff_down = $module_info[$down_id]['right_id'] - $module_info[$down_id]['left_id'];
+
+		$ids = array();
+
+		$sql = 'SELECT module_id
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND left_id > " . $module_info[$up_id]['left_id'] . '
+				AND right_id < ' . $module_info[$up_id]['right_id'];
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$ids[] = $row['module_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Start transaction
+		$db->sql_transaction('begin');
+
+		$sql = 'UPDATE ' . MODULES_TABLE . '
+			SET left_id = left_id + ' . ($diff_up + 1) . ', right_id = right_id + ' . ($diff_up + 1) . "
+			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND left_id > " . $module_info[$down_id]['left_id'] . '
+				AND right_id < ' . $module_info[$down_id]['right_id'];
+		$db->sql_query($sql);
+
+		if (sizeof($ids))
+		{
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET left_id = left_id - ' . ($diff_down + 1) . ', right_id = right_id - ' . ($diff_down + 1) . "
+				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					AND module_id IN (" . implode(', ', $ids) . ')';
+			$db->sql_query($sql);
+		}
+
+		$sql = 'UPDATE ' . MODULES_TABLE . '
+			SET left_id = ' . $module_info[$down_id]['left_id'] . ', right_id = ' . ($module_info[$down_id]['left_id'] + $diff_up) . "
+			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND module_id = $up_id";
+		$db->sql_query($sql);
+
+		$sql = 'UPDATE ' . MODULES_TABLE . '
+			SET left_id = ' . ($module_info[$up_id]['right_id'] - $diff_down) . ', right_id = ' . $module_info[$up_id]['right_id'] . "
+			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND module_id = $down_id";
+		$db->sql_query($sql);
+
+		$db->sql_transaction('commit');
+
+		return $move_module_name;
 	}
 }
 
