@@ -459,55 +459,53 @@ class bbcode
 	*/
 	function bbcode_list($type)
 	{
-		switch ($type)
+		if ($type == '')
 		{
-			case '':
-				$tpl = 'ulist_open_default';
-				$type = 'default';
-				$start = 0;
-			break;
-
-			case 'i':
-				$tpl = 'olist_open';
-				$type = 'lower-roman';
-				$start = 1;
-			break;
-
-			case 'I':
-				$tpl = 'olist_open';
-				$type = 'upper-roman';
-				$start = 1;
-			break;
-
-			case (preg_match('#^(disc|circle|square)$#i', $type)):
-				$tpl = 'ulist_open';
-				$type = strtolower($type);
-				$start = 1;
-			break;
-
-			case (preg_match('#^[a-z]$#', $type)):
-				$tpl = 'olist_open';
-				$type = 'lower-alpha';
-				$start = ord($type) - 96;
-			break;
-
-			case (preg_match('#[A-Z]#', $type)):
-				$tpl = 'olist_open';
-				$type = 'upper-alpha';
-				$start = ord($type) - 64;
-			break;
-
-			case (is_numeric($type)):
-				$tpl = 'olist_open';
-				$type = 'arabic-numbers';
-				$start = intval($type);
-			break;
-
-			default:
-				$tpl = 'olist_open';
-				$type = 'arabic-numbers';
-				$start = 1;
-			break;
+			$tpl = 'ulist_open_default';
+			$type = 'default';
+			$start = 0;
+		}
+		else if ($type == 'i')
+		{
+			$tpl = 'olist_open';
+			$type = 'lower-roman';
+			$start = 1;
+		}
+		else if ($type == 'I')
+		{
+			$tpl = 'olist_open';
+			$type = 'upper-roman';
+			$start = 1;
+		}
+		else if (preg_match('#^(disc|circle|square)$#i', $type))
+		{
+			$tpl = 'ulist_open';
+			$type = strtolower($type);
+			$start = 1;
+		}
+		else if (preg_match('#^[a-z]$#', $type))
+		{
+			$tpl = 'olist_open';
+			$type = 'lower-alpha';
+			$start = ord($type) - 96;
+		}
+		else if (preg_match('#[A-Z]#', $type))
+		{
+			$tpl = 'olist_open';
+			$type = 'upper-alpha';
+			$start = ord($type) - 64;
+		}
+		else if (is_numeric($type))
+		{
+			$tpl = 'olist_open';
+			$type = 'arabic-numbers';
+			$start = intval($type);
+		}
+		else
+		{
+			$tpl = 'olist_open';
+			$type = 'arabic-numbers';
+			$start = 1;
 		}
 
 		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl($tpl));
