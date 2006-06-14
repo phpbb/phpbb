@@ -1136,9 +1136,15 @@ class install_install extends module
 	/**
 	* Populate the module tables
 	*/
-	function add_modules()
+	function add_modules($mode, $sub)
 	{
 		global $db, $lang, $phpbb_root_path, $phpEx;
+
+		// Obtain any submitted data
+		foreach ($this->request_vars as $var)
+		{
+			$$var = request_var($var, '');
+		}
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
