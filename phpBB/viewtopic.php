@@ -224,12 +224,11 @@ if (!$topic_data)
 // This is for determining where we are (page)
 if ($post_id)
 {
-	$sql = 'SELECT COUNT(p.post_id) AS prev_posts
-		FROM ' . POSTS_TABLE . " p
-		WHERE p.post_approved = 1
-			AND p.topic_id = {$topic_data['topic_id']}
-			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
-			AND " . (($sort_dir == 'd') ?  "p.post_id >= $post_id" : "p.post_id <= $post_id");
+	$sql = 'SELECT COUNT(post_id) AS prev_posts
+		FROM ' . POSTS_TABLE . "
+		WHERE topic_id = {$topic_data['topic_id']}
+			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . "
+			AND " . (($sort_dir == 'd') ?  "post_id >= $post_id" : "post_id <= $post_id");
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
