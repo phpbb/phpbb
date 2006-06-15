@@ -112,17 +112,18 @@ class acp_modules
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
 				}
 
-				$sql = 'SELECT parent_id, left_id, right_id, module_langname
+				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
 					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 						AND module_id = $module_id";
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!($row = $db->sql_fetchrow($result)))
+				if (!$row)
 				{
 					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
 				}
-				$db->sql_freeresult($result);
 
 				$move_module_name = $this->move_module_by($row, $action, 1);
 
@@ -932,10 +933,10 @@ class acp_modules
 	}
 
 	/**
-	* Move module position by $amount up/down
-	* @todo support more than one step up/down (at the moment $amount needs to be 1)!
+	* Move module position by $steps up/down
+	* @todo support more than one step up/down (at the moment $steps needs to be 1)!
 	*/
-	function move_module_by($module_row, $action = 'move_up', $amount)
+	function move_module_by($module_row, $action = 'move_up', $steps = 1)
 	{
 		global $db;
 
@@ -948,7 +949,7 @@ class acp_modules
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 				AND parent_id = {$module_row['parent_id']}
 				AND " . (($action == 'move_up') ? "right_id < {$module_row['right_id']} ORDER BY right_id DESC" : "left_id > {$module_row['left_id']} ORDER BY left_id ASC");
-		$result = $db->sql_query_limit($sql, 1, ($amount - 1));
+		$result = $db->sql_query_limit($sql, 1, ($steps - 1));
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
