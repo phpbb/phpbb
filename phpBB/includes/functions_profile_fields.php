@@ -115,6 +115,13 @@ class custom_profile
 				}
 			break;
 
+			case FIELD_BOOL:
+				if (!$field_value && $field_data['field_required'])
+				{
+					return 'FIELD_REQUIRED';
+				}
+			break;
+
 			case FIELD_INT:
 				if (empty($field_value) && !$field_data['field_required'])
 				{
@@ -537,7 +544,7 @@ class custom_profile
 			}
 			else
 			{
-				if (!$preview && is_null($user->profile_fields[$user_ident]))
+				if (!$preview && isset($user->profile_fields[$user_ident]) && is_null($user->profile_fields[$user_ident]))
 				{
 					$value = NULL;
 				}
