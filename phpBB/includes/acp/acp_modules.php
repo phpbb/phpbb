@@ -941,90 +941,81 @@ class acp_modules
 		global $db;
 
 		$module_id = $module_row['module_id'];
-		$module_info = array($module_row['module_id'] => $module_row);
 
-		// Get the adjacent module
+		/**
+		* Fetch all the siblings between the module's current spot
+		* and where we want to move it to. If there are less than $steps
+		* siblings between the current spot and the target then the
+		* module will move as far as possible
+		*/
 		$sql = 'SELECT module_id, left_id, right_id, module_langname
 			FROM ' . MODULES_TABLE . "
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 				AND parent_id = {$module_row['parent_id']}
 				AND " . (($action == 'move_up') ? "right_id < {$module_row['right_id']} ORDER BY right_id DESC" : "left_id > {$module_row['left_id']} ORDER BY left_id ASC");
-		$result = $db->sql_query_limit($sql, 1, ($steps - 1));
-		$row = $db->sql_fetchrow($result);
+		$result = $db->sql_query_limit($sql, $steps);
+
+		$target_module = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$target_module = $row;
+		}
 		$db->sql_freeresult($result);
 
-		if (!$row)
+		if (!sizeof($target_module))
 		{
-			// already on top or at bottom
+			// The module is already on top or bottom
 			return false;
 		}
 
-		$module_info[$row['module_id']] = $row;
-
+		/**
+		* $left_id and $right_id define the scope of the nodes that are affected by the move.
+		* $diff_up and $diff_down are the values to substract or add to each node's left_id
+		* and right_id in order to move them up or down.
+		* $move_up_left and $move_up_right define the scope of the nodes that are moving
+		* up. Other nodes in the scope of ($left_id, $right_id) are considered to move down.
+		*/
 		if ($action == 'move_up')
 		{
-			$up_id = $module_id;
-			$down_id = $row['module_id'];
+			$left_id = $target_module['left_id'];
+			$right_id = $module_row['right_id'];
+
+			$diff_up = $module_row['left_id'] - $target_module['left_id'];
+			$diff_down = $module_row['right_id'] + 1 - $module_row['left_id'];
+
+			$move_up_left = $module_row['left_id'];
+			$move_up_right = $module_row['right_id'];
 		}
 		else
 		{
-			$up_id = $row['module_id'];
-			$down_id = $module_id;
+			$left_id = $module_row['left_id'];
+			$right_id = $target_module['right_id'];
+
+			$diff_up = $module_row['right_id'] + 1 - $module_row['left_id'];
+			$diff_down = $target_module['right_id'] - $module_row['right_id'];
+
+			$move_up_left = $module_row['right_id'] + 1;
+			$move_up_right = $target_module['right_id'];
 		}
 
-		$move_module_name = $this->lang_name($row['module_langname']);
-		$diff_up = $module_info[$up_id]['right_id'] - $module_info[$up_id]['left_id'];
-		$diff_down = $module_info[$down_id]['right_id'] - $module_info[$down_id]['left_id'];
-
-		$ids = array();
-
-		$sql = 'SELECT module_id
-			FROM ' . MODULES_TABLE . "
+		// Now do the dirty job
+		$sql = 'UPDATE ' . MODULES_TABLE . "
+			SET left_id = left_id + CASE
+				WHEN left_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
+				ELSE {$diff_down}
+			END,
+			right_id = right_id + CASE
+				WHEN right_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
+				ELSE {$diff_down}
+			END
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND left_id > " . $module_info[$up_id]['left_id'] . '
-				AND right_id < ' . $module_info[$up_id]['right_id'];
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$ids[] = $row['module_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// Start transaction
-		$db->sql_transaction('begin');
-
-		$sql = 'UPDATE ' . MODULES_TABLE . '
-			SET left_id = left_id + ' . ($diff_up + 1) . ', right_id = right_id + ' . ($diff_up + 1) . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND left_id > " . $module_info[$down_id]['left_id'] . '
-				AND right_id < ' . $module_info[$down_id]['right_id'];
+				AND left_id BETWEEN {$left_id} AND {$right_id}
+				AND right_id BETWEEN {$left_id} AND {$right_id}";
 		$db->sql_query($sql);
 
-		if (sizeof($ids))
-		{
-			$sql = 'UPDATE ' . MODULES_TABLE . '
-				SET left_id = left_id - ' . ($diff_down + 1) . ', right_id = right_id - ' . ($diff_down + 1) . "
-				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					AND module_id IN (" . implode(', ', $ids) . ')';
-			$db->sql_query($sql);
-		}
+		$this->remove_cache_file();
 
-		$sql = 'UPDATE ' . MODULES_TABLE . '
-			SET left_id = ' . $module_info[$down_id]['left_id'] . ', right_id = ' . ($module_info[$down_id]['left_id'] + $diff_up) . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND module_id = $up_id";
-		$db->sql_query($sql);
-
-		$sql = 'UPDATE ' . MODULES_TABLE . '
-			SET left_id = ' . ($module_info[$up_id]['right_id'] - $diff_down) . ', right_id = ' . $module_info[$up_id]['right_id'] . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND module_id = $down_id";
-		$db->sql_query($sql);
-
-		$db->sql_transaction('commit');
-
-		return $move_module_name;
+		return $this->lang_name($target_module['module_langname']);
 	}
 }
 
