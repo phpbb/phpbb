@@ -113,6 +113,11 @@ class custom_profile
 				{
 					return 'FIELD_INVALID_DATE';
 				}
+
+				if (!checkdate($month, $day, $year) === false)
+				{
+					return 'FIELD_INVALID_DATE';
+				}
 			break;
 
 			case FIELD_BOOL:
