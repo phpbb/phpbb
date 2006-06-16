@@ -825,7 +825,7 @@ class fulltext_native extends search_backend
 			}
 			$db->sql_freeresult($result);
 
-			$new_words = array_diff($unique_add_words, array_keys($word_ids));
+			$new_words = array_map(array(&$db, 'sql_escape'), array_diff($unique_add_words, array_keys($word_ids)));
 
 			if (sizeof($new_words))
 			{

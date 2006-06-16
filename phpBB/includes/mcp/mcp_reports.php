@@ -352,7 +352,14 @@ function close_report($post_id_list, $mode, $action)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	if (($action == 'delete') && (strpos($user->data['session_page'], 'mode=report_details') !== false))
+	{
+		$redirect = request_var('redirect', build_url(array('mode')) . '&amp;mode=reports');
+	}
+	else
+	{
+		$redirect = request_var('redirect', $user->data['session_page']);
+	}
 	$success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(

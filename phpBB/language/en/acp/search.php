@@ -84,7 +84,7 @@ $lang = array_merge($lang, array(
 	'TOTAL_MATCHES'							=> 'Total number of word to post relations indexed',
 
 	'YES_SEARCH'							=> 'Enable search facilities',
-	'YES_SEARCH_EXPLAIN'					=> 'User and backend search functions including fulltext updates when posting.',
+	'YES_SEARCH_EXPLAIN'					=> 'Enables user facing search functionality including member search.',
 	'YES_SEARCH_UPDATE'						=> 'Enable fulltext updating',
 	'YES_SEARCH_UPDATE_EXPLAIN'				=> 'Updating of fulltext indexes when posting, overriden if search is disabled.',
 ));
