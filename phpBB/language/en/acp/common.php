@@ -356,7 +356,7 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<b>Own permissions restored after using permissions from</b><br />&#187; %s',
 	
 	'LOG_ADMIN_AUTH_FAIL'		=> '<b>Failed administration login attempt</b>',
-	'LOG_ADMIN_AUTH_SUCCESS'	=> '<b>Sucessful administration login</b>',
+	'LOG_ADMIN_AUTH_SUCCESS'	=> '<b>Successful administration login</b>',
 
 	'LOG_ATTACH_EXT_ADD'		=> '<b>Added or edited attachment extension</b><br />&#187; %s',
 	'LOG_ATTACH_EXT_DEL'		=> '<b>Removed attachment extension</b><br />&#187; %s',

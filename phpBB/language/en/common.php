@@ -307,6 +307,7 @@ $lang = array_merge($lang, array(
 	'NO_FORUM'					=> 'The forum you selected does not exist',
 	'NO_FORUMS'					=> 'This board has no forums',
 	'NO_GROUP'					=> 'The requested usergroup does not exist.',
+	'NO_GROUP_MEMBERS'			=> 'This group is currently not having any members assigned',
 	'NO_MEMBERS'				=> 'No members found for this search criteria',
 	'NO_MESSAGES'				=> 'No messages',
 	'NO_NEW_MESSAGES'			=> 'No new messages',
