@@ -366,7 +366,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		return array($active_forum_ary, $forum_moderators);
 	}
 
-	return $active_forum_ary;
+	return array($active_forum_ary, array());
 }
 
 /**
