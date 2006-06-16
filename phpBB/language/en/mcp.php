@@ -207,6 +207,7 @@ $lang = array_merge($lang, array(
 	'NO_POST'				=> 'You have to select a post in order to warn the user for a post',
 	'NO_POST_REPORT'		=> 'This post was not reported.',
 	'NO_POST_SELECTED'		=> 'You must select at least one post to perform this action',
+	'NO_REASON_DISAPPROVAL'	=> 'Please give an appropiate reason for disapproval',
 	'NO_TOPIC_SELECTED'		=> 'You must select at least one topic to perform this action',
 
 	'OTHER_IPS'				=> 'Other IP addresses this user has posted from',

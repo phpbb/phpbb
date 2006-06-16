@@ -254,18 +254,6 @@ CREATE TABLE phpbb_bots (
 CREATE INDEX phpbb_bots_bot_active ON phpbb_bots (bot_active);
 
 
-
-
-/* Table: phpbb_cache */
-CREATE TABLE phpbb_cache (
-  var_name varchar(255) DEFAULT '' NOT NULL,
-  var_expires INT4  DEFAULT '0' NOT NULL,
-  var_data TEXT,
-  PRIMARY KEY (var_name),
-  CHECK (var_expires>=0)
-);
-
-
 /* Table: phpbb_config */
 CREATE TABLE phpbb_config (
   config_name varchar(255) NOT NULL,
@@ -590,7 +578,7 @@ CREATE TABLE phpbb_modules (
 
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
-
+CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
 
 
 

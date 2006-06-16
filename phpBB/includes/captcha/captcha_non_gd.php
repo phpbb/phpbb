@@ -25,7 +25,7 @@ class captcha
 		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
 		$this->define_filtered_pngs();
 	}
-	
+
 	/**
 	* Create the image containing $code
 	*/

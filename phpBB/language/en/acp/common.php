@@ -244,6 +244,7 @@ $lang = array_merge($lang, array(
 	'PROCEED_TO_ACP'		=> 'Click %sHere%s to proceed to the ACP',
 	'REMIND'				=> 'Remind',
 	'REORDER'				=> 'Reorder',
+	'RESYNC'				=> 'Sync',
 	'RETURN_TO'				=> 'Return to ...',
 
 	'SELECT_ANONYMOUS'		=> 'Select Anonymous User',

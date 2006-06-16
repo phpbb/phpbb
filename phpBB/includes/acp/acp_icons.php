@@ -97,6 +97,8 @@ class acp_icons
 				unset($_images);
 				$_images = array();
 
+			// no break;
+
 			case 'add':
 
 				$order_list = '';
@@ -269,9 +271,10 @@ class acp_icons
 						{
 							$update = true;
 
-							$result = $db->sql_query("SELECT {$fields}_order 
+							$sql = "SELECT {$fields}_order 
 								FROM $table
-								WHERE {$fields}_id = " . $image_id[$image]);
+								WHERE {$fields}_id = " . $image_id[$image];
+							$result = $db->sql_query($sql);
 							$order_old = (int) $db->sql_fetchfield($fields . '_order');
 							$db->sql_freeresult($result);
 
@@ -403,8 +406,9 @@ class acp_icons
 									));
 								}
 
-								$db->sql_query("UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . " 
-									WHERE $field_sql = '" . $db->sql_escape($replace_sql) . "'");
+								$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . " 
+									WHERE $field_sql = '" . $db->sql_escape($replace_sql) . "'";
+								$db->sql_query($sql);
 							}
 							else
 							{
@@ -638,7 +642,6 @@ class acp_icons
 			}
 		}
 		$db->sql_freeresult($result);
-
 	}
 }
 

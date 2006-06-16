@@ -180,7 +180,7 @@ class mcp_main
 			break;
 
 			default:
-				trigger_error("Unknown mode: $mode");
+				trigger_error("Unknown mode: $mode", E_USER_ERROR);
 		}
 	}
 }
@@ -543,7 +543,9 @@ function mcp_delete_topic($topic_ids)
 
 		$return = delete_topics('topic_id', $topic_ids, true);
 
-		// TODO: Adjust total post count...
+		/**
+		* @todo Adjust total post count (mcp_delete_topic)
+		*/
 	}
 	else
 	{
@@ -778,7 +780,7 @@ function mcp_fork_topic($topic_ids)
 			$new_topic_id_list[$topic_id] = $new_topic_id;
 
 			/**
-			* @todo enable
+			* @todo enable? (is this still needed?)
 			* markread('topic', $to_forum_id, $new_topic_id);
 			*/
 
@@ -793,9 +795,14 @@ function mcp_fork_topic($topic_ids)
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$sql = 'INSERT INTO ' . POLL_OPTIONS_TABLE . ' (poll_option_id, topic_id, poll_option_text, poll_option_total)
-						VALUES (' . $row['poll_option_id'] . ', ' . $new_topic_id . ", '" . $db->sql_escape($row['poll_option_text']) . "', 0)";
-					$db->sql_query($sql);
+					$sql_ary = array(
+						'poll_option_id'	=> (int) $row['poll_option_id'],
+						'topic_id'			=> (int) $new_topic_id,
+						'poll_option_text'	=> (string) $row['poll_option_text'],
+						'poll_option_total'	=> 0
+					);
+
+					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				}
 			}
 
@@ -810,7 +817,7 @@ function mcp_fork_topic($topic_ids)
 			{
 				$post_rows[] = $row;
 			}
-			$db->sql_freeresult();
+			$db->sql_freeresult($result);
 
 			if (!sizeof($post_rows))
 			{

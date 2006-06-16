@@ -97,13 +97,13 @@ else
 @set_time_limit(120);
 
 // Include essential scripts
-require($phpbb_root_path . 'includes/functions.'.$phpEx);
+require($phpbb_root_path . 'includes/functions.' . $phpEx);
 include($phpbb_root_path . 'includes/auth.' . $phpEx);
-include($phpbb_root_path . 'includes/session.'.$phpEx);
-include($phpbb_root_path . 'includes/template.'.$phpEx);
-include($phpbb_root_path . 'includes/acm/acm_file.'.$phpEx);
-include($phpbb_root_path . 'includes/cache.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+include($phpbb_root_path . 'includes/session.' . $phpEx);
+include($phpbb_root_path . 'includes/template.' . $phpEx);
+include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
+include($phpbb_root_path . 'includes/cache.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');
@@ -152,11 +152,11 @@ if (!$language)
 }
 
 // And finally, load the relevant language files
-include($phpbb_root_path . 'language/' . $language . '/common.'.$phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/common.'.$phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/board.'.$phpEx);
-include($phpbb_root_path . 'language/' . $language . '/install.'.$phpEx);
-include($phpbb_root_path . 'language/' . $language . '/posting.'.$phpEx);
+include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/acp/board.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/posting.' . $phpEx);
 
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
@@ -201,7 +201,9 @@ class module
 	var $mode;
 	var $sub;
 
-	// Private methods, should not be overwritten
+	/**
+	* Private methods, should not be overwritten
+	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
 		global $db, $config, $phpEx;
@@ -263,7 +265,9 @@ class module
 		} // END foreach
 	} // END create
 
-	// Load and run the relevant module if applicable
+	/**
+	* Load and run the relevant module if applicable
+	*/
 	function load($mode = false, $run = true)
 	{
 		global $phpbb_root_path, $phpEx;
@@ -275,13 +279,16 @@ class module
 				$this->mode = $mode;
 			}
 
+			/**
+			* @todo this could be written as $this->module = new $this->filename($this); ... no? (eval statement in install/index.php)
+			*/
 			eval("\$this->module = new $this->filename(\$this);");
 			if (method_exists($this->module, 'main'))
 			{
 				$this->module->main($this->mode, $this->sub);
 			}
 		}
-	} // END load
+	}
 
 	/**
 	* Output the standard page header
@@ -598,4 +605,5 @@ class module
 		return $tpl;
 	}
 }
+
 ?>

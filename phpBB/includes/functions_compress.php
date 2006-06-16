@@ -474,7 +474,7 @@ class compress_tar extends compress
 	*/
 	function extract($dst)
 	{
-		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && extension_loaded('zlib')) ? 'gzread' : 'fread');
+		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && @extension_loaded('zlib')) ? 'gzread' : 'fread');
 
 		// Run through the file and grab directory entries
 		while ($buffer = $fzread($this->fp, 512))
@@ -536,11 +536,11 @@ class compress_tar extends compress
 	*/
 	function close()
 	{
-		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && extension_loaded('zlib')) ? 'gzclose' : 'fclose');
+		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && @extension_loaded('zlib')) ? 'gzclose' : 'fclose');
 
 		if ($this->wrote) 
 		{
-			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
+			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
 			// Symbolizes that there are no more files
 			$fzwrite($this->fp, pack("a512", ""));
@@ -555,7 +555,7 @@ class compress_tar extends compress
 	function data($name, $data, $is_dir = false, $stat)
 	{
 		$this->wrote = true;
-		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
+		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
 		$typeflag = ($is_dir) ? '5' : '';
 
@@ -600,7 +600,7 @@ class compress_tar extends compress
 	*/
 	function open()
 	{
-		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && extension_loaded('zlib')) ? 'gzopen' : 'fopen');
+		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && @extension_loaded('zlib')) ? 'gzopen' : 'fopen');
 		$this->fp = @$fzopen($this->file, $this->mode . 'b' . (($fzopen == 'gzopen') ? '9' : ''));
 
 		if (!$this->fp)

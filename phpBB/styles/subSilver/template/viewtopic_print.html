@@ -4,34 +4,37 @@
 <meta http-equiv="Content-Type" content="text/html; charset={S_CONTENT_ENCODING}">
 <meta http-equiv="Content-Style-Type" content="text/css">
 <title>{SITENAME} :: {PAGE_TITLE}</title>
+
 <style type="text/css">
 <!--
+
 body {
-    font-family:	Verdana,serif;
-    font-size:		10pt;
+	font-family: Verdana,serif;
+	font-size: 10pt;
 }
 
 td {
-	font-family:	Verdana,serif;
-	font-size:		10pt;
-	line-height:	150%;
+	font-family: Verdana,serif;
+	font-size: 10pt;
+	line-height: 150%;
 }
 
-.code, .quote {
-    font-size:	smaller;
-	border:		black solid 1px;
+.code,
+.quote {
+	font-size: smaller;
+	border: black solid 1px;
 }
 
 .forum {
-	font-family:	Arial,Helvetica,sans-serif;
-    font-weight:	bold;
-    font-size:		18pt;
+	font-family: Arial,Helvetica,sans-serif;
+	font-weight: bold;
+	font-size: 18pt;
 }
 
 .topic {
-	font-family:	Arial,Helvetica,sans-serif;
-    font-size:		14pt;
-	font-weight:	bold;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14pt;
+	font-weight: bold;
 }
 
 .gensmall {
@@ -39,39 +42,40 @@ td {
 }
 
 hr {
-	color:			#888888;
-	height:			3px;
-	border-style:	solid;
+	color: #888;
+	height: 3px;
+	border-style: solid;
 }
 
-hr.sep	{
-	color:			#AAAAAA;
-	height:			1px;
-	border-style:	dashed;
+hr.sep {
+	color: #aaa;
+	height: 1px;
+	border-style: dashed;
 }
--->
+//-->
 </style>
+
 </head>
 <body>
 
 <table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
-	<tr>
-		<td colspan="2" align="center"><span class="Forum">{SITENAME}</span><br /><span class="gensmall">{U_FORUM}</a></span></td>
-	</tr>
-	<tr>
-		<td colspan="2"><br /></td>
-	</tr>
-	<tr>
-		<td><span class="Topic">{TOPIC_TITLE}</span><br /><span class="gensmall">{U_TOPIC}</a></span></td>
-		<td align="right" valign="bottom"><span class="gensmall">{PAGE_NUMBER}</span></td>
-	</tr>
+<tr>
+	<td colspan="2" align="center"><span class="Forum">{SITENAME}</span><br /><span class="gensmall">{U_FORUM}</a></span></td>
+</tr>
+<tr>
+	<td colspan="2"><br /></td>
+</tr>
+<tr>
+	<td><span class="topic">{TOPIC_TITLE}</span><br /><span class="gensmall">{U_TOPIC}</a></span></td>
+	<td align="right" valign="bottom"><span class="gensmall">{PAGE_NUMBER}</span></td>
+</tr>
 </table>
 
 <!-- BEGIN postrow -->
 
-<hr width="85%" />
+	<hr width="85%" />
 
-<table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
+	<table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
 	<tr>
 		<td width="10%" nowrap="nowrap">{L_AUTHOR}:&nbsp;</td>
 		<td><b>{postrow.POSTER_NAME}</b> [ {postrow.POST_DATE} ]</td>
@@ -83,7 +87,7 @@ hr.sep	{
 	<tr>
 		<td colspan="2"><hr class="sep" />{postrow.MESSAGE}</td>
 	</tr>
-</table>
+	</table>
 <!-- END postrow -->
 
 <hr width="85%" />
@@ -96,14 +100,15 @@ hr.sep	{
 
 	The phpBB Group : 2006
 // -->
+
 <table width="85%" cellspacing="3" cellpadding="0" border="0" align="center">
-	<tr>
-		<td><span class="gensmall">{PAGE_NUMBER}</span></td>
-		<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center"><span class="gensmall">Powered by phpBB &copy; 2002, 2006 phpBB Group<br />http://www.phpbb.com/</span></td>
-	</tr>
+<tr>
+	<td><span class="gensmall">{PAGE_NUMBER}</span></td>
+	<td align="right"><span class="gensmall">{S_TIMEZONE}</span></td>
+</tr>
+<tr>
+	<td colspan="2" align="center"><span class="gensmall">Powered by phpBB &copy; 2002, 2006 phpBB Group<br />http://www.phpbb.com/</span></td>
+</tr>
 </table>
 
 </body>

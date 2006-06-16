@@ -111,6 +111,8 @@ class acp_bots
 
 			case 'edit':
 			case 'add':
+				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
 				$bot_row = array(
 					'bot_name'		=> request_var('bot_name', '', true),
 					'bot_agent'		=> request_var('bot_agent', ''),
@@ -160,25 +162,18 @@ class acp_bots
 								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
 							}
 
-							$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+							$user_id = user_add(array(
+								'user_type'		=> (int) USER_IGNORE, 
 								'group_id'		=> (int) $group_row['group_id'], 
 								'username'		=> (string) $bot_row['bot_name'], 
-								'user_type'		=> (int) USER_IGNORE, 
+								'user_regdate'	=> time(),
+								'user_password'	=> '',
 								'user_colour'	=> (string) $group_row['group_colour'],
+								'user_email'	=> '',
 								'user_lang'		=> (string) $bot_row['bot_lang'], 
 								'user_style'	=> (int) $bot_row['bot_style'],
 								'user_options'	=> 0)
 							);
-							$db->sql_query($sql);
-
-							$user_id = $db->sql_nextid();
-
-							// Add to Bots usergroup
-							$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-								'user_id'	=> $user_id, 
-								'group_id'	=> $group_row['group_id'])
-							);
-							$db->sql_query($sql);
 
 							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 								'user_id'		=> (int) $user_id,
@@ -225,7 +220,7 @@ class acp_bots
 						$db->sql_transaction('commit');
 
 						$cache->destroy('bots');
-				
+
 						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
 						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
 					}

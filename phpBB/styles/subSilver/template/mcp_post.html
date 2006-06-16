@@ -1,7 +1,9 @@
 <!-- INCLUDE mcp_header.html -->
 
 <!-- IF S_MCP_REPORT -->
-	<form method="post" name="mcp_report" action="{U_CLOSE_ACTION}"><table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+	<form method="post" name="mcp_report" action="{U_CLOSE_ACTION}">
+	
+	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
 		<th colspan="2" height="28" align="center">{L_REPORT_DETAILS}</th>
 	</tr>
@@ -18,23 +20,27 @@
 		<td class="row2"><span class="postdetails">{REPORT_DATE}</span></td>
 	</tr>
 	<!-- IF REPORT_TEXT -->
-	<tr>
-		<th colspan="2" height="28" align="center">{L_MORE_INFO}</th>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{REPORT_TEXT}</div></td>
-	</tr>
+		<tr>
+			<th colspan="2" height="28" align="center">{L_MORE_INFO}</th>
+		</tr>
+		<tr>
+			<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{REPORT_TEXT}</div></td>
+		</tr>
 	<!-- ENDIF -->
 	<tr>
 		<td class="cat" align="center" colspan="2"><!-- IF S_POST_REPORTED --><input class="btnmain" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /><!-- ELSE -->{L_REPORT_CLOSED}<!-- ENDIF --> &nbsp; <input class="btnlite" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" /></td>
 	</tr>
+	</table>
+
 	<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
-	</table></form>
+	</form>
 
 	<br clear="all"/>
 <!-- ENDIF -->
 
-<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report" action="{U_CLOSE_ACTION}"><!-- ENDIF --><table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
+<!-- IF S_MCP_QUEUE --><form method="post" name="mcp_approve" action="{U_APPROVE_ACTION}"><!-- ELSE --><form method="post" name="mcp_report" action="{U_CLOSE_ACTION}"><!-- ENDIF -->
+
+<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 <tr>
 	<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
 </tr>
@@ -72,6 +78,7 @@
 	<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 <!-- ENDIF -->
 </table>
+
 </form>
 
 <!-- IF S_MCP_QUEUE -->

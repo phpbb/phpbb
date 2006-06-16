@@ -84,14 +84,16 @@ class acp_email
 					}
 				}
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!($row = $db->sql_fetchrow($result)))
+				if (!$row)
 				{
 					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 				}
-				$db->sql_freeresult($result);
 	
 				$i = $j = 0;
+
 				// Send with BCC, no more than 50 recipients for one mail (to not exceed the limit)
 				$max_chunk_size = 50;
 				$email_list = array();
@@ -175,8 +177,7 @@ class acp_email
 				}
 				else
 				{
-					// Not great but the logging routine doesn't cope well with localising
-					// on the fly
+					// Not great but the logging routine doesn't cope well with localising on the fly
 					$group_name = $user->lang['ALL_USERS'];
 				}
 

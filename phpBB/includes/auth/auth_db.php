@@ -103,7 +103,10 @@ function login_db(&$username, &$password)
 	if (md5($password) == $row['user_password'])
 	{
 		// Successful, reset login attempts (the user passed all stages)
-		$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_attempts = 0 WHERE user_id = ' . $row['user_id']);
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_login_attempts = 0
+			WHERE user_id = ' . $row['user_id'];
+		$db->sql_query($sql);
 
 		// User inactive...
 		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
@@ -124,8 +127,11 @@ function login_db(&$username, &$password)
 	}
 
 	// Password incorrect - increase login attempts
-	$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_login_attempts = user_login_attempts + 1 WHERE user_id = ' . $row['user_id']);
-	
+	$sql = 'UPDATE ' . USERS_TABLE . '
+		SET user_login_attempts = user_login_attempts + 1
+		WHERE user_id = ' . $row['user_id'];
+	$db->sql_query($sql);
+
 	// Give status about wrong password...
 	return array(
 		'status'		=> LOGIN_ERROR_PASSWORD,

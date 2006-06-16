@@ -60,9 +60,7 @@ class acp_language
 		if ($action == 'upload_data' && request_var('test_connection', ''))
 		{
 			$test_connection = false;
-
 			$action = 'upload_file';
-
 			$method = request_var('method', '');
 
 			include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
@@ -72,6 +70,7 @@ class acp_language
 				case 'ftp':
 					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 				break;
+
 				default:
 					trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
 			}

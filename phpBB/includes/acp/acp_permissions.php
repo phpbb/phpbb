@@ -129,13 +129,14 @@ class acp_permissions
 
 		// Define some common variables for every mode
 		$error = array();
-		
+
 		$permission_scope = (strpos($mode, '_global') !== false) ? 'global' : 'local';
 
 		// Showing introductionary page?
 		if ($mode == 'intro')
 		{
 			$this->page_title = 'ACP_PERMISSIONS';
+
 			$template->assign_vars(array(
 				'S_INTRO'		=> true)
 			);
@@ -263,7 +264,7 @@ class acp_permissions
 					);
 
 				break;
-					
+
 				case 'forums':
 
 					if (sizeof($forum_id))
@@ -362,9 +363,9 @@ class acp_permissions
 						),
 
 						'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
-											$sql_permission_option
-											$sql_forum_id
-											AND u.user_id = a.user_id",
+							$sql_permission_option
+							$sql_forum_id
+							AND u.user_id = a.user_id",
 
 						'ORDER_BY'	=> 'u.username, u.user_regdate ASC'
 					));
@@ -599,7 +600,7 @@ class acp_permissions
 			FROM $table
 			WHERE $sql_id IN (" . implode(', ', $ids) . ')';
 		$result = $db->sql_query($sql);
-							
+
 		$ids = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -709,7 +710,7 @@ class acp_permissions
 		{
 			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
 		}
-		
+
 		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
 		$auth_roles = (isset($_POST['role'])) ? $_POST['role'] : array();
 		$ug_ids = $forum_ids = array();
@@ -719,7 +720,7 @@ class acp_permissions
 		{
 			$ug_id = (int) $ug_id;
 			$ug_ids[] = $ug_id;
-		
+
 			foreach ($forum_auth_row as $forum_id => $auth_options)
 			{
 				$forum_id = (int) $forum_id;
@@ -824,7 +825,7 @@ class acp_permissions
 		}
 
 		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : array(0 => 0)));
-		
+
 		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
@@ -942,7 +943,7 @@ class acp_permissions
 				FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
 			$result = $db->sql_query($sql, 3600);
-			$forum_name = $db->sql_fetchfield('forum_name', false, $result);
+			$forum_name = $db->sql_fetchfield('forum_name');
 			$db->sql_freeresult($result);
 		}
 

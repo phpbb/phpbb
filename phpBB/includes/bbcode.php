@@ -375,14 +375,17 @@ class bbcode
 	{
 		if (empty($bbcode_hardtpl))
 		{
-			static $bbcode_hardtpl = array(
+			global $user;
+			static $bbcode_hardtpl = array();
+			
+			$bbcode_hardtpl = array(
 				'b_open'	=> '<span style="font-weight: bold">',
 				'b_close'	=> '</span>',
 				'i_open'	=> '<span style="font-style: italic">',
 				'i_close'	=> '</span>',
 				'u_open'	=> '<span style="text-decoration: underline">',
 				'u_close'	=> '</span>',
-				'img'		=> '<img src="$1" border="0" />',
+				'img'		=> '<img src="$1" alt="' . $user->lang['IMAGE'] . '" />',
 				'size'		=> '<span style="font-size: $1px; line-height: normal">$2</span>',
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'

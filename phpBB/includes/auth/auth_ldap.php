@@ -20,13 +20,15 @@
 */
 
 /**
+* Connect to ldap server
 * Only allow changing authentication to ldap if we can connect to the ldap server
+* Called in acp_board while setting authentication plugins
 */
 function init_ldap()
 {
 	global $config, $user;
 
-	if (!extension_loaded('ldap'))
+	if (!@extension_loaded('ldap'))
 	{
 		return $user->lang['LDAP_NO_LDAP_EXTENSION'];
 	}
@@ -38,13 +40,10 @@ function init_ldap()
 
 	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-	// We'll get a notice here that we don't want, if we cannot connect to the server.
 	// ldap_connect only checks whether the specified server is valid, so the connection might still fail
-	ob_start();
-
 	$search = @ldap_search($ldap, $config['ldap_base_dn'], $config['ldap_uid'] . '=' . $user->data['username'], array($config['ldap_uid']));
 
-	if (ob_get_clean())
+	if ($search === false)
 	{
 		return $user->lang['LDAP_NO_SERVER_CONNECTION'];
 	}
@@ -68,7 +67,7 @@ function login_ldap(&$username, &$password)
 {
 	global $db, $config;
 
-	if (!extension_loaded('ldap'))
+	if (!@extension_loaded('ldap'))
 	{
 		return array(
 			'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -115,7 +114,7 @@ function login_ldap(&$username, &$password)
 						'user_row'		=> $row,
 					);
 				}
-		
+
 				// Successful login... set user_login_attempts to zero...
 				return array(
 					'status'		=> LOGIN_SUCCESS,
@@ -155,7 +154,7 @@ function admin_ldap(&$new)
 	global $user;
 
 	/**
-	* @todo Using same approach with cfg_build_template?
+	* @todo Using same approach as with cfg_build_template?
 	*/
 
 	$tpl = '

@@ -31,11 +31,10 @@ class acp_modules
 		global $db, $user, $auth, $template;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
-		// Set a global define for modules we might include (the author is able to prevent executing of code with this)
+		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
 		define('MODULE_INCLUDE', true);
 
 		$user->add_lang('acp/modules');
-
 		$this->tpl_name = 'acp_modules';
 
 		// module class
@@ -560,6 +559,7 @@ class acp_modules
 					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					ORDER BY left_id ASC";
 			break;
+
 			default:
 				$sql = 'SELECT module_id, module_enabled, module_name, parent_id, module_langname, left_id, right_id, module_auth
 					FROM ' . MODULES_TABLE . "
@@ -649,6 +649,7 @@ class acp_modules
 
 			default:
 				$condition = 'm2.left_id BETWEEN m1.left_id AND m1.right_id OR m1.left_id BETWEEN m2.left_id AND m2.right_id';
+			break;
 		}
 
 		$rows = array();
@@ -934,13 +935,10 @@ class acp_modules
 
 	/**
 	* Move module position by $steps up/down
-	* @todo support more than one step up/down (at the moment $steps needs to be 1)!
 	*/
 	function move_module_by($module_row, $action = 'move_up', $steps = 1)
 	{
 		global $db;
-
-		$module_id = $module_row['module_id'];
 
 		/**
 		* Fetch all the siblings between the module's current spot
@@ -955,14 +953,14 @@ class acp_modules
 				AND " . (($action == 'move_up') ? "right_id < {$module_row['right_id']} ORDER BY right_id DESC" : "left_id > {$module_row['left_id']} ORDER BY left_id ASC");
 		$result = $db->sql_query_limit($sql, $steps);
 
-		$target_module = array();
+		$target = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$target_module = $row;
+			$target = $row;
 		}
 		$db->sql_freeresult($result);
 
-		if (!sizeof($target_module))
+		if (!sizeof($target))
 		{
 			// The module is already on top or bottom
 			return false;
@@ -977,10 +975,10 @@ class acp_modules
 		*/
 		if ($action == 'move_up')
 		{
-			$left_id = $target_module['left_id'];
+			$left_id = $target['left_id'];
 			$right_id = $module_row['right_id'];
 
-			$diff_up = $module_row['left_id'] - $target_module['left_id'];
+			$diff_up = $module_row['left_id'] - $target['left_id'];
 			$diff_down = $module_row['right_id'] + 1 - $module_row['left_id'];
 
 			$move_up_left = $module_row['left_id'];
@@ -989,13 +987,13 @@ class acp_modules
 		else
 		{
 			$left_id = $module_row['left_id'];
-			$right_id = $target_module['right_id'];
+			$right_id = $target['right_id'];
 
 			$diff_up = $module_row['right_id'] + 1 - $module_row['left_id'];
-			$diff_down = $target_module['right_id'] - $module_row['right_id'];
+			$diff_down = $target['right_id'] - $module_row['right_id'];
 
 			$move_up_left = $module_row['right_id'] + 1;
-			$move_up_right = $target_module['right_id'];
+			$move_up_right = $target['right_id'];
 		}
 
 		// Now do the dirty job
@@ -1015,7 +1013,7 @@ class acp_modules
 
 		$this->remove_cache_file();
 
-		return $this->lang_name($target_module['module_langname']);
+		return $this->lang_name($target['module_langname']);
 	}
 }
 

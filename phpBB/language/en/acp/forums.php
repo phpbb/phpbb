@@ -117,7 +117,6 @@ $lang = array_merge($lang, array(
 	'PRUNE_OLD_POLLS_EXPLAIN'	=> 'Removes topics with polls not voted in for post age days.',
 	
 	'REDIRECT_ACL'	=> 'Now you are able to %sset permissions%s for this forum.',
-	'RESYNC'		=> 'Sync',
 
 	'TYPE_CAT'			=> 'Category',
 	'TYPE_FORUM'		=> 'Forum',

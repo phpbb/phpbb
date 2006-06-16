@@ -65,11 +65,10 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error('Could not connect to Jabber server' . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action));
 				}
 
-				// First we'll try to authorise using this account, if that fails we'll
-				// try to create it.
+				// First we'll try to authorise using this account, if that fails we'll try to create it.
 				if (!($result = $jabber->send_auth()))
 				{
 					if (($result = $jabber->account_registration($config['board_email'], $config['sitename'])) <> 2)
@@ -95,12 +94,12 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error('Could not connect to Jabber server' . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action));
 				}
 
 				if (!$jabber->send_auth())
 				{
-					trigger_error('Could not authorise on Jabber server' . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_AUTH'] . adm_back_link($this->u_action));
 				}
 				$jabber->send_presence(NULL, NULL, 'online');
 

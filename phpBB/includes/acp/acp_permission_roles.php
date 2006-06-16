@@ -128,6 +128,8 @@ class acp_permission_roles
 						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action));
 					}
 
+				// no break;
+
 				case 'add':
 
 					$role_name = request_var('role_name', '', true);
@@ -178,7 +180,7 @@ class acp_permission_roles
 						$db->sql_freeresult($result);
 
 						$sql_ary['role_order'] = $max_order + 1;
-						
+
 						$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 						$db->sql_query($sql);
 
@@ -193,7 +195,6 @@ class acp_permission_roles
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
 
 				break;
-
 			}
 		}
 
@@ -243,6 +244,8 @@ class acp_permission_roles
 					$db->sql_freeresult($result);
 				}
 
+			// no break;
+
 			case 'edit':
 
 				if ($action == 'edit')
@@ -284,13 +287,13 @@ class acp_permission_roles
 
 					'U_ACTION'			=> $this->u_action . "&amp;action={$action}&amp;role_id={$role_id}",
 					'U_BACK'			=> $this->u_action,
-					
+
 					'ROLE_NAME'			=> $role_row['role_name'],
 					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
 					'L_ACL_TYPE'		=> $user->lang['ACL_TYPE_' . strtoupper($permission_type)],
 					)
 				);
-				
+
 				// We need to fill the auth options array with ACL_UNSET options ;)
 				$sql = 'SELECT auth_option_id, auth_option
 					FROM ' . ACL_OPTIONS_TABLE . "
@@ -348,7 +351,7 @@ class acp_permission_roles
 			break;
 		}
 
-		// By default, check that image_order is valid and fix it if necessary
+		// By default, check that role_order is valid and fix it if necessary
 		$sql = 'SELECT role_id, role_order
 			FROM ' . ACL_ROLES_TABLE . "
 			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
@@ -430,12 +433,12 @@ class acp_permission_roles
 		$content_array = $categories = array();
 		$key_sort_array = array(0);
 		$auth_options = array(0 => $auth_options);
-		
+
 		// Making use of auth_admin method here (we do not really want to change two similar code fragments)
 		auth_admin::build_permission_array($auth_options, $content_array, $categories, $key_sort_array);
 
 		$content_array = $content_array[0];
-		
+
 		$template->assign_var('S_NUM_PERM_COLS', sizeof($categories));
 
 		// Assign to template
@@ -448,7 +451,7 @@ class acp_permission_roles
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_YES'] && !$cat_array['S_UNSET']) ? true : false,
 				'S_UNSET'	=> ($cat_array['S_UNSET'] && !$cat_array['S_NO'] && !$cat_array['S_YES']) ? true : false)
 			);
-				
+
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				$template->assign_block_vars('auth.mask', array(
@@ -471,7 +474,7 @@ class acp_permission_roles
 		global $db;
 
 		$auth_admin = new auth_admin();
-		
+
 		// Get complete auth array
 		$sql = 'SELECT auth_option, auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . "

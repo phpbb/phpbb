@@ -109,7 +109,6 @@ class acp_logs
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
 			'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
-			
 			)
 		);
 

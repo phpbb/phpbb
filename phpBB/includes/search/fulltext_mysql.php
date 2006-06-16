@@ -52,7 +52,7 @@ class fulltext_mysql extends search_backend
 		}
 
 		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
-		$version = $db->sql_fetchfield('mysql_version', 0, $result);
+		$version = $db->sql_fetchfield('mysql_version');
 		$db->sql_freeresult($result);
 
 		if (!preg_match('#^4|5|6#s', $version))
@@ -248,9 +248,11 @@ class fulltext_mysql extends search_backend
 		$id_ary = array();
 
 		$join_topic = ($type == 'posts') ? false : true;
+
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 		$sql_sort_table = $sql_sort_join = '';
+
 		switch ($sql_sort[0])
 		{
 			case 'u':
@@ -291,6 +293,7 @@ class fulltext_mysql extends search_backend
 			default:
 				$sql_match = 'p.post_subject, p.post_text';
 				$sql_match_where = '';
+			break;
 		}
 
 		if (!sizeof($m_approve_fid_ary))
@@ -358,6 +361,7 @@ class fulltext_mysql extends search_backend
 
 		// Get the ids for the current result block
 		$any_words = (sizeof($any_words)) ? ' +(' . implode(' ', $any_words) . ')' : '';
+
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
 			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(implode(' ', $words)) . $any_words . "' IN BOOLEAN MODE)
@@ -714,7 +718,8 @@ class fulltext_mysql extends search_backend
 		return array(
 			$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 			$user->lang['FULLTEXT_MYSQL_TEXT_CARDINALITY']		=> isset($this->stats['post_text']['Cardinality']) ? $this->stats['post_text']['Cardinality'] : 0,
-			$user->lang['FULLTEXT_MYSQL_SUBJECT_CARDINALITY']	=> isset($this->stats['post_subject']['Cardinality']) ? $this->stats['post_subject']['Cardinality'] : 0);
+			$user->lang['FULLTEXT_MYSQL_SUBJECT_CARDINALITY']	=> isset($this->stats['post_subject']['Cardinality']) ? $this->stats['post_subject']['Cardinality'] : 0,
+		);
 	}
 
 	function get_stats()

@@ -39,7 +39,7 @@ class mcp_queue
 		{
 			case 'approve':
 			case 'disapprove':
-				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 				$post_id_list = request_var('post_id_list', array(0));
 
@@ -111,7 +111,7 @@ class mcp_queue
 				$message = $post_info['post_text'];
 				if ($post_info['bbcode_bitfield'])
 				{
-					include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
@@ -179,7 +179,7 @@ class mcp_queue
 						$forum_list[] = $row['forum_id'];
 					}
 
-					if (!$forum_list = implode(', ', $forum_list))
+					if (!($forum_list = implode(', ', $forum_list)))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -244,6 +244,7 @@ class mcp_queue
 						$post_ids[] = $row['post_id'];
 						$row_num[$row['post_id']] = $i++;
 					}
+					$db->sql_freeresult($result);
 
 					if (sizeof($post_ids))
 					{
@@ -252,8 +253,8 @@ class mcp_queue
 							WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
 								AND t.topic_id = p.topic_id
 								AND u.user_id = p.poster_id";
-
 						$result = $db->sql_query($sql);
+
 						$post_data = $rowset = array();
 						while ($row = $db->sql_fetchrow($result))
 						{
@@ -311,6 +312,7 @@ class mcp_queue
 					{
 						$forum_names[$row['forum_id']] = $row['forum_name'];
 					}
+					$db->sql_freeresult($result);
 				}
 
 				foreach ($rowset as $row)
@@ -324,8 +326,6 @@ class mcp_queue
 						$poster = $row['username'];
 					}
 
-					$s_checkbox = '<input type="checkbox" class="radio" name="post_id_list[]" value="' . $row['post_id'] . '" />';
-
 					$global_topic = ($row['forum_id']) ? false : true;
 					if ($global_topic)
 					{
@@ -333,22 +333,21 @@ class mcp_queue
 					}
 
 					$template->assign_block_vars('postrow', array(
-						'U_VIEWFORUM'	=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 						// Q: Why accessing the topic by a post_id instead of its topic_id?
 						// A: To prevent the post from being hidden because of wrong encoding or different charset
-						'U_VIEWTOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
-						'U_VIEW_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
-						'U_VIEWPROFILE'	=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
+						'U_VIEWTOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
+						'U_VIEW_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
+						'U_VIEWPROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 
+						'POST_ID'		=> $row['post_id'],
 						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POSTER'		=> $poster,
-						'POST_TIME'		=> $user->format_date($row['post_time']),
-						'S_CHECKBOX'	=> $s_checkbox)
+						'POST_TIME'		=> $user->format_date($row['post_time']))
 					);
 				}
-				unset($rowset);
-				unset($forum_names);
+				unset($rowset, $forum_names);
 
 				// Now display the page
 				$template->assign_vars(array(
@@ -372,7 +371,9 @@ class mcp_queue
 	}
 }
 
-// Approve Post/Topic
+/**
+* Approve Post/Topic
+*/
 function approve_post($post_id_list, $mode)
 {
 	global $db, $template, $user, $config;
@@ -588,7 +589,9 @@ function approve_post($post_id_list, $mode)
 	}
 }
 
-// Disapprove Post/Topic
+/**
+* Disapprove Post/Topic
+*/
 function disapprove_post($post_id_list, $mode)
 {
 	global $db, $template, $user, $config;
@@ -627,7 +630,7 @@ function disapprove_post($post_id_list, $mode)
 
 		if (!$row || (!$reason && $row['reason_title'] == 'other'))
 		{
-			$additional_msg = 'Please give an appropiate reason for disapproval';
+			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
 			unset($_POST['confirm']);
 		}
 		else
@@ -698,7 +701,7 @@ function disapprove_post($post_id_list, $mode)
 		{
 			if (!function_exists('delete_posts'))
 			{
-				include_once($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
 			// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts

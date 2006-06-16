@@ -30,7 +30,6 @@ class acp_reasons
 		$this->tpl_name = 'acp_reasons';
 		$this->page_title = 'ACP_REASONS';
 
-		// dumdidum... do i really need to do something mom?
 		$error = array();
 
 		switch ($action)

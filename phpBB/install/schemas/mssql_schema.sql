@@ -330,29 +330,6 @@ GO
 
 
 /*
- Table: phpbb_cache
-*/
-CREATE TABLE [phpbb_cache] (
-	[var_name] [varchar] (255) NOT NULL ,
-	[var_expires] [int] NOT NULL ,
-	[var_data] [text] 
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [phpbb_cache] WITH NOCHECK ADD 
-	CONSTRAINT [PK_phpbb_cache] PRIMARY KEY  CLUSTERED 
-	(
-		[var_name]
-	)  ON [PRIMARY] 
-GO
-
-ALTER TABLE [phpbb_cache] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_cache__var_expires] DEFAULT (0) FOR [var_expires],
-	CONSTRAINT [DF_phpbb_cache__var_name] DEFAULT ('') FOR [var_name]
-GO
-
-
-/*
  Table: phpbb_config
 */
 CREATE TABLE [phpbb_config] (
@@ -893,6 +870,9 @@ CREATE  INDEX [module_enabled] ON [phpbb_modules]([module_enabled]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [module_left_right_id] ON [phpbb_modules]([left_id], [right_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [module_class_left_id] ON [phpbb_modules]([module_class], [left_id]) ON [PRIMARY]
 GO
 
 

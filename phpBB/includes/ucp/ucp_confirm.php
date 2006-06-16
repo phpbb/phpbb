@@ -71,7 +71,7 @@ class ucp_confirm
 		}
 
 		$policy = '';
-		if (extension_loaded('gd') && sizeof($policy_modules))
+		if (@extension_loaded('gd') && sizeof($policy_modules))
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
 			$policy = $policy_modules[array_rand($policy_modules)];

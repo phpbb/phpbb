@@ -17,8 +17,8 @@ function compose_pm($id, $mode, $action)
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
 
-	include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
-	include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 	if (!$action)
 	{
@@ -35,17 +35,17 @@ function compose_pm($id, $mode, $action)
 	// Do NOT use request_var or specialchars here
 	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
 
-	$submit		= (isset($_POST['post']));
-	$preview	= (isset($_POST['preview']));
-	$save		= (isset($_POST['save']));
-	$load		= (isset($_POST['load']));
-	$cancel		= (isset($_POST['cancel']) && !isset($_POST['save']));
-	$delete		= (isset($_POST['delete']));
+	$submit		= (isset($_POST['post'])) ? true : false;
+	$preview	= (isset($_POST['preview'])) ? true : false;
+	$save		= (isset($_POST['save'])) ? true : false;
+	$load		= (isset($_POST['load'])) ? true : false;
+	$cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
+	$delete		= (isset($_POST['delete'])) ? true : false;
 
-	$remove_u	= (isset($_REQUEST['remove_u']));
-	$remove_g	= (isset($_REQUEST['remove_g']));
-	$add_to		= (isset($_REQUEST['add_to']));
-	$add_bcc	= (isset($_REQUEST['add_bcc']));
+	$remove_u	= (isset($_REQUEST['remove_u'])) ? true : false;
+	$remove_g	= (isset($_REQUEST['remove_g'])) ? true : false;
+	$add_to		= (isset($_REQUEST['add_to'])) ? true : false;
+	$add_bcc	= (isset($_REQUEST['add_bcc'])) ? true : false;
 
 	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || $save || $load
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
@@ -273,7 +273,9 @@ function compose_pm($id, $mode, $action)
 		{
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
 
-			// TODO - jump to next message in "history"?
+			/**
+			* @todo jump to next message in "history"?
+			*/
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
 			$message = $user->lang['MESSAGE_DELETED'];
 
@@ -284,9 +286,9 @@ function compose_pm($id, $mode, $action)
 		else
 		{
 			$s_hidden_fields = array(
-				'p'		=> $msg_id,
-				'f'		=> $folder_id,
-				'action'=> 'delete'
+				'p'			=> $msg_id,
+				'f'			=> $folder_id,
+				'action'	=> 'delete'
 			);
 
 			// "{$phpbb_root_path}ucp.$phpEx?i=pm&amp;mode=compose"
@@ -340,12 +342,13 @@ function compose_pm($id, $mode, $action)
 				AND user_id = ' . $user->data['user_id'] .
 				(($draft_id) ? " AND draft_id <> $draft_id" : '');
 		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if ($db->sql_fetchrow($result))
+		if ($row)
 		{
 			$drafts = true;
 		}
-		$db->sql_freeresult($result);
 	}
 
 	if ($action == 'edit')
@@ -353,10 +356,10 @@ function compose_pm($id, $mode, $action)
 		$message_parser->bbcode_uid = $bbcode_uid;
 	}
 
-	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode'));
-	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies'));
-	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img'));
-	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash'));
+	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
+	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies')) ? true : false;
+	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img')) ? true : false;
+	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
@@ -370,12 +373,13 @@ function compose_pm($id, $mode, $action)
 			if (confirm_box(true))
 			{
 				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'user_id'	=> $user->data['user_id'],
-					'topic_id'	=> 0,
-					'forum_id'	=> 0,
-					'save_time'	=> $current_time,
-					'draft_subject' => $subject,
-					'draft_message' => $message));
+					'user_id'		=> $user->data['user_id'],
+					'topic_id'		=> 0,
+					'forum_id'		=> 0,
+					'save_time'		=> $current_time,
+					'draft_subject'	=> $subject,
+					'draft_message'	=> $message)
+				);
 				$db->sql_query($sql);
 
 				$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
@@ -427,6 +431,7 @@ function compose_pm($id, $mode, $action)
 		{
 			$draft_id = 0;
 		}
+		$db->sql_freeresult($result);
 	}
 
 	// Load Drafts
@@ -761,7 +766,7 @@ function compose_pm($id, $mode, $action)
 		break;
 
 		default:
-			trigger_error('NO_ACTION_MODE');
+			trigger_error('NO_ACTION_MODE', E_USER_ERROR);
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
@@ -772,9 +777,9 @@ function compose_pm($id, $mode, $action)
 
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(
-		'L_POST_A'				=> $page_title,
-		'L_ICON'				=> $user->lang['PM_ICON'],
-		'L_MESSAGE_BODY_EXPLAIN'=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+		'L_POST_A'					=> $page_title,
+		'L_ICON'					=> $user->lang['PM_ICON'],
+		'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
@@ -788,12 +793,12 @@ function compose_pm($id, $mode, $action)
 		'S_EDIT_POST'			=> ($action == 'edit'),
 		'S_SHOW_PM_ICONS'		=> $s_pm_icons,
 		'S_BBCODE_ALLOWED'		=> $bbcode_status,
-		'S_BBCODE_CHECKED' 		=> ($bbcode_checked) ? ' checked="checked"' : '',
+		'S_BBCODE_CHECKED'		=> ($bbcode_checked) ? ' checked="checked"' : '',
 		'S_SMILIES_ALLOWED'		=> $smilies_status,
-		'S_SMILIES_CHECKED' 	=> ($smilies_checked) ? ' checked="checked"' : '',
+		'S_SMILIES_CHECKED'		=> ($smilies_checked) ? ' checked="checked"' : '',
 		'S_SIG_ALLOWED'			=> ($config['allow_sig'] && $auth->acl_get('u_sig')),
-		'S_SIGNATURE_CHECKED' 	=> ($sig_checked) ? ' checked="checked"' : '',
-		'S_MAGIC_URL_CHECKED' 	=> ($urls_checked) ? ' checked="checked"' : '',
+		'S_SIGNATURE_CHECKED'	=> ($sig_checked) ? ' checked="checked"' : '',
+		'S_MAGIC_URL_CHECKED'	=> ($urls_checked) ? ' checked="checked"' : '',
 		'S_SAVE_ALLOWED'		=> $auth->acl_get('u_savedrafts'),
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
 		'S_FORM_ENCTYPE'		=> $form_enctype,
@@ -802,9 +807,9 @@ function compose_pm($id, $mode, $action)
 		'S_BBCODE_FLASH'		=> $flash_status,
 		'S_BBCODE_QUOTE'		=> true,
 
-		'S_POST_ACTION' 		=> $s_action,
-		'S_HIDDEN_ADDRESS_FIELD'=> $s_hidden_address_field,
-		'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+		'S_POST_ACTION'				=> $s_action,
+		'S_HIDDEN_ADDRESS_FIELD'	=> $s_hidden_address_field,
+		'S_HIDDEN_FIELDS'			=> $s_hidden_fields,
 
 		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
 		'U_PROGRESS_BAR'			=> append_sid("{$phpbb_root_path}posting.$phpEx", 'f=0&amp;mode=popup'),
@@ -901,7 +906,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		{
 			// We need to check their PM status (do they want to receive PM's?)
 			// Only check if not a moderator or admin, since they are allowed to override this user setting
-			if (!$auth->acl_gets('a_', 'm_'))
+			if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '

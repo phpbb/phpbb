@@ -188,10 +188,10 @@
 		</td>
 		<td style="vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>
 		<td style="vertical-align: top; white-space: nowrap;">
-			<!-- IF not roles.S_FIRST_ROW --><a href="{roles.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
-			<!-- IF not roles.S_LAST_ROW --><a href="{roles.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
-			<a href="{roles.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT_ROLE}" title="{L_EDIT_ROLE}" width="16" height="16" /></a> 
-			<a href="{roles.U_REMOVE}"><img src="images/icon_delete.gif" alt="{L_REMOVE_ROLE}" title="{L_REMOVE_ROLE}" width="16" height="16" /></a>
+			<!-- IF not roles.S_FIRST_ROW --><a href="{roles.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
+			<!-- IF not roles.S_LAST_ROW --><a href="{roles.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+			<a href="{roles.U_EDIT}" title="{L_EDIT_ROLE}">{ICON_EDIT}</a> 
+			<a href="{roles.U_REMOVE}" title="{L_REMOVE_ROLE}">{ICON_DELETE}</a>
 		</td>
 	</tr>
 	<!-- END roles -->

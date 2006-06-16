@@ -66,7 +66,7 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
 				}
-			
+
 				// Approve, demote or promote
 				group_user_attributes($action, $group_id, $mark_ary, false, ($group_id) ? $group_row['group_name'] : false);
 
@@ -75,11 +75,11 @@ class acp_groups
 					case 'demote':
 						$message = 'GROUP_MODS_DEMOTED';
 					break;
-			
+
 					case 'promote':
 						$message = 'GROUP_MODS_PROMOTED';
 					break;
-				
+
 					case 'approve':
 						$message = 'USERS_APPROVED';
 					break;
@@ -99,7 +99,7 @@ class acp_groups
 					if (!sizeof($mark_ary))
 					{
 						$start = 0;
-		
+
 						do
 						{
 							$sql = 'SELECT user_id 
@@ -320,7 +320,7 @@ class acp_groups
 						// Only set the rank, colour, etc. if it's changed or if we're adding a new
 						// group. This prevents existing group members being updated if no changes 
 						// were made.
-			
+
 						$group_attributes = array();
 						$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit');
 						foreach ($test_variables as $test)
@@ -449,10 +449,11 @@ class acp_groups
 					{
 						case AVATAR_UPLOAD:
 							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-							break;
+						break;
+
 						case AVATAR_GALLERY:
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-							break;
+						break;
 					}
 					$avatar_img .= $group_row['group_avatar'];
 
@@ -505,7 +506,7 @@ class acp_groups
 					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
 					'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
-					
+
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(0),
 					'AVATAR_IMAGE'			=> $avatar_img,

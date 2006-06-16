@@ -31,21 +31,23 @@ e_help = "{LA_BBCODE_E_HELP}";
 <script language="javascript" type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
 <table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th colspan="2">{L_TITLE}</th>
-	</tr>
+<tr>
+	<th colspan="2">{L_TITLE}</th>
+</tr>
 
-	<!-- IF ERROR -->
+<!-- IF ERROR -->
 	<tr>
 		<td class="row3" colspan="2" align="center"><span class="genmed error">{ERROR}</span></td>
 	</tr>
-	<!-- ENDIF -->
+<!-- ENDIF -->
 
-	<tr> 
-		<td class="row1" width="20%"><b class="genmed">{L_SIGNATURE}: </b><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}</span></td>
-		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
-			<tr valign="middle" align="left">
-				<td colspan="2"><input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" />
+<tr>
+	<td class="row1" width="20%"><b class="genmed">{L_SIGNATURE}: </b><br /><span class="gensmall">{L_SIGNATURE_EXPLAIN}</span></td>
+	<td class="row2">
+		<table cellspacing="0" cellpadding="2" border="0">
+		<tr valign="middle" align="left">
+			<td colspan="2">
+				<input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" />
 				<input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" />
 				<input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" />
 				<input type="button" class="btnbbcode" accesskey="q" name="addbbcode6" value="Quote" style="width: 50px" onclick="bbstyle(6)" onmouseover="helpline('q')" />
@@ -55,91 +57,102 @@ e_help = "{LA_BBCODE_E_HELP}";
 				<!-- IF S_BBCODE_IMG --><input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /><!-- ENDIF -->
 				<input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
 				<!-- IF S_BBCODE_FLASH --><input type="button" class="btnbbcode" accesskey="f" name="addbbcode18" value="Flash" onclick="bbstyle(18)" /><!-- ENDIF -->
-				</td>
-			</tr>
-			<tr>
-				<td valign="middle" align="left">
+			</td>
+		</tr>
+		<tr>
+			<td valign="middle" align="left">
 				<span class="genmed" style="white-space: nowrap;">{L_FONT_SIZE}: <select class="gensmall" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
-						<option value="7">{L_FONT_TINY}</option>
-						<option value="9">{L_FONT_SMALL}</option>
-						<option value="12" selected="selected">{L_FONT_NORMAL}</option>
-						<option value="18">{L_FONT_LARGE}</option>
-						<option  value="24">{L_FONT_HUGE}</option>
-					</select> | <a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span>
-				</td>
-			</tr>
-			<!-- IF .custom_tags -->
+					<option value="7">{L_FONT_TINY}</option>
+					<option value="9">{L_FONT_SMALL}</option>
+					<option value="12" selected="selected">{L_FONT_NORMAL}</option>
+					<option value="18">{L_FONT_LARGE}</option>
+					<option  value="24">{L_FONT_HUGE}</option>
+				</select> | <a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></span>
+			</td>
+		</tr>
+		<!-- IF .custom_tags -->
 			<tr valign="middle" align="left">
 				<td colspan="2">
 				<!-- BEGIN custom_tags -->
 					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" />
 				<!-- END custom_tags -->
 				</td>
-			<!-- ENDIF -->
-			<tr>
-				<td colspan="9"><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
-			</tr>
-			<tr>
-				<td colspan="9"><textarea class="post" name="signature" rows="10" cols="80" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>
-			</tr>
-			<tr>
-				<td colspan="9"><table cellspacing="0" cellpadding="0" border="0" width="100%">
-					<tr>
-						<td bgcolor="black" align="center"><script language="javascript" type="text/javascript"><!--
-
-						colorPalette('h', 18, 5)
-
-						//--></script></td>
-					</tr>
-				</table></td>
-			</tr>
-		</table></td>
-	</tr>
-	<tr>
-		<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}</b><br /><table cellspacing="2" cellpadding="0" border="0">
-			<tr>
-				<td class="gensmall">{BBCODE_STATUS}</td>
-			</tr>
-			<tr>
-				<td class="gensmall">{IMG_STATUS}</td>
-			</tr>
-			<tr>
-				<td class="gensmall">{FLASH_STATUS}</td>
-			</tr>
-			<tr>
-				<td class="gensmall">{SMILIES_STATUS}</td>
-			</tr>
-		</table></td>
-		<td class="row2" valign="top"><table cellspacing="0" cellpadding="1" border="0">
-			<!-- IF S_BBCODE_ALLOWED -->
+		<!-- ENDIF -->
+		<tr>
+			<td colspan="9"><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
+		</tr>
+		<tr>
+			<td colspan="9"><textarea class="post" name="signature" rows="10" cols="80" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></td>
+		</tr>
+		<tr>
+			<td colspan="9">
+				<table cellspacing="0" cellpadding="0" border="0" width="100%">
+				<tr>
+					<td bgcolor="black" align="center">
+						<script type="text/javascript">
+						<!--
+							colorPalette('h', 18, 5)
+						//-->
+						</script>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+<tr>
+	<td class="row1" valign="top"><b class="genmed">{L_OPTIONS}</b><br />
+		<table cellspacing="2" cellpadding="0" border="0">
+		<tr>
+			<td class="gensmall">{BBCODE_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{IMG_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{FLASH_STATUS}</td>
+		</tr>
+		<tr>
+			<td class="gensmall">{SMILIES_STATUS}</td>
+		</tr>
+		</table>
+	</td>
+	<td class="row2" valign="top">
+		<table cellspacing="0" cellpadding="1" border="0">
+		<!-- IF S_BBCODE_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_BBCODE}</td>
 			</tr>
-			<!-- ENDIF -->
-			<!-- IF S_SMILIES_ALLOWED -->
+		<!-- ENDIF -->
+		<!-- IF S_SMILIES_ALLOWED -->
 			<tr>
 				<td><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /></td>
 				<td class="gen">{L_DISABLE_SMILIES}</td>
 			</tr>
-			<!-- ENDIF -->
-			<tr>
-				<td><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
-				<td class="gen">{L_DISABLE_MAGIC_URL}</td>
-			</tr>
-		</table></td>
-	</tr>
-	<!-- IF SIGNATURE_PREVIEW -->
+		<!-- ENDIF -->
+		<tr>
+			<td><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /></td>
+			<td class="gen">{L_DISABLE_MAGIC_URL}</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+
+<!-- IF SIGNATURE_PREVIEW -->
 	<tr>
 		<th colspan="2" valign="middle">{L_SIGNATURE_PREVIEW}</th>
 	</tr>
 	<tr> 
 		<td class="row1" colspan="2"><div class="postbody" style="padding: 6px;">{SIGNATURE_PREVIEW}</div></td>
 	</tr>
-	<!-- ENDIF -->
-	<tr>
-		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" name="preview" value="{L_PREVIEW}" />&nbsp;&nbsp;<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
-	</tr>
+<!-- ENDIF -->
+
+<tr>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnlite" type="submit" name="preview" value="{L_PREVIEW}" />&nbsp;&nbsp;<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+</tr>
 </table>
 
 <!-- INCLUDE ucp_footer.html -->

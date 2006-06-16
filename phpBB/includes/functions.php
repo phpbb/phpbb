@@ -2357,7 +2357,7 @@ function page_header($page_title = '', $display_online_list = true)
 	// gzip_compression
 	if ($config['gzip_compress'])
 	{
-		if (extension_loaded('zlib') && !headers_sent())
+		if (@extension_loaded('zlib') && !headers_sent())
 		{
 			ob_start('ob_gzhandler');
 		}

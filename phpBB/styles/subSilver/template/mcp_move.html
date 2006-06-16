@@ -1,41 +1,44 @@
 <!-- INCLUDE overall_header.html -->
 
-	<div id="pagecontent">
+<div id="pagecontent">
 
-		<form name="confirm" action="{S_CONFIRM_ACTION}" method="post"><table class="tablebg" width="100%" cellspacing="1">
-			<tr>
-				<th>{MESSAGE_TITLE}</th>
-			</tr>
-			<tr>
-				<td class="row1" align="center">
-					<!-- IF ADDITIONAL_MSG -->
-						<span class="gen" style="color:red">{ADDITIONAL_MSG}</span><br />
-					<!-- ENDIF -->
-					<span class="gen"><br />{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span>
-						<select name="to_forum_id">{S_FORUM_SELECT}</select><br />
-					<!-- IF S_CAN_LEAVE_SHADOW -->
-						<input type="checkbox" class="radio" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br />
-					<!-- ENDIF -->
-					<br />{S_HIDDEN_FIELDS}<span class="gen">{MESSAGE_TEXT}</span><br /><br />
-					<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></span>
-				</td>
-			</tr>
-		</table></form>
+	<form name="confirm" action="{S_CONFIRM_ACTION}" method="post">
 	
-	</div>
-
-	<br clear="all" />
-
-	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-		<tr>
-			<td class="row1">
-				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-				<p class="datetime">{S_TIMEZONE}</p>
-			</td>
-		</tr>
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{MESSAGE_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center">
+			<!-- IF ADDITIONAL_MSG -->
+				<span class="gen" style="color:red">{ADDITIONAL_MSG}</span><br />
+			<!-- ENDIF -->
+			<span class="gen"><br />{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span>
+				<select name="to_forum_id">{S_FORUM_SELECT}</select><br />
+			<!-- IF S_CAN_LEAVE_SHADOW -->
+				<input type="checkbox" class="radio" name="move_leave_shadow" checked="checked" /><span class="gen">{L_LEAVE_SHADOW}</span><br />
+			<!-- ENDIF -->
+			<br />{S_HIDDEN_FIELDS}<span class="gen">{MESSAGE_TEXT}</span><br /><br />
+			<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></span>
+		</td>
+	</tr>
 	</table>
+	
+	</form>
+	
+</div>
 
-	<br clear="all" />
+<br clear="all" />
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+		<p class="datetime">{S_TIMEZONE}</p>
+	</td>
+</tr>
+</table>
+
+<br clear="all" />
 
 <!-- INCLUDE overall_footer.html -->
-				

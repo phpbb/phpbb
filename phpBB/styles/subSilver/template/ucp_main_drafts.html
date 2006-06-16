@@ -1,20 +1,20 @@
 <!-- INCLUDE ucp_header.html -->
 
 <table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th colspan="4">{L_UCP}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="4" align="center"><span class="genmed">{L_DRAFTS_EXPLAIN}</span></td>
-	</tr>
+<tr>
+	<th colspan="4">{L_UCP}</th>
+</tr>
+<tr>
+	<td class="row3" colspan="4" align="center"><span class="genmed">{L_DRAFTS_EXPLAIN}</span></td>
+</tr>
 
-	<!-- IF ERROR -->
+<!-- IF ERROR -->
 	<tr>
 		<td class="row1" colspan="2" align="center"><span class="genmed" style="color:red">{ERROR}</span></td>
 	</tr>
-	<!-- ENDIF -->
+<!-- ENDIF -->
 
-	<!-- IF not S_EDIT_DRAFT -->
+<!-- IF not S_EDIT_DRAFT -->
 
 	<!-- IF S_DRAFT_ROWS -->
 	<tr>
@@ -41,25 +41,26 @@
 		<td style="padding: 4px;" align="center"><input type="checkbox" class="radio" name="d[{draftrow.DRAFT_ID}]" /></td>
 	</tr>
 	<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="4" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
-	</tr>
+		<tr>
+			<td class="row1" colspan="4" height="25" align="center"><b class="genmed">{L_NO_SAVED_DRAFTS}</b></td>
+		</tr>
 	<!-- END draftrow -->
 
 	<!-- IF S_DRAFT_ROWS -->
-	<tr>
-		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
-	</tr>
+		<tr>
+			<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="delete" value="{L_DELETE_MARKED}" />&nbsp;</td>
+		</tr>
 	<!-- ENDIF -->
 
-	<!-- ELSEIF S_EDIT_DRAFT -->
+<!-- ELSEIF S_EDIT_DRAFT -->
 	<tr>
 		<td class="row1" width="22%"><b class="genmed">{L_SUBJECT}:</b></td>
 		<td class="row2"><input class="post" style="width:450px" type="text" name="subject" size="45" maxlength="60" tabindex="2" value="{DRAFT_SUBJECT}" /></td>
 	</tr>
 	<tr> 
 		<td class="row1" width="22%"><b class="genmed">{L_MESSAGE}: </b><br /><span class="gensmall">{L_EDIT_DRAFT_EXPLAIN}</span></td>
-		<td class="row2"><table cellspacing="0" cellpadding="2" border="0">
+		<td class="row2">
+			<table cellspacing="0" cellpadding="2" border="0">
 			<tr align="center" valign="middle">
 				<td><input class="btnbbcode" type="button" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" onmouseover="helpline('b')" /></td>
 				<td><input class="btnbbcode" type="button" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" onmouseover="helpline('i')" /></td>
@@ -72,7 +73,8 @@
 				<td><input class="btnbbcode" type="button" accesskey="w" name="addbbcode18" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(18)" onmouseover="helpline('w')" /></td>
 			</tr>
 			<tr>
-				<td colspan="9"><table width="100%" cellspacing="0" cellpadding="0" border="0">
+				<td colspan="9">
+					<table width="100%" cellspacing="0" cellpadding="0" border="0">
 					<tr>
 						<td><span class="genmed"> &nbsp;{L_FONT_SIZE}:</span> <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
 							<option value="7">{L_FONT_TINY}</option>
@@ -83,7 +85,8 @@
 						</select></td>
 						<td class="gensmall" nowrap="nowrap" align="right"><a href="javascript:bbstyle(-1)" onmouseover="helpline('a')">{L_CLOSE_TAGS}</a></td>
 					</tr>
-				</table></td>
+					</table>
+				</td>
 			</tr>
 			<tr>
 				<td colspan="9"><input class="helpline" type="text" name="helpbox" size="45" maxlength="100" value="{L_STYLES_TIP}" /></td>
@@ -91,7 +94,8 @@
 			<tr>
 				<td colspan="9"><textarea class="post" name="message" rows="10" cols="76" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{DRAFT_MESSAGE}</textarea></td>
 			</tr>
-		</table></td>
+			</table>
+		</td>
 	</tr>
 	<tr class="row1">
 		<td colspan="9" align="left"><p class="topictitle"><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></p></td>
@@ -99,7 +103,7 @@
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
 	</tr>
-	<!-- ENDIF -->
+<!-- ENDIF -->
 </table>
 
 <!-- INCLUDE ucp_footer.html -->

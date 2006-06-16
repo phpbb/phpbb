@@ -39,7 +39,7 @@ class mcp_reports
 		{
 			case 'close':
 			case 'delete':
-				include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 				$post_id_list = request_var('post_id_list', array(0));
 
@@ -76,13 +76,13 @@ class mcp_reports
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id";
 				$result = $db->sql_query($sql);
+				$report = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!($report = $db->sql_fetchrow($result)))
+				if (!$report)
 				{
 					trigger_error('NO_POST_REPORT');
 				}
-
-				$db->sql_freeresult($result);
 
 				$reason = array('title' => $report['reason_title'], 'description' => $report['reason_description']);
 				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
@@ -111,7 +111,8 @@ class mcp_reports
 				$message = $post_info['post_text'];
 				if ($post_info['bbcode_bitfield'])
 				{
-					include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
@@ -126,27 +127,26 @@ class mcp_reports
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 
-					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
-					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_REPORTER_NOTES'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
-					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_REPORTER'	=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
-					'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-					'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
+					'U_EDIT'					=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+					'U_MCP_APPROVE'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORT'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORTER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
+					'U_MCP_USER_NOTES'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_WARN_REPORTER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
+					'U_MCP_WARN_USER'			=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_PROFILE'			=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_REPORTER_PROFILE'	=> ($report['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']) : '',
 
 					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
-
-					'RETURN_REPORTS'		=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
-					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
-					'REPORT_REASON_TITLE'	=> $reason['title'],
-					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
-					'REPORTER_NAME'			=> ($report['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $report['username'],
-					'REPORT_DATE'			=> $user->format_date($report['report_time']),
-					'REPORT_TEXT'			=> $report['report_text'],
-
 					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
+
+					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
+					'REPORTED_IMG'				=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
+					'REPORT_REASON_TITLE'		=> $reason['title'],
+					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
+					'REPORTER_NAME'				=> ($report['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $report['username'],
+					'REPORT_DATE'				=> $user->format_date($report['report_time']),
+					'REPORT_TEXT'				=> $report['report_text'],
 
 					'POSTER_NAME'			=> $poster,
 					'POST_PREVIEW'			=> $message,
@@ -189,7 +189,7 @@ class mcp_reports
 						$forum_list[] = $row['forum_id'];
 					}
 
-					if (!$forum_list = implode(', ', $forum_list))
+					if (!($forum_list = implode(', ', $forum_list)))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
@@ -200,7 +200,6 @@ class mcp_reports
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
-
 				}
 				else
 				{
@@ -263,6 +262,7 @@ class mcp_reports
 					$post_ids[] = $row['post_id'];
 					$row_num[$row['post_id']] = $i++;
 				}
+				$db->sql_freeresult($result);
 
 				if (sizeof($post_ids))
 				{
@@ -273,8 +273,8 @@ class mcp_reports
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
 							AND ru.user_id = r.user_id";
-
 					$result = $db->sql_query($sql);
+
 					$post_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
@@ -295,8 +295,6 @@ class mcp_reports
 							$poster = $row['username'];
 						}
 
-						$s_checkbox = '<input type="checkbox" class="radio" name="post_id_list[]" value="' . $row['post_id'] . '" />';
-
 						$template->assign_block_vars('postrow', array(
 							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
 							// Q: Why accessing the topic by a post_id instead of its topic_id?
@@ -306,10 +304,9 @@ class mcp_reports
 							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['reporter_id']) : '',
 
-							'S_CHECKBOX'	=> $s_checkbox,
-
 							'FORUM_NAME'	=> ($row['forum_id']) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['ALL_FORUMS'],
 							'POSTER'		=> $poster,
+							'POST_ID'		=> $row['post_id'],
 							'POST_SUBJECT'	=> $row['post_subject'],
 							'POST_TIME'		=> $user->format_date($row['post_time']),
 							'REPORTER'		=> ($row['reporter_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $row['reporter_name'],
@@ -383,12 +380,9 @@ function close_report($post_id_list, $mode, $action)
 		{
 			$reports[$report['post_id']] = $report;
 		}
-
 		$db->sql_freeresult($result);
 
-		$close_report_posts = array();
-		$close_report_topics = array();
-		$notify_reporters = array();
+		$close_report_posts = $close_report_topics = $notify_reporters = array();
 		foreach ($post_info as $post_id => $post_data)
 		{
 			if (isset($reports[$post_id]))
@@ -420,6 +414,7 @@ function close_report($post_id_list, $mode, $action)
 			{
 				$keep_report_topics[] = $row['topic_id'];
 			}
+			$db->sql_freeresult($result);
 
 			$close_report_topics = array_diff($close_report_topics, $keep_report_topics);
 			unset($keep_report_topics);

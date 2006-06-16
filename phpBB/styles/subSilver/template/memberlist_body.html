@@ -19,38 +19,40 @@
 	</form>
 <!-- ENDIF -->
 
-	<!-- IF S_SEARCH_USER and S_FORM_NAME -->
-		<form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false">
-	<!-- ELSE -->
-		<form method="post" action="{S_MODE_ACTION}">
-	<!-- ENDIF -->
+<!-- IF S_SEARCH_USER and S_FORM_NAME -->
+	<form method="post" name="results" action="{S_MODE_ACTION}" onsubmit="insert_marked(this.user);return false">
+<!-- ELSE -->
+	<form method="post" action="{S_MODE_ACTION}">
+<!-- ENDIF -->
 
-	<table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th nowrap="nowrap">#</th>
-		<th nowrap="nowrap" width="25%" align="left"><a href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
-		<th nowrap="nowrap" width="15%"><a href="{U_SORT_JOINED}">{L_JOINED}</a></th>
-		<th nowrap="nowrap" width="10%"><a href="{U_SORT_POSTS}">{L_POSTS}</a></th>
-		<th nowrap="nowrap" width="15%"><a href="{U_SORT_RANK}">{L_RANK}</a></th>
-		<th nowrap="nowrap" width="11%">{L_SEND_MESSAGE}</th>
-		<th nowrap="nowrap" width="11%"><a href="{U_SORT_EMAIL}">{L_EMAIL}</a></th>
-		<th nowrap="nowrap" width="11%"><a href="{U_SORT_WEBSITE}">{L_WEBSITE}</a></th>
-		<!-- IF S_SEARCH_USER and S_FORM_NAME --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
-	</tr>
-	<!-- BEGIN memberrow -->
-		<!-- IF S_SHOW_GROUP -->
-			<!-- IF memberrow.S_FIRST_ROW and memberrow.S_GROUP_LEADER -->
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th nowrap="nowrap">#</th>
+	<th nowrap="nowrap" width="25%" align="left"><a href="{U_SORT_USERNAME}">{L_USERNAME}</a></th>
+	<th nowrap="nowrap" width="15%"><a href="{U_SORT_JOINED}">{L_JOINED}</a></th>
+	<th nowrap="nowrap" width="10%"><a href="{U_SORT_POSTS}">{L_POSTS}</a></th>
+	<th nowrap="nowrap" width="15%"><a href="{U_SORT_RANK}">{L_RANK}</a></th>
+	<th nowrap="nowrap" width="11%">{L_SEND_MESSAGE}</th>
+	<th nowrap="nowrap" width="11%"><a href="{U_SORT_EMAIL}">{L_EMAIL}</a></th>
+	<th nowrap="nowrap" width="11%"><a href="{U_SORT_WEBSITE}">{L_WEBSITE}</a></th>
+	<!-- IF S_SEARCH_USER and S_FORM_NAME --><th width="2%" nowrap="nowrap">{L_MARK}</th><!-- ENDIF -->
+</tr>
+<!-- BEGIN memberrow -->
+
+	<!-- IF S_SHOW_GROUP -->
+		<!-- IF memberrow.S_FIRST_ROW and memberrow.S_GROUP_LEADER -->
 			<tr class="row3">
 				<td colspan="8"><b class="gensmall">{L_GROUP_LEADER}</b></td>
 			</tr>
-			<!-- ELSEIF not memberrow.S_GROUP_LEADER and not $S_MEMBER_HEADER -->
+		<!-- ELSEIF not memberrow.S_GROUP_LEADER and not $S_MEMBER_HEADER -->
 			<tr class="row3">
 				<td colspan="8"><b class="gensmall">{L_GROUP_MEMBERS}</b></td>
 			</tr>
 				<!-- DEFINE $S_MEMBER_HEADER = 1 -->
-			<!-- ENDIF -->
 		<!-- ENDIF -->
-		<!-- IF memberrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
+	<!-- ENDIF -->
+
+	<!-- IF memberrow.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
 
 		<td class="gen" align="center">&nbsp;{memberrow.ROW_NUMBER}&nbsp;</td>
 		<td class="genmed" align="left"><strong><a<!-- IF memberrow.USER_COLOR --> style="color:#{memberrow.USER_COLOR}"<!-- ENDIF --> href="{memberrow.U_VIEWPROFILE}">{memberrow.USERNAME}</a></strong></td>
@@ -67,41 +69,41 @@
 		<!-- IF S_SEARCH_USER and S_FORM_NAME --><td align="center"><input type="checkbox" class="radio" name="user" value="{memberrow.USERNAME}" /></td><!-- ENDIF -->
 	</tr>
 
-	<!-- BEGINELSE -->
+<!-- BEGINELSE -->
 
 	<tr>
 		<td class="row1" colspan="<!-- IF S_SEARCH_USER and S_FORM_NAME -->9<!-- ELSE -->8<!-- ENDIF -->" height="28" align="center"><span class="gen">{L_NO_MEMBERS}</span></td>
 	</tr>
 
-	<!-- END memberrow -->
+<!-- END memberrow -->
 
-	<tr>
-		<td class="cat" colspan="<!-- IF S_SEARCH_USER and S_FORM_NAME -->9<!-- ELSE -->8<!-- ENDIF -->" align="center"><!-- IF S_SEARCH_USER and S_FORM_NAME --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
-	</tr>
-	</table>
+<tr>
+	<td class="cat" colspan="<!-- IF S_SEARCH_USER and S_FORM_NAME -->9<!-- ELSE -->8<!-- ENDIF -->" align="center"><!-- IF S_SEARCH_USER and S_FORM_NAME --><input class="btnlite" type="submit" value="{L_SELECT_MARKED}" /><!-- ELSE --><span class="gensmall">{L_SELECT_SORT_METHOD}:</span>&nbsp;<select name="sk">{S_MODE_SELECT}</select>&nbsp; <span class="gensmall">{L_ORDER}</span>&nbsp;<select name="sd">{S_ORDER_SELECT}</select>&nbsp; <input type="submit" name="submit" value="{L_SUBMIT}" class="btnlite" /><!-- ENDIF --></td>
+</tr>
+</table>
 	
-	</form>
+</form>
 
-	<table width="100%" cellspacing="0" cellpadding="0">
-	<tr>
-		<td class="pagination">{PAGE_NUMBER} [ {TOTAL_USERS} ]</td>
-		<td align="right"><!-- IF S_SEARCH_USER and S_FORM_NAME --><b class="nav"><a href="javascript:marklist('results', 'user', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('results', 'user', false);">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- IF PAGINATION --><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --><!-- ENDIF --></span></td>
-	</tr>
-	</table>
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+	<td class="pagination">{PAGE_NUMBER} [ {TOTAL_USERS} ]</td>
+	<td align="right"><!-- IF S_SEARCH_USER and S_FORM_NAME --><b class="nav"><a href="javascript:marklist('results', 'user', true);">{L_MARK_ALL}</a> :: <a  href="javascript:marklist('results', 'user', false);">{L_UNMARK_ALL}</a></b><br /><!-- ENDIF --><span class="pagination"><!-- IF PAGINATION --><a href="javascript:jumpto();">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --><!-- ENDIF --></span></td>
+</tr>
+</table>
 
-	<br clear="all" />
+<br clear="all" />
 
-	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-	<tr>
-		<td class="row1">
-			<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-			<p class="datetime">{S_TIMEZONE}</p>
-		</td>
-	</tr>
-	</table>
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+		<p class="datetime">{S_TIMEZONE}</p>
+	</td>
+</tr>
+</table>
 
-	<br clear="all" />
+<br clear="all" />
 
-	<div align="right"><!-- INCLUDE jumpbox.html --></div>
+<div align="right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

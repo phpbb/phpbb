@@ -316,11 +316,11 @@
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
 				</td>
 				<td style="width: 15%; text-align: right; white-space: nowrap;">
-					<!-- IF not forums.S_FIRST_ROW --><a href="{forums.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
-					<!-- IF not forums.S_LAST_ROW --><a href="{forums.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
-					<a href="{forums.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT}" title="{L_EDIT}" width="16" height="16" /></a> 
-					<!-- IF not forums.S_LINK --><a href="{forums.U_SYNC}"><img src="images/icon_sync.gif" alt="{L_RESYNC}" title="{L_RESYNC}" width="16" height="16" /></a> <!-- ENDIF -->
-					<a href="{forums.U_DELETE}"><img src="images/icon_delete.gif" alt="{L_DELETE}" title="{L_DELETE}" width="16" height="16" /></a>
+					<!-- IF not forums.S_FIRST_ROW --><a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
+					<!-- IF not forums.S_LAST_ROW --><a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+					<a href="{forums.U_EDIT}">{ICON_EDIT}</a> 
+					<!-- IF not forums.S_LINK --><a href="{forums.U_SYNC}">{ICON_SYNC}</a> <!-- ENDIF -->
+					<a href="{forums.U_DELETE}">{ICON_DELETE}</a>
 				</td>
 			</tr>
 		<!-- END forums -->

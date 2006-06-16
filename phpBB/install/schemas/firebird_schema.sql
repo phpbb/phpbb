@@ -204,16 +204,6 @@ BEGIN
 END;;
 
 
-# phpbb_cache
-CREATE TABLE phpbb_cache (
-  var_name VARCHAR(252) NOT NULL,
-  var_expires INTEGER DEFAULT 0  NOT NULL,
-  var_data BLOB SUB_TYPE TEXT
-);;
-
-ALTER TABLE phpbb_cache ADD PRIMARY KEY (var_name);;
-
-
 # phpbb_config
 CREATE TABLE phpbb_config (
   config_name VARCHAR(252) NOT NULL,
@@ -565,6 +555,7 @@ ALTER TABLE phpbb_modules ADD PRIMARY KEY (module_id);;
 
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules(module_enabled);;
 CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules(left_id, right_id);;
+CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules(module_class, left_id);;
 
 CREATE GENERATOR phpbb_modules_gen;;
 SET GENERATOR phpbb_modules_gen TO 0;;

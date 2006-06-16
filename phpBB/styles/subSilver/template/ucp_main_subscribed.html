@@ -1,40 +1,35 @@
 <!-- INCLUDE ucp_header.html -->
 
 <table class="tablebg" width="100%" cellspacing="1">
-	<tr>
-		<th colspan="4">{L_UCP}</th>
-	</tr>
-	<tr>
-		<td class="row1" colspan="4" align="center"><span class="genmed">{L_UCP_WELCOME}</span></td>
-	</tr>
-	<tr>
-		<th colspan="4">{L_WATCHED_FORUMS}</th>
-	</tr>
+<tr>
+	<th colspan="4">{L_UCP}</th>
+</tr>
+<tr>
+	<td class="row1" colspan="4" align="center"><span class="genmed">{L_UCP_WELCOME}</span></td>
+</tr>
+<tr>
+	<th colspan="4">{L_WATCHED_FORUMS}</th>
+</tr>
 
-	<!-- BEGIN forumrow -->
+<!-- BEGIN forumrow -->
 
-	<!-- IF forumrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-
+	<!-- IF forumrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{forumrow.FORUM_FOLDER_IMG}</td>
 		<td style="padding: 4px;" width="100%"><p class="topictitle"><a href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a></p></td>
 		<td class="gensmall" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap"><!-- IF forumrow.LAST_POST_TIME -->{forumrow.LAST_POST_TIME}<br /><!-- IF forumrow.U_LAST_POST_AUTHOR --><a href="{forumrow.U_LAST_POST_AUTHOR}">{forumrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{forumrow.LAST_POST_AUTHOR}<!-- ENDIF --> <a href="{forumrow.U_LAST_POST}">{forumrow.LAST_POST_IMG}</a><!-- ELSE -->{L_NO_POSTS}<!-- ENDIF --></td>
 		<td style="padding: 4px;"> <input type="checkbox" class="radio" name="f[{forumrow.FORUM_ID}]" /> </td>
 	</tr>
-	<!-- BEGINELSE -->
+<!-- BEGINELSE -->
 	<tr class="row1">
 		<td colspan="4" align="center"><b class="genmed">{L_NO_WATCHED_FORUMS}</b></td>
 	</tr>
-	<!-- END forumrow -->
+<!-- END forumrow -->
 
-	<tr>
-		<th colspan="4">{L_WATCHED_TOPICS}</th>
-	</tr>
+<tr>
+	<th colspan="4">{L_WATCHED_TOPICS}</th>
+</tr>
 
-	<!-- IF TOTAL_TOPICS -->
+<!-- IF TOTAL_TOPICS -->
 	<tr>
 		<td class="row3" colspan="4">
 			<table width="100%" cellspacing="1">
@@ -46,22 +41,18 @@
 			</table>
 		</td>
 	</tr>
-	<!-- ENDIF -->
+<!-- ENDIF -->
 
-	<!-- BEGIN topicrow -->
+<!-- BEGIN topicrow -->
 
-	<!-- IF topicrow.S_ROW_COUNT is even -->
-	<tr class="row1">
-	<!-- ELSE -->
-	<tr class="row2">
-	<!-- ENDIF -->
-
+	<!-- IF topicrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<td style="padding: 4px;" width="100%" valign="top">
 			<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{topicrow.NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><br />
 			<!-- IF topicrow.PAGINATION -->
 				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 			<!-- ENDIF -->
+		</td>
 		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 			<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
@@ -70,15 +61,15 @@
 		</td>
 		<td style="padding: 4px;"> <input type="checkbox" class="radio" name="t[{topicrow.TOPIC_ID}]" /> </td>
 	</tr>
-	<!-- BEGINELSE -->
+<!-- BEGINELSE -->
 	<tr class="row1">
 		<td colspan="4" align="center"><b class="genmed">{L_NO_WATCHED_TOPICS}</b></td>
 	</tr>
-	<!-- END topicrow -->
+<!-- END topicrow -->
 
-	<tr>
-		<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
-	</tr>
+<tr>
+	<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
+</tr>
 </table>
 
 <div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="javascript:marklist('ucp', 't', true);">{L_MARK_ALL}</a> :: <a href="javascript:marklist('ucp', 't', false);">{L_UNMARK_ALL}</a></b></div>

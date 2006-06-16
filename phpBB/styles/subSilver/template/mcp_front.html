@@ -71,7 +71,7 @@
 <!-- ENDIF -->
 
 <!-- IF S_SHOW_LOGS -->
-<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="right">
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="4" border="0" align="right">
 	<tr>
 		<td class="row3" colspan="5" align="center"><b class="gen">{L_LATEST_LOGS}</b></td>
 	</tr>
@@ -83,21 +83,21 @@
 		<th width="18%" nowrap="nowrap">{L_TIME}</th>
 	</tr>
 	<!-- BEGIN log -->
-	<tr>
-		<td class="row1" nowrap="nowrap"><span class="gen">{log.USERNAME}</span></td>
-		<td class="row1" align="center" nowrap="nowrap"><span class="gen">{log.IP}</span></td>
-		<td class="row1"><span class="genmed">{log.ACTION}</span></td>
-		<td class="row1" align="center" nowrap="nowrap"><span class="gensmall"><!-- IF log.U_VIEWTOPIC --><a href="{log.U_VIEWTOPIC}">{L_VIEW_TOPIC}</a><!-- IF log.U_VIEWLOGS --> | <!-- ENDIF --><!-- ENDIF --><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF --></span></td>
-		<td class="row1" align="center" nowrap="nowrap"><span class="gensmall">{log.TIME}</span></td>
-	</tr>
+		<tr>
+			<td class="row1" nowrap="nowrap"><span class="gen">{log.USERNAME}</span></td>
+			<td class="row1" align="center" nowrap="nowrap"><span class="gen">{log.IP}</span></td>
+			<td class="row1"><span class="genmed">{log.ACTION}</span></td>
+			<td class="row1" align="center" nowrap="nowrap"><span class="gensmall"><!-- IF log.U_VIEWTOPIC --><a href="{log.U_VIEWTOPIC}">{L_VIEW_TOPIC}</a><!-- IF log.U_VIEWLOGS --> | <!-- ENDIF --><!-- ENDIF --><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF --></span></td>
+			<td class="row1" align="center" nowrap="nowrap"><span class="gensmall">{log.TIME}</span></td>
+		</tr>
 	<!-- BEGINELSE -->
-	<tr>
-		<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
-	</tr>
+		<tr>
+			<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_ENTRIES}</span></td>
+		</tr>
 	<!-- END log -->
-</table>
+	</table>
 
-<br clear="all" />
+	<br clear="all" />
 <!-- ENDIF -->
 
 <!-- INCLUDE mcp_footer.html -->

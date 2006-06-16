@@ -31,7 +31,7 @@ class acp_users
 		$username	= request_var('username', '', true);
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
-		
+
 		$submit		= (isset($_POST['update'])) ? true : false;
 
 		// Whois (special case)
@@ -57,7 +57,7 @@ class acp_users
 
 			return;
 		}
-		
+
 		// Show user selection mask
 		if (!$username && !$user_id)
 		{
@@ -129,6 +129,12 @@ class acp_users
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
 			'S_FORM_OPTIONS'	=> $s_form_options)
 		);
+
+		// Prevent normal users/admins change/view founders if they are not a founder by themselves
+		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
+		{
+			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action));
+		}
 
 		switch ($mode)
 		{
@@ -1502,9 +1508,9 @@ class acp_users
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
-					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? 'checked="checked"' : '',
-					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
-					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
+					'S_BBCODE_CHECKED'		=> (!$enable_bbcode) ? 'checked="checked"' : '',
+					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? 'checked="checked"' : '',
+					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? 'checked="checked"' : '',
 
 					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],

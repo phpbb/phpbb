@@ -284,9 +284,11 @@ class fulltext_native extends search_backend
 		$id_ary = array();
 
 		$join_topic = ($type == 'posts') ? false : true;
+
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 		$sql_sort_table = $sql_sort_join = '';
+
 		switch ($sql_sort[0])
 		{
 			case 'u':
@@ -363,17 +365,21 @@ class fulltext_native extends search_backend
 			{
 				case '-':
 					$bool = 'NOT';
-					continue;
+				continue;
+
 				case '+':
 					$bool = 'AND';
-					continue;
+				continue;
+
 				case '|':
 					$bool = 'OR';
-					continue;
+				continue;
+
 				default:
 					$bool = ($terms != 'all') ? 'OR' : $bool;
 					$sql_words[$bool][] = "'" . $db->sql_escape(preg_replace('#\*+#', '%', trim($word))) . "'";
 					$bool = ($terms == 'all') ? 'AND' : 'OR';
+				break;
 			}
 		}
 
@@ -400,6 +406,7 @@ class fulltext_native extends search_backend
 
 					if (!($row = $db->sql_fetchrow($result)))
 					{
+						$db->sql_freeresult($result);
 						$id_ary = array();
 						return false;
 					}
@@ -444,6 +451,7 @@ class fulltext_native extends search_backend
 
 				if (!($row = $db->sql_fetchrow($result)))
 				{
+					$db->sql_freeresult($result);
 					$id_ary = array();
 					return false;
 				}

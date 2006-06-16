@@ -308,18 +308,6 @@ CREATE INDEX phpbb_bots_bot_active on phpbb_bots (bot_active)
 
 
 /*
- Table: phpbb_cache
-*/
-CREATE TABLE phpbb_cache (
-  var_name varchar2(255) DEFAULT '',
-  var_expires number(10) DEFAULT '0' NOT NULL,
-  var_data clob,
-  CONSTRAINT pk_phpbb_cache PRIMARY KEY (var_name)
-)
-/
-
-
-/*
  Table: phpbb_config
 */
 CREATE TABLE phpbb_config (
@@ -780,6 +768,8 @@ END;
 CREATE INDEX phpbb_modules_module_enabled on phpbb_modules (module_enabled)
 /
 CREATE INDEX phpbb_modules_left_right_id on phpbb_modules (left_id, right_id)
+/
+CREATE INDEX phpbb_modules_class_left_id on phpbb_modules (module_class, left_id)
 /
 
 

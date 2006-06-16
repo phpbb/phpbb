@@ -498,7 +498,6 @@ class acp_board
 		// Output relevant page
 		foreach ($display_vars['vars'] as $config_key => $vars)
 		{
-
 			if (!is_array($vars) && strpos($config_key, 'legend') === false)
 			{
 				continue;
@@ -564,6 +563,9 @@ class acp_board
 		}
 	}
 
+	/**
+	* Select auth method
+	*/
 	function select_auth_method($selected_method, $key = '')
 	{
 		global $phpbb_root_path, $phpEx;
@@ -591,6 +593,9 @@ class acp_board
 		return $auth_select;
 	}
 
+	/**
+	* Select mail authentication method
+	*/
 	function mail_auth_select($selected_method, $key = '')
 	{
 		global $user;
@@ -606,6 +611,9 @@ class acp_board
 		return $s_smtp_auth_options;
 	}
 
+	/**
+	* Select full folder action
+	*/
 	function full_folder_select($value, $key = '')
 	{
 		global $user;
@@ -613,6 +621,9 @@ class acp_board
 		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES_SHORT'] . '</option>';
 	}
 
+	/**
+	* Select captcha pixel noise
+	*/
 	function captcha_pixel_noise_select($value, $key = '')
 	{
 		global $user;
@@ -620,6 +631,9 @@ class acp_board
 		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['LIGHT'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['MEDIUM'] . '</option><option value="3"' . (($value == 3) ? ' selected="selected"' : '') . '>' . $user->lang['HEAVY'] . '</option>';
 	}
 
+	/**
+	* Select ip validation
+	*/
 	function select_ip_check($value, $key = '')
 	{
 		$radio_ary = array(4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NONE');
@@ -627,6 +641,9 @@ class acp_board
 		return h_radio('config[ip_check]', $radio_ary, $value, $key);
 	}
 
+	/**
+	* Select account activation method
+	*/
 	function select_acc_activation($value, $key = '')
 	{
 		global $user, $config;
@@ -640,6 +657,9 @@ class acp_board
 		return h_radio('config[require_activation]', $radio_ary, $value, $key);
 	}
 
+	/**
+	* Maximum/Minimum username length
+	*/
 	function username_length($value, $key = '')
 	{
 		global $user;
@@ -647,6 +667,9 @@ class acp_board
 		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_name_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_name_chars]" value="' . $this->new_config['max_name_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
 	}
 
+	/**
+	* Allowed chars in usernames
+	*/
 	function select_username_chars($selected_value, $key)
 	{
 		global $user;
@@ -662,6 +685,9 @@ class acp_board
 		return $user_char_options;
 	}
 
+	/**
+	* Maximum/Minimum password length
+	*/
 	function password_length($value, $key)
 	{
 		global $user;
@@ -669,6 +695,9 @@ class acp_board
 		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_pass_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_pass_chars]" value="' . $this->new_config['max_pass_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
 	}
 
+	/**
+	* Required chars in passwords
+	*/
 	function select_password_chars($selected_value, $key)
 	{
 		global $user;
@@ -684,6 +713,9 @@ class acp_board
 		return $pass_char_options;
 	}
 
+	/**
+	* Select bump interval
+	*/
 	function bump_interval($value, $key)
 	{
 		global $user;
@@ -699,6 +731,9 @@ class acp_board
 		return '<input id="' . $key . '" type="text" size="3" maxlength="4" name="config[bump_interval]" value="' . $value . '" />&nbsp;<select name="config[bump_type]">' . $s_bump_type . '</select>';
 	}
 
+	/**
+	* Board disable option and message
+	*/
 	function board_disable($value, $key)
 	{
 		global $user;
@@ -708,6 +743,9 @@ class acp_board
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
 	}
 
+	/**
+	* Select default dateformat
+	*/
 	function dateformat_select($value, $key)
 	{
 		global $user;

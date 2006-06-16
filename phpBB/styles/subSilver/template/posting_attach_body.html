@@ -1,5 +1,8 @@
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 <!--
+	/**
+	* Show upload progress bar
+	*/
 	function popup_progress_bar()
 	{
 		close_waitscreen = 0;
@@ -9,65 +12,73 @@
 </script>
 
 <!-- IF S_CLOSE_PROGRESS_WINDOW -->
-<script language="javascript" type="text/javascript">
-<!--
-	close_waitscreen = 1;
-//-->
-</script>
+	<script language="javascript" type="text/javascript">
+	<!--
+		close_waitscreen = 1;
+	//-->
+	</script>
 <!-- ENDIF -->
 
-	<tr>
-		<th colspan="2" height="28">{L_ADD_ATTACHMENT}</th>
-	</tr>
-	<tr>
-		<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
-	</tr>
+<tr>
+	<th colspan="2" height="28">{L_ADD_ATTACHMENT}</th>
+</tr>
+<tr>
+	<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
+</tr>
 
-	<tr> 
-		<td class="row1"><b class="genmed">{L_FILENAME}</b></td> 
-	    <td class="row2"><input type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="" class="btnlite" /></td> 
-	</tr> 
-	<tr> 
-		<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
-		<td class="row2"><table border="0" cellspacing="0" cellpadding="2">
-			<tr>
-				<td><textarea class="post" name="filecomment" rows="3" cols="35" size="40">{FILE_COMMENT}</textarea>&nbsp;</td>
-				<td valign="top"><table border="0" cellspacing="4" cellpadding="0">
-					<tr>
-						<td><input class="btnlite" type="submit" style="width:150px" name="add_file" value="{L_ADD_FILE}" onclick="javascript:popup_progress_bar();" /></td>
-					</tr></table>
-				</td>
-			</tr></table>
-		</td>
-	</tr> 
+<tr> 
+	<td class="row1"><b class="genmed">{L_FILENAME}</b></td> 
+	<td class="row2"><input type="file" name="fileupload" size="40" maxlength="{FILESIZE}" value="" class="btnlite" /></td> 
+</tr> 
+<tr> 
+	<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
+	<td class="row2">
+		<table border="0" cellspacing="0" cellpadding="2">
+		<tr>
+			<td><textarea class="post" name="filecomment" rows="3" cols="35" size="40">{FILE_COMMENT}</textarea>&nbsp;</td>
+			<td valign="top">
+				<table border="0" cellspacing="4" cellpadding="0">
+				<tr>
+					<td><input class="btnlite" type="submit" style="width:150px" name="add_file" value="{L_ADD_FILE}" onclick="javascript:popup_progress_bar();" /></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr> 
 
-	<!-- IF S_HAS_ATTACHMENTS -->
+<!-- IF S_HAS_ATTACHMENTS -->
 	<tr>
 		<th colspan="2" height="28">{L_POSTED_ATTACHMENTS}</th>
 	</tr>
 
-		<!-- BEGIN attach_row -->
+	<!-- BEGIN attach_row -->
 		<tr>
 			<td class="row1"><b class="genmed">{L_FILENAME}</b></td>
 			<td class="row2"><a class="genmed" href="{attach_row.U_VIEW_ATTACHMENT}" target="_blank">{attach_row.FILENAME}</a></td> 
 		</tr>
 		<tr> 
 			<td class="row1"><b class="genmed">{L_FILE_COMMENT}</b></td> 
-			<td class="row2"><table border="0" cellspacing="0" cellpadding="2">
+			<td class="row2">
+				<table border="0" cellspacing="0" cellpadding="2">
 				<tr>
 					<td><textarea class="post" name="comment_list[{attach_row.ASSOC_INDEX}]" rows="3" cols="35" wrap="virtual" size=40>{attach_row.FILE_COMMENT}</textarea>&nbsp;</td>
-					<td valign="top"><table border="0" cellspacing="4" cellpadding="0">
+					<td valign="top">
+						<table border="0" cellspacing="4" cellpadding="0">
 						<tr>
 							<td><input class="btnlite" type="submit" style="width:150px" name="edit_comment[{attach_row.ASSOC_INDEX}]" value="{L_UPDATE_COMMENT}" /></td>
 						</tr>
 						<tr>
 							<td><input class="btnlite" type="submit" style="width:150px" name="delete_file[{attach_row.ASSOC_INDEX}]" value="{L_DELETE_FILE}" /></td>
-						</tr></table>
+						</tr>
+						</table>
 					</td>
-				</tr></table>
+				</tr>
+				</table>
 			</td>
 		</tr>
 		{attach_row.S_HIDDEN}	
-		<!-- END attach_row -->
+	<!-- END attach_row -->
 
-	<!-- ENDIF -->
+<!-- ENDIF -->

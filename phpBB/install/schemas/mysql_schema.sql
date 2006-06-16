@@ -132,14 +132,6 @@ CREATE TABLE phpbb_bots (
   KEY bot_active (bot_active)
 );
 
-# Table: 'phpbb_cache'
-CREATE TABLE phpbb_cache (
-  var_name varchar(255) DEFAULT '' NOT NULL,
-  var_expires int(10) UNSIGNED DEFAULT '0' NOT NULL,
-  var_data mediumtext,
-  PRIMARY KEY (var_name)
-);
-
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
   config_name varchar(255) NOT NULL,
@@ -362,7 +354,8 @@ CREATE TABLE phpbb_modules (
   module_auth varchar(255) DEFAULT '' NOT NULL,
   PRIMARY KEY  (module_id),
   KEY left_right_id (left_id, right_id),
-  KEY module_enabled (module_enabled)
+  KEY module_enabled (module_enabled),
+  KEY class_left_id (module_class, left_id)
 );
 
 # Table: 'phpbb_poll_options'

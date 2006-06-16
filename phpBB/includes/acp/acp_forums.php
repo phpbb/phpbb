@@ -253,7 +253,7 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
 
-				$sql = 'SELECT parent_id, left_id, right_id
+				$sql = 'SELECT *
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -265,90 +265,13 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
 
-				$forum_info = array($forum_id => $row);
+				$move_forum_name = $this->move_forum_by($row, $action, 1);
 
-				// Get the adjacent forum
-				$sql = 'SELECT forum_id, forum_name, left_id, right_id
-					FROM ' . FORUMS_TABLE . "
-					WHERE parent_id = $this->parent_id
-						AND " . (($action == 'move_up') ? "right_id < {$row['right_id']} ORDER BY right_id DESC" : "left_id > {$row['left_id']} ORDER BY left_id ASC");
-				$result = $db->sql_query_limit($sql, 1);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if (!$row)
+				if ($move_forum_name !== false)
 				{
-					// already on top or at bottom
-					break;
+					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
+					$cache->destroy('sql', FORUMS_TABLE);
 				}
-
-				if ($action == 'move_up')
-				{
-					$log_action = 'LOG_FORUM_MOVE_UP';
-					$up_id = $forum_id;
-					$down_id = $row['forum_id'];
-				}
-				else
-				{
-					$log_action = 'LOG_FORUM_MOVE_DOWN';
-					$up_id = $row['forum_id'];
-					$down_id = $forum_id;
-				}
-
-				$move_forum_name = $row['forum_name'];
-				$forum_info[$row['forum_id']] = $row;
-				$diff_up = $forum_info[$up_id]['right_id'] - $forum_info[$up_id]['left_id'];
-				$diff_down = $forum_info[$down_id]['right_id'] - $forum_info[$down_id]['left_id'];
-
-				$forum_ids = array();
-
-				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TABLE . '
-					WHERE left_id > ' . $forum_info[$up_id]['left_id'] . '
-						AND right_id < ' . $forum_info[$up_id]['right_id'];
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$forum_ids[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
-
-				// Start transaction
-				$db->sql_transaction('begin');
-
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET left_id = left_id + ' . ($diff_up + 1) . ', right_id = right_id + ' . ($diff_up + 1) . '
-					WHERE left_id > ' . $forum_info[$down_id]['left_id'] . '
-						AND right_id < ' . $forum_info[$down_id]['right_id'];
-				$db->sql_query($sql);
-
-				if (sizeof($forum_ids))
-				{
-					$sql = 'UPDATE ' . FORUMS_TABLE . '
-						SET left_id = left_id - ' . ($diff_down + 1) . ', right_id = right_id - ' . ($diff_down + 1) . '
-						WHERE forum_id IN (' . implode(', ', $forum_ids) . ')';
-					$db->sql_query($sql);
-				}
-
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET left_id = ' . $forum_info[$down_id]['left_id'] . ', right_id = ' . ($forum_info[$down_id]['left_id'] + $diff_up) . '
-					WHERE forum_id = ' . $up_id;
-				$db->sql_query($sql);
-
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET left_id = ' . ($forum_info[$up_id]['right_id'] - $diff_down) . ', right_id = ' . $forum_info[$up_id]['right_id'] . '
-					WHERE forum_id = ' . $down_id;
-				$db->sql_query($sql);
-
-				$db->sql_transaction('commit');
-
-				$forum_data = $this->get_forum_info($forum_id);
-
-				add_log('admin', $log_action, $forum_data['forum_name'], $move_forum_name);
-				unset($forum_data);
-	
-				$cache->destroy('sql', FORUMS_TABLE);
 
 			break;
 
@@ -1439,15 +1362,91 @@ class acp_forums
 			$db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
 		}
 
-		/**
-		* @todo run cron for optimize table or redirect to database management screen
-		*/
-
 		$db->sql_transaction('commit');
 
 		return array();
 	}
 
+	/**
+	* Move forum position by $steps up/down
+	*/
+	function move_forum_by($forum_row, $action = 'move_up', $steps = 1)
+	{
+		global $db;
+
+		/**
+		* Fetch all the siblings between the module's current spot
+		* and where we want to move it to. If there are less than $steps
+		* siblings between the current spot and the target then the
+		* module will move as far as possible
+		*/
+		$sql = 'SELECT forum_id, forum_name, left_id, right_id
+			FROM ' . FORUMS_TABLE . "
+			WHERE parent_id = {$forum_row['parent_id']}
+				AND " . (($action == 'move_up') ? "right_id < {$forum_row['right_id']} ORDER BY right_id DESC" : "left_id > {$forum_row['left_id']} ORDER BY left_id ASC");
+		$result = $db->sql_query_limit($sql, $steps);
+
+		$target = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$target = $row;
+		}
+		$db->sql_freeresult($result);
+
+		if (!sizeof($target))
+		{
+			// The forum is already on top or bottom
+			return false;
+		}
+
+		/**
+		* $left_id and $right_id define the scope of the nodes that are affected by the move.
+		* $diff_up and $diff_down are the values to substract or add to each node's left_id
+		* and right_id in order to move them up or down.
+		* $move_up_left and $move_up_right define the scope of the nodes that are moving
+		* up. Other nodes in the scope of ($left_id, $right_id) are considered to move down.
+		*/
+		if ($action == 'move_up')
+		{
+			$left_id = $target['left_id'];
+			$right_id = $forum_row['right_id'];
+
+			$diff_up = $forum_row['left_id'] - $target['left_id'];
+			$diff_down = $forum_row['right_id'] + 1 - $forum_row['left_id'];
+
+			$move_up_left = $forum_row['left_id'];
+			$move_up_right = $forum_row['right_id'];
+		}
+		else
+		{
+			$left_id = $forum_row['left_id'];
+			$right_id = $target['right_id'];
+
+			$diff_up = $forum_row['right_id'] + 1 - $forum_row['left_id'];
+			$diff_down = $target['right_id'] - $forum_row['right_id'];
+
+			$move_up_left = $forum_row['right_id'] + 1;
+			$move_up_right = $target['right_id'];
+		}
+
+		// Now do the dirty job
+		$sql = 'UPDATE ' . FORUMS_TABLE . "
+			SET left_id = left_id + CASE
+				WHEN left_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
+				ELSE {$diff_down}
+			END,
+			right_id = right_id + CASE
+				WHEN right_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
+				ELSE {$diff_down}
+			END,
+			forum_parents = ''
+			WHERE 
+				left_id BETWEEN {$left_id} AND {$right_id}
+				AND right_id BETWEEN {$left_id} AND {$right_id}";
+		$db->sql_query($sql);
+
+		return $target['forum_name'];
+	}
 }
 
 ?>

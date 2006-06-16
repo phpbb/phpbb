@@ -31,12 +31,12 @@ function mcp_topic_view($id, $mode, $action)
 	$topic_info = $topic_info[$topic_id];
 
 	// Set up some vars
-	$icon_id = request_var('icon', 0);
-	$subject = request_var('subject', '', true);
-	$start = request_var('start', 0);
-	$to_topic_id = request_var('to_topic_id', 0);
-	$to_forum_id = request_var('to_forum_id', 0);
-	$post_id_list = request_var('post_id_list', array(0));
+	$icon_id		= request_var('icon', 0);
+	$subject		= request_var('subject', '', true);
+	$start			= request_var('start', 0);
+	$to_topic_id	= request_var('to_topic_id', 0);
+	$to_forum_id	= request_var('to_forum_id', 0);
+	$post_id_list	= request_var('post_id_list', array(0));
 
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
@@ -60,8 +60,7 @@ function mcp_topic_view($id, $mode, $action)
 	// Jumpbox, sort selects and that kind of things
 	make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_');
 	$where_sql = ($action == 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';
-	
-	
+
 	$sort_days = $total = 0;
 	$sort_key = $sort_dir = '';
 	$sort_by_sql = $sort_order_sql = array();
@@ -73,6 +72,7 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		$total = $topic_info['topic_replies'] + 1;
 	}
+
 	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));
 	if ($posts_per_page == 0)
 	{
@@ -94,6 +94,7 @@ function mcp_topic_view($id, $mode, $action)
 		$rowset[] = $row;
 		$bbcode_bitfield |= $row['bbcode_bitfield'];
 	}
+	$db->sql_freeresult($result);
 
 	if ($bbcode_bitfield)
 	{
@@ -118,9 +119,6 @@ function mcp_topic_view($id, $mode, $action)
 		$message = smiley_text($message);
 		$message = str_replace("\n", '<br />', $message);
 
-		$checked = ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? 'checked="checked" ' : '';
-		$s_checkbox = '<input type="checkbox" class="radio" name="post_id_list[]" value="' . $row['post_id'] . '" ' . $checked . '/>';
-
 		if (!$row['post_approved'])
 		{
 			$has_unapproved_posts = true;
@@ -136,9 +134,9 @@ function mcp_topic_view($id, $mode, $action)
 
 			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
 
-			'S_CHECKBOX'		=> $s_checkbox,
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
+			'S_CHECKED'			=> ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? true : false,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
 			'U_MCP_APPROVE'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']),
@@ -200,8 +198,8 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 
-		'S_SHOW_TOPIC_ICONS'=> $s_topic_icons,
-		'S_TOPIC_ICON'		=> $icon_id,
+		'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
+		'S_TOPIC_ICON'			=> $icon_id,
 
 		'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select",
 
@@ -344,6 +342,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 					$post_id_list[] = $row['post_id'];
 				}
 			}
+			$db->sql_freeresult($result);
 		}
 
 		if (!sizeof($post_id_list))

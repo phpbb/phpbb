@@ -56,6 +56,7 @@ function mcp_front_view($id, $mode, $action)
 					AND post_approved = 0
 				ORDER BY post_id DESC';
 			$result = $db->sql_query_limit($sql, 5);
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$post_list[] = $row['post_id'];
@@ -79,12 +80,12 @@ function mcp_front_view($id, $mode, $action)
 				}
 
 				$template->assign_block_vars('unapproved', array(
-					'U_POST_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
-					'U_MCP_FORUM'	=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']) : '',
-					'U_MCP_TOPIC'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-					'U_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
-					'U_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-					'U_AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']),
+					'U_POST_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
+					'U_MCP_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']) : '',
+					'U_MCP_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+					'U_FORUM'			=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+					'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+					'U_AUTHOR'			=> ($row['poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']),
 
 					'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
@@ -116,6 +117,7 @@ function mcp_front_view($id, $mode, $action)
 	$forum_list = get_forum_list('m_');
 
 	$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
+
 	if (!empty($forum_list))
 	{
 		$sql = 'SELECT COUNT(r.report_id) AS total
@@ -124,8 +126,8 @@ function mcp_front_view($id, $mode, $action)
 				AND r.report_closed = 0
 				AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')';
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$total = $row['total'];
+		$total = (int) $db->sql_fetchfield('total');
+		$db->sql_freeresult($result);
 
 		if ($total)
 		{
@@ -140,7 +142,6 @@ function mcp_front_view($id, $mode, $action)
 					TOPICS_TABLE			=> 't',
 					USERS_TABLE				=> 'u',
 					POSTS_TABLE				=> 'p'
-
 				),
 
 				'LEFT_JOIN'	=> array(
@@ -151,11 +152,11 @@ function mcp_front_view($id, $mode, $action)
 				),
 
 				'WHERE'		=> 'r.post_id = p.post_id
-									AND r.report_closed = 0
-									AND r.reason_id = rr.reason_id
-									AND p.topic_id = t.topic_id
-									AND r.user_id = u.user_id
-									AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')',
+					AND r.report_closed = 0
+					AND r.reason_id = rr.reason_id
+					AND p.topic_id = t.topic_id
+					AND r.user_id = u.user_id
+					AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')',
 
 				'ORDER_BY'	=> 'p.post_id DESC'
 			));
@@ -170,12 +171,12 @@ function mcp_front_view($id, $mode, $action)
 				}
 
 				$template->assign_block_vars('report', array(
-					'U_POST_DETAILS'=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details"),
-					'U_MCP_FORUM'	=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view") : '',
-					'U_MCP_TOPIC'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
-					'U_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
-					'U_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-					'U_REPORTER'	=> ($row['user_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+					'U_POST_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details"),
+					'U_MCP_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view") : '',
+					'U_MCP_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
+					'U_FORUM'			=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+					'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+					'U_REPORTER'		=> ($row['user_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
 					'FORUM_NAME'	=> (!$global_topic) ? $row['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
@@ -221,8 +222,8 @@ function mcp_front_view($id, $mode, $action)
 				'IP'			=> $row['ip'],
 				'TIME'			=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
-				'U_VIEWTOPIC'	=> isset($row['viewtopic']) ? $row['viewtopic'] : '',
-				'U_VIEWLOGS'	=> isset($row['viewlogs']) ? $row['viewlogs'] : '')
+				'U_VIEWTOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
+				'U_VIEWLOGS'	=> (!empty($row['viewlogs'])) ? $row['viewlogs'] : '')
 			);
 		}
 	}

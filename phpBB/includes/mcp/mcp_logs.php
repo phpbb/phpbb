@@ -17,7 +17,7 @@ class mcp_logs
 {
 	var $u_action;
 	var $p_master;
-	
+
 	function mcp_main(&$p_master)
 	{
 		$this->p_master = &$p_master;
@@ -121,12 +121,12 @@ class mcp_logs
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
 
-			'U_POST_ACTION'		=> $this->u_action,
-			'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,
-			'S_SELECT_SORT_DIR' => $s_sort_dir,
-			'S_SELECT_SORT_KEY' => $s_sort_key,
-			'S_SELECT_SORT_DAYS'=> $s_limit_days,
-			'S_LOGS'			=> ($log_count > 0),
+			'U_POST_ACTION'			=> $this->u_action,
+			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+			'S_SELECT_SORT_KEY'		=> $s_sort_key,
+			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+			'S_LOGS'				=> ($log_count > 0),
 			)
 		);
 

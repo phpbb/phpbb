@@ -42,19 +42,22 @@ class mcp_warn
 			case 'front':
 				mcp_warn_front_view($id, $mode);
 				$this->tpl_name = 'mcp_warn_front';
-				break;
+			break;
+
 			case 'list':
 				mcp_warn_list_view($id, $mode, $action);
 				$this->tpl_name = 'mcp_warn_list';
-				break;
+			break;
+
 			case 'warn_post':
 				mcp_warn_post_view($id, $mode, $action);
 				$this->tpl_name = 'mcp_warn_post';
-				break;
+			break;
+
 			case 'warn_user':
 				mcp_warn_user_view($id, $mode, $action);
 				$this->tpl_name = 'mcp_warn_user';
-				break;
+			break;
 		}
 	}
 }
@@ -127,10 +130,10 @@ function mcp_warn_list_view($id, $mode, $action)
 
 	$user->add_lang('memberlist');
 
-	$start = request_var('start', 0);
-	$st	= request_var('st', 0);
-	$sk	= request_var('sk', 'b');
-	$sd	= request_var('sd', 'd');
+	$start	= request_var('start', 0);
+	$st		= request_var('st', 0);
+	$sk		= request_var('sk', 'b');
+	$sd		= request_var('sd', 'd');
 
 	$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 	$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_WARNINGS']);
@@ -162,11 +165,11 @@ function mcp_warn_list_view($id, $mode, $action)
 	}
 
 	$template->assign_vars(array(
-		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode"),
-		'S_CLEAR_ALLOWED'	=> ($auth->acl_get('a_clearlogs')) ? true : false,
-		'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
-		'S_SELECT_SORT_KEY' 	=> $s_sort_key,
-		'S_SELECT_SORT_DAYS' 	=> $s_limit_days,
+		'U_POST_ACTION'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode"),
+		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
+		'S_SELECT_SORT_KEY'		=> $s_sort_key,
+		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
 		'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
 		'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, $config['topics_per_page'], $start),
@@ -188,16 +191,18 @@ function mcp_warn_post_view($id, $mode, $action)
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 	$warning = request_var('warning', '', true);
 
-	$sql = 'SELECT u.*, p.* FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
+	$sql = 'SELECT u.*, p.*
+		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
 		WHERE post_id = $post_id
-		AND u.user_id = p.poster_id";
+			AND u.user_id = p.poster_id";
 	$result = $db->sql_query($sql);
+	$userrow = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if (!$userrow = $db->sql_fetchrow($result))
+	if (!$userrow)
 	{
 		trigger_error($user->lang['NO_POST']);
 	}
-	$db->sql_freeresult($result);
 
 	// There is no point issuing a warning to ignored users (ie anonymous and bots)
 	if ($userrow['user_type'] == USER_IGNORE)
@@ -207,16 +212,18 @@ function mcp_warn_post_view($id, $mode, $action)
 
 	// Check if there is already a warning for this post to prevent multiple
 	// warnings for the same offence
-	$sql = 'SELECT * FROM ' . WARNINGS_TABLE . "
+	$sql = 'SELECT post_id
+		FROM ' . WARNINGS_TABLE . "
 		WHERE post_id = $post_id";
 	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($row)
 	{
 		trigger_error($user->lang['ALREADY_WARNED']);
 	}
-	$db->sql_freeresult($result);
-	
+
 	$user_id = $userrow['user_id'];
 
 	if ($warning && $action == 'add_warning')
@@ -237,7 +244,8 @@ function mcp_warn_post_view($id, $mode, $action)
 	// Second parse bbcode here
 	if ($userrow['bbcode_bitfield'])
 	{
-		include_once($phpbb_root_path . 'includes/bbcode.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+
 		$bbcode = new bbcode($userrow['bbcode_bitfield']);
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
@@ -259,14 +267,15 @@ function mcp_warn_post_view($id, $mode, $action)
 		{
 			case AVATAR_UPLOAD:
 				$avatar_img = $config['avatar_path'] . '/';
-				break;
+			break;
+
 			case AVATAR_GALLERY:
 				$avatar_img = $config['avatar_gallery_path'] . '/';
-				break;
+			break;
 		}
 		$avatar_img .= $userrow['user_avatar'];
 
-		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" border="0" alt="" />';
+		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 	}
 
 	$template->assign_vars(array(
@@ -307,6 +316,11 @@ function mcp_warn_user_view($id, $mode, $action)
 	$userrow = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	if (!$userrow)
+	{
+		trigger_error('NO_USER');
+	}
+
 	$user_id = $userrow['user_id'];
 
 	if ($warning && $action == 'add_warning')
@@ -329,14 +343,15 @@ function mcp_warn_user_view($id, $mode, $action)
 		{
 			case AVATAR_UPLOAD:
 				$avatar_img = $config['avatar_path'] . '/';
-				break;
+			break;
+
 			case AVATAR_GALLERY:
 				$avatar_img = $config['avatar_gallery_path'] . '/';
-				break;
+			break;
 		}
 		$avatar_img .= $userrow['user_avatar'];
 
-		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" border="0" alt="" />';
+		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 	}
 
 	// OK, they didn't submit a warning so lets build the page for them to do so
@@ -366,13 +381,14 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 
 	if ($send_pm)
 	{
-		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
-		include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 		$userrow['user_lang'] = (file_exists($phpbb_root_path . 'language/' . $userrow['user_lang'] . "/mcp.$phpEx")) ? $userrow['user_lang'] : $config['default_lang'];
-		include($phpbb_root_path . 'language/' . $userrow['user_lang'] . "/mcp.$phpEx");
+		include($phpbb_root_path . 'language/' . basename($userrow['user_lang']) . "/mcp.$phpEx");
 
 		$message_parser = new parse_message();
+
 		$message_parser->message = sprintf($lang['WARNING_PM_BODY'], $warning);
 		$message_parser->parse(true, true, true, false, false, true);
 
@@ -412,4 +428,5 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 		WHERE user_id = ' . $userrow['user_id'];
 	$db->sql_query($sql);
 }
+
 ?>

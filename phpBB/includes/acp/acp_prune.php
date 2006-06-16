@@ -142,7 +142,7 @@ class acp_prune
 				'U_ACTION'			=> $this->u_action,
 				'S_SELECT_FORUM'	=> true,
 				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false))
-			);		
+			);
 		}
 		else
 		{
@@ -150,9 +150,11 @@ class acp_prune
 				FROM ' . FORUMS_TABLE . ' 
 				WHERE forum_id IN (' . implode(', ', $forum_id) . ')';
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
 
-			if (!($row = $db->sql_fetchrow($result)))
+			if (!$row)
 			{
+				$db->sql_freeresult($result);
 				trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action));
 			}
 
@@ -175,9 +177,7 @@ class acp_prune
 				'FORUM_LIST'			=> $forum_list,
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 			);
-
 		}
-
 	}
 
 	/**
@@ -361,7 +361,6 @@ class acp_prune
 			'S_COUNT_OPTIONS'	=> $s_find_count,
 			'U_FIND_USER'		=> append_sid($phpbb_root_path . "memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'))
 		);
-
 	}
 }
 

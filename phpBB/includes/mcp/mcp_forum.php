@@ -24,11 +24,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		unset($_POST['sk'], $_POST['sd'], $_REQUEST['sk'], $_REQUEST['sd']);
 	}
 
-	$forum_id = $forum_info['forum_id'];
-	$start = request_var('start', 0);
-	$topic_id_list = request_var('topic_id_list', array(0));
-	$post_id_list = request_var('post_id_list', array(0));
-	$topic_id = request_var('t', 0);
+	$forum_id		= $forum_info['forum_id'];
+	$start			= request_var('start', 0);
+	$topic_id_list	= request_var('topic_id_list', array(0));
+	$post_id_list	= request_var('post_id_list', array(0));
+	$topic_id		= request_var('t', 0);
 
 	// Resync Topics
 	if ($action == 'resync')
@@ -180,12 +180,12 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
-			'TOPIC_TYPE'		=>	$topic_type,
-			'TOPIC_TITLE'		=>	$topic_title,
-			'REPLIES'			=>	($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
-			'LAST_POST_TIME'	=>	$user->format_date($row['topic_last_post_time']),
-			'TOPIC_ID'			=>	$row['topic_id'],
-			'S_TOPIC_CHECKED'	=>	($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? 'checked="checked" ' : '',
+			'TOPIC_TYPE'		=> $topic_type,
+			'TOPIC_TITLE'		=> $topic_title,
+			'REPLIES'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
+			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
+			'TOPIC_ID'			=> $row['topic_id'],
+			'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? 'checked="checked" ' : '',
 
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
@@ -228,6 +228,7 @@ function mcp_resync_topics($topic_ids)
 	{
 		add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_TOPIC_RESYNC', $row['topic_title']);
 	}
+	$db->sql_freeresult($result);
 
 	$msg = (sizeof($topic_ids) == 1) ? $user->lang['TOPIC_RESYNC_SUCCESS'] : $user->lang['TOPICS_RESYNC_SUCCESS'];
 

@@ -1,31 +1,35 @@
 <!-- INCLUDE overall_header.html -->
 
-	<div id="pagecontent">
+<div id="pagecontent">
 
-		<form name="confirm" action="{S_CONFIRM_ACTION}" method="post"><table class="tablebg" width="100%" cellspacing="1">
-			<tr>
-				<th>{MESSAGE_TITLE}</th>
-			</tr>
-			<tr>
-				<td class="row1" align="center"><br /><p class="gen">{MESSAGE_TEXT}</p><br />{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></td>
-			</tr>
-		</table></form>
+	<form name="confirm" action="{S_CONFIRM_ACTION}" method="post">
 	
-	</div>
-
-	<br clear="all" />
-
-	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
-		<tr>
-			<td class="row1">
-				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-				<p class="datetime">{S_TIMEZONE}</p>
-			</td>
-		</tr>
+	<table class="tablebg" width="100%" cellspacing="1">
+	<tr>
+		<th>{MESSAGE_TITLE}</th>
+	</tr>
+	<tr>
+		<td class="row1" align="center"><br /><p class="gen">{MESSAGE_TEXT}</p><br />{S_HIDDEN_FIELDS}<input type="submit" name="confirm" value="{YES_VALUE}" class="btnmain" />&nbsp;&nbsp;<input type="submit" name="cancel" value="{L_NO}" class="btnlite" /></td>
+	</tr>
 	</table>
+	
+	</form>
+	
+</div>
 
-	<br clear="all" />
+<br clear="all" />
 
-	<div align="right"><!-- INCLUDE jumpbox.html --></div>
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+		<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+		<p class="datetime">{S_TIMEZONE}</p>
+	</td>
+</tr>
+</table>
+
+<br clear="all" />
+
+<div align="right"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

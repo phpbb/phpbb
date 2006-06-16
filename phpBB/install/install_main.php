@@ -14,13 +14,13 @@
 if (!empty($setmodules))
 {
 	$module[] = array(
-		'module_type' => 'install',
-		'module_title' => 'OVERVIEW',
-		'module_filename' => substr(basename(__FILE__), 0, -strlen($phpEx)-1),
-		'module_order' => 0,
-		'module_subs' => array('INTRO', 'LICENSE', 'SUPPORT'),
-		'module_stages' => '',
-		'module_reqs' => ''
+		'module_type'		=> 'install',
+		'module_title'		=> 'OVERVIEW',
+		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
+		'module_order'		=> 0,
+		'module_subs'		=> array('INTRO', 'LICENSE', 'SUPPORT'),
+		'module_stages'		=> '',
+		'module_reqs'		=> ''
 	);
 }
 
@@ -45,10 +45,12 @@ class install_main extends module
 				$title = $lang['SUB_INTRO'];
 				$body = $lang['OVERVIEW_BODY'];
 			break;
+
 			case 'license' :
 				$title = $lang['GPL'];
 				$body = implode("<br/>\n", file('../docs/COPYING'));
 			break;
+
 			case 'support' :
 				$title = $lang['SUB_SUPPORT'];
 				$body = $lang['SUPPORT_BODY'];
@@ -64,4 +66,5 @@ class install_main extends module
 		));
 	}
 }
+
 ?>

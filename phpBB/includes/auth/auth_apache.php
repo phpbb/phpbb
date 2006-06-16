@@ -28,7 +28,7 @@ function login_apache(&$username, &$password)
 	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
 	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
 
-	if ((!empty($php_auth_user)) && (!empty($php_auth_pw)))
+	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
 		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type 
 			FROM ' . USERS_TABLE . "
@@ -85,16 +85,17 @@ function autologin_apache()
 	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
 	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
 
-	if ((!empty($php_auth_user)) && (!empty($php_auth_pw)))
+	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
 		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row)
 		{
-			$db->sql_freeresult($result);
 			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? array() : $row;
 		}
 	}
@@ -109,7 +110,7 @@ function autologin_apache()
 */
 function validate_session_apache(&$user)
 {
-	return ($_SERVER['PHP_AUTH_USER'] == $user['username']) ? true : false;
+	return ($_SERVER['PHP_AUTH_USER'] === $user['username']) ? true : false;
 }
 
 ?>

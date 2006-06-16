@@ -65,10 +65,10 @@
 				</td>
 				<td style="width: 100px;">{reasons.REASON_COUNT}</td>
 				<td style="width: 15%; text-align: right; white-space: nowrap;">
-					<!-- IF not reasons.S_FIRST_ROW --><a href="{reasons.U_MOVE_UP}"><img src="images/icon_up.gif" alt="{L_MOVE_UP}" title="{L_MOVE_UP}" width="16" height="16" /></a> <!-- ENDIF -->
-					<!-- IF not reasons.S_LAST_ROW --><a href="{reasons.U_MOVE_DOWN}"><img src="images/icon_down.gif" alt="{L_MOVE_DOWN}" title="{L_MOVE_DOWN}" width="16" height="16" /></a> <!-- ENDIF -->
-					<a href="{reasons.U_EDIT}"><img src="images/icon_edit.gif" alt="{L_EDIT}" title="{L_EDIT}" width="16" height="16" /></a> 
-					<!-- IF reasons.U_DELETE --><a href="{reasons.U_DELETE}"><img src="images/icon_delete.gif" alt="{L_DELETE}" title="{L_DELETE}" width="16" height="16" /></a><!-- ENDIF -->
+					<!-- IF not reasons.S_FIRST_ROW --><a href="{reasons.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
+					<!-- IF not reasons.S_LAST_ROW --><a href="{reasons.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+					<a href="{reasons.U_EDIT}">{ICON_EDIT}</a> 
+					<!-- IF reasons.U_DELETE --><a href="{reasons.U_DELETE}">{ICON_DELETE}</a><!-- ENDIF -->
 				</td>
 			</tr>
 		<!-- END reasons -->

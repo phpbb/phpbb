@@ -11,7 +11,7 @@
 			<th width="22%">{L_AUTHOR}</th>
 			<th>{L_MESSAGE}</th>
 		</tr>
-		<!-- BEGIN history_row -->
+	<!-- BEGIN history_row -->
 			<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td rowspan="2" align="left" valign="top"><a name="{history_row.U_POST_ID}"></a>
 				<table width="150" cellspacing="0">
@@ -25,7 +25,7 @@
 			</td>
 		</tr>
 
-			<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td valign="top">
 				<table width="100%" cellspacing="0">
 				<tr>
@@ -52,14 +52,14 @@
 			</td>
 		</tr>
 
-			<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<!-- IF history_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 			<td class="gensmall"><a href="{history_row.U_VIEW_MESSAGE}">{L_VIEW_PM}</a></td>
 			<td><div class="gensmall" style="float:left">&nbsp;<!-- IF history_row.U_PROFILE --><a href="{history_row.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_EMAIL --><a href="{history_row.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float:right"><!-- IF history_row.U_QUOTE --><a href="{history_row.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- IF history_row.U_POST_REPLY_PM --><a href="{history_row.U_POST_REPLY_PM}">{REPLY_IMG}</a><!-- ENDIF -->&nbsp;</div></td>
 		</tr>
 		<tr>
 			<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 		</tr>
-		<!-- END history_row -->
+	<!-- END history_row -->
 		</table>
 	</div></td>
 </tr>

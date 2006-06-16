@@ -340,11 +340,16 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				$bday_day = $bday_month = $bday_year = 0;
-
-				if ($user->data['user_birthday'])
+				if (!isset($bday_day))
 				{
-					list($bday_day, $bday_month, $bday_year) = explode('-', $user->data['user_birthday']);
+					if ($user->data['user_birthday'])
+					{
+						list($bday_day, $bday_month, $bday_year) = explode('-', $user->data['user_birthday']);
+					}
+					else
+					{
+						$bday_day = $bday_month = $bday_year = 0;
+					}
 				}
 
 				$s_birthday_day_options = '<option value="0"' . ((!$bday_day) ? ' selected="selected"' : '') . '>--</option>';

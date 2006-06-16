@@ -124,6 +124,7 @@ class auth_admin extends auth
 				FROM ' . USERS_TABLE . '
 				WHERE user_id IN (' . implode(',', $ug_id) . ')';
 			$result = $db->sql_query($sql);
+
 			while ($userdata = $db->sql_fetchrow($result))
 			{
 				if ($user->data['user_id'] != $user_id)
@@ -148,6 +149,7 @@ class auth_admin extends auth
 				}
 			}
 			$db->sql_freeresult($result);
+
 			unset($userdata);
 			unset($auth2);
 		}
@@ -393,9 +395,9 @@ class auth_admin extends auth
 				$groups[$row['group_id']] = $row;
 			}
 			$db->sql_freeresult($result);
-			
+
 			$memberships = group_memberships(false, array_keys($hold_ary), false);
-			
+
 			// User is not a member of any group? Bad admin, bad bad admin...
 			if ($memberships)
 			{
@@ -546,6 +548,7 @@ class auth_admin extends auth
 
 								default:
 									$folder_image = ($forum_names_ary[$forum_id]['left_id'] + 1 != $forum_names_ary[$forum_id]['right_id']) ? '<img src="images/icon_folder_sub_small.gif" width="22" height="18" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder_small.gif" width="19" height="18" alt="' . $user->lang['FOLDER'] . '" />';
+								break;
 							}
 						}
 					}
@@ -596,7 +599,7 @@ class auth_admin extends auth
 				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_names[$forum_id],
 				'FORUM_ID'			=> $forum_id)
 			);
-		
+
 			if (isset($auth_ary['users']) && sizeof($auth_ary['users']))
 			{
 				$sql = 'SELECT user_id, username
@@ -740,6 +743,7 @@ class auth_admin extends auth
 		}
 
 		$cache->destroy('acl_options');
+		$this->acl_clear_prefetch();
 
 		return true;
 	}
@@ -762,7 +766,7 @@ class auth_admin extends auth
 		{
 			$ug_id = array($ug_id);
 		}
-		
+
 		$ug_id_sql = 'IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
 		$forum_sql = 'IN (' . implode(', ', array_map('intval', $forum_id)) . ') ';
 
@@ -1181,7 +1185,7 @@ class auth_admin extends auth
 	* The other user is always able to revert back to his permission set.
 	* This function does not check for lower/higher permissions, it is possible for the user to gain 
 	* "more" permissions by this.
-	*
+	* Admin permissions will not be copied.
 	*/
 	function ghost_permissions($from_user_id, $to_user_id)
 	{

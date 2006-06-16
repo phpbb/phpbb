@@ -14,13 +14,13 @@
 if (!empty($setmodules))
 {
 	$module[] = array(
-		'module_type' => 'install',
-		'module_title' => 'INSTALL',
-		'module_filename' => substr(basename(__FILE__), 0, -strlen($phpEx)-1),
-		'module_order' => 10,
-		'module_subs' => '',
-		'module_stages' => array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
-		'module_reqs' => ''
+		'module_type'		=> 'install',
+		'module_title'		=> 'INSTALL',
+		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
+		'module_order'		=> 10,
+		'module_subs'		=> '',
+		'module_stages'		=> array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
+		'module_reqs'		=> ''
 	);
 }
 
@@ -124,6 +124,7 @@ class install_install extends module
 		else
 		{
 			$passed['php'] = true;
+
 			// We also give feedback on whether we're running in safe mode
 			$result = '<b style="color:green">' . $lang['YES'];
 			if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
@@ -132,6 +133,7 @@ class install_install extends module
 			}
 			$result .= '</b>';
 		}
+
 		$template->assign_block_vars('checks', array(
 			'TITLE'			=> $lang['PHP_VERSION_REQD'],
 			'RESULT'		=> $result,
@@ -173,7 +175,7 @@ class install_install extends module
 		{
 			$dll = $db_ary['MODULE'];
 
-			if (!extension_loaded($dll))
+			if (!@extension_loaded($dll))
 			{
 				if (!$this->can_load_dll($dll))
 				{
@@ -208,7 +210,7 @@ class install_install extends module
 
 		foreach ($this->php_dlls_other as $dll)
 		{
-			if (!extension_loaded($dll))
+			if (!@extension_loaded($dll))
 			{
 				if (!$this->can_load_dll($dll))
 				{
@@ -222,6 +224,7 @@ class install_install extends module
 					continue;
 				}
 			}
+
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
 				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
@@ -429,7 +432,7 @@ class install_install extends module
 			$available_dbms_temp = array();
 			foreach ($this->available_dbms as $type => $dbms_ary)
 			{
-				if (!extension_loaded($dbms_ary['MODULE']))
+				if (!@extension_loaded($dbms_ary['MODULE']))
 				{
 					if (!$this->can_load_dll($dbms_ary['MODULE']))
 					{
@@ -693,7 +696,7 @@ class install_install extends module
 
 		foreach ($check_exts as $dll)
 		{
-			if (!extension_loaded($dll))
+			if (!@extension_loaded($dll))
 			{
 				if (!$this->can_load_dll($dll))
 				{
@@ -907,7 +910,7 @@ class install_install extends module
 		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
 
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
-		if (!extension_loaded($this->available_dbms[$dbms]['MODULE']))
+		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
 		{
 			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
 		}
@@ -1264,34 +1267,28 @@ class install_install extends module
 			if ($module_class == 'acp')
 			{
 				// Move main module 4 up...
-				for ($i = 1; $i <= 4; $i++)
-				{
-					$sql = 'SELECT *
-						FROM ' . MODULES_TABLE . "
-						WHERE module_name = 'main'
-							AND module_class = 'acp'
-							AND module_mode = 'main'";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_name = 'main'
+						AND module_class = 'acp'
+						AND module_mode = 'main'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 	
-					$_module->move_module_by($row, 'move_up', 1);
-				}
+				$_module->move_module_by($row, 'move_up', 4);
 
 				// Move permissions intro screen module 4 up...
-				for ($i = 1; $i <= 4; $i++)
-				{
-					$sql = 'SELECT *
-						FROM ' . MODULES_TABLE . "
-						WHERE module_name = 'permissions'
-							AND module_class = 'acp'
-							AND module_mode = 'intro'";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_name = 'permissions'
+						AND module_class = 'acp'
+						AND module_mode = 'intro'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 	
-					$_module->move_module_by($row, 'move_up', 1);
-				}
+				$_module->move_module_by($row, 'move_up', 4);
 			}
 	
 			// And now for the special ones
@@ -1374,7 +1371,7 @@ class install_install extends module
 		foreach ($this->bot_list as $bot_name => $bot_ary)
 		{
 			$user_row = array(
-				'user_type'			=> GROUP_HIDDEN,
+				'user_type'			=> USER_IGNORE,
 				'group_id'			=> $group_id,
 				'username'			=> $bot_name,
 				'user_regdate'		=> time(),
@@ -1446,7 +1443,7 @@ class install_install extends module
 
 		if ($config['email_enable'])
 		{
-			include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 			$messenger = new messenger(false);
 
@@ -1523,23 +1520,23 @@ class install_install extends module
 				case 'sqlite':
 					$sql = "SHOW TABLES";
 					$field = "Tables_in_{$dbname}";
-					break;
+				break;
 
 				case 'mssql':
 				case 'mssql_odbc':
 					$sql = "SELECT name 
 						FROM sysobjects 
 						WHERE type='U'";
-					$field = "name";
-					break;
+					$field = 'name';
+				break;
 
 				case 'postgres':
 					$sql = "SELECT relname 
 						FROM pg_class 
 						WHERE relkind = 'r' 
 							AND relname NOT LIKE 'pg\_%'";
-					$field = "relname";
-					break;
+					$field = 'relname';
+				break;
 
 				case 'firebird':
 					$sql = 'SELECT rdb$relation_name
@@ -1547,12 +1544,12 @@ class install_install extends module
 						WHERE rdb$view_source is null
 							AND rdb$system_flag = 0';
 					$field = 'rdb$relation_name';
-					break;
+				break;
 
 				case 'oracle':
 					$sql = 'SELECT table_name FROM USER_TABLES';
 					$field = 'table_name';
-					break;
+				break;
 			}
 			$result = $db->sql_query($sql);
 
@@ -1563,8 +1560,7 @@ class install_install extends module
 
 				do
 				{
-					// All phpBB installations will at least have config else it won't
-					// work
+					// All phpBB installations will at least have config else it won't work
 					if (in_array(strtolower($row[$field]), $table_ary))
 					{
 						$error[] = $lang['INST_ERR_PREFIX'];
@@ -1612,7 +1608,7 @@ class install_install extends module
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
 
-			if (is_file($path) || is_link($path) || $file == '.' || $file == '..')
+			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
 			{
 				continue;
 			}

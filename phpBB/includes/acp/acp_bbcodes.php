@@ -42,12 +42,13 @@ class acp_bbcodes
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row = $db->sql_fetchrow($result))
+				if (!$row)
 				{
 					trigger_error('BBCODE_NOT_EXIST');
 				}
-				$db->sql_freeresult($result);
 
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
@@ -59,14 +60,15 @@ class acp_bbcodes
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row = $db->sql_fetchrow($result))
+				if (!$row)
 				{
 					trigger_error('BBCODE_NOT_EXIST');
 				}
-				$db->sql_freeresult($result);
 
-				// No break here
+			// No break here
 
 			case 'create':
 				$display_on_posting = request_var('display_on_posting', 0);
@@ -151,12 +153,17 @@ class acp_bbcodes
 					$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
 					$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
+
 					$lang = 'BBCODE_ADDED';
 					$log_action = 'LOG_BBCODE_ADD';
 				}
 				else
 				{
-					$db->sql_query('UPDATE ' . BBCODES_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE bbcode_id = ' . $bbcode_id);
+					$sql = 'UPDATE ' . BBCODES_TABLE . '
+						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE bbcode_id = ' . $bbcode_id;
+					$db->sql_query($sql);
+
 					$lang = 'BBCODE_EDITED';
 					$log_action = 'LOG_BBCODE_EDIT';
 				}
@@ -173,13 +180,14 @@ class acp_bbcodes
 					FROM ' . BBCODES_TABLE . "
 					WHERE bbcode_id = $bbcode_id";
 				$result = $db->sql_query($sql);
-				
-				if ($row = $db->sql_fetchrow($result))
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row)
 				{
 					$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 					add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
 				}
-				$db->sql_freeresult($result);
 
 			break;
 		}

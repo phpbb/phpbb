@@ -379,7 +379,7 @@ if ($mode != 'post' && $config['allow_topic_notify'] && $user->data['is_register
 }
 
 // Do we want to edit our post ?
-if ($mode == 'edit')
+if ($mode == 'edit' && $post_data['bbcode_uid'])
 {
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
 }

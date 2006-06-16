@@ -84,14 +84,17 @@ function marklist(id, name, state)
 
 <div id="wrapheader">
 
-	<div id="logodesc"><table width="100%" cellspacing="0">
+	<div id="logodesc">
+		<table width="100%" cellspacing="0">
 		<tr>
 			<td><a href="{U_INDEX}">{SITE_LOGO_IMG}</a></td>
 			<td width="100%" align="center"><h1>{SITENAME}</h1><span class="gen">{SITE_DESCRIPTION}</span></td>
 		</tr>
-	</table></div>
+		</table>
+	</div>
 
-	<div id="menubar"><table width="100%" cellspacing="0">
+	<div id="menubar">
+		<table width="100%" cellspacing="0">
 		<tr>
 			<td class="genmed">
 				<a href="{U_LOGIN_LOGOUT}"><img src="{T_THEME_PATH}/images/icon_mini_login.gif" width="12" height="13" border="0" alt="{L_LOGIN_LOGOUT}" /> {L_LOGIN_LOGOUT}</a>&nbsp;
@@ -103,14 +106,17 @@ function marklist(id, name, state)
 			</td>
 			<td class="genmed" align="right"><a href="{U_FAQ}"><img src="{T_THEME_PATH}/images/icon_mini_faq.gif" width="12" height="13" border="0" alt="{L_FAQ}" /> {L_FAQ}</a><!-- IF S_DISPLAY_SEARCH -->&nbsp; &nbsp;<a href="{U_SEARCH}"><img src="{T_THEME_PATH}/images/icon_mini_search.gif" width="12" height="13" border="0" alt="{L_SEARCH}" /> {L_SEARCH}</a><!-- ENDIF --><!-- IF S_DISPLAY_MEMBERLIST -->&nbsp; &nbsp;<a href="{U_MEMBERLIST}"><img src="{T_THEME_PATH}/images/icon_mini_members.gif" width="12" height="13" border="0" alt="{L_MEMBERLIST}" /> {L_MEMBERLIST}</a><!-- ENDIF --><!-- IF S_USER_LOGGED_IN -->&nbsp; &nbsp;<a href="{U_PROFILE}"><img src="{T_THEME_PATH}/images/icon_mini_profile.gif" width="12" height="13" border="0" alt="{L_PROFILE}" /> {L_PROFILE}</a><!-- ENDIF --></td>
 		</tr>
-	</table></div>
+		</table>
+	</div>
 
-	<div id="datebar"><table width="100%" cellspacing="0">
+	<div id="datebar">
+		<table width="100%" cellspacing="0">
 		<tr>
 			<td class="gensmall"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ENDIF --></td>
 			<td class="gensmall" align="right">{CURRENT_TIME}<br /></td>
 		</tr>
-	</table></div>
+		</table>
+	</div>
 
 </div>
 
@@ -128,12 +134,12 @@ function marklist(id, name, state)
 	<br style="clear: both;" />
 
 	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" style="margin-top: 5px;">
-		<tr>
-			<td class="row1">
-				<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
-				<p class="datetime">{S_TIMEZONE}</p>
-			</td>
-		</tr>
+	<tr>
+		<td class="row1">
+			<p class="breadcrumbs"><a href="{U_INDEX}">{L_INDEX}</a><!-- BEGIN navlinks --> &#187; <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></p>
+			<p class="datetime">{S_TIMEZONE}</p>
+		</td>
+	</tr>
 	</table>
 
 	<br />
