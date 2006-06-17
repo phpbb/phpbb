@@ -116,6 +116,20 @@ class auth_admin extends auth
 		// Only those options we need
 		$compare_options = array_diff(preg_replace('/^((?!' . $auth_option . ').+)|(' . $auth_option . ')$/', '', array_keys($this->acl_options[$scope])), array(''));
 
+		// If forum_ids is false and the scope is local we actually want to have all forums within the array
+		if ($scope == 'local' && !sizeof($forum_ids))
+		{
+			$sql = 'SELECT forum_id 
+				FROM ' . FORUMS_TABLE;
+			$result = $db->sql_query($sql, 120);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_ids[] = $row['forum_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+
 		if ($view_user_mask)
 		{
 			$auth2 = null;
@@ -127,7 +141,7 @@ class auth_admin extends auth
 
 			while ($userdata = $db->sql_fetchrow($result))
 			{
-				if ($user->data['user_id'] != $user_id)
+				if ($user->data['user_id'] != $userdata['user_id'])
 				{
 					$auth2 = new auth();
 					$auth2->acl($userdata);
@@ -138,6 +152,7 @@ class auth_admin extends auth
 					$auth2 = &$auth;
 				}
 
+				
 				$hold_ary[$userdata['user_id']] = array();
 				foreach ($forum_ids as $f_id)
 				{
@@ -152,20 +167,6 @@ class auth_admin extends auth
 
 			unset($userdata);
 			unset($auth2);
-		}
-
-		// If forum_ids is false and the scope is local we actually want to have all forums within the array
-		if ($scope == 'local' && !sizeof($forum_ids))
-		{
-			$sql = 'SELECT forum_id 
-				FROM ' . FORUMS_TABLE;
-			$result = $db->sql_query($sql, 120);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$forum_ids[] = $row['forum_id'];
-			}
-			$db->sql_freeresult($result);
 		}
 
 		foreach ($ug_id as $_id)
