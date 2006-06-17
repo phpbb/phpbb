@@ -520,7 +520,7 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		if ($dbname == '')
+		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
@@ -679,7 +679,7 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		if ($dbname == '')
+		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
@@ -823,7 +823,7 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		if ($dbname == '')
+		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
@@ -899,7 +899,7 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
-		if ($dbname == '')
+		if ($dbms == '')
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
