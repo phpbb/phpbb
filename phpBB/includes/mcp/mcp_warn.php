@@ -247,7 +247,7 @@ function mcp_warn_post_view($id, $mode, $action)
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 
 		$bbcode = new bbcode($userrow['bbcode_bitfield']);
-		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+		$bbcode->bbcode_second_pass($message, $userrow['bbcode_uid'], $userrow['bbcode_bitfield']);
 	}
 
 	// Always process smilies after parsing bbcodes
