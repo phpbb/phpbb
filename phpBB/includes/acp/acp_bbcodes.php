@@ -56,7 +56,7 @@ class acp_bbcodes
 			break;
 
 			case 'modify':
-				$sql = 'SELECT bbcode_id
+				$sql = 'SELECT bbcode_id, bbcode_tag
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
@@ -110,6 +110,24 @@ class acp_bbcodes
 			case 'create':
 
 				$data = $this->build_regexp($bbcode_match, $bbcode_tpl);
+
+				// Make sure the user didn't pick a "bad" name for the BBCode tag.
+				$hard_coded = array('code', 'quote', 'quote=', 'attachment', 'attachment=', 'b', 'i', 'url', 'url=', 'img', 'size', 'size=', 'color', 'color=', 'u', 'list', 'list=', 'email', 'email=', 'flash', 'flash=');
+
+				if (($action == 'modify' && $data['bbcode_tag'] !== $row['bbcode_tag']) || ($action == 'create'))
+				{
+					$sql = 'SELECT 1 as test
+						FROM ' . BBCODES_TABLE . "
+						WHERE LOWER(bbcode_tag) = '" . $db->sql_escape(strtolower($data['bbcode_tag'])) . "'";
+					$result = $db->sql_query($sql);
+					$info = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded))
+					{
+						trigger_error('BBCODE_INVALID_TAG_NAME');
+					}
+				}
 
 				$sql_ary = array(
 					'bbcode_tag'				=> $data['bbcode_tag'],

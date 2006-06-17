@@ -1099,7 +1099,7 @@ class acp_database
 						if ($delete)
 						{
 							unlink($file_name);
-							trigger_error($user->lang['BACKUP_SUCCESS']);
+							trigger_error($user->lang['BACKUP_DELETE']);
 						}
 
 						$data = file_get_contents($file_name);

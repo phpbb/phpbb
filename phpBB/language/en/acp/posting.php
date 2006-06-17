@@ -36,6 +36,7 @@ $lang = array_merge($lang, array(
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully',
 	'BBCODE_EDITED'				=> 'BBCode edited successfully',
+	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected is invalid',
 	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist',
 	'BBCODE_TAG'				=> 'Tag',
 	'BBCODE_USAGE'				=> 'BBCode usage',
