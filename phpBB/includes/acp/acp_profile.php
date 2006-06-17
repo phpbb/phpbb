@@ -105,7 +105,51 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
-					$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP $field_ident");
+
+					switch (SQL_LAYER)
+					{
+						case 'sqlite':
+							$sql = "SELECT sql
+								FROM sqlite_master 
+								WHERE type = 'table' 
+									AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
+								ORDER BY type DESC, name;";
+							$result = $db->sql_query($sql);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							// Create a temp table and populate it, destroy the existing one
+							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+' . PROFILE_FIELDS_DATA_TABLE . '#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
+							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
+							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
+
+							preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+							$new_table_cols = $matches[1];
+							$old_table_cols = explode(',', $new_table_cols);
+							$column_list = array();
+							foreach($old_table_cols as $declaration)
+							{
+								$entities = preg_split('#\s+#', $declaration);
+								if ($entities[0] !== $field_ident)
+								{
+									$column_list[] = $entities[0];
+								}
+							}
+
+							$columns = implode(',', $column_list);
+
+							$new_table_cols = preg_replace('/' . $field_ident . '[^,]+,/', '', $new_table_cols);
+
+							// create a new table and fill it up. destroy the temp one
+							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
+							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
+							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
+						break;
+
+						default:
+							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP $field_ident");
+					}
 
 					$order = 0;
 
@@ -937,37 +981,77 @@ class acp_profile
 
 				case 'sqlite':
 
-					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident ";
-
 					switch ($field_type)
 					{
 						case FIELD_STRING:
-							$sql .= ' VARCHAR(255) ';
+							$type = ' VARCHAR(255) ';
 						break;
 
 						case FIELD_DATE:
-							$sql .= 'VARCHAR(10) ';
+							$type = 'VARCHAR(10) ';
 						break;
 
 						case FIELD_TEXT:
-							$sql .= "TEXT(65535)";
+							$type = "TEXT(65535)";
 		//						ADD {$field_ident}_bbcode_uid VARCHAR(5) NOT NULL,
 		//						ADD {$field_ident}_bbcode_bitfield INT(11) UNSIGNED";
 						break;
 
 						case FIELD_BOOL:
-							$sql .= 'TINYINT(2) ';
+							$type = 'TINYINT(2) ';
 						break;
 				
 						case FIELD_DROPDOWN:
-							$sql .= 'MEDIUMINT(8) ';
+							$type = 'MEDIUMINT(8) ';
 						break;
 
 						case FIELD_INT:
-							$sql .= 'BIGINT(20) ';
+							$type = 'BIGINT(20) ';
 						break;
 					}
+
+					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+					if (version_compare(sqlite_libversion(), '3.0') == -1)
+					{
+						$sql = "SELECT sql
+							FROM sqlite_master 
+							WHERE type = 'table' 
+								AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
+							ORDER BY type DESC, name;";
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						// Create a temp table and populate it, destroy the existing one
+						$db->sql_query(preg_replace('#CREATE\s+TABLE\s+' . PROFILE_FIELDS_DATA_TABLE . '#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
+						$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
+						$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
+
+						preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+						$new_table_cols = $matches[1];
+						$old_table_cols = explode(',', $new_table_cols);
+						$column_list = array();
+						foreach($old_table_cols as $declaration)
+						{
+							$entities = preg_split('#\s+#', $declaration);
+							$column_list[] = $entities[0];
+						}
+
+						$columns = implode(',', $column_list);
+
+						$new_table_cols = $field_ident . ' ' . $type . ',' . $new_table_cols;
+
+						// create a new table and fill it up. destroy the temp one
+						$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
+						$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
+						$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
+					}
+					else
+					{
+						$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident $type";
+					}
+
 
 				break;
 

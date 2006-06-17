@@ -41,7 +41,7 @@ class dbal_sqlite extends dbal
 		$this->dbname = $database;
 
 		$error = '';
-		$this->db_connect_id = ($this->persistency) ? @sqlite_popen($this->server, 0666, $error) : @sqlite_open($this->server, 0666, $error);;
+		$this->db_connect_id = ($this->persistency) ? @sqlite_popen($this->server, 0666, $error) : @sqlite_open($this->server, 0666, $error);
 
 		if ($this->db_connect_id)
 		{

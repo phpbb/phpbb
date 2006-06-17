@@ -391,7 +391,7 @@ class install_install extends module
 			{
 				if (!$this->can_load_dll($this->available_dbms[$dbms]['MODULE']))
 				{
-					$error['db'][] = $lang['INST_ERR_NO_DB'];;
+					$error['db'][] = $lang['INST_ERR_NO_DB'];
 				}
 			}
 
@@ -547,7 +547,7 @@ class install_install extends module
 			}
 
 			// Test against the default password rules
-			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
+			if ($admin_pass1 != '' && strlen($admin_pass1) < 4)
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_SHORT'];
 			}
