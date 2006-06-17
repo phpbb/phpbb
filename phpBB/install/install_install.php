@@ -547,7 +547,7 @@ class install_install extends module
 			}
 
 			// Test against the default password rules
-			if ($admin_pass1 != '' && strlen($admin_pass1) < 4)
+			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_SHORT'];
 			}
