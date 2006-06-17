@@ -230,7 +230,6 @@ $lang = array_merge($lang, array(
 	'POST_NOT_EXIST'		=> 'The post you requested does not exist',
 	'POST_REPORTED_SUCCESS'	=> 'This post has been successfully reported',
 	'POST_UNLOCKED_SUCCESS'	=> 'Post unlocked successfully',
-	'POST_UNRATED_SUCCESS'	=> 'Post unrated successfully',
 
 	'READ_USERNOTES'		=> 'User notes',
 	'READ_WARNINGS'			=> 'User warnings',
@@ -314,8 +313,6 @@ $lang = array_merge($lang, array(
 	'UNLOCK_TOPIC_CONFIRM'			=> 'Are you sure you want to unlock this topic?',
 	'UNLOCK_TOPICS'					=> 'Unlock selected topics',
 	'UNLOCK_TOPICS_CONFIRM'			=> 'Are you sure you want to unlock all selected topics?',
-	'UNRATE_POST'					=> 'Unrate post',
-	'UNRATE_POST_EXPLAIN'			=> 'Reset post rating',
 	'USER_CANNOT_POST'				=> 'You cannot post in this forum',
 	'USER_CANNOT_REPORT'			=> 'You cannot report posts in this forum',
 	'USER_FEEDBACK_ADDED'			=> 'User feedback added successfully',

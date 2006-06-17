@@ -79,11 +79,6 @@ $lang = array_merge($lang, array(
 	'QUICK_MOD'				=> 'Quick-mod tools',
 	'QUOTE'					=> 'Quote',
 
-	'RATE'					=> 'Rate',
-	'RATE_BAD'				=> 'Bad',
-	'RATE_GOOD'				=> 'Good',
-	'RATING_ADDED'			=> 'Your rating for this poster has been saved.',
-	'RATING_UPDATED'		=> 'Your existing rating for this poster has been updated',
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
