@@ -852,6 +852,16 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$post_subject = $row['post_subject'];
 		$message = $row['post_text'];
+		$decoded_message = false;
+
+		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
+		{
+			$decoded_message = $message;
+			decode_message($decoded_message, $row['bbcode_uid']);
+
+			$decoded_message = censor_text($decoded_message);
+			$decoded_message = str_replace("\n", "<br />", $decoded_message);
+		}
 
 		if ($row['bbcode_bitfield'])
 		{
@@ -864,16 +874,17 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$message = censor_text($message);
 
 		$template->assign_block_vars($mode . '_row', array(
-			'POSTER_NAME' 	=> $poster,
-			'POST_SUBJECT' 	=> $post_subject,
-			'MINI_POST_IMG' => $user->img('icon_post', $user->lang['POST']),
-			'POST_DATE' 	=> $user->format_date($row['post_time']),
-			'MESSAGE' 		=> str_replace("\n", '<br />', $message), 
+			'POSTER_NAME'		=> $poster,
+			'POST_SUBJECT'		=> $post_subject,
+			'MINI_POST_IMG'		=> $user->img('icon_post', $user->lang['POST']),
+			'POST_DATE'			=> $user->format_date($row['post_time']),
+			'MESSAGE'			=> str_replace("\n", '<br />', $message), 
+			'DECODED_MESSAGE'	=> $decoded_message,
 
-			'U_POST_ID'		=> $row['post_id'],
-			'U_MINI_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'	=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
-			'U_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . addslashes($poster) . "')" : '')
+			'U_POST_ID'			=> $row['post_id'],
+			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
+			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+			'U_QUOTE'			=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? 'javascript:addquote(' . $row['post_id'] . ", '" . addslashes($poster) . "')" : '')
 		);
 		unset($rowset[$i]);
 	}
