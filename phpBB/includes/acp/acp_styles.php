@@ -1232,11 +1232,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		global $db, $user, $phpbb_root_path, $cache, $template;
 
 		$this->page_title = 'EDIT_IMAGESET';
-		$update = (isset($_POST['update'])) ? true : false;
-		$imgname = (!empty($_POST['imgname'])) ? htmlspecialchars($_POST['imgname']) : '';
-		$imgpath = (isset($_POST['imgpath'])) ? htmlspecialchars($_POST['imgpath']) : '';
-		$imgsize = (!empty($_POST['imgsize'])) ? true : false;
-		$imgwidth = (isset($_POST['imgwidth'])) ? intval($_POST['imgwidth']) : '';
+		$update		= (isset($_POST['update'])) ? true : false;
+		$imgname	= request_var('imgname', '');
+		$imgpath	= request_var('imgpath', '');
+		$imgsize	= request_var('imgsize', false);
+		$imgwidth	= request_var('imgwidth', 0);
+
+		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
+		$imgpath	= str_replace('..', '.', $imgpath);
 
 		if ($imageset_id)
 		{
@@ -1383,7 +1386,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$imgsize_bool = (!empty($imgname) && ($imgsize || preg_match('#\*\d+#', $$imgname))) ? true : false;
 
-		$img_info = explode('*', $imgname);
+		$img_info = (!empty($imgname)) ? explode('*', $$imgname) : array();
 
 		$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
