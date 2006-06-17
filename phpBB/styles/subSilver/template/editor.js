@@ -213,6 +213,7 @@ function addquote(post_id, username)
 		if (divarea.innerHTML)
 		{
 			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
+			theSelection = theSelection.replace(/<br\/>/ig, '\n');
 		}
 		else if (document.all)
 		{

@@ -175,8 +175,7 @@ $lang = array_merge($lang, array(
 	'NO_LOCATION'				=> 'Cannot determine location',
 	'NO_TABLES_FOUND'			=> 'No tables found.',
 // TODO: Write some explanatory introduction text
-	'OVERVIEW_BODY'				=> 'Some brief explanatory text about phpBB will go here.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above',
-
+	'OVERVIEW_BODY'					=> 'Welcome to our first public beta of the next-generation of phpBB after 2.0.x, phpBB 3.0! This beta release is intended for advanced users to try out on dedicated development enviroments to help us finish creating the best Opensource Bulletin Board solution available.</p><p><strong style="text-transform: uppercase;">Note:</strong> This release is <strong style="text-transform: uppercase;">not final</strong> and made available for testing purposes <strong style="text-transform: uppercase;">only</strong>.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above.',
 	'PHP_OPTIONAL_MODULE'			=> 'Optional Modules',
 	'PHP_OPTIONAL_MODULE_EXPLAIN'	=> '<strong>Optional</strong> - These modules or applications are optional, you do not need these to use phpBB 3.0. However if you do have them they will will enable greater functionality.',
 	'PHP_SUPPORTED_DB'				=> 'Supported Databases',
@@ -220,7 +219,7 @@ $lang = array_merge($lang, array(
 	'SUB_SUPPORT'				=> 'Support',
 	'SUCCESSFUL_CONNECT'		=> 'Successful Connection',
 // TODO: Write some text on obtaining support
-	'SUPPORT_BODY'				=> 'Some text on obtaining support, etc can go here.</p><p>Probably this can be copied from the documentation</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a>',
+	'SUPPORT_BODY'				=> 'During the beta phase a minimal level of support will be given at <a href="http://www.phpbb.com/phpBB/viewforum.php?f=46">the phpBB 3.0 Beta1 support forum</a>. We will provide answers to general setup questions, configuration problems and support for determining common problems mostly related to bugs. We will not support modifications, custom code/style additions or any users using the beta packages within a live environment.</p><p>For additional assistance, please refer to our <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/quick_start_guide.html">Quick Start Guide</a>.</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a>',
 	'SYNC_FORUMS'				=> 'Starting to sync forums',
 	'SYNC_TOPICS'				=> 'Starting to sync topics',
 	'SYNC_TOPIC_ID'				=> 'Synchronising topics from topic_id $1%s to $2%s',

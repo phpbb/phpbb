@@ -29,6 +29,26 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'ACP_PERMISSIONS_EXPLAIN'	=> '
+		<p>Permissions are highly granular and grouped into four major sections, which are:</p>
+
+		<h2>Global Permissions</h2>
+		<p>These are used to control access on a global level and apply to the entire bulletin board. They are further divided into Users Permissions, Groups Permissions, Administrators and Global Moderators.</p>
+
+		<h2>Forum Based Permissions</h2>
+		<p>These are used to control access on a per forum basis. They are further divided into Forum Permissions, Forum Moderators, Users Forum Permissions and Groups Forum Permissions.</p>
+
+		<h2>Permission Roles</h2>
+		<p>These are used to create different sets of permissions for the different permission types later being able to be assigned on a role-based basis. The default roles should cover the administration of bulletin boards large and small, though within each of the four divisions, you can add/edit/delete roles as you see fit.</p>
+
+		<h2>Permission Mask</h2>
+		<p>These are used to view the effective permissions assigned to Users, Moderators (Local and Global), Administrators or Forums.</p>
+	
+		<br />
+
+		<p>For further information on setting up and managing permissions on your phpBB3 forum, please see <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/quick_permissions.html">Chapter 1.5 of our Quick Start Guide</a>.</p>
+	',
+
 	'ACL_NO'				=> 'No',
 	'ACL_SET'				=> 'Setting Permissions',
 	'ACL_SET_EXPLAIN'		=> 'Permissions are based on a simple YES/NO system. Setting an option to NO for a user or usergroup overrides any other value assigned to it. If you do not wish to assign a value for an option for this user or group select UNSET. If values are assigned for this option elsewhere they will be used in preference, else NO is assumed. All objects marked (with the checkbox in front of them) will inherit the permission set you defined.',
