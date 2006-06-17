@@ -1913,6 +1913,7 @@ function cache_moderators()
 					OR r.auth_setting = ' . ACL_NO . ')
 				AND a.group_id = ug.group_id
 				AND ug.user_id IN (' . implode(', ', $ug_id_ary) . ")
+				AND ug.user_pending = 0
 				AND o.auth_option LIKE 'm\_%'",
 		));
 		$result = $db->sql_query($sql);

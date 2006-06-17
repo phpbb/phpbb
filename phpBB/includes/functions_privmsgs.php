@@ -387,7 +387,8 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		{
 			$sql = 'SELECT *
 				FROM ' . USER_GROUP_TABLE . ' 
-				WHERE user_id IN (' . implode(', ', $user_ids) . ')';
+				WHERE user_id IN (' . implode(', ', $user_ids) . ')
+					AND user_pending = 0';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))

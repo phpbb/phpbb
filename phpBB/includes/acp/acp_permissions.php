@@ -968,6 +968,7 @@ class acp_permissions
 			FROM ' . GROUPS_TABLE . ' g
 				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.group_id = g.group_id)
 			WHERE ug.user_id = ' . $user_id . '
+				AND ug.user_pending = 0
 			ORDER BY g.group_type DESC, g.group_id DESC';
 		$result = $db->sql_query($sql);
 

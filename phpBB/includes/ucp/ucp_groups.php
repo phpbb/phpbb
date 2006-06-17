@@ -259,7 +259,7 @@ class ucp_groups
 					}
 				}
 
-				$sql = 'SELECT g.group_id, g.group_name, g.group_desc, g.group_desc_uid, g.group_desc_bitfield, g.group_type, ug.group_leader, ug.user_pending
+				$sql = 'SELECT g.*, ug.group_leader, ug.user_pending
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 					WHERE ug.user_id = ' . $user->data['user_id'] . '
 						AND g.group_id = ug.group_id

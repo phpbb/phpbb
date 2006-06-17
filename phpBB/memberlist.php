@@ -123,7 +123,7 @@ switch ($mode)
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
-					'ON'	=> 'ug.group_id = g.group_id AND ug.user_id = ' . $user->data['user_id']
+					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . $user->data['user_id']
 				)
 			),
 
@@ -157,7 +157,7 @@ switch ($mode)
 
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
 			{
-				$group_name = $user->lang['UNDISCLOSED'];
+				$group_name = $user->lang['GROUP_UNDISCLOSED'];
 				$u_group = '';
 			}
 			else

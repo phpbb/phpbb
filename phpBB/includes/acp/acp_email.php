@@ -70,7 +70,7 @@ class acp_email
 						$sql = 'SELECT u.user_email, u.username, u.user_lang, u.user_jabber, u.user_notify_type 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
-								AND ug.user_pending <> 1 
+								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id 
 								AND u.user_allow_massemail = 1
 							ORDER BY u.user_lang, u.user_notify_type";

@@ -541,6 +541,7 @@ class auth
 
 			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
 				AND a.group_id = ug.group_id
+				AND ug.user_pending = 0
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts",
