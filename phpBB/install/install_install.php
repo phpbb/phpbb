@@ -836,8 +836,8 @@ class install_install extends module
 
 		$server_name = ($server_name !== '') ? $server_name : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
 		$server_port = ($server_port !== '') ? $server_port : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
-		$server_protocol = ($server_protocol !== '') ? $server_protocol : (isset($_SERVER['HTTPS']) ? 'https://' : 'http://');
-		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : (isset($_SERVER['HTTPS']) ? true : false);
+		$server_protocol = ($server_protocol !== '') ? $server_protocol : (isset($_SERVER['HTTPS'] && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
+		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : (isset($_SERVER['HTTPS'] && $_SERVER['HTTPS'] == 'on') ? true : false);
 
 		
 		foreach ($this->advanced_config_options as $config_key => $vars)
@@ -1315,9 +1315,8 @@ class install_install extends module
 						$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
 							WHERE module_langname = '$mod_name'
 								AND module_class = '$module_class'
-								AND module_name <> ''
-							LIMIT 1";
-						$result = $db->sql_query($sql);
+								AND module_name <> ''";
+						$result = $db->sql_query_limit($sql, 1);
 						$module_data = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 

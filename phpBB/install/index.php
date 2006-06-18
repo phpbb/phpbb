@@ -332,7 +332,7 @@ class module
 	*/
 	function page_footer()
 	{
-		global $template;
+		global $db, $template;
 
 		$template->display('body');
 	
@@ -545,9 +545,7 @@ class module
 			'MESSAGE_TEXT'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
 		));
 
-		$db->sql_close();
 		$this->page_footer();
-		exit;
 	}
 
 	/**
@@ -573,7 +571,7 @@ class module
 				$rows = (int) $tpl_type[1];
 				$cols = (int) $tpl_type[2];
 
-				$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $value . '</textarea>';
+				$tpl = '<textarea id="' . $name . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $value . '</textarea>';
 			break;
 
 			case 'radio':
