@@ -917,7 +917,7 @@ class acp_profile
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_no_view'			=> $cp->vars['field_no_view']
 		);
-$db->sql_transaction('begin');
+
 		if ($action == 'create')
 		{
 			$profile_fields += array(
@@ -1381,7 +1381,7 @@ $db->sql_transaction('begin');
 			}
 		}
 
-$db->sql_transaction('commit');
+
 		$db->sql_transaction('begin');
 
 		if ($action == 'create')

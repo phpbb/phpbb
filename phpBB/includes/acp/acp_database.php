@@ -135,6 +135,7 @@ class acp_database
 						{
 							case 'sqlite':
 								$sql_data .= "BEGIN TRANSACTION;\n";
+								$sqlite_version = sqlite_libversion();
 							break;
 
 							case 'postgres':
@@ -157,7 +158,6 @@ class acp_database
 									case 'mysqli':
 									case 'mysql4':
 									case 'mysql':
-									case 'sqlite':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
 									break;
@@ -165,6 +165,18 @@ class acp_database
 									case 'oracle':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE $table_name;\n\\\n";
+									break;
+
+									case 'sqlite':
+										$sql_data .= '# Table: ' . $table_name . "\n";
+										if (version_compare($sqlite_version, '3.0') == -1)
+										{
+											$sql_data .= "DROP TABLE $table_name;\n";
+										}
+										else
+										{
+											$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
+										}
 									break;
 
 									case 'postgres':
