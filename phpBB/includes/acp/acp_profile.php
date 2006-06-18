@@ -125,7 +125,7 @@ class acp_profile
 
 							preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
-							$new_table_cols = $matches[1];
+							$new_table_cols = trim($matches[1]);
 							$old_table_cols = explode(',', $new_table_cols);
 							$column_list = array();
 							foreach($old_table_cols as $declaration)
@@ -917,7 +917,7 @@ class acp_profile
 			'field_hide'			=> $cp->vars['field_hide'],
 			'field_no_view'			=> $cp->vars['field_no_view']
 		);
-
+$db->sql_transaction('begin');
 		if ($action == 'create')
 		{
 			$profile_fields += array(
@@ -1029,12 +1029,13 @@ class acp_profile
 
 						preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
-						$new_table_cols = $matches[1];
+						$new_table_cols = trim($matches[1]);
 						$old_table_cols = explode(',', $new_table_cols);
 						$column_list = array();
 						foreach($old_table_cols as $declaration)
 						{
 							$entities = preg_split('#\s+#', $declaration);
+							var_dump($entities);
 							$column_list[] = $entities[0];
 						}
 
@@ -1380,6 +1381,7 @@ class acp_profile
 			}
 		}
 
+$db->sql_transaction('commit');
 		$db->sql_transaction('begin');
 
 		if ($action == 'create')
