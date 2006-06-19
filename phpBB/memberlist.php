@@ -183,7 +183,7 @@ switch ($mode)
 
 				'U_GROUP'		=> $u_group,
 				'U_VIEWPROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
-				'U_PM'			=> ($auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '')
+				'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '')
 			);
 		}
 		$db->sql_freeresult($result);
@@ -921,7 +921,7 @@ switch ($mode)
 				'RANK_IMG'		=> $rank_img,
 				'RANK_IMG_SRC'	=> $rank_img_src,
 
-				'U_PM'			=> ($auth->acl_get('u_sendpm') && $group_row['group_receive_pm'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
+				'U_PM'			=> ($auth->acl_get('u_sendpm') && $group_row['group_receive_pm'] && $config['allow_privmsg'] && $config['allow_mass_pm']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
 			);
 
 			$sql_select = ', ug.group_leader';
@@ -1235,7 +1235,7 @@ function show_profile($data)
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
 		'U_NOTES'		=> $auth->acl_getf_global('m_') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> $auth->acl_getf_global('m_warn') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_PM'			=> ($auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
+		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_ICQ'			=> ($data['user_icq']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=icq&amp;u=' . $user_id) : '',

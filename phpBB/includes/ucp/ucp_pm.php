@@ -148,6 +148,7 @@ class ucp_pm
 				include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
 
 				$module = new ucp_main($this);
+				$module->u_action = $this->u_action;
 				$module->main($id, $mode);
 				$this->tpl_name = $module->tpl_name;
 

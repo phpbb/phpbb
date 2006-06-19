@@ -243,7 +243,7 @@ function compose_pm($id, $mode, $action)
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
 	{
-		if (!($message_time > time() - $config['pm_edit_time'] || !$config['pm_edit_time']))
+		if (!($message_time > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']))
 		{
 			trigger_error('CANNOT_EDIT_MESSAGE_TIME');
 		}

@@ -93,8 +93,6 @@ $lang = array_merge($lang, array(
 
 	'IP_INFO'				=> 'IP Information',
 
-	'JUMP_TO'					=> 'Moderate forum',		// Overwriting the jump to language variable for the mcp jumpbox
-	
 	'LATEST_LOGS'				=> 'Latest 5 logged actions',
 	'LATEST_REPORTED'			=> 'Latest 5 reports',
 	'LATEST_UNAPPROVED'			=> 'Latest 5 posts awaiting for approval',
@@ -188,6 +186,7 @@ $lang = array_merge($lang, array(
 	'MERGE_POSTS_CONFIRM'	=> 'Are you sure you want to merge the selected posts?',
 	'MERGE_TOPIC_EXPLAIN'	=> 'Using the form below you can merge selected posts into another topic. These posts will not be reordered and will appear as if the users posted them to the new topic.<br />Please enter the destination topic id or click on the "Select" button to search for one',
 	'MERGE_TOPIC_ID'		=> 'Destination topic id',
+	'MODERATE_FORUM'		=> 'Moderate forum',
 	'MOD_OPTIONS'			=> 'Moderator options',
 	'MORE_INFO'				=> 'Further information',
 	'MOST_WARNINGS'			=> 'Users with most warnings',

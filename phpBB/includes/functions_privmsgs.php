@@ -1477,19 +1477,18 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 
 	$subject = censor_text($subject);
 
+	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
+
 	// Get banned User ID's
 	$sql = 'SELECT ban_userid 
-		FROM ' . BANLIST_TABLE;
+		FROM ' . BANLIST_TABLE . '
+		WHERE ban_userid IN (' . implode(', ', array_map('intval', array_keys($recipients))) . ')
+			AND ban_exclude = 0';
 	$result = $db->sql_query($sql);
 
-	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
-	
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (isset($row['ban_userid']))
-		{
-			unset($recipients[$row['ban_userid']]);
-		}
+		unset($recipients[$row['ban_userid']]);
 	}
 	$db->sql_freeresult($result);
 
@@ -1498,7 +1497,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		return;
 	}
 
-	$recipient_list = implode(', ', array_keys($recipients));
+	$recipient_list = implode(', ', array_map('intval', array_keys($recipients)));
 
 	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber 
 		FROM ' . USERS_TABLE . "

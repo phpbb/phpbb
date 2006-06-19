@@ -32,6 +32,9 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('ucp');
 
+// Setting a variable to let the style designer know where he is...
+$template->assign_var('S_IN_UCP', true);
+
 $module = new p_master();
 
 // Basic "global" modes

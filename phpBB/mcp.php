@@ -25,6 +25,9 @@ $user->setup('mcp');
 
 $module = new p_master();
 
+// Setting a variable to let the style designer know where he is...
+$template->assign_var('S_IN_MCP', true);
+
 // Basic parameter data
 $id = request_var('i', '');
 

@@ -157,6 +157,7 @@ $lang = array_merge($lang, array(
 	'DRAFT_UPDATED'				=> 'Draft successfully updated.',
 
 	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll informations.',
+	'EMAIL_BANNED_EMAIL'		=> 'The email address you entered is not allowed to be used.',
 	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
 	'EMAIL_REMIND'				=> 'This must be the email address you supplied when registering.',
 	'EMAIL_TAKEN_EMAIL'			=> 'The entered email address is already in use',
@@ -414,7 +415,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_ALPHA_SPACERS_EXPLAIN'=> 'Username must be between %1$d and %2$d chars long and use alphanumeric, space or -+_[] characters.',
 	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$d and %2$d characters.',
 	'USERNAME_TAKEN_USERNAME'		=> 'The username you entered is already in use, please select an alternative.',
-	'USERNAME_USERNAME_DISALLOWED'	=> 'The username you entered has been banned.',
+	'USERNAME_DISALLOWED_USERNAME'	=> 'The username you entered has been banned.',
 	'USER_NOT_FOUND_OR_INACTIVE'	=> 'The usernames you specified could either not be found or are not activated users.',
 
 	'VIEW_AVATARS'				=> 'Display avatars',

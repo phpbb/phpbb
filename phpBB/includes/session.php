@@ -82,7 +82,7 @@ class session
 		}
 
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
-		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
+		$page = (($page_dir) ? urlencode($page_dir) . '/' : '') . urlencode($page_name) . (($query_string) ? "?$query_string" : '');
 
 		// The script path from the webroot to the current directory (for example: /phpBB2/adm/) : always prefixed with / and ends in /
 		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
@@ -102,12 +102,12 @@ class session
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
 		$page_array += array(
-			'page_name'			=> $page_name,
-			'page_dir'			=> $page_dir,
+			'page_name'			=> urlencode($page_name),
+			'page_dir'			=> urlencode($page_dir),
 
 			'query_string'		=> $query_string,
-			'script_path'		=> htmlspecialchars($script_path),
-			'root_script_path'	=> htmlspecialchars($root_script_path),
+			'script_path'		=> urlencode(htmlspecialchars($script_path)),
+			'root_script_path'	=> urlencode(htmlspecialchars($root_script_path)),
 
 			'page'				=> $page
 		);
@@ -763,8 +763,11 @@ class session
 
 		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 			FROM ' . BANLIST_TABLE . '
-			WHERE ban_end >= ' . time() . '
-				OR ban_end = 0';
+			WHERE (ban_end >= ' . time() . " OR ban_end = 0)
+				AND (
+					ban_ip <> '' OR ban_email <> '' OR 
+					(ban_userid <> 0 AND ban_userid = " . $user_id . ')
+				)';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

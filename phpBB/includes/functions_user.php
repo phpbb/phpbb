@@ -472,6 +472,23 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$ban_end = 0;
 	}
 
+	$founder = array();
+
+	if (!$ban_exclude)
+	{
+		// Create a list of founder...
+		$sql = 'SELECT user_id, user_email
+			FROM ' . USERS_TABLE . '
+			WHERE user_type = ' . USER_FOUNDER;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$founder[$row['user_id']] = $row['user_email'];
+		}
+		$db->sql_freeresult($result);
+	}
+
 	$banlist_ary = array();
 
 	switch ($mode)
@@ -502,6 +519,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
 					WHERE username IN (' . $sql_usernames . ')';
+
+				if (sizeof($founder))
+				{
+					$sql .= ' AND user_id NOT IN (' . implode(', ', array_keys($founder)) . ')';
+				}
+
 				$result = $db->sql_query($sql);
 
 				if ($row = $db->sql_fetchrow($result))
@@ -618,9 +641,14 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 			foreach ($ban_list as $ban_item)
 			{
-				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', trim($ban_item)))
+				$ban_item = trim($ban_item);
+
+				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', $ban_item))
 				{
-					$banlist_ary[] = trim($ban_item);
+					if (!sizeof($founder) || !in_array($ban_item, $founder))
+					{
+						$banlist_ary[] = $ban_item;
+					}
 				}
 			}
 
@@ -764,6 +792,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		// Update log
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+
 		return true;
 	}
 

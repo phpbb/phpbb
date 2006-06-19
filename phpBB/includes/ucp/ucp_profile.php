@@ -49,10 +49,10 @@ class ucp_profile
 						$data[$var] = request_var($var, $default);
 					}
 
+					// Do not check cur_password, it is the old one.
 					$var_ary = array(
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'new_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
-						'cur_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'email'				=> array(
 							array('string', false, 6, 60),
 							array('email', $data['email'])),

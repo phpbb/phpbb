@@ -85,10 +85,10 @@ class acp_email
 				}
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
 
 				if (!$row)
 				{
+					$db->sql_freeresult($result);
 					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 				}
 	
@@ -121,7 +121,7 @@ class acp_email
 						$email_list[$j][$i]['jabber']	= $row['user_jabber'];
 						$i++;
 					}
-				} 
+				}
 				while ($row = $db->sql_fetchrow($result));
 				$db->sql_freeresult($result);
 

@@ -429,13 +429,18 @@ function style_select($default = '', $all = false)
 /**
 * Pick a timezone
 */
-function tz_select($default = '')
+function tz_select($default = '', $truncate = false)
 {
 	global $sys_timezone, $user;
 
 	$tz_select = '';
 	foreach ($user->lang['tz_zones'] as $offset => $zone)
 	{
+		if ($truncate)
+		{
+			$zone = (strlen($zone) > 70) ? substr($zone, 0, 70) . '...' : $zone;
+		}
+
 		if (is_numeric($offset))
 		{
 			$selected = ($offset == $default) ? ' selected="selected"' : '';
