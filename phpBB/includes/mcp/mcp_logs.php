@@ -43,8 +43,8 @@ class mcp_logs
 
 		// Set up general vars
 		$start		= request_var('start', 0);
-		$deletemark = (isset($_POST['del_marked'])) ? true : false;
-		$deleteall	= (isset($_POST['del_all'])) ? true : false;
+		$deletemark = ($action == 'del_marked') ? true : false;
+		$deleteall	= ($action == 'del_all') ? true : false;
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys
@@ -91,7 +91,7 @@ class mcp_logs
 			if ($where_sql || $deleteall)
 			{
 				$sql = 'DELETE FROM ' . LOG_TABLE . '
-					WHERE log_type = ' . LOD_MOD . "
+					WHERE log_type = ' . LOG_MOD . "
 					$where_sql";
 				$db->sql_query($sql);
 
