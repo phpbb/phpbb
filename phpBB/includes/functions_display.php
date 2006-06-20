@@ -156,7 +156,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$parent_id = $forum_id;
 			$forum_rows[$forum_id] = $row;
 
-			if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
+			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
 			{
 				$branch_root_id = $forum_id;
 			}
@@ -228,7 +228,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	foreach ($forum_rows as $row)
 	{
 		// Empty category
-		if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT)
+		if ($row['parent_id'] == $root_data['forum_id'] && $row['forum_type'] == FORUM_CAT)
 		{
 			$template->assign_block_vars('forumrow', array(
 				'S_IS_CAT'				=> true,

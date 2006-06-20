@@ -142,8 +142,20 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from && $action == 'add')
+						if ($forum_perm_from)
 						{
+							// if we edit a forum delete current permissions first
+							if ($action == 'edit')
+							{
+								$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+									WHERE forum_id = ' . (int) $forum_data['forum_id'];
+								$db->sql_query($sql);
+	
+								$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+									WHERE forum_id = ' . (int) $forum_data['forum_id'];
+								$db->sql_query($sql);
+							}
+
 							// From the mysql documentation:
 							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
 							// Due to this we stay on the safe side if we do the insertion "the manual way"
@@ -468,8 +480,9 @@ class acp_forums
 					'U_BACK'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 					'U_EDIT_ACTION'	=> $this->u_action . "&amp;parent_id={$this->parent_id}&amp;action=$action&amp;f=$forum_id",
 
-					'L_TITLE'				=> $user->lang[$this->page_title],
-					'ERROR_MSG'				=> (sizeof($errors)) ? implode('<br />', $errors) : '',
+					'L_COPY_PERMISSIONS_EXPLAIN'	=> $user->lang['COPY_PERMISSIONS_' . strtoupper($action) . '_EXPLAIN'],
+					'L_TITLE'						=> $user->lang[$this->page_title],
+					'ERROR_MSG'						=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 
 					'FORUM_NAME'				=> $forum_data['forum_name'],
 					'FORUM_DATA_LINK'			=> $forum_data['forum_link'],
@@ -501,7 +514,7 @@ class acp_forums
 					'S_STATUS_OPTIONS'			=> $statuslist,
 					'S_PARENT_OPTIONS'			=> $parents_list,
 					'S_STYLES_OPTIONS'			=> $styles_list,
-					'S_FORUM_OPTIONS'			=> make_forum_select(false, false, false),
+					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, false, false, false, false),
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
 					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,

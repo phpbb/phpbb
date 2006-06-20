@@ -982,6 +982,7 @@ class acp_permissions
 		}
 		$db->sql_freeresult($result);
 
+		$total = ACL_UNSET;
 		if (sizeof($groups))
 		{
 			// Get group auth settings
@@ -993,7 +994,6 @@ class acp_permissions
 			}
 			unset($hold_ary);
 
-			$total = ACL_UNSET;
 			foreach ($groups as $id => $row)
 			{
 				switch ($row['auth_setting'])

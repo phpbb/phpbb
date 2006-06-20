@@ -38,7 +38,8 @@ $lang = array_merge($lang, array(
 	'AUTO_PRUNE_VIEWED_EXPLAIN'	=> 'Number of days since topic was viewed after which topic is removed.',
 
 	'COPY_PERMISSIONS'				=> 'Copy permissions from',
-	'COPY_PERMISSIONS_EXPLAIN'		=> 'Once created, the forum will have the same permissions as the one you select here. If no forum is selected the newly created forum will not be visible until permissions had been set.',
+	'COPY_PERMISSIONS_ADD_EXPLAIN'		=> 'Once created, the forum will have the same permissions as the one you select here. If no forum is selected the newly created forum will not be visible until permissions had been set.',
+	'COPY_PERMISSIONS_EDIT_EXPLAIN'		=> 'If you select to copy permissions, the forum will have the same permissions as the one you select here. This will overwrite any permissions you have previously set for this forum with the permissions of the forum you select here. If no forum is selected the current permissions will be kept.',
 	'CREATE_FORUM'					=> 'Create new forum',
 
 	'DECIDE_MOVE_DELETE_CONTENT'		=> 'Delete content or move to forum',

@@ -62,7 +62,7 @@ class ucp_remind
 
 			$messenger = new messenger(false);
 
-			$messenger->template('user_activate_passwd', $row['user_lang']);
+			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
 			$messenger->replyto($user->data['user_email']);
 			$messenger->to($user_row['user_email'], $user_row['username']);

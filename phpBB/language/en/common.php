@@ -29,6 +29,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+	'TRANSLATION_INFO'	=> 'blah',
 	'ENCODING'		=> 'iso-8859-1',
 	'DIRECTION'		=> 'ltr',
 	'LEFT'			=> 'left',
@@ -50,6 +51,7 @@ $lang = array_merge($lang, array(
 	'ACTIVE_ERROR'					=> 'You have specified an inactive username. Please activate your account and try again. If you continue to have problems please contact a board administrator.',
 	'ADMINISTRATOR'					=> 'Administrator',
 	'ADMINISTRATORS'				=> 'Administrators',
+	'AGE'							=> 'Age',
 	'ALLOWED'						=> 'Allowed',
 	'ALL_FILES'						=> 'All files',
 	'ALL_FORUMS'					=> 'All forums',
