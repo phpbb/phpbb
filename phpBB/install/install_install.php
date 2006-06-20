@@ -952,12 +952,18 @@ class install_install extends module
 		{
 			case 'mysql':
 			case 'mysql4':
-			case 'mysqli':
 				// We don't want MySQL mixing up collations
 				if (version_compare(mysql_get_server_info(), '4.1.2', '>='))
 				{
 					$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
 				}
+
+			break;
+
+			case 'mysqli':
+				// mysqli only works with MySQL > 4.1.3 so we'll just do a straight replace if using this DBMS
+				$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
+			
 			break;
 		}
 
@@ -1102,7 +1108,7 @@ class install_install extends module
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
