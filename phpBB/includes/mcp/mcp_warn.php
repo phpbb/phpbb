@@ -210,6 +210,12 @@ function mcp_warn_post_view($id, $mode, $action)
 		trigger_error($user->lang['CANNOT_WARN_ANONYMOUS']);
 	}
 
+	// Prevent someone from warning themselves
+	if ($userrow['user_id'] == $user->data['user_id'])
+	{
+		trigger_error($user->lang['CANNOT_WARN_SELF']);
+	}
+
 	// Check if there is already a warning for this post to prevent multiple
 	// warnings for the same offence
 	$sql = 'SELECT post_id
@@ -319,6 +325,12 @@ function mcp_warn_user_view($id, $mode, $action)
 	if (!$userrow)
 	{
 		trigger_error('NO_USER');
+	}
+
+	// Prevent someone from warning themselves
+	if ($userrow['user_id'] == $user->data['user_id'])
+	{
+		trigger_error($user->lang['CANNOT_WARN_SELF']);
 	}
 
 	$user_id = $userrow['user_id'];

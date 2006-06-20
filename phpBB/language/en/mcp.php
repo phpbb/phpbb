@@ -47,6 +47,7 @@ $lang = array_merge($lang, array(
 
 	'CANNOT_MOVE_SAME_FORUM'=> 'You cannot move a topic to the forum it\'s already in',
 	'CANNOT_WARN_ANONYMOUS'	=> 'You cannot warn an guest user',
+	'CANNOT_WARN_SELF'		=> 'You cannot warn yourself',
 	'CAN_LEAVE_BLANK'		=> 'This can be left blank.',
 	'CHANGE_POSTER'			=> 'Change poster',
 	'CLOSE_REPORT'			=> 'Close report',
