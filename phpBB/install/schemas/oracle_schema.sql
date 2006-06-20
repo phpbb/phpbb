@@ -54,7 +54,7 @@ CREATE TABLE phpbb_attachments (
   "COMMENT" clob,
   extension varchar2(100),
   mimetype varchar2(100),
-  filesize number(20) NOT NULL,
+  filesize number(20) DEFAULT '0' NOT NULL,
   filetime number(11) DEFAULT '0' NOT NULL,
   thumbnail number(1) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_attachments PRIMARY KEY (attach_id)

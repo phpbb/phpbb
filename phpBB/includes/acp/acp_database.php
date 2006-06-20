@@ -23,7 +23,7 @@ class acp_database
 		$user->add_lang('acp/database');
 
 		$this->tpl_name = 'acp_database';
-		$this->page_title = 'ACP_DATABASE';
+		$this->page_title = 'ACP_DATABasE';
 
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -42,16 +42,16 @@ class acp_database
 						$type	= request_var('type', '');
 						$table	= request_var('table', array(''));
 						$format	= request_var('method', '');
-						$where	= request_var('where', '');
+						$WHERE	= request_var('WHERE', '');
 
 						$store = $download = $structure = $schema_data = false;
 
-						if ($where == 'store_and_download' || $where == 'store')
+						if ($WHERE == 'store_and_download' || $WHERE == 'store')
 						{
 							$store = true;
 						}
 
-						if ($where == 'store_and_download' || $where == 'download')
+						if ($WHERE == 'store_and_download' || $WHERE == 'download')
 						{
 							$download = true;
 						}
@@ -223,7 +223,8 @@ class acp_database
 								{
 									case 'mysqli':
 
-										$sql = "SELECT * FROM $table_name";
+										$sql = "SELECT *
+											FROM $table_name";
 										$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
 										if ($result != false)
 										{
@@ -290,7 +291,8 @@ class acp_database
 									case 'mysql4':
 									case 'mysql':
 	
-										$sql = "SELECT * FROM $table_name";
+										$sql = "SELECT *
+											FROM $table_name";
 										$result = mysql_unbuffered_query($sql, $db->db_connect_id);
 
 										if ($result != false)
@@ -361,7 +363,8 @@ class acp_database
 									case 'sqlite':
 
 										$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
-										$sql = "SELECT * FROM $table_name";
+										$sql = "SELECT *
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										while ($row = $db->sql_fetchrow($result))
@@ -415,7 +418,7 @@ class acp_database
 
 										$ary_type = $ary_name = array();
 										
-										// Grab all of the data from current table.
+										// Grab all of the data FROM current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -440,7 +443,7 @@ class acp_database
 												// Determine if we must reset the sequences
 												if (strpos($row['rowdefault'], 'nextval(\'') === 0)
 												{
-													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end from {$table_name}));\n";
+													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end FROM {$table_name}));\n";
 												}
 											}
 										}
@@ -536,7 +539,7 @@ class acp_database
 										$ary_type = $ary_name = array();
 										$ident_set = false;
 										
-										// Grab all of the data from current table.
+										// Grab all of the data FROM current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -546,8 +549,8 @@ class acp_database
 										if ($retrieved_data)
 										{
 											$sql = "SELECT 1 as has_identity
-														FROM INFORMATION_SCHEMA.COLUMNS
-														WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+												FROM INFORMATION_SCHEMA.COLUMNS
+												WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 											$result2 = $db->sql_query($sql);
 											$row2 = $db->sql_fetchrow($result2);
 											if (!empty($row2['has_identity']))
@@ -647,7 +650,7 @@ class acp_database
 										$ary_type = $ary_name = array();
 										$ident_set = false;
 										
-										// Grab all of the data from current table.
+										// Grab all of the data FROM current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -665,8 +668,8 @@ class acp_database
 										if ($retrieved_data)
 										{
 											$sql = "SELECT 1 as has_identity
-														FROM INFORMATION_SCHEMA.COLUMNS
-														WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+												FROM INFORMATION_SCHEMA.COLUMNS
+												WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 											$result2 = $db->sql_query($sql);
 											$row2 = $db->sql_fetchrow($result2);
 											if (!empty($row2['has_identity']))
@@ -758,7 +761,7 @@ class acp_database
 
 										$ary_type = $ary_name = array();
 										
-										// Grab all of the data from current table.
+										// Grab all of the data FROM current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -843,7 +846,7 @@ class acp_database
 									case 'oracle':
 										$ary_type = $ary_name = array();
 										
-										// Grab all of the data from current table.
+										// Grab all of the data FROM current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -1017,7 +1020,7 @@ class acp_database
 							case 'mssql_odbc':
 								$sql = "SELECT TABLE_NAME
 									FROM INFORMATION_SCHEMA.TABLES
-									WHERE TABLE_TYPE = 'BASE TABLE'
+									WHERE TABLE_TYPE = 'BasE TABLE'
 									ORDER BY TABLE_NAME";
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
@@ -1290,7 +1293,10 @@ class acp_database
 				}
 				$db->sql_freeresult($result);
 
-				$result = $db->sql_query("SHOW KEYS FROM $table_name");
+				$sql = "SHOW KEYS
+					FROM $table_name";
+
+				$result = $db->sql_query($sql);
 
 				$index = array();
 				while ($row = $db->sql_fetchrow($result))
@@ -1419,7 +1425,7 @@ class acp_database
 				}
 				$db->sql_freeresult($result);
 			
-				$field_query = "SELECT a.attnum, a.attname AS field, t.typname as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
+				$field_query = "SELECT a.attnum, a.attname as field, t.typname as type, a.attlen as length, a.atttypmod as lengthvar, a.attnotnull as notnull
 					FROM pg_class c, pg_attribute a, pg_type t
 					WHERE c.relname = '" . $db->sql_escape($table_name) . "'
 						AND a.attnum > 0
@@ -1432,7 +1438,7 @@ class acp_database
 				$lines = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					// Get the data from the table
+					// Get the data FROM the table
 					$sql_get_default = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
 						FROM pg_attrdef d, pg_class c
 						WHERE (c.relname = '" . $db->sql_escape($table_name) . "')
@@ -1489,7 +1495,7 @@ class acp_database
 
 
 				// Get the listing of primary keys.
-				$sql_pri_keys = "SELECT ic.relname AS index_name, bc.relname AS tab_name, ta.attname AS column_name, i.indisunique AS unique_key, i.indisprimary AS primary_key
+				$sql_pri_keys = "SELECT ic.relname as index_name, bc.relname as tab_name, ta.attname as column_name, i.indisunique as unique_key, i.indisprimary as primary_key
 					FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
 					WHERE (bc.oid = i.indrelid)
 						AND (ic.oid = i.indexrelid)
@@ -1678,7 +1684,7 @@ class acp_database
 
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME AS FNAME, R.RDB$NULL_FLAG AS NFLAG, R.RDB$DEFAULT_SOURCE AS DSOURCE, F.RDB$FIELD_TYPE AS FTYPE, F.RDB$FIELD_SUB_TYPE AS STYPE, F.RDB$FIELD_LENGTH AS FLEN
+				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
 					FROM RDB$RELATION_FIELDS R
 					JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE=F.RDB$FIELD_NAME
 					LEFT JOIN RDB$FIELD_DIMENSIONS D ON R.RDB$FIELD_SOURCE = D.RDB$FIELD_NAME
@@ -1739,7 +1745,7 @@ class acp_database
 
 				$db->sql_freeresult($result);
 
-				$sql = 'SELECT I.RDB$INDEX_NAME AS INAME, I.RDB$UNIQUE_FLAG AS UFLAG, S.RDB$FIELD_NAME AS FNAME
+				$sql = 'SELECT I.RDB$INDEX_NAME as INAME, I.RDB$UNIQUE_FLAG as UFLAG, S.RDB$FIELD_NAME as FNAME
 					FROM RDB$INDICES I JOIN RDB$INDEX_SEGMENTS S ON S.RDB$INDEX_NAME=I.RDB$INDEX_NAME
 					WHERE (I.RDB$SYSTEM_FLAG IS NULL  OR  I.RDB$SYSTEM_FLAG=0)
 						AND I.RDB$FOREIGN_KEY IS NULL
@@ -1783,7 +1789,7 @@ class acp_database
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME AS GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE
+					$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME as GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE
 						FROM RDB$DEPENDENCIES T1
 						WHERE (T1.RDB$DEPENDENT_NAME = \'' . $row['dname'] . '\')
 							AND (T1.RDB$DEPENDENT_TYPE = 2 AND T1.RDB$DEPENDED_ON_TYPE = 14)
@@ -1801,7 +1807,7 @@ class acp_database
 					$sql_data .= "\nCREATE GENERATOR " . $gen_name . ";;";
 					$sql_data .= "\nSET GENERATOR  " . $gen_name . " TO 0;;\n";
 					$sql_data .= "\nCREATE TRIGGER {$row['dname']} FOR $table_name";
-					$sql_data .= "\nBEFORE INSERT\nAS\nBEGIN";
+					$sql_data .= "\nBEFORE INSERT\nas\nBEGIN";
 					$sql_data .= "\n  NEW.{$row['fname']} = GEN_ID(" . $gen_name . ", 1);";
 					$sql_data .= "\nEND;;\n";
 				}
@@ -1812,7 +1818,9 @@ class acp_database
 			case 'oracle':
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT from ALL_TAB_COLS where table_name = '{$table_name}'";
+				$sql  = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
+					FROM ALL_TAB_COLS
+					WHERE table_name = '{$table_name}'";
 				$result = $db->sql_query($sql);
 
 				$rows = array();

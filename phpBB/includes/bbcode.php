@@ -232,7 +232,7 @@ class bbcode
 				case 6:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'!\[color=(#[0-9A-F]{6}|[a-z\-]+):$uid\](.*?)\[/color:$uid\]!s'	=> $this->bbcode_tpl('color', $bbcode_id),
+							'!\[color=(#[0-9a-fA-F]{6}|[a-z\-]+):$uid\](.*?)\[/color:$uid\]!s'	=> $this->bbcode_tpl('color', $bbcode_id),
 						)
 					);
 				break;

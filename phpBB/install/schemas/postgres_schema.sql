@@ -95,7 +95,7 @@ CREATE TABLE phpbb_attachments (
   comment varchar(8000),
   extension varchar(100),
   mimetype varchar(100),
-  filesize INT4  NOT NULL,
+  filesize INT4  DEFAULT '0' NOT NULL,
   filetime INT4  DEFAULT '0' NOT NULL,
   thumbnail INT2 DEFAULT '0' NOT NULL,
   PRIMARY KEY (attach_id),

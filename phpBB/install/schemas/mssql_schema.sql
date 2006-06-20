@@ -44,6 +44,7 @@ ALTER TABLE [phpbb_attachments] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_attach_poster_id] DEFAULT (0) FOR [poster_id],
 	CONSTRAINT [DF_phpbb_attach_download_count] DEFAULT (0) FOR [download_count],
 	CONSTRAINT [DF_phpbb_attach_filetime] DEFAULT (0) FOR [filetime],
+	CONSTRAINT [DF_phpbb_attach_filesize] DEFAULT (0) FOR [filesize],
 	CONSTRAINT [DF_phpbb_attach_thumbnail] DEFAULT (0) FOR [thumbnail]
 GO
 

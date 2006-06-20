@@ -17,7 +17,7 @@ CREATE TABLE phpbb_attachments (
   comment text,
   extension varchar(100),
   mimetype varchar(100),
-  filesize int(20) UNSIGNED NOT NULL,
+  filesize int(20) UNSIGNED DEFAULT '0' NOT NULL,
   filetime int(11) UNSIGNED DEFAULT '0' NOT NULL,
   thumbnail tinyint(1) DEFAULT '0' NOT NULL,
   PRIMARY KEY (attach_id),

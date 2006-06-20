@@ -19,7 +19,7 @@ CREATE TABLE phpbb_attachments (
   comment text(65535),
   extension varchar(100),
   mimetype varchar(100),
-  filesize int(20) NOT NULL,
+  filesize int(20) NOT NULL DEFAULT '0',
   filetime int(11) NOT NULL DEFAULT '0',
   thumbnail tinyint(1) NOT NULL DEFAULT '0'
 );

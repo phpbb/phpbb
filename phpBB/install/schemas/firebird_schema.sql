@@ -16,7 +16,7 @@ CREATE TABLE phpbb_attachments (
   comment BLOB SUB_TYPE TEXT,
   extension VARCHAR(100),
   mimetype VARCHAR(100),
-  filesize INTEGER NOT NULL,
+  filesize INTEGER DEFAULT 0  NOT NULL,
   filetime INTEGER DEFAULT 0  NOT NULL,
   thumbnail INTEGER DEFAULT 0  NOT NULL
 );;
