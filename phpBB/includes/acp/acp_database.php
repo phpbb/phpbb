@@ -23,7 +23,7 @@ class acp_database
 		$user->add_lang('acp/database');
 
 		$this->tpl_name = 'acp_database';
-		$this->page_title = 'ACP_DATABasE';
+		$this->page_title = 'ACP_DATABASE';
 
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -42,16 +42,16 @@ class acp_database
 						$type	= request_var('type', '');
 						$table	= request_var('table', array(''));
 						$format	= request_var('method', '');
-						$WHERE	= request_var('WHERE', '');
+						$where	= request_var('WHERE', '');
 
 						$store = $download = $structure = $schema_data = false;
 
-						if ($WHERE == 'store_and_download' || $WHERE == 'store')
+						if ($where == 'store_and_download' || $where == 'store')
 						{
 							$store = true;
 						}
 
-						if ($WHERE == 'store_and_download' || $WHERE == 'download')
+						if ($where == 'store_and_download' || $where == 'download')
 						{
 							$download = true;
 						}
@@ -418,7 +418,7 @@ class acp_database
 
 										$ary_type = $ary_name = array();
 										
-										// Grab all of the data FROM current table.
+										// Grab all of the data from current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -539,7 +539,7 @@ class acp_database
 										$ary_type = $ary_name = array();
 										$ident_set = false;
 										
-										// Grab all of the data FROM current table.
+										// Grab all of the data from current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -650,7 +650,7 @@ class acp_database
 										$ary_type = $ary_name = array();
 										$ident_set = false;
 										
-										// Grab all of the data FROM current table.
+										// Grab all of the data from current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -761,7 +761,7 @@ class acp_database
 
 										$ary_type = $ary_name = array();
 										
-										// Grab all of the data FROM current table.
+										// Grab all of the data from current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -846,7 +846,7 @@ class acp_database
 									case 'oracle':
 										$ary_type = $ary_name = array();
 										
-										// Grab all of the data FROM current table.
+										// Grab all of the data from current table.
 										$sql = "SELECT *
 											FROM {$table_name}";
 										$result = $db->sql_query($sql);
@@ -1020,7 +1020,7 @@ class acp_database
 							case 'mssql_odbc':
 								$sql = "SELECT TABLE_NAME
 									FROM INFORMATION_SCHEMA.TABLES
-									WHERE TABLE_TYPE = 'BasE TABLE'
+									WHERE TABLE_TYPE = 'BASE TABLE'
 									ORDER BY TABLE_NAME";
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
@@ -1438,7 +1438,7 @@ class acp_database
 				$lines = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					// Get the data FROM the table
+					// Get the data from the table
 					$sql_get_default = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
 						FROM pg_attrdef d, pg_class c
 						WHERE (c.relname = '" . $db->sql_escape($table_name) . "')
@@ -1807,7 +1807,7 @@ class acp_database
 					$sql_data .= "\nCREATE GENERATOR " . $gen_name . ";;";
 					$sql_data .= "\nSET GENERATOR  " . $gen_name . " TO 0;;\n";
 					$sql_data .= "\nCREATE TRIGGER {$row['dname']} FOR $table_name";
-					$sql_data .= "\nBEFORE INSERT\nas\nBEGIN";
+					$sql_data .= "\nBEFORE INSERT\nAS\nBEGIN";
 					$sql_data .= "\n  NEW.{$row['fname']} = GEN_ID(" . $gen_name . ", 1);";
 					$sql_data .= "\nEND;;\n";
 				}
