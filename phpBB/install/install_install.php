@@ -87,6 +87,7 @@ class install_install extends module
 			case 'final' :
 				$this->load_schema($mode, $sub);
 				$this->add_modules($mode, $sub);
+				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 			
@@ -1351,6 +1352,40 @@ class install_install extends module
 			}
 
 			$_module->remove_cache_file();
+		}
+	}
+
+	/**
+	* Populate the language tables
+	*/
+	function add_language($mode, $sub)
+	{
+		global $db, $lang, $phpbb_root_path, $phpEx;
+
+		$dir = @opendir($phpbb_root_path . 'language');
+		while (($file = readdir($dir)) !== false)
+		{
+			$path = $phpbb_root_path . 'language/' . $file;
+
+			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+			{
+				$lang_pack = file("{$phpbb_root_path}language/$path/iso.txt");
+				$sql_ary = array(
+					'lang_iso'			=> basename($path),
+					'lang_dir'			=> basename($path),
+					'lang_english_name'	=> trim(htmlspecialchars($lang_pack[0])),
+					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1])),
+					'lang_author'		=> trim(htmlspecialchars($lang_pack[2])),
+				);
+
+				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+
+				if ($db->sql_error_triggered)
+				{
+					$error = $db->sql_error($db->sql_error_sql);
+					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+				}
+			}
 		}
 	}
 

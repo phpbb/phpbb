@@ -195,9 +195,9 @@ CREATE TABLE phpbb_extension_groups (
 # Table: 'phpbb_forums'
 CREATE TABLE phpbb_forums (
   forum_id smallint(5) UNSIGNED NOT NULL auto_increment,
-  parent_id smallint(5) DEFAULT '0' UNSIGNED NOT NULL,
-  left_id smallint(5) DEFAULT '0' UNSIGNED NOT NULL,
-  right_id smallint(5) DEFAULT '0' UNSIGNED NOT NULL,
+  parent_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+  left_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
+  right_id smallint(5) UNSIGNED DEFAULT '0' NOT NULL,
   forum_parents text,
   forum_name text,
   forum_desc text,
@@ -227,8 +227,8 @@ CREATE TABLE phpbb_forums (
   enable_icons tinyint(1) DEFAULT '1' NOT NULL,
   enable_prune tinyint(1) DEFAULT '0' NOT NULL,
   prune_next int(11) UNSIGNED,
-  prune_days tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
-  prune_viewed tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
+  prune_days tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  prune_viewed tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   prune_freq tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   PRIMARY KEY (forum_id),
   KEY left_right_id (left_id, right_id),
@@ -289,9 +289,9 @@ CREATE TABLE phpbb_groups (
 CREATE TABLE phpbb_icons (
   icons_id tinyint(4) UNSIGNED NOT NULL auto_increment,
   icons_url varchar(255),
-  icons_width tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
-  icons_height tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
-  icons_order tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
+  icons_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  icons_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  icons_order tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   PRIMARY KEY (icons_id)
 );
@@ -329,7 +329,7 @@ CREATE TABLE phpbb_log (
 
 # Table: 'phpbb_moderator_cache'
 CREATE TABLE phpbb_moderator_cache (
-  forum_id mediumint(8) DEFAULT '0' UNSIGNED NOT NULL,
+  forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   username varchar(255) DEFAULT '' NOT NULL,
   group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -637,9 +637,9 @@ CREATE TABLE phpbb_smilies (
   code varchar(50),
   emotion varchar(50),
   smiley_url varchar(50),
-  smiley_width tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
-  smiley_height tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
-  smiley_order tinyint(4) DEFAULT '0' UNSIGNED NOT NULL,
+  smiley_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  smiley_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  smiley_order tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   PRIMARY KEY (smiley_id)
 );
