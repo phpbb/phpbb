@@ -321,9 +321,9 @@ END;;
 # phpbb_forums
 CREATE TABLE phpbb_forums (
   forum_id INTEGER NOT NULL,
-  parent_id INTEGER NOT NULL,
-  left_id INTEGER NOT NULL,
-  right_id INTEGER NOT NULL,
+  parent_id INTEGER DEFAULT 0  NOT NULL,
+  left_id INTEGER DEFAULT 0  NOT NULL,
+  right_id INTEGER DEFAULT 0  NOT NULL,
   forum_parents BLOB SUB_TYPE TEXT,
   forum_name BLOB SUB_TYPE TEXT,
   forum_desc BLOB SUB_TYPE TEXT,
@@ -353,8 +353,8 @@ CREATE TABLE phpbb_forums (
   enable_icons INTEGER DEFAULT 1  NOT NULL,
   enable_prune INTEGER DEFAULT 0  NOT NULL,
   prune_next INTEGER,
-  prune_days INTEGER NOT NULL,
-  prune_viewed INTEGER NOT NULL,
+  prune_days INTEGER DEFAULT 0  NOT NULL,
+  prune_viewed INTEGER DEFAULT 0  NOT NULL,
   prune_freq INTEGER DEFAULT 0  NOT NULL
 );;
 
@@ -447,9 +447,9 @@ END;;
 CREATE TABLE phpbb_icons (
   icons_id INTEGER NOT NULL,
   icons_url VARCHAR(255),
-  icons_width INTEGER  NOT NULL,
-  icons_height INTEGER  NOT NULL,
-  icons_order INTEGER  NOT NULL,
+  icons_width INTEGER DEFAULT 0  NOT NULL,
+  icons_height INTEGER DEFAULT 0  NOT NULL,
+  icons_order INTEGER DEFAULT 0  NOT NULL,
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
@@ -498,7 +498,7 @@ CREATE TABLE phpbb_log (
   topic_id INTEGER DEFAULT 0  NOT NULL,
   reportee_id INTEGER DEFAULT 0  NOT NULL,
   log_ip VARCHAR(40) NOT NULL,
-  log_time INTEGER  NOT NULL,
+  log_time INTEGER DEFAULT 0  NOT NULL,
   log_operation BLOB SUB_TYPE TEXT,
   log_data BLOB SUB_TYPE TEXT
 );;
@@ -571,7 +571,7 @@ END;;
 # phpbb_poll_options
 CREATE TABLE phpbb_poll_options (
   poll_option_id INTEGER DEFAULT 0  NOT NULL,
-  topic_id INTEGER NOT NULL,
+  topic_id INTEGER DEFAULT 0  NOT NULL,
   poll_option_text BLOB SUB_TYPE TEXT,
   poll_option_total INTEGER DEFAULT 0  NOT NULL
 );;
@@ -757,7 +757,7 @@ CREATE INDEX phpbb_privmsgs_to_user_id ON phpbb_privmsgs_to(user_id, folder_id);
 CREATE TABLE phpbb_profile_fields (
   field_id INTEGER NOT NULL,
   field_name VARCHAR(255) NOT NULL,
-  field_type INTEGER NOT NULL,
+  field_type INTEGER DEFAULT 0  NOT NULL,
   field_ident VARCHAR(20) DEFAULT '' NOT NULL,
   field_length VARCHAR(20) DEFAULT '' NOT NULL,
   field_minlen VARCHAR(255) DEFAULT '' NOT NULL,
@@ -992,9 +992,9 @@ CREATE TABLE phpbb_smilies (
   code VARCHAR(50),
   emotion VARCHAR(50),
   smiley_url VARCHAR(50),
-  smiley_width INTEGER NOT NULL,
-  smiley_height INTEGER NOT NULL,
-  smiley_order INTEGER NOT NULL,
+  smiley_width INTEGER DEFAULT 0  NOT NULL,
+  smiley_height INTEGER DEFAULT 0  NOT NULL,
+  smiley_order INTEGER DEFAULT 0  NOT NULL,
   display_on_posting INTEGER DEFAULT 1  NOT NULL
 );;
 
@@ -1017,10 +1017,17 @@ CREATE TABLE phpbb_styles (
   style_name VARCHAR(252) DEFAULT '' NOT NULL,
   style_copyright VARCHAR(255) DEFAULT '' NOT NULL,
   style_active INTEGER DEFAULT 1  NOT NULL,
-  template_id INTEGER NOT NULL,
-  theme_id INTEGER NOT NULL,
-  imageset_id INTEGER NOT NULL
+  template_id INTEGER DEFAULT 0  NOT NULL,
+  theme_id INTEGER DEFAULT 0  NOT NULL,
+  imageset_id INTEGER DEFAULT 0  NOT NULL
 );;
+
+ALTER TABLE phpbb_styles ADD PRIMARY KEY (style_id);;
+
+CREATE UNIQUE INDEX phpbb_styles_tmplte_nm ON phpbb_styles(template_name);;
+CREATE INDEX phpbb_styles_template_id ON phpbb_styles(template_id);;
+CREATE INDEX phpbb_styles_theme_id ON phpbb_styles(theme_id);;
+CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles(imageset_id);;
 
 # phpbb_styles_template
 CREATE TABLE phpbb_styles_template (
@@ -1039,7 +1046,7 @@ CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template(tem
 
 # phpbb_styles_template_data
 CREATE TABLE phpbb_styles_template_data (
-  template_id INTEGER NOT NULL,
+  template_id INTEGER DEFAULT 0  NOT NULL,
   template_filename VARCHAR(100) DEFAULT '' NOT NULL,
   template_included BLOB SUB_TYPE TEXT,
   template_mtime INTEGER DEFAULT 0  NOT NULL,

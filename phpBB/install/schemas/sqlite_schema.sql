@@ -213,9 +213,9 @@ CREATE TABLE phpbb_extension_groups (
 # Table: phpbb_forums
 CREATE TABLE phpbb_forums (
   forum_id INTEGER PRIMARY KEY NOT NULL,
-  parent_id smallint(5) NOT NULL,
-  left_id smallint(5) NOT NULL,
-  right_id smallint(5) NOT NULL,
+  parent_id smallint(5) NOT NULL DEFAULT '0',
+  left_id smallint(5) NOT NULL DEFAULT '0',
+  right_id smallint(5) NOT NULL DEFAULT '0',
   forum_parents text(65535),
   forum_name text(65535),
   forum_desc text(65535),
@@ -245,8 +245,8 @@ CREATE TABLE phpbb_forums (
   enable_icons tinyint(1) NOT NULL DEFAULT '1',
   enable_prune tinyint(1) NOT NULL DEFAULT '0',
   prune_next int(11),
-  prune_days tinyint(4) NOT NULL,
-  prune_viewed tinyint(4) NOT NULL,
+  prune_days tinyint(4) NOT NULL DEFAULT '0',
+  prune_viewed tinyint(4) NOT NULL DEFAULT '0',
   prune_freq tinyint(4) NOT NULL DEFAULT '0'
 );
 
@@ -313,9 +313,9 @@ CREATE INDEX phpbb_groups_group_legend on phpbb_groups (group_legend);
 CREATE TABLE phpbb_icons (
   icons_id INTEGER PRIMARY KEY NOT NULL,
   icons_url varchar(255),
-  icons_width tinyint(4) NOT NULL,
-  icons_height tinyint(4) NOT NULL,
-  icons_order tinyint(4) NOT NULL,
+  icons_width tinyint(4) NOT NULL DEFAULT '0',
+  icons_height tinyint(4) NOT NULL DEFAULT '0',
+  icons_order tinyint(4) NOT NULL DEFAULT '0',
   display_on_posting tinyint(1) NOT NULL DEFAULT '1'
 );
 
@@ -340,7 +340,7 @@ CREATE TABLE phpbb_log (
   topic_id mediumint(8) NOT NULL DEFAULT '0',
   reportee_id mediumint(8) NOT NULL DEFAULT '0',
   log_ip varchar(40) NOT NULL,
-  log_time int(11) NOT NULL,
+  log_time int(11) NOT NULL DEFAULT '0',
   log_operation text(65535),
   log_data text(65535)
 );
@@ -354,7 +354,7 @@ CREATE INDEX phpbb_log_user_id on phpbb_log (user_id);
 
 # Table: phpbb_moderator_cache
 CREATE TABLE phpbb_moderator_cache (
-  forum_id mediumint(8) NOT NULL,
+  forum_id mediumint(8) NOT NULL DEFAULT '0',
   user_id mediumint(8) NOT NULL DEFAULT '0',
   username varchar(255) NOT NULL DEFAULT '',
   group_id mediumint(8) NOT NULL DEFAULT '0',
@@ -389,7 +389,7 @@ CREATE INDEX phpbb_modules_class_left_id on phpbb_modules (module_class, left_id
 # Table: phpbb_poll_options
 CREATE TABLE phpbb_poll_options (
   poll_option_id tinyint(4) NOT NULL DEFAULT '0',
-  topic_id mediumint(8) NOT NULL,
+  topic_id mediumint(8) NOT NULL DEFAULT '0',
   poll_option_text text(65535),
   poll_option_total mediumint(8) NOT NULL DEFAULT '0'
 );
@@ -528,7 +528,7 @@ CREATE INDEX phpbb_privmsgs_to_user_id on phpbb_privmsgs_to (user_id, folder_id)
 CREATE TABLE phpbb_profile_fields (
   field_id INTEGER PRIMARY KEY NOT NULL,
   field_name varchar(255) NOT NULL DEFAULT '',
-  field_type mediumint(8) NOT NULL,
+  field_type mediumint(8) NOT NULL DEFAULT '0',
   field_ident varchar(20) NOT NULL DEFAULT '',
   field_length varchar(20) NOT NULL DEFAULT '',
   field_minlen varchar(255) NOT NULL DEFAULT '',
@@ -685,9 +685,9 @@ CREATE TABLE phpbb_smilies (
   code varchar(50),
   emotion varchar(50),
   smiley_url varchar(50),
-  smiley_width tinyint(4) NOT NULL,
-  smiley_height tinyint(4) NOT NULL,
-  smiley_order tinyint(4) NOT NULL,
+  smiley_width tinyint(4) NOT NULL DEFAULT '0',
+  smiley_height tinyint(4) NOT NULL DEFAULT '0',
+  smiley_order tinyint(4) NOT NULL DEFAULT '0',
   display_on_posting tinyint(1) NOT NULL DEFAULT '1'
 );
 
@@ -724,7 +724,7 @@ CREATE UNIQUE INDEX phpbb_styles_template_template_name on phpbb_styles_template
 
 # Table: phpbb_styles_template_data
 CREATE TABLE phpbb_styles_template_data (
-  template_id tinyint(4) NOT NULL,
+  template_id tinyint(4) NOT NULL DEFAULT '0',
   template_filename varchar(100) NOT NULL DEFAULT '',
   template_included text(65535),
   template_mtime int(11) NOT NULL DEFAULT '0',

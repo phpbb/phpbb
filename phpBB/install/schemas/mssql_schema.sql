@@ -543,6 +543,9 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_forums] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_forums_parent_id] DEFAULT (0) FOR [parent_id],
+	CONSTRAINT [DF_phpbb_forums_left_id] DEFAULT (0) FOR [left_id],
+	CONSTRAINT [DF_phpbb_forums_right_id] DEFAULT (0) FOR [right_id],
 	CONSTRAINT [DF_phpbb_forums_desc_bitfield] DEFAULT (0) FOR [forum_desc_bitfield],
 	CONSTRAINT [DF_phpbb_forums_rules_bitfield] DEFAULT (0) FOR [forum_rules_bitfield],
 	CONSTRAINT [DF_phpbb_forums_topics_per_page] DEFAULT (0) FOR [forum_topics_per_page],
@@ -559,6 +562,8 @@ ALTER TABLE [phpbb_forums] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_forums_enable_indexing] DEFAULT (1) FOR [enable_indexing],
 	CONSTRAINT [DF_phpbb_forums_enable_icons] DEFAULT (1) FOR [enable_icons],
 	CONSTRAINT [DF_phpbb_forums_enable_prune] DEFAULT (0) FOR [enable_prune],
+	CONSTRAINT [DF_phpbb_forums_prune_days] DEFAULT (0) FOR [prune_days],
+	CONSTRAINT [DF_phpbb_forums_prune_viewed] DEFAULT (0) FOR [prune_viewed],
 	CONSTRAINT [DF_phpbb_forums_prune_freq] DEFAULT (0) FOR [prune_freq],
 	CONSTRAINT [DF_phpbb_forums_forum_desc_uid] DEFAULT ('') FOR [forum_desc_uid],
 	CONSTRAINT [DF_phpbb_forums_forum_link] DEFAULT ('') FOR [forum_link],
@@ -728,7 +733,10 @@ ALTER TABLE [phpbb_icons] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_icons] WITH NOCHECK ADD 
-	CONSTRAINT [DF_phpbb_icons__display_on_posting] DEFAULT (1) FOR [display_on_posting]
+	CONSTRAINT [DF_phpbb_icons__display_on_posting] DEFAULT (1) FOR [display_on_posting],
+	CONSTRAINT [DF_phpbb_icons__icons_width] DEFAULT (0) FOR [icons_width], 	 
+	CONSTRAINT [DF_phpbb_icons__icons_height] DEFAULT (0) FOR [icons_height], 	 
+	CONSTRAINT [DF_phpbb_icons__icons_order] DEFAULT (0) FOR [icons_order]
 GO
 
 
@@ -782,7 +790,8 @@ ALTER TABLE [phpbb_log] WITH NOCHECK ADD
 	CONSTRAINT [DF_phpbb_log____user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_log____forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_log____topic_id] DEFAULT (0) FOR [topic_id],
-	CONSTRAINT [DF_phpbb_log____reportee_id] DEFAULT (0) FOR [reportee_id]
+	CONSTRAINT [DF_phpbb_log____reportee_id] DEFAULT (0) FOR [reportee_id],
+	CONSTRAINT [DF_phpbb_log____log_time] DEFAULT (0) FOR [log_time]
 GO
 
 CREATE  INDEX [log_type] ON [phpbb_log]([log_type]) ON [PRIMARY]
@@ -815,6 +824,7 @@ CREATE TABLE [phpbb_moderator_cache] (
 GO
 
 ALTER TABLE [phpbb_moderator_cache] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_modera_forum_id] DEFAULT (0) FOR [forum_id],
 	CONSTRAINT [DF_phpbb_modera_user_id] DEFAULT (0) FOR [user_id],
 	CONSTRAINT [DF_phpbb_modera_group_id] DEFAULT (0) FOR [group_id],
 	CONSTRAINT [DF_phpbb_modera_display_on_index] DEFAULT (1) FOR [display_on_index],
@@ -891,6 +901,7 @@ GO
 ALTER TABLE [phpbb_poll_options] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_poll_o_poll_option_id] DEFAULT (0) FOR [poll_option_id],
 	CONSTRAINT [DF_phpbb_poll_o_poll_option_total] DEFAULT (0) FOR [poll_option_total]
+	CONSTRAINT [DF_phpbb_poll_o_topic_id] DEFAULT (0) FOR [topic_id]
 GO
 
 CREATE  INDEX [poll_option_id] ON [phpbb_poll_options]([poll_option_id]) ON [PRIMARY]
@@ -1207,6 +1218,7 @@ ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_profile_fields] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_pffiel_field_type] DEFAULT (0) FOR [field_type],
 	CONSTRAINT [DF_phpbb_pffiel_field_default_value] DEFAULT ('0') FOR [field_default_value],
 	CONSTRAINT [DF_phpbb_pffiel_field_required] DEFAULT (0) FOR [field_required],
 	CONSTRAINT [DF_phpbb_pffiel_field_show_on_reg] DEFAULT (0) FOR [field_show_on_reg],
@@ -1583,6 +1595,9 @@ ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD
 GO
 
 ALTER TABLE [phpbb_smilies] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_smilie_smiley_width] DEFAULT (0) FOR [smiley_width],
+	CONSTRAINT [DF_phpbb_smilie_smiley_height] DEFAULT (0) FOR [smiley_height],
+	CONSTRAINT [DF_phpbb_smilie_smiley_order] DEFAULT (0) FOR [smiley_order],
 	CONSTRAINT [DF_phpbb_smilie_display_on_posting] DEFAULT (1) FOR [display_on_posting]
 GO
 
@@ -1611,7 +1626,10 @@ GO
 ALTER TABLE [phpbb_styles] WITH NOCHECK ADD 
 	CONSTRAINT [DF_phpbb_styles_style_active] DEFAULT (1) FOR [style_active],
 	CONSTRAINT [DF_phpbb_styles_style_name] DEFAULT ('') FOR [style_name],
-	CONSTRAINT [DF_phpbb_styles_style_copyright] DEFAULT ('') FOR [style_copyright]
+	CONSTRAINT [DF_phpbb_styles_style_copyright] DEFAULT ('') FOR [style_copyright],
+	CONSTRAINT [DF_phpbb_styles_template_id] DEFAULT (0) FOR [template_id],
+	CONSTRAINT [DF_phpbb_styles_theme_id] DEFAULT (0) FOR [theme_id],
+	CONSTRAINT [DF_phpbb_styles_imageset_id] DEFAULT (0) FOR [imageset_id]
 GO
 
 CREATE  UNIQUE  INDEX [style_name] ON [phpbb_styles]([style_name]) ON [PRIMARY]
@@ -1669,6 +1687,7 @@ CREATE TABLE [phpbb_styles_template_data] (
 GO
 
 ALTER TABLE [phpbb_styles_template_data] WITH NOCHECK ADD 
+	CONSTRAINT [DF_phpbb_tpldat_template_id] DEFAULT (0) FOR [template_id],
 	CONSTRAINT [DF_phpbb_tpldat_template_mtime] DEFAULT (0) FOR [template_mtime],
 	CONSTRAINT [DF_phpbb_tpldat_template_filename] DEFAULT ('') FOR [template_filename]
 GO

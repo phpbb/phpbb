@@ -460,9 +460,9 @@ END;
 */
 CREATE TABLE phpbb_forums (
   forum_id number(5) NOT NULL,
-  parent_id number(5) NOT NULL,
-  left_id number(5) NOT NULL,
-  right_id number(5) NOT NULL,
+  parent_id number(5) DEFAULT '0' NOT NULL,
+  left_id number(5) DEFAULT '0' NOT NULL,
+  right_id number(5) DEFAULT '0' NOT NULL,
   forum_parents clob,
   forum_name varchar2(3000),
   forum_desc clob,
@@ -492,8 +492,8 @@ CREATE TABLE phpbb_forums (
   enable_icons number(1) DEFAULT '1' NOT NULL,
   enable_prune number(1) DEFAULT '0' NOT NULL,
   prune_next number(11),
-  prune_days number(4) NOT NULL,
-  prune_viewed number(4) NOT NULL,
+  prune_days number(4) DEFAULT '0' NOT NULL,
+  prune_viewed number(4) DEFAULT '0' NOT NULL,
   prune_freq number(4) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_forums PRIMARY KEY (forum_id)
 )
@@ -613,9 +613,9 @@ CREATE INDEX phpbb_groups_group_legend on phpbb_groups (group_legend)
 CREATE TABLE phpbb_icons (
   icons_id number(4) NOT NULL,
   icons_url varchar2(255),
-  icons_width number(4) NOT NULL,
-  icons_height number(4) NOT NULL,
-  icons_order number(4) NOT NULL,
+  icons_width number(4) DEFAULT '0' NOT NULL,
+  icons_height number(4) DEFAULT '0' NOT NULL,
+  icons_order number(4) DEFAULT '0' NOT NULL,
   display_on_posting number(1) DEFAULT '1' NOT NULL,
   CONSTRAINT pk_phpbb_icons PRIMARY KEY (icons_id)
 )
@@ -678,7 +678,7 @@ CREATE TABLE phpbb_log (
   topic_id number(8) DEFAULT '0' NOT NULL,
   reportee_id number(8) DEFAULT '0' NOT NULL,
   log_ip varchar2(40) NOT NULL,
-  log_time number(11) NOT NULL,
+  log_time number(11) DEFAULT '0' NOT NULL,
   log_operation clob,
   log_data clob,
   CONSTRAINT pk_phpbb_log PRIMARY KEY (log_id)
@@ -716,7 +716,7 @@ CREATE INDEX phpbb_log_user_id on phpbb_log (user_id)
  Table: phpbb_moderator_cache
 */
 CREATE TABLE phpbb_moderator_cache (
-  forum_id number(8) NOT NULL,
+  forum_id number(8) DEFAULT '0' NOT NULL,
   user_id number(8) DEFAULT '0' NOT NULL,
   username varchar2(255) DEFAULT '',
   group_id number(8) DEFAULT '0' NOT NULL,
@@ -778,7 +778,7 @@ CREATE INDEX phpbb_modules_class_left_id on phpbb_modules (module_class, left_id
 */
 CREATE TABLE phpbb_poll_options (
   poll_option_id number(4) DEFAULT '0' NOT NULL,
-  topic_id number(8) NOT NULL,
+  topic_id number(8) DEFAULT '0' NOT NULL,
   poll_option_text varchar2(3000),
   poll_option_total number(8) DEFAULT '0' NOT NULL
 )
@@ -1020,7 +1020,7 @@ CREATE INDEX phpbb_privmsgs_to_user_id on phpbb_privmsgs_to (user_id, folder_id)
 CREATE TABLE phpbb_profile_fields (
   field_id number(8) NOT NULL,
   field_name varchar2(255) DEFAULT '',
-  field_type number(8) NOT NULL,
+  field_type number(8) DEFAULT '0' NOT NULL,
   field_ident varchar2(20) DEFAULT '',
   field_length varchar2(20) DEFAULT '',
   field_minlen varchar2(255) DEFAULT '',
@@ -1320,9 +1320,9 @@ CREATE TABLE phpbb_smilies (
   code varchar2(50),
   emotion varchar2(50),
   smiley_url varchar2(50),
-  smiley_width number(4) NOT NULL,
-  smiley_height number(4) NOT NULL,
-  smiley_order number(4) NOT NULL,
+  smiley_width number(4) DEFAULT '0' NOT NULL,
+  smiley_height number(4) DEFAULT '0' NOT NULL,
+  smiley_order number(4) DEFAULT '0' NOT NULL,
   display_on_posting number(1) DEFAULT '1' NOT NULL,
   CONSTRAINT pk_phpbb_smilies PRIMARY KEY (smiley_id)
 )
@@ -1352,9 +1352,9 @@ CREATE TABLE phpbb_styles (
   style_name varchar2(255) DEFAULT '',
   style_copyright varchar2(255) DEFAULT '',
   style_active number(1) DEFAULT '1' NOT NULL,
-  template_id number(4) NOT NULL,
-  theme_id number(4) NOT NULL,
-  imageset_id number(4) NOT NULL,
+  template_id number(4) DEFAULT '0' NOT NULL,
+  theme_id number(4) DEFAULT '0' NOT NULL,
+  imageset_id number(4) DEFAULT '0' NOT NULL,
   CONSTRAINT pk_phpbb_styles PRIMARY KEY (style_id),
   CONSTRAINT u_phpbb_style_name UNIQUE (style_name)
 )
@@ -1418,7 +1418,7 @@ END;
  Table: phpbb_styles_template_data
 */
 CREATE TABLE phpbb_styles_template_data (
-  template_id number(4) NOT NULL,
+  template_id number(4) NOT NULL DEFAULT '0',
   template_filename varchar2(100) DEFAULT '',
   template_included clob,
   template_mtime number(11) DEFAULT '0' NOT NULL,
