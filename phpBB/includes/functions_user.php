@@ -37,6 +37,8 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $$which_ary);
 	unset($$which_ary);
 
+	$user_id_ary = $username_ary = array();
+
 	// Grab the user id/username records
 	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username';
 	$sql = 'SELECT user_id, username
@@ -50,7 +52,6 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 		return 'NO_USERS';
 	}
 
-	$user_id_ary = $username_ary = array();
 	do
 	{
 		$username_ary[$row['user_id']] = $row['username'];
@@ -233,6 +234,9 @@ function user_add($user_row, $cp_data = false)
 	$db->sql_query($sql);
 
 	$db->sql_transaction('commit');
+
+	// Now make it the users default group...
+	group_set_user_default($user_row['group_id'], array($user_id));
 
 	return $user_id;
 }
@@ -1092,7 +1096,7 @@ function validate_email($email)
 		return 'EMAIL_INVALID';
 	}
 
-	if ($user->check_ban('', '', $email, true) == true)
+	if ($user->check_ban(false, false, $email, true) == true)
 	{
 		return 'EMAIL_BANNED';
 	}
@@ -1513,6 +1517,9 @@ function group_delete($group_id, $group_name = false)
 		WHERE group_id = $group_id";
 	$db->sql_query($sql);
 
+	// Re-cache moderators
+	cache_moderators();
+
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
 	return 'GROUP_DELETED';
@@ -1526,9 +1533,9 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	global $db, $auth;
 
 	// We need both username and user_id info
-	user_get_id_name($user_id_ary, $username_ary);
+	$result = user_get_id_name($user_id_ary, $username_ary);
 
-	if (!sizeof($user_id_ary))
+	if (!sizeof($user_id_ary) || $result !== false)
 	{
 		return 'NO_USER';
 	}
@@ -1629,9 +1636,9 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
 
 	// We need both username and user_id info
-	user_get_id_name($user_id_ary, $username_ary);
+	$result = user_get_id_name($user_id_ary, $username_ary);
 
-	if (!sizeof($user_id_ary))
+	if (!sizeof($user_id_ary) || $result !== false)
 	{
 		return 'NO_USER';
 	}
@@ -1762,9 +1769,9 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	global $db, $auth, $phpbb_root_path, $phpEx, $config;
 
 	// We need both username and user_id info
-	user_get_id_name($user_id_ary, $username_ary);
+	$result = user_get_id_name($user_id_ary, $username_ary);
 
-	if (!sizeof($user_id_ary))
+	if (!sizeof($user_id_ary) || $result !== false)
 	{
 		return false;
 	}
@@ -1869,7 +1876,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 {
 	global $db;
 
-	if (!$user_id_ary)
+	if (empty($user_id_ary))
 	{
 		return;
 	}

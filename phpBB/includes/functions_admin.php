@@ -1360,6 +1360,11 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 			$db->sql_freeresult($result);
 
+			if (!sizeof($forum_ids))
+			{
+				break;
+			}
+
 			// 2: Get topic counts for each forum
 			$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
 				FROM ' . TOPICS_TABLE . '

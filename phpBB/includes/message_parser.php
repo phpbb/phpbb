@@ -79,6 +79,23 @@ class bbcode_firstpass extends bbcode
 	}
 
 	/**
+	* Prepare some bbcodes for better parsing
+	*/
+	function prepare_bbcodes()
+	{
+		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
+		if (strpos($this->message, '[quote') !== false)
+		{
+			$in = str_replace("\r\n", "\n", $this->message);
+
+			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $this->message);
+			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $this->message);
+		}
+
+		// Add other checks which needs to be placed before actually parsing anything (be it bbcodes, smilies, urls...)
+	}
+
+	/**
 	* Init bbcode data for later parsing
 	*/
 	function bbcode_init()
@@ -565,12 +582,6 @@ class bbcode_firstpass extends bbcode
 		$tok = ']';
 		$out = '[';
 
-		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
-		$in = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
-		$in = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $in);
-
-		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
-
 		$in = substr($in, 1);
 		$close_tags = $error_ary = array();
 		$buffer = '';
@@ -897,15 +908,7 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		// Parse smilies
-		if ($allow_smilies)
-		{
-			$this->smilies($config['max_' . $mode . '_smilies']);
-		}
-
-		$num_urls = 0;
-
-		// Parse BBCode
+		// Prepare BBcode (just prepares some tags for better parsing)
 		if ($allow_bbcode && strpos($this->message, '[') !== false)
 		{
 			$this->bbcode_init();
@@ -917,8 +920,22 @@ class parse_message extends bbcode_firstpass
 					$this->bbcodes[$bool]['disabled'] = true;
 				}
 			}
-			$this->parse_bbcode();
 
+			$this->prepare_bbcodes();
+		}
+
+		// Parse smilies
+		if ($allow_smilies)
+		{
+			$this->smilies($config['max_' . $mode . '_smilies']);
+		}
+
+		$num_urls = 0;
+
+		// Parse BBCode
+		if ($allow_bbcode && strpos($this->message, '[') !== false)
+		{
+			$this->parse_bbcode();
 			$num_urls += $this->parsed_items['url'];
 		}
 

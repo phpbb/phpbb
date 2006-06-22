@@ -133,7 +133,7 @@ class acp_users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 		}
 
 		switch ($mode)
@@ -657,9 +657,34 @@ class acp_users
 								$sql_ary['user_warnings'] = $data['warnings'];
 							}
 
-							if (($user_row['user_type'] == USER_FOUNDER && !$data['user_founder']) || ($user_row['user_type'] != USER_FOUNDER && $data['user_founder']))
+							// Only allow founders updating the founder status...
+							if ($user->data['user_type'] == USER_FOUNDER)
 							{
-								$sql_ary['user_type'] = ($data['user_founder']) ? USER_FOUNDER : USER_NORMAL;
+								// Setting a normal member to be a founder
+								if ($data['user_founder'] && $user_row['user_type'] != USER_FOUNDER)
+								{
+									$sql_ary['user_type'] = USER_FOUNDER;
+								}
+								else if (!$data['user_founder'] && $user_row['user_type'] == USER_FOUNDER)
+								{
+									// Check if at least one founder is present
+									$sql = 'SELECT user_id
+										FROM ' . USERS_TABLE . '
+										WHERE user_type = ' . USER_FOUNDER . '
+											AND user_id <> ' . $user_id;
+									$result = $db->sql_query_limit($sql, 1);
+									$row = $db->sql_fetchrow($result);
+									$db->sql_freeresult($result);
+
+									if ($row)
+									{
+										$sql_ary['user_type'] = USER_NORMAL;
+									}
+									else
+									{
+										trigger_error($user->lang['AT_LEAST_ONE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+									}
+								}
 							}
 						}
 
@@ -1252,7 +1277,7 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($lang),
 					'S_STYLE_OPTIONS'	=> style_select($style),
-					'S_TZ_OPTIONS'		=> tz_select($tz),
+					'S_TZ_OPTIONS'		=> tz_select($tz, true),
 					)
 				);
 

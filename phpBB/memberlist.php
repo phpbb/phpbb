@@ -200,13 +200,6 @@ switch ($mode)
 		$presence_img = '';
 		switch ($action)
 		{
-			case 'icq':
-				$lang = 'ICQ';
-				$sql_field = 'user_icq';
-				$s_select = 'S_SEND_ICQ';
-				$s_action = 'http://wwp.icq.com/scripts/WWPMsg.dll';
-			break;
-
 			case 'aim':
 				$lang = 'AIM';
 				$sql_field = 'user_aim';
@@ -229,7 +222,7 @@ switch ($mode)
 			break;
 
 			default:
-				$sql_field = '';
+				trigger_error('This contact option is not supported', E_USER_ERROR);
 			break;
 		}
 
@@ -250,10 +243,6 @@ switch ($mode)
 		// Post data grab actions
 		switch ($action)
 		{
-			case 'icq':
-				$presence_img = '<img src="http://web.icq.com/whitepages/online?icq=' . $row[$sql_field] . '&amp;img=5" width="18" height="18" alt="" />';
-			break;
-
 			case 'jabber':
 				if ($submit && @extension_loaded('xml') && $config['jab_enable'])
 				{
@@ -289,7 +278,6 @@ switch ($mode)
 		$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
 			'USERNAME'		=> $row['username'],
-			'EMAIL'			=> $row['user_email'],
 			'CONTACT_NAME'	=> $row[$sql_field],
 			'SITENAME'		=> $config['sitename'],
 
@@ -835,7 +823,7 @@ switch ($mode)
 			// We JOIN here to save a query for determining membership for hidden groups. ;)
 			$sql = 'SELECT g.*, ug.user_id
 				FROM ' . GROUPS_TABLE . ' g
-				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.user_id = ' . $user->data['user_id'] . " AND ug.group_id = $group_id)
+				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.user_pending = 0 AND ug.user_id = ' . $user->data['user_id'] . " AND ug.group_id = $group_id)
 				WHERE g.group_id = $group_id";
 			$result = $db->sql_query($sql);
 			$group_row = $db->sql_fetchrow($result);
@@ -928,7 +916,7 @@ switch ($mode)
 			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
 			$order_by = 'ug.group_leader DESC, ';
 
-			$sql_where .= " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
+			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
 		}
 		
 		// Sorting and order
@@ -968,17 +956,18 @@ switch ($mode)
 					unset($_GET[$key]);
 				}
 
-				if (in_array($key, array('submit', 'start', 'mode')) || !$var)
+				if (in_array($key, array('submit', 'start', 'mode', 'char')) || empty($var))
 				{
 					continue;
 				}
+
 				$params[] = $key . '=' . urlencode(htmlspecialchars($var));
 			}
 		}
 
 		$u_hide_find_member = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $params));
 
-		$params[] = "mode=$mode&amp;first_char=$first_char";
+		$params[] = "mode=$mode";
 		$pagination_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $params));
 
 		// Some search user specific data
@@ -1238,7 +1227,7 @@ function show_profile($data)
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
-		'U_ICQ'			=> ($data['user_icq']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=icq&amp;u=' . $user_id) : '',
+		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . $data['user_icq'] : '',
 		'U_AIM'			=> ($data['user_aim']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg' : '',
 		'U_MSN'			=> ($data['user_msnm']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',

@@ -151,7 +151,7 @@ function adm_page_header($page_title)
 	{
 		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
 	}
-	header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
+	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');
 

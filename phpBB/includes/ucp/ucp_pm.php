@@ -150,7 +150,9 @@ class ucp_pm
 				$module = new ucp_main($this);
 				$module->u_action = $this->u_action;
 				$module->main($id, $mode);
+
 				$this->tpl_name = $module->tpl_name;
+				$this->page_title = 'UCP_PM_DRAFTS';
 
 				unset($module);
 				return;

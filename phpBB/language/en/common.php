@@ -29,12 +29,12 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'TRANSLATION_INFO'	=> 'blah',
-	'ENCODING'		=> 'iso-8859-1',
-	'DIRECTION'		=> 'ltr',
-	'LEFT'			=> 'left',
-	'RIGHT'			=> 'right',
-	'DATE_FORMAT'	=> '|d M Y|',
+	'TRANSLATION_INFO'	=> '',
+	'ENCODING'			=> 'iso-8859-1',
+	'DIRECTION'			=> 'ltr',
+	'LEFT'				=> 'left',
+	'RIGHT'				=> 'right',
+	'DATE_FORMAT'		=> '|d M Y|',
 
 	'1_DAY'			=> '1 day',
 	'1_MONTH'		=> '1 month',
@@ -431,6 +431,7 @@ $lang = array_merge($lang, array(
 	'SKIP'						=> 'Skip to content',
 	'SMTP_NO_AUTH_SUPPORT'		=> 'SMTP server does not support authentication',
 	'SORRY_AUTH_READ'			=> 'You are not authorised to read this forum',
+	'SORRY_AUTH_VIEW_ATTACH'	=> 'You are not authorised to download this attachment',
 	'SORT_BY'					=> 'Sort by',
 	'SORT_JOINED'				=> 'Joined date',
 	'SORT_LOCATION'				=> 'Location',
@@ -611,6 +612,7 @@ $lang = array_merge($lang, array(
 		'Feb'		=> 'Feb',
 		'Mar'		=> 'Mar',
 		'Apr'		=> 'Apr',
+		'May_short'	=> 'May',	// Short representation of "May". May_short used because in english the short and long date are the same for May.
 		'Jun'		=> 'Jun',
 		'Jul'		=> 'Jul',
 		'Aug'		=> 'Aug',

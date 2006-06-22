@@ -1479,6 +1479,11 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 
 	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
 
+	if (!sizeof($recipients))
+	{
+		return;
+	}
+
 	// Get banned User ID's
 	$sql = 'SELECT ban_userid 
 		FROM ' . BANLIST_TABLE . '

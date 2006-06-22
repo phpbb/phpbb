@@ -30,7 +30,8 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
-	
+	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status promote another user to be a founder first.',
+
 	'BAN_SUCCESSFUL'		=> 'Ban entered successfully',
 
 	'CANNOT_REMOVE_ANONYMOUS'	=> 'You are not able to remove the guest user account.',

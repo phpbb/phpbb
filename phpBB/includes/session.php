@@ -82,7 +82,7 @@ class session
 		}
 
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
-		$page = (($page_dir) ? urlencode($page_dir) . '/' : '') . urlencode($page_name) . (($query_string) ? "?$query_string" : '');
+		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
 
 		// The script path from the webroot to the current directory (for example: /phpBB2/adm/) : always prefixed with / and ends in /
 		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
@@ -102,12 +102,12 @@ class session
 		$root_script_path .= (substr($root_script_path, -1, 1) == '/') ? '' : '/';
 
 		$page_array += array(
-			'page_name'			=> urlencode($page_name),
-			'page_dir'			=> urlencode($page_dir),
+			'page_name'			=> $page_name,
+			'page_dir'			=> $page_dir,
 
 			'query_string'		=> $query_string,
-			'script_path'		=> urlencode(htmlspecialchars($script_path)),
-			'root_script_path'	=> urlencode(htmlspecialchars($root_script_path)),
+			'script_path'		=> str_replace(' ', '%20', htmlspecialchars($script_path)),
+			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page
 		);
@@ -437,7 +437,7 @@ class session
 		// @todo Change to !$this->data['user_type'] & USER_FOUNDER && !$this->data['user_type'] & USER_BOT in time
 		if ($this->data['user_type'] != USER_FOUNDER)
 		{
-			$this->check_ban();
+			$this->check_ban($this->data['user_id'], $this->ip);
 		}
 
 		//
@@ -755,19 +755,44 @@ class session
 	{
 		global $config, $db;
 
-		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
-		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
-		$user_email = ($user_email === false) ? $this->data['user_email'] : $user_email;
-
 		$banned = false;
 
 		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 			FROM ' . BANLIST_TABLE . '
-			WHERE (ban_end >= ' . time() . " OR ban_end = 0)
-				AND (
-					ban_ip <> '' OR ban_email <> '' OR 
-					(ban_userid <> 0 AND ban_userid = " . $user_id . ')
-				)';
+			WHERE (ban_end >= ' . time() . ' OR ban_end = 0)';
+
+		// Determine which entries to check, only return those
+		if ($user_email === false)
+		{
+			$sql .= " AND ban_email = ''";
+		}
+
+		if ($user_ip === false)
+		{
+			$sql .= " AND (ban_ip = '' OR (ban_ip <> '' AND ban_exclude = 1))";
+		}
+
+		if ($user_id === false)
+		{
+			$sql .= ' AND (ban_userid = 0 OR (ban_userid <> 0 AND ban_exclude = 1))';
+		}
+		else
+		{
+			$sql .= ' AND (ban_userid = ' . $user_id;
+
+			if ($user_email !== false)
+			{
+				$sql .= " OR ban_email <> ''";
+			}
+
+			if ($user_ip !== false)
+			{
+				$sql .= " OR ban_ip <> ''";
+			}
+
+			$sql .= ')';
+		}
+
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1208,17 +1233,18 @@ class user extends session
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
-		static $lang_dates, $midnight;
+		static $midnight;
 
-		if (empty($lang_dates))
+		$lang_dates = $this->lang['datetime'];
+		$format = (!$format) ? $this->date_format : $format;
+
+		// Short representation of month in format
+		if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
 		{
-			foreach ($this->lang['datetime'] as $match => $replace)
-			{
-				$lang_dates[$match] = $replace;
-			}
+			$lang_dates['May'] = $lang_dates['May_short'];
 		}
 
-		$format = (!$format) ? $this->date_format : $format;
+		unset($lang_dates['May_short']);
 
 		if (!$midnight)
 		{

@@ -808,8 +808,11 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 
 	$smtp = new smtp_class;
 
+	$errno = 0;
+	$errstr = '';
+
 	// Ok we have error checked as much as we can to this point let's get on it already.
-	if (!$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
+	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
 		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		return false;

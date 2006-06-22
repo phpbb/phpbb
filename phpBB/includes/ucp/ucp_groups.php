@@ -33,6 +33,8 @@ class ucp_groups
 		switch ($mode)
 		{
 			case 'membership':
+		
+				$this->page_title = 'UCP_USERGROUPS_MEMBER';
 
 				if ($submit || isset($_POST['change_default']))
 				{
@@ -377,6 +379,7 @@ class ucp_groups
 
 			case 'manage':
 
+				$this->page_title = 'UCP_USERGROUPS_MANAGE';
 				$action		= (isset($_POST['addusers'])) ? 'addusers' : request_var('action', '');
 				$group_id	= request_var('g', 0);
 
@@ -922,7 +925,6 @@ class ucp_groups
 		}
 
 		$this->tpl_name = 'ucp_groups_' . $mode;
-		$this->page_title = 'UCP_GROUPS_' . strtoupper($mode);
 	}
 }
 

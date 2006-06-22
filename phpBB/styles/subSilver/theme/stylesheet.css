@@ -609,6 +609,11 @@ input.radio {
 	color: #006699;
 }
 
+.sep {
+	color: black;
+	background-color: #FFA34F;
+}
+
 table.colortable td {
 	padding: 0;
 }

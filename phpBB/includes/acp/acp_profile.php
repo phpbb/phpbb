@@ -536,7 +536,7 @@ class acp_profile
 
 					if ($cp->vars['lang_name'] == '')
 					{
-						$error[] = $user->lang['EMPTY_USER_FIELD_IDENT'];
+						$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
 					}
 
 					if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)

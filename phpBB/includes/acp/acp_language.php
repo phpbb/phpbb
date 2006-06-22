@@ -211,7 +211,6 @@ class acp_language
 				{
 					// Email Template
 					$entry = (STRIP) ? stripslashes($_POST['entry']) : $_POST['entry'];
-					$entry = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $entry);
 					fwrite($fp, $entry);
 				}
 				else
@@ -237,15 +236,14 @@ class acp_language
 								foreach ($value as $_key => $_value)
 								{
 									$_value = (STRIP) ? stripslashes($_value) : $_value;
-									$_value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $_value);
 									$entry .= "\t\t" . (int) $_key . "\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
 								}
-								
+
 								$entry .= "\t),\n";
 							}
-											
+
 							fwrite($fp, $entry);
-						}	
+						}
 					}
 					else
 					{
@@ -258,7 +256,6 @@ class acp_language
 							if (!is_array($value))
 							{
 								$value = (STRIP) ? stripslashes($value) : $value;
-								$value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $value);
 								$entry = "\t'" . $key . "'\t=> '" . str_replace("'", "\\'", $value) . "',\n";
 							}
 							else
@@ -267,9 +264,23 @@ class acp_language
 							
 								foreach ($value as $_key => $_value)
 								{
-									$_value = (STRIP) ? stripslashes($_value) : $_value;
-									$_value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $_value);
-									$entry .= "\t\t'" . $_key . "'\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
+									if (!is_array($_value))
+									{
+										$_value = (STRIP) ? stripslashes($_value) : $_value;
+										$entry .= "\t\t'" . $_key . "'\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
+									}
+									else
+									{
+										$entry .= "\n\t\t'" . $_key . "'\t=> array(\n";
+
+										foreach ($_value as $__key => $__value)
+										{
+											$__value = (STRIP) ? stripslashes($__value) : $__value;
+											$entry .= "\t\t\t'" . $__key . "'\t=> '" . str_replace("'", "\\'", $__value) . "',\n";
+										}
+		
+										$entry .= "\t\t),\n\n";
+									}
 								}
 								
 								$entry .= "\t),\n\n";
@@ -1041,22 +1052,52 @@ $lang = array_merge($lang, array(
 
 				foreach ($value as $_key => $_value)
 				{
-					$tpl .= '
-						<tr>
-							<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
-							<td class="row2">';
-					
-					if ($input_field)
+					if (is_array($_value))
 					{
-						$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" size="50" />';
+						$tpl .= '
+							<tr>
+								<td class="row3" colspan="2">' . $key_prefix . '&nbsp; &nbsp;<b>' . $_key . '</b></td>
+							</tr>';
+
+						foreach ($_value as $__key => $__value)
+						{
+							$tpl .= '
+								<tr>
+									<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $__key . '</b></td>
+									<td class="row2">';
+
+							if ($input_field)
+							{
+								$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . '][' . $__key . ']" value="' . htmlspecialchars($__value) . '" size="50" />';
+							}
+							else
+							{
+								$tpl .= '<b>' . htmlspecialchars($__value) . '</b>';
+							}
+							
+							$tpl .= '</td>
+								</tr>';
+						}
 					}
 					else
 					{
-						$tpl .= '<b>' . htmlspecialchars($_value) . '</b>';
+						$tpl .= '
+							<tr>
+								<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
+								<td class="row2">';
+						
+						if ($input_field)
+						{
+							$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" size="50" />';
+						}
+						else
+						{
+							$tpl .= '<b>' . htmlspecialchars($_value) . '</b>';
+						}
+						
+						$tpl .= '</td>
+							</tr>';
 					}
-					
-					$tpl .= '</td>
-						</tr>';
 				}
 
 				$tpl .= '

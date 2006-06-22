@@ -293,7 +293,7 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
 
-				$sql = 'SELECT forum_name
+				$sql = 'SELECT forum_name, forum_type
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -1376,6 +1376,43 @@ class acp_forums
 		}
 
 		$db->sql_transaction('commit');
+
+		// Make sure the overall post/topic count is correct...
+		$sql = 'SELECT COUNT(post_id) AS stat 
+			FROM ' . POSTS_TABLE . '
+			WHERE post_approved = 1';
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('num_posts', (int) $row['stat'], true);
+
+		$sql = 'SELECT COUNT(topic_id) AS stat
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_approved = 1';
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('num_topics', (int) $row['stat'], true);
+
+		$sql = 'SELECT COUNT(attach_id) as stat
+			FROM ' . ATTACHMENTS_TABLE;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('num_files', (int) $row['stat'], true);
+
+		$sql = 'SELECT SUM(filesize) as stat
+			FROM ' . ATTACHMENTS_TABLE;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('upload_dir_size', (int) $row['stat'], true);
+
+		add_log('admin', 'LOG_RESYNC_STATS');
 
 		return array();
 	}

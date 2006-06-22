@@ -213,7 +213,10 @@ class acp_permissions
 			switch ($action)
 			{
 				case 'delete':
-					$this->remove_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id, $forum_id);
+					if (sizeof($user_id) || sizeof($group_id))
+					{
+						$this->remove_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id, $forum_id);
+					}
 				break;
 
 				case 'apply_permissions':

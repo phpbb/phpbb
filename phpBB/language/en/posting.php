@@ -182,7 +182,7 @@ $lang = array_merge($lang, array(
 
 	'UNABLE_GET_IMAGE_SIZE'		=> 'Accessing the image was impossible or file isn\'t a valid picture.',
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain bbcodes: ',
-	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you whish this topic to be displayed',
+	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you wish this topic to be displayed.',
 	'UPDATE_COMMENT'			=> 'Update comment',
 	'URL_INVALID'				=> 'The URL you specified is invalid.',
 	'URL_NOT_FOUND'				=> 'The file specified could not be found.',
