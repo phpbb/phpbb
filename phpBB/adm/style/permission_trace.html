@@ -22,20 +22,20 @@
 		<!-- IF trace.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 		<td style="white-space: nowrap;"><strong>{trace.WHO}</strong></td>
 
-		<!-- IF trace.S_SETTING_NO -->
-			<td class="no">{L_ACL_NO}</td>
+		<!-- IF trace.S_SETTING_NEVER -->
+			<td class="never">{L_ACL_NEVER}</td>
 		<!-- ELSEIF trace.S_SETTING_YES -->
 			<td class="yes">{L_ACL_YES}</td>
 		<!-- ELSE -->
-			<td class="unset">{L_ACL_UNSET}</td>
+			<td class="no">{L_ACL_NO}</td>
 		<!-- ENDIF -->
 
-		<!-- IF trace.S_TOTAL_NO -->
-			<td class="no">{L_ACL_NO}</td>
+		<!-- IF trace.S_TOTAL_NEVER -->
+			<td class="never">{L_ACL_NEVER}</td>
 		<!-- ELSEIF trace.S_TOTAL_YES -->
 			<td class="yes">{L_ACL_YES}</td>
 		<!-- ELSE -->
-			<td class="unset">{L_ACL_UNSET}</td>
+			<td class="no">{L_ACL_NO}</td>
 		<!-- ENDIF -->
 
 		<td>{trace.INFORMATION}</td>

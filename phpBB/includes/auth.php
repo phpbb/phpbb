@@ -378,14 +378,14 @@ class auth
 
 						// If one option is allowed, the global permission for this option has to be allowed too
 						// example: if the user has the a_ permission this means he has one or more a_* permissions
-						if ($auth_ary[$opt] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NO))
+						if ($auth_ary[$opt] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NEVER))
 						{
 							$bitstring[$this->acl_options[$ary_key][$option_key]] = ACL_YES;
 						}
 					}
 					else
 					{
-						$bitstring[$id] = ACL_NO;
+						$bitstring[$id] = ACL_NEVER;
 					}
 				}
 
@@ -489,7 +489,7 @@ class auth
 		$hold_ary = array();
 
 		// First grab user settings ... each user has only one setting for each
-		// option ... so we shouldn't need any ACL_NO checks ... he says ...
+		// option ... so we shouldn't need any ACL_NEVER checks ... he says ...
 		// Grab assigned roles...
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting',
@@ -522,7 +522,7 @@ class auth
 		}
 		$db->sql_freeresult($result);
 
-		// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
+		// Now grab group settings ... ACL_NEVER overrides ACL_YES so act appropriatley
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
 
@@ -552,13 +552,13 @@ class auth
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NO))
+			if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NEVER))
 			{
 				$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
 				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
 
-				// Check for existence of ACL_YES if an option got set to NO
-				if ($setting == ACL_NO)
+				// Check for existence of ACL_YES if an option got set to ACL_NEVER
+				if ($setting == ACL_NEVER)
 				{
 					$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
 

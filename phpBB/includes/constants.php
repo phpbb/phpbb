@@ -31,9 +31,9 @@ define('USER_FOUNDER', 3);
 //define('USER_GUEST', 4);
 
 // ACL
-define('ACL_NO', 0);
+define('ACL_NEVER', 0);
 define('ACL_YES', 1);
-define('ACL_UNSET', -1);
+define('ACL_NO', -1);
 
 // Login error codes
 define('LOGIN_CONTINUE', 1);

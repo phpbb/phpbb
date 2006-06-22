@@ -292,6 +292,7 @@ $lang = array_merge($lang, array(
 	'NEW_POST'					=> 'New post',
 	'NEW_POSTS'					=> 'New posts',
 	'NEXT'						=> 'Next',
+	'NEVER'						=> 'Never',
 	'NO'						=> 'No',
 	'NONE'						=> 'None',
 	'NOT_AUTHORIZED'			=> 'You are not authorised to access this area.',

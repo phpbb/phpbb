@@ -1884,7 +1884,7 @@ function cache_moderators()
 	// Clear table
 	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
 
-	// We add moderators who have forum moderator permissions without an explicit ACL_NO setting
+	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$hold_ary = $ug_id_ary = $sql_ary = array();
 
 	// Grab all users having moderative options...
@@ -1914,8 +1914,8 @@ function cache_moderators()
 			),
 
 			'WHERE'		=> '(o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
-				AND ((a.auth_setting = ' . ACL_NO . ' AND r.auth_setting IS NULL)
-					OR r.auth_setting = ' . ACL_NO . ')
+				AND ((a.auth_setting = ' . ACL_NEVER . ' AND r.auth_setting IS NULL)
+					OR r.auth_setting = ' . ACL_NEVER . ')
 				AND a.group_id = ug.group_id
 				AND ug.user_id IN (' . implode(', ', $ug_id_ary) . ")
 				AND ug.user_pending = 0

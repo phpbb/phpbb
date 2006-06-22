@@ -1841,7 +1841,7 @@ class acp_users
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NO);
+					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
 					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
 				}
 				$db->sql_freeresult($result);
@@ -1855,7 +1855,7 @@ class acp_users
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'local', ACL_NO);
+					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'local', ACL_NEVER);
 					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
 				}
 				$db->sql_freeresult($result);

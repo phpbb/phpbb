@@ -239,7 +239,7 @@ class acp_permission_roles
 					$auth_options = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$auth_options[$row['auth_option']] = ACL_UNSET;
+						$auth_options[$row['auth_option']] = ACL_NO;
 					}
 					$db->sql_freeresult($result);
 				}
@@ -294,7 +294,7 @@ class acp_permission_roles
 					)
 				);
 
-				// We need to fill the auth options array with ACL_UNSET options ;)
+				// We need to fill the auth options array with ACL_NO options ;)
 				$sql = 'SELECT auth_option_id, auth_option
 					FROM ' . ACL_OPTIONS_TABLE . "
 					WHERE auth_option LIKE '{$permission_type}%'
@@ -306,7 +306,7 @@ class acp_permission_roles
 				{
 					if (!isset($auth_options[$row['auth_option']]))
 					{
-						$auth_options[$row['auth_option']] = ACL_UNSET;
+						$auth_options[$row['auth_option']] = ACL_NO;
 					}
 				}
 				$db->sql_freeresult($result);
@@ -447,17 +447,17 @@ class acp_permission_roles
 			$template->assign_block_vars('auth', array(
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat],
 
-				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NO'] && !$cat_array['S_UNSET']) ? true : false,
-				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_YES'] && !$cat_array['S_UNSET']) ? true : false,
-				'S_UNSET'	=> ($cat_array['S_UNSET'] && !$cat_array['S_NO'] && !$cat_array['S_YES']) ? true : false)
+				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
+				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
+				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false)
 			);
 
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				$template->assign_block_vars('auth.mask', array(
 					'S_YES'		=> ($allowed == ACL_YES) ? true : false,
+					'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
 					'S_NO'		=> ($allowed == ACL_NO) ? true : false,
-					'S_UNSET'	=> ($allowed == ACL_UNSET) ? true : false,
 
 					'FIELD_NAME'	=> $permission,
 					'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
@@ -484,7 +484,7 @@ class acp_permission_roles
 		$auth_settings = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$auth_settings[$row['auth_option']] = ACL_UNSET;
+			$auth_settings[$row['auth_option']] = ACL_NO;
 		}
 		$db->sql_freeresult($result);
 

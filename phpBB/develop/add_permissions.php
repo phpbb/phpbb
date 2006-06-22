@@ -33,9 +33,9 @@ require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
 include($phpbb_root_path . 'includes/functions.'.$phpEx);
 
-define('ACL_NO', 0);
+define('ACL_NEVER', 0);
 define('ACL_YES', 1);
-define('ACL_UNSET', -1);
+define('ACL_NO', -1);
 
 define('ACL_GROUPS_TABLE', $table_prefix.'acl_groups');
 define('ACL_OPTIONS_TABLE', $table_prefix.'acl_options');
@@ -212,14 +212,14 @@ foreach ($prefixes as $prefix)
 		
 			echo "<p><b>Adding $auth_option...</b></p>\n";
 
-			mass_auth('group', 0, 'guests', $auth_option, ACL_NO);
-			mass_auth('group', 0, 'inactive', $auth_option, ACL_NO);
-			mass_auth('group', 0, 'inactive_coppa', $auth_option, ACL_NO);
-			mass_auth('group', 0, 'registered_coppa', $auth_option, ACL_NO);
-			mass_auth('group', 0, 'registered', $auth_option, (($prefix != 'm_' && $prefix != 'a_') ? ACL_YES : ACL_NO));
-			mass_auth('group', 0, 'global_moderators', $auth_option, (($prefix != 'a_') ? ACL_YES : ACL_NO));
+			mass_auth('group', 0, 'guests', $auth_option, ACL_NEVER);
+			mass_auth('group', 0, 'inactive', $auth_option, ACL_NEVER);
+			mass_auth('group', 0, 'inactive_coppa', $auth_option, ACL_NEVER);
+			mass_auth('group', 0, 'registered_coppa', $auth_option, ACL_NEVER);
+			mass_auth('group', 0, 'registered', $auth_option, (($prefix != 'm_' && $prefix != 'a_') ? ACL_YES : ACL_NEVER));
+			mass_auth('group', 0, 'global_moderators', $auth_option, (($prefix != 'a_') ? ACL_YES : ACL_NEVER));
 			mass_auth('group', 0, 'administrators', $auth_option, ACL_YES);
-			mass_auth('group', 0, 'bots', $auth_option, (($prefix != 'm_' && $prefix != 'a_') ? ACL_YES : ACL_NO));
+			mass_auth('group', 0, 'bots', $auth_option, (($prefix != 'm_' && $prefix != 'a_') ? ACL_YES : ACL_NEVER));
 		}
 	}
 }
@@ -236,7 +236,7 @@ echo "<p><b>Done</b></p>\n";
 	$forum_id = forum ids (array|int|0) -> 0 == all forums
 	$ug_id = [int] user_id|group_id : [string] usergroup name
 	$acl_list = [string] acl entry : [array] acl entries
-	$setting = ACL_YES|ACL_NO|ACL_UNSET
+	$setting = ACL_YES|ACL_NEVER|ACL_NO
 */
 function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 {
@@ -337,7 +337,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 
 			switch ($setting)
 			{
-				case ACL_UNSET:
+				case ACL_NO:
 					if (isset($cur_auth[$forum][$auth_option_id]))
 					{
 						$sql_ary['delete'][] = "DELETE FROM $table 
