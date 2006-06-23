@@ -322,30 +322,24 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'newposts':
-				$show_results = request_var('sr', 'topics');
-				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
+				// force sorting
+				$show_results = (request_var('sr', 'topics') == 'posts') ? 'posts' : 'topics';
+				$sort_key = 't';
+				$sort_dir = 'd';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
-				$sort_by_sql['s'] = ($show_results == 'posts') ? 'p.post_subject' : 't.topic_title';
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
-				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
-				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
+				if (!$sort_days)
+				{
+					$sort_days = 1;
+				}
+				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
 
 				if ($show_results == 'posts')
 				{
-					if ($sort_key == 'i')
-					{
-						$sort_join = TOPICS_TABLE . ' t, ';
-						$sql_sort = ' AND t.topic_id = p.topic_id ' . $sql_sort;
-					}
-					else if ($sort_key == 'a')
-					{
-						$sort_join = USERS_TABLE . ' u, ';
-						$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
-					}
-
-					$sql = "SELECT p.post_id
-						FROM $sort_join" . POSTS_TABLE . ' p
+					$sql = 'SELECT p.post_id
+						FROM ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
 							$m_approve_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
@@ -354,12 +348,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 				else
 				{
-					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
-						FROM $sort_join" . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
-							AND t.topic_id = p.topic_id
-							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+					$sql = 'SELECT t.topic_id
+						FROM ' . TOPICS_TABLE . ' t
+						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
+							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+							' . ((sizeof($ex_fid_ary)) ? 'AND t.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
