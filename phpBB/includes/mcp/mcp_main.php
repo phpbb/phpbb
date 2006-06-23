@@ -809,7 +809,7 @@ function mcp_fork_topic($topic_ids)
 			$sql = 'SELECT *
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
-				ORDER BY post_id ASC";
+				ORDER BY post_time ASC";
 			$result = $db->sql_query($sql);
 
 			$post_rows = array();

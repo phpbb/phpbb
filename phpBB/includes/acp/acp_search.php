@@ -485,6 +485,9 @@ class acp_search
 	{
 		global $db;
 
+		/**
+		* @todo what is faster, doing a MAX() or an ORDER BY post_id and LIMIT 1?
+		*/
 		$sql = 'SELECT MAX(post_id) as max_post_id
 			FROM '. POSTS_TABLE;
 		$result = $db->sql_query($sql);

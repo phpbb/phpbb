@@ -54,7 +54,7 @@ function mcp_front_view($id, $mode, $action)
 				FROM ' . POSTS_TABLE . '
 				WHERE forum_id IN (0, ' . implode(', ', $forum_list) . ')
 					AND post_approved = 0
-				ORDER BY post_id DESC';
+				ORDER BY post_time DESC';
 			$result = $db->sql_query_limit($sql, 5);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -68,7 +68,7 @@ function mcp_front_view($id, $mode, $action)
 				WHERE p.post_id IN (' . implode(', ', $post_list) . ')
 					AND t.topic_id = p.topic_id
 					AND p.poster_id = u.user_id
-				ORDER BY p.post_id DESC';
+				ORDER BY p.post_time DESC';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -158,7 +158,7 @@ function mcp_front_view($id, $mode, $action)
 					AND r.user_id = u.user_id
 					AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')',
 
-				'ORDER_BY'	=> 'p.post_id DESC'
+				'ORDER_BY'	=> 'p.post_time DESC'
 			));
 			$result = $db->sql_query_limit($sql, 5);
 
