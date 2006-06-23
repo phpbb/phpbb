@@ -1281,8 +1281,7 @@ class install_install extends module
 				}
 			}
 
-			// This is a one off move of a single ACP module since the sort algorithm puts it in the wrong place
-			// Manage Users should ideally be the first thing you see on the Users & groups tab
+			// Move some of the modules around since the code above will put them in the wrong place
 			if ($module_class == 'acp')
 			{
 				// Move main module 4 up...
@@ -1303,6 +1302,18 @@ class install_install extends module
 					WHERE module_name = 'permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+	
+				$_module->move_module_by($row, 'move_up', 4);
+
+				// Move manage users screen module 4 up...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_name = 'users'
+						AND module_class = 'acp'
+						AND module_mode = 'overview'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1555,6 +1566,13 @@ class install_install extends module
 		$sql_db = 'dbal_' . $dbms;
 		$db = new $sql_db();
 		$db->sql_return_on_error(true);
+
+		// Check that we actually have a database name before going any further.....
+		if ($dbms != 'sqlite' && $dbname === '')
+		{
+			$error[] = $lang['INST_ERR_DB_NO_NAME'];
+			return false;
+		}
 
 		// Try and connect ...
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
