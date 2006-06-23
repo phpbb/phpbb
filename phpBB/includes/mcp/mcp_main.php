@@ -898,8 +898,8 @@ function mcp_fork_topic($topic_ids)
 		// Sync new topics, parent forums and board stats
 		sync('topic', 'topic_id', $new_topic_id_list, true);
 		sync('forum', 'forum_id', $to_forum_id, true);
-		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list));
-		set_config('num_posts', $config['num_posts'] + $total_posts);
+		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list), true);
+		set_config('num_posts', $config['num_posts'] + $total_posts, true);
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{

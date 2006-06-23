@@ -196,7 +196,7 @@ class search_backend
 				}
 				$db->sql_freeresult($result);
 			}
-			//set_config('last_search_time', time());
+
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_last_search = ' . time() . '
 				WHERE user_id = ' . $user->data['user_id'];

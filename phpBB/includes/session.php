@@ -657,7 +657,7 @@ class session
 					WHERE session_time < ' . (int) ($this->time_now - $config['session_length']);
 				$db->sql_query($sql);
 
-				set_config('session_last_gc', $this->time_now);
+				set_config('session_last_gc', $this->time_now, true);
 			break;
 
 			default:

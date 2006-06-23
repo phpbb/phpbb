@@ -145,7 +145,7 @@ function unique_id($extra = 'c')
 
 	if ($dss_seeded !== true)
 	{
-		set_config('rand_seed', $config['rand_seed']);
+		set_config('rand_seed', $config['rand_seed'], true);
 		$dss_seeded = true;
 	}
 

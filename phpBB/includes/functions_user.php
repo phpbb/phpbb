@@ -116,7 +116,7 @@ function user_update_name($old_name, $new_name)
 
 	if ($config['newest_username'] == $old_name)
 	{
-		set_config('newest_username', $new_name);
+		set_config('newest_username', $new_name, true);
 	}
 }
 
