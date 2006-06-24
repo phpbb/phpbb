@@ -327,16 +327,19 @@ switch ($mode)
 			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
 
-		$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
-			FROM ' . SESSIONS_TABLE . "
-			WHERE session_user_id = $user_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		if ($config['load_onlinetrack'])
+		{
+			$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
+				FROM ' . SESSIONS_TABLE . "
+				WHERE session_user_id = $user_id";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-		$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
-		$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
-		unset($row);
+			$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
+			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
+			unset($row);
+		}
 
 		if ($config['load_user_activity'])
 		{
@@ -1200,8 +1203,15 @@ function show_profile($data)
 
 	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 
-	$update_time = $config['load_online_time'] * 60;
-	$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+	if ($config['load_onlinetrack'])
+	{
+		$update_time = $config['load_online_time'] * 60;
+		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+	}
+	else
+	{
+		$online = false;
+	}
 
 	// Dump it out to the template
 	return array(
@@ -1213,8 +1223,8 @@ function show_profile($data)
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
   		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
-		'ONLINE_IMG'		=> ($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE'),
-		'S_ONLINE'			=> ($online) ? true : false,
+		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
+		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
 		'RANK_IMG_SRC'		=> $rank_img_src,
 		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
@@ -1235,8 +1245,6 @@ function show_profile($data)
 		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',
 		
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
-
-		'S_ONLINE'	=> ($online) ? true : false
 	);
 }
 
