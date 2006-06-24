@@ -149,6 +149,7 @@ $lang = array_merge($lang, array(
 	'INSTALL_TEST'				=> 'Test Again',
 	'INST_ERR_DB_CONNECT'		=> 'Could not connect to the database, see error message below',
 	'INST_ERR_DB_NO_ERROR'		=> 'No error message given',
+	'INST_ERR_DB_NO_NAME'		=> 'No database name specified',
 	'INST_ERR_EMAIL_INVALID'	=> 'The email address you entered is invalid',
 	'INST_ERR_EMAIL_MISMATCH'	=> 'The emails you entered did not match.',
 	'INST_ERR_FATAL'			=> 'Fatal installation error',

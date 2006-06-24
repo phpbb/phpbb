@@ -2686,6 +2686,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
+		'S_BOARD_DISABLED'		=> ($config['board_disable'] && !defined('IN_LOGIN') && $auth->acl_gets('a_', 'm_')) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->data['user_lang'],

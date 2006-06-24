@@ -87,6 +87,7 @@ $lang = array_merge($lang, array(
 	'BOARD_BAN_REASON'		=> 'Reason given for ban: <strong>%s</strong>',
 	'BOARD_BAN_TIME'		=> 'You have been banned from this board until <strong>%1$s</strong>.<br /><br />Please contact the %2$sBoard Administrator%3$s for more information.',
 	'BOARD_DISABLE'			=> 'Sorry but this board is currently unavailable',
+	'BOARD_DISABLED'		=> 'This board is currently disabled',
 	'BOARD_UNAVAILABLE'		=> 'Sorry but the board is temporarily unavailable, please try again in a few minutes',
 	'BROWSING_FORUM_GUEST'	=> 'Users browsing this forum: %1$s and %2$d guest',
 	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
