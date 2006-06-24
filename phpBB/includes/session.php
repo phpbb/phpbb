@@ -67,8 +67,8 @@ class session
 		$page_name = htmlspecialchars(basename($script_name));
 
 		// current directory within the phpBB root (for example: adm)
-		$root_dirs = explode('/', str_replace('\\', '/', realpath($root_path)));
-		$page_dirs = explode('/', str_replace('\\', '/', realpath('./')));
+		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
+		$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);

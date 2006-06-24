@@ -376,6 +376,71 @@ if (!function_exists('stripos'))
 	}
 }
 
+if (!function_exists('realpath'))
+{
+	/**
+	* Replacement for realpath if it is disabled
+	* This function is from the php manual by nospam at savvior dot com
+	*/
+	function phpbb_realpath($path)
+	{
+		$translated_path = getenv('PATH_TRANSLATED');
+
+		$translated_path = str_replace('\\', '/', $translated_path);
+		$translated_path = str_replace(basename(getenv('PATH_INFO')), '', $translated_path);
+
+		$translated_path .= '/';
+
+		if ($path == '.' || $path == './')
+		{
+			return $translated_path;
+		}
+
+		// now check for back directory
+		$translated_path .= $path;
+
+		$dirs = explode('/', $translated_path);
+
+		foreach ($dirs as $key => $value)
+		{
+			if ($value == '..')
+			{
+				$dirs[$key] = '';
+				$dirs[$key - 2] = '';
+			}
+		}
+
+		$translated_path = '';
+
+		foreach($dirs as $key => $value)
+		{
+			if (strlen($value) > 0)
+			{
+				$translated_path .= $value . '/';
+			}
+		}
+
+		$translated_path = substr($translated_path, 0, strlen($translated_path) - 1);
+
+		if (is_dir($translated_path) || is_file($translated_path))
+		{
+			return $translated_path;
+		}
+
+		return false;
+	}
+}
+else
+{
+	/**
+	* A wrapper for realpath
+	*/
+	function phpbb_realpath($path)
+	{
+		return realpath($path);
+	}
+}
+
 // functions used for building option fields
 
 /**
@@ -1189,8 +1254,8 @@ function redirect($url)
 		else
 		{
 			// Get the realpath of dirname
-			$root_dirs = explode('/', str_replace('\\', '/', realpath('./')));
-			$page_dirs = explode('/', str_replace('\\', '/', realpath($pathinfo['dirname'])));
+			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
+			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
 			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 			$root_dirs = array_diff_assoc($root_dirs, $intersection);
@@ -2144,7 +2209,7 @@ function get_backtrace()
 
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
-	$path = realpath($phpbb_root_path);
+	$path = phpbb_realpath($phpbb_root_path);
 
 	foreach ($backtrace as $number => $trace)
 	{
@@ -2226,8 +2291,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 				{
 					// remove complete path to installation, with the risk of changing backslashes meant to be there
-					$errfile = str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
-					$msg_text = str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
+					$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
+					$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
 
 					echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 				}

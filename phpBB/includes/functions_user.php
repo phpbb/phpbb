@@ -141,6 +141,10 @@ function user_add($user_row, $cp_data = false)
 		'user_type'			=> $user_row['user_type'],
 	);
 
+	/**
+	* @todo user_allow_email is not used anywhere. Think about removing it.
+	*/
+
 	// These are the additional vars able to be specified
 	$additional_vars = array(
 		'user_permissions'	=> '',
