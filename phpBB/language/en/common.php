@@ -551,6 +551,7 @@ $lang = array_merge($lang, array(
 	'VIEW_ONLINE_TIMES'			=> 'This data is based on users active over the past %d minutes',
 	'VIEW_TOPIC'				=> 'View topic',
 	'VIEW_TOPIC_ANNOUNCEMENT'	=> 'Announcement: ',
+	'VIEW_TOPIC_GLOBAL'			=> 'Global Announcement: ',
 	'VIEW_TOPIC_LOCKED'			=> 'Locked: ',
 	'VIEW_TOPIC_LOGS'			=> 'View logs',
 	'VIEW_TOPIC_MOVED'			=> 'Moved: ',

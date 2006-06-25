@@ -634,6 +634,11 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		switch ($topic_row['topic_type'])
 		{
 			case POST_GLOBAL:
+				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$folder = 'folder_global';
+				$folder_new = 'folder_global_new';
+			break;
+
 			case POST_ANNOUNCE:
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'folder_announce';
@@ -657,14 +662,14 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 					$folder = 'folder';
 					$folder_new = 'folder_new';
 				}
-			break;
-		}
 
-		if ($topic_row['topic_status'] == ITEM_LOCKED)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-			$folder = 'folder_locked';
-			$folder_new = 'folder_locked_new';
+				if ($topic_row['topic_status'] == ITEM_LOCKED)
+				{
+					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+					$folder = 'folder_locked';
+					$folder_new = 'folder_locked_new';
+				}
+			break;
 		}
 
 		$folder_img = ($unread_topic) ? $folder_new : $folder;

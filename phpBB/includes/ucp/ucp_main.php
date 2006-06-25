@@ -50,8 +50,8 @@ class ucp_main
 					$sql_select .= ', tt.mark_time';
 				}
 
-				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
-				$folder = 'folder_announce';
+				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$folder = 'folder_global';
 				$folder_new = $folder . '_new';
 
 				// Get cleaned up list... return only those forums not having the f_read permission
@@ -104,13 +104,6 @@ class ucp_main
 					$topic_id = $row['topic_id'];
 
 					$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
-
-					if ($row['topic_status'] == ITEM_LOCKED)
-					{
-						$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-						$folder = 'folder_locked';
-						$folder_new = 'folder_locked_new';
-					}
 
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
 					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');

@@ -512,6 +512,7 @@ if (sizeof($topic_list))
 			'S_POST_ANNOUNCE'		=> ($row['topic_type'] == POST_ANNOUNCE) ? true : false,
 			'S_POST_GLOBAL'			=> ($row['topic_type'] == POST_GLOBAL) ? true : false,
 			'S_POST_STICKY'			=> ($row['topic_type'] == POST_STICKY) ? true : false,
+			'S_TOPIC_LOCKED'		=> ($row['topic_status'] == ITEM_LOCKED) ? true : false,
 			'S_TOPIC_MOVED'			=> ($row['topic_status'] == ITEM_MOVED) ? true : false,
 
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
