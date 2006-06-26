@@ -25,7 +25,7 @@ if (!empty($setmodules))
 		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order'		=> 10,
 		'module_subs'		=> '',
-		'module_stages'		=> array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
+		'module_stages'		=> array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'CREATE_TABLE', 'FINAL'),
 		'module_reqs'		=> ''
 	);
 }
@@ -84,8 +84,12 @@ class install_install extends module
 
 			break;
 
-			case 'final' :
+			case 'create_table':
 				$this->load_schema($mode, $sub);
+			
+			break;
+
+			case 'final' :
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
@@ -889,7 +893,7 @@ class install_install extends module
 
 		$submit = $lang['NEXT_STEP'];
 
-		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
+		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=create_table";
 
 		$template->assign_vars(array(
 			'BODY'		=> $lang['STAGE_ADVANCED_EXPLAIN'],
@@ -1156,7 +1160,22 @@ class install_install extends module
 				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
 			}
 		}
-	
+
+		foreach ($this->request_vars as $var)
+		{
+			$s_hidden_fields .= '<input type="hidden" name="' . $var . '" value="' . $$var . '" />';
+		}
+
+		$submit = $lang['NEXT_STEP'];
+
+		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
+
+		$template->assign_vars(array(
+			'BODY'		=> $lang['STAGE_CREATE_TABLE_EXPLAIN'],
+			'L_SUBMIT'	=> $submit,
+			'S_HIDDEN'	=> $s_hidden_fields,
+			'U_ACTION'	=> $url,
+		));
 	}
 
 	/**
@@ -1171,6 +1190,17 @@ class install_install extends module
 		{
 			$$var = request_var($var, '');
 		}
+
+		// Load the appropriate database class if not already loaded
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+
+		// Instantiate the database
+		$sql_db = 'dbal_' . $dbms;
+		$db = new $sql_db();
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+
+		// NOTE: trigger_error does not work here.
+		$db->return_on_error = true;
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
