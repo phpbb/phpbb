@@ -209,7 +209,7 @@ $lang = array_merge($lang, array(
 
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
-	'ACP_VC_SETTINGS_EXPLAIN'			=> 'Here you are able to define visual confirmation defaults and captcha settings',
+	'ACP_VC_SETTINGS_EXPLAIN'		=> 'Here you are able to define visual confirmation defaults and captcha settings.',
 
 	'CAPTCHA_3DBITMAP'				=> '3D Bitmap',
 	'CAPTCHA_CELLS'					=> 'Cells',
@@ -219,6 +219,7 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_OVERLAP'				=> 'Overlap',
 	'CAPTCHA_SHAPE'					=> 'Shape',
 	'CAPTCHA_STENCIL'				=> 'Stencil',
+	'CAPTCHA_EXPLAIN'				=> 'Click %shere%s to preview this CAPTCHA policy.',
 	'ENTROPY_NOISE_LINE'			=> 'Entropy line noise',
 	'ENTROPY_NOISE_PIXEL'			=> 'Entropy pixel noise',
 	'HEAVY'							=> 'Heavy',
@@ -232,6 +233,9 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM_POST_EXPLAIN'	=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'VISUAL_CONFIRM_REG'			=> 'Enable visual confirmation for registrations',
 	'VISUAL_CONFIRM_REG_EXPLAIN'	=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
+	'NO_GD'							=> 'The server does not support GD, an extension required to enable the advanced CAPTCHA policies. A fall-back method will be used if you decide to enable Visual Confirmation features.',
+	'NO_TTF'						=> 'The policy you selected requires TTF enabled, the server has TTF disabled. If this policy is enabled, it will be skipped and another policy will be used in its place. If no valid policies are enabled, a fall-back method will be used if you decide to enable Visual Confirmation features.',
+	'BAD_POLICY'					=> 'The policy you selected is invalid.'
 ));
 
 // Cookie Settings

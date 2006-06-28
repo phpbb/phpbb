@@ -209,32 +209,6 @@ class acp_board
 				);
 			break;
 
-			case 'visual':
-				$display_vars = array(
-					'title'	=> 'ACP_VC_SETTINGS',
-					'vars'	=> array(
-						'legend1'				=> 'GENERAL_OPTIONS',
-						'enable_confirm'		=> array('lang' => 'VISUAL_CONFIRM_REG',	'type' => 'radio:yes_no', 'explain' => true),
-						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'type' => 'radio:yes_no', 'explain' => true),
-
-						'legend2'						=> 'CAPTCHA_OPTIONS',
-						'policy_overlap'				=> array('lang' => 'CAPTCHA_OVERLAP',		'type' => 'radio:yes_no', 'explain' => false),
-						'policy_overlap_noise_pixel'	=> array('lang' => 'OVERLAP_NOISE_PIXEL',	'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
-						'policy_overlap_noise_line'		=> array('lang' => 'OVERLAP_NOISE_LINE',	'type' => 'radio:yes_no', 'explain' => false),
-						'policy_entropy'				=> array('lang' => 'CAPTCHA_ENTROPY',		'type' => 'radio:yes_no', 'explain' => false),
-						'policy_entropy_noise_pixel'	=> array('lang' => 'ENTROPY_NOISE_PIXEL',	'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
-						'policy_entropy_noise_line'		=> array('lang' => 'ENTROPY_NOISE_LINE',	'type' => 'radio:yes_no', 'explain' => false),
-						'policy_shape'					=> array('lang' => 'CAPTCHA_SHAPE',			'type' => 'radio:yes_no', 'explain' => false),
-						'policy_shape_noise_pixel'		=> array('lang' => 'SHAPE_NOISE_PIXEL',		'type' => 'select', 'method' => 'captcha_pixel_noise_select', 'explain' => false),
-						'policy_shape_noise_line'		=> array('lang' => 'SHAPE_NOISE_LINE',		'type' => 'radio:yes_no', 'explain' => false),
-						'policy_3dbitmap'				=> array('lang' => 'CAPTCHA_3DBITMAP',		'type' => 'radio:yes_no', 'explain' => false),
-						'policy_cells'					=> array('lang' => 'CAPTCHA_CELLS',			'type' => 'radio:yes_no', 'explain' => false),
-						'policy_stencil'				=> array('lang' => 'CAPTCHA_STENCIL',		'type' => 'radio:yes_no', 'explain' => false),
-						'policy_composite'				=> array('lang' => 'CAPTCHA_COMPOSITE',		'type' => 'radio:yes_no', 'explain' => false),
-					)
-				);
-			break;
-
 			case 'cookie':
 				$display_vars = array(
 					'title'	=> 'ACP_COOKIE_SETTINGS',
@@ -619,16 +593,6 @@ class acp_board
 		global $user;
 
 		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES_SHORT'] . '</option>';
-	}
-
-	/**
-	* Select captcha pixel noise
-	*/
-	function captcha_pixel_noise_select($value, $key = '')
-	{
-		global $user;
-
-		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['LIGHT'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['MEDIUM'] . '</option><option value="3"' . (($value == 3) ? ' selected="selected"' : '') . '>' . $user->lang['HEAVY'] . '</option>';
 	}
 
 	/**

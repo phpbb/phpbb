@@ -53,6 +53,8 @@ $lang = array_merge($lang, array(
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
 	
+	'ACP_CAPTCHA'				=> 'CAPTCHA',
+
 	'ACP_CAT_DATABASE'			=> 'Database',
 	'ACP_CAT_DOT_MODS'			=> '.Mods',
 	'ACP_CAT_FORUMS'			=> 'Forums',
@@ -175,6 +177,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_SIG'					=> 'Signature',
 
 	'ACP_VC_SETTINGS'					=> 'Visual Confirmation Settings',
+	'ACP_VC_CAPTCHA_DISPLAY'			=> 'CAPTCHA Image Preview',
 	'ACP_VERSION_CHECK'					=> 'Check for Updates',
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View Admin Permissions',
 	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View Forum Moderator Permissions',
