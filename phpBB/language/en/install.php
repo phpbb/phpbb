@@ -175,7 +175,7 @@ $lang = array_merge($lang, array(
 	'NOT_UNDERSTAND'			=> 'Could not understand %s #%d, table %s ("%s")',
 	'NO_CONVERTORS'				=> 'No convertors are available for use',
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified',
-	'NO_LOCATION'				=> 'Cannot determine location',
+	'NO_LOCATION'				=> 'Cannot determine location. If you know Imagemagick is installed, you may specify the location later within your Administration Panel',
 	'NO_TABLES_FOUND'			=> 'No tables found.',
 // TODO: Write some explanatory introduction text
 	'OVERVIEW_BODY'					=> 'Welcome to our first public beta of the next-generation of phpBB after 2.0.x, phpBB 3.0! This beta release is intended for advanced users to try out on dedicated development enviroments to help us finish creating the best Opensource Bulletin Board solution available.</p><p><strong style="text-transform: uppercase;">Note:</strong> This release is <strong style="text-transform: uppercase;">not final</strong> and made available for testing purposes <strong style="text-transform: uppercase;">only</strong>.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above.',

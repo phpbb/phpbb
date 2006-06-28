@@ -910,6 +910,8 @@ class install_install extends module
 	{
 		global $db, $lang, $template, $phpbb_root_path, $phpEx;
 
+		$this->page_title = $lang['STAGE_CREATE_TABLE'];
+
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
