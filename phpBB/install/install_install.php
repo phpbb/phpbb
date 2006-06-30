@@ -405,6 +405,8 @@ class install_install extends module
 					$error['db'][] = $lang['INST_ERR_NO_DB'];
 				}
 			}
+			
+			$dbpasswd = html_entity_decode($dbpasswd);
 
 			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
@@ -717,6 +719,7 @@ class install_install extends module
 			}
 		}
 
+		$dbpasswd = html_entity_decode($dbpasswd);
 		$load_extensions = implode(',', $load_extensions);
 
 		// Time to convert the data provided into a config file
@@ -933,6 +936,8 @@ class install_install extends module
 		{
 			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
 		}
+
+		$dbpasswd = html_entity_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
@@ -1192,6 +1197,8 @@ class install_install extends module
 		{
 			$$var = request_var($var, '');
 		}
+
+		$dbpasswd = html_entity_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
