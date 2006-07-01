@@ -1613,6 +1613,13 @@ class install_install extends module
 			return false;
 		}
 
+		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
+		if ($dbms == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+		{
+			$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
+			return false;
+		}
+
 		// Try and connect ...
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
 		{

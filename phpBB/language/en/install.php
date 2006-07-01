@@ -148,6 +148,7 @@ $lang = array_merge($lang, array(
 	'INSTALL_START'				=> 'Start Install',
 	'INSTALL_TEST'				=> 'Test Again',
 	'INST_ERR_DB_CONNECT'		=> 'Could not connect to the database, see error message below',
+	'INST_ERR_DB_FORUM_PATH'	=> 'The database file specified is within your forum directory tree. You should put this file in a non web-accessible location',
 	'INST_ERR_DB_NO_ERROR'		=> 'No error message given',
 	'INST_ERR_DB_NO_MYSQL4'		=> 'The version of MySQL installed on this machine is incompatible with the "MySQL 4.x/5.x" option you have selected. Please try the "MySQL 3.23.x/4.x" option instead.',
 	'INST_ERR_DB_NO_MYSQLI'		=> 'The version of MySQL installed on this machine is incompatible with the "MySQL 4.1.x/5.x with MySQLi Extension" option you have selected. Please try the "MySQL 4.x/5.x" or "MySQL 3.23.x/4.x" option instead.',
