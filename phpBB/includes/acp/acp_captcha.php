@@ -99,6 +99,8 @@ class acp_captcha
 					trigger_error($user->lang['BAD_POLICY']);
 				}
 
+				$user->add_lang('ucp');
+
 				include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
 
 				$captcha = new captcha();

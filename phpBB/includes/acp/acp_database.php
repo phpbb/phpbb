@@ -42,7 +42,7 @@ class acp_database
 						$type	= request_var('type', '');
 						$table	= request_var('table', array(''));
 						$format	= request_var('method', '');
-						$where	= request_var('WHERE', '');
+						$where	= request_var('where', '');
 
 						$store = $download = $structure = $schema_data = false;
 

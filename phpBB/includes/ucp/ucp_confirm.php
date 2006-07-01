@@ -59,7 +59,7 @@ class ucp_confirm
 
 		if (function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
-			$policy_modules += array('policy_overlap', 'policy_shape', 'policy_cells', 'policy_stencil', 'policy_composite');
+			$policy_modules = array_merge($policy_modules, array('policy_overlap', 'policy_shape', 'policy_cells', 'policy_stencil', 'policy_composite'));
 		}
 
 		foreach ($policy_modules as $key => $name)

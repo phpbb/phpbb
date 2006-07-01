@@ -97,7 +97,7 @@ class captcha
 					$char = hexdec(substr($seed, ($y * 4) + $x, 1));
 					if (!($char >> 2))
 					{
-						switch ($char % 4)
+						switch ($char & 3)
 						{
 							case 0:
 								$shape = 'Circle';
@@ -125,20 +125,20 @@ class captcha
 		for ($i = 0; $i < 6; ++$i)
 		{
 			$cells = hexdec(substr($seed, 20 + ($i * 2), 2));
-			$x1 = $cells % 4;
+			$x1 = $cells & 3;
 			$cells = $cells >> 2;
-			$y1 = $cells % 4;
+			$y1 = $cells & 3;
 			$cells = $cells >> 2;
-			$x2 = $cells % 4;
+			$x2 = $cells & 3;
 			$cells = $cells >> 2;
-			$y2 = $cells % 4;
+			$y2 = $cells & 3;
 			$x1_real = $x_min + (($x1 + 0.5) * $x_size);
 			$y1_real = $y_min + (($y1 + 0.5) * $y_size);
 			$x2_real = $x_min + (($x2 + 0.5) * $x_size);
 			$y2_real = $y_min + (($y2 + 0.5) * $y_size);
 			if ($thickness > 1)
 			{
-				imagesetthickness($img,$thickness);
+				imagesetthickness($img, $thickness);
 			}
 			imageline($img, $x1_real, $y1_real, $x2_real, $y2_real, $colors[array_rand($colors)]);
 			if ($thickness > 1)
@@ -203,7 +203,7 @@ class captcha
 		$patterns = array('', '', '', '');
 		for ($i = 32; $i > 0; --$i)
 		{
-			$patterns[$i % 4] .= str_pad(dechex(mt_rand(0, 65535)), 4, '0', STR_PAD_LEFT);
+			$patterns[$i & 3] .= str_pad(dechex(mt_rand(0, 65535)), 4, '0', STR_PAD_LEFT);
 		}
 
 		$char_class = $this->captcha_char('char_ttf');
@@ -341,11 +341,11 @@ class captcha
 								{
 									$distance = min($distance, sqrt(pow($s, 2) + pow($r, 2)));
 								}
-								elseif ($s < $vector[6])
+								else if ($s < $vector[6])
 								{
 									$distance = min($distance, $r);
 								}
-								elseif ($s < $vector[6] + $range)
+								else if ($s < $vector[6] + $range)
 								{
 									$distance = min($distance, sqrt(pow($s - $vector[6], 2) + pow($r, 2)));
 								}
@@ -358,7 +358,7 @@ class captcha
 
 						$dx = $meta_x - $vector[1];
 						$dy = -($meta_y - $vector[2]); // because our arcs are upside-down
-						if ( abs($dx) > abs($dy) )
+						if (abs($dx) > abs($dy))
 						{
 							$phi = rad2deg(atan(($dy * $vector[3]) / ($dx * $vector[4])));
 							$phi += ($dx < 0) ? 180 : 360;
@@ -575,10 +575,10 @@ class captcha
 		{
 			for ($i = 0, $size = sizeof($spares[$k]); $i < $size; ++$i )
 			{
-				imagefilledellipse($img, $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], 20, 20, $colors[($red + $k + 1) % 4]);
+				imagefilledellipse($img, $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], 20, 20, $colors[($red + $k + 1) & 3]);
 				if ($i)
 				{
-					imageline($img, $xs[$spares[$k][$i - 1]], $ys[$spares[$k][$i - 1]], $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], $colors[($red + $k + 1) % 4]);
+					imageline($img, $xs[$spares[$k][$i - 1]], $ys[$spares[$k][$i - 1]], $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], $colors[($red + $k + 1) & 3]);
 				}
 			}
 		}
@@ -794,7 +794,7 @@ class captcha
 				{
 					if ($map['data'][$letter][$y][$x])
 					{
-						$plane[$y + $plane_offset_y + (($c % 2) ? 1 : -1)][$x + $plane_offset_x] = true;
+						$plane[$y + $plane_offset_y + (($c & 1) ? 1 : -1)][$x + $plane_offset_x] = true;
 					}
 				}
 			}
@@ -827,7 +827,7 @@ class captcha
 		for ($y = 1; $y <= $full_y; ++$y)
 		{
 			// swap buffers
-			$buffer_cur		= $y % 2;
+			$buffer_cur		= $y & 1;
 			$buffer_prev	= 1 - $buffer_cur;
 
 			$prev_height	= $this->wave_height(0, $y, $subdivision_factor);
@@ -869,7 +869,7 @@ class captcha
 				$diag_up	= (empty($plane[$y_index_old][$x_index_new]) == empty($plane[$y_index_new][$x_index_old]));
 
 				// natural switching
-				$mode = ($x + $y) % 2;
+				$mode = ($x + $y) & 1;
 
 				// override if it requires it
 				if ($diag_down != $diag_up)
@@ -969,7 +969,7 @@ class captcha
 			$characters[$i]->drawchar($char_size, $offset, $yoffset, $img, $background, $fontcolors);
 			$offset += $dimm[2];
 			$offset -= (($dimm[2] - $dimm[0]) * $overlap_factor);
-			$yoffset += ($i % 2) ? ((1 - $overlap_factor) * ($dimm[3] - $dimm[1])) : ((1 - $overlap_factor) * ($dimm[1] - $dimm[3]));
+			$yoffset += ($i & 1) ? ((1 - $overlap_factor) * ($dimm[3] - $dimm[1])) : ((1 - $overlap_factor) * ($dimm[1] - $dimm[3]));
 		}
 
 		// Add some medium pixel noise
@@ -1041,15 +1041,15 @@ class captcha
 
 			case 'noise_pixel_heavy':
 
-				for ($x = $min_x; $x < $max_x; $x += mt_rand(9, 18))
+				for ($x = $min_x; $x < $max_x; $x += mt_rand(4, 9))
 				{
-					for ($y = $min_y; $y < $max_y; $y += mt_rand(4, 9))
+					for ($y = $min_y; $y < $max_y; $y++)
 					{
 						imagesetpixel($img, $x, $y, $non_font[array_rand($non_font)]);
 					}
 				}
 
-				for ($y = $min_y; $y < $max_y; $y++)
+				for ($y = $min_y; $y < $max_y; $y+= mt_rand(4, 9))
 				{
 					for ($x = $min_x; $x < $max_x; $x++)
 					{
@@ -1145,7 +1145,7 @@ class captcha
 				$character_classes[] = 'char_ttf';
 			}
 		}
-//$character_classes = array('char_dots');
+
 		// Use the module $override, else a random picked one...
 		$class = ($override !== false && in_array($override, $character_classes)) ? $override : $character_classes[array_rand($character_classes)];
 

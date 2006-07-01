@@ -41,7 +41,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_TAG'				=> 'Tag',
 	'BBCODE_USAGE'				=> 'BBCode usage',
 	'BBCODE_USAGE_EXAMPLE'		=> '[colour={COLOR}]{TEXT}[/colour]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
-	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the bbcode. Replace any variable input by the corresponding token (see below)',
+	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the bbcode. Replace any variable input by the corresponding token (%ssee below%s)',
 
 	'EXAMPLE'						=> 'Example:',
 	'EXAMPLES'						=> 'Examples:',
