@@ -96,7 +96,7 @@ $lang = array_merge($lang, array(
 
 	'CANCEL'				=> 'Cancel',
 	'CHANGE'				=> 'Change',
-	'CLICK_VIEW_PRIVMSG'	=> '%sReturn to your Inbox%s',
+	'CLICK_VIEW_PRIVMSG'	=> '%sGo to your inbox%s',
 	'CLOSE_WINDOW'			=> 'Close window',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
 	'CONFIRM'				=> 'Confirm',
@@ -245,6 +245,7 @@ $lang = array_merge($lang, array(
 
 	'LAST_POST'				=> 'Last post',
 	'LAST_UPDATED'			=> 'Last updated',
+	'LAST_VISIT'			=> 'Last visit',
 	'LEGEND'				=> 'Legend',
 	'LOCATION'				=> 'Location',
 	'LOCK_POST'				=> 'Lock Post',

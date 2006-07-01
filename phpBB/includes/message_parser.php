@@ -720,7 +720,7 @@ class bbcode_firstpass extends bbcode
 
 		$validated = true;
 
-		if (!preg_match('!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i', $email))
+		if (!preg_match('/^' . get_preg_expression('email') . '$/i', $email))
 		{
 			$validated = false;
 		}

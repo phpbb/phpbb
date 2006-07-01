@@ -397,6 +397,21 @@ switch ($mode)
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
 		}
 
+		// We need to check if the module 'zebra' is accessible
+		$zebra_enabled = false;
+
+		if ($user->data['user_id'] != $user_id && $user->data['is_registered'])
+		{
+			include_once($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+			$module = new p_master();
+			$module->list_modules('ucp');
+			$module->set_active('zebra');
+
+			$zebra_enabled = ($module->active_module === false) ? false : true;
+
+			unset($module);
+		}
+
 		$template->assign_vars(array(
 			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
@@ -424,7 +439,7 @@ switch ($mode)
 			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
-			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered']) ? true : false,
+			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
 			'U_ADD_FRIEND'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode($member['username'])),
 			'U_ADD_FOE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode($member['username'])))
 		);
@@ -598,53 +613,74 @@ switch ($mode)
 
 				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 				$messenger = new messenger(false);
-
 				$email_tpl = ($user_id) ? 'profile_send_email' : 'email_notify';
 
-				$messenger->template($email_tpl, $email_lang);
+				$mail_to_users = array();
 
-				$messenger->replyto($user->data['user_email']);
-				$messenger->to($email, $name);
-
-				if ($user_id)
-				{
-					$messenger->subject(html_entity_decode($subject));
-					$messenger->im($row['user_jabber'], $row['username']);
-					$notify_type = $row['user_notify_type'];
-				}
-				else
-				{
-					$notify_type = NOTIFY_EMAIL;
-				}
-
-				if ($cc)
-				{
-					$messenger->cc($user->data['user_email'], $user->data['username']);
-				}
-
-				$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
-				$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-				$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
-
-				$messenger->assign_vars(array(
-					'SITENAME'		=> $config['sitename'],
-					'BOARD_EMAIL'	=> $config['board_contact'],
-					'TO_USERNAME'	=> html_entity_decode($name),
-					'FROM_USERNAME'	=> html_entity_decode($user->data['username']),
-					'MESSAGE'		=> html_entity_decode($message))
+				$mail_to_users[] = array(
+					'email_lang'		=> $email_lang,
+					'email'				=> $email,
+					'name'				=> $name,
+					'username'			=> $row['username'],
+					'to_name'			=> $name,
+					'user_jabber'		=> $row['user_jabber'],
+					'user_notify_type'	=> $row['user_notify_type'],
 				);
 
-				if ($topic_id)
+				// Ok, now the same email if CC specified, but without exposing the users email address
+				if ($cc)
 				{
-					$messenger->assign_vars(array(
-						'TOPIC_NAME'	=> html_entity_decode($row['topic_title']),
-						'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
+					$mail_to_users[] = array(
+						'email_lang'		=> $user->data['user_lang'],
+						'email'				=> $user->data['user_email'],
+						'name'				=> $user->data['username'],
+						'username'			=> $user->data['username'],
+						'to_name'			=> $name,
+						'user_jabber'		=> $user->data['user_jabber'],
+						'user_notify_type'	=> ($user_id) ? $user->data['user_notify_type'] : NOTIFY_EMAIL,
 					);
 				}
 
-				$messenger->send($notify_type);
-				$messenger->save_queue();
+				foreach ($mail_to_users as $row)
+				{
+					$messenger->template($email_tpl, $row['email_lang']);
+					$messenger->replyto($user->data['user_email']);
+					$messenger->to($row['email'], $row['name']);
+
+					if ($user_id)
+					{
+						$messenger->subject(html_entity_decode($subject));
+						$messenger->im($row['user_jabber'], $row['username']);
+						$notify_type = $row['user_notify_type'];
+					}
+					else
+					{
+						$notify_type = NOTIFY_EMAIL;
+					}
+
+					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+					$messenger->assign_vars(array(
+						'SITENAME'		=> $config['sitename'],
+						'BOARD_EMAIL'	=> $config['board_contact'],
+						'TO_USERNAME'	=> html_entity_decode($row['to_name']),
+						'FROM_USERNAME'	=> html_entity_decode($user->data['username']),
+						'MESSAGE'		=> html_entity_decode($message))
+					);
+
+					if ($topic_id)
+					{
+						$messenger->assign_vars(array(
+							'TOPIC_NAME'	=> html_entity_decode($row['topic_title']),
+							'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
+						);
+					}
+
+					$messenger->send($notify_type);
+				}
 
 				meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');

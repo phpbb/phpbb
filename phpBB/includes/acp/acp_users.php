@@ -736,6 +736,9 @@ class acp_users
 							user_update_name($user_row['username'], $update_username);
 						}
 
+						// Let the users permissions being updated
+						$auth->acl_clear_prefetch($user_id);
+
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
 
 						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));

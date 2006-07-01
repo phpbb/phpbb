@@ -245,7 +245,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 		// This query is identical to the jumpbox one
 		$expire_time = ($no_cache) ? 0 : 120;
 
-		$sql = 'SELECT forum_id, parent_id, forum_name, forum_type, left_id, right_id
+		$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 			FROM ' . FORUMS_TABLE . '
 			ORDER BY left_id ASC';
 		$result = $db->sql_query($sql, $expire_time);

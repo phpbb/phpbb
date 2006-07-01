@@ -1095,7 +1095,7 @@ function validate_email($email)
 		return false;
 	}
 
-	if (!preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $email))
+	if (!preg_match('/^' . get_preg_expression('email') . '$/i', $email))
 	{
 		return 'EMAIL_INVALID';
 	}

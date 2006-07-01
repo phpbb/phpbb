@@ -99,7 +99,7 @@ GO
 */
 CREATE TABLE [phpbb_acl_options] (
 	[auth_option_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[auth_option] [varchar] (20) NOT NULL ,
+	[auth_option] [varchar] (50) NOT NULL ,
 	[is_global] [int] NOT NULL ,
 	[is_local] [int] NOT NULL ,
 	[founder_only] [int] NOT NULL 

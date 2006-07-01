@@ -464,7 +464,7 @@ class template_compile
 	{
 		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
 
-		if (empty($match[2]) || (empty($match[4]) && $op))
+		if (empty($match[2]) || (!isset($match[4]) && $op))
 		{
 			return;
 		}

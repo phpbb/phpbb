@@ -48,7 +48,7 @@ CREATE INDEX phpbb_acl_groups_auth_option_id on phpbb_acl_groups (auth_option_id
 # Table: phpbb_acl_options
 CREATE TABLE phpbb_acl_options (
   auth_option_id INTEGER PRIMARY KEY NOT NULL,
-  auth_option varchar(20) NOT NULL,
+  auth_option varchar(50) NOT NULL,
   is_global tinyint(1) NOT NULL DEFAULT '0',
   is_local tinyint(1) NOT NULL DEFAULT '0',
   founder_only tinyint(1) NOT NULL DEFAULT '0'

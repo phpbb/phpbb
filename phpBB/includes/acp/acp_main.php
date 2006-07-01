@@ -439,7 +439,7 @@ class acp_main
 
 		if ($auth->acl_get('a_user'))
 		{
-			$sql = 'SELECT user_id, username, user_regdate
+			$sql = 'SELECT user_id, username, user_regdate, user_lastvisit
 				FROM ' . USERS_TABLE . ' 
 				WHERE user_type = ' . USER_INACTIVE . ' 
 				ORDER BY user_regdate ASC';
@@ -449,6 +449,7 @@ class acp_main
 			{
 				$template->assign_block_vars('inactive', array(
 					'DATE'			=> $user->format_date($row['user_regdate']),
+					'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
 					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))

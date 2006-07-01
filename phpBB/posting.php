@@ -167,9 +167,51 @@ if (!$auth->acl_get('f_read', $forum_id))
 }
 
 // Permission to do the action asked?
-$check_auth = ($mode == 'quote') ? 'reply' : $mode;
-if (!$auth->acl_get('f_' . $check_auth, $forum_id))
+$is_authed = false;
+
+switch ($mode)
 {
+	case 'post':
+		if ($auth->acl_get('f_post', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'bump':
+		if ($auth->acl_get('f_bump', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'quote':
+	case 'reply':
+		if ($auth->acl_get('f_reply', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'edit':
+		if ($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'delete':
+		if ($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+}
+
+if (!$is_authed)
+{
+	$check_auth = ($mode == 'quote') ? 'reply' : $mode;
+
 	if ($user->data['is_registered'])
 	{
 		trigger_error('USER_CANNOT_' . strtoupper($check_auth));
@@ -1020,7 +1062,7 @@ $lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($post_data['topic_s
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_locked'];
 
 // If in edit mode, and the user is not the poster, we do not take the notification into account
-$notify_checked		= (isset($notify)) ? $notify : (($mode != 'edit') ? $user->data['user_notify'] : $post_data['notify_set']);
+$notify_checked		= (isset($notify)) ? $notify : (($mode == 'post') ? $user->data['user_notify'] : $post_data['notify_set']);
 
 // Page title & action URL, include session_id for security purpose
 $s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id", true, $user->session_id);
@@ -1092,7 +1134,7 @@ $template->assign_vars(array(
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
 	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield']) : '',
-	'TOPIC_TITLE'			=> $post_data['topic_title'],
+	'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
 	'MODERATORS'			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],

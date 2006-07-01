@@ -56,7 +56,7 @@ CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups(group_id);;
 # phpbb_acl_options
 CREATE TABLE phpbb_acl_options (
   auth_option_id INTEGER NOT NULL,
-  auth_option VARCHAR(20) NOT NULL,
+  auth_option VARCHAR(50) NOT NULL,
   is_global INTEGER DEFAULT 0  NOT NULL,
   is_local INTEGER DEFAULT 0  NOT NULL,
   founder_only INTEGER DEFAULT 0  NOT NULL

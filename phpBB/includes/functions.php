@@ -1515,7 +1515,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if ($admin && !$auth->acl_get('a_'))
 	{
 		// Not authd
-		add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+		// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
+		if ($user->data['is_registered'])
+		{
+			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+		}
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
@@ -1548,7 +1552,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 			else
 			{
-				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				// Only log the failed attempt if a real user tried to.
+				// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
+				if ($user->data['is_registered'])
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				}
 			}
 		}
 
@@ -1564,12 +1573,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
-		}
-
-		// The user wanted to re-authenticate, but something failed - log this
-		if ($admin)
-		{
-			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		}
 
 		// Something failed, determine what...
@@ -1950,7 +1953,7 @@ function make_clickable($text, $server_url = false)
 		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.(?:[\w\-\.]+\.)?[\w]+)#ie';
+		$magic_url_match[] = '/(^|[\n ]|\()(' . get_preg_expression('email') . ')/ie';
 		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 	}
 
@@ -2252,6 +2255,23 @@ function get_backtrace()
 	}
 	$output .= '</div>';
 	return $output;
+}
+
+/**
+* This function returns a regular expression pattern for commonly used expressions
+* Use with / as delimiter
+* mode can be: email|
+*/
+function get_preg_expression($mode)
+{
+	switch ($mode)
+	{
+		case 'email':
+			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+';
+		break;
+	}
+
+	return '';
 }
 
 // Handler, header and footer

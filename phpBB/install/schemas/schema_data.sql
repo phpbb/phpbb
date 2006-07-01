@@ -413,6 +413,7 @@ INSERT INTO phpbb_groups (group_name, group_type, group_colour, group_legend, gr
 # -- User -> Group
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (1, 1, 0, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (4, 2, 0, 0);
+INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (6, 2, 0, 0);
 INSERT INTO phpbb_user_group (group_id, user_id, user_pending, group_leader) VALUES (7, 2, 0, 1);
 
 # -- Ranks

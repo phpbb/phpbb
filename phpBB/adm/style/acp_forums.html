@@ -143,10 +143,8 @@
 		</dl>
 		<dl>
 			<dt><label for="enable_prune">{L_FORUM_AUTO_PRUNE}:</label><br /><span>{L_FORUM_AUTO_PRUNE_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" name="enable_prune" onchange="dE('forum_prune_options', 1)" value="1"<!-- IF S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="enable_prune" onchange="dE('forum_prune_options', -1)" value="0"<!-- IF not S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><input type="radio" class="radio" name="enable_prune" value="1"<!-- IF S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="enable_prune" value="0"<!-- IF not S_PRUNE_ENABLE --> id="enable_prune" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
-	
-	<div id="forum_prune_options"<!-- IF not S_PRUNE_ENABLE --> style="display: none;"<!-- ENDIF -->>
 		<dl>
 			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}:</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
 			<dd><input type="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" /> {L_DAYS}</dd>
@@ -171,8 +169,6 @@
 			<dt><label for="prune_sticky">{L_PRUNE_STICKY}:</label></dt>
 			<dd><input type="radio" class="radio" name="prune_sticky" value="1"<!-- IF S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="prune_sticky" value="0"<!-- IF not S_PRUNE_STICKY --> id="prune_sticky" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
-	</div>
-	
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}:</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
 			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" /></dd>

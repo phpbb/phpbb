@@ -43,7 +43,7 @@ CREATE TABLE phpbb_acl_groups (
 # Table: 'phpbb_acl_options'
 CREATE TABLE phpbb_acl_options (
   auth_option_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-  auth_option varchar(20) NOT NULL,
+  auth_option varchar(50) NOT NULL,
   is_global tinyint(1) DEFAULT '0' NOT NULL,
   is_local tinyint(1) DEFAULT '0' NOT NULL,
   founder_only tinyint(1) DEFAULT '0' NOT NULL,

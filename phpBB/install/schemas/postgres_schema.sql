@@ -136,7 +136,7 @@ CREATE SEQUENCE phpbb_acl_options_seq;
 
 CREATE TABLE phpbb_acl_options (
   auth_option_id INT4 DEFAULT nextval('phpbb_acl_options_seq'),
-  auth_option varchar(20) NOT NULL,
+  auth_option varchar(50) NOT NULL,
   is_global INT2 DEFAULT '0' NOT NULL,
   is_local INT2 DEFAULT '0' NOT NULL,
   founder_only INT2 DEFAULT '0' NOT NULL,

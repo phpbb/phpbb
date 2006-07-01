@@ -130,7 +130,7 @@ class acp_ranks
 				{
 					foreach ($img_ary as $img)
 					{
-						$img = substr($path, 1) . (($path != '') ? '/' : '') . $img; 
+						$img = $path . $img; 
 
 						if (!in_array($img, $existing_imgs) || $action == 'edit')
 						{
