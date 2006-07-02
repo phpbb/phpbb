@@ -1691,7 +1691,7 @@ class install_install extends module
 			switch ($dbms)
 			{
 				case 'mysql4':
-					if (version_compare(mysql_get_server_info(), '4.0.0', '<'))
+					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.0.0', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
 					}
@@ -1699,7 +1699,7 @@ class install_install extends module
 				break;
 
 				case 'mysqli':
-					if (version_compare(mysqli_get_server_info(), '4.1.3', '<'))
+					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 					}
