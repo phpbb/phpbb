@@ -71,6 +71,10 @@ class acp_language
 					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 				break;
 
+				case 'ftp_fsock':
+					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+				break;
+
 				default:
 					trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
 			}
@@ -97,23 +101,13 @@ class acp_language
 					));
 				}
 
-				$entry = $_POST['entry'];
-				foreach ($entry as $key => $value)
-				{
-					if (is_array($value))
-					{
-						foreach ($value as $key2 => $data)
-						{
-							$entry[$key][$key2] = htmlentities($data);
-						}
-					}
-					else
-					{
-						$entry[$key] = htmlentities($value);
-					}
-				}
-
-				$hidden_data = build_hidden_fields(array('file' => $this->language_file, 'dir' => $this->language_directory, 'method' => $method, 'entry' => $entry));
+				$hidden_data = build_hidden_fields(array(
+					'file'		=> $this->language_file,
+					'dir'		=> $this->language_directory,
+					'method'	=> $method,
+					'entry'		=> $_POST['entry']),
+					true
+				);
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
@@ -210,7 +204,7 @@ class acp_language
 				if ($this->language_directory == 'email')
 				{
 					// Email Template
-					$entry = (STRIP) ? stripslashes($_POST['entry']) : $_POST['entry'];
+					$entry = $this->prepare_lang_entry($_POST['entry'], false);
 					fwrite($fp, $entry);
 				}
 				else
@@ -228,20 +222,17 @@ class acp_language
 						{
 							if (!is_array($value))
 							{
+								continue;
 							}
-							else
-							{
-								$entry = "\tarray(\n";
+
+							$entry = "\tarray(\n";
 							
-								foreach ($value as $_key => $_value)
-								{
-									$_value = (STRIP) ? stripslashes($_value) : $_value;
-									$entry .= "\t\t" . (int) $_key . "\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
-								}
-
-								$entry .= "\t),\n";
+							foreach ($value as $_key => $_value)
+							{
+								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
 							}
 
+							$entry .= "\t),\n";
 							fwrite($fp, $entry);
 						}
 					}
@@ -253,45 +244,13 @@ class acp_language
 
 						foreach ($_POST['entry'] as $key => $value)
 						{
-							if (!is_array($value))
-							{
-								$value = (STRIP) ? stripslashes($value) : $value;
-								$entry = "\t'" . $key . "'\t=> '" . str_replace("'", "\\'", $value) . "',\n";
-							}
-							else
-							{
-								$entry = "\n\t'" . $key . "'\t=> array(\n";
-							
-								foreach ($value as $_key => $_value)
-								{
-									if (!is_array($_value))
-									{
-										$_value = (STRIP) ? stripslashes($_value) : $_value;
-										$entry .= "\t\t'" . $_key . "'\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
-									}
-									else
-									{
-										$entry .= "\n\t\t'" . $_key . "'\t=> array(\n";
-
-										foreach ($_value as $__key => $__value)
-										{
-											$__value = (STRIP) ? stripslashes($__value) : $__value;
-											$entry .= "\t\t\t'" . $__key . "'\t=> '" . str_replace("'", "\\'", $__value) . "',\n";
-										}
-		
-										$entry .= "\t\t),\n\n";
-									}
-								}
-								
-								$entry .= "\t),\n\n";
-							}
-											
+							$entry = $this->format_lang_array($key, $value);
 							fwrite($fp, $entry);
-						}	
+						}
 					}
 
 					$footer = "));\n\n?>";
-					fwrite($fp, $footer);	
+					fwrite($fp, $footer);
 				}
 
 				fclose($fp);
@@ -313,7 +272,8 @@ class acp_language
 				}
 				else if ($action == 'upload_data')
 				{
-					$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
+					$sql = 'SELECT lang_iso
+						FROM ' . LANG_TABLE . "
 						WHERE lang_id = $lang_id";
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
@@ -333,6 +293,11 @@ class acp_language
 						case 'ftp':
 							$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 						break;
+
+						case 'ftp_fsock':
+							$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						break;
+
 						default:
 							trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
 					}
@@ -345,6 +310,9 @@ class acp_language
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
 					$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
 					$transfer->close_session();
+
+					// Remove from storage folder
+					@unlink($phpbb_root_path . 'store/' . $lang_path . $file);
 
 					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
 
@@ -1231,6 +1199,49 @@ $lang = array_merge($lang, array(
 		unset($lang_entry_src);
 
 		return $return_ary;
+	}
+
+	/**
+	* Return language string value for storage
+	*/
+	function prepare_lang_entry($text, $store = true)
+	{
+		$text = (STRIP) ? stripslashes($text) : $text;
+
+		// Adjust for storage...
+		if ($store)
+		{
+			$text = str_replace("'", "\\'", str_replace('\\', '\\\\', $text));
+		}
+
+		return $text;
+	}
+
+	/**
+	* Format language array for storage
+	*/
+	function format_lang_array($key, $value, $tabs = "\t")
+	{
+		$entry = '';
+
+		if (!is_array($value))
+		{
+			$entry .= "{$tabs}'{$key}'\t=> '" . $this->prepare_lang_entry($value) . "',\n";
+		}
+		else
+		{
+			$_tabs = $tabs . "\t";
+			$entry .= "\n{$tabs}'{$key}'\t=> array(\n";
+
+			foreach ($value as $_key => $_value)
+			{
+				$entry .= $this->format_lang_array($_key, $_value, $_tabs);
+			}
+
+			$entry .= "{$tabs}),\n\n";
+		}
+
+		return $entry;
 	}
 }
 

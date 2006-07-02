@@ -473,7 +473,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 				't'			=> $topic_id,
 				'subject'	=> $subject,
 				'message'	=> $message,
-				)
+				), false
 			);
 
 			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);

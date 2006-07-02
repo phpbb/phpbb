@@ -245,7 +245,7 @@ class ftp extends transfer
 
 		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? '' : '/') . $root_path;
+		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
 
 		// Init some needed values
 		transfer::transfer();
@@ -321,7 +321,7 @@ class ftp extends transfer
 	}
 
 	/**
-	* Remove directory (RMDIR)
+	* Rename file
 	* @access: private
 	*/
 	function _rename($old_handle, $new_handle)
@@ -460,7 +460,7 @@ class ftp_fsock extends transfer
 
 		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (prefixed with / and no / at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . ((substr($root_path, -1, 1) == '/') ? '' : '/') . $root_path;
+		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
 
 		// Init some needed values
 		transfer::transfer();
@@ -543,6 +543,16 @@ class ftp_fsock extends transfer
 	}
 
 	/**
+	* Rename File
+	* @access: private
+	*/
+	function _rename($old_handle, $new_handle)
+	{
+		$this->_send_command('RNFR', $old_handle);
+		return $this->_send_command('RNTO', $new_handle);
+	}
+
+	/**
 	* Change current working directory (CHDIR)
 	* @access: private
 	*/
@@ -562,7 +572,7 @@ class ftp_fsock extends transfer
 	*/
 	function _chmod($file, $perms)
 	{
-		return $this->_send_command('SITE CHMOD', $perms . ' ' . $file);;
+		return $this->_send_command('SITE CHMOD', $perms . ' ' . $file);
 	}
 
 	/**
@@ -579,19 +589,19 @@ class ftp_fsock extends transfer
 			return false;
 		}
 
-		$this->_putcmd('STOR', $to_file, false);
-
 		// open the connection to send file over
 		if (!$this->_open_data_connection())
 		{
 			return false;
 		}
 
+		$this->_send_command('STOR', $to_file, false);
+
 		// send the file
 		$fp = @fopen($from_file, 'rb');
 		while (!@feof($fp))
 		{
-			@fwrite($$this->data_connection, @fread($fp, 4096));
+			@fwrite($this->data_connection, @fread($fp, 4096));
 		}
 		@fclose($fp);
 
@@ -710,7 +720,7 @@ class ftp_fsock extends transfer
 		{
 			return false;
 		}
-		@stream_set_timeout($$this->data_connection, $this->timeout);
+		@stream_set_timeout($this->data_connection, $this->timeout);
 
 		return true;
 	}
@@ -721,7 +731,7 @@ class ftp_fsock extends transfer
 	*/
 	function _close_data_connection()
 	{
-		return @fclose($this->data_connecton);
+		return @fclose($this->data_connection);
 	}
 
 	/**

@@ -2073,25 +2073,40 @@ function extension_allowed($forum_id, $extension, &$extensions)
 // Little helpers
 
 /**
+* Little helper for the build_hidden_fields function
+*/
+function _build_hidden_fields($key, $value, $specialchar)
+{
+	$hidden_fields = '';
+
+	if (!is_array($value))
+	{
+		$key = ($specialchar) ? htmlspecialchars($key) : $key;
+		$value = ($specialchar) ? htmlspecialchars($value) : $value;
+
+		$hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
+	}
+	else
+	{
+		foreach ($value as $_key => $_value)
+		{
+			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar);
+		}
+	}
+
+	return $hidden_fields;
+}
+
+/**
 * Build simple hidden fields from array
 */
-function build_hidden_fields($field_ary)
+function build_hidden_fields($field_ary, $specialchar = false)
 {
 	$s_hidden_fields = '';
 
 	foreach ($field_ary as $name => $vars)
 	{
-		if (is_array($vars))
-		{
-			foreach ($vars as $key => $value)
-			{
-				$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . $value . '" />';
-			}
-		}
-		else
-		{
-			$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $vars . '" />';
-		}
+		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar);
 	}
 
 	return $s_hidden_fields;
