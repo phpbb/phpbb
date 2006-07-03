@@ -361,13 +361,48 @@ class acp_database
 									break;
 	
 									case 'sqlite':
+										// This is *not* my fault. The PHP guys forgot a call to finalize when they wrote this function. This forces all the tables to stay locked...
+										// They finally fixed it in 5.3 but 5.2 still have this so instead, we go and grab the column types by smashing open the sqlite_master table
+										// and grope around for things that remind us of datatypes...
+										if (version_compare(phpversion(), '5.3', '>='))
+										{
+											$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
+										}
+										else
+										{
+											$sql = "SELECT sql
+												FROM sqlite_master 
+												WHERE type = 'table' 
+													AND name = '" . $table_name . "'";
+											$table_data = sqlite_single_query($db->db_connect_id, $sql);
+											$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
+											$table_data = trim($table_data);
 
-										$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
+											preg_match('#\((.*)\)#s', $table_data, $matches);
+
+											$column_list = array();
+											$table_cols = explode(',', trim($matches[1]));
+											foreach($table_cols as $declaration)
+											{
+												$entities = preg_split('#\s+#', trim($declaration));
+												$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
+
+												// Hit a primary key, those are not what we need :D
+												if (empty($entities[1]))
+												{
+													continue;
+												}
+												$col_types[$column_name] = $entities[1];
+											}
+										}
+
+										// Unbueffered query and the foreach make this ultra fast, we wait for nothing.
 										$sql = "SELECT *
 											FROM $table_name";
-										$result = $db->sql_query($sql);
+										$result = sqlite_unbuffered_query($sql, $db->db_connect_id);
+										$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
 
-										while ($row = $db->sql_fetchrow($result))
+										foreach ($rows as $row)
 										{
 											$names = $data = array();
 											foreach ($row as $row_name => $row_data)

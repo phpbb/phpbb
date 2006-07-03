@@ -119,7 +119,7 @@ class acp_profile
 							$db->sql_freeresult($result);
 
 							// Create a temp table and populate it, destroy the existing one
-							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+' . PROFILE_FIELDS_DATA_TABLE . '#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
+							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
 							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
 
@@ -130,7 +130,7 @@ class acp_profile
 							$column_list = array();
 							foreach($old_table_cols as $declaration)
 							{
-								$entities = preg_split('#\s+#', $declaration);
+								$entities = preg_split('#\s+#', trim($declaration));
 								if ($entities[0] !== $field_ident)
 								{
 									$column_list[] = $entities[0];
@@ -1023,7 +1023,7 @@ class acp_profile
 						$db->sql_freeresult($result);
 
 						// Create a temp table and populate it, destroy the existing one
-						$db->sql_query(preg_replace('#CREATE\s+TABLE\s+' . PROFILE_FIELDS_DATA_TABLE . '#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
+						$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
 						$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
 						$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
 
@@ -1034,8 +1034,7 @@ class acp_profile
 						$column_list = array();
 						foreach($old_table_cols as $declaration)
 						{
-							$entities = preg_split('#\s+#', $declaration);
-							var_dump($entities);
+							$entities = preg_split('#\s+#', trim($declaration));
 							$column_list[] = $entities[0];
 						}
 
