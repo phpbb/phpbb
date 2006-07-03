@@ -63,6 +63,7 @@ $lang = array_merge($lang, array(
 	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) forum systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the forum software you wish to convert from, please check our website where further conversion modules may be available for download.',
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist',
 	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion progress, push the button below to begin',
+	'COULD_NOT_COPY'			=> 'Could not copy file <b>%1$s</b> to <b>%2$s</b><br /><br />Please check that the target directory exists and is writable by the webserver',
 	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former forum. Please check your settings and try again.<br />&#187; Specified source path was %s',
 
 	'DBMS'						=> 'Database type',
