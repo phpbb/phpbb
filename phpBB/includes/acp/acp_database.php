@@ -362,9 +362,9 @@ class acp_database
 	
 									case 'sqlite':
 										// This is *not* my fault. The PHP guys forgot a call to finalize when they wrote this function. This forces all the tables to stay locked...
-										// They finally fixed it in 5.3 but 5.2 still have this so instead, we go and grab the column types by smashing open the sqlite_master table
+										// They finally fixed it in 5.1.3 but 5.1.2 and under still have this so instead, we go and grab the column types by smashing open the sqlite_master table
 										// and grope around for things that remind us of datatypes...
-										if (version_compare(phpversion(), '5.3', '>='))
+										if (version_compare(phpversion(), '5.1.3', '>='))
 										{
 											$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
 										}
@@ -455,7 +455,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = pg_num_fields($result);
@@ -576,7 +576,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$retrieved_data = odbc_num_rows($result);
@@ -687,7 +687,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$retrieved_data = mssql_num_rows($result);
@@ -798,7 +798,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = ibase_num_fields($result);
@@ -883,7 +883,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = ocinumcols($result);
