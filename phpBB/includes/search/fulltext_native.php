@@ -438,6 +438,9 @@ class fulltext_native extends search_backend
 
 			if ($sql_in)
 			{
+				// A little trick so we only need one query: using DISTINCT makes every word unique so if the
+				// number of all words for one post_id equals the number of AND-words it has to contain all
+				// AND-words
 				$sql = "SELECT $sql_select, COUNT(DISTINCT m.word_id) as matches, " . $sort_by_sql[$sort_key] . "
 					FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
 					WHERE w.word_text IN ($sql_in)
@@ -446,6 +449,7 @@ class fulltext_native extends search_backend
 						AND p.post_id = m.post_id
 						$sql_where_options
 					GROUP BY $field, " . $sort_by_sql[$sort_key] . '
+					HAVING matches = ' . sizeof($sql_words['AND']) . '
 					ORDER BY ' . $sql_sort;
 				$result = $db->sql_query($sql);
 
@@ -456,16 +460,10 @@ class fulltext_native extends search_backend
 					return false;
 				}
 
-				// A little trick so we only need one query: using DISTINCT makes every word unique so if the
-				// number of all words for one post_id equals the number of AND-words it has to contain all
-				// AND-words
 				$ids = array();
 				do
 				{
-					if ($row['matches'] == sizeof($sql_words['AND']))
-					{
-						$ids[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
-					}
+					$ids[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
 				}
 				while ($row = $db->sql_fetchrow($result));
 				$db->sql_freeresult($result);
