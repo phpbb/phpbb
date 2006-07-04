@@ -971,6 +971,34 @@ class acp_users
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
+							switch (SQL_LAYER)
+							{
+								case 'oracle':
+								case 'firebird':
+								case 'postgres':
+									$right_delim = $left_delim = '"';
+								break;
+
+								case 'sqlite':
+								case 'mssql':
+								case 'mssql_odbc':
+									$right_delim = ']';
+									$left_delim = '[';
+								break;
+
+								case 'mysql':
+								case 'mysql4':
+								case 'mysqli':
+									$right_delim = $left_delim = '`';
+								break;
+							}
+
+							foreach ($cp_data as $key => $value)
+							{
+								$cp_data[$right_delim . $key . $left_delim] = $value;
+								unset($cp_data[$key]);
+							}
+
 							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
 								WHERE user_id = $user_id";

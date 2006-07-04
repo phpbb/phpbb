@@ -71,7 +71,7 @@ class acp_captcha
 						$template->assign_var('GD', true);
 						foreach ($policy_modules as $module_name)
 						{
-							$template->assign_var('U_' . strtoupper($module_name), sprintf($user->lang['CAPTCHA_EXPLAIN'], '<a href="' . append_sid("{$phpbb_root_path}/adm/index.$phpEx", 'i=captcha&amp;mode=img&amp;policy=' . $module_name) . '" target="_blank">', '</a>'));
+							$template->assign_var('U_' . strtoupper($module_name), sprintf($user->lang['CAPTCHA_EXPLAIN'], '<a href="' . append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=captcha&amp;mode=img&amp;policy=' . $module_name) . '" target="_blank">', '</a>'));
 						}
 						if (function_exists('imagettfbbox') && function_exists('imagettftext'))
 						{

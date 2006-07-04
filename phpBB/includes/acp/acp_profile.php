@@ -1049,7 +1049,7 @@ class acp_profile
 					}
 					else
 					{
-						$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident $type";
+						$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident [$type]";
 					}
 
 
@@ -1059,7 +1059,7 @@ class acp_profile
 				case 'mssql_odbc':
 
 					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-					$sql = 'ALTER TABLE [' . PROFILE_FIELDS_DATA_TABLE . "] ADD $field_ident ";
+					$sql = 'ALTER TABLE [' . PROFILE_FIELDS_DATA_TABLE . "] ADD [$field_ident] ";
 
 					switch ($field_type)
 					{
@@ -1092,7 +1092,7 @@ class acp_profile
 				case 'postgres':
 
 					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD COLUMN $field_ident ";
+					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD COLUMN \"$field_ident\" ";
 
 					switch ($field_type)
 					{
@@ -1128,7 +1128,7 @@ class acp_profile
 				case 'firebird':
 
 					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident ";
+					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD \"$field_ident\" ";
 
 					switch ($field_type)
 					{
@@ -1161,7 +1161,7 @@ class acp_profile
 				case 'oracle':
 
 					// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident ";
+					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD \"$field_ident\" ";
 					switch ($field_type)
 					{
 						case FIELD_STRING:

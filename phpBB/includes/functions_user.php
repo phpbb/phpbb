@@ -219,6 +219,34 @@ function user_add($user_row, $cp_data = false)
 	{
 		$cp_data['user_id'] = (int) $user_id;
 
+		switch (SQL_LAYER)
+		{
+			case 'oracle':
+			case 'firebird':
+			case 'postgres':
+				$right_delim = $left_delim = '"';
+			break;
+
+			case 'sqlite':
+			case 'mssql':
+			case 'mssql_odbc':
+				$right_delim = ']';
+				$left_delim = '[';
+			break;
+
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$right_delim = $left_delim = '`';
+			break;
+		}
+
+		foreach ($cp_data as $key => $value)
+		{
+			$cp_data[$right_delim . $key . $left_delim] = $value;
+			unset($cp_data[$key]);
+		}
+
 		if (!class_exists('custom_profile'))
 		{
 			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);

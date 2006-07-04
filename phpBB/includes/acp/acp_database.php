@@ -366,7 +366,7 @@ class acp_database
 										// and grope around for things that remind us of datatypes...
 										if (version_compare(phpversion(), '5.1.3', '>='))
 										{
-											$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
+											$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
 										}
 										else
 										{
@@ -399,7 +399,7 @@ class acp_database
 										// Unbueffered query and the foreach make this ultra fast, we wait for nothing.
 										$sql = "SELECT *
 											FROM $table_name";
-										$result = sqlite_unbuffered_query($sql, $db->db_connect_id);
+										$result = sqlite_unbuffered_query($db->db_connect_id, $sql);
 										$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
 
 										foreach ($rows as $row)
@@ -471,12 +471,12 @@ class acp_database
 												FROM pg_attrdef d, pg_class c
 												WHERE (c.relname = '{$table_name}')
 													AND (c.oid = d.adrelid)
-													AND d.adnum = " . strval($i+1);
+													AND d.adnum = " . strval($i + 1);
 											$result2 = $db->sql_query($sql);
 											if ($row = $db->sql_fetchrow($result2))
 											{
 												// Determine if we must reset the sequences
-												if (strpos($row['rowdefault'], 'nextval(\'') === 0)
+												if (strpos($row['rowdefault'], "nextval('") === 0)
 												{
 													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end FROM {$table_name}));\n";
 												}
@@ -526,7 +526,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -647,7 +647,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -758,7 +758,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -853,7 +853,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -937,7 +937,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -1037,9 +1037,9 @@ class acp_database
 							break;
 
 							case 'postgres':
-								$sql = "SELECT relname
+								$sql = 'SELECT relname
 									FROM pg_stat_user_tables
-									ORDER BY relname;";
+									ORDER BY relname';
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -1194,39 +1194,47 @@ class acp_database
 						{
 							// Strip out sql comments...
 							remove_remarks($data);
-							switch (SQL_LAYER)
+
+							// SQLite gets improved performance when you shove all of these disk write queries at once :D
+							if (SQL_LAYER == 'sqlite')
 							{
-								case 'firebird':
-									$delim = ';;';
-								break;
-
-								case 'mysql':
-								case 'mysql4':
-								case 'mysqli':
-								case 'sqlite':
-								case 'postgres':
-									$delim = ';';
-								break;
-
-								case 'oracle':
-									$delim = '/';
-								break;
-
-								case 'mssql':
-								case 'mssql-odbc':
-									$delim = 'GO';
-								break;
+								$db->sql_query($data);
 							}
-							$pieces = split_sql_file($data, $delim);
-
-							$sql_count = count($pieces);
-							for($i = 0; $i < $sql_count; $i++)
+							else
 							{
-								$sql = trim($pieces[$i]);
-
-								if (!empty($sql) && $sql[0] != '#')
+								switch (SQL_LAYER)
 								{
-									$db->sql_query($sql);
+									case 'firebird':
+										$delim = ';;';
+									break;
+
+									case 'mysql':
+									case 'mysql4':
+									case 'mysqli':
+									case 'postgres':
+										$delim = ';';
+									break;
+
+									case 'oracle':
+										$delim = '/';
+									break;
+
+									case 'mssql':
+									case 'mssql-odbc':
+										$delim = 'GO';
+									break;
+								}
+								$pieces = split_sql_file($data, $delim);
+
+								$sql_count = count($pieces);
+								for($i = 0; $i < $sql_count; $i++)
+								{
+									$sql = trim($pieces[$i]);
+
+									if (!empty($sql) && $sql[0] != '#')
+									{
+										$db->sql_query($sql);
+									}
 								}
 							}
 						}
@@ -1456,6 +1464,7 @@ class acp_database
 				// We don't even care about storing the results. We already know the answer if we get rows back.
 				if ($db->sql_fetchrow($result))
 				{
+					$sql_data .= "DROP SEQUENCE {$table_name}_seq;\n";
 					$sql_data .= "CREATE SEQUENCE {$table_name}_seq;\n";
 				}
 				$db->sql_freeresult($result);
@@ -1539,7 +1548,8 @@ class acp_database
 						AND (bc.relname = '" . $db->sql_escape($table_name) . "')
 						AND (ta.attrelid = i.indrelid)
 						AND (ta.attnum = i.indkey[ia.attnum-1])
-					ORDER BY index_name, tab_name, column_name ";
+					ORDER BY index_name, tab_name, column_name";
+
 				$result = $db->sql_query($sql_pri_keys);
 
 				$index_create = $index_rows = $primary_key = array();
