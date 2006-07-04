@@ -144,7 +144,8 @@ class acp_database
 
 							case 'mssql':
 							case 'mssql_odbc':
-								$sql_data .= "BEGIN TRANSACTION\nGO\n";
+								$sql_data .= "BEGIN TRANSACTION\n";
+								$sql_data .= "GO\n";
 							break;
 						}
 
@@ -164,7 +165,8 @@ class acp_database
 									
 									case 'oracle':
 										$sql_data .= '# Table: ' . $table_name . "\n";
-										$sql_data .= "DROP TABLE $table_name;\n\\\n";
+										$sql_data .= "DROP TABLE $table_name;\n";
+										$sql_data .= '\\' . "\n";
 									break;
 
 									case 'sqlite':
@@ -189,10 +191,32 @@ class acp_database
 									case 'mssql_odbc':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "IF OBJECT_ID(N'$table_name', N'U') IS NOT NULL\n";
-										$sql_data .= "DROP TABLE $table_name;\nGO\n";
+										$sql_data .= "DROP TABLE $table_name;\n";
+										$sql_data .= "GO\n";
 									break;
 								}
 								$sql_data .= $this->get_table_structure($table_name);
+							}
+							// We might wanna empty out all that junk :D
+							else
+							{
+								switch (SQL_LAYER)
+								{
+									case 'mysqli':
+									case 'mysql4':
+									case 'mysql':
+									case 'mssql':
+									case 'mssql_odbc':
+									case 'oracle':
+									case 'postgres':
+									case 'firebird':
+										$sql_data .= 'TRUNCATE TABLE ' . $table_name . "\n";
+									break;
+									
+									case 'sqlite':
+										$sql_data .= 'DELETE FROM ' . $table_name . "\n";
+									break;
+								}
 							}
 							// Now write the data for the first time. :)
 							if ($store == true)
