@@ -320,26 +320,68 @@ function change_topic_type($action, $topic_ids)
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_type = $new_topic_type, forum_id = $forum_id
-						WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+					WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
 						AND forum_id = 0';
 				$db->sql_query($sql);
+
+				// Update forum_ids for all posts
+				$sql = 'UPDATE ' . POSTS_TABLE . "
+					SET forum_id = $forum_id
+					WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+						AND forum_id = 0';
+				$db->sql_query($sql);
+
+				sync('forum', 'forum_id', $forum_id);
 			}
 		}
 		else
 		{
-			$sql = 'UPDATE ' . TOPICS_TABLE . "
-				SET topic_type = $new_topic_type, forum_id = 0
-				WHERE topic_id IN (" . implode(', ', $topic_ids) . ")";
-			$db->sql_query($sql);
+			// Get away with those topics already being a global announcement by re-calculating $topic_ids
+			$sql = 'SELECT topic_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')
+					AND forum_id <> 0';
+			$result = $db->sql_query($sql);
+
+			$topic_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topic_ids[] = $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($topic_ids))
+			{
+				// Delete topic shadows for global announcements
+				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					WHERE topic_moved_id IN (' . implode(', ', $topic_ids) . ')';
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . "
+					SET topic_type = $new_topic_type, forum_id = 0
+						WHERE topic_id IN (" . implode(', ', $topic_ids) . ')';
+				$db->sql_query($sql);
+
+				// Update forum_ids for all posts
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET forum_id = 0
+					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+				$db->sql_query($sql);
+
+				sync('forum', 'forum_id', $forum_id);
+			}
 		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_TYPE_CHANGED' : 'TOPICS_TYPE_CHANGED';
 
-		$data = get_topic_data($topic_ids);
-
-		foreach ($data as $topic_id => $row)
+		if (sizeof($topic_ids))
 		{
-			add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
+			$data = get_topic_data($topic_ids);
+
+			foreach ($data as $topic_id => $row)
+			{
+				add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
+			}
 		}
 	}
 	else
@@ -542,10 +584,6 @@ function mcp_delete_topic($topic_ids)
 		}
 
 		$return = delete_topics('topic_id', $topic_ids, true);
-
-		/**
-		* @todo Adjust total post count (mcp_delete_topic)
-		*/
 	}
 	else
 	{
