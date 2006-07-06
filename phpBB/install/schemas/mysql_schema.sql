@@ -291,7 +291,7 @@ CREATE TABLE phpbb_icons (
   icons_url varchar(255),
   icons_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   icons_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
-  icons_order tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  icons_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   PRIMARY KEY (icons_id)
 );
@@ -639,7 +639,7 @@ CREATE TABLE phpbb_smilies (
   smiley_url varchar(50),
   smiley_width tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
   smiley_height tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
-  smiley_order tinyint(4) UNSIGNED DEFAULT '0' NOT NULL,
+  smiley_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
   display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
   PRIMARY KEY (smiley_id)
 );

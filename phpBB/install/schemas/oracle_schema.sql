@@ -615,7 +615,7 @@ CREATE TABLE phpbb_icons (
   icons_url varchar2(255),
   icons_width number(4) DEFAULT '0' NOT NULL,
   icons_height number(4) DEFAULT '0' NOT NULL,
-  icons_order number(4) DEFAULT '0' NOT NULL,
+  icons_order number(8) DEFAULT '0' NOT NULL,
   display_on_posting number(1) DEFAULT '1' NOT NULL,
   CONSTRAINT pk_phpbb_icons PRIMARY KEY (icons_id)
 )
@@ -1322,7 +1322,7 @@ CREATE TABLE phpbb_smilies (
   smiley_url varchar2(50),
   smiley_width number(4) DEFAULT '0' NOT NULL,
   smiley_height number(4) DEFAULT '0' NOT NULL,
-  smiley_order number(4) DEFAULT '0' NOT NULL,
+  smiley_order number(8) DEFAULT '0' NOT NULL,
   display_on_posting number(1) DEFAULT '1' NOT NULL,
   CONSTRAINT pk_phpbb_smilies PRIMARY KEY (smiley_id)
 )

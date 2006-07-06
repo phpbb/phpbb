@@ -18,6 +18,7 @@ function compose_pm($id, $mode, $action)
 	global $phpbb_root_path, $phpEx, $config;
 
 	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 	if (!$action)
@@ -572,7 +573,6 @@ function compose_pm($id, $mode, $action)
 		// Attachment Preview
 		if (sizeof($message_parser->attachment_data))
 		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 			$extensions = $update_count = array();
 
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
@@ -818,23 +818,7 @@ function compose_pm($id, $mode, $action)
 	);
 
 	// Build custom bbcodes array
-	$sql = 'SELECT bbcode_id, bbcode_tag 
-		FROM ' . BBCODES_TABLE . '
-		WHERE display_on_posting = 1';
-	$result = $db->sql_query($sql);
-
-	$i = 0;
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$template->assign_block_vars('custom_tags', array(
-			'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-			'BBCODE_ID'		=> 22 + ($i * 2),
-			'BBCODE_TAG'	=> $row['bbcode_tag'])
-		);
-
-		$i++;
-	}
-	$db->sql_freeresult($result);
+	display_custom_bbcodes();
 
 	// Attachment entry
 	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)

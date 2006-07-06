@@ -1202,15 +1202,12 @@ function redirect($url)
 {
 	global $db, $cache, $config, $user;
 
-	if (isset($db))
+	if (empty($user->lang))
 	{
-		$db->sql_close();
+		$user->add_lang('common');
 	}
 
-	if (isset($cache))
-	{
-		$cache->unload();
-	}
+	garbage_collection();
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
@@ -2341,16 +2338,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 		case E_USER_ERROR:
 
-			if (isset($db))
-			{
-				$db->sql_close();
-			}
+			garbage_collection();
 
-			if (isset($cache))
-			{
-				$cache->unload();
-			}
-			
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
 			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
 			echo '<head>';
@@ -2499,7 +2488,9 @@ function page_header($page_title = '', $display_online_list = true)
 		if (!empty($_REQUEST['f']))
 		{
 			$f = request_var('f', 0);
-			$reading_sql = " AND s.session_page LIKE '%f=$f%'";
+
+			// Do not change this (it is defined as _f_={forum_id}x within session.php)
+			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
 		}
 
 		// Get number of online guests
@@ -2727,6 +2718,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_BOARD_DISABLED'		=> ($config['board_disable'] && !defined('IN_LOGIN') && $auth->acl_gets('a_', 'm_')) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
+		'S_IS_BOT'				=> $user->data['is_bot'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->data['user_lang'],
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],

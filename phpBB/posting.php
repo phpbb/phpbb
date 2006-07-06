@@ -1187,23 +1187,7 @@ $template->assign_vars(array(
 );
 
 // Build custom bbcodes array
-$sql = 'SELECT bbcode_id, bbcode_tag 
-	FROM ' . BBCODES_TABLE . '
-	WHERE display_on_posting = 1';
-$result = $db->sql_query($sql);
-
-$i = 0;
-while ($row = $db->sql_fetchrow($result))
-{
-	$template->assign_block_vars('custom_tags', array(
-		'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-		'BBCODE_ID'		=> 22 + ($i * 2),
-		'BBCODE_TAG'	=> $row['bbcode_tag'])
-	);
-
-	$i++;
-}
-$db->sql_freeresult($result);
+display_custom_bbcodes();
 
 // Poll entry
 if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))))

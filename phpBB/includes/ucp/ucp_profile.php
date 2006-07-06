@@ -225,7 +225,7 @@ class ucp_profile
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
 					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
 				);
-				break;
+			break;
 
 			case 'profile_info':
 
@@ -399,7 +399,7 @@ class ucp_profile
 
 				$cp->generate_profile_fields('profile', $user->get_iso_lang_id());
 
-				break;
+			break;
 
 			case 'signature':
 
@@ -408,7 +408,8 @@ class ucp_profile
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
 				
-				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
@@ -486,23 +487,7 @@ class ucp_profile
 				);
 			
 				// Build custom bbcodes array
-				$sql = 'SELECT bbcode_id, bbcode_tag 
-					FROM ' . BBCODES_TABLE . '
-					WHERE display_on_posting = 1';
-				$result = $db->sql_query($sql);
-
-				$i = 0;
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$template->assign_block_vars('custom_tags', array(
-						'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-						'BBCODE_ID'		=> 22 + ($i * 2),
-						'BBCODE_TAG'	=> $row['bbcode_tag'])
-					);
-
-					$i++;
-				}
-				$db->sql_freeresult($result);
+				display_custom_bbcodes();
 			
 			break;
 
@@ -665,7 +650,7 @@ class ucp_profile
 					);
 				}
 
-				break;
+			break;
 		}
 
 		$template->assign_vars(array(

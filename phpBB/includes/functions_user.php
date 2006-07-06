@@ -219,34 +219,6 @@ function user_add($user_row, $cp_data = false)
 	{
 		$cp_data['user_id'] = (int) $user_id;
 
-		switch (SQL_LAYER)
-		{
-			case 'oracle':
-			case 'firebird':
-			case 'postgres':
-				$right_delim = $left_delim = '"';
-			break;
-
-			case 'sqlite':
-			case 'mssql':
-			case 'mssql_odbc':
-				$right_delim = ']';
-				$left_delim = '[';
-			break;
-
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$right_delim = $left_delim = '`';
-			break;
-		}
-
-		foreach ($cp_data as $key => $value)
-		{
-			$cp_data[$right_delim . $key . $left_delim] = $value;
-			unset($cp_data[$key]);
-		}
-
 		if (!class_exists('custom_profile'))
 		{
 			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
@@ -374,6 +346,9 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	set_config('num_users', $config['num_users'] - 1, true);
+
+	// Adjust last post info...
+
 
 	$db->sql_transaction('commit');
 
@@ -1187,7 +1162,7 @@ function avatar_remote($data, &$error)
 	// Make sure getimagesize works...
 	if (($image_data = @getimagesize($data['remotelink'])) === false)
 	{
-		$error[] = $user->lang['AVATAR_URL_INVALID'];
+		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;
 	}
 

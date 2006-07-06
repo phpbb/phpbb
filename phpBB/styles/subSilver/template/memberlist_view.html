@@ -93,7 +93,7 @@
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr> 
 				<td class="gen" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
-				<td class="row1" width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
+				<td width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<!-- IF U_PM -->
 				<tr>
@@ -161,12 +161,14 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><h4>{L_SIGNATURE}</h4></td>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2"><div class="postbody" style="padding: 10px;">{SIGNATURE}</div></td>
-	</tr>
+	<!-- IF SIGNATURE -->
+		<tr>
+			<td class="cat" colspan="2" align="center"><h4>{L_SIGNATURE}</h4></td>
+		</tr>
+		<tr>
+			<td class="row1" colspan="2"><div class="postbody" style="padding: 10px;">{SIGNATURE}</div></td>
+		</tr>
+	<!-- ENDIF -->
 	</table>
 	
 	</form>

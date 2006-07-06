@@ -51,7 +51,7 @@ class session
 		// Now, remove the sid and let us get a clean query string...
 		foreach ($args as $key => $argument)
 		{
-			if (strpos($argument, 'sid=') === 0)
+			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
 			{
 				unset($args[$key]);
 				break;
@@ -143,7 +143,8 @@ class session
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
-		$this->page['page'] .= (isset($_POST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . 'f=' . intval($_POST['f']) : '';
+		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
+		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
@@ -420,7 +421,7 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		if ($this->data['user_id'] != ANONYMOUS)
+		if ($this->data['user_id'] != ANONYMOUS && !$bot)
 		{
 			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
 		}

@@ -212,7 +212,7 @@ function group_select_options($group_id, $exclude_ids = false)
 	global $db, $user, $config;
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE group_id NOT IN (' . implode(', ', array_map('intval', $exclude_ids)) . ')' : '';
-	$sql_and = ($config['coppa_hide_groups']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
+	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
 
 	$sql = 'SELECT group_id, group_name, group_type 
 		FROM ' . GROUPS_TABLE . "
@@ -483,7 +483,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true)
 {
-	global $db;
+	global $db, $config;
 
 	$forum_ids = $topic_ids = array();
 
@@ -545,6 +545,8 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 		sync('forum', 'forum_id', $forum_ids, true);
 		sync('topic_reported', $where_type, $where_ids);
 	}
+
+	set_config('num_topics', $config['num_topics'] - sizeof($return['topics']), true);
 
 	return $return;
 }
@@ -637,6 +639,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true);
 	}
+
+	set_config('num_posts', $config['num_posts'] - sizeof($post_ids), true);
 
 	return sizeof($post_ids);
 }

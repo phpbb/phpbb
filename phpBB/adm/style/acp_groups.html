@@ -282,9 +282,12 @@
 
 	<fieldset class="quick">
 		<!-- IF S_GROUP_ADD -->
-			{L_CREATE_GROUP}: <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
+			{L_CREATE_GROUP}: <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+			<input type="hidden" name="add" value="1" />
 		<!-- ENDIF -->
 	</fieldset>
+
+	</form>
 
 	<h1>{L_SPECIAL_GROUPS}</h1>
 
@@ -312,8 +315,6 @@
 	<!-- END groups -->
 	</tbody>
 	</table>
-
-	</form>
 
 <!-- ENDIF -->
 

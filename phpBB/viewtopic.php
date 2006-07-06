@@ -461,7 +461,7 @@ $s_forum_rules = '';
 gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 
 // Quick mod tools
-$allow_change_type = ($auth->acl_get('m_') || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
+$allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
 $topic_mod = '';
 $topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && $user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? (($topic_data['topic_status'] == ITEM_UNLOCKED) ? '<option value="lock">' . $user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . $user->lang['UNLOCK_TOPIC'] . '</option>') : '';
@@ -1260,7 +1260,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
 	{
 		// Get usernames for all following posts if not already stored
-		if (!sizeof($post_edit_list) && $row['post_edit_reason'])
+		if (!sizeof($post_edit_list) && ($row['post_edit_reason'] || ($row['post_edit_user'] && !isset($user_cache[$row['post_edit_user']]))))
 		{
 			// Remove all post_ids already parsed (we do not have to check them)
 			$post_storage_list = (!$store_reverse) ? array_slice($post_list, $i) : array_slice(array_reverse($post_list), $i);
@@ -1270,11 +1270,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 				WHERE p.post_id IN (' . implode(', ', $post_storage_list) . ")
 					AND p.post_edit_count <> 0
 					AND p.post_edit_user <> 0
-					AND p.post_edit_reason <> ''
 					AND p.post_edit_user = u.user_id";
 			$result2 = $db->sql_query($sql);
 			while ($user_edit_row = $db->sql_fetchrow($result2))
 			{
+				$user_edit_row['username'] = ($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username'];
 				$post_edit_list[$user_edit_row['user_id']] = $user_edit_row;
 			}
 			$db->sql_freeresult($result2);
@@ -1287,10 +1287,16 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		if ($row['post_edit_reason'])
 		{
 			$user_edit_row = $post_edit_list[$row['post_edit_user']];
-			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : (($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username']), $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+
+			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_edit_row['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 		else
 		{
+			if ($row['post_edit_user'] && !isset($user_cache[$row['post_edit_user']]))
+			{
+				$user_cache[$row['post_edit_user']] = $post_edit_list[$row['post_edit_user']];
+			}
+
 			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_cache[$row['post_edit_user']]['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 	}

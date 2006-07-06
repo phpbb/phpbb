@@ -803,8 +803,10 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $phpEx, $user;
 
+		$check_path = ($user->page['root_script_path'] != '/') ? substr($user->page['root_script_path'], 0, -1) : '/';
+
 		// Is the user trying to link to a php file in this domain and script path?
-		if (strpos($url, ".{$phpEx}") !== false && strpos($url, substr($user->page['root_script_path'], 0, -1)) !== false)
+		if (strpos($url, ".{$phpEx}") !== false && strpos($url, $check_path) !== false)
 		{
 			$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
 
@@ -816,7 +818,7 @@ class bbcode_firstpass extends bbcode
 
 			// Check again in correct order...
 			$pos_ext = strpos($url, ".{$phpEx}");
-			$pos_path = strpos($url, substr($user->page['root_script_path'], 0, -1));
+			$pos_path = strpos($url, $check_path);
 			$pos_domain = strpos($url, $server_name);
 
 			if ($pos_domain !== false && $pos_path >= $pos_domain && $pos_ext >= $pos_path)

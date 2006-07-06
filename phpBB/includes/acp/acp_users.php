@@ -1505,6 +1505,7 @@ class acp_users
 			case 'sig':
 			
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
@@ -1576,8 +1577,13 @@ class acp_users
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
-					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
+					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
+					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
+					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false)
 				);
+
+				// Assigning custom bbcodes
+				display_custom_bbcodes();
 
 			break;
 
@@ -1808,7 +1814,7 @@ class acp_users
 				$s_group_options = '';
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if ($config['coppa_hide_groups'] && in_array($row['group_name'], array('INACTIVE_COPPA', 'REGISTERED_COPPA')))
+					if (!$config['coppa_enable'] && in_array($row['group_name'], array('INACTIVE_COPPA', 'REGISTERED_COPPA')))
 					{
 						continue;
 					}

@@ -652,7 +652,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 			break;
 
 			default:
-				if ($replies >= $config['hot_threshold'])
+				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'])
 				{
 					$folder = 'folder_hot';
 					$folder_new = 'folder_hot_new';
@@ -895,6 +895,39 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 	}
 
 	return $return_tpl;
+}
+
+/**
+* Assign/Build custom bbcodes for display in screens supporting using of bbcodes
+* The custom bbcodes buttons will be placed within the template block 'custom_codes'
+*/
+function display_custom_bbcodes()
+{
+	global $db, $template;
+
+	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
+	$num_predefined_bbcodes = 22;
+
+	/*
+	* @todo while adjusting custom bbcodes, think about caching this query as well as correct ordering
+	*/
+	$sql = 'SELECT bbcode_id, bbcode_tag 
+		FROM ' . BBCODES_TABLE . '
+		WHERE display_on_posting = 1';
+	$result = $db->sql_query($sql);
+
+	$i = 0;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$template->assign_block_vars('custom_tags', array(
+			'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+			'BBCODE_ID'		=> $num_predefined_bbcodes + ($i * 2),
+			'BBCODE_TAG'	=> $row['bbcode_tag'])
+		);
+
+		$i++;
+	}
+	$db->sql_freeresult($result);
 }
 
 /**

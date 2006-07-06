@@ -180,7 +180,6 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more Options per User than existing poll options',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully',
 
-	'UNABLE_GET_IMAGE_SIZE'		=> 'Accessing the image was impossible or file isn\'t a valid picture.',
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain bbcodes: ',
 	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you wish this topic to be displayed.',
 	'UPDATE_COMMENT'			=> 'Update comment',

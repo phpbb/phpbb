@@ -97,7 +97,7 @@ class acp_attachments
 						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'type' => 'text:3:3', 'explain' => false),
 						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'type' => 'radio:yes_no', 'explain' => true),
 						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
-						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERER', 'type' => 'radio:yes_no', 'explain' => true),
+						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERRER', 'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'					=> $l_legend_cat_images,
 						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'type' => 'radio:yes_no', 'explain' => true),

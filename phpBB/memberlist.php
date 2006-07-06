@@ -100,6 +100,14 @@ switch ($mode)
 		$admin_id_ary = array_unique($admin_id_ary);
 		$mod_id_ary = array_unique($mod_id_ary);
 
+		// Admin group id...
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'ADMINISTRATORS'";
+		$result = $db->sql_query($sql);
+		$admin_group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
 		$sql = 'SELECT forum_id, forum_name 
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_type = ' . FORUM_POST;
@@ -113,7 +121,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'u.user_id, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
+			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.user_colour, u.user_rank, u.user_posts, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
 
 			'FROM'		=> array(
 				USERS_TABLE		=> 'u',
@@ -138,6 +146,25 @@ switch ($mode)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$which_row = (in_array($row['user_id'], $admin_id_ary)) ? 'admin' : 'mod';
+
+			// We sort out admins not having the admin group as default
+			// The drawback is that only those admins are displayed which are within
+			// the special group 'Administrators' and also having it assigned as their default group.
+			// - might change
+			if ($which_row == 'admin' && $row['default_group'] != $admin_group_id)
+			{
+				// Remove from admin_id_ary, because the user may be a mod instead
+				unset($admin_id_ary[array_search($row['user_id'], $admin_id_ary)]);
+
+				if (!in_array($row['user_id'], $mod_id_ary))
+				{
+					continue;
+				}
+				else
+				{
+					$which_row = 'mod';
+				}
+			}
 
 			$s_forum_select = '';
 

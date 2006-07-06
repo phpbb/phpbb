@@ -65,7 +65,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path', '/')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_secure', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_hide_groups', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('database_gc', '604800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
