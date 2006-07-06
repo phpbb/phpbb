@@ -313,8 +313,6 @@ class module
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 
-			'META'					=> $this->get_meta(),
-
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_ENCODING' 	=> $lang['ENCODING'],
 			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
@@ -372,14 +370,6 @@ class module
 		}
 
 		return (isset($lang[$this->module->page_title])) ? $lang[$this->module->page_title] : $this->module->page_title;
-	}
-
-	/**
-	* Returns the desired meta tags for the page
-	*/
-	function get_meta()
-	{
-		return (isset($this->module->meta)) ? $this->module->meta : '';
 	}
 
 	/**
