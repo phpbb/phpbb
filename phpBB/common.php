@@ -126,8 +126,8 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Replace backslashes and doubled slashes (could happen on some proxy setups)
 	$script_name = str_replace(array('\\', '//'), '/', $script_name);
-	$script_path = trim(dirname($script_name));
-	$script_path = rtrim($script_patch, '/');
+	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
+	$script_path = str_replace('//', '/', $script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -136,7 +136,7 @@ if (!defined('PHPBB_INSTALLED'))
 		$url .= ':' . $server_port;
 	}
 
-	$url .= $script_path . '/install/index.' . $phpEx;
+	$url .= $script_path;
 	header('Location: ' . $url);
 	exit;
 }
