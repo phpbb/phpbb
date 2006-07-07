@@ -537,8 +537,7 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
@@ -696,8 +695,7 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
@@ -841,8 +839,7 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
@@ -925,8 +922,7 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');

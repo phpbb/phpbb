@@ -373,6 +373,39 @@ class module
 	}
 
 	/**
+	* Generate an HTTP/1.1 header to redirect the user to another page
+	* This is used during the installation when we do not have a database available to call the normal redirect function
+	* @param string $page The page to redirect to relative to the installer root path
+	*/
+	function redirect($page)
+	{
+		$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+		$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+
+		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+		if (!$script_name)
+		{
+			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+		}
+
+		// Replace backslashes and doubled slashes (could happen on some proxy setups)
+		$script_name = str_replace(array('\\', '//'), '/', $script_name);
+		$script_path = trim(dirname($script_name));
+
+		$url = (($secure) ? 'https://' : 'http://') . $server_name;
+
+		if ($server_port && (($secure && $server_port <> 443) || (!$secure && $server_port <> 80)))
+		{
+			$url .= ':' . $server_port;
+		}
+
+		$url .= $script_path . '/' . $page;
+		header('Location: ' . $url);
+		exit;
+	}
+
+	/**
 	* Generate the navigation tabs
 	*/
 	function generate_navigation()
