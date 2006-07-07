@@ -390,7 +390,7 @@ class acp_board
 				{
 					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-					$method = 'admin_' . $method;
+					$method = 'acp_' . $method;
 					if (function_exists($method))
 					{
 						if ($fields = $method($this->new_config))
@@ -518,7 +518,7 @@ class acp_board
 			{
 				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
 				{
-					$method = 'admin_' . $method;
+					$method = 'acp_' . $method;
 					if (function_exists($method))
 					{
 						$fields = $method($this->new_config);

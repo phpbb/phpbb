@@ -483,16 +483,17 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$filelist = $filelist_cats = array();
 
-		$template_data	= (!empty($_POST['template_data'])) ? ((STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data']) : '';
+		// we want newlines no carriage returns!
+		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\n\r", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
+
+		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
 		$template_file		= request_var('template_file', '');
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
 		// make sure template_file path doesn't go upwards
 		$template_file = str_replace('..', '.', $template_file);
-		// we want newlines no carriage returns!
-		$template_data = str_replace(array("\n\r", "\r"), array("\n", "\n"), $template_data);
-
+		
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
 			FROM ' . STYLES_TEMPLATE_TABLE . "
@@ -815,19 +816,21 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$this->page_title = 'EDIT_THEME';
 
+		// we want newlines no carriage returns!
+		$_POST['css_data'] = (isset($_POST['css_data']) && !empty($_POST['css_data'])) ? str_replace(array("\n\r", "\r"), array("\n", "\n"), $_POST['css_data']) : '';
+
+		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
+
 		// get user input
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$hide_css		= request_var('hidecss', false);
 		$show_css		= !$hide_css && request_var('showcss', false);
 		$edit_class		= request_var('css_class', '');
 		$custom_class	= request_var('custom_class', '');
-		$css_data		= (!empty($_POST['css_data'])) ? ((STRIP) ? stripslashes($_POST['css_data']) : $_POST['css_data']) : '';
+		$css_data		= (STRIP) ? stripslashes($_POST['css_data']) : $_POST['css_data'];
 		$submit			= isset($_POST['submit']) ? true : false;
 		$add_custom		= isset($_POST['add_custom']) ? true : false;
 		$matches		= array();
-
-		// we want newlines no carriage returns!
-		$css_data = str_replace(array("\n\r", "\r"), array("\n", "\n"), $css_data);
 
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
@@ -2254,7 +2257,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// heck of a lot of data ...
 				$sql_ary = array(
 					'template_id'			=> $style_id,
-					'template_filename'		=> "$template_pathfile$file",
+					'template_filename'		=> "$template_path$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
 					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
 					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),

@@ -232,7 +232,7 @@ class fulltext_native extends search_backend
 
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
-			if ($lengths[$i] < $config['fulltext_native_min_chars'] || $lengths[$i] > $config['fulltext_native_max_chars'])
+			if ($lengths[$i] < $config['fulltext_native_min_chars'] || $lengths[$i] > $config['fulltext_native_max_chars'] || strlen($text[$i]) > 252)
 			{
 				unset($text[$i]);
 			}

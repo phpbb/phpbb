@@ -345,13 +345,6 @@ class ucp_register
 						$db->sql_freeresult($result);
 					}
 				}
-
-				if ($user_type == USER_NORMAL || !$config['email_enable'])
-				{
-					set_config('newest_user_id', $user_id, true);
-					set_config('newest_username', $username, true);
-					set_config('num_users', $config['num_users'] + 1, true);
-				}
 				unset($data);
 
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');

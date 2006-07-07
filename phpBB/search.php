@@ -141,7 +141,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	else if ($auth->acl_getf_global('m_approve'))
 	{
 		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . '))';
+		$m_approve_fid_sql = ' AND (p.post_approved = 1' . (($m_approve_fid_ary) ? ' OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . ')') . ')' : '';
 	}
 	else
 	{

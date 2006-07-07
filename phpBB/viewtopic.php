@@ -118,7 +118,7 @@ if ($view && !$post_id)
 		else
 		{
 			$topic_id = $row['topic_id'];
-	
+
 			// Check for global announcement correctness?
 			if (!$row['forum_id'] && !$forum_id)
 			{
@@ -175,7 +175,7 @@ if ($user->data['is_registered'])
 	if ($config['load_db_lastread'])
 	{
 		$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time as forum_mark_time';
-		
+
 		$sql_array['LEFT_JOIN'][] = array(
 			'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
 			'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
@@ -203,7 +203,7 @@ $sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id';
 if (!$forum_id)
 {
 	// If it is a global announcement make sure to set the forum id to a postable forum
-	$sql_array['WHERE'] .= ' OR (t.topic_type = ' . POST_GLOBAL . ' 
+	$sql_array['WHERE'] .= ' OR (t.topic_type = ' . POST_GLOBAL . '
 		AND f.forum_type = ' . FORUM_POST . ')';
 }
 else
@@ -646,7 +646,7 @@ if (!empty($topic_data['poll_start']))
 					'vote_user_id'		=> (int) $user->data['user_id'],
 					'vote_user_ip'		=> (string) $user->ip,
 				);
-				
+
 				$sql = 'INSERT INTO  ' . POLL_VOTES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 				$db->sql_query($sql);
 			}
@@ -840,6 +840,9 @@ $sql = $db->sql_build_query('SELECT', array(
 
 $result = $db->sql_query($sql);
 
+$today = explode('-', date('j-n-Y', time() + $user->timezone + $user->dst));
+$today = array('day' => (int) $today[0], 'month' => (int) $today[1], 'year' => (int) $today[2]);
+
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
 while ($row = $db->sql_fetchrow($result))
@@ -949,7 +952,8 @@ while ($row = $db->sql_fetchrow($result))
 				'jabber'			=> '',
 				'search'			=> '',
 				'username'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
-				
+				'age'				=> '',
+
 				'warnings'			=> 0,
 			);
 		}
@@ -977,6 +981,7 @@ while ($row = $db->sql_fetchrow($result))
 				'viewonline'	=> $row['user_allow_viewonline'],
 
 				'avatar'		=> '',
+				'age'			=> '',
 
 				'online'		=> false,
 				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
@@ -1055,10 +1060,21 @@ while ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['icq_status_img'] = '';
 				$user_cache[$poster_id]['icq'] = '';
 			}
+
+			if (!empty($row['user_birthday']))
+			{
+				list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $row['user_birthday']));
+
+				if ($bday_year)
+				{
+					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - ((($today['month'] - $bday_month) < 0) || (($today['day'] - $bday_day) < 0)) ? 1 : 0);
+				}
+			}
 		}
 	}
 }
 $db->sql_freeresult($result);
+unset($today);
 
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
@@ -1309,7 +1325,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	if ($topic_data['topic_bumped'] && $row['post_id'] == $topic_data['topic_last_post_id'] && isset($user_cache[$topic_data['topic_bumper']]) )
 	{
 		// It is safe to grab the username from the user cache array, we are at the last
-		// post and only the topic poster and last poster are allowed to bump. However, a 
+		// post and only the topic poster and last poster are allowed to bump. However, a
 		// check is still needed incase an admin bumped the topic (but didn't post in the topic)
 		$l_bumped_by = '<br /><br />' . sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time']));
 	}
@@ -1327,7 +1343,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
-	
+
 	$s_first_unread = false;
 	if (!$first_unread && $post_unread)
 	{
@@ -1345,6 +1361,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_FROM'		=> $user_cache[$poster_id]['from'],
 		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'],
 		'POSTER_WARNINGS'	=> $user_cache[$poster_id]['warnings'],
+		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 
 		'POST_DATE'			=> $user->format_date($row['post_time']),
 		'POST_SUBJECT'		=> $row['post_subject'],

@@ -1276,8 +1276,23 @@ function show_profile($data)
 		$online = false;
 	}
 
+	$age = '';
+
+	if ($data['user_birthday'])
+	{
+		list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $data['user_birthday']));
+
+		if ($bday_year)
+		{
+			$time = time() + $user->timezone + $user->dst;
+
+			$age = (int) (date('Y', $time) - $bday_year - ((((date('n', $time) - $bday_month) < 0) || ((date('j', $time) - $bday_day) < 0)) ? 1 : 0));
+		}
+	}
+
 	// Dump it out to the template
 	return array(
+		'AGE'			=> $age,
 		'USERNAME'		=> $username,
 		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '',
 		'RANK_TITLE'	=> $rank_title,

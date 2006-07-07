@@ -148,7 +148,7 @@ function user_add($user_row, $cp_data = false)
 	// These are the additional vars able to be specified
 	$additional_vars = array(
 		'user_permissions'	=> '',
-		'user_timezone'		=> 0,
+		'user_timezone'		=> $config['board_timezone'],
 		'user_dateformat'	=> $config['default_dateformat'],
 		'user_lang'			=> $config['default_lang'],
 		'user_style'		=> $config['default_style'],
@@ -241,6 +241,14 @@ function user_add($user_row, $cp_data = false)
 
 	// Now make it the users default group...
 	group_set_user_default($user_row['group_id'], array($user_id));
+
+	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
+	if ($user_row['user_type'] == USER_NORMAL || !$config['email_enable'])
+	{
+		set_config('newest_user_id', $user_id, true);
+		set_config('newest_username', $user_row['username'], true);
+		set_config('num_users', $config['num_users'] + 1, true);
+	}
 
 	return $user_id;
 }

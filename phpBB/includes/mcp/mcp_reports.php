@@ -191,6 +191,8 @@ class mcp_reports
 						$forum_list[] = $row['forum_id'];
 					}
 
+					$global_id = $forum_list[0];
+
 					if (!($forum_list = implode(', ', $forum_list)))
 					{
 						trigger_error('NOT_MODERATOR');
@@ -214,6 +216,7 @@ class mcp_reports
 
 					$forum_info = $forum_info[$forum_id];
 					$forum_list = $forum_id;
+					$global_id = $forum_id;
 				}
 
 				$forum_list .= ', 0';
@@ -297,16 +300,20 @@ class mcp_reports
 							$poster = $row['username'];
 						}
 
+						$global_topic = ($row['forum_id']) ? false : true;
+						if ($global_topic)
+						{
+							$row['forum_id'] = $global_id;
+						}
+
 						$template->assign_block_vars('postrow', array(
-							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
-							// Q: Why accessing the topic by a post_id instead of its topic_id?
-							// A: To prevent the post from being hidden because of wrong encoding or different charset
-							'U_VIEWTOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
-							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$forum_id}&amp;p={$row['post_id']}"),
+							'U_VIEWFORUM'				=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
+							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}"),
 							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['reporter_id']) : '',
 
-							'FORUM_NAME'	=> ($row['forum_id']) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['ALL_FORUMS'],
+							'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 							'POSTER'		=> $poster,
 							'POST_ID'		=> $row['post_id'],
 							'POST_SUBJECT'	=> $row['post_subject'],

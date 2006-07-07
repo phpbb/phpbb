@@ -717,6 +717,40 @@ class auth
 			{
 				$login = $method($username, $password);
 
+				// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
+				if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)
+				{
+					// we are going to use the user_add function so include functions_user.php if it wasn't defined yet
+					if (!function_exists('user_add'))
+					{
+						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+					}
+
+					user_add($login['user_row'], (isset($login['cp_data'])) ? $login['cp_data'] : false);
+
+					$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
+						FROM ' . USERS_TABLE . "
+						WHERE username = '" . $db->sql_escape($username) . "'";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if (!$row)
+					{
+						return array(
+							'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+							'error_msg'		=> 'AUTH_NO_PROFILE_CREATED',
+							'user_row'		=> array('user_id' => ANONYMOUS),
+						);
+					}
+
+					$login = array(
+						'status'	=> LOGIN_SUCCESS,
+						'error_msg'	=> false,
+						'user_row'	=> $row,
+					);
+				}
+
 				// If login succeeded, we will log the user in... else we pass the login array through...
 				if ($login['status'] == LOGIN_SUCCESS)
 				{

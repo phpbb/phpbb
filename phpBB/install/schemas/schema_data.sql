@@ -107,6 +107,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_port', '5222')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_resource', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_email', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '0');

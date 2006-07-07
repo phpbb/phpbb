@@ -287,11 +287,15 @@ $lang = array_merge($lang, array(
 	'ACP_AUTH_SETTINGS_EXPLAIN'	=> 'phpBB2 supports authentication plug-ins, or modules. These allow you determine how users are authenticated when they log into the board. By default three plug-ins are provided; DB, LDAP and Apache. Not all methods require additional information so only fill out fields if they are relevant to the selected method.',
 
 	'AUTH_METHOD'				=> 'Select an authentication method',
+
+	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username.',
+
 	'LDAP_DN'					=> 'LDAP base dn',
 	'LDAP_DN_EXPLAIN'			=> 'This is the Distinguished Name, locating the user information, e.g. o=My Company,c=US',
+	'LDAP_EMAIL'				=> 'LDAP email attribute',
+	'LDAP_EMAIL_EXPLAIN'		=> 'Set this to the name of your user entry email attribute (if one exists) in order to automatically set the email address for new users. Leaving this empty results in empty email address for users who log in for the first time.',
+	'LDAP_NO_EMAIL'				=> 'The specified email attribute does not exist.',
 	'LDAP_NO_IDENTITY'			=> 'Could not find a login identity for %s',
-	'LDAP_NO_LDAP_EXTENSION'	=> 'LDAP extension not availible',
-	'LDAP_NO_SERVER_CONNECTION'	=> 'Could not connect to LDAP server',
 	'LDAP_SERVER'				=> 'LDAP server name',
 	'LDAP_SERVER_EXPLAIN'		=> 'If using LDAP this is the name or IP address of the server.',
 	'LDAP_UID'					=> 'LDAP uid',

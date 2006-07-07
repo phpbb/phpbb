@@ -54,7 +54,7 @@
 
 	<!-- BEGIN usernotes -->
 		<!-- IF usernotes.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td<!-- IF not S_CLEAR_ALLOWED --> colspan="2"<!-- ENDIF -->><span class="gensmall">{L_REPORT_BY}: <b>{usernotes.REPORT_BY}</b> {L_ON} {usernotes.REPORT_AT}</span><hr /><span class="gen">{usernotes.ACTION}</span></td>
+			<td<!-- IF not S_CLEAR_ALLOWED --> colspan="2"<!-- ENDIF -->><span class="gensmall">{L_REPORT_BY}: <b>{usernotes.REPORT_BY}</b> {L_REPORTED}: {usernotes.REPORT_AT}</span><hr /><span class="gen">{usernotes.ACTION}</span></td>
 			<!-- IF S_CLEAR_ALLOWED --><td width="5%" align="center"><input type="checkbox" class="radio" name="marknote[]" value="{usernotes.ID}" /></td><!-- ENDIF -->
 		</tr>
 	<!-- END usernotes -->

@@ -181,6 +181,8 @@ class mcp_queue
 						$forum_list[] = $row['forum_id'];
 					}
 
+					$global_id = $forum_list[0];
+
 					if (!($forum_list = implode(', ', $forum_list)))
 					{
 						trigger_error('NOT_MODERATOR');
@@ -192,8 +194,6 @@ class mcp_queue
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
-
-					$global_id = $forum_list[0];
 				}
 				else
 				{
@@ -250,7 +250,7 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_username, p.poster_id, p.post_time, u.username
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 							WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
 								AND t.topic_id = p.topic_id
@@ -281,7 +281,7 @@ class mcp_queue
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
 						FROM ' . TOPICS_TABLE . " t
 						WHERE topic_approved = 0
 							AND forum_id IN (0, $forum_list)
@@ -336,15 +336,13 @@ class mcp_queue
 
 					$template->assign_block_vars('postrow', array(
 						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
-						// Q: Why accessing the topic by a post_id instead of its topic_id?
-						// A: To prevent the post from being hidden because of wrong encoding or different charset
-						'U_VIEWTOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
+						'U_VIEWPOST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
 						'U_VIEW_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
 						'U_VIEWPROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 
 						'POST_ID'		=> $row['post_id'],
 						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
-						'TOPIC_TITLE'	=> $row['topic_title'],
+						'POST_SUBJECT'	=> $row['post_subject'],
 						'POSTER'		=> $poster,
 						'POST_TIME'		=> $user->format_date($row['post_time']))
 					);
@@ -360,6 +358,7 @@ class mcp_queue
 
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
+					'S_TOPICS'				=> ($mode == 'unapproved_posts') ? false : true,
 
 					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
