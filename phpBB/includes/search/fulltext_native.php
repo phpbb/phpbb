@@ -750,7 +750,7 @@ class fulltext_native extends search_backend
 	*
 	* @param string $mode contains the post mode: edit, post, reply, quote ...
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id)
+	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		global $config, $db;
 
@@ -922,7 +922,7 @@ class fulltext_native extends search_backend
 	/**
 	* Removes entries from the wordmatch table for the specified post_ids
 	*/
-	function index_remove($post_ids, $author_ids)
+	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		global $db;
 
@@ -956,7 +956,7 @@ class fulltext_native extends search_backend
 		// Remove common (> 60% of posts ) words
 		if ($config['num_posts'] >= 100)
 		{
-			$sql = 'SELECT word_id
+			$sql = 'SELECT word_id, word_text
 				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
 				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
@@ -968,10 +968,9 @@ class fulltext_native extends search_backend
 				do
 				{
 					$sql_in[] = $row['word_id'];
+					$destroy_cache_words[] = $row['word_text'];
 				}
 				while ($row = $db->sql_fetchrow($result));
-
-				$destroy_cache_words = $sql_in;
 
 				$sql_in = implode(', ', $sql_in);
 
@@ -989,7 +988,7 @@ class fulltext_native extends search_backend
 		}
 
 		// Remove words with no matches ... this is a potentially nasty query
-		$sql = 'SELECT w.word_id
+		$sql = 'SELECT w.word_id, w.word_text
 			FROM ' . SEARCH_WORDLIST_TABLE . ' w
 			LEFT JOIN ' . SEARCH_WORDMATCH_TABLE . ' m ON (w.word_id = m.word_id)
 			WHERE w.word_common = 0 AND m.word_id IS NULL
@@ -998,14 +997,15 @@ class fulltext_native extends search_backend
 
 		if ($row = $db->sql_fetchrow($result))
 		{
-			$sql_in = array();
+			$sql_in = $words = array();
 			do
 			{
 				$sql_in[] = $row['word_id'];
+				$words[] = $row['word_text'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
-			$destroy_cache_words = array_merge($destroy_cache_words, $sql_in);
+			$destroy_cache_words = array_merge($destroy_cache_words, $words);
 
 			$sql = 'DELETE FROM ' . SEARCH_WORDLIST_TABLE . '
 				WHERE word_id IN (' . implode(', ', $sql_in) . ')';

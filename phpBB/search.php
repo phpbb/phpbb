@@ -141,7 +141,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	else if ($auth->acl_getf_global('m_approve'))
 	{
 		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1' . (($m_approve_fid_ary) ? ' OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . ')') . ')' : '';
+		$m_approve_fid_sql = ' AND (p.post_approved = 1' . (($m_approve_fid_ary) ? ' OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . ')' : '') . ')';
 	}
 	else
 	{
@@ -539,6 +539,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
+
+		$rowset = array();
 
 		if ($show_results == 'topics')
 		{

@@ -361,7 +361,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 	return $matches;
 }
 
-/*
+/**
 * Move topic(s)
 */
 function move_topics($topic_ids, $forum_id, $auto_sync = true)
@@ -621,7 +621,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		trigger_error($error);
 	}
 
-	$search->index_remove($post_ids, $poster_ids);
+	$search->index_remove($post_ids, $poster_ids, $forum_ids);
 
 	delete_attachments('post', $post_ids, false);
 

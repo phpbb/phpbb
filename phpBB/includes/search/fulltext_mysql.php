@@ -555,7 +555,7 @@ class fulltext_mysql extends search_backend
 	*
 	* @param string $mode contains the post mode: edit, post, reply, quote ...
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id)
+	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		global $db;
 
@@ -606,7 +606,7 @@ class fulltext_mysql extends search_backend
 	/**
 	* Destroy cached results, that might be outdated after deleting a post
 	*/
-	function index_remove($post_ids, $author_ids)
+	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		$this->destroy_cache(array(), $author_ids);
 	}

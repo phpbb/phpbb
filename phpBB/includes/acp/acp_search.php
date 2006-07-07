@@ -267,7 +267,7 @@ class acp_search
 				}
 				else
 				{
-					$sql = 'SELECT post_id, poster_id
+					$sql = 'SELECT post_id, poster_id, forum_id
 						FROM ' . POSTS_TABLE . '
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
 							AND post_id < ' . (int) ($post_counter + $this->batch_size);
@@ -278,12 +278,13 @@ class acp_search
 					{
 						$ids[] = $row['post_id'];
 						$posters[] = $row['poster_id'];
+						$forum_ids[] = $row['forum_id'];
 					}
 					$db->sql_freeresult($result);
 
 					if (sizeof($ids))
 					{
-						$this->search->index_remove($ids, $posters);
+						$this->search->index_remove($ids, $posters, $forum_ids);
 					}
 	
 					$post_counter += $this->batch_size;
@@ -318,7 +319,7 @@ class acp_search
 				}
 				else
 				{
-					$sql = 'SELECT post_id, post_subject, post_text, poster_id
+					$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 						FROM ' . POSTS_TABLE . '
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
 							AND post_id < ' . (int) ($post_counter + $this->batch_size);
@@ -326,7 +327,7 @@ class acp_search
 
 					while (false !== ($row = $db->sql_fetchrow($result)))
 					{
-						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id']);
+						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 					}
 					$db->sql_freeresult($result);
 
