@@ -52,7 +52,7 @@ if ($id && $sid)
 
 	// Include files
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/acm/acm_main.' . $phpEx);
+	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	$db = new $sql_db();

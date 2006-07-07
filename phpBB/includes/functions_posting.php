@@ -1844,7 +1844,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			trigger_error($error);
 		}
 
-		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
+		$search->index($mode, $data['post_id'], $data['message'], $subject, $user->lang['ENCODING'], $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 	}
 
 	$db->sql_transaction('commit');

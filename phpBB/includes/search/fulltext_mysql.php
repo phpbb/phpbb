@@ -555,7 +555,7 @@ class fulltext_mysql extends search_backend
 	*
 	* @param string $mode contains the post mode: edit, post, reply, quote ...
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	function index($mode, $post_id, &$message, &$subject, $encoding, $poster_id, $forum_id)
 	{
 		global $db;
 
