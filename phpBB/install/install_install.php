@@ -1478,6 +1478,7 @@ class install_install extends module
 				'user_email'		=> '',
 				'user_lang'			=> $language,
 				'user_style'		=> 1,
+				'user_timezone'		=> 0,
 				'user_dateformat'	=> $lang['default_dateformat'],
 			);
 			

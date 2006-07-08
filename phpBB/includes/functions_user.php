@@ -243,7 +243,7 @@ function user_add($user_row, $cp_data = false)
 	group_set_user_default($user_row['group_id'], array($user_id));
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
-	if ($user_row['user_type'] == USER_NORMAL || !$config['email_enable'])
+	if ($user_row['user_type'] == USER_NORMAL && !$config['require_activation'])
 	{
 		set_config('newest_user_id', $user_id, true);
 		set_config('newest_username', $user_row['username'], true);
