@@ -237,7 +237,7 @@ function compose_pm($id, $mode, $action)
 		$check_value = 0;
 	}
 
-	if (($to_group_id || isset($address_list['g'])) && !$config['allow_mass_pm'])
+	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')))
 	{
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
@@ -301,7 +301,7 @@ function compose_pm($id, $mode, $action)
 	handle_message_list_actions($address_list, $remove_u, $remove_g, $add_to, $add_bcc);
 
 	// Check for too many recipients
-	if (!$config['allow_mass_pm'] && num_recipients($address_list) > 1)
+	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
 	{
 		$address_list = get_recipient_pos($address_list, 1);
 		$error[] = $user->lang['TOO_MANY_RECIPIENTS'];

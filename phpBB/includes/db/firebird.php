@@ -32,6 +32,7 @@ if (!defined('SQL_LAYER'))
 class dbal_firebird extends dbal
 {
 	var $last_query_text = '';
+	var $service_handle = false;
 
 	/**
 	* Connect to server
@@ -45,7 +46,25 @@ class dbal_firebird extends dbal
 
 		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3);
 
+		/**
+		* @todo evaluate the implications of opening a service connection
+		*/
+		$this->service_handle = @ibase_service_attach($this->server, $this->user, $sqlpassword);
+
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+	}
+
+	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		if ($this->service_handle !== false)
+		{
+			return @ibase_server_info($this->service_handle, IBASE_SVC_SERVER_VERSION);
+		}
+
+		return 'Firebird/Interbase';
 	}
 
 	/**
@@ -323,6 +342,11 @@ class dbal_firebird extends dbal
 	*/
 	function _sql_close()
 	{
+		if ($this->service_handle !== false)
+		{
+			@ibase_service_detach($this->service_handle);
+		}
+
 		return @ibase_close($this->db_connect_id);
 	}
 

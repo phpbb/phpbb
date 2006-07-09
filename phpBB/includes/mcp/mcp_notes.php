@@ -184,6 +184,7 @@ class mcp_notes
 					'REPORT_BY'		=> $row['username'],
 					'REPORT_AT'		=> $user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
+					'IP'			=> $row['ip'],
 					'ID'			=> $row['id'])
 				);
 			}

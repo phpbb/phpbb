@@ -1210,12 +1210,6 @@ class install_install extends module
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
-		// recalculate binary tree
-		if (!function_exists('recalc_btree'))
-		{
-			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-		}
-
 		$_module = &new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
 
@@ -1362,18 +1356,20 @@ class install_install extends module
 			{
 				foreach ($this->module_extras[$module_class] as $cat_name => $mods)
 				{
-					$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
-						WHERE module_langname = '$cat_name'
-						AND module_class = '$module_class'";
+					$sql = 'SELECT module_id, left_id, right_id
+						FROM ' . MODULES_TABLE . " 
+						WHERE module_langname = '" . $db->sql_escape($cat_name) . "'
+							AND module_class = '" . $db->sql_escape($module_class) . "'";
 					$result = $db->sql_query_limit($sql, 1);
 					$row2 = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
 					foreach ($mods as $mod_name)
 					{
-						$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
-							WHERE module_langname = '$mod_name'
-								AND module_class = '$module_class'
+						$sql = 'SELECT *
+							FROM ' . MODULES_TABLE . " 
+							WHERE module_langname = '" . $db->sql_escape($mod_name) . "'
+								AND module_class = '" . $db->sql_escape($module_class) . "'
 								AND module_name <> ''";
 						$result = $db->sql_query_limit($sql, 1);
 						$module_data = $db->sql_fetchrow($result);
@@ -1440,13 +1436,25 @@ class install_install extends module
 	*/
 	function add_bots($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $config;
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
 			$$var = request_var($var, '');
 		}
+
+		// Fill the config array - it is needed by those functions we call
+		$sql = 'SELECT *
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		$config = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "

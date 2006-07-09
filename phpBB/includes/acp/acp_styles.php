@@ -82,7 +82,7 @@ parse_css_file = {PARSE_CSS_FILE}
 pagination_sep = \'{PAGINATION_SEP}\'
 ';
 
-		$this->imageset_keys = 'site_logo, btn_post, btn_post_pm, btn_reply, btn_reply_pm, btn_locked, btn_profile, btn_pm, btn_delete, btn_info, btn_quote, btn_search, btn_edit, btn_report, btn_email, btn_www, btn_icq, btn_aim, btn_yim, btn_msnm, btn_jabber, btn_online, btn_offline, btn_friend, btn_foe, icon_unapproved, icon_reported, icon_attach, icon_post, icon_post_new, icon_post_latest, icon_post_newest, forum, forum_new, forum_locked, forum_link, sub_forum, sub_forum_new, folder, folder_moved, folder_posted, folder_new, folder_new_posted, folder_hot, folder_hot_posted, folder_hot_new, folder_hot_new_posted, folder_locked, folder_locked_posted, folder_locked_new, folder_locked_new_posted, folder_sticky, folder_sticky_posted, folder_sticky_new, folder_sticky_new_posted, folder_announce, folder_announce_posted, folder_announce_new, folder_announce_new_posted, folder_global, folder_global_posted, folder_global_new, folder_global_new_posted, poll_left, poll_center, poll_right, attach_progress_bar, user_icon1, user_icon2, user_icon3, user_icon4, user_icon5, user_icon6, user_icon7, user_icon8, user_icon9, user_icon10';
+		$this->imageset_keys = 'site_logo, btn_post, btn_post_pm, btn_reply, btn_reply_pm, btn_locked, btn_profile, btn_pm, btn_delete, btn_info, btn_quote, btn_search, btn_edit, btn_report, btn_email, btn_www, btn_icq, btn_aim, btn_yim, btn_msnm, btn_jabber, btn_online, btn_offline, btn_friend, btn_foe, icon_unapproved, icon_reported, icon_attach, icon_post, icon_post_new, icon_post_latest, icon_post_newest, forum, forum_new, forum_locked, forum_link, sub_forum, sub_forum_new, folder, folder_moved, folder_posted, folder_new, folder_new_posted, folder_hot, folder_hot_posted, folder_hot_new, folder_hot_new_posted, folder_locked, folder_locked_posted, folder_locked_new, folder_locked_new_posted, folder_locked_announce, folder_locked_announce_new, folder_locked_announce_posted, folder_locked_announce_new_posted, folder_locked_global, folder_locked_global_new, folder_locked_global_posted, folder_locked_global_new_posted, folder_locked_sticky, folder_locked_sticky_new, folder_locked_sticky_posted, folder_locked_sticky_new_posted, folder_sticky, folder_sticky_posted, folder_sticky_new, folder_sticky_new_posted, folder_announce, folder_announce_posted, folder_announce_new, folder_announce_new_posted, folder_global, folder_global_posted, folder_global_new, folder_global_new_posted, poll_left, poll_center, poll_right, attach_progress_bar, user_icon1, user_icon2, user_icon3, user_icon4, user_icon5, user_icon6, user_icon7, user_icon8, user_icon9, user_icon10';
 
 		// Execute overall actions
 		switch ($action)
@@ -183,7 +183,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('style', array('details', 'export', 'delete'));
+				$this->frontend('style', array('details'), array('export', 'delete'));
 			break;
 
 			case 'template':
@@ -260,7 +260,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('template', array('cache', 'details', 'refresh', 'edit', 'export', 'delete'));
+				$this->frontend('template', array('edit', 'cache', 'details'), array('refresh', 'export', 'delete'));
 			break;
 
 			case 'theme':
@@ -318,11 +318,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('theme', array('details', 'refresh', 'edit', 'export', 'delete'));
+				$this->frontend('theme', array('edit', 'details'), array('refresh', 'export', 'delete'));
 			break;
 
 			case 'imageset':
-				$this->frontend('imageset', array('details', 'edit', 'delete', 'export'));
+				$this->frontend('imageset', array('edit', 'details'), array('export', 'delete'));
 			break;
 		}
 	}
@@ -330,7 +330,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Build Frontend with supplied options
 	*/
-	function frontend($mode, $options)
+	function frontend($mode, $options, $actions)
 	{
 		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
@@ -408,12 +408,19 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$s_options[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
 			}
 
+			$s_actions = array();
+			foreach ($actions as $option)
+			{
+				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
+			}
+
 			$template->assign_block_vars('installed', array(
 				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == $config['default_style']) ? true : false,
 				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
 				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
 				'S_OPTIONS'				=> implode(' | ', $s_options),
+				'S_ACTIONS'				=> implode(' | ', $s_actions),
 				'U_PREVIEW'				=> ($mode == 'style') ? append_sid("{$phpbb_root_path}index.$phpEx", "$mode=" . $row[$mode . '_id']) : '',
 
 				'NAME'					=> $row[$mode . '_name'],
@@ -1272,7 +1279,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				'forums'		=> array(
 					'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
 				'folders'	=> array(
-					'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted', 'folder_global', 'folder_global_posted', 'folder_global_new', 'folder_global_new_posted',),
+					'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_locked_announce', 'folder_locked_announce_new', 'folder_locked_announce_posted', 'folder_locked_announce_new_posted', 'folder_locked_global', 'folder_locked_global_new', 'folder_locked_global_posted', 'folder_locked_global_new_posted', 'folder_locked_sticky', 'folder_locked_sticky_new', 'folder_locked_sticky_posted', 'folder_locked_sticky_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted', 'folder_global', 'folder_global_posted', 'folder_global_new', 'folder_global_new_posted',),
 				'polls'		=> array(
 					'poll_left', 'poll_center', 'poll_right',),
 			);

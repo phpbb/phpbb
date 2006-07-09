@@ -16,6 +16,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	global $template, $db, $user, $auth, $cache;
 	global $phpEx, $phpbb_root_path, $config;
 
+	include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
 	if ($action == 'merge_select')
@@ -107,56 +109,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		$topic_title = '';
 
-		if ($row['topic_status'] == ITEM_LOCKED)
-		{
-			$folder_img = 'folder_locked';
-			$folder_alt = 'VIEW_TOPIC_LOCKED';
-		}
-		else
-		{
-			if ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL)
-			{
-				$folder_img = 'folder_announce';
-				$folder_alt = 'VIEW_TOPIC_ANNOUNCEMENT';
-			}
-			else if ($row['topic_type'] == POST_STICKY)
-			{
-				$folder_img = 'folder_sticky';
-				$folder_alt = 'VIEW_TOPIC_STICKY';
-			}
-			else if ($row['topic_status'] == ITEM_MOVED)
-			{
-				$folder_img = 'folder_moved';
-				$folder_alt = 'VIEW_TOPIC_MOVED';
-			}
-			else
-			{
-				$folder_img = 'folder';
-				$folder_alt = 'NO_NEW_POSTS';
-			}
-		}
+		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
-		if ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'] . ' ';
-		}
-		else if ($row['topic_type'] == POST_STICKY)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_STICKY'] . ' ';
-		}
-		else if ($row['topic_status'] == ITEM_MOVED)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_MOVED'] . ' ';
-		}
-		else
-		{
-			$topic_type = '';
-		}
-
-		if (intval($row['poll_start']))
-		{
-			$topic_type .= $user->lang['VIEW_TOPIC_POLL'] . ' ';
-		}
+		// Get folder img, topic status/type related informations
+		$folder_img = $folder_alt = $topic_type = '';
+		topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
 
 		$topic_title = censor_text($row['topic_title']);
 

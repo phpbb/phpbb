@@ -48,6 +48,14 @@ class dbal_oracle extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		return 'Oracle ' . @ociserverversion($this->db_connect_id);
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/

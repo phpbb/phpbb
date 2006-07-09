@@ -85,7 +85,7 @@ class acp_groups
 					break;
 				}
 
-				trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
 			case 'default':
@@ -134,7 +134,7 @@ class acp_groups
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 					}
 
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
 				{
@@ -165,7 +165,7 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
@@ -178,7 +178,7 @@ class acp_groups
 
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($this->u_action));
+						trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
@@ -204,7 +204,7 @@ class acp_groups
 
 				if (!$name_ary)
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
@@ -212,11 +212,11 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action));
+					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 
 				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
 			case 'edit':
@@ -607,10 +607,12 @@ class acp_groups
 
 					'S_ON_PAGE'		=> on_page($total_members, $config['topics_per_page'], $start),
 					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
+					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
-					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'))
+					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
+					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id")
 				);
 
 				foreach ($group_data['leader'] as $row)
@@ -701,7 +703,6 @@ class acp_groups
 				
 				$template->assign_block_vars('groups', array(
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
-					'U_DEFAULT'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
 					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
 					'U_DELETE'		=> ($auth->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
 

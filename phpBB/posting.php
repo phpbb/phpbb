@@ -473,7 +473,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 				't'			=> $topic_id,
 				'subject'	=> $subject,
 				'message'	=> $message,
-				), false
+				)
 			);
 
 			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
@@ -617,13 +617,17 @@ if ($submit || $preview || $refresh)
 	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 	{
-		if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
+		// Only do so if it is allowed forum-wide
+		if ($post_data['forum_flags'] & 32)
 		{
-			$template->assign_var('S_POST_REVIEW', true);
-		}
+			if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
+			{
+				$template->assign_var('S_POST_REVIEW', true);
+			}
 
-		$submit = false;
-		$refresh = true;
+			$submit = false;
+			$refresh = true;
+		}
 	}
 
 	// Parse Attachments - before checksum is calculated

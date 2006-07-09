@@ -111,6 +111,7 @@ class acp_forums
 						'enable_indexing'		=> request_var('enable_indexing',true), 
 						'enable_icons'			=> request_var('enable_icons', false),
 						'enable_prune'			=> request_var('enable_prune', false),
+						'enable_post_review'	=> request_var('enable_post_review', true),
 						'prune_days'			=> request_var('prune_days', 7),
 						'prune_viewed'			=> request_var('prune_viewed', 7),
 						'prune_freq'			=> request_var('prune_freq', 1),
@@ -318,12 +319,13 @@ class acp_forums
 
 				if ($update)
 				{
-					$forum_data['forum_flags']	= 0;
-					$forum_data['forum_flags']	+= (request_var('forum_link_track', false)) ? 1 : 0;
-					$forum_data['forum_flags']	+= (request_var('prune_old_polls', false)) ? 2 : 0;
-					$forum_data['forum_flags']	+= (request_var('prune_announce', false)) ? 4 : 0;
-					$forum_data['forum_flags']	+= (request_var('prune_sticky', false)) ? 8 : 0;
-					$forum_data['forum_flags']	+= ($forum_data['show_active']) ? 16 : 0;
+					$forum_data['forum_flags'] = 0;
+					$forum_data['forum_flags'] += (request_var('forum_link_track', false)) ? 1 : 0;
+					$forum_data['forum_flags'] += (request_var('prune_old_polls', false)) ? 2 : 0;
+					$forum_data['forum_flags'] += (request_var('prune_announce', false)) ? 4 : 0;
+					$forum_data['forum_flags'] += (request_var('prune_sticky', false)) ? 8 : 0;
+					$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
+					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? 32 : 0;
 				}
 
 				// Show form to create/modify a forum
@@ -520,15 +522,16 @@ class acp_forums
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
 					'S_FORUM_LINK'				=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 					'S_FORUM_CAT'				=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
-					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & 1) ? true : false,
 					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
 					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
+					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & 1) ? true : false,
 					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & 2) ? true : false,
 					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & 4) ? true : false,
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & 8) ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & 16) ? true : false,
+					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & 32) ? true : false,
 					)
 				);
 
@@ -757,12 +760,14 @@ class acp_forums
 		// 4 = prune announcements
 		// 8 = prune stickies
 		// 16 = show active topics
+		// 32 = enable post review
 		$forum_data['forum_flags'] = 0;
 		$forum_data['forum_flags'] += ($forum_data['forum_link_track']) ? 1 : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_old_polls']) ? 2 : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_announce']) ? 4 : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_sticky']) ? 8 : 0;
 		$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
+		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? 32 : 0;
 
 		// Unset data that are not database fields
 		$forum_data_sql = $forum_data;
@@ -772,6 +777,7 @@ class acp_forums
 		unset($forum_data_sql['prune_announce']);
 		unset($forum_data_sql['prune_sticky']);
 		unset($forum_data_sql['show_active']);
+		unset($forum_data_sql['enable_post_review']);
 		unset($forum_data_sql['forum_password_confirm']);
 
 		// What are we going to do tonight Brain? The same thing we do everynight,

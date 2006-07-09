@@ -207,8 +207,6 @@ function user_add($user_row, $cp_data = false)
 		}
 	}
 
-	$db->sql_transaction('begin');
-
 	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 	$db->sql_query($sql);
 
@@ -237,13 +235,11 @@ function user_add($user_row, $cp_data = false)
 	);
 	$db->sql_query($sql);
 
-	$db->sql_transaction('commit');
-
 	// Now make it the users default group...
 	group_set_user_default($user_row['group_id'], array($user_id));
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
-	if ($user_row['user_type'] == USER_NORMAL && !$config['require_activation'])
+	if ($user_row['user_type'] == USER_NORMAL)
 	{
 		set_config('newest_user_id', $user_id, true);
 		set_config('newest_username', $user_row['username'], true);

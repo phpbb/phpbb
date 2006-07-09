@@ -56,6 +56,28 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		$result_id = @mssql_query("SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')", $this->db_connect_id);
+
+		$row = false;
+		if ($result_id)
+		{
+			$row = @mssql_fetch_assoc($result_id);
+			@mssql_free_result($result_id);
+		}
+
+		if ($row)
+		{
+			return 'MSSQL<br />' . implode(' ', $row);
+		}
+
+		return 'MSSQL';
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/

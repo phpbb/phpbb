@@ -412,8 +412,10 @@ class acp_main
 			'DBSIZE'			=> $dbsize,
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
+			'DATABASE_INFO'		=> $db->sql_server_info(),
 
 			'U_ACTION'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
+			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
 			)

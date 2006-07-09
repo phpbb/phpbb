@@ -52,6 +52,14 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		return 'SQLite ' . @sqlite_libversion();
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/

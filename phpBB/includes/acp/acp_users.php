@@ -1871,9 +1871,15 @@ class acp_users
 				// Select auth options
 				$sql = 'SELECT auth_option, is_local, is_global
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '%\_'
-						AND is_global = 1
-					ORDER BY auth_option";
+					WHERE auth_option LIKE '%\_'";
+
+				if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+				{
+					$sql .= " ESCAPE '\\'";
+				}
+
+				$sql .= 'AND is_global = 1
+					ORDER BY auth_option';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
@@ -1885,9 +1891,15 @@ class acp_users
 
 				$sql = 'SELECT auth_option, is_local, is_global
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '%\_'
-						AND is_local = 1
-					ORDER BY is_global DESC, auth_option";
+					WHERE auth_option LIKE '%\_'";
+
+				if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+				{
+					$sql .= " ESCAPE '\\'";
+				}
+
+				$sql .= 'AND is_local = 1
+					ORDER BY is_global DESC, auth_option';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))

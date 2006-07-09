@@ -50,6 +50,28 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		$result_id = @odbc_exec($this->db_connect_id, "SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')");
+
+		$row = false;
+		if ($result_id)
+		{
+			$row = @odbc_fetch_array($result_id);
+			@odbc_free_result($result_id);
+		}
+
+		if ($row)
+		{
+			return 'MSSQL (ODBC)<br />' . implode(' ', $row);
+		}
+
+		return 'MSSQL (ODBC)';
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/

@@ -412,7 +412,7 @@ if (!function_exists('realpath'))
 
 		$translated_path = '';
 
-		foreach($dirs as $key => $value)
+		foreach ($dirs as $key => $value)
 		{
 			if (strlen($value) > 0)
 			{
@@ -2491,6 +2491,12 @@ function page_header($page_title = '', $display_online_list = true)
 
 			// Do not change this (it is defined as _f_={forum_id}x within session.php)
 			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
+
+			// Specify escape character for MSSQL
+			if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+			{
+				$reading_sql .= " ESCAPE '\\'";
+			}
 		}
 
 		// Get number of online guests

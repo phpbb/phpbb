@@ -296,7 +296,7 @@ $lang = array_merge($lang, array(
 	'PM_ICON'					=> 'PM icon',
 	'PM_INBOX'					=> 'Inbox',
 	'PM_OUTBOX'					=> 'Outbox',
-	'PM_SENTBOX'				=> 'Sentbox',
+	'PM_SENTBOX'				=> 'Sent Messages',
 	'PM_SUBJECT'				=> 'Message subject',
 	'PM_TO'						=> 'Send to',
 	'POPUP_ON_PM'				=> 'Pop up window on new private message',
@@ -373,7 +373,7 @@ $lang = array_merge($lang, array(
 	'UCP_MSNM'					=> 'MSN Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files',
 
-	'UCP_PREFS'					=> 'Preferences',
+	'UCP_PREFS'					=> 'Forum preferences',
 	'UCP_PREFS_PERSONAL'		=> 'Personal settings',
 	'UCP_PREFS_POST'			=> 'Posting messages',
 	'UCP_PREFS_VIEW'			=> 'Viewing posts',

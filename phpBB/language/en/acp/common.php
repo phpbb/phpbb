@@ -188,6 +188,7 @@ $lang = array_merge($lang, array(
 	'ACP_WORDS'					=> 'Word Censoring',
 
 	'ACTION'				=> 'Action',
+	'ACTIONS'				=> 'Actions',
 	'ACTIVATE'				=> 'Activate',
 	'ADD'					=> 'Add',
 	'ADMIN'					=> 'Administration',
@@ -288,12 +289,13 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ADMIN_INTRO'				=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
 	'ADMIN_LOG'					=> 'Logged administrator actions',
-	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item to the left.',
+	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item or following the link below.',
 	'AVATAR_DIR_SIZE'			=> 'Avatar directory size',
 
 	'BOARD_STARTED'		=> 'Board started',
 
-	'DATABASE_SIZE'		=> 'Database size',
+	'DATABASE_SERVER_INFO'	=> 'Database server',
+	'DATABASE_SIZE'			=> 'Database size',
 
 	'FILES_PER_DAY'		=> 'Attachments per day',
 	'FORUM_STATS'		=> 'Forum Statistics',
@@ -326,6 +328,7 @@ $lang = array_merge($lang, array(
 	'USERS_PER_DAY'		=> 'Users per day',
 
 	'VALUE'				=> 'Value',
+	'VIEW_ADMIN_LOG'	=> 'View administrator log',
 
 	'WELCOME_PHPBB'			=> 'Welcome to phpBB',
 ));

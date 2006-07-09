@@ -71,6 +71,14 @@ class acp_board
 						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'type' => 'radio:yes_no', 'explain' => true),
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true),
+
+						'legend2'				=> 'ACP_LOAD_SETTINGS',
+						'load_birthdays'		=> array('lang' => 'YES_BIRTHDAYS',		'type' => 'radio:yes_no', 'explain' => false),
+						'load_moderators'		=> array('lang' => 'YES_MODERATORS',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',		'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'type' => 'radio:yes_no', 'explain' => false),
+						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'type' => 'radio:yes_no', 'explain' => false),
 					)
 				);
 			break;
@@ -111,7 +119,6 @@ class acp_board
 						'auth_bbcode_pm'		=> array('lang' => 'ALLOW_BBCODE_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'auth_smilies_pm'		=> array('lang' => 'ALLOW_SMILIES_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
-						'auth_download_pm'		=> array('lang' => 'ALLOW_DOWNLOAD_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig_pm'			=> array('lang' => 'ALLOW_SIG_PM',			'type' => 'radio:yes_no', 'explain' => false),
 						'print_pm'				=> array('lang' => 'ALLOW_PRINT_PM',		'type' => 'radio:yes_no', 'explain' => false),
 						'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'type' => 'radio:yes_no', 'explain' => false),

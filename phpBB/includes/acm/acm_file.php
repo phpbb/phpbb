@@ -69,7 +69,7 @@ class acm
 		}
 
 		global $phpEx;
-		$file = '<?php $this->vars=' . $this->format_array($this->vars) . ";\n\$this->var_expires=" . $this->format_array($this->var_expires) . ' ?>';
+		$file = "<?php\n\$this->vars = " . $this->format_array($this->vars) . ";\n\n\$this->var_expires = " . $this->format_array($this->var_expires) . "\n?>";
 
 		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
 		{
@@ -255,26 +255,28 @@ class acm
 	/**
 	* Format an array to be stored on filesystem
 	*/
-	function format_array($array)
+	function format_array($array, $tab = '')
 	{
+		$tab .= "\t";
+
 		$lines = array();
 		foreach ($array as $k => $v)
 		{
 			if (is_array($v))
 			{
-				$lines[] = "\n'$k' => " . $this->format_array($v);
+				$lines[] = "\n{$tab}'$k' => " . $this->format_array($v, $tab);
 			}
 			else if (is_int($v))
 			{
-				$lines[] = "\n'$k' => $v";
+				$lines[] = "\n{$tab}'$k' => $v";
 			}
 			else if (is_bool($v))
 			{
-				$lines[] = "\n'$k' => " . (($v) ? 'true' : 'false');
+				$lines[] = "\n{$tab}'$k' => " . (($v) ? 'true' : 'false');
 			}
 			else
 			{
-				$lines[] = "\n'$k' => '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
+				$lines[] = "\n{$tab}'$k' => '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
 			}
 		}
 

@@ -637,21 +637,44 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
 				$folder = 'folder_global';
 				$folder_new = 'folder_global_new';
+
+				if ($topic_row['topic_status'] == ITEM_LOCKED)
+				{
+					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+					$folder = 'folder_locked_global';
+					$folder_new = 'folder_locked_global_new';
+				}
 			break;
 
 			case POST_ANNOUNCE:
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'folder_announce';
 				$folder_new = 'folder_announce_new';
+
+				if ($topic_row['topic_status'] == ITEM_LOCKED)
+				{
+					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+					$folder = 'folder_locked_announce';
+					$folder_new = 'folder_locked_announce_new';
+				}
 			break;
 
 			case POST_STICKY:
 				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
 				$folder = 'folder_sticky';
 				$folder_new = 'folder_sticky_new';
+
+				if ($topic_row['topic_status'] == ITEM_LOCKED)
+				{
+					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+					$folder = 'folder_locked_sticky';
+					$folder_new = 'folder_locked_sticky_new';
+				}
 			break;
 
 			default:
+				$topic_type = '';
+
 				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'])
 				{
 					$folder = 'folder_hot';

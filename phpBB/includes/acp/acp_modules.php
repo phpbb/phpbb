@@ -792,9 +792,12 @@ class acp_modules
 			{
 				$this->move_module($module_data['module_id'], $module_data['parent_id']);
 			}
-		
+
+			$update_ary = $module_data;
+			unset($update_ary['module_id']);
+
 			$sql = 'UPDATE ' . MODULES_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $module_data) . "
+				SET ' . $db->sql_build_array('UPDATE', $update_ary) . "
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					AND module_id = {$module_data['module_id']}";
 			$db->sql_query($sql);

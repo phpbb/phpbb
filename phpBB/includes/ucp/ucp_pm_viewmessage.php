@@ -85,7 +85,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	if ($message_row['message_attachment'] && $config['allow_pm_attach'])
 	{
-		if ($config['auth_download_pm'] && $auth->acl_get('u_pm_download'))
+		if ($auth->acl_get('u_pm_download'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 

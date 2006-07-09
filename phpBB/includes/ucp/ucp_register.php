@@ -202,7 +202,7 @@ class ucp_register
 				// Which group by default?
 				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
 				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
-				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
+				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable']) ? $group_reg : $group_inactive;
 
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "

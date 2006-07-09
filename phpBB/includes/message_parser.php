@@ -164,7 +164,7 @@ class bbcode_firstpass extends bbcode
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', $in));
 
 		// Trimming here to make sure no empty bbcodes are parsed accidently
-		if (!trim($in))
+		if (trim($in) == '')
 		{
 			return false;
 		}

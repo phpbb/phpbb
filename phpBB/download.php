@@ -81,7 +81,7 @@ if (!$attachment['in_message'])
 else
 {
 	$row['forum_id'] = 0;
-	if (!$auth->acl_get('u_pm_download') || !$config['auth_download_pm'])
+	if (!$auth->acl_get('u_pm_download'))
 	{
 		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}

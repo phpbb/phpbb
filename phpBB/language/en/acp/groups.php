@@ -89,6 +89,9 @@ $lang = array_merge($lang, array(
 	'GROUP_USERS_EXIST'				=> 'The selected users are already members.',
 	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully',
 
+	'MAKE_DEFAULT_FOR_ALL'	=> 'Make default group for every member',
+	'MEMBERS'				=> 'Members',
+
 	'NO_GROUP'					=> 'No group specified',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
 

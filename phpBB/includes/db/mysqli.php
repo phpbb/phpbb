@@ -58,6 +58,14 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		return 'MySQL(i) ' . @mysqli_get_server_info($this->db_connect_id);
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/

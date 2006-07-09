@@ -85,6 +85,16 @@ class dbal_postgres extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		$version = @pg_version($this->db_connect_id);
+
+		return 'PostgresSQL' . ((!empty($version)) ? ' ' . $version['client'] : '';
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/
