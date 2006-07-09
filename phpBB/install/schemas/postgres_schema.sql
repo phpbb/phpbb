@@ -8,10 +8,6 @@ BEGIN;
 
 /* Domain definition */
 CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT ''::character varying;
-CREATE CAST (varchar_ci AS varchar) WITHOUT FUNCTION AS IMPLICIT;
-CREATE CAST (varchar AS varchar_ci) WITHOUT FUNCTION AS IMPLICIT;
-CREATE CAST (varchar_ci AS text) WITHOUT FUNCTION AS IMPLICIT;
-CREATE CAST (text AS varchar_ci) WITHOUT FUNCTION AS IMPLICIT;
 
 /* Operation Functions */
 CREATE FUNCTION _varchar_ci_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) = LOWER($2)' LANGUAGE SQL STRICT;
