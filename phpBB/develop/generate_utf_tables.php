@@ -35,22 +35,22 @@ echo "\nGenerating Hangul and Jamo tables\n";
 for ($i = 0; $i < UNICODE_HANGUL_LCOUNT; ++$i)
 {
 	$utf_char = cp_to_utf(UNICODE_HANGUL_LBASE + $i);
-	$file_contents['utf_normalizer_common']['utfJamoIndex'][$utf_char] = $i * UNICODE_HANGUL_VCOUNT * UNICODE_HANGUL_TCOUNT + UNICODE_HANGUL_SBASE;
-	$file_contents['utf_normalizer_common']['utfJamoType'][$utf_char] = UNICODE_JAMO_L;
+	$file_contents['utf_normalizer_common']['utf_jamo_index'][$utf_char] = $i * UNICODE_HANGUL_VCOUNT * UNICODE_HANGUL_TCOUNT + UNICODE_HANGUL_SBASE;
+	$file_contents['utf_normalizer_common']['utf_jamo_type'][$utf_char] = UNICODE_JAMO_L;
 }
 
 for ($i = 0; $i < UNICODE_HANGUL_VCOUNT; ++$i)
 {
 	$utf_char = cp_to_utf(UNICODE_HANGUL_VBASE + $i);
-	$file_contents['utf_normalizer_common']['utfJamoIndex'][$utf_char] = $i * UNICODE_HANGUL_TCOUNT;
-	$file_contents['utf_normalizer_common']['utfJamoType'][$utf_char] = UNICODE_JAMO_V;
+	$file_contents['utf_normalizer_common']['utf_jamo_index'][$utf_char] = $i * UNICODE_HANGUL_TCOUNT;
+	$file_contents['utf_normalizer_common']['utf_jamo_type'][$utf_char] = UNICODE_JAMO_V;
 }
 
 for ($i = 0; $i < UNICODE_HANGUL_TCOUNT; ++$i)
 {
 	$utf_char = cp_to_utf(UNICODE_HANGUL_TBASE + $i);
-	$file_contents['utf_normalizer_common']['utfJamoIndex'][$utf_char] = $i;
-	$file_contents['utf_normalizer_common']['utfJamoType'][$utf_char] = UNICODE_JAMO_T;
+	$file_contents['utf_normalizer_common']['utf_jamo_index'][$utf_char] = $i;
+	$file_contents['utf_normalizer_common']['utf_jamo_type'][$utf_char] = UNICODE_JAMO_T;
 }
 
 /**
@@ -151,7 +151,10 @@ while (!feof($fp))
 
 	for ($i = $start; $i <= $end; ++$i)
 	{
-		$file_contents[$file]['utfCheck' . substr($p[1], 0, -3)][cp_to_utf($i)] = $val;
+		/**
+		* The vars have the same name as the file: $utf_nfc_qc is in utf_nfc_qc.php
+		*/
+		$file_contents[$file][$file][cp_to_utf($i)] = $val;
 	}
 }
 fclose($fp);
@@ -173,7 +176,7 @@ while (!feof($fp))
 		/**
 		* Store combining class > 0
 		*/
-		$file_contents['utf_normalizer_common']['utfCombiningClass'][cp_to_utf($cp)] = (int) $p[3];
+		$file_contents['utf_normalizer_common']['utf_combining_class'][cp_to_utf($cp)] = (int) $p[3];
 	}
 
 	if (!isset($p[5]) || !preg_match_all('#[0-9A-F]+#', strip_tags($p[5]), $m))
@@ -208,9 +211,9 @@ foreach ($map['NFD'] as $cp => $decomp_seq)
 
 	$utf_seq = implode('', array_map('cp_to_utf', explode(' ', $decomp_seq)));
 
-	if (!isset($file_contents['utf_canonical_comp']['utfCanonicalComp'][$utf_seq]))
+	if (!isset($file_contents['utf_canonical_comp']['utf_canonical_comp'][$utf_seq]))
 	{
-		$file_contents['utf_canonical_comp']['utfCanonicalComp'][$utf_seq] = cp_to_utf($cp);
+		$file_contents['utf_canonical_comp']['utf_canonical_comp'][$utf_seq] = cp_to_utf($cp);
 	}
 }
 
@@ -229,12 +232,12 @@ foreach ($map as $type => $decomp_map)
 	if ($type == 'NFKD')
 	{
 		$file = 'utf_compatibility_decomp';
-		$var = 'utfCompatibilityDecomp';
+		$var = 'utf_compatibility_decomp';
 	}
 	else
 	{
 		$file = 'utf_canonical_decomp';
-		$var = 'utfCanonicalDecomp';
+		$var = 'utf_canonical_decomp';
 	}
 
 	/**
@@ -251,14 +254,8 @@ foreach ($map as $type => $decomp_map)
 */
 foreach ($file_contents as $file => $contents)
 {
-	$php = '';
-	foreach ($contents as $var => $val)
-	{
-		$php .= '$GLOBALS[' . my_var_export($var) . ']=' . my_var_export($val) . ";\n";
-	}
-
 	/**
-	* Generate a new file (overwrite if applicable
+	* Generate a new file
 	*/
 	echo "Writing to $file.$phpEx\n";
 
@@ -267,13 +264,116 @@ foreach ($file_contents as $file => $contents)
 		trigger_error('Cannot open ' . $file . ' for write');
 	}
 
-	fwrite($fp, '<?php
-/**
-* @package phpBB3
-*/
-' . $php);
+	fwrite($fp, '<?php');
+	foreach ($contents as $var => $val)
+	{
+		fwrite($fp, "\n\$GLOBALS[" . my_var_export($var) . ']=' . my_var_export($val) . ";");
+	}
 	fclose($fp);
 }
+
+echo "\n*** UTF-8 normalization tables done\n\n";
+
+/**
+* Now we'll generate the files needed by the search indexer
+*/
+$fp = fopen($phpbb_root_path . 'develop/UnicodeData.txt', 'rt');
+
+$map = array();
+while ($line = fgets($fp, 1024))
+{
+	/**
+	* The current line is split, $m[0] hold the codepoint in hexadecimal and
+	* all other fields numbered as in http://www.unicode.org/Public/UNIDATA/UCD.html#UnicodeData.txt
+	*/
+	$m = explode(';', $line);
+
+	/**
+	* @var	string	$utf_char	UTF-8 representation of current char
+	*/
+	$utf_char = hex_to_utf($m[0]);
+
+	/**
+	* $m[2] holds the "General Category" of the character
+	* @link http://www.unicode.org/Public/UNIDATA/UCD.html#General_Category_Values
+	*/
+	switch ($m[2][0])
+	{
+		case 'L':
+			/**
+			* We allow all letters and map them to their lowercased counterpart on the fly
+			*/
+			$map_to_hex = (isset($m[13][0])) ? $m[13] : $m[0];
+
+			if (preg_match('#^LATIN.*(?:LETTER|LIGATURE) ([A-Z]{2}(?![A-Z]))$#', $m[1], $capture))
+			{
+				/**
+				* Special hack for some latin ligatures. Using the name of a character
+				* is bad practice, but for now it works well enough.
+				*
+				* @todo Note that ligatures with combining marks such as U+01E2 are
+				* not supported at this time
+				*/
+				$map[$utf_char] = strtolower($capture[1]);
+			}
+			elseif (isset($m[13][0]))
+			{
+				/**
+				* If the letter has a lowercased form, use it
+				*/
+				$map[$utf_char] = hex_to_utf($m[13]);
+			}
+			else
+			{
+				/**
+				* In all other cases, map the letter to itself
+				*/
+				$map[$utf_char] = $utf_char;
+			}
+			break;
+
+		case 'M':
+			/**
+			* We allow all marks, they are mapped to themselves
+			*/
+			$map[$utf_char] = $utf_char;
+			break;
+
+		case 'N':
+			/**
+			* We allow all numbers, but we map them to their numeric value whenever
+			* possible. The numeric value (field #8) is in ASCII already
+			*
+			* @todo Note that fractions such as U+00BD will be converted to something
+			* like "1/2", with a slash. However, "1/2" entered in ASCII is converted
+			* to "1 2". This will have to be fixed.
+			*/
+			$map[$utf_char] = (isset($m[8][0])) ? $m[8] : $utf_char;
+			break;
+
+		default:
+			/**
+			* Everything else is ignored, skip to the next line
+			*/
+			continue 2;
+	}
+}
+fclose($fp);
+
+/**
+* Add some cheating
+*/
+$cheats = array(
+	'00DF'	=>	'ss',		#	German sharp S
+	'00D6'	=>	'oe',		#	Capital O with diaeresis
+	'00F6'	=>	'oe',		#	Small O with diaeresis
+);
+
+echo count($map);
+
+$fp = fopen($phpbb_root_path . 'includes/utf/data/search_indexer.php', 'wb');
+fwrite($fp, '<?php return ' . my_var_export($map) . ';');
+fclose($fp);
 
 die("\nAll done!\n");
 
@@ -298,7 +398,7 @@ function decompose(&$decomp_map, $decomp_seq)
 		{
 			$ret[] = decompose($decomp_map, $decomp_map[$cp]);
 		}
-	else
+		else
 		{
 			$ret[] = $cp;
 		}
@@ -307,31 +407,6 @@ function decompose(&$decomp_map, $decomp_seq)
 	return implode(' ', $ret);
 }
 
-/**
-* Convert a codepoint to a UTF char
-*
-* @param	integer	$cp	Unicode codepoint
-* @return	string		UTF string
-*/
-function cp_to_utf($cp)
-{
-	if ($cp > 0xFFFF)
-	{
-		return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
-	}
-	elseif ($cp > 0x7FF)
-	{
-		return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
-	}
-	elseif ($cp > 0x7F)
-	{
-		return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
-	}
-	else
-	{
-		return chr($cp);
-	}
-}
 
 /**
 * Return a parsable string representation of a variable
@@ -407,4 +482,52 @@ function download($url)
 	fclose($fpw);
 
 	echo "\n";
+}
+
+/**
+* Convert a codepoint in hexadecimal to a UTF-8 char
+*
+* @param	string	$hex		Codepoint, in hexadecimal
+* @return	string				UTF-8 char
+*/
+function hex_to_utf($hex)
+{
+	return cp_to_utf(hexdec($hex));
+}
+
+/**
+* Return a UTF string formed from a sequence of codepoints in hexadecimal
+*
+* @param	string	$seq		Sequence of codepoints, separated with a space
+* @return	string				UTF-8 string
+*/
+function hexseq_to_utf($seq)
+{
+	return implode('', array_map('hex_to_utf', explode(' ', $seq)));
+}
+
+/**
+* Convert a codepoint to a UTF-8 char
+*
+* @param	integer	$cp			Unicode codepoint
+* @return	string				UTF-8 string
+*/
+function cp_to_utf($cp)
+{
+	if ($cp > 0xFFFF)
+	{
+		return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
+	}
+	elseif ($cp > 0x7FF)
+	{
+		return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
+	}
+	elseif ($cp > 0x7F)
+	{
+		return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
+	}
+	else
+	{
+		return chr($cp);
+	}
 }

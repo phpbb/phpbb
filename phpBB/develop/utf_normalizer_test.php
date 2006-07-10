@@ -72,6 +72,7 @@ require_once($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 
 $i = $n = 0;
 $failed = FALSE;
+$tested_chars = array();
 
 $fp = fopen($phpbb_root_path . 'develop/NormalizationTest.txt', 'rb');
 while (!feof($fp))
@@ -103,6 +104,16 @@ while (!feof($fp))
 
 	list($c1, $c2, $c3, $c4, $c5) = explode(';', $line);
 
+	if (!strpos($c1, ' '))
+	{
+		/**
+		* We are currently testing a single character, we add it to the list of
+		* characters we have processed so that we can exclude it when testing
+		* for invariants
+		*/
+		$tested_chars[$c1] = 1;
+	}
+
 	foreach ($test_suite as $form => $serie)
 	{
 		foreach ($serie as $expected => $tests)
@@ -119,17 +130,81 @@ while (!feof($fp))
 					$failed = TRUE;
 					$hex_result = utf_to_hexseq($utf_result);
 
-					echo "FAILED $expected == $form($test) ($hex_expected != $hex_result)\n";
+					echo "\nFAILED $expected == $form($test) ($hex_expected != $hex_result)";
 				}
 			}
 		}
 
 		if ($failed)
 		{
-			die("\nFailed at line $n\n");
+			die("\n\nFailed at line $n\n");
 		}
 	}
 }
+fclose($fp);
+
+/**
+* Test for invariants
+*/
+echo "\n\nTesting for invariants...\n\n";
+
+$fp = fopen($phpbb_root_path . 'develop/UnicodeData.txt', 'rt');
+
+$n = 0;
+while (!feof($fp))
+{
+	if (++$n % 100 == 0)
+	{
+		echo $n, ' ';
+	}
+
+	$line = fgets($fp, 1024);
+
+	if (!$pos = strpos($line, ';'))
+	{
+		continue;
+	}
+
+	$hex_tested = $hex_expected = substr($line, 0, $pos);
+
+	if (isset($tested_chars[$hex_tested]))
+	{
+		continue;
+	}
+
+	$utf_expected = hex_to_utf($hex_expected);
+
+	if ($utf_expected >= UTF8_SURROGATE_FIRST
+	 && $utf_expected <= UTF8_SURROGATE_LAST)
+	{
+		/**
+		* Surrogates are illegal on their own, we expect the normalizer
+		* to return a replacement char
+		*/
+		$utf_expected = UTF8_REPLACEMENT;
+		$hex_expected = utf_to_hexseq($utf_expected);
+	}
+
+	foreach (array('nfc', 'nfkc', 'nfd', 'nfkd') as $form)
+	{
+		$utf_result = utf_normalizer::$form($utf_expected);
+		$hex_result = utf_to_hexseq($utf_result);
+//		echo "$form($utf_expected) == $utf_result\n";
+
+		if (strcmp($utf_expected, $utf_result))
+		{
+			$failed = 1;
+
+			echo "\nFAILED $hex_expected == $form($hex_tested) ($hex_expected != $hex_result)";
+		}
+	}
+
+	if ($failed)
+	{
+		die("\n\nFailed at line $n\n");
+	}
+}
+fclose($fp);
 
 die("\n\nALL TESTS PASSED SUCCESSFULLY\n");
 
