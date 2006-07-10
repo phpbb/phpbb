@@ -19,6 +19,8 @@ define('UTF8_FFFE', "\xEF\xBF\xBE");
 define('UTF8_FFFF', "\xEF\xBF\xBF");
 define('UTF8_SURROGATE_FIRST', "\xED\xA0\x80");
 define('UTF8_SURROGATE_LAST', "\xED\xBF\xBF");
+define('UTF8_HANGUL_FIRST', "\xEA\xB0\x80");
+define('UTF8_HANGUL_LAST', "\xED\x9E\xA3");
 
 if (function_exists('utf8_normalize'))
 {
@@ -62,7 +64,7 @@ class utf_normalizer
 		}
 
 		/**
-		* Check if there is potentially a 0xFFFE or 0xFFFF char (UTF sequence
+		* Check if there is potentially a U+FFFE or U+FFFF char (UTF sequence
 		* 0xEFBFBE or 0xEFBFBF) and replace them
 		*
 		* Note: we start searching at position $pos
@@ -173,8 +175,6 @@ define('UNICODE_HANGUL_NCOUNT', 588);
 define('UNICODE_JAMO_L', 0);
 define('UNICODE_JAMO_V', 1);
 define('UNICODE_JAMO_T', 2);
-define('UTF8_HANGUL_FIRST', "\xEA\xB0\x80");
-define('UTF8_HANGUL_LAST', "\xED\x9E\xA3");
 
 /**
 * Unicode normalization routines
@@ -555,7 +555,7 @@ class utf_normalizer
 									if ($utf_char >= "\xED\xA0\x80")
 									{
 										/**
-										* Surrogates (0xD800..0xDFFF) are not allowed in UTF-8
+										* Surrogates (U+D800..U+DFFF) are not allowed in UTF-8
 										* (UTF sequence 0xEDA080..0xEDBFBF)
 										*/
 										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
@@ -572,7 +572,7 @@ class utf_normalizer
 									if ($utf_char == "\xEF\xBF\xBE" || $utf_char == "\xEF\xBF\xBF")
 									{
 										/**
-										* 0xFFFE and 0xFFFF are explicitly disallowed
+										* U+FFFE and U+FFFF are explicitly disallowed
 										* (UTF sequence 0xEFBFBE..0xEFBFBF)
 										*/
 										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
@@ -587,7 +587,7 @@ class utf_normalizer
 									if ($utf_char <= "\xC1\xBF")
 									{
 										/**
-										* Overlong sequence: Unicode char 0x00..0x7F encoded as a
+										* Overlong sequence: Unicode char U+0000..U+007F encoded as a
 										* double-byte UTF char
 										*/
 										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
@@ -601,7 +601,7 @@ class utf_normalizer
 									if ($utf_char <= "\xE0\x9F\xBF")
 									{
 										/**
-										* Unicode char 0x0000..0x07FF encoded in 3 bytes
+										* Unicode char U+0000..U+07FF encoded in 3 bytes
 										*/
 										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
 										$pos += $utf_len;
@@ -614,7 +614,7 @@ class utf_normalizer
 									if ($utf_char <= "\xF0\x8F\xBF\xBF")
 									{
 										/**
-										* Unicode char 0x0000..0xFFFF encoded in 4 bytes
+										* Unicode char U+0000..U+FFFF encoded in 4 bytes
 										*/
 										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
 										$pos += $utf_len;
@@ -1608,7 +1608,7 @@ class utf_normalizer
 									if ($utf_char >= "\xED\xA0\x80")
 									{
 										/**
-										* Surrogates (0xD800..0xDFFF) are not allowed in UTF-8
+										* Surrogates (U+D800..U+DFFF) are not allowed in UTF-8
 										* (UTF sequence 0xEDA080..0xEDBFBF)
 										*/
 										$tmp .= substr($str, $tmp_pos, $starter_pos - $tmp_pos);
@@ -1639,7 +1639,7 @@ class utf_normalizer
 									if ($utf_char == "\xEF\xBF\xBE" || $utf_char == "\xEF\xBF\xBF")
 									{
 										/**
-										* 0xFFFE and 0xFFFF are explicitly disallowed
+										* U+FFFE and U+FFFF are explicitly disallowed
 										* (UTF sequence 0xEFBFBE..0xEFBFBF)
 										*/
 										$tmp .= substr($str, $tmp_pos, $starter_pos - $tmp_pos);
@@ -1668,7 +1668,7 @@ class utf_normalizer
 									if ($utf_char <= "\xC1\xBF")
 									{
 										/**
-										* Overlong sequence: Unicode char 0x00..0x7F encoded as a
+										* Overlong sequence: Unicode char U+0000..U+007F encoded as a
 										* double-byte UTF char
 										*/
 										$tmp .= substr($str, $tmp_pos, $starter_pos - $tmp_pos);
@@ -1696,7 +1696,7 @@ class utf_normalizer
 									if ($utf_char <= "\xE0\x9F\xBF")
 									{
 										/**
-										* Unicode char 0x0000..0x07FF encoded in 3 bytes
+										* Unicode char U+0000..U+07FF encoded in 3 bytes
 										*/
 										$tmp .= substr($str, $tmp_pos, $starter_pos - $tmp_pos);
 
@@ -1723,7 +1723,7 @@ class utf_normalizer
 									if ($utf_char <= "\xF0\x8F\xBF\xBF")
 									{
 										/**
-										* Unicode char 0x0000..0xFFFF encoded in 4 bytes
+										* Unicode char U+0000..U+FFFF encoded in 4 bytes
 										*/
 										$tmp .= substr($str, $tmp_pos, $starter_pos - $tmp_pos);
 
