@@ -127,7 +127,8 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . "
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . "
 					WHERE lang_id = $lang_id";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -162,7 +163,8 @@ class acp_language
 					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action));
 				}
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . "
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . "
 					WHERE lang_id = $lang_id";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -332,7 +334,8 @@ class acp_language
 				
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . '
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
 				$lang_entries = $db->sql_fetchrow($result);
@@ -644,7 +647,8 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 				
-				$sql = 'SELECT * FROM ' . LANG_TABLE . '
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -686,7 +690,8 @@ class acp_language
 				);
 				unset($file);
 
-				$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
+				$sql = 'SELECT lang_iso
+					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
 				$result = $db->sql_query($sql);
 
@@ -725,7 +730,8 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . '
+				$sql = 'SELECT * 
+					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -841,7 +847,8 @@ class acp_language
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT *  
-			FROM ' . LANG_TABLE;
+			FROM ' . LANG_TABLE . '
+			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);
 
 		$installed = array();

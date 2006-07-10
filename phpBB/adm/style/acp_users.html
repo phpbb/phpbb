@@ -134,11 +134,13 @@
 		<dt><label for="quicktools">{L_QUICK_TOOLS}:</label></dt>
 		<dd><select id="quicktools" name="action">{S_ACTION_OPTIONS}</select></dd>
 	</dl>
-	<dl>
-		<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
-		<dd><input type="checkbox" class="radio" name="delete" value="1" /></dd>
-		<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
-	</dl>
+		<!-- IF not S_OWN_ACCOUNT -->
+			<dl>
+				<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
+				<dd><input type="checkbox" class="radio" name="delete" value="1" /></dd>
+				<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
+			</dl>
+		<!-- ENDIF -->
 	<!-- ENDIF -->
 	</fieldset>
 

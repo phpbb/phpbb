@@ -339,9 +339,18 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);		
 	}
 
+	// Admins and mods are allowed to exceed the allowed filesize
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
 	{
-		$allowed_filesize = ($extensions[$file->get('extension')]['max_filesize'] != 0) ? $extensions[$file->get('extension')]['max_filesize'] : (($is_message) ? $config['max_filesize_pm'] : $config['max_filesize']);
+		if (!empty($extensions[$file->get('extension')]['max_filesize']))
+		{
+			$allowed_filesize = $extensions[$file->get('extension')]['max_filesize'];
+		}
+		else
+		{
+			$allowed_filesize = ($is_message) ? $config['max_filesize_pm'] : $config['max_filesize'];
+		}
+
 		$file->upload->set_max_filesize($allowed_filesize);
 	}
 

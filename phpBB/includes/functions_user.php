@@ -384,10 +384,12 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 		WHERE user_id = $user_id";
 	$result = $db->sql_query($sql);
 
+	$group_name = ($user_type == USER_NORMAL) ? 'REGISTERED' : 'INACTIVE';
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($group_name = array_search($row['group_id'], $group_id_ary))
+		if ($name = array_search($row['group_id'], $group_id_ary))
 		{
+			$group_name = $name;
 			break;
 		}
 	}

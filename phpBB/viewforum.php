@@ -384,12 +384,42 @@ $sql_array = array(
 $sql = $db->sql_build_query('SELECT', $sql_array);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
+$shadow_topic_list = array();
 while ($row = $db->sql_fetchrow($result))
 {
+	if ($row['topic_status'] == ITEM_MOVED)
+	{
+		$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+	}
+
 	$rowset[$row['topic_id']] = $row;
 	$topic_list[] = $row['topic_id'];
 }
 $db->sql_freeresult($result);
+
+// If we have some shadow topics, update the rowset to reflect their topic informations
+if (sizeof($shadow_topic_list))
+{
+	$sql = 'SELECT *
+		FROM ' . TOPICS_TABLE . '
+		WHERE topic_id IN (' . implode(', ', array_keys($shadow_topic_list)) . ')';
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$orig_topic_id = $shadow_topic_list[$row['topic_id']];
+
+		// We want to retain some values
+		$row = array_merge($row, array(
+			'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
+			'topic_status'		=> $rowset[$orig_topic_id]['topic_status'])
+		);
+
+		$rowset[$orig_topic_id] = $row;
+	}
+	$db->sql_freeresult($result);
+}
+unset($shadow_topic_list);
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
@@ -406,7 +436,7 @@ if (sizeof($topic_list))
 		$topic_forum_list = array();
 		foreach ($rowset as $t_id => $row)
 		{
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
+			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered']) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $t_id;
 		}
 

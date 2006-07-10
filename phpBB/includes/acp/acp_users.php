@@ -192,6 +192,12 @@ class acp_users
 						case 'banuser':
 						case 'banemail':
 						case 'banip':
+
+							if ($user_id == $user->data['user_id'])
+							{
+								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+
 							$ban = array();
 
 							switch ($action)
@@ -237,6 +243,11 @@ class acp_users
 						break;
 
 						case 'reactivate':
+
+							if ($user_id == $user->data['user_id'])
+							{
+								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
 
 							if ($config['email_enable'])
 							{
@@ -286,6 +297,12 @@ class acp_users
 						break;
 
 						case 'active':
+
+							if ($user_id == $user->data['user_id'])
+							{
+								// It is only deactivation since the user is already activated (else he would not have reached this page)
+								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
 
 							user_active_flip($user_id, $user_row['user_type'], false, $user_row['username']);
 
@@ -749,11 +766,19 @@ class acp_users
 				}
 
 				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
-				$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
-				
-				if ($config['email_enable'])
+
+				if ($user_id == $user->data['user_id'])
 				{
-					$quick_tool_ary['reactivate'] = 'FORCE';
+					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+				}
+				else
+				{
+					$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					
+					if ($config['email_enable'])
+					{
+						$quick_tool_ary['reactivate'] = 'FORCE';
+					}
 				}
 
 				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
@@ -771,6 +796,7 @@ class acp_users
 					'S_USER_IP'			=> ($user_row['user_ip']) ? true : false,
 					'S_USER_FOUNDER'	=> ($user_row['user_type'] == USER_FOUNDER) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
+					'S_OWN_ACCOUNT'		=> ($user_id == $user->data['user_id']) ? true : false,
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",

@@ -566,25 +566,13 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) && 
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
-		switch (SQL_LAYER)
-		{
-			case 'mysql4':
-			case 'mysqli':
-				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . ', ' . POLL_VOTES_TABLE . "
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-			break;
+		$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
 
-			default:
-				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-
-				$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-			break;
-		}
+		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
 		
 		$topic_sql = array(
 			'poll_title'		=> '',

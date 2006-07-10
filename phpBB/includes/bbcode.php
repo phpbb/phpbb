@@ -561,7 +561,7 @@ class bbcode
 				$code = str_replace('  ', ' &nbsp;', $code);
 
 				// remove newline at the beginning
-				if ($code{0} == "\n")
+				if (!empty($code) && $code{0} == "\n")
 				{
 					$code = substr($code, 1);
 				}

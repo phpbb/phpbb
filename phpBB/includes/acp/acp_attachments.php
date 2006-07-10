@@ -631,25 +631,30 @@ class acp_attachments
 
 						$img_path = $config['upload_icons_path'];
 
-						$imglist = filelist($phpbb_root_path . $img_path);
-						$imglist = array_values($imglist);
-						$imglist = $imglist[0];
-
 						$filename_list = '';
 						$no_image_select = false;
-						foreach ($imglist as $key => $img)
-						{
-							if (!$ext_group_row['upload_icon'])
-							{
-								$no_image_select = true;
-								$selected = '';
-							}
-							else
-							{
-								$selected = ($ext_group_row['upload_icon'] == $img) ? ' selected="selected"' : '';
-							}
 
-							$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
+						$imglist = filelist($phpbb_root_path . $img_path);
+
+						if (sizeof($imglist))
+						{
+							$imglist = array_values($imglist);
+							$imglist = $imglist[0];
+
+							foreach ($imglist as $key => $img)
+							{
+								if (!$ext_group_row['upload_icon'])
+								{
+									$no_image_select = true;
+									$selected = '';
+								}
+								else
+								{
+									$selected = ($ext_group_row['upload_icon'] == $img) ? ' selected="selected"' : '';
+								}
+
+								$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
+							}
 						}
 
 						$i = 0;

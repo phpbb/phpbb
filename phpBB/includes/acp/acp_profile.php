@@ -50,7 +50,8 @@ class acp_profile
 		$lang_defs = array();
 
 		$sql = 'SELECT lang_id, lang_iso
-			FROM ' . LANG_TABLE;
+			FROM ' . LANG_TABLE . '
+			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -63,7 +64,7 @@ class acp_profile
 
 		$sql = 'SELECT field_id, lang_id
 			FROM ' . PROFILE_LANG_TABLE . '
-				ORDER BY lang_id';
+			ORDER BY lang_id';
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
@@ -293,10 +294,11 @@ class acp_profile
 					$field_type = $field_row['field_type'];
 
 					// Get language entries
-					$sql = 'SELECT * FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+					$sql = 'SELECT *
+						FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
 						WHERE lang_id = ' . $lang_defs['iso'][$config['default_lang']] . "
 							AND field_id = $field_id
-							ORDER BY option_id ASC";
+						ORDER BY option_id ASC";
 					$result = $db->sql_query($sql);
 
 					$lang_options = array();
@@ -474,7 +476,8 @@ class acp_profile
 				if ($action == 'edit')
 				{
 					// Get language entries
-					$sql = 'SELECT * FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+					$sql = 'SELECT *
+						FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
 						WHERE lang_id <> ' . $lang_defs['iso'][$config['default_lang']] . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
@@ -488,7 +491,8 @@ class acp_profile
 					$db->sql_freeresult($result);
 
 		
-					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value FROM ' . PROFILE_LANG_TABLE . ' 
+					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
+						FROM ' . PROFILE_LANG_TABLE . ' 
 						WHERE lang_id <> ' . $lang_defs['iso'][$config['default_lang']] . "
 							AND field_id = $field_id
 						ORDER BY lang_id ASC";
@@ -769,7 +773,8 @@ class acp_profile
 
 		$sql = 'SELECT lang_id, lang_iso 
 			FROM ' . LANG_TABLE . "
-			WHERE lang_iso <> '" . $config['default_lang'] . "'";
+			WHERE lang_iso <> '" . $config['default_lang'] . "'
+			ORDER BY lang_english_name";
 		$result = $db->sql_query($sql);
 
 		$languages = array();

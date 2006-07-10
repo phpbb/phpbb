@@ -390,6 +390,12 @@ if ($hilit_words)
 	$highlight = urlencode($hilit_words);
 }
 
+// Make sure $start is set to the last page if it exceeds the amount
+if ($start < 0 || $start > $total_posts)
+{
+	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
+}
+
 // General Viewtopic URL for return links
 $viewtopic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
 
