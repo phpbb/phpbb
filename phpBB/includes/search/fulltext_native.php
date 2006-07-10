@@ -957,7 +957,7 @@ class fulltext_native extends search_backend
 		if ($config['num_posts'] >= 100)
 		{
 			$sql = 'SELECT word_id, word_text
-				FROM ' . SEARCH_WORDMATCH_TABLE . '
+				FROM ' . SEARCH_WORDLIST_TABLE . '
 				GROUP BY word_id
 				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
 			$result = $db->sql_query($sql);
