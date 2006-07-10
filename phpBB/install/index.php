@@ -480,8 +480,6 @@ class module
 	/**
 	* Output an error message
 	* If skip is true, return and continue execution, else exit
-	* @todo Really should change the caption based on $skip and calling code at some point
-	* @todo This needs testing with a large dataset that generates multiple errors
 	*/
 	function error($error, $line, $file, $skip = false)
 	{
@@ -491,7 +489,7 @@ class module
 		{
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'	=> true,
-				'LEGEND'	=> $lang['INST_ERR_FATAL'],
+				'LEGEND'	=> $lang['INST_ERR'],
 			));
 
 			$template->assign_block_vars('checks', array(

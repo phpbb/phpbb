@@ -478,6 +478,7 @@ $lang = array_merge($lang, array(
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
+	'LOG_INSTALL_CONVERTED'	=> '<b>Converted from %s to phpBB %s</b>',
 	'LOG_INSTALL_INSTALLED'	=> '<b>Installed phpBB %s</b>',
 
 	'LOG_IP_BROWSER_CHECK'	=> '<b>Session IP/Browser check failed</b><br />&#187;User IP "<i>%s</i>" checked against session IP "<i>%s</i>" and user browser string "<i>%s</i>" checked against session browser string "<i>%s</i>".',
