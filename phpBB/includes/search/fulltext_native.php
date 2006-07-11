@@ -37,8 +37,6 @@ class fulltext_native extends search_backend
 		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
 
 		$error = false;
-
-		$this->tidy();
 	}
 
 	/**
