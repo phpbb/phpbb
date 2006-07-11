@@ -37,6 +37,8 @@ class fulltext_native extends search_backend
 		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
 
 		$error = false;
+
+		$this->tidy();
 	}
 
 	/**
@@ -956,8 +958,9 @@ class fulltext_native extends search_backend
 		// Remove common (> 60% of posts ) words
 		if ($config['num_posts'] >= 100)
 		{
-			$sql = 'SELECT word_id, word_text
-				FROM ' . SEARCH_WORDLIST_TABLE . '
+			// First, get the IDs of common words
+			$sql = 'SELECT word_id
+				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
 				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
 			$result = $db->sql_query($sql);
@@ -968,20 +971,33 @@ class fulltext_native extends search_backend
 				do
 				{
 					$sql_in[] = $row['word_id'];
-					$destroy_cache_words[] = $row['word_text'];
 				}
 				while ($row = $db->sql_fetchrow($result));
 
 				$sql_in = implode(', ', $sql_in);
 
+				// Get the text of those new common words
+				$sql = 'SELECT word_text
+					FROM ' . SEARCH_WORDLIST_TABLE . "
+					WHERE word_id IN ($sql_in)";
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$destroy_cache_words[] = $row['word_text'];
+				}
+
+				// Flag the words
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . "
 					SET word_common = 1
 					WHERE word_id IN ($sql_in)";
 				$db->sql_query($sql);
 
+				// Delete the matches
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . "
 					WHERE word_id IN ($sql_in)";
 				$db->sql_query($sql);
+
 				unset($sql_in);
 			}
 			$db->sql_freeresult($result);
