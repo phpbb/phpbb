@@ -277,6 +277,8 @@ echo "\n*** UTF-8 normalization tables done\n\n";
 /**
 * Now we'll generate the files needed by the search indexer
 */
+echo "Generating search indexer tables\n";
+
 $fp = fopen($phpbb_root_path . 'develop/UnicodeData.txt', 'rt');
 
 $map = array();
@@ -289,9 +291,11 @@ while ($line = fgets($fp, 1024))
 	$m = explode(';', $line);
 
 	/**
+	* @var	integer	$cp			Current char codepoint
 	* @var	string	$utf_char	UTF-8 representation of current char
 	*/
-	$utf_char = hex_to_utf($m[0]);
+	$cp = hexdec($m[0]);
+	$utf_char = cp_to_utf($cp);
 
 	/**
 	* $m[2] holds the "General Category" of the character
@@ -314,21 +318,21 @@ while ($line = fgets($fp, 1024))
 				* @todo Note that ligatures with combining marks such as U+01E2 are
 				* not supported at this time
 				*/
-				$map[$utf_char] = strtolower($capture[1]);
+				$map[$cp] = strtolower($capture[1]);
 			}
 			elseif (isset($m[13][0]))
 			{
 				/**
 				* If the letter has a lowercased form, use it
 				*/
-				$map[$utf_char] = hex_to_utf($m[13]);
+				$map[$cp] = hex_to_utf($m[13]);
 			}
 			else
 			{
 				/**
 				* In all other cases, map the letter to itself
 				*/
-				$map[$utf_char] = $utf_char;
+				$map[$cp] = $utf_char;
 			}
 			break;
 
@@ -336,7 +340,7 @@ while ($line = fgets($fp, 1024))
 			/**
 			* We allow all marks, they are mapped to themselves
 			*/
-			$map[$utf_char] = $utf_char;
+			$map[$cp] = $utf_char;
 			break;
 
 		case 'N':
@@ -348,7 +352,7 @@ while ($line = fgets($fp, 1024))
 			* like "1/2", with a slash. However, "1/2" entered in ASCII is converted
 			* to "1 2". This will have to be fixed.
 			*/
-			$map[$utf_char] = (isset($m[8][0])) ? $m[8] : $utf_char;
+			$map[$cp] = (isset($m[8][0])) ? $m[8] : $utf_char;
 			break;
 
 		default:
@@ -369,11 +373,33 @@ $cheats = array(
 	'00F6'	=>	'oe',		#	Small O with diaeresis
 );
 
-echo count($map);
+/**
+* Add our "cheat replacements" to the map
+*/
+foreach ($cheats as $hex => $map_to)
+{
+	$map[hexdec($hex)] = $map_to;
+}
 
-$fp = fopen($phpbb_root_path . 'includes/utf/data/search_indexer.php', 'wb');
-fwrite($fp, '<?php return ' . my_var_export($map) . ';');
-fclose($fp);
+/**
+* Split the map into smaller blocks
+*/
+$file_contents = array();
+foreach ($map as $cp => $map_to)
+{
+	$file_contents[$cp >> 11][cp_to_utf($cp)] = $map_to;
+}
+unset($map);
+
+foreach ($file_contents as $idx => $contents)
+{
+	echo "Writing to search_indexer_$idx.$phpEx\n";
+	$fp = fopen($phpbb_root_path . 'includes/utf/data/search_indexer_' . $idx . '.' . $phpEx, 'wb');
+	fwrite($fp, '<?php return ' . my_var_export($contents) . ';');
+	fclose($fp);
+}
+echo "\n*** Search indexer tables done\n\n";
+
 
 die("\nAll done!\n");
 
