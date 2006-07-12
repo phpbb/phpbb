@@ -286,7 +286,17 @@ class dbal
 				$table_array = array();
 				foreach ($array['FROM'] as $table_name => $alias)
 				{
-					$table_array[] = $table_name . ' ' . $alias;
+					if (is_array($alias))
+					{
+						foreach ($alias as $multi_alias)
+						{
+							$table_array[] = $table_name . ' ' . $multi_alias;
+						}
+					}
+					else
+					{
+						$table_array[] = $table_name . ' ' . $alias;
+					}
 				}
 
 				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));

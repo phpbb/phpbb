@@ -491,7 +491,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$filelist = $filelist_cats = array();
 
 		// we want newlines no carriage returns!
-		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\n\r", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
+		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
 		$template_file		= request_var('template_file', '');
@@ -736,7 +736,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				'FILENAME'	=> str_replace('.', '/', $source) . '.html')
 			);
 
-			$code = str_replace(array("\n\r", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
+			$code = str_replace(array("\r\n", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
 
 			$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 			foreach ($conf as $ini_var)
@@ -824,7 +824,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$this->page_title = 'EDIT_THEME';
 
 		// we want newlines no carriage returns!
-		$_POST['css_data'] = (isset($_POST['css_data']) && !empty($_POST['css_data'])) ? str_replace(array("\n\r", "\r"), array("\n", "\n"), $_POST['css_data']) : '';
+		$_POST['css_data'] = (isset($_POST['css_data']) && !empty($_POST['css_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['css_data']) : '';
 
 		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
 

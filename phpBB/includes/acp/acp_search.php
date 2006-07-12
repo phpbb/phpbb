@@ -524,6 +524,12 @@ class acp_search
 
 		include_once("{$phpbb_root_path}includes/search/$type.$phpEx");
 
+		if (!class_exists($type))
+		{
+			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
+			return $error;
+		}
+
 		$error = false;
 		$search = new $type($error);
 

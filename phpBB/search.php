@@ -89,14 +89,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// Which forums should not be searched?
 	$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 
-	$not_in_fid = (sizeof($ex_fid_ary)) ? 'f.forum_id NOT IN (' . implode(', ', $ex_fid_ary) . ') OR ' : '';
+	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE f.forum_id NOT IN (' . implode(', ', $ex_fid_ary) . ") OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
 			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
-		WHERE $not_in_fid(f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')
-		ORDER BY f.left_id';
+		$not_in_fid
+		ORDER BY f.left_id";
 	$result = $db->sql_query($sql);
 
 	$right_id = 0;
