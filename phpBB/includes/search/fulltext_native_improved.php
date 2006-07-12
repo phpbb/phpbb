@@ -27,6 +27,7 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 */
 class fulltext_native_improved extends search_backend
 {
+	var $stats;
 	var $word_length = array();
 	var $common_words = array();
 	var $must_contain_ids = array();
@@ -1006,16 +1007,18 @@ class fulltext_native_improved extends search_backend
 				switch (SQL_LAYER)
 				{
 					case 'mysql':
-						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . ' (word_text)
-							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'$1\')', $new_words));
+					case 'mysql4':
+					case 'mysqli':
+						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
+							VALUES ('" . implode("'),('", array_map(array($db, 'sql_escape'), $new_words)) . "')";
 						$db->sql_query($sql);
 					break;
 
-					case 'mysql4':
-					case 'mysqli':
 					case 'mssql':
 					case 'mssql_odbc':
 					case 'sqlite':
+						$new_words = array_map(array($db, 'sql_escape'), $new_words);
+
 						// make sure the longest word comes first, so nothing will be truncated
 						usort($new_words, array(&$this, 'strlencmp'));
 
@@ -1027,7 +1030,7 @@ class fulltext_native_improved extends search_backend
 						foreach ($new_words as $word)
 						{
 							$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-								VALUES ('$word')";
+								VALUES ('" . $db->sql_escape($word) . "')";
 							$db->sql_query($sql);
 						}
 				}
