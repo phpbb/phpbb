@@ -358,7 +358,7 @@ $message_parser->get_submitted_attachment_data($post_data['poster_id']);
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
 	// Do not change to SELECT *
-	$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+	$sql = 'SELECT attach_id, physical_filename, attach_comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
@@ -527,7 +527,7 @@ if ($submit || $preview || $refresh)
 
 	$message_parser->message = request_var('message', '', true);
 
-	$post_data['username']			= request_var('username', $post_data['username'], true);
+	$post_data['username']			= request_var('username', $post_data['username']);
 	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
 
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));

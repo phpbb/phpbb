@@ -918,7 +918,7 @@ function mcp_fork_topic($topic_ids)
 							'physical_filename'	=> (string) basename($attach_row['physical_filename']),
 							'real_filename'		=> (string) basename($attach_row['real_filename']),
 							'download_count'	=> (int) $attach_row['download_count'],
-							'comment'			=> (string) $attach_row['comment'],
+							'attach_comment'	=> (string) $attach_row['attach_comment'],
 							'extension'			=> (string) $attach_row['extension'],
 							'mimetype'			=> (string) $attach_row['mimetype'],
 							'filesize'			=> (int) $attach_row['filesize'],

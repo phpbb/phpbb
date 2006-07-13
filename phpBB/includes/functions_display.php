@@ -761,7 +761,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$comment = str_replace("\n", '<br />', censor_text($attachment['comment']));
+		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
 
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,

@@ -177,8 +177,6 @@ class dbal
 	* Idea for this from Ikonboard
 	* Possible query values: INSERT, INSERT_SELECT, MULTI_INSERT, UPDATE, SELECT
 	*
-	* If a key is 'module_name' and firebird used it gets adjusted to '"module_name"'
-	* on INSERT, INSERT_SELECT, UPDATE and SELECT
 	*/
 	function sql_build_array($query, $assoc_ary = false)
 	{
@@ -193,7 +191,7 @@ class dbal
 		{
 			foreach ($assoc_ary as $key => $var)
 			{
-				$fields[] = ($key == 'module_name' && SQL_LAYER == 'firebird') ? '"' . $key . '"' : $key;
+				$fields[] = $key;
 
 				if (is_null($var))
 				{
@@ -247,8 +245,6 @@ class dbal
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
-				$key = ($key == 'module_name' && SQL_LAYER == 'firebird') ? '"' . $key . '"' : $key;
-
 				if (is_null($var))
 				{
 					$values[] = "$key = NULL";

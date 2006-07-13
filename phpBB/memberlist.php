@@ -778,7 +778,7 @@ switch ($mode)
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '', true);
+			$username	= request_var('username', '');
 			$email		= request_var('email', '');
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');
@@ -948,7 +948,7 @@ switch ($mode)
 			}
 
 			$rank_title = $rank_img = $rank_img_src = '';
-			if ($group_row['group_rank'] != -1)
+			if ($group_row['group_rank'])
 			{
 				if (isset($ranks['special'][$group_row['group_rank']]))
 				{
@@ -957,7 +957,7 @@ switch ($mode)
 				$rank_img = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" title="' . $ranks['special'][$group_row['group_rank']]['rank_title'] . '" /><br />' : '';
 				$rank_img_src = (!empty($ranks['special'][$group_row['group_rank']]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$group_row['group_rank']]['rank_image'] : '';
 			}
-			else if ($group_row['group_rank'] == -1)
+			else
 			{
 				$rank_title = '';
 				$rank_img = '';

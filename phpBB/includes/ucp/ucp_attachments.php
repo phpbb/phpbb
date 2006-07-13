@@ -60,7 +60,7 @@ class ucp_attachments
 
 		// Select box eventually
 		$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
-		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
+		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.attach_comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -114,7 +114,7 @@ class ucp_attachments
 				$template->assign_block_vars('attachrow', array(
 					'ROW_NUMBER'		=> $row_count + ($start + 1),
 					'FILENAME'			=> $row['real_filename'],
-					'COMMENT'			=> str_replace("\n", '<br />', $row['comment']),
+					'COMMENT'			=> str_replace("\n", '<br />', $row['attach_comment']),
 					'EXTENSION'			=> $row['extension'],
 					'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],

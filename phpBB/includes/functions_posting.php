@@ -676,7 +676,7 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
 				'ATTACH_FILENAME'	=> basename($attach_row['physical_filename']),
-				'FILE_COMMENT'		=> $attach_row['comment'],
+				'FILE_COMMENT'		=> $attach_row['attach_comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'ASSOC_INDEX'		=> $count,
 
@@ -1705,7 +1705,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-					SET comment = '" . $db->sql_escape($attach_row['comment']) . "'
+					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
 					WHERE attach_id = " . (int) $attach_row['attach_id'];
 				$db->sql_query($sql);
 			}
@@ -1724,7 +1724,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'poster_id'			=> $poster_id,
 					'physical_filename'	=> basename($attach_row['physical_filename']),
 					'real_filename'		=> basename($attach_row['real_filename']),
-					'comment'			=> $attach_row['comment'],
+					'attach_comment'	=> $attach_row['attach_comment'],
 					'extension'			=> $attach_row['extension'],
 					'mimetype'			=> $attach_row['mimetype'],
 					'filesize'			=> $attach_row['filesize'],

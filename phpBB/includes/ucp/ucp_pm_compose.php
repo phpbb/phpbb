@@ -138,7 +138,7 @@ function compose_pm($id, $mode, $action)
 				trigger_error('NO_MESSAGE');
 			}
 
-			$sql = 'SELECT msg_id, unread, new, author_id, folder_id
+			$sql = 'SELECT msg_id, pm_unread, pm_new, author_id, folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . "
 					AND msg_id = $msg_id";
@@ -311,7 +311,7 @@ function compose_pm($id, $mode, $action)
 
 	if ($message_attachment && !$submit && !$refresh && !$preview && $action == 'edit')
 	{
-		$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+		$sql = 'SELECT attach_id, physical_filename, attach_comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
 			FROM ' . ATTACHMENTS_TABLE . "
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
@@ -868,8 +868,8 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		$user_id_ary = array();
 
 		// Build usernames to add
-		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
-		$username_list = request_var('username_list', '', true);
+		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '')) : array();
+		$username_list = request_var('username_list', '');
 		if ($username_list)
 		{
 			$usernames = array_merge($usernames, explode("\n", $username_list));

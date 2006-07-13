@@ -28,7 +28,7 @@ class acp_users
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$error		= array();
-		$username	= request_var('username', '', true);
+		$username	= request_var('username', '');
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
@@ -1711,7 +1711,7 @@ class acp_users
 
 					$template->assign_block_vars('attach', array(
 						'REAL_FILENAME'		=> $row['real_filename'],
-						'COMMENT'			=> nl2br($row['comment']),
+						'COMMENT'			=> nl2br($row['attach_comment']),
 						'EXTENSION'			=> $row['extension'],
 						'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 						'DOWNLOAD_COUNT'	=> $row['download_count'],

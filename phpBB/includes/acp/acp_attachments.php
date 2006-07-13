@@ -1102,7 +1102,7 @@ class acp_attachments
 				'in_message'		=> 0,
 				'physical_filename'	=> $filedata['physical_filename'],
 				'real_filename'		=> $filedata['real_filename'],
-				'comment'			=> $message_parser->filename_data['filecomment'],
+				'attach_comment'	=> $message_parser->filename_data['filecomment'],
 				'extension'			=> $filedata['extension'],
 				'mimetype'			=> $filedata['mimetype'],
 				'filesize'			=> $filedata['filesize'],

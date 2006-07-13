@@ -318,7 +318,7 @@ class ucp_pm
 					}
 
 					// Update unread status
-					update_unread_status($message_row['unread'], $message_row['msg_id'], $user->data['user_id'], $folder_id);
+					update_unread_status($message_row['pm_unread'], $message_row['msg_id'], $user->data['user_id'], $folder_id);
 				}
 
 				$folder = get_folder($user->data['user_id'], $folder_id);

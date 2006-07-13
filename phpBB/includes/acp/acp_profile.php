@@ -304,7 +304,7 @@ class acp_profile
 					$lang_options = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$lang_options[$row['option_id']] = $row['value'];
+						$lang_options[$row['option_id']] = $row['lang_value'];
 					}
 					$db->sql_freeresult($result);
 
@@ -486,7 +486,7 @@ class acp_profile
 					$l_lang_options = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$l_lang_options[$row['lang_id']][$row['option_id']] = $row['value'];
+						$l_lang_options[$row['lang_id']][$row['option_id']] = $row['lang_value'];
 					}
 					$db->sql_freeresult($result);
 
@@ -1203,8 +1203,8 @@ class acp_profile
 		}
 
 		$sql_ary = array(
-			'lang_name'		=> $cp->vars['lang_name'],
-			'lang_explain'	=> $cp->vars['lang_explain'],
+			'lang_name'				=> $cp->vars['lang_name'],
+			'lang_explain'			=> $cp->vars['lang_explain'],
 			'lang_default_value'	=> $cp->vars['lang_default_value']
 		);
 
@@ -1277,7 +1277,7 @@ class acp_profile
 			{
 				$sql_ary = array(
 					'field_type'	=> (int) $field_type,
-					'value'			=> $value
+					'lang_value'	=> $value
 				);
 
 				if ($action == 'create')
@@ -1332,7 +1332,7 @@ class acp_profile
 							'lang_id'		=> (int) $lang_id,
 							'option_id'		=> (int) $option_id,
 							'field_type'	=> (int) $field_type,
-							'value'			=> $value
+							'lang_value'	=> $value
 						);
 					}
 				}

@@ -59,7 +59,7 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($action == 'chgposter')
 			{
-				$username = request_var('username', '', true);
+				$username = request_var('username', '');
 				$sql_where = "username = '" . $db->sql_escape($username) . "'";
 			}
 			else

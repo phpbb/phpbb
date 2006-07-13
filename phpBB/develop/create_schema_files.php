@@ -8,6 +8,8 @@
 *
 * This file creates new schema files for every database.
 * The filenames will be prefixed with an underscore to not overwrite the current schema files.
+*
+* If you overwrite the original schema files please make sure you save the file with UNIX linefeeds.
 */
 
 die("Please read the first lines of this script for instructions on how to enable it");
@@ -89,11 +91,11 @@ $dbms_type_map = array(
 	'oracle'	=> array(
 		'INT:'		=> 'number(%d)',
 		'BINT'		=> 'number(20)',
-		'UINT'		=> 'number(8) UNSIGNED',
-		'UINT:'		=> 'number(%d) UNSIGNED',
+		'UINT'		=> 'number(8)',
+		'UINT:'		=> 'number(%d)',
 		'TINT:'		=> 'number(%d)',
-		'USINT'		=> 'number(4) UNSIGNED',
-		'BOOL'		=> 'number(1) UNSIGNED',
+		'USINT'		=> 'number(4)',
+		'BOOL'		=> 'number(1)',
 		'VCHAR'		=> 'varchar2(255)',
 		'VCHAR:'	=> 'varchar2(%d)',
 		'CHAR:'		=> 'char(%d)',
@@ -101,7 +103,7 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar2(3000)',
 		'TEXT'		=> 'clob',
 		'MTEXT'		=> 'clob',
-		'TIMESTAMP'	=> 'number(11) UNSIGNED',
+		'TIMESTAMP'	=> 'number(11)',
 		'DECIMAL'	=> 'number(5, 2)',
 		'VCHAR_BIN'	=> 'varchar2(252)',
 		'VCHAR_CI'	=> 'varchar2(255)',
@@ -131,10 +133,10 @@ $dbms_type_map = array(
 	'postgres'	=> array(
 		'INT:'		=> 'INT4',
 		'BINT'		=> 'INT8',
-		'UINT'		=> 'INT4 UNSIGNED',
-		'UINT:'		=> 'INT4 UNSIGNED',
-		'USINT'		=> 'INT2 UNSIGNED',
-		'BOOL'		=> 'INT2 UNSIGNED',
+		'UINT'		=> 'INT4', // unsigned
+		'UINT:'		=> 'INT4', // unsigned
+		'USINT'		=> 'INT2', // unsigned
+		'BOOL'		=> 'INT2', // unsigned
 		'TINT:'		=> 'INT2',
 		'VCHAR'		=> 'varchar(255)',
 		'VCHAR:'	=> 'varchar(%d)',
@@ -143,12 +145,15 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar(3000)',
 		'TEXT'		=> 'varchar(8000)',
 		'MTEXT'		=> 'TEXT',
-		'TIMESTAMP'	=> 'INT4 UNSIGNED',
+		'TIMESTAMP'	=> 'INT4', // unsigned
 		'DECIMAL'	=> 'decimal(5,2)',
 		'VCHAR_BIN'	=> 'varchar(252)',
 		'VCHAR_CI'	=> 'varchar_ci',
 	),
 );
+
+// A list of types being unsigned for better reference in some db's
+$unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 foreach (array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite') as $dbms)
 {
@@ -234,12 +239,14 @@ foreach (array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite') as 
 			// Get type
 			if (strpos($column_data[0], ':') !== false)
 			{
-				list($column_type, $column_length) = explode(':', $column_data[0]);
+				list($orig_column_type, $column_length) = explode(':', $column_data[0]);
 
-				$column_type = sprintf($dbms_type_map[$dbms][$column_type . ':'], $column_length);
+				$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'], $column_length);
+				$orig_column_type .= ':';
 			}
 			else
 			{
+				$orig_column_type = $column_data[0];
 				$column_type = $dbms_type_map[$dbms][$column_data[0]];
 			}
 
@@ -344,7 +351,15 @@ foreach (array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite') as 
 					else
 					{
 						$line .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}' " : '';
-						$line .= "NOT NULL,\n";
+						$line .= "NOT NULL";
+
+						// Unsigned? Then add a CHECK contraint
+						if (in_array($orig_column_type, $unsigned_types))
+						{
+							$line .= " CHECK ({$column_name} >= 0)";
+						}
+
+						$line .= ",\n";
 					}
 				break;
 			}
@@ -530,7 +545,7 @@ foreach (array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite') as 
 			break;
 		}
 
-		fwrite($fp, $line);
+		fwrite($fp, $line . "\n");
 	}
 
 	$line = '';
@@ -554,6 +569,7 @@ foreach (array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite') as 
 		break;
 
 		case 'sqlite':
+		case 'postgres':
 			$line = "\nCOMMIT;";
 		break;
 	}
@@ -606,7 +622,7 @@ function get_schema_struct()
 			'pysical_filename'	=> array('VCHAR', ''),
 			'real_filename'		=> array('VCHAR', ''),
 			'download_count'	=> array('UINT', 0),
-			'comment'			=> array('TEXT', ''),
+			'attach_comment'	=> array('TEXT', ''),
 			'extension'			=> array('VCHAR:100', ''),
 			'mimetype'			=> array('VCHAR:100', ''),
 			'filesize'			=> array('UINT:20', 0),
@@ -828,7 +844,7 @@ function get_schema_struct()
 			'forum_parents'			=> array('MTEXT', ''),
 			'forum_name'			=> array('STEXT', ''),
 			'forum_desc'			=> array('TEXT', ''),
-			'forum_desc_bitfield'	=> array('UINT:11', ''),
+			'forum_desc_bitfield'	=> array('UINT:11', 0),
 			'forum_desc_uid'		=> array('VCHAR:5', ''),
 			'forum_link'			=> array('VCHAR', ''),
 			'forum_password'		=> array('VCHAR:40', ''),
@@ -992,7 +1008,7 @@ function get_schema_struct()
 			'module_id'				=> array('UINT', NULL, 'auto_increment'),
 			'module_enabled'		=> array('BOOL', 1),
 			'module_display'		=> array('BOOL', 1),
-			'module_name'			=> array('VCHAR', ''),
+			'module_basename'		=> array('VCHAR', ''),
 			'module_class'			=> array('VCHAR:10', ''),
 			'parent_id'				=> array('UINT', 0),
 			'left_id'				=> array('UINT', 0),
@@ -1143,12 +1159,12 @@ function get_schema_struct()
 			'msg_id'				=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
 			'author_id'				=> array('UINT', 0),
-			'deleted'				=> array('BOOL', 0),
-			'new'					=> array('BOOL', 1),
-			'unread'				=> array('BOOL', 1),
-			'replied'				=> array('BOOL', 0),
-			'marked'				=> array('BOOL', 0),
-			'forwarded'				=> array('BOOL', 0),
+			'pm_deleted'			=> array('BOOL', 0),
+			'pm_new'				=> array('BOOL', 1),
+			'pm_unread'				=> array('BOOL', 1),
+			'pm_replied'			=> array('BOOL', 0),
+			'pm_marked'				=> array('BOOL', 0),
+			'pm_forwarded'			=> array('BOOL', 0),
 			'folder_id'				=> array('UINT', 0),
 		),
 		'KEYS'			=> array(
@@ -1196,7 +1212,7 @@ function get_schema_struct()
 			'lang_id'				=> array('UINT', 0),
 			'option_id'				=> array('UINT', 0),
 			'field_type'			=> array('TINT:4', 0),
-			'value'					=> array('VCHAR', ''),
+			'lang_value'			=> array('VCHAR', ''),
 		),
 		'PRIMARY_KEY'	=> array('field_id', 'lang_id', 'option_id'),
 	);
@@ -1836,6 +1852,7 @@ CREATE OPERATOR =(
   HASHES,
   MERGES,
   SORT1= <);
+
 EOF;
 }
 

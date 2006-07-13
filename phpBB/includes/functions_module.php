@@ -86,7 +86,7 @@ class p_master
 			}
 
 			// Category with no members, ignore
-			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
+			if (!$row['module_basename'] && ($row['left_id'] + 1 == $row['right_id']))
 			{
 				unset($this->module_cache['modules'][$key]);
 				continue;
@@ -135,7 +135,7 @@ class p_master
 			}
 
 			// Category with no members on their way down (we have to check every level)
-			if (!$row['module_name'])
+			if (!$row['module_basename'])
 			{
 				$empty_category = true;
 
@@ -145,7 +145,7 @@ class p_master
 					if ($temp_row['left_id'] > $row['left_id'] && $temp_row['left_id'] < $row['right_id'])
 					{
 						// Module there
-						if ($temp_row['module_name'] && $temp_row['module_enabled'])
+						if ($temp_row['module_basename'] && $temp_row['module_enabled'])
 						{
 							$empty_category = false;
 							break;
@@ -168,15 +168,15 @@ class p_master
 			// We need to prefix the functions to not create a naming conflict
 			
 			// Function for building 'url_extra'
-			$url_func = '_module_' . $row['module_name'] . '_url';
+			$url_func = '_module_' . $row['module_basename'] . '_url';
 
 			// Function for building the language name
-			$lang_func = '_module_' . $row['module_name'] . '_lang';
+			$lang_func = '_module_' . $row['module_basename'] . '_lang';
 
 			// Custom function for calling parameters on module init (for example assigning template variables)
-			$custom_func = '_module_' . $row['module_name'];
+			$custom_func = '_module_' . $row['module_basename'];
 
-			$names[$row['module_name'] . '_' . $row['module_mode']][] = true;
+			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
 			
 			$module_row = array(
 				'depth'		=> $depth,
@@ -185,15 +185,15 @@ class p_master
 				'parent'	=> (int) $row['parent_id'],
 				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
 
-				'is_duplicate'	=> ($row['module_name'] && sizeof($names[$row['module_name'] . '_' . $row['module_mode']]) > 1) ? true : false,
+				'is_duplicate'	=> ($row['module_basename'] && sizeof($names[$row['module_basename'] . '_' . $row['module_mode']]) > 1) ? true : false,
 
-				'name'		=> (string) $row['module_name'],
+				'name'		=> (string) $row['module_basename'],
 				'mode'		=> (string) $row['module_mode'],
 				'display'	=> (int) $row['module_display'],
 
 				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode']) : '',
 				
-				'lang'		=> ($row['module_name'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
+				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
 
 				'left'		=> $row['left_id'],

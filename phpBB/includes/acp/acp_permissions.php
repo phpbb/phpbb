@@ -59,8 +59,8 @@ class acp_permissions
 		$subforum_id = request_var('subforum_id', 0);
 		$forum_id = request_var('forum_id', array(0));
 
-		$username = request_var('username', array(''), true);
-		$usernames = request_var('usernames', '', true);
+		$username = request_var('username', array(''));
+		$usernames = request_var('usernames', '');
 		$user_id = request_var('user_id', array(0));
 
 		$group_id = request_var('group_id', array(0));

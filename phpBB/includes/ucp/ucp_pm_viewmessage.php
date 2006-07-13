@@ -189,7 +189,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
 
-		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
+		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['pm_forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id),
 		'U_EMAIL'			=> $user_info['email'],

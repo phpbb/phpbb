@@ -230,7 +230,7 @@ class custom_profile
 		}
 		else
 		{
-			$sql = 'SELECT option_id, value
+			$sql = 'SELECT option_id, lang_value
 				FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = $lang_id
@@ -240,7 +240,7 @@ class custom_profile
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['value'];
+				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
 			}
 			$db->sql_freeresult($result);
 		}

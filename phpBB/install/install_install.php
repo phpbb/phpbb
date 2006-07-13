@@ -1006,10 +1006,6 @@ class install_install extends module
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
 			break;
-
-			case 'firebird':
-				$sql_query = str_replace('module_name', '"module_name"', $sql_query);
-			break;
 		}
 
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
@@ -1224,7 +1220,7 @@ class install_install extends module
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
 				$module_data = array(
-					'module_name'		=> '',
+					'module_basename'	=> '',
 					'module_enabled'	=> 1,
 					'module_display'	=> 1,
 					'parent_id'			=> 0,
@@ -1253,7 +1249,7 @@ class install_install extends module
 					foreach ($subs as $level2_name)
 					{
 						$module_data = array(
-							'module_name'		=> '',
+							'module_basename'	=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1281,14 +1277,14 @@ class install_install extends module
 			// Get the modules we want to add... returned sorted by name
 			$module_info = $_module->get_module_infos('', $module_class);
 
-			foreach ($module_info as $module_name => $fileinfo)
+			foreach ($module_info as $module_basename => $fileinfo)
 			{
 				foreach ($fileinfo['modes'] as $module_mode => $row)
 				{
 					foreach ($row['cat'] as $cat_name)
 					{
 						$module_data = array(
-							'module_name'		=> $module_name,
+							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1316,7 +1312,7 @@ class install_install extends module
 				// Move main module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_name = 'main'
+					WHERE module_basename = 'main'
 						AND module_class = 'acp'
 						AND module_mode = 'main'";
 				$result = $db->sql_query($sql);
@@ -1328,7 +1324,7 @@ class install_install extends module
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_name = 'permissions'
+					WHERE module_basename = 'permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
 				$result = $db->sql_query($sql);
@@ -1340,7 +1336,7 @@ class install_install extends module
 				// Move manage users screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_name = 'users'
+					WHERE module_basename = 'users'
 						AND module_class = 'acp'
 						AND module_mode = 'overview'";
 				$result = $db->sql_query($sql);
@@ -1370,7 +1366,7 @@ class install_install extends module
 							FROM ' . MODULES_TABLE . " 
 							WHERE module_langname = '" . $db->sql_escape($mod_name) . "'
 								AND module_class = '" . $db->sql_escape($module_class) . "'
-								AND module_name <> ''";
+								AND module_basename <> ''";
 						$result = $db->sql_query_limit($sql, 1);
 						$module_data = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);

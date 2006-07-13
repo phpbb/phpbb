@@ -1526,7 +1526,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if (isset($_POST['login']))
 	{
-		$username	= request_var('username', '', true);
+		$username	= request_var('username', '');
 		$password	= request_var('password', '');
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;

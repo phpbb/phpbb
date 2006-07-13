@@ -1148,7 +1148,7 @@ class parse_message extends bbcode_firstpass
 				{
 					$new_entry = array(
 						'physical_filename'	=> $filedata['physical_filename'],
-						'comment'			=> $this->filename_data['filecomment'],
+						'attach_comment'	=> $this->filename_data['filecomment'],
 						'real_filename'		=> $filedata['real_filename'],
 						'extension'			=> $filedata['extension'],
 						'mimetype'			=> $filedata['mimetype'],
@@ -1218,7 +1218,7 @@ class parse_message extends bbcode_firstpass
 
 					$edit_comment = request_var('edit_comment', array(0 => ''));
 					$edit_comment = key($edit_comment);
-					$this->attachment_data[$edit_comment]['comment'] = $actual_comment_list[$edit_comment];
+					$this->attachment_data[$edit_comment]['attach_comment'] = $actual_comment_list[$edit_comment];
 				}
 
 				if (($add_file || $preview) && $upload_file)
@@ -1232,7 +1232,7 @@ class parse_message extends bbcode_firstpass
 						{
 							$new_entry = array(
 								'physical_filename'	=> $filedata['physical_filename'],
-								'comment'			=> $this->filename_data['filecomment'],
+								'attach_comment'	=> $this->filename_data['filecomment'],
 								'real_filename'		=> $filedata['real_filename'],
 								'extension'			=> $filedata['extension'],
 								'mimetype'			=> $filedata['mimetype'],
@@ -1308,7 +1308,7 @@ class parse_message extends bbcode_firstpass
 				{
 					$pos = $attach_ids[$row['attach_id']];
 					$this->attachment_data[$pos] = $row;
-					set_var($this->attachment_data[$pos]['comment'], $_POST['attachment_data'][$pos]['comment'], 'string', true);
+					set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
 
 					unset($attach_ids[$row['attach_id']]);
 				}
@@ -1348,7 +1348,7 @@ class parse_message extends bbcode_firstpass
 					'thumbnail'			=> (file_exists($phpbb_root_path . $config['upload_path'] . '/thumb_' . $physical_filename)) ? 1 : 0,
 				);
 
-				set_var($this->attachment_data[$pos]['comment'], $_POST['attachment_data'][$pos]['comment'], 'string', true);
+				set_var($this->attachment_data[$pos]['attach_comment'], $_POST['attachment_data'][$pos]['attach_comment'], 'string', true);
 				set_var($this->attachment_data[$pos]['real_filename'], $_POST['attachment_data'][$pos]['real_filename'], 'string', true);
 				set_var($this->attachment_data[$pos]['filetime'], $_POST['attachment_data'][$pos]['filetime'], 'int');
 

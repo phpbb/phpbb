@@ -68,7 +68,7 @@ class mcp_notes
 		global $template, $db, $user, $auth;
 
 		$user_id = request_var('u', 0);
-		$username = request_var('username', '', true);
+		$username = request_var('username', '');
 		$start = request_var('start', 0);
 		$st	= request_var('st', 0);
 		$sk	= request_var('sk', 'b');
