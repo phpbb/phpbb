@@ -839,32 +839,59 @@ switch ($mode)
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
 			{
-				$ips = (preg_match('#[a-z]#', $ipdomain)) ? implode(', ', preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "'\\1'", gethostbynamel($ipdomain))) : "'" . str_replace('*', '%', $ipdomain) . "'";
-
-				$ip_forums = array_keys($auth->acl_getf('m_info', true));
-				$sql = 'SELECT DISTINCT poster_id
-					FROM ' . POSTS_TABLE . '
-					WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)
-						AND forum_id IN (0, " . implode(',', $ip_forums) . ')';
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
+				if (preg_match('#[a-z]#', $ipdomain))
 				{
-					$ip_sql = array();
-					do
-					{
-						$ip_sql[] = $row['poster_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
+					$hostnames = gethostbynamel($ipdomain);
 
-					$sql_where .= ' AND u.user_id IN (' . implode(', ', $ip_sql) . ')';
+					if ($hostnames !== false)
+					{
+						$ips = "'" . implode('\', \'', array_map(array($db, 'sql_escape'), preg_replace('#([0-9]{1,3}\.[0-9]{1,3}[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#', "\\1", gethostbynamel($ipdomain)))) . "'";
+					}
+					else
+					{
+						$ips = false;
+					}
 				}
 				else
+				{
+					$ips = "'" . str_replace('*', '%', $db->sql_escape($ipdomain)) . "'";
+				}
+
+				if ($ips === false)
 				{
 					// A minor fudge but it does the job :D
 					$sql_where .= " AND u.user_id IN ('-1')";
 				}
-				unset($ip_forums);
+				else
+				{
+					$ip_forums = array_keys($auth->acl_getf('m_info', true));
+
+					$sql = 'SELECT DISTINCT poster_id
+						FROM ' . POSTS_TABLE . '
+						WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)
+							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
+					$result = $db->sql_query($sql);
+
+					if ($row = $db->sql_fetchrow($result))
+					{
+						$ip_sql = array();
+						do
+						{
+							$ip_sql[] = $row['poster_id'];
+						}
+						while ($row = $db->sql_fetchrow($result));
+
+						$sql_where .= ' AND u.user_id IN (' . implode(', ', $ip_sql) . ')';
+					}
+					else
+					{
+						// A minor fudge but it does the job :D
+						$sql_where .= " AND u.user_id IN ('-1')";
+					}
+					unset($ip_forums);
+
+					$db->sql_freeresult($result);
+				}
 			}
 		}
 

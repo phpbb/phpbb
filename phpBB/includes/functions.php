@@ -2834,7 +2834,6 @@ function page_footer()
 		else if (time() - $config['database_gc'] > $config['database_last_gc'])
 		{
 			// Tidy the database
-			// This includes recalculation binary trees, ...
 			$cron_type = 'tidy_database';
 		}
 		else if (time() - $config['search_gc'] > $config['search_last_gc'])

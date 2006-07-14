@@ -2488,26 +2488,7 @@ function tidy_database()
 {
 	global $db;
 
-	// Disabling recalculating the binary tree for the moment
-	// It might be the source of some severe problems with broken trees
 
-	/* Recalculate binary tree for forums
-	recalc_btree('forum_id', FORUMS_TABLE);
-
-	// Recalculate binary tree for modules
-	$sql = 'SELECT module_class
-		FROM ' . MODULES_TABLE . '
-		GROUP BY module_class';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{	
-		recalc_btree('module_id', MODULES_TABLE, $row['module_class']);
-	}
-	$db->sql_freeresult($result);
-
-	// remove cache files.
-*/
 
 	set_config('database_last_gc', time(), true);
 }
