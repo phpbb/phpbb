@@ -91,7 +91,7 @@ class dbal_postgres extends dbal
 	{
 		$version = @pg_version($this->db_connect_id);
 
-		return 'PostgresSQL' . ((!empty($version)) ? ' ' . $version['client'] : '';
+		return 'PostgresSQL' . ((!empty($version)) ? ' ' . $version['client'] : '');
 	}
 
 	/**
