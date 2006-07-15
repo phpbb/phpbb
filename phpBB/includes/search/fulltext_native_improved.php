@@ -1385,10 +1385,10 @@ class fulltext_native_improved extends search_backend
 				/**
 				* All characters within these ranges are valid
 				*
-				* We index all the characters separately and we pad them to make them
-				* long enough to be indexed
+				* We separate them with a space in order to index each character
+				* individually
 				*/
-				$ret .= ' chr' . $utf_char;
+				$ret .= ' ' . $utf_char;
 				continue;
 			}
 
