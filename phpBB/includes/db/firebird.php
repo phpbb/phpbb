@@ -113,7 +113,7 @@ class dbal_firebird extends dbal
 
 				if (!$this->transaction)
 				{
-					@ibase_commit_ret();
+					@ibase_commit();
 				}
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))

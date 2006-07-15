@@ -286,8 +286,8 @@ class custom_profile
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
-			$check_value = $cp_data[$row['field_ident']];
+			$cp_data['_' . $row['field_ident']] = $this->get_profile_field($row);
+			$check_value = $cp_data['_' . $row['field_ident']];
 
 			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
 			{
@@ -382,7 +382,7 @@ class custom_profile
 			{
 				foreach ($field_data as $user_id => $row)
 				{
-					$user_fields[$user_id][$used_ident]['value'] = $row[$used_ident];
+					$user_fields[$user_id][$used_ident]['value'] = $row['_' . $used_ident];
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 				}
 			}

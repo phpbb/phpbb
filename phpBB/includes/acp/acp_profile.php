@@ -945,6 +945,9 @@ class acp_profile
 		
 		if ($action == 'create')
 		{
+
+			$field_ident = '_' . $field_ident;
+
 			switch (SQL_LAYER)
 			{
 				case 'mysql':
