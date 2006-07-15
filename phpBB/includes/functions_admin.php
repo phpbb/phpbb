@@ -2140,12 +2140,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			if (isset($user->lang[$row['log_operation']]))
 			{
-				foreach ($log_data_ary as $log_data)
-				{
-					$log_data = str_replace("\n", '<br />', censor_text($log_data));
-
-					$log[$i]['action'] = preg_replace('#%s#', $log_data, $log[$i]['action'], 1);
-				}
+				$params = array_merge(array($log[$i]['action']), $log_data_ary);
+				$log[$i]['action'] = call_user_func_array('sprintf', $params);
+				$log[$i]['action'] = str_replace("\n", '<br />', censor_text($log[$i]['action']));
 			}
 			else
 			{
