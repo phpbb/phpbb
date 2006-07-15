@@ -47,10 +47,18 @@ class fulltext_native_improved extends search_backend
 
 		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
 
+		/**
+		* Load the UTF tools
+		*/
 		if (!class_exists('utf_normalizer'))
 		{
 			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 		}
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		}
+
 
 		$error = false;
 	}
@@ -865,14 +873,6 @@ class fulltext_native_improved extends search_backend
 		$isset_min = $min - 1;
 
 		/**
-		* Load the UTF tools
-		*/
-		if (!function_exists('utf8_strlen'))
-		{
-			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-		}
-
-		/**
 		* Clean up the string, remove HTML tags, remove BBCodes
 		*/
 		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), '', $user->lang['ENCODING']), ' ');
@@ -1259,11 +1259,6 @@ class fulltext_native_improved extends search_backend
 		$encoding = strtolower($encoding);
 		if ($encoding != 'utf-8')
 		{
-			if (!function_exists('utf8_recode'))
-			{
-				include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-			}
-
 			$text = utf8_recode($text, $encoding);
 		}
 
@@ -1277,7 +1272,7 @@ class fulltext_native_improved extends search_backend
 		/**
 		* Replace HTML entities and NCRs
 		*/
-		$text = html_entity_decode($this->decode_ncr($text), ENT_QUOTES);
+		$text = html_entity_decode(utf8_decode_ncr($text), ENT_QUOTES);
 
 		/**
 		* Load the UTF-8 normalizer
@@ -1479,60 +1474,6 @@ class fulltext_native_improved extends search_backend
 		while (1);
 
 		return $ret;
-	}
-
-	/**
-	* Convert Numeric Character References to UTF-8 chars
-	*
-	* Notes:
-	*  - we do not convert NCRs recursively, if you pass &#38;#38; it will return &#38;
-	*  - we DO NOT check for the existence of the Unicode characters, therefore an entity
-	*    may be converted to an inexistent codepoint
-	*
-	* @param	string	$text		String to convert, encoded in UTF-8 (no normal form required)
-	* @return	string				UTF-8 string where NCRs have been replaced with the actual chars
-	*/
-	function decode_ncr($text)
-	{
-		/**
-		* @todo replace me with preg_replace_callback() or a loop
-		*/
-		return preg_replace(
-			'/&#([0-9]{1,6});/e',
-			"\$this->cp_to_utf(\$1)",
-			
-			preg_replace(
-				'/&#x([0-9A-F]{1,5});/ie',
-				"\$this->cp_to_utf(hexdec('\$1'))",
-				$text
-			)
-		);
-	}
-
-	/**
-	* Convert a codepoint to a UTF-8 char
-	*
-	* @param	integer	$cp			Unicode codepoint
-	* @return	string				UTF-8 string
-	*/
-	function cp_to_utf($cp)
-	{
-		if ($cp > 0xFFFF)
-		{
-			return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
-		}
-		elseif ($cp > 0x7FF)
-		{
-			return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
-		}
-		elseif ($cp > 0x7F)
-		{
-			return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
-		}
-		else
-		{
-			return chr($cp);
-		}
 	}
 
 	/**

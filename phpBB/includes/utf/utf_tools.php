@@ -127,4 +127,91 @@ function utf8_recode($string, $encoding)
 	die('Finish me!! '.basename(__FILE__).' at line '.__LINE__);
 }
 
+/**
+* Replace all UTF-8 chars that are not in ASCII with their NCR
+*
+* @param	string	$text		UTF-8 string in NFC
+* @return	string				ASCII string using NCRs for non-ASCII chars
+*/
+function utf8_encode_ncr($text)
+{
+	return preg_replace_callback('#[\\xC2-\\xF4][\\x80-\\xBF]+#', 'utf8_encode_ncr_callback', $text);
+}
+
+/**
+* Callback used in encode_ncr()
+*
+* Takes a UTF-8 char and replaces it with its NCR. Attention, $m is an array
+*
+* @param	array	$m			0-based numerically indexed array passed by preg_replace_callback()
+* @return	string				A HTML NCR if the character is valid, or the original string otherwise
+*/
+function utf8_encode_ncr_callback($m)
+{
+	switch (strlen($m[0]))
+	{
+		case 1:
+			return '&#' . ord($m[0]) . ';';
+
+		case 2:
+			return '&#' . (((ord($m[0][0]) & 0x1F) << 6) | (ord($m[0][1]) & 0x3F)) . ';';
+
+		case 3:
+			return '&#' . (((ord($m[0][0]) & 0x0F) << 12) | ((ord($m[0][1]) & 0x3F) << 6) | (ord($m[0][2]) & 0x3F)) . ';';
+
+		case 4:
+			return '&#' . (((ord($m[0][0]) & 0x07) << 18) | ((ord($m[0][1]) & 0x3F) << 12) | ((ord($m[0][2]) & 0x3F) << 6) | (ord($m[0][3]) & 0x3F)) . ';';
+
+		default:
+			return $m[0];
+	}		
+}
+
+/**
+* Convert Numeric Character References to UTF-8 chars
+*
+* Notes:
+*  - we do not convert NCRs recursively, if you pass &#38;#38; it will return &#38;
+*  - we DO NOT check for the existence of the Unicode characters, therefore an entity
+*    may be converted to an inexistent codepoint
+*
+* @param	string	$text		String to convert, encoded in UTF-8 (no normal form required)
+* @return	string				UTF-8 string where NCRs have been replaced with the actual chars
+*/
+function utf8_decode_ncr($text)
+{
+	return preg_replace_callback('/&#([0-9]{1,6}|x[0-9A-F]{1,5});/i', 'utf8_decode_ncr_callback', $text);
+}
+
+/**
+* Callback used in decode_ncr()
+*
+* Takes a NCR (in decimal or hexadecimal) and returns a UTF-8 char. Attention, $m is an array.
+* It will ignore most of invalid NCRs, but not all!
+*
+* @param	array	$m			0-based numerically indexed array passed by preg_replace_callback()
+* @return	string				UTF-8 char
+*/
+function utf8_decode_ncr_callback($m)
+{
+	$cp = (strncasecmp($m[1], 'x', 1)) ? $m[1] : hexdec(substr($m[1], 1));
+
+	if ($cp > 0xFFFF)
+	{
+		return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
+	}
+	elseif ($cp > 0x7FF)
+	{
+		return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
+	}
+	elseif ($cp > 0x7F)
+	{
+		return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
+	}
+	else
+	{
+		return chr($cp);
+	}
+}
+
 ?>
