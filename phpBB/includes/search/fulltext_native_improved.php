@@ -989,8 +989,8 @@ class fulltext_native_improved extends search_backend
 		if (sizeof($unique_add_words))
 		{
 			$sql = 'SELECT word_id, word_text
-				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $unique_add_words)) . ')';
+				FROM ' . SEARCH_WORDLIST_TABLE . "
+				WHERE word_text IN ('" . implode("','", array_map(array(&$db, 'sql_escape'), $unique_add_words)) . "')";
 			$result = $db->sql_query($sql);
 
 			$word_ids = array();
@@ -1010,19 +1010,7 @@ class fulltext_native_improved extends search_backend
 					case 'mysql4':
 					case 'mysqli':
 						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-							VALUES ('" . implode("'),('", array_map(array($db, 'sql_escape'), $new_words)) . "')";
-						$db->sql_query($sql);
-					break;
-
-					case 'mssql':
-					case 'mssql_odbc':
-					case 'sqlite':
-						$new_words = array_map(array($db, 'sql_escape'), $new_words);
-
-						// make sure the longest word comes first, so nothing will be truncated
-						usort($new_words, array(&$this, 'strlencmp'));
-
-						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
+							VALUES ('" . implode("'),('", array_map(array(&$db, 'sql_escape'), $new_words)) . "')";
 						$db->sql_query($sql);
 					break;
 
@@ -1068,8 +1056,8 @@ class fulltext_native_improved extends search_backend
 			{
 				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . " (post_id, word_id, title_match)
 					SELECT $post_id, word_id, $title_match
-					FROM " . SEARCH_WORDLIST_TABLE . '
-					WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $word_ary)) . ')';
+					FROM " . SEARCH_WORDLIST_TABLE . "
+					WHERE word_text IN ('" . implode("','", array_map(array(&$db, 'sql_escape'), $word_ary)) . "')";
 				$db->sql_query($sql);
 			}
 		}
