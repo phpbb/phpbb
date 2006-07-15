@@ -22,6 +22,12 @@ define('UTF8_SURROGATE_LAST', "\xED\xBF\xBF");
 define('UTF8_HANGUL_FIRST', "\xEA\xB0\x80");
 define('UTF8_HANGUL_LAST', "\xED\x9E\xA3");
 
+define('UTF8_CJK_FIRST', "\xE4\xB8\x80");
+define('UTF8_CJK_LAST', "\xE9\xBE\xBB");
+define('UTF8_CJK_B_FIRST', "\xF0\xA0\x80\x80");
+define('UTF8_CJK_B_LAST', "\xF0\xAA\x9B\x96");
+
+
 if (function_exists('utf8_normalize'))
 {
 

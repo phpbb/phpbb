@@ -865,55 +865,56 @@ class fulltext_native_improved extends search_backend
 		$isset_min = $min - 1;
 
 		/**
+		* Load the UTF tools
+		*/
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		}
+
+		/**
 		* Clean up the string, remove HTML tags, remove BBCodes
 		*/
 		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), '', $user->lang['ENCODING']), ' ');
 
 		while (isset($word[0]))
 		{
-			/**
-			* We check the length in octets to get an idea of the length
-			* in chars. If it greater than or equal to $min and lower than
-			* or equal to $max then we can safely assume they are within the
-			* char limits
-			*
-			* Words that take more than 255 bytes are ignored
-			*/
-			if (isset($word[$isset_min])
-			 && !isset($word[255]))
+			if (isset($word[252])
+			 || !isset($word[$isset_min]))
 			{
 				/**
-				* This word does not exceed the SQL size, but we don't know
-				* yet if its length in chars exceed the admin-defined one
+				* Words longer than 252 bytes are ignored. This will have to be
+				* changed whenever we change the length of search_wordlist.word_text
+				*
+				* Words shorter than $isset_min bytes are ignored, too
 				*/
-				if (!isset($word[$max]))
-				{
-					/**
-					* No chance, its length in bytes is lower than our limit
-					* and a single byte can't represent two chars
-					*/
-					$words[] = $word;
-				}
-				else
-				{
-					/**
-					* We have to find the length in chars
-					*/
-					if (!function_exists('utf8_strlen'))
-					{
-						include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-					}
+				$word = strtok(' ');
+				continue;
+			}
 
-					if (utf8_strlen($word) <= $max)
-					{
-						/**
-						* Hurray for us, the word is the right size
-						*/
-						$words[] = $word;
-					}
+			$len = utf8_strlen($word);
+
+			/**
+			* Test whether the word is too short to be indexed.
+			*
+			* Note that this limit does NOT apply to CJK and Hangul
+			*/
+			if ($len < $min)
+			{
+				/**
+				* Note: this could be optimized. If the codepoint is lower than Hangul's range
+				* we know that it will also be lower than CJK ranges
+				*/
+				if ((strncmp($word, UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, UTF8_HANGUL_LAST, 3) > 0)
+				 && (strncmp($word, UTF8_CJK_FIRST, 3) < 0 || strncmp($word, UTF8_CJK_LAST, 3) > 0)
+				 && (strncmp($word, UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, UTF8_CJK_B_LAST, 4) > 0))
+				{
+					$word = strtok(' ');
+					continue;
 				}
 			}
 
+			$words[] = $word;
 			$word = strtok(' ');
 		}
 
@@ -1377,12 +1378,17 @@ class fulltext_native_improved extends search_backend
 			$utf_char = substr($text, $pos, $utf_len);
 			$pos += $utf_len;
 
-			if ($utf_char >= UTF8_HANGUL_FIRST && $utf_char <= UTF8_HANGUL_LAST)
+			if (($utf_char >= UTF8_HANGUL_FIRST && $utf_char <= UTF8_HANGUL_LAST)
+			 || ($utf_char >= UTF8_CJK_FIRST && $utf_char <= UTF8_CJK_LAST)
+			 || ($utf_char >= UTF8_CJK_B_FIRST && $utf_char <= UTF8_CJK_B_LAST))
 			{
 				/**
-				* All characters within this range are valid
+				* All characters within these ranges are valid
+				*
+				* We index all the characters separately and we pad them to make them
+				* long enough to be indexed
 				*/
-				$ret .= $utf_char;
+				$ret .= ' chr' . $utf_char;
 				continue;
 			}
 
