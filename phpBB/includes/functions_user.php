@@ -1389,7 +1389,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		// Parse description
 		if ($desc)
 		{
-			generate_text_for_storage($sql_ary['group_desc'], $sql_ary['group_desc_uid'], $sql_ary['group_desc_bitfield'], $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies);
+			generate_text_for_storage($sql_ary['group_desc'], $sql_ary['group_desc_uid'], $sql_ary['group_desc_bitfield'], $sql_ary['group_desc_options'], $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies);
 		}
 
 		if (sizeof($group_attributes))

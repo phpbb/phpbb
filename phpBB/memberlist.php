@@ -992,7 +992,7 @@ switch ($mode)
 			}
 
 			$template->assign_vars(array(
-				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield']),
+				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 				'GROUP_COLOR'	=> $group_row['group_colour'],
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],

@@ -1408,7 +1408,7 @@ class acp_profile
 		}
 		else
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', $field_ident . ':' . $cp->vars['lang_name']);
+			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 1) . ':' . $cp->vars['lang_name']);
 			trigger_error($user->lang['ADDED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 	}

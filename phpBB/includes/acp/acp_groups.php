@@ -418,7 +418,7 @@ class acp_groups
 				else
 				{
 					$group_name = $group_row['group_name'];
-					$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield']);
+					$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_options']);
 					$group_type = $group_row['group_type'];
 					$group_rank = $group_row['group_rank'];
 				}

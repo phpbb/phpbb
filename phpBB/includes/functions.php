@@ -1811,20 +1811,13 @@ function decode_message(&$message, $bbcode_uid = '')
 * For display of custom parsed text on user-facing pages
 * Expects $text to be the value directly from the database (stored value)
 */
-function generate_text_for_display($text, $uid, $bitfield)
+function generate_text_for_display($text, $uid, $bitfield, $flags)
 {
 	global $__bbcode;
 
 	if (!$text)
 	{
 		return '';
-	}
-
-	// Get flags... they are always allow_bbcode, allow_smilies and allow_urls
-	$flags = $bitfield;
-	if ($flags >> 3)
-	{
-		$flags = bindec(substr(decbin($flags), strlen(decbin($flags >> 3))));
 	}
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
@@ -1838,11 +1831,11 @@ function generate_text_for_display($text, $uid, $bitfield)
 
 		if (empty($__bbcode))
 		{
-			$__bbcode = new bbcode($bitfield >> 3);
+			$__bbcode = new bbcode($bitfield);
 		}
 		else
 		{
-			$__bbcode->bbcode($bitfield >> 3);
+			$__bbcode->bbcode($bitfield);
 		}
 		
 		$__bbcode->bbcode_second_pass($text, $uid);
@@ -1859,7 +1852,7 @@ function generate_text_for_display($text, $uid, $bitfield)
 * This function additionally returns the uid and bitfield that needs to be stored.
 * Expects $text to be the value directly from request_var() and in it's non-parsed form
 */
-function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
+function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
 	global $phpbb_root_path, $phpEx;
 
@@ -1889,7 +1882,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = fa
 	}
 
 	$flags = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
-	$bitfield = $flags + ($message_parser->bbcode_bitfield << 3);
+	$bitfield = $message_parser->bbcode_bitfield;
 
 	return;
 }
@@ -1898,16 +1891,9 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = fa
 * For decoding custom parsed text for edits as well as extracting the flags
 * Expects $text to be the value directly from the database (pre-parsed content)
 */
-function generate_text_for_edit($text, $uid, $bitfield)
+function generate_text_for_edit($text, $uid, $flags)
 {
 	global $phpbb_root_path, $phpEx;
-
-	// Get forum flags...
-	$flags = $bitfield;
-	if ($flags >> 3)
-	{
-		$flags = bindec(substr(decbin($flags), strlen(decbin($flags >> 3))));
-	}
 
 	decode_message($text, $uid);
 

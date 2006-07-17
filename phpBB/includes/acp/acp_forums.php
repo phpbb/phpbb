@@ -99,9 +99,11 @@ class acp_forums
 						'forum_link_track'		=> request_var('forum_link_track', false),
 						'forum_desc'			=> request_var('forum_desc', '', true),
 						'forum_desc_uid'		=> '',
+						'forum_desc_options'	=> 0,
 						'forum_desc_bitfield'	=> 0,
 						'forum_rules'			=> request_var('forum_rules', '', true),
 						'forum_rules_uid'		=> '',
+						'forum_rules_options'	=> 0,
 						'forum_rules_bitfield'	=> 0,
 						'forum_rules_link'		=> request_var('forum_rules_link', ''),
 						'forum_image'			=> request_var('forum_image', ''),
@@ -127,13 +129,13 @@ class acp_forums
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
 					{
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], request_var('rules_parse_bbcode', false), request_var('rules_parse_urls', false), request_var('rules_parse_smilies', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_parse_bbcode', false), request_var('rules_parse_urls', false), request_var('rules_parse_smilies', false));
 					}
 
 					// Get data for forum description if specified
 					if ($forum_data['forum_desc'])
 					{
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], request_var('desc_parse_bbcode', false), request_var('desc_parse_urls', false), request_var('desc_parse_smilies', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_parse_bbcode', false), request_var('desc_parse_urls', false), request_var('desc_parse_smilies', false));
 					}
 
 					$errors = $this->update_forum_data($forum_data);
@@ -405,15 +407,16 @@ class acp_forums
 						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
 						$forum_data['forum_rules_uid'] = '';
 						$forum_data['forum_rules_bitfield'] = 0;
+						$forum_data['forum_rules_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
 					}
 
 					// Generate preview content
-					$forum_rules_preview = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+					$forum_rules_preview = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
 
 					// decode...
-					$forum_rules_data = generate_text_for_edit($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+					$forum_rules_data = generate_text_for_edit($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_options']);
 				}
 
 				// Parse desciption if specified
@@ -424,12 +427,13 @@ class acp_forums
 						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
 						$forum_data['forum_desc_uid'] = '';
 						$forum_data['forum_desc_bitfield'] = 0;
+						$forum_data['forum_desc_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
 					}
 
 					// decode...
-					$forum_desc_data = generate_text_for_edit($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield']);
+					$forum_desc_data = generate_text_for_edit($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_options']);
 				}
 
 				$forum_type_options = '';
@@ -661,7 +665,7 @@ class acp_forums
 				$template->assign_block_vars('forums', array(
 					'FOLDER_IMAGE'		=> $folder_image,
 					'FORUM_NAME'		=> $row['forum_name'],
-					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
+					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 					'FORUM_TOPICS'		=> $row['forum_topics'],
 					'FORUM_POSTS'		=> $row['forum_posts'],
 
