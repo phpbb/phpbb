@@ -154,8 +154,9 @@ $dbms_type_map = array(
 
 // A list of types being unsigned for better reference in some db's
 $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
+$supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
 
-foreach (array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite') as $dbms)
+foreach ($supported_dbms as $dbms)
 {
 	$fp = fopen($schema_path . '_' . $dbms . '_schema.sql', 'wt');
 
@@ -619,7 +620,7 @@ function get_schema_struct()
 			'topic_id'			=> array('UINT', 0),
 			'in_message'		=> array('BOOL', 0),
 			'poster_id'			=> array('UINT', 0),
-			'pysical_filename'	=> array('VCHAR', ''),
+			'physical_filename'	=> array('VCHAR', ''),
 			'real_filename'		=> array('VCHAR', ''),
 			'download_count'	=> array('UINT', 0),
 			'attach_comment'	=> array('TEXT', ''),
@@ -845,6 +846,7 @@ function get_schema_struct()
 			'forum_name'			=> array('STEXT', ''),
 			'forum_desc'			=> array('TEXT', ''),
 			'forum_desc_bitfield'	=> array('UINT:11', 0),
+			'forum_desc_options'	=> array('UINT:11', 0),
 			'forum_desc_uid'		=> array('VCHAR:5', ''),
 			'forum_link'			=> array('VCHAR', ''),
 			'forum_password'		=> array('VCHAR:40', ''),
@@ -853,6 +855,7 @@ function get_schema_struct()
 			'forum_rules'			=> array('TEXT', ''),
 			'forum_rules_link'		=> array('VCHAR', ''),
 			'forum_rules_bitfield'	=> array('UINT:11', 0),
+			'forum_rules_options'	=> array('UINT:11', 0),
 			'forum_rules_uid'		=> array('VCHAR:5', ''),
 			'forum_topics_per_page'	=> array('TINT:4', 0),
 			'forum_type'			=> array('TINT:4', 0),
@@ -919,6 +922,7 @@ function get_schema_struct()
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT', ''),
 			'group_desc_bitfield'	=> array('UINT:11', 0),
+			'group_desc_options'	=> array('UINT:11', 0),
 			'group_desc_uid'		=> array('VCHAR:5', ''),
 			'group_display'			=> array('BOOL', 0),
 			'group_avatar'			=> array('VCHAR', ''),
@@ -953,7 +957,7 @@ function get_schema_struct()
 	$schema_data['phpbb_lang'] = array(
 		'COLUMNS'		=> array(
 			'lang_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'lang_iso'				=> array('VCHAR:5', ''),
+			'lang_iso'				=> array('VCHAR:30', ''),
 			'lang_dir'				=> array('VCHAR:30', ''),
 			'lang_english_name'		=> array('VCHAR:100', ''),
 			'lang_local_name'		=> array('VCHAR:255', ''),
@@ -1149,7 +1153,7 @@ function get_schema_struct()
 			'rule_user_id'			=> array('UINT', 0),
 			'rule_group_id'			=> array('UINT', 0),
 			'rule_action'			=> array('UINT', 0),
-			'rule_folder_id'		=> array('UINT', 0),
+			'rule_folder_id'		=> array('INT:4', 0),
 		),
 		'PRIMARY_KEY'	=> 'rule_id',
 	);
@@ -1165,7 +1169,7 @@ function get_schema_struct()
 			'pm_replied'			=> array('BOOL', 0),
 			'pm_marked'				=> array('BOOL', 0),
 			'pm_forwarded'			=> array('BOOL', 0),
-			'folder_id'				=> array('UINT', 0),
+			'folder_id'				=> array('INT:4', 0),
 		),
 		'KEYS'			=> array(
 			'msg_id'				=> array('INDEX', 'msg_id'),

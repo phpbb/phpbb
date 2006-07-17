@@ -177,8 +177,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 			{
 				$row = &$folder_info['rowset'][$message_id];
 
-				$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
-				$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
+				$folder_img = ($row['pm_unread']) ? 'folder_new' : 'folder';
+				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
 				$message_author = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['author_id']) . '">' . $row['username'] . '</a>';
@@ -188,7 +188,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$row_indicator = '';
 				foreach ($color_rows as $var)
 				{
-					if (($var != 'friend' && $var != 'foe' && $row[$var])
+					if (($var != 'friend' && $var != 'foe' && $row['pm_' . $var])
 						||
 						(($var == 'friend' || $var == 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
 					{
@@ -213,10 +213,10 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
-					'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
+					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 
-					'U_VIEW_PM'			=> ($row['deleted']) ? '' : $view_message_url,
-					'U_REMOVE_PM'		=> ($row['deleted']) ? $remove_message_url : '',
+					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
+					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
 				);
 			}

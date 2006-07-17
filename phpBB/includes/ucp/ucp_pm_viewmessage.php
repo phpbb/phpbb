@@ -23,7 +23,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$author_id	= (int) $message_row['author_id'];
 
 	// Not able to view message, it was deleted by the sender
-	if ($message_row['deleted'])
+	if ($message_row['pm_deleted'])
 	{
 		trigger_error('NO_AUTH_READ_REMOVED_MESSAGE');
 	}

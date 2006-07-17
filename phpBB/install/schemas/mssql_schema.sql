@@ -15,7 +15,7 @@ CREATE TABLE [phpbb_attachments] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[in_message] [int] DEFAULT (0) NOT NULL ,
 	[poster_id] [int] DEFAULT (0) NOT NULL ,
-	[pysical_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[physical_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[real_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[download_count] [int] DEFAULT (0) NOT NULL ,
 	[attach_comment] [varchar] (8000) DEFAULT ('') NOT NULL ,
@@ -509,7 +509,7 @@ GO
 /* Table: 'phpbb_lang' */
 CREATE TABLE [phpbb_lang] (
 	[lang_id] [int] IDENTITY (1, 1) NOT NULL ,
-	[lang_iso] [varchar] (5) DEFAULT ('') NOT NULL ,
+	[lang_iso] [varchar] (30) DEFAULT ('') NOT NULL ,
 	[lang_dir] [varchar] (30) DEFAULT ('') NOT NULL ,
 	[lang_english_name] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[lang_local_name] [varchar] (255) DEFAULT ('') NOT NULL ,

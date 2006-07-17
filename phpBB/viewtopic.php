@@ -989,6 +989,10 @@ while ($row = $db->sql_fetchrow($result))
 				'avatar'		=> '',
 				'age'			=> '',
 
+				'rank_title'		=> '',
+				'rank_image'		=> '',
+				'rank_image_src'	=> '',
+
 				'online'		=> false,
 				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
 				'www'			=> $row['user_website'],
@@ -1038,12 +1042,6 @@ while ($row = $db->sql_fetchrow($result))
 							break;
 						}
 					}
-				}
-				else
-				{
-					$user_cache[$poster_id]['rank_title'] = '';
-					$user_cache[$poster_id]['rank_image'] = '';
-					$user_cache[$poster_id]['rank_image_src'] = '';
 				}
 			}
 

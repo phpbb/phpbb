@@ -13,7 +13,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
 	in_message tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
 	poster_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-	pysical_filename varchar(255) NOT NULL DEFAULT '',
+	physical_filename varchar(255) NOT NULL DEFAULT '',
 	real_filename varchar(255) NOT NULL DEFAULT '',
 	download_count mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
 	attach_comment text(65535) NOT NULL DEFAULT '',
@@ -306,7 +306,7 @@ CREATE TABLE phpbb_icons (
 # Table: 'phpbb_lang'
 CREATE TABLE phpbb_lang (
 	lang_id INTEGER PRIMARY KEY NOT NULL ,
-	lang_iso varchar(5) NOT NULL DEFAULT '',
+	lang_iso varchar(30) NOT NULL DEFAULT '',
 	lang_dir varchar(30) NOT NULL DEFAULT '',
 	lang_english_name varchar(100) NOT NULL DEFAULT '',
 	lang_local_name varchar(255) NOT NULL DEFAULT '',
@@ -478,7 +478,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
 	rule_group_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
 	rule_action mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
-	rule_folder_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0'
+	rule_folder_id int(4) NOT NULL DEFAULT '0'
 );
 
 
@@ -493,7 +493,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
 	pm_marked tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
 	pm_forwarded tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-	folder_id mediumint(8) UNSIGNED NOT NULL DEFAULT '0'
+	folder_id int(4) NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id);

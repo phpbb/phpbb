@@ -11,7 +11,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id INTEGER DEFAULT 0 NOT NULL,
 	in_message INTEGER DEFAULT 0 NOT NULL,
 	poster_id INTEGER DEFAULT 0 NOT NULL,
-	pysical_filename VARCHAR(255) DEFAULT '' NOT NULL,
+	physical_filename VARCHAR(255) DEFAULT '' NOT NULL,
 	real_filename VARCHAR(255) DEFAULT '' NOT NULL,
 	download_count INTEGER DEFAULT 0 NOT NULL,
 	attach_comment BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
@@ -472,7 +472,7 @@ END;;
 # Table: 'phpbb_lang'
 CREATE TABLE phpbb_lang (
 	lang_id INTEGER NOT NULL,
-	lang_iso VARCHAR(5) DEFAULT '' NOT NULL,
+	lang_iso VARCHAR(30) DEFAULT '' NOT NULL,
 	lang_dir VARCHAR(30) DEFAULT '' NOT NULL,
 	lang_english_name VARCHAR(100) DEFAULT '' NOT NULL,
 	lang_local_name VARCHAR(255) DEFAULT '' NOT NULL,

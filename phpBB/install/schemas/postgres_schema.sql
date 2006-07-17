@@ -85,7 +85,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	in_message INT2 DEFAULT '0' NOT NULL CHECK (in_message >= 0),
 	poster_id INT4 DEFAULT '0' NOT NULL CHECK (poster_id >= 0),
-	pysical_filename varchar(255) DEFAULT '' NOT NULL,
+	physical_filename varchar(255) DEFAULT '' NOT NULL,
 	real_filename varchar(255) DEFAULT '' NOT NULL,
 	download_count INT4 DEFAULT '0' NOT NULL CHECK (download_count >= 0),
 	attach_comment varchar(8000) DEFAULT '' NOT NULL,
@@ -417,7 +417,7 @@ CREATE SEQUENCE phpbb_lang_seq;
 
 CREATE TABLE phpbb_lang (
 	lang_id INT2 DEFAULT nextval('phpbb_lang_seq'),
-	lang_iso varchar(5) DEFAULT '' NOT NULL,
+	lang_iso varchar(30) DEFAULT '' NOT NULL,
 	lang_dir varchar(30) DEFAULT '' NOT NULL,
 	lang_english_name varchar(100) DEFAULT '' NOT NULL,
 	lang_local_name varchar(255) DEFAULT '' NOT NULL,
@@ -607,7 +607,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id INT4 DEFAULT '0' NOT NULL CHECK (rule_user_id >= 0),
 	rule_group_id INT4 DEFAULT '0' NOT NULL CHECK (rule_group_id >= 0),
 	rule_action INT4 DEFAULT '0' NOT NULL CHECK (rule_action >= 0),
-	rule_folder_id INT4 DEFAULT '0' NOT NULL CHECK (rule_folder_id >= 0),
+	rule_folder_id INT4 DEFAULT '0' NOT NULL,
 	PRIMARY KEY (rule_id)
 );
 
@@ -623,7 +623,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied INT2 DEFAULT '0' NOT NULL CHECK (pm_replied >= 0),
 	pm_marked INT2 DEFAULT '0' NOT NULL CHECK (pm_marked >= 0),
 	pm_forwarded INT2 DEFAULT '0' NOT NULL CHECK (pm_forwarded >= 0),
-	folder_id INT4 DEFAULT '0' NOT NULL CHECK (folder_id >= 0)
+	folder_id INT4 DEFAULT '0' NOT NULL
 );
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id);

@@ -131,13 +131,13 @@ $result = $db->sql_query($sql);
 $post_data = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
-$user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
-
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
 	exit;
 }
+
+$user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 
 // Use post_row values in favor of submitted ones...
 $forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;
@@ -1236,7 +1236,7 @@ function upload_popup($forum_style = 0)
 
 	($forum_style) ? $user->setup('posting', $forum_style) : $user->setup('posting');
 
-	page_header('PROGRESS_BAR');
+	page_header($user->lang['PROGRESS_BAR']);
 
 	$template->set_filenames(array(
 		'popup'	=> 'posting_progress_bar.html')
