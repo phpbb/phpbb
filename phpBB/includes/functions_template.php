@@ -86,7 +86,7 @@ class template_compile
 		// php is a no-no. There is a potential issue here in that non-php
 		// content may be removed ... however designers should use entities
 		// if they wish to display < and >
-		$match_php_tags = array('#\<\?php .*?\?\>#is', '#\<\script language="php"\>.*?\<\/script\>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
+		$match_php_tags = array('#\<\?php .*?\?\>#is', '#\<script language="php"\>.*?\<\/script\>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
 		$code = preg_replace($match_php_tags, '', $code);
 
 		// Pull out all block/statement level elements and seperate plain text
