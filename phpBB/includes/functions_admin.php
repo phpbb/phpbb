@@ -2140,8 +2140,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			if (isset($user->lang[$row['log_operation']]))
 			{
-				$params = array_merge(array($log[$i]['action']), $log_data_ary);
-				$log[$i]['action'] = call_user_func_array('sprintf', $params);
+				$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
 				$log[$i]['action'] = str_replace("\n", '<br />', censor_text($log[$i]['action']));
 			}
 			else
