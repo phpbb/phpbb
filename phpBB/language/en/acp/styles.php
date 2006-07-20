@@ -198,6 +198,7 @@ $lang = array_merge($lang, array(
 	'IMG_FOLDER_LOCKED_STICKY_POSTED'		=> 'Sticky topic locked posted to',
 	'IMG_FOLDER_LOCKED_STICKY_NEW'			=> 'Sticky topic locked new posts',
 	'IMG_FOLDER_LOCKED_STICKY_NEW_POSTED'	=> 'Sticky topic locked posted to new',
+	'IMG_FOLDER_MOVED'						=> 'Topic moved',
 	'IMG_FOLDER_NEW'						=> 'Topic new posts',
 	'IMG_FOLDER_NEW_POSTED'					=> 'Topic posted to new',
 	'IMG_FOLDER_POSTED'						=> 'Topic posted to',

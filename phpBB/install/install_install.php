@@ -558,6 +558,17 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_PASSWORD_MISMATCH'];
 			}
 
+			// Test against the default username rules
+			if ($admin_name != '' && strlen($admin_name) < 3)
+			{
+				$error[] = $lang['INST_ERR_USER_TOO_SHORT'];
+			}
+
+			if ($admin_name != '' && strlen($admin_name) > 20)
+			{
+				$error[] = $lang['INST_ERR_USER_TOO_LONG'];
+			}
+
 			// Test against the default password rules
 			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
 			{
@@ -1812,7 +1823,7 @@ class install_install extends module
 	var $admin_config_options = array(
 		'legend1'				=> 'ADMIN_CONFIG',
 		'language'				=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
-		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => false),
+		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => true),
 		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
 		'board_email1'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),

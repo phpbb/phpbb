@@ -35,6 +35,7 @@ $lang = array_merge($lang, array(
 	'ADMIN_PASSWORD_EXPLAIN'	=> '(Please enter a password between 6 and 30 characters is length)',
 	'ADMIN_TEST'				=> 'Check administrator settings',
 	'ADMIN_USERNAME'			=> 'Administrator username',
+	'ADMIN_USERNAME_EXPLAIN'	=> '(Please enter a password between 3 and 20 characters is length)',
 	'APP_MAGICK'				=> 'Imagemagick support [ Attachments ]',
 	'AUTHOR_NOTES'				=> 'Author Notes<br />&#187; %s',
 	'AVAILABLE'					=> 'Available',
@@ -168,6 +169,9 @@ $lang = array_merge($lang, array(
 	'INST_ERR_PASSWORD_TOO_LONG' => 'The password you entered is too long. The maximum length is 30 characters.',
 	'INST_ERR_PASSWORD_TOO_SHORT' => 'The password you entered is too short. The minimum length is 6 characters.',
 	'INST_ERR_PREFIX'			=> 'Tables with the specified prefix already exist, please choose an alternative.',
+	'INST_ERR_PREFIX_TOO_LONG'	=> 'The table prefix you have specified is too long. The maximum length is %d characters.',
+	'INST_ERR_USER_TOO_LONG'	=> 'The username you entered is too long. The maximum length is 20 characters.',
+	'INST_ERR_USER_TOO_SHORT'	=> 'The username you entered is too short. The minimum length is 3 characters.',
 	'INVALID_PRIMARY_KEY'		=> 'Invalid primary key : %s',
 
 	'MAKE_FOLDER_WRITABLE'		=> 'Please make sure that this folder exists and is writable by the webserver then try again:<br />&#187;<b>%s</b>',
