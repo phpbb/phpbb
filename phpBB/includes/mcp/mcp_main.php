@@ -583,7 +583,7 @@ function mcp_delete_topic($topic_ids)
 			add_log('mod', $forum_id, 0, 'LOG_TOPIC_DELETED', $row['topic_title']);
 		}
 
-		$return = delete_topics('topic_id', $topic_ids, true);
+		$return = delete_topics('topic_id', $topic_ids);
 	}
 	else
 	{

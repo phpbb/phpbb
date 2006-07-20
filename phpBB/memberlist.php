@@ -648,10 +648,12 @@ switch ($mode)
 					'email_lang'		=> $email_lang,
 					'email'				=> $email,
 					'name'				=> $name,
-					'username'			=> $row['username'],
+					'username'			=> ($user_id) ? $row['username'] : '',
 					'to_name'			=> $name,
-					'user_jabber'		=> $row['user_jabber'],
-					'user_notify_type'	=> $row['user_notify_type'],
+					'user_jabber'		=> ($user_id) ? $row['user_jabber'] : '',
+					'user_notify_type'	=> ($user_id) ? $row['user_notify_type'] : NOTIFY_EMAIL,
+					'topic_title'		=> (!$user_id) ? $row['topic_title'] : '',
+					'forum_id'			=> (!$user_id) ? $row['forum_id'] : 0,
 				);
 
 				// Ok, now the same email if CC specified, but without exposing the users email address
@@ -665,6 +667,8 @@ switch ($mode)
 						'to_name'			=> $name,
 						'user_jabber'		=> $user->data['user_jabber'],
 						'user_notify_type'	=> ($user_id) ? $user->data['user_notify_type'] : NOTIFY_EMAIL,
+						'topic_title'		=> (!$user_id) ? $row['topic_title'] : '',
+						'forum_id'			=> (!$user_id) ? $row['forum_id'] : 0,
 					);
 				}
 

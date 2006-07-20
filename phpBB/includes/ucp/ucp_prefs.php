@@ -61,7 +61,7 @@ class ucp_prefs
 
 					$var_ary = array(
 						'dateformat'	=> array('string', false, 3, 30),
-						'lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
+						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 					);
 

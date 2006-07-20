@@ -97,7 +97,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_link_width', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_height', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_min_thumb_filesize', '12000');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ip_check', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_password', '');

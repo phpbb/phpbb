@@ -1175,7 +1175,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	{
 		case 'delete_topic':
 			delete_topics('topic_id', array($topic_id), false);
-			set_config('num_topics', $config['num_topics'] - 1, true);
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
@@ -1269,7 +1268,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	}
 
 	$sql_data[USERS_TABLE] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
-	set_config('num_posts', $config['num_posts'] - 1, true);
 
 	$db->sql_transaction('begin');
 

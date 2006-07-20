@@ -10,15 +10,9 @@
 
 /**
 * Recalculate Binary Tree
-*/
 function recalc_btree($sql_id, $sql_table, $module_class = '')
 {
 	global $db;
-
-	/* Init table, id's, etc...
-	$sql_id = 'module_id'; // 'forum_id'
-	$sql_table = MODULES_TABLE; // FORUMS_TABLE
-	*/
 
 	if (!$sql_id || !$sql_table)
 	{
@@ -103,6 +97,7 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 	}
 	$db->sql_freeresult($f_result);
 }
+*/
 
 /**
 * Simple version of jumpbox, just lists authed forums
@@ -498,7 +493,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 	}
 
 	$return = array(
-		'posts'	=>	delete_posts($where_type, $where_ids, false, false)
+		'posts'	=>	delete_posts($where_type, $where_ids, false, true)
 	);
 
 	$sql = 'SELECT topic_id, forum_id

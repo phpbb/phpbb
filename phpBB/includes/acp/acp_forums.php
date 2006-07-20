@@ -342,7 +342,20 @@ class acp_forums
 						$forum_data = $row;
 					}
 
-					$parents_list = make_forum_select($forum_data['parent_id'], $forum_id, false, false, false);
+					// Make sure there is no forum displayed for parents_list having the current forum id as a parent...
+					$sql = 'SELECT forum_id
+						FROM ' . FORUMS_TABLE . '
+						WHERE parent_id = ' . $forum_id;
+					$result = $db->sql_query($sql);
+
+					$exclude_forums = array($forum_id);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$exclude_forums[] = $row['forum_id'];
+					}
+					$db->sql_freeresult($result);
+
+					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
 				}

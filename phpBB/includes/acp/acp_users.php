@@ -809,6 +809,7 @@ class acp_users
 					'USER_LASTACTIVE'	=> ($user_row['user_lastvisit']) ? $user->format_date($user_row['user_lastvisit']) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
+					'USER_POSTS'		=> $user_row['user_posts'],
 					)
 				);
 
@@ -1159,7 +1160,7 @@ class acp_users
 
 					$var_ary = array(
 						'dateformat'	=> array('string', false, 3, 30),
-						'lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
+						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 
 						'topic_sk'		=> array('string', false, 1, 1),

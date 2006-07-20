@@ -242,6 +242,7 @@ class acp_main
 				}
 
 				add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+
 			break;
 	
 			case 'date':

@@ -125,7 +125,7 @@ class ucp_register
 				'email_confirm'		=> array('string', false, 6, 60),
 				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
 				'tz'				=> array('num', false, -14, 14),
-				'lang'				=> array('match', false, '#^[a-z_]{2,}$#i'),
+				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			);
 
 			$error = validate_data($data, $var_ary);

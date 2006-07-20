@@ -1204,7 +1204,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Two situations can prevent a post being display:
 	// i)  The poster is on the users ignore list
 	// ii) The post was made in a codepage different from the users
-	if (isset($row['foe']) && $row['foe'])
+	if (!empty($row['foe']))
 	{
 		$template->assign_block_vars('postrow', array(
 			'S_IGNORE_POST' => true,
@@ -1213,21 +1213,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		continue;
 	}
-	else if ($row['post_encoding'] != $user->lang['ENCODING'])
+	else if ($row['post_encoding'] != $user->lang['ENCODING'] && $view == 'encoding' && $post_id == $row['post_id'])
 	{
-		if ($view == 'encoding' && $post_id == $row['post_id'])
-		{
-			$force_encoding = $row['post_encoding'];
-		}
-		else
-		{
-			$template->assign_block_vars('postrow', array(
-				'S_IGNORE_POST'	=> true,
-				'L_IGNORE_POST'	=> sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=encoding#p{$row['post_id']}" . '">', '</a>'))
-			);
-
-			continue;
-		}
+		$force_encoding = $row['post_encoding'];
 	}
 
 	// End signature parsing, only if needed
@@ -1382,6 +1370,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ICQ_STATUS_IMG'		=> $user_cache[$poster_id]['icq_status_img'],
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
+
+		'FORCE_ENCODING'	=> ($row['post_encoding'] != $user->lang['ENCODING']) ? sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=encoding#p{$row['post_id']}" . '">', '</a>') : '',
 
 		'U_EDIT'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
