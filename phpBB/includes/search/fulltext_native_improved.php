@@ -1383,7 +1383,7 @@ class fulltext_native_improved extends search_backend
 				* We separate them with a space in order to index each character
 				* individually
 				*/
-				$ret .= ' ' . $utf_char;
+				$ret .= ' ' . $utf_char . ' ';
 				continue;
 			}
 
