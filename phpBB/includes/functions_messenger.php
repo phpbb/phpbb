@@ -118,7 +118,7 @@ class messenger
 	*/
 	function headers($headers)
 	{
-		$this->extra_headers .= trim($headers) . "\r\n";
+		$this->extra_headers .= trim($headers) . "\n";
 	}
 
 	/**
@@ -339,22 +339,22 @@ class messenger
 		}
 
 		// Build header
-		$headers = 'From: ' . $this->from . "\r\n";
-		$headers .= ($cc != '') ? "Cc: $cc\r\n" : '';
-		$headers .= ($bcc != '') ? "Bcc: $bcc\r\n" : ''; 
-		$headers .= 'Reply-to: ' . $this->replyto . "\r\n";
-		$headers .= 'Return-Path: <' . $config['board_email'] . ">\r\n";
-		$headers .= 'Sender: <' . $config['board_email'] . ">\r\n";
-		$headers .= "MIME-Version: 1.0\r\n";
-		$headers .= 'Message-ID: <' . md5(unique_id(time())) . "@" . $config['server_name'] . ">\r\n";
-		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\r\n";
-		$headers .= "Content-type: text/plain; charset={$this->encoding}\r\n";
-		$headers .= "Content-transfer-encoding: 8bit\r\n";
-		$headers .= "X-Priority: {$this->mail_priority}\r\n";
-		$headers .= 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High')) . "\r\n";
-		$headers .= "X-Mailer: PhpBB3\r\n";
-		$headers .= "X-MimeOLE: phpBB3\r\n";
-		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\r\n";
+		$headers = 'From: ' . $this->from . "\n";
+		$headers .= ($cc != '') ? "Cc: $cc\n" : '';
+		$headers .= ($bcc != '') ? "Bcc: $bcc\n" : ''; 
+		$headers .= 'Reply-to: ' . $this->replyto . "\n";
+		$headers .= 'Return-Path: <' . $config['board_email'] . ">\n";
+		$headers .= 'Sender: <' . $config['board_email'] . ">\n";
+		$headers .= "MIME-Version: 1.0\n";
+		$headers .= 'Message-ID: <' . md5(unique_id(time())) . "@" . $config['server_name'] . ">\n";
+		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
+		$headers .= "Content-type: text/plain; charset={$this->encoding}\n";
+		$headers .= "Content-transfer-encoding: 8bit\n";
+		$headers .= "X-Priority: {$this->mail_priority}\n";
+		$headers .= 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High')) . "\n";
+		$headers .= "X-Mailer: PhpBB3\n";
+		$headers .= "X-MimeOLE: phpBB3\n";
+		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
 		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
 
 		// Send message ... removed $this->encode() from subject for time being
@@ -363,7 +363,14 @@ class messenger
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
 			$err_msg = '';
 
-			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers) : @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+			if ($config['smtp_delivery'])
+			{
+				$result = smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers);
+			}
+			else
+			{
+				$result = @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+			}
 
 			if (!$result)
 			{
