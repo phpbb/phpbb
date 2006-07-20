@@ -136,12 +136,13 @@ class template_compile
 		// php is a no-no. There is a potential issue here in that non-php
 		// content may be removed ... however designers should use entities
 		// if they wish to display < and >
+/*
 		$match_php_tags = array('#\<\?php.*?\?\>#is', '#<[^\w<]*(script)(((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?(language[^<>\'"]+("[^"]*php[^"]*"|\'[^\']*php[^\']*\'))((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?)?>.*?</script>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
 		$code = preg_replace($match_php_tags, '', $code);
+*/
 
 		// An alternative to the above would be calling this function which would be the ultimate solution but also has it's drawbacks.
-		// At the moment it is commented out until we decide which method to use.
-//		$this->remove_php_tags($code);
+		$this->remove_php_tags($code);
 
 		// Pull out all block/statement level elements and seperate plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
