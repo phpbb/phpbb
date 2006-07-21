@@ -237,7 +237,6 @@ $lang = array_merge($lang, array(
 	'NOTIFY'				=> 'Notification',
 	'NO_ADMIN'				=> 'You are not authorised to administer this board.',
 	'NO_EMAILS_DEFINED'		=> 'No valid email addresses found',
-	'NO_IPS_DEFINED'		=> 'No IPs or Hostnames defined',
 
 	'OFF'					=> 'OFF',
 	'ON'					=> 'ON',

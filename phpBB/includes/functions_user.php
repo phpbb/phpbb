@@ -533,6 +533,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				}
 				$sql_usernames = implode(', ', $sql_usernames);
 
+				// Make sure we have been given someone to ban
+				if (empty($sql_usernames))
+				{
+					trigger_error($user->lang['NO_USER_SPECIFIED']);
+				}
+
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
 					WHERE username IN (' . $sql_usernames . ')';

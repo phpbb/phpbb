@@ -317,6 +317,7 @@ $lang = array_merge($lang, array(
 	'NO_FORUMS'					=> 'This board has no forums',
 	'NO_GROUP'					=> 'The requested usergroup does not exist.',
 	'NO_GROUP_MEMBERS'			=> 'This group currently has no members',
+	'NO_IPS_DEFINED'			=> 'No IPs or Hostnames defined',
 	'NO_MEMBERS'				=> 'No members found for this search criteria',
 	'NO_MESSAGES'				=> 'No messages',
 	'NO_MODERATORS'				=> 'No moderators assigned at this board.',
@@ -331,6 +332,7 @@ $lang = array_merge($lang, array(
 	'NO_UNREAD_PM'				=> '<strong>0</strong> unread messages',
 	'NO_USER'					=> 'The requested user does not exist.',
 	'NO_USERS'					=> 'The requested users do not exist',
+	'NO_USER_SPECIFIED'			=> 'No username was specified',
 
 	'OCCUPATION'				=> 'Occupation',
 	'OFFLINE'					=> 'Offline',
