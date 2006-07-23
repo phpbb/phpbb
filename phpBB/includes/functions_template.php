@@ -105,8 +105,8 @@ class template_compile
 			{
 				$match = array(
 					'\\?php[\n\r\s\t]+',
-					'\\?=',
-					'\\?[\n\r\s\t]',
+					'[\\?%]=',
+					'[\\?%][^\w]',
 					'script[\n\r\s\t]+language[\n\r\s\t]*=[\n\r\s\t]*[\'"]php[\'"]'
 				);
 
@@ -174,7 +174,7 @@ class template_compile
 		$code = preg_replace($match_php_tags, '', $code);
 */
 
-		// An alternative to the above would be calling this function which would be the ultimate solution but also has it's drawbacks.
+		// An alternative to the above would be calling this function which would be the ultimate solution but also has its drawbacks.
 		$this->remove_php_tags($code);
 
 		// Pull out all block/statement level elements and seperate plain text
