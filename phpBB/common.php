@@ -124,10 +124,10 @@ if (!defined('PHPBB_INSTALLED'))
 		$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
 	}
 
-	// Replace backslashes and doubled slashes (could happen on some proxy setups)
-	$script_name = str_replace(array('\\', '//'), '/', $script_name);
+	// Replace any number of consecutive backslashes and/or slashes with a single slash
+	// (could happen on some proxy setups and/or Windows servers)
 	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
-	$script_path = str_replace('//', '/', $script_path);
+	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
