@@ -439,7 +439,7 @@ class module
 						{
 							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
-							$url = $this->module_url . '?mode=' . $this->mode . "&amp;sub=&amp;language=$language";
+							$url = $this->module_url . '?mode=' . $this->mode . "&amp;sub=$option&amp;language=$language";
 
 							$template->assign_block_vars('l_block1', array(
 								'L_TITLE'		=> $l_option,
