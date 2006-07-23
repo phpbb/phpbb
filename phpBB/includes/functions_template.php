@@ -82,6 +82,39 @@ class template_compile
 	*/
 	function remove_php_tags(&$code)
 	{
+		if (!function_exists('token_get_all'))
+		{
+			/**
+			* If the tokenizer extension is not available, try to load it and if
+			* it's still not available we fall back to some pattern replacement.
+			*
+			* Note that the pattern replacement may affect the well-formedness
+			* of the HTML if a PHP tag is found because even if we escape PHP
+			* opening tags we do NOT escape PHP closing tags and cannot do so
+			* reliably without the use of a full-blown tokenizer.
+			*
+			* The bottom line is, a template should NEVER contain PHP because it
+			* would comprise the security of the installation, that's why we
+			* prevent it from being executed. Our job is to secure the installation,
+			* not fix unsecure templates. if a template contains some PHP then it
+			* should not be used at all.
+			*/
+			@dl('tokenizer');
+
+			if (!function_exists('token_get_all'))
+			{
+				$match = array(
+					'\\?php[\n\r\s\t]+',
+					'\\?=',
+					'\\?[\n\r\s\t]',
+					'script[\n\r\s\t]+language[\n\r\s\t]*=[\n\r\s\t]*[\'"]php[\'"]'
+				);
+
+				$code = preg_replace('#<(' . implode('|', $match) . ')#is', '&lt;$1', $code);
+				return;
+			}
+		}
+
 		do
 		{
 			$tokens = token_get_all('<?php ?>' . $code);
