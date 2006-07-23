@@ -188,6 +188,7 @@ function mcp_warn_post_view($id, $mode, $action)
 	global $template, $db, $user, $auth;
 
 	$post_id = request_var('p', 0);
+	$forum_id = request_var('f', 0);
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 	$warning = request_var('warning', '', true);
 
@@ -296,6 +297,8 @@ function mcp_warn_post_view($id, $mode, $action)
 
 		'AVATAR_IMG'		=> $avatar_img,
 		'RANK_IMG'			=> $rank_img,
+
+		'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id"),
 		)
 	);
 }

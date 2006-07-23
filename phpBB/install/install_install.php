@@ -54,7 +54,7 @@ class install_install extends module
 					'TITLE'			=> $lang['INSTALL_INTRO'],
 					'BODY'			=> $lang['INSTALL_INTRO_BODY'],
 					'L_SUBMIT'		=> $lang['NEXT'],
-					'S_LANG_SELECT'	=> '<select name="language">' . $this->p_master->inst_language_select() . '</select>',
+					'S_LANG_SELECT'	=> '<select name="language">' . $this->p_master->inst_language_select($language) . '</select>',
 					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language",
 				));
 
