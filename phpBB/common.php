@@ -104,7 +104,7 @@ if (defined('IN_CRON'))
 
 if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
-	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"$phpbb_root_path/install/index.$phpEx\">Click here to install phpBB</a></p>");
+	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"{$phpbb_root_path}install/index.$phpEx\">Click here to install phpBB</a></p>");
 }
 
 require($phpbb_root_path . 'config.' . $phpEx);
