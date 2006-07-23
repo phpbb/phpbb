@@ -310,7 +310,9 @@ class module
 		global $template, $lang, $stage;
 
 		$template->assign_vars(array(
+			'L_CHANGE'				=> $lang['CHANGE'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
+			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
@@ -628,6 +630,45 @@ class module
 		}
 
 		return $tpl;
+	}
+
+	/**
+	* Generate the drop down of available language packs
+	*/
+	function inst_language_select($default = '')
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$dir = @opendir($phpbb_root_path . 'language');
+
+		while ($file = readdir($dir))
+		{
+			$path = $phpbb_root_path . 'language/' . $file;
+
+			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
+			{
+				continue;
+			}
+
+			if (file_exists($path . '/iso.txt'))
+			{
+				list($displayname) = @file($path . '/iso.txt');
+				$lang[$displayname] = $file;
+			}
+		}
+		@closedir($dir);
+
+		@asort($lang);
+		@reset($lang);
+
+		$user_select = '';
+		foreach ($lang as $displayname => $filename)
+		{
+			$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
+			$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+		}
+
+		return $user_select;
 	}
 }
 

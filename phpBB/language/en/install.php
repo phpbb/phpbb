@@ -49,6 +49,7 @@ $lang = array_merge($lang, array(
 	'CAT_CONVERT'				=> 'Convert',
 	'CAT_INSTALL'				=> 'Install',
 	'CAT_OVERVIEW'				=> 'Overview',
+	'CHANGE'					=> 'Change',
 	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
 	'CLEAN_VERIFY'				=> 'Cleaning up and verifying the final structure',
 	'CONFIG_CONVERT'			=> 'Converting the configuration',
@@ -210,6 +211,7 @@ $lang = array_merge($lang, array(
 
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB2 is located relative to the domain name',
+	'SELECT_LANG'				=> 'Select language',
 	'SERVER_CONFIG'				=> 'Server Configuration',
 	'SOFTWARE'					=> 'Forum Software',
 	'SPECIFY_OPTIONS'			=> 'Specify Conversion Options',

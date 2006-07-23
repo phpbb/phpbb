@@ -51,10 +51,11 @@ class install_install extends module
 				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
-					'TITLE'		=> $lang['INSTALL_INTRO'],
-					'BODY'		=> $lang['INSTALL_INTRO_BODY'],
-					'L_SUBMIT'	=> $lang['NEXT'],
-					'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements",
+					'TITLE'			=> $lang['INSTALL_INTRO'],
+					'BODY'			=> $lang['INSTALL_INTRO_BODY'],
+					'L_SUBMIT'		=> $lang['NEXT'],
+					'S_LANG_SELECT'	=> '<select name="language">' . $this->p_master->inst_language_select() . '</select>',
+					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements",
 				));
 
 			break;
@@ -1044,7 +1045,7 @@ class install_install extends module
 				VALUES ('board_startdate', $current_time)",
 
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
-				VALUES ('default_lang', '" . $db->sql_escape($language) . "')",
+				VALUES ('default_lang', '" . $db->sql_escape($default_lang) . "')",
 
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($img_imagick) . "'
@@ -1123,7 +1124,7 @@ class install_install extends module
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
@@ -1491,7 +1492,7 @@ class install_install extends module
 				'user_password'		=> '',
 				'user_colour'		=> '9E8DA7',
 				'user_email'		=> '',
-				'user_lang'			=> $language,
+				'user_lang'			=> $default_lang,
 				'user_style'		=> 1,
 				'user_timezone'		=> 0,
 				'user_dateformat'	=> $lang['default_dateformat'],
@@ -1744,45 +1745,6 @@ class install_install extends module
 	}
 
 	/**
-	* Generate the drop down of available language packs
-	*/
-	function inst_language_select($default = '')
-	{
-		global $phpbb_root_path, $phpEx;
-
-		$dir = @opendir($phpbb_root_path . 'language');
-
-		while ($file = readdir($dir))
-		{
-			$path = $phpbb_root_path . 'language/' . $file;
-
-			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
-			{
-				continue;
-			}
-
-			if (file_exists($path . '/iso.txt'))
-			{
-				list($displayname) = @file($path . '/iso.txt');
-				$lang[$displayname] = $file;
-			}
-		}
-		@closedir($dir);
-
-		@asort($lang);
-		@reset($lang);
-
-		$user_select = '';
-		foreach ($lang as $displayname => $filename)
-		{
-			$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
-			$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
-		}
-
-		return $user_select;
-	}
-
-	/**
 	* Generate a list of available mail server authentication methods
 	*/
 	function mail_auth_select($selected_method)
@@ -1805,7 +1767,7 @@ class install_install extends module
 	* The variables that we will be passing between pages
 	* Used to retrieve data quickly on each page
 	*/
-	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
+	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'default_lang', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
 
 	/**
 	* The information below will be used to build the input fields presented to the user
@@ -1822,7 +1784,7 @@ class install_install extends module
 	);
 	var $admin_config_options = array(
 		'legend1'				=> 'ADMIN_CONFIG',
-		'language'				=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
+		'default_lang'			=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
 		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => true),
 		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),

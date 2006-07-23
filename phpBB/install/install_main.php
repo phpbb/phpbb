@@ -69,6 +69,8 @@ class install_main extends module
 		$template->assign_vars(array(
 			'TITLE'		=> $title,
 			'BODY'		=> $body,
+
+			'S_LANG_SELECT'	=> '<select name="language">' . $this->p_master->inst_language_select() . '</select>',
 		));
 	}
 }
