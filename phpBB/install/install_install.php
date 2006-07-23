@@ -43,7 +43,7 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template;
+		global $lang, $template, $language;
 
 		switch ($sub)
 		{
@@ -55,7 +55,7 @@ class install_install extends module
 					'BODY'			=> $lang['INSTALL_INTRO_BODY'],
 					'L_SUBMIT'		=> $lang['NEXT'],
 					'S_LANG_SELECT'	=> '<select name="language">' . $this->p_master->inst_language_select() . '</select>',
-					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements",
+					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language",
 				));
 
 			break;
@@ -107,7 +107,7 @@ class install_install extends module
 	*/
 	function check_server_requirements($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx;
+		global $lang, $template, $phpbb_root_path, $phpEx, $language;
 
 		$this->page_title = $lang['STAGE_REQUIREMENTS'];
 
@@ -367,7 +367,7 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements";
+		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
 		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
@@ -495,6 +495,7 @@ class install_install extends module
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 		if ($connect_test)
 		{
 			foreach ($this->db_config_options as $config_key => $vars)
@@ -666,6 +667,7 @@ class install_install extends module
 		}
 		
 		$s_hidden_fields .= ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 
 		foreach ($this->db_config_options as $config_key => $vars)
 		{
@@ -711,6 +713,7 @@ class install_install extends module
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 		$written = false;
 
 		// Create a list of any PHP modules we wish to have loaded
@@ -784,6 +787,7 @@ class install_install extends module
 		}
 
 		$config_options = array_merge($this->db_config_options, $this->admin_config_options);
+
 		foreach ($config_options as $config_key => $vars)
 		{
 			if (!is_array($vars))
@@ -855,13 +859,13 @@ class install_install extends module
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
-		$email_enable = ($email_enable !== '') ? $email_enable : true;
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 
+		$email_enable = ($email_enable !== '') ? $email_enable : true;
 		$server_name = ($server_name !== '') ? $server_name : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
 		$server_port = ($server_port !== '') ? $server_port : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
 		$server_protocol = ($server_protocol !== '') ? $server_protocol : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
-
 		
 		foreach ($this->advanced_config_options as $config_key => $vars)
 		{

@@ -412,7 +412,7 @@ class module
 	*/
 	function generate_navigation()
 	{
-		global $lang, $template, $phpEx;
+		global $lang, $template, $phpEx, $language;
 
 		if (is_array($this->module_ary))
 		{
@@ -422,7 +422,7 @@ class module
 				$cat = $cat_ary['name'];
 				$l_cat = (!empty($lang['CAT_' . $cat])) ? $lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
 				$cat = strtolower($cat);
-				$url = $this->module_url . '?mode=' . $cat;
+				$url = $this->module_url . "?mode=$cat&amp;language=$language";
 				
 				if ($this->mode == $cat)
 				{
@@ -439,7 +439,7 @@ class module
 						{
 							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
-							$url = $this->module_url . '?mode=' . $this->mode . '&amp;sub=' . $option;
+							$url = $this->module_url . '?mode=' . $this->mode . "&amp;sub=&amp;language=$language";
 
 							$template->assign_block_vars('l_block1', array(
 								'L_TITLE'		=> $l_option,
