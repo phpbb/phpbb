@@ -186,7 +186,7 @@ function user_add($user_row, $cp_data = false)
 
 		'user_sig'					=> '',
 		'user_sig_bbcode_uid'		=> '',
-		'user_sig_bbcode_bitfield'	=> 0,
+		'user_sig_bbcode_bitfield'	=> '',
 	);
 
 	// Now fill the sql array with not required variables
@@ -207,7 +207,75 @@ function user_add($user_row, $cp_data = false)
 		}
 	}
 
-	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+	$query = '';
+
+	switch (SQL_LAYER)
+	{
+		case 'mssql':
+		case 'mssql_odbc':
+			$fields = array();
+			foreach ($sql_ary as $key => $var)
+			{
+				$fields[] = $key;
+
+				if (is_null($var))
+				{
+					$values[] = 'NULL';
+				}
+				else if (is_string($var))
+				{
+					if ($key !== 'user_sig_bbcode_bitfield')
+					{
+						$values[] = "'" . $db->sql_escape($var) . "'";
+					}
+					else
+					{
+						$values[] = "CAST('" . $var . "' AS varbinary)";
+					}
+				}
+				else
+				{
+					$values[] = (is_bool($var)) ? intval($var) : $var;
+				}
+			}
+			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+		break;
+
+		case 'sqlite':
+			$fields = array();
+			foreach ($sql_ary as $key => $var)
+			{
+				$fields[] = $key;
+
+				if (is_null($var))
+				{
+					$values[] = 'NULL';
+				}
+				else if (is_string($var))
+				{
+					if ($key !== 'user_sig_bbcode_bitfield')
+					{
+						$values[] = "'" . $db->sql_escape($var) . "'";
+					}
+					else
+					{
+						$values[] = "'" . sqlite_udf_encode_binary($var) . "'";
+					}
+				}
+				else
+				{
+					$values[] = (is_bool($var)) ? intval($var) : $var;
+				}
+			}
+			$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+		break;
+
+		default:
+			$query = $db->sql_build_array('INSERT', $sql_ary);
+		break;
+	}
+
+	$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $query;
 	$db->sql_query($sql);
 
 	$user_id = $db->sql_nextid();
@@ -1388,7 +1456,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			'group_name'			=> (string) $name,
 			'group_desc'			=> (string) $desc,
 			'group_desc_uid'		=> '',
-			'group_desc_bitfield'	=> 0,
+			'group_desc_bitfield'	=> '',
 			'group_type'			=> (int) $type,
 		);
 
@@ -1413,15 +1481,144 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		// Setting the log message before we set the group id (if group gets added)
 		$log = ($group_id) ? 'LOG_GROUP_UPDATED' : 'LOG_GROUP_CREATED';
 
+		$query = '';
+
 		if ($group_id)
 		{
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$values = array();
+					foreach ($sql_ary as $key => $var)
+					{
+						if (is_null($var))
+						{
+							$values[] = "$key = NULL";
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'group_desc_bitfield')
+							{
+								$values[] = "$key = '" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "$key = CAST('" . $var . "' AS varbinary)";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+						}
+					}
+					$query = implode(', ', $values);
+				break;
+
+				case 'sqlite':
+					$values = array();
+					foreach ($sql_ary as $key => $var)
+					{
+						if (is_null($var))
+						{
+							$values[] = "$key = NULL";
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'group_desc_bitfield')
+							{
+								$values[] = "$key = '" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "$key = '" . sqlite_udf_encode_binary($var) . "'";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+						}
+					}
+					$query = implode(', ', $values);
+				break;
+
+				default:
+					$query = $db->sql_build_array('UPDATE', $sql_ary);
+				break;
+			}
+
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+				SET ' . $query . "
 				WHERE group_id = $group_id";
 		}
 		else
 		{
-			$sql = 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$fields = array();
+					foreach ($sql_ary as $key => $var)
+					{
+						$fields[] = $key;
+
+						if (is_null($var))
+						{
+							$values[] = 'NULL';
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'bbcode_bitfield')
+							{
+								$values[] = "'" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "CAST('" . $var . "' AS varbinary)";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? intval($var) : $var;
+						}
+					}
+					$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+				break;
+
+				case 'sqlite':
+					$fields = array();
+					foreach ($sql_ary as $key => $var)
+					{
+						$fields[] = $key;
+
+						if (is_null($var))
+						{
+							$values[] = 'NULL';
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'bbcode_bitfield')
+							{
+								$values[] = "'" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "'" . sqlite_udf_encode_binary($var) . "'";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? intval($var) : $var;
+						}
+					}
+					$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+				break;
+
+				default:
+					$query = $db->sql_build_array('INSERT', $sql_ary);
+				break;
+			}
+			$sql = 'INSERT INTO ' . GROUPS_TABLE . ' ' . $query;
 		}
 		$db->sql_query($sql);
 

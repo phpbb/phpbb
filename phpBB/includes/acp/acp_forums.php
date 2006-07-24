@@ -104,7 +104,7 @@ class acp_forums
 						'forum_rules'			=> request_var('forum_rules', '', true),
 						'forum_rules_uid'		=> '',
 						'forum_rules_options'	=> 0,
-						'forum_rules_bitfield'	=> 0,
+						'forum_rules_bitfield'	=> '',
 						'forum_rules_link'		=> request_var('forum_rules_link', ''),
 						'forum_image'			=> request_var('forum_image', ''),
 						'forum_style'			=> request_var('forum_style', 0),
@@ -419,7 +419,7 @@ class acp_forums
 					{
 						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
 						$forum_data['forum_rules_uid'] = '';
-						$forum_data['forum_rules_bitfield'] = 0;
+						$forum_data['forum_rules_bitfield'] = '';
 						$forum_data['forum_rules_options'] = 0;
 
 						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
@@ -439,7 +439,7 @@ class acp_forums
 					{
 						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
 						$forum_data['forum_desc_uid'] = '';
-						$forum_data['forum_desc_bitfield'] = 0;
+						$forum_data['forum_desc_bitfield'] = '';
 						$forum_data['forum_desc_options'] = 0;
 
 						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
@@ -919,8 +919,72 @@ class acp_forums
 			$forum_id = $forum_data_sql['forum_id'];
 			unset($forum_data_sql['forum_id']);
 
+			$query = '';
+
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$values = array();
+					foreach ($forum_data_sql as $key => $var)
+					{
+						if (is_null($var))
+						{
+							$values[] = "$key = NULL";
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'forum_desc_bitfield' && $key != 'forum_rules_bitfield')
+							{
+								$values[] = "$key = '" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "$key = CAST('" . $var . "' AS varbinary)";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+						}
+					}
+					$query = implode(', ', $values);
+				break;
+
+				case 'sqlite':
+					$values = array();
+					foreach ($forum_data_sql as $key => $var)
+					{
+						if (is_null($var))
+						{
+							$values[] = "$key = NULL";
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'forum_desc_bitfield' && $key != 'forum_rules_bitfield')
+							{
+								$values[] = "$key = '" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "$key = '" . sqlite_udf_encode_binary($var) . "'";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+						}
+					}
+					$query = implode(', ', $values);
+				break;
+
+				default:
+					$query = $db->sql_build_array('UPDATE', $forum_data_sql);
+				break;
+			}
+
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $forum_data_sql) . '
+				SET ' . $query . '
 				WHERE forum_id = ' . $forum_id;
 			$db->sql_query($sql);
 

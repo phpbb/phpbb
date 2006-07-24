@@ -210,11 +210,11 @@ class acp_database
 									case 'oracle':
 									case 'postgres':
 									case 'firebird':
-										$sql_data .= 'TRUNCATE TABLE ' . $table_name . "\n";
+										$sql_data .= 'TRUNCATE TABLE ' . $table_name . ";\n";
 									break;
 									
 									case 'sqlite':
-										$sql_data .= 'DELETE FROM ' . $table_name . "\n";
+										$sql_data .= 'DELETE FROM ' . $table_name . ";\n";
 									break;
 								}
 							}
@@ -1686,7 +1686,7 @@ class acp_database
 
 					if ($row['COLUMN_DEFAULT'])
 					{
-						$line .= ' CONSTRAINT [DF_' . $table_name . '_' . $row['COLUMN_NAME'] . '] DEFAULT ' . $row['COLUMN_DEFAULT'];
+						$line .= ' DEFAULT ' . $row['COLUMN_DEFAULT'];
 					}
 
 					$rows[] = $line;

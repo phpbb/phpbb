@@ -43,7 +43,9 @@ class bbcode_firstpass extends bbcode
 		}
 
 		global $user;
-		$this->bbcode_bitfield = 0;
+
+		$this->bbcode_bitfield = '';
+		$bitfield = new bitfield();
 
 		$size = strlen($this->message);
 		foreach ($this->bbcodes as $bbcode_name => $bbcode_data)
@@ -72,10 +74,12 @@ class bbcode_firstpass extends bbcode
 			$new_size = strlen($this->message);
 			if ($size != $new_size)
 			{
-				$this->bbcode_bitfield |= (1 << $bbcode_data['bbcode_id']);
+				$bitfield->set($bbcode_data['bbcode_id']);
 				$size = $new_size;
 			}
 		}
+
+		$this->bbcode_bitfield = $bitfield->get_blob();
 	}
 
 	/**
@@ -1376,21 +1380,21 @@ class parse_message extends bbcode_firstpass
 		// Parse Poll Option text ;)
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_option_text'];
-		$bbcode_bitfield = $this->bbcode_bitfield;
+
 
 		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
 
-		$this->bbcode_bitfield |= $bbcode_bitfield;
+
 		$this->message = $tmp_message;
 
 		// Parse Poll Title
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_title'];
-		$bbcode_bitfield = $this->bbcode_bitfield;
+
 
 		$poll['poll_title'] = $this->parse($poll['enable_bbcode'], $poll['enable_urls'], $poll['enable_smilies'], $poll['img_status'], false, false, false);
 
-		$this->bbcode_bitfield |= $bbcode_bitfield;
+
 		$this->message = $tmp_message;
 
 		unset($tmp_message);

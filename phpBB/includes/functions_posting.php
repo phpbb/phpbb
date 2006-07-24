@@ -832,11 +832,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		return false;
 	}
 
-	$bbcode_bitfield = 0;
+	$bbcode_bitfield = '';
 	do
 	{
 		$rowset[] = $row;
-		$bbcode_bitfield |= $row['bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
 	}
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
@@ -1537,8 +1537,76 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 		}
 
-		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .
-			$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
+		$query = '';
+
+		switch (SQL_LAYER)
+		{
+			case 'mssql':
+			case 'mssql_odbc':
+				$fields = array();
+				foreach ($sql_data[POSTS_TABLE]['sql'] as $key => $var)
+				{
+					$fields[] = $key;
+
+					if (is_null($var))
+					{
+						$values[] = 'NULL';
+					}
+					else if (is_string($var))
+					{
+						if ($key !== 'bbcode_bitfield')
+						{
+							$values[] = "'" . $db->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = "CAST('" . $var . "' AS varbinary)";
+						}
+					}
+					else
+					{
+						$values[] = (is_bool($var)) ? intval($var) : $var;
+					}
+				}
+				$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			break;
+
+			case 'sqlite':
+				$fields = array();
+				foreach ($sql_data[POSTS_TABLE]['sql'] as $key => $var)
+				{
+					$fields[] = $key;
+
+					if (is_null($var))
+					{
+						$values[] = 'NULL';
+					}
+					else if (is_string($var))
+					{
+						if ($key !== 'bbcode_bitfield')
+						{
+							$values[] = "'" . $db->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = "'" . sqlite_udf_encode_binary($var) . "'";
+						}
+					}
+					else
+					{
+						$values[] = (is_bool($var)) ? intval($var) : $var;
+					}
+				}
+				$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			break;
+
+			default:
+				$query = $db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
+			break;
+		}
+
+
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .	$query;
 		$db->sql_query($sql);
 		$data['post_id'] = $db->sql_nextid();
 
@@ -1614,8 +1682,70 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Update the posts table
 	if (isset($sql_data[POSTS_TABLE]['sql']))
 	{
+		switch (SQL_LAYER)
+		{
+			case 'mssql':
+			case 'mssql_odbc':
+				$values = array();
+				foreach ($sql_data as $key => $var)
+				{
+					if (is_null($var))
+					{
+						$values[] = "$key = NULL";
+					}
+					else if (is_string($var))
+					{
+						if ($key !== 'bbcode_bitfield')
+						{
+							$values[] = "$key = '" . $db->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = "$key = CAST('" . $var . "' AS varbinary)";
+						}
+					}
+					else
+					{
+						$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+					}
+				}
+				$query = implode(', ', $values);
+			break;
+
+			case 'sqlite':
+				$values = array();
+				foreach ($sql_data as $key => $var)
+				{
+					if (is_null($var))
+					{
+						$values[] = "$key = NULL";
+					}
+					else if (is_string($var))
+					{
+						if ($key !== 'bbcode_bitfield')
+						{
+							$values[] = "$key = '" . $db->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = "$key ='" . sqlite_udf_encode_binary($var) . "'";
+						}
+					}
+					else
+					{
+						$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+					}
+				}
+				$query = implode(', ', $values);
+			break;
+
+			default:
+				$query = $db->sql_build_array('UPDATE', $sql_data);
+			break;
+		}
+
 		$sql = 'UPDATE ' . POSTS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']) . '
+			SET ' . $query . '
 			WHERE post_id = ' . $data['post_id'];
 		$db->sql_query($sql);
 	}

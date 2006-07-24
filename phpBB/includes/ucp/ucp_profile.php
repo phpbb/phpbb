@@ -431,17 +431,81 @@ class ucp_profile
 						{
 							$error[] = implode('<br />', $message_parser->warn_msg);
 						}
-						
+
 						if (!sizeof($error) && $submit)
 						{
 							$sql_ary = array(
 								'user_sig'					=> (string) $message_parser->message, 
 								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
-								'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
+								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
+							$query = '';
+
+							switch (SQL_LAYER)
+							{
+								case 'mssql':
+								case 'mssql_odbc':
+									$values = array();
+									foreach ($sql_ary as $key => $var)
+									{
+										if (is_null($var))
+										{
+											$values[] = "$key = NULL";
+										}
+										else if (is_string($var))
+										{
+											if ($key !== 'user_sig_bbcode_bitfield')
+											{
+												$values[] = "$key = '" . $db->sql_escape($var) . "'";
+											}
+											else
+											{
+												$values[] = "$key = CAST('" . $var . "' AS varbinary)";
+											}
+										}
+										else
+										{
+											$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+										}
+									}
+									$query = implode(', ', $values);
+								break;
+
+								case 'sqlite':
+									$values = array();
+									foreach ($sql_ary as $key => $var)
+									{
+										if (is_null($var))
+										{
+											$values[] = "$key = NULL";
+										}
+										else if (is_string($var))
+										{
+											if ($key !== 'user_sig_bbcode_bitfield')
+											{
+												$values[] = "$key = '" . $db->sql_escape($var) . "'";
+											}
+											else
+											{
+												$values[] = "$key = '" . sqlite_udf_encode_binary($var) . "'";
+											}
+										}
+										else
+										{
+											$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+										}
+									}
+									$query = implode(', ', $values);
+								break;
+
+								default:
+									$query = $db->sql_build_array('UPDATE', $sql_ary);
+								break;
+							}
+
 							$sql = 'UPDATE ' . USERS_TABLE . ' 
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+								SET ' . $query . ' 
 								WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 

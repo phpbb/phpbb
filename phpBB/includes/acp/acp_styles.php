@@ -27,7 +27,14 @@ class acp_styles
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Hardcoded template bitfield to add for new templates
-		define('TEMPLATE_BITFIELD', 6921);
+		$bitfield = new bitfield();
+		$bitfield->set(0);
+		$bitfield->set(3);
+		$bitfield->set(8);
+		$bitfield->set(9);
+		$bitfield->set(11);
+		$bitfield->set(12);
+		define('TEMPLATE_BITFIELD', $bitfield->data);
 
 		$user->add_lang('acp/styles');
 
@@ -2917,10 +2924,78 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			unset($cfg_data);
 		}
 
+		$query = '';
+
+		switch (SQL_LAYER)
+		{
+			case 'mssql':
+			case 'mssql_odbc':
+				$fields = array();
+				foreach ($sql_ary as $key => $var)
+				{
+					$fields[] = $key;
+
+					if (is_null($var))
+					{
+						$values[] = 'NULL';
+					}
+					else if (is_string($var))
+					{
+						if ($key !== 'bbcode_bitfield')
+						{
+							$values[] = "'" . $db->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = "CAST('" . $var . "' AS varbinary)";
+						}
+					}
+					else
+					{
+						$values[] = (is_bool($var)) ? intval($var) : $var;
+					}
+				}
+				$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			break;
+
+			case 'sqlite':
+				$fields = array();
+				foreach ($sql_ary as $key => $var)
+				{
+					$fields[] = $key;
+
+					if (is_null($var))
+					{
+						$values[] = 'NULL';
+					}
+					else if (is_string($var))
+					{
+						if ($key !== 'bbcode_bitfield')
+						{
+							$values[] = "'" . $db->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = "'" . sqlite_udf_encode_binary($var) . "'";
+						}
+					}
+					else
+					{
+						$values[] = (is_bool($var)) ? intval($var) : $var;
+					}
+				}
+				$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+			break;
+
+			default:
+				$query = $db->sql_build_array('INSERT', $sql_ary);
+			break;
+		}
+
 		$db->sql_transaction('begin');
 
 		$sql = "INSERT INTO $sql_from
-			" . $db->sql_build_array('INSERT', $sql_ary);
+			" . $query;
 		$db->sql_query($sql);
 
 		$id = $db->sql_nextid();

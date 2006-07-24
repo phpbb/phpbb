@@ -796,8 +796,8 @@ else
 // Container for user details, only process once
 $post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
 $has_attachments = $display_notice = false;
-$force_encoding = '';
-$bbcode_bitfield = $i = $i_total = 0;
+$bbcode_bitfield = $force_encoding = '';
+$i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
 $sql = 'SELECT p.post_id
@@ -917,12 +917,12 @@ while ($row = $db->sql_fetchrow($result))
 	);
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
-	$bbcode_bitfield |= $row['bbcode_bitfield'];
+	$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
 
 	// Is a signature attached? Are we going to display it?
 	if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 	{
-		$bbcode_bitfield |= $row['user_sig_bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | $row['user_sig_bbcode_bitfield'];
 	}
 
 	// Cache various user specific data ... so we don't have to recompute

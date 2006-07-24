@@ -1857,7 +1857,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	global $phpbb_root_path, $phpEx;
 
 	$uid = '';
-	$bitfield = 0;
+	$bitfield = '';
 
 	if (!$text)
 	{
@@ -2861,6 +2861,100 @@ function garbage_collection()
 
 	// Close our DB connection.
 	$db->sql_close();
+}
+
+class bitfield
+{
+	var $data;
+
+	function bitfield($bitfield = '')
+	{
+		$this->data = $bitfield;
+	}
+
+	function get($n)
+	{
+		/**
+		* Get the ($n / 8)th char
+		*/
+		$byte = $n >> 3;
+
+		if (!isset($this->data[$byte]))
+		{
+			/**
+			* Of course, if it doesn't exist then the result if FALSE
+			*/
+			return FALSE;
+		}
+
+		$c = $this->data[$byte];
+
+		/**
+		* Lookup the ($n % 8)th bit of the byte
+		*/
+		$bit = 7 - ($n & 7);
+		return (bool) (ord($c) & (1 << $bit));
+	}
+
+	function set($n)
+	{
+		$byte = $n >> 3;
+		$bit = 7 - ($n & 7);
+
+		if (isset($this->data[$byte]))
+		{
+			$this->data[$byte] = $this->data[$byte] | chr(1 << $bit);
+		}
+		else
+		{
+			if ($byte - strlen($this->data) > 0)
+			{
+				$this->data .= str_repeat("\0", $byte - strlen($this->data));
+			}
+			$this->data .= chr(1 << $bit);
+		}
+	}
+
+	function clear($n)
+	{
+		$byte = $n >> 3;
+
+		if (!isset($this->data[$byte]))
+		{
+			return;
+		}
+
+		$bit = 7 - ($n & 7);
+		$this->data[$byte] = $this->data[$byte] &~ chr(1 << $bit);
+	}
+
+	function get_blob()
+	{
+		return $this->data;
+	}
+
+	function get_bin()
+	{
+		$bin = '';
+		$len = strlen($this->data);
+
+		for ($i = 0; $i < $len; ++$i)
+		{
+			$bin .= str_pad(decbin(ord($this->data[$i])), 8, '0', STR_PAD_LEFT);
+		}
+
+		return $bin;
+	}
+
+	function get_all_set()
+	{
+		return array_keys(array_filter(str_split($this->get_bin())));
+	}
+
+	function merge($bitfield)
+	{
+		$this->data = $this->data | $bitfield->get_blob();
+	}
 }
 
 ?>

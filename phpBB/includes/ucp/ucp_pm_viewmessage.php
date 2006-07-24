@@ -264,7 +264,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	$rowset = array();
-	$bbcode_bitfield = 0;
+	$bbcode_bitfield = '';
 	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
 	$title = ($sort_dir == 'd') ? $row['message_subject'] : '';
@@ -281,7 +281,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		else
 		{
 			$rowset[$row['msg_id']] = $row;
-			$bbcode_bitfield |= $row['bbcode_bitfield'];
+			$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
 		}
 	}
 	while ($row = $db->sql_fetchrow($result));

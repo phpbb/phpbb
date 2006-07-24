@@ -1302,15 +1302,145 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 
 	if (sizeof($sql_data))
 	{
+		$query = '';
+
 		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward')
 		{
-			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$fields = array();
+					foreach ($sql_data as $key => $var)
+					{
+						$fields[] = $key;
+
+						if (is_null($var))
+						{
+							$values[] = 'NULL';
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'bbcode_bitfield')
+							{
+								$values[] = "'" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "CAST('" . $var . "' AS varbinary)";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? intval($var) : $var;
+						}
+					}
+					$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+				break;
+
+				case 'sqlite':
+					$fields = array();
+					foreach ($sql_data as $key => $var)
+					{
+						$fields[] = $key;
+
+						if (is_null($var))
+						{
+							$values[] = 'NULL';
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'bbcode_bitfield')
+							{
+								$values[] = "'" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "'" . sqlite_udf_encode_binary($var) . "'";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? intval($var) : $var;
+						}
+					}
+					$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
+				break;
+
+				default:
+					$query = $db->sql_build_array('INSERT', $sql_data);
+				break;
+			}
+
+			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $query);
 			$data['msg_id'] = $db->sql_nextid();
 		}
 		else if ($mode == 'edit')
 		{
+			switch (SQL_LAYER)
+			{
+				case 'mssql':
+				case 'mssql_odbc':
+					$values = array();
+					foreach ($sql_data as $key => $var)
+					{
+						if (is_null($var))
+						{
+							$values[] = "$key = NULL";
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'forum_desc_bitfield')
+							{
+								$values[] = "$key = '" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "$key = CAST('" . $var . "' AS varbinary)";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+						}
+					}
+					$query = implode(', ', $values);
+				break;
+
+				case 'sqlite':
+					$values = array();
+					foreach ($sql_data as $key => $var)
+					{
+						if (is_null($var))
+						{
+							$values[] = "$key = NULL";
+						}
+						else if (is_string($var))
+						{
+							if ($key !== 'forum_desc_bitfield')
+							{
+								$values[] = "$key = '" . $db->sql_escape($var) . "'";
+							}
+							else
+							{
+								$values[] = "$key = '" . sqlite_udf_encode_binary($var) . "'";
+							}
+						}
+						else
+						{
+							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
+						}
+					}
+					$query = implode(', ', $values);
+				break;
+
+				default:
+					$query = $db->sql_build_array('UPDATE', $sql_data);
+				break;
+			}
+
 			$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' 
-				SET message_edit_count = message_edit_count + 1, ' . $db->sql_build_array('UPDATE', $sql_data) . ' 
+				SET message_edit_count = message_edit_count + 1, ' . $query . ' 
 				WHERE msg_id = ' . $data['msg_id'];
 			$db->sql_query($sql);
 		}

@@ -520,7 +520,7 @@ function compose_pm($id, $mode, $action)
 				'enable_bbcode'			=> (bool) $enable_bbcode,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
-				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+				'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,

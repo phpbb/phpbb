@@ -868,7 +868,7 @@ if ($submit || $preview || $refresh)
 				'notify_set'			=> $post_data['notify_set'],
 				'poster_ip'				=> (isset($post_data['poster_ip'])) ? $post_data['poster_ip'] : $user->ip,
 				'post_edit_locked'		=> (int) $post_data['post_edit_locked'],
-				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+				'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,

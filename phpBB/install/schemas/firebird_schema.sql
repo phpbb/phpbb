@@ -4,6 +4,24 @@
 # $Id$
 #
 
+# Function declarations
+
+# Emulation of STRLEN, might need to be checked out for FB 2.0
+DECLARE EXTERNAL FUNCTION STRLEN CSTRING(32767)
+RETURNS INTEGER BY VALUE
+ENTRY_POINT 'IB_UDF_strlen' MODULE_NAME 'ib_udf';;
+
+# Emulation of LOWER, might need to be checked out for FB 2.0
+DECLARE EXTERNAL FUNCTION LOWER CSTRING(80)
+RETURNS CSTRING(80) FREE_IT 
+ENTRY_POINT 'IB_UDF_lower' MODULE_NAME 'ib_udf';;
+
+# Only used for insertion of binary strings as defaults
+DECLARE EXTERNAL FUNCTION ASCII_CHAR INTEGER
+RETURNS CSTRING(1) FREE_IT
+ENTRY_POINT 'IB_UDF_ascii_char' MODULE_NAME 'ib_udf';;
+
+
 # Table: 'phpbb_attachments'
 CREATE TABLE phpbb_attachments (
 	attach_id INTEGER NOT NULL,
@@ -39,7 +57,6 @@ AS
 BEGIN
 	NEW.attach_id = GEN_ID(phpbb_attachments_gen, 1);
 END;;
-
 
 # Table: 'phpbb_acl_groups'
 CREATE TABLE phpbb_acl_groups (
@@ -166,7 +183,7 @@ CREATE TABLE phpbb_bbcodes (
 
 ALTER TABLE phpbb_bbcodes ADD PRIMARY KEY (bbcode_id);;
 
-CREATE INDEX phpbb_bbcodes_display_in_posting ON phpbb_bbcodes(display_on_posting);;
+CREATE INDEX phpbb_bbcodes_display_in_post ON phpbb_bbcodes(display_on_posting);;
 
 # Table: 'phpbb_bookmarks'
 CREATE TABLE phpbb_bookmarks (
@@ -205,7 +222,7 @@ END;;
 
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
-	config_name VARCHAR(255) DEFAULT '' NOT NULL,
+	config_name VARCHAR(252) DEFAULT '' NOT NULL,
 	config_value VARCHAR(255) DEFAULT '' NOT NULL,
 	is_dynamic INTEGER DEFAULT 0 NOT NULL
 );;
@@ -328,7 +345,7 @@ CREATE TABLE phpbb_forums (
 	forum_parents BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_name BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_desc BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	forum_desc_bitfield INTEGER DEFAULT 0 NOT NULL,
+	forum_desc_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	forum_desc_options INTEGER DEFAULT 0 NOT NULL,
 	forum_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	forum_link VARCHAR(255) DEFAULT '' NOT NULL,
@@ -337,7 +354,7 @@ CREATE TABLE phpbb_forums (
 	forum_image VARCHAR(255) DEFAULT '' NOT NULL,
 	forum_rules BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_rules_link VARCHAR(255) DEFAULT '' NOT NULL,
-	forum_rules_bitfield INTEGER DEFAULT 0 NOT NULL,
+	forum_rules_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	forum_rules_options INTEGER DEFAULT 0 NOT NULL,
 	forum_rules_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	forum_topics_per_page INTEGER DEFAULT 0 NOT NULL,
@@ -376,6 +393,22 @@ BEGIN
 	NEW.forum_id = GEN_ID(phpbb_forums_gen, 1);
 END;;
 
+CREATE TRIGGER t_phpbb_forums_desc_bitf FOR phpbb_forums
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.forum_desc_bitfield is null) THEN
+		NEW.forum_desc_bitfield = ASCII_CHAR(0);
+END;;
+
+CREATE TRIGGER t_phpbb_forums_rules_bitf FOR phpbb_forums
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.forum_rules_bitfield is null) THEN
+		NEW.forum_rules_bitfield = ASCII_CHAR(0);
+END;;
+
 
 # Table: 'phpbb_forums_access'
 CREATE TABLE phpbb_forums_access (
@@ -406,7 +439,7 @@ CREATE TABLE phpbb_forums_watch (
 
 CREATE INDEX phpbb_forums_watch_forum_id ON phpbb_forums_watch(forum_id);;
 CREATE INDEX phpbb_forums_watch_user_id ON phpbb_forums_watch(user_id);;
-CREATE INDEX phpbb_forums_watch_notify_status ON phpbb_forums_watch(notify_status);;
+CREATE INDEX phpbb_forums_watch_notify_stat ON phpbb_forums_watch(notify_status);;
 
 # Table: 'phpbb_groups'
 CREATE TABLE phpbb_groups (
@@ -414,7 +447,7 @@ CREATE TABLE phpbb_groups (
 	group_type INTEGER DEFAULT 1 NOT NULL,
 	group_name VARCHAR(255) DEFAULT '' NOT NULL,
 	group_desc BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	group_desc_bitfield INTEGER DEFAULT 0 NOT NULL,
+	group_desc_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	group_desc_options INTEGER DEFAULT 0 NOT NULL,
 	group_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	group_display INTEGER DEFAULT 0 NOT NULL,
@@ -442,6 +475,14 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.group_id = GEN_ID(phpbb_groups_gen, 1);
+END;;
+
+CREATE TRIGGER t_phpbb_groups_bitf FOR phpbb_groups
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.group_desc_bitfield is null) THEN
+		NEW.group_desc_bitfield = ASCII_CHAR(0);
 END;;
 
 
@@ -537,7 +578,7 @@ CREATE TABLE phpbb_moderator_cache (
 	display_on_index INTEGER DEFAULT 1 NOT NULL
 );;
 
-CREATE INDEX phpbb_moderator_cache_display_on_index ON phpbb_moderator_cache(display_on_index);;
+CREATE INDEX phpbb_moderator_cche_dis_on_idx ON phpbb_moderator_cache(display_on_index);;
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache(forum_id);;
 
 # Table: 'phpbb_modules'
@@ -580,7 +621,7 @@ CREATE TABLE phpbb_poll_options (
 	poll_option_total INTEGER DEFAULT 0 NOT NULL
 );;
 
-CREATE INDEX phpbb_poll_options_poll_option_id ON phpbb_poll_options(poll_option_id);;
+CREATE INDEX phpbb_poll_options_poll_opt_id ON phpbb_poll_options(poll_option_id);;
 CREATE INDEX phpbb_poll_options_topic_id ON phpbb_poll_options(topic_id);;
 
 # Table: 'phpbb_poll_votes'
@@ -616,7 +657,7 @@ CREATE TABLE phpbb_posts (
 	post_checksum VARCHAR(32) DEFAULT '' NOT NULL,
 	post_encoding VARCHAR(20) DEFAULT 'iso-8859-1' NOT NULL,
 	post_attachment INTEGER DEFAULT 0 NOT NULL,
-	bbcode_bitfield INTEGER DEFAULT 0 NOT NULL,
+	bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	post_edit_time INTEGER DEFAULT 0 NOT NULL,
 	post_edit_reason BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
@@ -644,6 +685,14 @@ BEGIN
 	NEW.post_id = GEN_ID(phpbb_posts_gen, 1);
 END;;
 
+CREATE TRIGGER t_phpbb_posts_bitf FOR phpbb_posts
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.bbcode_bitfield is null) THEN
+		NEW.bbcode_bitfield = ASCII_CHAR(0);
+END;;
+
 
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
@@ -663,7 +712,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_user INTEGER DEFAULT 0 NOT NULL,
 	message_encoding VARCHAR(20) DEFAULT 'iso-8859-1' NOT NULL,
 	message_attachment INTEGER DEFAULT 0 NOT NULL,
-	bbcode_bitfield INTEGER DEFAULT 0 NOT NULL,
+	bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	message_edit_time INTEGER DEFAULT 0 NOT NULL,
 	message_edit_count INTEGER DEFAULT 0 NOT NULL,
@@ -686,6 +735,14 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.msg_id = GEN_ID(phpbb_privmsgs_gen, 1);
+END;;
+
+CREATE TRIGGER t_phpbb_privmsgs_bitf FOR phpbb_privmsgs
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.bbcode_bitfield is null) THEN
+		NEW.bbcode_bitfield = ASCII_CHAR(0);
 END;;
 
 
@@ -754,7 +811,7 @@ CREATE TABLE phpbb_privmsgs_to (
 );;
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to(msg_id);;
-CREATE INDEX phpbb_privmsgs_to_user_folder_id ON phpbb_privmsgs_to(user_id, folder_id);;
+CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to(user_id, folder_id);;
 
 # Table: 'phpbb_profile_fields'
 CREATE TABLE phpbb_profile_fields (
@@ -779,7 +836,7 @@ CREATE TABLE phpbb_profile_fields (
 ALTER TABLE phpbb_profile_fields ADD PRIMARY KEY (field_id);;
 
 CREATE INDEX phpbb_profile_fields_field_type ON phpbb_profile_fields(field_type);;
-CREATE INDEX phpbb_profile_fields_field_order ON phpbb_profile_fields(field_order);;
+CREATE INDEX phpbb_profile_fields_field_ordr ON phpbb_profile_fields(field_order);;
 
 CREATE GENERATOR phpbb_profile_fields_gen;;
 SET GENERATOR phpbb_profile_fields_gen TO 0;;
@@ -1005,7 +1062,7 @@ CREATE TABLE phpbb_smilies (
 
 ALTER TABLE phpbb_smilies ADD PRIMARY KEY (smiley_id);;
 
-CREATE INDEX phpbb_smilies_display_on_posting ON phpbb_smilies(display_on_posting);;
+CREATE INDEX phpbb_smilies_display_on_postng ON phpbb_smilies(display_on_posting);;
 
 CREATE GENERATOR phpbb_smilies_gen;;
 SET GENERATOR phpbb_smilies_gen TO 0;;
@@ -1021,7 +1078,7 @@ END;;
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
 	style_id INTEGER NOT NULL,
-	style_name VARCHAR(255) DEFAULT '' NOT NULL,
+	style_name VARCHAR(252) DEFAULT '' NOT NULL,
 	style_copyright VARCHAR(255) DEFAULT '' NOT NULL,
 	style_active INTEGER DEFAULT 1 NOT NULL,
 	template_id INTEGER DEFAULT 0 NOT NULL,
@@ -1050,16 +1107,16 @@ END;;
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
 	template_id INTEGER NOT NULL,
-	template_name VARCHAR(255) DEFAULT '' NOT NULL,
+	template_name VARCHAR(252) DEFAULT '' NOT NULL,
 	template_copyright VARCHAR(255) DEFAULT '' NOT NULL,
 	template_path VARCHAR(100) DEFAULT '' NOT NULL,
-	bbcode_bitfield INTEGER DEFAULT 6921 NOT NULL,
+	bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	template_storedb INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_styles_template ADD PRIMARY KEY (template_id);;
 
-CREATE UNIQUE INDEX phpbb_styles_template_template_name ON phpbb_styles_template(template_name);;
+CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template(template_name);;
 
 CREATE GENERATOR phpbb_styles_template_gen;;
 SET GENERATOR phpbb_styles_template_gen TO 0;;
@@ -1069,6 +1126,14 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.template_id = GEN_ID(phpbb_styles_template_gen, 1);
+END;;
+
+CREATE TRIGGER t_phpbb_styles_template_bitf FOR phpbb_styles_template
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.bbcode_bitfield is null) THEN
+		NEW.bbcode_bitfield = ASCII_CHAR(144) || ASCII_CHAR(216);
 END;;
 
 
@@ -1081,13 +1146,13 @@ CREATE TABLE phpbb_styles_template_data (
 	template_data BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL
 );;
 
-CREATE INDEX phpbb_styles_template_data_template_id ON phpbb_styles_template_data(template_id);;
-CREATE INDEX phpbb_styles_template_data_template_filename ON phpbb_styles_template_data(template_filename);;
+CREATE INDEX phpbb_styles_tmplte_dt_tmplt_id ON phpbb_styles_template_data(template_id);;
+CREATE INDEX phpbb_styles_tmplte_d_tmpl_flnm ON phpbb_styles_template_data(template_filename);;
 
 CREATE GENERATOR phpbb_styles_template_data_gen;;
 SET GENERATOR phpbb_styles_template_data_gen TO 0;;
 
-CREATE TRIGGER t_phpbb_styles_template_data_gen FOR phpbb_styles_template_data
+CREATE TRIGGER t_phpbb_styles_templte_data_gen FOR phpbb_styles_template_data
 BEFORE INSERT
 AS
 BEGIN
@@ -1098,7 +1163,7 @@ END;;
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id INTEGER NOT NULL,
-	theme_name VARCHAR(255) DEFAULT '' NOT NULL,
+	theme_name VARCHAR(252) DEFAULT '' NOT NULL,
 	theme_copyright VARCHAR(255) DEFAULT '' NOT NULL,
 	theme_path VARCHAR(100) DEFAULT '' NOT NULL,
 	theme_storedb INTEGER DEFAULT 0 NOT NULL,
@@ -1124,7 +1189,7 @@ END;;
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id INTEGER NOT NULL,
-	imageset_name VARCHAR(255) DEFAULT '' NOT NULL,
+	imageset_name VARCHAR(252) DEFAULT '' NOT NULL,
 	imageset_copyright VARCHAR(255) DEFAULT '' NOT NULL,
 	imageset_path VARCHAR(100) DEFAULT '' NOT NULL,
 	site_logo VARCHAR(200) DEFAULT '' NOT NULL,
@@ -1220,16 +1285,16 @@ CREATE TABLE phpbb_styles_imageset (
 
 ALTER TABLE phpbb_styles_imageset ADD PRIMARY KEY (imageset_id);;
 
-CREATE UNIQUE INDEX phpbb_styles_imageset_imageset_name ON phpbb_styles_imageset(imageset_name);;
+CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset(imageset_name);;
 
-CREATE GENERATOR phpbb_styles_imageset_gen;;
-SET GENERATOR phpbb_styles_imageset_gen TO 0;;
+CREATE GENERATOR t_phpbb_styles_imageset_gen;;
+SET GENERATOR t_phpbb_styles_imageset_gen TO 0;;
 
-CREATE TRIGGER t_phpbb_styles_imageset_gen FOR phpbb_styles_imageset
+CREATE TRIGGER phpbb_styles_imageset_imgset_nm FOR phpbb_styles_imageset
 BEFORE INSERT
 AS
 BEGIN
-	NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1);
+	NEW.imageset_id = GEN_ID(t_phpbb_styles_imageset_gen, 1);
 END;;
 
 
@@ -1272,7 +1337,7 @@ ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
 
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
-CREATE INDEX phpbb_topics_topic_last_post_time ON phpbb_topics(topic_last_post_time);;
+CREATE INDEX phpbb_topics_topic_last_pst_tme ON phpbb_topics(topic_last_post_time);;
 
 CREATE GENERATOR phpbb_topics_gen;;
 SET GENERATOR phpbb_topics_gen TO 0;;
@@ -1316,7 +1381,7 @@ CREATE TABLE phpbb_topics_watch (
 
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch(topic_id);;
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch(user_id);;
-CREATE INDEX phpbb_topics_watch_notify_status ON phpbb_topics_watch(notify_status);;
+CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch(notify_status);;
 
 # Table: 'phpbb_user_group'
 CREATE TABLE phpbb_user_group (
@@ -1339,7 +1404,7 @@ CREATE TABLE phpbb_users (
 	user_perm_from INTEGER DEFAULT 0 NOT NULL,
 	user_ip VARCHAR(40) DEFAULT '' NOT NULL,
 	user_regdate INTEGER DEFAULT 0 NOT NULL,
-	username VARCHAR(255) DEFAULT '' NOT NULL,
+	username VARCHAR(252) DEFAULT '' NOT NULL,
 	user_password VARCHAR(40) DEFAULT '' NOT NULL,
 	user_passchg INTEGER DEFAULT 0 NOT NULL,
 	user_email VARCHAR(100) DEFAULT '' NOT NULL,
@@ -1389,7 +1454,7 @@ CREATE TABLE phpbb_users (
 	user_avatar_height INTEGER DEFAULT 0 NOT NULL,
 	user_sig BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	user_sig_bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
-	user_sig_bbcode_bitfield INTEGER DEFAULT 0 NOT NULL,
+	user_sig_bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
 	user_from VARCHAR(100) DEFAULT '' NOT NULL,
 	user_icq VARCHAR(15) DEFAULT '' NOT NULL,
 	user_aim VARCHAR(255) DEFAULT '' NOT NULL,
@@ -1418,6 +1483,14 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.user_id = GEN_ID(phpbb_users_gen, 1);
+END;;
+
+CREATE TRIGGER t_phpbb_users_bitf FOR phpbb_users
+ACTIVE BEFORE INSERT OR UPDATE POSITION 0
+AS
+BEGIN
+	IF (NEW.user_sig_bbcode_bitfield is null) THEN
+		NEW.user_sig_bbcode_bitfield = ASCII_CHAR(0);
 END;;
 
 
@@ -1475,15 +1548,3 @@ CREATE TABLE phpbb_zebra (
 
 CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra(user_id);;
 CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra(zebra_id);;
-
-
-
-DECLARE EXTERNAL FUNCTION STRLEN
-	CSTRING(32767)
-RETURNS INTEGER BY VALUE
-ENTRY_POINT 'IB_UDF_strlen' MODULE_NAME 'ib_udf';;
-
-DECLARE EXTERNAL FUNCTION LOWER CSTRING(80)
-RETURNS CSTRING(80) FREE_IT 
-ENTRY_POINT 'IB_UDF_lower' MODULE_NAME 'ib_udf';;
-
