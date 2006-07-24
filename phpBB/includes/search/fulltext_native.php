@@ -1006,7 +1006,7 @@ class fulltext_native extends search_backend
 			FROM ' . SEARCH_WORDLIST_TABLE . ' w
 			LEFT JOIN ' . SEARCH_WORDMATCH_TABLE . ' m ON (w.word_id = m.word_id)
 			WHERE w.word_common = 0 AND m.word_id IS NULL
-			GROUP BY w.word_id';
+			GROUP BY w.word_id, w.word_text';
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
