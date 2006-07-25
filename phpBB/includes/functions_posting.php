@@ -1687,7 +1687,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			case 'mssql':
 			case 'mssql_odbc':
 				$values = array();
-				foreach ($sql_data as $key => $var)
+				foreach ($sql_data[POSTS_TABLE]['sql'] as $key => $var)
 				{
 					if (is_null($var))
 					{
@@ -1714,7 +1714,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			case 'sqlite':
 				$values = array();
-				foreach ($sql_data as $key => $var)
+				foreach ($sql_data[POSTS_TABLE]['sql'] as $key => $var)
 				{
 					if (is_null($var))
 					{
@@ -1740,7 +1740,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			break;
 
 			default:
-				$query = $db->sql_build_array('UPDATE', $sql_data);
+				$query = $db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']);
 			break;
 		}
 
