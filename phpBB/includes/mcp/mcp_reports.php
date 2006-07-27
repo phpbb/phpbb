@@ -61,20 +61,14 @@ class mcp_reports
 
 				$post_id = request_var('p', 0);
 
-				$post_info = get_post_data(array($post_id), 'm_approve');
+				// closed reports are accessed by report id
+				$report_id = request_var('r', 0);
 
-				if (!sizeof($post_info))
-				{
-					trigger_error('NO_POST_SELECTED');
-				}
-
-				$post_info = $post_info[$post_id];
-
-				$sql = 'SELECT r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username
-					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . " u
-					WHERE r.post_id = $post_id
+				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username
+					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
+					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
 						AND rr.reason_id = r.reason_id
-						AND r.user_id = u.user_id";
+						AND r.user_id = u.user_id';
 				$result = $db->sql_query($sql);
 				$report = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -83,6 +77,20 @@ class mcp_reports
 				{
 					trigger_error('NO_POST_REPORT');
 				}
+
+				if ($report_id)
+				{
+					$post_id = $report['post_id'];
+				}
+
+				$post_info = get_post_data(array($post_id), 'm_approve');
+
+				if (!sizeof($post_info))
+				{
+					trigger_error('NO_POST_SELECTED');
+				}
+
+				$post_info = $post_info[$post_id];
 
 				$reason = array('title' => $report['reason_title'], 'description' => $report['reason_description']);
 				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
@@ -247,7 +255,7 @@ class mcp_reports
 					$report_state = 'AND r.report_closed = 1';
 				}
 
-				$sql = 'SELECT p.post_id
+				$sql = 'SELECT r.report_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . "
 					WHERE p.forum_id IN ($forum_list)
 						$report_state
@@ -261,36 +269,28 @@ class mcp_reports
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$i = 0;
-				$post_ids = array();
+				$report_ids = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$post_ids[] = $row['post_id'];
-					$row_num[$row['post_id']] = $i++;
+					$report_ids[] = $row['report_id'];
+					$row_num[$row['report_id']] = $i++;
 				}
 				$db->sql_freeresult($result);
 
-				if (sizeof($post_ids))
+				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . USERS_TABLE . " ru
-						WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time, r.report_id
+						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . " ru
+						WHERE r.report_id IN (" . implode(', ', $report_ids) . ")
 							AND t.topic_id = p.topic_id
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
 							AND ru.user_id = r.user_id";
 					$result = $db->sql_query($sql);
 
-					$post_data = $rowset = array();
+					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$post_data[$row['post_id']] = $row;
-					}
-					$db->sql_freeresult($result);
-
-					foreach ($post_ids as $post_id)
-					{
-						$row = $post_data[$post_id];
-
 						if ($row['poster_id'] == ANONYMOUS)
 						{
 							$poster = (!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST'];
@@ -309,7 +309,7 @@ class mcp_reports
 						$template->assign_block_vars('postrow', array(
 							'U_VIEWFORUM'				=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
-							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}"),
+							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
 							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['reporter_id']) : '',
 
@@ -323,7 +323,8 @@ class mcp_reports
 							'TOPIC_TITLE'	=> $row['topic_title'])
 						);
 					}
-					unset($post_data, $post_ids, $row);
+					$db->sql_freeresult($result);
+					unset($report_ids, $row);
 				}
 
 				// Now display the page
@@ -455,10 +456,13 @@ function close_report($post_id_list, $mode, $action)
 				WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
 			$db->sql_query($sql);
 
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_reported = 0
-				WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')';
-			$db->sql_query($sql);
+			if (sizeof($close_report_topics))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_reported = 0
+					WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')';
+				$db->sql_query($sql);
+			}
 
 			$db->sql_transaction('commit');
 		}

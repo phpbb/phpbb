@@ -27,8 +27,10 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 */
 class fulltext_mysql extends search_backend
 {
-	var $stats;
-	var $word_length;
+	var $stats = array();
+	var $word_length = array();
+	var $split_words = array();
+	var $common_words = array();
 
 	function fulltext_mysql(&$error)
 	{
@@ -98,6 +100,7 @@ class fulltext_mysql extends search_backend
 
 	/**
 	* Splits keywords entered by a user into an array of words stored in $this->split_words
+	* Stores the tidied search query in $this->search_query
 	*
 	* @param string $keywords Contains the keyword as entered by the user
 	* @param string $terms is either 'all' or 'any'
@@ -156,6 +159,8 @@ class fulltext_mysql extends search_backend
 				unset($this->split_words[$i]);
 			}
 		}
+
+		$this->search_query = implode(' ', $this->split_words);
 
 		if (sizeof($this->split_words))
 		{
@@ -637,7 +642,7 @@ class fulltext_mysql extends search_backend
 			return $error;
 		}
 
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -670,7 +675,7 @@ class fulltext_mysql extends search_backend
 			return $error;
 		}
 
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -695,7 +700,7 @@ class fulltext_mysql extends search_backend
 	*/
 	function index_created()
 	{
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -710,7 +715,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $user;
 
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}

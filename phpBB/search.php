@@ -141,7 +141,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	else if ($auth->acl_getf_global('m_approve'))
 	{
 		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1' . (($m_approve_fid_ary) ? ' OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . ')' : '') . ')';
+		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . ')' : '') . ')';
 	}
 	else
 	{
@@ -230,7 +230,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	if ($keywords)
 	{
 		$search->split_keywords($keywords, $search_terms);
-		if (!sizeof($search->split_words) && !sizeof($author_id_ary) && !$search_id)
+		if (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id)
 		{
 			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words))) . '<br />' : '';
 			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
@@ -390,7 +390,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	sort($m_approve_fid_ary);
 	sort($author_id_ary);
 
-	if (sizeof($search->split_words))
+	if (!empty($search->search_query))
 	{
 		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
@@ -434,9 +434,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
-	$hilit = htmlspecialchars(implode('|', str_replace(array('+', '-', '|'), '', $search->split_words)));
-	$split_words = (sizeof($search->split_words)) ? htmlspecialchars(implode(' ', $search->split_words)) : '';
-	$u_hilit = urlencode($split_words);
+	$hilit = preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords))))));
+	$u_hilit = urlencode($keywords);
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
@@ -453,7 +452,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$template->assign_vars(array(
 		'SEARCH_MATCHES'	=> $l_search_matches,
-		'SEARCH_WORDS'		=> $split_words,
+		'SEARCH_WORDS'		=> preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars($search->search_query)),
 		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? htmlspecialchars(implode(' ', $search->common_words)) : '',
 		'PAGINATION'		=> generate_pagination($u_search, $total_match_count, $per_page, $start),
 		'PAGE_NUMBER'		=> on_page($total_match_count, $per_page, $start),
@@ -585,18 +584,43 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$db->sql_freeresult($result);
 		}
 
+		if ($hilit)
+		{
+			// Remove bad highlights
+			$hilit_array = array_filter(explode('|', $hilit), 'strlen');
+			foreach ($hilit_array as $key => $value)
+			{
+				$hilit_array[$key] = str_replace('\*', '\w*?', preg_quote($value, '#'));
+			}
+			$hilit = implode('|', $hilit_array);
+		}
+
 		foreach ($rowset as $row)
 		{
 			$forum_id = $row['forum_id'];
 			$result_topic_id = $row['topic_id'];
 			$topic_title = censor_text($row['topic_title']);
 
+			// we need to select a forum id for this global topic
 			if (!$forum_id)
 			{
 				if (!isset($g_forum_id))
 				{
-					$availible_forums = array_values(array_diff(array_keys($auth->acl_getf('f_read', true)), $ex_fid_ary));
-					$g_forum_id = $availible_forums[0];
+					// Get a list of forums the user cannot read
+					$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
+	
+					// Determine first forum the user is able to read (must not be a category)
+					$sql = 'SELECT forum_id 
+						FROM ' . FORUMS_TABLE . '
+						WHERE forum_type = ' . FORUM_POST;
+		
+					if (sizeof($forum_ary))
+					{
+						$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+					}
+
+					$result = $db->sql_query_limit($sql, 1);
+					$g_forum_id = (int) $db->sql_fetchfield('forum_id');
 				}
 				$u_forum_id = $g_forum_id;
 			}
@@ -678,18 +702,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$row['post_subject'] = censor_text($row['post_subject']);
 				$row['post_text'] = str_replace("\n", '<br />', censor_text($row['post_text']));
 
-				if ($hilit)
-				{
-					// Remove bad highlights
-					$hilit_array = array_filter(explode('|', $hilit), 'strlen');
-					foreach ($hilit_array as $key => $value)
-					{
-						$hilit_array[$key] = preg_quote($value, '#');
-					}
-					$hilit = implode('|', $hilit_array);
-
-					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
-				}
+				// post highlighting
+				$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
 
 				$row['post_text'] = smiley_text($row['post_text']);
 

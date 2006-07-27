@@ -105,7 +105,7 @@ $lang = array_merge($lang, array(
 	'REAL_NAME'				=> 'Recipient name',
 	'RECIPIENT'				=> 'Recipient',
 
-	'SEARCH_USER_POSTS'		=> 'Search users posts',
+	'SEARCH_USER_POSTS'		=> 'Search user\'s posts',
 	'SELECT_MARKED'			=> 'Select marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
 	'SEND_IM'				=> 'Instant messaging',

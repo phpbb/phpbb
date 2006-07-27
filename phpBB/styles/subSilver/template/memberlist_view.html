@@ -69,7 +69,7 @@
 			<!-- ENDIF -->
 			<tr> 
 				<td class="gen" align="right" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
-				<td><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}</b><!-- ENDIF --></td>
+				<td><b class="gen">{POSTS}</b><!-- IF POSTS_PCT neq 0 --><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>

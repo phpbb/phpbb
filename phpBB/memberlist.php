@@ -1317,7 +1317,7 @@ function show_profile($data)
 		{
 			$time = time() + $user->timezone + $user->dst;
 
-			$age = (int) (date('Y', $time) - $bday_year - ((((date('n', $time) - $bday_month) < 0) || ((date('j', $time) - $bday_day) < 0)) ? 1 : 0));
+			$age = (int) (date('Y', $time) - $bday_year - ((date('n', $time) - $bday_month < 0) ? 1 : ((date('j', $time) - $bday_day < 0) ? 1 : 0)));
 		}
 	}
 

@@ -185,7 +185,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('search_store_resul
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_deny', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_allow_empty_referer', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('secure_downloads', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('send_encoding', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('send_encoding', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_name', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', '');

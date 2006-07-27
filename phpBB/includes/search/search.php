@@ -33,8 +33,6 @@ class search_backend
 	var $ignore_words = array();
 	var $match_synonym = array();
 	var $replace_synonym = array();
-	var $split_words = array();
-	var $common_words = array();
 
 	function search_backend(&$error)
 	{
