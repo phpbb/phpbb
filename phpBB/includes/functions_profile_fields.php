@@ -779,7 +779,14 @@ class custom_profile
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
 		{
-			$sql_not_in[] = "'" . $db->sql_escape($key) . "'";
+			if (strncmp($key, '_', 1) === 0)
+			{
+				$sql_not_in[] = "'" . $db->sql_escape(substr($key, 1)) . "'";
+			}
+			else
+			{
+				$sql_not_in[] = "'" . $db->sql_escape($key) . "'";
+			}
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value

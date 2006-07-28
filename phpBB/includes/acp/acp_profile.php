@@ -1043,6 +1043,10 @@ class acp_profile
 						foreach($old_table_cols as $declaration)
 						{
 							$entities = preg_split('#\s+#', trim($declaration));
+							if ($entities == 'PRIMARY')
+							{
+								continue;
+							}
 							$column_list[] = $entities[0];
 						}
 
