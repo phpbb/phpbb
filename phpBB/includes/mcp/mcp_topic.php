@@ -88,11 +88,11 @@ function mcp_topic_view($id, $mode, $action)
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = array();
-	$bbcode_bitfield = 0;
+	$bbcode_bitfield = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
-		$bbcode_bitfield |= $row['bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
 	}
 	$db->sql_freeresult($result);
 

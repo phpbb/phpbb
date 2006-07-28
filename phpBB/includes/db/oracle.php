@@ -278,7 +278,7 @@ class dbal_oracle extends dbal
 			// OCI->CLOB?
 			if (is_object($value))
 			{
-				$value = ociloadlob($value);
+				$value = $value->load();
 			}
 			
 			$result_row[strtolower($key)] = $value;
