@@ -215,7 +215,7 @@ p.topicdetails {
 	font-family: "Lucida Grande", "Trebuchet MS", Helvetica, Arial, sans-serif;
 }
 
-.postbody li, ul {
+.postbody li, ol, ul {
 	margin-left: 1.5em;
 }
 
