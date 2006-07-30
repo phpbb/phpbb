@@ -903,6 +903,7 @@ CREATE TABLE phpbb_styles_imageset (
 	btn_search varchar(200) DEFAULT '' NOT NULL,
 	btn_edit varchar(200) DEFAULT '' NOT NULL,
 	btn_report varchar(200) DEFAULT '' NOT NULL,
+	btn_warn varchar(200) DEFAULT '' NOT NULL,
 	btn_email varchar(200) DEFAULT '' NOT NULL,
 	btn_www varchar(200) DEFAULT '' NOT NULL,
 	btn_icq varchar(200) DEFAULT '' NOT NULL,

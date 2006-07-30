@@ -136,6 +136,8 @@ $lang = array_merge($lang, array(
 	'IMAGESET_UPDATED'			=> 'Imageset updated successfully',
 	'ITALIC'					=> 'Italic',
 
+	'IMG_ATTACH_PROGRESS_BAR'	=> 'Attachment upload progress bar',
+
 	'IMG_BTN_POST'			=> 'New topic',
 	'IMG_BTN_REPLY'			=> 'Reply topic',
 	'IMG_BTN_LOCKED'		=> 'Topic locked',
@@ -157,9 +159,11 @@ $lang = array_merge($lang, array(
 	'IMG_BTN_ONLINE'		=> 'User online',
 	'IMG_BTN_OFFLINE'		=> 'User offline',
 	'IMG_BTN_REPORT'		=> 'Report post',
+	'IMG_BTN_WARN'			=> 'Warn user',
 	'IMG_BTN_PM'			=> 'Send message',
 	'IMG_BTN_FRIEND'		=> 'Add as friend',
 	'IMG_BTN_FOE'			=> 'Add as foe',
+
 	'IMG_CAT_BUTTONS'		=> 'Localised buttons',
 	'IMG_CAT_CUSTOM'		=> 'Custom images',
 	'IMG_CAT_FOLDERS'		=> 'Topic icons',
@@ -168,6 +172,8 @@ $lang = array_merge($lang, array(
 	'IMG_CAT_KARMA'			=> 'Karma images',
 	'IMG_CAT_LOGOS'			=> 'Logos',
 	'IMG_CAT_POLLS'			=> 'Polling images',
+	'IMG_CAT_UI'			=> 'General user interface elements',
+	'IMG_CAT_USER'			=> 'Additional images',
 
 	'IMG_FOLDER'							=> 'Topic',
 	'IMG_FOLDER_ANNOUNCE'					=> 'Announcement',
@@ -227,6 +233,17 @@ $lang = array_merge($lang, array(
 	'IMG_SITE_LOGO'			=> 'Main Logo',
 	'IMG_SUB_FORUM'			=> 'Subforum',
 	'IMG_SUB_FORUM_NEW'		=> 'Subforum new posts',
+
+	'IMG_USER_ICON1'		=> 'User defined image 1',
+	'IMG_USER_ICON2'		=> 'User defined image 2',
+	'IMG_USER_ICON3'		=> 'User defined image 3',
+	'IMG_USER_ICON4'		=> 'User defined image 4',
+	'IMG_USER_ICON5'		=> 'User defined image 5',
+	'IMG_USER_ICON6'		=> 'User defined image 6',
+	'IMG_USER_ICON7'		=> 'User defined image 7',
+	'IMG_USER_ICON8'		=> 'User defined image 8',
+	'IMG_USER_ICON9'		=> 'User defined image 9',
+	'IMG_USER_ICON10'		=> 'User defined image 10',
 
 	'INCLUDE_DIMENSIONS'		=> 'Include dimensions',
 	'INCLUDE_IMAGESET'			=> 'Include imageset',

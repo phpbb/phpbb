@@ -1405,6 +1405,7 @@ CREATE TABLE phpbb_styles_imageset (
 	btn_search varchar2(200) DEFAULT '' NOT NULL,
 	btn_edit varchar2(200) DEFAULT '' NOT NULL,
 	btn_report varchar2(200) DEFAULT '' NOT NULL,
+	btn_warn varchar2(200) DEFAULT '' NOT NULL,
 	btn_email varchar2(200) DEFAULT '' NOT NULL,
 	btn_www varchar2(200) DEFAULT '' NOT NULL,
 	btn_icq varchar2(200) DEFAULT '' NOT NULL,

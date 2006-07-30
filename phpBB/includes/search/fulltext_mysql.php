@@ -30,6 +30,7 @@ class fulltext_mysql extends search_backend
 	var $stats = array();
 	var $word_length = array();
 	var $split_words = array();
+	var $search_query;
 	var $common_words = array();
 
 	function fulltext_mysql(&$error)

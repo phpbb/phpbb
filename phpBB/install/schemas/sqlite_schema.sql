@@ -779,6 +779,7 @@ CREATE TABLE phpbb_styles_imageset (
 	btn_search varchar(200) NOT NULL DEFAULT '',
 	btn_edit varchar(200) NOT NULL DEFAULT '',
 	btn_report varchar(200) NOT NULL DEFAULT '',
+	btn_warn varchar(200) NOT NULL DEFAULT '',
 	btn_email varchar(200) NOT NULL DEFAULT '',
 	btn_www varchar(200) NOT NULL DEFAULT '',
 	btn_icq varchar(200) NOT NULL DEFAULT '',

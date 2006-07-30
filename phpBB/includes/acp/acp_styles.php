@@ -833,8 +833,6 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// we want newlines no carriage returns!
 		$_POST['css_data'] = (isset($_POST['css_data']) && !empty($_POST['css_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['css_data']) : '';
 
-		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-
 		// get user input
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$hide_css		= request_var('hidecss', false);
@@ -1279,16 +1277,26 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					'site_logo',
 				),
 				'buttons'	=> array(
-					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_info', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline',
+					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_warn', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_info', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_friend', 'btn_foe',
 				),
 				'icons'		=> array(
-					'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
-				'forums'		=> array(
-					'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
+					'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',
+				),
+				'forums'	=> array(
+					'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',
+				),
 				'folders'	=> array(
-					'folder', 'folder_moved', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_locked_announce', 'folder_locked_announce_new', 'folder_locked_announce_posted', 'folder_locked_announce_new_posted', 'folder_locked_global', 'folder_locked_global_new', 'folder_locked_global_posted', 'folder_locked_global_new_posted', 'folder_locked_sticky', 'folder_locked_sticky_new', 'folder_locked_sticky_posted', 'folder_locked_sticky_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted', 'folder_global', 'folder_global_posted', 'folder_global_new', 'folder_global_new_posted',),
+					'folder', 'folder_moved', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_locked_announce', 'folder_locked_announce_new', 'folder_locked_announce_posted', 'folder_locked_announce_new_posted', 'folder_locked_global', 'folder_locked_global_new', 'folder_locked_global_posted', 'folder_locked_global_new_posted', 'folder_locked_sticky', 'folder_locked_sticky_new', 'folder_locked_sticky_posted', 'folder_locked_sticky_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted', 'folder_global', 'folder_global_posted', 'folder_global_new', 'folder_global_new_posted',
+				),
 				'polls'		=> array(
-					'poll_left', 'poll_center', 'poll_right',),
+					'poll_left', 'poll_center', 'poll_right',
+				),
+				'ui'		=> array(
+					'attach_progress_bar',
+				),
+				'user'		=> array(
+					'user_icon1', 'user_icon2', 'user_icon3', 'user_icon4', 'user_icon5', 'user_icon6', 'user_icon7', 'user_icon8', 'user_icon9', 'user_icon10',
+				),
 			);
 
 			foreach ($imglist as $category => $img_ary)
@@ -1416,7 +1424,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'IMAGE_OPTIONS'		=> $img_options,
 			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
 			'IMAGE_SIZE'		=> $imgsize_bool,
-			'IMAGE_REQUEST'		=> (!empty($imgname)) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, $img_info[0]) : '',
+			'IMAGE_REQUEST'		=> (!empty($img_info[0])) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, $img_info[0]) : '',
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
@@ -1815,7 +1823,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
-				$path = $style_row[$mode . '_path'];
+				if ($mode == 'style')
+				{
+					$path = preg_replace('#[^\w-]+#', '_', $style_row['style_name']);
+				}
+				else
+				{
+					$path = $style_row[$mode . '_path'];
+				}
 
 				if ($format == 'zip')
 				{
@@ -2602,7 +2617,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				$style_row['style_id'] = 0;
 
-				$this->install_style($error, 'add', '', $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+				$this->install_style($error, 'add', '', $style_row['style_id'], $style_row['style_name'], '', $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
 			}
 
 			if (!sizeof($error))
