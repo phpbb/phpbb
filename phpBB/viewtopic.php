@@ -533,7 +533,7 @@ $template->assign_vars(array(
 	'REPORT_IMG'		=> $user->img('btn_report', 'REPORT_POST'),
 	'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED'),
 	'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED'),
-	'WARN_IMG'			=> $user->img('btn_report', 'WARN_USER'),
+	'WARN_IMG'			=> $user->img('btn_warn', 'WARN_USER'),
 
 	'S_SELECT_SORT_DIR' 	=> $s_sort_dir,
 	'S_SELECT_SORT_KEY' 	=> $s_sort_key,
