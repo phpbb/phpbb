@@ -1267,7 +1267,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		break;
 	}
 
-	$sql_data[USERS_TABLE] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
+//	$sql_data[USERS_TABLE] = ($data['post_postcount']) ? 'user_posts = user_posts - 1' : '';
 
 	$db->sql_transaction('begin');
 
@@ -1346,6 +1346,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$post_mode = ($data['topic_first_post_id'] == $data['topic_last_post_id']) ? 'edit_topic' : (($data['topic_first_post_id'] == $data['post_id']) ? 'edit_first_post' : (($data['topic_last_post_id'] == $data['post_id']) ? 'edit_last_post' : 'edit'));
 	}
 
+	// First of all make sure the subject and topic title are having the correct length.
+	// To achive this without cutting off between special chars we convert to an array and then count the elements.
+	$subject = truncate_string($subject);
+	$data['topic_title'] = truncate_string($data['topic_title']);
+
 	// Collect some basic informations about which tables and which rows to update/insert
 	$sql_data = array();
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
@@ -1374,6 +1379,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
+				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id']) ? 1 : 0,
 				'post_edit_locked'	=> $data['post_edit_locked']
 			);
 		break;

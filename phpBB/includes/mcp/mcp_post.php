@@ -343,24 +343,13 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// Adjust post counts
-	$auth_user_from = new auth();
-	$auth_user_from->acl($post_info);
-
-	$auth_user_to = new auth();
-	$auth_user_to->acl($userdata);
-
-	// Decrease post count by one for the old user
-	if ($auth_user_from->acl_get('f_postcount', $post_info['forum_id']))
+	if ($post_info['post_postcount'])
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1
 			WHERE user_id = ' . $post_info['user_id'];
 		$db->sql_query($sql);
-	}
 
-	// Increase post count by one for the new user
-	if ($auth_user_to->acl_get('f_postcount', $post_info['forum_id']))
-	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts + 1
 			WHERE user_id = ' . $userdata['user_id'];

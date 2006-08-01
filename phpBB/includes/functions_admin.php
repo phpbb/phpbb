@@ -563,9 +563,9 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		return false;
 	}
 
-	$post_ids = $topic_ids = $forum_ids = array();
+	$post_ids = $topic_ids = $forum_ids = $post_counts = array();
 
-	$sql = 'SELECT post_id, poster_id, topic_id, forum_id
+	$sql = 'SELECT post_id, poster_id, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . "
 		WHERE $where_type " . ((!is_array($where_ids)) ? '= ' . (int) $where_ids : 'IN (' . implode(', ', array_map('intval', $where_ids)) . ')');
 	$result = $db->sql_query($sql);
@@ -576,6 +576,11 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$poster_ids[] = $row['poster_id'];
 		$topic_ids[] = $row['topic_id'];
 		$forum_ids[] = $row['forum_id'];
+
+		if ($row['post_postcount'])
+		{
+			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
+		}
 	}
 	$db->sql_freeresult($result);
 
@@ -597,6 +602,18 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$db->sql_query($sql);
 	}
 	unset($table_ary);
+
+	// Adjust users post counts
+	if (sizeof($post_counts))
+	{
+		foreach ($post_counts as $poster_id => $substract)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = user_posts - ' . $substract . '
+				WHERE user_id = ' . $poster_id;
+			$db->sql_query($sql);
+		}
+	}
 
 	// Remove the message from the search index
 	$search_type = basename($config['search_type']);

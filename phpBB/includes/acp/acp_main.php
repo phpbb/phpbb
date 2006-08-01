@@ -209,37 +209,17 @@ class acp_main
 					trigger_error($user->lang['NO_ADMIN']);
 				}
 
-				$post_count_ary = $auth->acl_getf('f_postcount');
-				$forum_read_ary = $auth->acl_getf('f_read');
-				
-				$forum_ary = array();
-				foreach ($post_count_ary as $forum_id => $allowed)
-				{
-					if ($allowed['f_postcount'] && $forum_read_ary[$forum_id]['f_read'])
-					{
-						$forum_ary[] = $forum_id;
-					}
-				}
+				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+					FROM ' . POSTS_TABLE . '
+					WHERE post_postcount = 1
+					GROUP BY poster_id';
+				$result = $db->sql_query($sql);
 
-				if (!sizeof($forum_ary))
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
+					$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
 				}
-				else
-				{
-					$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-						FROM ' . POSTS_TABLE . '
-						WHERE poster_id <> ' . ANONYMOUS . '
-							AND forum_id IN (' . implode(', ', $forum_ary) . ')
-						GROUP BY poster_id';
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
-					}
-					$db->sql_freeresult($result);
-				}
+				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
 

@@ -165,7 +165,7 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
@@ -176,13 +176,15 @@ class acp_groups
 						break;
 					}
 
+					$back_link = ($action == 'delete') ? $this->u_action : $this->u_action . '&amp;action=list&amp;g=' . $group_id;
+
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+						trigger_error($user->lang[$error] . adm_back_link($back_link));
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
-					trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+					trigger_error($user->lang[$message] . adm_back_link($back_link));
 				}
 				else
 				{

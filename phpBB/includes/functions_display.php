@@ -641,8 +641,8 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				if ($topic_row['topic_status'] == ITEM_LOCKED)
 				{
 					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_locked_global';
-					$folder_new = 'folder_locked_global_new';
+					$folder = 'folder_lock_global';
+					$folder_new = 'folder_lock_global_new';
 				}
 			break;
 
@@ -654,8 +654,8 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				if ($topic_row['topic_status'] == ITEM_LOCKED)
 				{
 					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_locked_announce';
-					$folder_new = 'folder_locked_announce_new';
+					$folder = 'folder_lock_announce';
+					$folder_new = 'folder_lock_announce_new';
 				}
 			break;
 
@@ -667,8 +667,8 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				if ($topic_row['topic_status'] == ITEM_LOCKED)
 				{
 					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_locked_sticky';
-					$folder_new = 'folder_locked_sticky_new';
+					$folder = 'folder_lock_sticky';
+					$folder_new = 'folder_lock_sticky_new';
 				}
 			break;
 
@@ -689,8 +689,8 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				if ($topic_row['topic_status'] == ITEM_LOCKED)
 				{
 					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_locked';
-					$folder_new = 'folder_locked_new';
+					$folder = 'folder_lock';
+					$folder_new = 'folder_lock_new';
 				}
 			break;
 		}
@@ -701,7 +701,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		// Posted image?
 		if (!empty($topic_row['topic_posted']) && $topic_row['topic_posted'])
 		{
-			$folder_img .= '_posted';
+			$folder_img .= '_post';
 		}
 	}
 

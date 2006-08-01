@@ -266,7 +266,7 @@ class ucp_main
 					// Which folder should we display?
 					if ($row['forum_status'] == ITEM_LOCKED)
 					{
-						$folder_image = ($unread_forum) ? 'folder_locked_new' : 'folder_locked';
+						$folder_image = ($unread_forum) ? 'folder_lock_new' : 'folder_lock';
 						$folder_alt = 'FORUM_LOCKED';
 					}
 					else

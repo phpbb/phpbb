@@ -2276,6 +2276,41 @@ function get_preg_expression($mode)
 	return '';
 }
 
+/**
+* Truncates string while retaining special characters if going over the max length
+* The default max length is 60 at the moment
+*/
+function truncate_string($string, $max_length = 60)
+{
+	$chars = array();
+
+	// split the multibyte characters first
+	$string_ary = preg_split('#(&\#[0-9]+;)#', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+	// Now go through the array and split the other characters
+	foreach ($string_ary as $key => $value)
+	{
+		if (strpos($value, '&#') === 0)
+		{
+			$chars[] = $value;
+			continue;
+		}
+
+		// decode html entities and put them back later
+		$_chars = str_split(html_entity_decode($value));
+		$chars = array_merge($chars, array_map('htmlspecialchars', $_chars));
+	}
+
+	// Now check the length ;)
+	if (sizeof($chars) <= $max_length)
+	{
+		return $string;
+	}
+
+	// Cut off the last elements from the array
+	return implode('', array_slice($chars, 0, $max_length));
+}
+
 // Handler, header and footer
 
 /**
@@ -2863,6 +2898,8 @@ function garbage_collection()
 	$db->sql_close();
 }
 
+/**
+*/
 class bitfield
 {
 	var $data;
@@ -2872,26 +2909,22 @@ class bitfield
 		$this->data = $bitfield;
 	}
 
+	/**
+	*/
 	function get($n)
 	{
-		/**
-		* Get the ($n / 8)th char
-		*/
+		// Get the ($n / 8)th char
 		$byte = $n >> 3;
 
 		if (!isset($this->data[$byte]))
 		{
-			/**
-			* Of course, if it doesn't exist then the result if FALSE
-			*/
-			return FALSE;
+			// Of course, if it doesn't exist then the result if FALSE
+			return false;
 		}
 
 		$c = $this->data[$byte];
 
-		/**
-		* Lookup the ($n % 8)th bit of the byte
-		*/
+		// Lookup the ($n % 8)th bit of the byte
 		$bit = 7 - ($n & 7);
 		return (bool) (ord($c) & (1 << $bit));
 	}

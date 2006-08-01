@@ -187,7 +187,7 @@ class template
 
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 
-		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
+		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename) || @filesize($filename) === 0) ? true : false;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
