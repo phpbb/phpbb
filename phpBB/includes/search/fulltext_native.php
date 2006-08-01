@@ -770,7 +770,7 @@ class fulltext_native extends search_backend
 							$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
 						}
 
-						$sql .= 'FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+						$sql .= ' FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 							WHERE $sql_author
 								$sql_topic_id
 								$m_approve_fid_sql

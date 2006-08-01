@@ -1032,6 +1032,8 @@ function validate_data($data, $val_ary)
 
 /**
 * Validate String
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_string($string, $optional = false, $min = 0, $max = 0)
 {
@@ -1054,6 +1056,8 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 
 /**
 * Validate Number
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 {
@@ -1076,6 +1080,8 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 
 /**
 * Validate Match
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_match($string, $optional = false, $match)
 {
@@ -1096,6 +1102,8 @@ function validate_match($string, $optional = false, $match)
 * Check to see if the username has been taken, or if it is disallowed.
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_username($username)
 {
@@ -1168,6 +1176,8 @@ function validate_username($username)
 
 /**
 * Check to see if email address is banned or already present in the DB
+*
+* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_email($email)
 {

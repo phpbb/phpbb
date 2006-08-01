@@ -19,6 +19,7 @@ class acm
 	var $is_modified = false;
 
 	var $sql_rowset = array();
+	var $sql_row_pointer = array();
 
 	/**
 	* Set cache path
@@ -56,6 +57,7 @@ class acm
 		unset($this->vars);
 		unset($this->var_expires);
 		unset($this->sql_rowset);
+		unset($this->sql_row_pointer);
 	}
 
 	/**
@@ -311,6 +313,8 @@ class acm
 			return false;
 		}
 
+		$this->sql_row_pointer[$query_id] = 0;
+
 		return $query_id;
 	}
 
@@ -331,6 +335,7 @@ class acm
 			$lines = array();
 			$query_id = sizeof($this->sql_rowset);
 			$this->sql_rowset[$query_id] = array();
+			$this->sql_row_pointer[$query_id] = 0;
 
 			while ($row = $db->sql_fetchrow($query_result))
 			{
@@ -361,7 +366,63 @@ class acm
 	*/
 	function sql_fetchrow($query_id)
 	{
-		return array_shift($this->sql_rowset[$query_id]);
+		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		{
+			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
+		}
+
+		return false;
+	}
+
+	/**
+	* Fetch the number of rows from cache (database)
+	*/
+	function sql_numrows($query_id)
+	{
+		return sizeof($this->sql_rowset[$query_id]);
+	}
+
+	/**
+	* Fetch a field from the current row of a cached database result (database)
+	*/
+	function sql_fetchfield($query_id, $field)
+	{
+		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
+		{
+			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]];
+		}
+
+		return false;
+	}
+
+	/**
+	* Seek a specific row in an a cached database result (database)
+	*/
+	function sql_rowseek($query_id, $rownum)
+	{
+		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
+		{
+			return false;
+		}
+
+		$this->sql_row_pointer[$query_id] = $rownum;
+		return true;
+	}
+
+	/**
+	* Free memory used for a cached database result (database)
+	*/
+	function sql_freeresult($query_id)
+	{
+		if (!isset($this->sql_rowset[$query_id]))
+		{
+			return false;
+		}
+
+		unset($this->sql_rowset[$query_id]);
+		unset($this->sql_row_pointer[$query_id]);
+
+		return true;
 	}
 }
 

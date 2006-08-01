@@ -22,7 +22,7 @@ if(!defined('SQL_LAYER'))
 {
 
 	define('SQL_LAYER', 'oracle');
-	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Oracle Database Abstraction Layer
@@ -81,6 +81,12 @@ class dbal_oracle extends dbal
 
 	/**
 	* Base query method
+	*
+	* @param	string	$query		Contains the SQL query which shall be executed
+	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
+	*
+	* @access	public
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -225,9 +231,16 @@ class dbal_oracle extends dbal
 	*/
 	function sql_numrows($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_numrows($query_id);
 		}
 
 		$result = @ocifetchstatement($query_id, $this->rowset);
@@ -293,6 +306,8 @@ class dbal_oracle extends dbal
 	*/
 	function sql_fetchfield($field, $rownum = false, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
@@ -303,6 +318,11 @@ class dbal_oracle extends dbal
 			if ($rownum !== false)
 			{
 				$this->sql_rowseek($rownum, $query_id);
+			}
+
+			if (isset($cache->sql_rowset[$query_id]))
+			{
+				return $cache->sql_fetchfield($query_id, $field);
 			}
 
 			$row = $this->sql_fetchrow($query_id);
@@ -318,9 +338,16 @@ class dbal_oracle extends dbal
 	*/
 	function sql_rowseek($rownum, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($query_id, $rownum);
 		}
 
 		if (!$query_id)
@@ -380,9 +407,16 @@ class dbal_oracle extends dbal
 	*/
 	function sql_freeresult($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_freeresult($query_id);
 		}
 
 		if (isset($this->open_queries[(int) $query_id]))
