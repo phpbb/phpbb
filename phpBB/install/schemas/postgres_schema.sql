@@ -383,6 +383,7 @@ CREATE TABLE phpbb_groups (
 	group_name varchar_ci DEFAULT '' NOT NULL,
 	group_desc varchar(8000) DEFAULT '' NOT NULL,
 	group_desc_bitfield bytea DEFAULT '\000' NOT NULL,
+	group_desc_options INT4 DEFAULT 0 NOT NULL,
 	group_desc_uid varchar(5) DEFAULT '' NOT NULL,
 	group_display INT2 DEFAULT '0' NOT NULL CHECK (group_display >= 0),
 	group_avatar varchar(255) DEFAULT '' NOT NULL,
