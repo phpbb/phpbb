@@ -26,6 +26,7 @@ s_help = "{LA_BBCODE_S_HELP}";
 f_help = "{LA_BBCODE_F_HELP}";
 e_help = "{LA_BBCODE_E_HELP}";
 d_help = "{LA_BBCODE_D_HELP}";
+<!-- BEGIN custom_tags -->cb_{custom_tags.BBCODE_ID}_help = "{custom_tags.BBCODE_HELPLINE}";<!-- END custom_tags -->
 
 //-->
 </script>
@@ -75,7 +76,7 @@ d_help = "{LA_BBCODE_D_HELP}";
 			<tr valign="middle" align="left">
 				<td colspan="2">
 				<!-- BEGIN custom_tags -->
-					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" />
+					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')"<!-- ENDIF --> />
 				<!-- END custom_tags -->
 				</td>
 			</tr>

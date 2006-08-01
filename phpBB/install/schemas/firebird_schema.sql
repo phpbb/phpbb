@@ -172,6 +172,7 @@ END;;
 CREATE TABLE phpbb_bbcodes (
 	bbcode_id INTEGER DEFAULT 0 NOT NULL,
 	bbcode_tag VARCHAR(16) DEFAULT '' NOT NULL,
+	bbcode_helpline VARCHAR(255) DEFAULT '' NOT NULL,
 	display_on_posting INTEGER DEFAULT 0 NOT NULL,
 	bbcode_match VARCHAR(255) DEFAULT '' NOT NULL,
 	bbcode_tpl BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,

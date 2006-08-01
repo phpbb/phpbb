@@ -934,7 +934,7 @@ function display_custom_bbcodes()
 	/*
 	* @todo while adjusting custom bbcodes, think about caching this query as well as correct ordering
 	*/
-	$sql = 'SELECT bbcode_id, bbcode_tag 
+	$sql = 'SELECT bbcode_id, bbcode_tag, bbcode_helpline
 		FROM ' . BBCODES_TABLE . '
 		WHERE display_on_posting = 1';
 	$result = $db->sql_query($sql);
@@ -943,9 +943,10 @@ function display_custom_bbcodes()
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$template->assign_block_vars('custom_tags', array(
-			'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-			'BBCODE_ID'		=> $num_predefined_bbcodes + ($i * 2),
-			'BBCODE_TAG'	=> $row['bbcode_tag'])
+			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
+			'BBCODE_TAG'		=> $row['bbcode_tag'],
+			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'])
 		);
 
 		$i++;

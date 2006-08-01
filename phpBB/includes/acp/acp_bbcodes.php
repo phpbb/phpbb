@@ -33,12 +33,12 @@ class acp_bbcodes
 		switch ($action)
 		{
 			case 'add':
-				$bbcode_match = $bbcode_tpl = '';
+				$bbcode_match = $bbcode_tpl = $bbcode_helpline = '';
 				$display_on_posting = 0;
 			break;
 
 			case 'edit':
-				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting
+				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline, bbcode_helpline
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
@@ -53,6 +53,7 @@ class acp_bbcodes
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
 				$display_on_posting = $row['display_on_posting'];
+				$bbcode_helpline = html_entity_decode($row['bbcode_helpline']);
 			break;
 
 			case 'modify':
@@ -75,6 +76,7 @@ class acp_bbcodes
 
 				$bbcode_match = request_var('bbcode_match', '');
 				$bbcode_tpl = html_entity_decode(request_var('bbcode_tpl', ''));
+				$bbcode_helpline = htmlspecialchars(request_var('bbcode_helpline', ''));
 			break;
 		}
 
@@ -92,6 +94,7 @@ class acp_bbcodes
 					'L_BBCODE_USAGE_EXPLAIN'=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
+					'BBCODE_HELPLINE'		=> $bbcode_helpline,
 					'DISPLAY_ON_POSTING'	=> $display_on_posting)
 				);
 
@@ -135,6 +138,7 @@ class acp_bbcodes
 					'bbcode_match'				=> $bbcode_match,
 					'bbcode_tpl'				=> $bbcode_tpl,
 					'display_on_posting'		=> $display_on_posting,
+					'bbcode_helpline'			=> $bbcode_helpline,
 					'first_pass_match'			=> $data['first_pass_match'],
 					'first_pass_replace'		=> $data['first_pass_replace'],
 					'second_pass_match'			=> $data['second_pass_match'],

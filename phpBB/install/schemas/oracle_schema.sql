@@ -227,6 +227,7 @@ END;
 CREATE TABLE phpbb_bbcodes (
 	bbcode_id number(3) DEFAULT '0' NOT NULL,
 	bbcode_tag varchar2(16) DEFAULT '' NOT NULL,
+	bbcode_helpline varchar2(255) DEFAULT '' NOT NULL,
 	display_on_posting number(1) DEFAULT '0' NOT NULL,
 	bbcode_match varchar2(255) DEFAULT '' NOT NULL,
 	bbcode_tpl clob DEFAULT '' NOT NULL,

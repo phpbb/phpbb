@@ -106,6 +106,7 @@ CREATE TABLE phpbb_banlist (
 CREATE TABLE phpbb_bbcodes (
 	bbcode_id tinyint(3) DEFAULT '0' NOT NULL,
 	bbcode_tag varchar(16) DEFAULT '' NOT NULL,
+	bbcode_helpline varchar(255) DEFAULT '' NOT NULL,
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_match varchar(255) DEFAULT '' NOT NULL,
 	bbcode_tpl mediumtext DEFAULT '' NOT NULL,

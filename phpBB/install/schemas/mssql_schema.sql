@@ -172,6 +172,7 @@ GO
 CREATE TABLE [phpbb_bbcodes] (
 	[bbcode_id] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_tag] [varchar] (16) DEFAULT ('') NOT NULL ,
+	[bbcode_helpline] [varchar] (255) DEFAULT ('') NOT NULL,
 	[display_on_posting] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_match] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[bbcode_tpl] [text] DEFAULT ('') NOT NULL ,
