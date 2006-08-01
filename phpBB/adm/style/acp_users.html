@@ -560,6 +560,7 @@
 	s_help = "{LA_BBCODE_S_HELP}";
 	f_help = "{LA_BBCODE_F_HELP}";
 	e_help = "{LA_BBCODE_E_HELP}";
+	d_help = "{LA_BBCODE_D_HELP}";
 
 	//-->
 	</script>
@@ -586,8 +587,8 @@
 			<input type="button" class="button2" accesskey="l" name="addbbcode10" value="List" style="width: 40px" onclick="bbstyle(10)" onmouseover="helpline('l')" />
 			<input type="button" class="button2" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
 			<!-- IF S_BBCODE_IMG --><input type="button" class="button2" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /><!-- ENDIF -->
-			<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
-			<!-- IF S_BBCODE_FLASH --><input type="button" class="button2" accesskey="f" name="addbbcode18" value="Flash" onclick="bbstyle(18)" /><!-- ENDIF -->
+			<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" onmouseover="helpline('d')" />
+			<!-- IF S_BBCODE_FLASH --><input type="button" class="button2" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" /><!-- ENDIF -->
 
 			{L_FONT_SIZE}: <select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
 				<option value="7">{L_FONT_TINY}</option>

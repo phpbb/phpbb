@@ -89,7 +89,7 @@ class acp_captcha
 					trigger_error($user->lang['NO_GD']);
 				}
 
-				if (($policy !== 'policy_entropy' || $policy !== 'policy_3dbitmap') && !(function_exists('imagettfbbox') && function_exists('imagettftext')))
+				if (!($policy === 'policy_entropy' || $policy === 'policy_3dbitmap') && (!function_exists('imagettfbbox') || !function_exists('imagettftext')))
 				{
 					trigger_error($user->lang['NO_TTF']);
 				}
