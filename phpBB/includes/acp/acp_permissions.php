@@ -213,9 +213,31 @@ class acp_permissions
 			switch ($action)
 			{
 				case 'delete':
+					// All users/groups selected?
+					$all_users = (isset($_POST['all_users'])) ? true : false;
+					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+
+					if ($all_users || $all_groups)
+					{
+						$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
+
+						if ($all_users && sizeof($items['user_ids']))
+						{
+							$user_id = $items['user_ids'];
+						}
+						else if ($all_groups && sizeof($items['group_ids']))
+						{
+							$group_id = $items['group_ids'];
+						}
+					}
+
 					if (sizeof($user_id) || sizeof($group_id))
 					{
 						$this->remove_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id, $forum_id);
+					}
+					else
+					{
+						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action));
 					}
 				break;
 
@@ -346,99 +368,30 @@ class acp_permissions
 						continue 2;
 					}
 
-					$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')' : 'AND a.forum_id <> 0');
-					$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
-
-					$sql = $db->sql_build_query('SELECT_DISTINCT', array(
-						'SELECT'	=> 'u.username, u.user_regdate, u.user_id',
-
-						'FROM'		=> array(
-							USERS_TABLE			=> 'u',
-							ACL_OPTIONS_TABLE	=> 'o',
-							ACL_USERS_TABLE		=> 'a'
-						),
-
-						'LEFT_JOIN'	=> array(
-							array(
-								'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-								'ON'	=> 'a.auth_role_id = r.role_id'
-							)
-						),
-
-						'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
-							$sql_permission_option
-							$sql_forum_id
-							AND u.user_id = a.user_id",
-
-						'ORDER_BY'	=> 'u.username, u.user_regdate ASC'
-					));
-					$result = $db->sql_query($sql);
-
-					$s_defined_user_options = '';
-					$defined_user_ids = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$s_defined_user_options .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
-						$defined_user_ids[] = $row['user_id'];
-					}
-					$db->sql_freeresult($result);
-
-					$sql = $db->sql_build_query('SELECT_DISTINCT', array(
-						'SELECT'	=> 'g.group_type, g.group_name, g.group_id',
-
-						'FROM'		=> array(
-							GROUPS_TABLE		=> 'g',
-							ACL_OPTIONS_TABLE	=> 'o',
-							ACL_GROUPS_TABLE	=> 'a'
-						),
-
-						'LEFT_JOIN'	=> array(
-							array(
-								'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-								'ON'	=> 'a.auth_role_id = r.role_id'
-							)
-						),
-
-						'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
-							$sql_permission_option
-							$sql_forum_id
-							AND g.group_id = a.group_id",
-
-						'ORDER_BY'	=> 'g.group_type DESC, g.group_name ASC'
-					));
-					$result = $db->sql_query($sql);
-
-					$s_defined_group_options = '';
-					$defined_group_ids = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
-						$defined_group_ids[] = $row['group_id'];
-					}
-					$db->sql_freeresult($result);
+					$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
 
 					// Now we check the users... because the "all"-selection is different here (all defined users/groups)
 					$all_users = (isset($_POST['all_users'])) ? true : false;
 					$all_groups = (isset($_POST['all_groups'])) ? true : false;
 
-					if ($all_users && sizeof($defined_user_ids))
+					if ($all_users && sizeof($items['user_ids']))
 					{
-						$user_id = $defined_user_ids;
+						$user_id = $items['user_ids'];
 						continue 2;
 					}
 
-					if ($all_groups && sizeof($defined_group_ids))
+					if ($all_groups && sizeof($items['group_ids']))
 					{
-						$group_id = $defined_group_ids;
+						$group_id = $items['group_ids'];
 						continue 2;
 					}
 
 					$template->assign_vars(array(
 						'S_SELECT_USERGROUP'		=> ($victim == 'usergroup') ? true : false,
 						'S_SELECT_USERGROUP_VIEW'	=> ($victim == 'usergroup_view') ? true : false,
-						'S_DEFINED_USER_OPTIONS'	=> $s_defined_user_options,
-						'S_DEFINED_GROUP_OPTIONS'	=> $s_defined_group_options,
-						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $defined_group_ids),
+						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
+						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
+						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids']),
 						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username'))
 					);
 
@@ -1116,6 +1069,92 @@ class acp_permissions
 				'S_TOTAL_NEVER'		=> false)
 			);
 		}
+	}
+
+	/**
+	* Get already assigned users/groups
+	*/
+	function retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type)
+	{
+		global $db, $user;
+
+		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')' : 'AND a.forum_id <> 0');
+		$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+
+		$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+			'SELECT'	=> 'u.username, u.user_regdate, u.user_id',
+
+			'FROM'		=> array(
+				USERS_TABLE			=> 'u',
+				ACL_OPTIONS_TABLE	=> 'o',
+				ACL_USERS_TABLE		=> 'a'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				)
+			),
+
+			'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
+				$sql_permission_option
+				$sql_forum_id
+				AND u.user_id = a.user_id",
+
+			'ORDER_BY'	=> 'u.username, u.user_regdate ASC'
+		));
+		$result = $db->sql_query($sql);
+
+		$s_defined_user_options = '';
+		$defined_user_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$s_defined_user_options .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
+			$defined_user_ids[] = $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+			'SELECT'	=> 'g.group_type, g.group_name, g.group_id',
+
+			'FROM'		=> array(
+				GROUPS_TABLE		=> 'g',
+				ACL_OPTIONS_TABLE	=> 'o',
+				ACL_GROUPS_TABLE	=> 'a'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				)
+			),
+
+			'WHERE'		=> "(a.auth_option_id = o.auth_option_id OR r.auth_option_id = o.auth_option_id)
+				$sql_permission_option
+				$sql_forum_id
+				AND g.group_id = a.group_id",
+
+			'ORDER_BY'	=> 'g.group_type DESC, g.group_name ASC'
+		));
+		$result = $db->sql_query($sql);
+
+		$s_defined_group_options = '';
+		$defined_group_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			$defined_group_ids[] = $row['group_id'];
+		}
+		$db->sql_freeresult($result);
+
+		return array(
+			'group_ids'			=> $defined_group_ids,
+			'group_ids_options'	=> $s_defined_group_options,
+			'user_ids'			=> $defined_user_ids,
+			'user_ids_options'	=> $s_defined_user_options
+		);
 	}
 }
 

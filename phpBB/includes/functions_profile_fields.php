@@ -534,7 +534,7 @@ class custom_profile
 		global $user;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
@@ -601,7 +601,7 @@ class custom_profile
 		global $user, $template;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		$now = getdate();
 
@@ -803,7 +803,8 @@ class custom_profile
 				$now = getdate();
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
-			$cp_data[$row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
+
+			$cp_data['_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
 		$db->sql_freeresult($result);
 		

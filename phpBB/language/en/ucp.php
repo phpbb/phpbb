@@ -213,6 +213,7 @@ $lang = array_merge($lang, array(
 
 	'IF_FOLDER_FULL'			=> 'If folder is full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',
+	'ITEMS_REQUIRED'			=> 'The items marked with * are required profile fields and need to be filled out',
 
 	'LANGUAGE'					=> 'Language',
 	'LINK_REMOTE_AVATAR'		=> 'Link off-site',

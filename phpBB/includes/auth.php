@@ -707,74 +707,70 @@ class auth
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
 		$method = trim(basename($config['auth_method']));
+		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		$method = 'login_' . $method;
+		if (function_exists($method))
 		{
-			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+			$login = $method($username, $password);
 
-			$method = 'login_' . $method;
-			if (function_exists($method))
+			// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
+			if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)
 			{
-				$login = $method($username, $password);
-
-				// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
-				if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)
+				// we are going to use the user_add function so include functions_user.php if it wasn't defined yet
+				if (!function_exists('user_add'))
 				{
-					// we are going to use the user_add function so include functions_user.php if it wasn't defined yet
-					if (!function_exists('user_add'))
-					{
-						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-					}
+					include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
-					user_add($login['user_row'], (isset($login['cp_data'])) ? $login['cp_data'] : false);
+				user_add($login['user_row'], (isset($login['cp_data'])) ? $login['cp_data'] : false);
 
-					$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
-						FROM ' . USERS_TABLE . "
-						WHERE username = '" . $db->sql_escape($username) . "'";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+				$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
+					FROM ' . USERS_TABLE . "
+					WHERE username = '" . $db->sql_escape($username) . "'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-					if (!$row)
-					{
-						return array(
-							'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
-							'error_msg'		=> 'AUTH_NO_PROFILE_CREATED',
-							'user_row'		=> array('user_id' => ANONYMOUS),
-						);
-					}
-
-					$login = array(
-						'status'	=> LOGIN_SUCCESS,
-						'error_msg'	=> false,
-						'user_row'	=> $row,
+				if (!$row)
+				{
+					return array(
+						'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+						'error_msg'		=> 'AUTH_NO_PROFILE_CREATED',
+						'user_row'		=> array('user_id' => ANONYMOUS),
 					);
 				}
 
-				// If login succeeded, we will log the user in... else we pass the login array through...
-				if ($login['status'] == LOGIN_SUCCESS)
+				$login = array(
+					'status'	=> LOGIN_SUCCESS,
+					'error_msg'	=> false,
+					'user_row'	=> $row,
+				);
+			}
+
+			// If login succeeded, we will log the user in... else we pass the login array through...
+			if ($login['status'] == LOGIN_SUCCESS)
+			{
+				$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
+
+				// Successful session creation
+				if ($result === true)
 				{
-					$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
-
-					// Successful session creation
-					if ($result === true)
-					{
-						return array(
-							'status'		=> LOGIN_SUCCESS,
-							'error_msg'		=> false,
-							'user_row'		=> $login['user_row'],
-						);
-					}
-
 					return array(
-						'status'		=> LOGIN_BREAK,
-						'error_msg'		=> $result,
+						'status'		=> LOGIN_SUCCESS,
+						'error_msg'		=> false,
 						'user_row'		=> $login['user_row'],
 					);
 				}
 
-				return $login;
+				return array(
+					'status'		=> LOGIN_BREAK,
+					'error_msg'		=> $result,
+					'user_row'		=> $login['user_row'],
+				);
 			}
+
+			return $login;
 		}
 
 		trigger_error('Authentication method not found', E_USER_ERROR);

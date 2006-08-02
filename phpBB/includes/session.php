@@ -172,17 +172,10 @@ class session
 		// Load limit check (if applicable)
 		if ($config['limit_load'])
 		{
-			if (@file_exists('/proc/loadavg') && @is_readable('/proc/loadavg'))
+			if ($load = @file_get_contents('/proc/loadavg'))
 			{
-				if ($load = @file_get_contents('/proc/loadavg'))
-				{
-					$this->load = array_slice(explode(' ', $load), 0, 1);
-					$this->load = floatval($this->load[0]);
-				}
-				else
-				{
-					set_config('limit_load', '0');
-				}
+				$this->load = array_slice(explode(' ', $load), 0, 1);
+				$this->load = floatval($this->load[0]);
 			}
 			else
 			{
@@ -220,18 +213,14 @@ class session
 
 					// Check whether the session is still valid if we have one
 					$method = basename(trim($config['auth_method']));
+					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-					if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+					$method = 'validate_session_' . $method;
+					if (function_exists($method))
 					{
-						include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-						$method = 'validate_session_' . $method;
-						if (function_exists($method))
+						if (!$method($this->data))
 						{
-							if (!$method($this->data))
-							{
-								$session_expired = true;
-							}
+							$session_expired = true;
 						}
 					}
 
@@ -357,21 +346,17 @@ class session
 		}
 
 		$method = basename(trim($config['auth_method']));
+		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		$method = 'autologin_' . $method;
+		if (function_exists($method))
 		{
-			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+			$this->data = $method();
 
-			$method = 'autologin_' . $method;
-			if (function_exists($method))
+			if (sizeof($this->data))
 			{
-				$this->data = $method();
-
-				if (sizeof($this->data))
-				{
-					$this->cookie_data['k'] = '';
-					$this->cookie_data['u'] = $this->data['user_id'];
-				}
+				$this->cookie_data['k'] = '';
+				$this->cookie_data['u'] = $this->data['user_id'];
 			}
 		}
 
@@ -547,16 +532,12 @@ class session
 
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
+		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		$method = 'logout_' . $method;
+		if (function_exists($method))
 		{
-			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-			$method = 'logout_' . $method;
-			if (function_exists($method))
-			{
-				$method($this->data);
-			}
+			$method($this->data);
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)
