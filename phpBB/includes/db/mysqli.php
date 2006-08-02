@@ -186,7 +186,7 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_numrows($query_id);
 		}
@@ -242,7 +242,7 @@ class dbal_mysqli extends dbal
 				$this->sql_rowseek($rownum, $query_id);
 			}
 
-			if (isset($cache->sql_rowset[$query_id]))
+			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 			{
 				return $cache->sql_fetchfield($query_id, $field);
 			}
@@ -267,7 +267,7 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_rowseek($query_id, $rownum);
 		}
@@ -295,7 +295,7 @@ class dbal_mysqli extends dbal
 			$query_id = $this->query_result;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_freeresult($query_id);
 		}
