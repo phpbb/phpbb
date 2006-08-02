@@ -46,9 +46,6 @@ class dbal_firebird extends dbal
 
 		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3);
 
-		/**
-		* @todo evaluate the implications of opening a service connection
-		*/
 		$this->service_handle = (function_exists('ibase_service_attach')) ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
@@ -76,7 +73,7 @@ class dbal_firebird extends dbal
 		switch ($status)
 		{
 			case 'begin':
-				return @ibase_trans();
+				return true;
 			break;
 
 			case 'commit':
@@ -115,6 +112,18 @@ class dbal_firebird extends dbal
 				if (($this->query_result = @ibase_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
+				}
+
+				if (!$this->transaction)
+				{
+					if (function_exists('ibase_commit_ret'))
+					{
+						@ibase_commit_ret();
+					}
+					else
+					{
+						@ibase_commit();
+					}
 				}
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
