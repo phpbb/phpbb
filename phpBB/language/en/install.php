@@ -125,7 +125,7 @@ $lang = array_merge($lang, array(
 	'FTP_CONFIG'				=> 'Transfer config by FTP',
 	'FTP_CONFIG_EXPLAIN'		=> 'phpBB has detected the presence of the FTP module on this server. You may attempt to install your config.php via this if you wish. You will need to supply the information listed below. Remember your username and password are those to your server! (ask your hosting provider for details if you are unsure what these are)',
 	'FTP_PATH'					=> 'FTP Path',
-	'FTP_PATH_EXPLAIN'			=> 'This is the path from your root directory to that of phpBB2, e.g. htdocs/phpBB2/',
+	'FTP_PATH_EXPLAIN'			=> 'This is the path from your root directory to that of phpBB, e.g. htdocs/phpBB3/',
 	'FTP_UPLOAD'				=> 'Upload',
 
 	'GPL'						=> 'General Public License',
@@ -210,7 +210,7 @@ $lang = array_merge($lang, array(
 	'RETRY_WRITE_EXPLAIN'		=> 'If you wish you can change the permissions on config.php to allow phpBB to write to it. Should you wish to do that you can click Retry below to try again. Remember to return the permissions on config.php after phpBB has finished installation.',
 
 	'SCRIPT_PATH'				=> 'Script path',
-	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB2 is located relative to the domain name',
+	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name',
 	'SELECT_LANG'				=> 'Select language',
 	'SERVER_CONFIG'				=> 'Server Configuration',
 	'SOFTWARE'					=> 'Forum Software',
