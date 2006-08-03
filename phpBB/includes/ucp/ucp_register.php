@@ -117,8 +117,8 @@ class ucp_register
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username')),
-				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'email'				=> array(
 					array('string', false, 6, 60),
 					array('email')),

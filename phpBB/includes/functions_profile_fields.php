@@ -494,7 +494,15 @@ class custom_profile
 					return NULL;
 				}
 
-				return $this->options_lang[$field_id][$lang_id][(int) $value];
+				$value = (int) $value;
+
+				// User not having a value assigned
+				if (!isset($this->options_lang[$field_id][$lang_id][$value]))
+				{
+					return NULL;
+				}
+
+				return $this->options_lang[$field_id][$lang_id][$value];
 			break;
 
 			case 'bool':

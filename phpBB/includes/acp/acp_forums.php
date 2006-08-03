@@ -1082,7 +1082,7 @@ class acp_forums
 	{
 		global $db;
 
-		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{
@@ -1123,6 +1123,7 @@ class acp_forums
 
 		$errors = array();
 		$log_action_posts = $log_action_forums = $posts_to_name = $subforums_to_name = '';
+		$forum_ids = array($forum_id);
 
 		if ($action_posts == 'delete')
 		{
@@ -1166,8 +1167,6 @@ class acp_forums
 		if ($action_subforums == 'delete')
 		{
 			$log_action_forums = 'FORUMS';
-
-			$forum_ids = array($forum_id);
 			$rows = get_forum_branch($forum_id, 'children', 'descending', false);
 
 			foreach ($rows as $row)
@@ -1258,11 +1257,6 @@ class acp_forums
 			SET left_id = left_id - $diff, right_id = right_id - $diff
 			WHERE left_id > {$forum_data['right_id']}";
 		$db->sql_query($sql);
-
-		if (!isset($forum_ids) || !is_array($forum_ids))
-		{
-			$forum_ids = array($forum_id);
-		}
 
 		// Delete forum ids from extension groups table
 		$sql = 'SELECT group_id, allowed_forums 

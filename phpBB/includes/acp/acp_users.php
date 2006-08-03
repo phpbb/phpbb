@@ -618,8 +618,8 @@ class acp_users
 
 					// Validation data
 					$var_ary = array(
-						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'warnings'			=> array('num'),
 					);
 

@@ -262,7 +262,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 	// Replace Rule Literals
 	$evaluate = preg_replace('/{(STRING|USER_ID|GROUP_ID)}/', '$rule_row["rule_" . strtolower("\1")]', $evaluate);
 
-	// Eval Statement
+	// Evil Statement
 	$result = false;
 	eval('$result = (' . $evaluate . ') ? true : false;');
 
@@ -447,8 +447,10 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			switch ($rule_ary['action'])
 			{
 				case ACTION_PLACE_INTO_FOLDER:
+					// Folder actions have precedence, so we will remove any other ones
 					$folder_action = true;
 					$_folder_id = (int) $rule_ary['folder_id'];
+					$move_into_folder = array();
 					$move_into_folder[$_folder_id][] = $msg_id;
 					$num_new++;
 				break;
@@ -458,7 +460,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					{
 						$unread_ids[] = $msg_id;
 					}
-					$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+
+					if (!$folder_action)
+					{
+						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+					}
 				break;
 
 				case ACTION_DELETE_MESSAGE:
@@ -470,7 +476,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					{
 						$important_ids[] = $msg_id;
 					}
-					$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+
+					if (!$folder_action)
+					{
+						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+					}
 				break;
 			}
 		}

@@ -61,10 +61,11 @@ $lang = array_merge($lang, array(
 	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown on viewtopic/viewprofile/memberlist/etc.',
 	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line',
 
-	'EMPTY_FIELD_IDENT'			=> 'Empty field identification',
-	'EMPTY_USER_FIELD_NAME'		=> 'Please enter a field name/title',
-	'ENTRIES'					=> 'Entries',
-	'EVERYTHING_OK'				=> 'Everything OK',
+	'EDIT_DROPDOWN_LANG_EXPLAIN'	=> 'Please note that you are able to change your options text and also able to add new options to the end. It is not advised to add new options between existing options - this could result in wrong options assigned to your users. This can also happen if you remove options in-between. Removing options from the end result in users having assigned this item now reverting back to the default one.',
+	'EMPTY_FIELD_IDENT'				=> 'Empty field identification',
+	'EMPTY_USER_FIELD_NAME'			=> 'Please enter a field name/title',
+	'ENTRIES'						=> 'Entries',
+	'EVERYTHING_OK'					=> 'Everything OK',
 
 	'FIELD_BOOL'				=> 'Boolean (Yes/No)',
 	'FIELD_DATE'				=> 'Date',

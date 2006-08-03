@@ -81,7 +81,13 @@
 		<!-- ENDIF -->
 		<!-- IF S_BOOL or S_DROPDOWN -->
 			<dl>
-				<dt><label for="lang_options">{L_ENTRIES}:</label><br /><span>{L_LANG_OPTIONS_EXPLAIN}</span></dt>
+				<dt><label for="lang_options">{L_ENTRIES}:</label>
+					<!-- IF S_EDIT_MODE and S_DROPDOWN -->
+						<br /><span>{L_EDIT_DROPDOWN_LANG_EXPLAIN}</span>
+					<!-- ELSE -->
+						<br /><span>{L_LANG_OPTIONS_EXPLAIN}</span>
+					<!-- ENDIF -->
+				</dt>
 			<!-- IF S_DROPDOWN -->
 				<dd><textarea id="lang_options" name="lang_options" rows="5" cols="80">{LANG_OPTIONS}</textarea></dd>
 			<!-- ELSE -->

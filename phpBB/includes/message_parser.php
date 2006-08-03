@@ -692,7 +692,8 @@ class bbcode_firstpass extends bbcode
 			else
 			{
 				$out .= $buffer . $tok;
-				$tok = ($tok == '[') ? ']' : '[]';
+				// $tok = ($tok == '[') ? ']' : '[]';
+				$tok = '[]';
 				$buffer = '';
 			}
 		}

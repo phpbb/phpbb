@@ -25,6 +25,7 @@ $user->setup(array('memberlist', 'groups'));
 $mode		= request_var('mode', '');
 $action		= request_var('action', '');
 $user_id	= request_var('u', ANONYMOUS);
+$username	= request_var('un', '');
 $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
@@ -321,16 +322,27 @@ switch ($mode)
 
 	case 'viewprofile':
 		// Display a profile
-		if ($user_id == ANONYMOUS)
+		if ($user_id == ANONYMOUS && !$username)
 		{
 			trigger_error('NO_USER');
 		}
 
 		// Get user...
-		$sql = 'SELECT *
-			FROM ' . USERS_TABLE . "
-			WHERE user_id = $user_id
-				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		if ($username)
+		{
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . "
+				WHERE LOWER(username) = '" . strtolower($db->sql_escape($username)) . "'
+					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		}
+		else
+		{
+			$sql = 'SELECT *
+				FROM ' . USERS_TABLE . "
+				WHERE user_id = $user_id
+					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		}
+
 		$result = $db->sql_query($sql);
 		$member = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -339,6 +351,8 @@ switch ($mode)
 		{
 			trigger_error('NO_USER');
 		}
+
+		$user_id = (int) $member['user_id'];
 
 		// Do the SQL thang
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type

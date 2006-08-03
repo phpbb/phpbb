@@ -361,7 +361,7 @@ class dbal
 				// This could happen if the connection could not be established for example (then we are not able to grab the default language)
 				if (!isset($user->lang['SQL_ERROR_OCCURRED']))
 				{
-					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persist.';
+					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persists.';
 				}
 				else
 				{
