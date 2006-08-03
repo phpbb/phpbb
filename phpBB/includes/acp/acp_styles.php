@@ -2927,13 +2927,17 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		else
 		{
 			$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+			$imageset_definitions = explode(', ', $this->imageset_keys);
 
 			foreach ($cfg_data as $key => $value)
 			{
 				if (strpos($key, 'img_') === 0)
 				{
 					$key = substr($key, 4);
-					$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+					if (in_array($key, $imageset_definitions))
+					{
+						$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+					}
 				}
 			}
 			unset($cfg_data);
