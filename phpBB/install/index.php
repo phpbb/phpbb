@@ -574,6 +574,12 @@ class module
 			'MESSAGE_TEXT'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
 		));
 
+		// Rollback if in transaction
+		if ($db->transaction)
+		{
+			$db->sql_transaction('rollback');
+		}
+
 		$this->page_footer();
 	}
 

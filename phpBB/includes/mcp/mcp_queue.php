@@ -136,9 +136,9 @@ class mcp_queue
 					'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
-					'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
-					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
-					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
+					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
+					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 
 					'POSTER_NAME'			=> $poster,
 					'POST_PREVIEW'			=> $message,

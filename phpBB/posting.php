@@ -1135,7 +1135,7 @@ $template->assign_vars(array(
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-	'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
+	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
@@ -1243,7 +1243,7 @@ function upload_popup($forum_style = 0)
 	);
 
 	$template->assign_vars(array(
-		'PROGRESS_BAR'	=> $user->img('attach_progress_bar', $user->lang['UPLOAD_IN_PROGRESS']))
+		'PROGRESS_BAR'	=> $user->img('upload_bar', $user->lang['UPLOAD_IN_PROGRESS']))
 	);
 
 	$template->display('popup');

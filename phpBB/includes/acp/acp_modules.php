@@ -711,8 +711,10 @@ class acp_modules
 					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 						AND module_id = {$module_data['parent_id']}";
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row = $db->sql_fetchrow($result))
+				if (!$row)
 				{
 					if ($run_inline)
 					{
@@ -721,7 +723,6 @@ class acp_modules
 
 					trigger_error($user->lang['PARENT_NO_EXIST']);
 				}
-				$db->sql_freeresult($result);
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET left_id = left_id + 2, right_id = right_id + 2

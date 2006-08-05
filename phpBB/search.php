@@ -465,10 +465,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'S_SEARCH_ACTION'		=> $u_search,
 		'S_SHOW_TOPICS'			=> ($show_results == 'posts') ? false : true,
 
-		'GOTO_PAGE_IMG'			=> $user->img('icon_post', 'GOTO_PAGE'),
-		'NEWEST_POST_IMG'		=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
-		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
+		'GOTO_PAGE_IMG'			=> $user->img('icon_post_target', 'GOTO_PAGE'),
+		'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+		'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 
 		'U_SEARCH_WORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", "keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : '') . (($author_id) ? '&amp;author_id=' . $author_id : '') . $u_show_results))
 	);
@@ -653,14 +653,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 					'TOPIC_TYPE'		=> $topic_type,
 
-					'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
+					'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 					'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-					'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
+					'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
 					'S_TOPIC_TYPE'			=> $row['topic_type'],

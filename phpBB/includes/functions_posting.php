@@ -892,7 +892,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$template->assign_block_vars($mode . '_row', array(
 			'POSTER_NAME'		=> $poster,
 			'POST_SUBJECT'		=> $post_subject,
-			'MINI_POST_IMG'		=> $user->img('icon_post', $user->lang['POST']),
+			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
 			'MESSAGE'			=> str_replace("\n", '<br />', $message), 
 			'DECODED_MESSAGE'	=> $decoded_message,
@@ -907,7 +907,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	if ($mode == 'topic_review')
 	{
-		$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']));
+		$template->assign_var('QUOTE_IMG', $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']));
 	}
 
 	return true;

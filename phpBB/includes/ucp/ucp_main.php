@@ -122,11 +122,11 @@ class ucp_main
 						'TOPIC_TITLE'		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'		=> $topic_type,
 
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
-						'NEWEST_POST_IMG'		=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+						'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
@@ -295,7 +295,7 @@ class ucp_main
 						'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 						'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 						'FORUM_NAME'			=> $row['forum_name'],
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 						'LAST_POST_TIME'		=> $last_post_time,
 						'LAST_POST_AUTHOR'		=> $last_poster,
 
@@ -425,14 +425,14 @@ class ucp_main
 						'TOPIC_TITLE'		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'		=> $topic_type,
 
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
-						'NEWEST_POST_IMG'		=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+						'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 						'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 						'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 						'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 						'S_TOPIC_TYPE'			=> $row['topic_type'],
 						'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
@@ -584,8 +584,8 @@ class ucp_main
 
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
+						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 
 						'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',

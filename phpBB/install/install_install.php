@@ -1361,7 +1361,7 @@ class install_install extends module
 	
 				$_module->move_module_by($row, 'move_up', 4);
 			}
-	
+
 			// And now for the special ones
 			// (these are modules which appear in multiple categories and thus get added manually to some for more control)
 			if (isset($this->module_extras[$module_class]))
@@ -1871,7 +1871,7 @@ class install_install extends module
 			'COMMENTS'		=> 'remove_comments'
 		),
 		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 7.x',
+			'LABEL'			=> 'PostgreSQL 7.x/8.x',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql', 
 			'DELIM'			=> ';',
@@ -1881,7 +1881,7 @@ class install_install extends module
 			'LABEL'			=> 'SQLite',
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite', 
-			'DELIM'			=> ';;',
+			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'
 		),
 	);

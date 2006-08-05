@@ -37,7 +37,7 @@ CREATE TABLE phpbb_acl_groups (
 	auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY group_id (group_id),
-	KEY auth_option_id (auth_option_id)
+	KEY auth_opt_id (auth_option_id)
 );
 
 
@@ -115,7 +115,7 @@ CREATE TABLE phpbb_bbcodes (
 	second_pass_match varchar(255) DEFAULT '' NOT NULL,
 	second_pass_replace mediumtext DEFAULT '' NOT NULL,
 	PRIMARY KEY (bbcode_id),
-	KEY display_in_posting (display_on_posting)
+	KEY display_on_post (display_on_posting)
 );
 
 
@@ -144,7 +144,7 @@ CREATE TABLE phpbb_bots (
 
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
-	config_name varchar(255) DEFAULT '' NOT NULL,
+	config_name varchar(252) DEFAULT '' NOT NULL,
 	config_value varchar(255) DEFAULT '' NOT NULL,
 	is_dynamic tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (config_name),
@@ -165,7 +165,7 @@ CREATE TABLE phpbb_confirm (
 # Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
 	disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
-	disallow_username varchar(255) DEFAULT '' NOT NULL,
+	disallow_username varchar(252) DEFAULT '' NOT NULL,
 	PRIMARY KEY (disallow_id)
 );
 
@@ -250,7 +250,7 @@ CREATE TABLE phpbb_forums (
 	prune_freq tinyint(4) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (forum_id),
 	KEY left_right_id (left_id, right_id),
-	KEY forum_last_post_id (forum_last_post_id)
+	KEY forum_lastpost_id (forum_last_post_id)
 );
 
 
@@ -279,7 +279,7 @@ CREATE TABLE phpbb_forums_watch (
 	notify_status tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY forum_id (forum_id),
 	KEY user_id (user_id),
-	KEY notify_status (notify_status)
+	KEY notify_stat (notify_status)
 );
 
 
@@ -287,7 +287,7 @@ CREATE TABLE phpbb_forums_watch (
 CREATE TABLE phpbb_groups (
 	group_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
-	group_name varchar(255) DEFAULT '' NOT NULL,
+	group_name varchar(252) DEFAULT '' NOT NULL,
 	group_desc text DEFAULT '' NOT NULL,
 	group_desc_bitfield varbinary(255) DEFAULT '' NOT NULL,
 	group_desc_options int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -316,7 +316,8 @@ CREATE TABLE phpbb_icons (
 	icons_height tinyint(4) DEFAULT '0' NOT NULL,
 	icons_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	PRIMARY KEY (icons_id)
+	PRIMARY KEY (icons_id),
+	KEY display_on_posting (display_on_posting)
 );
 
 
@@ -358,11 +359,11 @@ CREATE TABLE phpbb_log (
 CREATE TABLE phpbb_moderator_cache (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	username varchar(255) DEFAULT '' NOT NULL,
+	username varchar(252) DEFAULT '' NOT NULL,
 	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name varchar(255) DEFAULT '' NOT NULL,
 	display_on_index tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	KEY display_on_index (display_on_index),
+	KEY disp_idx (display_on_index),
 	KEY forum_id (forum_id)
 );
 
@@ -393,7 +394,7 @@ CREATE TABLE phpbb_poll_options (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_option_text text DEFAULT '' NOT NULL,
 	poll_option_total mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY poll_option_id (poll_option_id),
+	KEY poll_opt_id (poll_option_id),
 	KEY topic_id (topic_id)
 );
 
@@ -425,7 +426,7 @@ CREATE TABLE phpbb_posts (
 	enable_smilies tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_magic_url tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_sig tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	post_username varchar(255) DEFAULT '' NOT NULL,
+	post_username varchar(252) DEFAULT '' NOT NULL,
 	post_subject text DEFAULT '' NOT NULL,
 	post_text mediumtext DEFAULT '' NOT NULL,
 	post_checksum varchar(32) DEFAULT '' NOT NULL,
@@ -521,7 +522,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_forwarded tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	folder_id int(4) DEFAULT '0' NOT NULL,
 	KEY msg_id (msg_id),
-	KEY user_folder_id (user_id, folder_id)
+	KEY usr_flder_id (user_id, folder_id)
 );
 
 
@@ -544,8 +545,8 @@ CREATE TABLE phpbb_profile_fields (
 	field_active tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	field_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (field_id),
-	KEY field_type (field_type),
-	KEY field_order (field_order)
+	KEY fld_type (field_type),
+	KEY fld_ordr (field_order)
 );
 
 
@@ -625,11 +626,11 @@ CREATE TABLE phpbb_search_results (
 
 # Table: 'phpbb_search_wordlist'
 CREATE TABLE phpbb_search_wordlist (
-	word_text varchar(252) BINARY DEFAULT '' NOT NULL,
 	word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
+	word_text varchar(252) BINARY DEFAULT '' NOT NULL,
 	word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (word_text),
-	KEY word_id (word_id)
+	PRIMARY KEY (word_id),
+	UNIQUE wrd_txt (word_text)
 );
 
 
@@ -693,14 +694,14 @@ CREATE TABLE phpbb_smilies (
 	smiley_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (smiley_id),
-	KEY display_on_posting (display_on_posting)
+	KEY display_on_post (display_on_posting)
 );
 
 
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
 	style_id tinyint(4) NOT NULL auto_increment,
-	style_name varchar(255) DEFAULT '' NOT NULL,
+	style_name varchar(252) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	template_id tinyint(4) DEFAULT '0' NOT NULL,
@@ -717,13 +718,13 @@ CREATE TABLE phpbb_styles (
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
 	template_id tinyint(4) NOT NULL auto_increment,
-	template_name varchar(255) DEFAULT '' NOT NULL,
+	template_name varchar(252) DEFAULT '' NOT NULL,
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT 0x90D8 NOT NULL,
 	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (template_id),
-	UNIQUE template_name (template_name)
+	UNIQUE tmplte_nm (template_name)
 );
 
 
@@ -734,15 +735,15 @@ CREATE TABLE phpbb_styles_template_data (
 	template_included text DEFAULT '' NOT NULL,
 	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	template_data mediumtext DEFAULT '' NOT NULL,
-	KEY template_id (template_id),
-	KEY template_filename (template_filename)
+	KEY tid (template_id),
+	KEY tfn (template_filename)
 );
 
 
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id tinyint(4) NOT NULL auto_increment,
-	theme_name varchar(255) DEFAULT '' NOT NULL,
+	theme_name varchar(252) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
 	theme_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
@@ -756,89 +757,93 @@ CREATE TABLE phpbb_styles_theme (
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id tinyint(4) NOT NULL auto_increment,
-	imageset_name varchar(255) DEFAULT '' NOT NULL,
+	imageset_name varchar(252) DEFAULT '' NOT NULL,
 	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
 	imageset_path varchar(100) DEFAULT '' NOT NULL,
 	site_logo varchar(200) DEFAULT '' NOT NULL,
-	btn_post varchar(200) DEFAULT '' NOT NULL,
-	btn_post_pm varchar(200) DEFAULT '' NOT NULL,
-	btn_reply varchar(200) DEFAULT '' NOT NULL,
-	btn_reply_pm varchar(200) DEFAULT '' NOT NULL,
-	btn_locked varchar(200) DEFAULT '' NOT NULL,
-	btn_profile varchar(200) DEFAULT '' NOT NULL,
-	btn_pm varchar(200) DEFAULT '' NOT NULL,
-	btn_delete varchar(200) DEFAULT '' NOT NULL,
-	btn_info varchar(200) DEFAULT '' NOT NULL,
-	btn_quote varchar(200) DEFAULT '' NOT NULL,
-	btn_search varchar(200) DEFAULT '' NOT NULL,
-	btn_edit varchar(200) DEFAULT '' NOT NULL,
-	btn_report varchar(200) DEFAULT '' NOT NULL,
-	btn_warn varchar(200) DEFAULT '' NOT NULL,
-	btn_email varchar(200) DEFAULT '' NOT NULL,
-	btn_www varchar(200) DEFAULT '' NOT NULL,
-	btn_icq varchar(200) DEFAULT '' NOT NULL,
-	btn_aim varchar(200) DEFAULT '' NOT NULL,
-	btn_yim varchar(200) DEFAULT '' NOT NULL,
-	btn_msnm varchar(200) DEFAULT '' NOT NULL,
-	btn_jabber varchar(200) DEFAULT '' NOT NULL,
-	btn_online varchar(200) DEFAULT '' NOT NULL,
-	btn_offline varchar(200) DEFAULT '' NOT NULL,
-	btn_friend varchar(200) DEFAULT '' NOT NULL,
-	btn_foe varchar(200) DEFAULT '' NOT NULL,
-	icon_unapproved varchar(200) DEFAULT '' NOT NULL,
-	icon_reported varchar(200) DEFAULT '' NOT NULL,
-	icon_attach varchar(200) DEFAULT '' NOT NULL,
-	icon_post varchar(200) DEFAULT '' NOT NULL,
-	icon_post_new varchar(200) DEFAULT '' NOT NULL,
-	icon_post_latest varchar(200) DEFAULT '' NOT NULL,
-	icon_post_newest varchar(200) DEFAULT '' NOT NULL,
-	forum varchar(200) DEFAULT '' NOT NULL,
-	forum_new varchar(200) DEFAULT '' NOT NULL,
-	forum_locked varchar(200) DEFAULT '' NOT NULL,
-	forum_link varchar(200) DEFAULT '' NOT NULL,
-	sub_forum varchar(200) DEFAULT '' NOT NULL,
-	sub_forum_new varchar(200) DEFAULT '' NOT NULL,
-	folder varchar(200) DEFAULT '' NOT NULL,
-	folder_moved varchar(200) DEFAULT '' NOT NULL,
-	folder_post varchar(200) DEFAULT '' NOT NULL,
-	folder_new varchar(200) DEFAULT '' NOT NULL,
-	folder_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_hot varchar(200) DEFAULT '' NOT NULL,
-	folder_hot_post varchar(200) DEFAULT '' NOT NULL,
-	folder_hot_new varchar(200) DEFAULT '' NOT NULL,
-	folder_hot_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky_post varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky_new varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_announce varchar(200) DEFAULT '' NOT NULL,
-	folder_announce_post varchar(200) DEFAULT '' NOT NULL,
-	folder_announce_new varchar(200) DEFAULT '' NOT NULL,
-	folder_announce_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_global varchar(200) DEFAULT '' NOT NULL,
-	folder_global_post varchar(200) DEFAULT '' NOT NULL,
-	folder_global_new varchar(200) DEFAULT '' NOT NULL,
-	folder_global_new_post varchar(200) DEFAULT '' NOT NULL,
+	upload_bar varchar(200) DEFAULT '' NOT NULL,
 	poll_left varchar(200) DEFAULT '' NOT NULL,
 	poll_center varchar(200) DEFAULT '' NOT NULL,
 	poll_right varchar(200) DEFAULT '' NOT NULL,
-	attach_progress_bar varchar(200) DEFAULT '' NOT NULL,
+	icon_friend varchar(200) DEFAULT '' NOT NULL,
+	icon_foe varchar(200) DEFAULT '' NOT NULL,
+	forum_link varchar(200) DEFAULT '' NOT NULL,
+	forum_read varchar(200) DEFAULT '' NOT NULL,
+	forum_read_locked varchar(200) DEFAULT '' NOT NULL,
+	forum_read_subforum varchar(200) DEFAULT '' NOT NULL,
+	forum_unread varchar(200) DEFAULT '' NOT NULL,
+	forum_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	forum_unread_subforum varchar(200) DEFAULT '' NOT NULL,
+	topic_moved varchar(200) DEFAULT '' NOT NULL,
+	topic_read varchar(200) DEFAULT '' NOT NULL,
+	topic_read_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_read_hot varchar(200) DEFAULT '' NOT NULL,
+	topic_read_hot_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_read_locked varchar(200) DEFAULT '' NOT NULL,
+	topic_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_unread varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_hot varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_hot_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_read varchar(200) DEFAULT '' NOT NULL,
+	sticky_read_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_read_locked varchar(200) DEFAULT '' NOT NULL,
+	sticky_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_read varchar(200) DEFAULT '' NOT NULL,
+	announce_read_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_read_locked varchar(200) DEFAULT '' NOT NULL,
+	announce_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_unread varchar(200) DEFAULT '' NOT NULL,
+	announce_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	announce_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	global_read varchar(200) DEFAULT '' NOT NULL,
+	global_read_mine varchar(200) DEFAULT '' NOT NULL,
+	global_read_locked varchar(200) DEFAULT '' NOT NULL,
+	global_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	global_unread varchar(200) DEFAULT '' NOT NULL,
+	global_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	global_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	global_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	pm_read varchar(200) DEFAULT '' NOT NULL,
+	pm_unread varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_aim varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_email varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_icq varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_jabber varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_msnm varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_pm varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_yahoo varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_www varchar(200) DEFAULT '' NOT NULL,
+	icon_post_delete varchar(200) DEFAULT '' NOT NULL,
+	icon_post_edit varchar(200) DEFAULT '' NOT NULL,
+	icon_post_info varchar(200) DEFAULT '' NOT NULL,
+	icon_post_quote varchar(200) DEFAULT '' NOT NULL,
+	icon_post_report varchar(200) DEFAULT '' NOT NULL,
+	icon_post_target varchar(200) DEFAULT '' NOT NULL,
+	icon_post_target_unread varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_attach varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_latest varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_newest varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_reported varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_unapproved varchar(200) DEFAULT '' NOT NULL,
+	icon_user_online varchar(200) DEFAULT '' NOT NULL,
+	icon_user_offline varchar(200) DEFAULT '' NOT NULL,
+	icon_user_profile varchar(200) DEFAULT '' NOT NULL,
+	icon_user_search varchar(200) DEFAULT '' NOT NULL,
+	icon_user_warn varchar(200) DEFAULT '' NOT NULL,
+	button_pm_forward varchar(200) DEFAULT '' NOT NULL,
+	button_pm_new varchar(200) DEFAULT '' NOT NULL,
+	button_pm_reply varchar(200) DEFAULT '' NOT NULL,
+	button_topic_locked varchar(200) DEFAULT '' NOT NULL,
+	button_topic_new varchar(200) DEFAULT '' NOT NULL,
+	button_topic_reply varchar(200) DEFAULT '' NOT NULL,
 	user_icon1 varchar(200) DEFAULT '' NOT NULL,
 	user_icon2 varchar(200) DEFAULT '' NOT NULL,
 	user_icon3 varchar(200) DEFAULT '' NOT NULL,
@@ -850,7 +855,7 @@ CREATE TABLE phpbb_styles_imageset (
 	user_icon9 varchar(200) DEFAULT '' NOT NULL,
 	user_icon10 varchar(200) DEFAULT '' NOT NULL,
 	PRIMARY KEY (imageset_id),
-	UNIQUE imageset_name (imageset_name)
+	UNIQUE imgset_nm (imageset_name)
 );
 
 
@@ -890,7 +895,7 @@ CREATE TABLE phpbb_topics (
 	PRIMARY KEY (topic_id),
 	KEY forum_id (forum_id),
 	KEY forum_id_type (forum_id, topic_type),
-	KEY topic_last_post_time (topic_last_post_time)
+	KEY last_post_time (topic_last_post_time)
 );
 
 
@@ -921,7 +926,7 @@ CREATE TABLE phpbb_topics_watch (
 	notify_status tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY topic_id (topic_id),
 	KEY user_id (user_id),
-	KEY notify_status (notify_status)
+	KEY notify_stat (notify_status)
 );
 
 
@@ -946,7 +951,7 @@ CREATE TABLE phpbb_users (
 	user_perm_from mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_ip varchar(40) DEFAULT '' NOT NULL,
 	user_regdate int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	username varchar(255) DEFAULT '' NOT NULL,
+	username varchar(252) DEFAULT '' NOT NULL,
 	user_password varchar(40) DEFAULT '' NOT NULL,
 	user_passchg int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	user_email varchar(100) DEFAULT '' NOT NULL,

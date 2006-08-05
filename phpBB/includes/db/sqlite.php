@@ -26,6 +26,7 @@ if (!defined('SQL_LAYER'))
 
 /**
 * Sqlite Database Abstraction Layer
+* Minimum Requirement: 2.8.2+
 * @package dbal
 */
 class dbal_sqlite extends dbal

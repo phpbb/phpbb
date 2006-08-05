@@ -131,9 +131,9 @@ function mcp_post_details($id, $mode, $action)
 		
 		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
-		'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
-		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
-		'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
+		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
+		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 
 		'POSTER_NAME'			=> $poster,
 		'POST_PREVIEW'			=> $message,

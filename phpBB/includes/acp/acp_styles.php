@@ -89,7 +89,32 @@ parse_css_file = {PARSE_CSS_FILE}
 pagination_sep = \'{PAGINATION_SEP}\'
 ';
 
-		$this->imageset_keys = 'site_logo, btn_post, btn_post_pm, btn_reply, btn_reply_pm, btn_locked, btn_profile, btn_pm, btn_delete, btn_info, btn_quote, btn_search, btn_edit, btn_report, btn_warn, btn_email, btn_www, btn_icq, btn_aim, btn_yim, btn_msnm, btn_jabber, btn_online, btn_offline, btn_friend, btn_foe, icon_unapproved, icon_reported, icon_attach, icon_post, icon_post_new, icon_post_latest, icon_post_newest, forum, forum_new, forum_locked, forum_link, sub_forum, sub_forum_new, folder, folder_moved, folder_post, folder_new, folder_new_post, folder_hot, folder_hot_post, folder_hot_new, folder_hot_new_post, folder_lock, folder_lock_post, folder_lock_new, folder_lock_new_post, folder_lock_announce, folder_lock_announce_new, folder_lock_announce_post, folder_lock_announce_new_post, folder_lock_global, folder_lock_global_new, folder_lock_global_post, folder_lock_global_new_post, folder_lock_sticky, folder_lock_sticky_new, folder_lock_sticky_post, folder_lock_sticky_new_post, folder_sticky, folder_sticky_post, folder_sticky_new, folder_sticky_new_post, folder_announce, folder_announce_post, folder_announce_new, folder_announce_new_post, folder_global, folder_global_post, folder_global_new, folder_global_new_post, poll_left, poll_center, poll_right, attach_progress_bar, user_icon1, user_icon2, user_icon3, user_icon4, user_icon5, user_icon6, user_icon7, user_icon8, user_icon9, user_icon10';
+		$this->imageset_keys = array(
+			'logos' => array(
+				'site_logo',
+			),
+			'buttons'	=> array(
+				'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
+			),
+			'icons'		=> array(
+				'icon_post_target', 'icon_post_target_unread', 'icon_topic_attach', 'icon_topic_latest', 'icon_topic_newest', 'icon_topic_reported', 'icon_topic_unapproved', 'icon_friend', 'icon_foe',
+			),
+			'forums'	=> array(
+				'forum_link', 'forum_read', 'forum_read_locked', 'forum_read_subforum', 'forum_unread', 'forum_unread_locked', 'forum_unread_subforum',
+			),
+			'folders'	=> array(
+				'topic_moved', 'topic_read', 'topic_read_mine', 'topic_read_hot', 'topic_read_hot_mine', 'topic_read_locked', 'topic_read_locked_mine', 'topic_unread', 'topic_unread_mine', 'topic_unread_hot', 'topic_unread_hot_mine', 'topic_unread_locked', 'topic_unread_locked_mine', 'sticky_read', 'sticky_read_mine', 'sticky_read_locked', 'sticky_read_locked_mine', 'sticky_unread', 'sticky_unread_mine', 'sticky_unread_locked', 'sticky_unread_locked_mine', 'announce_read', 'announce_read_mine', 'announce_read_locked', 'announce_read_locked_mine', 'announce_unread', 'announce_unread_mine', 'announce_unread_locked', 'announce_unread_locked_mine', 'global_read', 'global_read_mine', 'global_read_locked', 'global_read_locked_mine', 'global_unread', 'global_unread_mine', 'global_unread_locked', 'global_unread_locked_mine', 'pm_read', 'pm_unread',
+			),
+			'polls'		=> array(
+				'poll_left', 'poll_center', 'poll_right',
+			),
+			'ui'		=> array(
+				'upload_bar',
+			),
+			'user'		=> array(
+				'user_icon1', 'user_icon2', 'user_icon3', 'user_icon4', 'user_icon5', 'user_icon6', 'user_icon7', 'user_icon8', 'user_icon9', 'user_icon10',
+			),
+		);
 
 		// Execute overall actions
 		switch ($action)
@@ -958,7 +983,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$css_elements = array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $css_data))), array(''));
 
 			// Grab list of potential images for the "images" type
-			$imglist = filelist($phpbb_root_path . 'styles/' . $theme_info['theme_name'] . '/theme');
+			$img_filelist = filelist($phpbb_root_path . 'styles/' . $theme_info['theme_name'] . '/theme');
 
 			foreach ($match_elements as $type => $match_ary)
 			{
@@ -1035,7 +1060,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						case 'images':
 							// generate a list of images for this setting
 							$s_imglist = '';
-							foreach ($imglist as $path => $img_ary)
+							foreach ($img_filelist as $path => $img_ary)
 							{
 								foreach ($img_ary as $img)
 								{
@@ -1080,7 +1105,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$s_hidden_fields['cssother'] = implode(' ;; ', $css_elements);
 			}
 
-			unset($imglist, $css_elements);
+			unset($img_filelist, $css_elements);
 		}
 		// else if we are showing raw css or the user submitted data from the simple view
 		// then we need to turn the given information into raw css
@@ -1272,34 +1297,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			// Check to see whether the selected image exists in the table
 			$valid_name = ($update) ? false : true;
-			$imglist = array(
-				'logos' => array(
-					'site_logo',
-				),
-				'buttons'	=> array(
-					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_warn', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_info', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline', 'btn_friend', 'btn_foe',
-				),
-				'icons'		=> array(
-					'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',
-				),
-				'forums'	=> array(
-					'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',
-				),
-				'folders'	=> array(
-					'folder', 'folder_moved', 'folder_post', 'folder_new', 'folder_new_post', 'folder_hot', 'folder_hot_post', 'folder_hot_new', 'folder_hot_new_post', 'folder_lock', 'folder_lock_post', 'folder_lock_new', 'folder_lock_new_post', 'folder_lock_announce', 'folder_lock_announce_new', 'folder_lock_announce_post', 'folder_lock_announce_new_post', 'folder_lock_global', 'folder_lock_global_new', 'folder_lock_global_post', 'folder_lock_global_new_post', 'folder_lock_sticky', 'folder_lock_sticky_new', 'folder_lock_sticky_post', 'folder_lock_sticky_new_post', 'folder_sticky', 'folder_sticky_post', 'folder_sticky_new', 'folder_sticky_new_post', 'folder_announce', 'folder_announce_post', 'folder_announce_new', 'folder_announce_new_post', 'folder_global', 'folder_global_post', 'folder_global_new', 'folder_global_new_post',
-				),
-				'polls'		=> array(
-					'poll_left', 'poll_center', 'poll_right',
-				),
-				'ui'		=> array(
-					'attach_progress_bar',
-				),
-				'user'		=> array(
-					'user_icon1', 'user_icon2', 'user_icon3', 'user_icon4', 'user_icon5', 'user_icon6', 'user_icon7', 'user_icon8', 'user_icon9', 'user_icon10',
-				),
-			);
 
-			foreach ($imglist as $category => $img_ary)
+			foreach ($this->imageset_keys as $category => $img_ary)
 			{
 				if (in_array($imgname, $img_ary))
 				{
@@ -1342,11 +1341,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Generate list of image options
 		$img_options = '';
-		foreach ($imglist as $category => $img_ary)
+		foreach ($this->imageset_keys as $category => $img_ary)
 		{
 			$template->assign_block_vars('category', array(
 				'NAME'			=> $user->lang['IMG_CAT_' . strtoupper($category)]
 			));
+
 			foreach ($img_ary as $img)
 			{
 				$template->assign_block_vars('category.images', array(
@@ -1770,11 +1770,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
 
-				$imageset_definitions = explode(', ', $this->imageset_keys);
-
-				foreach ($imageset_definitions as $key)
+				foreach ($this->imageset_keys as $topic => $key_array)
 				{
-					$imageset_cfg .= "\n" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
+					foreach ($key_array as $key)
+					{
+						$imageset_cfg .= "\n" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
+					}
 				}
 
 				$files[] = array(
@@ -2927,7 +2928,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		else
 		{
 			$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
-			$imageset_definitions = explode(', ', $this->imageset_keys);
+
+			$imageset_definitions = array();
+			foreach ($this->imageset_keys as $topic => $key_array)
+			{
+				$imageset_definitions = array_merge($imageset_definitions, $key_array);
+			}
 
 			foreach ($cfg_data as $key => $value)
 			{

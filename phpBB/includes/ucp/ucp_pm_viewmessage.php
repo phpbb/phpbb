@@ -172,16 +172,16 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
 		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
-		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
+		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
-		'DELETE_IMG'		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
-		'INFO_IMG'			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
-		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']),
-		'EMAIL_IMG'			=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
-		'QUOTE_IMG'			=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
-		'REPLY_IMG'			=> $user->img('btn_reply_pm', $user->lang['POST_REPLY_PM']),
-		'EDIT_IMG'			=> $user->img('btn_edit', $user->lang['POST_EDIT_PM']),
-		'MINI_POST_IMG'		=> $user->img('icon_post', $user->lang['PM']),
+		'DELETE_IMG'		=> $user->img('icon_post_delete', $user->lang['DELETE_MESSAGE']),
+		'INFO_IMG'			=> $user->img('icon_post_info', $user->lang['VIEW_PM_INFO']),
+		'PROFILE_IMG'		=> $user->img('icon_user_profile', $user->lang['READ_PROFILE']),
+		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang['SEND_EMAIL']),
+		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['POST_QUOTE_PM']),
+		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang['POST_REPLY_PM']),
+		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
+		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
 
 		'SENT_DATE'			=> $user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
@@ -355,7 +355,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	$template->assign_vars(array(
-		'QUOTE_IMG'	=> $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']),
+		'QUOTE_IMG'	=> $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']),
 		'TITLE'		=> $title,
 
 		'U_VIEW_NEXT_HISTORY'		=> "$url&amp;p=" . (($next_history_pm) ? $next_history_pm : $msg_id),

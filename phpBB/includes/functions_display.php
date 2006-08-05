@@ -273,14 +273,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 
 			$l_subforums = (sizeof($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
-			$folder_image = ($forum_unread) ? 'sub_forum_new' : 'sub_forum';
+			$folder_image = ($forum_unread) ? 'forum_unread_subforum' : 'forum_read_subforum';
 		}
 		else
 		{
 			switch ($row['forum_type'])
 			{
 				case FORUM_POST:
-					$folder_image = ($forum_unread) ? 'forum_new' : 'forum';
+					$folder_image = ($forum_unread) ? 'forum_unread' : 'forum_read';
 				break;
 
 				case FORUM_LINK:
@@ -292,7 +292,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Which folder should we display?
 		if ($row['forum_status'] == ITEM_LOCKED)
 		{
-			$folder_image = 'forum_locked';
+			$folder_image = ($forum_unread) ? 'forum_unread_locked' : 'forum_read_locked';
 			$folder_alt = 'FORUM_LOCKED';
 		}
 		else
@@ -358,7 +358,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'U_MARK_FORUMS'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $root_data['forum_id'] . '&amp;mark=forums'),
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
-		'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'))
+		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
 	);
 
 	if ($return_moderators)
@@ -626,7 +626,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 	if ($topic_row['topic_status'] == ITEM_MOVED)
 	{
 		$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
-		$folder_img = 'folder_moved';
+		$folder_img = 'topic_moved';
 		$folder_alt = 'VIEW_TOPIC_MOVED';
 	}
 	else
@@ -635,65 +635,42 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		{
 			case POST_GLOBAL:
 				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
-				$folder = 'folder_global';
-				$folder_new = 'folder_global_new';
-
-				if ($topic_row['topic_status'] == ITEM_LOCKED)
-				{
-					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_lock_global';
-					$folder_new = 'folder_lock_global_new';
-				}
+				$folder = 'global_read';
+				$folder_new = 'global_unread';
 			break;
 
 			case POST_ANNOUNCE:
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
-				$folder = 'folder_announce';
-				$folder_new = 'folder_announce_new';
-
-				if ($topic_row['topic_status'] == ITEM_LOCKED)
-				{
-					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_lock_announce';
-					$folder_new = 'folder_lock_announce_new';
-				}
+				$folder = 'announce_read';
+				$folder_new = 'announce_unread';
 			break;
 
 			case POST_STICKY:
 				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
-				$folder = 'folder_sticky';
-				$folder_new = 'folder_sticky_new';
-
-				if ($topic_row['topic_status'] == ITEM_LOCKED)
-				{
-					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_lock_sticky';
-					$folder_new = 'folder_lock_sticky_new';
-				}
+				$folder = 'sticky_read';
+				$folder_new = 'sticky_unread';
 			break;
 
 			default:
 				$topic_type = '';
+				$folder = 'topic_read';
+				$folder_new = 'topic_unread';
 
 				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'])
 				{
-					$folder = 'folder_hot';
-					$folder_new = 'folder_hot_new';
-				}
-				else
-				{
-					$folder = 'folder';
-					$folder_new = 'folder_new';
-				}
-
-				if ($topic_row['topic_status'] == ITEM_LOCKED)
-				{
-					$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-					$folder = 'folder_lock';
-					$folder_new = 'folder_lock_new';
+					$folder .= '_hot';
+					$folder_new .= '_hot';
 				}
 			break;
 		}
+
+		if ($topic_row['topic_status'] == ITEM_LOCKED)
+		{
+			$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+			$folder .= '_locked';
+			$folder_new .= '_locked';
+		}
+
 
 		$folder_img = ($unread_topic) ? $folder_new : $folder;
 		$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
@@ -701,7 +678,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		// Posted image?
 		if (!empty($topic_row['topic_posted']) && $topic_row['topic_posted'])
 		{
-			$folder_img .= '_post';
+			$folder_img .= '_mine';
 		}
 	}
 
@@ -747,9 +724,9 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 		if (isset($extensions[$attachment['extension']]))
 		{
-			if ($user->img('icon_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+			if ($user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = $user->img('icon_attach', '');
+				$upload_icon = $user->img('icon_topic_attach', '');
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{

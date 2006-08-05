@@ -217,7 +217,7 @@ switch ($mode)
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'PM_IMG'		=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
+			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
 		);
 	break;
 
@@ -462,15 +462,15 @@ switch ($mode)
 			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '',
 
 			'AVATAR_IMG'	=> $poster_avatar,
-			'PM_IMG'		=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
-			'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
-			'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
-			'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
-			'AIM_IMG'		=> $user->img('btn_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('btn_msnm', $user->lang['MSNM']),
-			'YIM_IMG'		=> $user->img('btn_yim', $user->lang['YIM']),
-			'JABBER_IMG'	=> $user->img('btn_jabber', $user->lang['JABBER']),
-			'SEARCH_IMG'	=> $user->img('btn_search', $user->lang['SEARCH']),
+			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
+			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
+			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
+			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
+			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
+			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
+			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
+			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
+			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'S_PROFILE_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'	=> $group_options,
@@ -1210,16 +1210,16 @@ switch ($mode)
 			'PAGE_NUMBER'	=> on_page($total_users, $config['topics_per_page'], $start),
 			'TOTAL_USERS'	=> ($total_users == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $total_users),
 
-			'PROFILE_IMG'	=> $user->img('btn_profile', $user->lang['PROFILE']),
-			'PM_IMG'		=> $user->img('btn_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
-			'EMAIL_IMG'		=> $user->img('btn_email', $user->lang['EMAIL']),
-			'WWW_IMG'		=> $user->img('btn_www', $user->lang['WWW']),
-			'ICQ_IMG'		=> $user->img('btn_icq', $user->lang['ICQ']),
-			'AIM_IMG'		=> $user->img('btn_aim', $user->lang['AIM']),
-			'MSN_IMG'		=> $user->img('btn_msnm', $user->lang['MSNM']),
-			'YIM_IMG'		=> $user->img('btn_yim', $user->lang['YIM']),
-			'JABBER_IMG'	=> $user->img('btn_jabber', $user->lang['JABBER']),
-			'SEARCH_IMG'	=> $user->img('btn_search', $user->lang['SEARCH']),
+			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
+			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
+			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
+			'WWW_IMG'		=> $user->img('icon_contact_www', $user->lang['WWW']),
+			'ICQ_IMG'		=> $user->img('icon_contact_icq', $user->lang['ICQ']),
+			'AIM_IMG'		=> $user->img('icon_contact_aim', $user->lang['AIM']),
+			'MSN_IMG'		=> $user->img('icon_contact_msnm', $user->lang['MSNM']),
+			'YIM_IMG'		=> $user->img('icon_contact_yahoo', $user->lang['YIM']),
+			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
+			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser') : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
@@ -1346,7 +1346,7 @@ function show_profile($data)
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
   		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
 
-		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('btn_online', 'ONLINE') : $user->img('btn_offline', 'OFFLINE')),
+		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
 		'RANK_IMG_SRC'		=> $rank_img_src,

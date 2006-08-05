@@ -147,11 +147,11 @@ class mcp_reports
 					'U_VIEW_REPORTER_PROFILE'	=> ($report['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']) : '',
 					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
-					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
-					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
+					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 
 					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
-					'REPORTED_IMG'				=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
+					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 					'REPORT_REASON_TITLE'		=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
 					'REPORTER_NAME'				=> ($report['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $report['username'],

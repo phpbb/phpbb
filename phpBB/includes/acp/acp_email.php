@@ -159,6 +159,7 @@ class acp_email
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'CONTACT_EMAIL' => $config['board_contact'],
+						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 						'MESSAGE'		=> html_entity_decode($message))
 					);
 	

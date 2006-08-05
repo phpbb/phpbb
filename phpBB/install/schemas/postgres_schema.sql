@@ -7,10 +7,14 @@
 
 BEGIN;
 
-/* Domain definition */
-CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT ''::character varying;
+/*
+	Domain definition
+*/
+CREATE DOMAIN varchar_ci AS varchar(252) NOT NULL DEFAULT ''::character varying;
 
-/* Operation Functions */
+/*
+	Operation Functions
+*/
 CREATE FUNCTION _varchar_ci_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) = LOWER($2)' LANGUAGE SQL STRICT;
 CREATE FUNCTION _varchar_ci_not_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) != LOWER($2)' LANGUAGE SQL STRICT;
 CREATE FUNCTION _varchar_ci_less_than(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) < LOWER($2)' LANGUAGE SQL STRICT;
@@ -18,7 +22,9 @@ CREATE FUNCTION _varchar_ci_less_equal(varchar_ci, varchar_ci) RETURNS boolean A
 CREATE FUNCTION _varchar_ci_greater_than(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) > LOWER($2)' LANGUAGE SQL STRICT;
 CREATE FUNCTION _varchar_ci_greater_equals(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) >= LOWER($2)' LANGUAGE SQL STRICT;
 
-/* Operators */
+/*
+	Operators
+*/
 CREATE OPERATOR <(
   PROCEDURE = _varchar_ci_less_than,
   LEFTARG = varchar_ci,
@@ -76,7 +82,9 @@ CREATE OPERATOR =(
   MERGES,
   SORT1= <);
 
-/* Table: 'phpbb_attachments' */
+/*
+	Table: 'phpbb_attachments'
+*/
 CREATE SEQUENCE phpbb_attachments_seq;
 
 CREATE TABLE phpbb_attachments (
@@ -103,7 +111,9 @@ CREATE INDEX phpbb_attachments_topic_id ON phpbb_attachments (topic_id);
 CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments (poster_id);
 CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments (filesize);
 
-/* Table: 'phpbb_acl_groups' */
+/*
+	Table: 'phpbb_acl_groups'
+*/
 CREATE TABLE phpbb_acl_groups (
 	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
@@ -113,9 +123,11 @@ CREATE TABLE phpbb_acl_groups (
 );
 
 CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups (group_id);
-CREATE INDEX phpbb_acl_groups_auth_option_id ON phpbb_acl_groups (auth_option_id);
+CREATE INDEX phpbb_acl_groups_auth_opt_id ON phpbb_acl_groups (auth_option_id);
 
-/* Table: 'phpbb_acl_options' */
+/*
+	Table: 'phpbb_acl_options'
+*/
 CREATE SEQUENCE phpbb_acl_options_seq;
 
 CREATE TABLE phpbb_acl_options (
@@ -129,7 +141,9 @@ CREATE TABLE phpbb_acl_options (
 
 CREATE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options (auth_option);
 
-/* Table: 'phpbb_acl_roles' */
+/*
+	Table: 'phpbb_acl_roles'
+*/
 CREATE SEQUENCE phpbb_acl_roles_seq;
 
 CREATE TABLE phpbb_acl_roles (
@@ -144,7 +158,9 @@ CREATE TABLE phpbb_acl_roles (
 CREATE INDEX phpbb_acl_roles_role_type ON phpbb_acl_roles (role_type);
 CREATE INDEX phpbb_acl_roles_role_order ON phpbb_acl_roles (role_order);
 
-/* Table: 'phpbb_acl_roles_data' */
+/*
+	Table: 'phpbb_acl_roles_data'
+*/
 CREATE TABLE phpbb_acl_roles_data (
 	role_id INT4 DEFAULT '0' NOT NULL CHECK (role_id >= 0),
 	auth_option_id INT4 DEFAULT '0' NOT NULL CHECK (auth_option_id >= 0),
@@ -153,7 +169,9 @@ CREATE TABLE phpbb_acl_roles_data (
 );
 
 
-/* Table: 'phpbb_acl_users' */
+/*
+	Table: 'phpbb_acl_users'
+*/
 CREATE TABLE phpbb_acl_users (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
@@ -165,7 +183,9 @@ CREATE TABLE phpbb_acl_users (
 CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
 
-/* Table: 'phpbb_banlist' */
+/*
+	Table: 'phpbb_banlist'
+*/
 CREATE SEQUENCE phpbb_banlist_seq;
 
 CREATE TABLE phpbb_banlist (
@@ -182,7 +202,9 @@ CREATE TABLE phpbb_banlist (
 );
 
 
-/* Table: 'phpbb_bbcodes' */
+/*
+	Table: 'phpbb_bbcodes'
+*/
 CREATE TABLE phpbb_bbcodes (
 	bbcode_id INT2 DEFAULT '0' NOT NULL,
 	bbcode_tag varchar(16) DEFAULT '' NOT NULL,
@@ -197,9 +219,11 @@ CREATE TABLE phpbb_bbcodes (
 	PRIMARY KEY (bbcode_id)
 );
 
-CREATE INDEX phpbb_bbcodes_display_in_posting ON phpbb_bbcodes (display_on_posting);
+CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes (display_on_posting);
 
-/* Table: 'phpbb_bookmarks' */
+/*
+	Table: 'phpbb_bookmarks'
+*/
 CREATE TABLE phpbb_bookmarks (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -209,7 +233,9 @@ CREATE TABLE phpbb_bookmarks (
 CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks (order_id);
 CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks (topic_id, user_id);
 
-/* Table: 'phpbb_bots' */
+/*
+	Table: 'phpbb_bots'
+*/
 CREATE SEQUENCE phpbb_bots_seq;
 
 CREATE TABLE phpbb_bots (
@@ -224,9 +250,11 @@ CREATE TABLE phpbb_bots (
 
 CREATE INDEX phpbb_bots_bot_active ON phpbb_bots (bot_active);
 
-/* Table: 'phpbb_config' */
+/*
+	Table: 'phpbb_config'
+*/
 CREATE TABLE phpbb_config (
-	config_name varchar(255) DEFAULT '' NOT NULL,
+	config_name varchar(252) DEFAULT '' NOT NULL,
 	config_value varchar(255) DEFAULT '' NOT NULL,
 	is_dynamic INT2 DEFAULT '0' NOT NULL CHECK (is_dynamic >= 0),
 	PRIMARY KEY (config_name)
@@ -234,7 +262,9 @@ CREATE TABLE phpbb_config (
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
 
-/* Table: 'phpbb_confirm' */
+/*
+	Table: 'phpbb_confirm'
+*/
 CREATE TABLE phpbb_confirm (
 	confirm_id char(32) DEFAULT '' NOT NULL,
 	session_id char(32) DEFAULT '' NOT NULL,
@@ -244,17 +274,21 @@ CREATE TABLE phpbb_confirm (
 );
 
 
-/* Table: 'phpbb_disallow' */
+/*
+	Table: 'phpbb_disallow'
+*/
 CREATE SEQUENCE phpbb_disallow_seq;
 
 CREATE TABLE phpbb_disallow (
 	disallow_id INT4 DEFAULT nextval('phpbb_disallow_seq'),
-	disallow_username varchar(255) DEFAULT '' NOT NULL,
+	disallow_username varchar(252) DEFAULT '' NOT NULL,
 	PRIMARY KEY (disallow_id)
 );
 
 
-/* Table: 'phpbb_drafts' */
+/*
+	Table: 'phpbb_drafts'
+*/
 CREATE SEQUENCE phpbb_drafts_seq;
 
 CREATE TABLE phpbb_drafts (
@@ -270,7 +304,9 @@ CREATE TABLE phpbb_drafts (
 
 CREATE INDEX phpbb_drafts_save_time ON phpbb_drafts (save_time);
 
-/* Table: 'phpbb_extensions' */
+/*
+	Table: 'phpbb_extensions'
+*/
 CREATE SEQUENCE phpbb_extensions_seq;
 
 CREATE TABLE phpbb_extensions (
@@ -281,7 +317,9 @@ CREATE TABLE phpbb_extensions (
 );
 
 
-/* Table: 'phpbb_extension_groups' */
+/*
+	Table: 'phpbb_extension_groups'
+*/
 CREATE SEQUENCE phpbb_extension_groups_seq;
 
 CREATE TABLE phpbb_extension_groups (
@@ -298,7 +336,9 @@ CREATE TABLE phpbb_extension_groups (
 );
 
 
-/* Table: 'phpbb_forums' */
+/*
+	Table: 'phpbb_forums'
+*/
 CREATE SEQUENCE phpbb_forums_seq;
 
 CREATE TABLE phpbb_forums (
@@ -310,7 +350,7 @@ CREATE TABLE phpbb_forums (
 	forum_name varchar(3000) DEFAULT '' NOT NULL,
 	forum_desc varchar(8000) DEFAULT '' NOT NULL,
 	forum_desc_bitfield bytea DEFAULT '\000' NOT NULL,
-	forum_desc_options INT4 DEFAULT 0 NOT NULL,
+	forum_desc_options INT4 DEFAULT '0' NOT NULL CHECK (forum_desc_options >= 0),
 	forum_desc_uid varchar(5) DEFAULT '' NOT NULL,
 	forum_link varchar(255) DEFAULT '' NOT NULL,
 	forum_password varchar(40) DEFAULT '' NOT NULL,
@@ -319,7 +359,7 @@ CREATE TABLE phpbb_forums (
 	forum_rules varchar(8000) DEFAULT '' NOT NULL,
 	forum_rules_link varchar(255) DEFAULT '' NOT NULL,
 	forum_rules_bitfield bytea DEFAULT '\000' NOT NULL,
-	forum_rules_options INT4 DEFAULT 0 NOT NULL,
+	forum_rules_options INT4 DEFAULT '0' NOT NULL CHECK (forum_rules_options >= 0),
 	forum_rules_uid varchar(5) DEFAULT '' NOT NULL,
 	forum_topics_per_page INT2 DEFAULT '0' NOT NULL,
 	forum_type INT2 DEFAULT '0' NOT NULL,
@@ -344,9 +384,11 @@ CREATE TABLE phpbb_forums (
 );
 
 CREATE INDEX phpbb_forums_left_right_id ON phpbb_forums (left_id, right_id);
-CREATE INDEX phpbb_forums_forum_last_post_id ON phpbb_forums (forum_last_post_id);
+CREATE INDEX phpbb_forums_forum_lastpost_id ON phpbb_forums (forum_last_post_id);
 
-/* Table: 'phpbb_forums_access' */
+/*
+	Table: 'phpbb_forums_access'
+*/
 CREATE TABLE phpbb_forums_access (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -355,7 +397,9 @@ CREATE TABLE phpbb_forums_access (
 );
 
 
-/* Table: 'phpbb_forums_track' */
+/*
+	Table: 'phpbb_forums_track'
+*/
 CREATE TABLE phpbb_forums_track (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
@@ -364,7 +408,9 @@ CREATE TABLE phpbb_forums_track (
 );
 
 
-/* Table: 'phpbb_forums_watch' */
+/*
+	Table: 'phpbb_forums_watch'
+*/
 CREATE TABLE phpbb_forums_watch (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -373,9 +419,11 @@ CREATE TABLE phpbb_forums_watch (
 
 CREATE INDEX phpbb_forums_watch_forum_id ON phpbb_forums_watch (forum_id);
 CREATE INDEX phpbb_forums_watch_user_id ON phpbb_forums_watch (user_id);
-CREATE INDEX phpbb_forums_watch_notify_status ON phpbb_forums_watch (notify_status);
+CREATE INDEX phpbb_forums_watch_notify_stat ON phpbb_forums_watch (notify_status);
 
-/* Table: 'phpbb_groups' */
+/*
+	Table: 'phpbb_groups'
+*/
 CREATE SEQUENCE phpbb_groups_seq;
 
 CREATE TABLE phpbb_groups (
@@ -384,7 +432,7 @@ CREATE TABLE phpbb_groups (
 	group_name varchar_ci DEFAULT '' NOT NULL,
 	group_desc varchar(8000) DEFAULT '' NOT NULL,
 	group_desc_bitfield bytea DEFAULT '\000' NOT NULL,
-	group_desc_options INT4 DEFAULT 0 NOT NULL,
+	group_desc_options INT4 DEFAULT '0' NOT NULL CHECK (group_desc_options >= 0),
 	group_desc_uid varchar(5) DEFAULT '' NOT NULL,
 	group_display INT2 DEFAULT '0' NOT NULL CHECK (group_display >= 0),
 	group_avatar varchar(255) DEFAULT '' NOT NULL,
@@ -402,7 +450,9 @@ CREATE TABLE phpbb_groups (
 
 CREATE INDEX phpbb_groups_group_legend ON phpbb_groups (group_legend);
 
-/* Table: 'phpbb_icons' */
+/*
+	Table: 'phpbb_icons'
+*/
 CREATE SEQUENCE phpbb_icons_seq;
 
 CREATE TABLE phpbb_icons (
@@ -415,8 +465,11 @@ CREATE TABLE phpbb_icons (
 	PRIMARY KEY (icons_id)
 );
 
+CREATE INDEX phpbb_icons_display_on_posting ON phpbb_icons (display_on_posting);
 
-/* Table: 'phpbb_lang' */
+/*
+	Table: 'phpbb_lang'
+*/
 CREATE SEQUENCE phpbb_lang_seq;
 
 CREATE TABLE phpbb_lang (
@@ -431,7 +484,9 @@ CREATE TABLE phpbb_lang (
 
 CREATE INDEX phpbb_lang_lang_iso ON phpbb_lang (lang_iso);
 
-/* Table: 'phpbb_log' */
+/*
+	Table: 'phpbb_log'
+*/
 CREATE SEQUENCE phpbb_log_seq;
 
 CREATE TABLE phpbb_log (
@@ -454,20 +509,24 @@ CREATE INDEX phpbb_log_topic_id ON phpbb_log (topic_id);
 CREATE INDEX phpbb_log_reportee_id ON phpbb_log (reportee_id);
 CREATE INDEX phpbb_log_user_id ON phpbb_log (user_id);
 
-/* Table: 'phpbb_moderator_cache' */
+/*
+	Table: 'phpbb_moderator_cache'
+*/
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	username varchar(255) DEFAULT '' NOT NULL,
+	username varchar(252) DEFAULT '' NOT NULL,
 	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
 	group_name varchar(255) DEFAULT '' NOT NULL,
 	display_on_index INT2 DEFAULT '1' NOT NULL CHECK (display_on_index >= 0)
 );
 
-CREATE INDEX phpbb_moderator_cache_display_on_index ON phpbb_moderator_cache (display_on_index);
+CREATE INDEX phpbb_moderator_cache_disp_idx ON phpbb_moderator_cache (display_on_index);
 CREATE INDEX phpbb_moderator_cache_forum_id ON phpbb_moderator_cache (forum_id);
 
-/* Table: 'phpbb_modules' */
+/*
+	Table: 'phpbb_modules'
+*/
 CREATE SEQUENCE phpbb_modules_seq;
 
 CREATE TABLE phpbb_modules (
@@ -489,7 +548,9 @@ CREATE INDEX phpbb_modules_left_right_id ON phpbb_modules (left_id, right_id);
 CREATE INDEX phpbb_modules_module_enabled ON phpbb_modules (module_enabled);
 CREATE INDEX phpbb_modules_class_left_id ON phpbb_modules (module_class, left_id);
 
-/* Table: 'phpbb_poll_options' */
+/*
+	Table: 'phpbb_poll_options'
+*/
 CREATE TABLE phpbb_poll_options (
 	poll_option_id INT2 DEFAULT '0' NOT NULL,
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
@@ -497,10 +558,12 @@ CREATE TABLE phpbb_poll_options (
 	poll_option_total INT4 DEFAULT '0' NOT NULL CHECK (poll_option_total >= 0)
 );
 
-CREATE INDEX phpbb_poll_options_poll_option_id ON phpbb_poll_options (poll_option_id);
+CREATE INDEX phpbb_poll_options_poll_opt_id ON phpbb_poll_options (poll_option_id);
 CREATE INDEX phpbb_poll_options_topic_id ON phpbb_poll_options (topic_id);
 
-/* Table: 'phpbb_poll_votes' */
+/*
+	Table: 'phpbb_poll_votes'
+*/
 CREATE TABLE phpbb_poll_votes (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	poll_option_id INT2 DEFAULT '0' NOT NULL,
@@ -512,7 +575,9 @@ CREATE INDEX phpbb_poll_votes_topic_id ON phpbb_poll_votes (topic_id);
 CREATE INDEX phpbb_poll_votes_vote_user_id ON phpbb_poll_votes (vote_user_id);
 CREATE INDEX phpbb_poll_votes_vote_user_ip ON phpbb_poll_votes (vote_user_ip);
 
-/* Table: 'phpbb_posts' */
+/*
+	Table: 'phpbb_posts'
+*/
 CREATE SEQUENCE phpbb_posts_seq;
 
 CREATE TABLE phpbb_posts (
@@ -529,7 +594,7 @@ CREATE TABLE phpbb_posts (
 	enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (enable_smilies >= 0),
 	enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (enable_magic_url >= 0),
 	enable_sig INT2 DEFAULT '1' NOT NULL CHECK (enable_sig >= 0),
-	post_username varchar(255) DEFAULT '' NOT NULL,
+	post_username varchar(252) DEFAULT '' NOT NULL,
 	post_subject varchar(1000) DEFAULT '' NOT NULL,
 	post_text TEXT DEFAULT '' NOT NULL,
 	post_checksum varchar(32) DEFAULT '' NOT NULL,
@@ -554,7 +619,9 @@ CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
 CREATE INDEX phpbb_posts_post_postcount ON phpbb_posts (post_postcount);
 CREATE INDEX phpbb_posts_post_time ON phpbb_posts (post_time);
 
-/* Table: 'phpbb_privmsgs' */
+/*
+	Table: 'phpbb_privmsgs'
+*/
 CREATE SEQUENCE phpbb_privmsgs_seq;
 
 CREATE TABLE phpbb_privmsgs (
@@ -588,7 +655,9 @@ CREATE INDEX phpbb_privmsgs_message_time ON phpbb_privmsgs (message_time);
 CREATE INDEX phpbb_privmsgs_author_id ON phpbb_privmsgs (author_id);
 CREATE INDEX phpbb_privmsgs_root_level ON phpbb_privmsgs (root_level);
 
-/* Table: 'phpbb_privmsgs_folder' */
+/*
+	Table: 'phpbb_privmsgs_folder'
+*/
 CREATE SEQUENCE phpbb_privmsgs_folder_seq;
 
 CREATE TABLE phpbb_privmsgs_folder (
@@ -601,7 +670,9 @@ CREATE TABLE phpbb_privmsgs_folder (
 
 CREATE INDEX phpbb_privmsgs_folder_user_id ON phpbb_privmsgs_folder (user_id);
 
-/* Table: 'phpbb_privmsgs_rules' */
+/*
+	Table: 'phpbb_privmsgs_rules'
+*/
 CREATE SEQUENCE phpbb_privmsgs_rules_seq;
 
 CREATE TABLE phpbb_privmsgs_rules (
@@ -618,7 +689,9 @@ CREATE TABLE phpbb_privmsgs_rules (
 );
 
 
-/* Table: 'phpbb_privmsgs_to' */
+/*
+	Table: 'phpbb_privmsgs_to'
+*/
 CREATE TABLE phpbb_privmsgs_to (
 	msg_id INT4 DEFAULT '0' NOT NULL CHECK (msg_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -633,9 +706,11 @@ CREATE TABLE phpbb_privmsgs_to (
 );
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id);
-CREATE INDEX phpbb_privmsgs_to_user_folder_id ON phpbb_privmsgs_to (user_id, folder_id);
+CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to (user_id, folder_id);
 
-/* Table: 'phpbb_profile_fields' */
+/*
+	Table: 'phpbb_profile_fields'
+*/
 CREATE SEQUENCE phpbb_profile_fields_seq;
 
 CREATE TABLE phpbb_profile_fields (
@@ -658,17 +733,21 @@ CREATE TABLE phpbb_profile_fields (
 	PRIMARY KEY (field_id)
 );
 
-CREATE INDEX phpbb_profile_fields_field_type ON phpbb_profile_fields (field_type);
-CREATE INDEX phpbb_profile_fields_field_order ON phpbb_profile_fields (field_order);
+CREATE INDEX phpbb_profile_fields_fld_type ON phpbb_profile_fields (field_type);
+CREATE INDEX phpbb_profile_fields_fld_ordr ON phpbb_profile_fields (field_order);
 
-/* Table: 'phpbb_profile_fields_data' */
+/*
+	Table: 'phpbb_profile_fields_data'
+*/
 CREATE TABLE phpbb_profile_fields_data (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	PRIMARY KEY (user_id)
 );
 
 
-/* Table: 'phpbb_profile_fields_lang' */
+/*
+	Table: 'phpbb_profile_fields_lang'
+*/
 CREATE TABLE phpbb_profile_fields_lang (
 	field_id INT4 DEFAULT '0' NOT NULL CHECK (field_id >= 0),
 	lang_id INT4 DEFAULT '0' NOT NULL CHECK (lang_id >= 0),
@@ -679,7 +758,9 @@ CREATE TABLE phpbb_profile_fields_lang (
 );
 
 
-/* Table: 'phpbb_profile_lang' */
+/*
+	Table: 'phpbb_profile_lang'
+*/
 CREATE TABLE phpbb_profile_lang (
 	field_id INT4 DEFAULT '0' NOT NULL CHECK (field_id >= 0),
 	lang_id INT4 DEFAULT '0' NOT NULL CHECK (lang_id >= 0),
@@ -690,7 +771,9 @@ CREATE TABLE phpbb_profile_lang (
 );
 
 
-/* Table: 'phpbb_ranks' */
+/*
+	Table: 'phpbb_ranks'
+*/
 CREATE SEQUENCE phpbb_ranks_seq;
 
 CREATE TABLE phpbb_ranks (
@@ -703,7 +786,9 @@ CREATE TABLE phpbb_ranks (
 );
 
 
-/* Table: 'phpbb_reports' */
+/*
+	Table: 'phpbb_reports'
+*/
 CREATE SEQUENCE phpbb_reports_seq;
 
 CREATE TABLE phpbb_reports (
@@ -719,7 +804,9 @@ CREATE TABLE phpbb_reports (
 );
 
 
-/* Table: 'phpbb_reports_reasons' */
+/*
+	Table: 'phpbb_reports_reasons'
+*/
 CREATE SEQUENCE phpbb_reports_reasons_seq;
 
 CREATE TABLE phpbb_reports_reasons (
@@ -731,7 +818,9 @@ CREATE TABLE phpbb_reports_reasons (
 );
 
 
-/* Table: 'phpbb_search_results' */
+/*
+	Table: 'phpbb_search_results'
+*/
 CREATE TABLE phpbb_search_results (
 	search_key varchar(32) DEFAULT '' NOT NULL,
 	search_time INT4 DEFAULT '0' NOT NULL CHECK (search_time >= 0),
@@ -741,19 +830,23 @@ CREATE TABLE phpbb_search_results (
 );
 
 
-/* Table: 'phpbb_search_wordlist' */
+/*
+	Table: 'phpbb_search_wordlist'
+*/
 CREATE SEQUENCE phpbb_search_wordlist_seq;
 
 CREATE TABLE phpbb_search_wordlist (
-	word_text varchar(252) DEFAULT '' NOT NULL,
 	word_id INT4 DEFAULT nextval('phpbb_search_wordlist_seq'),
+	word_text varchar(252) DEFAULT '' NOT NULL,
 	word_common INT2 DEFAULT '0' NOT NULL CHECK (word_common >= 0),
-	PRIMARY KEY (word_text)
+	PRIMARY KEY (word_id)
 );
 
-CREATE INDEX phpbb_search_wordlist_word_id ON phpbb_search_wordlist (word_id);
+CREATE UNIQUE INDEX phpbb_search_wordlist_wrd_txt ON phpbb_search_wordlist (word_text);
 
-/* Table: 'phpbb_search_wordmatch' */
+/*
+	Table: 'phpbb_search_wordmatch'
+*/
 CREATE TABLE phpbb_search_wordmatch (
 	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
 	word_id INT4 DEFAULT '0' NOT NULL CHECK (word_id >= 0),
@@ -762,7 +855,9 @@ CREATE TABLE phpbb_search_wordmatch (
 
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch (word_id);
 
-/* Table: 'phpbb_sessions' */
+/*
+	Table: 'phpbb_sessions'
+*/
 CREATE TABLE phpbb_sessions (
 	session_id char(32) DEFAULT '' NOT NULL,
 	session_user_id INT4 DEFAULT '0' NOT NULL CHECK (session_user_id >= 0),
@@ -781,7 +876,9 @@ CREATE TABLE phpbb_sessions (
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time);
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id);
 
-/* Table: 'phpbb_sessions_keys' */
+/*
+	Table: 'phpbb_sessions_keys'
+*/
 CREATE TABLE phpbb_sessions_keys (
 	key_id char(32) DEFAULT '' NOT NULL,
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -792,7 +889,9 @@ CREATE TABLE phpbb_sessions_keys (
 
 CREATE INDEX phpbb_sessions_keys_last_login ON phpbb_sessions_keys (last_login);
 
-/* Table: 'phpbb_sitelist' */
+/*
+	Table: 'phpbb_sitelist'
+*/
 CREATE SEQUENCE phpbb_sitelist_seq;
 
 CREATE TABLE phpbb_sitelist (
@@ -804,7 +903,9 @@ CREATE TABLE phpbb_sitelist (
 );
 
 
-/* Table: 'phpbb_smilies' */
+/*
+	Table: 'phpbb_smilies'
+*/
 CREATE SEQUENCE phpbb_smilies_seq;
 
 CREATE TABLE phpbb_smilies (
@@ -819,14 +920,16 @@ CREATE TABLE phpbb_smilies (
 	PRIMARY KEY (smiley_id)
 );
 
-CREATE INDEX phpbb_smilies_display_on_posting ON phpbb_smilies (display_on_posting);
+CREATE INDEX phpbb_smilies_display_on_post ON phpbb_smilies (display_on_posting);
 
-/* Table: 'phpbb_styles' */
+/*
+	Table: 'phpbb_styles'
+*/
 CREATE SEQUENCE phpbb_styles_seq;
 
 CREATE TABLE phpbb_styles (
 	style_id INT2 DEFAULT nextval('phpbb_styles_seq'),
-	style_name varchar(255) DEFAULT '' NOT NULL,
+	style_name varchar(252) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
 	template_id INT2 DEFAULT '0' NOT NULL,
@@ -840,12 +943,14 @@ CREATE INDEX phpbb_styles_template_id ON phpbb_styles (template_id);
 CREATE INDEX phpbb_styles_theme_id ON phpbb_styles (theme_id);
 CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id);
 
-/* Table: 'phpbb_styles_template' */
+/*
+	Table: 'phpbb_styles_template'
+*/
 CREATE SEQUENCE phpbb_styles_template_seq;
 
 CREATE TABLE phpbb_styles_template (
 	template_id INT2 DEFAULT nextval('phpbb_styles_template_seq'),
-	template_name varchar(255) DEFAULT '' NOT NULL,
+	template_name varchar(252) DEFAULT '' NOT NULL,
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield bytea DEFAULT '\220\330' NOT NULL,
@@ -853,9 +958,11 @@ CREATE TABLE phpbb_styles_template (
 	PRIMARY KEY (template_id)
 );
 
-CREATE UNIQUE INDEX phpbb_styles_template_template_name ON phpbb_styles_template (template_name);
+CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
 
-/* Table: 'phpbb_styles_template_data' */
+/*
+	Table: 'phpbb_styles_template_data'
+*/
 CREATE SEQUENCE phpbb_styles_template_data_seq;
 
 CREATE TABLE phpbb_styles_template_data (
@@ -866,15 +973,17 @@ CREATE TABLE phpbb_styles_template_data (
 	template_data TEXT DEFAULT '' NOT NULL
 );
 
-CREATE INDEX phpbb_styles_template_data_template_id ON phpbb_styles_template_data (template_id);
-CREATE INDEX phpbb_styles_template_data_template_filename ON phpbb_styles_template_data (template_filename);
+CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (template_id);
+CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename);
 
-/* Table: 'phpbb_styles_theme' */
+/*
+	Table: 'phpbb_styles_theme'
+*/
 CREATE SEQUENCE phpbb_styles_theme_seq;
 
 CREATE TABLE phpbb_styles_theme (
 	theme_id INT2 DEFAULT nextval('phpbb_styles_theme_seq'),
-	theme_name varchar(255) DEFAULT '' NOT NULL,
+	theme_name varchar(252) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
 	theme_storedb INT2 DEFAULT '0' NOT NULL CHECK (theme_storedb >= 0),
@@ -885,94 +994,100 @@ CREATE TABLE phpbb_styles_theme (
 
 CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_name);
 
-/* Table: 'phpbb_styles_imageset' */
+/*
+	Table: 'phpbb_styles_imageset'
+*/
 CREATE SEQUENCE phpbb_styles_imageset_seq;
 
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id INT2 DEFAULT nextval('phpbb_styles_imageset_seq'),
-	imageset_name varchar(255) DEFAULT '' NOT NULL,
+	imageset_name varchar(252) DEFAULT '' NOT NULL,
 	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
 	imageset_path varchar(100) DEFAULT '' NOT NULL,
 	site_logo varchar(200) DEFAULT '' NOT NULL,
-	btn_post varchar(200) DEFAULT '' NOT NULL,
-	btn_post_pm varchar(200) DEFAULT '' NOT NULL,
-	btn_reply varchar(200) DEFAULT '' NOT NULL,
-	btn_reply_pm varchar(200) DEFAULT '' NOT NULL,
-	btn_locked varchar(200) DEFAULT '' NOT NULL,
-	btn_profile varchar(200) DEFAULT '' NOT NULL,
-	btn_pm varchar(200) DEFAULT '' NOT NULL,
-	btn_delete varchar(200) DEFAULT '' NOT NULL,
-	btn_info varchar(200) DEFAULT '' NOT NULL,
-	btn_quote varchar(200) DEFAULT '' NOT NULL,
-	btn_search varchar(200) DEFAULT '' NOT NULL,
-	btn_edit varchar(200) DEFAULT '' NOT NULL,
-	btn_report varchar(200) DEFAULT '' NOT NULL,
-	btn_warn varchar(200) DEFAULT '' NOT NULL,
-	btn_email varchar(200) DEFAULT '' NOT NULL,
-	btn_www varchar(200) DEFAULT '' NOT NULL,
-	btn_icq varchar(200) DEFAULT '' NOT NULL,
-	btn_aim varchar(200) DEFAULT '' NOT NULL,
-	btn_yim varchar(200) DEFAULT '' NOT NULL,
-	btn_msnm varchar(200) DEFAULT '' NOT NULL,
-	btn_jabber varchar(200) DEFAULT '' NOT NULL,
-	btn_online varchar(200) DEFAULT '' NOT NULL,
-	btn_offline varchar(200) DEFAULT '' NOT NULL,
-	btn_friend varchar(200) DEFAULT '' NOT NULL,
-	btn_foe varchar(200) DEFAULT '' NOT NULL,
-	icon_unapproved varchar(200) DEFAULT '' NOT NULL,
-	icon_reported varchar(200) DEFAULT '' NOT NULL,
-	icon_attach varchar(200) DEFAULT '' NOT NULL,
-	icon_post varchar(200) DEFAULT '' NOT NULL,
-	icon_post_new varchar(200) DEFAULT '' NOT NULL,
-	icon_post_latest varchar(200) DEFAULT '' NOT NULL,
-	icon_post_newest varchar(200) DEFAULT '' NOT NULL,
-	forum varchar(200) DEFAULT '' NOT NULL,
-	forum_new varchar(200) DEFAULT '' NOT NULL,
-	forum_locked varchar(200) DEFAULT '' NOT NULL,
-	forum_link varchar(200) DEFAULT '' NOT NULL,
-	sub_forum varchar(200) DEFAULT '' NOT NULL,
-	sub_forum_new varchar(200) DEFAULT '' NOT NULL,
-	folder varchar(200) DEFAULT '' NOT NULL,
-	folder_moved varchar(200) DEFAULT '' NOT NULL,
-	folder_post varchar(200) DEFAULT '' NOT NULL,
-	folder_new varchar(200) DEFAULT '' NOT NULL,
-	folder_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_hot varchar(200) DEFAULT '' NOT NULL,
-	folder_hot_post varchar(200) DEFAULT '' NOT NULL,
-	folder_hot_new varchar(200) DEFAULT '' NOT NULL,
-	folder_hot_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_announce_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_global_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky_new varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky_post varchar(200) DEFAULT '' NOT NULL,
-	folder_lock_sticky_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky_post varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky_new varchar(200) DEFAULT '' NOT NULL,
-	folder_sticky_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_announce varchar(200) DEFAULT '' NOT NULL,
-	folder_announce_post varchar(200) DEFAULT '' NOT NULL,
-	folder_announce_new varchar(200) DEFAULT '' NOT NULL,
-	folder_announce_new_post varchar(200) DEFAULT '' NOT NULL,
-	folder_global varchar(200) DEFAULT '' NOT NULL,
-	folder_global_post varchar(200) DEFAULT '' NOT NULL,
-	folder_global_new varchar(200) DEFAULT '' NOT NULL,
-	folder_global_new_post varchar(200) DEFAULT '' NOT NULL,
+	upload_bar varchar(200) DEFAULT '' NOT NULL,
 	poll_left varchar(200) DEFAULT '' NOT NULL,
 	poll_center varchar(200) DEFAULT '' NOT NULL,
 	poll_right varchar(200) DEFAULT '' NOT NULL,
-	attach_progress_bar varchar(200) DEFAULT '' NOT NULL,
+	icon_friend varchar(200) DEFAULT '' NOT NULL,
+	icon_foe varchar(200) DEFAULT '' NOT NULL,
+	forum_link varchar(200) DEFAULT '' NOT NULL,
+	forum_read varchar(200) DEFAULT '' NOT NULL,
+	forum_read_locked varchar(200) DEFAULT '' NOT NULL,
+	forum_read_subforum varchar(200) DEFAULT '' NOT NULL,
+	forum_unread varchar(200) DEFAULT '' NOT NULL,
+	forum_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	forum_unread_subforum varchar(200) DEFAULT '' NOT NULL,
+	topic_moved varchar(200) DEFAULT '' NOT NULL,
+	topic_read varchar(200) DEFAULT '' NOT NULL,
+	topic_read_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_read_hot varchar(200) DEFAULT '' NOT NULL,
+	topic_read_hot_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_read_locked varchar(200) DEFAULT '' NOT NULL,
+	topic_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_unread varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_hot varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_hot_mine varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	topic_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_read varchar(200) DEFAULT '' NOT NULL,
+	sticky_read_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_read_locked varchar(200) DEFAULT '' NOT NULL,
+	sticky_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	sticky_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_read varchar(200) DEFAULT '' NOT NULL,
+	announce_read_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_read_locked varchar(200) DEFAULT '' NOT NULL,
+	announce_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_unread varchar(200) DEFAULT '' NOT NULL,
+	announce_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	announce_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	announce_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	global_read varchar(200) DEFAULT '' NOT NULL,
+	global_read_mine varchar(200) DEFAULT '' NOT NULL,
+	global_read_locked varchar(200) DEFAULT '' NOT NULL,
+	global_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	global_unread varchar(200) DEFAULT '' NOT NULL,
+	global_unread_mine varchar(200) DEFAULT '' NOT NULL,
+	global_unread_locked varchar(200) DEFAULT '' NOT NULL,
+	global_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
+	pm_read varchar(200) DEFAULT '' NOT NULL,
+	pm_unread varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_aim varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_email varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_icq varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_jabber varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_msnm varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_pm varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_yahoo varchar(200) DEFAULT '' NOT NULL,
+	icon_contact_www varchar(200) DEFAULT '' NOT NULL,
+	icon_post_delete varchar(200) DEFAULT '' NOT NULL,
+	icon_post_edit varchar(200) DEFAULT '' NOT NULL,
+	icon_post_info varchar(200) DEFAULT '' NOT NULL,
+	icon_post_quote varchar(200) DEFAULT '' NOT NULL,
+	icon_post_report varchar(200) DEFAULT '' NOT NULL,
+	icon_post_target varchar(200) DEFAULT '' NOT NULL,
+	icon_post_target_unread varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_attach varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_latest varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_newest varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_reported varchar(200) DEFAULT '' NOT NULL,
+	icon_topic_unapproved varchar(200) DEFAULT '' NOT NULL,
+	icon_user_online varchar(200) DEFAULT '' NOT NULL,
+	icon_user_offline varchar(200) DEFAULT '' NOT NULL,
+	icon_user_profile varchar(200) DEFAULT '' NOT NULL,
+	icon_user_search varchar(200) DEFAULT '' NOT NULL,
+	icon_user_warn varchar(200) DEFAULT '' NOT NULL,
+	button_pm_forward varchar(200) DEFAULT '' NOT NULL,
+	button_pm_new varchar(200) DEFAULT '' NOT NULL,
+	button_pm_reply varchar(200) DEFAULT '' NOT NULL,
+	button_topic_locked varchar(200) DEFAULT '' NOT NULL,
+	button_topic_new varchar(200) DEFAULT '' NOT NULL,
+	button_topic_reply varchar(200) DEFAULT '' NOT NULL,
 	user_icon1 varchar(200) DEFAULT '' NOT NULL,
 	user_icon2 varchar(200) DEFAULT '' NOT NULL,
 	user_icon3 varchar(200) DEFAULT '' NOT NULL,
@@ -986,9 +1101,11 @@ CREATE TABLE phpbb_styles_imageset (
 	PRIMARY KEY (imageset_id)
 );
 
-CREATE UNIQUE INDEX phpbb_styles_imageset_imageset_name ON phpbb_styles_imageset (imageset_name);
+CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset (imageset_name);
 
-/* Table: 'phpbb_topics' */
+/*
+	Table: 'phpbb_topics'
+*/
 CREATE SEQUENCE phpbb_topics_seq;
 
 CREATE TABLE phpbb_topics (
@@ -1028,9 +1145,11 @@ CREATE TABLE phpbb_topics (
 
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);
-CREATE INDEX phpbb_topics_topic_last_post_time ON phpbb_topics (topic_last_post_time);
+CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time);
 
-/* Table: 'phpbb_topics_track' */
+/*
+	Table: 'phpbb_topics_track'
+*/
 CREATE TABLE phpbb_topics_track (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
@@ -1041,7 +1160,9 @@ CREATE TABLE phpbb_topics_track (
 
 CREATE INDEX phpbb_topics_track_forum_id ON phpbb_topics_track (forum_id);
 
-/* Table: 'phpbb_topics_posted' */
+/*
+	Table: 'phpbb_topics_posted'
+*/
 CREATE TABLE phpbb_topics_posted (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
@@ -1050,7 +1171,9 @@ CREATE TABLE phpbb_topics_posted (
 );
 
 
-/* Table: 'phpbb_topics_watch' */
+/*
+	Table: 'phpbb_topics_watch'
+*/
 CREATE TABLE phpbb_topics_watch (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -1059,9 +1182,11 @@ CREATE TABLE phpbb_topics_watch (
 
 CREATE INDEX phpbb_topics_watch_topic_id ON phpbb_topics_watch (topic_id);
 CREATE INDEX phpbb_topics_watch_user_id ON phpbb_topics_watch (user_id);
-CREATE INDEX phpbb_topics_watch_notify_status ON phpbb_topics_watch (notify_status);
+CREATE INDEX phpbb_topics_watch_notify_stat ON phpbb_topics_watch (notify_status);
 
-/* Table: 'phpbb_user_group' */
+/*
+	Table: 'phpbb_user_group'
+*/
 CREATE TABLE phpbb_user_group (
 	group_id INT4 DEFAULT '0' NOT NULL CHECK (group_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
@@ -1073,7 +1198,9 @@ CREATE INDEX phpbb_user_group_group_id ON phpbb_user_group (group_id);
 CREATE INDEX phpbb_user_group_user_id ON phpbb_user_group (user_id);
 CREATE INDEX phpbb_user_group_group_leader ON phpbb_user_group (group_leader);
 
-/* Table: 'phpbb_users' */
+/*
+	Table: 'phpbb_users'
+*/
 CREATE SEQUENCE phpbb_users_seq;
 
 CREATE TABLE phpbb_users (
@@ -1154,7 +1281,9 @@ CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash);
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type);
 CREATE INDEX phpbb_users_username ON phpbb_users (username);
 
-/* Table: 'phpbb_warnings' */
+/*
+	Table: 'phpbb_warnings'
+*/
 CREATE SEQUENCE phpbb_warnings_seq;
 
 CREATE TABLE phpbb_warnings (
@@ -1167,7 +1296,9 @@ CREATE TABLE phpbb_warnings (
 );
 
 
-/* Table: 'phpbb_words' */
+/*
+	Table: 'phpbb_words'
+*/
 CREATE SEQUENCE phpbb_words_seq;
 
 CREATE TABLE phpbb_words (
@@ -1178,7 +1309,9 @@ CREATE TABLE phpbb_words (
 );
 
 
-/* Table: 'phpbb_zebra' */
+/*
+	Table: 'phpbb_zebra'
+*/
 CREATE TABLE phpbb_zebra (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	zebra_id INT4 DEFAULT '0' NOT NULL CHECK (zebra_id >= 0),
