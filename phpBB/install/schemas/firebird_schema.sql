@@ -929,7 +929,7 @@ ALTER TABLE phpbb_search_results ADD PRIMARY KEY (search_key);;
 # Table: 'phpbb_search_wordlist'
 CREATE TABLE phpbb_search_wordlist (
 	word_id INTEGER NOT NULL,
-	word_text VARCHAR(252) DEFAULT '' NOT NULL,
+	word_text VARCHAR(252) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	word_common INTEGER DEFAULT 0 NOT NULL
 );;
 
