@@ -370,6 +370,14 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* Escape string used in sql query
+	*/
+	function sql_escape_binary($msg)
+	{
+		return "CAST('" . $msg . "' AS varbinary)";
+	}
+
+	/**
 	* return sql error array
 	* @access: private
 	*/

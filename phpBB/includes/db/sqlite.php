@@ -216,7 +216,16 @@ class dbal_sqlite extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
+		$row = @sqlite_fetch_array($query_id, SQLITE_ASSOC);
+		if ($row)
+		{
+			foreach ($row as $key => $value)
+			{
+				$row[$key] = (strpos($key, 'bitfield') === false) ? $value : sqlite_udf_decode_binary($value);
+			}
+		}
+
+		return $row;
 	}
 
 	/**
@@ -305,6 +314,14 @@ class dbal_sqlite extends dbal
 	function sql_escape($msg)
 	{
 		return @sqlite_escape_string($msg);
+	}
+
+	/**
+	* Escape string used in sql query
+	*/
+	function sql_escape_binary($msg)
+	{
+		return "'" . @sqlite_udf_encode_binary($msg) . "'";
 	}
 
 	/**

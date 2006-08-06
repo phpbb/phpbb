@@ -199,7 +199,14 @@ class dbal
 				}
 				else if (is_string($var))
 				{
-					$values[] = "'" . $this->sql_escape($var) . "'";
+					if (strpos($key, 'bitfield') === false)
+					{
+						$values[] = "'" . $this->sql_escape($var) . "'";
+					}
+					else
+					{
+						$values[] = $this->sql_escape_binary($var);
+					}
 				}
 				else if (is_array($var) && is_string($var[0]))
 				{
@@ -228,7 +235,14 @@ class dbal
 					}
 					else if (is_string($var))
 					{
-						$values[] = "'" . $this->sql_escape($var) . "'";
+						if (strpos($key, 'bitfield') === false)
+						{
+							$values[] = "'" . $this->sql_escape($var) . "'";
+						}
+						else
+						{
+							$values[] = $this->sql_escape_binary($var);
+						}
 					}
 					else
 					{
@@ -251,7 +265,14 @@ class dbal
 				}
 				else if (is_string($var))
 				{
-					$values[] = "$key = '" . $this->sql_escape($var) . "'";
+					if (strpos($key, 'bitfield') === false)
+					{
+						$values[] = "$key = '" . $this->sql_escape($var) . "'";
+					}
+					else
+					{
+						$values[] = "$key = " . $this->sql_escape_binary($var);
+					}
 				}
 				else
 				{
@@ -262,6 +283,11 @@ class dbal
 		}
 
 		return $query;
+	}
+
+	function sql_escape_binary($msg)
+	{
+		return "'" . $this->sql_escape($msg) . "'";
 	}
 
 	/**

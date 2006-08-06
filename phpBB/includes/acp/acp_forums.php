@@ -919,72 +919,8 @@ class acp_forums
 			$forum_id = $forum_data_sql['forum_id'];
 			unset($forum_data_sql['forum_id']);
 
-			$query = '';
-
-			switch (SQL_LAYER)
-			{
-				case 'mssql':
-				case 'mssql_odbc':
-					$values = array();
-					foreach ($forum_data_sql as $key => $var)
-					{
-						if (is_null($var))
-						{
-							$values[] = "$key = NULL";
-						}
-						else if (is_string($var))
-						{
-							if ($key !== 'forum_desc_bitfield' && $key != 'forum_rules_bitfield')
-							{
-								$values[] = "$key = '" . $db->sql_escape($var) . "'";
-							}
-							else
-							{
-								$values[] = "$key = CAST('" . $var . "' AS varbinary)";
-							}
-						}
-						else
-						{
-							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
-						}
-					}
-					$query = implode(', ', $values);
-				break;
-
-				case 'sqlite':
-					$values = array();
-					foreach ($forum_data_sql as $key => $var)
-					{
-						if (is_null($var))
-						{
-							$values[] = "$key = NULL";
-						}
-						else if (is_string($var))
-						{
-							if ($key !== 'forum_desc_bitfield' && $key != 'forum_rules_bitfield')
-							{
-								$values[] = "$key = '" . $db->sql_escape($var) . "'";
-							}
-							else
-							{
-								$values[] = "$key = '" . sqlite_udf_encode_binary($var) . "'";
-							}
-						}
-						else
-						{
-							$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
-						}
-					}
-					$query = implode(', ', $values);
-				break;
-
-				default:
-					$query = $db->sql_build_array('UPDATE', $forum_data_sql);
-				break;
-			}
-
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . $query . '
+				SET ' . $db->sql_build_array('UPDATE', $forum_data_sql) . '
 				WHERE forum_id = ' . $forum_id;
 			$db->sql_query($sql);
 

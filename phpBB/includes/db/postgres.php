@@ -258,7 +258,16 @@ class dbal_postgres extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @pg_fetch_assoc($query_id, NULL) : false;
+		$row = @pg_fetch_assoc($query_id, null);
+		if ($row)
+		{
+			foreach ($row as $key => $value)
+			{
+				$row[$key] = (strpos($key, 'bitfield') === false) ? $value : pg_unescape_bytea($value);
+			}
+		}
+
+		return ($query_id) ? $row : false;
 	}
 
 	/**
@@ -376,6 +385,14 @@ class dbal_postgres extends dbal
 	function sql_escape($msg)
 	{
 		return @pg_escape_string($msg);
+	}
+
+	/**
+	* Escape string used in sql query
+	*/
+	function sql_escape_binary($msg)
+	{
+		return "'" . @pg_escape_bytea($msg) . "'";
 	}
 
 	/**

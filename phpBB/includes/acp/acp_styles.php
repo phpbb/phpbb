@@ -2949,78 +2949,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			unset($cfg_data);
 		}
 
-		$query = '';
-
-		switch (SQL_LAYER)
-		{
-			case 'mssql':
-			case 'mssql_odbc':
-				$fields = array();
-				foreach ($sql_ary as $key => $var)
-				{
-					$fields[] = $key;
-
-					if (is_null($var))
-					{
-						$values[] = 'NULL';
-					}
-					else if (is_string($var))
-					{
-						if ($key !== 'bbcode_bitfield')
-						{
-							$values[] = "'" . $db->sql_escape($var) . "'";
-						}
-						else
-						{
-							$values[] = "CAST('" . $var . "' AS varbinary)";
-						}
-					}
-					else
-					{
-						$values[] = (is_bool($var)) ? intval($var) : $var;
-					}
-				}
-				$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
-			break;
-
-			case 'sqlite':
-				$fields = array();
-				foreach ($sql_ary as $key => $var)
-				{
-					$fields[] = $key;
-
-					if (is_null($var))
-					{
-						$values[] = 'NULL';
-					}
-					else if (is_string($var))
-					{
-						if ($key !== 'bbcode_bitfield')
-						{
-							$values[] = "'" . $db->sql_escape($var) . "'";
-						}
-						else
-						{
-							$values[] = "'" . sqlite_udf_encode_binary($var) . "'";
-						}
-					}
-					else
-					{
-						$values[] = (is_bool($var)) ? intval($var) : $var;
-					}
-				}
-				$query = ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')';
-			break;
-
-			default:
-				$query = $db->sql_build_array('INSERT', $sql_ary);
-			break;
-		}
-
 		$db->sql_transaction('begin');
 
 		$sql = "INSERT INTO $sql_from
-			" . $query;
+			" . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
 		$id = $db->sql_nextid();

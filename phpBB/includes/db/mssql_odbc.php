@@ -380,6 +380,14 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
+	* Escape string used in sql query
+	*/
+	function sql_escape_binary($msg)
+	{
+		return "CAST('" . $msg . "' AS varbinary)";
+	}
+
+	/**
 	* Build db-specific query data
 	* @access: private
 	*/
