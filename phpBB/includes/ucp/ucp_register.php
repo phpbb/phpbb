@@ -363,6 +363,7 @@ class ucp_register
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'])
 		{
+			$str = '';
 			if (!$change_lang)
 			{
 				$sql = 'SELECT session_id
@@ -409,8 +410,12 @@ class ucp_register
 				);
 				$db->sql_query($sql);
 			}
+			else
+			{
+				$str .= '&amp;change_lang=' . $change_lang;
+			}
 
-			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG) . '" alt="" title="" />';
+			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 
