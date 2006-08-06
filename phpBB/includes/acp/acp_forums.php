@@ -100,7 +100,7 @@ class acp_forums
 						'forum_desc'			=> request_var('forum_desc', '', true),
 						'forum_desc_uid'		=> '',
 						'forum_desc_options'	=> 0,
-						'forum_desc_bitfield'	=> 0,
+						'forum_desc_bitfield'	=> '',
 						'forum_rules'			=> request_var('forum_rules', '', true),
 						'forum_rules_uid'		=> '',
 						'forum_rules_options'	=> 0,
