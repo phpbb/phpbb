@@ -89,9 +89,18 @@ class dbal_postgres extends dbal
 	*/
 	function sql_server_info()
 	{
-		$version = @pg_version($this->db_connect_id);
-
-		return 'PostgreSQL' . ((!empty($version)) ? ' ' . $version['client'] : '');
+		if (version_compare(phpversion(), '5.0.0', '>='))
+		{
+			$version = @pg_version($this->db_connect_id);
+			return 'PostgreSQL' . ((!empty($version)) ? ' ' . $version['client'] : '');
+		}
+		else
+		{
+			$query_id = @pg_query($this->db_connect_id, 'select version()');
+			$row = @pg_fetch_assoc($query_id, null);
+			$version = $row['version'];
+			return ((!empty($version)) ? ' ' . $version : '');
+		}
 	}
 
 	/**
