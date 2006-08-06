@@ -2590,7 +2590,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 		if (!$online_userlist)
 		{
-			$online_userlist = $user->lang['NONE'];
+			$online_userlist = $user->lang['NO_ONLINE_USERS'];
 		}
 
 		if (empty($_REQUEST['f']))

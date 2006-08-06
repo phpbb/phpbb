@@ -124,6 +124,7 @@ $lang = array_merge($lang, array(
 	'NO_POLL_TITLE'				=> 'You have to enter a poll title',
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified',
+	'NO_TOPIC_ICON'				=> 'None',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
 	'PHP_SIZE_NA'				=> 'The attachment\'s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',

@@ -624,7 +624,7 @@ class module
 
 			case 'select':
 				eval('$s_options = ' . str_replace('{VALUE}', $value, $options) . ';');
-				$tpl = '<select name="' . $name . '">' . $s_options . '</select>';
+				$tpl = '<select id="' . $name . '" name="' . $name . '">' . $s_options . '</select>';
 			break;
 
 			case 'custom':

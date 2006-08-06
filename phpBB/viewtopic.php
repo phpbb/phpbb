@@ -1072,7 +1072,18 @@ while ($row = $db->sql_fetchrow($result))
 
 				if ($bday_year)
 				{
-					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - (($today['month'] - $bday_month < 0) ? 1 : (($today['day'] - $bday_day < 0) ? 1 : 0)));
+					$diff = $today['month'] - $bday_month;
+					if ($diff == 0)
+					{
+						$diff = ($today['day'] - $bday_day < 0) ? 1 : 0;
+					}
+					else
+					{
+						$diff = ($diff < 0) ? 1 : 0;
+					}
+		
+					$age = (int) (date('Y', $time) - $bday_year - $diff);
+					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - $diff);
 				}
 			}
 		}

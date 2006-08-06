@@ -1049,7 +1049,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 								$selected = ($unit_option == $unit) ? ' selected="selected"' : '';
 								$s_units .= "<option value=\"$unit_option\"$selected>$unit_option</option>";
 							}
-							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $s_units;
+							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_UNIT'] . '</option>' . $s_units;
 
 							$template->assign_vars(array(
 								strtoupper($var) => $value,
@@ -1070,7 +1070,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 									$s_imglist .= "<option value=\"$img\"$selected>$img</option>";
 								}
 							}
-							$s_imglist = '<option value=""' . (($value == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $s_imglist;
+							$s_imglist = '<option value=""' . (($value == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_IMAGE'] . '</option>' . $s_imglist;
 
 							$template->assign_vars(array(
 								'S_' . strtoupper($var) => $s_imglist)

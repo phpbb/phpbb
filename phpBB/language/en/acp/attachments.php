@@ -106,8 +106,10 @@ $lang = array_merge($lang, array(
 
 	'NOT_ALLOWED_IN_PM'			=> 'Not allowed in private messages',
 	'NOT_ASSIGNED'				=> 'Not assigned',
+	'NO_EXT_GROUP'				=> 'None',
 	'NO_EXT_GROUP_NAME'			=> 'No Group Name entered',
 	'NO_EXT_GROUP_SPECIFIED'	=> 'No Extension Group specified',
+	'NO_FILE_CAT'				=> 'None',
 	'NO_IMAGE'					=> 'No Image',
 	'NO_THUMBNAIL_SUPPORT'		=> 'Thumbnail support has been disabled because there is no supported GD library available and the imagemagick executable could not be found.',
 	'NO_UPLOAD_DIR'				=> 'The upload directory you specified does not exist.',

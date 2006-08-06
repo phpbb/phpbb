@@ -1264,7 +1264,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 	if (!file_exists($path) || !is_dir($path))
 	{
-		$avatar_list = array($user->lang['NONE'] => array());
+		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
 	}
 	else
 	{
@@ -1304,7 +1304,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 	if (!sizeof($avatar_list))
 	{
-		$avatar_list = array($user->lang['NONE'] => array());
+		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
 	}
 
 	@ksort($avatar_list);

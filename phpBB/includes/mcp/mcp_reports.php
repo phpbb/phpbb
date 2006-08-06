@@ -83,7 +83,7 @@ class mcp_reports
 					$post_id = $report['post_id'];
 				}
 
-				$post_info = get_post_data(array($post_id), 'm_approve');
+				$post_info = get_post_data(array($post_id), 'm_report');
 
 				if (!sizeof($post_info))
 				{

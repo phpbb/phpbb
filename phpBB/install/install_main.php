@@ -70,7 +70,7 @@ class install_main extends module
 			'TITLE'		=> $title,
 			'BODY'		=> $body,
 
-			'S_LANG_SELECT'	=> '<select name="language">' . $this->p_master->inst_language_select($language) . '</select>',
+			'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select($language) . '</select>',
 		));
 	}
 }

@@ -288,6 +288,7 @@ $lang = array_merge($lang, array(
 	'NO_UNINSTALLED_STYLE'		=> 'No uninstalled styles detected',
 	'NO_UNINSTALLED_TEMPLATE'	=> 'No uninstalled templates detected',
 	'NO_UNINSTALLED_THEME'		=> 'No uninstalled themes detected',
+	'NO_UNIT'					=> 'None',
 
 	'ONLY_IMAGESET'			=> 'This is the only remaining imageset, you cannot delete it',
 	'ONLY_STYLE'			=> 'This is the only remaining style, you cannot delete it',

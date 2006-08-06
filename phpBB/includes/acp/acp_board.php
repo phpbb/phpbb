@@ -296,14 +296,14 @@ class acp_board
 					'title'	=> 'ACP_SECURITY_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SECURITY_SETTINGS',
-						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',	'type' => 'radio:yes_no', 'explain' => true),
-						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',	'type' => 'text:5:5', 'explain' => true),
-						'ip_check'				=> array('lang' => 'IP_VALID',			'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
-						'browser_check'			=> array('lang' => 'BROWSER_VALID',		'type' => 'radio:yes_no', 'explain' => true),
-						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'type' => 'text:3:3', 'explain' => true),
-						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS','type' => 'text:3:3', 'explain' => true),
-						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',		'type' => 'radio:yes_no', 'explain' => true),
+						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',		'type' => 'radio:yes_no', 'explain' => true),
+						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'type' => 'text:5:5', 'explain' => true),
+						'ip_check'				=> array('lang' => 'IP_VALID',				'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
+						'browser_check'			=> array('lang' => 'BROWSER_VALID',			'type' => 'radio:yes_no', 'explain' => true),
+						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',			'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'type' => 'text:3:3', 'explain' => true),
+						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'type' => 'text:3:3', 'explain' => true),
+						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'type' => 'radio:yes_no', 'explain' => true),
 					)
 				);
 			break;
@@ -606,7 +606,7 @@ class acp_board
 	*/
 	function select_ip_check($value, $key = '')
 	{
-		$radio_ary = array(4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NONE');
+		$radio_ary = array(4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NO_IP_VALIDATION');
 
 		return h_radio('config[ip_check]', $radio_ary, $value, $key);
 	}

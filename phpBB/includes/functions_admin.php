@@ -384,7 +384,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 	{
 		$sql = 'SELECT DISTINCT forum_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id ' . $sql_where;
+			WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

@@ -78,7 +78,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NONE']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -521,7 +521,7 @@ class acp_attachments
 				}
 			
 				$cat_lang = array(
-					ATTACHMENT_CATEGORY_NONE	=> $user->lang['NONE'],
+					ATTACHMENT_CATEGORY_NONE	=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
 					ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
 					ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
@@ -959,7 +959,7 @@ class acp_attachments
 		global $db, $user;
 
 		$types = array(
-			ATTACHMENT_CATEGORY_NONE	=> $user->lang['NONE'],
+			ATTACHMENT_CATEGORY_NONE	=> $user->lang['NO_FILE_CAT'],
 			ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
 			ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
 			ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']

@@ -208,6 +208,7 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_VC_SETTINGS_EXPLAIN'		=> 'Here you are able to define visual confirmation defaults and captcha settings.',
 
+	'BAD_POLICY'					=> 'The policy you selected is invalid.',
 	'CAPTCHA_3DBITMAP'				=> '3D Bitmap',
 	'CAPTCHA_CELLS'					=> 'Cells',
 	'CAPTCHA_COMPOSITE'				=> 'Composite',
@@ -222,6 +223,9 @@ $lang = array_merge($lang, array(
 	'HEAVY'							=> 'Heavy',
 	'LIGHT'							=> 'Light',
 	'MEDIUM'						=> 'Medium',
+	'NO_GD'							=> 'The server does not support GD, an extension required to enable the advanced CAPTCHA policies. A fall-back method will be used if you decide to enable Visual Confirmation features.',
+	'NO_NOISE'						=> 'None',
+	'NO_TTF'						=> 'The policy you selected requires TTF enabled, the server has TTF disabled. If this policy is enabled, it will be skipped and another policy will be used in its place. If no valid policies are enabled, a fall-back method will be used if you decide to enable Visual Confirmation features.',
 	'OVERLAP_NOISE_LINE'			=> 'Overlap line noise',
 	'OVERLAP_NOISE_PIXEL'			=> 'Overlap pixel noise',
 	'SHAPE_NOISE_LINE'				=> 'Shape line noise',
@@ -230,9 +234,6 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM_POST_EXPLAIN'	=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'VISUAL_CONFIRM_REG'			=> 'Enable visual confirmation for registrations',
 	'VISUAL_CONFIRM_REG_EXPLAIN'	=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
-	'NO_GD'							=> 'The server does not support GD, an extension required to enable the advanced CAPTCHA policies. A fall-back method will be used if you decide to enable Visual Confirmation features.',
-	'NO_TTF'						=> 'The policy you selected requires TTF enabled, the server has TTF disabled. If this policy is enabled, it will be skipped and another policy will be used in its place. If no valid policies are enabled, a fall-back method will be used if you decide to enable Visual Confirmation features.',
-	'BAD_POLICY'					=> 'The policy you selected is invalid.'
 ));
 
 // Cookie Settings
@@ -347,6 +348,7 @@ $lang = array_merge($lang, array(
 	'IP_VALID_EXPLAIN'				=> 'Determines how much of the users IP is used to validate a session; All compares the complete address, A.B.C the first x.x.x, A.B the first x.x, None disables checking.',
 	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts',
 	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation)',
+	'NO_IP_VALIDATION'				=> 'None',
 	'PASSWORD_TYPE'					=> 'Password complexity',
 	'PASSWORD_TYPE_EXPLAIN'			=> 'Determines how complex a password needs to be when set or altered, subsequent options include the previous ones.',
 	'PASS_TYPE_ALPHA'				=> 'Must contain alphanumerics',

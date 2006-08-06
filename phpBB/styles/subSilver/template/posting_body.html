@@ -174,7 +174,7 @@ function checkForm()
 		<td class="row2">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+				<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NO_TOPIC_ICON}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 			</tr>
 			</table>
 		</td>
@@ -196,7 +196,7 @@ function checkForm()
 			<span class="genmed">
 			<a href="{to_recipient.U_VIEW}"><!-- IF to_recipient.COLOUR --><b style="color:#{to_recipient.COLOUR}"><!-- ELSE --><b<!-- IF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{to_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
 		<!-- BEGINELSE -->
-			<span class="genmed">{L_NONE}</span>
+			<span class="genmed">{L_NO_TO_RECIPIENT}</span>
 		<!-- END to_recipient -->
 		</td>
 	</tr>
@@ -207,7 +207,7 @@ function checkForm()
 			<span class="genmed">
 			<a href="{bcc_recipient.U_VIEW}"><!-- IF bcc_recipient.COLOUR --><b style="color:#{bcc_recipient.COLOUR}"><!-- ELSE --><b<!-- IF bcc_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{bcc_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
 		<!-- BEGINELSE -->
-			<span class="genmed">{L_NONE}</span>
+			<span class="genmed">{L_NO_BCC_RECIPIENT}</span>
 		<!-- END bcc_recipient -->
 		</td>
 	</tr>

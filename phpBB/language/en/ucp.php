@@ -264,6 +264,7 @@ $lang = array_merge($lang, array(
 	'NOT_MOVED_MESSAGES'		=> 'You have %d private messages currently on hold because of full folder.',
 	'NO_ACTION_MODE'			=> 'No message action specified',
 	'NO_AUTHOR'					=> 'No author defined for this message',
+	'NO_AVATAR_CATEGORY'		=> 'None',
 
 	'NO_AUTH_DELETE_MESSAGE'		=> 'You are not authorised to delete private messages.',
 	'NO_AUTH_EDIT_MESSAGE'			=> 'You are not authorised to edit private messages.',
@@ -274,6 +275,7 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_SEND_MESSAGE'			=> 'You are not authorised sending private messages.',
 	'NO_AUTH_SIGNATURE'				=> 'You are not authorised to define a signature',
 
+	'NO_BCC_RECIPIENT'			=> 'None',
 	'NO_BOOKMARKS'				=> 'You have no bookmarks',
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks',
 	'NO_EMAIL_USER'				=> 'The email/username information submitted could not be found',
@@ -290,6 +292,7 @@ $lang = array_merge($lang, array(
 	'NO_RECIPIENT'				=> 'No recipient defined',
 	'NO_RULES_DEFINED'			=> 'No rules defined',
 	'NO_SAVED_DRAFTS'			=> 'No drafts saved',
+	'NO_TO_RECIPIENT'			=> 'None',
 	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
 
