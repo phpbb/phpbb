@@ -42,6 +42,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouseover text of the BBCode',
 	'BBCODE_HELPLINE_TEXT'		=> 'Helpline text',
 	'BBCODE_TAG'				=> 'Tag',
+	'BBCODE_TAG_TOO_LONG'		=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
 	'BBCODE_USAGE_EXAMPLE'		=> '[colour={COLOR}]{TEXT}[/colour]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
 	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the bbcode. Replace any variable input by the corresponding token (%ssee below%s)',

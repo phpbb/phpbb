@@ -133,6 +133,11 @@ class acp_bbcodes
 					}
 				}
 
+				if (strlen($data['first_pass_match']) >= 255 || strlen($data['first_pass_replace']) >= 255 || strlen($data['second_pass_match']) >= 255)
+				{
+					trigger_error('BBCODE_TAG_TOO_LONG');
+				}
+
 				$sql_ary = array(
 					'bbcode_tag'				=> $data['bbcode_tag'],
 					'bbcode_match'				=> $bbcode_match,
