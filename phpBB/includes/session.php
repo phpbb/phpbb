@@ -511,9 +511,6 @@ class session
 			$this->set_cookie('k', $this->cookie_data['k'], $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
-			$SID = '?sid=';
-			$_SID = '';
-
 			unset($cookie_expire);
 		}
 
