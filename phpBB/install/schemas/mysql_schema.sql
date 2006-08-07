@@ -98,7 +98,11 @@ CREATE TABLE phpbb_banlist (
 	ban_exclude tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	ban_reason text DEFAULT '' NOT NULL,
 	ban_give_reason text DEFAULT '' NOT NULL,
-	PRIMARY KEY (ban_id)
+	PRIMARY KEY (ban_id),
+	KEY ban_end (ban_end),
+	KEY ban_user (ban_userid, ban_exclude),
+	KEY ban_email (ban_email, ban_exclude),
+	KEY ban_ip (ban_ip, ban_exclude)
 );
 
 
@@ -158,7 +162,8 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' NOT NULL,
 	confirm_type tinyint(3) DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
-	PRIMARY KEY (session_id, confirm_id)
+	PRIMARY KEY (session_id, confirm_id),
+	KEY confirm_type (confirm_type)
 );
 
 
@@ -505,7 +510,8 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_action mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_folder_id int(4) DEFAULT '0' NOT NULL,
-	PRIMARY KEY (rule_id)
+	PRIMARY KEY (rule_id),
+	KEY user_id (user_id)
 );
 
 
@@ -522,6 +528,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_forwarded tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	folder_id int(4) DEFAULT '0' NOT NULL,
 	KEY msg_id (msg_id),
+	KEY author_id (author_id),
 	KEY usr_flder_id (user_id, folder_id)
 );
 
@@ -639,7 +646,8 @@ CREATE TABLE phpbb_search_wordmatch (
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	title_match tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY word_id (word_id)
+	KEY word_id (word_id),
+	KEY post_id (post_id)
 );
 
 
@@ -895,7 +903,8 @@ CREATE TABLE phpbb_topics (
 	PRIMARY KEY (topic_id),
 	KEY forum_id (forum_id),
 	KEY forum_id_type (forum_id, topic_type),
-	KEY last_post_time (topic_last_post_time)
+	KEY last_post_time (topic_last_post_time),
+	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
 );
 
 

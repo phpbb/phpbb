@@ -220,6 +220,14 @@ CREATE TABLE phpbb_banlist (
 )
 /
 
+CREATE INDEX phpbb_banlist_ban_end ON phpbb_banlist (ban_end)
+/
+CREATE INDEX phpbb_banlist_ban_user ON phpbb_banlist (ban_userid, ban_exclude)
+/
+CREATE INDEX phpbb_banlist_ban_email ON phpbb_banlist (ban_email, ban_exclude)
+/
+CREATE INDEX phpbb_banlist_ban_ip ON phpbb_banlist (ban_ip, ban_exclude)
+/
 
 CREATE SEQUENCE phpbb_banlist_seq
 /
@@ -332,6 +340,8 @@ CREATE TABLE phpbb_confirm (
 )
 /
 
+CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm (confirm_type)
+/
 
 /*
 	Table: 'phpbb_disallow'
@@ -983,6 +993,8 @@ CREATE TABLE phpbb_privmsgs_rules (
 )
 /
 
+CREATE INDEX phpbb_privmsgs_rules_user_id ON phpbb_privmsgs_rules (user_id)
+/
 
 CREATE SEQUENCE phpbb_privmsgs_rules_seq
 /
@@ -1018,6 +1030,8 @@ CREATE TABLE phpbb_privmsgs_to (
 /
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id)
+/
+CREATE INDEX phpbb_privmsgs_to_author_id ON phpbb_privmsgs_to (author_id)
 /
 CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to (user_id, folder_id)
 /
@@ -1250,6 +1264,8 @@ CREATE TABLE phpbb_search_wordmatch (
 /
 
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch (word_id)
+/
+CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch (post_id)
 /
 
 /*
@@ -1660,6 +1676,8 @@ CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id)
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type)
 /
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time)
+/
+CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id)
 /
 
 CREATE SEQUENCE phpbb_topics_seq

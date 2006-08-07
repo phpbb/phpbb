@@ -99,6 +99,10 @@ CREATE TABLE phpbb_banlist (
 	ban_give_reason text(65535) NOT NULL DEFAULT ''
 );;
 
+CREATE INDEX phpbb_banlist_ban_end ON phpbb_banlist (ban_end);;
+CREATE INDEX phpbb_banlist_ban_user ON phpbb_banlist (ban_userid, ban_exclude);;
+CREATE INDEX phpbb_banlist_ban_email ON phpbb_banlist (ban_email, ban_exclude);;
+CREATE INDEX phpbb_banlist_ban_ip ON phpbb_banlist (ban_ip, ban_exclude);;
 
 # Table: 'phpbb_bbcodes'
 CREATE TABLE phpbb_bbcodes (
@@ -158,6 +162,7 @@ CREATE TABLE phpbb_confirm (
 	PRIMARY KEY (session_id, confirm_id)
 );;
 
+CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm (confirm_type);;
 
 # Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
@@ -491,6 +496,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_folder_id int(4) NOT NULL DEFAULT '0'
 );;
 
+CREATE INDEX phpbb_privmsgs_rules_user_id ON phpbb_privmsgs_rules (user_id);;
 
 # Table: 'phpbb_privmsgs_to'
 CREATE TABLE phpbb_privmsgs_to (
@@ -507,6 +513,7 @@ CREATE TABLE phpbb_privmsgs_to (
 );;
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id);;
+CREATE INDEX phpbb_privmsgs_to_author_id ON phpbb_privmsgs_to (author_id);;
 CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to (user_id, folder_id);;
 
 # Table: 'phpbb_profile_fields'
@@ -620,6 +627,7 @@ CREATE TABLE phpbb_search_wordmatch (
 );;
 
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch (word_id);;
+CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch (post_id);;
 
 # Table: 'phpbb_sessions'
 CREATE TABLE phpbb_sessions (
@@ -701,13 +709,6 @@ CREATE TABLE phpbb_styles_template (
 );;
 
 CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);;
-
-CREATE TRIGGER "t_phpbb_styles_template"
-AFTER INSERT ON "phpbb_styles_template"
-FOR EACH ROW WHEN NEW.bbcode_bitfield = ''
-BEGIN
-   UPDATE phpbb_styles_template SET bbcode_bitfield = binary_insert(1) WHERE template_id = NEW.template_id;
-END;;
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
@@ -876,6 +877,7 @@ CREATE TABLE phpbb_topics (
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);;
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time);;
+CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id);;
 
 # Table: 'phpbb_topics_track'
 CREATE TABLE phpbb_topics_track (
@@ -1027,5 +1029,12 @@ CREATE TABLE phpbb_zebra (
 CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id);;
 CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id);;
 
+
+CREATE TRIGGER "t_phpbb_styles_template"
+AFTER INSERT ON "phpbb_styles_template"
+FOR EACH ROW WHEN NEW.bbcode_bitfield = ''
+BEGIN
+	UPDATE phpbb_styles_template SET bbcode_bitfield = binary_insert(1) WHERE template_id = NEW.template_id;
+END;;
 
 COMMIT;;

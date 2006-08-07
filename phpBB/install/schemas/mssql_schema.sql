@@ -181,6 +181,18 @@ ALTER TABLE [phpbb_banlist] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+CREATE  INDEX [ban_end] ON [phpbb_banlist]([ban_end]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [ban_user] ON [phpbb_banlist]([ban_userid], [ban_exclude]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [ban_email] ON [phpbb_banlist]([ban_email], [ban_exclude]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [ban_ip] ON [phpbb_banlist]([ban_ip], [ban_exclude]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_bbcodes'
@@ -289,6 +301,9 @@ ALTER TABLE [phpbb_confirm] WITH NOCHECK ADD
 		[session_id],
 		[confirm_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [confirm_type] ON [phpbb_confirm]([confirm_type]) ON [PRIMARY]
 GO
 
 
@@ -869,6 +884,9 @@ ALTER TABLE [phpbb_privmsgs_rules] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+CREATE  INDEX [user_id] ON [phpbb_privmsgs_rules]([user_id]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_privmsgs_to'
@@ -888,6 +906,9 @@ CREATE TABLE [phpbb_privmsgs_to] (
 GO
 
 CREATE  INDEX [msg_id] ON [phpbb_privmsgs_to]([msg_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [author_id] ON [phpbb_privmsgs_to]([author_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [usr_flder_id] ON [phpbb_privmsgs_to]([user_id], [folder_id]) ON [PRIMARY]
@@ -1103,6 +1124,9 @@ CREATE TABLE [phpbb_search_wordmatch] (
 GO
 
 CREATE  INDEX [word_id] ON [phpbb_search_wordmatch]([word_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [post_id] ON [phpbb_search_wordmatch]([post_id]) ON [PRIMARY]
 GO
 
 
@@ -1476,6 +1500,9 @@ CREATE  INDEX [forum_id_type] ON [phpbb_topics]([forum_id], [topic_type]) ON [PR
 GO
 
 CREATE  INDEX [last_post_time] ON [phpbb_topics]([topic_last_post_time]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id]) ON [PRIMARY]
 GO
 
 

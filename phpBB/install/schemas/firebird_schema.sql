@@ -155,6 +155,10 @@ CREATE TABLE phpbb_banlist (
 
 ALTER TABLE phpbb_banlist ADD PRIMARY KEY (ban_id);;
 
+CREATE INDEX phpbb_banlist_ban_end ON phpbb_banlist(ban_end);;
+CREATE INDEX phpbb_banlist_ban_user ON phpbb_banlist(ban_userid, ban_exclude);;
+CREATE INDEX phpbb_banlist_ban_email ON phpbb_banlist(ban_email, ban_exclude);;
+CREATE INDEX phpbb_banlist_ban_ip ON phpbb_banlist(ban_ip, ban_exclude);;
 
 CREATE GENERATOR phpbb_banlist_gen;;
 SET GENERATOR phpbb_banlist_gen TO 0;;
@@ -241,6 +245,7 @@ CREATE TABLE phpbb_confirm (
 
 ALTER TABLE phpbb_confirm ADD PRIMARY KEY (session_id, confirm_id);;
 
+CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm(confirm_type);;
 
 # Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
@@ -747,6 +752,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 
 ALTER TABLE phpbb_privmsgs_rules ADD PRIMARY KEY (rule_id);;
 
+CREATE INDEX phpbb_privmsgs_rules_user_id ON phpbb_privmsgs_rules(user_id);;
 
 CREATE GENERATOR phpbb_privmsgs_rules_gen;;
 SET GENERATOR phpbb_privmsgs_rules_gen TO 0;;
@@ -774,6 +780,7 @@ CREATE TABLE phpbb_privmsgs_to (
 );;
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to(msg_id);;
+CREATE INDEX phpbb_privmsgs_to_author_id ON phpbb_privmsgs_to(author_id);;
 CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to(user_id, folder_id);;
 
 # Table: 'phpbb_profile_fields'
@@ -956,6 +963,7 @@ CREATE TABLE phpbb_search_wordmatch (
 );;
 
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch(word_id);;
+CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch(post_id);;
 
 # Table: 'phpbb_sessions'
 CREATE TABLE phpbb_sessions (
@@ -1298,6 +1306,7 @@ ALTER TABLE phpbb_topics ADD PRIMARY KEY (topic_id);;
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics(topic_last_post_time);;
+CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics(forum_id, topic_last_post_time, topic_moved_id);;
 
 CREATE GENERATOR phpbb_topics_gen;;
 SET GENERATOR phpbb_topics_gen TO 0;;
