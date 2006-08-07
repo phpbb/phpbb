@@ -157,6 +157,13 @@ class session
 
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
+
+			if (empty($this->session_id))
+			{
+				$this->session_id = $_SID = request_var('sid', '');
+				$SID = '?sid=' . $this->session_id;
+				$this->cookie_data = array('u' => 0, 'k' => '');
+			}
 		}
 		else
 		{
@@ -493,8 +500,8 @@ class session
 			$this->set_login_key();
 		}
 
-		$SID = '?sid=';
-		$_SID = '';
+		$SID = '?sid=' . $this->session_id;
+		$_SID = $this->session_id;
 
 		if (!$bot)
 		{
@@ -504,8 +511,8 @@ class session
 			$this->set_cookie('k', $this->cookie_data['k'], $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
-			$SID = '?sid=' . $this->session_id;
-			$_SID = $this->session_id;
+			$SID = '?sid=';
+			$_SID = '';
 
 			unset($cookie_expire);
 		}
