@@ -370,11 +370,13 @@ class fulltext_native extends search_backend
 		}
 
 		$title_match = '';
+		$group_by = true;
 		// Build some display specific sql strings
 		switch ($fields)
 		{
 			case 'titleonly':
 				$title_match = 'title_match = 1';
+				$group_by = false;
 			// no break
 			case 'firstpost':
 				$sql_array['FROM'][TOPICS_TABLE] = 't';
@@ -383,6 +385,7 @@ class fulltext_native extends search_backend
 
 			case 'msgonly':
 				$title_match = 'title_match = 0';
+				$group_by = false;
 			break;
 		}
 

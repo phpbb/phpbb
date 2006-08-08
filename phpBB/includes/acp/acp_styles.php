@@ -2904,49 +2904,54 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$mode . '_path'			=> $path,
 		);
 
-		if ($mode != 'imageset')
+		switch ($mode)
 		{
-			switch ($mode)
-			{
-				case 'template':
-					// We set a pre-defined bitfield here which we may use further in 3.2
-					$sql_ary += array(
-						'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
-						'template_storedb'	=> $store_db
-					);
-				break;
+			case 'template':
+				// We set a pre-defined bitfield here which we may use further in 3.2
+				$sql_ary += array(
+					'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
+					'template_storedb'	=> $store_db
+				);
+			break;
 
-				case 'theme':
-					$sql_ary += array(
-						'theme_storedb'	=> $store_db,
-						'theme_data'	=> ($store_db) ? (($root_path) ? $this->db_theme_data($sql_ary, false, $root_path) : '') : '',
-						'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
-					);
-				break;
-			}
-		}
-		else
-		{
-			$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+			case 'theme':
+				// We are only interested in the theme configuration for now
+				$theme_cfg = parse_cfg_file("{$phpbb_root_path}styles/$path/theme/theme.cfg");
 
-			$imageset_definitions = array();
-			foreach ($this->imageset_keys as $topic => $key_array)
-			{
-				$imageset_definitions = array_merge($imageset_definitions, $key_array);
-			}
-
-			foreach ($cfg_data as $key => $value)
-			{
-				if (strpos($key, 'img_') === 0)
+				if (isset($theme_cfg['parse_css_file']) && $theme_cfg['parse_css_file'])
 				{
-					$key = substr($key, 4);
-					if (in_array($key, $imageset_definitions))
+					$store_db = 1;
+				}
+
+				$sql_ary += array(
+					'theme_storedb'	=> $store_db,
+					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
+					'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
+				);
+			break;
+
+			case 'imageset':
+				$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+	
+				$imageset_definitions = array();
+				foreach ($this->imageset_keys as $topic => $key_array)
+				{
+					$imageset_definitions = array_merge($imageset_definitions, $key_array);
+				}
+	
+				foreach ($cfg_data as $key => $value)
+				{
+					if (strpos($key, 'img_') === 0)
 					{
-						$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+						$key = substr($key, 4);
+						if (in_array($key, $imageset_definitions))
+						{
+							$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+						}
 					}
 				}
-			}
-			unset($cfg_data);
+				unset($cfg_data);
+			break;
 		}
 
 		$db->sql_transaction('begin');

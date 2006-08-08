@@ -465,12 +465,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'S_SEARCH_ACTION'		=> $u_search,
 		'S_SHOW_TOPICS'			=> ($show_results == 'posts') ? false : true,
 
-		'GOTO_PAGE_IMG'			=> $user->img('icon_post_target', 'GOTO_PAGE'),
-		'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
-		'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+		'GOTO_PAGE_IMG'		=> $user->img('icon_post_target', 'GOTO_PAGE'),
+		'NEWEST_POST_IMG'	=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 
-		'U_SEARCH_WORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", "keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : '') . (($author_id) ? '&amp;author_id=' . $author_id : '') . $u_show_results))
+		'U_SEARCH_WORDS'	=> $u_search)
 	);
 
 	if ($sql_where)

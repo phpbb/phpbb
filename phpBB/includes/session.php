@@ -1080,8 +1080,33 @@ class user extends session
 		{
 			$this->theme['theme_storedb'] = 1;
 
+			$stylesheet = file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/stylesheet.css");
+			// Match CSS imports
+			$matches = array();
+			preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
+	
+			if (sizeof($matches))
+			{
+				$content = '';
+				foreach ($matches[0] as $idx => $match)
+				{
+					if ($content = @file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/" . $matches[1][$idx]))
+					{
+						$content = trim($content);
+					}
+					else
+					{
+						$content = '';
+					}
+					$stylesheet = str_replace($match, $content, $stylesheet);
+				}
+				unset ($content);
+			}
+
+			$stylesheet = str_replace('./', 'styles/' . $this->theme['theme_path'] . '/theme/', $stylesheet);
+
 			$sql_ary = array(
-				'theme_data'	=> implode('', file("{$phpbb_root_path}styles/" . $this->theme['theme_path'] . '/theme/stylesheet.css')),
+				'theme_data'	=> $stylesheet,
 				'theme_mtime'	=> time(),
 				'theme_storedb'	=> 1
 			);
