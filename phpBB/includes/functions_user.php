@@ -809,6 +809,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 					$sql_where";
 				$db->sql_query($sql);
+
+				if ($mode == 'user')
+				{
+					$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' ' . ((in_array('*', $banlist_ary)) ? '' : 'WHERE user_id IN (' . implode(', ', $banlist_ary) . ')');
+					$db->sql_query($sql);
+				}
 			}
 		}
 

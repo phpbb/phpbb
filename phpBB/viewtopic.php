@@ -325,6 +325,8 @@ if ($post_id)
 // Get topic tracking info
 if (!isset($topic_tracking_info))
 {
+	$topic_tracking_info = array();
+
 	// Get topic tracking info
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
@@ -332,7 +334,7 @@ if (!isset($topic_tracking_info))
 		$topic_tracking_info = get_topic_tracking($forum_id, $topic_id, $tmp_topic_data, array($forum_id => $topic_data['forum_mark_time']));
 		unset($tmp_topic_data);
 	}
-	else
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_id);
 	}
@@ -715,20 +717,25 @@ if (!empty($topic_data['poll_start']))
 
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
+		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
+
 		if ($poll_bbcode !== false)
 		{
 			$poll_bbcode->bbcode_second_pass($poll_info[$i]['poll_option_text'], $poll_info[$i]['bbcode_uid'], $poll_option['bbcode_bitfield']);
 		}
+
 		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', censor_text($poll_info[$i]['poll_option_text']));
+		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', $poll_info[$i]['poll_option_text']);
 	}
+
+	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
 
 	if ($poll_bbcode !== false)
 	{
 		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
 	}
 	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
-	$topic_data['poll_title'] = str_replace("\n", '<br />', censor_text($topic_data['poll_title']));
+	$topic_data['poll_title'] = str_replace("\n", '<br />', $topic_data['poll_title']);
 
 	unset($poll_bbcode);
 
@@ -1081,8 +1088,8 @@ while ($row = $db->sql_fetchrow($result))
 					{
 						$diff = ($diff < 0) ? 1 : 0;
 					}
-		
-					$age = (int) (date('Y', $time) - $bday_year - $diff);
+
+					$age = (int) (date('Y', time()) - $bday_year - $diff);
 					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - $diff);
 				}
 			}
@@ -1193,7 +1200,7 @@ if (sizeof($attach_list))
 }
 
 // Instantiate BBCode if need be
-if ($bbcode_bitfield)
+if ($bbcode_bitfield !== '')
 {
 	include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 	$bbcode = new bbcode($bbcode_bitfield);
@@ -1233,18 +1240,20 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
+		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
+
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($user_cache[$poster_id]['sig'], $user_cache[$poster_id]['sig_bbcode_uid'], $user_cache[$poster_id]['sig_bbcode_bitfield']);
 		}
 
 		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', censor_text($user_cache[$poster_id]['sig']));
+		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
 
 	// Parse the message and subject
-	$message = $row['post_text'];
+	$message = censor_text($row['post_text']);
 
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
@@ -1274,7 +1283,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	// Replace naughty words such as farty pants
 	$row['post_subject'] = censor_text($row['post_subject']);
-	$message = str_replace("\n", '<br />', censor_text($message));
+	$message = str_replace("\n", '<br />', $message);
 
 	// Editing information
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
@@ -1478,6 +1487,9 @@ if (isset($user->data['session_page']) && strpos($user->data['session_page'], '&
 if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id])
 {
 	markread('topic', $forum_id, $topic_id, $max_post_time);
+
+	// Update forum info
+	update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
 }
 
 // Change encoding if appropriate

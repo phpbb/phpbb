@@ -554,6 +554,9 @@ class acp_icons
 
 				$notice = $user->lang[$lang . '_DELETED'];
 
+				$cache->destroy('icons');
+				$cache->destroy('sql', $table);
+
 			break;
 
 			case 'move_up':

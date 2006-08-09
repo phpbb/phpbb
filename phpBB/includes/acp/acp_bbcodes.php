@@ -38,7 +38,7 @@ class acp_bbcodes
 			break;
 
 			case 'edit':
-				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline, bbcode_helpline
+				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);

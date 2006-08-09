@@ -525,7 +525,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 			}
 
-			if (!$user->data['is_registered'] || !$config['load_db_lastread'])
+			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
@@ -563,7 +563,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']), ($forum_id) ? false : $forum['topic_list']);
 				}
-				else
+				else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 				{
 					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list'], ($forum_id) ? false : $forum['topic_list']);
 		

@@ -42,7 +42,7 @@ $dbms_type_map = array(
 		'MTEXT'		=> 'mediumtext',
 		'TIMESTAMP'	=> 'int(11) UNSIGNED',
 		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_BIN'	=> 'varchar(252) BINARY',
+		'VCHAR_BIN'	=> 'varchar(252) /*!40101 CHARACTER SET utf8 */ BINARY',
 		'VCHAR_CI'	=> 'varchar(252)',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
@@ -64,7 +64,7 @@ $dbms_type_map = array(
 		'MTEXT'		=> 'BLOB SUB_TYPE TEXT',
 		'TIMESTAMP'	=> 'INTEGER',
 		'DECIMAL'	=> 'DOUBLE PRECISION',
-		'VCHAR_BIN'	=> 'VARCHAR(252)',
+		'VCHAR_BIN'	=> 'VARCHAR(252) CHARACTER SET UNICODE_FSS',
 		'VCHAR_CI'	=> 'VARCHAR(252)',
 		'VARBINARY'	=> 'CHAR(255)',
 	),
@@ -108,7 +108,7 @@ $dbms_type_map = array(
 		'MTEXT'		=> 'clob',
 		'TIMESTAMP'	=> 'number(11)',
 		'DECIMAL'	=> 'number(5, 2)',
-		'VCHAR_BIN'	=> 'varchar2(252)',
+		'VCHAR_BIN'	=> 'nvarchar2(252)',
 		'VCHAR_CI'	=> 'varchar2(252)',
 		'VARBINARY'	=> 'raw(255)',
 	),
@@ -130,7 +130,7 @@ $dbms_type_map = array(
 		'MTEXT'		=> 'mediumtext(16777215)',
 		'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
 		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_BIN'	=> 'varchar(252)',
+		'VCHAR_BIN'	=> 'nvarchar(252)',
 		'VCHAR_CI'	=> 'varchar(252)',
 		'VARBINARY'	=> 'blob',
 	),
@@ -182,7 +182,7 @@ foreach ($supported_dbms as $dbms)
 
 		case 'sqlite':
 			$line = "#\n# SQLite Schema for phpBB 3.x - (c) phpBB Group, 2005\n#\n# \$I" . "d: $\n#\n\n";
-			$line .= "BEGIN TRANSACTION;\n\n";
+			$line .= "BEGIN TRANSACTION;;\n\n";
 		break;
 
 		case 'mssql':
@@ -477,7 +477,7 @@ foreach ($supported_dbms as $dbms)
 			case 'sqlite':
 				// Remove last line delimiter...
 				$line = substr($line, 0, -2);
-				$line .= "\n);\n\n";
+				$line .= "\n);;\n\n";
 			break;
 		}
 
@@ -526,6 +526,12 @@ foreach ($supported_dbms as $dbms)
 					break;
 
 					case 'sqlite':
+						$line .= ($key_data[0] == 'INDEX') ? 'CREATE INDEX' : '';
+						$line .= ($key_data[0] == 'UNIQUE') ? 'CREATE UNIQUE INDEX' : '';
+
+						$line .= " {$table_name}_{$key_name} ON {$table_name} (" . implode(', ', $key_data[1]) . ");;\n";
+					break;
+
 					case 'postgres':
 						$line .= ($key_data[0] == 'INDEX') ? 'CREATE INDEX' : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? 'CREATE UNIQUE INDEX' : '';
@@ -653,6 +659,17 @@ EOF;
 		break;
 
 		case 'sqlite':
+			$line = '
+CREATE TRIGGER "t_phpbb_styles_template"
+AFTER INSERT ON "phpbb_styles_template"
+FOR EACH ROW WHEN NEW.bbcode_bitfield = \'\'
+BEGIN
+	UPDATE phpbb_styles_template SET bbcode_bitfield = binary_insert(1) WHERE template_id = NEW.template_id;
+END;;
+
+COMMIT;;';
+		break;
+
 		case 'postgres':
 			$line = "\nCOMMIT;";
 		break;
@@ -802,6 +819,12 @@ function get_schema_struct()
 			'ban_give_reason'	=> array('STEXT', ''),
 		),
 		'PRIMARY_KEY'			=> 'ban_id',
+		'KEYS'			=> array(
+			'ban_end'			=> array('INDEX', 'ban_end'),
+			'ban_user'			=> array('INDEX', array('ban_userid', 'ban_exclude')),
+			'ban_email'			=> array('INDEX', array('ban_email', 'ban_exclude')),
+			'ban_ip'			=> array('INDEX', array('ban_ip', 'ban_exclude')),
+		),
 	);
 
 	$schema_data['phpbb_bbcodes'] = array(
@@ -870,6 +893,9 @@ function get_schema_struct()
 			'code'				=> array('VCHAR:8', ''),
 		),
 		'PRIMARY_KEY'	=> array('session_id', 'confirm_id'),
+		'KEYS'			=> array(
+			'confirm_type'		=> array('INDEX', 'confirm_type'),
+		),
 	);
 
 	$schema_data['phpbb_disallow'] = array(
@@ -1245,6 +1271,9 @@ function get_schema_struct()
 			'rule_folder_id'		=> array('INT:4', 0),
 		),
 		'PRIMARY_KEY'	=> 'rule_id',
+		'KEYS'			=> array(
+			'user_id'				=> array('INDEX', 'user_id'),
+		),
 	);
 
 	$schema_data['phpbb_privmsgs_to'] = array(
@@ -1262,6 +1291,7 @@ function get_schema_struct()
 		),
 		'KEYS'			=> array(
 			'msg_id'				=> array('INDEX', 'msg_id'),
+			'author_id'				=> array('INDEX', 'author_id'),
 			'usr_flder_id'			=> array('INDEX', array('user_id', 'folder_id')),
 		),
 	);
@@ -1386,6 +1416,7 @@ function get_schema_struct()
 		),
 		'KEYS'			=> array(
 			'word_id'			=> array('INDEX', 'word_id'),
+			'post_id'			=> array('INDEX', 'post_id'),
 		),
 	);
 
@@ -1675,6 +1706,7 @@ function get_schema_struct()
 			'forum_id'			=> array('INDEX', 'forum_id'),
 			'forum_id_type'		=> array('INDEX', array('forum_id', 'topic_type')),
 			'last_post_time'	=> array('INDEX', 'topic_last_post_time'),
+			'fid_time_moved'	=> array('INDEX', array('forum_id', 'topic_last_post_time', 'topic_moved_id')),
 		),
 	);
 

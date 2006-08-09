@@ -723,7 +723,7 @@ class ucp_groups
 							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start, true),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
-							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'))
+							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'))
 						);
 
 					break;

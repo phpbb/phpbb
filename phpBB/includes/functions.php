@@ -539,7 +539,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
 				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
 			}
-			else
+			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
@@ -633,7 +633,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 			$tracking = ($tracking) ? unserialize($tracking) : array();
@@ -698,7 +698,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$db->sql_return_on_error(false);
 			}
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 			$tracking = ($tracking) ? unserialize($tracking) : array();
@@ -745,7 +745,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 				if ($user->data['is_registered'])
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10)) . " WHERE user_id = {$user->data['user_id']}");
+					$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10));
+					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . $user->data['user_lastmark'] . " WHERE user_id = {$user->data['user_id']}");
 				}
 				else
 				{
@@ -929,7 +930,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			}
 		}
 	}
-	else
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		global $tracking_topics;
 
@@ -993,6 +994,111 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 	}
 
 	return $last_read;
+}
+
+/**
+* Check for read forums and update topic tracking info accordingly
+*
+* @param int $forum_id the forum id to check
+* @param int $forum_last_post_time the forums last post time
+* @param int $f_mark_time the forums last mark time if user is registered and load_db_lastread enabled
+* @param int $mark_time_forum false if the mark time needs to be obtained, else the last users forum mark time
+*
+*/
+function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
+{
+	global $db, $tracking_topics, $user, $config;
+
+	// Determine the users last forum mark time if not given.
+	if ($mark_time_forum === false)
+	{
+		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		{
+			$mark_time_forum = (!empty($f_mark_time)) ? $f_mark_time : $user->data['user_lastmark'];
+		}
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		{
+			if (!isset($tracking_topics) || !sizeof($tracking_topics))
+			{
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+			}
+
+			if (!$user->data['is_registered'])
+			{
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
+			}
+
+			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
+		}
+	}
+
+	// Check the forum for any left unread topics.
+	// If there are none, we mark the forum as read.
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		if ($mark_time_forum >= $forum_last_post_time)
+		{
+			// We do not need to mark read, this happened before. Therefore setting this to true
+			$row = true;
+		}
+		else
+		{
+			$sql = 'SELECT t.forum_id FROM ' . TOPICS_TABLE . ' t
+				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
+				WHERE t.forum_id = ' . $forum_id . '
+					AND t.topic_last_post_time > ' . $mark_time_forum . '
+					AND t.topic_moved_id = 0
+					AND tt.topic_id IS NULL
+				GROUP BY t.forum_id';
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+	}
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		// Get information from cookie
+		$row = false;
+
+		if (!isset($tracking_topics['tf'][$forum_id]))
+		{
+			// We do not need to mark read, this happened before. Therefore setting this to true
+			$row = true;
+		}
+		else
+		{
+			$sql = 'SELECT topic_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id = ' . $forum_id . '
+					AND topic_last_post_time > ' . $mark_time_forum . '
+					AND topic_moved_id = 0';
+			$result = $db->sql_query($sql);
+
+			$check_forum = $tracking_topics['tf'][$forum_id];
+			$unread = false;
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))
+				{
+					$unread = true;
+					break;
+				}
+			}
+			$db->sql_freeresult($result);
+
+			$row = $unread;
+		}
+	}
+	else
+	{
+		$row = true;
+	}
+
+	if (!$row)
+	{
+		markread('topics', $forum_id);
+	}
 }
 
 // Pagination functions

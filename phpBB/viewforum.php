@@ -38,17 +38,14 @@ if (!$forum_id)
 }
 
 $sql_from = FORUMS_TABLE . ' f';
+$lastread_select = '';
 
 // Grab appropriate forum data
 if ($config['load_db_lastread'] && $user->data['is_registered'])
 {
 	$sql_from .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
 		AND ft.forum_id = f.forum_id)';
-	$lastread_select = ', ft.mark_time';
-}
-else
-{
-	$lastread_select = '';
+	$lastread_select .= ', ft.mark_time';
 }
 
 if ($user->data['is_registered'])
@@ -428,6 +425,7 @@ $topic_tracking_info = $tracking_topics = array();
 if (sizeof($topic_list))
 {
 	$mark_forum_read = true;
+	$mark_time_forum = 0;
 
 	// Active topics?
 	if ($s_display_active && sizeof($active_forum_ary))
@@ -447,7 +445,7 @@ if (sizeof($topic_list))
 				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), false);
 			}
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
@@ -464,7 +462,7 @@ if (sizeof($topic_list))
 			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $rowset, array($forum_id => $forum_data['mark_time']), $global_announce_list);
 			$mark_time_forum = (!empty($forum_data['mark_time'])) ? $forum_data['mark_time'] : $user->data['user_lastmark'];
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, $global_announce_list);
 
@@ -572,65 +570,7 @@ if (sizeof($topic_list))
 // after reading a topic
 if ($forum_data['forum_type'] == FORUM_POST && sizeof($topic_list) && $mark_forum_read)
 {
-	// Make sure there are not additional topics unread
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
-	{
-		if ($mark_time_forum >= $forum_data['forum_last_post_time'])
-		{
-			$row = true;
-		}
-		else
-		{
-			$sql = 'SELECT t.forum_id FROM ' . TOPICS_TABLE . ' t
-				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
-				WHERE t.forum_id = ' . $forum_id . '
-					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0
-					AND tt.topic_id IS NULL
-				GROUP BY t.forum_id';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-		}
-	}
-	else
-	{
-		// Get information from cookie
-		$row = false;
-
-		if (!isset($tracking_topics['tf'][$forum_id]))
-		{
-			// We do not need to mark read, this has happened before. Therefore setting this to true
-			$row = true;
-		}
-		else
-		{
-			$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . '
-				WHERE forum_id = ' . $forum_id . '
-					AND topic_last_post_time > ' . $mark_time_forum . '
-					AND topic_moved_id = 0';
-			$result = $db->sql_query($sql);
-
-			$check_forum = $tracking_topics['tf'][$forum_id];
-			$unread = false;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))
-				{
-					$unread = true;
-					break;
-				}
-			}
-			$db->sql_freeresult($result);
-
-			$row = $unread;
-		}
-	}
-
-	if (!$row)
-	{
-		markread('topics', $forum_id);
-	}
+	update_forum_tracking_info($forum_id, $forum_data['forum_last_post_time'], false, $mark_time_forum);
 }
 
 page_footer();
