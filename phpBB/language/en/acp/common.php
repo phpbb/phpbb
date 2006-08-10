@@ -473,6 +473,7 @@ $lang = array_merge($lang, array(
 	'LOG_IMAGESET_EDIT_DETAILS'	=> '<b>Edited imageset details</b><br />&#187; %s',
 	'LOG_IMAGESET_EDIT'			=> '<b>Edited imageset</b><br />&#187; %s',
 	'LOG_IMAGESET_EXPORT'		=> '<b>Exported imageset</b><br />&#187; %s',
+	'LOG_IMAGESET_REFRESHED'	=> '<b>Refreshed imageset</b><br />&#187; %s',
 
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
@@ -560,6 +561,7 @@ $lang = array_merge($lang, array(
 	'LOG_THEME_EDIT'			=> '<b>Edited theme <i>%1$s</i></b><br />&#187; Modified class <i>%2$s</i>',
 	'LOG_THEME_EDIT_ADD'		=> '<b>Edited theme <i>%1$s</i></b><br />&#187; Added class <i>%2$s</i>',
 	'LOG_THEME_EXPORT'			=> '<b>Exported theme</b><br />&#187; %s',
+	'LOG_THEME_REFRESHED'		=> '<b>Refreshed theme</b><br />&#187; %s',
 
 	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s',
 	'LOG_USER_BAN_USER'		=> '<b>Banned User via user management</b> for reason "<i>%1$s</i>"<br />&#187; %2$s',

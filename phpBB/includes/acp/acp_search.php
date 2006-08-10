@@ -274,7 +274,7 @@ class acp_search
 					$result = $db->sql_query($sql);
 	
 					$ids = $posters = array();
-					while (false !== ($row = $db->sql_fetchrow($result)))
+					while ($row = $db->sql_fetchrow($result))
 					{
 						$ids[] = $row['post_id'];
 						$posters[] = $row['poster_id'];
@@ -325,7 +325,7 @@ class acp_search
 							AND post_id < ' . (int) ($post_counter + $this->batch_size);
 					$result = $db->sql_query($sql);
 
-					while (false !== ($row = $db->sql_fetchrow($result)))
+					while ($row = $db->sql_fetchrow($result))
 					{
 						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['post_encoding'], $row['poster_id'], $row['forum_id']);
 					}

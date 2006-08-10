@@ -1089,7 +1089,6 @@ while ($row = $db->sql_fetchrow($result))
 						$diff = ($diff < 0) ? 1 : 0;
 					}
 
-					$age = (int) (date('Y', time()) - $bday_year - $diff);
 					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - $diff);
 				}
 			}

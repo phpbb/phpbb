@@ -463,8 +463,10 @@ class session
 
 		$db->sql_return_on_error(true);
 
-		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+		$sql = 'DELETE
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'
+				AND session_user_id = ' . ANONYMOUS;
 
 		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
@@ -483,15 +485,16 @@ class session
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
-
-			$this->session_id = $this->data['session_id'] = md5(unique_id());
-
-			$sql_ary['session_id'] = (string) $this->session_id;
-			$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
-
-			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-			$db->sql_query($sql);
 		}
+
+		$this->session_id = $this->data['session_id'] = md5(unique_id());
+
+		$sql_ary['session_id'] = (string) $this->session_id;
+		$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
+
+		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
 		$db->sql_return_on_error(false);
 
 		// Regenerate autologin/persistent login key

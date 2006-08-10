@@ -335,6 +335,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 								$cache->destroy('sql', STYLES_THEME_TABLE);
 
+								add_log('admin', 'LOG_THEME_REFRESHED', $theme_row['theme_name']);
 								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
 							}
 						}
@@ -354,7 +355,70 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			break;
 
 			case 'imageset':
-				$this->frontend('imageset', array('edit', 'details'), array('export', 'delete'));
+
+				switch ($action)
+				{
+					case 'refresh':
+
+						$sql = 'SELECT *
+							FROM ' . STYLES_IMAGESET_TABLE . "
+							WHERE imageset_id = $style_id";
+						$result = $db->sql_query($sql);
+						$imageset_row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if (!$imageset_row)
+						{
+							trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action));
+						}
+
+						if (confirm_box(true))
+						{
+							$sql_ary = array();
+
+							$cfg_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/imageset.cfg");
+					
+							$imageset_definitions = array();
+							foreach ($this->imageset_keys as $topic => $key_array)
+							{
+								$imageset_definitions = array_merge($imageset_definitions, $key_array);
+							}
+				
+							foreach ($cfg_data as $key => $value)
+							{
+								if (strpos($key, 'img_') === 0)
+								{
+									$key = substr($key, 4);
+									if (in_array($key, $imageset_definitions))
+									{
+										$sql_ary[$key] = str_replace('{PATH}', "styles/{$imageset_row['imageset_path']}/imageset/", trim($value));
+									}
+								}
+							}
+							unset($cfg_data);
+
+							$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								WHERE imageset_id = $style_id";
+							$db->sql_query($sql);
+
+							$cache->destroy('sql', STYLES_IMAGESET_TABLE);
+
+							add_log('admin', 'LOG_IMAGESET_REFRESHED', $imageset_row['imageset_name']);
+							trigger_error($user->lang['IMAGESET_REFRESHED'] . adm_back_link($this->u_action));
+						}
+						else
+						{
+							confirm_box(false, $user->lang['CONFIRM_IMAGESET_REFRESH'], build_hidden_fields(array(
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+								'id'		=> $style_id
+							)));
+						}
+					break;
+				}
+
+				$this->frontend('imageset', array('edit', 'details'), array('refresh', 'export', 'delete'));
 			break;
 		}
 	}

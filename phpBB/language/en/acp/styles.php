@@ -54,6 +54,7 @@ $lang = array_merge($lang, array(
 	'CACHE_FILENAME'			=> 'Template file',
 	'CACHE_FILESIZE'			=> 'Filesize',
 	'CACHE_MODIFIED'			=> 'Modified',
+	'CONFIRM_IMAGESET_REFRESH'	=> 'Are you sure you wish to refresh all imageset data? The settings from the imageset configuration file will overwrite all modifications to the imageset which have been carried out with the imageset editor.',
 	'CONFIRM_TEMPLATE_CLEAR_CACHE'	=> 'Are you sure you wish to clear all cached versions of your template files?',
 	'CONFIRM_TEMPLATE_REFRESH'	=> 'Are you sure you wish to refresh all template data in the database with the contents of the template files on the filesystem? This will overwrite all modifications which have been carried out with the template editor while the template was stored in the database.',
 	'CONFIRM_THEME_REFRESH'		=> 'Are you sure you wish to refresh the theme data stored in the database with the contents of the theme on the filesystem? This will overwrite all modifications which have been carried out with the theme editor while the theme was stored in the database.',
@@ -133,6 +134,7 @@ $lang = array_merge($lang, array(
 	'IMAGESET_EXPORT_EXPLAIN'	=> 'Here you can export an imageset in the form of an archive. This archive will contain all the data necessary to install the set of images on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.',
 	'IMAGESET_EXPORTED'			=> 'Imageset exported succesfully and stored in %s',
 	'IMAGESET_NAME'				=> 'Imageset Name',
+	'IMAGESET_REFRESHED'		=> 'Imageset refreshed successfully',
 	'IMAGESET_UPDATED'			=> 'Imageset updated successfully',
 	'ITALIC'					=> 'Italic',
 
