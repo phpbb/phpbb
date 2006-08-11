@@ -285,6 +285,49 @@ class dbal
 		return $query;
 	}
 
+	function sql_in_set($field, $array)
+	{
+		if (!sizeof($array))
+		{
+			trigger_error('No values specified for SQL IN comparison', E_USER_ERROR);
+		}
+
+		$bitfield = (strpos($field, 'bitfield') !== false);
+
+		$values = array();
+		foreach ($array as $var)
+		{
+			if (is_null($var))
+			{
+				$values[] = 'NULL';
+			}
+			else if (is_string($var))
+			{
+				if (!$bitfield)
+				{
+					$values[] = "'" . $this->sql_escape($var) . "'";
+				}
+				else
+				{
+					$values[] = $this->sql_escape_binary($var);
+				}
+			}
+			else
+			{
+				$values[] = (is_bool($var)) ? intval($var) : $var;
+			}
+		}
+
+		if (sizeof($values) == 1)
+		{
+			return $field . ' = ' . $values[0];
+		}
+		else
+		{
+			return $field . ' IN (' . implode(',', $values) . ')';
+		}
+	}
+
 	function sql_escape_binary($msg)
 	{
 		return "'" . $this->sql_escape($msg) . "'";
