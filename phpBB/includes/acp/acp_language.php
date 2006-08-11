@@ -803,6 +803,17 @@ class acp_language
 				// Add main files
 				$this->add_to_archive($compress, $this->main_files, $row['lang_iso']);
 
+				// Add search files if they exist...
+				if (file_exists($phpbb_root_path . 'language/' . $row['lang_iso'] . '/search_ignore_words.' . $phpEx))
+				{
+					$this->add_to_archive($compress, array("search_ignore_words.$phpEx"), $row['lang_iso']);
+				}
+
+				if (file_exists($phpbb_root_path . 'language/' . $row['lang_iso'] . '/search_synonyms.' . $phpEx))
+				{
+					$this->add_to_archive($compress, array("search_synonyms.$phpEx"), $row['lang_iso']);
+				}
+
 				// Write files in folders
 				$this->add_to_archive($compress, $email_templates, $row['lang_iso'], 'email');
 				$this->add_to_archive($compress, $acp_files, $row['lang_iso'], 'acp');
@@ -961,8 +972,7 @@ $lang = array_merge($lang, array(
 ';
 
 		// Language files in language root directory
-		$this->main_files = array("common.$phpEx", "groups.$phpEx", "mcp.$phpEx", "memberlist.$phpEx", "posting.$phpEx", "search.$phpEx", "ucp.$phpEx", "viewforum.$phpEx", "viewtopic.$phpEx", "help_bbcode.$phpEx", "help_faq.$phpEx");
-	
+		$this->main_files = array("common.$phpEx", "groups.$phpEx", "install.$phpEx", "mcp.$phpEx", "memberlist.$phpEx", "posting.$phpEx", "search.$phpEx", "ucp.$phpEx", "viewforum.$phpEx", "viewtopic.$phpEx", "help_bbcode.$phpEx", "help_faq.$phpEx");
 	}
 
 	/**
