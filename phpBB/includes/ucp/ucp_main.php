@@ -51,8 +51,8 @@ class ucp_main
 				}
 
 				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
-				$folder = 'folder_global';
-				$folder_new = $folder . '_new';
+				$folder = 'global_read';
+				$folder_new = 'global_unread';
 
 				// Get cleaned up list... return only those forums not having the f_read permission
 				$forum_ary = $auth->acl_getf('!f_read', true);
@@ -108,10 +108,15 @@ class ucp_main
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
 					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
 
+					if ($row['topic_status'] == ITEM_LOCKED)
+					{
+						$folder_img .= '_locked';
+					}
+
 					// Posted image?
 					if (!empty($row['topic_posted']) && $row['topic_posted'])
 					{
-						$folder_img .= '_posted';
+						$folder_img .= '_mine';
 					}
 
 					$template->assign_block_vars('topicrow', array(
@@ -266,12 +271,12 @@ class ucp_main
 					// Which folder should we display?
 					if ($row['forum_status'] == ITEM_LOCKED)
 					{
-						$folder_image = ($unread_forum) ? 'folder_lock_new' : 'folder_lock';
+						$folder_image = ($unread_forum) ? 'forum_unread_locked' : 'forum_read_locked';
 						$folder_alt = 'FORUM_LOCKED';
 					}
 					else
 					{
-						$folder_image = ($unread_forum) ? 'folder_new' : 'folder';
+						$folder_image = ($unread_forum) ? 'forum_unread' : 'forum_read';
 						$folder_alt = ($unread_forum) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 					}
 
