@@ -350,7 +350,7 @@ CREATE TABLE phpbb_forums (
 	forum_parents BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_name BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_desc BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	forum_desc_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	forum_desc_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	forum_desc_options INTEGER DEFAULT 0 NOT NULL,
 	forum_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	forum_link VARCHAR(255) DEFAULT '' NOT NULL,
@@ -359,7 +359,7 @@ CREATE TABLE phpbb_forums (
 	forum_image VARCHAR(255) DEFAULT '' NOT NULL,
 	forum_rules BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_rules_link VARCHAR(255) DEFAULT '' NOT NULL,
-	forum_rules_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	forum_rules_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	forum_rules_options INTEGER DEFAULT 0 NOT NULL,
 	forum_rules_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	forum_topics_per_page INTEGER DEFAULT 0 NOT NULL,
@@ -436,7 +436,7 @@ CREATE TABLE phpbb_groups (
 	group_type INTEGER DEFAULT 1 NOT NULL,
 	group_name VARCHAR(252) DEFAULT '' NOT NULL,
 	group_desc BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	group_desc_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	group_desc_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	group_desc_options INTEGER DEFAULT 0 NOT NULL,
 	group_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	group_display INTEGER DEFAULT 0 NOT NULL,
@@ -639,7 +639,7 @@ CREATE TABLE phpbb_posts (
 	post_checksum VARCHAR(32) DEFAULT '' NOT NULL,
 	post_encoding VARCHAR(20) DEFAULT 'iso-8859-1' NOT NULL,
 	post_attachment INTEGER DEFAULT 0 NOT NULL,
-	bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	bbcode_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	post_postcount INTEGER DEFAULT 1 NOT NULL,
 	post_edit_time INTEGER DEFAULT 0 NOT NULL,
@@ -688,7 +688,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_user INTEGER DEFAULT 0 NOT NULL,
 	message_encoding VARCHAR(20) DEFAULT 'iso-8859-1' NOT NULL,
 	message_attachment INTEGER DEFAULT 0 NOT NULL,
-	bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	bbcode_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	message_edit_time INTEGER DEFAULT 0 NOT NULL,
 	message_edit_count INTEGER DEFAULT 0 NOT NULL,
@@ -1081,7 +1081,7 @@ CREATE TABLE phpbb_styles_template (
 	template_name VARCHAR(252) DEFAULT '' NOT NULL,
 	template_copyright VARCHAR(255) DEFAULT '' NOT NULL,
 	template_path VARCHAR(100) DEFAULT '' NOT NULL,
-	bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	bbcode_bitfield VARCHAR(252) DEFAULT 'kNg=' NOT NULL,
 	template_storedb INTEGER DEFAULT 0 NOT NULL
 );;
 
@@ -1423,7 +1423,7 @@ CREATE TABLE phpbb_users (
 	user_avatar_height INTEGER DEFAULT 0 NOT NULL,
 	user_sig BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	user_sig_bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
-	user_sig_bbcode_bitfield CHAR(255) DEFAULT '' NOT NULL,
+	user_sig_bbcode_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	user_from VARCHAR(100) DEFAULT '' NOT NULL,
 	user_icq VARCHAR(15) DEFAULT '' NOT NULL,
 	user_aim VARCHAR(255) DEFAULT '' NOT NULL,
@@ -1509,65 +1509,3 @@ CREATE TABLE phpbb_zebra (
 
 CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra(user_id);;
 CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra(zebra_id);;
-
-# Trigger for phpbb_forums bitfields
-CREATE TRIGGER t_phpbb_forums_desc_bitf FOR phpbb_forums
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.forum_desc_bitfield is null) THEN
-		NEW.forum_desc_bitfield = ASCII_CHAR(0);
-END;;
-
-CREATE TRIGGER t_phpbb_forums_rules_bitf FOR phpbb_forums
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.forum_rules_bitfield is null) THEN
-		NEW.forum_rules_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_groups bitfields
-CREATE TRIGGER t_phpbb_groups_bitf FOR phpbb_groups
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.group_desc_bitfield is null) THEN
-		NEW.group_desc_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_posts bitfields
-CREATE TRIGGER t_phpbb_posts_bitf FOR phpbb_posts
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.bbcode_bitfield is null) THEN
-		NEW.bbcode_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_privmsgs bitfields
-CREATE TRIGGER t_phpbb_privmsgs_bitf FOR phpbb_privmsgs
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.bbcode_bitfield is null) THEN
-		NEW.bbcode_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_styles_template bitfields
-CREATE TRIGGER t_phpbb_styles_template_bitf FOR phpbb_styles_template
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.bbcode_bitfield is null) THEN
-		NEW.bbcode_bitfield = ASCII_CHAR(144) || ASCII_CHAR(216);
-END;;
-
-# Trigger for phpbb_users bitfields
-CREATE TRIGGER t_phpbb_users_bitf FOR phpbb_users
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.user_sig_bbcode_bitfield is null) THEN
-		NEW.user_sig_bbcode_bitfield = ASCII_CHAR(0);
-END;;

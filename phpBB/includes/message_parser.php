@@ -79,7 +79,7 @@ class bbcode_firstpass extends bbcode
 			}
 		}
 
-		$this->bbcode_bitfield = $bitfield->get_blob();
+		$this->bbcode_bitfield = $bitfield->get_base64();
 	}
 
 	/**

@@ -256,7 +256,7 @@ class dbal_mssql extends dbal
 		{
 			foreach ($row as $key => $value)
 			{
-				$row[$key] = ($value === ' ' && strpos($key, 'bitfield') === false) ? '' : $value;
+				$row[$key] = ($value === ' ') ? '' : $value;
 			}
 		}
 
@@ -367,14 +367,6 @@ class dbal_mssql extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace("'", "''", $msg);
-	}
-
-	/**
-	* Escape string used in sql query
-	*/
-	function sql_escape_binary($msg)
-	{
-		return "CAST('" . $msg . "' AS varbinary)";
 	}
 
 	/**

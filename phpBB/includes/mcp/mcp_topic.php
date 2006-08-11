@@ -92,7 +92,7 @@ function mcp_topic_view($id, $mode, $action)
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
-		$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
 

@@ -49,7 +49,6 @@ class dbal_sqlite extends dbal
 			@sqlite_query('PRAGMA short_column_names = 1', $this->db_connect_id);
 		}
 
-		sqlite_create_function($this->db_connect_id, 'binary_insert', array('dbal_sqlite', '_sql_insert'), 1);
 		
 		return ($this->db_connect_id) ? true : array('message' => $error);
 	}
@@ -217,13 +216,6 @@ class dbal_sqlite extends dbal
 		}
 
 		$row = @sqlite_fetch_array($query_id, SQLITE_ASSOC);
-		if ($row)
-		{
-			foreach ($row as $key => $value)
-			{
-				$row[$key] = (strpos($key, 'bitfield') === false) ? $value : sqlite_udf_decode_binary($value);
-			}
-		}
 
 		return $row;
 	}
@@ -317,14 +309,6 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
-	* Escape string used in sql query
-	*/
-	function sql_escape_binary($msg)
-	{
-		return "'" . @sqlite_udf_encode_binary($msg) . "'";
-	}
-
-	/**
 	* return sql error array
 	* @access: private
 	*/
@@ -382,31 +366,6 @@ class dbal_sqlite extends dbal
 
 			break;
 		}
-	}
-
-	/**
-	* Build the proper binary string used for the default
-	* @access: private
-	*/
-	function _sql_insert($mode)
-	{
-		if ($mode == 1)
-		{
-			$bitfield = new bitfield();
-			$bitfield->set(0);
-			$bitfield->set(3);
-			$bitfield->set(8);
-			$bitfield->set(9);
-			$bitfield->set(11);
-			$bitfield->set(12);
-			return sqlite_udf_encode_binary($bitfield->data);
-		}
-		/*
-		else
-		{
-			return sqlite_udf_encode_binary("\0");
-		}
-		*/
 	}
 
 }

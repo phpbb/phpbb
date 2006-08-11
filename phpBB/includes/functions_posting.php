@@ -842,7 +842,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	do
 	{
 		$rowset[] = $row;
-		$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);

@@ -397,14 +397,6 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* Escape string used in sql query
-	*/
-	function sql_escape_binary($msg)
-	{
-		return "'" . @pg_escape_bytea($msg) . "'";
-	}
-
-	/**
 	* return sql error array
 	* @access: private
 	*/

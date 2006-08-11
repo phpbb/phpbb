@@ -3012,7 +3012,7 @@ class bitfield
 
 	function bitfield($bitfield = '')
 	{
-		$this->data = $bitfield;
+		$this->data = base64_decode($bitfield);
 	}
 
 	/**
@@ -3070,6 +3070,11 @@ class bitfield
 	function get_blob()
 	{
 		return $this->data;
+	}
+
+	function get_base64()
+	{
+		return base64_encode($this->data);
 	}
 
 	function get_bin()

@@ -981,11 +981,6 @@ class install_install extends module
 				{
 					$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
 				}
-				else
-				{
-					// versions older than 4.1.2 never had a good, working varbinary. TINYBLOB is just as good.
-					$sql_query = str_replace(array("varbinary(255) DEFAULT ''", 'varbinary(255) DEFAULT 0x90D8'), "TINYBLOB DEFAULT ''", $sql_query);
-				}
 
 			break;
 
@@ -1019,22 +1014,6 @@ class install_install extends module
 		// Deal with any special comments and with MySQL < 4.1.2
 		switch ($dbms)
 		{
-			case 'mysql':
-			case 'mysql4':
-				if (version_compare(mysql_get_server_info(), '4.1.2', '<'))
-				{
-					$bitfield = new bitfield();
-					$bitfield->set(0);
-					$bitfield->set(3);
-					$bitfield->set(8);
-					$bitfield->set(9);
-					$bitfield->set(11);
-					$bitfield->set(12);
-
-					$sql_query = str_replace("INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path) VALUES ('subSilver', '&copy; phpBB Group', 'subSilver');", "INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield) VALUES ('subSilver', '&copy; phpBB Group', 'subSilver', '" . $bitfield->data . "');", $sql_query);
-				}
-			break;
-
 			case 'mssql':
 			case 'mssql_odbc':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $sql_query);

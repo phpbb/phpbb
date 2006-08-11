@@ -199,14 +199,7 @@ class dbal
 				}
 				else if (is_string($var))
 				{
-					if (strpos($key, 'bitfield') === false)
-					{
-						$values[] = "'" . $this->sql_escape($var) . "'";
-					}
-					else
-					{
-						$values[] = $this->sql_escape_binary($var);
-					}
+					$values[] = "'" . $this->sql_escape($var) . "'";
 				}
 				else if (is_array($var) && is_string($var[0]))
 				{

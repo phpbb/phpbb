@@ -28,7 +28,7 @@ class bbcode
 	* Constructor
 	* Init bbcode cache entries if bitfield is specified
 	*/
-	function bbcode($bitfield = 0)
+	function bbcode($bitfield = '')
 	{
 		if ($bitfield)
 		{
@@ -126,7 +126,6 @@ class bbcode
 
 		$sql = '';
 		$bbcode_ids = $rowset = array();
-		$bitlen = strlen(decbin($this->bbcode_bitfield));
 
 		$bitfield = new bitfield($this->bbcode_bitfield);
 		$bbcodes_set = $bitfield->get_all_set();

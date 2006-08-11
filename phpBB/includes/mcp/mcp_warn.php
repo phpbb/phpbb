@@ -416,7 +416,7 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 			'enable_smilies'		=> true,
 			'enable_urls'			=> false,
 			'icon_id'				=> 0,
-			'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 			'bbcode_uid'			=> $message_parser->bbcode_uid,
 			'message'				=> $message_parser->message,
 			'address_list'			=> array('u' => array($userrow['user_id'] => 'to')),

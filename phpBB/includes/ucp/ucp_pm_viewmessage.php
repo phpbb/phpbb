@@ -281,7 +281,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		else
 		{
 			$rowset[$row['msg_id']] = $row;
-			$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
+			$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 		}
 	}
 	while ($row = $db->sql_fetchrow($result));

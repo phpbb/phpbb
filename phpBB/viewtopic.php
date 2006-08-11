@@ -924,12 +924,12 @@ while ($row = $db->sql_fetchrow($result))
 	);
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
-	$bbcode_bitfield = $bbcode_bitfield | $row['bbcode_bitfield'];
+	$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 	// Is a signature attached? Are we going to display it?
 	if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 	{
-		$bbcode_bitfield = $bbcode_bitfield | $row['user_sig_bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['user_sig_bbcode_bitfield']);
 	}
 
 	// Cache various user specific data ... so we don't have to recompute
@@ -1202,7 +1202,7 @@ if (sizeof($attach_list))
 if ($bbcode_bitfield !== '')
 {
 	include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-	$bbcode = new bbcode($bbcode_bitfield);
+	$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 }
 
 $i_total = sizeof($rowset) - 1;

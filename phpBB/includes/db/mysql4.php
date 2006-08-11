@@ -331,16 +331,6 @@ class dbal_mysql4 extends dbal
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
 	}
 
-	function sql_escape_binary($msg)
-	{
-		// If the last char is 
-		if (substr($msg, -1) == ' ')
-		{
-			$msg .= "\0";
-		}
-		return "'" . $this->sql_escape($msg) . "'";
-	}
-
 	/**
 	* Build db-specific query data
 	* @access: private
