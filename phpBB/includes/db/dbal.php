@@ -285,7 +285,7 @@ class dbal
 		return $query;
 	}
 
-	function sql_in_set($field, $array)
+	function sql_in_set($field, $array, $negate = false)
 	{
 		if (!sizeof($array))
 		{
@@ -320,11 +320,11 @@ class dbal
 
 		if (sizeof($values) == 1)
 		{
-			return $field . ' = ' . $values[0];
+			return $field . ($negate ? ' <> ' : ' = ') . $values[0];
 		}
 		else
 		{
-			return $field . ' IN (' . implode(',', $values) . ')';
+			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(',', $values) . ')';
 		}
 	}
 
