@@ -779,7 +779,7 @@ class acp_language
 
 				include_once($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
-				if ($use_method == 'zip')
+				if ($use_method == '.zip')
 				{
 					$compress = new compress_zip('w', $phpbb_root_path . 'store/lang_' . $row['lang_iso'] . $use_method);
 				}

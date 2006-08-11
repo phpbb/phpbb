@@ -45,7 +45,7 @@
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_RM_FILE -->
-			<object id=rmstream_{_file.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="0">
+			<object id=rmstream_{_file.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="200" height="50">
 				<param name="src" value="{_file.U_FORUM}/{_file.U_DOWNLOAD_LINK}">
 				<param name="autostart" value="false">
 				<param name="controls" value="ImageWindow">
@@ -57,7 +57,7 @@
 			<object id=ctrls_{_file.ATTACH_ID} classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
 				<param name="controls" value="ControlPanel">
 				<param name="console" value="{_file.U_DOWNLOAD_LINK}">
-				<embed name=ctrls_{_file.ATTACH_ID} type="audio/x-pn-realaudio-plugin" width="0" height="36" controls="ControlPanel" console="video"></embed>
+				<embed name=ctrls_{_file.ATTACH_ID} type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="video"></embed>
 			</object>
 
 			<script language="Javascript">

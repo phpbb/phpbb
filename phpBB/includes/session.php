@@ -131,7 +131,7 @@ class session
 	* @todo Introduce further user types, bot, guest
 	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
-	function session_begin($update_session_page = true)
+	function session_begin($update_session_page = true, $loose_validation = false)
 	{
 		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
 
@@ -207,7 +207,7 @@ class session
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
-
+				
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 

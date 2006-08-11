@@ -17,12 +17,13 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
 $download_id = request_var('id', 0);
-
-// Thumbnails are not handled by this file by default - but for modders this should be interesting. ;)
 $thumbnail = request_var('t', false);
 
-// Start session management
-$user->session_begin();
+// Disable browser check for downloads
+$config['browser_check'] = false;
+
+// Start session management, do not update session page.
+$user->session_begin(false);
 $auth->acl($user->data);
 $user->setup('viewtopic');
 
@@ -64,6 +65,19 @@ if (!$attachment['in_message'])
 	$result = $db->sql_query_limit($sql, 1);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
+
+	// Global announcement?
+	if (!$row)
+	{
+		$forum_id = request_var('f', 0);
+
+		$sql = 'SELECT forum_id, forum_password, parent_id
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $forum_id;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+	}
 
 	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
 	{
@@ -116,12 +130,13 @@ if (!$attachment)
 
 
 $attachment['physical_filename'] = basename($attachment['physical_filename']);
+$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
-else
+else if ($display_cat == ATTACHMENT_CATEGORY_NONE)
 {
 	// Update download count
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 

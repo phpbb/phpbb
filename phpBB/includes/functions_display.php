@@ -789,12 +789,13 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				}
 			}
 
+			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
+
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
@@ -806,17 +807,24 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']) : $filename;
+					$thumbnail_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . $forum_id) : $thumbnail_filename;
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
-						'THUMB_IMAGE'		=> $thumbnail_filename,
+						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
 				break;
 
 				// Windows Media Streams
 				case ATTACHMENT_CATEGORY_WM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					// The download link is slightly different, because somehow phpBB is not able to get the correct results if called
+					// within the wmp object (cookies are not present).
+					// $download_link = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&f=' . $forum_id, false, $user->session_id) : $filename;
+
+					// Giving the filename directly because within the wm object all variables are in local context making it impossible
+					// to validate against a valid session (all params can differ)
 					$download_link = $filename;
 
 					$block_array += array(
@@ -830,7 +838,6 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
 
 					$block_array += array(
 						'S_RM_FILE'		=> true,
@@ -861,7 +868,6 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 */
 				default:
 					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-					$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']) : $filename;
 
 					$block_array += array(
 						'S_FILE'		=> true,
