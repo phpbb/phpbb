@@ -173,7 +173,7 @@ class acp_bbcodes
 						$bbcode_id = NUM_CORE_BBCODES + 1;
 					}
 
-					if ($bbcode_id > 2039)
+					if ($bbcode_id > 1511)
 					{
 						trigger_error('TOO_MANY_BBCODES');
 					}
