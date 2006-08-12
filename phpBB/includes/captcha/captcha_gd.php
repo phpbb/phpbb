@@ -3438,7 +3438,7 @@ function vector_distance(&$char, $x, $y, $range = 0.1)
 				
 			break;
 		}
-		$distance = min($distance, $d);
+		$distance = min($distance, abs($d));
 	}
 	return $distance;
 }
