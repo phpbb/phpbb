@@ -1299,6 +1299,10 @@ class install_install extends module
 				{
 					foreach ($row['cat'] as $cat_name)
 					{
+						if (!isset($categories[$cat_name]))
+						{
+							continue;
+						}
 						$module_data = array(
 							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 1,
@@ -1634,6 +1638,41 @@ class install_install extends module
 		if ($dbms == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
 		{
 			$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
+			return false;
+		}
+
+		// Check the prefix length to ensure that index names are not too long
+		switch ($dbms)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+			case 'postgres':
+				$prefix_length = 36;
+
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+				$prefix_length = 90;
+			
+			break;
+
+			case 'oracle':
+			case 'sqlite':
+				$prefix_length = 200;
+			
+			break;
+
+			case 'firebird':
+				$prefix_length = 6;
+
+			break;
+		}
+
+		if (strlen($table_prefix) > $prefix_length)
+		{
+			$error[] = sprintf($lang['INST_ERR_PREFIX_TOO_LONG'], $prefix_length);
 			return false;
 		}
 
