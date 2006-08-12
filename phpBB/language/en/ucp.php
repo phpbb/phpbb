@@ -159,6 +159,7 @@ $lang = array_merge($lang, array(
 	'DELETE_MESSAGES_IN_FOLDER'	=> 'Delete all messages within removed folder',
 	'DELETE_RULE'				=> 'Delete rule',
 	'DELETE_RULE_CONFIRM'		=> 'Are you sure you want to delete this rule?',
+	'DEMOTE_SELECTED'			=> 'Demote selected',
 	'DISABLE_CENSORS'			=> 'Enable word censoring',
 	'DISPLAY_GALLERY'			=> 'Display gallery',
 	'DOWNLOADS'					=> 'Downloads',
@@ -224,6 +225,8 @@ $lang = array_merge($lang, array(
 	'IF_FOLDER_FULL'			=> 'If folder is full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',
 	'ITEMS_REQUIRED'			=> 'The items marked with * are required profile fields and need to be filled out',
+
+	'JOIN_SELECTED'				=> 'Join selected',
 
 	'LANGUAGE'					=> 'Language',
 	'LINK_REMOTE_AVATAR'		=> 'Link off-site',
@@ -347,6 +350,7 @@ $lang = array_merge($lang, array(
 	'REMOVE_FOLDER_CONFIRM'		=> 'Are you sure you want to remove this folder?',
 	'RENAME'					=> 'Rename',
 	'RENAME_FOLDER'				=> 'Rename folder',
+	'RESIGN_SELECTED'			=> 'Resign selected',
 	'RETURN_FOLDER'				=> '%1$sReturn to previous folder%2$s',
 	'RETURN_UCP'				=> '%sReturn to the User Control Panel%s',
 	'RULE_ADDED'				=> 'Rule successfully added',
