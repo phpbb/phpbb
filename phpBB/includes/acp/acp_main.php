@@ -456,6 +456,12 @@ class acp_main
 			$template->assign_var('S_DEBUG_EXTRA', true);
 		}
 
+		// Warn if install is still present
+		if (file_exists($phpbb_root_path . 'install'))
+		{
+			$template->assign_var('S_REMOVE_INSTALL', true);
+		}
+
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
 	}

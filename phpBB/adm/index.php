@@ -11,6 +11,7 @@
 /**
 */
 define('IN_PHPBB', 1);
+define('ADMIN_START', 1);
 define('NEED_SID', true);
 
 // Include files

@@ -191,10 +191,11 @@ unset($dbpasswd);
 $config = $cache->obtain_config();
 $dss_seeded = false;
 
-// Warn about install/ directory
-if (file_exists($phpbb_root_path . 'install'))
+// Disable board if the install/ directory is still present
+if (file_exists($phpbb_root_path . 'install') && !defined('ADMIN_START'))
 {
-	trigger_error('REMOVE_INSTALL');
+	$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
+	trigger_error($message);
 }
 
 ?>
