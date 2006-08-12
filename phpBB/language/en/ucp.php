@@ -350,6 +350,7 @@ $lang = array_merge($lang, array(
 	'REMOVE_FOLDER_CONFIRM'		=> 'Are you sure you want to remove this folder?',
 	'RENAME'					=> 'Rename',
 	'RENAME_FOLDER'				=> 'Rename folder',
+	'REPLIED_MESSAGE'			=> 'Replied to message',
 	'RESIGN_SELECTED'			=> 'Resign selected',
 	'RETURN_FOLDER'				=> '%1$sReturn to previous folder%2$s',
 	'RETURN_UCP'				=> '%sReturn to the User Control Panel%s',
