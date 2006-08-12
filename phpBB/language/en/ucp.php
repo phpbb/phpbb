@@ -50,10 +50,20 @@ $lang = array_merge($lang, array(
 ));
 
 $lang = array_merge($lang, array(
-	'CAPTCHA_LINE_1'	=> 'Enter the code on',
-	'CAPTCHA_LINE_2'	=> ' the right which ',
-	'CAPTCHA_LINE_3'	=> 'matches the image',
-	'CAPTCHA_LINE_4'	=> '   on the left   ',
+	'CAPTCHA' =>array(
+		'cells'		=> array(
+						'Enter the code on',
+						'  the right, in  ',
+						' the order shown ',
+						'   on the left   ',
+		),
+		'shape'		=> array(
+						'Enter the code on',
+						' the right which ',
+						'matches the image',
+						'   on the left   ',
+		)
+	)
 ));
 
 // Common language entries
