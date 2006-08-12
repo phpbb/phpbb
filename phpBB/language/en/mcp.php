@@ -197,6 +197,7 @@ $lang = array_merge($lang, array(
 	'NOTIFY_USER_WARN'		=> 'Notify user about warning?',
 	'NOT_MODERATOR'			=> 'You are not a moderator of this forum',
 	'NO_DESTINATION_FORUM'	=> 'Please select a forum for destination',
+	'NO_DESTINATION_FORUM_FOUND'	=> 'There is no destination forum available.',
 	'NO_ENTRIES'			=> 'No log entries for this period',
 	'NO_FEEDBACK'			=> 'No feedback exists for this user',
 	'NO_FINAL_TOPIC_SELECTED'	=> 'You have to select a destination topic for merging posts',
