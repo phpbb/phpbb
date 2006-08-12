@@ -322,7 +322,7 @@ class auth_admin extends auth
 		$forum_names_ary = array();
 		if ($local)
 		{
-			$forum_names_ary = make_forum_select(false, false, true, false, false, true);
+			$forum_names_ary = make_forum_select(false, false, true, false, false, false, true);
 		}
 		else
 		{

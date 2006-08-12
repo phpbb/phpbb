@@ -298,7 +298,7 @@ class acp_permissions
 						continue 2;
 					}
 
-					$forum_list = make_forum_select(false, false, true, false, false, true);
+					$forum_list = make_forum_select(false, false, true, false, false, false, true);
 
 					// Build forum options
 					$s_forum_options = '';

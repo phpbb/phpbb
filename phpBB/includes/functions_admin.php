@@ -102,11 +102,11 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 /**
 * Simple version of jumpbox, just lists authed forums
 */
-function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $return_array = false)
+function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $only_acl_post = false, $return_array = false)
 {
 	global $db, $user, $auth;
 
-	$acl = ($ignore_acl) ? '' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel');
+	$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'));
 
 	// This query is identical to the jumpbox one
 	$sql = 'SELECT forum_id, parent_id, forum_name, forum_type, forum_status, left_id, right_id

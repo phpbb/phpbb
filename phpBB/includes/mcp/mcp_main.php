@@ -522,7 +522,7 @@ function mcp_move_topic($topic_ids)
 	else
 	{
 		$template->assign_vars(array(
-			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, $forum_id, false, true, true),
+			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, $forum_id, false, true, true, true),
 			'S_CAN_LEAVE_SHADOW'	=> true,
 			'ADDITIONAL_MSG'		=> $additional_msg)
 		);
