@@ -214,11 +214,11 @@ CREATE TABLE phpbb_bbcodes (
 	bbcode_tag varchar(16) DEFAULT '' NOT NULL,
 	bbcode_helpline varchar(255) DEFAULT '' NOT NULL,
 	display_on_posting INT2 DEFAULT '0' NOT NULL CHECK (display_on_posting >= 0),
-	bbcode_match varchar(255) DEFAULT '' NOT NULL,
+	bbcode_match varchar(8000) DEFAULT '' NOT NULL,
 	bbcode_tpl TEXT DEFAULT '' NOT NULL,
-	first_pass_match varchar(255) DEFAULT '' NOT NULL,
-	first_pass_replace varchar(255) DEFAULT '' NOT NULL,
-	second_pass_match varchar(255) DEFAULT '' NOT NULL,
+	first_pass_match TEXT DEFAULT '' NOT NULL,
+	first_pass_replace TEXT DEFAULT '' NOT NULL,
+	second_pass_match TEXT DEFAULT '' NOT NULL,
 	second_pass_replace TEXT DEFAULT '' NOT NULL,
 	PRIMARY KEY (bbcode_id)
 );

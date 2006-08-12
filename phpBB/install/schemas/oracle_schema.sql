@@ -253,11 +253,11 @@ CREATE TABLE phpbb_bbcodes (
 	bbcode_tag varchar2(16) DEFAULT '' ,
 	bbcode_helpline varchar2(255) DEFAULT '' ,
 	display_on_posting number(1) DEFAULT '0' NOT NULL,
-	bbcode_match varchar2(255) DEFAULT '' ,
+	bbcode_match clob DEFAULT '' ,
 	bbcode_tpl clob DEFAULT '' ,
-	first_pass_match varchar2(255) DEFAULT '' ,
-	first_pass_replace varchar2(255) DEFAULT '' ,
-	second_pass_match varchar2(255) DEFAULT '' ,
+	first_pass_match clob DEFAULT '' ,
+	first_pass_replace clob DEFAULT '' ,
+	second_pass_match clob DEFAULT '' ,
 	second_pass_replace clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_bbcodes PRIMARY KEY (bbcode_id)
 )

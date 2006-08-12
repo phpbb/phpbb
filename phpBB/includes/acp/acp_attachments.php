@@ -1150,7 +1150,7 @@ class acp_attachments
 	{
 		$imagick = '';
 
-		$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
+		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 

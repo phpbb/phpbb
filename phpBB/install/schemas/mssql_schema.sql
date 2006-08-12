@@ -202,11 +202,11 @@ CREATE TABLE [phpbb_bbcodes] (
 	[bbcode_tag] [varchar] (16) DEFAULT ('') NOT NULL ,
 	[bbcode_helpline] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[display_on_posting] [int] DEFAULT (0) NOT NULL ,
-	[bbcode_match] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[bbcode_match] [varchar] (8000) DEFAULT ('') NOT NULL ,
 	[bbcode_tpl] [text] DEFAULT ('') NOT NULL ,
-	[first_pass_match] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[first_pass_replace] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[second_pass_match] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[first_pass_match] [text] DEFAULT ('') NOT NULL ,
+	[first_pass_replace] [text] DEFAULT ('') NOT NULL ,
+	[second_pass_match] [text] DEFAULT ('') NOT NULL ,
 	[second_pass_replace] [text] DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO

@@ -177,11 +177,11 @@ CREATE TABLE phpbb_bbcodes (
 	bbcode_tag VARCHAR(16) DEFAULT '' NOT NULL,
 	bbcode_helpline VARCHAR(255) DEFAULT '' NOT NULL,
 	display_on_posting INTEGER DEFAULT 0 NOT NULL,
-	bbcode_match VARCHAR(255) DEFAULT '' NOT NULL,
+	bbcode_match BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	bbcode_tpl BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	first_pass_match VARCHAR(255) DEFAULT '' NOT NULL,
-	first_pass_replace VARCHAR(255) DEFAULT '' NOT NULL,
-	second_pass_match VARCHAR(255) DEFAULT '' NOT NULL,
+	first_pass_match BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
+	first_pass_replace BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
+	second_pass_match BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	second_pass_replace BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL
 );;
 

@@ -14,6 +14,12 @@
 class acp_users
 {
 	var $u_action;
+	var $p_master;
+
+	function acp_users(&$p_master)
+	{
+		$this->p_master = &$p_master;
+	}
 
 	function main($id, $mode)
 	{
@@ -114,7 +120,7 @@ class acp_users
 
 		foreach ($forms_ary['modes'] as $value => $ary)
 		{
-			if (!$this->is_authed($ary['auth']))
+			if (!$this->p_master->module_auth($ary['auth']))
 			{
 				continue;
 			}
@@ -1995,26 +2001,6 @@ class acp_users
 
 		$var = ($data) ? $data : $user_row['user_options'];
 		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
-	}
-
-	/**
-	* Check if user is allowed to call this user mode
-	*/
-	function is_authed($module_auth)
-	{
-		global $config, $auth;
-
-		$module_auth = trim($module_auth);
-
-		if (!$module_auth)
-		{
-			return true;
-		}
-
-		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $config["\\1"]'), $module_auth) . ');');
-
-		return $is_auth;
 	}
 }
 

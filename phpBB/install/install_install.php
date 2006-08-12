@@ -247,7 +247,7 @@ class install_install extends module
 		}
 
 		// Can we find Imagemagick anywhere on the system?
-		$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
+		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 		$img_imagick = '';

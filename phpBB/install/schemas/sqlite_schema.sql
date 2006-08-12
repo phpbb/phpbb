@@ -110,11 +110,11 @@ CREATE TABLE phpbb_bbcodes (
 	bbcode_tag varchar(16) NOT NULL DEFAULT '',
 	bbcode_helpline varchar(255) NOT NULL DEFAULT '',
 	display_on_posting INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	bbcode_match varchar(255) NOT NULL DEFAULT '',
+	bbcode_match text(65535) NOT NULL DEFAULT '',
 	bbcode_tpl mediumtext(16777215) NOT NULL DEFAULT '',
-	first_pass_match varchar(255) NOT NULL DEFAULT '',
-	first_pass_replace varchar(255) NOT NULL DEFAULT '',
-	second_pass_match varchar(255) NOT NULL DEFAULT '',
+	first_pass_match mediumtext(16777215) NOT NULL DEFAULT '',
+	first_pass_replace mediumtext(16777215) NOT NULL DEFAULT '',
+	second_pass_match mediumtext(16777215) NOT NULL DEFAULT '',
 	second_pass_replace mediumtext(16777215) NOT NULL DEFAULT '',
 	PRIMARY KEY (bbcode_id)
 );
