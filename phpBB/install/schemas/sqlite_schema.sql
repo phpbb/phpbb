@@ -1030,5 +1030,4 @@ CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id);
 CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id);
 
 
-
 COMMIT;
