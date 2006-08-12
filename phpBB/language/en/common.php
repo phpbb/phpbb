@@ -93,7 +93,6 @@ $lang = array_merge($lang, array(
 	'BROWSING_FORUM_GUEST'	=> 'Users browsing this forum: %1$s and %2$d guest',
 	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
 	'BYTES'					=> 'Bytes',
-	'BY'					=> 'by',
 
 	'CANCEL'				=> 'Cancel',
 	'CHANGE'				=> 'Change',
@@ -336,7 +335,6 @@ $lang = array_merge($lang, array(
 
 	'OCCUPATION'				=> 'Occupation',
 	'OFFLINE'					=> 'Offline',
-	'ON'						=> 'On',
 	'ONLINE'					=> 'Online',
 	'ONLINE_BUDDIES'			=> 'Online Buddies',
 	'ONLINE_USERS_TOTAL'		=> 'In total there are <strong>%d</strong> users online :: ',
@@ -352,8 +350,11 @@ $lang = array_merge($lang, array(
 	'POST_ANNOUNCEMENT'	=> 'Announce',
 	'POST_STICKY'		=> 'Sticky',
 	'POSTED'			=> 'Posted',
+	'POSTED_IN_FORUM'	=> 'in',
+	'POSTED_ON_DATE'	=> 'on',
 	'POSTS'				=> 'Posts',
 	'POSTS_UNAPPROVED'	=> 'At least one post in this topic has not been approved',
+	'POST_BY_AUTHOR'	=> 'by',
 	'POST_BY_FOE'		=> 'This post was made by <strong>%1$s</strong> who is currently on your ignore list. %2$sDisplay this post%3$s.',
 	'POST_DAY'			=> '%.2f posts per day',
 	'POST_DETAILS'		=> 'Post details',

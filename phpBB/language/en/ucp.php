@@ -237,11 +237,14 @@ $lang = array_merge($lang, array(
 	'MARK_IMPORTANT'			=> 'Mark as important',
 	'MARKED_MESSAGE'			=> 'Marked message',
 	'MAX_FOLDER_REACHED'		=> 'Maximum number of allowed user defined folder reached',
+	'MESSAGE_BY_AUTHOR'			=> 'by',
 	'MESSAGE_COLOURS'			=> 'Message colours',
 	'MESSAGE_DELETED'			=> 'Message successfully deleted',
 	'MESSAGE_HISTORY'			=> 'Message history',
 	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by it\'s author before it was delivered',
+	'MESSAGE_SENT_ON'			=> 'on',
 	'MESSAGE_STORED'			=> 'Your message has been sent successfully',
+	'MESSAGE_TO'				=> 'To',
 	'MESSAGES_DELETED'			=> 'Messages successfully deleted',
 	'MOVE_DELETED_MESSAGES_TO'	=> 'Move messages from removed folder to',
 	'MOVE_DOWN'					=> 'Move down',
@@ -344,7 +347,6 @@ $lang = array_merge($lang, array(
 	'REMOVE_FOLDER_CONFIRM'		=> 'Are you sure you want to remove this folder?',
 	'RENAME'					=> 'Rename',
 	'RENAME_FOLDER'				=> 'Rename folder',
-	'REPLIED_MESSAGE'			=> 'Replied to message',
 	'RETURN_FOLDER'				=> '%1$sReturn to previous folder%2$s',
 	'RETURN_UCP'				=> '%sReturn to the User Control Panel%s',
 	'RULE_ADDED'				=> 'Rule successfully added',
@@ -511,11 +513,6 @@ $lang = array_merge($lang, array(
 	'NO_MEMBER'		=> 'No group memberships',
 	'NO_PENDING'	=> 'No pending memberships',
 	'NO_NONMEMBER'	=> 'No non-member groups',
-
-	'QUIT_ALL'		=> 'Quit all',
-	'QUIT_MARKED'	=> 'Quit marked',
-	'JOIN_ALL'		=> 'Join all',
-	'JOIN_MARKED'	=> 'Join marked',
 ));
 
 ?>

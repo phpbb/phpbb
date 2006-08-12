@@ -233,6 +233,8 @@ $lang = array_merge($lang, array(
 	'READ_WARNINGS'			=> 'User warnings',
 	'REPORTER'				=> 'Reporter',
 	'REPORTED'				=> 'Reported',
+	'REPORTED_BY'			=> 'Reported by',
+	'REPORTED_ON_DATE'		=> 'on',
 	'REPORTS_CLOSED_SUCCESS'	=> 'The selected reports have been closed successfully.',
 	'REPORTS_DELETED_SUCCESS'	=> 'The selected reports have been deleted successfully.',
 	'REPORTS_TOTAL'			=> 'In total there are <strong>%d</strong> reports to review',
@@ -257,6 +259,7 @@ $lang = array_merge($lang, array(
 	'RETURN_QUEUE'			=> '%sReturn to the queue%s',
 	'RETURN_REPORTS'		=> '%sReturn to the reports%s',
 
+	'SEARCH_POSTS_BY_USER'	=> 'Search posts by',
 	'SELECT_ACTION'			=> 'Select desired action',
 	'SELECT_TOPIC'			=> 'Select topic',
 	'SELECT_USER'			=> 'Select user',
