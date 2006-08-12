@@ -68,7 +68,7 @@ class acp_prune
 				'S_PRUNED'		=> true)
 			);
 
-			$sql_forum = (sizeof($forum_id)) ? ' AND forum_id IN (' . implode(', ', $forum_id) . ')' : '';
+			$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
 
 			// Get a list of forum's or the data for the forum that we are pruning.
 			$sql = 'SELECT forum_id, forum_name 
@@ -148,7 +148,7 @@ class acp_prune
 		{
 			$sql = 'SELECT forum_id, forum_name 
 				FROM ' . FORUMS_TABLE . ' 
-				WHERE forum_id IN (' . implode(', ', $forum_id) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 
@@ -202,15 +202,7 @@ class acp_prune
 		
 				if ($users)
 				{
-					$users = explode("\n", $users);
-
-					$where_sql = '';
-		
-					foreach ($users as $username)
-					{
-						$where_sql .= (($where_sql != '') ? ', ' : '') . "'" . $db->sql_escape($username) . "'";
-					}
-					$where_sql = " AND username IN ($where_sql)";
+					$where_sql = ' AND ' . $db->sql_in_set('username', explode("\n", $users));
 				}
 				else
 				{

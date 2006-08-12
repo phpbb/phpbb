@@ -224,8 +224,8 @@ function lock_unlock($action, $ids)
 	if (confirm_box(true))
 	{
 		$sql = "UPDATE $table
-			SET $set_id = " . (($action == 'lock' || $action == 'lock_post') ? ITEM_LOCKED : ITEM_UNLOCKED) . "
-			WHERE $sql_id IN (" . implode(', ', $ids) . ")";
+			SET $set_id = " . (($action == 'lock' || $action == 'lock_post') ? ITEM_LOCKED : ITEM_UNLOCKED) . '
+			WHERE ' . $db->sql_in_set($sql_id, $ids);
 		$db->sql_query($sql);
 
 		$data = ($action == 'lock' || $action == 'unlock') ? get_topic_data($ids) : get_post_data($ids);
@@ -311,7 +311,7 @@ function change_topic_type($action, $topic_ids)
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . "
 				SET topic_type = $new_topic_type
-				WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+				WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 					AND forum_id <> 0';
 			$db->sql_query($sql);
 
@@ -320,14 +320,14 @@ function change_topic_type($action, $topic_ids)
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_type = $new_topic_type, forum_id = $forum_id
-					WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
 				$db->sql_query($sql);
 
 				// Update forum_ids for all posts
 				$sql = 'UPDATE ' . POSTS_TABLE . "
 					SET forum_id = $forum_id
-					WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
 				$db->sql_query($sql);
 
@@ -339,7 +339,7 @@ function change_topic_type($action, $topic_ids)
 			// Get away with those topics already being a global announcement by re-calculating $topic_ids
 			$sql = 'SELECT topic_id
 				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id IN (' . implode(', ', $topic_ids) . ')
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
 					AND forum_id <> 0';
 			$result = $db->sql_query($sql);
 
@@ -354,18 +354,18 @@ function change_topic_type($action, $topic_ids)
 			{
 				// Delete topic shadows for global announcements
 				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-					WHERE topic_moved_id IN (' . implode(', ', $topic_ids) . ')';
+					WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
 				$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_type = $new_topic_type, forum_id = 0
-						WHERE topic_id IN (" . implode(', ', $topic_ids) . ')';
+						WHERE " . $db->sql_in_set('topic_id', $topic_ids);
 				$db->sql_query($sql);
 
 				// Update forum_ids for all posts
 				$sql = 'UPDATE ' . POSTS_TABLE . '
 					SET forum_id = 0
-					WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 				$db->sql_query($sql);
 
 				sync('forum', 'forum_id', $forum_id);
@@ -640,7 +640,7 @@ function mcp_delete_post($post_ids)
 
 		$sql = 'SELECT DISTINCT topic_id
 			FROM ' . POSTS_TABLE . '
-			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+			WHERE ' . $db->sql_in_set('post_id', $post_ids);
 		$result = $db->sql_query($sql);
 
 		$topic_id_list = array();
@@ -663,7 +663,7 @@ function mcp_delete_post($post_ids)
 
 		$sql = 'SELECT COUNT(topic_id) AS topics_left
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id IN (' . implode(', ', $topic_id_list) . ')';
+			WHERE ' . $db->sql_in_set('topic_id', $topic_id_list);
 		$result = $db->sql_query_limit($sql, 1);
 
 		$deleted_topics = ($row = $db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;

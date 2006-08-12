@@ -153,7 +153,7 @@ class ucp_profile
 
 								$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 									FROM ' . USERS_TABLE . '
-									WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+									WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
@@ -585,7 +585,11 @@ class ucp_profile
 							// Delete old avatar if present
 							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'] && $user->data['user_avatar_type'] != AVATAR_GALLERY)
 							{
-								avatar_delete($user->data['user_avatar']);
+								// Check if the users avatar is actually a group avatar
+								if (strpos($user->data['user_avatar'], 'g' . $user->data['group_id'] . '_') !== 0 && strpos($user->data['user_avatar'], $user->data['user_id'] . '_') === 0)
+								{
+									avatar_delete($user->data['user_avatar']);
+								}
 							}
 						}
 

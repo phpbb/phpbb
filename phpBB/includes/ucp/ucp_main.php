@@ -65,7 +65,7 @@ class ucp_main
 	
 				if (sizeof($forum_ary))
 				{
-					$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary);
 				}
 				$result = $db->sql_query_limit($sql, 1);
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
@@ -186,27 +186,27 @@ class ucp_main
 
 				if ($unwatch)
 				{
-					$forums = (isset($_POST['f'])) ? implode(', ', array_map('intval', array_keys($_POST['f']))) : false;
-					$topics = (isset($_POST['t'])) ? implode(', ', array_map('intval', array_keys($_POST['t']))) : false;
+					$forums = (isset($_POST['f'])) ? array_map('intval', array_keys($_POST['f'])) : array();
+					$topics = (isset($_POST['t'])) ? array_map('intval', array_keys($_POST['t'])) : array();
 
-					if ($forums || $topics)
+					if (sizeof($forums) || sizeof($topics))
 					{
 						$l_unwatch = '';
-						if ($forums)
+						if (sizeof($forums))
 						{
-							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
-								WHERE forum_id IN ($forums) 
-									AND user_id = " . $user->data['user_id'];
+							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
+								WHERE ' . $db->sql_in_set('forum_id', $forums) . '
+									AND user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 
 							$l_unwatch .= '_FORUMS';
 						}
 
-						if ($topics)
+						if (sizeof($topics))
 						{
-							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
-								WHERE topic_id IN ($topics) 
-									AND user_id = " . $user->data['user_id'];
+							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+								WHERE ' . $db->sql_in_set('topic_id', $topics) . '
+									AND user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 
 							$l_unwatch .= '_TOPICS';
@@ -511,7 +511,7 @@ class ucp_main
 					{
 						$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
-								AND topic_id IN (' . implode(', ', $topics) . ')';
+								AND ' . $db->sql_in_set('topic_id', $topics);
 						$db->sql_query($sql);
 
 						// Re-Order bookmarks (possible with one query? This query massaker is not really acceptable...)
@@ -620,13 +620,13 @@ class ucp_main
 
 				if ($delete)
 				{
-					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : '';
+					$drafts = (!empty($_POST['d'])) ? array_map('intval', array_keys($_POST['d'])) : array();
 
-					if ($drafts)
+					if (sizeof($drafts))
 					{
-						$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
-							WHERE draft_id IN ($drafts) 
-								AND user_id = " .$user->data['user_id'];
+						$sql = 'DELETE FROM ' . DRAFTS_TABLE . '
+							WHERE ' . $db->sql_in_set('draft_id', $drafts) . '
+								AND user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
 						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -634,6 +634,8 @@ class ucp_main
 						meta_refresh(3, $this->u_action);
 						trigger_error($message);
 					}
+
+					unset($drafts);
 				}
 
 				if ($submit && $edit)
@@ -701,7 +703,7 @@ class ucp_main
 				{
 					$sql = 'SELECT topic_id, forum_id, topic_title
 						FROM ' . TOPICS_TABLE . '
-						WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+						WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))

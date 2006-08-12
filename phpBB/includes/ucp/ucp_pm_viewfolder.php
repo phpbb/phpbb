@@ -133,15 +133,15 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							$sql = 'SELECT user_id as id, username as name, user_colour as colour 
 								FROM ' . USERS_TABLE . '
-								WHERE user_id';
+								WHERE ';
 						}
 						else
 						{
 							$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
 								FROM ' . GROUPS_TABLE . '
-								WHERE group_id';
+								WHERE ';
 						}
-						$sql .= ' IN (' . implode(', ', array_map('intval', array_keys($recipient_list[$ug_type]))) . ')';
+						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($recipient_list[$ug_type])));
 
 						$result = $db->sql_query($sql);
 
@@ -277,15 +277,15 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							$sql = 'SELECT user_id as id, username as name
 								FROM ' . USERS_TABLE . '
-								WHERE user_id';
+								WHERE ';
 						}
 						else
 						{
 							$sql = 'SELECT group_id as id, group_name as name
 								FROM ' . GROUPS_TABLE . '
-								WHERE group_id';
+								WHERE ';
 						}
-						$sql .= ' IN (' . implode(', ', array_map('intval', array_keys($address[$message_id][$ug_type]))) . ')';
+						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($address[$message_id][$ug_type])));
 
 						$result = $db->sql_query($sql);
 

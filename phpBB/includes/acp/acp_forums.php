@@ -971,14 +971,14 @@ class acp_forums
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET right_id = right_id + $diff, forum_parents = ''
 				WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
-					AND forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('forum_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync the righthand side of the tree
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff, forum_parents = ''
 				WHERE left_id > " . $to_data['right_id'] . '
-					AND forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('forum_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync moved branch
@@ -997,7 +997,7 @@ class acp_forums
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $moved_ids, true);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -1007,7 +1007,7 @@ class acp_forums
 
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
-			WHERE forum_id IN (" . implode(', ', $moved_ids) . ')';
+			WHERE " . $db->sql_in_set('forum_id', $moved_ids);
 		$db->sql_query($sql);
 	}
 
@@ -1119,7 +1119,7 @@ class acp_forums
 			$diff = sizeof($forum_ids) * 2;
 
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
-				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
 			$db->sql_query($sql);
 		}
 		else if ($action_subforums == 'move')
@@ -1362,11 +1362,10 @@ class acp_forums
 						if (sizeof($ids))
 						{
 							$start += sizeof($ids);
-							$id_list = implode(', ', $ids);
 
 							foreach ($tables as $table)
 							{
-								$db->sql_query("DELETE FROM $table WHERE $field IN ($id_list)");
+								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $id_list));
 							}
 						}
 					}

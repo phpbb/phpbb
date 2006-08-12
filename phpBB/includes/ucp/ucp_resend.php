@@ -105,7 +105,7 @@ class ucp_resend
 
 				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 					FROM ' . USERS_TABLE . '
-					WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))

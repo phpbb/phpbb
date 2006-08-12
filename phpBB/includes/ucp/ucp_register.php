@@ -323,7 +323,7 @@ class ucp_register
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 							FROM ' . USERS_TABLE . '
-							WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+							WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -375,12 +375,12 @@ class ucp_register
 					$sql_in = array();
 					do
 					{
-						$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
+						$sql_in[] = (string) $row['session_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 
 					$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
-						WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')
+						WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
 							AND confirm_type = ' . CONFIRM_REG;
 					$db->sql_query($sql);
 				}

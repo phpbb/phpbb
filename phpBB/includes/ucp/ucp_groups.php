@@ -318,7 +318,7 @@ class ucp_groups
 				$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 				$sql = 'SELECT group_id, group_name, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type
 					FROM ' . GROUPS_TABLE . '
-					WHERE group_id NOT IN (' . implode(', ', $group_id_ary) . ")
+					WHERE ' . $db->sql_in_set('group_id', $group_id_ary, true) . ")
 						AND group_type $sql_and
 					ORDER BY group_type DESC, group_name";
 				$result = $db->sql_query($sql);

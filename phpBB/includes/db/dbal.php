@@ -193,22 +193,14 @@ class dbal
 			{
 				$fields[] = $key;
 
-				if (is_null($var))
-				{
-					$values[] = 'NULL';
-				}
-				else if (is_string($var))
-				{
-					$values[] = "'" . $this->sql_escape($var) . "'";
-				}
-				else if (is_array($var) && is_string($var[0]))
+				if (is_array($var) && is_string($var[0]))
 				{
 					// This is used for INSERT_SELECT(s)
 					$values[] = $var[0];
 				}
 				else
 				{
-					$values[] = (is_bool($var)) ? intval($var) : $var;
+					$values[] = $this->_sql_validate_value($var);
 				}
 			}
 
@@ -222,25 +214,7 @@ class dbal
 				$values = array();
 				foreach ($sql_ary as $key => $var)
 				{
-					if (is_null($var))
-					{
-						$values[] = 'NULL';
-					}
-					else if (is_string($var))
-					{
-						if (strpos($key, 'bitfield') === false)
-						{
-							$values[] = "'" . $this->sql_escape($var) . "'";
-						}
-						else
-						{
-							$values[] = $this->sql_escape_binary($var);
-						}
-					}
-					else
-					{
-						$values[] = (is_bool($var)) ? intval($var) : $var;
-					}
+					$values[] = $this->_sql_validate_value($var);
 				}
 				$ary[] = '(' . implode(', ', $values) . ')';
 			}
@@ -252,25 +226,7 @@ class dbal
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
-				if (is_null($var))
-				{
-					$values[] = "$key = NULL";
-				}
-				else if (is_string($var))
-				{
-					if (strpos($key, 'bitfield') === false)
-					{
-						$values[] = "$key = '" . $this->sql_escape($var) . "'";
-					}
-					else
-					{
-						$values[] = "$key = " . $this->sql_escape_binary($var);
-					}
-				}
-				else
-				{
-					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
-				}
+				$values[] = "$key = " . $this->_sql_validate_value($var);
 			}
 			$query = implode(($query == 'UPDATE') ? ', ' : ' AND ', $values);
 		}
@@ -285,30 +241,10 @@ class dbal
 			trigger_error('No values specified for SQL IN comparison', E_USER_ERROR);
 		}
 
-		$bitfield = (strpos($field, 'bitfield') !== false);
-
 		$values = array();
 		foreach ($array as $var)
 		{
-			if (is_null($var))
-			{
-				$values[] = 'NULL';
-			}
-			else if (is_string($var))
-			{
-				if (!$bitfield)
-				{
-					$values[] = "'" . $this->sql_escape($var) . "'";
-				}
-				else
-				{
-					$values[] = $this->sql_escape_binary($var);
-				}
-			}
-			else
-			{
-				$values[] = (is_bool($var)) ? intval($var) : $var;
-			}
+			$values[] = $this->_sql_validate_value($var);
 		}
 
 		if (sizeof($values) == 1)
@@ -317,13 +253,28 @@ class dbal
 		}
 		else
 		{
-			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(',', $values) . ')';
+			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', $values) . ')';
 		}
 	}
 
-	function sql_escape_binary($msg)
+	/**
+	* Function for validating values
+	* @access private
+	*/
+	function _sql_validate_value($var)
 	{
-		return "'" . $this->sql_escape($msg) . "'";
+		if (is_null($var))
+		{
+			return 'NULL';
+		}
+		else if (is_string($var))
+		{
+			return "'" . $this->sql_escape($var) . "'";
+		}
+		else
+		{
+			return (is_bool($var)) ? intval($var) : $var;
+		}
 	}
 
 	/**

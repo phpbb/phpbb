@@ -114,9 +114,9 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	$update_sql = $empty_forums = array();
 
 	$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
-		FROM ' . POSTS_TABLE . "
+		FROM ' . POSTS_TABLE . '
 		WHERE post_approved = 1
-			AND {$type}_id IN (" . implode(', ', $ids) . ")
+			AND ' . $db->sql_in_set($type . '_id', $ids) . "
 		GROUP BY {$type}_id";
 	$result = $db->sql_query($sql);
 
@@ -150,7 +150,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_time, p.poster_id, p.post_username, u.user_id, u.username
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 			WHERE p.poster_id = u.user_id
-				AND p.post_id IN (' . implode(', ', $last_post_ids) . ')';
+				AND ' . $db->sql_in_set('p.post_id', $last_post_ids);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -757,7 +757,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1109,7 +1109,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $update_notification['topic']) . ")";
+				AND " . $db->sql_in_set('user_id', $update_notification['topic']);
 		$db->sql_query($sql);
 	}
 
@@ -1118,7 +1118,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $update_notification['forum']) . ")";
+				AND " . $db->sql_in_set('user_id', $update_notification['forum']);
 		$db->sql_query($sql);
 	}
 
@@ -1127,7 +1127,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	{
 		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
 			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")";
+				AND " . $db->sql_in_set('user_id', $delete_ids['topic']);
 		$db->sql_query($sql);
 	}
 
@@ -1135,7 +1135,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	{
 		$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $delete_ids['forum']) . ")";
+				AND " . $db->sql_in_set('user_id', $delete_ids['forum']);
 		$db->sql_query($sql);
 	}
 

@@ -294,7 +294,7 @@ class acp_attachments
 						{
 							$sql = 'SELECT extension 
 								FROM ' . EXTENSIONS_TABLE . '
-								WHERE extension_id IN (' . implode(', ', $extension_id_list) . ')';
+								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$result = $db->sql_query($sql);
 							
 							$extension_list = '';
@@ -306,7 +306,7 @@ class acp_attachments
 
 							$sql = 'DELETE 
 								FROM ' . EXTENSIONS_TABLE . '
-								WHERE extension_id IN (' . implode(', ', $extension_id_list) . ')';
+								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$db->sql_query($sql);
 
 							add_log('admin', 'LOG_ATTACH_EXT_DEL', $extension_list);
@@ -508,7 +508,7 @@ class acp_attachments
 					{
 						$sql = 'UPDATE ' . EXTENSIONS_TABLE . " 
 							SET group_id = $group_id
-							WHERE extension_id IN (" . implode(', ', $extension_list) . ")";
+							WHERE " . $db->sql_in_set('extension_id', $extension_list);
 						$db->sql_query($sql);
 					}
 
@@ -865,7 +865,7 @@ class acp_attachments
 
 						$sql = 'SELECT forum_id, topic_id, post_id 
 							FROM ' . POSTS_TABLE . '
-							WHERE post_id IN (' . implode(', ', array_keys($upload_list)) . ')';
+							WHERE ' . $db->sql_in_set('post_id', array_keys($upload_list));
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -1373,16 +1373,16 @@ class acp_attachments
 		}
 		else if (isset($_POST['unsecuresubmit']))
 		{
-			$unip_sql = implode(', ', array_map('intval', $_POST['unip']));
+			$unip_sql = array_map('intval', $_POST['unip']);
 
-			if ($unip_sql != '')
+			if (sizeof($unip_sql))
 			{
 				$l_unip_list = '';
-			
+
 				// Grab details of ips for logging information later
 				$sql = 'SELECT site_ip, site_hostname
-					FROM ' . SITELIST_TABLE . "
-					WHERE site_id IN ($unip_sql)";
+					FROM ' . SITELIST_TABLE . '
+					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
@@ -1391,8 +1391,8 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$sql = 'DELETE FROM ' . SITELIST_TABLE . "
-					WHERE site_id IN ($unip_sql)";
+				$sql = 'DELETE FROM ' . SITELIST_TABLE . '
+					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
 				$db->sql_query($sql);
 
 				add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);

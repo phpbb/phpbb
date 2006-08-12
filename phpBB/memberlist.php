@@ -136,7 +136,7 @@ switch ($mode)
 				)
 			),
 
-			'WHERE'		=> 'u.user_id IN (' . implode(', ', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . ')
+			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . '
 				AND u.group_id = g.group_id',
 
 			'ORDER_BY'	=> 'g.group_name ASC, u.username ASC'
@@ -878,7 +878,7 @@ switch ($mode)
 				if ($ips === false)
 				{
 					// A minor fudge but it does the job :D
-					$sql_where .= " AND u.user_id IN ('-1')";
+					$sql_where .= " AND u.user_id = 0";
 				}
 				else
 				{
@@ -899,12 +899,12 @@ switch ($mode)
 						}
 						while ($row = $db->sql_fetchrow($result));
 
-						$sql_where .= ' AND u.user_id IN (' . implode(', ', $ip_sql) . ')';
+						$sql_where .= ' AND ' . $db->sql_in_set('u.user_id', $ip_sql);
 					}
 					else
 					{
 						// A minor fudge but it does the job :D
-						$sql_where .= " AND u.user_id IN ('-1')";
+						$sql_where .= " AND u.user_id = 0";
 					}
 					unset($ip_forums);
 

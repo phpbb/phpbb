@@ -371,7 +371,7 @@ $sql_array = array(
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : 't.forum_id IN (' . implode(', ', $active_forum_ary['forum_id']) . ')') . '
+	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . '
 		AND t.topic_type NOT IN (' . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
 		$sql_approved
 		$sql_limit_time",
@@ -399,7 +399,7 @@ if (sizeof($shadow_topic_list))
 {
 	$sql = 'SELECT *
 		FROM ' . TOPICS_TABLE . '
-		WHERE topic_id IN (' . implode(', ', array_keys($shadow_topic_list)) . ')';
+		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

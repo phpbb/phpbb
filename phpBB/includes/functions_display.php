@@ -556,18 +556,22 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		return;
 	}
 
-	if ($forum_id !== false && is_array($forum_id))
+	$forum_sql = '';
+
+	if ($forum_id !== false)
 	{
+		if (!is_array($forum_id))
+		{
+			$forum_id = array($forum_id);
+		}
+
 		// If we don't have a forum then we can't have a moderator
 		if (!sizeof($forum_id))
 		{
 			return;
 		}
-		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
-	}
-	else
-	{
-		$forum_sql = ($forum_id !== false) ? 'AND forum_id = ' . $forum_id : '';
+
+		$forum_sql = 'AND ' . $db->sql_in_set('forum_id', $forum_id);
 	}
 
 	$sql = 'SELECT *
@@ -1012,7 +1016,7 @@ function display_user_activity(&$userdata)
 	}
 
 	$forum_ary = array_unique($forum_ary);
-	$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
+	$post_count_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('f.forum_id', $forum_ary, true) : '';
 
 	// Firebird does not support ORDER BY on aliased columns
 	// MySQL does not support ORDER BY on functions

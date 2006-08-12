@@ -142,15 +142,9 @@ class fulltext_native extends search_backend
 
 		if (sizeof($exact_words))
 		{
-			// we can match exact words with one IN
-			foreach ($exact_words as $i => $word)
-			{
-				$exact_words[$i] = '\'' . $db->sql_escape($word) . '\'';
-			}
-
 			$sql = 'SELECT word_id, word_text, word_common
 				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE word_text ' . ((sizeof($exact_words) > 1) ? 'IN (' . implode(', ', $exact_words) . ')' : '= ' . $exact_words[0]);
+				WHERE ' . $db->sql_in_set('word_text', $exact_words);
 			$result = $db->sql_query($sql);
 	
 			// store an array of words and ids, remove common words
@@ -419,7 +413,7 @@ class fulltext_native extends search_backend
 					}
 				}
 
-				$sql_where[] = (sizeof($word_ids) > 1) ? "m$m_num.word_id IN (" . implode(', ', $word_ids) . ')' : "m$m_num.word_id = {$word_ids[0]}";
+				$sql_where[] = $db->sql_in_set("m$m_num.word_id", $word_ids);
 
 				unset($word_id_sql);
 				unset($word_ids);
@@ -473,7 +467,7 @@ class fulltext_native extends search_backend
 		{
 			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(SEARCH_WORDMATCH_TABLE => 'm' . $m_num),
-				'ON'	=> ((sizeof($this->must_not_contain_ids) > 1) ? "m$m_num.word_id IN (" . implode(', ', $this->must_not_contain_ids) . ')' : "m$m_num.word_id = " . $this->must_not_contain_ids[0]) . (($title_match) ? "m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
+				'ON'	=> $db->sql_in_set("m$m_num.word_id", $this->must_not_contain_ids) . (($title_match) ? "m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
 			);
 
 			$sql_where[] = "m$m_num.word_id IS NULL";
@@ -514,7 +508,7 @@ class fulltext_native extends search_backend
 		}
 		else if ($m_approve_fid_ary !== array(-1))
 		{
-			$sql_where[] = '(p.post_approved = 1 OR p.forum_id ' . ((sizeof($m_approve_fid_ary) == 1) ? '= ' . $m_approve_fid_ary[0] : 'NOT IN (' . implode(', ', $m_approve_fid_ary) . ')' ) . ')';
+			$sql_where[] = '(p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary) . ')';
 		}
 
 		if ($topic_id)
@@ -524,12 +518,12 @@ class fulltext_native extends search_backend
 
 		if (sizeof($author_ary))
 		{
-			$sql_where[] = 'p.poster_id ' . ((sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(',', $author_ary) . ')');
+			$sql_where[] = $db->sql_in_set('p.poster_id', $author_ary);
 		}
 
 		if (sizeof($ex_fid_ary))
 		{
-			$sql_where[] = 'p.forum_id ' . ((sizeof($ex_fid_ary) == 1) ? '<> ' . $ex_fid_ary[0] : 'NOT IN (' . implode(',', $ex_fid_ary) . ')');
+			$sql_where[] = $db->sql_in_set('p.forum_id', $ex_fid_ary, true);
 		}
 
 		if ($sort_days)
@@ -696,8 +690,8 @@ class fulltext_native extends search_backend
 		$id_ary = array();
 
 		// Create some display specific sql strings
-		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id ' . ((sizeof($ex_fid_ary) == 1) ? '<> ' . $ex_fid_ary[0] : 'NOT IN (' . implode(',', $ex_fid_ary) . ')') : '';
+		$sql_author		= $db->sql_in_set('p.poster_id', $author_ary);
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 
@@ -732,7 +726,7 @@ class fulltext_native extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id ' . ((sizeof($m_approve_fid_ary) == 1) ? '= ' . $m_approve_fid_ary[0] : 'IN (' . implode($m_approve_fid_ary) . ')' ) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary) . ')';
 		}
 
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
@@ -1015,8 +1009,8 @@ class fulltext_native extends search_backend
 		if (sizeof($unique_add_words))
 		{
 			$sql = 'SELECT word_id, word_text
-				FROM ' . SEARCH_WORDLIST_TABLE . "
-				WHERE word_text IN ('" . implode("','", array_map(array(&$db, 'sql_escape'), $unique_add_words)) . "')";
+				FROM ' . SEARCH_WORDLIST_TABLE . '
+				WHERE ' . $db->sql_in_set('word_text', $unique_add_words);
 			$result = $db->sql_query($sql);
 
 			$word_ids = array();
@@ -1026,7 +1020,7 @@ class fulltext_native extends search_backend
 			}
 			$db->sql_freeresult($result);
 
-			$new_words = array_map(array(&$db, 'sql_escape'), array_diff($unique_add_words, array_keys($word_ids)));
+			$new_words = array_diff($unique_add_words, array_keys($word_ids));
 
 			if (sizeof($new_words))
 			{
@@ -1066,7 +1060,7 @@ class fulltext_native extends search_backend
 				}
 
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-					WHERE word_id IN (' . implode(', ', $sql_in) . ')
+					WHERE ' . $db->sql_in_set('word_id', $sql_in) . '
 						AND post_id = ' . intval($post_id) . "
 						AND title_match = $title_match";
 				$db->sql_query($sql);
@@ -1082,8 +1076,8 @@ class fulltext_native extends search_backend
 			{
 				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . " (post_id, word_id, title_match)
 					SELECT $post_id, word_id, $title_match
-					FROM " . SEARCH_WORDLIST_TABLE . "
-					WHERE word_text IN ('" . implode("','", array_map(array(&$db, 'sql_escape'), $word_ary)) . "')";
+					FROM " . SEARCH_WORDLIST_TABLE . '
+					WHERE ' . $db->sql_in_set('word_text', $word_ary);
 				$db->sql_query($sql);
 			}
 		}
@@ -1119,12 +1113,14 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-		$db->sql_query($sql);
+		if (sizeof($post_ids))
+		{
+			$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
+				WHERE ' . $db->sql_in_set('post_id', $post_ids);
+			$db->sql_query($sql);
+		}
 
 		// SEARCH_WORDLIST_TABLE will be updated by tidy()
-
 		$this->destroy_cache(array(), $author_ids);
 	}
 
@@ -1156,42 +1152,39 @@ class fulltext_native extends search_backend
 				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
 			$result = $db->sql_query($sql);
 
-			if ($row = $db->sql_fetchrow($result))
+			$sql_in = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$sql_in = array();
-				do
-				{
-					$sql_in[] = $row['word_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
+				$sql_in[] = $row['word_id'];
+			}
+			$db->sql_freeresult($result);
 
-				$sql_in = implode(', ', $sql_in);
-
+			if (sizeof($sql_in))
+			{
 				// Get the text of those new common words
 				$sql = 'SELECT word_text
-					FROM ' . SEARCH_WORDLIST_TABLE . "
-					WHERE word_id IN ($sql_in)";
+					FROM ' . SEARCH_WORDLIST_TABLE . '
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$destroy_cache_words[] = $row['word_text'];
 				}
+				$db->sql_freeresult($result);
 
 				// Flag the words
-				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . "
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_common = 1
-					WHERE word_id IN ($sql_in)";
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
 				$db->sql_query($sql);
 
 				// Delete the matches
-				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . "
-					WHERE word_id IN ($sql_in)";
+				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
 				$db->sql_query($sql);
-
-				unset($sql_in);
 			}
-			$db->sql_freeresult($result);
+			unset($sql_in);
 		}
 
 		// destroy cached search results containing any of the words that are now common or were removed

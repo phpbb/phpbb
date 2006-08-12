@@ -21,9 +21,9 @@ class acp_main
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? implode(', ', request_var('mark', array(0))) : '';
+		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
 
-		if ($mark)
+		if (sizeof($mark))
 		{
 			switch ($action)
 			{
@@ -36,8 +36,8 @@ class acp_main
 					}
 
 					$sql = 'SELECT username 
-						FROM ' . USERS_TABLE . "
-						WHERE user_id IN ($mark)";
+						FROM ' . USERS_TABLE . '
+						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
 				
 					$user_affected = array();
@@ -50,14 +50,13 @@ class acp_main
 					if ($action == 'activate')
 					{
 						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-						$mark_ary = explode(', ', $mark);
 
-						foreach ($mark_ary as $user_id)
+						foreach ($mark as $user_id)
 						{
 							user_active_flip($user_id, USER_INACTIVE);
 						}
 
-						set_config('num_users', $config['num_users'] + sizeof($mark_ary), true);
+						set_config('num_users', $config['num_users'] + sizeof($mark), true);
 
 						// Update latest username
 						update_last_username();
@@ -69,9 +68,9 @@ class acp_main
 							trigger_error($user->lang['NO_ADMIN']);
 						}
 
-						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " WHERE user_id IN ($mark)";
+						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
 						$db->sql_query($sql);
-						$sql = 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
+						$sql = 'DELETE FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
 						$db->sql_query($sql);
 	
 						add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
@@ -91,8 +90,8 @@ class acp_main
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
-						FROM ' . USERS_TABLE . " 
-						WHERE user_id IN ($mark)";
+						FROM ' . USERS_TABLE . ' 
+						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))

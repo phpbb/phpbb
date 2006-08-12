@@ -19,9 +19,6 @@ include($phpbb_root_path . 'common.' . $phpEx);
 $download_id = request_var('id', 0);
 $thumbnail = request_var('t', false);
 
-// Disable browser check for downloads
-$config['browser_check'] = false;
-
 // Start session management, do not update session page.
 $user->session_begin(false);
 $auth->acl($user->data);

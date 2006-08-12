@@ -124,8 +124,7 @@ class bbcode
 			}
 		}
 
-		$sql = '';
-		$bbcode_ids = $rowset = array();
+		$bbcode_ids = $rowset = $sql = array();
 
 		$bitfield = new bitfield($this->bbcode_bitfield);
 		$bbcodes_set = $bitfield->get_all_set();
@@ -141,18 +140,18 @@ class bbcode
 
 			if ($bbcode_id > NUM_CORE_BBCODES)
 			{
-				$sql .= (($sql) ? ',' : '') . $bbcode_id;
+				$sql[] = $bbcode_id;
 			}
 		}
 
-		if ($sql)
+		if (sizeof($sql))
 		{
 			global $db;
 
 			$sql = 'SELECT *
-				FROM ' . BBCODES_TABLE . "
-				WHERE bbcode_id IN ($sql)";
-			$result = $db->sql_query($sql);
+				FROM ' . BBCODES_TABLE . '
+				WHERE ' . $db->sql_in_set('bbcode_id', $sql);
+			$result = $db->sql_query($sql, 3600);
 
 			while ($row = $db->sql_fetchrow($result))
 			{

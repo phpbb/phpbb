@@ -134,7 +134,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET download_count = download_count + 1
-				WHERE attach_id IN (' . implode(', ', array_unique($update_count)) . ')';
+				WHERE ' . $db->sql_in_set('attach_id', array_unique($update_count));
 			$db->sql_query($sql);
 		}
 	}

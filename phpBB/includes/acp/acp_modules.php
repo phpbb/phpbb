@@ -841,7 +841,7 @@ class acp_modules
 				SET right_id = right_id + $diff
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					AND " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
-					AND module_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync the righthand side of the tree
@@ -849,7 +849,7 @@ class acp_modules
 				SET left_id = left_id + $diff, right_id = right_id + $diff
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					AND left_id > " . $to_data['right_id'] . '
-					AND module_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync moved branch
@@ -868,7 +868,7 @@ class acp_modules
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . MODULES_TABLE . "
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					AND module_id NOT IN (" . implode(', ', $moved_ids) . ')';
+					AND " . $db->sql_in_set('module_id', $moved_ids, true);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -879,7 +879,7 @@ class acp_modules
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET left_id = left_id $diff, right_id = right_id $diff
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND module_id IN (" . implode(', ', $moved_ids) . ')';
+				AND " . $db->sql_in_set('module_id', $moved_ids);
 		$db->sql_query($sql);
 	}
 

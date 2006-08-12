@@ -42,14 +42,15 @@ class acp_logs
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 		{
 			$where_sql = '';
-			if ($deletemark && $marked)
+
+			if ($deletemark && sizeof($marked))
 			{
 				$sql_in = array();
 				foreach ($marked as $mark)
 				{
 					$sql_in[] = $mark;
 				}
-				$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
 				unset($sql_in);
 			}
 

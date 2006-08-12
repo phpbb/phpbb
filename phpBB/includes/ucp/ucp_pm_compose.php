@@ -663,7 +663,7 @@ function compose_pm($id, $mode, $action)
 		{
 			$sql = 'SELECT user_id as id, username as name, user_colour as colour
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_map('intval', array_keys($address_list['u']))) . ')';
+				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u'])));
 			$result['u'] = $db->sql_query($sql);
 		}
 
@@ -672,7 +672,7 @@ function compose_pm($id, $mode, $action)
 			$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_receive_pm = 1
-					AND group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')';
+					AND ' . $db->sql_in_set('group_id', array_map('intval', array_keys($address_list['g'])));
 			$result['g'] = $db->sql_query($sql);
 		}
 
@@ -894,7 +894,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
-					WHERE user_id IN (' . implode(', ', $user_id_ary) . ')
+					WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
 						AND user_allow_pm = 1';
 				$result = $db->sql_query($sql);
 

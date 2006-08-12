@@ -273,7 +273,7 @@ function get_topic_data($topic_ids, $acl_list = false)
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t
 				LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
-			WHERE t.topic_id IN (' . implode(', ', $topic_ids) . ')';
+			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
@@ -337,7 +337,7 @@ function get_post_data($post_ids, $acl_list = false)
 			)
 		),
 
-		'WHERE'		=> 'p.post_id IN (' . implode(', ', $post_ids) . ')
+		'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
 			AND u.user_id = p.poster_id
 			AND t.topic_id = p.topic_id',
 	));
@@ -378,6 +378,11 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 	$rowset = array();
 
+	if (!is_array($forum_id))
+	{
+		$forum_id = array($forum_id);
+	}
+
 	if (!sizeof($forum_id))
 	{
 		return array();
@@ -385,7 +390,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
-		WHERE forum_id ' . ((is_array($forum_id)) ? 'IN (' . implode(', ', $forum_id) . ')' : "= $forum_id");
+		WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -462,7 +467,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
-				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
 					AND post_approved = 0
 					AND post_time >= ' . $min_time;
 		break;
@@ -474,7 +479,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
-				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
 					AND topic_approved = 0
 					AND topic_time >= ' . $min_time;
 		break;
@@ -496,7 +501,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' p.forum_id IN (' . implode(', ', get_forum_list('m_report')) . ')';
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('m_report'));
 			}
 
 			if ($mode == 'reports')
@@ -522,7 +527,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(log_id) AS total
 				FROM ' . LOG_TABLE . "
-				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_')) . '
 					AND log_time >= ' . $min_time . '
 					AND log_type = ' . LOG_MOD;
 		break;
@@ -626,7 +631,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 			WHERE forum_type = ' . FORUM_POST;
 		if (sizeof($forum_ary))
 		{
-			$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+			$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
 		}
 
 		$result = $db->sql_query_limit($sql, 1);
@@ -645,7 +650,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 	}
 
 	$sql = "SELECT $sql_id FROM $table
-		WHERE $sql_id IN (" . implode(', ', $ids) . ")
+		WHERE " . $db->sql_in_set($sql_id, $ids) . "
 			AND (forum_id = $forum_id OR forum_id = 0)";
 	$result = $db->sql_query($sql);
 

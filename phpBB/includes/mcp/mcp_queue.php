@@ -251,10 +251,10 @@ class mcp_queue
 					if (sizeof($post_ids))
 					{
 						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username
-							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
-							WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
+							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
+							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id";
+								AND u.user_id = p.poster_id';
 						$result = $db->sql_query($sql);
 
 						$post_data = $rowset = array();
@@ -306,7 +306,7 @@ class mcp_queue
 					// Select the names for the forum_ids
 					$sql = 'SELECT forum_id, forum_name
 						FROM ' . FORUMS_TABLE . '
-						WHERE forum_id IN (' . implode(',', $forum_names) . ')';
+						WHERE ' . $db->sql_in_set('forum_id', $forum_names);
 					$result = $db->sql_query($sql, 3600);
 
 					$forum_names = array();
@@ -449,7 +449,7 @@ function approve_post($post_id_list, $mode)
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
 				SET topic_approved = 1
-				WHERE topic_id IN (' . implode(', ', $topic_approve_sql) . ')';
+				WHERE ' . $db->sql_in_set('topic_id', $topic_approve_sql);
 			$db->sql_query($sql);
 		}
 
@@ -457,7 +457,7 @@ function approve_post($post_id_list, $mode)
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_approved = 1
-				WHERE post_id IN (' . implode(', ', $post_approve_sql) . ')';
+				WHERE ' . $db->sql_in_set('post_id', $post_approve_sql);
 			$db->sql_query($sql);
 		}
 

@@ -413,7 +413,7 @@ class acp_permissions
 			{
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
-					WHERE forum_id IN (' . implode(', ', $forum_id) . ')
+					WHERE ' . $db->sql_in_set('forum_id', $forum_id) . '
 					ORDER BY forum_name ASC';
 				$result = $db->sql_query($sql);
 
@@ -554,7 +554,7 @@ class acp_permissions
 
 		$sql = "SELECT $sql_id
 			FROM $table
-			WHERE $sql_id IN (" . implode(', ', $ids) . ')';
+			WHERE " . $db->sql_in_set($sql_id, $ids);
 		$result = $db->sql_query($sql);
 
 		$ids = array();
@@ -803,8 +803,8 @@ class acp_permissions
 		}
 
 		// Logging ... first grab user or groupnames ...
-		$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE group_id' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE user_id';
-		$sql .=  ' IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
+		$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE ' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE ';
+		$sql .=  $db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
 		$result = $db->sql_query($sql);
 
 		$l_ug_list = '';
@@ -825,7 +825,7 @@ class acp_permissions
 			// Grab the forum details if non-zero forum_id
 			$sql = 'SELECT forum_name  
 				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id IN (' . implode(', ', $forum_id) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
 			$l_forum_list = '';
@@ -858,7 +858,7 @@ class acp_permissions
 		if (sizeof($perms))
 		{
 			$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
-				WHERE zebra_id IN (' . implode(', ', array_unique($perms)) . ')
+				WHERE ' . $db->sql_in_set('zebra_id', array_unique($perms)) . '
 					AND foe = 1';
 			$db->sql_query($sql);
 		}
@@ -1078,7 +1078,7 @@ class acp_permissions
 	{
 		global $db, $user;
 
-		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')' : 'AND a.forum_id <> 0');
+		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
 		$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
 
 		$sql = $db->sql_build_query('SELECT_DISTINCT', array(

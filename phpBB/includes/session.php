@@ -131,7 +131,7 @@ class session
 	* @todo Introduce further user types, bot, guest
 	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
-	function session_begin($update_session_page = true, $loose_validation = false)
+	function session_begin($update_session_page = true)
 	{
 		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
 
@@ -658,33 +658,30 @@ class session
 					GROUP BY session_user_id, session_page';
 				$result = $db->sql_query_limit($sql, 5);
 
-				$del_user_id = '';
+				$del_user_id = array();
 				$del_sessions = 0;
-				if ($row = $db->sql_fetchrow($result))
-				{
-					do
-					{
-						if ($row['session_user_id'] != ANONYMOUS)
-						{
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-								WHERE user_id = " . $row['session_user_id'];
-							$db->sql_query($sql);
-						}
 
-						$del_user_id .= (($del_user_id != '') ? ', ' : '') . (int) $row['session_user_id'];
-						$del_sessions++;
+				while ($row = $db->sql_fetchrow($result));
+				{
+					if ($row['session_user_id'] != ANONYMOUS)
+					{
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+							WHERE user_id = " . $row['session_user_id'];
+						$db->sql_query($sql);
 					}
-					while ($row = $db->sql_fetchrow($result));
+
+					$del_user_id[] = (int) $row['session_user_id'];
+					$del_sessions++;
 				}
 				$db->sql_freeresult($result);
 
-				if ($del_user_id)
+				if (sizeof($del_user_id))
 				{
 					// Delete expired sessions
-					$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-						WHERE session_user_id IN ($del_user_id)
-							AND session_time < " . ($this->time_now - $config['session_length']);
+					$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+						WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
+							AND session_time < ' . ($this->time_now - $config['session_length']);
 					$db->sql_query($sql);
 				}
 

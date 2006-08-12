@@ -576,13 +576,13 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . " 
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id IN (" . implode(', ', $forum_id) . ")";
+					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$db->sql_query($sql);
 
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id IN (" . implode(', ', $forum_id) . ')';
+					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
 			$sql_update = array();
@@ -597,7 +597,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
 					SET mark_time = ' . time() . "
 					WHERE user_id = {$user->data['user_id']}
-						AND forum_id IN (" . implode(', ', $sql_update) . ')';
+						AND " . $db->sql_in_set('forum_id', $sql_update);
 				$db->sql_query($sql);
 			}
 
@@ -888,7 +888,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		$sql = 'SELECT topic_id, mark_time
 			FROM ' . TOPICS_TRACK_TABLE . "
 			WHERE user_id = {$user->data['user_id']}
-				AND topic_id IN (" . implode(', ', $topic_ids) . ")";
+				AND " . $db->sql_in_set('topic_id', $topic_ids);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1805,13 +1805,13 @@ function login_forum_box($forum_data)
 			$sql_in = array();
 			do
 			{
-				$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
+				$sql_in[] = (string) $row['session_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			// Remove expired sessions
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
+				WHERE ' . $db->sql_in_set('session_id', $sql_in, true);
 			$db->sql_query($sql);
 		}
 		$db->sql_freeresult($result);

@@ -84,7 +84,7 @@ class mcp_logs
 					$sql_in[] = $mark;
 				}
 
-				$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
 				unset($sql_in);
 			}
 

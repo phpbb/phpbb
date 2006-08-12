@@ -97,13 +97,11 @@ class ucp_zebra
 
 				unset($friends, $foes, $n);
 
-				$data['add'] = implode(', ', preg_replace('#^(.*?)$#', "'$1'", array_map(array(&$db, 'sql_escape'), $data['add'])));
-
-				if ($data['add'])
+				if (sizeof($data['add']))
 				{
 					$sql = 'SELECT user_id, user_type
 						FROM ' . USERS_TABLE . ' 
-						WHERE LOWER(username) IN (' . $data['add'] . ')
+						WHERE ' . $db->sql_in_set('LOWER(username)', $data['add']) . '
 							AND user_type <> ' . USER_INACTIVE;
 					$result = $db->sql_query($sql);
 
@@ -197,7 +195,7 @@ class ucp_zebra
 
 				$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
 					WHERE user_id = ' . $user->data['user_id'] . ' 
-						AND zebra_id IN (' . implode(', ', $data['usernames']) . ')';
+						AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
 				$db->sql_query($sql);
 			}
 

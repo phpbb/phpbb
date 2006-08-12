@@ -177,7 +177,7 @@ function mcp_resync_topics($topic_ids)
 
 	$sql = 'SELECT topic_id, forum_id, topic_title
 		FROM ' . TOPICS_TABLE . '
-		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+		WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 	$result = $db->sql_query($sql);
 
 	// Log this action

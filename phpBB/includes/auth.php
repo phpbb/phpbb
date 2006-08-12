@@ -161,7 +161,7 @@ class auth
 				
 				if (sizeof($this->acl))
 				{
-					$sql .= ' WHERE forum_id NOT IN (' . implode(', ', array_keys($this->acl)) . ')';
+					$sql .= ' WHERE ' . $db->sql_in_set('forum_id', array_keys($this->acl), true);
 				}
 				$result = $db->sql_query($sql);
 
@@ -418,7 +418,13 @@ class auth
 	{
 		global $db;
 
-		$where_sql = ($user_id !== false) ? ' WHERE user_id ' . ((is_array($user_id)) ? ' IN (' . implode(', ', array_map('intval', $user_id)) . ')' : " = $user_id") : '';
+		$where_sql = '';
+
+		if ($user_id !== false)
+		{
+			$user_id = (!is_array($user_id)) ? $user_id = array((int) $user_id) : array_map('intval', $user_id);
+			$where_sql = ' WHERE ' . $db->sql_in_set('user_id', $user_id);
+		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_permissions = '',
@@ -440,8 +446,8 @@ class auth
 
 		$sql_id = ($user_type == 'user') ? 'user_id' : 'group_id';
 
-		$sql_ug = ($ug_id !== false) ? ((!is_array($ug_id)) ? "AND a.$sql_id = $ug_id" : "AND a.$sql_id IN (" . implode(', ', $ug_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_ug = ($ug_id !== false) ? ((!is_array($ug_id)) ? "AND a.$sql_id = $ug_id" : 'AND ' . $db->sql_in_set("a.$sql_id", $ug_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		// Grab assigned roles...
 		$sql = 'SELECT a.auth_role_id, a.' . $sql_id . ', a.forum_id
@@ -469,8 +475,8 @@ class auth
 	{
 		global $db;
 
-		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : 'user_id IN (' . implode(', ', $user_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		$sql_opts = '';
 
@@ -482,7 +488,7 @@ class auth
 			}
 			else
 			{
-				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
 			}
 		}
 
@@ -586,8 +592,8 @@ class auth
 	{
 		global $db;
 
-		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : 'user_id IN (' . implode(', ', $user_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		$sql_opts = '';
 
@@ -599,7 +605,7 @@ class auth
 			}
 			else
 			{
-				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
 			}
 		}
 
@@ -647,8 +653,8 @@ class auth
 	{
 		global $db;
 
-		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : 'group_id IN (' . implode(', ', $group_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : $db->sql_in_set('group_id', $group_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		if ($opts !== false)
 		{
@@ -658,7 +664,7 @@ class auth
 			}
 			else
 			{
-				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
 			}
 		}
 

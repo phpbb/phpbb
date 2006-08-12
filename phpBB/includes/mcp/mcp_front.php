@@ -41,7 +41,7 @@ function mcp_front_view($id, $mode, $action)
 
 			$sql = 'SELECT forum_id, forum_name
 				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id IN (' . implode(', ', $forum_list) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -65,7 +65,7 @@ function mcp_front_view($id, $mode, $action)
 
 			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t,  ' . USERS_TABLE . ' u
-				WHERE p.post_id IN (' . implode(', ', $post_list) . ')
+				WHERE ' . $db->sql_in_set('p.post_id', $post_list) . '
 					AND t.topic_id = p.topic_id
 					AND p.poster_id = u.user_id
 				ORDER BY p.post_time DESC';

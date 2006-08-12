@@ -182,7 +182,7 @@ foreach ($supported_dbms as $dbms)
 
 		case 'sqlite':
 			$line = "#\n# SQLite Schema for phpBB 3.x - (c) phpBB Group, 2005\n#\n# \$I" . "d: $\n#\n\n";
-			$line .= "BEGIN TRANSACTION;;\n\n";
+			$line .= "BEGIN TRANSACTION;\n\n";
 		break;
 
 		case 'mssql':
@@ -477,7 +477,7 @@ foreach ($supported_dbms as $dbms)
 			case 'sqlite':
 				// Remove last line delimiter...
 				$line = substr($line, 0, -2);
-				$line .= "\n);;\n\n";
+				$line .= "\n);\n\n";
 			break;
 		}
 
@@ -529,7 +529,7 @@ foreach ($supported_dbms as $dbms)
 						$line .= ($key_data[0] == 'INDEX') ? 'CREATE INDEX' : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? 'CREATE UNIQUE INDEX' : '';
 
-						$line .= " {$table_name}_{$key_name} ON {$table_name} (" . implode(', ', $key_data[1]) . ");;\n";
+						$line .= " {$table_name}_{$key_name} ON {$table_name} (" . implode(', ', $key_data[1]) . ");\n";
 					break;
 
 					case 'postgres':
@@ -588,86 +588,12 @@ foreach ($supported_dbms as $dbms)
 	// Write custom function at the end for some db's
 	switch ($dbms)
 	{
-		case 'firebird':
-			$line = <<<EOF
-# Trigger for phpbb_forums bitfields
-CREATE TRIGGER t_phpbb_forums_desc_bitf FOR phpbb_forums
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.forum_desc_bitfield is null) THEN
-		NEW.forum_desc_bitfield = ASCII_CHAR(0);
-END;;
-
-CREATE TRIGGER t_phpbb_forums_rules_bitf FOR phpbb_forums
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.forum_rules_bitfield is null) THEN
-		NEW.forum_rules_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_groups bitfields
-CREATE TRIGGER t_phpbb_groups_bitf FOR phpbb_groups
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.group_desc_bitfield is null) THEN
-		NEW.group_desc_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_posts bitfields
-CREATE TRIGGER t_phpbb_posts_bitf FOR phpbb_posts
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.bbcode_bitfield is null) THEN
-		NEW.bbcode_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_privmsgs bitfields
-CREATE TRIGGER t_phpbb_privmsgs_bitf FOR phpbb_privmsgs
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.bbcode_bitfield is null) THEN
-		NEW.bbcode_bitfield = ASCII_CHAR(0);
-END;;
-
-# Trigger for phpbb_styles_template bitfields
-CREATE TRIGGER t_phpbb_styles_template_bitf FOR phpbb_styles_template
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.bbcode_bitfield is null) THEN
-		NEW.bbcode_bitfield = ASCII_CHAR(144) || ASCII_CHAR(216);
-END;;
-
-# Trigger for phpbb_users bitfields
-CREATE TRIGGER t_phpbb_users_bitf FOR phpbb_users
-ACTIVE BEFORE INSERT OR UPDATE POSITION 0
-AS
-BEGIN
-	IF (NEW.user_sig_bbcode_bitfield is null) THEN
-		NEW.user_sig_bbcode_bitfield = ASCII_CHAR(0);
-END;;
-EOF;
-		break;
-
 		case 'mssql':
 			$line = "\nCOMMIT\nGO\n\n";
 		break;
 
 		case 'sqlite':
-			$line = '
-CREATE TRIGGER "t_phpbb_styles_template"
-AFTER INSERT ON "phpbb_styles_template"
-FOR EACH ROW WHEN NEW.bbcode_bitfield = \'\'
-BEGIN
-	UPDATE phpbb_styles_template SET bbcode_bitfield = binary_insert(1) WHERE template_id = NEW.template_id;
-END;;
-
-COMMIT;;';
+			$line = "\nCOMMIT;";
 		break;
 
 		case 'postgres':
@@ -955,7 +881,7 @@ function get_schema_struct()
 			'forum_parents'			=> array('MTEXT', ''),
 			'forum_name'			=> array('STEXT', ''),
 			'forum_desc'			=> array('TEXT', ''),
-			'forum_desc_bitfield'	=> array('VARBINARY', array('default' => '', 'mssql' => '0x', 'postgres' => '\000')),
+			'forum_desc_bitfield'	=> array('VCHAR:252', ''),
 			'forum_desc_options'	=> array('UINT:11', 0),
 			'forum_desc_uid'		=> array('VCHAR:5', ''),
 			'forum_link'			=> array('VCHAR', ''),
@@ -964,7 +890,7 @@ function get_schema_struct()
 			'forum_image'			=> array('VCHAR', ''),
 			'forum_rules'			=> array('TEXT', ''),
 			'forum_rules_link'		=> array('VCHAR', ''),
-			'forum_rules_bitfield'	=> array('VARBINARY', array('default' => '', 'mssql' => '0x', 'postgres' => '\000')),
+			'forum_rules_bitfield'	=> array('VCHAR:252', ''),
 			'forum_rules_options'	=> array('UINT:11', 0),
 			'forum_rules_uid'		=> array('VCHAR:5', ''),
 			'forum_topics_per_page'	=> array('TINT:4', 0),
@@ -1031,7 +957,7 @@ function get_schema_struct()
 			'group_type'			=> array('TINT:4', 1),
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT', ''),
-			'group_desc_bitfield'	=> array('VARBINARY', array('default' => '', 'mssql' => '0x', 'postgres' => '\000')),
+			'group_desc_bitfield'	=> array('VCHAR:252', ''),
 			'group_desc_options'	=> array('UINT:11', 0),
 			'group_desc_uid'		=> array('VCHAR:5', ''),
 			'group_display'			=> array('BOOL', 0),
@@ -1190,7 +1116,7 @@ function get_schema_struct()
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_encoding'			=> array('VCHAR:20', 'iso-8859-1'),
 			'post_attachment'		=> array('BOOL', 0),
-			'bbcode_bitfield'		=> array('VARBINARY', array('default' => '', 'mssql' => '0x', 'postgres' => '\000')),
+			'bbcode_bitfield'		=> array('VCHAR:252', ''),
 			'bbcode_uid'			=> array('VCHAR:5', ''),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
@@ -1229,7 +1155,7 @@ function get_schema_struct()
 			'message_edit_user'		=> array('UINT', 0),
 			'message_encoding'		=> array('VCHAR:20', 'iso-8859-1'),
 			'message_attachment'	=> array('BOOL', 0),
-			'bbcode_bitfield'		=> array('VARBINARY', array('default' => '', 'mssql' => '0x', 'postgres' => '\000')),
+			'bbcode_bitfield'		=> array('VCHAR:252', ''),
 			'bbcode_uid'			=> array('VCHAR:5', ''),
 			'message_edit_time'		=> array('TIMESTAMP', 0),
 			'message_edit_count'	=> array('USINT', 0),
@@ -1506,7 +1432,7 @@ function get_schema_struct()
 			'template_name'			=> array('VCHAR:252', ''),
 			'template_copyright'	=> array('VCHAR', ''),
 			'template_path'			=> array('VCHAR:100', ''),
-			'bbcode_bitfield'		=> array('VARBINARY', array('default' => '', 'mysql' => '0x90D8', 'mssql' => '0x90D8', 'oracle' => '90D8', 'postgres' => '\220\330')),
+			'bbcode_bitfield'		=> array('VCHAR:252', 'kNg='),
 			'template_storedb'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'template_id',
@@ -1818,7 +1744,7 @@ function get_schema_struct()
 			'user_avatar_height'		=> array('TINT:4', 0),
 			'user_sig'					=> array('MTEXT', ''),
 			'user_sig_bbcode_uid'		=> array('VCHAR:5', ''),
-			'user_sig_bbcode_bitfield'	=> array('VARBINARY', array('default' => '', 'mssql' => '0x', 'postgres' => '\000')),
+			'user_sig_bbcode_bitfield'	=> array('VCHAR:252', ''),
 			'user_from'					=> array('VCHAR:100', ''),
 			'user_icq'					=> array('VCHAR:15', ''),
 			'user_aim'					=> array('VCHAR', ''),

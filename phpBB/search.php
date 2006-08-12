@@ -89,7 +89,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// Which forums should not be searched?
 	$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 
-	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE f.forum_id NOT IN (' . implode(', ', $ex_fid_ary) . ") OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
+	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
@@ -141,7 +141,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	else if ($auth->acl_getf_global('m_approve'))
 	{
 		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . ')' : '') . ')';
+		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) : '') . ')';
 	}
 	else
 	{
@@ -276,7 +276,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						AND t.topic_approved = 1
 						AND p.topic_id = t.topic_id
 						$m_approve_fid_sql
-						" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . '
+						" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
 			break;
@@ -304,7 +304,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
 					$field = 'post_id';
 				}
@@ -315,7 +315,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
@@ -342,7 +342,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'post_id';
 				}
@@ -352,7 +352,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
 							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
-							' . ((sizeof($ex_fid_ary)) ? 'AND t.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
@@ -404,8 +404,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		trigger_error($user->lang['NO_SEARCH_RESULTS']);
 	}
 
-	$sql_where = (($show_results == 'posts') ? 'p.post_id' : 't.topic_id') . ' IN (' . implode(', ', $id_ary) . ')';
-	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (f.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ') OR f.forum_id IS NULL)' : '';
+	$sql_where = $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
+	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
 	$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
 
 	if ($show_results == 'posts')
@@ -616,7 +616,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		
 					if (sizeof($forum_ary))
 					{
-						$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+						$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
 					}
 
 					$result = $db->sql_query_limit($sql, 1);

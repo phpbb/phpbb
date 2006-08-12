@@ -191,9 +191,10 @@ class mcp_reports
 					$forum_id = $topic_info['forum_id'];
 				}
 
+				$forum_list = array();
+
 				if (!$forum_id)
 				{
-					$forum_list = array();
 					foreach ($forum_list_reports as $row)
 					{
 						$forum_list[] = $row['forum_id'];
@@ -201,14 +202,14 @@ class mcp_reports
 
 					$global_id = $forum_list[0];
 
-					if (!($forum_list = implode(', ', $forum_list)))
+					if (!sizeof($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
-						FROM ' . FORUMS_TABLE . "
-						WHERE forum_id IN ($forum_list)";
+						FROM ' . FORUMS_TABLE . '
+						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
@@ -223,11 +224,11 @@ class mcp_reports
 					}
 
 					$forum_info = $forum_info[$forum_id];
-					$forum_list = $forum_id;
+					$forum_list = array($forum_id);
 					$global_id = $forum_id;
 				}
 
-				$forum_list .= ', 0';
+				$forum_list[] = 0;
 				$forum_data = array();
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
@@ -256,8 +257,8 @@ class mcp_reports
 				}
 
 				$sql = 'SELECT r.report_id
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . "
-					WHERE p.forum_id IN ($forum_list)
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . '
+					WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . "
 						$report_state
 						AND r.post_id = p.post_id
 						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
@@ -280,12 +281,12 @@ class mcp_reports
 				if (sizeof($report_ids))
 				{
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time, r.report_id
-						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . " ru
-						WHERE r.report_id IN (" . implode(', ', $report_ids) . ")
+						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
+						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
-							AND ru.user_id = r.user_id";
+							AND ru.user_id = r.user_id';
 					$result = $db->sql_query($sql);
 
 					$report_data = $rowset = array();
@@ -387,7 +388,7 @@ function close_report($post_id_list, $mode, $action)
 
 		$sql = 'SELECT r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
 			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
-			WHERE r.post_id IN (' . implode(',', array_keys($post_info)) . ')
+			WHERE ' . $db->sql_in_set('r.post_id', array_keys($post_info)) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '
 				AND r.user_id = u.user_id';
 		$result = $db->sql_query($sql);
@@ -421,9 +422,9 @@ function close_report($post_id_list, $mode, $action)
 			// Get a list of topics that still contain reported posts
 			$sql = 'SELECT DISTINCT topic_id
 				FROM ' . POSTS_TABLE . '
-				WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')
+				WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
 					AND post_reported = 1
-					AND post_id NOT IN (' . implode(', ', $close_report_posts) . ')';
+					AND ' . $db->sql_in_set('post_id', $close_report_posts, true);
 			$result = $db->sql_query($sql);
 
 			$keep_report_topics = array();
@@ -442,25 +443,25 @@ function close_report($post_id_list, $mode, $action)
 			{
 				$sql = 'UPDATE ' . REPORTS_TABLE . '
 					SET report_closed = 1
-					WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
+					WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 			}
 			else
 			{
 				$sql = 'DELETE FROM ' . REPORTS_TABLE . '
-					WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
+					WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 			}
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_reported = 0
-				WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
+				WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 			$db->sql_query($sql);
 
 			if (sizeof($close_report_topics))
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_reported = 0
-					WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')';
+					WHERE ' . $db->sql_in_set('topic_id', $close_report_topics);
 				$db->sql_query($sql);
 			}
 

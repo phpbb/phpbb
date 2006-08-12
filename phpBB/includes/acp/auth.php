@@ -136,7 +136,7 @@ class auth_admin extends auth
 
 			$sql = 'SELECT user_id, user_permissions, user_type
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(',', $ug_id) . ')';
+				WHERE ' . $db->sql_in_set('user_id', $ug_id);
 			$result = $db->sql_query($sql);
 
 			while ($userdata = $db->sql_fetchrow($result))
@@ -292,14 +292,14 @@ class auth_admin extends auth
 		{
 			$sql = 'SELECT user_id as ug_id, username as ug_name
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_keys($hold_ary)) . ')
+				WHERE ' . $db->sql_in_set('user_id', array_keys($hold_ary)) . '
 				ORDER BY username ASC';
 		}
 		else
 		{
 			$sql = 'SELECT group_id as ug_id, group_name as ug_name, group_type
 				FROM ' . GROUPS_TABLE . '
-				WHERE group_id IN (' . implode(', ', array_keys($hold_ary)) . ')
+				WHERE ' . $db->sql_in_set('group_id', array_keys($hold_ary)) . '
 				ORDER BY group_type DESC, group_name ASC';
 		}
 		$result = $db->sql_query($sql);
@@ -361,7 +361,7 @@ class auth_admin extends auth
 			$sql = 'SELECT r.role_id, o.auth_option, r.auth_setting
 				FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
 				WHERE o.auth_option_id = r.auth_option_id
-					AND r.role_id IN (' . implode(', ', array_keys($roles)) . ')';
+					AND ' . $db->sql_in_set('r.role_id', array_keys($roles));
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -584,7 +584,7 @@ class auth_admin extends auth
 		// Get forum names
 		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id IN (' . implode(', ', array_keys($hold_ary)) . ')';
+			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary));
 		$result = $db->sql_query($sql);
 
 		$forum_names = array();
@@ -605,7 +605,7 @@ class auth_admin extends auth
 			{
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
-					WHERE user_id IN (' . implode(', ', $auth_ary['users']) . ')
+					WHERE ' . $db->sql_in_set('user_id', $auth_ary['users']) . '
 					ORDER BY username';
 				$result = $db->sql_query($sql);
 
@@ -624,7 +624,7 @@ class auth_admin extends auth
 			{
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE . '
-					WHERE group_id IN (' . implode(', ', $auth_ary['groups']) . ')
+					WHERE ' . $db->sql_in_set('group_id', $auth_ary['groups']) . '
 					ORDER BY group_type ASC, group_name';
 				$result = $db->sql_query($sql);
 
@@ -768,12 +768,12 @@ class auth_admin extends auth
 			$ug_id = array($ug_id);
 		}
 
-		$ug_id_sql = 'IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
-		$forum_sql = 'IN (' . implode(', ', array_map('intval', $forum_id)) . ') ';
+		$ug_id_sql = $db->sql_in_set($ug_type . '_id', array_map('intval', $ug_id));
+		$forum_sql = $db->sql_in_set('forum_id', array_map('intval', $forum_id));
 
 		// Instead of updating, inserting, removing we just remove all current settings and re-set everything...
 		$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
-		$id_field  = $ug_type . '_id';
+		$id_field = $ug_type . '_id';
 
 		// Get any flags as required
 		reset($auth);
@@ -797,8 +797,8 @@ class auth_admin extends auth
 		}
 
 		$sql = "DELETE FROM $table
-			WHERE forum_id $forum_sql
-				AND $id_field $ug_id_sql
+			WHERE $forum_sql
+				AND $ug_id_sql
 				AND auth_option_id IN ($any_option_id, " . implode(', ', $auth_option_ids) . ')';
 		$db->sql_query($sql);
 
@@ -818,10 +818,10 @@ class auth_admin extends auth
 		if (sizeof($role_ids))
 		{
 			$sql = "DELETE FROM $table
-				WHERE forum_id $forum_sql
-					AND $id_field $ug_id_sql
+				WHERE $forum_sql
+					AND $ug_id_sql
 					AND auth_option_id = 0
-					AND auth_role_id IN (" . implode(', ', $role_ids) . ')';
+					AND " . $db->sql_in_set('auth_role_id', $role_ids);
 			$db->sql_query($sql);
 		}
 
@@ -995,12 +995,12 @@ class auth_admin extends auth
 
 		if ($forum_id !== false)
 		{
-			$where_sql[] = (!is_array($forum_id)) ? 'forum_id = ' . (int) $forum_id : 'forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
+			$where_sql[] = (!is_array($forum_id)) ? 'forum_id = ' . (int) $forum_id : $db->sql_in_set('forum_id', array_map('intval', $forum_id));
 		}
 
 		if ($ug_id !== false)
 		{
-			$where_sql[] = (!is_array($ug_id)) ? $id_field . ' = ' . (int) $ug_id : $id_field . ' IN (' . implode(', ', array_map('intval', $ug_id)) . ')';
+			$where_sql[] = (!is_array($ug_id)) ? $id_field . ' = ' . (int) $ug_id : $db->sql_in_set($id_field, array_map('intval', $ug_id));
 		}
 
 		// There seem to be auth options involved, therefore we need to go through the list and make sure we capture roles correctly
@@ -1043,7 +1043,7 @@ class auth_admin extends auth
 				$sql = 'SELECT ao.auth_option, rd.role_id, rd.auth_setting
 					FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_ROLES_DATA_TABLE . ' rd
 					WHERE ao.auth_option_id = rd.auth_option_id
-						AND rd.role_id IN (' . implode(', ', array_keys($cur_role_auth)) . ')';
+						AND ' . $db->sql_in_set('rd.role_id', array_keys($cur_role_auth));
 				$result = $db->sql_query($sql);
 
 				$auth_settings = array();
@@ -1072,7 +1072,7 @@ class auth_admin extends auth
 		// Now, normally remove permissions...
 		if ($permission_type !== false)
 		{
-			$where_sql[] = 'auth_option_id IN (' . implode(', ', array_map('intval', $option_id_ary)) . ')';
+			$where_sql[] = $db->sql_in_set('auth_option_id', array_map('intval', $option_id_ary));
 		}
 		
 		$sql = "DELETE FROM $table

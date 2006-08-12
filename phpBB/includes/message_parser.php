@@ -410,12 +410,11 @@ class bbcode_firstpass extends bbcode
 			switch (strtolower($stx))
 			{
 				case 'php':
-					$code = trim($code);
 
 					$remove_tags = false;
 					$code = str_replace(array('&lt;', '&gt;'), array('<', '>'), $code);
 
-					if (!preg_match('/^\<\?.*?\?\>/is', $code))
+					if (!preg_match('/\<\?.*?\?\>/is', $code))
 					{
 						$remove_tags = true;
 						$code = "<?php $code ?>";
@@ -438,7 +437,7 @@ class bbcode_firstpass extends bbcode
 					{
 						$str_from[] = '<span class="syntaxdefault">&lt;?php </span>';
 						$str_to[] = '';
-						$str_from[] = '<span class="syntaxdefault">&lt;?php ';
+						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
 						$str_to[] = '<span class="syntaxdefault">';
 					}
 
@@ -452,6 +451,12 @@ class bbcode_firstpass extends bbcode
 
 					$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
 					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#', '</span>', $code);
+
+					// remove newline at the end
+					if (!empty($code) && $code{strlen($code)-1} == "\n")
+					{
+						$code = substr($code, 0, -1);
+					}
 
 					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
 				break;
@@ -1303,7 +1308,7 @@ class parse_message extends bbcode_firstpass
 			// Get the data from the attachments
 			$sql = 'SELECT attach_id, physical_filename, real_filename, extension, mimetype, filesize, filetime, thumbnail
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE attach_id IN (' . implode(', ', array_keys($attach_ids)) . ')
+				WHERE ' . $db->sql_in_set('attach_id', array_keys($attach_ids)) . '
 					AND poster_id = ' . $check_user_id;
 			$result = $db->sql_query($sql);
 
@@ -1332,8 +1337,8 @@ class parse_message extends bbcode_firstpass
 			include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 
 			$sql = 'SELECT attach_id
-				FROM ' . ATTACHMENTS_TABLE . "
-				WHERE LOWER(physical_filename) IN ('" . implode("', '", array_map('strtolower', $filenames)) . "')";
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE ' . $db->sql_in_set('LOWER(physical_filename)', array_map('strtolower', $filenames));
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);

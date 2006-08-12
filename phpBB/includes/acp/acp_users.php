@@ -393,7 +393,7 @@ class acp_users
 								{
 									$sql = 'SELECT topic_id, topic_replies, topic_replies_real
 										FROM ' . TOPICS_TABLE . '
-										WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+										WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 									$result = $db->sql_query($sql);
 
 									$del_topic_ary = array();
@@ -409,7 +409,7 @@ class acp_users
 									if (sizeof($del_topic_ary))
 									{
 										$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-											WHERE topic_id IN (' . implode(', ', $del_topic_ary) . ')';
+											WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
 										$db->sql_query($sql);
 									}
 								}
@@ -495,7 +495,7 @@ class acp_users
 							{
 								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real
 									FROM ' . TOPICS_TABLE . '
-									WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
@@ -842,7 +842,7 @@ class acp_users
 						{
 							$sql_in[] = $mark;
 						}
-						$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+						$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
 						unset($sql_in);
 					}
 
@@ -1630,7 +1630,7 @@ class acp_users
 					{
 						$sql = 'SELECT real_filename
 							FROM ' . ATTACHMENTS_TABLE . '
-							WHERE attach_id IN (' . implode(', ', $marked) . ')';
+							WHERE ' . $db->sql_in_set('attach_id', $marked);
 						$result = $db->sql_query($sql);
 
 						$log_attachments = array();
@@ -1834,7 +1834,7 @@ class acp_users
 				// Select box for other groups
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE . '
-					' . ((sizeof($id_ary)) ? 'WHERE group_id NOT IN (' . implode(', ', $id_ary) . ')' : '') . '
+					' . ((sizeof($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
 					ORDER BY group_type DESC, group_name ASC';
 				$result = $db->sql_query($sql);
 

@@ -55,13 +55,11 @@ class acp_email
 			{
 				if ($usernames)
 				{
-					$usernames = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", explode("\n", $usernames)));
-
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
-						FROM ' . USERS_TABLE . " 
-						WHERE username IN ($usernames)
+						FROM ' . USERS_TABLE . '
+						WHERE ' . $db->sql_in_set('username', explode("\n", $usernames)) . '
 							AND user_allow_massemail = 1
-						ORDER BY user_lang, user_notify_type"; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
+						ORDER BY user_lang, user_notify_type'; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
 				}
 				else
 				{

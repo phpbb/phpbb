@@ -358,14 +358,14 @@ class custom_profile
 				$this->build_cache();
 			}
 
-			if (!implode(', ', $user_id))
+			if (!sizeof($user_id))
 			{
 				return array();
 			}
 
 			$sql = 'SELECT *
 				FROM ' . PROFILE_FIELDS_DATA_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
+				WHERE ' . $db->sql_in_set('user_id', array_map('intval', $user_id));
 			$result = $db->sql_query($sql);
 
 			$field_data = array();
@@ -787,20 +787,13 @@ class custom_profile
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
 		{
-			if (strncmp($key, '_', 1) === 0)
-			{
-				$sql_not_in[] = "'" . $db->sql_escape(substr($key, 1)) . "'";
-			}
-			else
-			{
-				$sql_not_in[] = "'" . $db->sql_escape($key) . "'";
-			}
+			$sql_not_in[] = (strncmp($key, '_', 1) === 0) ? substr($key, 1) : $key;
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
 			WHERE l.lang_id = ' . $user->get_iso_lang_id() . ' 
-				' . ((sizeof($sql_not_in)) ? ' AND f.field_ident NOT IN (' . implode(', ', $sql_not_in) . ')' : '') . '
+				' . ((sizeof($sql_not_in)) ? ' AND ' . $db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
 		$result = $db->sql_query($sql);
 

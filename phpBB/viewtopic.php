@@ -848,7 +848,7 @@ $sql = $db->sql_build_query('SELECT', array(
 		)
 	),
 
-	'WHERE'		=> 'p.post_id IN (' . implode(', ', $post_list) . ')
+	'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
 		AND u.user_id = p.poster_id'
 ));
 
@@ -1113,7 +1113,7 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 {
 	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 		FROM ' . SESSIONS_TABLE . '
-		WHERE session_user_id IN (' . implode(', ', $id_cache) . ')
+		WHERE ' . $db->sql_in_set('session_user_id', $id_cache) . '
 		GROUP BY session_user_id';
 	$result = $db->sql_query($sql);
 
@@ -1133,7 +1133,7 @@ if (sizeof($attach_list))
 	{
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE post_msg_id IN (' . implode(', ', $attach_list) . ')
+			WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
 				AND in_message = 0
 			ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
 		$result = $db->sql_query($sql);
@@ -1149,7 +1149,7 @@ if (sizeof($attach_list))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_attachment = 0
-				WHERE post_id IN (' . implode(', ', $attach_list) . ')';
+				WHERE ' . $db->sql_in_set('post_id', $attach_list);
 			$db->sql_query($sql);
 
 			// We need to update the topic indicator too if the complete topic is now without an attachment
@@ -1295,10 +1295,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 			$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE p.post_id IN (' . implode(', ', $post_storage_list) . ")
+				WHERE ' . $db->sql_in_set('p.post_id', $post_storage_list) . '
 					AND p.post_edit_count <> 0
 					AND p.post_edit_user <> 0
-					AND p.post_edit_user = u.user_id";
+					AND p.post_edit_user = u.user_id';
 			$result2 = $db->sql_query($sql);
 			while ($user_edit_row = $db->sql_fetchrow($result2))
 			{
@@ -1477,7 +1477,7 @@ if (isset($user->data['session_page']) && strpos($user->data['session_page'], '&
 	{
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 			SET download_count = download_count + 1
-			WHERE attach_id IN (' . implode(', ', array_unique($update_count)) . ')';
+			WHERE ' . $db->sql_in_set('attach_id', array_unique($update_count));
 		$db->sql_query($sql);
 	}
 }
