@@ -121,6 +121,8 @@ class mcp_logs
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
 
+			'L_TITLE'			=> $user->lang['MCP_LOGS'],
+
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
