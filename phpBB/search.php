@@ -273,7 +273,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sql = 'SELECT DISTINCT t.topic_last_post_time, t.topic_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 					WHERE p.post_time > $last_post_time
-						AND t.topic_approved = 1
+						AND t.topic_moved_id = 0
 						AND p.topic_id = t.topic_id
 						$m_approve_fid_sql
 						" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . '
@@ -313,6 +313,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
+							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
 							$m_approve_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
@@ -351,6 +352,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$sql = 'SELECT t.topic_id
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
+							AND t.topic_moved_id = 0
 							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
@@ -543,9 +545,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 		if ($show_results == 'topics')
 		{
-			$forums = $rowset = array();
+			$forums = $rowset = $shadow_topic_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				if ($row['topic_status'] == ITEM_MOVED)
+				{
+					$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+				}
+
 				$rowset[$row['topic_id']] = $row;
 
 				if (!isset($forums[$row['forum_id']]) && $user->data['is_registered'] && $config['load_db_lastread'])
@@ -556,6 +563,31 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$forums[$row['forum_id']]['rowset'][$row['topic_id']] = &$rowset[$row['topic_id']];
 			}
 			$db->sql_freeresult($result);
+ 
+			// If we have some shadow topics, update the rowset to reflect their topic informations
+			if (sizeof($shadow_topic_list))
+			{
+				$sql = 'SELECT *
+					FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+				$result = $db->sql_query($sql);
+			
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$orig_topic_id = $shadow_topic_list[$row['topic_id']];
+			
+					// We want to retain some values
+					$row = array_merge($row, array(
+						'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
+						'topic_status'		=> $rowset[$orig_topic_id]['topic_status'],
+						'forum_name'		=> $rowset[$orig_topic_id]['forum_name'])
+					);
+			
+					$rowset[$orig_topic_id] = $row;
+				}
+				$db->sql_freeresult($result);
+			}
+			unset($shadow_topic_list);
 
 			foreach ($forums as $forum_id => $forum)
 			{

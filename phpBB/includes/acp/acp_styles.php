@@ -1501,7 +1501,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function remove($mode, $style_id)
 	{
-		global $db, $template, $user, $phpbb_root_path, $cache;
+		global $db, $template, $user, $phpbb_root_path, $cache, $config;
 
 		$new_id = request_var('new_id', 0);
 		$update = (isset($_POST['update'])) ? true : false;
@@ -1582,6 +1582,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					SET forum_style = $new_id
 					WHERE forum_style = $style_id";
 				$db->sql_query($sql);
+
+				if ($style_id == $config['default_style'])
+				{
+					set_config('default_style', $new_id);
+				}
 			}
 			else
 			{
