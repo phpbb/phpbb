@@ -2355,7 +2355,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// heck of a lot of data ...
 				$sql_ary = array(
 					'template_id'			=> $style_id,
-					'template_filename'		=> "$template_path$pathfile$file",
+					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
 					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
 					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),

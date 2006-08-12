@@ -121,6 +121,9 @@ function autologin_apache()
 
 	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
+		set_var($php_auth_user, $php_auth_user, 'string');
+		set_var($php_auth_pw, $php_auth_pw, 'string');
+
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
@@ -190,7 +193,15 @@ function user_row_apache($username, $password)
 */
 function validate_session_apache(&$user)
 {
-	return (isset($_SERVER['PHP_AUTH_USER']) && ($_SERVER['PHP_AUTH_USER'] === $user['username'])) ? true : false;
+	if (!isset($_SERVER['PHP_AUTH_USER']))
+	{
+		return false;
+	}
+
+	$php_auth_user = '';
+	set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string');
+
+	return ($php_auth_user === $user['username']) ? true : false;
 }
 
 ?>

@@ -38,7 +38,7 @@ function init_ldap()
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . $user->data['username'] . ')',
+		'(' . $config['ldap_uid'] . '=' . ldap_escape(html_entity_decode($user->data['username'])) . ')',
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -53,17 +53,18 @@ function init_ldap()
 
 	@ldap_close($ldap);
 
+
+	if (!is_array($result) || sizeof($result) < 2)
+	{
+		return sprintf($user->lang['LDAP_NO_IDENTITY'], $user->data['username']);
+	}
+
 	if (!empty($config['ldap_email']) && !isset($result[0][$config['ldap_email']]))
 	{
 		return $user->lang['LDAP_NO_EMAIL'];
 	}
 
-	if (is_array($result) && sizeof($result) > 1)
-	{
-		return false;
-	}
-
-	return sprintf($user->lang['LDAP_NO_IDENTITY'], $user->data['username']);
+	return false;
 }
 
 /**
@@ -97,7 +98,7 @@ function login_ldap(&$username, &$password)
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . $username . ')',
+		'(' . $config['ldap_uid'] . '=' . ldap_escape(html_entity_decode($username)) . ')',
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -107,7 +108,7 @@ function login_ldap(&$username, &$password)
 
 	if (is_array($ldap_result) && sizeof($ldap_result) > 1)
 	{
-		if (@ldap_bind($ldap, $ldap_result[0]['dn'], $password))
+		if (@ldap_bind($ldap, $ldap_result[0]['dn'], html_entity_decode($password)))
 		{
 			@ldap_close($ldap);
 
@@ -196,6 +197,14 @@ function login_ldap(&$username, &$password)
 		'error_msg'	=> 'LOGIN_ERROR_USERNAME',
 		'user_row'	=> array('user_id' => ANONYMOUS),
 	);
+}
+
+/**
+* Escapes an LDAP AttributeValue
+*/
+function ldap_escape($string)
+{
+	return str_replace(array('*', '\\', '(', ')'), array('\\*', '\\\\', '\\(', '\\)'), $string);
 }
 
 /**

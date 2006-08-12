@@ -465,6 +465,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		$forum_ids[] = $forum_row['forum_id'];
 
 		sync('topic_reported', 'topic_id', $topic_ids);
+		sync('topic_attachment', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
 		sync('forum', 'forum_id', $forum_ids, true);
 	}

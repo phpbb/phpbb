@@ -409,7 +409,6 @@ $lang = array_merge($lang, array(
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'					=> 'Send password',
 	'UCP_RESEND'					=> 'Send activation email',
-	'UCP_WATCHED'					=> 'Watched items',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
 	'UCP_YIM'						=> 'Yahoo Messenger',
 	'UCP_ZEBRA'						=> 'Friends and Foes',
@@ -486,7 +485,6 @@ $lang = array_merge($lang, array(
 		'IS_GROUP'		=> 'is in usergroup',
 		'ANSWERED'		=> 'answered',
 		'FORWARDED'		=> 'forwarded',
-		'REPORTED'		=> 'reported',
 		'TO_GROUP'		=> 'to my default usergroup',
 		'TO_ME'			=> 'to me'
 	),
