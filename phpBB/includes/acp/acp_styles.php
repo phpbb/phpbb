@@ -34,7 +34,7 @@ class acp_styles
 		$bitfield->set(9);
 		$bitfield->set(11);
 		$bitfield->set(12);
-		define('TEMPLATE_BITFIELD', $bitfield->data);
+		define('TEMPLATE_BITFIELD', $bitfield->get_base64());
 
 		$user->add_lang('acp/styles');
 
