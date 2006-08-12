@@ -467,7 +467,7 @@ class fulltext_native extends search_backend
 		{
 			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(SEARCH_WORDMATCH_TABLE => 'm' . $m_num),
-				'ON'	=> $db->sql_in_set("m$m_num.word_id", $this->must_not_contain_ids) . (($title_match) ? "m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
+				'ON'	=> $db->sql_in_set("m$m_num.word_id", $this->must_not_contain_ids) . (($title_match) ? " AND m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
 			);
 
 			$sql_where[] = "m$m_num.word_id IS NULL";
@@ -493,7 +493,7 @@ class fulltext_native extends search_backend
 
 				$sql_array['LEFT_JOIN'][] = array(
 					'FROM'	=> array(SEARCH_WORDMATCH_TABLE => 'm' . $m_num),
-					'ON'	=> "m$m_num.word_id = $id AND m$m_num.post_id = m0.post_id" . (($title_match) ? "m$m_num.$title_match" : '')
+					'ON'	=> "m$m_num.word_id = $id AND m$m_num.post_id = m0.post_id" . (($title_match) ? " AND m$m_num.$title_match" : '')
 				);
 				$is_null_joins[] = "m$m_num.word_id IS NULL";
 
@@ -508,7 +508,7 @@ class fulltext_native extends search_backend
 		}
 		else if ($m_approve_fid_ary !== array(-1))
 		{
-			$sql_where[] = '(p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary) . ')';
+			$sql_where[] = '(p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		if ($topic_id)
@@ -726,7 +726,7 @@ class fulltext_native extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';

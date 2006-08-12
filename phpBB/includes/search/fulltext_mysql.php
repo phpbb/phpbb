@@ -487,7 +487,7 @@ class fulltext_mysql extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		// If the cache was completely empty count the results
