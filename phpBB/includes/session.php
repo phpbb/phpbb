@@ -666,8 +666,8 @@ class session
 					if ($row['session_user_id'] != ANONYMOUS)
 					{
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-							WHERE user_id = " . $row['session_user_id'];
+							SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+							WHERE user_id = " . (int) $row['session_user_id'];
 						$db->sql_query($sql);
 					}
 
