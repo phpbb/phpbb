@@ -1107,6 +1107,7 @@ class captcha
 	*/
 	function noise_line($img, $min_x, $min_y, $max_x, $max_y, $bg, $font, $non_font)
 	{
+		imagesetthickness($img, 2);
 		$x1 = $min_x;
 		$x2 = $max_x;
 		$y1 = $min_y;
@@ -1114,23 +1115,13 @@ class captcha
 
 		do
 		{
-			$line = array();
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $non_font[array_rand($non_font)];
-			}
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $bg;
-			}
+			$line = array_merge(
+				array_fill(0, mt_rand(30, 60), $non_font[array_rand($non_font)]),
+				array_fill(0, mt_rand(30, 60), $bg)
+			);
 
 			imagesetstyle($img, $line);
-			for ($yp = -1; $yp <= 1; ++$yp)
-			{
-				imageline($img, $x1, $y1 + $yp, $x2, $y2 + $yp, IMG_COLOR_STYLED);
-			}
+			imageline($img, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 
 			$y1 += mt_rand(12, 35);
 			$y2 += mt_rand(12, 35);
@@ -1144,28 +1135,19 @@ class captcha
 
 		do
 		{
-			$line = array();
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $non_font[array_rand($non_font)];
-			}
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $bg;
-			}
+			$line = array_merge(
+				array_fill(0, mt_rand(30, 60), $non_font[array_rand($non_font)]),
+				array_fill(0, mt_rand(30, 60), $bg)
+			);
 
 			imagesetstyle($img, $line);
-			for ($xp = -1; $xp <= 1; ++$xp)
-			{
-				imageline($img, $x1 + $xp, $y1, $x2 + $xp, $y2, IMG_COLOR_STYLED);
-			}
+			imageline($img, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 
 			$x1 += mt_rand(12, 35);
 			$x2 += mt_rand(12, 35);
 		}
 		while ($x1 < $max_x && $x2 < $max_x);
+		imagesetthickness($img, 1);
 	}
 
 	/**
