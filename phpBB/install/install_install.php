@@ -1881,7 +1881,7 @@ class install_install extends module
 			'LABEL'			=> 'SQLite',
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite', 
-			'DELIM'			=> ';;',
+			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'
 		),
 	);
