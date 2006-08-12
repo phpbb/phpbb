@@ -1202,7 +1202,7 @@ class char_dots
 		$this->width_percent = (!empty($width_percent)) ? max(25, min(150, intval($width_percent))) : mt_rand(60, 90);
 
 		$this->space = 10;
-		$this->radius = 1;
+		$this->radius = 3;
 		$this->density = 3;
 		$this->letter = $letter;
 	}
