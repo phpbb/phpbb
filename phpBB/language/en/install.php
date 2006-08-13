@@ -92,6 +92,7 @@ $lang = array_merge($lang, array(
 	'DISABLE_KEYS'				=> 'Disabling keys',
 	'DLL_FIREBIRD'				=> 'Firebird 1.5+',
 	'DLL_FTP'					=> 'Remote FTP support [ Installation ]',
+	'DLL_GD'					=> 'GD graphics support [ Visual Confirmation ]',
 	'DLL_MBSTRING'				=> 'Multi-byte character support',
 	'DLL_MSSQL'					=> 'MSSQL Server 2000+',
 	'DLL_MSSQL_ODBC'			=> 'MSSQL Server 2000+ via ODBC',
