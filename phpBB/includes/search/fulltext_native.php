@@ -357,12 +357,6 @@ class fulltext_native extends search_backend
 		);
 		$sql_where[] = 'm0.post_id = p.post_id';
 
-		if ($type == 'topics')
-		{
-			$sql_array['FROM'][TOPICS_TABLE] = 't';
-			$group_by = true;
-		}
-
 		$title_match = '';
 		$group_by = true;
 		// Build some display specific sql strings
@@ -381,6 +375,16 @@ class fulltext_native extends search_backend
 				$title_match = 'title_match = 0';
 				$group_by = false;
 			break;
+		}
+
+		if ($type == 'topics')
+		{
+			if (!isset($sql_array['FROM'][TOPICS_TABLE]))
+			{
+				$sql_array['FROM'][TOPICS_TABLE] = 't';
+				$sql_where[] = 'p.topic_id = t.topic_id';
+			}
+			$group_by = true;
 		}
 
 		/**
