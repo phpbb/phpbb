@@ -60,7 +60,7 @@ class acp_icons
 		if ($action == 'edit' || $action == 'add' || $action == 'import')
 		{
 			$imglist = filelist($phpbb_root_path . $img_path, '');
-			
+
 			foreach ($imglist as $path => $img_ary)
 			{
 				foreach ($img_ary as $img)
@@ -108,6 +108,7 @@ class acp_icons
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
 
+				$data = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($action == 'add')
@@ -142,7 +143,6 @@ class acp_icons
 
 				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>' . $order_list;
 
-				$data = array();
 				if ($action == 'add')
 				{
 					$data = $_images;
