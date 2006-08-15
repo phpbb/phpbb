@@ -848,10 +848,10 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$db->sql_freeresult($result);
 
 	// Instantiate BBCode class
-	if (!isset($bbcode) && $bbcode_bitfield)
+	if (!isset($bbcode) && $bbcode_bitfield !== '')
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($bbcode_bitfield);
+		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	foreach ($rowset as $i => $row)

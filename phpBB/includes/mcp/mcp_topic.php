@@ -96,10 +96,10 @@ function mcp_topic_view($id, $mode, $action)
 	}
 	$db->sql_freeresult($result);
 
-	if ($bbcode_bitfield)
+	if ($bbcode_bitfield !== '')
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-		$bbcode = new bbcode($bbcode_bitfield);
+		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	foreach ($rowset as $i => $row)

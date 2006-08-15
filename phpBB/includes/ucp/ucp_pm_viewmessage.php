@@ -295,13 +295,13 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	// Instantiate BBCode class
-	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield)
+	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield !== '')
 	{
 		if (!class_exists('bbcode'))
 		{
 			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		}
-		$bbcode = new bbcode($bbcode_bitfield);
+		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	$title = censor_text($title);
