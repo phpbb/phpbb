@@ -47,7 +47,6 @@ class bbcode_firstpass extends bbcode
 		$this->bbcode_bitfield = '';
 		$bitfield = new bitfield();
 
-		$size = strlen($this->message);
 		foreach ($this->bbcodes as $bbcode_name => $bbcode_data)
 		{
 			if (isset($bbcode_data['disabled']) && $bbcode_data['disabled'])
@@ -63,19 +62,27 @@ class bbcode_firstpass extends bbcode
 			}
 			else
 			{
+				// TODO: Review this
+				$found = false;
 				foreach ($bbcode_data['regexp'] as $regexp => $replacement)
 				{
+					if (!$found)
+					{
+						$before = strlen($this->message);
+					}
 					$this->message = preg_replace($regexp, $replacement, $this->message);
+					if (!$found)
+					{
+						$after = strlen($this->message);
+						if ($before != $after)
+						{
+							// Because we add bbcode_uid to all tags, the message length
+							// will increase whenever a tag is found
+							$bitfield->set($bbcode_data['bbcode_id']);
+							$found = true;
+						}
+					}
 				}
-			}
-
-			// Because we add bbcode_uid to all tags, the message length
-			// will increase whenever a tag is found
-			$new_size = strlen($this->message);
-			if ($size != $new_size)
-			{
-				$bitfield->set($bbcode_data['bbcode_id']);
-				$size = $new_size;
 			}
 		}
 
