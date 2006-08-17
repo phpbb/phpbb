@@ -587,7 +587,7 @@ class install_install extends module
 				$error[] = $lang['INST_ERR_EMAIL_MISMATCH'];
 			}
 
-			if ($board_email1 != '' && !preg_match('#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}$#i', $board_email1))
+			if ($board_email1 != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
