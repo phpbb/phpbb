@@ -99,7 +99,15 @@ else
 if (defined('IN_CRON'))
 {
 	chdir($phpbb_root_path);
-	$phpbb_root_path = getcwd() . '/';
+	if (@function_exists('getcwd'))
+	{
+		$phpbb_root_path = getcwd() . '/';
+	}
+	else
+	{
+		// This is a best guess
+		$phpbb_root_path = pathinfo($_SERVER['SCRIPT_FILENAME'], PATHINFO_DIRNAME) . '/';
+	}
 }
 
 if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
