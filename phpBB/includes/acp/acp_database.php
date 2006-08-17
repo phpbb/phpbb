@@ -68,7 +68,9 @@ class acp_database
 
 						@set_time_limit(1200);
 
-						$filename = 'backup_' . time();
+						$time = time();
+
+						$filename = 'backup_' . $time;
 
 						// We set up the info needed for our on-the-fly creation :D
 						switch ($format)
@@ -118,9 +120,9 @@ class acp_database
 						if ($download == true)
 						{
 							$name = $filename . $ext;
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
+							//header('Pragma: no-cache');
+							//header("Content-Type: $mimetype; name=\"$name\"");
+							//header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
@@ -128,7 +130,7 @@ class acp_database
 						$sql_data .= "#\n";
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
-						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $filename) . " GMT\n";
+						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $time) . " GMT\n";
 						$sql_data .= "#\n";
 
 						switch (SQL_LAYER)
@@ -147,6 +149,31 @@ class acp_database
 								$sql_data .= "BEGIN TRANSACTION\n";
 								$sql_data .= "GO\n";
 							break;
+						}
+
+						if ($structure && SQL_LAYER == 'firebird')
+						{
+							$sql = 'SELECT RDB$FUNCTION_NAME, RDB$DESCRIPTION
+								FROM RDB$FUNCTIONS
+								ORDER BY RDB$FUNCTION_NAME';
+							$result = $db->sql_query($sql);
+
+							$rows = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$sql = 'SELECT F.RDB$FUNCTION_NAME, F.RDB$MODULE_NAME, F.RDB$ENTRYPOINT, F.RDB$RETURN_ARGUMENT, F.RDB$DESCRIPTION, FA.RDB$ARGUMENT_POSITION, FA.RDB$MECHANISM, FA.RDB$FIELD_TYPE, FA.RDB$FIELD_SCALE, FA.RDB$FIELD_LENGTH, FA.RDB$FIELD_SUB_TYPE, C.RDB$BYTES_PER_CHARACTER, C.RDB$CHARACTER_SET_NAME ,FA.RDB$FIELD_PRECISION
+									FROM RDB$FUNCTIONS F
+									LEFT JOIN RDB$FUNCTION_ARGUMENTS FA ON F.RDB$FUNCTION_NAME = FA.RDB$FUNCTION_NAME
+									LEFT JOIN RDB$CHARACTER_SETS C ON FA.RDB$CHARACTER_SET_ID = C.RDB$CHARACTER_SET_ID
+									WHERE (F.RDB$FUNCTION_NAME = ' . $row['FUNCTION_NAME'] . ')
+									ORDER BY FA.RDB$ARGUMENT_POSITION';
+								$result2 = $db->sql_query($sql);
+								while ($row2 = $db->sql_fetchrow($result2))
+								{
+								}
+								$db->sql_freeresult($result2);
+							}
+							$db->sql_freeresult($result);
 						}
 
 						foreach ($table as $table_name)
@@ -263,8 +290,8 @@ class acp_database
 												$field_set[$j] = $field[$j]->name;
 											}
 
-											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
-											$replace		= array('\\\\\\\\', "''", '\0', '\n', '\r', '\Z');
+											$search			= array("\\", "'", "\x00", "\x0a", "\x0d", "\x1a", '"');
+											$replace		= array("\\\\", "\\'", '\0', '\n', '\r', '\Z', '\\"');
 											$fields			= implode(', ', $field_set);
 											$values			= array();
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
@@ -336,8 +363,8 @@ class acp_database
 												$field_set[$j] = $field[$j]->name;
 											}
 
-											$search			= array('\\', "'", "\x00", "\x0a", "\x0d", "\x1a");
-											$replace		= array('\\\\\\\\', "''", '\0', '\n', '\r', '\Z');
+											$search			= array("\\", "'", "\x00", "\x0a", "\x0d", "\x1a", '"');
+											$replace		= array("\\\\", "\\'", '\0', '\n', '\r', '\Z', '\\"');
 											$fields			= implode(', ', $field_set);
 											$schema_insert	= 'INSERT INTO ' . $table_name . ' (' . $fields . ') VALUES (';
 
@@ -442,7 +469,7 @@ class acp_database
 												{
 													$row_data = "''";
 												}
-												else if (strpos($col_types[$row_name], 'text') !== false || strpos($col_types[$row_name], 'char') !== false)
+												else if (strpos($col_types[$row_name], 'text') !== false || strpos($col_types[$row_name], 'char') !== false || strpos($col_types[$row_name], 'blob') !== false)
 												{
 													$row_data = "'" . $row_data . "'";
 												}
@@ -516,7 +543,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|bytea#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -637,7 +664,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -748,7 +775,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -843,7 +870,7 @@ class acp_database
 											{
 												$str_val = $row[strtolower($ary_name[$i])];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -927,7 +954,7 @@ class acp_database
 											{
 												$str_val = $row[$ary_name[$i]];
 
-												if (preg_match('#char|text|bool#i', $ary_type[$i]))
+												if (preg_match('#char|text|bool|raw#i', $ary_type[$i]))
 												{
 													$str_quote = "'";
 													$str_empty = '';
@@ -1207,9 +1234,9 @@ class acp_database
 								break;
 							}
 
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
+							//header('Pragma: no-cache');
+							//header("Content-Type: $mimetype; name=\"$name\"");
+							//header("Content-disposition: attachment; filename=$name");
 							echo $data;
 							die;
 						}
