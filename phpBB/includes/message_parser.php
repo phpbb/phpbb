@@ -62,25 +62,14 @@ class bbcode_firstpass extends bbcode
 			}
 			else
 			{
-				// TODO: Review this
-				$found = false;
 				foreach ($bbcode_data['regexp'] as $regexp => $replacement)
 				{
-					if (!$found)
+					// The pattern gets compiled and cached by the PCRE extension,
+					// it should not demand recompilation
+					if (preg_match($regexp, $this->message))
 					{
-						$before = strlen($this->message);
-					}
-					$this->message = preg_replace($regexp, $replacement, $this->message);
-					if (!$found)
-					{
-						$after = strlen($this->message);
-						if ($before != $after)
-						{
-							// Because we add bbcode_uid to all tags, the message length
-							// will increase whenever a tag is found
-							$bitfield->set($bbcode_data['bbcode_id']);
-							$found = true;
-						}
+						$this->message = preg_replace($regexp, $replacement, $this->message);
+						$bitfield->set($bbcode_data['bbcode_id']);
 					}
 				}
 			}

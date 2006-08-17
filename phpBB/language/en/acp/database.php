@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 // Banning
 $lang = array_merge($lang, array(
 	'DATABASE' => 'Database Utilities',
-	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your store/ folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats. If you wish to include any additional "custom" tables please list them in the additional tables field, separated by commas. ',
+	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your store/ folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats.',
 	'BACKUP_OPTIONS'	=> 'Backup options',
 	'BACKUP_TYPE'		=> 'Backup type',
 	'BACKUP_INVALID'	=> 'The selected file to backup is invalid',
