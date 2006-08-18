@@ -1921,7 +1921,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$f_mark_time = false;
 	}
 
-	if ($config['load_db_lastread'] || $config['load_anon_lastread'] || $user->data['is_registered'])
+	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		// Update forum info
 		$sql = 'SELECT forum_last_post_time
