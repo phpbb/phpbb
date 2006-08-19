@@ -105,8 +105,7 @@ class template_compile
 			{
 				// This matches the information gathered from the internal PHP lexer
 				$match = array(
-					'#<\?.*?\?>#s',
-					'#<[%?]=.*?\?>#s',
+					'#<([\?%])=?.*?\1>#s',
 					'#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s',
 					'#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'
 				);
