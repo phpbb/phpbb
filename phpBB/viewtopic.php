@@ -755,6 +755,8 @@ if (!empty($topic_data['poll_start']))
 		);
 	}
 
+	$poll_end = $topic_data['poll_length'] + $topic_data['poll_start'];
+
 	$template->assign_vars(array(
 		'POLL_QUESTION'		=> $topic_data['poll_title'],
 		'TOTAL_VOTES' 		=> $poll_total,
@@ -762,7 +764,7 @@ if (!empty($topic_data['poll_start']))
 		'POLL_RIGHT_CAP_IMG'=> $user->img('poll_right'),
 
 		'L_MAX_VOTES'		=> ($topic_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $topic_data['poll_max_options']),
-		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($topic_data['poll_length'] + $topic_data['poll_start'])) : '',
+		'L_POLL_LENGTH'		=> ($topic_data['poll_length']) ? sprintf($user->lang[($poll_end > time()) ? 'POLL_RUN_TILL' : 'POLL_ENDED_AT'], $user->format_date($poll_end)) : '',
 
 		'S_HAS_POLL'		=> true,
 		'S_CAN_VOTE'		=> $s_can_vote,
@@ -773,7 +775,7 @@ if (!empty($topic_data['poll_start']))
 		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
 	);
 
-	unset($poll_info, $voted_id);
+	unset($poll_end, $poll_info, $voted_id);
 }
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
