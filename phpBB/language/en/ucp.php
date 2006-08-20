@@ -118,6 +118,7 @@ $lang = array_merge($lang, array(
 	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages can not be moved to the folder you want to remove.',
 	'CANNOT_RENAME_FOLDER'		=> 'This folder can not be renamed.',
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder can not be removed.',
+	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
 	'CHANGE_PASSWORD'			=> 'Change password',
 	'CHANGE_PASSWORD_EXPLAIN'	=> 'Must be between %1$d and %2$d characters.',
 	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your "%3$s" folder%2$s',
