@@ -189,15 +189,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now send the File Contents to the Browser
 	$size = @filesize($filename);
 
-	// Might not be ideal to store the contents, but file_get_contents is binary-safe as well as the recommended method
 	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
-	$contents = @file_get_contents($filename);
 
 	// Check if headers already sent or not able to get the file contents.
-	if (headers_sent() || $contents === false)
+	if (headers_sent() || !@file_exists($filename) || !@is_readable($filename))
 	{
-		unset($contents);
-
 		// PHP track_errors setting On?
 		if (!empty($php_errormsg))
 		{
@@ -210,15 +206,21 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now the tricky part... let's dance
 	header('Pragma: public');
 
+	// Try X-Sendfile since it is much more server friendly.
+	// lighttpd has core support for it. An apache2 module is available at http://celebnamer.celebworld.ws/stuff/mod_xsendfile/
+	header('X-Sendfile: ' . $filename);
+
 	// Send out the Headers
-	header('Content-type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
+	header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
 	header('Content-Disposition: inline; filename="' . $attachment['real_filename'] . '"');
 
 	if ($size)
 	{
-		header("Content-length: $size");
+		header("Content-Length: $size");
 	}
-	echo $contents;
+
+	// Might not be ideal to store the contents, but file_get_contents is binary-safe as well as the recommended method
+	echo @file_get_contents($filename);
 	unset($contents);
 
 	flush();

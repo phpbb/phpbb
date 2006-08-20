@@ -173,7 +173,7 @@ set_error_handler('msg_handler');
 $user = new user();
 $auth = new auth();
 $cache = new cache();
-$template = new Template();
+$template = new template();
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
@@ -212,7 +212,7 @@ class module
 	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $db, $config, $phpEx;
+		global $db, $config, $phpEx, $phpbb_root_path;
 
 		$module = array();
 
@@ -285,10 +285,9 @@ class module
 				$this->mode = $mode;
 			}
 
-			/**
-			* @todo this could be written as $this->module = new $this->filename($this); ... no? (eval statement in install/index.php)
-			*/
-			eval("\$this->module = new $this->filename(\$this);");
+			$module = $this->filename;
+			$this->module = new $module($this);
+
 			if (method_exists($this->module, 'main'))
 			{
 				$this->module->main($this->mode, $this->sub);

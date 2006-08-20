@@ -19,6 +19,19 @@ if ( !defined('IN_INSTALL') )
 
 if (!empty($setmodules))
 {
+	/* If phpBB is already installed we do not include this module
+	// This does not work at the moment because on installation the config file will be written before
+	// everything is finished.
+	if (@file_exists($phpbb_root_path . 'config.' . $phpEx))
+	{
+		include_once($phpbb_root_path . 'config.' . $phpEx);
+
+		if (defined('PHPBB_INSTALLED'))
+		{
+			return;
+		}
+	}*/
+
 	$module[] = array(
 		'module_type'		=> 'install',
 		'module_title'		=> 'INSTALL',
@@ -748,9 +761,9 @@ class install_install extends module
 //		$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'file') . "';\n";
 		$config_data .= "\$acm_type = 'file';\n";
 		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
-		$config_data .= "define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "define('DEBUG', true);\n"; // @todo Comment out when final
-		$config_data .= "define('DEBUG_EXTRA', true);\n"; // @todo Comment out when final
+		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
+		$config_data .= "@define('DEBUG', true);\n"; // @todo Comment out when final
+		$config_data .= "@define('DEBUG_EXTRA', true);\n"; // @todo Comment out when final
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
@@ -927,6 +940,7 @@ class install_install extends module
 		global $db, $lang, $template, $phpbb_root_path, $phpEx;
 
 		$this->page_title = $lang['STAGE_CREATE_TABLE'];
+		$s_hidden_fields = '';
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
