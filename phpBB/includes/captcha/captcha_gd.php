@@ -8,6 +8,12 @@
 *
 */
 
+/**
+* This file is getting too large.
+*
+* Only bugfixes allowed from now on.
+* If a policy can not be fixed with the minimum amount of code it gets removed.
+*/
 
 /**
 * Main gd based captcha class
@@ -2716,6 +2722,9 @@ function captcha_vectors()
 	);
 }
 
+/**
+* @package VC
+*/
 class color_manager
 {
 	var $img;
@@ -3370,7 +3379,7 @@ function vector_distance(&$char, $x, $y, $range = 0.1)
 					$phi += ($dy < 0) ? 180 : 360;
 					$phi %= 360;
 				}
-								
+
 				$internal = $vector[6] > $vector[5];	//external wraps over the 360 point
 				$low = $phi >= $vector[5]; 					//phi is above our low range
 				$high = $phi <= $vector[6];					//phi is below our high range.
@@ -3383,7 +3392,7 @@ function vector_distance(&$char, $x, $y, $range = 0.1)
 				}
 				
 			break;
-							
+
 			case 'line':
 				
 				$bx = $x - $vector[1];
@@ -3395,7 +3404,7 @@ function vector_distance(&$char, $x, $y, $range = 0.1)
 				{
 					if (abs($dx) > abs($dy))
 					{
-						$s = (($bx + ($dy * $r)) / $dx);								
+						$s = (($bx + ($dy * $r)) / $dx);
 					}
 					else
 					{
@@ -3424,4 +3433,5 @@ function vector_distance(&$char, $x, $y, $range = 0.1)
 	}
 	return $distance;
 }
+
 ?>
