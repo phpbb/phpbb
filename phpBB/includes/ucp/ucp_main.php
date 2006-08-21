@@ -419,7 +419,9 @@ class ucp_main
 					$template->assign_block_vars('topicrow', array(
 						'FORUM_ID'			=> $forum_id,
 						'TOPIC_ID'			=> $topic_id,
-						'TOPIC_AUTHOR'		=> topic_topic_author($row),
+						'TOPIC_AUTHOR'		=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+						'TOPIC_AUTHOR_COLOUR' => ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+						'TOPIC_AUTHOR_LINK'	=> topic_topic_author($row),
 						'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
@@ -578,7 +580,9 @@ class ucp_main
 						'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
 						'S_GLOBAL_TOPIC'	=> (!$forum_id) ? true : false,
 
-						'TOPIC_AUTHOR'		=> topic_topic_author($row),
+						'TOPIC_AUTHOR'		=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+						'TOPIC_AUTHOR_COLOUR' => ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+						'TOPIC_AUTHOR_LINK'	=> topic_topic_author($row),
 						'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
 						'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
 						'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),

@@ -1197,7 +1197,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		break;
 
 		case 'delete_first_post':
-			$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username
+			$sql = 'SELECT p.post_id, p.poster_id, p.post_username, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
@@ -1211,7 +1211,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
 			}
 
-			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . ", topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
 			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 
 			$next_post_id = (int) $row['post_id'];
@@ -1462,6 +1462,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_approved'			=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
+				'topic_first_poster_colour'	=> (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_colour'] : ''),
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'topic_attachment'			=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0
@@ -1560,7 +1561,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_post_id'	=> $data['post_id'],
 				'topic_last_post_time'	=> $current_time,
 				'topic_last_poster_id'	=> (int) $user->data['user_id'],
-				'topic_last_poster_name'=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')
+				'topic_last_poster_name'=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
+				'topic_last_poster_colour'	=> (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_colour'] : ''),
 			);
 		}
 

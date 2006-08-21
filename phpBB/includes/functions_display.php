@@ -498,7 +498,7 @@ function topic_topic_author(&$topic_row)
 {
 	global $phpEx, $phpbb_root_path, $user;
 
-	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $topic_row['topic_poster']) . '">' : '';
+	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $topic_row['topic_poster']) . ($topic_row['topic_first_poster_colour'] ? '" style="color: #' . $topic_row['topic_first_poster_colour'] : '') . '">' : '';
 	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? $topic_row['topic_first_poster_name'] : (($topic_row['topic_first_poster_name'] != '') ? $topic_row['topic_first_poster_name'] : $user->lang['GUEST']);
 	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
 

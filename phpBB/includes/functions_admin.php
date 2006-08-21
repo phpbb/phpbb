@@ -1638,7 +1638,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 					AND u.user_id = p.poster_id';
@@ -1658,6 +1658,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$topic_data[$topic_id]['time'] = $row['post_time'];
 					$topic_data[$topic_id]['poster'] = $row['poster_id'];
 					$topic_data[$topic_id]['first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+					$topic_data[$topic_id]['first_poster_colour'] = $row['user_colour'];
 				}
 
 				if ($row['post_id'] == $topic_data[$topic_id]['last_post_id'])
@@ -1665,6 +1666,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$topic_data[$topic_id]['last_poster_id'] = $row['poster_id'];
 					$topic_data[$topic_id]['last_post_time'] = $row['post_time'];
 					$topic_data[$topic_id]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+					$topic_data[$topic_id]['last_poster_colour'] = $row['user_colour'];
 				}
 			}
 			$db->sql_freeresult($result);
