@@ -139,15 +139,16 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		foreach ($empty_forums as $void => $forum_id)
 		{
 			$update_sql[$forum_id][] = 'forum_last_post_id = 0';
-			$update_sql[$forum_id][] =	'forum_last_post_time = 0';
+			$update_sql[$forum_id][] = 'forum_last_post_time = 0';
 			$update_sql[$forum_id][] = 'forum_last_poster_id = 0';
 			$update_sql[$forum_id][] = "forum_last_poster_name = ''";
+			$update_sql[$forum_id][] = "forum_last_poster_colour = ''";
 		}
 	}
 
 	if (sizeof($last_post_ids))
 	{
-		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_time, p.poster_id, p.post_username, u.user_id, u.username
+		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 			WHERE p.poster_id = u.user_id
 				AND ' . $db->sql_in_set('p.post_id', $last_post_ids);
@@ -158,6 +159,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id = ' . (int) $row['post_id'];
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time = ' . (int) $row['post_time'];
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
 			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
 		}
 		$db->sql_freeresult($result);

@@ -183,6 +183,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
 				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
 				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
+				$forum_rows[$parent_id]['forum_last_poster_colour'] = $row['forum_last_poster_colour'];
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
 			else
@@ -306,6 +307,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 
 			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
+			$last_poster_colour = ($row['forum_last_poster_colour']) ? '#' . $row['forum_last_poster_colour'] : '';
 			$last_poster_url = ($row['forum_last_poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['forum_last_poster_id']);
 
 			$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id_last_post'] . '&amp;p=' . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
@@ -342,6 +344,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'SUBFORUMS'				=> $subforums_list,
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> $last_poster,
+			'LAST_POSTER_COLOUR'	=> $last_poster_colour,
 			'MODERATORS'			=> $moderators_list,
 
 			'L_SUBFORUM_STR'		=> $l_subforums,
@@ -489,20 +492,6 @@ function get_forum_parents(&$forum_data)
 	}
 
 	return $forum_parents;
-}
-
-/**
-* Get topic author
-*/
-function topic_topic_author(&$topic_row)
-{
-	global $phpEx, $phpbb_root_path, $user;
-
-	$topic_author = ($topic_row['topic_poster'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $topic_row['topic_poster']) . ($topic_row['topic_first_poster_colour'] ? '" style="color: #' . $topic_row['topic_first_poster_colour'] : '') . '">' : '';
-	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? $topic_row['topic_first_poster_name'] : (($topic_row['topic_first_poster_name'] != '') ? $topic_row['topic_first_poster_name'] : $user->lang['GUEST']);
-	$topic_author .= ($topic_row['topic_poster'] != ANONYMOUS) ? '</a>' : '';
-
-	return $topic_author;
 }
 
 /**

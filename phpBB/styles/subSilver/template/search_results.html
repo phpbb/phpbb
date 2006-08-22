@@ -51,12 +51,12 @@
 					<p class="gensmall">{L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></p>
 				<!-- ENDIF -->
 			</td>
-			<td class="row2" width="100" align="center"><p class="topicauthor">{searchresults.TOPIC_AUTHOR_LINK}</p></td>
+			<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF searchresults.U_TOPIC_AUTHOR --><a href="{searchresults.U_TOPIC_AUTHOR}"<!-- IF searchresults.TOPIC_AUTHOR_COLOUR --> style="color: {searchresults.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{searchresults.TOPIC_AUTHOR}</a><!-- ELSE -->{searchresults.TOPIC_AUTHOR}</a><!-- ENDIF --></p></td>
 			<td class="row1" width="50" align="center"><p class="topicdetails">{searchresults.TOPIC_REPLIES}</p></td>
 			<td class="row2" width="50" align="center"><p class="topicdetails">{searchresults.TOPIC_VIEWS}</p></td>
 			<td class="row1" width="120" align="center">
 				<p class="topicdetails">{searchresults.LAST_POST_TIME}</p>
-				<p class="topicdetails"><!-- IF searchresults.U_LAST_POST_AUTHOR --><a href="{searchresults.U_LAST_POST_AUTHOR}">{searchresults.LAST_POST_AUTHOR}</a><!-- ELSE -->{searchresults.LAST_POST_AUTHOR}<!-- ENDIF -->
+				<p class="topicdetails"><!-- IF searchresults.U_LAST_POST_AUTHOR --><a href="{searchresults.U_LAST_POST_AUTHOR}"<!-- IF searchresults.LAST_POST_AUTHOR_COLOUR --> style="color: {searchresults.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{searchresults.LAST_POST_AUTHOR}</a><!-- ELSE -->{searchresults.LAST_POST_AUTHOR}<!-- ENDIF -->
 					<a href="{searchresults.U_LAST_POST}">{searchresults.LAST_POST_IMG}</a>
 				</p>
 			</td>

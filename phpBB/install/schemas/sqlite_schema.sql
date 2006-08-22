@@ -237,6 +237,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_last_post_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_last_poster_name varchar(255) NOT NULL DEFAULT '',
+	forum_last_poster_colour varchar(6) NOT NULL DEFAULT '',
 	forum_flags tinyint(4) NOT NULL DEFAULT '32',
 	display_on_index INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_indexing INTEGER UNSIGNED NOT NULL DEFAULT '1',

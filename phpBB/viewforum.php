@@ -509,15 +509,16 @@ if (sizeof($topic_list))
 
 		// Send vars to template
 		$template->assign_block_vars('topicrow', array(
-			'FORUM_ID'			=> $forum_id,
-			'TOPIC_ID'			=> $topic_id,
-			'TOPIC_AUTHOR'		=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
-			'TOPIC_AUTHOR_COLOUR' => ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
-			'TOPIC_AUTHOR_LINK'	=> topic_topic_author($row),
-			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
-			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
-			'LAST_POST_AUTHOR'	=> ($row['topic_last_poster_name']) ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+			'FORUM_ID'					=> $forum_id,
+			'TOPIC_ID'					=> $topic_id,
+			'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
+			'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
+			'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+			'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
+			'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+			'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name']) ? $row['topic_last_poster_name'] : $user->lang['GUEST'],
+			'LAST_POST_AUTHOR_COLOUR'	=> ($row['topic_last_poster_colour']) ? '#' . $row['topic_last_poster_colour'] : '',
+
 			'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 			'REPLIES'			=> $replies,
 			'VIEWS'				=> $row['topic_views'],
@@ -548,6 +549,7 @@ if (sizeof($topic_list))
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 			'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 			'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
+			'U_TOPIC_AUTHOR'		=> ($row['topic_poster'] != ANONYMOUS && $row['topic_poster']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_poster']) : '',
 			'U_VIEW_TOPIC'			=> $view_topic_url,
 			'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;f=' . $forum_id . '&amp;t=' . $topic_id, true, $user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,

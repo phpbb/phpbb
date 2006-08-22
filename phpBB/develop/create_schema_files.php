@@ -903,6 +903,7 @@ function get_schema_struct()
 			'forum_last_poster_id'	=> array('UINT', 0),
 			'forum_last_post_time'	=> array('TIMESTAMP', 0),
 			'forum_last_poster_name'=> array('VCHAR', ''),
+			'forum_last_poster_colour'=> array('VCHAR:6', ''),
 			'forum_flags'			=> array('TINT:4', 32),
 			'display_on_index'		=> array('BOOL', 1),
 			'enable_indexing'		=> array('BOOL', 1),

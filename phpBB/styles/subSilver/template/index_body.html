@@ -55,7 +55,7 @@
 					<p class="topicdetails">{forumrow.LAST_POST_TIME}</p>
 					<p class="topicdetails">
 					<!-- IF forumrow.U_LAST_POSTER -->
-						<a href="{forumrow.U_LAST_POSTER}">{forumrow.LAST_POSTER}</a>
+						<a href="{forumrow.U_LAST_POSTER}"<!-- IF forumrow.LAST_POSTER_COLOUR --> style="color: {forumrow.LAST_POSTER_COLOUR}"<!-- ENDIF -->>{forumrow.LAST_POSTER}</a>
 					<!-- ELSE -->
 						{forumrow.LAST_POSTER}
 					<!-- ENDIF -->

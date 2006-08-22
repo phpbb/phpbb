@@ -499,6 +499,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_time number(11) DEFAULT '0' NOT NULL,
 	forum_last_poster_name varchar2(255) DEFAULT '' ,
+	forum_last_poster_colour varchar2(6) DEFAULT '' ,
 	forum_flags number(4) DEFAULT '32' NOT NULL,
 	display_on_index number(1) DEFAULT '1' NOT NULL,
 	enable_indexing number(1) DEFAULT '1' NOT NULL,

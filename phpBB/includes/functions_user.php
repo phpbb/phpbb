@@ -262,7 +262,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		case 'retain':
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET forum_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . ", forum_last_poster_colour = ''
 				WHERE forum_last_poster_id = $user_id";
 			$db->sql_query($sql);
 
