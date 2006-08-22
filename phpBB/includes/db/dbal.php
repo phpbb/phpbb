@@ -131,7 +131,7 @@ class dbal
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function sql_transaction($status = 'begin')
 	{

@@ -706,7 +706,7 @@ class queue
 
 	/**
 	* Format array
-	* @access: private
+	* @access private
 	*/
 	function format_array($array)
 	{

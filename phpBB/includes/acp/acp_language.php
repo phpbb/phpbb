@@ -838,7 +838,7 @@ class acp_language
 				$compress->close();
 
 				$compress->download('lang_' . $row['lang_iso']);
-				@unlink($phpbb_root_path . 'store/lang_' . $row['lang_iso'] . '.' . $use_method);
+				@unlink($phpbb_root_path . 'store/lang_' . $row['lang_iso'] . $use_method);
 
 				exit;
 

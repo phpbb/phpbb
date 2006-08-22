@@ -803,7 +803,7 @@ class bbcode_firstpass extends bbcode
 	* @param string $url the url to check
 	* @return true if the url is pointing to this domain/script_path/php-file, false if not
 	*
-	* @access: private
+	* @access private
 	*/
 	function path_in_domain($url)
 	{

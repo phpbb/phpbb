@@ -271,6 +271,7 @@ $lang = array_merge($lang, array(
 	'CURRENT_FILE'					=> 'Current original file',
 	'CURRENT_VERSION'				=> 'Current version',
 
+	'DATABASE_UPDATE_INFO_OLD'			=> 'The latest version is newer than the database info stored. Please download the correct archive.',
 	'DESTINATION'						=> 'Destination file',
 	'DIFF_INLINE'						=> 'Inline',
 	'DIFF_RAW'							=> 'Raw unified diff',

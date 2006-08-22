@@ -15,7 +15,7 @@
 *
 * Set variable, used by {@link request_var the request_var function}
 *
-* @access: private
+* @access private
 */
 function set_var(&$result, $var, $type, $multibyte = false)
 {
@@ -1865,7 +1865,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (!$redirect)
 	{
 		// We just use what the session code determined...
-		$redirect = $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
+		// We do not append the phpbb_root_path directory because we are within the root dir if the redirect happens and not within the current directory.
+		$redirect = (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));

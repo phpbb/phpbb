@@ -52,7 +52,7 @@ class template_compile
 	
 	/**
 	* Load template source from file
-	* @access: private
+	* @access private
 	*/
 	function _tpl_load_file($handle)
 	{
@@ -153,7 +153,7 @@ class template_compile
 
 	/**
 	* The all seeing all doing compile method. Parts are inspired by or directly from Smarty
-	* @access: private
+	* @access private
 	*/
 	function compile($code, $no_echo = false, $echo_var = '')
 	{
@@ -280,7 +280,7 @@ class template_compile
 
 	/**
 	* Compile variables
-	* @access: private
+	* @access private
 	*/
 	function compile_var_tags(&$text_blocks)
 	{
@@ -322,7 +322,7 @@ class template_compile
 
 	/**
 	* Compile blocks
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_block($tag_args)
 	{
@@ -413,7 +413,7 @@ class template_compile
 	/**
 	* Compile IF tags - much of this is from Smarty with
 	* some adaptions for our block level methods
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_if($tag_args, $elseif)
 	{
@@ -540,7 +540,7 @@ class template_compile
 
 	/**
 	* Compile DEFINE tags
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_define($tag_args, $op)
 	{
@@ -593,7 +593,7 @@ class template_compile
 
 	/**
 	* Compile INCLUDE tag
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_include($tag_args)
 	{
@@ -602,7 +602,7 @@ class template_compile
 
 	/**
 	* Compile INCLUDE_PHP tag
-	* @access: private
+	* @access private
 	*/
 	function compile_tag_include_php($tag_args)
 	{
@@ -612,7 +612,7 @@ class template_compile
 	/**
 	* parse expression
 	* This is from Smarty
-	* @access: private
+	* @access private
 	*/
 	function _parse_is_expr($is_arg, $tokens)
 	{
@@ -683,7 +683,7 @@ class template_compile
 	* ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
 	* It's ready to be inserted into an "echo" line in one of the templates.
 	* NOTE: expects a trailing "." on the namespace.
-	* @access: private
+	* @access private
 	*/
 	function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
 	{
@@ -708,7 +708,7 @@ class template_compile
 	*
 	* If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	* NOTE: does not expect a trailing "." on the blockname.
-	* @access: private
+	* @access private
 	*/
 	function generate_block_data_ref($blockname, $include_last_iterator, $defop = false)
 	{
@@ -737,7 +737,7 @@ class template_compile
 
 	/**
 	* Write compiled file to cache directory
-	* @access: private
+	* @access private
 	*/
 	function compile_write(&$handle, $data)
 	{

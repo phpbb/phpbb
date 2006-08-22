@@ -33,7 +33,7 @@ class dbal_mysql extends dbal
 {
 	/**
 	* Connect to server
-	* @access: public
+	* @access public
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
@@ -65,7 +65,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* SQL Transaction
-	* @access: private
+	* @access private
 	*/
 	function _sql_transaction($status = 'begin')
 	{
@@ -330,7 +330,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* Build db-specific query data
-	* @access: private
+	* @access private
 	*/
 	function _sql_custom_build($stage, $data)
 	{
@@ -346,7 +346,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* return sql error array
-	* @access: private
+	* @access private
 	*/
 	function _sql_error()
 	{
@@ -366,7 +366,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* Close sql connection
-	* @access: private
+	* @access private
 	*/
 	function _sql_close()
 	{
@@ -375,7 +375,7 @@ class dbal_mysql extends dbal
 
 	/**
 	* Build db-specific report
-	* @access: private
+	* @access private
 	*/
 	function _sql_report($mode, $query = '')
 	{

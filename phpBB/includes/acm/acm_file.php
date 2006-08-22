@@ -176,6 +176,32 @@ class acm
 	}
 
 	/**
+	* Purge cache data
+	*/
+	function purge()
+	{
+		// Purge sql data
+		$dir = opendir($this->cache_dir);
+		while (($entry = readdir($dir)) !== false)
+		{
+			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			{
+				continue;
+			}
+
+			@unlink($this->cache_dir . $entry);
+		}
+		@closedir($dir);
+
+		unset($this->vars);
+		unset($this->var_expires);
+		unset($this->sql_rowset);
+		unset($this->sql_row_pointer);
+
+		$this->is_modified = false;
+	}
+
+	/**
 	* Destroy cache data
 	*/
 	function destroy($var_name, $table = '')

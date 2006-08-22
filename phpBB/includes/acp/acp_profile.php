@@ -129,7 +129,7 @@ class acp_profile
 							$new_table_cols = trim($matches[1]);
 							$old_table_cols = explode(',', $new_table_cols);
 							$column_list = array();
-							foreach($old_table_cols as $declaration)
+							foreach ($old_table_cols as $declaration)
 							{
 								$entities = preg_split('#\s+#', trim($declaration));
 								if ($entities[0] !== '_' . $field_ident)

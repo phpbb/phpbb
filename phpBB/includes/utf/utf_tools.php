@@ -59,17 +59,13 @@ function utf8_recode($string, $encoding)
 		return $string;
 	}
 
-	/**
-	* PHP has a built-in function for encoding from iso-8859-1, let's use that
-	*/
+	// PHP has a built-in function for encoding from iso-8859-1, let's use that
 	if ($encoding == 'iso-8859-1')
 	{
 		return utf8_encode($string);
 	}
 
-	/**
-	* First, try iconv()
-	*/
+	// First, try iconv()
 	if (function_exists('iconv'))
 	{
 		$ret = @iconv($encoding, 'utf-8', $string);
@@ -80,9 +76,7 @@ function utf8_recode($string, $encoding)
 		}
 	}
 
-	/**
-	* Try the mb_string extension
-	*/
+	// Try the mb_string extension
 	if (function_exists('mb_convert_encoding'))
 	{
 		$ret = @mb_convert_encoding($string, 'utf-8', $encoding);
@@ -93,9 +87,7 @@ function utf8_recode($string, $encoding)
 		}
 	}
 
-	/**
-	* Try the recode extension
-	*/
+	// Try the recode extension
 	if (function_exists('recode_string'))
 	{
 		$ret = @recode_string($encoding . '..utf-8', $string);
@@ -106,25 +98,21 @@ function utf8_recode($string, $encoding)
 		}
 	}
 
-	/**
-	* If nothing works, check if we have a custom transcoder available
-	*/
+	// If nothing works, check if we have a custom transcoder available
 	if (!preg_match('#^[a-z0-9\\-]+$#', $encoding))
 	{
-		/**
-		* Make sure the encoding name is alphanumeric, we don't want it
-		* to be abused into loading arbitrary files
-		*/
-		trigger_error('Unknown encoding: ' . $encoding);
+		// Make sure the encoding name is alphanumeric, we don't want it to be abused into loading arbitrary files
+		trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
 	}
 
 	global $phpbb_root_path;
+
 	if (!file_exists($phpbb_root_path . 'includes/utf/data/'))
 	{
 		return $string;
 	}
 
-	die('Finish me!! '.basename(__FILE__).' at line '.__LINE__);
+	die('Finish me!! ' . basename(__FILE__) . ' at line ' . __LINE__);
 }
 
 /**
@@ -200,11 +188,11 @@ function utf8_decode_ncr_callback($m)
 	{
 		return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
 	}
-	elseif ($cp > 0x7FF)
+	else if ($cp > 0x7FF)
 	{
 		return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
 	}
-	elseif ($cp > 0x7F)
+	else if ($cp > 0x7F)
 	{
 		return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
 	}

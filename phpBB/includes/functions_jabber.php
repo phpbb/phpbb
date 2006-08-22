@@ -627,7 +627,7 @@ class jabber
 
 	/**
 	* Send auth
-	* @access: private
+	* @access private
 	*/
 	function _sendauth_ok($zerok_token, $zerok_sequence)
 	{
@@ -655,7 +655,7 @@ class jabber
 
 	/**
 	* Send auth digest
-	* @access: private
+	* @access private
 	*/
 	function _sendauth_digest()
 	{
@@ -671,7 +671,7 @@ class jabber
 
 	/**
 	* Send auth plain
-	* @access: private
+	* @access private
 	*/
 	function _sendauth_plaintext()
 	{
@@ -687,7 +687,7 @@ class jabber
 
 	/**
 	* Listen on socket
-	* @access: private
+	* @access private
 	*/
 	function _listen_incoming()
 	{
@@ -704,7 +704,7 @@ class jabber
 
 	/**
 	* Check if connected
-	* @access: private
+	* @access private
 	*/
 	function _check_connected()
 	{
@@ -733,7 +733,7 @@ class jabber
 
 	/**
 	* Split incoming packet
-	* @access: private
+	* @access private
 	*/
 	function _split_incoming($incoming)
 	{
@@ -750,7 +750,7 @@ class jabber
 
 	/**
 	* Get packet type
-	* @access: private
+	* @access private
 	*/
 	function _get_packet_type($packet = NULL)
 	{
@@ -765,7 +765,7 @@ class jabber
 
 	/**
 	* Recursively prepares the strings in an array to be used in XML data.
-	* @access: private
+	* @access private
 	*/
 	function _array_xmlspecialchars(&$array)
 	{
@@ -787,7 +787,7 @@ class jabber
 
 	/**
 	* Prepares a string for usage in XML data.
-	* @access: private
+	* @access private
 	*/
 	function _xmlspecialchars(&$string)
 	{
@@ -797,7 +797,7 @@ class jabber
 
 	/**
 	* Recursively converts all elements in an array to UTF-8 from the encoding stored in {@link encoding the encoding attribute}.
-	* @access: private
+	* @access private
 	*/
 	function _array_conv_utf8(&$array)
 	{
@@ -830,7 +830,7 @@ class jabber
 	*
 	* @return boolean True on success, false on failure.
 	*
-	* @access: private
+	* @access private
 	*/
 	function _conv_utf8(&$string)
 	{

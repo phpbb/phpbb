@@ -433,7 +433,7 @@ class acp_database
 
 											$column_list = array();
 											$table_cols = explode(',', trim($matches[1]));
-											foreach($table_cols as $declaration)
+											foreach ($table_cols as $declaration)
 											{
 												$entities = preg_split('#\s+#', trim($declaration));
 												$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);

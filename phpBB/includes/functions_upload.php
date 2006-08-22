@@ -38,7 +38,7 @@ class filespec
 
 	/**
 	* File Class
-	* @access: private
+	* @access private
 	*/
 	function filespec($upload_ary, $upload_namespace)
 	{

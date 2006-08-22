@@ -588,6 +588,9 @@ class session
 		$SID = '?sid=';
 		$this->session_id = $_SID = '';
 
+		// To make sure a valid session is created we create one for the anonymous user
+		$this->session_create(ANONYMOUS);
+
 		return true;
 	}
 
@@ -1207,7 +1210,7 @@ class user extends session
 
 	/**
 	* Set language entry (called by add_lang)
-	* @access: private
+	* @access private
 	*/
 	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{
