@@ -1865,8 +1865,15 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (!$redirect)
 	{
 		// We just use what the session code determined...
-		// We do not append the phpbb_root_path directory because we are within the root dir if the redirect happens and not within the current directory.
-		$redirect = (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
+		// If we are not within the admin directory we use the page dir...
+		$redirect = '';
+
+		if (!$admin)
+		{
+			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
+		}
+
+		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
