@@ -1476,7 +1476,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					if ($row['forum_' . $fieldname] != $row[$fieldname])
 					{
-						if (preg_match('#name$#', $fieldname))
+						if (preg_match('#(name|colour)$#', $fieldname))
 						{
 							$sql_ary['forum_' . $fieldname] = (string) $row[$fieldname];
 						}
