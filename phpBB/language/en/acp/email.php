@@ -41,7 +41,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_SESSION'			=> 'Log mail session to critical log',
 
-	'SEND_IMMEDIATLY'		=> 'Send immediatly',
+	'SEND_IMMEDIATLY'		=> 'Send immediately',
 	'SEND_TO_GROUP'			=> 'Send to group',
 	'SEND_TO_USERS'			=> 'Send to users',
 	'SEND_TO_USERS_EXPLAIN'	=> 'Entering names here will override any group selected above. Enter each username on a new line.',

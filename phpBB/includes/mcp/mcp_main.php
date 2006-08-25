@@ -207,9 +207,18 @@ function lock_unlock($action, $ids)
 		$l_prefix = 'POST';
 	}
 
-	if (!($forum_id = check_ids($ids, $table, $sql_id, array('f_user_lock', 'm_lock'))))
+	if (!($forum_id = check_ids($ids, $table, $sql_id, array('m_lock'))))
 	{
-		return;
+		// Make sure that for f_user_lock only the lock action is triggered.
+		if ($action != 'lock')
+		{
+			return;
+		}
+
+		if (!($forum_id = check_ids($ids, $table, $sql_id, array('f_user_lock'))))
+		{
+			return;
+		}
 	}
 
 	$redirect = request_var('redirect', $user->data['session_page']);

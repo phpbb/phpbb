@@ -120,7 +120,6 @@ $lang = array_merge($lang, array(
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder can not be removed.',
 	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
 	'CHANGE_PASSWORD'			=> 'Change password',
-	'CHANGE_PASSWORD_EXPLAIN'	=> 'Must be between %1$d and %2$d characters.',
 	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your "%3$s" folder%2$s',
 	'CONFIRMATION'				=> 'Confirmation of registration',
 	'CONFIRM_EMAIL'				=> 'Confirm email address',
@@ -225,6 +224,8 @@ $lang = array_merge($lang, array(
 
 	'IF_FOLDER_FULL'			=> 'If folder is full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',
+	'INVALID_CHARS_USERNAME'	=> 'The username contains forbidden characters.',
+	'INVALID_CHARS_NEW_PASSWORD'=> 'The password does not contain the required characters.',
 	'ITEMS_REQUIRED'			=> 'The items marked with * are required profile fields and need to be filled out',
 
 	'JOIN_SELECTED'				=> 'Join selected',
@@ -261,7 +262,6 @@ $lang = array_merge($lang, array(
 	'NEW_FOLDER_NAME'			=> 'New folder name',
 	'NEW_PASSWORD'				=> 'Password',
 	'NEW_PASSWORD_ERROR'		=> 'The passwords you entered do not match.',
-	'NEW_PASSWORD_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
 	'NOTIFY_METHOD'				=> 'Notification method',
 	'NOTIFY_METHOD_BOTH'		=> 'Both',
 	'NOTIFY_METHOD_EMAIL'		=> 'Email only',
@@ -313,6 +313,10 @@ $lang = array_merge($lang, array(
 	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
 
+	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must contain alphanumerics',
+	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
+	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must be mixed case',
+	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must contain symbols',
 	'PASSWORD_ACTIVATED'		=> 'Your new password has been activated',
 	'PASSWORD_UPDATED'			=> 'Your password has been sent successfully to your original email address.',
 	'PERMISSIONS_RESTORED'		=> 'Successfully restored original permissions.',

@@ -106,7 +106,6 @@ if (!$auth->acl_getf_global('m_'))
 	// Except he is using one of the quickmod tools for users
 	$user_quickmod_actions = array(
 		'lock'			=> 'f_user_lock',
-		'unlock'		=> 'f_user_lock',
 		'make_sticky'	=> 'f_sticky',
 		'make_announce'	=> 'f_announce',
 		'make_global'	=> 'f_announce',

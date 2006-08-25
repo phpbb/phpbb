@@ -117,7 +117,9 @@ class ucp_register
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username')),
-				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'new_password'		=> array(
+					array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+					array('password')),
 				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'email'				=> array(
 					array('string', false, 6, 60),
@@ -433,6 +435,7 @@ class ucp_register
 		}
 
 		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
+		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
 
 		$lang = (isset($lang)) ? $lang : $config['default_lang'];
 		$tz = (isset($tz)) ? $tz : $config['board_timezone'];
@@ -450,7 +453,7 @@ class ucp_register
 			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($lang),
 			'S_TZ_OPTIONS'		=> tz_select($tz),

@@ -622,9 +622,11 @@ class acp_users
 					$data['username'] = $data['user'];
 					unset($data['user']);
 
-					// Validation data
+					// Validation data - we do not check the password complexity setting here
 					$var_ary = array(
-						'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+						'user_password'		=> array(
+							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+							array('password')),
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'warnings'			=> array('num'),
 					);
@@ -772,6 +774,7 @@ class acp_users
 				}
 
 				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
+				$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
 
 				if ($user_id == $user->data['user_id'])
 				{
@@ -794,8 +797,8 @@ class acp_users
 				}
 
 				$template->assign_vars(array(
-					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[$config['allow_name_chars']] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang['CHANGE_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
 					'S_OVERVIEW'		=> true,

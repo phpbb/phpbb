@@ -23,6 +23,15 @@ $auth->acl($user->data);
 $cron_type = request_var('cron_type', '');
 $use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
 
+// Output transparent gif
+header('Cache-Control: no-cache');
+header('Content-type: image/gif');
+header('Content-length: 43');
+
+echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+
+flush();
+
 /**
 * Run cron-like action
 * Real cron-based layer will be introduced in 3.2
@@ -217,14 +226,6 @@ else
 	garbage_collection();
 }
 
-// Output transparent gif
-header('Cache-Control: no-cache');
-header('Content-type: image/gif');
-header('Content-length: 43');
-
-echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
-
-flush();
 exit;
 
 ?>

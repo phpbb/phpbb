@@ -53,7 +53,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_S_HELP'				=> 'Font color: [color=red]text[/color]  Tip: you can also use color=#FF0000',
 	'BBCODE_U_HELP'				=> 'Underline text: [u]text[/u]  (alt+u)',
 	'BBCODE_W_HELP'				=> 'Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)',
-	'BBCODE_D_HELP'				=> 'Flash: [flash=height,width]http://url[/flash]  (alt+d)',
+	'BBCODE_D_HELP'				=> 'Flash: [flash=width,height]http://url[/flash]  (alt+d)',
 	'BUMP_ERROR'				=> 'You cannot bump this topic so soon after the last post.',
 
 	'CANNOT_DELETE_REPLIED'		=> 'Sorry but you may only delete posts which have not been replied to.',
