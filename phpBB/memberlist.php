@@ -396,16 +396,20 @@ switch ($mode)
 		$posts_per_day = $member['user_posts'] / $memberdays;
 		$percentage = ($config['num_posts']) ? min(100, ($member['user_posts'] / $config['num_posts']) * 100) : 0;
 
-		if ($member['user_sig_bbcode_bitfield'] && $member['user_sig'])
-		{
-			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-			$bbcode = new bbcode();
-			$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
-		}
 
 		if ($member['user_sig'])
 		{
-			$member['user_sig'] = censor_text(smiley_text($member['user_sig']));
+			$member['user_sig'] = censor_text($member['user_sig']);
+			$member['user_sig'] = str_replace("\n", '<br />', $member['user_sig']);
+
+			if ($member['user_sig_bbcode_bitfield'])
+			{
+				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				$bbcode = new bbcode();
+				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
+			}
+
+			$member['user_sig'] = smiley_text($member['user_sig']);
 		}
 
 		$poster_avatar = '';
@@ -459,7 +463,7 @@ switch ($mode)
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
-			'SIGNATURE'		=> (!empty($member['user_sig'])) ? str_replace("\n", '<br />', $member['user_sig']) : '',
+			'SIGNATURE'		=> $member['user_sig'],
 
 			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
@@ -1329,19 +1333,19 @@ function show_profile($data)
 
 		if ($bday_year)
 		{
-			$time = time() + $user->timezone + $user->dst;
+			$now = getdate(time() + $user->timezone + $user->dst);
 
-			$diff = date('n', $time) - $bday_month;
+			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)
 			{
-				$diff = (date('j', $time) - $bday_day < 0) ? 1 : 0;
+				$diff = ($now['mday'] - $bday_day < 0) ? 1 : 0;
 			}
 			else
 			{
 				$diff = ($diff < 0) ? 1 : 0;
 			}
 
-			$age = (int) (date('Y', $time) - $bday_year - $diff);
+			$age = (int) ($now['year'] - $bday_year - $diff);
 		}
 	}
 

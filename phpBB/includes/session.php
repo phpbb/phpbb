@@ -1340,13 +1340,15 @@ class user extends session
 		static $imgs;
 		global $phpbb_root_path;
 
-		if (empty($imgs[$img . $suffix]) || $width !== false)
+		$img_data = $imgs[$img . $suffix];
+
+		if (empty($img_data) || $width !== false)
 		{
 			if (!isset($this->theme[$img]) || !$this->theme[$img])
 			{
 				// Do not fill the image to let designers decide what to do if the image is empty
-				$imgs[$img . $suffix] = '';
-				return $imgs[$img . $suffix];
+				$img_data = '';
+				return $img_data;
 			}
 
 			// Do not include dimensions?
@@ -1372,9 +1374,9 @@ class user extends session
 				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
 			}
 
-			$imgs[$img . $suffix]['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
-			$imgs[$img . $suffix]['width'] = $width;
-			$imgs[$img . $suffix]['height'] = $height;
+			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
+			$img_data['width'] = $width;
+			$img_data['height'] = $height;
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;
@@ -1382,19 +1384,19 @@ class user extends session
 		switch ($type)
 		{
 			case 'src':
-				return $imgs[$img . $suffix]['src'];
+				return $img_data['src'];
 			break;
 			
 			case 'width':
-				return $imgs[$img . $suffix]['width'];
+				return $img_data['width'];
 			break;
 
 			case 'height':
-				return $imgs[$img . $suffix]['height'];
+				return $img_data['height'];
 			break;
 
 			default:
-				return '<img src="' . $imgs[$img . $suffix]['src'] . '"' . (($imgs[$img . $suffix]['width']) ? ' width="' . $imgs[$img . $suffix]['width'] . '"' : '') . (($imgs[$img . $suffix]['height']) ? ' height="' . $imgs[$img . $suffix]['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
+				return '<img src="' . $img_data['src'] . '"' . (($img_data['width']) ? ' width="' . $img_data['width'] . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
 			break;
 		}
 	}

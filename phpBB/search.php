@@ -47,11 +47,6 @@ $sort_dir		= request_var('sd', 'd');
 $return_chars	= request_var('ch', ($topic_id) ? -1 : 200);
 $search_forum	= request_var('fid', array(0));
 
-if ($search_forum == array(0))
-{
-	$search_forum = array();
-}
-
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
 {
@@ -609,11 +604,55 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 		else
 		{
+			$bbcode_bitfield = '';
+			$attach_list = array();
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$rowset[] = $row;
+				if (($return_chars == -1) || (strlen($row['post_text']) < $return_chars + 3))
+				{
+					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
+
+					// Does this post have an attachment? If so, add it to the list
+					if ($row['post_attachment'] && $config['allow_attachments'])
+					{
+						$attach_list[] = $row['post_id'];
+					}
+				}
 			}
 			$db->sql_freeresult($result);
+
+			// Instantiate BBCode if needed
+			if ($bbcode_bitfield !== '')
+			{
+				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				$bbcode = new bbcode(base64_encode($bbcode_bitfield));
+			}
+
+			// Pull attachment data
+			if (sizeof($attach_list))
+			{
+				if ($auth->acl_gets('f_download', 'u_download', $forum_id))
+				{
+					$sql = 'SELECT *
+						FROM ' . ATTACHMENTS_TABLE . '
+						WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
+							AND in_message = 0
+						ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
+					$result = $db->sql_query($sql);
+			
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$attachments[$row['post_msg_id']][] = $row;
+					}
+					$db->sql_freeresult($result);
+				}
+				else
+				{
+					$display_notice = true;
+				}
+			}
 		}
 
 		if ($hilit)
@@ -727,28 +766,53 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					continue;
 				}
 
-				decode_message($row['post_text'], $row['bbcode_uid']);
-
-				if ($return_chars != -1)
-				{
-					$row['post_text'] = (strlen($row['post_text']) < $return_chars + 3) ? $row['post_text'] : substr($row['post_text'], 0, $return_chars) . '...';
-				}
-
 				// Replace naughty words such as farty pants
 				$row['post_subject'] = censor_text($row['post_subject']);
-				$row['post_text'] = str_replace("\n", '<br />', censor_text($row['post_text']));
+				$message = $row['post_text'];
+
+
+				if (($return_chars != -1) && (strlen($message) >= $return_chars + 3))
+				{
+					$message = censor_text($message);
+					strip_bbcode($message, $row['bbcode_uid']);
+
+					// now find context for the searched words
+					$message = get_context($message, array_filter(explode('|', $hilit), 'strlen'), $return_chars);
+
+					$message = str_replace("\n", '<br />', $message);
+				}
+				else
+				{
+					$message = censor_text($message);
+					$message = str_replace("\n", '<br />', $message);
+
+					// Second parse bbcode here
+					if ($row['bbcode_bitfield'])
+					{
+						$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+					}
+
+					if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+					{
+						parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
+				
+						// we only display inline attachments
+						unset($attachments[$row['post_id']]);
+					}
+
+					// Always process smilies after parsing bbcodes
+					$message = smiley_text($message);
+				}
 
 				// post highlighting
-				$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
-
-				$row['post_text'] = smiley_text($row['post_text']);
+				$message = preg_replace('#(?!(?:<(?:s(?:cript|tyle))?)[^<]*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $message);
 
 				$tpl_ary = array(
 					'POSTER_NAME'		=> ($row['poster_id'] == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
 					'U_PROFILE'			=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
-					'MESSAGE'			=> $row['post_text']
+					'MESSAGE'			=> $message
 				);
 			}
 

@@ -119,6 +119,15 @@ class fulltext_native extends search_backend
 		// remove some useless bracket combinations which might be created by the previous regexps
 		$keywords = str_replace(array('()', ')|('), array('', '|'), $keywords);
 
+		$keywords = preg_replace_callback(
+			'#\((?:(?:[^)]*?) )*?[^)]*?\)#',
+			create_function(
+				'$matches',
+				'return str_replace(" ", "|", $matches[0]);'
+			),
+			$keywords
+		);
+
 		// $keywords input format: each word seperated by a space, words in a bracket are not seperated
 
 		// the user wants to search for any word, convert the search query
@@ -187,7 +196,7 @@ class fulltext_native extends search_backend
 				// a group of which at least one may not be in the resulting posts
 				if ($word[0] == '(')
 				{
-					$word = explode('|', substr($word, 1, -1));
+					$word = array_unique(explode('|', substr($word, 1, -1)));
 					$mode = 'must_exclude_one';
 				}
 				// one word which should not be in the resulting posts
@@ -209,7 +218,7 @@ class fulltext_native extends search_backend
 				// a group of words of which at least one word should be in every resulting post
 				if ($word[0] == '(')
 				{
-					$word = explode('|', substr($word, 1, -1));
+					$word = array_unique(explode('|', substr($word, 1, -1)));
 				}
 				$ignore_no_id = false;
 				$mode = 'must_contain';
@@ -880,7 +889,7 @@ class fulltext_native extends search_backend
 		// Do not index code
 		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
 		// BBcode
-		$match[] = '#\[\/?[a-z\*\+\-]+(?:=.*?)?(\:?[0-9a-z]{5,})\]#';
+		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
 
 		$min = $config['fulltext_native_min_chars'];
 		$max = $config['fulltext_native_max_chars'];
@@ -890,7 +899,7 @@ class fulltext_native extends search_backend
 		/**
 		* Clean up the string, remove HTML tags, remove BBCodes
 		*/
-		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), '', $user->lang['ENCODING']), ' ');
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1, $user->lang['ENCODING']), ' ');
 
 		while (isset($word[0]))
 		{
@@ -1146,14 +1155,14 @@ class fulltext_native extends search_backend
 
 		$destroy_cache_words = array();
 
-		// Remove common (> 60% of posts ) words
+		// Remove common (> 20% of posts ) words
 		if ($config['num_posts'] >= 100)
 		{
 			// First, get the IDs of common words
 			$sql = 'SELECT word_id
 				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
-				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
+				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.2);
 			$result = $db->sql_query($sql);
 
 			$sql_in = array();

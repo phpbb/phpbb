@@ -110,6 +110,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
+		$message = str_replace("\n", '<br />', $message);
 
 		if ($row['bbcode_bitfield'])
 		{
@@ -117,7 +118,6 @@ function mcp_topic_view($id, $mode, $action)
 		}
 
 		$message = smiley_text($message);
-		$message = str_replace("\n", '<br />', $message);
 
 		if (!$row['post_approved'])
 		{

@@ -117,6 +117,7 @@ class mcp_reports
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
+				$message = str_replace("\n", '<br />', $message);
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);

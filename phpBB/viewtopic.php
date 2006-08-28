@@ -717,6 +717,7 @@ if (!empty($topic_data['poll_start']))
 	for ($i = 0, $size = sizeof($poll_info); $i < $size; $i++)
 	{
 		$poll_info[$i]['poll_option_text'] = censor_text($poll_info[$i]['poll_option_text']);
+		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', $poll_info[$i]['poll_option_text']);
 
 		if ($poll_bbcode !== false)
 		{
@@ -724,17 +725,16 @@ if (!empty($topic_data['poll_start']))
 		}
 
 		$poll_info[$i]['poll_option_text'] = smiley_text($poll_info[$i]['poll_option_text']);
-		$poll_info[$i]['poll_option_text'] = str_replace("\n", '<br />', $poll_info[$i]['poll_option_text']);
 	}
 
 	$topic_data['poll_title'] = censor_text($topic_data['poll_title']);
+	$topic_data['poll_title'] = str_replace("\n", '<br />', $topic_data['poll_title']);
 
 	if ($poll_bbcode !== false)
 	{
 		$poll_bbcode->bbcode_second_pass($topic_data['poll_title'], $poll_info[0]['bbcode_uid'], $poll_info[0]['bbcode_bitfield']);
 	}
 	$topic_data['poll_title'] = smiley_text($topic_data['poll_title']);
-	$topic_data['poll_title'] = str_replace("\n", '<br />', $topic_data['poll_title']);
 
 	unset($poll_bbcode);
 
@@ -862,8 +862,7 @@ $sql = $db->sql_build_query('SELECT', array(
 
 $result = $db->sql_query($sql);
 
-$today = explode('-', date('j-n-Y', time() + $user->timezone + $user->dst));
-$today = array('day' => (int) $today[0], 'month' => (int) $today[1], 'year' => (int) $today[2]);
+$now = getdate(time() + $user->timezone + $user->dst);
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
@@ -1087,17 +1086,17 @@ while ($row = $db->sql_fetchrow($result))
 
 				if ($bday_year)
 				{
-					$diff = $today['month'] - $bday_month;
+					$diff = $now['mon'] - $bday_month;
 					if ($diff == 0)
 					{
-						$diff = ($today['day'] - $bday_day < 0) ? 1 : 0;
+						$diff = ($now['mday'] - $bday_day < 0) ? 1 : 0;
 					}
 					else
 					{
 						$diff = ($diff < 0) ? 1 : 0;
 					}
 
-					$user_cache[$poster_id]['age'] = (int) ($today['year'] - $bday_year - $diff);
+					$user_cache[$poster_id]['age'] = (int) ($now['year'] - $bday_year - $diff);
 				}
 			}
 		}
@@ -1248,6 +1247,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
 		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
+		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 
 		if ($user_cache[$poster_id]['sig_bbcode_bitfield'])
 		{
@@ -1255,12 +1255,12 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		}
 
 		$user_cache[$poster_id]['sig'] = smiley_text($user_cache[$poster_id]['sig']);
-		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig_parsed'] = true;
 	}
 
 	// Parse the message and subject
 	$message = censor_text($row['post_text']);
+	$message = str_replace("\n", '<br />', $message);
 
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
@@ -1285,12 +1285,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
-		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">\1</span>', $message);
+		$message = preg_replace('#(?!(?:<(?:s(?:cript|tyle))?)[^<]*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
 	}
 
 	// Replace naughty words such as farty pants
 	$row['post_subject'] = censor_text($row['post_subject']);
-	$message = str_replace("\n", '<br />', $message);
 
 	// Editing information
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])

@@ -873,6 +873,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$post_subject = $row['post_subject'];
 		$message = $row['post_text'];
+		$message = censor_text($message);
+		$message = str_replace("\n", '<br />', $message);
 		$decoded_message = false;
 
 		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
@@ -892,14 +894,13 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$message = smiley_text($message, !$row['enable_smilies']);
 
 		$post_subject = censor_text($post_subject);
-		$message = censor_text($message);
 
 		$template->assign_block_vars($mode . '_row', array(
 			'POSTER_NAME'		=> $poster,
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
-			'MESSAGE'			=> str_replace("\n", '<br />', $message), 
+			'MESSAGE'			=> $message,
 			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'U_POST_ID'			=> $row['post_id'],

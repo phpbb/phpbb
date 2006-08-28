@@ -54,6 +54,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	// Parse the message and subject
 	$message = $message_row['message_text'];
+	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Second parse bbcode here
 	if ($message_row['bbcode_bitfield'])
@@ -66,7 +67,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	// Replace naughty words such as farty pants
 	$message_row['message_subject'] = censor_text($message_row['message_subject']);
-	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Editing information
 	if ($message_row['message_edit_count'] && $config['display_last_edited'])
@@ -146,6 +146,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// End signature parsing, only if needed
 	if ($signature)
 	{
+		$signature = censor_text($signature);
+		$signature = str_replace("\n", '<br />', censor_text($signature));
+
 		if ($user_info['user_sig_bbcode_bitfield'])
 		{
 			if ($bbcode === false)
@@ -158,7 +161,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		}
 
 		$signature = smiley_text($signature);
-		$signature = str_replace("\n", '<br />', censor_text($signature));
 	}
 
 	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
@@ -318,6 +320,9 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		$subject	= $row['message_subject'];
 		$message	= $row['message_text'];
 
+		$message = censor_text($message);
+		$message = str_replace("\n", '<br />', $message)
+
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
@@ -326,7 +331,6 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		$message = smiley_text($message, !$row['enable_smilies']);
 
 		$subject = censor_text($subject);
-		$message = censor_text($message);
 
 		if ($id == $msg_id)
 		{
@@ -339,7 +343,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'AUTHOR_NAME'	=> $author,
 			'SUBJECT'		=> $subject,
 			'SENT_DATE'		=> $user->format_date($row['message_time']),
-			'MESSAGE'		=> str_replace("\n", '<br />', $message),
+			'MESSAGE'		=> $message,
 			'FOLDER'		=> implode(', ', $row['folder']),
 
 			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),

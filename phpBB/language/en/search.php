@@ -38,7 +38,7 @@ $lang = array_merge($lang, array(
 	'FOUND_SEARCH_MATCHES'	=> 'Search found %d matches',
 	'FOUND_MORE_SEARCH_MATCHES'	=> 'Search found more than %d matches',
 
-	'GLOBAL'				=> 'Global topic',
+	'GLOBAL'				=> 'Global announcement',
 
 	'IGNORED_TERMS'			=> 'ignored',
 	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored: <b>%s</b>',

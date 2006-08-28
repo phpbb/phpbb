@@ -95,6 +95,7 @@ function mcp_post_details($id, $mode, $action)
 
 	// Process message, leave it uncensored
 	$message = $post_info['post_text'];
+	$message = str_replace("\n", '<br />', $message);
 	if ($post_info['bbcode_bitfield'])
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
@@ -102,7 +103,6 @@ function mcp_post_details($id, $mode, $action)
 		$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 	}
 	$message = smiley_text($message);
-	$message = str_replace("\n", '<br />', $message);
 
 	$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters

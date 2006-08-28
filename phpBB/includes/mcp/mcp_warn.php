@@ -247,6 +247,7 @@ function mcp_warn_post_view($id, $mode, $action)
 	// We want to make the message available here as a reminder
 	// Parse the message and subject
 	$message = $userrow['post_text'];
+	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Second parse bbcode here
 	if ($userrow['bbcode_bitfield'])
@@ -259,9 +260,6 @@ function mcp_warn_post_view($id, $mode, $action)
 
 	// Always process smilies after parsing bbcodes
 	$message = smiley_text($message);
-
-	// Replace naughty words such as farty pants
-	$message = str_replace("\n", '<br />', censor_text($message));
 
 	// Generate the appropriate user information for the user we are looking at
 	$rank_title = $rank_img = '';

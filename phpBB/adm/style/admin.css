@@ -258,7 +258,7 @@ span.corners-top span, span.corners-bottom span {
 	border-top: 1px solid #FFFFFF;
 }
 
-#menu li a:hover span, #menu li#activemenu span {
+#menu li a:hover span, #menu li#activemenu span, #menu li a:hover {
 	text-decoration: none;
 	background-color: #FFA34F;
 	color: #FFFFFF;

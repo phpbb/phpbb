@@ -2015,6 +2015,117 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 }
 
 /**
+* Generates a text with approx. the specified length which contains the specified words and their context
+*
+* @param	string	$text	The full text from which context shall be extracted
+* @param	string	$words	An array of words which should be contained in the result, * is allowed as a wildcard
+* @param	int		$length	The desired length of the resulting text, however the result might be shorter or longer than this value
+*
+* @return	string			Context of the specified words seperated by "..."
+*/
+function get_context($text, $words, $length = 400)
+{
+	// first replace all whitespaces with single spaces
+	$text = preg_replace('/\s+/', ' ', $text);
+
+	$word_indizes = array();
+	if (sizeof($words))
+	{
+		$match = '';
+		// find the starting indizes of all words
+		foreach ($words as $word)
+		{
+			if (preg_match('#(?: |^)(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')(?: |$)#i', $text, $match))
+			{
+				$pos = strpos($text, $match[1]);
+				if ($pos !== false)
+				{
+					$word_indizes[] = $pos;
+				}
+			}
+		}
+		unset($match);
+
+		if (sizeof($word_indizes))
+		{
+			$word_indizes = array_unique($word_indizes);
+			sort($word_indizes);
+
+			$wordnum = sizeof($word_indizes);
+			// number of characters on the right and left side of each word
+			$sequence_length = (int) ($length / (2 * $wordnum)) - 2;
+			$final_text = '';
+			$word = $j = 0;
+			$final_text_index = -1;
+
+			// cycle through every character in the original text
+			for ($i = $word_indizes[$word], $n = strlen($text); $i < $n; $i++)
+			{
+				// if the current position is the start of one of the words then append $sequence_length characters to the final text
+				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
+				{
+					if ($final_text_index < $i - $sequence_length - 1)
+					{
+						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', substr($text, $i - $sequence_length, $sequence_length));
+					}
+					else
+					{
+						// if the final text is already nearer to the current word than $sequence_length we only append the text
+						// from its current index on and distribute the unused length to all other sequenes
+						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
+						$final_text .= substr($text, $final_text_index + 1, $i - $final_text_index - 1);
+					}
+					$final_text_index = $i - 1;
+
+					// add the following characters to the final text (see below)
+					$word++;
+					$j = 1;
+				}
+
+				if ($j > 0)
+				{
+					// add the character to the final text and increment the sequence counter
+					$final_text .= $text[$i];
+					$final_text_index++;
+					$j++;
+
+					// if this is a whitespace then check whether we are done with this sequence
+					if ($text[$i] == ' ')
+					{
+						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
+						if ($i + 4 < $n)
+						{
+							if (($j > $sequence_length && $word >= $wordnum) || strlen($final_text) > $length)
+							{
+								$final_text .= ' ...';
+								break;
+							}
+						}
+						else
+						{
+							// make sure the text really reaches the end
+							$j -= 4;
+						}
+
+						// stop context generation and wait for the next word
+						if ($j > $sequence_length)
+						{
+							$j = 0;
+						}
+					}
+				}
+			}
+			return $final_text;
+		}
+	}
+
+	if (!sizeof($words) || !sizeof($word_indizes))
+	{
+		return (strlen($text) >= $length + 3) ? substr($text, 0, $length) . '...' : $text;
+	}
+}
+
+/**
 * Decode text whereby text is coming from the db and expected to be pre-parsed content
 * We are placing this outside of the message parser because we are often in need of it...
 */
@@ -2053,6 +2164,33 @@ function decode_message(&$message, $bbcode_uid = '')
 }
 
 /**
+* Strips all bbcode from a text and returns the plain content
+*/
+function strip_bbcode(&$text, $uid = '')
+{
+	if (!$uid)
+	{
+		$uid = '[0-9a-z]{5,}';
+	}
+
+	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
+
+	$match = array(
+		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
+		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
+		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
+		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+		'#<!\-\- .*? \-\->#s',
+		'#<.*?>#s'
+	);
+	
+	$replace = array('\1', '\1', '\1', '\1', '\1', '', '');
+	
+	$text = preg_replace($match, $replace, $text);
+}
+
+/**
 * For display of custom parsed text on user-facing pages
 * Expects $text to be the value directly from the database (stored value)
 */
@@ -2065,6 +2203,8 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		return '';
 	}
 
+	$text = str_replace("\n", '<br />', censor_text($text));
+
 	// Parse bbcode if bbcode uid stored and bbcode enabled
 	if ($uid && ($flags & 1))
 	{
@@ -2074,7 +2214,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 			include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		}
 
-		if (empty($__bbcode))
+		if (empty($bbcode))
 		{
 			$bbcode = new bbcode($bitfield);
 		}
@@ -2087,7 +2227,6 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 	}
 
 	$text = smiley_text($text, !($flags & 2));
-	$text = str_replace("\n", '<br />', censor_text($text));
 
 	return $text;
 }
