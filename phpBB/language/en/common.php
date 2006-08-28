@@ -142,7 +142,7 @@ $lang = array_merge($lang, array(
 	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server',
 	'ERR_UNABLE_TO_LOGIN'				=> 'Error on login. Supplied username or password wrong.',
 	'ERR_WRONG_PATH_TO_PHPBB'			=> 'The phpBB path entered seems to be not valid.',
-	'EXPAND_VIEW'			=> 'Expand view',
+	'EXPAND_VIEW'						=> 'Expand view',
 	'EXTENSION'							=> 'Extension',
 	'EXTENSION_DISABLED_AFTER_POSTING'	=> 'The extension <strong>%s</strong> has been deactivated and can no longer be displayed',
 
@@ -228,7 +228,7 @@ $lang = array_merge($lang, array(
 	'HOURS'						=> 'Hours',
 	'HOME'						=> 'Home',
 
-	'ICQ'					=> 'ICQ',
+	'ICQ'						=> 'ICQ',
 	'ICQ_STATUS'				=> 'ICQ status',	
 	'IF'						=> 'if',
 	'IMAGE'						=> 'Image',
@@ -246,7 +246,7 @@ $lang = array_merge($lang, array(
 	'JUMP_TO'				=> 'Jump to',
 	'JUMP_TO_PAGE'			=> 'Click to jump to page...',
 
-	'KB'				=> 'KB',
+	'KB'					=> 'KB',
 
 	'LAST_POST'				=> 'Last post',
 	'LAST_UPDATED'			=> 'Last updated',
@@ -436,10 +436,10 @@ $lang = array_merge($lang, array(
 	'SEARCHING_FORUMS'			=> 'Searching forums',
 	'SEARCH_ACTIVE_TOPICS'		=> 'View active topics',
 	'SEARCH_FOR'				=> 'Search for',
-	'SEARCH_FORUM'			=> 'Search this forum',	
+	'SEARCH_FORUM'				=> 'Search this forum',	
 	'SEARCH_NEW'				=> 'View new posts',
 	'SEARCH_SELF'				=> 'View your posts',
-	'SEARCH_TOPIC'			=> 'Search this topic',
+	'SEARCH_TOPIC'				=> 'Search this topic',
 	'SEARCH_UNANSWERED'			=> 'View unanswered posts',
 	'SECONDS'					=> 'Seconds',
 	'SELECT'					=> 'Select',
@@ -595,7 +595,7 @@ $lang = array_merge($lang, array(
 
 	'YEAR'				=> 'Year',
 	'YES'				=> 'Yes',
-	'YIM'					=> 'YIM',	
+	'YIM'				=> 'YIM',	
 	'YOU_LAST_VISIT'	=> 'Last visit was: %s',
 	'YOU_NEW_PM'		=> 'A new private message is waiting for you in your Inbox',
 	'YOU_NEW_PMS'		=> 'New private messages are waiting for you in your Inbox',
