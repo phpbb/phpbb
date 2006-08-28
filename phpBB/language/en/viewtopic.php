@@ -70,6 +70,7 @@ $lang = array_merge($lang, array(
 	'NO_OLDER_TOPICS'		=> 'There are no older topics in this forum',
 	'NO_UNREAD_POSTS'		=> 'There are no new unread posts for this topic.',
 	'NO_VOTE_OPTION'		=> 'You must specify an option when voting.',
+	'NO_VOTES'				=> 'No votes',
 
 	'POLL_ENDED_AT'			=> 'Poll ended at %s',
 	'POLL_RUN_TILL'			=> 'Poll runs till %s',

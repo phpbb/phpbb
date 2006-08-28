@@ -34,8 +34,7 @@ $lang = array_merge($lang, array(
 	'ACTIVE_IN_TOPIC'		=> 'Most active topic',
 	'ADD_FOE'				=> 'Add foe',
 	'ADD_FRIEND'			=> 'Add friend',
-	'AFTER'					=> 'After',
-	'AIM'					=> 'AIM',
+	'AFTER'					=> 'After',	
 
 	'BEFORE'				=> 'Before',
 
@@ -62,7 +61,6 @@ $lang = array_merge($lang, array(
 
 	'HIDE_MEMBER_SEARCH'	=> 'Hide member search',
 
-	'ICQ'					=> 'ICQ',
 	'IM_ADD_CONTACT'		=> 'Add Contact',
 	'IM_AIM'				=> 'Please note that you need AOL Instant Messenger installed to use this.',
 	'IM_AIM_EXPRESS'		=> 'AIM Express',
@@ -80,8 +78,6 @@ $lang = array_merge($lang, array(
 	'IM_SENT_JABBER'		=> 'Your message to %1$s has been sent successfully.',
 	'IM_USER'				=> 'Send an instant message',
 	
-	'JABBER'				=> 'Jabber',
-
 	'LAST_ACTIVE'				=> 'Last active',
 	'LESS_THAN'					=> 'Less than',
 	'LIST_USER'					=> '1 user',
@@ -124,8 +120,6 @@ $lang = array_merge($lang, array(
 	'VISITED'				=> 'Last visited',
 
 	'WWW'					=> 'Website',
-
-	'YIM'					=> 'YIM',
 ));
 
 ?>
