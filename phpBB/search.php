@@ -770,10 +770,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$row['post_subject'] = censor_text($row['post_subject']);
 				$message = $row['post_text'];
 
-
 				if (($return_chars != -1) && (strlen($message) >= $return_chars + 3))
 				{
 					$message = censor_text($message);
+
+					// make list items visible as such
+					$message = str_replace('[*:' . $row['bbcode_uid'] . ']', '&sdot;&nbsp;', $message);
+
+					// do not display raw bbcode
 					strip_bbcode($message, $row['bbcode_uid']);
 
 					// now find context for the searched words
