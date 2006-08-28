@@ -76,7 +76,8 @@ class acp_language
 				break;
 
 				default:
-					trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
+					trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
+				break;
 			}
 
 			$test_connection = $transfer->open_session();
@@ -124,7 +125,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -155,12 +156,12 @@ class acp_language
 
 				if (!$lang_id || !isset($_POST['entry']) || !is_array($_POST['entry']))
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$this->language_file || (!$this->language_directory && !in_array($this->language_file, $this->main_files)))
 				{
-					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -187,7 +188,7 @@ class acp_language
 						{
 							if (!@mkdir($dir, 0777))
 							{
-								trigger_error("Could not create directory $dir");
+								trigger_error("Could not create directory $dir", E_USER_ERROR);
 							}
 							@chmod($dir, 0777);
 						}
@@ -200,7 +201,7 @@ class acp_language
 
 				if (!$fp)
 				{
-					trigger_error($user->lang['UNABLE_TO_WRITE_FILE']);
+					trigger_error($user->lang['UNABLE_TO_WRITE_FILE'], E_USER_WARNING);
 				}
 
 				if ($this->language_directory == 'email')
@@ -301,12 +302,13 @@ class acp_language
 						break;
 
 						default:
-							trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
+							trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
+						break;
 					}
 
 					if (($result = $transfer->open_session()) !== true)
 					{
-						trigger_error($user->lang[$result] . adm_back_link($this->u_action));
+						trigger_error($user->lang[$result] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
@@ -329,7 +331,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
@@ -362,28 +364,28 @@ class acp_language
 					case 'email':
 						if (!in_array($this->language_file, $email_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					case 'acp':
 						if (!in_array($this->language_file, $acp_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					case 'mods':
 						if (!in_array($this->language_file, $mods_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					default:
 						if (!in_array($this->language_file, $this->main_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id));
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 				}
 				
@@ -644,7 +646,7 @@ class acp_language
 			
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				
 				$sql = 'SELECT *
@@ -656,7 +658,7 @@ class acp_language
 
 				if ($row['lang_iso'] == $config['default_lang'])
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
@@ -677,7 +679,7 @@ class acp_language
 
 				if (!$lang_iso || !file_exists("{$phpbb_root_path}language/$lang_iso/iso.txt"))
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$file = file("{$phpbb_root_path}language/$lang_iso/iso.txt");
@@ -697,13 +699,13 @@ class acp_language
 
 				if ($row = $db->sql_fetchrow($result))
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$db->sql_freeresult($result);
 
 				if (!$lang_pack['name'] || !$lang_pack['local_name'])
 				{
-					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				
 				// Add language pack
@@ -727,7 +729,7 @@ class acp_language
 		
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT * 

@@ -164,7 +164,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 					{
 						foreach ($id_ary as $ug_id => $_id)
 						{
-							$address_list[$message_id][] = (($type == 'u') ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $ug_id) . '">' : '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '">') . (($recipient_list[$type][$ug_id]['colour']) ? '<span style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '">' : '<span>') . $recipient_list[$type][$ug_id]['name'] . '</span></a>';
+							$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
+
+							$address_list[$message_id][] = (($type == 'u') ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $ug_id) . '"' . $user_colour . '>' : '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>') . $recipient_list[$type][$ug_id]['name'] . '</a>';
 						}
 					}
 				}

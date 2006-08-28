@@ -191,7 +191,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if ($style_id == $config['default_style'])
 						{
-							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'UPDATE ' . STYLES_TABLE . '
@@ -234,7 +234,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if (!$template_row)
 						{
-							trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (confirm_box(true))
@@ -311,7 +311,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if (!$theme_row)
 						{
-							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (!$theme_row['theme_storedb'])
@@ -369,7 +369,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						if (!$imageset_row)
 						{
-							trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (confirm_box(true))
@@ -605,7 +605,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!($template_info = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_TEMPLATE']);
+			trigger_error($user->lang['NO_TEMPLATE'], E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -621,7 +621,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				if (!($fp = fopen($file, 'wb')))
 				{
-					trigger_error($user->lang['NO_TEMPLATE']);
+					trigger_error($user->lang['NO_TEMPLATE'], E_USER_WARNING);
 				}
 				fwrite($fp, $template_data);
 				fclose($fp);
@@ -674,7 +674,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				if (!file_exists($template_path . "/$template_file") || !($template_data = file_get_contents($template_path . "/$template_file")))
 				{
-					trigger_error($user->lang['NO_TEMPLATE']);
+					trigger_error($user->lang['NO_TEMPLATE'], E_USER_WARNING);
 				}
 			}
 		}
@@ -804,7 +804,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!($template_row = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_TEMPLATE']);
+			trigger_error($user->lang['NO_TEMPLATE'], E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -941,7 +941,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!($theme_info = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_THEME']);
+			trigger_error($user->lang['NO_THEME'], E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -951,7 +951,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			if (!file_exists($stylesheet_path) || !($stylesheet = file_get_contents($stylesheet_path)))
 			{
-				trigger_error($user->lang['NO_THEME']);
+				trigger_error($user->lang['NO_THEME'], E_USER_WARNING);
 			}
 		}
 		else
@@ -1030,7 +1030,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			if (!isset($matches[1]))
 			{
-				trigger_error($user->lang['NO_CLASS']);
+				trigger_error($user->lang['NO_CLASS'], E_USER_WARNING);
 			}
 
 			$css_data = implode(";\n", array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $matches[1]))), array('')));
@@ -1262,7 +1262,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// check whether the custom class name is valid
 				if (!preg_match('/^[a-z0-9#:.\- ]+$/i', $add_custom))
 				{
-					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"));
+					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"), E_USER_WARNING);
 				}
 				else
 				{
@@ -1278,7 +1278,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// write stylesheet to file
 				if (!($fp = fopen($stylesheet_path, 'wb')))
 				{
-					trigger_error($user->lang['NO_THEME']);
+					trigger_error($user->lang['NO_THEME'], E_USER_WARNING);
 				}
 				fwrite($fp, $stylesheet);
 				fclose($fp);
@@ -1355,7 +1355,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			if (!extract($db->sql_fetchrow($result)))
 			{
-				trigger_error($user->lang['NO_IMAGESET']);
+				trigger_error($user->lang['NO_IMAGESET'], E_USER_WARNING);
 			}
 			$db->sql_freeresult($result);
 
@@ -1540,7 +1540,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!$style_row)
 		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$sql = "SELECT {$mode}_id, {$mode}_name
@@ -1561,7 +1561,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		else
 		{
-			trigger_error($user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action));
+			trigger_error($user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -1719,7 +1719,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			if (!$style_row)
 			{
-				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_storedb', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_storedb', 'theme_mtime', 'theme_data', 'imageset_id', 'imageset_name', 'imageset_path', 'imageset_copyright');
@@ -1951,7 +1951,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!$style_row)
 		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$this->page_title = $l_prefix . '_EXPORT';
@@ -2021,7 +2021,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!$style_row)
 		{
-			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$style_row['style_default'] = ($mode == 'style' && $config['default_style'] == $style_id) ? 1 : 0;
@@ -2331,7 +2331,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				if (!($fp = fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
 				{
-					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file");
+					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
 				}
 				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$template_path$pathfile$file"));
 				fclose($fp);
@@ -2396,7 +2396,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		if (!($dp = @opendir("{$phpbb_root_path}cache")))
 		{
-			trigger_error($user->lang['TEMPLATE_ERR_CACHE_READ']);
+			trigger_error($user->lang['TEMPLATE_ERR_CACHE_READ'], E_USER_ERROR);
 		}
 
 		$file_ary = array();
@@ -2538,7 +2538,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		else
 		{
-			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$style_row['store_db'] = request_var('store_db', 0);

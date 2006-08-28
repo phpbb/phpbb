@@ -65,7 +65,7 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// First we'll try to authorise using this account, if that fails we'll try to create it.
@@ -94,12 +94,12 @@ class acp_jabber
 			{
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$jabber->send_auth())
 				{
-					trigger_error($user->lang['ERR_JAB_AUTH'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ERR_JAB_AUTH'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$jabber->send_presence(NULL, NULL, 'online');
 

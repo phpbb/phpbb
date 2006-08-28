@@ -152,7 +152,7 @@ class acp_search
 						}
 						else
 						{
-							trigger_error($error);
+							trigger_error($error, E_USER_WARNING);
 						}
 					}
 					else
@@ -168,7 +168,7 @@ class acp_search
 				}
 				else
 				{
-					trigger_error($error);
+					trigger_error($error, E_USER_WARNING);
 				}
 			}
 
@@ -228,7 +228,8 @@ class acp_search
 				break;
 	
 				default:
-					trigger_error('NO_ACTION');
+					trigger_error('NO_ACTION', E_USER_ERROR);
+				break;
 			}
 
 			if (empty($this->state[0]))
@@ -240,7 +241,7 @@ class acp_search
 			$error = false;
 			if ($this->init_search($this->state[0], $this->search, $error))
 			{
-				trigger_error($error);
+				trigger_error($error, E_USER_WARNING);
 			}
 	
 			$action = &$this->state[1];
@@ -262,7 +263,7 @@ class acp_search
 					{
 						$this->state = array('');
 						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js());
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 				}
 				else
@@ -314,7 +315,7 @@ class acp_search
 					{
 						$this->state = array('');
 						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js());
+						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 					}
 				}
 				else

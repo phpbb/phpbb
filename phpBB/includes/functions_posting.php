@@ -423,8 +423,10 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 */
 function get_img_size_format($width, $height)
 {
+	global $config;
+
 	// Maximum Width the Image can take
-	$max_width = 400;
+	$max_width = ($config['img_max_thumb_width']) ? $config['img_max_thumb_width'] : 400;
 
 	if ($width > $height)
 	{

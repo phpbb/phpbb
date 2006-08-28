@@ -335,7 +335,8 @@ class acp_board
 			break;
 
 			default:
-				trigger_error('NO_MODE');
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 
 		if (isset($display_vars['lang']))
@@ -448,14 +449,14 @@ class acp_board
 							{
 								set_config($config_name, $config_value);
 							}
-							trigger_error($error . adm_back_link($this->u_action));
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					set_config('auth_method', $cfg_array['auth_method']);
 				}
 				else
 				{
-					trigger_error('NO_AUTH_PLUGIN');
+					trigger_error('NO_AUTH_PLUGIN', E_USER_ERROR);
 				}
 			}
 		}

@@ -137,7 +137,7 @@ class acp_reasons
 
 					if (!$reason_row)
 					{
-						trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -180,12 +180,12 @@ class acp_reasons
 
 				if (!$reason_row)
 				{
-					trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($reason_row['reason_title'] == 'other')
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Let the deletion be confirmed...

@@ -363,7 +363,7 @@ class acp_icons
 
 					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
 					{
-						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					foreach ($pak_ary as $pak_entry)
@@ -374,7 +374,7 @@ class acp_icons
 							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))
 							{
-								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							// Stripslash here because it got addslashed before... (on export)
@@ -523,7 +523,7 @@ class acp_icons
 				}
 				else
 				{
-					trigger_error($user->lang['NO_' . strtoupper($fields) . '_EXPORT'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_' . strtoupper($fields) . '_EXPORT'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			break;

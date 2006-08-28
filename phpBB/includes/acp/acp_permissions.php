@@ -47,7 +47,7 @@ class acp_permissions
 				return;
 			}
 			
-			trigger_error('NO_MODE');
+			trigger_error('NO_MODE', E_USER_ERROR);
 		}
 
 		// Set some vars
@@ -98,7 +98,7 @@ class acp_permissions
 
 			if (!sizeof($user_id))
 			{
-				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		unset($username);
@@ -190,7 +190,8 @@ class acp_permissions
 			break;
 
 			default:
-				trigger_error('INVALID_MODE');
+				trigger_error('INVALID_MODE', E_USER_ERROR);
+			break;
 		}
 
 		$template->assign_vars(array(
@@ -203,7 +204,7 @@ class acp_permissions
 
 		if (!in_array($permission_type, $this->permission_dropdown))
 		{
-			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 
@@ -237,14 +238,14 @@ class acp_permissions
 					}
 					else
 					{
-						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				break;
 
 				case 'apply_permissions':
 					if (!isset($_POST['setting']))
 					{
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -253,7 +254,7 @@ class acp_permissions
 				case 'apply_all_permissions':
 					if (!isset($_POST['setting']))
 					{
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -436,7 +437,7 @@ class acp_permissions
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (sizeof($forum_id) && !sizeof($user_id) && !sizeof($group_id))
 		{
-			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$template->assign_vars(array(
@@ -566,7 +567,7 @@ class acp_permissions
 
 		if (!sizeof($ids))
 		{
-			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
 
@@ -585,7 +586,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		
 		$ug_id = $forum_id = 0;
@@ -664,7 +665,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
@@ -769,7 +770,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : false), $permission_type);
@@ -888,7 +889,7 @@ class acp_permissions
 
 		if (!$userdata)
 		{
-			trigger_error('NO_USERS');
+			trigger_error('NO_USERS', E_USER_ERROR);
 		}
 
 		$forum_name = false;

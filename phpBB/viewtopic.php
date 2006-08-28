@@ -550,7 +550,6 @@ $template->assign_vars(array(
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
-	'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 	'U_VIEW_TOPIC' 			=> $viewtopic_url,
 	'U_VIEW_FORUM' 			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 	'U_VIEW_OLDER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=previous"),
@@ -828,7 +827,14 @@ $db->sql_freeresult($result);
 
 if (!sizeof($post_list))
 {
-	trigger_error('NO_TOPIC');
+	if ($sort_days)
+	{
+		trigger_error('NO_POSTS_TIME_FRAME');
+	}
+	else
+	{
+		trigger_error('NO_TOPIC');
+	}
 }
 
 // Holding maximum post time for marking topic read
@@ -1490,7 +1496,37 @@ if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'
 	markread('topic', $forum_id, $topic_id, $max_post_time);
 
 	// Update forum info
-	update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+	$all_marked_read = update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+}
+else
+{
+	$all_marked_read = true;
+}
+
+// If there are absolutely no more unread posts in this forum and unread posts shown, we can savely show the #unread link
+if ($all_marked_read && $post_unread)
+{
+	$template->assign_vars(array(
+		'U_VIEW_UNREAD_POST'	=> '#unread',
+	));
+}
+else if (!$all_marked_read)
+{
+	$last_page = ((floor($start / $config['posts_per_page']) + 1) == max(ceil($total_posts / $config['posts_per_page']), 1)) ? true : false;
+
+	// What can happen is that we are at the last displayed page. If so, we also display the #unread link based in $post_unread
+	if ($last_page && $post_unread)
+	{
+		$template->assign_vars(array(
+			'U_VIEW_UNREAD_POST'	=> '#unread',
+		));
+	}
+	else if (!$last_page)
+	{
+		$template->assign_vars(array(
+			'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
+		));
+	}
 }
 
 // Change encoding if appropriate

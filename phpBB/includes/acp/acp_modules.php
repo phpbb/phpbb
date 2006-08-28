@@ -61,7 +61,7 @@ class acp_modules
 			case 'delete':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id), E_USER_WARNING);
 				}
 				
 				if (confirm_box(true))
@@ -91,7 +91,7 @@ class acp_modules
 			case 'disable':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id), E_USER_WARNING);
 				}
 			
 				$sql = 'UPDATE ' . MODULES_TABLE . ' 
@@ -108,7 +108,7 @@ class acp_modules
 			case 'move_down':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -121,7 +121,7 @@ class acp_modules
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id), E_USER_WARNING);
 				}
 
 				$move_module_name = $this->move_module_by($row, $action, 1);
@@ -190,7 +190,7 @@ class acp_modules
 
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id), E_USER_WARNING);
 				}
 				
 				$module_row = $this->get_module_row($module_id);
@@ -228,7 +228,7 @@ class acp_modules
 				{
 					if (!$module_data['module_langname'])
 					{
-						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id));
+						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $parent_id), E_USER_WARNING);
 					}
 
 					$module_type = request_var('module_type', 'category');
@@ -476,7 +476,7 @@ class acp_modules
 		
 		if (!$row)
 		{
-			trigger_error($user->lang['NO_MODULE']);
+			trigger_error($user->lang['NO_MODULE'], E_USER_WARNING);
 		}
 
 		return $row;
@@ -721,7 +721,7 @@ class acp_modules
 						return 'PARENT_NO_EXIST';
 					}
 
-					trigger_error($user->lang['PARENT_NO_EXIST']);
+					trigger_error($user->lang['PARENT_NO_EXIST'], E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "

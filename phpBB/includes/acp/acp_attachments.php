@@ -46,7 +46,8 @@ class acp_attachments
 			break;
 
 			default:
-				trigger_error('NO_MODE');
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 
 		$this->tpl_name = 'acp_attachments';
@@ -102,6 +103,7 @@ class acp_attachments
 						'legend2'					=> $l_legend_cat_images,
 						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'type' => 'radio:yes_no', 'explain' => true),
 						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'type' => 'radio:yes_no', 'explain' => true),
+						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'type' => 'text:7:15', 'explain' => true, 'append' => ' px'),
 						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'type' => 'text:7:15', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
 						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'type' => 'dimension:3:4', 'explain' => true),
@@ -403,12 +405,12 @@ class acp_attachments
 
 					if ($action != 'add' && $action != 'edit')
 					{
-						trigger_error('WRONG_MODE');
+						trigger_error('WRONG_MODE', E_USER_WARNING);
 					}
 
 					if (!$group_id && $action == 'edit')
 					{
-						trigger_error('NO_EXT_GROUP_SPECIFIED');
+						trigger_error('NO_EXT_GROUP_SPECIFIED', E_USER_WARNING);
 					}
 
 					if ($group_id)
@@ -578,7 +580,7 @@ class acp_attachments
 					
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'SELECT *
@@ -770,7 +772,7 @@ class acp_attachments
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action));
+							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '

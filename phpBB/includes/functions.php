@@ -1131,6 +1131,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param int $f_mark_time the forums last mark time if user is registered and load_db_lastread enabled
 * @param int $mark_time_forum false if the mark time needs to be obtained, else the last users forum mark time
 *
+* @return true if complete forum got marked read, else false.
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
@@ -1225,7 +1226,10 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	if (!$row)
 	{
 		markread('topics', $forum_id);
+		return true;
 	}
+
+	return false;
 }
 
 // Pagination functions
@@ -2645,7 +2649,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_USER_NOTICE:
 
 			define('IN_ERROR_HANDLER', true);
-		
+
 			if (empty($user->data))
 			{
 				$user->session_begin();
@@ -2679,8 +2683,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			);
 
 			$template->assign_vars(array(
-				'MESSAGE_TITLE'	=> $msg_title,
-				'MESSAGE_TEXT'	=> $msg_text)
+				'MESSAGE_TITLE'		=> $msg_title,
+				'MESSAGE_TEXT'		=> $msg_text,
+				'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
+				'S_USER_NOTICE'		=> ($errno == E_USER_NOTICE) ? true : false)
 			);
 
 			// We do not want the cron script to be called on error messages
@@ -2793,7 +2799,12 @@ function page_header($page_title = '', $display_online_list = true)
 				{
 					if ($row['user_colour'])
 					{
-						$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
+						$user_colour = ' style="color:#' . $row['user_colour'] . '"';
+						$row['username'] = '<strong>' . $row['username'] . '</strong>';
+					}
+					else
+					{
+						$user_colour = '';
 					}
 
 					if ($row['user_allow_viewonline'] && $row['session_viewonline'])
@@ -2803,13 +2814,21 @@ function page_header($page_title = '', $display_online_list = true)
 					}
 					else
 					{
-						$user_online_link = '<i>' . $row['username'] . '</i>';
+						$user_online_link = '<em>' . $row['username'] . '</em>';
 						$logged_hidden_online++;
 					}
 
 					if (($row['user_allow_viewonline'] && $row['session_viewonline']) || $auth->acl_get('u_viewonline'))
 					{
-						$user_online_link = ($row['user_type'] <> USER_IGNORE) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $user_online_link . '</a>' : $user_online_link;
+						if ($row['user_type'] <> USER_IGNORE)
+						{
+							$user_online_link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '"' . $user_colour . '>' . $user_online_link . '</a>';
+						}
+						else
+						{
+							$user_online_link = ($user_colour) ? '<span' . $user_colour . '>' . $user_online_link . '</span>' : $user_online_link;
+						}
+
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}

@@ -40,7 +40,7 @@ class acp_words
 				
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -74,7 +74,7 @@ class acp_words
 
 				if (!$word || !$replacement)
 				{
-					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
@@ -107,7 +107,7 @@ class acp_words
 
 				if (!$word_id)
 				{
-					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT word

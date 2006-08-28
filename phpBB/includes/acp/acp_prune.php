@@ -155,7 +155,7 @@ class acp_prune
 			if (!$row)
 			{
 				$db->sql_freeresult($result);
-				trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$forum_list = $s_hidden_fields = '';

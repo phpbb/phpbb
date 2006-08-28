@@ -159,7 +159,7 @@ class acp_bots
 
 							if (!$group_row)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 							$user_id = user_add(array(
@@ -197,7 +197,7 @@ class acp_bots
 
 							if (!$row)
 							{
-								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
@@ -237,7 +237,7 @@ class acp_bots
 
 					if (!$bot_row)
 					{
-						trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+						trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];

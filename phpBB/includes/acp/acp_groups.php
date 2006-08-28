@@ -52,7 +52,7 @@ class acp_groups
 
 			if (!$group_row)
 			{
-				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -64,7 +64,7 @@ class acp_groups
 			case 'promote':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Approve, demote or promote
@@ -91,7 +91,7 @@ class acp_groups
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -155,7 +155,7 @@ class acp_groups
 				{
 					if (!$group_id)
 					{
-						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$error = '';
@@ -165,7 +165,7 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
@@ -180,7 +180,7 @@ class acp_groups
 
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($back_link));
+						trigger_error($user->lang[$error] . adm_back_link($back_link), E_USER_WARNING);
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
@@ -201,12 +201,12 @@ class acp_groups
 			case 'addusers':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
@@ -214,7 +214,7 @@ class acp_groups
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
@@ -228,12 +228,12 @@ class acp_groups
 
 				if ($action == 'edit' && !$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$error = array();
@@ -542,7 +542,7 @@ class acp_groups
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->page_title = 'GROUP_MEMBERS';

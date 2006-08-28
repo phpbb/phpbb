@@ -92,7 +92,7 @@ class acp_users
 
 			if (!$user_id)
 			{
-				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -108,7 +108,7 @@ class acp_users
 
 		if (!$user_row)
 		{
-			trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Generate overall "header" for user admin
@@ -139,7 +139,7 @@ class acp_users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 		}
 
 		switch ($mode)
@@ -157,18 +157,18 @@ class acp_users
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
-							trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						// Check if the user wants to remove himself or the guest user account
 						if ($user_id == ANONYMOUS)
 						{
-							trigger_error($user->lang['CANNOT_REMOVE_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['CANNOT_REMOVE_ANONYMOUS'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						if ($user_id == $user->data['user_id'])
 						{
-							trigger_error($user->lang['CANNOT_REMOVE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error($user->lang['CANNOT_REMOVE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						if (confirm_box(true))
@@ -201,7 +201,7 @@ class acp_users
 
 							if ($user_id == $user->data['user_id'])
 							{
-								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$ban = array();
@@ -252,7 +252,7 @@ class acp_users
 
 							if ($user_id == $user->data['user_id'])
 							{
-								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($config['email_enable'])
@@ -307,7 +307,7 @@ class acp_users
 							if ($user_id == $user->data['user_id'])
 							{
 								// It is only deactivation since the user is already activated (else he would not have reached this page)
-								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							user_active_flip($user_id, $user_row['user_type'], false, $user_row['username']);
@@ -707,7 +707,7 @@ class acp_users
 									}
 									else
 									{
-										trigger_error($user->lang['AT_LEAST_ONE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+										trigger_error($user->lang['AT_LEAST_ONE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 								}
 							}
@@ -1775,12 +1775,12 @@ class acp_users
 						{
 							if (!$group_id)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($error = group_user_del($group_id, $user_id))
 							{
-								trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+								trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 						
 							$error = array();
@@ -1804,13 +1804,13 @@ class acp_users
 				{
 					if (!$group_id)
 					{
-						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					// Add user/s to group
 					if ($error = group_user_add($group_id, $user_id))
 					{
-						trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					$error = array();

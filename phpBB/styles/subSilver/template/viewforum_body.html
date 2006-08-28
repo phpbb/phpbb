@@ -67,9 +67,9 @@
 
 		<tr>
 			<!-- IF S_TOPIC_ICONS -->
-				<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+				<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 			<!-- ELSE -->
-				<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+				<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 			<!-- ENDIF -->
 		</tr>
 	<!-- END topicrow -->
@@ -188,9 +188,9 @@
 
 			<tr>
 				<!-- IF S_TOPIC_ICONS -->
-					<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+					<td class="row1" colspan="7" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 				<!-- ELSE -->
-					<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen">{L_NO_TOPICS}</span></td>
+					<td class="row1" colspan="6" height="30" align="center" valign="middle"><span class="gen"><!-- IF not S_SORT_DAYS -->{L_NO_TOPICS}<!-- ELSE -->{L_NO_TOPICS_TIME_FRAME}<!-- ENDIF --></span></td>
 				<!-- ENDIF -->
 			</tr>
 		<!-- END topicrow -->

@@ -40,7 +40,7 @@ class acp_forums
 
 				if (!$auth->acl_get('a_forumdel'))
 				{
-					trigger_error($user->lang['NO_PERMISSION_FORUM_DELETE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_PERMISSION_FORUM_DELETE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 			break;
@@ -49,7 +49,7 @@ class acp_forums
 
 				if (!$auth->acl_get('a_forumadd'))
 				{
-					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 			
 			break;
@@ -265,7 +265,7 @@ class acp_forums
 
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -277,7 +277,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$move_forum_name = $this->move_forum_by($row, $action, 1);
@@ -293,7 +293,7 @@ class acp_forums
 			case 'sync':
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT forum_name, forum_type
@@ -305,7 +305,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				sync('forum', 'forum_id', $forum_id);
@@ -560,7 +560,7 @@ class acp_forums
 
 				if (!$forum_id)
 				{
-					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$forum_data = $this->get_forum_info($forum_id);
@@ -821,7 +821,7 @@ class acp_forums
 
 				if (!$row)
 				{
-					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id));
+					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
@@ -885,7 +885,8 @@ class acp_forums
 					return array($user->lang['NO_FORUM_ACTION']);
 				}
 
-				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_posts'] = $forum_data_sql['forum_topics'] = $forum_data_sql['forum_topics_real'] = $forum_data_sql['forum_last_post_id'] = $forum_data_sql['forum_last_poster_id'] = $forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_last_poster_name'] = $forum_data_sql['forum_last_poster_colour'] = '';
 			}
 
 			if (sizeof($errors))
@@ -1018,7 +1019,7 @@ class acp_forums
 	{
 		global $db;
 
-		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{
@@ -1121,6 +1122,14 @@ class acp_forums
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
 			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
+			$db->sql_query($sql);
 		}
 		else if ($action_subforums == 'move')
 		{
@@ -1167,6 +1176,14 @@ class acp_forums
 					$sql = 'DELETE FROM ' . FORUMS_TABLE . "
 						WHERE forum_id = $forum_id";
 					$db->sql_query($sql);
+
+					$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
+						WHERE forum_id = $forum_id";
+					$db->sql_query($sql);
+
+					$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
+						WHERE forum_id = $forum_id";
+					$db->sql_query($sql);
 				}
 			}
 
@@ -1179,6 +1196,14 @@ class acp_forums
 		{
 			$diff = 2;
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
+				WHERE forum_id = $forum_id";
+			$db->sql_query($sql);
+
+			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
 				WHERE forum_id = $forum_id";
 			$db->sql_query($sql);
 		}
@@ -1365,18 +1390,18 @@ class acp_forums
 
 							foreach ($tables as $table)
 							{
-								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $id_list));
+								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $ids));
 							}
 						}
 					}
 					while ($row);
 				}
-				unset($ids, $id_list);
+				unset($ids);
 
 			break;
 		}
 
-		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(FORUMS_ACCESS_TABLE, FORUMS_TRACK_TABLE, FORUMS_WATCH_TABLE, LOG_TABLE, MODERATOR_CACHE_TABLE, POSTS_TABLE, TOPICS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{

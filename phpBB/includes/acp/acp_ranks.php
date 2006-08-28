@@ -48,7 +48,7 @@ class acp_ranks
 
 				if (!$rank_title)
 				{
-					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
@@ -96,7 +96,7 @@ class acp_ranks
 				}
 				else
 				{
-					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			break;

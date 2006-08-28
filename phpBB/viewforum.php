@@ -210,6 +210,9 @@ if ($sort_days)
 		$start = 0;
 	}
 	$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
+
+	// Make sure we have information about day selection ready
+	$template->assign_var('S_SORT_DAYS', true);
 }
 else
 {

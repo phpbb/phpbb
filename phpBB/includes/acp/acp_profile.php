@@ -91,7 +91,7 @@ class acp_profile
 
 				if (!$field_id)
 				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -192,7 +192,7 @@ class acp_profile
 
 				if (!$field_id)
 				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
 				$sql = 'SELECT lang_id 
@@ -204,7 +204,7 @@ class acp_profile
 
 				if (!in_array($default_lang_id, $lang_defs['entry'][$field_id]))
 				{
-					trigger_error($user->lang['DEFAULT_LANGUAGE_NOT_FILLED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['DEFAULT_LANGUAGE_NOT_FILLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . " 
@@ -229,7 +229,7 @@ class acp_profile
 
 				if (!$field_id)
 				{
-					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
@@ -275,7 +275,7 @@ class acp_profile
 				{
 					if (!$field_id)
 					{
-						trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT l.*, f.*
@@ -289,7 +289,7 @@ class acp_profile
 
 					if (!$field_row)
 					{
-						trigger_error($user->lang['FIELD_NOT_FOUND'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['FIELD_NOT_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					$field_type = $field_row['field_type'];
 
@@ -319,7 +319,7 @@ class acp_profile
 			
 					if (!$field_type)
 					{
-						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action));
+						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$field_row = array_merge($default_values[$field_type], array(

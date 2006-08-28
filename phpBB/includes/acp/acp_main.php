@@ -32,7 +32,7 @@ class acp_main
 
 					if (!$auth->acl_get('a_user'))
 					{
-						trigger_error($user->lang['NO_ADMIN']);
+						trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 					}
 
 					$sql = 'SELECT username 
@@ -65,7 +65,7 @@ class acp_main
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
-							trigger_error($user->lang['NO_ADMIN']);
+							trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 						}
 
 						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
@@ -81,12 +81,12 @@ class acp_main
 				case 'remind':
 					if (!$auth->acl_get('a_user'))
 					{
-						trigger_error($user->lang['NO_ADMIN']);
+						trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 					}
 
 					if (empty($config['email_enable']))
 					{
-						trigger_error($user->lang['EMAIL_DISABLED']);
+						trigger_error($user->lang['EMAIL_DISABLED'], E_USER_WARNING);
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
@@ -144,7 +144,7 @@ class acp_main
 			case 'online':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 				}
 
 				set_config('record_online_users', 1, true);
@@ -155,7 +155,7 @@ class acp_main
 			case 'stats':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 				}
 
 				$sql = 'SELECT COUNT(post_id) AS stat 
@@ -205,7 +205,7 @@ class acp_main
 			case 'user':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 				}
 
 				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
@@ -227,7 +227,7 @@ class acp_main
 			case 'date':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN']);
+					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
 				}
 
 				set_config('board_startdate', time() - 1);

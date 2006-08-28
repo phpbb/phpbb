@@ -86,17 +86,17 @@ class acp_captcha
 
 				if (!@extension_loaded('gd'))
 				{
-					trigger_error($user->lang['NO_GD']);
+					trigger_error($user->lang['NO_GD'], E_USER_WARNING);
 				}
 
 				if (!($policy === 'policy_entropy' || $policy === 'policy_3dbitmap') && (!function_exists('imagettfbbox') || !function_exists('imagettftext')))
 				{
-					trigger_error($user->lang['NO_TTF']);
+					trigger_error($user->lang['NO_TTF'], E_USER_WARNING);
 				}
 
 				if (!in_array($policy, $policy_modules))
 				{
-					trigger_error($user->lang['BAD_POLICY']);
+					trigger_error($user->lang['BAD_POLICY'], E_USER_WARNING);
 				}
 
 				$user->add_lang('ucp');

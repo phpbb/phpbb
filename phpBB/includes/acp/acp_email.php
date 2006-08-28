@@ -87,7 +87,7 @@ class acp_email
 				if (!$row)
 				{
 					$db->sql_freeresult($result);
-					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
 				$i = $j = 0;
@@ -185,12 +185,13 @@ class acp_email
 				if (!$errored)
 				{
 					$message = ($use_queue) ? $user->lang['EMAIL_SENT_QUEUE'] : $user->lang['EMAIL_SENT'];
+					trigger_error($message . adm_back_link($this->u_action));
 				}
 				else
 				{
 					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=critical') . '">', '</a>');
+					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				trigger_error($message . adm_back_link($this->u_action));
 			}
 		}
 

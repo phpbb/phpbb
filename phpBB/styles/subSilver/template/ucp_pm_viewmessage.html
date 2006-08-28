@@ -27,7 +27,7 @@
 		<td class="genmed" nowrap="nowrap" width="150"><b>{L_TO}:</b></td>
 		<td class="gen">
 		<!-- BEGIN to_recipient -->
-			<a href="{to_recipient.U_VIEW}"><!-- IF to_recipient.COLOUR --><span style="color:#{to_recipient.COLOUR}"><!-- ELSE --><span<!-- IF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{to_recipient.NAME}</span></a>&nbsp;
+			<a href="{to_recipient.U_VIEW}"<!-- IF to_recipient.COLOUR --> style="color:#{to_recipient.COLOUR}"<!-- ELSEIF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->>{to_recipient.NAME}</a>&nbsp;
 		<!-- END to_recipient -->
 		</td>
 	</tr>
@@ -38,7 +38,7 @@
 		<td class="genmed" nowrap="nowrap" width="150"><b>{L_BCC}:</b></td>
 		<td class="gen">
 		<!-- BEGIN bcc_recipient -->
-			<a href="{bcc_recipient.U_VIEW}"><!-- IF bcc_recipient.COLOUR --><span style="color:#{bcc_recipient.COLOUR}"><!-- ELSE --><span<!-- IF bcc_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{bcc_recipient.NAME}</span></a>&nbsp;
+			<a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:#{bcc_recipient.COLOUR}"<!-- ELSEIF bcc_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->>{bcc_recipient.NAME}</a>&nbsp;
 		<!-- END bcc_recipient -->
 		</td>
 	</tr>

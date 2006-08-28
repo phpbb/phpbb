@@ -47,7 +47,7 @@ class acp_bbcodes
 
 				if (!$row)
 				{
-					trigger_error('BBCODE_NOT_EXIST');
+					trigger_error('BBCODE_NOT_EXIST', E_USER_WARNING);
 				}
 
 				$bbcode_match = $row['bbcode_match'];
@@ -66,7 +66,7 @@ class acp_bbcodes
 
 				if (!$row)
 				{
-					trigger_error('BBCODE_NOT_EXIST');
+					trigger_error('BBCODE_NOT_EXIST', E_USER_WARNING);
 				}
 
 			// No break here
@@ -129,7 +129,7 @@ class acp_bbcodes
 
 					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded))
 					{
-						trigger_error('BBCODE_INVALID_TAG_NAME');
+						trigger_error('BBCODE_INVALID_TAG_NAME', E_USER_WARNING);
 					}
 				}
 
@@ -170,7 +170,7 @@ class acp_bbcodes
 
 					if ($bbcode_id > 1511)
 					{
-						trigger_error('TOO_MANY_BBCODES');
+						trigger_error('TOO_MANY_BBCODES', E_USER_WARNING);
 					}
 
 					$sql_ary['bbcode_id'] = (int) $bbcode_id;

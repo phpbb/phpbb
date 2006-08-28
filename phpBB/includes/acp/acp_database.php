@@ -113,7 +113,7 @@ class acp_database
 
 							if (!$fp)
 							{
-								trigger_error('Unable to write temporary file to storage folder');
+								trigger_error('Unable to write temporary file to storage folder', E_USER_ERROR);
 							}
 						}
 
@@ -1194,7 +1194,7 @@ class acp_database
 
 						if (!(file_exists($file_name) && is_readable($file_name)))
 						{
-							trigger_error($user->lang['BACKUP_INVALID']);
+							trigger_error($user->lang['BACKUP_INVALID'], E_USER_WARNING);
 						}
 
 						if ($delete)
