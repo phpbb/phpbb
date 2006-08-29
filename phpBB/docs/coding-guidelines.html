@@ -214,12 +214,12 @@ body {
 	<div class="paragraph">
 
 	<h3>Tabs vs Spaces:</h3>
-	<p>In order to make this as simple as possible, we will be using tabs, not spaces. Feel free to set how many spaces your editor uses when it <b>displays</b> tabs, but make sure that when you <b>save</b> the file, it's saving tabs and not spaces. This way, we can each have the code be displayed the way we like it, without breaking the layout of the actual files.</p>
-	<p>Additionally please check your editor for the indent size. If tabs are set to 4 spaces for example, the indent size needs to be 4 too:</p>
-	
+	<p>In order to make this as simple as possible, we will be using tabs, not spaces. We enforce 4 (four) spaces for one tab - therefore you need to set your tab width within your editor to 4 spaces. Make sure that when you <b>save</b> the file, it's saving tabs and not spaces. This way, we can each have the code be displayed the way we like it, without breaking the layout of the actual files.</p>
+	<p>Tabs in front of lines are no problem, but having them within the text can be a problem if you do not set it to the amount of spaces every one of us uses. Here is a short example of how it should look like:</p>
+
 	<blockquote><pre>
-$mode{TAB}{TAB}= request_var('mode', '');
-$search_id{TAB}= request_var('search_id', '');
+{TAB}$mode{TAB}{TAB}= request_var('mode', '');
+{TAB}$search_id{TAB}= request_var('search_id', '');
 	</pre></blockquote>
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
