@@ -420,6 +420,12 @@ if ($mode != 'post' && $config['allow_topic_notify'] && $user->data['is_register
 	$db->sql_freeresult($result);
 }
 
+// If the user is replying or posting and not already watching this topic but set to always being notified we need to overwrite this setting
+if ($mode != 'edit' && $config['allow_topic_notify'] && $user->data['is_registered'] && !$post_data['notify_set'])
+{
+	$post_data['notify_set'] = $user->data['user_notify'];
+}
+
 // Do we want to edit our post ?
 if ($mode == 'edit' && $post_data['bbcode_uid'])
 {
