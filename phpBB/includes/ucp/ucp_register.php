@@ -322,10 +322,19 @@ class ucp_register
 					{
 						// Grab an array of user_id's with a_user permissions ... these users can activate a user
 						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
+						$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
+
+						// Also include founders
+						$where_sql = ' WHERE user_type = ' . USER_FOUNDER;
+
+						if (sizeof($admin_ary))
+						{
+							$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
+						}
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
-							FROM ' . USERS_TABLE . '
-							WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
+							FROM ' . USERS_TABLE . ' ' .
+							$where_sql;
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -381,10 +390,13 @@ class ucp_register
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
-						WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
-							AND confirm_type = ' . CONFIRM_REG;
-					$db->sql_query($sql);
+					if (sizeof($sql_in))
+					{
+						$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
+							WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
+								AND confirm_type = ' . CONFIRM_REG;
+						$db->sql_query($sql);
+					}
 				}
 				$db->sql_freeresult($result);
 
