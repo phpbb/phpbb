@@ -1057,6 +1057,8 @@ class install_install extends module
 
 		$current_time = time();
 
+		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+
 		// Set default config and post data, this applies to all DB's
 		$sql_ary = array(
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
@@ -1142,7 +1144,7 @@ class install_install extends module
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
@@ -1162,7 +1164,7 @@ class install_install extends module
 				SET user_regdate = $current_time", 
 
 			'UPDATE ' . $table_prefix . "posts
-				SET post_time = $current_time", 
+				SET post_time = $current_time, poster_ip = '" . $db->sql_escape($user_ip) . "'", 
 
 			'UPDATE ' . $table_prefix . "topics
 				SET topic_time = $current_time, topic_last_post_time = $current_time", 
