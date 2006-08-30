@@ -314,7 +314,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else
 		{
-			$last_post_time = $last_poster = $last_poster_url = $last_post_url = '';
+			$last_post_time = $last_poster = $last_poster_colour = $last_poster_url = $last_post_url = '';
 		}
 
 		// Output moderator listing ... if applicable
