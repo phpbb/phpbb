@@ -160,8 +160,7 @@
 	<tr>
 		<th>{L_FIELD_IDENT}</th>
 		<th>{L_FIELD_TYPE}</th>
-		<th>&nbsp;</th>
-		<th>{L_OPTIONS}</th>
+		<th colspan="2">{L_OPTIONS}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -170,12 +169,24 @@
 
 		<td>{fields.FIELD_IDENT}</td>
 		<td>{fields.FIELD_TYPE}</td>
-		<td><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_EDIT}" style="color: red;">{L_EDIT}</a><!-- ENDIF --></td>
+		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_EDIT}" style="color: red;">{L_EDIT}</a><!-- ENDIF --></td>
 
-		<td style="width: 15%; text-align: right; white-space: nowrap;">
-			<!-- IF not fields.S_FIRST_ROW --><a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
-			<!-- IF not fields.S_LAST_ROW --><a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
-			<!-- IF not fields.S_NEED_EDIT --><a href="{fields.U_EDIT}">{ICON_EDIT}</a> <!-- ENDIF -->
+		<td style="width: 80px; text-align: right; white-space: nowrap;">
+			<!-- IF fields.S_FIRST_ROW && not fields.S_LAST_ROW -->
+				{ICON_MOVE_UP_DISABLED}
+				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>					 	
+			<!-- ELSEIF not fields.S_FIRST_ROW && not fields.S_LAST_ROW-->
+				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
+				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+			<!-- ELSEIF fields.S_LAST_ROW && not fields.S_FIRST_ROW -->						
+				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+				{ICON_MOVE_DOWN_DISABLED}	
+			<!-- ENDIF -->
+			<!-- IF not fields.S_NEED_EDIT -->
+				<a href="{fields.U_EDIT}">{ICON_EDIT}</a> 
+			<!-- ELSE -->
+				{ICON_EDIT_DISABLED}
+			<!-- ENDIF -->
 			<a href="{fields.U_DELETE}">{ICON_DELETE}</a>
 		</td>
 

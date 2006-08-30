@@ -313,15 +313,30 @@
 			<tr>
 				<td style="width: 5%;">{forums.FOLDER_IMAGE}</td>
 				<td>
-					<strong><!-- IF forums.S_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
+					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
 				</td>
-				<td style="width: 15%; text-align: right; white-space: nowrap;">
-					<!-- IF not forums.S_FIRST_ROW --><a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a> <!-- ENDIF -->
-					<!-- IF not forums.S_LAST_ROW --><a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> <!-- ENDIF -->
+				<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
+					<!-- IF forums.S_FIRST_ROW && not forums.S_LAST_ROW -->
+						{ICON_MOVE_UP_DISABLED}
+						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>					 	
+					<!-- ELSEIF not forums.S_FIRST_ROW && not forums.S_LAST_ROW-->
+						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
+						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+					<!-- ELSEIF forums.S_LAST_ROW && not forums.S_FIRST_ROW -->						
+						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+						{ICON_MOVE_DOWN_DISABLED}
+					<!-- ELSE -->
+						{ICON_MOVE_UP_DISABLED}
+						{ICON_MOVE_DOWN_DISABLED}			
+					<!-- ENDIF -->					
 					<a href="{forums.U_EDIT}">{ICON_EDIT}</a> 
-					<!-- IF not forums.S_LINK --><a href="{forums.U_SYNC}">{ICON_SYNC}</a> <!-- ENDIF -->
+					<!-- IF not forums.S_FORUM_LINK -->
+						<a href="{forums.U_SYNC}">{ICON_SYNC}</a> 
+					<!-- ELSE -->
+						{ICON_SYNC_DISABLED}
+					<!-- ENDIF -->
 					<a href="{forums.U_DELETE}">{ICON_DELETE}</a>
 				</td>
 			</tr>
