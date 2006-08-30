@@ -65,7 +65,7 @@ class ucp_main
 	
 				if (sizeof($forum_ary))
 				{
-					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary);
+					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
 				}
 				$result = $db->sql_query_limit($sql, 1);
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
@@ -79,12 +79,16 @@ class ucp_main
 				$result = $db->sql_query($sql);
 
 				$topic_list = $rowset = array();
-				while ($row = $db->sql_fetchrow($result))
+				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
+				if ($g_forum_id)
 				{
-					$topic_list[] = $row['topic_id'];
-					$rowset[$row['topic_id']] = $row;
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$topic_list[] = $row['topic_id'];
+						$rowset[$row['topic_id']] = $row;
+					}
+					$db->sql_freeresult($result);
 				}
-				$db->sql_freeresult($result);
 
 				$topic_tracking_info = array();
 				if ($config['load_db_lastread'])
