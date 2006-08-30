@@ -76,12 +76,13 @@ class ucp_main
 					WHERE t.forum_id = 0
 						AND t.topic_type = " . POST_GLOBAL . '
 					ORDER BY t.topic_last_post_time DESC';
-				$result = $db->sql_query($sql);
 
 				$topic_list = $rowset = array();
 				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
 				if ($g_forum_id)
 				{
+					$result = $db->sql_query($sql);
+
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$topic_list[] = $row['topic_id'];
