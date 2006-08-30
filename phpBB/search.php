@@ -956,10 +956,24 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 );
 
-$sql = 'SELECT search_time, search_keywords
-	FROM ' . SEARCH_RESULTS_TABLE . '
-	WHERE search_keywords <> \'\'
-	ORDER BY search_time DESC';
+// Can't do comparisons w/ TEXT on MSSQL, CAST is good enough
+switch (SQL_LAYER)
+{
+	case 'mssql':
+	case 'mssql_odbc':
+		$sql = 'SELECT search_time, search_keywords
+			FROM ' . SEARCH_RESULTS_TABLE . '
+			WHERE CAST(search_keywords AS varchar) <> \'\'
+			ORDER BY search_time DESC';
+	break;
+
+	default:
+		$sql = 'SELECT search_time, search_keywords
+			FROM ' . SEARCH_RESULTS_TABLE . '
+			WHERE search_keywords <> \'\'
+			ORDER BY search_time DESC';
+	break;
+}
 $result = $db->sql_query_limit($sql, 5);
 
 while ($row = $db->sql_fetchrow($result))
