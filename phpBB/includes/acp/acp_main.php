@@ -20,6 +20,35 @@ class acp_main
 		global $config, $db, $user, $auth, $template;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
+		// Show restore permissions notice
+		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
+		{
+			$this->tpl_name = 'acp_main';
+			$this->page_title = 'ACP_MAIN';
+
+			$sql = 'SELECT user_id, username, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user->data['user_perm_from'];
+			$result = $db->sql_query($sql);
+			$user_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$perm_from = '<strong' . (($user_row['user_colour']) ? ' style="color: #' . $user_row['user_colour'] . '">' : '>');
+			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_row['user_id']) . '">' : '';
+			$perm_from .= $user_row['username'];
+			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '</a>' : '';
+			$perm_from .= '</strong>';
+
+			$template->assign_vars(array(
+				'S_RESTORE_PERMISSIONS'		=> true,
+				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
+				'PERM_FROM'					=> $perm_from,
+				'L_PERMISSIONS_TRANSFERED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERED_EXPLAIN'], $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
+			));
+
+			return;
+		}
+
 		$action = request_var('action', '');
 		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
 

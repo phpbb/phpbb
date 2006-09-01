@@ -38,6 +38,7 @@ function utf8_strlen($text)
 		return mb_strlen($text, 'utf-8');
 	}
 
+	// Since utf8_decode is replacing multibyte characters to ? strlen works fine
 	return strlen(utf8_decode($text));
 }
 

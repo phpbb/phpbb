@@ -83,7 +83,7 @@
 		<legend>{L_ACP_USER_OVERVIEW}</legend>
 	<dl>
 		<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
-		<dd><input type="text" id="user" name="user" value="{USER}" /></dd>
+		<dd><input type="text" id="user" name="user" value="{USER}" /><!-- IF S_USER_INACTIVE --> [{L_USER_IS_INACTIVE}]<!-- ENDIF --></dd>
 		<!-- IF U_SWITCH_PERMISSIONS --><dd>[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</dd><!-- ENDIF -->
 	</dl>
 	<dl>

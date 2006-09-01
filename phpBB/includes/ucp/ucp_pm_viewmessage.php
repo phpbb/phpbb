@@ -193,16 +193,17 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['pm_forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id),
+		'U_AUTHOR_PROFILE'	=> ($author_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id) : '',
 		'U_EMAIL'			=> $user_info['email'],
-		'U_QUOTE'			=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EDIT'			=> (($message_row['message_time'] > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
 
 		'S_HAS_ATTACHMENTS'	=> (sizeof($attachments)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $message_row['message_attachment'],
+		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
@@ -321,7 +322,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		$message	= $row['message_text'];
 
 		$message = censor_text($message);
-		$message = str_replace("\n", '<br />', $message)
+		$message = str_replace("\n", '<br />', $message);
 
 		if ($row['bbcode_bitfield'])
 		{
@@ -346,13 +347,14 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'MESSAGE'		=> $message,
 			'FOLDER'		=> implode(', ', $row['folder']),
 
-			'S_CURRENT_MSG'	=> ($row['msg_id'] == $msg_id),
-	
+			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
+			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
+
 			'U_MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$author_id"),
-			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
+			'U_AUTHOR_PROFILE'	=> ($author_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$author_id") : '',
+			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
+			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
 		unset($rowset[$id]);
 		$prev_id = $id;

@@ -309,14 +309,14 @@ class p_master
 		{
 			if (!file_exists("$module_path/{$this->p_class}_$this->p_name.$phpEx"))
 			{
-				trigger_error('Cannot find module', E_USER_ERROR);
+				trigger_error("Cannot find module $module_path/{$this->p_class}_$this->p_name.$phpEx", E_USER_ERROR);
 			}
 
 			include("$module_path/{$this->p_class}_$this->p_name.$phpEx");
 
 			if (!class_exists("{$this->p_class}_$this->p_name"))
 			{
-				trigger_error('Module does not contain correct class', E_USER_ERROR);
+				trigger_error("Module file $module_path/{$this->p_class}_$this->p_name.$phpEx does not contain correct class [{$this->p_class}_$this->p_name]", E_USER_ERROR);
 			}
 
 			if (!empty($mode))

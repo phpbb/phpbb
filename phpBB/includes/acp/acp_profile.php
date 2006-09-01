@@ -831,12 +831,11 @@ class acp_profile
 			$lang_options[$lang_id]['lang_iso'] = $lang_iso;
 			foreach ($options as $field => $field_type)
 			{
-				$value = ($action == 'create') ? request_var('l_' . $field, '', true) : $cp->vars['l_' . $field];
+				$value = ($action == 'create') ? request_var('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
 					 
 				if ($field == 'lang_options')
 				{
-
-					$var = ($action == 'create' || !is_array($cp->vars['lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
+					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['l_lang_options'] : $cp->vars['l_lang_options'][$lang_id];
 					
 					switch ($field_type)
 					{
@@ -1003,10 +1002,11 @@ class acp_profile
 			}
 		}
 
-		$cp->vars['l_lang_name']			= request_var('l_lang_name', '', true);
-		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', '', true);
-		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', '', true);
-		$cp->vars['l_lang_options']			= request_var('l_lang_options', '', true);
+		// These are always arrays because the key is the language id...
+		$cp->vars['l_lang_name']			= request_var('l_lang_name', array(0 => ''), true);
+		$cp->vars['l_lang_explain']			= request_var('l_lang_explain', array(0 => ''), true);
+		$cp->vars['l_lang_default_value']	= request_var('l_lang_default_value', array(0 => ''), true);
+		$cp->vars['l_lang_options']			= request_var('l_lang_options', array(0 => ''), true);
 
 		if ($cp->vars['lang_options'])
 		{

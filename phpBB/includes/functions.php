@@ -3294,7 +3294,10 @@ function garbage_collection()
 	}
 
 	// Close our DB connection.
-	$db->sql_close();
+	if (!empty($db))
+	{
+		$db->sql_close();
+	}
 }
 
 /**

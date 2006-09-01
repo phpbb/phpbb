@@ -279,8 +279,29 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		
 		case ACTION_MARK_AS_READ:
 		case ACTION_MARK_AS_IMPORTANT:
-		case ACTION_DELETE_MESSAGE:
 			return array('action' => $rule_row['rule_action'], 'pm_unread' => $message_row['pm_unread'], 'pm_marked' => $message_row['pm_marked']);
+		break;
+
+		case ACTION_DELETE_MESSAGE:
+
+			// Check for admins/mods - users are not allowed to remove those messages...
+			// We do the check here to make sure the data we use is consistent
+			$sql = 'SELECT user_id, user_type, user_permissions
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . (int) $message_row['author_id'];
+			$result = $db->sql_query($sql);
+			$userdata = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$auth2 = new auth();
+			$auth2->acl($userdata);
+
+			if (!$auth2->acl_get('a_') && !$auth->acl_get('m_') && !$auth2->acl_getf_global('m_'))
+			{
+				return array('action' => $rule_row['rule_action'], 'pm_unread' => $message_row['pm_unread'], 'pm_marked' => $message_row['pm_marked']);
+			}
+
+			return false;
 		break;
 		
 		default:
@@ -486,8 +507,8 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		}
 	}
 
-	$num_new += sizeof(array_unique($delete_ids));
-	$num_unread += sizeof(array_unique($delete_ids));
+//	$num_new += sizeof(array_unique($delete_ids));
+//	$num_unread += sizeof(array_unique($delete_ids));
 	$num_unread += sizeof(array_unique($unread_ids));
 
 	// Do not change the order of processing
@@ -668,6 +689,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		}
 		
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET $set_sql WHERE user_id = $user_id");
+
 		$user->data['user_new_privmsg'] -= $num_new;
 		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
@@ -778,7 +800,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		return;
 	}
 
-	global $db;
+	global $db, $user;
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . " 
 		SET pm_unread = 0
@@ -791,6 +813,11 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 		SET user_unread_privmsg = user_unread_privmsg - 1
 		WHERE user_id = $user_id";
 	$db->sql_query($sql);
+
+	if ($user->data['user_id'] == $user_id)
+	{
+		$user->data['user_unread_privmsg']--;
+	}
 }
 
 /**
@@ -860,7 +887,7 @@ function handle_mark_actions($user_id, $mark_action)
 */
 function delete_pm($user_id, $msg_ids, $folder_id)
 {
-	global $db;
+	global $db, $user;
 
 	$user_id	= (int) $user_id;
 	$folder_id	= (int) $folder_id;
@@ -957,6 +984,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	if ($num_unread || $num_new)
 	{
 		$set_sql = ($num_unread) ? 'user_unread_privmsg = user_unread_privmsg - ' . $num_unread : '';
+
 		if ($num_new)
 		{
 			$set_sql .= ($set_sql != '') ? ', ' : '';
@@ -964,6 +992,9 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		}
 
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET $set_sql WHERE user_id = $user_id");
+
+		$user->data['user_new_privmsg'] -= $num_new;
+		$user->data['user_unread_privmsg'] -= $num_unread;
 	}
 	
 	// Now we have to check which messages we can delete completely	
@@ -1141,7 +1172,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 						'IS_USER'	=> ($type == 'user'),
 						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+						'U_VIEW'	=> ($type == 'user') ? (($id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : '') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
 						'TYPE'		=> $type)
 					);
 				}
@@ -1223,7 +1254,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 					$id = (int) $id;
 
 					// Do not rely on the address list being "valid"
-					if (!$id)
+					if (!$id || ($ug_type == 'u' && $id == ANONYMOUS))
 					{
 						continue;
 					}

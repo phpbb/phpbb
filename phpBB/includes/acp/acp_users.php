@@ -806,6 +806,7 @@ class acp_users
 					'S_USER_FOUNDER'	=> ($user_row['user_type'] == USER_FOUNDER) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 					'S_OWN_ACCOUNT'		=> ($user_id == $user->data['user_id']) ? true : false,
+					'S_USER_INACTIVE'	=> ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE) ? true : false,
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
@@ -924,7 +925,7 @@ class acp_users
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($user_row['user_lang']) . "'";
+					WHERE lang_iso = '" . $db->sql_escape($user->data['user_lang']) . "'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);

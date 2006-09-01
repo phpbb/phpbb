@@ -166,7 +166,16 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
 
-							$address_list[$message_id][] = (($type == 'u') ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $ug_id) . '"' . $user_colour . '>' : '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>') . $recipient_list[$type][$ug_id]['name'] . '</a>';
+							if ($type == 'u')
+							{
+								$link = ($ug_id != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $ug_id) . '"' . $user_colour . '>' : '';
+							}
+							else
+							{
+								$link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>';
+							}
+
+							$address_list[$message_id][] = $link . $recipient_list[$type][$ug_id]['name'] . (($link) ? '</a>' : '');
 						}
 					}
 				}
@@ -183,7 +192,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
-				$message_author = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['author_id']) . '">' . $row['username'] . '</a>';
+				$message_author = ($row['author_id'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['author_id']) . '">' . $row['username'] . '</a>' : $row['username'];
 				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
 				$remove_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
 
@@ -217,6 +226,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
+					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
 
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',

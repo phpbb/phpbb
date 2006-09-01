@@ -177,7 +177,7 @@ function compose_pm($id, $mode, $action)
 		$folder_id		= (isset($post['folder_id'])) ? $post['folder_id'] : 0;
 		$message_text	= (isset($post['message_text'])) ? $post['message_text'] : '';
 
-		if (!$post['author_id'] && $msg_id)
+		if ((!$post['author_id'] || ($post['author_id'] == ANONYMOUS && $action != 'delete')) && $msg_id)
 		{
 			trigger_error('NO_AUTHOR');
 		}
@@ -900,6 +900,11 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 
 				while ($row = $db->sql_fetchrow($result))
 				{
+					if ($row['user_id'] == ANONYMOUS)
+					{
+						continue;
+					}
+
 					$address_list['u'][$row['user_id']] = $type;
 				}
 				$db->sql_freeresult($result);
@@ -908,6 +913,11 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 			{
 				foreach ($user_id_ary as $user_id)
 				{
+					if ($user_id == ANONYMOUS)
+					{
+						continue;
+					}
+
 					$address_list['u'][$user_id] = $type;
 				}
 			}

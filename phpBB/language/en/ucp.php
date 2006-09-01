@@ -323,6 +323,7 @@ $lang = array_merge($lang, array(
 	'PERMISSIONS_TRANSFERED'	=> 'Successfully transfered permissions from <strong>%s</strong>, you are now able to browse the forum with the users permissions.<br />Please note that admin permissions were not transfered. You are able to revert to your permission set at any time.',
 	'PM_DISABLED'				=> 'Private messaging has been disabled on this board',
 	'PM_FROM'					=> 'From',
+	'PM_FROM_REMOVED_AUTHOR'	=> 'This message was sent by a user no longer registered.',
 	'PM_ICON'					=> 'PM icon',
 	'PM_INBOX'					=> 'Inbox',
 	'PM_OUTBOX'					=> 'Outbox',

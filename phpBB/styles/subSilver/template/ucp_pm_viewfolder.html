@@ -72,6 +72,9 @@
 				<!-- ELSE -->
 					<a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a>
 				<!-- ENDIF -->
+				<!-- IF messagerow.S_AUTHOR_DELETED -->
+					<br /><em class="gensmall">{L_PM_FROM_REMOVED_AUTHOR}</em>
+				<!-- ENDIF -->
 			</span></td>
 
 			<td class="row1" width="100" align="center"><p class="topicauthor"><!-- IF S_SHOW_RECIPIENTS -->{messagerow.RECIPIENTS}<!-- ELSE -->{messagerow.MESSAGE_AUTHOR}<!-- ENDIF --></p></td>
