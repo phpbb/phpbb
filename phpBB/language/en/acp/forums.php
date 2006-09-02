@@ -111,7 +111,7 @@ $lang = array_merge($lang, array(
 	'NO_FORUM_ACTION'				=> 'No action defined for what happens with the forum content',
 	'NO_PARENT'						=> 'No Parent',
 	'NO_PERMISSIONS'				=> 'Do not copy permissions',
-	'NO_PERMISSION_FORUM_ADD'		=> 'You do not have the neccessary permissions to add forums',
+	'NO_PERMISSION_FORUM_ADD'		=> 'You do not have the necessary permissions to add forums',
 	'NO_PERMISSION_FORUM_DELETE'	=> 'You do not have the neccessary permissions to delete forums',
 
 	'PARENT_NOT_EXIST'			=> 'Parent does not exist',
