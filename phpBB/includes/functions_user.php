@@ -1538,33 +1538,30 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 						continue;
 					}
 
-					$sql_ary[str_replace('group', 'user', $attribute)] = $group_attributes[$attribute];
+					$sql_ary[$attribute] = $group_attributes[$attribute];
 				}
 			}
 		}
 
 		if (sizeof($sql_ary))
 		{
-			// Before we update the user attributes, we will make a list of those having now the group avatar assigned
-			if (in_array('user_avatar', array_keys($sql_ary)))
-			{
-				// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-				$sql = 'SELECT user_id, user_avatar
-					FROM ' . USERS_TABLE . '
-					WHERE group_id = ' . $group_id . '
-						AND user_avatar_type = ' . AVATAR_UPLOAD;
-				$result = $db->sql_query($sql);
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE group_id = ' . $group_id;
+			$result = $db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
-				{
-					avatar_delete($row['user_avatar']);
-				}
-				$db->sql_freeresult($result);
+			$user_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$user_ary[] = $row['user_id'];
 			}
 
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-				WHERE group_id = $group_id";
-			$db->sql_query($sql);
+			$db->sql_freeresult($result);
+
+			if (sizeof($user_ary))
+			{
+				group_set_user_default($group_id, $user_ary, $sql_ary);
+			}
 		}
 
 		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
@@ -1769,18 +1766,18 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		$group_order_id[$row['group_name']] = $row['group_id'];
 
 		$special_group_data[$row['group_id']] = array(
-			'user_colour'			=> $row['group_colour'],
-			'user_rank'				=> $row['group_rank'],
+			'group_colour'			=> $row['group_colour'],
+			'group_rank'				=> $row['group_rank'],
 		);
 
 		// Only set the group avatar if one is defined...
 		if ($row['group_avatar'])
 		{
 			$special_group_data[$row['group_id']] = array_merge($special_group_data[$row['group_id']], array(
-				'user_avatar'			=> $row['group_avatar'],
-				'user_avatar_type'		=> $row['group_avatar_type'],
-				'user_avatar_width'		=> $row['group_avatar_width'],
-				'user_avatar_height'	=> $row['group_avatar_height'])
+				'group_avatar'			=> $row['group_avatar'],
+				'group_avatar_type'		=> $row['group_avatar_type'],
+				'group_avatar_width'		=> $row['group_avatar_width'],
+				'group_avatar_height'	=> $row['group_avatar_height'])
 			);
 		}
 	}
@@ -1830,28 +1827,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
-			$special_group_data[$gid]['group_id'] = $gid;
-
-			// Before we update the user attributes, we will make a list of those having now the group avatar assigned
-			if (in_array('user_avatar', array_keys($special_group_data[$gid])))
-			{
-				// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-				$sql = 'SELECT user_id, user_avatar
-					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $sql_where_ary[$gid]) . '
-						AND user_avatar_type = ' . AVATAR_UPLOAD;
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					avatar_delete($row['user_avatar']);
-				}
-				$db->sql_freeresult($result);
-			}
-
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $special_group_data[$gid]) . '
-				WHERE ' . $db->sql_in_set('user_id', $sql_where_ary[$gid]);
-			$db->sql_query($sql);
+			group_set_user_default($gid, $sql_where_ary[$gid], $special_group_data[$gid]);
 		}
 	}
 	unset($special_group_data);
@@ -2054,6 +2030,19 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
+	$db->sql_query($sql);
+
+	// Update any cached colour information for these users
+	$sql = 'UPDATE ' . FORUMS_TABLE . " SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+		WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 	$db->sql_query($sql);
 }
 

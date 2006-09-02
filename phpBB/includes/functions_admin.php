@@ -2514,7 +2514,7 @@ function tidy_warnings()
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$warning_list[] = $row['warning_id'];
-		$user_list[$row['user_id']] = isset($user_list[$row['user_id']]) ? $user_list[$row['user_id']]++ : 0;
+		$user_list[$row['user_id']] = isset($user_list[$row['user_id']]) ? $user_list[$row['user_id']]++ : 1;
 	}
 	$db->sql_freeresult($result);
 
