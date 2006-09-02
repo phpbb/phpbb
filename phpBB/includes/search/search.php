@@ -285,7 +285,7 @@ class search_backend
 			{
 				$cache->destroy('_search_results_' . $row['search_key']);
 			}
-			$db->sql_freeresult();
+			$db->sql_freeresult($result);
 		}
 
 		// clear all searches that searched for the specified authors
@@ -306,7 +306,7 @@ class search_backend
 			{
 				$cache->destroy('_search_results_' . $row['search_key']);
 			}
-			$db->sql_freeresult();
+			$db->sql_freeresult($result);
 		}
 
 		$sql = 'DELETE

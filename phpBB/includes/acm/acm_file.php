@@ -180,7 +180,7 @@ class acm
 	*/
 	function purge()
 	{
-		// Purge sql data
+		// Purge all phpbb cache files
 		$dir = opendir($this->cache_dir);
 		while (($entry = readdir($dir)) !== false)
 		{

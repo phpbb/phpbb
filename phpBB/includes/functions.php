@@ -3148,6 +3148,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->data['user_lang'],
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
+		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> $user->lang['ENCODING'],
 		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],

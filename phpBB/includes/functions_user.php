@@ -1681,6 +1681,8 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		return 'GROUP_USERS_EXIST';
 	}
 
+	$db->sql_transaction('begin');
+
 	if (sizeof($add_id_ary))
 	{
 		// Insert the new users
@@ -1689,8 +1691,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 			case 'mysql':
 			case 'mysql4':
 			case 'mysqli':
-			case 'mssql':
-			case 'mssql_odbc':
 			case 'sqlite':
 				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
 					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader, $pending)",  $add_id_ary));
@@ -1721,6 +1721,8 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		group_set_user_default($group_id, $user_id_ary, $group_attributes);
 	}
+
+	$db->sql_transaction('commit');
 
 	// Clear permissions cache of relevant users
 	$auth->acl_clear_prefetch($user_id_ary);

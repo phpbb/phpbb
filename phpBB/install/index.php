@@ -306,13 +306,14 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage;
+		global $template, $lang, $stage, $phpbb_root_path;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
+			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_ENCODING' 	=> $lang['ENCODING'],

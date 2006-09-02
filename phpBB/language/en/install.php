@@ -264,25 +264,33 @@ $lang = array_merge($lang, array(
 
 	'CHECK_FILES'					=> 'Check files',
 	'CHECK_FILES_AGAIN'				=> 'Check files again',
-	'CHECK_FILES_EXPLAIN'			=> 'Within the next step all all files will be checked against the update files - this can take a while if this is the first file check.',
+	'CHECK_FILES_EXPLAIN'			=> 'Within the next step all files will be checked against the update files - this can take a while if this is the first file check.',
 	'CHECK_FILES_UP_TO_DATE'		=> 'According to your database your version is up to date. You may want to proceed with the file check to make sure all files are really up to date with the latest phpBB version.',
 	'COLLECTED_INFORMATIONS'		=> 'Collected file informations',
 	'COLLECTED_INFORMATIONS_EXPLAIN'=> 'The list below shows informations about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
+	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Don\'t forget to delete, rename or move your install directory!',
 	'CURRENT_FILE'					=> 'Current original file',
 	'CURRENT_VERSION'				=> 'Current version',
 
-	'DATABASE_UPDATE_INFO_OLD'			=> 'The latest version is newer than the database info stored. Please download the correct archive.',
+	'DATABASE_TYPE'						=> 'Database type',
+	'DATABASE_UPDATE_INFO_OLD'			=> 'The database update file within the install directory is outdated. Please make sure you uploaded the correct version of the file.',
 	'DESTINATION'						=> 'Destination file',
 	'DIFF_INLINE'						=> 'Inline',
 	'DIFF_RAW'							=> 'Raw unified diff',
+	'DIFF_SEP_EXPLAIN'					=> 'End of current file / Begin of new updated file',
 	'DIFF_SIDE_BY_SIDE'					=> 'Side by Side',
 	'DIFF_UNIFIED'						=> 'Unified diff',
+	'DO_NOT_UPDATE'						=> 'Do not update this file',
+	'DONE'								=> 'Done',
 	'DOWNLOAD'							=> 'Download',
 	'DOWNLOAD_AS'						=> 'Download as',
 	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
 	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, please check the files again with the other button below.',
 
+	'ERROR'		=> 'Error',
+
 	'FILE_ALREADY_UP_TO_DATE'		=> 'File is already up to date',
+	'FILE_USED'						=> 'Informations used from',
 	'FILES_CONFLICT'				=> 'Conflict files',
 	'FILES_CONFLICT_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. phpBB determined that these files create conflicts if they are tried to be merged. Please investigate the conflicts and try to manually resolve them or continue the update choosing the preferred merging method. If you resolve the conflicts manually check the files again after you modified the them. You are also able to choose between the preferred merge method for every file. The first one will result in a file where the conflicting lines from your old file will be lost, the other one will result in loosing the changes from the newer file.',
 	'FILES_MODIFIED'				=> 'Modified files',
@@ -316,20 +324,39 @@ $lang = array_merge($lang, array(
 
 	'NEW_FILE'						=> 'New updated file',
 	'NO_AUTH_UPDATE'				=> 'Not authorized to update',
+	'NO_DATABASE_UPDATE_NEEDED'		=> 'All of your files seem to be up to date. Since you are already running the latest version you do not need to update your database.',
+	'NO_ERRORS'						=> 'No errors',
+	'NO_UPDATE_FILES'				=> 'Not updating the following files',
+	'NO_UPDATE_FILES_EXPLAIN'		=> 'The following files are new or modified but the directory they normally reside in could not be found on your installation. If this list contains files to other directories than language/ or styles/ than you may have modified your directory structure and the update may be incomplete.',
 	'NO_UPDATE_FILES_OUTDATED'		=> 'No valid update directory was found, please make sure you uploaded the relevant files.<br /><br />Your installation does <strong>not</strong> seem to be up to date. Updates are available for your version of phpBB %1$s, please visit <a href="http://www.phpbb.com/downloads.php" rel="external">http://www.phpbb.com/downloads.php</a> to obtain the correct package to update from Version %2$s to Version %3$s.',
 	'NO_UPDATE_FILES_UP_TO_DATE'	=> 'Your version is up to date. There is no need to run the update tool. If you want to make an integrity check on your files make sure you uploaded the correct update files.',
 	'NO_UPDATE_INFO'				=> 'Update file informations could not be found.',
+	'NO_UPDATES_REQUIRED'			=> 'No updates required',
 	'NO_VISIBLE_CHANGES'			=> 'No visible changes',
 	'NOTICE'						=> 'Notice',
 	'NUM_CONFLICTS'					=> 'Number of conflicts',
 
+	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating to phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
+
+	'PERFORM_DATABASE_UPDATE'			=> 'Perform database update',
+	'PERFORM_DATABASE_UPDATE_EXPLAIN'	=> 'Below you will find a link to the database update script. This script needs to be run seperatly because updating the database might result in unexpected behaviour if you are logged in. The database update can take a while, so please do not stop the execution if it only seems to hang. After you clicked the link and the update finished you can close this window too.',
+	'PREVIOUS_VERSION'					=> 'Previous version',
+	'PROGRESS'							=> 'Progress',
+
+	'RESULT'					=> 'Result',
+	'RUN_DATABASE_SCRIPT'		=> 'Update my database now',
+
 	'SELECT_DIFF_MODE'			=> 'Select diff mode',
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download archive format',
 	'SELECT_FTP_SETTINGS'		=> 'Select FTP Settings',
-	'SHOW_DIFFERENCES'			=> 'Show differences',
-	'SHOW_DIFFERENCES_CONFLICT'	=> 'Show differences/conflicts',
-	'SHOW_FILE_CONTENTS'		=> 'Show file contents',
-	'SHOW_MERGED_DIFFERENCES'	=> 'Show merged differences',
+	'SHOW_DIFF_CONFLICT'		=> 'Show differences/conflicts',
+	'SHOW_DIFF_MODIFIED'		=> 'Show merged differences',
+	'SHOW_DIFF_NEW'				=> 'Show file contents',
+	'SHOW_DIFF_NEW_CONFLICT'	=> 'Show differences',
+	'SHOW_DIFF_NOT_MODIFIED'	=> 'Show differences',
+	'SOME_QUERIES_FAILED'		=> 'Some queries failed, the statements and errors are listing below',
+	'SQL'						=> 'SQL',
+	'SQL_FAILURE_EXPLAIN'		=> 'This is probably nothing to worry about, update will continue. Should this fail to complete you may need to seek help at our support forums. See <a href="../docs/README.html">README</a> for details on how to obtain advice.',
 	'STAGE_FILE_CHECK'			=> 'Check files',
 	'STAGE_UPDATE_DB'			=> 'Update database',
 	'STAGE_UPDATE_FILES'		=> 'Update files',
@@ -341,22 +368,58 @@ $lang = array_merge($lang, array(
 	'STATUS_NOT_MODIFIED'		=> 'Not modified file',
 	'STATUS_UP_TO_DATE'			=> 'Already updated file',
 
+	'UPDATE_COMPLETED'				=> 'Update completed',
 	'UPDATE_DATABASE'				=> 'Update database',
+	'UPDATE_DATABASE_SCHEMA'		=> 'Updating database schema',
 	'UPDATE_FILES'					=> 'Update files',
+	'UPDATE_FILES_NOTICE'			=> 'Please make sure you have updated your board files too, this file is only updating your database.',
 	'UPDATE_INSTALLATION'			=> 'Update phpBB Installation',
 	'UPDATE_INSTALLATION_EXPLAIN'	=> 'With this option, it is possible to update your phpBB installation to the latest version.<br />During the process all of your files will be checked for their integrity. You are able to review all differences and files before the update.<br /><br />The file update itself can be done in two different ways.</p><h2>Manual Update</h2><p>With this update you only download your personal set of changed files to make sure you do not loose your file modifications you may have done. After you downloaded this package you need to manually upload the files to their correct position under your phpBB root directory. Once done, you are able to do the file check stage again to see if you moved the files to their correct location. If everything is correctly updated you will be forwarded to the database updater.</p><h2>Automatic Update with FTP</h2><p>This method is similar to the first one but without the need to download the changed files and uploading them on your own. This will be done for you. In order to use this method you need to know your FTP login details since you will be asked for them. Once finished you will be redirected to the file check again to make sure everything got updated correctly. If so, you will be forwarded to the database updater.',
+	'UPDATE_INSTRUCTIONS'			=> '
+
+		<h1>Release announcement</h1>
+
+		<p>Please read <a href="%1$s" title="%1$s" target="_blank">the release announcement for the latest version</a> before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
+
+		<br />
+
+		<h1>How to update your installation</h1>
+
+		<p>The recommended way of updating your installation only takes the following steps:</p>
+
+		<ul style="margin-left: 20px; font-size: 1.1em;">
+			<li>Go to the <a href="http://www.phpbb.com/downloads.php" title="http://www.phpbb.com/downloads.php" target="_blank">phpBB.com downloads page</a> and download the correct archive. If you are unsure you can <a href="%2$s" title="%2$s">download the correct archive directly</a> as a zip file.<br /><br /></li>
+			<li>Unpack the archive<br /><br /></li>
+			<li>Upload the complete uncompressed install folder to your phpBB root directory (where your config.php file is).<br /><br /></li>
+		</ul>
+
+		<p>Once uploaded your board will be offline for normal users.<br /><br />
+		<strong><a href="%3$s" title="%3$s">Now start the update process by pointing your browser to the install folder</a>.</strong><br />
+		<br />
+		You will then be guided through the update process. The update is complete after the database update script has been completed successfully - this is the last step within the udpate process.
+		</p>
+
+	',
 	'UPDATE_METHOD'					=> 'Update method',
 	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP Upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
 	'UPDATE_SUCCESS'				=> 'Update was successful',
 	'UPDATE_SUCCESS_EXPLAIN'		=> 'Successfully updated all files. The next step involves checking all files again to make sure the files got updated correctly.',
+	'UPDATE_VERSION_OPTIMIZE'		=> 'Updating version and optimizing tables',
+	'UPDATING_DATA'					=> 'Updating data',
+	'UPDATING_TO_LATEST_STABLE'		=> 'Updating database to latest stable release',
+	'UPDATED_VERSION'				=> 'Updated version',
 	'UPLOAD_METHOD'					=> 'Upload method',
 
 	'VERSION_CHECK'				=> 'Version Check',
 	'VERSION_CHECK_EXPLAIN'		=> 'Checks to see if the version of phpBB you are currently running is up to date.',
 	'VERSION_NOT_UP_TO_DATE'	=> 'Your version of phpBB is not up to date. Please continue the update process.',
+	'VERSION_NOT_UP_TO_DATE_ACP'=> 'Your version of phpBB is not up to date.<br />Below you will find a link to the release announcement for the latest version as well as instructions on how to perform the update.',
 	'VERSION_UP_TO_DATE'		=> 'Your installation is up to date, no updates are available for your version of phpBB. You may want to continue anyway to perform a file validity check.',
+	'VERSION_UP_TO_DATE_ACP'	=> 'Your installation is up to date, no updates are available for your version of phpBB. You do not need to update your installation.',
 	'VIEWING_FILE_CONTENTS'		=> 'Viewing file contents',
 	'VIEWING_FILE_DIFF'			=> 'Viewing file differences',
+
+	'WRONG_INFO_FILE_FORMAT'	=> 'Wrong info file format',
 ));
 
 ?>

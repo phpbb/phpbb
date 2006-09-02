@@ -430,12 +430,13 @@ class diff3 extends diff
 	*
 	* @param string $label1 the cvs file version/label from the original set of lines
 	* @param string $label2 the cvs file version/label from the new set of lines
+	* @param string $label_sep the explanation between label1 and label2 - more of a helper for the user
 	* @param bool $get_conflicts if set to true only the number of conflicts is returned
 	* @param bool $merge_new if set to true the merged output will have the new file contents on a conflicting merge
 	*
 	* @return mixed the merged output
 	*/
-	function merged_output($label1 = 'CURRENT_FILE', $label2 = 'NEW_FILE', $get_conflicts = false, $merge_new = false)
+	function merged_output($label1 = 'CURRENT_FILE', $label2 = 'NEW_FILE', $label_sep = 'DIFF_SEP_EXPLAIN', $get_conflicts = false, $merge_new = false)
 	{
 		global $user;
 
@@ -454,6 +455,7 @@ class diff3 extends diff
 
 		$label1 = (!empty($user->lang[$label1])) ? $user->lang[$label1] : $label1;
 		$label2 = (!empty($user->lang[$label2])) ? $user->lang[$label2] : $label2;
+		$label_sep = (!empty($user->lang[$label_sep])) ? $user->lang[$label_sep] : $label_sep;
 
 		$lines = array();
 
@@ -463,7 +465,7 @@ class diff3 extends diff
 			{
 				if (!$merge_new)
 				{
-					$lines = array_merge($lines, array('<<<<<<<' . ($label1 ? ' ' . $label1 : '')), $edit->final1, array('======='), $edit->final2, array('>>>>>>>' . ($label2 ? ' ' . $label2 : '')));
+					$lines = array_merge($lines, array('<<<<<<<' . ($label1 ? ' ' . $label1 : '')), $edit->final1, array('=======' . ($label_sep ? ' ' . $label_sep : '')), $edit->final2, array('>>>>>>>' . ($label2 ? ' ' . $label2 : '')));
 				}
 				else
 				{

@@ -511,7 +511,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 		$forum_ids[] = $row['forum_id'];
 		$topic_ids[] = $row['topic_id'];
 	}
-	$db->sql_freeresult();
+	$db->sql_freeresult($result);
 
 	$return['topics'] = sizeof($topic_ids);
 
@@ -628,7 +628,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
 
-	require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+	include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
 
 	$error = false;
 	$search = new $search_type($error);
@@ -1142,7 +1142,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$topic_ids[] = $row['topic_id'];
 					}
-					$db->sql_freeresult();
+					$db->sql_freeresult($result);
 
 					if (!sizeof($topic_ids))
 					{
@@ -1728,7 +1728,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 				foreach ($fieldnames as $fieldname)
 				{
-					if ($row['topic_' . $fieldname] != $row[$fieldname])
+					if (isset($row[$fieldname]) && isset($row['topic_' . $fieldname]) && $row['topic_' . $fieldname] != $row[$fieldname])
 					{
 						$sql_ary['topic_' . $fieldname] = $row[$fieldname];
 					}

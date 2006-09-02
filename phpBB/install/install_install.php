@@ -20,9 +20,7 @@ if ( !defined('IN_INSTALL') )
 if (!empty($setmodules))
 {
 	/* If phpBB is already installed we do not include this module
-	// This does not work at the moment because on installation the config file will be written before
-	// everything is finished.
-	if (@file_exists($phpbb_root_path . 'config.' . $phpEx))
+	if (@file_exists($phpbb_root_path . 'config.' . $phpEx) && !file_exists($phpbb_root_path . 'cache/install_lock'))
 	{
 		include_once($phpbb_root_path . 'config.' . $phpEx);
 

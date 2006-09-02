@@ -119,6 +119,8 @@ class acp_profile
 							$row = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
 
+							$db->sql_transaction('begin');
+
 							// Create a temp table and populate it, destroy the existing one
 							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
@@ -127,8 +129,9 @@ class acp_profile
 							preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
 							$new_table_cols = trim($matches[1]);
-							$old_table_cols = explode(',', $new_table_cols);
+							$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
 							$column_list = array();
+
 							foreach ($old_table_cols as $declaration)
 							{
 								$entities = preg_split('#\s+#', trim($declaration));
@@ -146,6 +149,8 @@ class acp_profile
 							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
 							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
+
+							$db->sql_transaction('commit');
 						break;
 
 						default:
