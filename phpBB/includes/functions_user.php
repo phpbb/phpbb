@@ -601,9 +601,14 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('LOWER(username)', $sql_usernames);
 
+				// Do not allow banning yourself
 				if (sizeof($founder))
 				{
-					$sql .= ' AND ' . $db->sql_in_set('user_id', array_keys($founder), true);
+					$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
+				}
+				else
+				{
+					$sql .= ' AND user_id <> ' . $user->data['user_id'];
 				}
 
 				$result = $db->sql_query($sql);

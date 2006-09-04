@@ -402,7 +402,7 @@ if (!function_exists('realpath'))
 		*/
 		function is_absolute($path)
 		{
-		    return ($path[0] == '/' || (substr(PHP_OS, 0, 3) == 'WIN' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
+			return ($path[0] == '/' || (substr(PHP_OS, 0, 3) == 'WIN' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
 		}
 
 		/**
@@ -3302,6 +3302,7 @@ function garbage_collection()
 }
 
 /**
+* @package phpBB3
 */
 class bitfield
 {

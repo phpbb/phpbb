@@ -43,6 +43,7 @@ if (function_exists('utf8_normalize'))
 	* utf_normalizer class for the utfnormal extension
 	*
 	* @ignore
+	* @package phpBB3
 	*/
 	class utf_normalizer
 	{

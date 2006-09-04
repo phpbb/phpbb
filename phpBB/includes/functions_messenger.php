@@ -790,10 +790,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	$mail_rcpt = $mail_to = $mail_cc = array();
 
 	// Build correct addresses for RCPT TO command and the client side display (TO, CC)
-	foreach ($addresses['to'] as $which_ary)
+	if (isset($addresses['to']) && sizeof($addresses['to']))
 	{
-		$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
-		$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
+		foreach ($addresses['to'] as $which_ary)
+		{
+			$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
+		}
 	}
 
 	if (isset($addresses['bcc']) && sizeof($addresses['bcc']))
@@ -813,10 +816,12 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 		}
 	}
 
-	$smtp = new smtp_class;
+	$smtp = new smtp_class();
 
 	$errno = 0;
 	$errstr = '';
+
+	$smtp->add_backtrace('Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port']);
 
 	// Ok we have error checked as much as we can to this point let's get on it already.
 	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
@@ -828,14 +833,14 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	// Wait for reply
 	if ($err_msg = $smtp->server_parse('220', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
 	// Let me in. This function handles the complete authentication process
 	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], $config['smtp_password'], $config['smtp_auth_method']))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -844,7 +849,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -867,7 +872,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 					// We continue... if users are not resolved we do not care
 					if ($smtp->numeric_response_code != 550)
 					{
-						$smtp->close_session();
+						$smtp->close_session($err_msg);
 						return false;
 					}
 				}
@@ -885,7 +890,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 		$user->session_begin();
 		$err_msg .= '<br /><br />';
 		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -895,7 +900,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	// This is the last response code we look for until the end of the message.
 	if ($err_msg = $smtp->server_parse('354', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
@@ -922,13 +927,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	$smtp->server_send('.');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
-		$smtp->close_session();
+		$smtp->close_session($err_msg);
 		return false;
 	}
 
 	// Now tell the server we are done and close the socket...
 	$smtp->server_send('QUIT');
-	$smtp->close_session();
+	$smtp->close_session($err_msg);
 
 	return true;
 }
@@ -947,16 +952,41 @@ class smtp_class
 	var $commands = array();
 	var $numeric_response_code = 0;
 
+	var $backtrace = false;
+	var $backtrace_log = array();
+
+	function smtp_class()
+	{
+		if (defined('DEBUG_EXTRA'))
+		{
+			$this->backtrace = true;
+			$this->backtrace_log = array();
+		}
+	}
+
+	/**
+	* Add backtrace message for debugging
+	*/
+	function add_backtrace($message)
+	{
+		if ($this->backtrace)
+		{
+			$this->backtrace_log[] = $message;
+		}
+	}
+
 	/**
 	* Send command to smtp server
 	*/
-	function server_send($command)
+	function server_send($command, $private_info = false)
 	{
 		fputs($this->socket, $command . "\r\n");
 
+		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Ommitting sensitive Informations');
+
 		// We could put additional code here
 	}
-	
+
 	/**
 	* We use the line to give the support people an indication at which command the error occurred
 	*/
@@ -976,6 +1006,8 @@ class smtp_class
 			}
 			$this->responses[] = substr(rtrim($this->server_response), 4);
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
+
+			$this->add_backtrace("LINE: $line <- {$this->server_response}");
 		}
 
 		if (!(substr($this->server_response, 0, 3) == $response))
@@ -990,9 +1022,15 @@ class smtp_class
 	/**
 	* Close session
 	*/
-	function close_session()
+	function close_session(&$err_msg)
 	{
 		fclose($this->socket);
+
+		if ($this->backtrace)
+		{
+			$message = '<h1>Backtrace</h1><p>' . implode('<br />', array_map('htmlspecialchars', $this->backtrace_log)) . '</p>';
+			$err_msg .= $message;
+		}
 	}
 	
 	/**
@@ -1008,10 +1046,37 @@ class smtp_class
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
+		// NOTE: on some configurations the time between an update of the auth database takes so 
+		// long that the first email send does not work. This is not a biggie on a live board (only
+		// the install mail will most likely fail) - but on a dynamic ip connection this might produce
+		// severe problems and is not fixable!
 		if ($default_auth_method == 'POP-BEFORE-SMTP' && $username && $password)
 		{
+			global $config;
+
+			$errno = 0;
+			$errstr = '';
+
+			$this->server_send("QUIT");
+			fclose($this->socket);
+
 			$result = $this->pop_before_smtp($hostname, $username, $password);
 			$username = $password = $default_auth_method = '';
+
+			// We need to close the previous session, else the server is not
+			// able to get our ip for matching...
+			if (!$this->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 10))
+			{
+				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+				return $err_msg;
+			}
+
+			// Wait for reply
+			if ($err_msg = $this->server_parse('220', __LINE__))
+			{
+				$this->close_session($err_msg);
+				return $err_msg;
+			}
 		}
 
 		// Try EHLO first
@@ -1090,31 +1155,25 @@ class smtp_class
 	{
 		global $user;
 
-		$old_socket = $this->socket;
-
-		if (!$this->socket = fsockopen($hostname, 110, $errno, $errstr, 20))
+		if (!$this->socket = @fsockopen($hostname, 110, $errno, $errstr, 10))
 		{
-			$this->socket = $old_socket;
 			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
-		$this->server_parse('0', __LINE__);
-		if (substr($this->server_response, 0, 3) == '+OK')
+		$this->server_send("USER $username", true);
+		if ($err_msg = $this->server_parse('+OK', __LINE__))
 		{
-			fputs($this->socket, "USER $username\r\n");
-			fputs($this->socket, "PASS $password\r\n");
+			return $err_msg;
 		}
-		else
+
+		$this->server_send("PASS $password", true);
+		if ($err_msg = $this->server_parse('+OK', __LINE__))
 		{
-			$this->socket = $old_socket;
-			return $this->responses[0];
+			return $err_msg;
 		}
 
 		$this->server_send('QUIT');
-		$this->server_parse('0', __LINE__);
 		fclose($this->socket);
-
-		$this->socket = $old_socket;
 
 		return false;
 	}
@@ -1131,7 +1190,7 @@ class smtp_class
 		}
 
 		$base64_method_plain = base64_encode("\0" . $username . "\0" . $password);
-		$this->server_send($base64_method_plain);
+		$this->server_send($base64_method_plain, true);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1151,13 +1210,13 @@ class smtp_class
 			return ($this->numeric_response_code == 503) ? false : $err_msg;
 		}
 
-		$this->server_send(base64_encode($username));
+		$this->server_send(base64_encode($username), true);
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
 			return $err_msg;
 		}
 
-		$this->server_send(base64_encode($password));
+		$this->server_send(base64_encode($password), true);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1183,7 +1242,7 @@ class smtp_class
 
 		$base64_method_cram_md5 = base64_encode($username . ' ' . $md5_digest);
 
-		$this->server_send($base64_method_cram_md5);
+		$this->server_send($base64_method_cram_md5, true);
 		if ($err_msg = $this->server_parse('235', __LINE__))
 		{
 			return $err_msg;
@@ -1287,7 +1346,7 @@ class smtp_class
 		}
 
 		$base64_method_digest_md5 = base64_encode($input_string);
-		$this->server_send($base64_method_digest_md5);
+		$this->server_send($base64_method_digest_md5, true);
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
 			return $err_msg;

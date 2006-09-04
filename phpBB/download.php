@@ -133,7 +133,7 @@ if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
-else if ($display_cat == ATTACHMENT_CATEGORY_NONE)
+else if ($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT_CATEGORY_IMAGE)
 {
 	// Update download count
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 
@@ -210,9 +210,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// lighttpd has core support for it. An apache2 module is available at http://celebnamer.celebworld.ws/stuff/mod_xsendfile/
 	header('X-Sendfile: ' . $filename);
 
-	// Send out the Headers
+	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
-	header('Content-Disposition: inline; filename="' . $attachment['real_filename'] . '"');
+	header('Content-Disposition: attachment; filename="' . $attachment['real_filename'] . '"');
 
 	if ($size)
 	{
