@@ -555,6 +555,22 @@ class acp_profile
 							$error[] = $user->lang['NO_FIELD_ENTRIES'];
 						}
 					}
+
+					// Check for already existing field ident
+					if ($action != 'edit')
+					{
+						$sql = 'SELECT field_ident 
+							FROM ' . PROFILE_FIELDS_TABLE . " 
+							WHERE field_ident = '" . $db->sql_escape($cp->vars['field_ident']) . "'";
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if ($row)
+						{
+							$error[] = $user->lang['FIELD_IDENT_ALREADY_EXIST'];
+						}
+					}
 				}
 
 				$step = (isset($_REQUEST['next'])) ? $step + 1 : ((isset($_REQUEST['prev'])) ? $step - 1 : $step);

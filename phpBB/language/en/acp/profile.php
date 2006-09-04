@@ -73,6 +73,7 @@ $lang = array_merge($lang, array(
 	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The Explanation for this field presented to the user',
 	'FIELD_DROPDOWN'			=> 'Dropdown Box',
 	'FIELD_IDENT'				=> 'Field Identification',
+	'FIELD_IDENT_ALREADY_EXIST'	=> 'The chosen field identification already exist. Please choose another name.',
 	'FIELD_IDENT_EXPLAIN'		=> 'The field Identification is a name to identify the profile field within the database and the templates.',
 	'FIELD_INT'					=> 'Numbers',
 	'FIELD_LENGTH'				=> 'Length of input box',

@@ -633,7 +633,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			// Pull attachment data
 			if (sizeof($attach_list))
 			{
-				if ($auth->acl_gets('f_download', 'u_download', $forum_id))
+				if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
 				{
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
@@ -711,8 +711,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
 
-				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
-				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_gets('m_approve', $forum_id)) ? true : false;
+				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
 
 				$tpl_ary = array(
@@ -733,7 +733,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-					'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
@@ -741,7 +741,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
 					'S_UNREAD_TOPIC'		=> $unread_topic,
 
-					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_gets('m_report', $forum_id)) ? true : false,
+					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 

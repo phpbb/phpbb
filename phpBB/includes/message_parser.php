@@ -1229,7 +1229,7 @@ class parse_message extends bbcode_firstpass
 
 				if (($add_file || $preview) && $upload_file)
 				{
-					if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_'))
+					if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 					{
 						$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
 						$error = array_merge($error, $filedata['error']);
