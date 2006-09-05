@@ -1255,7 +1255,7 @@ function avatar_delete($id)
 */
 function avatar_remote($data, &$error)
 {
-	global $config, $db, $user, $phpbb_root_path;
+	global $config, $db, $user, $phpbb_root_path, $phpEx;
 
 	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
 	{
@@ -1281,6 +1281,24 @@ function avatar_remote($data, &$error)
 	if (!$width || !$height)
 	{
 		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		return false;
+	}
+
+	// Check image type
+	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+	$types = fileupload::image_types();
+	$extension = strtolower(filespec::get_extension($data['remotelink']));
+
+	if (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]]))
+	{
+		if (!isset($types[$image_data[2]]))
+		{
+			$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+		}
+		else
+		{
+			$error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$image_data[2]][0], $extension);
+		}
 		return false;
 	}
 
