@@ -283,6 +283,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		break;
 
 		case ACTION_DELETE_MESSAGE:
+			global $db, $auth;
 
 			// Check for admins/mods - users are not allowed to remove those messages...
 			// We do the check here to make sure the data we use is consistent
