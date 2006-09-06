@@ -1340,7 +1340,7 @@ class user extends session
 		static $imgs;
 		global $phpbb_root_path;
 
-		$img_data = $imgs[$img . $suffix];
+		$img_data = &$imgs[$img . $suffix];
 
 		if (empty($img_data) || $width !== false)
 		{
