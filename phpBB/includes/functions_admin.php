@@ -1375,6 +1375,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$forum_data[$forum_id]['topics'] = 0;
 				$forum_data[$forum_id]['topics_real'] = 0;
 				$forum_data[$forum_id]['last_post_id'] = 0;
+				$forum_data[$forum_id]['last_post_subject'] = '';
 				$forum_data[$forum_id]['last_post_time'] = 0;
 				$forum_data[$forum_id]['last_poster_id'] = 0;
 				$forum_data[$forum_id]['last_poster_name'] = '';
@@ -1428,7 +1429,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 4: Retrieve last_post infos
 			if (sizeof($post_ids))
 			{
-				$sql = 'SELECT p.post_id, p.poster_id, p.post_time, p.post_username, u.username, u.user_colour
+				$sql = 'SELECT p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 						AND p.poster_id = u.user_id';
@@ -1446,6 +1447,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						if (isset($post_info[$data['last_post_id']]))
 						{
+							$forum_data[$forum_id]['last_post_subject'] = $post_info[$data['last_post_id']]['post_subject'];
 							$forum_data[$forum_id]['last_post_time'] = $post_info[$data['last_post_id']]['post_time'];
 							$forum_data[$forum_id]['last_poster_id'] = $post_info[$data['last_post_id']]['poster_id'];
 							$forum_data[$forum_id]['last_poster_name'] = ($post_info[$data['last_post_id']]['poster_id'] != ANONYMOUS) ? $post_info[$data['last_post_id']]['username'] : $post_info[$data['last_post_id']]['post_username'];
@@ -1455,6 +1457,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						{
 							// For some reason we did not find the post in the db
 							$forum_data[$forum_id]['last_post_id'] = 0;
+							$forum_data[$forum_id]['last_post_subject'] = '';
 							$forum_data[$forum_id]['last_post_time'] = 0;
 							$forum_data[$forum_id]['last_poster_id'] = 0;
 							$forum_data[$forum_id]['last_poster_name'] = '';
@@ -1466,7 +1469,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 
 			// 5: Now do that thing
-			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			foreach ($forum_data as $forum_id => $row)
 			{
@@ -1476,7 +1479,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				{
 					if ($row['forum_' . $fieldname] != $row[$fieldname])
 					{
-						if (preg_match('#(name|colour)$#', $fieldname))
+						if (preg_match('#(name|colour|subject)$#', $fieldname))
 						{
 							$sql_ary['forum_' . $fieldname] = (string) $row[$fieldname];
 						}
@@ -1500,7 +1503,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		case 'topic':
 			$topic_data = $post_ids = $approved_unapproved_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
 
-			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
+			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
 			$result = $db->sql_query($sql);
@@ -1641,7 +1644,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics);
 			}
 
-			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_username, p.post_time, u.username, u.user_colour
+			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 					AND u.user_id = p.poster_id';
@@ -1667,6 +1670,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				if ($row['post_id'] == $topic_data[$topic_id]['last_post_id'])
 				{
 					$topic_data[$topic_id]['last_poster_id'] = $row['poster_id'];
+					$topic_data[$topic_id]['last_post_subject'] = $row['post_subject'];
 					$topic_data[$topic_id]['last_post_time'] = $row['post_time'];
 					$topic_data[$topic_id]['last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
 					$topic_data[$topic_id]['last_poster_colour'] = $row['user_colour'];
@@ -1685,7 +1689,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			unset($approved_unapproved_ids);
 
 			// These are fields that will be synchronised
-			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			$fieldnames = array('time', 'replies', 'replies_real', 'poster', 'first_post_id', 'first_poster_name', 'first_poster_colour', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
 
 			if ($sync_extra)
 			{

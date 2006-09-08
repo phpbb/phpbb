@@ -719,6 +719,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'TOPIC_AUTHOR'				=> ($row['topic_first_poster_name']) ? $row['topic_first_poster_name'] : $user->lang['GUEST'],
 					'TOPIC_AUTHOR_COLOUR'		=> ($row['topic_first_poster_colour']) ? '#' . $row['topic_first_poster_colour'] : '',
 					'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+					'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
 					'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
 					'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
 					'LAST_POST_AUTHOR'			=> ($row['topic_last_poster_name'] != '') ? $row['topic_last_poster_name'] : $user->lang['GUEST'],

@@ -180,6 +180,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			if ($row['forum_last_post_time'] > $forum_rows[$parent_id]['forum_last_post_time'])
 			{
 				$forum_rows[$parent_id]['forum_last_post_id'] = $row['forum_last_post_id'];
+				$forum_rows[$parent_id]['forum_last_post_subject'] = $row['forum_last_post_subject'];
 				$forum_rows[$parent_id]['forum_last_post_time'] = $row['forum_last_post_time'];
 				$forum_rows[$parent_id]['forum_last_poster_id'] = $row['forum_last_poster_id'];
 				$forum_rows[$parent_id]['forum_last_poster_name'] = $row['forum_last_poster_name'];
@@ -304,6 +305,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Create last post link information, if appropriate
 		if ($row['forum_last_post_id'])
 		{
+			$last_post_subject = $row['forum_last_post_subject'];
 			$last_post_time = $user->format_date($row['forum_last_post_time']);
 
 			$last_poster = ($row['forum_last_poster_name'] != '') ? $row['forum_last_poster_name'] : $user->lang['GUEST'];
@@ -314,7 +316,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else
 		{
-			$last_post_time = $last_poster = $last_poster_colour = $last_poster_url = $last_post_url = '';
+			$last_post_subject = $last_post_time = $last_poster = $last_poster_colour = $last_poster_url = $last_post_url = '';
 		}
 
 		// Output moderator listing ... if applicable
@@ -342,6 +344,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : $user->img($folder_image, $folder_alt),
 			'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : $user->img($folder_image, $folder_alt, false, '', 'src'),
 			'SUBFORUMS'				=> $subforums_list,
+			'LAST_POST_SUBJECT'		=> $last_post_subject,
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> $last_poster,
 			'LAST_POSTER_COLOUR'	=> $last_poster_colour,

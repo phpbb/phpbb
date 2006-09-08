@@ -114,9 +114,11 @@ $database_update_info = array(
 		'add_columns'		=> array(
 			TOPICS_TABLE			=> array(
 				'topic_first_poster_colour'	=> array('VCHAR:6', ''),
+				'topic_last_post_subject'	=> array('XSTEXT', ''),
 				'topic_last_poster_colour'	=> array('VCHAR:6', ''),
 			),
 			FORUMS_TABLE			=> array(
+				'forum_last_post_subject'	=> array('XSTEXT', ''),
 				'forum_last_poster_colour'	=> array('VCHAR:6', ''),
 			),
 		),

@@ -37,7 +37,7 @@ if (!empty($setmodules))
 		'module_type'		=> 'update',
 		'module_title'		=> 'UPDATE',
 		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
-		'module_order'		=> 20,
+		'module_order'		=> 30,
 		'module_subs'		=> '',
 		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'FILE_CHECK', 'UPDATE_FILES', 'UPDATE_DB'),
 		'module_reqs'		=> ''
