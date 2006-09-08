@@ -286,6 +286,10 @@ class module
 			}
 
 			$module = $this->filename;
+			if (!class_exists($module))
+			{
+				$this->error('Module not accessible', __LINE__, __FILE__);
+			}
 			$this->module = new $module($this);
 
 			if (method_exists($this->module, 'main'))

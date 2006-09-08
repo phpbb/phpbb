@@ -19,7 +19,7 @@ if ( !defined('IN_INSTALL') )
 
 if (!empty($setmodules))
 {
-	/* If phpBB is already installed we do not include this module
+	// If phpBB is already installed we do not include this module
 	if (@file_exists($phpbb_root_path . 'config.' . $phpEx) && !file_exists($phpbb_root_path . 'cache/install_lock'))
 	{
 		include_once($phpbb_root_path . 'config.' . $phpEx);
@@ -28,7 +28,7 @@ if (!empty($setmodules))
 		{
 			return;
 		}
-	}*/
+	}
 
 	$module[] = array(
 		'module_type'		=> 'install',
@@ -54,7 +54,7 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language;
+		global $lang, $template, $language, $phpbb_root_path;
 
 		switch ($sub)
 		{
@@ -106,7 +106,10 @@ class install_install extends module
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
-			
+				
+				// Remove the lock file
+				@unlink($phpbb_root_path . 'cache/install_lock');
+
 			break;
 		}
 
@@ -742,6 +745,10 @@ class install_install extends module
 				$load_extensions[] = "$dll.$suffix";
 			}
 		}
+
+		// Create a lock file to indicate that there is an install in progress
+		$fp = @fopen($phpbb_root_path . 'cache/install_lock', 'wb');
+		@fclose($fp);
 
 		$dbpasswd = html_entity_decode($dbpasswd);
 		$load_extensions = implode(',', $load_extensions);
