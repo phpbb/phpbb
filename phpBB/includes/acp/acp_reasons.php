@@ -220,9 +220,9 @@ class acp_reasons
 										FROM " . REPORTS_TABLE . "
 									WHERE reason_id = " . $reason_id . "
 
-									UPDATETEXT " . REPORTS_TABLE . ".report_text @ptrval 0 0 '" . $db->sql_escape($reason_row['reason_description']) . "\n\n'"
+									UPDATETEXT " . REPORTS_TABLE . ".report_text @ptrval 0 0 '" . $db->sql_escape($reason_row['reason_description']) . "\n\n'
 
-									'UPDATE ' . REPORTS_TABLE . '
+									UPDATE " . REPORTS_TABLE . '
 										SET reason_id = ' . $other_reason_id . "
 									WHERE reason_id = $reason_id";
 						break;
