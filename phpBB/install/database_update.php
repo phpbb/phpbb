@@ -105,21 +105,14 @@ $database_update_info = array(
 /*
 		// Change the following columns...
 		'change_columns'	=> array(
-			USERS_TABLE			=> array(
-				'user_avatar_width'			=> array('USINT', 0),
-				'user_avatar_height'		=> array('USINT', 0),
+			{table}			=> array(
+				{column_name}			=> array('USINT', 0), -> column type
 			),
 		),
 		// Add the following columns
 		'add_columns'		=> array(
-			TOPICS_TABLE			=> array(
-				'topic_first_poster_colour'	=> array('VCHAR:6', ''),
-				'topic_last_post_subject'	=> array('XSTEXT', ''),
-				'topic_last_poster_colour'	=> array('VCHAR:6', ''),
-			),
-			FORUMS_TABLE			=> array(
-				'forum_last_post_subject'	=> array('XSTEXT', ''),
-				'forum_last_poster_colour'	=> array('VCHAR:6', ''),
+			{table}			=> array(
+				{column_name}			=> array('USINT', 0), -> column type
 			),
 		),
 */
@@ -272,25 +265,7 @@ switch ($current_version)
 {
 	case '3.0.b3':
 /*
-		$sql = 'SELECT forum_id
-			FROM ' . FORUMS_TABLE;
-		$result = _sql($sql, $errored, $error_ary);
-
-		$forum_ids = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_ids[] = $row['forum_id'];
-		}
-		$db->sql_freeresult($result);
-
-		if (sizeof($forum_ids))
-		{
-			// Since we changed the last post informations we need to sync a bit...
-			sync('forum', 'forum_id', $forum_ids, true);
-
-			// Sync topics
-			sync('topic', 'forum_id', $forum_ids, true);
-		}
+	some code magic
 */
 	// No need to change here, before no break should appear
 	break;
