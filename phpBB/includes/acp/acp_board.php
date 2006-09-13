@@ -65,10 +65,6 @@ class acp_board
 						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig'				=> array('lang' => 'ALLOW_SIG',				'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_bbcode'		=> array('lang' => 'ALLOW_SIG_BBCODE',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_img'			=> array('lang' => 'ALLOW_SIG_IMG',			'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_flash'		=> array('lang' => 'ALLOW_SIG_FLASH',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'type' => 'radio:yes_no', 'explain' => true),
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true),
 
@@ -138,6 +134,7 @@ class acp_board
 						'allow_forum_notify'	=> array('lang' => 'ALLOW_FORUM_NOTIFY',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_bbcode'			=> array('lang' => 'ALLOW_BBCODE',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_smilies'			=> array('lang' => 'ALLOW_SMILIES',			'type' => 'radio:yes_no', 'explain' => false),
+						'allow_post_links'		=> array('lang' => 'ALLOW_POST_LINKS',		'type' => 'radio:yes_no', 'explain' => true),
 						'allow_nocensors'		=> array('lang' => 'ALLOW_NO_CENSORS',		'type' => 'radio:yes_no', 'explain' => true),
 						'allow_bookmarks'		=> array('lang' => 'ALLOW_BOOKMARKS',		'type' => 'radio:yes_no', 'explain' => true),
 						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'type' => 'radio:yes_no', 'explain' => true),
@@ -173,6 +170,7 @@ class acp_board
 						'allow_sig_img'			=> array('lang' => 'ALLOW_SIG_IMG',			'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig_flash'		=> array('lang' => 'ALLOW_SIG_FLASH',		'type' => 'radio:yes_no', 'explain' => false),
 						'allow_sig_smilies'		=> array('lang' => 'ALLOW_SIG_SMILIES',		'type' => 'radio:yes_no', 'explain' => false),
+						'allow_sig_links'		=> array('lang' => 'ALLOW_SIG_LINKS',		'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'GENERAL_SETTINGS',
 						'max_sig_chars'			=> array('lang' => 'MAX_SIG_LENGTH',		'type' => 'text:5:4', 'explain' => true),

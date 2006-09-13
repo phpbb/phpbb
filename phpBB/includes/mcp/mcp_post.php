@@ -42,7 +42,7 @@ function mcp_post_details($id, $mode, $action)
 			$whois = user_ipwhois($ip);
 			
 			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
+			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
 			
 			$template->assign_vars(array(
 				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),

@@ -614,6 +614,7 @@ class acp_groups
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
+					'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=list&field=usernames', false),
 					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id")
 				);
 

@@ -104,7 +104,7 @@ $lang = array_merge($lang, array(
 	'BIRTHDAY'					=> 'Birthday',
 	'BIRTHDAY_EXPLAIN'			=> 'Setting a year will list your age when it is your birthday.',
 	'BOARD_DATE_FORMAT'			=> 'My date format',
-	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date" onclick="this.target=\'_blank\';" title="Opens in a new window">date()</a> function',
+	'BOARD_DATE_FORMAT_EXPLAIN'	=> 'The syntax used is identical to the PHP <a href="http://www.php.net/date">date()</a> function',
 	'BOARD_DST'					=> 'Daylight Saving Time is in effect',
 	'BOARD_LANGUAGE'			=> 'My language',
 	'BOARD_STYLE'				=> 'My board style',

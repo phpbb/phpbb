@@ -51,7 +51,7 @@ if ($mode == 'whois')
 		$whois = user_ipwhois($row['session_ip']);
 
 		$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-		$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2" target="_blank">\2</a>\3', $whois);
+		$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
 
 		$template->assign_vars(array(
 			'WHOIS'	=> trim($whois))

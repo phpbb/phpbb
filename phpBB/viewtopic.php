@@ -1534,6 +1534,14 @@ if ($force_encoding != '')
 	$user->lang['ENCODING'] = $force_encoding;
 }
 
+// We overwrite $_REQUEST['f'] if there is no forum specified
+// to be able to display the correct online list.
+// One downside is that the user currently viewing this topic/post is not taken into account.
+if (empty($_REQUEST['f']))
+{
+	$_REQUEST['f'] = $forum_id;
+}
+
 // Output the page
 page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_data['topic_title']);
 

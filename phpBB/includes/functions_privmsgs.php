@@ -1324,7 +1324,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'message_subject'	=> $subject,
 				'message_text'		=> $data['message'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'message_attachment'=> (sizeof($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
@@ -1343,7 +1343,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'message_subject'	=> $subject,
 				'message_text'		=> $data['message'],
 				'message_encoding'	=> $user->lang['ENCODING'],
-				'message_attachment'=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'message_attachment'=> (sizeof($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid']
 			);
@@ -1448,50 +1448,72 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
 	{
 		$space_taken = $files_added = 0;
+		$orphan_rows = array();
 
 		foreach ($data['attachment_data'] as $pos => $attach_row)
 		{
-			if ($attach_row['attach_id'])
+			$orphan_rows[(int) $attach_row['attach_id']] = array();
+		}
+
+		if (sizeof($orphan_rows))
+		{
+			$sql = 'SELECT attach_id, filesize, physical_filename
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan_rows)) . '
+					AND in_message = 1
+					AND is_orphan = 1
+					AND poster_id = ' . $user->data['user_id'];
+			$result = $db->sql_query($sql);
+
+			$orphan_rows = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$orphan_rows[$row['attach_id']] = $row;
+			}
+			$db->sql_freeresult($result);
+		}
+
+		foreach ($data['attachment_data'] as $pos => $attach_row)
+		{
+			if ($attach_row['is_orphan'] && !in_array($attach_row['attach_id'], array_keys($orphan_rows)))
+			{
+				continue;
+			}
+
+			if (!$attach_row['is_orphan'])
 			{
 				// update entry in db if attachment already stored in db and filespace
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . " 
-					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "' 
-					WHERE attach_id = " . (int) $attach_row['attach_id'];
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
+					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
+					WHERE attach_id = " . (int) $attach_row['attach_id'] . '
+						AND is_orphan = 0';
 				$db->sql_query($sql);
 			}
 			else
 			{
-				// insert attachment into db 
+				// insert attachment into db
+				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				{
+					continue;
+				}
+
+				$space_taken += $orphan_rows[$attach_row['attach_id']]['filesize'];
+				$files_added++;
+
 				$attach_sql = array(
 					'post_msg_id'		=> $data['msg_id'],
 					'topic_id'			=> 0,
-					'in_message'		=> 1,
+					'is_orphan'			=> 0,
 					'poster_id'			=> $data['from_user_id'],
-					'physical_filename'	=> basename($attach_row['physical_filename']),
-					'real_filename'		=> basename($attach_row['real_filename']),
 					'attach_comment'	=> $attach_row['attach_comment'],
-					'extension'			=> $attach_row['extension'],
-					'mimetype'			=> $attach_row['mimetype'],
-					'filesize'			=> $attach_row['filesize'],
-					'filetime'			=> $attach_row['filetime'],
-					'thumbnail'			=> $attach_row['thumbnail']
 				);
 
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . 
-					$db->sql_build_array('INSERT', $attach_sql);
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . '
+					WHERE attach_id = ' . $attach_row['attach_id'] . '
+						AND is_orphan = 1
+						AND poster_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
-
-				$space_taken += $attach_row['filesize'];
-				$files_added++;
 			}
-		}
-
-		if (sizeof($data['attachment_data']))
-		{
-			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-				SET message_attachment = 1
-				WHERE msg_id = ' . $data['msg_id'];
-			$db->sql_query($sql);
 		}
 
 		if ($space_taken && $files_added)

@@ -405,9 +405,21 @@ class session
 			$this->cookie_data['k'] = '';
 			$this->cookie_data['u'] = ($bot) ? $bot : ANONYMOUS;
 
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . (int) $this->cookie_data['u'];
+			if (!$bot)
+			{
+				$sql = 'SELECT *
+					FROM ' . USERS_TABLE . '
+					WHERE user_id = ' . (int) $this->cookie_data['u'];
+			}
+			else
+			{
+				// We give bots always the same session if it is not yet expired.
+				$sql = 'SELECT u.*, s.*
+					FROM ' . USERS_TABLE . ' u
+					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
+					WHERE u.user_id = ' . (int) $bot;
+			}
+
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -439,6 +451,47 @@ class session
 		$this->data['is_bot'] = ($bot) ? true : false;
 		//
 		//
+
+		// If our friend is a bot, we re-assign a previously assigned session
+		if ($this->data['is_bot'] && $bot === $this->data['user_id'] && $this->data['session_id'])
+		{
+			// Only assign the current session if the ip and browser match...
+			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+
+			$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
+			$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
+
+			if ($u_ip === $s_ip && $s_browser === $u_browser)
+			{
+				$this->session_id = $this->data['session_id'];
+
+				// Only update session DB a minute or so after last update or if page changes
+				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+				{
+					$sql_ary = array('session_time' => $this->time_now, 'session_last_visit' => $this->time_now, 'session_admin' => 0);
+
+					if ($this->update_session_page)
+					{
+						$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
+					}
+
+					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+						WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+					$db->sql_query($sql);
+				}
+
+				$SID = '?sid=';
+				$_SID = '';
+
+				return true;
+			}
+			else
+			{
+				// If the ip and browser does not match make sure we only have one bot assigned to one session
+				$db->sql_query('DELETE FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = ' . $this->data['user_id']);
+			}
+		}
 
 		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
 		$session_autologin = (($this->cookie_data['k'] || $persist_login) && $this->data['is_registered']) ? true : false;
@@ -515,6 +568,11 @@ class session
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
 			unset($cookie_expire);
+		}
+		else
+		{
+			$SID = '?sid=';
+			$_SID = '';
 		}
 
 		return true;

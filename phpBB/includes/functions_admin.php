@@ -1782,12 +1782,12 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 
 	$sql_and = '';
 
-	if (!($prune_flags & 4))
+	if (!($prune_flags & FORUM_FLAG_PRUNE_ANNOUNCE))
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_ANNOUNCE;
 	}
 
-	if (!($prune_flags & 8))
+	if (!($prune_flags & FORUM_FLAG_PRUNE_STICKY))
 	{
 		$sql_and .= ' AND topic_type <> ' . POST_STICKY;
 	}
@@ -1816,7 +1816,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	}
 	$db->sql_freeresult($result);
 
-	if ($prune_flags & 2)
+	if ($prune_flags & FORUM_FLAG_PRUNE_POLL)
 	{
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . '

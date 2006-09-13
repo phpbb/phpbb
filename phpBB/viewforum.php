@@ -89,10 +89,10 @@ if (!$auth->acl_get('f_read', $forum_id))
 
 // Is this forum a link? ... User got here either because the
 // number of clicks is being tracked or they guessed the id
-if ($forum_data['forum_link'])
+if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 {
 	// Does it have click tracking enabled?
-	if ($forum_data['forum_flags'] & 1)
+	if ($forum_data['forum_flags'] & FORUM_FLAG_LINK_TRACK)
 	{
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
 			SET forum_posts = forum_posts + 1
@@ -139,7 +139,7 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 // Not postable forum or showing active topics?
-if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 16) && $forum_data['forum_type'] == FORUM_CAT)))
+if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && $forum_data['forum_type'] == FORUM_CAT)))
 {
 	page_footer();
 }
@@ -232,7 +232,7 @@ else
 $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
 
 // Display active topics?
-$s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & 16)) ? true : false;
+$s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
 $template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),

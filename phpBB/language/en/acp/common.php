@@ -308,10 +308,11 @@ $lang = array_merge($lang, array(
 
 	'NO_INACTIVE_USERS'	=> 'No inactive users',
 	'NOT_AVAILABLE'		=> 'Not available',
-	'NUMBER_FILES'		=> 'Number of Attachments',
+	'NUMBER_FILES'		=> 'Number of attachments',
 	'NUMBER_POSTS'		=> 'Number of posts',
 	'NUMBER_TOPICS'		=> 'Number of topics',
 	'NUMBER_USERS'		=> 'Number of users',
+	'NUMBER_ORPHAN'		=> 'Orphan attachments',
 
 	'POSTS_PER_DAY'		=> 'Posts per day',
 
@@ -325,7 +326,7 @@ $lang = array_merge($lang, array(
 
 	'TOPICS_PER_DAY'	=> 'Topics per day',
 
-	'UPLOAD_DIR_SIZE'	=> 'Upload directory size',
+	'UPLOAD_DIR_SIZE'	=> 'Size of posted attachments',
 	'USERS_PER_DAY'		=> 'Users per day',
 
 	'VALUE'				=> 'Value',

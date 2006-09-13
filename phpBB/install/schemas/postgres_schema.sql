@@ -93,6 +93,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	in_message INT2 DEFAULT '0' NOT NULL CHECK (in_message >= 0),
 	poster_id INT4 DEFAULT '0' NOT NULL CHECK (poster_id >= 0),
+	is_orphan INT2 DEFAULT '1' NOT NULL CHECK (is_orphan >= 0),
 	physical_filename varchar(255) DEFAULT '' NOT NULL,
 	real_filename varchar(255) DEFAULT '' NOT NULL,
 	download_count INT4 DEFAULT '0' NOT NULL CHECK (download_count >= 0),
@@ -109,7 +110,7 @@ CREATE INDEX phpbb_attachments_filetime ON phpbb_attachments (filetime);
 CREATE INDEX phpbb_attachments_post_msg_id ON phpbb_attachments (post_msg_id);
 CREATE INDEX phpbb_attachments_topic_id ON phpbb_attachments (topic_id);
 CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments (poster_id);
-CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments (filesize);
+CREATE INDEX phpbb_attachments_is_orphan ON phpbb_attachments (is_orphan);
 
 /*
 	Table: 'phpbb_acl_groups'
@@ -923,8 +924,8 @@ CREATE TABLE phpbb_smilies (
 	code varchar(50) DEFAULT '' NOT NULL,
 	emotion varchar(50) DEFAULT '' NOT NULL,
 	smiley_url varchar(50) DEFAULT '' NOT NULL,
-	smiley_width INT2 DEFAULT '0' NOT NULL,
-	smiley_height INT2 DEFAULT '0' NOT NULL,
+	smiley_width INT2 DEFAULT '0' NOT NULL CHECK (smiley_width >= 0),
+	smiley_height INT2 DEFAULT '0' NOT NULL CHECK (smiley_height >= 0),
 	smiley_order INT4 DEFAULT '0' NOT NULL CHECK (smiley_order >= 0),
 	display_on_posting INT2 DEFAULT '1' NOT NULL CHECK (display_on_posting >= 0),
 	PRIMARY KEY (smiley_id)

@@ -433,7 +433,8 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
 
-		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string'))
+		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=rule_string'),
+		'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=rule_string', true))
 	);
 
 	$rule_lang = $action_lang = $check_lang = array();

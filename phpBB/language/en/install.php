@@ -235,7 +235,7 @@ $lang = array_merge($lang, array(
 	'SUB_SUPPORT'				=> 'Support',
 	'SUCCESSFUL_CONNECT'		=> 'Successful Connection',
 // TODO: Write some text on obtaining support
-	'SUPPORT_BODY'				=> 'During the beta phase a minimal level of support will be given at <a href="http://www.phpbb.com/phpBB/viewforum.php?f=46">the phpBB 3.0 Beta support forum</a>. We will provide answers to general setup questions, configuration problems and support for determining common problems mostly related to bugs. We will not support modifications, custom code/style additions or any users using the beta packages within a live environment.</p><p>For additional assistance, please refer to our <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/">Quick Start Guide</a>.</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/" target="_new">subscribe to our mailing list</a>',
+	'SUPPORT_BODY'				=> 'During the beta phase a minimal level of support will be given at <a href="http://www.phpbb.com/phpBB/viewforum.php?f=46">the phpBB 3.0 Beta support forum</a>. We will provide answers to general setup questions, configuration problems and support for determining common problems mostly related to bugs. We will not support modifications, custom code/style additions or any users using the beta packages within a live environment.</p><p>For additional assistance, please refer to our <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/">Quick Start Guide</a>.</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/">subscribe to our mailing list</a>',
 	'SYNC_FORUMS'				=> 'Starting to sync forums',
 	'SYNC_TOPICS'				=> 'Starting to sync topics',
 	'SYNC_TOPIC_ID'				=> 'Synchronising topics from topic_id $1%s to $2%s',
@@ -379,7 +379,7 @@ $lang = array_merge($lang, array(
 
 		<h1>Release announcement</h1>
 
-		<p>Please read <a href="%1$s" title="%1$s" target="_blank">the release announcement for the latest version</a> before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
+		<p>Please read <a href="%1$s" title="%1$s">the release announcement for the latest version</a> before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
 
 		<br />
 
@@ -388,7 +388,7 @@ $lang = array_merge($lang, array(
 		<p>The recommended way of updating your installation only takes the following steps:</p>
 
 		<ul style="margin-left: 20px; font-size: 1.1em;">
-			<li>Go to the <a href="http://www.phpbb.com/downloads.php" title="http://www.phpbb.com/downloads.php" target="_blank">phpBB.com downloads page</a> and download the correct archive. If you are unsure you can <a href="%2$s" title="%2$s">download the correct archive directly</a> as a zip file.<br /><br /></li>
+			<li>Go to the <a href="http://www.phpbb.com/downloads.php" title="http://www.phpbb.com/downloads.php">phpBB.com downloads page</a> and download the correct archive. If you are unsure you can <a href="%2$s" title="%2$s">download the correct archive directly</a> as a zip file.<br /><br /></li>
 			<li>Unpack the archive<br /><br /></li>
 			<li>Upload the complete uncompressed install folder to your phpBB root directory (where your config.php file is).<br /><br /></li>
 		</ul>

@@ -646,6 +646,7 @@ function get_schema_struct()
 			'topic_id'			=> array('UINT', 0),
 			'in_message'		=> array('BOOL', 0),
 			'poster_id'			=> array('UINT', 0),
+			'is_orphan'			=> array('BOOL', 1),
 			'physical_filename'	=> array('VCHAR', ''),
 			'real_filename'		=> array('VCHAR', ''),
 			'download_count'	=> array('UINT', 0),
@@ -662,7 +663,7 @@ function get_schema_struct()
 			'post_msg_id'		=> array('INDEX', 'post_msg_id'),
 			'topic_id'			=> array('INDEX', 'topic_id'),
 			'poster_id'			=> array('INDEX', 'poster_id'),
-			'filesize'			=> array('INDEX', 'filesize'),
+			'is_orphan'			=> array('INDEX', 'is_orphan'),
 		),
 	);
 
@@ -1398,8 +1399,8 @@ function get_schema_struct()
 			'code'				=> array('VCHAR:50', ''),
 			'emotion'			=> array('VCHAR:50', ''),
 			'smiley_url'		=> array('VCHAR:50', ''),
-			'smiley_width'		=> array('TINT:4', 0),
-			'smiley_height'		=> array('TINT:4', 0),
+			'smiley_width'		=> array('USINT', 0),
+			'smiley_height'		=> array('USINT', 0),
 			'smiley_order'		=> array('UINT', 0),
 			'display_on_posting'=> array('BOOL', 1),
 		),

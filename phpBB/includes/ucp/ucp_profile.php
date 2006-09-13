@@ -428,7 +428,7 @@ class ucp_profile
 						$message_parser = new parse_message($signature);
 
 						// Allowing Quote BBCode
-						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, true, 'sig');
+						$message_parser->parse($enable_bbcode, ($config['allow_sig_links']) ? $enable_urls : false, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
 						
 						if (sizeof($message_parser->warn_msg))
 						{
@@ -476,17 +476,19 @@ class ucp_profile
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
+					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false)
+					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
+					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
 			
 				// Build custom bbcodes array

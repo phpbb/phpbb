@@ -11,6 +11,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	in_message tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	is_orphan tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	physical_filename varchar(255) DEFAULT '' NOT NULL,
 	real_filename varchar(255) DEFAULT '' NOT NULL,
 	download_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
@@ -25,7 +26,7 @@ CREATE TABLE phpbb_attachments (
 	KEY post_msg_id (post_msg_id),
 	KEY topic_id (topic_id),
 	KEY poster_id (poster_id),
-	KEY filesize (filesize)
+	KEY is_orphan (is_orphan)
 );
 
 
@@ -699,8 +700,8 @@ CREATE TABLE phpbb_smilies (
 	code varchar(50) DEFAULT '' NOT NULL,
 	emotion varchar(50) DEFAULT '' NOT NULL,
 	smiley_url varchar(50) DEFAULT '' NOT NULL,
-	smiley_width tinyint(4) DEFAULT '0' NOT NULL,
-	smiley_height tinyint(4) DEFAULT '0' NOT NULL,
+	smiley_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	smiley_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	smiley_order mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (smiley_id),

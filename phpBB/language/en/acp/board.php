@@ -67,6 +67,8 @@ $lang = array_merge($lang, array(
 	'ALLOW_SIG_BBCODE'			=> 'Allow BBCode in user signatures',
 	'ALLOW_SIG_FLASH'			=> 'Allow use of FLASH BBCode Tag in user signatures',
 	'ALLOW_SIG_IMG'				=> 'Allow use of IMG BBCode Tag in user signatures',
+	'ALLOW_SIG_LINKS'			=> 'Allow use of links in user signatures',
+	'ALLOW_SIG_LINKS_EXPLAIN'	=> 'If disallowed the URL bbcode tag and automatic/magic urls are disabled.',
 	'ALLOW_SIG_SMILIES'			=> 'Allow use of smilies in user signatures',
 	'ALLOW_SMILIES'				=> 'Allow Smilies',
 	'ALLOW_TOPIC_NOTIFY'		=> 'Allow Topic Watching',
@@ -122,6 +124,8 @@ $lang = array_merge($lang, array(
 // Post Settings
 $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting',
+	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
+	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the URL bbcode tag and automatic/magic urls are disabled.',
 
 	'BUMP_INTERVAL'					=> 'Bump Interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',

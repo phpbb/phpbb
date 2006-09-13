@@ -485,7 +485,7 @@ function colorPalette(dir, width, height)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td style="line-height: ' + height + 'px; background-color:#' + color + '; width: ' + width + 'px; height: ' + height + 'px;">');
-				document.write('<a href="javascript:bbfontstyle(\'[color=#' + color + ']\', \'[/color]\');" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 

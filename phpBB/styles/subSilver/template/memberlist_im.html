@@ -28,7 +28,7 @@
 
 	<!-- IF S_SEND_MSNM -->
 		<tr>
-			<td class="row1" colspan="2" align="center"><object classid="clsid:FB7199AB-79BF-11d2-8D94-0000F875C541" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object><br /><a class="gen" href="javascript:objMessengerApp.LaunchAddContactUI('{IM_CONTACT}')">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="javascript:objMessengerApp.LaunchIMUI('{IM_CONTACT}')">{L_IM_SEND_MESSAGE}</a></td>
+			<td class="row1" colspan="2" align="center"><object classid="clsid:FB7199AB-79BF-11d2-8D94-0000F875C541" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object><br /><a class="gen" href="#" onclick="objMessengerApp.LaunchAddContactUI('{IM_CONTACT}'); return false;">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="#" onclick="objMessengerApp.LaunchIMUI('{IM_CONTACT}'); return false;">{L_IM_SEND_MESSAGE}</a></td>
 		</tr>
 		<tr>
 			<td class="cat" colspan="2" align="center">&nbsp;</td>

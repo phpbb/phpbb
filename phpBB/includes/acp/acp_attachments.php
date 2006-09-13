@@ -825,24 +825,45 @@ class acp_attachments
 					$add_files = (isset($_POST['add'])) ? array_keys(request_var('add', array('' => 0))) : array();
 					$post_ids = request_var('post_id', array('' => 0));
 
-					foreach ($delete_files as $delete)
+					if (sizeof($delete_files))
 					{
-						phpbb_unlink($delete);
-						phpbb_unlink($delete, 'thumbnail');
+						$sql = 'SELECT *
+							FROM ' . ATTACHMENTS_TABLE . '
+							WHERE ' . $db->sql_in_set('attach_id', $delete_files) . '
+								AND is_orphan = 1';
+						$result = $db->sql_query($sql);
+
+						$delete_files = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							phpbb_unlink($row['physical_filename']);
+
+							if ($row['thumbnail'])
+							{
+								phpbb_unlink($row['physical_filename'], 'thumbnail');
+							}
+
+							$delete_files[$row['attach_id']] = $row['real_filename'];
+						}
+						$db->sql_freeresult($result);
 					}
 
 					if (sizeof($delete_files))
 					{
+						$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
+							WHERE ' . $db->sql_in_set('attach_id', array_keys($delete_files));
+						$db->sql_query($sql);
+
 						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
 						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
 					}
 
 					$upload_list = array();
-					foreach ($add_files as $file)
+					foreach ($add_files as $attach_id)
 					{
-						if (!in_array($file, $delete_files) && $post_ids[$file])
+						if (!in_array($attach_id, array_keys($delete_files)) && !empty($post_ids[$attach_id]))
 						{
-							$upload_list[$post_ids[$file]] = $file;
+							$upload_list[$attach_id] = $post_ids[$attach_id];
 						}
 					}
 					unset($add_files);
@@ -851,13 +872,10 @@ class acp_attachments
 					{
 						$template->assign_var('S_UPLOADING_FILES', true);
 
-						include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
-						$message_parser = new parse_message();
-
 						$sql = 'SELECT forum_id, forum_name
 							FROM ' . FORUMS_TABLE;
 						$result = $db->sql_query($sql);
-						
+
 						$forum_names = array();
 						while ($row = $db->sql_fetchrow($result))
 						{
@@ -865,30 +883,67 @@ class acp_attachments
 						}
 						$db->sql_freeresult($result);
 
-						$sql = 'SELECT forum_id, topic_id, post_id 
+						$sql = 'SELECT forum_id, topic_id, post_id, poster_id
 							FROM ' . POSTS_TABLE . '
-							WHERE ' . $db->sql_in_set('post_id', array_keys($upload_list));
+							WHERE ' . $db->sql_in_set('post_id', $upload_list);
+						$result = $db->sql_query($sql);
+
+						$post_info = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$post_info[$row['post_id']] = $row;
+						}
+						$db->sql_freeresult($result);
+
+						// Select those attachments we want to change...
+						$sql = 'SELECT *
+							FROM ' . ATTACHMENTS_TABLE . '
+							WHERE ' . $db->sql_in_set('attach_id', array_keys($upload_list)) . '
+								AND is_orphan = 1';
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
 						{
-							$return = true;
-
-							if ($auth->acl_get('f_attach', $row['forum_id']))
-							{
-								$return = $this->upload_file($row['post_id'], $row['topic_id'], $row['forum_id'], $config['upload_path'], $upload_list[$row['post_id']]);
-							}
+							$post_row = $post_info[$upload_list[$row['attach_id']]];
 
 							$template->assign_block_vars('upload', array(
-								'FILE_INFO'		=> sprintf($user->lang['UPLOADING_FILE_TO'], $upload_list[$row['post_id']], $row['post_id']),
-								'S_DENIED'		=> (!$auth->acl_get('f_attach', $row['forum_id'])) ? true : false,
-								'L_DENIED'		=> (!$auth->acl_get('f_attach', $row['forum_id'])) ? sprintf($user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '',
-								'ERROR_MSG'		=> ($return === true) ? false : $return)
+								'FILE_INFO'		=> sprintf($user->lang['UPLOADING_FILE_TO'], $row['real_filename'], $post_row['post_id']),
+								'S_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? true : false,
+								'L_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? sprintf($user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '')
 							);
+
+							if (!$auth->acl_get('f_attach', $post_row['forum_id']))
+							{
+								continue;
+							}
+
+							// Adjust attachment entry
+							$sql_ary = array(
+								'in_message'	=> 0,
+								'is_orphan'		=> 0,
+								'poster_id'		=> $post_row['poster_id'],
+								'post_msg_id'	=> $post_row['post_id'],
+								'topic_id'		=> $post_row['topic_id'],
+							);
+
+							$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE attach_id = ' . $row['attach_id'];
+							$db->sql_query($sql);
+
+							$sql = 'UPDATE ' . POSTS_TABLE . '
+								SET post_attachment = 1
+								WHERE post_id = ' . $post_row['post_id'];
+							$db->sql_query($sql);
+
+							$sql = 'UPDATE ' . TOPICS_TABLE . '
+								SET topic_attachment = 1
+								WHERE topic_id = ' . $post_row['topic_id'];
+							$db->sql_query($sql);
+
+							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], $row['real_filename']);
 						}
 						$db->sql_freeresult($result);
-
-						unset($message_parser);
 					}
 				}
 
@@ -896,43 +951,31 @@ class acp_attachments
 					'S_ORPHAN'		=> true)
 				);
 
-				$attach_filelist = array();
-
-				$dir = @opendir($phpbb_root_path . $config['upload_path']);
-				while (($file = @readdir($dir)) !== false)
-				{
-					if (is_file($phpbb_root_path . $config['upload_path'] . '/' . $file) && filesize($phpbb_root_path . $config['upload_path'] . '/' . $file) && $file{0} != '.' && $file != 'index.htm' && !preg_match('#^thumb\_#', $file))
-					{
-						$attach_filelist[$file] = $file;
-					}
-				}
-				@closedir($dir);
-
-				$sql = 'SELECT physical_filename 
-					FROM ' . ATTACHMENTS_TABLE;
+				// Just get the files with is_orphan set and older than 3 hours
+				$sql = 'SELECT *
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 1
+						AND filetime < ' . (time() - 3*60*60) . '
+					ORDER BY filetime DESC';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					unset($attach_filelist[$row['physical_filename']]);
+					$size_lang = ($row['filesize'] >= 1048576) ? $user->lang['MB'] : (($row['filesize'] >= 1024) ? $user->lang['KB'] : $user->lang['BYTES']);
+					$row['filesize'] = ($row['filesize'] >= 1048576) ? round((round($row['filesize'] / 1048576 * 100) / 100), 2) : (($row['filesize'] >= 1024) ? round((round($row['filesize'] / 1024 * 100) / 100), 2) : $row['filesize']);
+
+					$template->assign_block_vars('orphan', array(
+						'FILESIZE'			=> $row['filesize'] . ' ' . $size_lang,
+						'FILETIME'			=> $user->format_date($row['filetime']),
+						'REAL_FILENAME'		=> basename($row['real_filename']),
+						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
+						'ATTACH_ID'			=> $row['attach_id'],
+						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
+						'U_FILE'			=> append_sid($phpbb_root_path . 'download.' . $phpEx, 'id=' . $row['attach_id']))
+					);
 				}
 				$db->sql_freeresult($result);
 
-				$i = 0;
-				foreach ($attach_filelist as $file)
-				{
-					$filesize = @filesize($phpbb_root_path . $config['upload_path'] . '/' . $file);
-					$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-					$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
-
-					$template->assign_block_vars('orphan', array(
-						'FILESIZE'		=> $filesize . ' ' . $size_lang,
-						'U_FILE'		=> $phpbb_root_path . $config['upload_path'] . '/' . $file,
-						'FILE'			=> $file,
-						'POST_IDS'		=> (!empty($post_ids[$file])) ? $post_ids[$file] : '')
-					);
-				}
-				
 			break;
 		}
 
@@ -1083,15 +1126,12 @@ class acp_attachments
 
 	/** 
 	* Upload already uploaded file... huh? are you kidding?
-	*/
 	function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
 	{
 		global $message_parser, $db, $user, $phpbb_root_path;
 
 		$message_parser->attachment_data = array();
-
 		$message_parser->filename_data['filecomment'] = '';
-		$message_parser->filename_data['filename'] = $phpbb_root_path . $upload_dir . '/' . basename($filename);
 
 		$filedata = upload_attachment('local', $forum_id, true, $phpbb_root_path . $upload_dir . '/' . basename($filename));
 
@@ -1144,6 +1184,7 @@ class acp_attachments
 			return sprintf($user->lang['ADMIN_UPLOAD_ERROR'], implode('<br />', $filedata['error']));
 		}
 	}
+		*/
 
 	/**
 	* Search Imagick

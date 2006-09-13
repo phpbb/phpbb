@@ -276,6 +276,7 @@ class install_update extends module
 							'CUSTOM_ORIGINAL'	=> ($file_struct['custom']) ? $file_struct['original'] : '',
 
 							'U_SHOW_DIFF'		=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename'])),
+							'UA_SHOW_DIFF'		=> append_sid($this->p_master->module_url, "mode=$mode&sub=file_check&action=diff&status=$status&file=" . urlencode($file_struct['filename']), false),
 							'L_SHOW_DIFF'		=> ($status != 'up_to_date') ? $user->lang['SHOW_DIFF_' . strtoupper($status)] : '',
 						));
 					}

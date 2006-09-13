@@ -469,11 +469,6 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 		'user_type'		=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL
 	);
 
-	if ($new_group_id == $group_id_ary[$group_name])
-	{
-		$sql_ary['group_id'] = $new_group_id;
-	}
-
 	if ($user_actkey !== false)
 	{
 		$sql_ary['user_actkey'] = $user_actkey;
@@ -482,6 +477,10 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 		WHERE user_id = $user_id";
 	$db->sql_query($sql);
+
+	// Set the users default group from inactive to registered or registered to inactive
+	// only if the group id changed...
+	group_set_user_default($new_group_id, array($user_id));
 
 	$auth->acl_clear_prefetch($user_id);
 
@@ -1344,7 +1343,21 @@ function avatar_upload($data, &$error)
 	}
 
 	$file->clean_filename('real', $data['user_id'] . '_');
-	$file->move_file($config['avatar_path']);
+
+	$destination = $config['avatar_path'];
+
+	if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
+	{
+		$destination = substr($destination, 0, sizeof($destination)-2);
+	}
+
+	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
+	if ($destination && ($destination{0} == '/' || $destination{0} == "\\"))
+	{
+		$destination = '';
+	}
+
+	$file->move_file($destination);
 
 	if (sizeof($file->error))
 	{

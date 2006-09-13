@@ -180,7 +180,7 @@ function mcp_topic_view($id, $mode, $action)
 		'U_VIEWTOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
 		'TO_TOPIC_ID'		=> $to_topic_id,
-		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '" target="_new">' . $to_topic_info['topic_title'] . '</a>') : '',
+		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
 
 		'SPLIT_SUBJECT'		=> $subject,
 		'POSTS_PER_PAGE'	=> $posts_per_page,

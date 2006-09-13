@@ -129,7 +129,7 @@
 							<br /><span>{L_NUM_CONFLICTS}: {files.NUM_CONFLICTS}</span>
 							<!-- ENDIF -->
 						</dt>
-						<dd>[ <a href="{files.U_SHOW_DIFF}" target="diff">{files.L_SHOW_DIFF}</a> ]</dd>
+						<dd>[ <a href="{files.U_SHOW_DIFF}" onclick="popup({files.UA_SHOW_DIFF}, 700, 500);">{files.L_SHOW_DIFF}</a> ]</dd>
 						<!-- IF files.S_CUSTOM -->
 							<dd><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
 						<!-- ENDIF -->

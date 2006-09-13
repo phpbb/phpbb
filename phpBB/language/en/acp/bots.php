@@ -56,8 +56,9 @@ $lang = array_merge($lang, array(
 	'BOT_VIS'			=> 'Bot visible',
 	'BOT_VIS_EXPLAIN'	=> 'Allow bot to be seen by all users in online lists.',
 
-	'ERR_BOT_NO_IP'			=> 'The IP addresses you supplied were invalid or the hostname could not be resolved.',
-	'ERR_BOT_NO_MATCHES'	=> 'You must supply at least one of an agent or IP for this bot match.',
+	'ERR_BOT_AGENT_MATCHES_UA'	=> 'The bot agent you supplied is similar to the one you are currently using. Please adjust the agent for this bot.',
+	'ERR_BOT_NO_IP'				=> 'The IP addresses you supplied were invalid or the hostname could not be resolved.',
+	'ERR_BOT_NO_MATCHES'		=> 'You must supply at least one of an agent or IP for this bot match.',
 
 	'NO_BOT'	=> 'Found no bot with the specified ID',
 ));

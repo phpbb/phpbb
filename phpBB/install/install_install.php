@@ -1616,7 +1616,7 @@ class install_install extends module
 
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
-			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html" target="_blank">', '</a>'),
+			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html">', '</a>'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx),
 		));

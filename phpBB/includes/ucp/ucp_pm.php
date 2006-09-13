@@ -96,7 +96,7 @@ class ucp_pm
 				$template->assign_vars(array(
 					'MESSAGE'			=> $l_new_message,
 					'S_NOT_LOGGED_IN'	=> ($user->data['user_id'] == ANONYMOUS) ? true : false,
-					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox();return false;" target="_new">', '</a>'),
+					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox(); return false;">', '</a>'),
 					'U_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 					'UA_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false))
 				);

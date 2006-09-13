@@ -96,7 +96,7 @@
 	<h1>{L_ACL_TYPE}</h1>
 
 	<fieldset class="quick">
-		<a href="javascript: mark_options('a_options', 'y');">{L_ALL_YES}</a> &bull; <a href="javascript: mark_options('a_options', 'n');">{L_ALL_NEVER}</a> &bull; <a href="javascript: mark_options('a_options', 'u');">{L_ALL_NO}</a>
+		<a href="#" onclick="mark_options('a_options', 'y'); return false;">{L_ALL_YES}</a> &bull; <a href="#" onclick="mark_options('a_options', 'n'); return false;">{L_ALL_NEVER}</a> &bull; <a href="#" onclick="mark_options('a_options', 'u'); return false;">{L_ALL_NO}</a>
 	</fieldset>
 
 	<fieldset class="permissions">
@@ -121,7 +121,7 @@
 			<!-- ELSE -->
 				<td class="preset preset_custom">
 			<!-- ENDIF -->
-				<a href="javascript:swap_options('options{auth.S_ROW_COUNT}');"><span></span></a></td>
+				<a href="#" onclick="swap_options('options{auth.S_ROW_COUNT}'); return false;"><span></span></a></td>
 		<!-- END auth -->
 		</tr>
 		<tr class="row3">
@@ -131,9 +131,9 @@
 				<thead>
 				<tr>
 					<th scope="col" style="text-align: left; padding-left: 0;"><strong>{L_ACL_SETTING} [{auth.CAT_NAME}]</strong></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'y');">{L_ACL_YES}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'u');">{L_ACL_NO}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'n');">{L_ACL_NEVER}</a></th>
+					<th scope="col"><a href="#" onclick="mark_options('options{auth.S_ROW_COUNT}', 'y'); return false;">{L_ACL_YES}</a></th>
+					<th scope="col"><a href="#" onclick="mark_options('options{auth.S_ROW_COUNT}', 'u'); return false;">{L_ACL_NO}</a></th>
+					<th scope="col"><a href="#" onclick="mark_options('options{auth.S_ROW_COUNT}', 'n'); return false;">{L_ACL_NEVER}</a></th>
 				</tr>
 				</thead>
 				<tbody>

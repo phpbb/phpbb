@@ -215,14 +215,16 @@ class acp_main
 				set_config('num_users', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(attach_id) as stat
-					FROM ' . ATTACHMENTS_TABLE;
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
 				$result = $db->sql_query($sql);
 
 				set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT SUM(filesize) as stat
-					FROM ' . ATTACHMENTS_TABLE;
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE is_orphan = 0';
 				$result = $db->sql_query($sql);
 
 				set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
@@ -404,6 +406,13 @@ class acp_main
 			$files_per_day = $total_files;
 		}
 
+		$sql = 'SELECT COUNT(attach_id) total_orphan
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE is_orphan = 1';
+		$result = $db->sql_query($sql);
+		$total_orphan = (int) $db->sql_fetchfield('total_orphan');
+		$db->sql_freeresult($result);
+
 		$dbsize = get_database_size();
 		$s_action_options = build_select(array('online' => 'RESET_ONLINE', 'date' => 'RESET_DATE', 'stats' => 'RESYNC_STATS', 'user' => 'RESYNC_POSTCOUNTS', 'db_track' => 'RESYNC_POST_MARKING'));
 
@@ -420,6 +429,7 @@ class acp_main
 			'AVATAR_DIR_SIZE'	=> $avatar_dir_size,
 			'DBSIZE'			=> $dbsize,
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
+			'TOTAL_ORPHAN'		=> $total_orphan,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
 

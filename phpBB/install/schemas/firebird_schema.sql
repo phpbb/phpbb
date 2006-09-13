@@ -27,6 +27,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id INTEGER DEFAULT 0 NOT NULL,
 	in_message INTEGER DEFAULT 0 NOT NULL,
 	poster_id INTEGER DEFAULT 0 NOT NULL,
+	is_orphan INTEGER DEFAULT 1 NOT NULL,
 	physical_filename VARCHAR(255) DEFAULT '' NOT NULL,
 	real_filename VARCHAR(255) DEFAULT '' NOT NULL,
 	download_count INTEGER DEFAULT 0 NOT NULL,
@@ -44,7 +45,7 @@ CREATE INDEX phpbb_attachments_filetime ON phpbb_attachments(filetime);;
 CREATE INDEX phpbb_attachments_post_msg_id ON phpbb_attachments(post_msg_id);;
 CREATE INDEX phpbb_attachments_topic_id ON phpbb_attachments(topic_id);;
 CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments(poster_id);;
-CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments(filesize);;
+CREATE INDEX phpbb_attachments_is_orphan ON phpbb_attachments(is_orphan);;
 
 CREATE GENERATOR phpbb_attachments_gen;;
 SET GENERATOR phpbb_attachments_gen TO 0;;

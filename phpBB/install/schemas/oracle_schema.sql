@@ -51,6 +51,7 @@ CREATE TABLE phpbb_attachments (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	in_message number(1) DEFAULT '0' NOT NULL,
 	poster_id number(8) DEFAULT '0' NOT NULL,
+	is_orphan number(1) DEFAULT '1' NOT NULL,
 	physical_filename varchar2(255) DEFAULT '' ,
 	real_filename varchar2(255) DEFAULT '' ,
 	download_count number(8) DEFAULT '0' NOT NULL,
@@ -72,7 +73,7 @@ CREATE INDEX phpbb_attachments_topic_id ON phpbb_attachments (topic_id)
 /
 CREATE INDEX phpbb_attachments_poster_id ON phpbb_attachments (poster_id)
 /
-CREATE INDEX phpbb_attachments_filesize ON phpbb_attachments (filesize)
+CREATE INDEX phpbb_attachments_is_orphan ON phpbb_attachments (is_orphan)
 /
 
 CREATE SEQUENCE phpbb_attachments_seq

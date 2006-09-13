@@ -353,15 +353,18 @@ foreach ($uninit as $var_name => $default_value)
 }
 unset($uninit);
 
+// Always check if the submitted attachment data is valid and belongs to the user.
+// Further down (especially in submit_post()) we do not check this again.
 $message_parser->get_submitted_attachment_data($post_data['poster_id']);
 
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
 	// Do not change to SELECT *
-	$sql = 'SELECT attach_id, physical_filename, attach_comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+	$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
+			AND is_orphan = 0
 		ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
 	$result = $db->sql_query($sql);
 	$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
@@ -436,6 +439,7 @@ if ($mode == 'edit' && $post_data['bbcode_uid'])
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
 $img_status		= ($auth->acl_get('f_img', $forum_id)) ? true : false;
+$url_status		= ($config['allow_post_links']) ? true : false;
 $flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? true : false;
 $quote_status	= ($auth->acl_get('f_reply', $forum_id)) ? true : false;
 
@@ -612,7 +616,7 @@ if ($submit || $preview || $refresh)
 	if (($mode == 'reply' || $mode == 'quote') && $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 	{
 		// Only do so if it is allowed forum-wide
-		if ($post_data['forum_flags'] & 32)
+		if ($post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW)
 		{
 			if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
 			{
@@ -636,7 +640,7 @@ if ($submit || $preview || $refresh)
 	// Parse message
 	if ($update_message)
 	{
-		$message_parser->parse($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies'], $img_status, $flash_status, $quote_status);
+		$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
 	}
 	else
 	{
@@ -769,7 +773,7 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
-	if (sizeof($message_parser->warn_msg))
+	if (sizeof($message_parser->warn_msg) && !$refresh)
 	{
 		$error[] = implode('<br />', $message_parser->warn_msg);
 	}
@@ -1137,10 +1141,11 @@ $template->assign_vars(array(
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
 	'MESSAGE'				=> $post_data['post_text'],
-	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
+	'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+	'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -1170,6 +1175,7 @@ $template->assign_vars(array(
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
 	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
+	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
 	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered']) ? true : false,
@@ -1177,6 +1183,7 @@ $template->assign_vars(array(
 	'S_FORM_ENCTYPE'			=> $form_enctype,
 
 	'S_BBCODE_IMG'			=> $img_status,
+	'S_BBCODE_URL'			=> $url_status,
 	'S_BBCODE_FLASH'		=> $flash_status,
 	'S_BBCODE_QUOTE'		=> $quote_status,
 

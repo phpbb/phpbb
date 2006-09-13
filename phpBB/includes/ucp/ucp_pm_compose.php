@@ -307,19 +307,21 @@ function compose_pm($id, $mode, $action)
 		$error[] = $user->lang['TOO_MANY_RECIPIENTS'];
 	}
 
+	// Always check if the submitted attachment data is valid and belongs to the user.
+	// Further down (especially in submit_post()) we do not check this again.
 	$message_parser->get_submitted_attachment_data();
 
 	if ($message_attachment && !$submit && !$refresh && !$preview && $action == 'edit')
 	{
-		$sql = 'SELECT attach_id, physical_filename, attach_comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+		// Do not change to SELECT *
+		$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
 			FROM ' . ATTACHMENTS_TABLE . "
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
-				ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
+				AND is_orphan = 0
+			ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
 		$result = $db->sql_query($sql);
-
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
-
 		$db->sql_freeresult($result);
 	}
 
@@ -361,6 +363,7 @@ function compose_pm($id, $mode, $action)
 	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies')) ? true : false;
 	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img')) ? true : false;
 	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
+	$url_status		= ($config['allow_post_links']) ? true : false;
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
@@ -473,7 +476,7 @@ function compose_pm($id, $mode, $action)
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
 		// Parse message
-		$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $img_status, $flash_status, true);
+		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_sig_links']);
 
 		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
 		{
@@ -604,7 +607,14 @@ function compose_pm($id, $mode, $action)
 		if ($action == 'quotepost')
 		{
 			$post_id = request_var('p', 0);
-			$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$message_subject}[/url]\n";
+			if ($config['allow_post_links'])
+			{
+				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$message_subject}[/url]\n\n";
+			}
+			else
+			{
+				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
+			}
 		}
 		else 
 		{
@@ -622,14 +632,23 @@ function compose_pm($id, $mode, $action)
 	{
 		$fwd_to_field = write_pm_addresses(array('to' => $post['to_address']), 0, true);
 
+		if ($config['allow_post_links'])
+		{
+			$quote_username_text = '[url=' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]";
+		}
+		else
+		{
+			$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']})";
+		}
+
 		$forward_text = array();
 		$forward_text[] = $user->lang['FWD_ORIGINAL_MESSAGE'];
 		$forward_text[] = sprintf($user->lang['FWD_SUBJECT'], censor_text($message_subject));
 		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time));
-		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username);
+		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
-		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"[url=" . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
+		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=\"{$quote_username}\"]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
 	}
 
@@ -783,10 +802,11 @@ function compose_pm($id, $mode, $action)
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
-		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '" onclick="target=\'_phpbbcode\';">', '</a>'),
+		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 
@@ -798,6 +818,7 @@ function compose_pm($id, $mode, $action)
 		'S_SMILIES_CHECKED'		=> ($smilies_checked) ? ' checked="checked"' : '',
 		'S_SIG_ALLOWED'			=> ($config['allow_sig'] && $auth->acl_get('u_sig')),
 		'S_SIGNATURE_CHECKED'	=> ($sig_checked) ? ' checked="checked"' : '',
+		'S_LINKS_ALLOWED'		=> $url_status,
 		'S_MAGIC_URL_CHECKED'	=> ($urls_checked) ? ' checked="checked"' : '',
 		'S_SAVE_ALLOWED'		=> $auth->acl_get('u_savedrafts'),
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
@@ -806,6 +827,7 @@ function compose_pm($id, $mode, $action)
 		'S_BBCODE_IMG'			=> $img_status,
 		'S_BBCODE_FLASH'		=> $flash_status,
 		'S_BBCODE_QUOTE'		=> true,
+		'S_BBCODE_URL'			=> $url_status,
 
 		'S_POST_ACTION'				=> $s_action,
 		'S_HIDDEN_ADDRESS_FIELD'	=> $s_hidden_address_field,

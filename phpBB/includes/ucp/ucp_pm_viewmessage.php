@@ -435,7 +435,7 @@ function get_user_informations($user_id, $user_row)
 		}
 		$avatar_img .= $user_row['user_avatar'];
 
-		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" border="0" alt="" />';
+		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="' . $user->lang['USER_AVATAR'] . '" />';
 	}
 
 	$user_row['rank_title'] = $user_row['rank_image'] = '';
@@ -443,7 +443,7 @@ function get_user_informations($user_id, $user_row)
 	if (!empty($user_row['user_rank']))
 	{
 		$user_row['rank_title'] = (isset($ranks['special'][$user_row['user_rank']])) ? $ranks['special'][$user_row['user_rank']]['rank_title'] : '';
-		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" border="0" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
+		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
 	}
 	else
 	{
@@ -454,7 +454,7 @@ function get_user_informations($user_id, $user_row)
 				if ($user_row['user_posts'] >= $rank['rank_min'])
 				{
 					$user_row['rank_title'] = $rank['rank_title'];
-					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" border="0" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
+					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
 					break;
 				}
 			}

@@ -94,6 +94,7 @@ $lang = array_merge($lang, array(
 	'NO_VIEW_USERS'			=> 'You are not authorised to view the member list or profiles.',
 
 	'ORDER'					=> 'Order',
+	'OTHER'					=> 'Other',
 
 	'POST_IP'				=> 'Posted from IP/domain',
 

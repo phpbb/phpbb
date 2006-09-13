@@ -113,16 +113,31 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 	$update_sql = $empty_forums = array();
 
-	$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
-		FROM ' . POSTS_TABLE . '
-		WHERE post_approved = 1
-			AND ' . $db->sql_in_set($type . '_id', $ids) . "
-		GROUP BY {$type}_id";
+	if (sizeof($ids) == 1)
+	{
+		$sql = 'SELECT MAX(post_id) as last_post_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_approved = 1
+				AND ' . $db->sql_in_set($type . '_id', $ids);
+	}
+	else
+	{
+		$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_approved = 1
+				AND ' . $db->sql_in_set($type . '_id', $ids) . "
+			GROUP BY {$type}_id";
+	}
 	$result = $db->sql_query($sql);
 
 	$last_post_ids = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
+		if (sizeof($ids) == 1)
+		{
+			$row[$type . '_id'] = $ids[0];
+		}
+
 		if ($type == 'forum')
 		{
 			$empty_forums[] = $row['forum_id'];
@@ -315,7 +330,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 	if (!$filedata['post_attach'])
 	{
-		$filedata['error'][] = 'No filedata found';
+		$filedata['error'][] = $user->lang['NO_UPLOAD_FORM_FOUND'];
 		return $filedata;
 	}
 
@@ -333,6 +348,16 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	$cat_id = (isset($extensions[$file->get('extension')]['display_cat'])) ? $extensions[$file->get('extension')]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
+
+	// Make sure the image category only holds valid images...
+	if ($cat_id == ATTACHMENT_CATEGORY_IMAGE && !$file->is_image())
+	{
+		$file->remove();
+
+		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
+		// Since the image category is displaying content inline we need to catch this.
+		trigger_error($user->lang['UNABLE_GET_IMAGE_SIZE']);
+	}
 
 	// Do we have to create a thumbnail?
 	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
@@ -645,7 +670,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 
 		foreach ($attachment_data as $i => $attachment)
 		{
-			$s_inline_attachment_options .= '<option value="' . $i . '">' . $attachment['real_filename'] . '</option>';
+			$s_inline_attachment_options .= '<option value="' . $i . '">' . basename($attachment['real_filename']) . '</option>';
 		}
 
 		$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
@@ -661,7 +686,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 {
-	global $template, $config, $phpbb_root_path, $phpEx;
+	global $template, $config, $phpbb_root_path, $phpEx, $user;
 
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> true)
@@ -684,13 +709,13 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 
-			$download_link = (!$attach_row['attach_id']) ? $phpbb_root_path . $config['upload_path'] . '/' . basename($attach_row['physical_filename']) : append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . (int) $attach_row['attach_id']);
+			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . (int) $attach_row['attach_id'], false, ($attach_row['is_orphan']) ? $user->session_id : false);
 
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
-				'ATTACH_FILENAME'	=> basename($attach_row['physical_filename']),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
+				'S_IS_ORPHAN'		=> $attach_row['is_orphan'],
 				'ASSOC_INDEX'		=> $count,
 
 				'U_VIEW_ATTACHMENT'	=> $download_link,
@@ -928,8 +953,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 {
 	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
 
-	$topic_notification = ($mode == 'reply' || $mode == 'quote');
-	$forum_notification = ($mode == 'post');
+	$topic_notification = ($mode == 'reply' || $mode == 'quote') ? true : false;
+	$forum_notification = ($mode == 'post') ? true : false;
 
 	if (!$topic_notification && !$forum_notification)
 	{
@@ -1390,7 +1415,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_text'			=> $data['message'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
-				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'post_attachment'	=> (sizeof($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
@@ -1444,7 +1469,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_encoding'		=> $user->lang['ENCODING'],
-				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
+				'post_attachment'	=> (sizeof($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked'])
@@ -1473,7 +1498,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_first_poster_colour'	=> (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_colour'] : ''),
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'topic_attachment'			=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0
+				'topic_attachment'			=> (sizeof($data['attachment_data'])) ? 1 : 0,
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1526,7 +1551,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'poll_length'				=> (isset($poll['poll_options'])) ? ($poll['poll_length'] * 86400) : 0,
 				'poll_vote_change'			=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
 
-				'topic_attachment'			=> ($post_mode == 'edit_topic') ? ((isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0) : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0)
+				'topic_attachment'			=> (sizeof($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
 		break;
 	}
@@ -1717,64 +1742,78 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if (sizeof($data['attachment_data']) && $data['post_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit')))
 	{
 		$space_taken = $files_added = 0;
+		$orphan_rows = array();
 
 		foreach ($data['attachment_data'] as $pos => $attach_row)
 		{
-			if ($attach_row['attach_id'])
+			$orphan_rows[(int) $attach_row['attach_id']] = array();
+		}
+
+		if (sizeof($orphan_rows))
+		{
+			$sql = 'SELECT attach_id, filesize, physical_filename
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan_rows)) . '
+					AND is_orphan = 1
+					AND poster_id = ' . $user->data['user_id'];
+			$result = $db->sql_query($sql);
+
+			$orphan_rows = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$orphan_rows[$row['attach_id']] = $row;
+			}
+			$db->sql_freeresult($result);
+		}
+
+		foreach ($data['attachment_data'] as $pos => $attach_row)
+		{
+			if ($attach_row['is_orphan'] && !in_array($attach_row['attach_id'], array_keys($orphan_rows)))
+			{
+				continue;
+			}
+
+			if (!$attach_row['is_orphan'])
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
 					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
-					WHERE attach_id = " . (int) $attach_row['attach_id'];
+					WHERE attach_id = " . (int) $attach_row['attach_id'] . '
+						AND is_orphan = 0';
 				$db->sql_query($sql);
 			}
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($attach_row['physical_filename'])))
+				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
 
+				$space_taken += $orphan_rows[$attach_row['attach_id']]['filesize'];
+				$files_added++;
+
 				$attach_sql = array(
 					'post_msg_id'		=> $data['post_id'],
 					'topic_id'			=> $data['topic_id'],
-					'in_message'		=> 0,
+					'is_orphan'			=> 0,
 					'poster_id'			=> $poster_id,
-					'physical_filename'	=> basename($attach_row['physical_filename']),
-					'real_filename'		=> basename($attach_row['real_filename']),
 					'attach_comment'	=> $attach_row['attach_comment'],
-					'extension'			=> $attach_row['extension'],
-					'mimetype'			=> $attach_row['mimetype'],
-					'filesize'			=> $attach_row['filesize'],
-					'filetime'			=> $attach_row['filetime'],
-					'thumbnail'			=> $attach_row['thumbnail']
 				);
 
-				$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' .
-					$db->sql_build_array('INSERT', $attach_sql);
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . '
+					WHERE attach_id = ' . $attach_row['attach_id'] . '
+						AND is_orphan = 1
+						AND poster_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
-
-				$space_taken += $attach_row['filesize'];
-				$files_added++;
 			}
 		}
 
-		if (sizeof($data['attachment_data']))
+		if ($space_taken && $files_added)
 		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 1
-				WHERE post_id = ' . $data['post_id'];
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 1
-				WHERE topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
+			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
+			set_config('num_files', $config['num_files'] + $files_added, true);
 		}
-
-		set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-		set_config('num_files', $config['num_files'] + $files_added, true);
 	}
 
 	$db->sql_transaction('commit');

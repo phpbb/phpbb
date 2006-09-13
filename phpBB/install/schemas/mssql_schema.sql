@@ -17,6 +17,7 @@ CREATE TABLE [phpbb_attachments] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
 	[in_message] [int] DEFAULT (0) NOT NULL ,
 	[poster_id] [int] DEFAULT (0) NOT NULL ,
+	[is_orphan] [int] DEFAULT (1) NOT NULL ,
 	[physical_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[real_filename] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[download_count] [int] DEFAULT (0) NOT NULL ,
@@ -48,7 +49,7 @@ GO
 CREATE  INDEX [poster_id] ON [phpbb_attachments]([poster_id]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [filesize] ON [phpbb_attachments]([filesize]) ON [PRIMARY]
+CREATE  INDEX [is_orphan] ON [phpbb_attachments]([is_orphan]) ON [PRIMARY]
 GO
 
 

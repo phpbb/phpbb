@@ -403,7 +403,7 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 		$message_parser = new parse_message();
 
 		$message_parser->message = sprintf($lang['WARNING_PM_BODY'], $warning);
-		$message_parser->parse(true, true, true, false, false, true);
+		$message_parser->parse(true, true, true, false, false, true, true);
 
 		$pm_data = array(
 			'from_user_id'			=> $user->data['user_id'],

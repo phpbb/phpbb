@@ -2146,21 +2146,10 @@ function decode_message(&$message, $bbcode_uid = '')
 
 	$message = str_replace($match, $replace, $message);
 
-	$match = array(
-		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
-		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
-		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-		'#<!\-\- .*? \-\->#s',
-		'#<.*?>#s'
-	);
-	
-	$replace = array('\1', '\1', '\1', '\1', '\1', '', '');
-	
-	$message = preg_replace($match, $replace, $message);
+	$match = get_preg_expression('bbcode_htm');
+	$replace = array('\1', '\2', '\1', '', '');
 
-	return;
+	$message = preg_replace($match, $replace, $message);
 }
 
 /**
@@ -2175,17 +2164,8 @@ function strip_bbcode(&$text, $uid = '')
 
 	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
 
-	$match = array(
-		'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-		'#<!\-\- m \-\-><a href="(.*?)" target="_blank">.*?</a><!\-\- m \-\->#',
-		'#<!\-\- w \-\-><a href="http:\/\/(.*?)" target="_blank">.*?</a><!\-\- w \-\->#',
-		'#<!\-\- l \-\-><a href="(.*?)">.*?</a><!\-\- l \-\->#',
-		'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
-		'#<!\-\- .*? \-\->#s',
-		'#<.*?>#s'
-	);
-	
-	$replace = array('\1', '\1', '\1', '\1', '\1', '', '');
+	$match = get_preg_expression('bbcode_htm');
+	$replace = array('\1', '\2', '\1', '', '');
 	
 	$text = preg_replace($match, $replace, $text);
 }
@@ -2206,7 +2186,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 	$text = str_replace("\n", '<br />', censor_text($text));
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
-	if ($uid && ($flags & 1))
+	if ($uid && ($flags & OPTION_FLAG_BBCODE))
 	{
 		if (!class_exists('bbcode'))
 		{
@@ -2226,7 +2206,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
 
-	$text = smiley_text($text, !($flags & 2));
+	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
 	return $text;
 }
@@ -2282,9 +2262,9 @@ function generate_text_for_edit($text, $uid, $flags)
 	decode_message($text, $uid);
 
 	return array(
-		'allow_bbcode'	=> ($flags & 1) ? 1 : 0,
-		'allow_smilies'	=> ($flags & 2) ? 1 : 0,
-		'allow_urls'	=> ($flags & 4) ? 1 : 0,
+		'allow_bbcode'	=> ($flags & OPTION_FLAG_BBCODE) ? 1 : 0,
+		'allow_smilies'	=> ($flags & OPTION_FLAG_SMILIES) ? 1 : 0,
+		'allow_urls'	=> ($flags & OPTION_FLAG_LINKS) ? 1 : 0,
 		'text'			=> $text
 	);
 }
@@ -2317,11 +2297,11 @@ function make_clickable($text, $server_url = false)
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match[] = '#(^|[\n ]|\()([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
-		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
+		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 		$magic_url_match[] = '#(^|[\n ]|\()(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
-		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
+		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
 		$magic_url_match[] = '/(^|[\n ]|\()(' . get_preg_expression('email') . ')/ie';
@@ -2336,19 +2316,18 @@ function make_clickable($text, $server_url = false)
 */
 function censor_text($text)
 {
-	global $censors, $user, $cache;
+	static $censors;
+	global $cache;
 
-	if (!isset($censors))
+	if (!isset($censors) || !is_array($censors))
 	{
 		$censors = array();
 
-		if ($user->optionget('viewcensors'))
-		{
-			$cache->obtain_word_list($censors);
-		}
+		// obtain_word_list is taking care of the users censor option and the board-wide option
+		$cache->obtain_word_list($censors);
 	}
 
-	if (sizeof($censors) && $user->optionget('viewcensors'))
+	if (sizeof($censors))
 	{
 		return preg_replace($censors['match'], $censors['replace'], $text);
 	}
@@ -2645,8 +2624,8 @@ function get_backtrace()
 
 /**
 * This function returns a regular expression pattern for commonly used expressions
-* Use with / as delimiter
-* mode can be: email|
+* Use with / as delimiter for email mode
+* mode can be: email|bbcode_htm
 */
 function get_preg_expression($mode)
 {
@@ -2654,6 +2633,16 @@ function get_preg_expression($mode)
 	{
 		case 'email':
 			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*[a-z]+';
+		break;
+
+		case 'bbcode_htm':
+			return array(
+				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
+				'#<!\-\- (l|m|w) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
+				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
+				'#<!\-\- .*? \-\->#s',
+				'#<.*?>#s',
+			);
 		break;
 	}
 
@@ -3154,7 +3143,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'],
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
-		'S_DISPLAY_ONLINE_LIST'	=> ($config['load_online']) ? 1 : 0,
+		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
 		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered']) ? 1 : 0,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
