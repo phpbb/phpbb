@@ -1124,68 +1124,6 @@ class acp_attachments
 		return $group_select;
 	}
 
-	/** 
-	* Upload already uploaded file... huh? are you kidding?
-	function upload_file($post_id, $topic_id, $forum_id, $upload_dir, $filename)
-	{
-		global $message_parser, $db, $user, $phpbb_root_path;
-
-		$message_parser->attachment_data = array();
-		$message_parser->filename_data['filecomment'] = '';
-
-		$filedata = upload_attachment('local', $forum_id, true, $phpbb_root_path . $upload_dir . '/' . basename($filename));
-
-		if ($filedata['post_attach'] && !sizeof($filedata['error']))
-		{
-			$message_parser->attachment_data = array(
-				'post_msg_id'		=> $post_id,
-				'poster_id'			=> $user->data['user_id'],
-				'topic_id'			=> $topic_id,
-				'in_message'		=> 0,
-				'physical_filename'	=> $filedata['physical_filename'],
-				'real_filename'		=> $filedata['real_filename'],
-				'attach_comment'	=> $message_parser->filename_data['filecomment'],
-				'extension'			=> $filedata['extension'],
-				'mimetype'			=> $filedata['mimetype'],
-				'filesize'			=> $filedata['filesize'],
-				'filetime'			=> $filedata['filetime'],
-				'thumbnail'			=> $filedata['thumbnail']
-			);
-
-			$message_parser->filename_data['filecomment'] = '';
-			$filedata['post_attach'] = false;
-
-			// Submit Attachment
-			$attach_sql = $message_parser->attachment_data;
-
-			$db->sql_transaction('begin');
-
-			$sql = 'INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $attach_sql);
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . POSTS_TABLE . "
-				SET post_attachment = 1
-				WHERE post_id = $post_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . "
-				SET topic_attachment = 1
-				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
-
-			$db->sql_transaction('commit');
-
-			add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_id, $filename);
-
-			return true;
-		}
-		else if (sizeof($filedata['error']))
-		{
-			return sprintf($user->lang['ADMIN_UPLOAD_ERROR'], implode('<br />', $filedata['error']));
-		}
-	}
-		*/
-
 	/**
 	* Search Imagick
 	*/
