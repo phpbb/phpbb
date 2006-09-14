@@ -13,6 +13,10 @@ body {
 	font-size: 10pt;
 }
 
+img {
+	border: 0;
+}
+
 td {
 	font-family: Verdana,serif;
 	font-size: 10pt;
@@ -85,7 +89,24 @@ hr.sep {
 		<td><b>{postrow.POST_SUBJECT}</b></td>
 	</tr>
 	<tr>
-		<td colspan="2"><hr class="sep" />{postrow.MESSAGE}</td>
+		<td colspan="2"><hr class="sep" />{postrow.MESSAGE}
+
+		<!-- IF postrow.S_HAS_ATTACHMENTS -->
+			<br clear="all" /><br />
+
+			<table class="tablebg" width="100%" cellspacing="1">
+			<tr>
+				<td><b class="genmed">{L_ATTACHMENTS}: </b></td>
+			</tr>
+			<!-- BEGIN attachment -->
+				<tr>
+					<td>{postrow.attachment.DISPLAY_ATTACHMENT}</td>
+				</tr>
+			<!-- END attachment -->
+			</table>
+		<!-- ENDIF -->
+
+		</td>
 	</tr>
 	</table>
 <!-- END postrow -->

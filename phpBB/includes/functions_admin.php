@@ -2305,6 +2305,32 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 }
 
 /**
+* Update foes - remove moderators and administrators from foe lists...
+*/
+function update_foes()
+{
+	global $db, $auth;
+
+	$perms = array();
+	foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
+	{
+		foreach ($forum_ary as $auth_option => $user_ary)
+		{
+			$perms = array_merge($perms, $user_ary);
+		}
+	}
+
+	if (sizeof($perms))
+	{
+		$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+			WHERE ' . $db->sql_in_set('zebra_id', array_unique($perms)) . '
+				AND foe = 1';
+		$db->sql_query($sql);
+	}
+	unset($perms);
+}
+
+/**
 * Lists warned users
 */
 function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_warnings DESC')

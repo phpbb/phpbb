@@ -1673,6 +1673,8 @@ function group_delete($group_id, $group_name = false)
 
 /**
 * Add user(s) to group
+*
+* @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
@@ -1769,13 +1771,18 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	return ($leader) ? 'GROUP_LEADERS_ADDED' : 'GROUP_USERS_ADDED';
+	group_update_listings($group_id);
+
+	// Return false - no error
+	return false;
 }
 
 /**
 * Remove a user/s from a given group. When we remove users we update their
 * default group_id. We do this by examining which "special" groups they belong
 * to. The selection is made based on a reasonable priority system
+*
+* @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
@@ -1885,7 +1892,8 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
-	return 'GROUP_USERS_REMOVE';
+	// Return false - no error
+	return false;
 }
 
 /**
@@ -2170,6 +2178,62 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 	$db->sql_freeresult($result);
 
 	return $return;
+}
+
+/**
+* Re-cache moderators and foes if group has a_ or m_ permissions
+*/
+function group_update_listings($group_id)
+{
+	global $auth;
+
+	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
+
+	if (!sizeof($hold_ary))
+	{
+		return;
+	}
+
+	$mod_permissions = $admin_permissions = false;
+
+	foreach ($hold_ary as $g_id => $forum_ary)
+	{
+		foreach ($forum_ary as $forum_id => $auth_ary)
+		{
+			foreach ($auth_ary as $auth_option => $setting)
+			{
+				if ($mod_permissions && $admin_permissions)
+				{
+					break 3;
+				}
+
+				if ($setting != ACL_YES)
+				{
+					continue;
+				}
+
+				if ($auth_option == 'm_')
+				{
+					$mod_permissions = true;
+				}
+
+				if ($auth_option == 'a_')
+				{
+					$admin_permissions = true;
+				}
+			}
+		}
+	}
+
+	if ($mod_permissions)
+	{
+		cache_moderators();
+	}
+
+	if ($mod_permissions || $admin_permissions)
+	{
+		update_foes();
+	}
 }
 
 ?>

@@ -68,7 +68,7 @@ class acp_groups
 				}
 
 				// Approve, demote or promote
-				group_user_attributes($action, $group_id, $mark_ary, false, ($group_id) ? $group_row['group_name'] : false);
+				group_user_attributes($action, $group_id, $mark_ary, false, $group_row['group_name']);
 
 				switch ($action)
 				{
@@ -84,6 +84,8 @@ class acp_groups
 						$message = 'USERS_APPROVED';
 					break;
 				}
+
+				group_update_listing($group_id);
 
 				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
@@ -133,6 +135,8 @@ class acp_groups
 					{
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 					}
+
+					group_update_listing($group_id);
 
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
@@ -217,7 +221,7 @@ class acp_groups
 					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
-				$message = ($action == 'addleaders') ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
+				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
 				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 

@@ -651,7 +651,7 @@ class acp_permissions
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			$this->update_foes();
+			update_foes();
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
@@ -718,7 +718,7 @@ class acp_permissions
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			$this->update_foes();
+			update_foes();
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
@@ -845,32 +845,6 @@ class acp_permissions
 
 			add_log('admin', 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), $l_forum_list, $l_ug_list);
 		}
-	}
-
-	/**
-	* Update foes - remove moderators and administrators from foe lists...
-	*/
-	function update_foes()
-	{
-		global $db, $auth;
-
-		$perms = array();
-		foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
-		{
-			foreach ($forum_ary as $auth_option => $user_ary)
-			{
-				$perms = array_merge($perms, $user_ary);
-			}
-		}
-
-		if (sizeof($perms))
-		{
-			$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
-				WHERE ' . $db->sql_in_set('zebra_id', array_unique($perms)) . '
-					AND foe = 1';
-			$db->sql_query($sql);
-		}
-		unset($perms);
 	}
 
 	/**

@@ -37,12 +37,21 @@ class ucp_register
 
 		if ($change_lang)
 		{
-			$submit = false;
-			$lang = $change_lang;
-			$user->lang_name = $lang = $change_lang;
-			$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
-			$user->lang = array();
-			$user->add_lang(array('common', 'ucp'));
+			$change_lang = basename($change_lang);
+
+			if (file_exists($phpbb_root_path . 'language/' . $change_lang . '/'))
+			{
+				$submit = false;
+
+				$user->lang_name = $lang = $change_lang;
+				$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
+				$user->lang = array();
+				$user->add_lang(array('common', 'ucp'));
+			}
+			else
+			{
+				$change_lang = '';
+			}
 		}
 
 		$cp = new custom_profile();

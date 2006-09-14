@@ -43,7 +43,7 @@ class template
 	*/
 	function set_template()
 	{
-		global $phpbb_root_path, $config, $user;
+		global $phpbb_root_path, $user;
 
 		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template'))
 		{
