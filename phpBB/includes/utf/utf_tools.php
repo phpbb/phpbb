@@ -394,7 +394,7 @@ $UTF8_LOWER_TO_UPPER = array(
 					return '';
 				}
 				
-				if (($offset + $length) >	$strlen)
+				if (($offset + $length) > $strlen)
 				{
 					$length = '*';
 				}
@@ -611,7 +611,7 @@ function utf8_encode_ncr($text)
 */
 function utf8_encode_ncr_callback($m)
 {
-	return utf8_ord($m[0]);
+	return '&#' . utf8_ord($m[0]) . ';';
 }
 
 function utf8_ord($chr)
