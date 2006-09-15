@@ -51,54 +51,54 @@ if (!extension_loaded('xml'))
 	// "borrowed" from getID3
 	function utf8_decode($string)
 	{
-        $newcharstring = '';
-        $offset = 0;
-        $stringlength = strlen($string);
-        while ($offset < $stringlength)
+		$newcharstring = '';
+		$offset = 0;
+		$stringlength = strlen($string);
+		while ($offset < $stringlength)
 		{
-        	$ord = ord($string{$offset});
-            if (($ord | 0x07) == 0xF7)
+			$ord = ord($string{$offset});
+			if (($ord | 0x07) == 0xF7)
 			{
-                // 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
-                $charval = (($ord & 0x07) << 18) &
-                           ((ord($string{($offset + 1)}) & 0x3F) << 12) &
-                           ((ord($string{($offset + 2)}) & 0x3F) <<  6) &
-                            (ord($string{($offset + 3)}) & 0x3F);
-                $offset += 4;
-            }
+				// 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
+				$charval = (($ord & 0x07) << 18) &
+							((ord($string{($offset + 1)}) & 0x3F) << 12) &
+							((ord($string{($offset + 2)}) & 0x3F) <<  6) &
+							(ord($string{($offset + 3)}) & 0x3F);
+				$offset += 4;
+			}
 			else if (($ord | 0x0F) == 0xEF)
 			{
-                // 1110bbbb 10bbbbbb 10bbbbbb
-                $charval = (($ord & 0x0F) << 12) &
-                           ((ord($string{($offset + 1)}) & 0x3F) <<  6) &
-                            (ord($string{($offset + 2)}) & 0x3F);
-                $offset += 3;
-            }
+				// 1110bbbb 10bbbbbb 10bbbbbb
+				$charval = (($ord & 0x0F) << 12) &
+							((ord($string{($offset + 1)}) & 0x3F) <<  6) &
+							(ord($string{($offset + 2)}) & 0x3F);
+				$offset += 3;
+			}
 			else if (($ord | 0x1F) == 0xDF)
 			{
-                // 110bbbbb 10bbbbbb
-                $charval = ((ord($string{($offset + 0)}) & 0x1F) <<  6) &
-                            (ord($string{($offset + 1)}) & 0x3F);
-                $offset += 2;
-            }
+				// 110bbbbb 10bbbbbb
+				$charval = ((ord($string{($offset + 0)}) & 0x1F) <<  6) &
+							(ord($string{($offset + 1)}) & 0x3F);
+				$offset += 2;
+			}
 			else if (($ord | 0x7F) == 0x7F)
 			{
-                // 0bbbbbbb
-                $charval = $ord;
-                $offset += 1;
-            }
+				// 0bbbbbbb
+				$charval = $ord;
+				$offset += 1;
+			}
 			else
 			{
-                // error? throw some kind of warning here?
-                $charval = false;
-                $offset += 1;
-            }
-            if ($charval !== false)
+				// error? throw some kind of warning here?
+				$charval = false;
+				$offset += 1;
+			}
+			if ($charval !== false)
 			{
-                $newcharstring .= (($charval < 256) ? chr($charval) : '?');
-            }
-        }
-        return $newcharstring;
+				$newcharstring .= (($charval < 256) ? chr($charval) : '?');
+			}
+		}
+		return $newcharstring;
 	}
 }
 
@@ -698,54 +698,54 @@ function utf8_decode_ncr_callback($m)
  */
 function utf8_to_unicode($$string)
 {
-    $unicode = array();
-    $offset = 0;
-    $stringlength = strlen($string);
-    while ($offset < $stringlength)
+	$unicode = array();
+	$offset = 0;
+	$stringlength = strlen($string);
+	while ($offset < $stringlength)
 	{
-    	$ord = ord($string{$offset});
-        if (($ord | 0x07) == 0xF7)
+		$ord = ord($string{$offset});
+		if (($ord | 0x07) == 0xF7)
 		{
-            // 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
-            $charval = (($ord & 0x07) << 18) &
-                       ((ord($string{($offset + 1)}) & 0x3F) << 12) &
-                       ((ord($string{($offset + 2)}) & 0x3F) <<  6) &
-                        (ord($string{($offset + 3)}) & 0x3F);
-            $offset += 4;
-        }
+			// 11110bbb 10bbbbbb 10bbbbbb 10bbbbbb
+			$charval = (($ord & 0x07) << 18) &
+						((ord($string{($offset + 1)}) & 0x3F) << 12) &
+						((ord($string{($offset + 2)}) & 0x3F) <<  6) &
+						(ord($string{($offset + 3)}) & 0x3F);
+			$offset += 4;
+		}
 		else if (($ord | 0x0F) == 0xEF)
 		{
-            // 1110bbbb 10bbbbbb 10bbbbbb
-            $charval = (($ord & 0x0F) << 12) &
-                       ((ord($string{($offset + 1)}) & 0x3F) <<  6) &
-                        (ord($string{($offset + 2)}) & 0x3F);
-            $offset += 3;
-	}
+			// 1110bbbb 10bbbbbb 10bbbbbb
+			$charval = (($ord & 0x0F) << 12) &
+						((ord($string{($offset + 1)}) & 0x3F) <<  6) &
+						(ord($string{($offset + 2)}) & 0x3F);
+			$offset += 3;
+		}
 		else if (($ord | 0x1F) == 0xDF)
-	{
-            // 110bbbbb 10bbbbbb
-            $charval = (($ord & 0x1F) <<  6) &
-                        (ord($string{($offset + 1)}) & 0x3F);
-            $offset += 2;
-	}
-		else if (($ord | 0x7F) == 0x7F)
-	{
-            // 0bbbbbbb
-            $charval = $ord;
-            $offset += 1;
-	}
-	else
-	{
-            // error? throw some kind of warning here?
-            $charval = false;
-            $offset += 1;
-        }
-        if ($charval !== false)
 		{
-            $unicode[] = $charval;
-        }
-    }
-    return $unicode;
+			// 110bbbbb 10bbbbbb
+			$charval = (($ord & 0x1F) <<  6) &
+						(ord($string{($offset + 1)}) & 0x3F);
+			$offset += 2;
+		}
+		else if (($ord | 0x7F) == 0x7F)
+		{
+			// 0bbbbbbb
+			$charval = $ord;
+			$offset += 1;
+		}
+		else
+		{
+			// error? throw some kind of warning here?
+			$charval = false;
+			$offset += 1;
+		}
+		if ($charval !== false)
+		{
+			$unicode[] = $charval;
+		}
+	}
+	return $unicode;
 }
 
 /**
