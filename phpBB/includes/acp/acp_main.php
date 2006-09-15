@@ -406,7 +406,7 @@ class acp_main
 			$files_per_day = $total_files;
 		}
 
-		$sql = 'SELECT COUNT(attach_id) total_orphan
+		$sql = 'SELECT COUNT(attach_id) AS total_orphan
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE is_orphan = 1';
 		$result = $db->sql_query($sql);

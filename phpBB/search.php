@@ -98,7 +98,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$reset_search_forum = true;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['forum_password'] && ($row['user_id'] != $user->data['user_id']))
+		if ($row['forum_password'] && $row['user_id'] != $user->data['user_id'])
 		{
 			$ex_fid_ary[] = (int) $row['forum_id'];
 			continue;

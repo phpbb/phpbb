@@ -203,6 +203,8 @@ $lang = array_merge($lang, array(
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIMENSIONS'				=> 'Dimensions',
+	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered directory "%s" does not exist.',
+	'DIRECTORY_NOT_DIR'			=> 'The entered path "%s" is not a directory.',
 	'DISABLE'					=> 'Disable',
 	'DOWNLOAD'					=> 'Download',
 	'DOWNLOAD_AS'				=> 'Download as',

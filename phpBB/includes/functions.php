@@ -1971,7 +1971,11 @@ function login_forum_box($forum_data)
 		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
 	}
 
-	page_header();
+	page_header($user->lang['LOGIN']);
+
+	$template->assign_vars(array(
+		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
+	);
 
 	$template->set_filenames(array(
 		'body' => 'login_forum.html')
@@ -2658,7 +2662,7 @@ function truncate_string($string, $max_length = 60)
 	$chars = array();
 
 	// split the multibyte characters first
-	$string_ary = preg_split('#(&\#[0-9]+;)#', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+	$string_ary = preg_split('/(&#[0-9]+;)/', $string, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
 	// Now go through the array and split the other characters
 	foreach ($string_ary as $key => $value)

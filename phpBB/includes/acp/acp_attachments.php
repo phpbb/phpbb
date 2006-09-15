@@ -87,32 +87,42 @@ class acp_attachments
 						'img_max_width' => false, 'img_max_height' => false, 'img_link_width' => false, 'img_link_height' => false,
 
 						'legend1'				=> 'ACP_ATTACHMENT_SETTINGS',
-						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'type' => 'radio:yes_no', 'explain' => false),
-						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'type' => 'radio:yes_no', 'explain' => false),
-						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'type' => 'text:25:100', 'explain' => true),
-						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'type' => 'custom', 'method' => 'display_order', 'explain' => true),
-						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
-						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
-						'max_filesize_pm'		=> array('lang' => 'ATTACH_MAX_PM_FILESIZE','type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
-						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'type' => 'text:3:3', 'explain' => false),
-						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'type' => 'text:3:3', 'explain' => false),
-						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'type' => 'radio:yes_no', 'explain' => true),
-						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
-						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERRER', 'type' => 'radio:yes_no', 'explain' => true),
+						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'validate' => 'path',	'type' => 'text:25:100', 'explain' => true),
+						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'custom', 'method' => 'display_order', 'explain' => true),
+						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'validate' => 'int',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
+						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'validate' => 'int',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
+						'max_filesize_pm'		=> array('lang' => 'ATTACH_MAX_PM_FILESIZE','validate' => 'int',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
+						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => false),
+						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => false),
+						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
+						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'					=> $l_legend_cat_images,
-						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'type' => 'radio:yes_no', 'explain' => true),
-						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'type' => 'radio:yes_no', 'explain' => true),
-						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'type' => 'text:7:15', 'explain' => true, 'append' => ' px'),
-						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'type' => 'text:7:15', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
-						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'type' => 'dimension:3:4', 'explain' => true),
-						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'type' => 'dimension:3:4', 'explain' => true),
+						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'validate' => 'int',	'type' => 'text:7:15', 'explain' => true, 'append' => ' px'),
+						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'validate' => 'int',	'type' => 'text:7:15', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
+						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'validate' => 'string',	'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
+						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
+						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
 					)
 				);
 
 				$this->new_config = $config;
 				$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : $this->new_config;
+				$error = array();
+
+				// We validate the complete config if whished
+				validate_config_vars($display_vars['vars'], $cfg_array, $error);
+
+				// Do not write values if there is an error
+				if (sizeof($error))
+				{
+					$submit = false;
+				}
 
 				// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 				foreach ($display_vars['vars'] as $config_name => $null)
@@ -199,7 +209,9 @@ class acp_attachments
 				$template->assign_vars(array(
 					'S_SECURE_DOWNLOADS'	=> $this->new_config['secure_downloads'],
 					'S_DEFINED_IPS'			=> ($defined_ips != '') ? true : false,
+					'S_WARNING'				=> (sizeof($error)) ? true : false,
 
+					'WARNING_MSG'			=> implode('<br />', $error),
 					'DEFINED_IPS'			=> $defined_ips,
 
 					'L_SECURE_TITLE'		=> $user->lang['DEFINE_' . $allow_deny . '_IPS'],
