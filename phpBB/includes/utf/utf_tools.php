@@ -696,7 +696,7 @@ function utf8_decode_ncr_callback($m)
  * Unicode characters.
  * @param  string  UTF-8 encoded string
  */
-function utf8_to_unicode($$string)
+function utf8_to_unicode($string)
 {
 	$unicode = array();
 	$offset = 0;
