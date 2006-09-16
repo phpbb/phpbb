@@ -1761,6 +1761,7 @@ class install_install extends module
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 					}
+				break;
 				
 				case 'oracle':
 					$sql = "SELECT *
