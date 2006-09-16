@@ -42,7 +42,7 @@ class dbal_oracle extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 		
-		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server) : @ocinlogon($this->user, $sqlpassword, $this->server);
+		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->server, 'UTF8');
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}

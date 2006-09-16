@@ -268,13 +268,6 @@ class dbal_postgres extends dbal
 		}
 
 		$row = @pg_fetch_assoc($query_id, null);
-		if ($row)
-		{
-			foreach ($row as $key => $value)
-			{
-				$row[$key] = (strpos($key, 'bitfield') === false) ? $value : pg_unescape_bytea($value);
-			}
-		}
 
 		return ($query_id) ? $row : false;
 	}

@@ -505,7 +505,8 @@ class bbcode_firstpass extends bbcode
 		do
 		{
 			$pos = strlen($in);
-			for ($i = 0; $i < strlen($tok); ++$i)
+			$tok_len = strlen($tok);
+			for ($i = 0; $i < $tok_len; ++$i)
 			{
 				$tmp_pos = strpos($in, $tok{$i});
 
@@ -523,7 +524,7 @@ class bbcode_firstpass extends bbcode
 			if ($tok == ']')
 			{
 				// if $tok is ']' the buffer holds a tag
-				if ($buffer == '/list' && sizeof($list_end_tags))
+				if (strtolower($buffer) == '/list' && sizeof($list_end_tags))
 				{
 					$out .= array_pop($list_end_tags) . ']';
 					$tok = '[';
@@ -539,6 +540,12 @@ class bbcode_firstpass extends bbcode
 					{
 						array_push($list_end_tags, '/list:o:' . $this->bbcode_uid);
 					}
+
+					if (strtolower(substr($buffer, 0, 4)) == 'list')
+					{
+						$buffer = 'list' . substr($buffer, 4, $pos);
+					}
+
 					$out .= $buffer . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}

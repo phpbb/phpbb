@@ -97,7 +97,7 @@ END;;
 # Table: 'phpbb_acl_roles'
 CREATE TABLE phpbb_acl_roles (
 	role_id INTEGER NOT NULL,
-	role_name VARCHAR(255) DEFAULT '' NOT NULL,
+	role_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	role_description BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	role_type VARCHAR(10) DEFAULT '' NOT NULL,
 	role_order INTEGER DEFAULT 0 NOT NULL
@@ -146,7 +146,7 @@ CREATE TABLE phpbb_banlist (
 	ban_id INTEGER NOT NULL,
 	ban_userid INTEGER DEFAULT 0 NOT NULL,
 	ban_ip VARCHAR(40) DEFAULT '' NOT NULL,
-	ban_email VARCHAR(100) DEFAULT '' NOT NULL,
+	ban_email VARCHAR(34) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	ban_start INTEGER DEFAULT 0 NOT NULL,
 	ban_end INTEGER DEFAULT 0 NOT NULL,
 	ban_exclude INTEGER DEFAULT 0 NOT NULL,
@@ -251,7 +251,7 @@ CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm(confirm_type);;
 # Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
 	disallow_id INTEGER NOT NULL,
-	disallow_username VARCHAR(252) DEFAULT '' NOT NULL
+	disallow_username VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_disallow ADD PRIMARY KEY (disallow_id);;
@@ -318,7 +318,7 @@ END;;
 # Table: 'phpbb_extension_groups'
 CREATE TABLE phpbb_extension_groups (
 	group_id INTEGER NOT NULL,
-	group_name VARCHAR(255) DEFAULT '' NOT NULL,
+	group_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	cat_id INTEGER DEFAULT 0 NOT NULL,
 	allow_group INTEGER DEFAULT 0 NOT NULL,
 	download_mode INTEGER DEFAULT 1 NOT NULL,
@@ -354,12 +354,12 @@ CREATE TABLE phpbb_forums (
 	forum_desc_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	forum_desc_options INTEGER DEFAULT 0 NOT NULL,
 	forum_desc_uid VARCHAR(5) DEFAULT '' NOT NULL,
-	forum_link VARCHAR(255) DEFAULT '' NOT NULL,
-	forum_password VARCHAR(40) DEFAULT '' NOT NULL,
+	forum_link VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	forum_password VARCHAR(14) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	forum_style INTEGER DEFAULT 0 NOT NULL,
 	forum_image VARCHAR(255) DEFAULT '' NOT NULL,
 	forum_rules BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	forum_rules_link VARCHAR(255) DEFAULT '' NOT NULL,
+	forum_rules_link VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	forum_rules_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	forum_rules_options INTEGER DEFAULT 0 NOT NULL,
 	forum_rules_uid VARCHAR(5) DEFAULT '' NOT NULL,
@@ -373,7 +373,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_id INTEGER DEFAULT 0 NOT NULL,
 	forum_last_post_subject BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	forum_last_post_time INTEGER DEFAULT 0 NOT NULL,
-	forum_last_poster_name VARCHAR(255) DEFAULT '' NOT NULL,
+	forum_last_poster_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	forum_last_poster_colour VARCHAR(6) DEFAULT '' NOT NULL,
 	forum_flags INTEGER DEFAULT 32 NOT NULL,
 	display_on_index INTEGER DEFAULT 1 NOT NULL,
@@ -437,7 +437,7 @@ CREATE INDEX phpbb_forums_watch_notify_stat ON phpbb_forums_watch(notify_status)
 CREATE TABLE phpbb_groups (
 	group_id INTEGER NOT NULL,
 	group_type INTEGER DEFAULT 1 NOT NULL,
-	group_name VARCHAR(252) DEFAULT '' NOT NULL,
+	group_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	group_desc BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	group_desc_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
 	group_desc_options INTEGER DEFAULT 0 NOT NULL,
@@ -500,9 +500,9 @@ CREATE TABLE phpbb_lang (
 	lang_id INTEGER NOT NULL,
 	lang_iso VARCHAR(30) DEFAULT '' NOT NULL,
 	lang_dir VARCHAR(30) DEFAULT '' NOT NULL,
-	lang_english_name VARCHAR(100) DEFAULT '' NOT NULL,
-	lang_local_name VARCHAR(255) DEFAULT '' NOT NULL,
-	lang_author VARCHAR(255) DEFAULT '' NOT NULL
+	lang_english_name VARCHAR(34) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	lang_local_name VARCHAR(85) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	lang_author VARCHAR(85) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_lang ADD PRIMARY KEY (lang_id);;
@@ -557,9 +557,9 @@ END;;
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	username VARCHAR(252) DEFAULT '' NOT NULL,
+	username VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	group_id INTEGER DEFAULT 0 NOT NULL,
-	group_name VARCHAR(255) DEFAULT '' NOT NULL,
+	group_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	display_on_index INTEGER DEFAULT 1 NOT NULL
 );;
 
@@ -636,7 +636,7 @@ CREATE TABLE phpbb_posts (
 	enable_smilies INTEGER DEFAULT 1 NOT NULL,
 	enable_magic_url INTEGER DEFAULT 1 NOT NULL,
 	enable_sig INTEGER DEFAULT 1 NOT NULL,
-	post_username VARCHAR(252) DEFAULT '' NOT NULL,
+	post_username VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	post_subject BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	post_text BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	post_checksum VARCHAR(32) DEFAULT '' NOT NULL,
@@ -721,7 +721,7 @@ END;;
 CREATE TABLE phpbb_privmsgs_folder (
 	folder_id INTEGER NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
-	folder_name VARCHAR(255) DEFAULT '' NOT NULL,
+	folder_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	pm_count INTEGER DEFAULT 0 NOT NULL
 );;
 
@@ -746,7 +746,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	rule_check INTEGER DEFAULT 0 NOT NULL,
 	rule_connection INTEGER DEFAULT 0 NOT NULL,
-	rule_string VARCHAR(255) DEFAULT '' NOT NULL,
+	rule_string VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	rule_user_id INTEGER DEFAULT 0 NOT NULL,
 	rule_group_id INTEGER DEFAULT 0 NOT NULL,
 	rule_action INTEGER DEFAULT 0 NOT NULL,
@@ -789,15 +789,15 @@ CREATE INDEX phpbb_privmsgs_to_usr_flder_id ON phpbb_privmsgs_to(user_id, folder
 # Table: 'phpbb_profile_fields'
 CREATE TABLE phpbb_profile_fields (
 	field_id INTEGER NOT NULL,
-	field_name VARCHAR(255) DEFAULT '' NOT NULL,
+	field_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	field_type INTEGER DEFAULT 0 NOT NULL,
 	field_ident VARCHAR(20) DEFAULT '' NOT NULL,
 	field_length VARCHAR(20) DEFAULT '' NOT NULL,
 	field_minlen VARCHAR(255) DEFAULT '' NOT NULL,
 	field_maxlen VARCHAR(255) DEFAULT '' NOT NULL,
-	field_novalue VARCHAR(255) DEFAULT '' NOT NULL,
-	field_default_value VARCHAR(255) DEFAULT '' NOT NULL,
-	field_validation VARCHAR(20) DEFAULT '' NOT NULL,
+	field_novalue VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	field_default_value VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	field_validation VARCHAR(7) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	field_required INTEGER DEFAULT 0 NOT NULL,
 	field_show_on_reg INTEGER DEFAULT 0 NOT NULL,
 	field_hide INTEGER DEFAULT 0 NOT NULL,
@@ -836,7 +836,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	lang_id INTEGER DEFAULT 0 NOT NULL,
 	option_id INTEGER DEFAULT 0 NOT NULL,
 	field_type INTEGER DEFAULT 0 NOT NULL,
-	lang_value VARCHAR(255) DEFAULT '' NOT NULL
+	lang_value VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_profile_fields_lang ADD PRIMARY KEY (field_id, lang_id, option_id);;
@@ -846,9 +846,9 @@ ALTER TABLE phpbb_profile_fields_lang ADD PRIMARY KEY (field_id, lang_id, option
 CREATE TABLE phpbb_profile_lang (
 	field_id INTEGER DEFAULT 0 NOT NULL,
 	lang_id INTEGER DEFAULT 0 NOT NULL,
-	lang_name VARCHAR(255) DEFAULT '' NOT NULL,
+	lang_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	lang_explain BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
-	lang_default_value VARCHAR(255) DEFAULT '' NOT NULL
+	lang_default_value VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_profile_lang ADD PRIMARY KEY (field_id, lang_id);;
@@ -857,7 +857,7 @@ ALTER TABLE phpbb_profile_lang ADD PRIMARY KEY (field_id, lang_id);;
 # Table: 'phpbb_ranks'
 CREATE TABLE phpbb_ranks (
 	rank_id INTEGER NOT NULL,
-	rank_title VARCHAR(255) DEFAULT '' NOT NULL,
+	rank_title VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	rank_min INTEGER DEFAULT 0 NOT NULL,
 	rank_special INTEGER DEFAULT 0 NOT NULL,
 	rank_image VARCHAR(255) DEFAULT '' NOT NULL
@@ -906,7 +906,7 @@ END;;
 # Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (
 	reason_id INTEGER NOT NULL,
-	reason_title VARCHAR(255) DEFAULT '' NOT NULL,
+	reason_title VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	reason_description BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	reason_order INTEGER DEFAULT 0 NOT NULL
 );;
@@ -977,7 +977,7 @@ CREATE TABLE phpbb_sessions (
 	session_time INTEGER DEFAULT 0 NOT NULL,
 	session_ip VARCHAR(40) DEFAULT '' NOT NULL,
 	session_browser VARCHAR(150) DEFAULT '' NOT NULL,
-	session_page VARCHAR(255) DEFAULT '' NOT NULL,
+	session_page VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	session_viewonline INTEGER DEFAULT 1 NOT NULL,
 	session_autologin INTEGER DEFAULT 0 NOT NULL,
 	session_admin INTEGER DEFAULT 0 NOT NULL
@@ -1025,8 +1025,8 @@ END;;
 # Table: 'phpbb_smilies'
 CREATE TABLE phpbb_smilies (
 	smiley_id INTEGER NOT NULL,
-	code VARCHAR(50) DEFAULT '' NOT NULL,
-	emotion VARCHAR(50) DEFAULT '' NOT NULL,
+	code VARCHAR(17) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	emotion VARCHAR(17) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	smiley_url VARCHAR(50) DEFAULT '' NOT NULL,
 	smiley_width INTEGER DEFAULT 0 NOT NULL,
 	smiley_height INTEGER DEFAULT 0 NOT NULL,
@@ -1052,8 +1052,8 @@ END;;
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
 	style_id INTEGER NOT NULL,
-	style_name VARCHAR(252) DEFAULT '' NOT NULL,
-	style_copyright VARCHAR(255) DEFAULT '' NOT NULL,
+	style_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	style_copyright VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	style_active INTEGER DEFAULT 1 NOT NULL,
 	template_id INTEGER DEFAULT 0 NOT NULL,
 	theme_id INTEGER DEFAULT 0 NOT NULL,
@@ -1081,8 +1081,8 @@ END;;
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
 	template_id INTEGER NOT NULL,
-	template_name VARCHAR(252) DEFAULT '' NOT NULL,
-	template_copyright VARCHAR(255) DEFAULT '' NOT NULL,
+	template_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	template_copyright VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	template_path VARCHAR(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield VARCHAR(252) DEFAULT 'kNg=' NOT NULL,
 	template_storedb INTEGER DEFAULT 0 NOT NULL
@@ -1129,8 +1129,8 @@ END;;
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id INTEGER NOT NULL,
-	theme_name VARCHAR(252) DEFAULT '' NOT NULL,
-	theme_copyright VARCHAR(255) DEFAULT '' NOT NULL,
+	theme_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	theme_copyright VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	theme_path VARCHAR(100) DEFAULT '' NOT NULL,
 	theme_storedb INTEGER DEFAULT 0 NOT NULL,
 	theme_mtime INTEGER DEFAULT 0 NOT NULL,
@@ -1155,8 +1155,8 @@ END;;
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id INTEGER NOT NULL,
-	imageset_name VARCHAR(252) DEFAULT '' NOT NULL,
-	imageset_copyright VARCHAR(255) DEFAULT '' NOT NULL,
+	imageset_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	imageset_copyright VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	imageset_path VARCHAR(100) DEFAULT '' NOT NULL,
 	site_logo VARCHAR(200) DEFAULT '' NOT NULL,
 	upload_bar VARCHAR(200) DEFAULT '' NOT NULL,
@@ -1287,11 +1287,11 @@ CREATE TABLE phpbb_topics (
 	topic_status INTEGER DEFAULT 0 NOT NULL,
 	topic_type INTEGER DEFAULT 0 NOT NULL,
 	topic_first_post_id INTEGER DEFAULT 0 NOT NULL,
-	topic_first_poster_name VARCHAR(255) DEFAULT '' NOT NULL,
+	topic_first_poster_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	topic_first_poster_colour VARCHAR(6) DEFAULT '' NOT NULL,
 	topic_last_post_id INTEGER DEFAULT 0 NOT NULL,
 	topic_last_poster_id INTEGER DEFAULT 0 NOT NULL,
-	topic_last_poster_name VARCHAR(255) DEFAULT '' NOT NULL,
+	topic_last_poster_name VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	topic_last_poster_colour VARCHAR(6) DEFAULT '' NOT NULL,
 	topic_last_post_subject BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	topic_last_post_time INTEGER DEFAULT 0 NOT NULL,
@@ -1379,16 +1379,16 @@ CREATE TABLE phpbb_users (
 	user_perm_from INTEGER DEFAULT 0 NOT NULL,
 	user_ip VARCHAR(40) DEFAULT '' NOT NULL,
 	user_regdate INTEGER DEFAULT 0 NOT NULL,
-	username VARCHAR(252) DEFAULT '' NOT NULL,
-	user_password VARCHAR(40) DEFAULT '' NOT NULL,
+	username VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	user_password VARCHAR(14) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	user_passchg INTEGER DEFAULT 0 NOT NULL,
-	user_email VARCHAR(100) DEFAULT '' NOT NULL,
+	user_email VARCHAR(34) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	user_email_hash DOUBLE PRECISION DEFAULT 0 NOT NULL,
 	user_birthday VARCHAR(10) DEFAULT '' NOT NULL,
 	user_lastvisit INTEGER DEFAULT 0 NOT NULL,
 	user_lastmark INTEGER DEFAULT 0 NOT NULL,
 	user_lastpost_time INTEGER DEFAULT 0 NOT NULL,
-	user_lastpage VARCHAR(200) DEFAULT '' NOT NULL,
+	user_lastpage VARCHAR(67) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	user_last_confirm_key VARCHAR(10) DEFAULT '' NOT NULL,
 	user_last_search INTEGER DEFAULT 0 NOT NULL,
 	user_warnings INTEGER DEFAULT 0 NOT NULL,
@@ -1398,7 +1398,7 @@ CREATE TABLE phpbb_users (
 	user_lang VARCHAR(30) DEFAULT '' NOT NULL,
 	user_timezone DOUBLE PRECISION DEFAULT 0 NOT NULL,
 	user_dst INTEGER DEFAULT 0 NOT NULL,
-	user_dateformat VARCHAR(30) DEFAULT 'd M Y H:i' NOT NULL,
+	user_dateformat VARCHAR(10) CHARACTER SET UNICODE_FSS DEFAULT 'd M Y H:i' NOT NULL,
 	user_style INTEGER DEFAULT 0 NOT NULL,
 	user_rank INTEGER DEFAULT 0 NOT NULL,
 	user_colour VARCHAR(6) DEFAULT '' NOT NULL,
@@ -1430,17 +1430,17 @@ CREATE TABLE phpbb_users (
 	user_sig BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	user_sig_bbcode_uid VARCHAR(5) DEFAULT '' NOT NULL,
 	user_sig_bbcode_bitfield VARCHAR(252) DEFAULT '' NOT NULL,
-	user_from VARCHAR(100) DEFAULT '' NOT NULL,
+	user_from VARCHAR(34) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	user_icq VARCHAR(15) DEFAULT '' NOT NULL,
-	user_aim VARCHAR(255) DEFAULT '' NOT NULL,
-	user_yim VARCHAR(255) DEFAULT '' NOT NULL,
-	user_msnm VARCHAR(255) DEFAULT '' NOT NULL,
-	user_jabber VARCHAR(255) DEFAULT '' NOT NULL,
-	user_website VARCHAR(200) DEFAULT '' NOT NULL,
-	user_occ VARCHAR(255) DEFAULT '' NOT NULL,
+	user_aim VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	user_yim VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	user_msnm VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	user_jabber VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	user_website VARCHAR(67) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	user_occ VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
 	user_interests BLOB SUB_TYPE TEXT DEFAULT '' NOT NULL,
 	user_actkey VARCHAR(32) DEFAULT '' NOT NULL,
-	user_newpasswd VARCHAR(32) DEFAULT '' NOT NULL
+	user_newpasswd VARCHAR(11) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;
@@ -1487,8 +1487,8 @@ END;;
 # Table: 'phpbb_words'
 CREATE TABLE phpbb_words (
 	word_id INTEGER NOT NULL,
-	word VARCHAR(255) DEFAULT '' NOT NULL,
-	replacement VARCHAR(255) DEFAULT '' NOT NULL
+	word VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL,
+	replacement VARCHAR(84) CHARACTER SET UNICODE_FSS DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_words ADD PRIMARY KEY (word_id);;

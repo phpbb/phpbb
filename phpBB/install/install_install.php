@@ -991,25 +991,6 @@ class install_install extends module
 
 		$sql_query = @file_get_contents($dbms_schema);
 
-		switch ($dbms)
-		{
-			case 'mysql':
-			case 'mysql4':
-				// We don't want MySQL mixing up collations
-				if (version_compare(mysql_get_server_info(), '4.1.2', '>='))
-				{
-					$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
-				}
-
-			break;
-
-			case 'mysqli':
-				// mysqli only works with MySQL > 4.1.3 so we'll just do a straight replace if using this DBMS
-				$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
-			
-			break;
-		}
-
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
 
 		$remove_remarks($sql_query);
@@ -1768,7 +1749,7 @@ class install_install extends module
 			switch ($dbms)
 			{
 				case 'mysql4':
-					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.0.0', '<'))
+					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.1.3', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
 					}
@@ -1781,6 +1762,58 @@ class install_install extends module
 						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
 					}
 				
+				case 'oracle':
+					$sql = "SELECT *
+						FROM NLS_DATABASE_PARAMETERS
+						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
+							OR PARAMETER = 'NLS_CHARACTERSET';";
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$stats[$row['parameter']] = $row['value'];
+					}
+
+					$db->sql_freeresult($result);
+
+					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+					}
+				break;
+				
+				case 'oracle':
+					$sql = "SELECT *
+						FROM NLS_DATABASE_PARAMETERS
+						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
+							OR PARAMETER = 'NLS_CHARACTERSET';";
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$stats[$row['parameter']] = $row['value'];
+					}
+
+					$db->sql_freeresult($result);
+
+					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+					}
+				break;
+				
+				case 'postgres':
+					$sql = "SHOW server_encoding;";
+					$result = $db->sql_query($sql);
+
+					$row = $db->sql_fetchrow($result);
+
+					$db->sql_freeresult($result);
+
+					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
+					}
 				break;
 			}
 
@@ -1890,21 +1923,21 @@ class install_install extends module
 		),
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL 4.1.x/5.x (MySQLi)',
-			'SCHEMA'		=> 'mysql',
+			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'
 		),
 		'mysql4'	=> array(
-			'LABEL'			=> 'MySQL 4.x/5.x',
-			'SCHEMA'		=> 'mysql',
+			'LABEL'			=> 'MySQL 4.1.x/5.x',
+			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'
 		),
 		'mysql'		=> array(
 			'LABEL'			=> 'MySQL',
-			'SCHEMA'		=> 'mysql',
+			'SCHEMA'		=> 'mysql_40',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks'

@@ -322,8 +322,7 @@ class compress_zip extends compress
 	{
 		$name = str_replace('\\', '/', $name);
 
-		$dtime = dechex($this->unix_to_dos_time($stat[9]));
-		$hexdtime = pack('H8', $dtime[6] . $dtime[7] . $dtime[4] . $dtime[5] . $dtime[2] . $dtime[3] . $dtime[0] . $dtime[1]);
+		$hexdtime = pack('V', $this->unix_to_dos_time($stat[9]));
 
 		if ($is_dir)
 		{

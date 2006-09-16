@@ -27,7 +27,6 @@ if (!defined('SQL_LAYER'))
 /**
 * MySQL4 Database Abstraction Layer
 * Compatible with:
-* MySQL 4.0+
 * MySQL 4.1+
 * MySQL 5.0+
 * @package dbal
