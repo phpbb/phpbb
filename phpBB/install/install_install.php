@@ -559,6 +559,8 @@ class install_install extends module
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 		$passed = false;
 
+		$default_lang = ($default_lang !== '') ? $default_lang : $language;
+
 		if (isset($_POST['check']))
 		{
 			$error = array();

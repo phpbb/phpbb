@@ -371,14 +371,15 @@ INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order)
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Moderator', 'ROLE_DESCRIPTION_MOD_STANDARD', 'm_', 1);
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Simple Moderator', 'ROLE_DESCRIPTION_MOD_SIMPLE', 'm_', 2);
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Queue Moderator', 'ROLE_DESCRIPTION_MOD_QUEUE', 'm_', 4);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Full Access', 'ROLE_DESCRIPTION_FORUM_FULL', 'f_', 6);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access', 'ROLE_DESCRIPTION_FORUM_STANDARD', 'f_', 4);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Full Access', 'ROLE_DESCRIPTION_FORUM_FULL', 'f_', 7);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access', 'ROLE_DESCRIPTION_FORUM_STANDARD', 'f_', 5);
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('No Access', 'ROLE_DESCRIPTION_FORUM_NOACCESS', 'f_', 1);
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Read Only Access', 'ROLE_DESCRIPTION_FORUM_READONLY', 'f_', 2);
 INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Access', 'ROLE_DESCRIPTION_FORUM_LIMITED', 'f_', 3);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Bot Access', 'ROLE_DESCRIPTION_FORUM_BOT', 'f_', 8);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('On Moderation Queue', 'ROLE_DESCRIPTION_FORUM_ONQUEUE', 'f_', 7);
-INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access + Polls', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 5);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Bot Access', 'ROLE_DESCRIPTION_FORUM_BOT', 'f_', 9);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('On Moderation Queue', 'ROLE_DESCRIPTION_FORUM_ONQUEUE', 'f_', 8);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Standard Access + Polls', 'ROLE_DESCRIPTION_FORUM_POLLS', 'f_', 6);
+INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order) VALUES ('Limited Access + Polls', 'ROLE_DESCRIPTION_FORUM_LIMITED_POLLS', 'f_', 4);
 
 
 # -- phpbb_styles
@@ -458,7 +459,7 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 10, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'm_%';
 
 # Standard Moderator (m_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 11, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'm_%' AND auth_option NOT IN ('m_approve', 'm_ban', 'm_chgposter', 'm_delete');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 11, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'm_%' AND auth_option NOT IN ('m_ban', 'm_chgposter');
 
 # Simple Moderator (m_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 12, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'm_%' AND auth_option IN ('m_', 'm_approve', 'm_delete', 'm_edit', 'm_info', 'm_report', 'm_warn');
@@ -490,6 +491,9 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 
 # Standard Access + Polls (f_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 21, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_delete', 'f_ignoreflood', 'f_sticky', 'f_user_lock');
+
+# Limited Access + Polls (f_)
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 22, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_attach', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_sticky', 'f_user_lock', 'f_votechg');
 
 # Permissions
 

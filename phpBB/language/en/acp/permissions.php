@@ -150,6 +150,7 @@ $lang = array_merge($lang, array(
 	'ROLE_DESCRIPTION_FORUM_BOT'		=> 'This role is recommended for bots and search spiders.',
 	'ROLE_DESCRIPTION_FORUM_FULL'		=> 'Can use all forum features, including posting of announcements and stickies. Can also ignore the flood limit.<br />Not recommended for normal users.',
 	'ROLE_DESCRIPTION_FORUM_LIMITED'	=> 'Can use some forum features, but cannot attach files or use post icons.',
+	'ROLE_DESCRIPTION_FORUM_LIMITED_POLLS'	=> 'Like Limited Access but can also create polls.',
 	'ROLE_DESCRIPTION_FORUM_NOACCESS'	=> 'Can neither see nor access the forum.',
 	'ROLE_DESCRIPTION_FORUM_ONQUEUE'	=> 'Can use most forum features including attachments, but posts and topics need to be approved by a moderator.',
 	'ROLE_DESCRIPTION_FORUM_POLLS'		=> 'Like Standard Access but can also create polls.',
