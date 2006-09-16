@@ -1643,12 +1643,17 @@ class install_install extends module
 			return false;
 		}
 
-		// Check the prefix length to ensure that index names are not too long
+		// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
 		switch ($dbms)
 		{
 			case 'mysql':
 			case 'mysql4':
 			case 'mysqli':
+				if (stristr($table_prefix, '-') !== false)
+				{
+					$error[] = $lang['INST_ERR_PREFIX_INVALID'];
+					return false;
+				}
 			case 'postgres':
 				$prefix_length = 36;
 
@@ -1760,26 +1765,6 @@ class install_install extends module
 					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
-					}
-				break;
-				
-				case 'oracle':
-					$sql = "SELECT *
-						FROM NLS_DATABASE_PARAMETERS
-						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
-							OR PARAMETER = 'NLS_CHARACTERSET';";
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$stats[$row['parameter']] = $row['value'];
-					}
-
-					$db->sql_freeresult($result);
-
-					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
-					{
-						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
 					}
 				break;
 				
