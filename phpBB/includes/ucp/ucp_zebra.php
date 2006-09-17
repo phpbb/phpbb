@@ -197,6 +197,8 @@ class ucp_zebra
 					WHERE user_id = ' . $user->data['user_id'] . ' 
 						AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
 				$db->sql_query($sql);
+
+				$updated = true;
 			}
 
 			if ($updated)
