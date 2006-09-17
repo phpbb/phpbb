@@ -17,13 +17,15 @@
 * @package phpBB3
 */
 
-// huge chunks of this code belong to the PHP UTF-8 project
-// TODO: document the functions!
-
-// utf8_encode and utf8_decode are both XML functions
 if (!extension_loaded('xml'))
 {
-	// This function exploits some nice things that ISO-8859-1 and UTF-8 have in common
+	/**
+	 * Implementation of PHP's native utf8_encode for people without XML support
+	 * This function exploits some nice things that ISO-8859-1 and UTF-8 have in common
+	 *
+	 * @param string $str ISO-8859-1 encoded data
+	 * @return string UTF-8 encoded data
+	 */
 	function utf8_encode($str)
 	{
 		$out = '';
@@ -48,7 +50,13 @@ if (!extension_loaded('xml'))
 		return $out;
 	}
 
-	// "borrowed" from getID3
+	/**
+	 * Implementation of PHP's native utf8_decode for people without XML support
+	 *
+	 * @author GetID3()
+	 * @param string $string UTF-8 encoded data
+	 * @return string ISO-8859-1 encoded data
+	 */
 	function utf8_decode($string)
 	{
 		$newcharstring = '';
@@ -106,6 +114,16 @@ if (!extension_loaded('xml'))
 // if mbstring is not loaded, we go into native mode.
 if (extension_loaded('mbstring'))
 {
+	/**
+	* UTF-8 aware alternative to strrpos
+	* Find position of last occurrence of a char in a string
+	* 
+	* @author Harry Fuecks
+	* @param string haystack
+	* @param string needle
+	* @param integer (optional) offset (from left)
+	* @return mixed integer position or FALSE on failure
+	*/
 	function utf8_strrpos($str,	$needle, $offset = null)
 	{
 		// offset for mb_strrpos was added in 5.2.0
@@ -137,6 +155,16 @@ if (extension_loaded('mbstring'))
 		}
 	}
 
+	/**
+	* UTF-8 aware alternative to strpos
+	* Find position of first occurrence of a string
+	*
+	* @author Harry Fuecks
+	* @param string haystack
+	* @param string needle
+	* @param integer offset in characters (from left)
+	* @return mixed integer position or FALSE on failure
+	 */
 	function utf8_strpos($str, $needle, $offset = null)
 	{
 		if ($offset === false)
@@ -149,16 +177,50 @@ if (extension_loaded('mbstring'))
 		}
 	}
 
+	/**
+	* UTF-8 aware alternative to strtolower
+	* Make a string lowercase
+	* Note: The concept of a characters "case" only exists is some alphabets
+	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
+	* not exist in the Chinese alphabet, for example. See Unicode Standard
+	* Annex #21: Case Mappings
+	* 
+	* @author Andreas Gohr <andi@splitbrain.org>
+	* @param string
+	* @return mixed either string in lowercase or FALSE is UTF-8 invalid
+	*/
 	function utf8_strtolower($str)
 	{
 		return mb_strtolower($str);
 	}
 
+	/**
+	* UTF-8 aware alternative to strtoupper
+	* Make a string uppercase
+	* Note: The concept of a characters "case" only exists is some alphabets
+	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
+	* not exist in the Chinese alphabet, for example. See Unicode Standard
+	* Annex #21: Case Mappings
+	* 
+	* @author Andreas Gohr <andi@splitbrain.org>
+	* @param string
+	* @return mixed either string in lowercase or FALSE is UTF-8 invalid
+	*/
 	function utf8_strtoupper($str)
 	{
 		return mb_strtoupper($str);
 	}
 
+	/**
+	* UTF-8 aware alternative to substr
+	* Return part of a string given character offset (and optionally length)
+	* 
+	* @author Harry Fuecks
+	* @param string
+	* @param integer number of UTF-8 characters offset (from left)
+	* @param integer (optional) length in UTF-8 characters from offset
+	* @return mixed string or FALSE if failure
+	*/
 	function utf8_substr($str, $offset,	$length	= null)
 	{
 		if ($length === false)
@@ -170,9 +232,30 @@ if (extension_loaded('mbstring'))
 			return mb_substr($str, $offset, $length);
 		}
 	}
+
+	/**
+	* Return the length (in characters) of a UTF-8 string
+	*
+	* @param	string	$text		UTF-8 string
+	* @return	integer				Length (in chars) of given string
+	*/
+	function utf8_strlen($text)
+	{
+		return mb_strlen($text, 'utf-8');
+	}
 }
 else
 {
+	/**
+	* UTF-8 aware alternative to strrpos
+	* Find position of last occurrence of a char in a string
+	* 
+	* @author Harry Fuecks
+	* @param string haystack
+	* @param string needle
+	* @param integer (optional) offset (from left)
+	* @return mixed integer position or FALSE on failure
+	*/
 	function utf8_strrpos($str,	$needle, $offset = null)
 	{
 		if (is_null($offset))
@@ -207,6 +290,16 @@ else
 		}
 	}
 
+	/**
+	* UTF-8 aware alternative to strpos
+	* Find position of first occurrence of a string
+	*
+	* @author Harry Fuecks
+	* @param string haystack
+	* @param string needle
+	* @param integer offset in characters (from left)
+	* @return mixed integer position or FALSE on failure
+	 */
 	function utf8_strpos($str, $needle, $offset = null)
 	{
 		// native
@@ -330,6 +423,18 @@ $UTF8_LOWER_TO_UPPER = array(
 			0x00F0=>0x00D0, 0x0457=>0x0407, 0x0123=>0x0122,
 		);
 
+	/**
+	* UTF-8 aware alternative to strtolower
+	* Make a string lowercase
+	* Note: The concept of a characters "case" only exists is some alphabets
+	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
+	* not exist in the Chinese alphabet, for example. See Unicode Standard
+	* Annex #21: Case Mappings
+	* 
+	* @author Andreas Gohr <andi@splitbrain.org>
+	* @param string
+	* @return mixed either string in lowercase or FALSE is UTF-8 invalid
+	*/
 	function utf8_strtolower($string)
 	{
 		global $UTF8_UPPER_TO_LOWER;
@@ -351,6 +456,18 @@ $UTF8_LOWER_TO_UPPER = array(
 		return utf8_from_unicode($uni);
 	}
 
+	/**
+	* UTF-8 aware alternative to strtoupper
+	* Make a string uppercase
+	* Note: The concept of a characters "case" only exists is some alphabets
+	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
+	* not exist in the Chinese alphabet, for example. See Unicode Standard
+	* Annex #21: Case Mappings
+	* 
+	* @author Andreas Gohr <andi@splitbrain.org>
+	* @param string
+	* @return mixed either string in lowercase or FALSE is UTF-8 invalid
+	*/
 	function utf8_strtoupper($str)
 	{
 		global $UTF8_LOWER_TO_UPPER;
@@ -372,6 +489,16 @@ $UTF8_LOWER_TO_UPPER = array(
 		return utf8_from_unicode($uni);
 	}
 
+	/**
+	* UTF-8 aware alternative to substr
+	* Return part of a string given character offset (and optionally length)
+	* 
+	* @author Harry Fuecks
+	* @param string
+	* @param integer number of UTF-8 characters offset (from left)
+	* @param integer (optional) length in UTF-8 characters from offset
+	* @return mixed string or FALSE if failure
+	*/
 	function utf8_substr($str, $offset,	$length	= null)
 	{
 		if ($offset >= 0 && $length >= 0)
@@ -436,8 +563,30 @@ $UTF8_LOWER_TO_UPPER = array(
 			}
 		}
 	}
+
+	/**
+	* Return the length (in characters) of a UTF-8 string
+	*
+	* @param	string	$text		UTF-8 string
+	* @return	integer				Length (in chars) of given string
+	*/
+	function utf8_strlen($text)
+	{
+		// Since utf8_decode is replacing multibyte characters to ? strlen works fine
+		return strlen(utf8_decode($text));
+	}
+
 }
 
+/**
+* UTF-8 aware alternative to str_split
+* Convert a string to an array
+* 
+* @author Harry Fuecks
+* @param string UTF-8 encoded
+* @param int number to characters to split string by
+* @return string characters in string reverses
+*/
 function utf8_str_split($str, $split_len = 1)
 {
 	if (!preg_match('/^[0-9]+$/', $split_len) || $split_len < 1)
@@ -455,6 +604,14 @@ function utf8_str_split($str, $split_len = 1)
 	return $ar[0];
 }
 
+/**
+* UTF-8 aware alternative to strcspn
+* Find length of initial segment not matching mask
+* 
+* @author Harry Fuecks
+* @param string
+* @return int
+*/
 function utf8_strspn($str, $mask, $start = null, $length = null)
 {
 	$mask = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $mask);
@@ -474,6 +631,14 @@ function utf8_strspn($str, $mask, $start = null, $length = null)
     return 0;
 }
 
+/**
+* UTF-8 aware alternative to ucfirst
+* Make a string's first character uppercase
+* 
+* @author Harry Fuecks
+* @param string
+* @return string with first character as upper case (if applicable)
+*/
 function utf8_ucfirst($str)
 {
 	switch (utf8_strlen($str))
@@ -491,28 +656,6 @@ function utf8_ucfirst($str)
 			return utf8_strtoupper($matches[1]) . $matches[2];
 		break;
 	}
-}
-
-/**
-* Return the length (in characters) of a UTF-8 string
-*
-* @param	string	$text		UTF-8 string
-* @return	integer				Length (in chars) of given string
-*/
-function utf8_strlen($text)
-{
-	if (function_exists('iconv_strlen'))
-	{
-		return iconv_strlen($text, 'utf-8');
-	}
-
-	if (function_exists('mb_strlen'))
-	{
-		return mb_strlen($text, 'utf-8');
-	}
-
-	// Since utf8_decode is replacing multibyte characters to ? strlen works fine
-	return strlen(utf8_decode($text));
 }
 
 /**
@@ -614,6 +757,12 @@ function utf8_encode_ncr_callback($m)
 	return '&#' . utf8_ord($m[0]) . ';';
 }
 
+/**
+ * Enter description here...
+ *
+ * @param string $chr UTF-8 char
+ * @return integer UNICODE code point
+ */
 function utf8_ord($chr)
 {
 	switch (strlen($chr))
@@ -639,6 +788,12 @@ function utf8_ord($chr)
 	}
 }
 
+/**
+ * Converts an NCR to a UTF-8 char
+ *
+ * @param integer $cp UNICODE code point
+ * @return string UTF-8 char
+ */
 function utf8_chr($cp)
 {
 	if ($cp > 0xFFFF)
@@ -694,7 +849,9 @@ function utf8_decode_ncr_callback($m)
 /**
  * Takes an UTF-8 string and returns an array of ints representing the
  * Unicode characters.
+ * 
  * @param  string  UTF-8 encoded string
+ * @return array array of UNICODE code points
  */
 function utf8_to_unicode($string)
 {
@@ -752,7 +909,8 @@ function utf8_to_unicode($string)
  * Takes an array of ints representing the Unicode characters and returns
  * a UTF-8 string.
  *
- * @param  array of unicode code points representing a string
+ * @param array $array array of unicode code points representing a string
+ * @return string UTF-8 character string
  */
 function utf8_from_unicode($array)
 {
