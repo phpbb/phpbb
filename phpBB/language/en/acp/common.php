@@ -262,8 +262,6 @@ $lang = array_merge($lang, array(
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
 	'WARNING'				=> 'Warning',
-
-	'DEBUG_EXTRA_WARNING'	=> 'The DEBUG_EXTRA constant is defined which is only meant for development purposes by the developers.<br />The board is running additional code to display sql reports, which slows down the board in a significant manner. Additionally sql errors are always displayed with a full backtrace to all users instead of displaying it solely to administrators, which is the default setting.<br /><br />With this said, please be aware that you are currently running your installation in <b>Debug Mode</b> and should you take this board live, please remove the constant from the config file.',
 ));
 
 // PHP info

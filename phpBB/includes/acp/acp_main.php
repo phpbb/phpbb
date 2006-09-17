@@ -489,12 +489,6 @@ class acp_main
 			);
 		}
 
-		// Display debug_extra notice
-		if (defined('DEBUG_EXTRA'))
-		{
-			$template->assign_var('S_DEBUG_EXTRA', true);
-		}
-
 		// Warn if install is still present
 		if (file_exists($phpbb_root_path . 'install'))
 		{

@@ -371,7 +371,7 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			fwrite($fp, "<?php\n\n/*\n$query\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
+			fwrite($fp, "<?php\n\n/*\n" . str_replace('*/', '*\/', $query) . "\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 

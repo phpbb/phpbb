@@ -87,12 +87,194 @@ include($phpbb_root_path . 'language/' . $row['config_value'] . '/install.' . $p
 
 // Database column types mapping
 $dbms_type_map = array(
-	'mysql'		=> array('INT:' => 'int(%d)',	'BINT' => 'bigint(20)',			'UINT' => 'mediumint(8) UNSIGNED',	'UINT:' => 'int(%d) UNSIGNED',	'TINT:' => 'tinyint(%d)',		'USINT' => 'smallint(4) UNSIGNED',	'BOOL' => 'tinyint(1) UNSIGNED',	'VCHAR' => 'varchar(255)',		'VCHAR:' => 'varchar(%d)',		'CHAR:' => 'char(%d)',		'XSTEXT' => 'text',					'STEXT' => 'text',				'TEXT' => 'text',				'MTEXT' => 'mediumtext',			'TIMESTAMP' => 'int(11) UNSIGNED',	'DECIMAL' => 'decimal(5,2)',	'VCHAR_BIN' => 'varchar(252) /*!40101 CHARACTER SET utf8 */ BINARY',	'VCHAR_CI' => 'varchar(252)',	'VARBINARY' => 'varbinary(255)'),
-	'firebird'	=> array('INT:' => 'INTEGER',	'BINT' => 'DOUBLE PRECISION',	'UINT' => 'INTEGER',				'UINT:' => 'INTEGER',			'TINT:'		=> 'INTEGER',		'USINT' => 'INTEGER',				'BOOL' => 'INTEGER',				'VCHAR' => 'VARCHAR(255)',		'VCHAR:' => 'VARCHAR(%d)',		'CHAR:' => 'CHAR(%d)',		'XSTEXT' => 'BLOB SUB_TYPE TEXT',	'STEXT' => 'BLOB SUB_TYPE TEXT','TEXT' => 'BLOB SUB_TYPE TEXT',	'MTEXT' => 'BLOB SUB_TYPE TEXT',	'TIMESTAMP' => 'INTEGER',			'DECIMAL' => 'DOUBLE PRECISION','VCHAR_BIN' => 'VARCHAR(84) CHARACTER SET UNICODE_FSS',					'VCHAR_CI' => 'VARCHAR(252)',	'VARBINARY' => 'CHAR(255)'),
-	'mssql'		=> array('INT:' => '[int]',		'BINT' => '[float]',			'UINT' => '[int]',					'UINT:' => '[int]',				'TINT:'		=> '[int]',			'USINT' => '[int]',					'BOOL' => '[int]',					'VCHAR' => '[varchar] (255)',	'VCHAR:' => '[varchar] (%d)',	'CHAR:' => '[char] (%d)',	'XSTEXT' => '[varchar] (1000)',		'STEXT' => '[varchar] (3000)',	'TEXT' => '[varchar] (8000)',	'MTEXT' => '[text]',				'TIMESTAMP' => '[int]',				'DECIMAL' => '[float]',			'VCHAR_BIN' => '[nvarchar] (252)',										'VCHAR_CI' => '[varchar] (252)','VARBINARY' => '[varbinary] (255)'),
-	'oracle'	=> array('INT:' => 'number(%d)','BINT' => 'number(20)',			'UINT' => 'number(8)',				'UINT:' => 'number(%d)',		'TINT:'		=> 'number(%d)',	'USINT' => 'number(4)',				'BOOL' => 'number(1)',				'VCHAR' => 'varchar2(255)',		'VCHAR:' => 'varchar2(%d)',		'CHAR:' => 'char(%d)',		'XSTEXT' => 'varchar2(1000)',		'STEXT' => 'varchar2(3000)',	'TEXT' => 'clob',				'MTEXT' => 'clob',					'TIMESTAMP' => 'number(11)',		'DECIMAL' => 'number(5, 2)',	'VCHAR_BIN' => 'nvarchar2(252)',										'VCHAR_CI' => 'varchar2(252)',	'VARBINARY' => 'raw(255)'),
-	'sqlite'	=> array('INT:' => 'int(%d)',	'BINT' => 'bigint(20)',			'UINT' => 'INTEGER UNSIGNED',		'UINT:' => 'INTEGER UNSIGNED', 	'TINT:'		=> 'tinyint(%d)',	'USINT' => 'INTEGER UNSIGNED',		'BOOL' => 'INTEGER UNSIGNED',		'VCHAR' => 'varchar(255)',		'VCHAR:' => 'varchar(%d)',		'CHAR:' => 'char(%d)',		'XSTEXT' => 'text(65535)',			'STEXT' => 'text(65535)',		'TEXT' => 'text(65535)',		'MTEXT' => 'mediumtext(16777215)',	'TIMESTAMP' => 'INTEGER UNSIGNED',	'DECIMAL' => 'decimal(5,2)',	'VCHAR_BIN' => 'nvarchar(252)',											'VCHAR_CI' => 'varchar(252)',	'VARBINARY' => 'blob'),
-	'postgres'	=> array('INT:' => 'INT4',		'BINT' => 'INT8',				'UINT' => 'INT4',					'UINT:' => 'INT4',				'TINT:'		=> 'INT2',			'USINT' => 'INT2',					'BOOL' => 'INT2',					'VCHAR' => 'varchar(255)',		'VCHAR:' => 'varchar(%d)',		'CHAR:' => 'char(%d)',		'XSTEXT' => 'varchar(1000)',		'STEXT' => 'varchar(3000)',		'TEXT' => 'varchar(8000)',		'MTEXT' => 'TEXT',					'TIMESTAMP' => 'INT4',				'DECIMAL' => 'decimal(5,2)',	'VCHAR_BIN' => 'varchar(252)',											'VCHAR_CI' => 'varchar_ci',		'VARBINARY' => 'bytea'),
+	'mysql_41'	=> array(
+		'INT:'		=> 'int(%d)',
+		'BINT'		=> 'bigint(20)',
+		'UINT'		=> 'mediumint(8) UNSIGNED',
+		'UINT:'		=> 'int(%d) UNSIGNED',
+		'TINT:'		=> 'tinyint(%d)',
+		'USINT'		=> 'smallint(4) UNSIGNED',
+		'BOOL'		=> 'tinyint(1) UNSIGNED',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'text',
+		'XSTEXT_UNI'=> 'text',
+		'STEXT'		=> 'text',
+		'STEXT_UNI'	=> 'text',
+		'TEXT'		=> 'text',
+		'TEXT_UNI'	=> 'text',
+		'MTEXT'		=> 'mediumtext',
+		'MTEXT_UNI'	=> 'mediumtext',
+		'TIMESTAMP'	=> 'int(11) UNSIGNED',
+		'DECIMAL'	=> 'decimal(5,2)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VCHAR_CI'	=> 'varchar(252)',
+		'VARBINARY'	=> 'varbinary(255)',
+	),
+
+	'mysql_40'	=> array(
+		'INT:'		=> 'int(%d)',
+		'BINT'		=> 'bigint(20)',
+		'UINT'		=> 'mediumint(8) UNSIGNED',
+		'UINT:'		=> 'int(%d) UNSIGNED',
+		'TINT:'		=> 'tinyint(%d)',
+		'USINT'		=> 'smallint(4) UNSIGNED',
+		'BOOL'		=> 'tinyint(1) UNSIGNED',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'text',
+		'XSTEXT_UNI'=> 'text',
+		'STEXT'		=> 'text',
+		'STEXT_UNI'	=> 'text',
+		'TEXT'		=> 'text',
+		'TEXT_UNI'	=> 'text',
+		'MTEXT'		=> 'mediumtext',
+		'MTEXT_UNI'	=> 'mediumtext',
+		'TIMESTAMP'	=> 'int(11) UNSIGNED',
+		'DECIMAL'	=> 'decimal(5,2)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> array('varchar(%d)', 'limit' => array('mult', 3, 255, 'text')),
+		'VCHAR_CI'	=> 'varchar(252)',
+		'VARBINARY'	=> 'varbinary(255)',
+	),
+
+	'firebird'	=> array(
+		'INT:'		=> 'INTEGER',
+		'BINT'		=> 'DOUBLE PRECISION',
+		'UINT'		=> 'INTEGER',
+		'UINT:'		=> 'INTEGER',
+		'TINT:'		=> 'INTEGER',
+		'USINT'		=> 'INTEGER',
+		'BOOL'		=> 'INTEGER',
+		'VCHAR'		=> 'VARCHAR(255)',
+		'VCHAR:'	=> 'VARCHAR(%d)',
+		'CHAR:'		=> 'CHAR(%d)',
+		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT',
+		'STEXT'		=> 'BLOB SUB_TYPE TEXT',
+		'TEXT'		=> 'BLOB SUB_TYPE TEXT',
+		'MTEXT'		=> 'BLOB SUB_TYPE TEXT',
+		'XSTEXT_UNI'=> 'BLOB SUB_TYPE TEXT',
+		'STEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
+		'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
+		'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
+		'TIMESTAMP'	=> 'INTEGER',
+		'DECIMAL'	=> 'DOUBLE PRECISION',
+		'VCHAR_UNI'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
+		'VCHAR_UNI:'=> array('VARCHAR(%d) CHARACTER SET UNICODE_FSS', 'rule' => array('div', 3)),
+		'VCHAR_CI'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
+		'VARBINARY'	=> 'CHAR(255)',
+	),
+
+	'mssql'		=> array(
+		'INT:'		=> '[int]',
+		'BINT'		=> '[float]',
+		'UINT'		=> '[int]',
+		'UINT:'		=> '[int]',
+		'TINT:'		=> '[int]',
+		'USINT'		=> '[int]',
+		'BOOL'		=> '[int]',
+		'VCHAR'		=> '[varchar] (255)',
+		'VCHAR:'	=> '[varchar] (%d)',
+		'CHAR:'		=> '[char] (%d)',
+		'XSTEXT'	=> '[varchar] (1000)',
+		'STEXT'		=> '[varchar] (3000)',
+		'TEXT'		=> '[varchar] (8000)',
+		'MTEXT'		=> '[text]',
+		'XSTEXT_UNI'=> '[nvarchar] (1000)',
+		'STEXT_UNI'	=> '[nvarchar] (3000)',
+		'TEXT_UNI'	=> '[nvarchar] (8000)',
+		'MTEXT_UNI'	=> '[ntext]',
+		'TIMESTAMP'	=> '[int]',
+		'DECIMAL'	=> '[float]',
+		'VCHAR_UNI'	=> '[nvarchar] (255)',
+		'VCHAR_UNI:'=> '[nvarchar] (%d)',
+		'VCHAR_CI'	=> '[nvarchar] (252)',
+		'VARBINARY'	=> '[varbinary] (255)',
+	),
+
+	'oracle'	=> array(
+		'INT:'		=> 'number(%d)',
+		'BINT'		=> 'number(20)',
+		'UINT'		=> 'number(8)',
+		'UINT:'		=> 'number(%d)',
+		'TINT:'		=> 'number(%d)',
+		'USINT'		=> 'number(4)',
+		'BOOL'		=> 'number(1)',
+		'VCHAR'		=> 'varchar2(255)',
+		'VCHAR:'	=> 'varchar2(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'varchar2(1000)',
+		'STEXT'		=> 'varchar2(3000)',
+		'TEXT'		=> 'clob',
+		'MTEXT'		=> 'clob',
+		'XSTEXT_UNI'=> 'varchar2(1000)',
+		'STEXT_UNI'	=> 'varchar2(3000)',
+		'TEXT_UNI'	=> 'clob',
+		'MTEXT_UNI'	=> 'clob',
+		'TIMESTAMP'	=> 'number(11)',
+		'DECIMAL'	=> 'number(5, 2)',
+		'VCHAR_UNI'	=> 'varchar2(255)',
+		'VCHAR_UNI:'=> 'varchar2(%d)',
+		'VCHAR_CI'	=> 'varchar2(252)',
+		'VARBINARY'	=> 'raw(255)',
+	),
+
+	'sqlite'	=> array(
+		'INT:'		=> 'int(%d)',
+		'BINT'		=> 'bigint(20)',
+		'UINT'		=> 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
+		'UINT:'		=> 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
+		'TINT:'		=> 'tinyint(%d)',
+		'USINT'		=> 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
+		'BOOL'		=> 'INTEGER UNSIGNED', //'tinyint(1) UNSIGNED',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'text(65535)',
+		'STEXT'		=> 'text(65535)',
+		'TEXT'		=> 'text(65535)',
+		'MTEXT'		=> 'mediumtext(16777215)',
+		'XSTEXT_UNI'=> 'text(65535)',
+		'STEXT_UNI'	=> 'text(65535)',
+		'TEXT_UNI'	=> 'text(65535)',
+		'MTEXT_UNI'	=> 'mediumtext(16777215)',
+		'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
+		'DECIMAL'	=> 'decimal(5,2)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VCHAR_CI'	=> 'varchar(252)',
+		'VARBINARY'	=> 'blob',
+	),
+
+	'postgres'	=> array(
+		'INT:'		=> 'INT4',
+		'BINT'		=> 'INT8',
+		'UINT'		=> 'INT4', // unsigned
+		'UINT:'		=> 'INT4', // unsigned
+		'USINT'		=> 'INT2', // unsigned
+		'BOOL'		=> 'INT2', // unsigned
+		'TINT:'		=> 'INT2',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'varchar(1000)',
+		'STEXT'		=> 'varchar(3000)',
+		'TEXT'		=> 'varchar(8000)',
+		'MTEXT'		=> 'TEXT',
+		'XSTEXT_UNI'=> 'varchar(1000)',
+		'STEXT_UNI'	=> 'varchar(3000)',
+		'TEXT_UNI'	=> 'varchar(8000)',
+		'MTEXT_UNI'	=> 'TEXT',
+		'TIMESTAMP'	=> 'INT4', // unsigned
+		'DECIMAL'	=> 'decimal(5,2)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VCHAR_CI'	=> 'varchar_ci',
+		'VARBINARY'	=> 'bytea',
+	),
 );
 
 // A list of types being unsigned for better reference in some db's
@@ -127,9 +309,12 @@ $map_dbms = SQL_LAYER;
 switch (SQL_LAYER)
 {
 	case 'mysql':
+		$map_dbms = 'mysql_40';
+	break;
+
 	case 'mysql4':
 	case 'mysqli':
-		$map_dbms = 'mysql';
+		$map_dbms = 'mysql_41';
 	break;
 
 	case 'mssql':
@@ -441,12 +626,47 @@ function prepare_column_data($dbms, $column_data)
 {
 	global $dbms_type_map, $unsigned_types;
 
-	// Get final column type...
+	// Get type
 	if (strpos($column_data[0], ':') !== false)
 	{
 		list($orig_column_type, $column_length) = explode(':', $column_data[0]);
 
-		$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'], $column_length);
+		if (!is_array($dbms_type_map[$dbms][$orig_column_type . ':']))
+		{
+			$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'], $column_length);
+		}
+		else
+		{
+			if (isset($dbms_type_map[$dbms][$orig_column_type . ':']['rule']))
+			{
+				switch ($dbms_type_map[$dbms][$orig_column_type . ':']['rule'][0])
+				{
+					case 'div':
+						$column_length /= $dbms_type_map[$dbms][$orig_column_type . ':']['rule'][1];
+						$column_length = ceil($column_length);
+						$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'][0], $column_length);
+					break;
+				}
+			}
+
+			if (isset($dbms_type_map[$dbms][$orig_column_type . ':']['limit']))
+			{
+				switch ($dbms_type_map[$dbms][$orig_column_type . ':']['limit'][0])
+				{
+					case 'mult':
+						$column_length *= $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][1];
+						if ($column_length > $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][2])
+						{
+							$column_type = $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][3];
+						}
+						else
+						{
+							$column_type = sprintf($dbms_type_map[$dbms][$orig_column_type . ':'][0], $column_length);
+						}
+					break;
+				}
+			}
+		}
 		$orig_column_type .= ':';
 	}
 	else
@@ -495,7 +715,8 @@ function prepare_column_data($dbms, $column_data)
 			$sql .= 'NOT NULL';
 		break;
 
-		case 'mysql':
+		case 'mysql_40':
+		case 'mysql_41':
 			$sql .= " {$column_type} ";
 
 			// For hexadecimal values do not use single quotes
@@ -560,7 +781,8 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql':
+		case 'mysql_40':
+		case 'mysql_41':
 			$sql = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -658,7 +880,8 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql':
+		case 'mysql_40':
+		case 'mysql_41':
 			$sql = 'ALTER TABLE `' . $table_name . '` CHANGE `' . $column_name . '` `' . $column_name . '` ' . $column_data['column_type_sql'];
 			_sql($sql, $errored, $error_ary);
 		break;

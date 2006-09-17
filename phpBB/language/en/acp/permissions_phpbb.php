@@ -8,6 +8,7 @@
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* @todo You are able to put your permission sets into a seperate file too by prefixing it with permissions_ and putting it into the acp language folder.
 */
 
 /**
@@ -34,20 +35,16 @@ if (empty($lang) || !is_array($lang))
 	Please add your permission settings this way:
 
 	// Adding new category
-	$lang['permission_cats']['bugs'] = 'Bugs';
+	$lang['permission_cat']['bugs'] = 'Bugs';
 
 	// Adding new permission set
-	$lang['permission_sets']['bug_'] = 'Bug Permissions';
+	$lang['permission_type']['bug_'] = 'Bug Permissions';
 
 	// Adding the permissions
 	$lang = array_merge($lang, array(
 		'acl_bug_view'		=> array('lang' => 'Can view bug reports', 'cat' => 'bugs'),
 		'acl_bug_post'		=> array('lang' => 'Can post bugs', 'cat' => 'post'), // Using a phpBB category here
 	));
-
-	TODO:
-	You are able to put your permission sets into a seperate file too by
-	prefixing it with permissions_ and putting it into the acp language folder.
 */
 
 // Define categories and permission types

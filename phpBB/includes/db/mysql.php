@@ -26,7 +26,7 @@ if (!defined('SQL_LAYER'))
 
 /**
 * MySQL Database Abstraction Layer
-* Minimum Requirement is 3.23+/4.0+/4.1+
+* Minimum Requirement is 3.23+/4.0+ (NOT 4.1+/5.0+)
 * @package dbal
 */
 class dbal_mysql extends dbal
