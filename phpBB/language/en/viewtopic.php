@@ -20,6 +20,8 @@ if (empty($lang) || !is_array($lang))
 
 // DEVELOPERS PLEASE NOTE
 //
+// All language files should use UTF-8 as their encoding and the files must not contain a BOM.
+//
 // Placeholders can now contain order information, e.g. instead of
 // 'Page %s of %s' you can (and should) write 'Page %1$s of %2$s', this allows
 // translators to re-order the output of data while ensuring it remains correct
@@ -75,7 +77,6 @@ $lang = array_merge($lang, array(
 	'POLL_ENDED_AT'			=> 'Poll ended at %s',
 	'POLL_RUN_TILL'			=> 'Poll runs till %s',
 	'POLL_VOTED_OPTION'		=> 'You voted for this option',
-	'POST_ENCODING'			=> 'This post by <strong>%1$s</strong> was made in a character set different to yours. %2$sView this post in its proper encoding%3$s.',
 	'PRINT_TOPIC'			=> 'Print view',
 
 	'QUICK_MOD'				=> 'Quick-mod tools',

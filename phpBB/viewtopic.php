@@ -804,7 +804,7 @@ else
 // Container for user details, only process once
 $post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
 $has_attachments = $display_notice = false;
-$bbcode_bitfield = $force_encoding = '';
+$bbcode_bitfield = '';
 $i = $i_total = 0;
 
 // Go ahead and pull all data for this topic
@@ -862,7 +862,7 @@ $sql = $db->sql_build_query('SELECT', array(
 
 $result = $db->sql_query($sql);
 
-$now = getdate(time() + $user->timezone + $user->dst);
+$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
@@ -922,7 +922,6 @@ while ($row = $db->sql_fetchrow($result))
 		'post_approved'		=> $row['post_approved'],
 		'post_reported'		=> $row['post_reported'],
 		'post_text'			=> $row['post_text'],
-		'post_encoding'		=> $row['post_encoding'],
 		'bbcode_uid'		=> $row['bbcode_uid'],
 		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 		'enable_smilies'	=> $row['enable_smilies'],
@@ -1238,10 +1237,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		continue;
 	}
-	else if ($row['post_encoding'] != $user->lang['ENCODING'] && $view == 'encoding' && $post_id == $row['post_id'])
-	{
-		$force_encoding = $row['post_encoding'];
-	}
 
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
@@ -1398,8 +1393,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'FORCE_ENCODING'	=> ($row['post_encoding'] != $user->lang['ENCODING']) ? sprintf($user->lang['POST_ENCODING'], $row['poster'], '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=encoding#p{$row['post_id']}" . '">', '</a>') : '',
-
 		'U_EDIT'			=> (($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
@@ -1526,12 +1519,6 @@ else if (!$all_marked_read)
 			'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 		));
 	}
-}
-
-// Change encoding if appropriate
-if ($force_encoding != '')
-{
-	$user->lang['ENCODING'] = $force_encoding;
 }
 
 // We overwrite $_REQUEST['f'] if there is no forum specified

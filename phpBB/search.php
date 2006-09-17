@@ -254,24 +254,23 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sort_key = 't';
 				$sort_dir = 'd';
 				$sort_by_sql['t'] = 't.topic_last_post_time';
-				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				if (!$sort_days)
 				{
-					$sort_days = 1;
+					$sort_days = 3;
 				}
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
-				$s_sort_key = $s_sort_dir = $u_sort_param = '';
+				$s_sort_key = $s_sort_dir = '';
+				$u_sort_param = 'st=' . $sort_days;
 
 				$last_post_time = (time() - ($sort_days * 24 * 3600));
 
-				$sql = 'SELECT DISTINCT t.topic_last_post_time, t.topic_id
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-					WHERE p.post_time > $last_post_time
+				$sql = 'SELECT t.topic_last_post_time, t.topic_id
+					FROM ' . TOPICS_TABLE . " t
+					WHERE t.topic_last_post_time > $last_post_time
 						AND t.topic_moved_id = 0
-						AND p.topic_id = t.topic_id
-						$m_approve_fid_sql
-						" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . '
+						" . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
 			break;
@@ -286,6 +285,15 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
 				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
 
+				if ($sort_days)
+				{
+					$last_post_time = 'AND p.post_time > ' . (time() - ($sort_days * 24 * 3600));
+				}
+				else
+				{
+					$last_post_time = '';
+				}
+
 				if ($show_results == 'posts')
 				{
 					if ($sort_key == 'a')
@@ -298,6 +306,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
+							$last_post_time
 							$m_approve_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
@@ -310,6 +319,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_replies = 0
 							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
+							$last_post_time
 							$m_approve_fid_sql
 							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
@@ -325,10 +335,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
-				if (!$sort_days)
-				{
-					$sort_days = 1;
-				}
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
 
@@ -934,6 +940,11 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 unset($pad_store);
+
+if (!$s_forums)
+{
+	trigger_error($user->lang['NO_SEARCH']);
+}
 
 // Number of chars returned
 $s_characters = '<option value="-1">' . $user->lang['ALL_AVAILABLE'] . '</option>';

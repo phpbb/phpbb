@@ -25,7 +25,6 @@
 */
 class jabber
 {
-	var $encoding;
 	var $server;
 	var $port;
 	var $username;
@@ -67,8 +66,6 @@ class jabber
 		$this->resource				= NULL;
 		$this->packet_queue			= $this->subscription_queue = array();
 		$this->iq_sleep_timer		= $this->delay_disconnect = 1;
-
-		$this->encoding				= 'UTF-8';
 
 		$this->returned_keep_alive	= true;
 		$this->txnid				= 0;
@@ -454,7 +451,6 @@ class jabber
 			}
 
 			$this->_array_xmlspecialchars($content);
-			$this->_array_conv_utf8($content);
 
 			$xml = "<message to='$to' type='$type' id='$id'>\n";
 
@@ -793,69 +789,6 @@ class jabber
 	{
 		// we only have a few entities in xml
 		$string = str_replace(array('&', '>', '<', '"', '\''), array('&amp;', '&gt;', '&lt;', '&quot;', '&apos;'), $string);
-	}
-
-	/**
-	* Recursively converts all elements in an array to UTF-8 from the encoding stored in {@link encoding the encoding attribute}.
-	* @access private
-	*/
-	function _array_conv_utf8(&$array)
-	{
-		// no need to do anything if the encoding already is UTF-8
-		if (strtoupper($this->encoding) == 'UTF-8')
-		{
-			return true;
-		}
-
-		if (is_array($array))
-		{
-			foreach ($array as $k => $v)
-			{
-				if (is_array($v))
-				{
-					$this->_array_conv_utf8($array[$k]);
-				}
-				else
-				{
-					$this->_conv_utf8($array[$k]);
-				}
-			}
-		}
-	}
-
-	/**
-	* Converts a string to utf8 encoding.
-	*
-	* @param string $string has to have the same encoding as {@link encoding the encoding attribute} is set to.
-	*
-	* @return boolean True on success, false on failure.
-	*
-	* @access private
-	*/
-	function _conv_utf8(&$string)
-	{
-		// no need to do anything if the encoding already is UTF-8
-		if (strtoupper($this->encoding) == 'UTF-8')
-		{
-			return true;
-		}
-
-		// first try iconv then mb_convert_encoding and as a last fall back try recode_string
-		if (function_exists('iconv') && (($string = iconv($this->encoding, 'UTF-8', $string)) !== false))
-		{
-			return true;
-		}
-		elseif (function_exists('mb_convert_encoding') && (($string = mb_convert_encoding($string, 'UTF-8', $this->encoding)) !== false))
-		{
-			return true;
-		}
-		elseif (function_exists('recode_string') && (($string = recode_string($this->encoding . '..UTF-8', $string)) !== false))
-		{
-			return true;
-		}
-
-		// if everything fails we will just have to live with what we have, good luck!
-		return false;
 	}
 
 	// ======================================================================

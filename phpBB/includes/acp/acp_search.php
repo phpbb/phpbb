@@ -320,7 +320,7 @@ class acp_search
 				}
 				else
 				{
-					$sql = 'SELECT post_id, post_subject, post_text, post_encoding, poster_id, forum_id
+					$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 						FROM ' . POSTS_TABLE . '
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
 							AND post_id < ' . (int) ($post_counter + $this->batch_size);
@@ -328,7 +328,7 @@ class acp_search
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['post_encoding'], $row['poster_id'], $row['forum_id']);
+						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 					}
 					$db->sql_freeresult($result);
 

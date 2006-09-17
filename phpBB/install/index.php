@@ -320,16 +320,13 @@ class module
 			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
-			'S_CONTENT_ENCODING' 	=> $lang['ENCODING'],
+			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
 			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
 			)
 		);
 
-		if (!empty($lang['ENCODING']))
-		{
-			header('Content-type: text/html; charset: ' . $lang['ENCODING']);
-		}
+		header('Content-type: text/html; charset=UTF-8');
 		header('Cache-Control: private, no-cache="set-cookie"');
 		header('Expires: 0');
 		header('Pragma: no-cache');

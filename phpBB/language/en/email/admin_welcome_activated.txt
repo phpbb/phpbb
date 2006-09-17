@@ -1,5 +1,4 @@
 Subject: Account Activated
-Charset: iso-8859-1
 
 Hello {USERNAME},
 

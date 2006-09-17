@@ -24,14 +24,26 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 	if ($type == 'string')
 	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r"), array("\n", "\n"), $result)));
-		$result = (STRIP) ? stripslashes($result) : $result;
+		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r"), array("\n", "\n"), $result), ENT_QUOTES, 'UTF-8'));
 
-		// Check for possible multibyte characters to save a preg_replace call if nothing is in there...
-		if ($multibyte && strpos($result, '&amp;#') !== false)
+		if (!empty($result))
 		{
-			$result = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $result);
+			// Make sure multibyte characters are wellformed
+			if ($multibyte)
+			{
+				if (!preg_match('/^./u', $result))
+				{
+					$result = '';
+				}
+			}
+			else
+			{
+				// no multibyte, allow only ASCII (0-127)
+				$result = preg_replace('/[\x80-\xFF]/', '?', $result);
+			}
 		}
+
+		$result = (STRIP) ? stripslashes($result) : $result;
 	}
 }
 
@@ -2039,7 +2051,7 @@ function get_context($text, $words, $length = 400)
 		// find the starting indizes of all words
 		foreach ($words as $word)
 		{
-			if (preg_match('#(?: |^)(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')(?: |$)#i', $text, $match))
+			if (preg_match('#(?:[^\w]|^)(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')(?:[^\w]|$)#i', $text, $match))
 			{
 				$pos = strpos($text, $match[1]);
 				if ($pos !== false)
@@ -2362,6 +2374,12 @@ function smiley_text($text, $force_option = false)
 function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_id = 0, $preview = false)
 {
 	global $config, $user;
+
+	if (!function_exists('display_attachments'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include_once("{$phpbb_root_path}includes/functions_display.$phpEx");
+	}
 
 	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
 	$tpl_size = sizeof($attachments);
@@ -3143,7 +3161,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
-		'S_CONTENT_ENCODING'	=> $user->lang['ENCODING'],
+		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'],
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
@@ -3164,7 +3182,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'],
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 		'T_THEME_DATA'			=> (!$user->theme['theme_storedb']) ? '' : $user->theme['theme_data'],
 
@@ -3173,7 +3191,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['send_encoding'])
 	{
-		header('Content-type: text/html; charset=' . $user->lang['ENCODING']);
+		header('Content-type: text/html; charset=UTF-8');
 	}
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');

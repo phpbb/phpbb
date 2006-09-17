@@ -56,10 +56,6 @@ class fulltext_native extends search_backend
 		{
 			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 		}
-		if (!function_exists('utf8_strlen'))
-		{
-			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-		}
 
 
 		$error = false;
@@ -86,47 +82,89 @@ class fulltext_native extends search_backend
 	{
 		global $db, $config, $user;
 
-		// Clean up the query search
+		$keywords = trim($this->cleanup($keywords, '+-|()*'));
+
+		// allow word|word|word without brackets
+		if ((strpos($keywords, ' ') === false) && (strpos($keywords, '|') !== false) && (strpos($keywords, '(') === false))
+		{
+			$keywords = '(' . $keywords . ')';
+		}
+
+		$open_bracket = $space = false;
+		for ($i = 0, $n = strlen($keywords); $i < $n; $i++)
+		{
+			if ($open_bracket !== false)
+			{
+				switch ($keywords[$i])
+				{
+					case ')':
+						if ($open_bracket + 1 == $i)
+						{
+							$keywords[$i - 1] = '|';
+							$keywords[$i] = '|';
+						}
+						$open_bracket = false;
+					break;
+					case '(':
+						$keywords[$i] = '|';
+					break;
+					case '+':
+					case '-':
+					case ' ':
+						$keywords[$i] = '|';
+					break;
+				}
+			}
+			else
+			{
+				switch ($keywords[$i])
+				{
+					case ')':
+						$keywords[$i] = ' ';
+					break;
+					case '(':
+						$open_bracket = $i;
+					break;
+					case '|':
+						$keywords[$i] = ' ';
+					break;
+					case '-':
+					case '+':
+						$space = $keywords[$i];
+					break;
+					case ' ':
+						if ($space !== false)
+						{
+							$keywords[$i] = $space;
+						}
+					break;
+					default:
+						$space = false;
+				}
+			}
+		}
+
+		if ($open_bracket)
+		{
+			$keywords .= ')';
+		}
+
 		$match = array(
-			// Replace multiple spaces with a single space
 			'#  +#',
-
-			// Strip spaces after: +-|(
-			'#([+\\-|(]) #',
-
-			// Strip spaces before: |*)
-			'# ([|*)])#',
-
-			// Make word|word|word work without brackets
-			'#^[^()]*\\|[^()]*$#',
-
-			// Remove nested brackets
-			'#(\\([^()]*)(?=\\()#',
-			'#\\)([^()]*)(?=\\))#',
+			'#\|\|+#',
+			'#(\+|\-)(?:\+|\-)+#',
+			'#\(\|#',
+			'#\|\)#',
 		);
-
 		$replace = array(
 			' ',
+			'|',
 			'$1',
-			'$1',
-			'($0)',
-			'$1)',
-			'$1',
+			'(',
+			')',
 		);
 
-		$keywords = trim(preg_replace($match, $replace, $this->cleanup($keywords, '+-|()*', $user->lang['ENCODING'])));
-
-		// remove some useless bracket combinations which might be created by the previous regexps
-		$keywords = str_replace(array('()', ')|('), array('', '|'), $keywords);
-
-		$keywords = preg_replace_callback(
-			'#\((?:(?:[^)]*?) )*?[^)]*?\)#',
-			create_function(
-				'$matches',
-				'return str_replace(" ", "|", $matches[0]);'
-			),
-			$keywords
-		);
+		$keywords = preg_replace($match, $replace, $keywords);
 
 		// $keywords input format: each word seperated by a space, words in a bracket are not seperated
 
@@ -143,7 +181,7 @@ class fulltext_native extends search_backend
 		}
 
 		// set the search_query which is shown to the user
-		$this->search_query = utf8_encode_ncr($keywords, ENT_QUOTES);
+		$this->search_query = $keywords;
 
 		$exact_words = array();
 		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#', $keywords, $exact_words);
@@ -224,6 +262,11 @@ class fulltext_native extends search_backend
 				$mode = 'must_contain';
 			}
 
+			if (empty($word))
+			{
+				continue;
+			}
+
 			// if this is an array of words then retrieve an id for each
 			if (is_array($word))
 			{
@@ -255,7 +298,7 @@ class fulltext_native extends search_backend
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id)
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], utf8_encode_ncr(implode(', ', $word))));
+					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $word)));
 				}
 			}
 			// else we only need one id
@@ -273,7 +316,7 @@ class fulltext_native extends search_backend
 			// throw an error if we shall not ignore unexistant words
 			else if (!$ignore_no_id)
 			{
-				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], utf8_encode_ncr($word)));
+				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
 			}
 		}
 
@@ -558,9 +601,16 @@ class fulltext_native extends search_backend
 				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
-					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
-					$is_mysql = true;
-				break;
+					// 3.x does not support SQL_CALC_FOUND_ROWS
+					if (SQL_LAYER != 'mysql' || $db->sql_server_info[6] != '3')
+					{
+						$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+						$is_mysql = true;
+
+						// that's everything for MySQL >= 4.0
+						break;
+					}
+					// no break for MySQL 3.x
 
 				case 'sqlite':
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
@@ -871,7 +921,7 @@ class fulltext_native extends search_backend
 	*
 	* NOTE: duplicates are NOT removed from the return array
 	*
-	* @param	string	$text	Text to split, encoded in user's encoding
+	* @param	string	$text	Text to split, encoded in UTF-8
 	* @return	array			Array of UTF-8 words
 	*
 	* @access	private
@@ -899,7 +949,7 @@ class fulltext_native extends search_backend
 		/**
 		* Clean up the string, remove HTML tags, remove BBCodes
 		*/
-		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1, $user->lang['ENCODING']), ' ');
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
 
 		while (isset($word[0]))
 		{
@@ -952,13 +1002,12 @@ class fulltext_native extends search_backend
 	* @param	int		$post_id	The id of the post which is modified/created
 	* @param	string	$message	New or updated post content
 	* @param	string	$subject	New or updated post subject
-	* @param	string	$encoding	The post content's encoding
 	* @param	int		$poster_id	Post author's user id
 	* @param	int		$forum_id	The id of the forum in which the post is located
 	*
 	* @access	public
 	*/
-	function index($mode, $post_id, &$message, &$subject, $encoding, $poster_id, $forum_id)
+	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		global $config, $db, $user;
 
@@ -1101,22 +1150,6 @@ class fulltext_native extends search_backend
 		unset($unique_add_words);
 		unset($words);
 		unset($cur_words);
-	}
-
-	/**
-	* Used by index() to sort strings by string length, longest first
-	*/
-	function strlencmp($a, $b)
-	{
-		$len_a = strlen($a);
-		$len_b = strlen($b);
-
-		if ($len_a == $len_b)
-		{
-			return 0;
-		}
-
-		return ($len_a > $len_b) ? -1 : 1;
 	}
 
 	/**
@@ -1278,7 +1311,7 @@ class fulltext_native extends search_backend
 	* @param	string	$encoding		Text encoding
 	* @return	string					Cleaned up text, only alphanumeric chars are left
 	*/
-	function cleanup($text, $allowed_chars = null, $encoding = 'iso-8859-1')
+	function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
 		global $phpbb_root_path, $phpEx;
 		static $conv = array(), $conv_loaded = array();
@@ -1537,7 +1570,7 @@ class fulltext_native extends search_backend
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:252', 'fulltext_native_max_chars' => 'integer:0:252')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:252', 'fulltext_native_max_chars' => 'integer:0:255')
 		);
 	}
 }

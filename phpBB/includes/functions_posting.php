@@ -1414,7 +1414,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_subject'		=> $subject,
 				'post_text'			=> $data['message'],
 				'post_checksum'		=> $data['message_md5'],
-				'post_encoding'		=> $user->lang['ENCODING'],
 				'post_attachment'	=> (sizeof($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
@@ -1468,7 +1467,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_edit_reason'	=> $data['post_edit_reason'],
 				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
-				'post_encoding'		=> $user->lang['ENCODING'],
 				'post_attachment'	=> (sizeof($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
@@ -1911,7 +1909,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			trigger_error($error);
 		}
 
-		$search->index($mode, $data['post_id'], $data['message'], $subject, $user->lang['ENCODING'], $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
+		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 	}
 
 	$db->sql_transaction('commit');

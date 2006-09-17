@@ -14,7 +14,7 @@
 */
 class messenger
 {
-	var $vars, $msg, $extra_headers, $replyto, $from, $subject, $encoding;
+	var $vars, $msg, $extra_headers, $replyto, $from, $subject;
 	var $addresses = array();
 
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
@@ -45,7 +45,7 @@ class messenger
 	function reset()
 	{
 		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = $this->encoding = '';
+		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
@@ -221,16 +221,6 @@ class messenger
 			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
 		}
 
-		if (preg_match('#^(Charset:(.*?))$#m', $this->msg, $match))
-		{
-			$this->encoding = (trim($match[2]) != '') ? trim($match[2]) : trim($user->lang['ENCODING']);
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
-		}
-		else
-		{
-			$this->encoding = trim($user->lang['ENCODING']);
-		}
-
 		if ($drop_header)
 		{
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
@@ -324,7 +314,7 @@ class messenger
 
 			foreach ($address_ary as $which_ary)
 			{
-				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name'], $this->encoding) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
+				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ?  '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
 			}
 		}
 
@@ -348,7 +338,7 @@ class messenger
 		$headers .= "MIME-Version: 1.0\n";
 		$headers .= 'Message-ID: <' . md5(unique_id(time())) . "@" . $config['server_name'] . ">\n";
 		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
-		$headers .= "Content-type: text/plain; charset={$this->encoding}\n";
+		$headers .= "Content-type: text/plain; charset=UTF-8\n";
 		$headers .= "Content-transfer-encoding: 8bit\n";
 		$headers .= "X-Priority: {$this->mail_priority}\n";
 		$headers .= 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High')) . "\n";
@@ -357,7 +347,7 @@ class messenger
 		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
 		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
 
-		// Send message ... removed $this->encode() from subject for time being
+		// Send message ...
 		if (!$use_queue)
 		{
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
@@ -365,7 +355,7 @@ class messenger
 
 			if ($config['smtp_delivery'])
 			{
-				$result = smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers);
+				$result = smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $headers);
 			}
 			else
 			{
@@ -387,7 +377,6 @@ class messenger
 				'addresses'		=> $this->addresses,
 				'subject'		=> $this->subject,
 				'msg'			=> $this->msg,
-				'encoding'		=> $this->encoding,
 				'headers'		=> $headers)
 			);
 		}
@@ -435,7 +424,6 @@ class messenger
 			$this->jabber->username = $config['jab_username'];
 			$this->jabber->password = $config['jab_password'];
 			$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
-			$this->jabber->encoding = $this->encoding;
 
 			if (!$this->jabber->connect())
 			{
@@ -607,7 +595,7 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $encoding, $headers) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $headers) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
 
 						if (!$result)
 						{
@@ -739,7 +727,7 @@ class queue
 /**
 * Replacement or substitute for PHP's mail command
 */
-function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers = '')
+function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 {
 	global $config, $user;
 
@@ -794,7 +782,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	{
 		foreach ($addresses['to'] as $which_ary)
 		{
-			$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 			$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
 		}
 	}
@@ -811,7 +799,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 	{
 		foreach ($addresses['cc'] as $which_ary)
 		{
-			$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name']), $encoding) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 			$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
 		}
 	}
@@ -1363,12 +1351,12 @@ class smtp_class
 }
 
 /**
-* Encodes the given string for proper display for this encoding ... nabbed 
+* Encodes the given string for proper display in UTF-8 ... nabbed 
 * from php.net and modified. There is an alternative encoding method which 
 * may produce less output but it's questionable as to its worth in this 
-* scenario IMO
+* scenario.
 */
-function mail_encode($str, $encoding)
+function mail_encode($str)
 {
 	if ($encoding == '')
 	{
@@ -1377,7 +1365,7 @@ function mail_encode($str, $encoding)
 
 	// define start delimimter, end delimiter and spacer
 	$end = "?=";
-	$start = "=?$encoding?B?";
+	$start = "=?UTF-8?B?";
 	$spacer = "$end\r\n $start";
 
 	// determine length of encoded text within chunks and ensure length is even

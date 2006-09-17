@@ -148,14 +148,14 @@ function adm_page_header($page_title)
 		'ICON_SYNC_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_sync_disabled.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
 
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
-		'S_CONTENT_ENCODING'	=> $user->lang['ENCODING'],
+		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
 		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'])
 	);
 
-	if (!empty($config['send_encoding']))
+	if ($config['send_encoding'])
 	{
-		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
+		header('Content-type: text/html; charset=UTF-8');
 	}
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
