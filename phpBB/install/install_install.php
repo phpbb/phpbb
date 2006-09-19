@@ -1774,7 +1774,7 @@ class install_install extends module
 					$sql = "SELECT *
 						FROM NLS_DATABASE_PARAMETERS
 						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
-							OR PARAMETER = 'NLS_CHARACTERSET';";
+							OR PARAMETER = 'NLS_CHARACTERSET'";
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))

@@ -116,7 +116,63 @@ class dbal_oracle extends dbal
 					$in_transaction = true;
 				}
 
+				$array = array();
+
+				// We overcome Oracle's 4000 char limit by binding vars
+				if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\(([^()]+)\\)$/', $query, $regs))
+				{
+					if (strlen($regs[3]) > 4000)
+					{
+						$cols = explode(', ', $regs[2]);
+						$vals = explode(', ', $regs[3]);
+						foreach ($vals as $key => $value)
+						{
+							if (strlen($value) > 4002) // check to see if this thing is greater than the max + 'x2
+							{
+								$vals[$key] = ':' . strtoupper($cols[$key]);
+								$array[$vals[$key]] = substr($value, 1, -1);
+							}
+						}
+						$query = $regs[1] . '(' . implode(', ', $cols) . ') VALUES (' . implode(', ', $vals) . ')';
+					}
+				}
+				else if (preg_match('/^(UPDATE.*?)SET (.*)(\\sWHERE.*)$/s', $query, $regs))
+				{
+					if (strlen($regs[2]) > 4000)
+					{
+						$args = explode(', ', $regs[2]);
+						$cols = array();
+						foreach ($args as $value)
+						{
+							$temp_array = explode('=', $value);
+							$cols[$temp_array[0]] = $temp_array[1];
+						}
+
+						foreach ($cols as $col => $val)
+						{
+							if (strlen($val) > 4003) // check to see if this thing is greater than the max + 'x2 + a space
+							{
+								$cols[$col] = ' :' . strtoupper(rtrim($col));
+								$array[ltrim($cols[$col])] = substr(trim($val), 2, -1);
+							}
+						}
+
+						$art = array();
+						foreach ($cols as $col => $val)
+						{
+							$art[] = $col . '=' . $val; 
+						}
+						$query = $regs[1] . 'SET ' . implode(', ', $art) . $regs[3];
+					}
+				}
+
 				$this->query_result = @ociparse($this->db_connect_id, $query);
+
+				foreach ($array as $key => $value)
+				{
+					@ocibindbyname($this->query_result, $key, $array[$key], -1);
+				}
+
 				$success = @ociexecute($this->query_result, OCI_DEFAULT);
 
 				if (!$success)
@@ -383,7 +439,7 @@ class dbal_oracle extends dbal
 			{
 				$query = 'SELECT ' . $tablename[1] . '_seq.currval FROM DUAL';
 				$stmt = @ociparse($this->db_connect_id, $query);
-				@ociexecute($stmt, OCI_DEFAULT );
+				@ociexecute($stmt, OCI_DEFAULT);
 
 				$temp_result = @ocifetchinto($stmt, $temp_array, OCI_ASSOC + OCI_RETURN_NULLS);
 				@ocifreestatement($stmt);
