@@ -406,12 +406,19 @@ class acp_main
 			$files_per_day = $total_files;
 		}
 
-		$sql = 'SELECT COUNT(attach_id) AS total_orphan
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE is_orphan = 1';
-		$result = $db->sql_query($sql);
-		$total_orphan = (int) $db->sql_fetchfield('total_orphan');
-		$db->sql_freeresult($result);
+		if ($config['allow_attachments'] || $config['allow_pm_attach'])
+		{
+			$sql = 'SELECT COUNT(attach_id) AS total_orphan
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE is_orphan = 1';
+			$result = $db->sql_query($sql);
+			$total_orphan = (int) $db->sql_fetchfield('total_orphan');
+			$db->sql_freeresult($result);
+		}
+		else
+		{
+			$total_orphan = false;
+		}
 
 		$dbsize = get_database_size();
 		$s_action_options = build_select(array('online' => 'RESET_ONLINE', 'date' => 'RESET_DATE', 'stats' => 'RESYNC_STATS', 'user' => 'RESYNC_POSTCOUNTS', 'db_track' => 'RESYNC_POST_MARKING'));
@@ -430,6 +437,7 @@ class acp_main
 			'DBSIZE'			=> $dbsize,
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'TOTAL_ORPHAN'		=> $total_orphan,
+			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
 

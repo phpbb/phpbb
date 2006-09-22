@@ -2236,8 +2236,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 {
 	global $phpbb_root_path, $phpEx;
 
-	$uid = '';
-	$bitfield = '';
+	$uid = $bitfield = '';
 
 	if (!$text)
 	{

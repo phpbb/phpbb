@@ -1018,24 +1018,11 @@ function display_user_activity(&$userdata)
 	global $auth, $template, $db, $user;
 	global $phpbb_root_path, $phpEx;
 
-	// Init new auth class if user is different
-	if ($user->data['user_id'] != $userdata['user_id'])
-	{
-		$auth2 = new auth();
-		$auth2->acl($userdata);
-
-		$post_count_ary = $auth2->acl_getf('!f_postcount');
-	}
-	else
-	{
-		$post_count_ary = $auth->acl_getf('!f_postcount');
-	}
-
-	$forum_read_ary = $auth->acl_getf('!f_read');
-
 	$forum_ary = array();
 
 	// Do not include those forums the user is not having read access to...
+	$forum_read_ary = $auth->acl_getf('!f_read');
+
 	foreach ($forum_read_ary as $forum_id => $not_allowed)
 	{
 		if ($not_allowed['f_read'])
@@ -1044,40 +1031,27 @@ function display_user_activity(&$userdata)
 		}
 	}
 
-	// Now do not include those forums where the posts do not count...
-	foreach ($post_count_ary as $forum_id => $not_counted)
-	{
-		if ($not_counted['f_postcount'])
-		{
-			$forum_ary[] = (int) $forum_id;
-		}
-	}
-
 	$forum_ary = array_unique($forum_ary);
-	$post_count_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('f.forum_id', $forum_ary, true) : '';
+	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary, true) : '';
+
+	// Obtain active forum
+	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
+		FROM ' . POSTS_TABLE . '
+		WHERE poster_id = ' . $userdata['user_id'] . "
+			AND post_postcount = 1
+			$forum_sql
+		GROUP BY forum_id";
 
 	// Firebird does not support ORDER BY on aliased columns
 	// MySQL does not support ORDER BY on functions
 	switch (SQL_LAYER)
 	{
 		case 'firebird':
-			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND f.forum_id = p.forum_id 
-					$post_count_sql
-				GROUP BY f.forum_id
-				ORDER BY COUNT(p.post_id) DESC";
+			$sql .= ' ORDER BY COUNT(post_id) DESC';
 		break;
 
 		default:
-			$sql = 'SELECT f.forum_id, COUNT(p.post_id) AS num_posts
-				FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f 
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND f.forum_id = p.forum_id 
-					$post_count_sql
-				GROUP BY f.forum_id
-				ORDER BY num_posts DESC";
+			$sql .= ' ORDER BY num_posts DESC';
 		break;
 	}
 
@@ -1095,30 +1069,24 @@ function display_user_activity(&$userdata)
 		$db->sql_freeresult($result);
 	}
 
+	// Obtain active topic
+	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts   
+		FROM ' . POSTS_TABLE . '
+		WHERE poster_id = ' . $userdata['user_id'] . "
+			AND post_postcount = 1
+			$forum_sql
+		GROUP BY topic_id";
+
 	// Firebird does not support ORDER BY on aliased columns
 	// MySQL does not support ORDER BY on functions
 	switch (SQL_LAYER)
 	{
 		case 'firebird':
-			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND t.topic_id = p.topic_id  
-					AND f.forum_id = t.forum_id 
-					$post_count_sql
-				GROUP BY t.topic_id
-				ORDER BY COUNT(p.post_id) DESC";
+			$sql .= ' ORDER BY COUNT(post_id) DESC';
 		break;
 
 		default:
-			$sql = 'SELECT t.topic_id, COUNT(p.post_id) AS num_posts   
-				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f  
-				WHERE p.poster_id = ' . $userdata['user_id'] . " 
-					AND t.topic_id = p.topic_id  
-					AND f.forum_id = t.forum_id 
-					$post_count_sql
-				GROUP BY t.topic_id
-				ORDER BY num_posts DESC";
+			$sql .= ' ORDER BY num_posts DESC';
 		break;
 	}
 

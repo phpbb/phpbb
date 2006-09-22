@@ -156,6 +156,7 @@ function user_add($user_row, $cp_data = false)
 		'user_actkey'		=> '',
 		'user_ip'			=> '',
 		'user_regdate'		=> time(),
+		'user_passchg'		=> time(),
 
 		'user_lastmark'			=> time(),
 		'user_lastvisit'		=> 0,
@@ -255,6 +256,7 @@ function user_add($user_row, $cp_data = false)
 function user_delete($mode, $user_id, $post_username = false)
 {
 	global $config, $db, $user, $auth;
+	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
 
@@ -286,7 +288,6 @@ function user_delete($mode, $user_id, $post_username = false)
 
 			if (!function_exists('delete_posts'))
 			{
-				global $phpbb_root_path, $phpEx;
 				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
