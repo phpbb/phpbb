@@ -226,7 +226,11 @@ function checkForm()
 			<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
 		</tr>
 		<tr>
-			<td align="center"><!-- BEGIN smiley --><a href="#" onclick="smiley('{smiley.A_SMILEY_CODE}'); return false;" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" onclick="smiley('{smiley.A_SMILEY_CODE}'); return false" hspace="2" vspace="2" /></a> <!-- END smiley --></td>
+			<td align="center">
+				<!-- BEGIN smiley -->
+					<a href="#" onclick="smiley('{smiley.A_SMILEY_CODE}'); return false;" style="line-height: 20px;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_DESC}" title="{smiley.SMILEY_DESC}" hspace="2" vspace="2" /></a>
+				<!-- END smiley -->
+			</td>
 		</tr>
 
 		<!-- IF S_SHOW_SMILEY_LINK -->
