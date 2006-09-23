@@ -33,7 +33,7 @@ function getarraysize(thearray)
 {
 	for (i = 0; i < thearray.length; i++)
 	{
-		if (thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
+		if (typeof thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
 		{
 			return i;
 		}
@@ -208,7 +208,7 @@ function addquote(post_id, username)
 		theSelection = document.selection.createRange().text;
 	}
 
-	if (theSelection == '')
+	if (theSelection == '' || typeof theSelection == 'undefined' || theSelection == null)
 	{
 		if (divarea.innerHTML)
 		{
