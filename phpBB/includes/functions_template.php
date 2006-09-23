@@ -82,73 +82,14 @@ class template_compile
 	*/
 	function remove_php_tags(&$code)
 	{
-		if (!function_exists('token_get_all'))
-		{
-			/**
-			* If the tokenizer extension is not available, try to load it and if
-			* it's still not available we fall back to some pattern replacement.
-			*
-			* Note that the pattern replacement may affect the well-formedness
-			* of the HTML if a PHP tag is found because even if we escape PHP
-			* opening tags we do NOT escape PHP closing tags and cannot do so
-			* reliably without the use of a full-blown tokenizer.
-			*
-			* The bottom line is, a template should NEVER contain PHP because it
-			* would comprise the security of the installation, that's why we
-			* prevent it from being executed. Our job is to secure the installation,
-			* not fix unsecure templates. if a template contains some PHP then it
-			* should not be used at all.
-			*/
-			@dl('tokenizer');
+		// This matches the information gathered from the internal PHP lexer
+		$match = array(
+			'#<([\?%])=?.*?\1>#s',
+			'#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s',
+			'#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'
+		);
 
-			if (!function_exists('token_get_all'))
-			{
-				// This matches the information gathered from the internal PHP lexer
-				$match = array(
-					'#<([\?%])=?.*?\1>#s',
-					'#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s',
-					'#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'
-				);
-
-				$code = preg_replace($match, '', $code);
-				return;
-			}
-		}
-
-		do
-		{
-			$tokens = token_get_all('<?php ?>' . $code);
-			$code = '';
-			$php_found = false;
-
-			foreach ($tokens as $i => $token)
-			{
-				if (!is_array($token))
-				{
-					$code .= $token;
-				}
-				else if ($token[0] == T_OPEN_TAG || $token[0] == T_OPEN_TAG_WITH_ECHO || $token[0] == T_CLOSE_TAG)
-				{
-					if ($i > 1)
-					{
-						$code .= htmlspecialchars($token[1]);
-						$php_found = true;
-					}
-				}
-				else
-				{
-					$code .= $token[1];
-				}
-			}
-			unset($tokens);
-
-			// Fix for a tokenizer oddity
-			if (!strncmp($code, '<?php ?&gt;', 11))
-			{
-				$code = substr($code, 11);
-			}
-		}
-		while ($php_found);
+		$code = preg_replace($match, '', $code);
 	}
 
 	/**
