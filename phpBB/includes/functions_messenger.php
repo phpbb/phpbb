@@ -1358,11 +1358,6 @@ class smtp_class
 */
 function mail_encode($str)
 {
-	if ($encoding == '')
-	{
-		return $str;
-	}
-
 	// define start delimimter, end delimiter and spacer
 	$end = "?=";
 	$start = "=?UTF-8?B?";

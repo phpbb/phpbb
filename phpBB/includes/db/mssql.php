@@ -172,30 +172,26 @@ class dbal_mssql extends dbal
 		{
 			$this->query_result = false;
 
-			// if $total is set to 0 we do not want to limit the number of rows
-			if ($total == 0)
+			// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
+			if ($total)
 			{
-				$total = -1;
-			}
-
-			$row_offset = ($total) ? $offset : '';
-			$num_rows = ($total) ? $total : $offset;
-
-			if (strpos($query, 'SELECT DISTINCT') === 0)
-			{
-				$query = 'SELECT DISTINCT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 15);
-			}
-			else
-			{
-				$query = 'SELECT TOP ' . ($row_offset + $num_rows) . ' ' . substr($query, 6);
+				// We need to grab the total number of rows + the offset number of rows to get the correct result
+				if (strpos($query, 'SELECT DISTINCT') === 0)
+				{
+					$query = 'SELECT DISTINCT TOP ' . ($total + $offset) . ' ' . substr($query, 15);
+				}
+				else
+				{
+					$query = 'SELECT TOP ' . ($total + $offset) . ' ' . substr($query, 6);
+				}
 			}
 
 			$result = $this->sql_query($query, $cache_ttl);
 
-			// Seek by $row_offset rows
-			if ($row_offset)
+			// Seek by $offset rows
+			if ($offset)
 			{
-				$this->sql_rowseek($result, $row_offset);
+				$this->sql_rowseek($offset, $result);
 			}
 
 			return $result;
@@ -313,7 +309,7 @@ class dbal_mssql extends dbal
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
 		return ($query_id) ? @mssql_data_seek($query_id, $rownum) : false;

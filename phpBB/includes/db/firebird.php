@@ -281,7 +281,7 @@ class dbal_firebird extends dbal
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
 		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row

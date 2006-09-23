@@ -270,7 +270,7 @@ class dbal_mysqli extends dbal
 
 		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
 		return ($query_id) ? @mysqli_data_seek($query_id, $rownum) : false;

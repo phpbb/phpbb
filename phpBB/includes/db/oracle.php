@@ -403,7 +403,7 @@ class dbal_oracle extends dbal
 
 		if (isset($cache->sql_rowset[$query_id]))
 		{
-			return $cache->sql_rowseek($query_id, $rownum);
+			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
 		if (!$query_id)

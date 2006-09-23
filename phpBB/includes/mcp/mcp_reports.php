@@ -364,7 +364,7 @@ function close_report($post_id_list, $mode, $action)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	if (($action == 'delete') && (strpos($user->data['session_page'], 'mode=report_details') !== false))
+	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
 		$redirect = request_var('redirect', build_url(array('mode')) . '&amp;mode=reports');
 	}

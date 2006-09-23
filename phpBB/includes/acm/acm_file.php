@@ -424,7 +424,7 @@ class acm
 	/**
 	* Seek a specific row in an a cached database result (database)
 	*/
-	function sql_rowseek($query_id, $rownum)
+	function sql_rowseek($rownum, $query_id)
 	{
 		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
 		{
