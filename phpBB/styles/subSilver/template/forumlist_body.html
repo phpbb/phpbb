@@ -17,12 +17,14 @@
 	<!-- ELSEIF forumrow.S_IS_LINK -->
 		<tr>
 			<td class="row1" width="50" align="center">{forumrow.FORUM_FOLDER_IMG}</td>
-			<!-- IF forumrow.CLICKS --><td class="row1"><!-- ELSE --><td class="row1" colspan="4"><!-- ENDIF -->
+			<!-- IF forumrow.CLICKS --><td class="row1"><!-- ELSE --><td class="row1"><!-- ENDIF -->
 				<a class="forumlink" href="{forumrow.U_VIEWFORUM}">{forumrow.FORUM_NAME}</a>
 				<p class="forumdesc">{forumrow.FORUM_DESC}</p>
 			</td>
 			<!-- IF forumrow.CLICKS -->
 				<td class="row2" colspan="3" align="center"><span class="genmed">{L_REDIRECTS}: {forumrow.CLICKS}</span></td>
+			<!-- ELSE -->
+				<td class="row2" colspan="3" align="center"></td>			
 			<!-- ENDIF -->
 		</tr>
 	<!-- ELSE -->
