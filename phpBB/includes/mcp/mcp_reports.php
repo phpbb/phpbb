@@ -201,12 +201,12 @@ class mcp_reports
 						$forum_list[] = $row['forum_id'];
 					}
 
-					$global_id = $forum_list[0];
-
 					if (!sizeof($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
+
+					$global_id = $forum_list[0];
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '

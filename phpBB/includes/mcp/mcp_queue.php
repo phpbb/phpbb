@@ -182,12 +182,14 @@ class mcp_queue
 						$forum_list[] = $row['forum_id'];
 					}
 
-					$global_id = $forum_list[0];
-
-					if (!($forum_list = implode(', ', $forum_list)))
+					if (!sizeof($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
+
+					$global_id = $forum_list[0];
+
+					$forum_list = implode(', ', $forum_list);
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . "
