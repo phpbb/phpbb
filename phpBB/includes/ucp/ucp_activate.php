@@ -70,7 +70,7 @@ class ucp_activate
 			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 			// Now we need to demote the user from the inactive group and add him to the registered group
-			user_active_flip($user_row['user_id'], $user_row['user_type'], '', $user_row['username'], true);
+			user_active_flip($user_row['user_id'], $user_row['user_type'], '', $user_row['username'], 0, true);
 
 			// Update last username
 			update_last_username();

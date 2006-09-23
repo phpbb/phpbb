@@ -133,17 +133,18 @@
 	<!-- IF S_INACTIVE_USERS -->
 		<h2>{L_INACTIVE_USERS}</h2>
 
-		<p>{L_INACTIVE_USERS_EXPLAIN}</p>
+		<p>{L_INACTIVE_USERS_EXPLAIN_INDEX}</p>
 
-		<form id="inactive" method="post" action="{U_ACTION}">
+		<div style="text-align: right;"><a href="{U_INACTIVE_USERS}">&raquo; {L_VIEW_INACTIVE_USERS}</a></div>
 
 		<table cellspacing="1">
 		<thead>
 		<tr>
 			<th>{L_USERNAME}</th>
 			<th>{L_JOINED}</th>
+			<th>{L_INACTIVE_DATE}</th>
+			<th>{L_INACTIVE_REASON}</th>
 			<th>{L_LAST_VISIT}</th>
-			<th>{L_MARK}</th>
 		</tr>
 		</thead>
 		<tbody>
@@ -151,28 +152,18 @@
 			<!-- IF inactive.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 				<td><a href="{inactive.U_USER_ADMIN}">{inactive.USERNAME}</a></td>
-				<td>{inactive.DATE}</td>
+				<td>{inactive.JOINED}</td>
+				<td>{inactive.INACTIVE_DATE}</td>
+				<td>{inactive.REASON}</td>
 				<td>{inactive.LAST_VISIT}</td>
-				<td>&nbsp;<input type="checkbox" class="radio" name="mark[]" value="{inactive.USER_ID}" />&nbsp;</td>
 			</tr>
 		<!-- BEGINELSE -->
 			<tr>
-				<td colspan="3" style="text-align: center;">{L_NO_INACTIVE_USERS}</td>
+				<td colspan="4" style="text-align: center;">{L_NO_INACTIVE_USERS}</td>
 			</tr>
 		<!-- END inactive -->
 		</tbody>
 		</table>
-
-		<!-- IF .inactive -->
-			<fieldset class="quick">
-				<p><a href="#" onclick="marklist('inactive', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('inactive', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>
-				<select name="action">{S_INACTIVE_OPTIONS}</select>
-
-				<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
-			</fieldset>
-		<!-- ENDIF -->
-
-		</form>
 
 	<!-- ENDIF -->
 

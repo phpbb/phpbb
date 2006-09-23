@@ -239,24 +239,30 @@ class ucp_register
 					$key_len = ($key_len < 6) ? 6 : $key_len;
 					$user_actkey = substr($user_actkey, 0, $key_len);
 					$user_type = USER_INACTIVE;
+					$user_inactive_reason = INACTIVE_REGISTER;
+					$user_inactive_time = time();
 				}
 				else
 				{
 					$user_type = USER_NORMAL;
 					$user_actkey = '';
+					$user_inactive_reason = 0;
+					$user_inactive_time = 0;
 				}
 
 				$user_row = array(
-					'username'		=> $username,
-					'user_password'	=> md5($new_password),
-					'user_email'	=> $email,
-					'group_id'		=> (int) $group_id,
-					'user_timezone'	=> (float) $tz,
-					'user_lang'		=> $lang,
-					'user_type'		=> $user_type,
-					'user_actkey'	=> $user_actkey,
-					'user_ip'		=> $user->ip,
-					'user_regdate'	=> time(),
+					'username'				=> $username,
+					'user_password'			=> md5($new_password),
+					'user_email'			=> $email,
+					'group_id'				=> (int) $group_id,
+					'user_timezone'			=> (float) $tz,
+					'user_lang'				=> $lang,
+					'user_type'				=> $user_type,
+					'user_actkey'			=> $user_actkey,
+					'user_ip'				=> $user->ip,
+					'user_regdate'			=> time(),
+					'user_inactive_reason'	=> $user_inactive_reason,
+					'user_inactive_time'	=> $user_inactive_time,
 				);
 
 				// Register user...

@@ -98,6 +98,7 @@ $lang = array_merge($lang, array(
 	'ACP_ICONS'					=> 'Topic Icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic Icons/Smilies',
 	'ACP_IMAGESETS'				=> 'Imagesets',
+	'ACP_INACTIVE_USERS'		=> 'Inactive users',
 	'ACP_INDEX'					=> 'Admin index',
 	
 	'ACP_JABBER_SETTINGS'		=> 'Jabber Settings',
@@ -303,10 +304,6 @@ $lang = array_merge($lang, array(
 
 	'GZIP_COMPRESSION'	=> 'Gzip compression',
 
-	'INACTIVE_USERS'			=> 'Inactive Users',
-	'INACTIVE_USERS_EXPLAIN'	=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
-
-	'NO_INACTIVE_USERS'	=> 'No inactive users',
 	'NOT_AVAILABLE'		=> 'Not available',
 	'NUMBER_FILES'		=> 'Number of attachments',
 	'NUMBER_POSTS'		=> 'Number of posts',
@@ -329,12 +326,32 @@ $lang = array_merge($lang, array(
 	'UPLOAD_DIR_SIZE'	=> 'Size of posted attachments',
 	'USERS_PER_DAY'		=> 'Users per day',
 
-	'VALUE'				=> 'Value',
-	'VIEW_ADMIN_LOG'	=> 'View administrator log',
+	'VALUE'					=> 'Value',
+	'VIEW_ADMIN_LOG'		=> 'View administrator log',
+	'VIEW_INACTIVE_USERS'	=> 'View inactive users',
 
 	'WELCOME_PHPBB'			=> 'Welcome to phpBB',
 ));
 
+// Inactive Users
+$lang = array_merge($lang, array(
+	'INACTIVE_DATE'				=> 'Inactive date',
+	'INACTIVE_REASON'			=> 'Reason',
+	'INACTIVE_REASON_MANUAL'	=> 'Account deactivated by administrator',
+	'INACTIVE_REASON_PROFILE'	=> 'Profile details changed',
+	'INACTIVE_REASON_REGISTER'	=> 'Newly registered account',
+	'INACTIVE_REASON_UNKNOWN'	=> 'Unknown',
+	'INACTIVE_USERS'			=> 'Inactive Users',
+	'INACTIVE_USERS_EXPLAIN'	=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
+	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an email) these users if you wish.',
+
+	'NO_INACTIVE_USERS'	=> 'No inactive users',
+
+	'SORT_INACTIVE'		=> 'Inactive date',
+	'SORT_LAST_VISIT'	=> 'Last visit',
+	'SORT_REASON'		=> 'Reason',
+	'SORT_REG_DATE'		=> 'Registration date',
+));
 // Log Entries
 $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<b>Added or edited users user permissions</b><br />&#187; %s',
@@ -478,9 +495,9 @@ $lang = array_merge($lang, array(
 	'LOG_IMAGESET_EXPORT'		=> '<b>Exported imageset</b><br />&#187; %s',
 	'LOG_IMAGESET_REFRESHED'	=> '<b>Refreshed imageset</b><br />&#187; %s',
 
-	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
-	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
-	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
+	'LOG_INACTIVE_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
+	'LOG_INACTIVE_DELETE'	=> '<b>Deleted inactive users</b><br />&#187; %s',
+	'LOG_INACTIVE_REMIND'	=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
 	'LOG_INSTALL_CONVERTED'	=> '<b>Converted from %1$s to phpBB %2$s</b>',
 	'LOG_INSTALL_INSTALLED'	=> '<b>Installed phpBB %s</b>',
 

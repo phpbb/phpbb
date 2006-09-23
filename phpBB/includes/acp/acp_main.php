@@ -50,123 +50,6 @@ class acp_main
 		}
 
 		$action = request_var('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
-
-		if (sizeof($mark))
-		{
-			switch ($action)
-			{
-				case 'activate':
-				case 'delete':
-
-					if (!$auth->acl_get('a_user'))
-					{
-						trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
-					}
-
-					$sql = 'SELECT username 
-						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
-				
-					$user_affected = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$user_affected[] = $row['username'];
-					}
-					$db->sql_freeresult($result);
-
-					if ($action == 'activate')
-					{
-						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-
-						foreach ($mark as $user_id)
-						{
-							user_active_flip($user_id, USER_INACTIVE);
-						}
-
-						set_config('num_users', $config['num_users'] + sizeof($mark), true);
-
-						// Update latest username
-						update_last_username();
-					}
-					else if ($action == 'delete')
-					{
-						if (!$auth->acl_get('a_userdel'))
-						{
-							trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
-						}
-
-						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
-						$db->sql_query($sql);
-						$sql = 'DELETE FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
-						$db->sql_query($sql);
-	
-						add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
-					}
-
-				break;
-
-				case 'remind':
-					if (!$auth->acl_get('a_user'))
-					{
-						trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
-					}
-
-					if (empty($config['email_enable']))
-					{
-						trigger_error($user->lang['EMAIL_DISABLED'], E_USER_WARNING);
-					}
-
-					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
-						FROM ' . USERS_TABLE . ' 
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
-
-					if ($row = $db->sql_fetchrow($result))
-					{
-						// Send the messages
-						include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
-
-						$messenger = new messenger();
-
-						$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
-						$sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
-						$usernames = array();
-						do
-						{
-							$messenger->template('user_remind_inactive', $row['user_lang']);
-
-							$messenger->replyto($config['board_email']);
-							$messenger->to($row['user_email'], $row['username']);
-							$messenger->im($row['user_jabber'], $row['username']);
-
-							$messenger->assign_vars(array(
-								'EMAIL_SIG'		=> $sig,
-								'USERNAME'		=> html_entity_decode($row['username']),
-								'SITENAME'		=> $config['sitename'],
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-							
-								'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
-							);
-
-							$messenger->send($row['user_notify_type']);
-
-							$usernames[] = $row['username'];
-						}
-						while ($row = $db->sql_fetchrow($result));
-
-						$messenger->save_queue();
-
-						add_log('admin', 'LOG_INDEX_REMIND', implode(', ', $usernames));
-						unset($usernames);
-					}
-					$db->sql_freeresult($result);
-		
-				break;
-			}
-		}
 
 		switch ($action)
 		{
@@ -443,6 +326,7 @@ class acp_main
 
 			'U_ACTION'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
+			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
 			)
@@ -468,17 +352,18 @@ class acp_main
 
 		if ($auth->acl_get('a_user'))
 		{
-			$sql = 'SELECT user_id, username, user_regdate, user_lastvisit
-				FROM ' . USERS_TABLE . ' 
-				WHERE user_type = ' . USER_INACTIVE . ' 
-				ORDER BY user_regdate ASC';
-			$result = $db->sql_query($sql);
+			$inactive = array();
+			$inactive_count = 0;
 
-			while ($row = $db->sql_fetchrow($result))
+			view_inactive_users($inactive, $inactive_count, 10);
+
+			foreach ($inactive as $row)
 			{
 				$template->assign_block_vars('inactive', array(
-					'DATE'			=> $user->format_date($row['user_regdate']),
+					'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
+					'JOINED'		=> $user->format_date($row['user_regdate']),
 					'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+					'REASON'		=> $row['inactive_reason'],
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
 					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))

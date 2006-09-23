@@ -2331,6 +2331,52 @@ function update_foes()
 }
 
 /**
+* Lists inactive users
+*/
+function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_inactive_time DESC')
+{
+	global $db, $user;
+
+	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
+		FROM ' . USERS_TABLE . ' 
+		WHERE user_type = ' . USER_INACTIVE . 
+		(($limit_days) ? "AND user_inactive_time >= $limit_days" : '') . " 
+		ORDER BY $sort_by";
+	$result = $db->sql_query_limit($sql, $limit, $offset);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$row['inactive_reason'] = $user->lang['INACTIVE_REASON_UNKNOWN'];
+		switch ($row['user_inactive_reason'])
+		{
+			case INACTIVE_REGISTER:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REGISTER'];
+			break;
+
+			case INACTIVE_PROFILE:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_PROFILE'];
+			break;
+
+			case INACTIVE_MANUAL:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_MANUAL'];
+			break;
+		}
+	
+		$users[] = $row;
+	}
+	
+	$sql = 'SELECT count(user_id) AS user_count
+		FROM ' . USERS_TABLE . '
+		WHERE user_type = ' . USER_INACTIVE . 
+		(($limit_days) ? "AND user_inactive_time >= $limit_days" : '');
+	$result = $db->sql_query($sql);
+	$user_count = (int) $db->sql_fetchfield('user_count');
+	$db->sql_freeresult($result);
+
+	return;
+}
+
+/**
 * Lists warned users
 */
 function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_warnings DESC')

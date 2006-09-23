@@ -30,6 +30,10 @@ define('USER_FOUNDER', 3);
 //define('USER_BOT', 2);
 //define('USER_GUEST', 4);
 
+define('INACTIVE_REGISTER', 1);
+define('INACTIVE_PROFILE', 2);
+define('INACTIVE_MANUAL', 3);
+
 // ACL
 define('ACL_NEVER', 0);
 define('ACL_YES', 1);

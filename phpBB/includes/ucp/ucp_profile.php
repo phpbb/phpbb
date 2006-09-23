@@ -180,8 +180,10 @@ class ucp_profile
 							$messenger->save_queue();
 
 							$sql_ary += array(
-								'user_type'		=> USER_INACTIVE,
-								'user_actkey'	=> $user_actkey
+								'user_type'				=> USER_INACTIVE,
+								'user_actkey'			=> $user_actkey,
+								'user_inactive_reason'	=> INACTIVE_PROFILE,
+								'user_inactive_time'	=> time(),
 							);
 						}
 

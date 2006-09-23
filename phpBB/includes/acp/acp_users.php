@@ -269,7 +269,7 @@ class acp_users
 
 								if ($user_row['user_type'] != USER_INACTIVE)
 								{
-									user_active_flip($user_id, $user_row['user_type'], $user_actkey, $user_row['username']);
+									user_active_flip($user_id, $user_row['user_type'], $user_actkey, $user_row['username'], INACTIVE_MANUAL);
 								}
 
 								$messenger = new messenger(false);
@@ -311,7 +311,7 @@ class acp_users
 								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							user_active_flip($user_id, $user_row['user_type'], false, $user_row['username']);
+							user_active_flip($user_id, $user_row['user_type'], false, $user_row['username'], INACTIVE_MANUAL);
 
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';

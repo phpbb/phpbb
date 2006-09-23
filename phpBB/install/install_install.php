@@ -1357,7 +1357,7 @@ class install_install extends module
 	
 				$_module->move_module_by($row, 'move_up', 4);
 
-				// Move manage users screen module 4 up...
+				// Move manage users screen module 5 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
 					WHERE module_basename = 'users'
@@ -1367,7 +1367,7 @@ class install_install extends module
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 	
-				$_module->move_module_by($row, 'move_up', 4);
+				$_module->move_module_by($row, 'move_up', 5);
 			}
 
 			// And now for the special ones
@@ -1667,13 +1667,13 @@ class install_install extends module
 			
 			break;
 
-			case 'oracle':
 			case 'sqlite':
 				$prefix_length = 200;
 			
 			break;
 
 			case 'firebird':
+			case 'oracle':
 				$prefix_length = 6;
 
 			break;

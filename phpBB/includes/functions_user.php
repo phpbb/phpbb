@@ -158,6 +158,8 @@ function user_add($user_row, $cp_data = false)
 		'user_regdate'		=> time(),
 		'user_passchg'		=> time(),
 
+		'user_inactive_reason'	=> 0,
+		'user_inactive_time'	=> 0,
 		'user_lastmark'			=> time(),
 		'user_lastvisit'		=> 0,
 		'user_lastpost_time'	=> 0,
@@ -423,7 +425,7 @@ function user_delete($mode, $user_id, $post_username = false)
 * Flips user_type from active to inactive and vice versa, handles
 * group membership updates
 */
-function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false, $no_log = false)
+function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false, $reason = 0, $no_log = false)
 {
 	global $db, $user, $auth;
 
@@ -467,7 +469,9 @@ function user_active_flip($user_id, $user_type, $user_actkey = false, $username 
 	$db->sql_query($sql);
 
 	$sql_ary = array(
-		'user_type'		=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL
+		'user_type'				=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL,
+		'user_inactive_time'	=> ($user_type == USER_NORMAL) ? time() : 0,
+		'user_inactive_reason'	=> ($user_type == USER_NORMAL) ? $reason : 0,
 	);
 
 	if ($user_actkey !== false)

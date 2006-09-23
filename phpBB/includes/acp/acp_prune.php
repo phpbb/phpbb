@@ -269,7 +269,7 @@ class acp_prune
 					{
 						foreach ($user_ids as $user_id)
 						{
-							user_active_flip($user_id, USER_NORMAL, false, false, true);
+							user_active_flip($user_id, USER_NORMAL, false, false, INACTIVE_MANUAL, true);
 						}
 
 						$l_log = 'LOG_PRUNE_USER_DEAC';
