@@ -290,7 +290,7 @@ class acp_bbcodes
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
 				{
 					$repad = $pad + sizeof(array_unique($repad[0]));
-					$replace = preg_replace('/(?<!\\\\)\$([0-9]+)/e', "'\$' . (\$1 + \$pad)", $replace);
+					$replace = preg_replace('/(?<!\\\\)\$([0-9]+)/e', "'\${' . (\$1 + \$pad) . '}'", $replace);
 					$pad = $repad;
 				}
 
@@ -320,7 +320,7 @@ class acp_bbcodes
 				$fp_replace = str_replace($token, $replace, $fp_replace);
 
 				$sp_match = str_replace(preg_quote($token, '!'), '(.*?)', $sp_match);
-				$sp_replace = str_replace($token, '$' . ($n + 1), $sp_replace);
+				$sp_replace = str_replace($token, '${' . ($n + 1) . '}', $sp_replace);
 			}
 
 			$fp_match = '!' . $fp_match . '!' . $modifiers;

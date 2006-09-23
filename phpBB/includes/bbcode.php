@@ -155,6 +155,12 @@ class bbcode
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				// To circumvent replacing newlines with <br /> for the generated html,
+				// we just remove newlines here. We do not do this within the admin panel to 
+				// let the admin lay out his html code nicely
+				$row['bbcode_tpl'] = str_replace(array("\n", "\r"), '', $row['bbcode_tpl']);
+				$row['second_pass_replace'] = str_replace(array("\n", "\r"), '', $row['second_pass_replace']);
+
 				$rowset[$row['bbcode_id']] = $row;
 			}
 			$db->sql_freeresult($result);
