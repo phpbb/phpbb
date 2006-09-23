@@ -52,12 +52,17 @@
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 				<!-- ENDIF -->
 			</td>
-			<td class="row2" width="100" align="center"><p class="topicauthor">{topicrow.TOPIC_AUTHOR_LINK}</p></td>
+			<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}<!-- ENDIF --></p></td>
 			<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 			<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 			<td class="row1" width="140" align="center">
 				<p class="topicdetails" style="white-space: nowrap;">{topicrow.LAST_POST_TIME}</p>
-				<p class="topicdetails"><!-- IF topicrow.U_LAST_POST_AUTHOR --><a href="{topicrow.U_LAST_POST_AUTHOR}">{topicrow.LAST_POST_AUTHOR}</a><!-- ELSE -->{topicrow.LAST_POST_AUTHOR}<!-- ENDIF -->
+				<p class="topicdetails">
+					<!-- IF topicrow.U_LAST_POST_AUTHOR -->
+						<a href="{topicrow.U_LAST_POST_AUTHOR}"  <!-- IF topicrow.LAST_POST_AUTHOR_COLOUR -->	style="color: {topicrow.LAST_POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.LAST_POST_AUTHOR}</a>
+					<!-- ELSE -->
+						{topicrow.LAST_POST_AUTHOR}
+					<!-- ENDIF -->
 					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 				</p>
 			</td>
@@ -173,7 +178,7 @@
 						<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 					<!-- ENDIF -->
 				</td>
-				<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}</a><!-- ENDIF --></p></td>
+				<td class="row2" width="100" align="center"><p class="topicauthor"><!-- IF topicrow.U_TOPIC_AUTHOR --><a href="{topicrow.U_TOPIC_AUTHOR}"<!-- IF topicrow.TOPIC_AUTHOR_COLOUR --> style="font-weight: bold; color: {topicrow.TOPIC_AUTHOR_COLOUR}"<!-- ENDIF -->>{topicrow.TOPIC_AUTHOR}</a><!-- ELSE -->{topicrow.TOPIC_AUTHOR}<!-- ENDIF --></p></td>
 				<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 				<td class="row2" width="50" align="center"><p class="topicdetails">{topicrow.VIEWS}</p></td>
 				<td class="row1" width="140" align="center">
