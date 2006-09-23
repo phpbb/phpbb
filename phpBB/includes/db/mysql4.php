@@ -49,6 +49,7 @@ class dbal_mysql4 extends dbal
 		{
 			if (@mysql_select_db($this->dbname))
 			{
+				@mysql_query("SET NAMES 'utf8'");
 				return $this->db_connect_id;
 			}
 		}

@@ -50,6 +50,7 @@ class dbal_mysqli extends dbal
 		{
 			if (@mysqli_select_db($this->db_connect_id, $this->dbname))
 			{
+				@mysqli_query("SET NAMES 'utf8'");
 				return $this->db_connect_id;
 			}
 		}
