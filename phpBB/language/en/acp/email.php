@@ -32,8 +32,8 @@ if (empty($lang) || !is_array($lang))
 
 // Bot settings
 $lang = array_merge($lang, array(
-	'ACP_MASS_EMAIL_EXPLAIN'		=> 'Here you can email a message to either all of your users, or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed',
-	'ALL_USERS'						=> 'All Users',
+	'ACP_MASS_EMAIL_EXPLAIN'		=> 'Here you can email a message to either all of your users or all users of a specific group.  To do this, an email will be sent out to the administrative email address supplied, with a blind carbon copy sent to all recipients. If you are emailing a large group of people please be patient after submitting and do not stop the page halfway through. It is normal for a mass emailing to take a long time, you will be notified when the script has completed',
+	'ALL_USERS'						=> 'All users',
 
 	'COMPOSE'				=> 'Compose',
 
@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 	'MAIL_HIGH_PRIORITY'	=> 'High',
 	'MAIL_LOW_PRIORITY'		=> 'Low',
 	'MAIL_NORMAL_PRIORITY'	=> 'Normal',
-	'MAIL_PRIORITY'			=> 'Mail Priority',
+	'MAIL_PRIORITY'			=> 'Mail priority',
 	'MASS_MESSAGE'			=> 'Your message',
 	'MASS_MESSAGE_EXPLAIN'	=> 'Please note that you may enter only plain text. All markup will be removed before sending.',
 	

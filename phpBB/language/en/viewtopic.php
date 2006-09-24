@@ -67,7 +67,7 @@ $lang = array_merge($lang, array(
 	'MISSING_INLINE_ATTACHMENT'	=> 'The attachment <strong>%s</strong> is no longer available',
 	'MOVE_TOPIC'				=> 'Move topic',
 
-	'NO_ATTACHMENT_SELECTED'=> 'You haven\'t selected an attachment to download or view.',
+	'NO_ATTACHMENT_SELECTED'=> 'You haven’t selected an attachment to download or view.',
 	'NO_NEWER_TOPICS'		=> 'There are no newer topics in this forum',
 	'NO_OLDER_TOPICS'		=> 'There are no older topics in this forum',
 	'NO_UNREAD_POSTS'		=> 'There are no new unread posts for this topic.',

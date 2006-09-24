@@ -31,7 +31,7 @@ $help = array(
 		1 => 'Login and Registration Issues'
 	),
 	array(
-		0 => 'Why can\'t I login?',
+		0 => 'Why can’t I login?',
 		1 => 'Have you registered? Seriously, you must register in order to login. Have you been banned from the board (a message will be displayed if you have)? If so then you should contact the webmaster or board administrator to find out why. If you have registered and are not banned and you still cannot login then check and double check your username and password. Usually this is the problem, if not then contact the board administrator they may have incorrect configuration settings for the board.'
 	),
 	array(
@@ -44,11 +44,11 @@ $help = array(
 	),
 	array(
 		0 => 'How do I prevent my username appearing in the online user listings?',
-		1 => 'In your profile you will find an option <i>Hide your online status</i>, if you switch this <i>on</i> you\'ll only appear to board administrators or to yourself. You will be counted as a hidden user.'
+		1 => 'In your profile you will find an option <i>Hide your online status</i>, if you switch this <i>on</i> you’ll only appear to board administrators or to yourself. You will be counted as a hidden user.'
 	),
 	array(
-		0 => 'I\'ve lost my password!',
-		1 => 'Don\'t panic! While your password cannot be retrieved it can be reset. To do this go to the login page and click <u>I\'ve forgotten my password</u>, follow the instructions and you should be back online in no time'
+		0 => 'I’ve lost my password!',
+		1 => 'Don’t panic! While your password cannot be retrieved it can be reset. To do this go to the login page and click <u>I’ve forgotten my password</u>, follow the instructions and you should be back online in no time'
 	),
 	array(
 		0 => 'I registered but cannot login!',
@@ -80,7 +80,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I show an image below my username?',
-		1 => 'There may be two images below a username when viewing posts. The first is an image associated with your rank, generally these take the form of stars or blocks indicating how many posts you have made or your status on the forums. Below this may be a larger image known as an avatar, this is generally unique or personal to each user. It is up to the board administrator to enable avatars and they have a choice over the way in which avatars can be made available. If you are unable to use avatars then this is the decision of the board admin, you should ask them their reasons (we\'re sure they\'ll be good!)'
+		1 => 'There may be two images below a username when viewing posts. The first is an image associated with your rank, generally these take the form of stars or blocks indicating how many posts you have made or your status on the forums. Below this may be a larger image known as an avatar, this is generally unique or personal to each user. It is up to the board administrator to enable avatars and they have a choice over the way in which avatars can be made available. If you are unable to use avatars then this is the decision of the board admin, you should ask them their reasons (we’re sure they’ll be good!)'
 	),
 	array(
 		0 => 'How do I change my rank?',
@@ -115,11 +115,11 @@ $help = array(
 		1 => 'As with posts, polls can only be edited by the original poster, a moderator or board admin. To edit a poll click the first post in the topic (this always has the poll associated with it). If no one has cast a vote then users can delete the poll or edit any poll option, however if people have already placed votes only moderators or administrators can edit or delete it. This is to prevent people rigging polls by changing options mid-way through a poll'
 	),
 	array(
-		0 => 'Why can\'t I access a forum?',
+		0 => 'Why can’t I access a forum?',
 		1 => 'Some forums may be limited to certain users or groups. To view, read, post, etc. you may need special authorisation, only the forum moderator and board admin can grant this access, you should contact them.'
 	),
 	array(
-		0 => 'Why can\'t I vote in polls?',
+		0 => 'Why can’t I vote in polls?',
 		1 => 'Only registered users can vote in polls (so as to prevent spoofing of results). If you have registered and still cannot vote then you probably do not have appropriate access rights.'
 	),
 	array(
@@ -132,7 +132,7 @@ $help = array(
 	),
 	array(
 		0 => 'Can I use HTML?',
-		1 => '...'
+		1 => '�'
 	),
 	array(
 		0 => 'What are Smileys?',
@@ -203,7 +203,7 @@ $help = array(
 		1 => 'This software (in its unmodified form) is produced, released and is copyright  <a href="http://www.phpbb.com/" target="_blank">phpBB Group</a>. It is made available under the GNU General Public Licence and may be freely distributed, see link for more details'
 	),
 	array(
-		0 => 'Why isn\'t X feature available?',
+		0 => 'Why isn’t X feature available?',
 		1 => 'This software was written by and licensed through phpBB Group. If you believe a feature needs to be added then please visit the phpbb.com website and see what phpBB Group have to say. Please do not post feature requests to the board at phpbb.com, the Group uses sourceforge to handle tasking of new features. Please read through the forums and see what, if any, our position may already be for a feature and then follow the procedure given there.'
 	),
 	array(

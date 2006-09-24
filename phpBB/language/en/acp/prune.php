@@ -40,9 +40,9 @@ $lang = array_merge($lang, array(
 	'DELETE_USER_POSTS'			=> 'Delete pruned user posts',
 	'DELETE_USER_POSTS_EXPLAIN' => 'Removes posts made by deleted users, has no effect if users are deactivated.',
 
-	'JOINED_EXPLAIN'			=> 'Enter a date in YYYY-MM-DD format.',
+	'JOINED_EXPLAIN'			=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format.',
 
-	'LAST_ACTIVE_EXPLAIN'		=> 'Enter a date in YYYY-MM-DD format.',
+	'LAST_ACTIVE_EXPLAIN'		=> 'Enter a date in <kbd>YYYY-MM-DD</kbd> format.',
 
 	'SELECT_USERS_EXPLAIN'		=> 'Enter specific usernames here, they will be used in preference to the criteria above.',
 
@@ -54,22 +54,22 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_PRUNE_FORUMS_EXPLAIN'	=> 'This will delete any topic which has not been posted to within the number of days you select. If you do not enter a number then all topics will be deleted. It will not remove topics in which polls are still running nor will it remove announcements. You will need to remove these topics manually.',
 
-	'FORUM_PRUNE'		=> 'Forum Prune',
+	'FORUM_PRUNE'		=> 'Forum prune',
 
 	'NO_PRUNE'			=> 'No forums pruned',
 
-	'SELECTED_FORUM'	=> 'Selected Forum',
-	'SELECTED_FORUMS'	=> 'Selected Forums',
+	'SELECTED_FORUM'	=> 'Selected forum',
+	'SELECTED_FORUMS'	=> 'Selected forums',
 
 	'POSTS_PRUNED'					=> 'Posts pruned',
-	'PRUNE_ANNOUNCEMENTS'			=> 'Prune Announcements',
-	'PRUNE_FINISHED_POLLS'			=> 'Prune Closed Polls',
+	'PRUNE_ANNOUNCEMENTS'			=> 'Prune announcements',
+	'PRUNE_FINISHED_POLLS'			=> 'Prune closed polls',
 	'PRUNE_FINISHED_POLLS_EXPLAIN'	=> 'Removes topics with polls which have ended.',
 	'PRUNE_NOT_POSTED'				=> 'Days since last posted',
 	'PRUNE_NOT_VIEWED'				=> 'Days since last viewed',
-	'PRUNE_OLD_POLLS'				=> 'Prune Old Polls',
+	'PRUNE_OLD_POLLS'				=> 'Prune old polls',
 	'PRUNE_OLD_POLLS_EXPLAIN'		=> 'Removes topics with polls not voted in for post age days.',
-	'PRUNE_STICKY'					=> 'Prune Stickies',
+	'PRUNE_STICKY'					=> 'Prune stickies',
 	'PRUNE_SUCCESS'					=> 'Pruning of forums was successful',
 
 	'TOPICS_PRUNED'		=> 'Topics pruned',

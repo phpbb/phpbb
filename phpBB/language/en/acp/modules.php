@@ -34,13 +34,13 @@ $lang = array_merge($lang, array(
 	'ACP_MODULE_MANAGEMENT_EXPLAIN'	=> 'Here you are able to manage all kind of modules. Please note that if you place the same module under different categories, the category selected will be the first one found within the tree.',
 	'ADD_MODULE'					=> 'Add module',
 	'ADD_MODULE_CONFIRM'			=> 'Are you sure you want to add the selected module with the selected mode?',
-	'ADD_MODULE_TITLE'				=> 'Add Module',
+	'ADD_MODULE_TITLE'				=> 'Add module',
 
 	'CANNOT_REMOVE_MODULE'	=> 'Unable to remove module, it has assigned childs. Please remove or move all childs before performing this action',
 	'CATEGORY'				=> 'Category',
-	'CHOOSE_MODE'			=> 'Choose Module Mode',
+	'CHOOSE_MODE'			=> 'Choose module mode',
 	'CHOOSE_MODE_EXPLAIN'	=> 'Choose the modules mode being used.',
-	'CHOOSE_MODULE'			=> 'Choose Module',
+	'CHOOSE_MODULE'			=> 'Choose module',
 	'CHOOSE_MODULE_EXPLAIN'	=> 'Choose the file being called by this module.',
 	'CREATE_MODULE'			=> 'Create new module',
 
@@ -51,7 +51,7 @@ $lang = array_merge($lang, array(
 	'EDIT_MODULE'			=> 'Edit module',
 	'EDIT_MODULE_EXPLAIN'	=> 'Here you are able to enter module specific settings',
 
-	'HIDDEN_MODULE'			=> 'Hidden Module',
+	'HIDDEN_MODULE'			=> 'Hidden module',
 
 	'MODULE'					=> 'Module',
 	'MODULE_ADDED'				=> 'Module successfully added',
@@ -60,7 +60,7 @@ $lang = array_merge($lang, array(
 	'MODULE_DISPLAYED_EXPLAIN'	=> 'If you do not wish to display this module, but want to use it, set this to no.',
 	'MODULE_EDITED'				=> 'Module successfully edited',
 	'MODULE_ENABLED'			=> 'Module enabled',
-	'MODULE_LANGNAME'			=> 'Module Language Name',
+	'MODULE_LANGNAME'			=> 'Module language mame',
 	'MODULE_LANGNAME_EXPLAIN'	=> 'Enter the displayed module name. Use language constant if name is served from language file.',
 	'MODULE_TYPE'				=> 'Module type',
 

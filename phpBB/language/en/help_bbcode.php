@@ -48,7 +48,7 @@ $help = array(
 	),
 	array(
 		0 => 'Can I combine formatting tags?',
-		1 => 'Yes, of course you can, for example to get someones attention you may write:<br /><br /><strong>[size=18][color=red][b]</strong>LOOK AT ME!<strong>[/b][/color][/size]</strong><br /><br />this would output <span style="color:red;font-size:18px;"><strong>LOOK AT ME!</strong></span><br /><br />We don\'t recommend you output lots of text that looks like this though! Remember it is up to you, the poster to ensure tags are closed correctly. For example the following is incorrect:<br /><br /><strong>[b][u]</strong>This is wrong<strong>[/b][/u]</strong>'
+		1 => 'Yes, of course you can, for example to get someones attention you may write:<br /><br /><strong>[size=18][color=red][b]</strong>LOOK AT ME!<strong>[/b][/color][/size]</strong><br /><br />this would output <span style="color:red;font-size:18px;"><strong>LOOK AT ME!</strong></span><br /><br />We don’t recommend you output lots of text that looks like this though! Remember it is up to you, the poster to ensure tags are closed correctly. For example the following is incorrect:<br /><br /><strong>[b][u]</strong>This is wrong<strong>[/b][/u]</strong>'
 	),
 	array(
 		0 => '--',

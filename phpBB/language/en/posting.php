@@ -78,7 +78,7 @@ $lang = array_merge($lang, array(
 	'DISABLE_MAGIC_URL'			=> 'Do not automatically parse URLs',
 	'DISABLE_SMILIES'			=> 'Disable smilies',
 	'DISALLOWED_EXTENSION'		=> 'The extension %s is not allowed',
-	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your Draft will be deleted after submitting this post.',
+	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your draft will be deleted after submitting this post.',
 	'DRAFT_SAVED'				=> 'Draft successfully saved.',
 	'DRAFT_TITLE'				=> 'Draft title',
 
@@ -129,8 +129,8 @@ $lang = array_merge($lang, array(
 	'NO_TOPIC_ICON'				=> 'None',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
-	'PHP_SIZE_NA'				=> 'The attachment\'s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
-	'PHP_SIZE_OVERRUN'			=> 'The attachment\'s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
+	'PHP_SIZE_NA'				=> 'The attachment’s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
+	'PHP_SIZE_OVERRUN'			=> 'The attachment’s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
 	'PLACE_INLINE'				=> 'Place inline',
 	'POLL_DELETE'				=> 'Delete poll',
 	'POLL_FOR'					=> 'Run poll for',

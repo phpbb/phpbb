@@ -57,22 +57,22 @@ $lang = array_merge($lang, array(
 		'forums'		=> 'Forums',
 		'misc'			=> 'Misc',
 		'permissions'	=> 'Permissions',
-		'pm'			=> 'Private Messages',
+		'pm'			=> 'Private messages',
 		'polls'			=> 'Polls',
 		'post'			=> 'Post',
-		'post_actions'	=> 'Post Actions',
+		'post_actions'	=> 'Post actions',
 		'posting'		=> 'Posting',
 		'profile'		=> 'Profile',
 		'settings'		=> 'Settings',
-		'topic_actions'	=> 'Topic Actions',
+		'topic_actions'	=> 'Topic actions',
 		'user_group'	=> 'Users &amp; Groups',
 	),
 
 	'permission_type'	=> array(
-		'u_'			=> 'User Permissions',
-		'a_'			=> 'Admin Permissions',
-		'm_'			=> 'Moderator Permissions',
-		'f_'			=> 'Forum Permissions',
+		'u_'			=> 'User permissions',
+		'a_'			=> 'Admin permissions',
+		'm_'			=> 'Moderator permissions',
+		'f_'			=> 'Forum permissions',
 	),
 ));
 
@@ -173,7 +173,7 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'acl_a_board'		=> array('lang' => 'Can alter board settings', 'cat' => 'settings'),
 	'acl_a_server'		=> array('lang' => 'Can alter server/communication settings', 'cat' => 'settings'),
-	'acl_a_jabber'		=> array('lang' => 'Can alter jabber settings', 'cat' => 'settings'),
+	'acl_a_jabber'		=> array('lang' => 'Can alter Jabber settings', 'cat' => 'settings'),
 	'acl_a_phpinfo'		=> array('lang' => 'Can view php settings', 'cat' => 'settings'),
 
 	'acl_a_forum'		=> array('lang' => 'Can manage forums', 'cat' => 'forums'),

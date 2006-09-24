@@ -58,17 +58,17 @@ $lang = array_merge($lang, array(
 
 	'TOKEN'					=> 'Token',
 	'TOKENS'				=> 'Tokens',
-	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any of lang string present in your language/ directory like this: {L_<i>&lt;stringname&gt;</i>} where <i>&lt;stringname&gt;</i> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as "wrote" or its translation according to user\'s locale',
+	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any of lang string present in your language/ directory like this: {L_<em>&lt;stringname&gt;</em>} where <em>&lt;stringname&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as "wrote" or its translation according to user’s locale',
 	'TOKEN_DEFINITION'		=> 'What can it be?',
 	'TOO_MANY_BBCODES'		=> 'You cannot create any more BBCodes. Please remove one or more BBCodes then try again',
 
 	'tokens'	=>	array(
-		'TEXT'			=> 'Any text, including foreign characters, numbers, etc...',
+		'TEXT'			=> 'Any text, including foreign characters, numbers, etc…',
 		'NUMBER'		=> 'Any series of digits',
 		'EMAIL'			=> 'A valid email address',
-		'URL'			=> 'A valid URL using any protocol (http, ftp, etc... cannot be used for javascript exploits). If none is given, "http://" is prepended to to the string',
+		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prepended to to the string',
 		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',
-		'COLOR'			=> 'A HTML color, can be either in the numeric form #FF1234 or an english name such as "blue"'
+		'COLOR'			=> 'A HTML color, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
 	)
 ));
 
@@ -89,13 +89,13 @@ $lang = array_merge($lang, array(
 
 	'DISPLAY_ON_POSTING'	=> 'Display on posting',
 
-	'EDIT_ICONS'				=> 'Edit Icons',
+	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
 	'EMOTION'					=> 'Emotion',
-	'EXPORT_ICONS'				=> 'Create icons pak',
-	'EXPORT_ICONS_EXPLAIN'		=> 'To create a package of your currently installed icons, click %sHERE%s to download the icons package file. Once downloaded create a zip or tgz file containing all of your icons plus this .pak configuration file.',
-	'EXPORT_SMILIES'			=> 'Create smilies pak',
-	'EXPORT_SMILIES_EXPLAIN'	=> 'To create a package of your currently installed smilies, click %sHERE%s to download the smilies.pak file. Once downloaded create a zip or tgz file containing all of your smilies plus this .pak configuration file.',
+	'EXPORT_ICONS'				=> 'Export and download icons.pak',
+	'EXPORT_ICONS_EXPLAIN'		=> '%sOn clicking this link, the configuration for your installed icons will be packaged into <samp>icons.pak</samp> which once downloaded can be used to create a <samp>.zip</samp> or <samp>.tgz</samp> file containing all of your icons plus this <samp>icons.pak</samp> configuration file%s.',
+	'EXPORT_SMILIES'			=> 'Export and download smilies.pak',
+	'EXPORT_SMILIES_EXPLAIN'	=> '%sOn clicking this link, the configuration for your installed smilies will be packaged into <samp>smilies.pak</samp> which once downloaded can be used to create a <samp>.zip</samp> or <samp>.tgz</samp> file containing all of your smilies plus this <samp>icons.pak</samp> configuration file%s.',
 
 	'FIRST'			=> 'First',
 
@@ -103,7 +103,7 @@ $lang = array_merge($lang, array(
 	'ICONS_ADDED'			=> 'The icon has been added successfully.',
 	'ICONS_CONFIG'			=> 'Icon configuration',
 	'ICONS_DELETED'			=> 'The icon has been removed successfully.',
-	'ICONS_EDIT'			=> 'Edit Icon',
+	'ICONS_EDIT'			=> 'Edit icon',
 	'ICONS_EDITED'			=> 'The icon has been updated successfully.',
 	'ICONS_HEIGHT'			=> 'Icon height',
 	'ICONS_IMAGE'			=> 'Icon image',
@@ -131,7 +131,7 @@ $lang = array_merge($lang, array(
 	'REPLACE_MATCHES'	=> 'Replace matches',
 
 	'SELECT_PACKAGE'			=> 'Select a package file',
-	'SMILIES_ADD'				=> 'Add a new Smiley',
+	'SMILIES_ADD'				=> 'Add a new smiley',
 	'SMILIES_ADDED'				=> 'The smiley has been added successfully.',
 	'SMILIES_CODE'				=> 'Smiley code',
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
@@ -180,16 +180,16 @@ $lang = array_merge($lang, array(
 	'MUST_SELECT_RANK'		=> 'You must select a rank.',
 	
 	'NO_ASSIGNED_RANK'		=> 'No special rank assigned.',
-	'NO_RANK_TITLE'			=> 'You haven\'t specified a title for the rank.',
+	'NO_RANK_TITLE'			=> 'You haven’t specified a title for the rank.',
 	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts.',
 
 	'RANK_ADDED'			=> 'The rank was successfully added.',
-	'RANK_IMAGE'			=> 'Rank Image',
+	'RANK_IMAGE'			=> 'Rank image',
 	'RANK_IMAGE_EXPLAIN'	=> 'Use this to define a small image associated with the rank. The path is relative to the root phpBB directory.',
-	'RANK_MINIMUM'			=> 'Minimum Posts',
+	'RANK_MINIMUM'			=> 'Minimum posts',
 	'RANK_REMOVED'			=> 'The rank was successfully deleted.',
-	'RANK_SPECIAL'			=> 'Set as Special Rank',
-	'RANK_TITLE'			=> 'Rank Title',
+	'RANK_SPECIAL'			=> 'Set as special rank',
+	'RANK_TITLE'			=> 'Rank title',
 	'RANK_UPDATED'			=> 'The rank was successfully updated.',
 ));
 
@@ -200,13 +200,13 @@ $lang = array_merge($lang, array(
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 
 	'DELETE_DISALLOW_EXPLAIN'	=> 'You can remove a disallowed username by selecting the username from this list and clicking submit',
-	'DELETE_DISALLOW_TITLE'		=> 'Remove a Disallowed Username',
+	'DELETE_DISALLOW_TITLE'		=> 'Remove a disallowed username',
 	'DISALLOWED_ALREADY'		=> 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present.',
 	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed',
 	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added',
 
-	'NO_DISALLOWED'				=> 'No Disallowed Usernames',
-	'NO_USERNAME_SPECIFIED'		=> 'You haven\'t selected or entered a username to operate with.',
+	'NO_DISALLOWED'				=> 'No disallowed usernames',
+	'NO_USERNAME_SPECIFIED'		=> 'You haven’t selected or entered a username to operate with.',
 ));
 
 // Reasons
@@ -215,8 +215,8 @@ $lang = array_merge($lang, array(
 
 	'ADD_NEW_REASON'		=> 'Add new reason',
 	
-	'IS_NOT_TRANSLATED'		=> 'Reason has not been localized',
-	'IS_TRANSLATED'			=> 'Reason has been localized',
+	'IS_NOT_TRANSLATED'		=> 'Reason has not been localised',
+	'IS_TRANSLATED'			=> 'Reason has been localised',
 	
 	'NO_REASON'					=> 'Reason could not be found',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
@@ -225,7 +225,7 @@ $lang = array_merge($lang, array(
 	'REASON_ADD'			=> 'Add report/denial reason',
 	'REASON_ADDED'			=> 'Report/denial reason successfully added',
 	'REASON_ALREADY_EXIST'	=> 'A reason with this title already exist, please enter another title for this reason.',
-	'REASON_DESCRIPTION'	=> 'Reason Description',
+	'REASON_DESCRIPTION'	=> 'Reason description',
 	'REASON_EDIT'			=> 'Edit report/denial reason',
 	'REASON_EDIT_EXPLAIN'	=> 'Here you are able to add or edit a reason. If the reason is translated the localized version is used instead of the description entered here.',
 	'REASON_REMOVED'		=> 'Report/denial reason successfully removed',
