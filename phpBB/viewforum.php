@@ -368,23 +368,29 @@ else
 	$sql_start = $start;
 }
 
-// Obtain other topics
+// SQL array for obtaining topics/stickies
 $sql_array = array(
 	'SELECT'		=> $sql_array['SELECT'],
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . '
-		AND t.topic_type NOT IN (' . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
+	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . "
+		AND t.topic_type = {SQL_TOPIC_TYPE}
 		$sql_approved
 		$sql_limit_time",
 
-	'ORDER_BY'		=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
+	'ORDER_BY'		=> $sql_sort_order,
 );
+
+// If store_reverse, then first obtain topics, then stickies, else the other way around...
+// Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
+// the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
+$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $shadow_topic_list = array();
+$num_rows = 0;
 while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['topic_status'] == ITEM_MOVED)
@@ -394,8 +400,29 @@ while ($row = $db->sql_fetchrow($result))
 
 	$rowset[$row['topic_id']] = $row;
 	$topic_list[] = $row['topic_id'];
+	$num_rows++;
 }
 $db->sql_freeresult($result);
+
+// If the number of topics exceeds the sql limit then we do not need to retrieve the remaining topic type
+if ($num_rows < $sql_limit)
+{
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_STICKY : POST_NORMAL, $sql);
+	$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['topic_status'] == ITEM_MOVED)
+		{
+			$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+		}
+
+		$rowset[$row['topic_id']] = $row;
+		$topic_list[] = $row['topic_id'];
+	}
+	$db->sql_freeresult($result);
+}
 
 // If we have some shadow topics, update the rowset to reflect their topic informations
 if (sizeof($shadow_topic_list))
