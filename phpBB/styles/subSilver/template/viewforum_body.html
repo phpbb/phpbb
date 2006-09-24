@@ -118,7 +118,7 @@
 			<!-- IF TOTAL_TOPICS -->
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 			<!-- ENDIF -->
 		</tr>
 		</table>
@@ -217,7 +217,7 @@
 			<td align="left" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 			<td class="nav" nowrap="nowrap">&nbsp;{PAGE_NUMBER}</td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]</td>
-			<td class="nav" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+			<td class="nav" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 		</tr>
 		</table>
 

@@ -35,7 +35,7 @@
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-			<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+			<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 		<!-- ENDIF -->
 	</tr>
 	</table>
@@ -291,7 +291,7 @@
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-			<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- IF PAGINATION --><b><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{L_GOTO_PAGE}</a> <!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}">{L_PREVIOUS}</a>&nbsp;&nbsp;<!-- ENDIF -->{PAGINATION}<!-- IF NEXT_PAGE -->&nbsp;&nbsp;<a href="{NEXT_PAGE}">{L_NEXT}</a><!-- ENDIF --></b><!-- ENDIF --></td>
+			<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 		<!-- ENDIF -->
 	</tr>
 	</table>
