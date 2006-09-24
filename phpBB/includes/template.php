@@ -500,7 +500,7 @@ class template
 
 			if ($filename)
 			{
-				include_once($filename);
+				include($filename);
 				return;
 			}
 			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
