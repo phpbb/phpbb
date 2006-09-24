@@ -1816,6 +1816,8 @@ function get_schema_struct()
 			'user_warnings'				=> array('TINT:4', 0),
 			'user_last_warning'			=> array('TIMESTAMP', 0),
 			'user_login_attempts'		=> array('TINT:4', 0),
+			'user_inactive_reason'		=> array('TINT:2', 0),
+			'user_inactive_time'		=> array('TIMESTAMP', 0),
 			'user_posts'				=> array('UINT', 0),
 			'user_lang'					=> array('VCHAR:30', ''),
 			'user_timezone'				=> array('DECIMAL', 0),
