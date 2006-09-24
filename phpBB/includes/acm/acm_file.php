@@ -80,6 +80,16 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
+		else
+		{
+			// Now, this occurred how often? ... phew, just tell the user then...
+			if (!@is_writeable($this->cache_dir))
+			{
+				trigger_error($this->cache_dir . ' is NOT writeable.', E_USER_ERROR);
+			}
+
+			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx, E_USER_ERROR);
+		}
 
 		$this->is_modified = false;
 	}
