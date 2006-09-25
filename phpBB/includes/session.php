@@ -671,88 +671,48 @@ class session
 			$this->time_now = time();
 		}
 
-		switch (SQL_LAYER)
+		// Firstly, delete guest sessions
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . ANONYMOUS . '
+				AND session_time < ' . (int) ($this->time_now - $config['session_length']);
+		$db->sql_query($sql);
+
+		// Get expired sessions, only most recent for each user
+		$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
+			GROUP BY session_user_id, session_page';
+		$result = $db->sql_query_limit($sql, 10);
+
+		$del_user_id = array();
+		$del_sessions = 0;
+
+		while ($row = $db->sql_fetchrow($result));
 		{
-			case 'mysql4':
-			case 'mysqli':
-				// Firstly, delete guest sessions
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					WHERE session_user_id = ' . ANONYMOUS . '
-						AND session_time < ' . (int) ($this->time_now - $config['session_length']);
-				$db->sql_query($sql);
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				WHERE user_id = " . (int) $row['session_user_id'];
+			$db->sql_query($sql);
 
-				// Keep only the most recent session for each user
-				// Note: if the user is currently browsing the board, his
-				// last_visit field won't be updated, which I believe should be
-				// the normal behavior anyway
-				$db->sql_return_on_error(true);
+			$del_user_id[] = (int) $row['session_user_id'];
+			$del_sessions++;
+		}
+		$db->sql_freeresult($result);
 
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					USING ' . SESSIONS_TABLE . ' s1, ' . SESSIONS_TABLE . ' s2
-					WHERE s1.session_user_id = s2.session_user_id
-						AND s1.session_time < s2.session_time';
-				$db->sql_query($sql);
+		if (sizeof($del_user_id))
+		{
+			// Delete expired sessions
+			$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+				WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
+					AND session_time < ' . ($this->time_now - $config['session_length']);
+			$db->sql_query($sql);
+		}
 
-				$db->sql_return_on_error(false);
-
-				// Update last visit time
-				$sql = 'UPDATE ' . USERS_TABLE. ' u, ' . SESSIONS_TABLE . ' s
-					SET u.user_lastvisit = s.session_time, u.user_lastpage = s.session_page
-					WHERE s.session_time < ' . (int) ($this->time_now - $config['session_length']) . '
-						AND u.user_id = s.session_user_id';
-				$db->sql_query($sql);
-
-				// Delete everything else now
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . (int) ($this->time_now - $config['session_length']);
-				$db->sql_query($sql);
-
-				set_config('session_last_gc', $this->time_now, true);
-			break;
-
-			default:
-
-				// Get expired sessions, only most recent for each user
-				$sql = 'SELECT session_user_id, session_page, MAX(session_time) AS recent_time
-					FROM ' . SESSIONS_TABLE . '
-					WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
-					GROUP BY session_user_id, session_page';
-				$result = $db->sql_query_limit($sql, 5);
-
-				$del_user_id = array();
-				$del_sessions = 0;
-
-				while ($row = $db->sql_fetchrow($result));
-				{
-					if ($row['session_user_id'] != ANONYMOUS)
-					{
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-							WHERE user_id = " . (int) $row['session_user_id'];
-						$db->sql_query($sql);
-					}
-
-					$del_user_id[] = (int) $row['session_user_id'];
-					$del_sessions++;
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($del_user_id))
-				{
-					// Delete expired sessions
-					$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
-						WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
-							AND session_time < ' . ($this->time_now - $config['session_length']);
-					$db->sql_query($sql);
-				}
-
-				if ($del_sessions < 5)
-				{
-					// Less than 5 sessions, update gc timer ... else we want gc
-					// called again to delete other sessions
-					set_config('session_last_gc', $this->time_now, true);
-				}
-			break;
+		if ($del_sessions < 10)
+		{
+			// Less than 10 sessions, update gc timer ... else we want gc
+			// called again to delete other sessions
+			set_config('session_last_gc', $this->time_now, true);
 		}
 
 		if ($config['max_autologin_time'])
