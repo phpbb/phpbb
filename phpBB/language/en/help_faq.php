@@ -132,19 +132,23 @@ $help = array(
 	),
 	array(
 		0 => 'Can I use HTML?',
-		1 => '…'
+		1 => 'No. It is not possible to post HTML on this board. Most formatting which can be carried out using HTML can also be applied using BBCode instead.'
 	),
 	array(
-		0 => 'What are Smileys?',
-		1 => 'Smileys, or Emoticons are small graphical images which can be used to express some feeling using a short code, e.g. :) means happy, :( means sad. The full list of emoticons can be seen via the posting form. Try not to overuse smileys though, they can quickly render a post unreadable and a moderator may decide to edit them out or remove the post altogether'
+		0 => 'What are Smilies?',
+		1 => 'Smilies, or Emoticons are small graphical images which can be used to express some feeling using a short code, e.g. :) means happy, :( means sad. The full list of emoticons can be seen via the posting form. Try not to overuse smileys though, they can quickly render a post unreadable and a moderator may decide to edit them out or remove the post altogether'
 	),
 	array(
 		0 => 'Can I post Images?',
-		1 => 'Images can indeed be shown in your posts. However, there is no facility at present for uploading images directly to this board. Therefore you must link to an image stored on a publicly accessible web server, e.g. http://www.some-unknown-place.net/my-picture.gif. You cannot link to pictures stored on your own PC (unless it is a publicly accessible server) nor images stored behind authentication mechanisms, e.g. hotmail or yahoo mailboxes, password protected sites, etc. To display the image use either the BBCode [img] tag or appropriate HTML (if allowed).'
+		1 => 'Images can indeed be shown in your posts. However, there is no facility at present for uploading images directly to this board. Therefore you must link to an image stored on a publicly accessible web server, e.g. http://www.some-unknown-place.net/my-picture.gif. You cannot link to pictures stored on your own PC (unless it is a publicly accessible server) nor images stored behind authentication mechanisms, e.g. hotmail or yahoo mailboxes, password protected sites, etc. To display the image use the BBCode [img] tag.'
+	),
+	array(
+		0 => 'What are Global announcements?',
+		1 => 'Global announcements contain important information and you should read them as soon as possible. Global announcements will appear at the top of every forum and also within your User Control Panel. Whether or not you can post a gloabl announcement depends on the permissions required, these are set by the administrator.'
 	),
 	array(
 		0 => 'What are Announcements?',
-		1 => 'Announcements often contain important information and you should read them as soon as possible. Announcements appear at the top of every page in the forum to which they are posted. Whether or not you can post an announcement depends on the permissions required, these are set by the administrator.'
+		1 => 'Announcements often contain important information for the forum you are currently reading and you should read them as soon as possible. Announcements appear at the top of every page in the forum to which they are posted. As with global announcements, whether or not you can post an announcement depends on the permissions required, these are set by the administrator.'
 	),
 	array(
 		0 => 'What are Sticky topics?',
@@ -153,6 +157,10 @@ $help = array(
 	array(
 		0 => 'What are Locked topics?',
 		1 => 'Locked topics are set this way by either the forum moderator or board administrator. You cannot reply to locked topics and any poll it contained is automatically ended. Topics may be locked for many reasons.'
+	),
+	array(
+		0 => 'What are Topic icons?',
+		1 => 'Topic icons are images which can be assosciated with posts to indicate their content. The ability to use topic icons depends on the permissions set by the administrator.'
 	),
 	array(
 		0 => '--',
@@ -188,7 +196,7 @@ $help = array(
 	),
 	array(
 		0 => 'I keep getting unwanted private messages!',
-		1 => 'In the future we will be adding an ignore list to the private messaging system. For now though if you keep receiving unwanted private messages from someone inform the board admin, they have the power to prevent a user from sending private messages at all.'
+		1 => 'You may block a user from sending you private messages by using message rules within your User Control Panel. If you are receiving abusive private messages from someone inform the board admin, they have the power to prevent a user from sending private messages at all.'
 	),
 	array(
 		0 => 'I have received a spamming or abusive email from someone on this board!',
@@ -196,7 +204,7 @@ $help = array(
 	),
 	array(
 		0 => '--',
-		1 => 'phpBB 2 Issues'
+		1 => 'phpBB 3 Issues'
 	),
 	array(
 		0 => 'Who wrote this bulletin board?',
