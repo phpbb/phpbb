@@ -467,8 +467,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
-					AND post_approved = 0
-					AND post_time >= ' . $min_time;
+					AND post_approved = 0';
+
+			if ($min_time)
+			{
+				$sql .= ' AND post_time >= ' . $min_time;
+			}
 		break;
 
 		case 'unapproved_topics':
@@ -479,8 +483,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
 				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
-					AND topic_approved = 0
-					AND topic_time >= ' . $min_time;
+					AND topic_approved = 0';
+
+			if ($min_time)
+			{
+				$sql .= ' AND topic_time >= ' . $min_time;
+			}
 		break;
 
 		case 'reports':

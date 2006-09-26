@@ -117,15 +117,15 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	{
 		$sql = 'SELECT MAX(post_id) as last_post_id
 			FROM ' . POSTS_TABLE . '
-			WHERE post_approved = 1
-				AND ' . $db->sql_in_set($type . '_id', $ids);
+			WHERE ' . $db->sql_in_set($type . '_id', $ids) . '
+				AND post_approved = 1';
 	}
 	else
 	{
 		$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
 			FROM ' . POSTS_TABLE . '
-			WHERE post_approved = 1
-				AND ' . $db->sql_in_set($type . '_id', $ids) . "
+			WHERE ' . $db->sql_in_set($type . '_id', $ids) . "
+				AND post_approved = 1
 			GROUP BY {$type}_id";
 	}
 	$result = $db->sql_query($sql);

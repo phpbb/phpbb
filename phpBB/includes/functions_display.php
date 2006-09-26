@@ -1018,6 +1018,12 @@ function display_user_activity(&$userdata)
 	global $auth, $template, $db, $user;
 	global $phpbb_root_path, $phpEx;
 
+	// Do not display user activity for users having more than 5000 posts...
+	if ($userdata['user_posts'] > 5000)
+	{
+		return;
+	}
+
 	$forum_ary = array();
 
 	// Do not include those forums the user is not having read access to...
@@ -1070,7 +1076,7 @@ function display_user_activity(&$userdata)
 	}
 
 	// Obtain active topic
-	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts   
+	$sql = 'SELECT topic_id, COUNT(post_id) AS num_posts
 		FROM ' . POSTS_TABLE . '
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
@@ -1133,7 +1139,8 @@ function display_user_activity(&$userdata)
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
 		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_t_pct),
 		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
-		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id))
+		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id),
+		'S_SHOW_ACTIVITY'		=> true)
 	);
 }
 

@@ -409,7 +409,7 @@ class dbal
 	{
 		global $cache, $starttime, $phpbb_root_path, $user;
 
-		if (empty($_GET['explain']))
+		if (empty($_REQUEST['explain']))
 		{
 			return false;
 		}

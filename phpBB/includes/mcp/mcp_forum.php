@@ -191,7 +191,7 @@ function mcp_resync_topics($topic_ids)
 
 	$redirect = request_var('redirect', $user->data['session_page']);
 
-	meta_refresh(2, $redirect);
+	meta_refresh(3, $redirect);
 	trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 
 	return;

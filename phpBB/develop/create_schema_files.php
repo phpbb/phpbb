@@ -1237,8 +1237,7 @@ function get_schema_struct()
 			'poster_ip'				=> array('INDEX', 'poster_ip'),
 			'poster_id'				=> array('INDEX', 'poster_id'),
 			'post_approved'			=> array('INDEX', 'post_approved'),
-			'post_postcount'		=> array('INDEX', 'post_postcount'),
-			'post_time'				=> array('INDEX', 'post_time'),
+			'tid_post_time'			=> array('INDEX', array('topic_id', 'post_time')),
 		),
 	);
 
@@ -1739,6 +1738,7 @@ function get_schema_struct()
 			'forum_id'			=> array('INDEX', 'forum_id'),
 			'forum_id_type'		=> array('INDEX', array('forum_id', 'topic_type')),
 			'last_post_time'	=> array('INDEX', 'topic_last_post_time'),
+			'topic_approved'	=> array('INDEX', 'topic_approved'),
 			'fid_time_moved'	=> array('INDEX', array('forum_id', 'topic_last_post_time', 'topic_moved_id')),
 		),
 	);

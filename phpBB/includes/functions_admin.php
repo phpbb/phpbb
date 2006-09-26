@@ -1388,6 +1388,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				break;
 			}
 
+			$forum_ids = array_values($forum_ids);
+
 			// 2: Get topic counts for each forum
 			$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
 				FROM ' . TOPICS_TABLE . '
@@ -1408,16 +1410,27 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$db->sql_freeresult($result);
 
 			// 3: Get post count and last_post_id for each forum
-			$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
-				FROM ' . POSTS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-					AND post_approved = 1
-				GROUP BY forum_id';
+			if (sizeof($forum_ids) == 1)
+			{
+				$sql = 'SELECT COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+						AND post_approved = 1';
+			}
+			else
+			{
+				$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
+					FROM ' . POSTS_TABLE . '
+					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+						AND post_approved = 1
+					GROUP BY forum_id';
+			}
+
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_id = (int) $row['forum_id'];
+				$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
 				$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
 				$forum_data[$forum_id]['last_post_id'] = (int) $row['last_post_id'];
@@ -1519,6 +1532,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$topic_id = (int) $row['topic_id'];
 				$topic_data[$topic_id] = $row;
 				$topic_data[$topic_id]['replies_real'] = -1;
+				$topic_data[$topic_id]['replies'] = 0;
 				$topic_data[$topic_id]['first_post_id'] = 0;
 				$topic_data[$topic_id]['last_post_id'] = 0;
 				unset($topic_data[$topic_id]['topic_id']);
@@ -1538,19 +1552,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// NOTE: 't.post_approved' in the GROUP BY is causing a major slowdown.
 			$sql = 'SELECT t.topic_id, t.post_approved, COUNT(t.post_id) AS total_posts, MIN(t.post_id) AS first_post_id, MAX(t.post_id) AS last_post_id
 				FROM ' . POSTS_TABLE . " t
-				$where_sql";
-
-			switch (SQL_LAYER)
-			{
-				case 'mssql':
-				case 'mssql_odbc':
-					$sql .= ' GROUP BY t.topic_id, t.post_approved';
-				break;
-
-				default:
-					$sql .= ' GROUP BY t.topic_id';
-				break;
-			}
+				$where_sql
+				GROUP BY t.topic_id, t.post_approved";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1755,7 +1758,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// batch processing.
 			if ($resync_parents && sizeof($resync_forums) && $where_type != 'range')
 			{
-				sync('forum', 'forum_id', $resync_forums, true);
+				sync('forum', 'forum_id', array_values($resync_forums), true);
 			}
 		break;
 	}

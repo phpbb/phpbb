@@ -611,13 +611,12 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			}
 			else if ($full_folder_action == FULL_FOLDER_DELETE)
 			{
-				// Delete some messages ;)
-				$sql = 'SELECT t.msg_id
-					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . " p
-					WHERE t.msg_id = p.msg_id
-						AND t.user_id = $user_id
-						AND t.folder_id = $dest_folder
-					ORDER BY p.message_time ASC";
+				// Delete some messages. NOTE: Ordered by msg_id here instead of message_time!
+				$sql = 'SELECT msg_id
+					FROM ' . PRIVMSGS_TO_TABLE . "
+					WHERE user_id = $user_id
+						AND folder_id = $dest_folder
+					ORDER BY msg_id ASC";
 				$result = $db->sql_query_limit($sql, (($folder[$dest_folder] + sizeof($msg_ary)) - $user->data['message_limit']));
 
 				$delete_ids = array();

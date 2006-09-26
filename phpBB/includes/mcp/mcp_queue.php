@@ -286,8 +286,8 @@ class mcp_queue
 				{
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
 						FROM ' . TOPICS_TABLE . " t
-						WHERE topic_approved = 0
-							AND forum_id IN (0, $forum_list)
+						WHERE forum_id IN (0, $forum_list)
+							AND topic_approved = 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
@@ -412,6 +412,8 @@ function approve_post($post_id_list, $mode)
 		$total_topics = $total_posts = $forum_topics = $forum_posts = 0;
 		$topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = array();
 
+		$update_forum_information = false;
+
 		foreach ($post_info as $post_id => $post_data)
 		{
 			$topic_id_list[$post_data['topic_id']] = 1;
@@ -446,6 +448,12 @@ function approve_post($post_id_list, $mode)
 			}
 
 			$post_approve_sql[] = $post_id;
+
+			// If the post is newer than the last post information stored we need to update the forum information
+			if ($post_data['post_time'] >= $post_data['forum_last_post_time'])
+			{
+				$update_forum_information = true;
+			}
 		}
 
 		if (sizeof($topic_approve_sql))
@@ -499,7 +507,11 @@ function approve_post($post_id_list, $mode)
 		unset($topic_approve_sql, $topic_replies_sql, $post_approve_sql);
 
 		update_post_information('topic', array_keys($topic_id_list));
-		update_post_information('forum', $forum_id);
+
+		if ($update_forum_information)
+		{
+			update_post_information('forum', $forum_id);
+		}
 		unset($topic_id_list);
 
 		$messenger = new messenger();

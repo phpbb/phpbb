@@ -238,19 +238,34 @@ if (!$topic_data)
 // This is for determining where we are (page)
 if ($post_id)
 {
-	/**
-	* @todo adjust for using post_time? Generally adjust query... it is not called very often though
-	*/
-	$sql = 'SELECT COUNT(post_id) AS prev_posts
-		FROM ' . POSTS_TABLE . "
-		WHERE topic_id = {$topic_data['topic_id']}
-			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . "
-			AND " . (($sort_dir == 'd') ?  "post_id >= $post_id" : "post_id <= $post_id");
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	if ($post_id == $topic_data['topic_first_post_id'] || $post_id == $topic_data['topic_last_post_id'])
+	{
+		$check_sort = ($post_id == $topic_data['topic_first_post_id']) ? 'd' : 'a';
 
-	$topic_data['prev_posts'] = $row['prev_posts'];
+		if ($sort_dir == $check_sort)
+		{
+			$topic_data['prev_posts'] = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] + 1 : $topic_data['topic_replies'] + 1;
+		}
+		else
+		{
+			$topic_data['prev_posts'] = 1;
+		}
+	}
+	else
+	{
+		$sql = 'SELECT COUNT(p1.post_id) AS prev_posts
+			FROM ' . POSTS_TABLE . ' p1, ' . POSTS_TABLE . " p2
+			WHERE p1.topic_id = {$topic_data['topic_id']}
+				AND p2.post_id = {$post_id}
+				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p1.post_approved = 1' : '') . '
+				AND ' . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
+
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$topic_data['prev_posts'] = $row['prev_posts'];
+	}
 }
 
 $forum_id = (int) $topic_data['forum_id'];

@@ -177,7 +177,6 @@ class ucp_main
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
 //					'S_GROUP_OPTIONS'	=> $group_options, 
-					'S_SHOW_ACTIVITY'	=> ($config['load_user_activity']) ? true : false,
 
 					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user->data['user_id'] . '&amp;sr=posts') : '')
 				);
