@@ -40,7 +40,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why do I get logged off automatically?',
-		1 => 'If you do not check the <i>Log me in automatically</i> box when you login the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in check the box during login, this is not recommended if you access the board from a shared computer, e.g. library, internet cafe, university cluster, etc.'
+		1 => 'If you do not check the <i>Log me in automatically</i> box when you login the board will only keep you logged in for a preset time. This prevents misuse of your account by anyone else. To stay logged in check the box during login, this is not recommended if you access the board from a shared computer, e.g. library, internet cafe, university cluster, etc. If you do not see this check box, it means your administrator has disabled this feature.'
 	),
 	array(
 		0 => 'How do I prevent my username appearing in the online user listings?',
@@ -180,11 +180,23 @@ $help = array(
 	),
 	array(
 		0 => 'How do I join a Usergroup?',
-		1 => 'To join a usergroup click the usergroup link on the page header (dependent on template design), you can then view all usergroups. Not all groups are <i>open access</i>, some are closed and some may even have hidden memberships. If the board is open then you can request to join it by clicking the appropriate button. The user group moderator will need to approve your request, they may ask why you want to join the group. Please do not pester a group moderator if they turn your request down, they will have their reasons.'
+		1 => 'To join a usergroup click the usergroup link within your user control panel, you can then view all usergroups. Not all groups are <i>open access</i>, some may require approval to join, some are closed and some may even have hidden memberships. If the group is open then you can join it by clicking the appropriate button. If a group requires approval to join you may request to join it by clicking the appropriate button. The user group moderator will need to approve your request, they may ask why you want to join the group. Please do not pester a group moderator if they turn your request down, they will have their reasons.'
 	),
 	array(
 		0 => 'How do I become a Usergroup Moderator?',
 		1 => 'Usergroups are initially created by the board admin, they also assign a board moderator. If you are interested in creating a usergroup then your first point of contact should be the admin, try dropping them a private message.'
+	),
+	array(
+		0 => 'Why do some Usergroups appear in a different colour?',
+		1 => 'It is possible for the board administrator to assign a colour to the members of a usergroup to make it easy to identify the members of this group.'
+	),
+	array(
+		0 => 'What is a "Default Usergroup"?',
+		1 => 'If you are a member of more than one usergroup, your default is used to determine which group colour and group rank should be shown for you by default. The board administrator may grant you permission to change your default usergroup via your User Control Panel.'
+	),
+	array(
+		0 => 'What is "The team" link?',
+		1 => 'This page provides you with a list of the board staff, including board administrators and moderators including details of which forums they moderate.'
 	),
 	array(
 		0 => '--',
@@ -201,6 +213,18 @@ $help = array(
 	array(
 		0 => 'I have received a spamming or abusive email from someone on this board!',
 		1 => 'We are sorry to hear that. The email form feature of this board includes safeguards to try and track users who send such posts. You should email the board administrator with a full copy of the email you received, it is very important this include the headers (these list details of the user that sent the email). They can then take action.'
+	),
+	array(
+		0 => '--',
+		1 => 'Friends and Foes'
+	),
+	array(
+		0 => 'What is my Friends and Foes list?',
+		1 => 'You can use these lists to organise other members of the forum. Members added to your friends list will be listed within your User Control Panel for quick access to see their online status and to send them private messages. Subject to template support, posts from these users may also be highlighted. If you add a user to your foes list them any posts made by them will be hidden by default.'
+	),
+	array(
+		0 => 'How can I add / remove users to my friends or foes list?',
+		1 => 'You can add users to your list in two ways. Within each user\'s profile, there is a link to add them to either your friend or foe list. Alternatively from your User Control Panel, you can directly add users by entering their member name. You may also remove users from your list using the same page.'
 	),
 	array(
 		0 => '--',
