@@ -253,7 +253,7 @@ $lang = array_merge($lang, array(
 	'REMIND'							=> 'Remind',
 	'REORDER'							=> 'Reorder',
 	'RESYNC'							=> 'Resyncronise',
-	'RETURN_TO'							=> 'Return to…',
+	'RETURN_TO'							=> 'Return toâ€¦',
 
 	'SELECT_ANONYMOUS'		=> 'Select Anonymous User',
 	'SELECT_OPTION'			=> 'Select option',
