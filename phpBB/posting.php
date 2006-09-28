@@ -640,7 +640,19 @@ if ($submit || $preview || $refresh)
 	// Parse message
 	if ($update_message)
 	{
+		if (sizeof($message_parser->warn_msg))
+		{
+			$error[] = implode('<br />', $message_parser->warn_msg);
+			$message_parser->warn_msg = array();
+		}
+
 		$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+
+		// On a refresh we do not care about message parsing errors
+		if (sizeof($message_parser->warn_msg) && $refresh)
+		{
+			$message_parser->warn_msg = array();
+		}
 	}
 	else
 	{
@@ -708,7 +720,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
@@ -773,9 +785,18 @@ if ($submit || $preview || $refresh)
 		}
 	}
 
-	if (sizeof($message_parser->warn_msg) && !$refresh)
+	if (sizeof($message_parser->warn_msg))
 	{
 		$error[] = implode('<br />', $message_parser->warn_msg);
+	}
+
+	// DNSBL check
+	if ($config['check_dnsbl'] && !$refresh)
+	{
+		if (($dnsbl = $user->check_dnsbl()) !== false)
+		{
+			$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+		}
 	}
 
 	// Store message, sync counters

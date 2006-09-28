@@ -146,6 +146,15 @@ class ucp_register
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
+			// DNSBL check
+			if ($config['check_dnsbl'])
+			{
+				if (($dnsbl = $user->check_dnsbl()) !== false)
+				{
+					$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
+				}
+			}
+
 			// validate custom profile fields
 			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
 

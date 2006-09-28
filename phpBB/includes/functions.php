@@ -2705,6 +2705,52 @@ function truncate_string($string, $max_length = 60)
 	return implode('', array_slice($chars, 0, $max_length));
 }
 
+
+/**
+* Wrapper for php's checkdnsrr function
+* The windows failover is from this page: http://www.zend.com/codex.php?id=370&single=1
+* Please make sure to check the return value for === true and === false, since NULL could
+* be returned too.
+* 
+* @return true if entry found, false if not, NULL if this function is not supported by this environment
+*/
+function phpbb_checkdnsrr($host, $type = '')
+{
+	$type = (!$type) ? 'MX' : $type;
+
+	if (strpos(PHP_OS, 'WIN') !== false)
+	{
+		if (!function_exists('exec'))
+		{
+			return NULL;
+		}
+
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
+
+		foreach ($output as $line)
+		{
+			if (!trim($line))
+			{
+				continue;
+			}
+
+			// Valid records begin with host name:
+			if (strpos($line, $host) === 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	else if (function_exists('checkdnsrr'))
+	{
+		return (checkdnsrr($domain, $type)) ? true : false;
+	}
+
+	return NULL;
+}
+
 // Handler, header and footer
 
 /**
@@ -2777,7 +2823,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			
 			if (!empty($config['board_contact']))
 			{
-				echo '				<p>Please notify the board administrator or webmaster : <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+				echo '				<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
 			}
 			
 			echo '			</div>';

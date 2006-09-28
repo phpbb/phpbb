@@ -244,6 +244,7 @@ $lang = array_merge($lang, array(
 	'INVALID_DIGEST_CHALLENGE'	=> 'Invalid digest challenge',
 	'INVALID_EMAIL_LOG'			=> '<strong>%s</strong> possibly an invalid email address?',
 	'IP'						=> 'IP',
+	'IP_BLACKLISTED'			=> 'Your IP %1$s has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
 
 	'JABBER'				=> 'Jabber',
 	'JOINED'				=> 'Joined',
@@ -328,6 +329,7 @@ $lang = array_merge($lang, array(
 	'NO_IPS_DEFINED'			=> 'No IPs or Hostnames defined',
 	'NO_MEMBERS'				=> 'No members found for this search criteria',
 	'NO_MESSAGES'				=> 'No messages',
+	'NO_MODE'					=> 'No mode specified',
 	'NO_MODERATORS'				=> 'No moderators assigned at this board.',
 	'NO_NEW_MESSAGES'			=> 'No new messages',
 	'NO_NEW_PM'					=> '<strong>0</strong> new messages',

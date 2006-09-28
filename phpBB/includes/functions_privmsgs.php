@@ -1322,7 +1322,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'enable_sig'		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text'		=> $data['message'],
-				'message_attachment'=> (sizeof($data['attachment_data'])) ? 1 : 0,
+				'message_attachment'=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
@@ -1340,7 +1340,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 				'enable_sig'		=> $data['enable_sig'],
 				'message_subject'	=> $subject,
 				'message_text'		=> $data['message'],
-				'message_attachment'=> (sizeof($data['attachment_data'])) ? 1 : 0,
+				'message_attachment'=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid']
 			);

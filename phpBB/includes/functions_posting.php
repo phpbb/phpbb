@@ -1414,7 +1414,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_subject'		=> $subject,
 				'post_text'			=> $data['message'],
 				'post_checksum'		=> $data['message_md5'],
-				'post_attachment'	=> (sizeof($data['attachment_data'])) ? 1 : 0,
+				'post_attachment'	=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
@@ -1467,7 +1467,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_edit_reason'	=> $data['post_edit_reason'],
 				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
-				'post_attachment'	=> (sizeof($data['attachment_data'])) ? 1 : 0,
+				'post_attachment'	=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'post_edit_locked'	=> $data['post_edit_locked'])
@@ -1496,7 +1496,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_first_poster_colour'	=> (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_colour'] : ''),
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
-				'topic_attachment'			=> (sizeof($data['attachment_data'])) ? 1 : 0,
+				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : 0,
 			);
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
@@ -1549,7 +1549,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'poll_length'				=> (isset($poll['poll_options'])) ? ($poll['poll_length'] * 86400) : 0,
 				'poll_vote_change'			=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
 
-				'topic_attachment'			=> (sizeof($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
+				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
 		break;
 	}
@@ -1737,7 +1737,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Submit Attachments
-	if (sizeof($data['attachment_data']) && $data['post_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit')))
+	if (!empty($data['attachment_data']) && $data['post_id'] && in_array($mode, array('post', 'reply', 'quote', 'edit')))
 	{
 		$space_taken = $files_added = 0;
 		$orphan_rows = array();

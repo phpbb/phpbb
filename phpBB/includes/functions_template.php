@@ -468,8 +468,10 @@ class template_compile
 					}
 					else if (preg_match('#^\.(([a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
+						// Allow checking if loops are set with .loopname
+						// It is also possible to check the loop count by doing <!-- IF .loopname > 1 --> for example
 						$_tok = $this->generate_block_data_ref($varrefs[1], false);
-						$token = "(isset($_tok) && sizeof($_tok))";
+						$token = "sizeof($_tok)";
 					}
 
 				break;

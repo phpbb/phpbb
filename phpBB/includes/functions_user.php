@@ -1216,6 +1216,18 @@ function validate_email($email)
 		return 'EMAIL_INVALID';
 	}
 
+	// Check MX record.
+	// The idea for this is from reading the UseBB blog/announcement. :)
+	if ($config['email_check_mx'])
+	{
+		list(, $domain) = explode('@', $email);
+
+		if (phpbb_checkdnsrr($domain, 'MX') === false)
+		{
+			return 'DOMAIN_NO_MX_RECORD';
+		}
+	}
+
 	if ($user->check_ban(false, false, $email, true) == true)
 	{
 		return 'EMAIL_BANNED';

@@ -344,7 +344,7 @@ class module
 		$template->display('body');
 	
 		// Close our DB connection.
-		if (isset($db))
+		if (!empty($db) && is_object($db))
 		{
 			$db->sql_close();
 		}
@@ -533,7 +533,7 @@ class module
 		echo '</body>';
 		echo '</html>';
 
-		if (isset($db))
+		if (!empty($db) && is_object($db))
 		{
 			$db->sql_close();
 		}

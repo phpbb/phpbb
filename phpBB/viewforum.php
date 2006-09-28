@@ -77,7 +77,7 @@ if (isset($_GET['e']) && !$user->data['is_registered'])
 }
 
 // Permissions check
-if (!$auth->acl_get('f_read', $forum_id))
+if (!$auth->acl_gets('f_list', 'f_read', $forum_id))
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
@@ -114,7 +114,10 @@ if ($forum_data['forum_password'])
 generate_forum_nav($forum_data);
 
 // Forum Rules
-generate_forum_rules($forum_data);
+if ($auth->acl_get('f_read', $forum_id))
+{
+	generate_forum_rules($forum_data);
+}
 
 // Do we have subforums?
 $active_forum_ary = $moderators = array();
@@ -140,6 +143,12 @@ make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
 // Not postable forum or showing active topics?
 if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && $forum_data['forum_type'] == FORUM_CAT)))
+{
+	page_footer();
+}
+
+// Ok, if someone has only list-access, we only display the forum list
+if (!$auth->acl_get('f_read', $forum_id))
 {
 	page_footer();
 }

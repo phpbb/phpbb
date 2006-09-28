@@ -208,8 +208,20 @@ class acp_bbcodes
 
 				if ($row)
 				{
-					$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
-					add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+					if (confirm_box(true))
+					{
+						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
+						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
+					}
+					else
+					{
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							'bbcode'	=> $bbcode_id,
+							'i'			=> $id,
+							'mode'		=> $mode,
+							'action'	=> $action))
+						);
+					}
 				}
 
 			break;

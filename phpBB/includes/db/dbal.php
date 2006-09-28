@@ -238,7 +238,13 @@ class dbal
 	{
 		if (!sizeof($array))
 		{
-			trigger_error('No values specified for SQL IN comparison', E_USER_ERROR);
+			// Not optimal, but at least the backtrace should help in identifying where the problem lies.
+			$this->sql_error('No values specified for SQL IN comparison');
+		}
+
+		if (!is_array($array))
+		{
+			$array = array($array);
 		}
 
 		$values = array();

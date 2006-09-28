@@ -138,7 +138,7 @@ class filespec
 	/**
 	* Check if the file got correctly uploaded
 	*
-	* @return true if it is a valid upload and the file exist, false if not
+	* @return true if it is a valid upload, false if not
 	*/
 	function is_uploaded()
 	{
@@ -147,7 +147,12 @@ class filespec
 			return false;
 		}
 
-		return (file_exists($this->filename)) ? true : false;
+		if ($this->local && !file_exists($this->filename))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

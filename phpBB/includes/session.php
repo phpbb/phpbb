@@ -847,6 +847,45 @@ class session
 	}
 
 	/**
+	* Check if ip is blacklisted
+	* This should be called only where absolutly necessary
+	*
+	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
+	*
+	* @author satmd (from the php manual)
+	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
+	*/
+	function check_dnsbl($ip = false)
+	{
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		$dnsbl_check = array(
+			'bl.spamcop.net'		=> 'http://spamcop.net/bl.shtml?',
+			'list.dsbl.org'			=> 'http://dsbl.org/listing?',
+			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+		);
+
+		if ($ip)
+		{
+			$quads = explode('.', $ip);
+			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+			foreach ($dnsbl_check as $dnsbl => $lookup)
+			{
+				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				{
+					return array($dnsbl, $lookup . $ip);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	* Set/Update a persistent login key
 	*
 	* This method creates or updates a persistent session key. When a user makes

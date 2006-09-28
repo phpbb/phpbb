@@ -4,11 +4,63 @@
 <!--
 
 var form_name = 'post';
-var text_name = 'message';
+
+/**
+* Apply clicked smiley to message body
+*/
+function smiley(text) 
+{
+	text = ' ' + text + ' ';
+
+	if (opener.document.forms[form_name].message.createTextRange && opener.document.forms[form_name].message.caretPos)
+	{
+		var caretPos = opener.document.forms[form_name].message.caretPos;
+
+		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
+		opener.document.forms[form_name].message.focus();
+	}
+	else
+	{
+		var selStart = opener.document.forms[form_name].message.selectionStart;
+		var selEnd = opener.document.forms[form_name].message.selectionEnd;
+
+		mozWrap(opener.document.forms[form_name].message, text, '')
+		opener.document.forms[form_name].message.focus();
+		opener.document.forms[form_name].message.selectionStart = selStart + text.length;
+		opener.document.forms[form_name].message.selectionEnd = selEnd + text.length;
+	}
+}
+
+/**
+* From http://www.massless.org/mozedit/
+*/
+function mozWrap(txtarea, open, close)
+{
+	var selLength = txtarea.textLength;
+	var selStart = txtarea.selectionStart;
+	var selEnd = txtarea.selectionEnd;
+	var scrollTop = txtarea.scrollTop;
+
+	if (selEnd == 1 || selEnd == 2) 
+	{
+		selEnd = selLength;
+	}
+
+	var s1 = (txtarea.value).substring(0,selStart);
+	var s2 = (txtarea.value).substring(selStart, selEnd)
+	var s3 = (txtarea.value).substring(selEnd, selLength);
+
+	txtarea.value = s1 + open + s2 + close + s3;
+	txtarea.selectionStart = selEnd + open.length + close.length;
+	txtarea.selectionEnd = txtarea.selectionStart;
+	txtarea.focus();
+	txtarea.scrollTop = scrollTop;
+
+	return;
+}
 
 //-->
 </script>
-<script language="javascript" type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
 <table width="100%" cellspacing="1" cellpadding="4" border="0">
 <tr>

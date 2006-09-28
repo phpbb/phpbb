@@ -59,6 +59,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('browser_check', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('bump_type', 'd');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cache_gc', '7200');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_dnsbl', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name', 'phpbb3');
@@ -73,6 +74,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_check_mx', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_function_name', 'mail');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size', '50');
