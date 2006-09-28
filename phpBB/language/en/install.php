@@ -144,7 +144,7 @@ $lang = array_merge($lang, array(
 	<li>Database name</li>
 	<li>Database username and password</li>
 	</ul>
-	<p>Some more introductory text can go here…',
+	<p>Some more introductory text can go hereâ€¦',
 	'INSTALL_INTRO_NEXT'		=> 'To commence the installation, please press the button below.',
 	'INSTALL_LOGIN'				=> 'Login',
 	'INSTALL_NEXT'				=> 'Next stage',
