@@ -2707,8 +2707,9 @@ function truncate_string($string, $max_length = 60)
 
 
 /**
-* Wrapper for php's checkdnsrr function
-* The windows failover is from this page: http://www.zend.com/codex.php?id=370&single=1
+* Wrapper for php's checkdnsrr function.
+*
+* The windows failover is from the php manual
 * Please make sure to check the return value for === true and === false, since NULL could
 * be returned too.
 * 
