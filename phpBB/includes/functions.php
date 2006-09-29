@@ -2746,7 +2746,7 @@ function phpbb_checkdnsrr($host, $type = '')
 	}
 	else if (function_exists('checkdnsrr'))
 	{
-		return (checkdnsrr($domain, $type)) ? true : false;
+		return (checkdnsrr($host, $type)) ? true : false;
 	}
 
 	return NULL;
