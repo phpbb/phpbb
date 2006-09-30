@@ -361,7 +361,6 @@ class acp_forums
 					$end = $start + $batch_size;
 
 					// Sync all topics in batch mode...
-					// topic_moved
 					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
 					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
 

@@ -1036,7 +1036,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		$where_ids = ($where_ids) ? array((int) $where_ids) : array();
 	}
 
-	if ($mode == 'forum' || $mode == 'topic')
+	if ($mode == 'forum' || $mode == 'topic' || $mode == 'topic_approved')
 	{
 		if (!$where_type)
 		{
@@ -1068,33 +1068,14 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 	}
 	else
 	{
-		if (!$where_type)
+		if (!sizeof($where_ids))
 		{
-			$where_sql = '';
-			$where_sql_and = 'WHERE';
+			return;
 		}
-		else if ($where_type == 'range')
-		{
-			// Only check a range of topics/forums. For instance: 'topic_id BETWEEN 1 AND 60'
-			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
-			$where_sql_and = $where_sql . "\n\tAND";
-		}
-		else
-		{
-			// Do not sync the "global forum"
-			$where_ids = array_diff($where_ids, array(0));
 
-			if (!sizeof($where_ids))
-			{
-				// Empty array with IDs. This means that we don't have any work to do. Just return.
-				return;
-			}
-
-			// Limit the topics/forums we are syncing, use specific topic/forum IDs.
-			// $where_type contains the field for the where clause (forum_id, topic_id)
-			$where_sql = 'WHERE ' . $db->sql_in_set($mode{0} . '.' . $where_type, $where_ids);
-			$where_sql_and = $where_sql . "\n\tAND";
-		}
+		// $where_type contains the field for the where clause (forum_id, topic_id)
+		$where_sql = 'WHERE ' . $db->sql_in_set($mode{0} . '.' . $where_type, $where_ids);
+		$where_sql_and = $where_sql . "\n\tAND";
 	}
 
 	switch ($mode)
