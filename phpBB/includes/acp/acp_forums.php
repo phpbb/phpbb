@@ -36,6 +36,14 @@ class acp_forums
 		// Check additional permissions
 		switch ($action)
 		{
+			case 'progress_bar':
+				$start = request_var('start', 0);
+				$total = request_var('total', 0);
+
+				$this->display_progress_bar($start, $total);
+				exit;
+			break;
+
 			case 'delete':
 
 				if (!$auth->acl_get('a_forumdel'))
@@ -308,7 +316,74 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				sync('forum', 'forum_id', $forum_id);
+				sync('forum', 'forum_id', $forum_id, false, true);
+				$cache->destroy('sql', FORUMS_TABLE);
+
+				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic";
+				meta_refresh(0, $url);
+
+				$sql = 'SELECT forum_topics_real
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$template->assign_vars(array(
+					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
+					'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar',
+					'S_CONTINUE_SYNC'		=> true,
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+				);
+
+//				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
+
+				return;
+
+			break;
+
+			case 'sync_topic':
+
+				@set_time_limit(0);
+
+				$sql = 'SELECT forum_name, forum_topics_real
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row['forum_topics_real'])
+				{
+					$start = request_var('start', 0);
+
+					$batch_size = 3000;
+					$end = $start + $batch_size;
+
+					// Sync all topics in batch mode...
+					// topic_moved
+					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
+					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
+
+					if ($end < $row['forum_topics_real'])
+					{
+						$start += $batch_size;
+
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic&amp;start=$start&amp;total={$row['forum_topics_real']}";
+
+						meta_refresh(0, $url);
+
+						$template->assign_vars(array(
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$start&amp;total={$row['forum_topics_real']}",
+							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$start&total={$row['forum_topics_real']}",
+							'S_CONTINUE_SYNC'		=> true,
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $row['forum_topics_real']))
+						);
+
+						return;
+					}
+				}
+
 				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
 				$cache->destroy('sql', FORUMS_TABLE);
 
@@ -634,7 +709,7 @@ class acp_forums
 		// Jumpbox
 		$forum_box = make_forum_select($this->parent_id, false, false, false, false); //make_forum_select($this->parent_id);
 
-		if ($action == 'sync')
+		if ($action == 'sync' || $action == 'sync_topic')
 		{
 			$template->assign_var('S_RESYNCED', true);
 		}
@@ -716,7 +791,10 @@ class acp_forums
 			'NAVIGATION'	=> $navigation,
 			'FORUM_BOX'		=> $forum_box,
 			'U_SEL_ACTION'	=> $this->u_action,
-			'U_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id)
+			'U_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
+
+			'U_PROGRESS_BAR'	=> $this->u_action . '&amp;action=progress_bar',
+			'UA_PROGRESS_BAR'	=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar')
 		);
 	}
 
@@ -1563,6 +1641,27 @@ class acp_forums
 		$db->sql_query($sql);
 
 		return $target['forum_name'];
+	}
+
+	/**
+	* Display progress bar for syncinc forums
+	*/
+	function display_progress_bar($start, $total)
+	{
+		global $template, $user;
+
+		adm_page_header($user->lang['SYNC_IN_PROGRESS']);
+
+		$template->set_filenames(array(
+			'body'	=> 'progress_bar.html')
+		);
+
+		$template->assign_vars(array(
+			'L_PROGRESS'			=> $user->lang['SYNC_IN_PROGRESS'],
+			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $total) : $user->lang['SYNC_IN_PROGRESS'])
+		);
+
+		adm_page_footer();
 	}
 }
 

@@ -124,6 +124,9 @@ $lang = array_merge($lang, array(
 	
 	'REDIRECT_ACL'	=> 'Now you are able to %sset permissions%s for this forum.',
 
+	'SYNC_IN_PROGRESS'			=> 'Synchronizing forum',
+	'SYNC_IN_PROGRESS_EXPLAIN'	=> 'Currently resyncing topic range %1$d/%2$d.',
+
 	'TYPE_CAT'			=> 'Category',
 	'TYPE_FORUM'		=> 'Forum',
 	'TYPE_LINK'			=> 'Link',

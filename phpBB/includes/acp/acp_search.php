@@ -441,7 +441,7 @@ class acp_search
 		adm_page_header($user->lang[$l_type]);
 
 		$template->set_filenames(array(
-			'body'	=> 'search_index_progress_bar.html')
+			'body'	=> 'progress_bar.html')
 		);
 
 		$template->assign_vars(array(
