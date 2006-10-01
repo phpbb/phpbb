@@ -1323,12 +1323,17 @@ class user extends session
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $this->timezone - $this->dst;
 		}
 
-		if (strpos($format, '|') === false || (!($gmepoch > $midnight && !$forcedate) && !($gmepoch > $midnight - 86400 && !$forcedate)))
+		if (strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate))
 		{
 			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
 		}
 
-		if ($gmepoch > $midnight && !$forcedate)
+		if ($gmepoch > $midnight + 86400 && !$forcedate)
+		{
+			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
+			return str_replace('||', $this->lang['datetime']['TOMORROW'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
+		}
+		else if ($gmepoch > $midnight && !$forcedate)
 		{
 			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
 			return str_replace('||', $this->lang['datetime']['TODAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));

@@ -613,6 +613,7 @@ $lang = array_merge($lang, array(
 
 	'datetime'			=> array(
 		'TODAY'		=> 'Today, ',
+		'TOMORROW'	=> 'Tomorrow, ',
 		'YESTERDAY'	=> 'Yesterday, ',
 
 		'Sunday'	=> 'Sunday',
