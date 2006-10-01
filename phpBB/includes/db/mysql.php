@@ -20,13 +20,15 @@ if (!defined('IN_PHPBB'))
 */
 if (!defined('SQL_LAYER'))
 {
-
-	define('SQL_LAYER', 'mysql');
 	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* MySQL Database Abstraction Layer
-* Minimum Requirement is 3.23+/4.0+ (NOT 4.1+/5.0+)
+* MySQL4 Database Abstraction Layer
+* Compatible with:
+* MySQL 3.23+
+* MySQL 4.0+
+* MySQL 4.1+
+* MySQL 5.0+
 * @package dbal
 */
 class dbal_mysql extends dbal
@@ -48,6 +50,23 @@ class dbal_mysql extends dbal
 		{
 			if (@mysql_select_db($this->dbname))
 			{
+				// Determine what version we are using and if it natively supports UNICODE
+				$mysql_version = mysql_get_server_info($this->db_connect_id);
+
+				if (version_compare($mysql_version, '4.1.3', '>='))
+				{
+					define('SQL_LAYER', 'mysql4');
+					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+				}
+				else if (version_compare($mysql_version, '4.0.0', '>='))
+				{
+					define('SQL_LAYER', 'mysql4');
+				}
+				else
+				{
+					define('SQL_LAYER', 'mysql');
+				}
+
 				return $this->db_connect_id;
 			}
 		}
@@ -158,7 +177,8 @@ class dbal_mysql extends dbal
 			// if $total is set to 0 we do not want to limit the number of rows
 			if ($total == 0)
 			{
-				$total = -1;
+				// Having a value of -1 was always a bug
+				$total = '18446744073709551615';
 			}
 
 			$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
@@ -324,7 +344,7 @@ class dbal_mysql extends dbal
 		{
 			return @mysql_real_escape_string($msg);
 		}
-	
+
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
 	}
 
@@ -343,7 +363,7 @@ class dbal_mysql extends dbal
 
 		return $data;
 	}
-
+	
 	/**
 	* return sql error array
 	* @access private

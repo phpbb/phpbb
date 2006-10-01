@@ -566,7 +566,7 @@ class install_install extends module
 			$error = array();
 
 			// Check the entered email address and password
-			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
+/*			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
@@ -606,7 +606,7 @@ class install_install extends module
 			if ($board_email1 != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
-			}
+			}*/
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
@@ -758,7 +758,7 @@ class install_install extends module
 		// Time to convert the data provided into a config file
 		$config_data = "<?php\n";
 		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-		$config_data .= "\$dbms = '$dbms';\n";
+		$config_data .= "\$dbms = '" . $this->available_dbms[$dbms]['DRIVER'] . "';\n";
 		$config_data .= "\$dbhost = '$dbhost';\n";
 		$config_data .= "\$dbport = '$dbport';\n";
 		$config_data .= "\$dbname = '$dbname';\n";
@@ -973,10 +973,10 @@ class install_install extends module
 		$dbpasswd = html_entity_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $dbms;
+		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
@@ -1013,7 +1013,7 @@ class install_install extends module
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
 
-		// Deal with any special comments and with MySQL < 4.1.2
+		// Deal with any special comments
 		switch ($dbms)
 		{
 			case 'mssql':
@@ -1756,7 +1756,7 @@ class install_install extends module
 			switch ($dbms)
 			{
 				case 'mysql4':
-					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.1.3', '<'))
+					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.0.0', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
 					}
@@ -1918,63 +1918,72 @@ class install_install extends module
 			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase', 
 			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'firebird'
 		),
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL 4.1.x/5.x (MySQLi)',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'mysqli'
 		),
 		'mysql4'	=> array(
-			'LABEL'			=> 'MySQL 4.1.x/5.x',
+			'LABEL'			=> 'MySQL 4.x/MySQL 5.x',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'mysql'
 		),
 		'mysql'		=> array(
 			'LABEL'			=> 'MySQL',
 			'SCHEMA'		=> 'mysql_40',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'mysql'
 		),
 		'mssql'		=> array(
 			'LABEL'			=> 'MS SQL Server 2000+',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql', 
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssql'
 		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc', 
 			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssql_odbc'
 		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8', 
 			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'oci8'
 		),
 		'postgres' => array(
 			'LABEL'			=> 'PostgreSQL 7.x/8.x',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments'
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'postgres'
 		),
 		'sqlite'		=> array(
 			'LABEL'			=> 'SQLite',
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite', 
 			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks'
+			'COMMENTS'		=> 'remove_remarks',
+			'DRIVER'		=> 'sqlite'
 		),
 	);
 
