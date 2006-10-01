@@ -52,8 +52,17 @@ function set_var(&$result, $var, $type, $multibyte = false)
 *
 * Used to get passed variable
 */
-function request_var($var_name, $default, $multibyte = false)
+function request_var($var_name, $default, $multibyte = false, $cookie = false)
 {
+	if (!$cookie && isset($_COOKIE[$var_name]))
+	{
+		if (!isset($_GET[$var_name]) && !isset($_POST[$var_name]))
+		{
+			return (is_array($default)) ? array() : $default;
+		}
+		$_REQUEST[$var_name] = isset($_POST[$var_name]) ? $_POST[$var_name] : $_GET[$var_name];
+	}
+
 	if (!isset($_REQUEST[$var_name]) || (is_array($_REQUEST[$var_name]) && !is_array($default)) || (is_array($default) && !is_array($_REQUEST[$var_name])))
 	{
 		return (is_array($default)) ? array() : $default;

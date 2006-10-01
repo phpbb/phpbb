@@ -151,9 +151,9 @@ class session
 			// Switch to request_var ... can this cause issues, can a _GET/_POST param
 			// be used to poison this? Not sure that it makes any difference in terms of
 			// the end result, be it a cookie or param.
-			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0);
-			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '');
-			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '');
+			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
+			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
+			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '', false, true);
 
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
