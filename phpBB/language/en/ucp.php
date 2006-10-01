@@ -368,6 +368,7 @@ $lang = array_merge($lang, array(
 	'RULE_DELETED'				=> 'Rule successfully removed',
 	'RULE_NOT_DEFINED'			=> 'Rule not correctly specified',
 
+	'SAME_PASSWORD_ERROR'		=> 'The new password you entered is the same as your current password',
 	'SEARCH_YOUR_POSTS'			=> 'Show your posts',
 	'SEND_PASSWORD'				=> 'Send password',
 	'SENT_AT'					=> 'Sent at',

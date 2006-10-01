@@ -83,6 +83,12 @@ class ucp_profile
 						$error[] = 'CUR_PASSWORD_ERROR';
 					}
 
+					// Only check the new password against the previous password if there have been no errors
+					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $new_password && md5($new_password) == $user->data['user_password'])
+					{
+						$error[] = 'SAME_PASSWORD_ERROR';
+					}
+
 					if ($auth->acl_get('u_chgemail') && $email != $user->data['user_email'] && $email_confirm != $email)
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
