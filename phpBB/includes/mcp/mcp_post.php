@@ -280,26 +280,11 @@ function mcp_post_details($id, $mode, $action)
 		// but the extra size is only valuable if there are persons having more than a thousands posts.
 		// This is better left to the really really big forums.
 
-		// Firebird does not support ORDER BY on aliased columns
-		// MySQL does not support ORDER BY on functions
-		switch (SQL_LAYER)
-		{
-			case 'firebird':
-				$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
-					FROM ' . POSTS_TABLE . '
-					WHERE poster_id = ' . $post_info['poster_id'] . '
-					GROUP BY poster_ip
-					ORDER BY COUNT(poster_ip) DESC';
-			break;
-
-			default:
-				$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
-					FROM ' . POSTS_TABLE . '
-					WHERE poster_id = ' . $post_info['poster_id'] . '
-					GROUP BY poster_ip
-					ORDER BY postings DESC';
-			break;
-		}
+		$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
+			FROM ' . POSTS_TABLE . '
+			WHERE poster_id = ' . $post_info['poster_id'] . '
+			GROUP BY poster_ip
+			ORDER BY postings DESC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

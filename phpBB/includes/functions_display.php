@@ -1046,21 +1046,8 @@ function display_user_activity(&$userdata)
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
 			$forum_sql
-		GROUP BY forum_id";
-
-	// Firebird does not support ORDER BY on aliased columns
-	// MySQL does not support ORDER BY on functions
-	switch (SQL_LAYER)
-	{
-		case 'firebird':
-			$sql .= ' ORDER BY COUNT(post_id) DESC';
-		break;
-
-		default:
-			$sql .= ' ORDER BY num_posts DESC';
-		break;
-	}
-
+		GROUP BY forum_id
+		ORDER BY num_posts DESC";
 	$result = $db->sql_query_limit($sql, 1);
 	$active_f_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1081,21 +1068,8 @@ function display_user_activity(&$userdata)
 		WHERE poster_id = ' . $userdata['user_id'] . "
 			AND post_postcount = 1
 			$forum_sql
-		GROUP BY topic_id";
-
-	// Firebird does not support ORDER BY on aliased columns
-	// MySQL does not support ORDER BY on functions
-	switch (SQL_LAYER)
-	{
-		case 'firebird':
-			$sql .= ' ORDER BY COUNT(post_id) DESC';
-		break;
-
-		default:
-			$sql .= ' ORDER BY num_posts DESC';
-		break;
-	}
-
+		GROUP BY topic_id
+		ORDER BY num_posts DESC";
 	$result = $db->sql_query_limit($sql, 1);
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);

@@ -280,7 +280,7 @@ class cache extends acm
 					$sql = 'SELECT user_id, bot_agent, bot_ip 
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1
-					ORDER BY STRLEN(bot_agent) DESC';
+					ORDER BY CHAR_LENGTH(bot_agent) DESC';
 				break;
 
 				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...

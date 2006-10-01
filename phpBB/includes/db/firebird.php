@@ -26,7 +26,7 @@ if (!defined('SQL_LAYER'))
 
 /**
 * Firebird/Interbase Database Abstraction Layer
-* Minimum Requirement is Firebird 1.5+/Interbase 7.1+
+* Minimum Requirement is Firebird 2.0
 * @package dbal
 */
 class dbal_firebird extends dbal
@@ -122,7 +122,8 @@ class dbal_firebird extends dbal
 					}
 					else
 					{
-						@ibase_commit();
+						// way cooler than ibase_commit_ret :D
+						@ibase_query('COMMIT RETAIN;');
 					}
 				}
 
@@ -168,7 +169,7 @@ class dbal_firebird extends dbal
 	* Return number of rows
 	* Not used within core code
 	*/
-	function sql_numrows($query_id = false)
+	function sql_numrows($query_id = false)//(&$query_id)
 	{
 		global $cache;
 
@@ -182,6 +183,18 @@ class dbal_firebird extends dbal
 			return $cache->sql_numrows($query_id);
 		}
 
+/*
+		$num_rows = 0;
+		while ($this->sql_fetchrow($query_id))
+		{
+			$num_rows++;
+		}
+
+		// leave the query_id alone, it never hurt anybody
+		$query_id = $this->sql_query($this->last_query_text);
+
+		return $num_rows;
+*/
 		return false;
 	}
 

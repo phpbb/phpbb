@@ -99,9 +99,9 @@ $dbms_type_map = array(
 		'VCHAR:'	=> 'varchar(%d)',
 		'CHAR:'		=> 'char(%d)',
 		'XSTEXT'	=> 'text',
-		'XSTEXT_UNI'=> 'text',
+		'XSTEXT_UNI'=> 'varchar(100)',
 		'STEXT'		=> 'text',
-		'STEXT_UNI'	=> 'text',
+		'STEXT_UNI'	=> 'varchar(255)',
 		'TEXT'		=> 'text',
 		'TEXT_UNI'	=> 'text',
 		'MTEXT'		=> 'mediumtext',
@@ -110,7 +110,7 @@ $dbms_type_map = array(
 		'DECIMAL'	=> 'decimal(5,2)',
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_CI'	=> 'varchar(255)',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
 
@@ -135,9 +135,9 @@ $dbms_type_map = array(
 		'MTEXT_UNI'	=> 'mediumtext',
 		'TIMESTAMP'	=> 'int(11) UNSIGNED',
 		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI'	=> 'text',
 		'VCHAR_UNI:'=> array('varchar(%d)', 'limit' => array('mult', 3, 255, 'text')),
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_CI'	=> 'text',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
 
@@ -149,23 +149,23 @@ $dbms_type_map = array(
 		'TINT:'		=> 'INTEGER',
 		'USINT'		=> 'INTEGER',
 		'BOOL'		=> 'INTEGER',
-		'VCHAR'		=> 'VARCHAR(255)',
-		'VCHAR:'	=> 'VARCHAR(%d)',
-		'CHAR:'		=> 'CHAR(%d)',
-		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT',
-		'STEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'TEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'MTEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'XSTEXT_UNI'=> 'BLOB SUB_TYPE TEXT',
-		'STEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
-		'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
-		'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
+		'VCHAR'		=> 'VARCHAR(255) CHARACTER SET NONE',
+		'VCHAR:'	=> 'VARCHAR(%d) CHARACTER SET NONE',
+		'CHAR:'		=> 'CHAR(%d) CHARACTER SET NONE',
+		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'STEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'TEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'MTEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'XSTEXT_UNI'=> 'VARCHAR(100) CHARACTER SET UTF8',
+		'STEXT_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
+		'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
 		'TIMESTAMP'	=> 'INTEGER',
 		'DECIMAL'	=> 'DOUBLE PRECISION',
-		'VCHAR_UNI'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
-		'VCHAR_UNI:'=> array('VARCHAR(%d) CHARACTER SET UNICODE_FSS', 'rule' => array('div', 3)),
-		'VCHAR_CI'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
-		'VARBINARY'	=> 'CHAR(255)',
+		'VCHAR_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'VCHAR_UNI:'=> 'VARCHAR(%d) CHARACTER SET UTF8',
+		'VCHAR_CI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'VARBINARY'	=> 'CHAR(255) CHARACTER SET NONE',
 	),
 
 	'mssql'		=> array(
@@ -183,16 +183,16 @@ $dbms_type_map = array(
 		'STEXT'		=> '[varchar] (3000)',
 		'TEXT'		=> '[varchar] (8000)',
 		'MTEXT'		=> '[text]',
-		'XSTEXT_UNI'=> '[nvarchar] (1000)',
-		'STEXT_UNI'	=> '[nvarchar] (3000)',
-		'TEXT_UNI'	=> '[nvarchar] (8000)',
-		'MTEXT_UNI'	=> '[ntext]',
+		'XSTEXT_UNI'=> '[varchar] (100)',
+		'STEXT_UNI'	=> '[varchar] (255)',
+		'TEXT_UNI'	=> '[varchar] (4000)',
+		'MTEXT_UNI'	=> '[text]',
 		'TIMESTAMP'	=> '[int]',
 		'DECIMAL'	=> '[float]',
-		'VCHAR_UNI'	=> '[nvarchar] (255)',
-		'VCHAR_UNI:'=> '[nvarchar] (%d)',
-		'VCHAR_CI'	=> '[nvarchar] (252)',
-		'VARBINARY'	=> '[varbinary] (255)',
+		'VCHAR_UNI'	=> '[varchar] (255)',
+		'VCHAR_UNI:'=> '[varchar] (%d)',
+		'VCHAR_CI'	=> '[varchar] (255)',
+		'VARBINARY'	=> '[varchar] (255)',
 	),
 
 	'oracle'	=> array(
@@ -210,15 +210,15 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar2(3000)',
 		'TEXT'		=> 'clob',
 		'MTEXT'		=> 'clob',
-		'XSTEXT_UNI'=> 'varchar2(1000)',
-		'STEXT_UNI'	=> 'varchar2(3000)',
+		'XSTEXT_UNI'=> 'varchar2(300)',
+		'STEXT_UNI'	=> 'varchar2(765)',
 		'TEXT_UNI'	=> 'clob',
 		'MTEXT_UNI'	=> 'clob',
 		'TIMESTAMP'	=> 'number(11)',
 		'DECIMAL'	=> 'number(5, 2)',
-		'VCHAR_UNI'	=> 'varchar2(255)',
-		'VCHAR_UNI:'=> 'varchar2(%d)',
-		'VCHAR_CI'	=> 'varchar2(252)',
+		'VCHAR_UNI'	=> 'varchar2(765)',
+		'VCHAR_UNI:'=> array('varchar2(%d)', 'limit' => array('mult', 3, 765, 'clob')),
+		'VCHAR_CI'	=> 'varchar2(255)',
 		'VARBINARY'	=> 'raw(255)',
 	),
 
@@ -245,7 +245,7 @@ $dbms_type_map = array(
 		'DECIMAL'	=> 'decimal(5,2)',
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_CI'	=> 'varchar(255)',
 		'VARBINARY'	=> 'blob',
 	),
 
@@ -264,9 +264,9 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar(3000)',
 		'TEXT'		=> 'varchar(8000)',
 		'MTEXT'		=> 'TEXT',
-		'XSTEXT_UNI'=> 'varchar(1000)',
-		'STEXT_UNI'	=> 'varchar(3000)',
-		'TEXT_UNI'	=> 'varchar(8000)',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT_UNI'	=> 'varchar(4000)',
 		'MTEXT_UNI'	=> 'TEXT',
 		'TIMESTAMP'	=> 'INT4', // unsigned
 		'DECIMAL'	=> 'decimal(5,2)',
@@ -693,7 +693,15 @@ function prepare_column_data($dbms, $column_data)
 				$sql .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
 			}
 
-			$sql .= "NOT NULL";
+			$sql .= 'NOT NULL';
+
+			// This is a UNICODE column and thus should be given it's fair share
+			if (preg_match('/^X?STEXT_UNI|VCHAR_(CI|UNI:?)/', $column_data[0]))
+			{
+				$sql .= ' COLLATE UNICODE';
+			}
+
+			$sql .= ",\n";
 		break;
 
 		case 'mssql':

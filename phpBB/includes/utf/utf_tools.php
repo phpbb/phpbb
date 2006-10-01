@@ -127,6 +127,9 @@ if (extension_loaded('mbstring'))
 	/**
 	* UTF-8 aware alternative to strrpos
 	* Find position of last occurrence of a char in a string
+	*
+	* Notes:
+	* - offset for mb_strrpos was added in 5.2.0, we emulate if it is lower
 	* 
 	* @author Harry Fuecks
 	* @param string haystack
@@ -134,10 +137,9 @@ if (extension_loaded('mbstring'))
 	* @param integer (optional) offset (from left)
 	* @return mixed integer position or FALSE on failure
 	*/
-	function utf8_strrpos($str,	$needle, $offset = null)
+	if (version_compare(phpversion(), '5.2.0', '>='))
 	{
-		// offset for mb_strrpos was added in 5.2.0
-		if ($offset === false || version_compare(phpversion(), '5.2.0', '>='))
+		function utf8_strrpos($str,	$needle, $offset = null)
 		{
 			// Emulate behaviour of strrpos rather than raising warning
 			if (empty($str))
@@ -147,22 +149,39 @@ if (extension_loaded('mbstring'))
 
 			return mb_strrpos($str, $search);
 		}
-		else
+	}
+	else
+	{
+		function utf8_strrpos($str,	$needle, $offset = null)
 		{
-			if (!is_int($offset))
+			// offset for mb_strrpos was added in 5.2.0
+			if ($offset === false)
 			{
-				trigger_error('utf8_strrpos expects parameter 3 to be long', E_USER_WARNING);
+				// Emulate behaviour of strrpos rather than raising warning
+				if (empty($str))
+				{
+					return false;
+				}
+
+				return mb_strrpos($str, $search);
+			}
+			else
+			{
+				if (!is_int($offset))
+				{
+					trigger_error('utf8_strrpos expects parameter 3 to be long', E_USER_WARNING);
+					return false;
+				}
+
+				$str = mb_substr($str, $offset);
+
+				if (false !== ($pos = mb_strrpos($str, $search)))
+				{
+					return $pos + $offset;
+				}
+
 				return false;
 			}
-
-			$str = mb_substr($str, $offset);
-
-			if (false !== ($pos = mb_strrpos($str, $search)))
-			{
-				return $pos + $offset;
-			}
-
-			return false;
 		}
 	}
 

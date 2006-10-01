@@ -146,7 +146,7 @@ CREATE INDEX phpbb_bots_bot_active ON phpbb_bots (bot_active);
 
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
-	config_name varchar(252) NOT NULL DEFAULT '',
+	config_name varchar(255) NOT NULL DEFAULT '',
 	config_value varchar(255) NOT NULL DEFAULT '',
 	is_dynamic INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (config_name)
@@ -168,7 +168,7 @@ CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm (confirm_type);
 # Table: 'phpbb_disallow'
 CREATE TABLE phpbb_disallow (
 	disallow_id INTEGER PRIMARY KEY NOT NULL ,
-	disallow_username varchar(252) NOT NULL DEFAULT ''
+	disallow_username varchar(255) NOT NULL DEFAULT ''
 );
 
 
@@ -216,7 +216,7 @@ CREATE TABLE phpbb_forums (
 	forum_parents mediumtext(16777215) NOT NULL DEFAULT '',
 	forum_name text(65535) NOT NULL DEFAULT '',
 	forum_desc text(65535) NOT NULL DEFAULT '',
-	forum_desc_bitfield varchar(252) NOT NULL DEFAULT '',
+	forum_desc_bitfield varchar(255) NOT NULL DEFAULT '',
 	forum_desc_options INTEGER UNSIGNED NOT NULL DEFAULT '7',
 	forum_desc_uid varchar(5) NOT NULL DEFAULT '',
 	forum_link varchar(255) NOT NULL DEFAULT '',
@@ -225,7 +225,7 @@ CREATE TABLE phpbb_forums (
 	forum_image varchar(255) NOT NULL DEFAULT '',
 	forum_rules text(65535) NOT NULL DEFAULT '',
 	forum_rules_link varchar(255) NOT NULL DEFAULT '',
-	forum_rules_bitfield varchar(252) NOT NULL DEFAULT '',
+	forum_rules_bitfield varchar(255) NOT NULL DEFAULT '',
 	forum_rules_options INTEGER UNSIGNED NOT NULL DEFAULT '7',
 	forum_rules_uid varchar(5) NOT NULL DEFAULT '',
 	forum_topics_per_page tinyint(4) NOT NULL DEFAULT '0',
@@ -287,9 +287,9 @@ CREATE INDEX phpbb_forums_watch_notify_stat ON phpbb_forums_watch (notify_status
 CREATE TABLE phpbb_groups (
 	group_id INTEGER PRIMARY KEY NOT NULL ,
 	group_type tinyint(4) NOT NULL DEFAULT '1',
-	group_name varchar(252) NOT NULL DEFAULT '',
+	group_name varchar(255) NOT NULL DEFAULT '',
 	group_desc text(65535) NOT NULL DEFAULT '',
-	group_desc_bitfield varchar(252) NOT NULL DEFAULT '',
+	group_desc_bitfield varchar(255) NOT NULL DEFAULT '',
 	group_desc_options INTEGER UNSIGNED NOT NULL DEFAULT '7',
 	group_desc_uid varchar(5) NOT NULL DEFAULT '',
 	group_display INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -355,7 +355,7 @@ CREATE INDEX phpbb_log_user_id ON phpbb_log (user_id);
 CREATE TABLE phpbb_moderator_cache (
 	forum_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	username varchar(252) NOT NULL DEFAULT '',
+	username varchar(255) NOT NULL DEFAULT '',
 	group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_name varchar(255) NOT NULL DEFAULT '',
 	display_on_index INTEGER UNSIGNED NOT NULL DEFAULT '1'
@@ -421,12 +421,12 @@ CREATE TABLE phpbb_posts (
 	enable_smilies INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_magic_url INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_sig INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	post_username varchar(252) NOT NULL DEFAULT '',
+	post_username varchar(255) NOT NULL DEFAULT '',
 	post_subject text(65535) NOT NULL DEFAULT '',
 	post_text mediumtext(16777215) NOT NULL DEFAULT '',
 	post_checksum varchar(32) NOT NULL DEFAULT '',
 	post_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	bbcode_bitfield varchar(252) NOT NULL DEFAULT '',
+	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
 	bbcode_uid varchar(5) NOT NULL DEFAULT '',
 	post_postcount INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	post_edit_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -441,8 +441,7 @@ CREATE INDEX phpbb_posts_topic_id ON phpbb_posts (topic_id);
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts (poster_ip);
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts (poster_id);
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts (post_approved);
-CREATE INDEX phpbb_posts_post_postcount ON phpbb_posts (post_postcount);
-CREATE INDEX phpbb_posts_post_time ON phpbb_posts (post_time);
+CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts (topic_id, post_time);
 
 # Table: 'phpbb_privmsgs'
 CREATE TABLE phpbb_privmsgs (
@@ -461,7 +460,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_reason text(65535) NOT NULL DEFAULT '',
 	message_edit_user INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	message_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	bbcode_bitfield varchar(252) NOT NULL DEFAULT '',
+	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
 	bbcode_uid varchar(5) NOT NULL DEFAULT '',
 	message_edit_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	message_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -686,7 +685,7 @@ CREATE INDEX phpbb_smilies_display_on_post ON phpbb_smilies (display_on_posting)
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
 	style_id INTEGER PRIMARY KEY NOT NULL ,
-	style_name varchar(252) NOT NULL DEFAULT '',
+	style_name varchar(255) NOT NULL DEFAULT '',
 	style_copyright varchar(255) NOT NULL DEFAULT '',
 	style_active INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	template_id tinyint(4) NOT NULL DEFAULT '0',
@@ -702,10 +701,10 @@ CREATE INDEX phpbb_styles_imageset_id ON phpbb_styles (imageset_id);
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
 	template_id INTEGER PRIMARY KEY NOT NULL ,
-	template_name varchar(252) NOT NULL DEFAULT '',
+	template_name varchar(255) NOT NULL DEFAULT '',
 	template_copyright varchar(255) NOT NULL DEFAULT '',
 	template_path varchar(100) NOT NULL DEFAULT '',
-	bbcode_bitfield varchar(252) NOT NULL DEFAULT 'kNg=',
+	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
 	template_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
@@ -726,7 +725,7 @@ CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (templ
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
 	theme_id INTEGER PRIMARY KEY NOT NULL ,
-	theme_name varchar(252) NOT NULL DEFAULT '',
+	theme_name varchar(255) NOT NULL DEFAULT '',
 	theme_copyright varchar(255) NOT NULL DEFAULT '',
 	theme_path varchar(100) NOT NULL DEFAULT '',
 	theme_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -739,7 +738,7 @@ CREATE UNIQUE INDEX phpbb_styles_theme_theme_name ON phpbb_styles_theme (theme_n
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id INTEGER PRIMARY KEY NOT NULL ,
-	imageset_name varchar(252) NOT NULL DEFAULT '',
+	imageset_name varchar(255) NOT NULL DEFAULT '',
 	imageset_copyright varchar(255) NOT NULL DEFAULT '',
 	imageset_path varchar(100) NOT NULL DEFAULT '',
 	site_logo varchar(200) NOT NULL DEFAULT '',
@@ -881,6 +880,7 @@ CREATE TABLE phpbb_topics (
 CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time);
+CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved);
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id);
 
 # Table: 'phpbb_topics_track'
@@ -935,7 +935,7 @@ CREATE TABLE phpbb_users (
 	user_perm_from INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_ip varchar(40) NOT NULL DEFAULT '',
 	user_regdate INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	username varchar(252) NOT NULL DEFAULT '',
+	username varchar(255) NOT NULL DEFAULT '',
 	user_password varchar(40) NOT NULL DEFAULT '',
 	user_passchg INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_email varchar(100) NOT NULL DEFAULT '',
@@ -987,7 +987,7 @@ CREATE TABLE phpbb_users (
 	user_avatar_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_sig mediumtext(16777215) NOT NULL DEFAULT '',
 	user_sig_bbcode_uid varchar(5) NOT NULL DEFAULT '',
-	user_sig_bbcode_bitfield varchar(252) NOT NULL DEFAULT '',
+	user_sig_bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
 	user_from varchar(100) NOT NULL DEFAULT '',
 	user_icq varchar(15) NOT NULL DEFAULT '',
 	user_aim varchar(255) NOT NULL DEFAULT '',

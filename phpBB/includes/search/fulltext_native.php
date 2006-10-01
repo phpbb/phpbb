@@ -953,11 +953,11 @@ class fulltext_native extends search_backend
 
 		while (isset($word[0]))
 		{
-			if (isset($word[252])
+			if (isset($word[255])
 			 || !isset($word[$isset_min]))
 			{
 				/**
-				* Words longer than 252 bytes are ignored. This will have to be
+				* Words longer than 255 bytes are ignored. This will have to be
 				* changed whenever we change the length of search_wordlist.word_text
 				*
 				* Words shorter than $isset_min bytes are ignored, too
@@ -1570,7 +1570,7 @@ class fulltext_native extends search_backend
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:252', 'fulltext_native_max_chars' => 'integer:0:255')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255')
 		);
 	}
 }

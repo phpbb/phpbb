@@ -1760,13 +1760,24 @@ class install_install extends module
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
 					}
-
 				break;
 
 				case 'mysqli':
 					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
+					}
+				break;
+
+				case 'firebird':
+					if ($db->service_handle !== false && function_exists('ibase_server_info'))
+					{
+						$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
+						preg_match('#V([\d.]+)#', $val, $match);
+						if ($match[1] < 2)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						}
 					}
 				break;
 				

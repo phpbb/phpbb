@@ -12,7 +12,7 @@
 * If you overwrite the original schema files please make sure you save the file with UNIX linefeeds.
 */
 
-die("Please read the first lines of this script for instructions on how to enable it");
+//die("Please read the first lines of this script for instructions on how to enable it");
 
 set_time_limit(0);
 
@@ -37,9 +37,9 @@ $dbms_type_map = array(
 		'VCHAR:'	=> 'varchar(%d)',
 		'CHAR:'		=> 'char(%d)',
 		'XSTEXT'	=> 'text',
-		'XSTEXT_UNI'=> 'text',
+		'XSTEXT_UNI'=> 'varchar(100)',
 		'STEXT'		=> 'text',
-		'STEXT_UNI'	=> 'text',
+		'STEXT_UNI'	=> 'varchar(255)',
 		'TEXT'		=> 'text',
 		'TEXT_UNI'	=> 'text',
 		'MTEXT'		=> 'mediumtext',
@@ -48,7 +48,7 @@ $dbms_type_map = array(
 		'DECIMAL'	=> 'decimal(5,2)',
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_CI'	=> 'varchar(255)',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
 
@@ -87,23 +87,23 @@ $dbms_type_map = array(
 		'TINT:'		=> 'INTEGER',
 		'USINT'		=> 'INTEGER',
 		'BOOL'		=> 'INTEGER',
-		'VCHAR'		=> 'VARCHAR(255)',
-		'VCHAR:'	=> 'VARCHAR(%d)',
-		'CHAR:'		=> 'CHAR(%d)',
-		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT',
-		'STEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'TEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'MTEXT'		=> 'BLOB SUB_TYPE TEXT',
-		'XSTEXT_UNI'=> 'BLOB SUB_TYPE TEXT',
-		'STEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
-		'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
-		'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT',
+		'VCHAR'		=> 'VARCHAR(255) CHARACTER SET NONE',
+		'VCHAR:'	=> 'VARCHAR(%d) CHARACTER SET NONE',
+		'CHAR:'		=> 'CHAR(%d) CHARACTER SET NONE',
+		'XSTEXT'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'STEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'TEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'MTEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
+		'XSTEXT_UNI'=> 'VARCHAR(100) CHARACTER SET UTF8',
+		'STEXT_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
+		'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
 		'TIMESTAMP'	=> 'INTEGER',
 		'DECIMAL'	=> 'DOUBLE PRECISION',
-		'VCHAR_UNI'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
-		'VCHAR_UNI:'=> array('VARCHAR(%d) CHARACTER SET UNICODE_FSS', 'rule' => array('div', 3)),
-		'VCHAR_CI'	=> 'VARCHAR(84) CHARACTER SET UNICODE_FSS',
-		'VARBINARY'	=> 'CHAR(255)',
+		'VCHAR_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'VCHAR_UNI:'=> 'VARCHAR(%d) CHARACTER SET UTF8',
+		'VCHAR_CI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
+		'VARBINARY'	=> 'CHAR(255) CHARACTER SET NONE',
 	),
 
 	'mssql'		=> array(
@@ -121,15 +121,15 @@ $dbms_type_map = array(
 		'STEXT'		=> '[varchar] (3000)',
 		'TEXT'		=> '[varchar] (8000)',
 		'MTEXT'		=> '[text]',
-		'XSTEXT_UNI'=> '[text]',
-		'STEXT_UNI'	=> '[text]',
-		'TEXT_UNI'	=> '[text]',
+		'XSTEXT_UNI'=> '[varchar] (100)',
+		'STEXT_UNI'	=> '[varchar] (255)',
+		'TEXT_UNI'	=> '[varchar] (4000)',
 		'MTEXT_UNI'	=> '[text]',
 		'TIMESTAMP'	=> '[int]',
 		'DECIMAL'	=> '[float]',
 		'VCHAR_UNI'	=> '[varchar] (255)',
 		'VCHAR_UNI:'=> '[varchar] (%d)',
-		'VCHAR_CI'	=> '[varchar] (252)',
+		'VCHAR_CI'	=> '[varchar] (255)',
 		'VARBINARY'	=> '[varchar] (255)',
 	),
 
@@ -148,15 +148,15 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar2(3000)',
 		'TEXT'		=> 'clob',
 		'MTEXT'		=> 'clob',
-		'XSTEXT_UNI'=> 'varchar2(1000)',
-		'STEXT_UNI'	=> 'varchar2(3000)',
+		'XSTEXT_UNI'=> 'varchar2(300)',
+		'STEXT_UNI'	=> 'varchar2(765)',
 		'TEXT_UNI'	=> 'clob',
 		'MTEXT_UNI'	=> 'clob',
 		'TIMESTAMP'	=> 'number(11)',
 		'DECIMAL'	=> 'number(5, 2)',
-		'VCHAR_UNI'	=> 'varchar2(255)',
-		'VCHAR_UNI:'=> 'varchar2(%d)',
-		'VCHAR_CI'	=> 'varchar2(252)',
+		'VCHAR_UNI'	=> 'varchar2(765)',
+		'VCHAR_UNI:'=> array('varchar2(%d)', 'limit' => array('mult', 3, 765, 'clob')),
+		'VCHAR_CI'	=> 'varchar2(255)',
 		'VARBINARY'	=> 'raw(255)',
 	),
 
@@ -183,7 +183,7 @@ $dbms_type_map = array(
 		'DECIMAL'	=> 'decimal(5,2)',
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
-		'VCHAR_CI'	=> 'varchar(252)',
+		'VCHAR_CI'	=> 'varchar(255)',
 		'VARBINARY'	=> 'blob',
 	),
 
@@ -202,9 +202,9 @@ $dbms_type_map = array(
 		'STEXT'		=> 'varchar(3000)',
 		'TEXT'		=> 'varchar(8000)',
 		'MTEXT'		=> 'TEXT',
-		'XSTEXT_UNI'=> 'varchar(1000)',
-		'STEXT_UNI'	=> 'varchar(3000)',
-		'TEXT_UNI'	=> 'varchar(8000)',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT_UNI'	=> 'varchar(4000)',
 		'MTEXT_UNI'	=> 'TEXT',
 		'TIMESTAMP'	=> 'INT4', // unsigned
 		'DECIMAL'	=> 'decimal(5,2)',
@@ -301,6 +301,9 @@ foreach ($supported_dbms as $dbms)
 			break;
 		}
 
+		// Table specific so we don't get overlap
+		$modded_array = array(); 
+
 		// Write columns one by one...
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
@@ -335,6 +338,7 @@ foreach ($supported_dbms as $dbms)
 								if ($column_length > $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][2])
 								{
 									$column_type = $dbms_type_map[$dbms][$orig_column_type . ':']['limit'][3];
+									$modded_array[$column_name] = $column_type;
 								}
 								else
 								{
@@ -403,7 +407,15 @@ foreach ($supported_dbms as $dbms)
 						$line .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
 					}
 
-					$line .= "NOT NULL,\n";
+					$line .= 'NOT NULL';
+
+					// This is a UNICODE column and thus should be given it's fair share
+					if (preg_match('/^X?STEXT_UNI|VCHAR_(CI|UNI:?)/', $column_data[0]))
+					{
+						$line .= ' COLLATE UNICODE';
+					}
+
+					$line .= ",\n";
 
 					if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 					{
@@ -593,6 +605,18 @@ foreach ($supported_dbms as $dbms)
 					case 'mysql_41':
 						$line .= ($key_data[0] == 'INDEX') ? "\tKEY" : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? "\tUNIQUE" : '';
+						foreach ($key_data[1] as $key => $col_name)
+						{
+							if (isset($modded_array[$col_name]))
+							{
+								switch ($modded_array[$col_name])
+								{
+									case 'text':
+										$key_data[1][$key] = $col_name . '(255)';
+									break;
+								}
+							}
+						}
 						$line .= ' ' . $key_name . ' (' . implode(', ', $key_data[1]) . "),\n";
 					break;
 
@@ -735,7 +759,7 @@ foreach ($supported_dbms as $dbms)
 *	VCHAR:x		=> varchar(x)
 *	TIMESTAMP	=> int(11) UNSIGNED
 *	DECIMAL		=> decimal number (5,2)
-*	VCHAR_UNI	=> varchar(252) BINARY
+*	VCHAR_UNI	=> varchar(255) BINARY
 *	VCHAR_CI	=> varchar_ci for postgresql, others VCHAR
 */
 function get_schema_struct()
@@ -905,7 +929,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_config'] = array(
 		'COLUMNS'		=> array(
-			'config_name'		=> array('VCHAR:252', ''),
+			'config_name'		=> array('VCHAR:255', ''),
 			'config_value'		=> array('VCHAR', ''),
 			'is_dynamic'		=> array('BOOL', 0),
 		),
@@ -931,7 +955,7 @@ function get_schema_struct()
 	$schema_data['phpbb_disallow'] = array(
 		'COLUMNS'		=> array(
 			'disallow_id'		=> array('UINT', NULL, 'auto_increment'),
-			'disallow_username'	=> array('VCHAR_UNI:252', ''),
+			'disallow_username'	=> array('VCHAR_UNI:255', ''),
 		),
 		'PRIMARY_KEY'	=> 'disallow_id',
 	);
@@ -985,7 +1009,7 @@ function get_schema_struct()
 			'forum_parents'			=> array('MTEXT', ''),
 			'forum_name'			=> array('STEXT_UNI', ''),
 			'forum_desc'			=> array('TEXT_UNI', ''),
-			'forum_desc_bitfield'	=> array('VCHAR:252', ''),
+			'forum_desc_bitfield'	=> array('VCHAR:255', ''),
 			'forum_desc_options'	=> array('UINT:11', 7),
 			'forum_desc_uid'		=> array('VCHAR:5', ''),
 			'forum_link'			=> array('VCHAR_UNI', ''),
@@ -994,7 +1018,7 @@ function get_schema_struct()
 			'forum_image'			=> array('VCHAR', ''),
 			'forum_rules'			=> array('TEXT_UNI', ''),
 			'forum_rules_link'		=> array('VCHAR_UNI', ''),
-			'forum_rules_bitfield'	=> array('VCHAR:252', ''),
+			'forum_rules_bitfield'	=> array('VCHAR:255', ''),
 			'forum_rules_options'	=> array('UINT:11', 7),
 			'forum_rules_uid'		=> array('VCHAR:5', ''),
 			'forum_topics_per_page'	=> array('TINT:4', 0),
@@ -1063,7 +1087,7 @@ function get_schema_struct()
 			'group_type'			=> array('TINT:4', 1),
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT_UNI', ''),
-			'group_desc_bitfield'	=> array('VCHAR:252', ''),
+			'group_desc_bitfield'	=> array('VCHAR:255', ''),
 			'group_desc_options'	=> array('UINT:11', 7),
 			'group_desc_uid'		=> array('VCHAR:5', ''),
 			'group_display'			=> array('BOOL', 0),
@@ -1141,7 +1165,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'forum_id'				=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
-			'username'				=> array('VCHAR_UNI:252', ''),
+			'username'				=> array('VCHAR_UNI:255', ''),
 			'group_id'				=> array('UINT', 0),
 			'group_name'			=> array('VCHAR_UNI', ''),
 			'display_on_index'		=> array('BOOL', 1),
@@ -1216,12 +1240,12 @@ function get_schema_struct()
 			'enable_smilies'		=> array('BOOL', 1),
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
-			'post_username'			=> array('VCHAR_UNI:252', ''),
+			'post_username'			=> array('VCHAR_UNI:255', ''),
 			'post_subject'			=> array('XSTEXT_UNI', ''),
 			'post_text'				=> array('MTEXT_UNI', ''),
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_attachment'		=> array('BOOL', 0),
-			'bbcode_bitfield'		=> array('VCHAR:252', ''),
+			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:5', ''),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
@@ -1258,7 +1282,7 @@ function get_schema_struct()
 			'message_edit_reason'	=> array('STEXT_UNI', ''),
 			'message_edit_user'		=> array('UINT', 0),
 			'message_attachment'	=> array('BOOL', 0),
-			'bbcode_bitfield'		=> array('VCHAR:252', ''),
+			'bbcode_bitfield'		=> array('VCHAR:255', ''),
 			'bbcode_uid'			=> array('VCHAR:5', ''),
 			'message_edit_time'		=> array('TIMESTAMP', 0),
 			'message_edit_count'	=> array('USINT', 0),
@@ -1513,7 +1537,7 @@ function get_schema_struct()
 	$schema_data['phpbb_styles'] = array(
 		'COLUMNS'		=> array(
 			'style_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'style_name'			=> array('VCHAR_UNI:252', ''),
+			'style_name'			=> array('VCHAR_UNI:255', ''),
 			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
 			'template_id'			=> array('TINT:4', 0),
@@ -1532,10 +1556,10 @@ function get_schema_struct()
 	$schema_data['phpbb_styles_template'] = array(
 		'COLUMNS'		=> array(
 			'template_id'			=> array('TINT:4', NULL, 'auto_increment'),
-			'template_name'			=> array('VCHAR_UNI:252', ''),
+			'template_name'			=> array('VCHAR_UNI:255', ''),
 			'template_copyright'	=> array('VCHAR_UNI', ''),
 			'template_path'			=> array('VCHAR:100', ''),
-			'bbcode_bitfield'		=> array('VCHAR:252', 'kNg='),
+			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 			'template_storedb'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'template_id',
@@ -1561,7 +1585,7 @@ function get_schema_struct()
 	$schema_data['phpbb_styles_theme'] = array(
 		'COLUMNS'		=> array(
 			'theme_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'theme_name'			=> array('VCHAR_UNI:252', ''),
+			'theme_name'			=> array('VCHAR_UNI:255', ''),
 			'theme_copyright'		=> array('VCHAR_UNI', ''),
 			'theme_path'			=> array('VCHAR:100', ''),
 			'theme_storedb'			=> array('BOOL', 0),
@@ -1577,7 +1601,7 @@ function get_schema_struct()
 	$schema_data['phpbb_styles_imageset'] = array(
 		'COLUMNS'		=> array(
 			'imageset_id'				=> array('TINT:4', NULL, 'auto_increment'),
-			'imageset_name'				=> array('VCHAR_UNI:252', ''),
+			'imageset_name'				=> array('VCHAR_UNI:255', ''),
 			'imageset_copyright'		=> array('VCHAR_UNI', ''),
 			'imageset_path'				=> array('VCHAR:100', ''),
 
@@ -1853,7 +1877,7 @@ function get_schema_struct()
 			'user_avatar_height'		=> array('USINT', 0),
 			'user_sig'					=> array('MTEXT_UNI', ''),
 			'user_sig_bbcode_uid'		=> array('VCHAR:5', ''),
-			'user_sig_bbcode_bitfield'	=> array('VCHAR:252', ''),
+			'user_sig_bbcode_bitfield'	=> array('VCHAR:255', ''),
 			'user_from'					=> array('VCHAR_UNI:100', ''),
 			'user_icq'					=> array('VCHAR:15', ''),
 			'user_aim'					=> array('VCHAR_UNI', ''),
@@ -1967,7 +1991,7 @@ EOF;
 /*
 	Domain definition
 */
-CREATE DOMAIN varchar_ci AS varchar(252) NOT NULL DEFAULT ''::character varying;
+CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT ''::character varying;
 
 /*
 	Operation Functions
@@ -2038,27 +2062,6 @@ CREATE OPERATOR =(
   HASHES,
   MERGES,
   SORT1= <);
-
-EOF;
-		break;
-
-		case 'firebird':
-			return <<<EOF
-
-# Emulation of STRLEN, might need to be checked out for FB 2.0
-DECLARE EXTERNAL FUNCTION STRLEN CSTRING(32767)
-RETURNS INTEGER BY VALUE
-ENTRY_POINT 'IB_UDF_strlen' MODULE_NAME 'ib_udf';;
-
-# Emulation of LOWER, might need to be checked out for FB 2.0
-DECLARE EXTERNAL FUNCTION LOWER CSTRING(80)
-RETURNS CSTRING(80) FREE_IT 
-ENTRY_POINT 'IB_UDF_lower' MODULE_NAME 'ib_udf';;
-
-# Only used for insertion of binary strings as defaults
-DECLARE EXTERNAL FUNCTION ASCII_CHAR INTEGER
-RETURNS CSTRING(1) FREE_IT
-ENTRY_POINT 'IB_UDF_ascii_char' MODULE_NAME 'ib_udf';;
 
 EOF;
 		break;
