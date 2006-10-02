@@ -354,6 +354,10 @@ foreach ($supported_dbms as $dbms)
 			{
 				$orig_column_type = $column_data[0];
 				$column_type = $dbms_type_map[$dbms][$column_data[0]];
+				if ($column_type == 'text')
+				{
+					$modded_array[$column_name] = $column_type;
+				}
 			}
 
 			// Adjust default value if db-dependant specified

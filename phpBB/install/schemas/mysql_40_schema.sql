@@ -637,7 +637,7 @@ CREATE TABLE phpbb_search_wordlist (
 	word_text text DEFAULT '' NOT NULL,
 	word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (word_id),
-	UNIQUE wrd_txt (word_text)
+	UNIQUE wrd_txt (word_text(255))
 );
 
 
@@ -1032,7 +1032,7 @@ CREATE TABLE phpbb_users (
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),
 	KEY user_type (user_type),
-	KEY username (username)
+	KEY username (username(255))
 );
 
 
