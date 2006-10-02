@@ -54,24 +54,24 @@ $lang = array_merge($lang, array(
 	'HIDDEN_MODULE'			=> 'Hidden module',
 
 	'MODULE'					=> 'Module',
-	'MODULE_ADDED'				=> 'Module successfully added',
-	'MODULE_DELETED'			=> 'Module successfully removed',
+	'MODULE_ADDED'				=> 'Module successfully added.',
+	'MODULE_DELETED'			=> 'Module successfully removed.',
 	'MODULE_DISPLAYED'			=> 'Module displayed',
 	'MODULE_DISPLAYED_EXPLAIN'	=> 'If you do not wish to display this module, but want to use it, set this to no.',
-	'MODULE_EDITED'				=> 'Module successfully edited',
+	'MODULE_EDITED'				=> 'Module successfully edited.',
 	'MODULE_ENABLED'			=> 'Module enabled',
 	'MODULE_LANGNAME'			=> 'Module language mame',
 	'MODULE_LANGNAME_EXPLAIN'	=> 'Enter the displayed module name. Use language constant if name is served from language file.',
 	'MODULE_TYPE'				=> 'Module type',
 
 	'NO_CATEGORY_TO_MODULE'	=> 'Unable to turn category into module. Please remove/move all childs before performing this action.',
-	'NO_MODULE'				=> 'No module found',
-	'NO_MODULE_ID'			=> 'No module id specified',
-	'NO_MODULE_LANGNAME'	=> 'No module language name specified',
+	'NO_MODULE'				=> 'No module found.',
+	'NO_MODULE_ID'			=> 'No module id specified.',
+	'NO_MODULE_LANGNAME'	=> 'No module language name specified.',
 	'NO_PARENT'				=> 'No Parent',
 
 	'PARENT'				=> 'Parent',
-	'PARENT_NO_EXIST'		=> 'Parent does not exist',
+	'PARENT_NO_EXIST'		=> 'Parent does not exist.',
 
 	'SELECT_MODULE'			=> 'Select a module',
 ));

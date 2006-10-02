@@ -36,10 +36,10 @@ $lang = array_merge($lang, array(
 	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes',
 	'ADD_BBCODE'				=> 'Add a new BBCode',
 
-	'BBCODE_ADDED'				=> 'BBCode added successfully',
-	'BBCODE_EDITED'				=> 'BBCode edited successfully',
-	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists',
-	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist',
+	'BBCODE_ADDED'				=> 'BBCode added successfully.',
+	'BBCODE_EDITED'				=> 'BBCode edited successfully.',
+	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
+	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist.',
 	'BBCODE_HELPLINE'			=> 'Helpline',
 	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouseover text of the BBCode',
 	'BBCODE_HELPLINE_TEXT'		=> 'Helpline text',
@@ -60,7 +60,7 @@ $lang = array_merge($lang, array(
 	'TOKENS'				=> 'Tokens',
 	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any of lang string present in your language/ directory like this: {L_<em>&lt;stringname&gt;</em>} where <em>&lt;stringname&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as "wrote" or its translation according to user’s locale',
 	'TOKEN_DEFINITION'		=> 'What can it be?',
-	'TOO_MANY_BBCODES'		=> 'You cannot create any more BBCodes. Please remove one or more BBCodes then try again',
+	'TOO_MANY_BBCODES'		=> 'You cannot create any more BBCodes. Please remove one or more BBCodes then try again.',
 
 	'tokens'	=>	array(
 		'TEXT'			=> 'Any text, including foreign characters, numbers, etc…',
@@ -108,7 +108,7 @@ $lang = array_merge($lang, array(
 	'ICONS_HEIGHT'			=> 'Icon height',
 	'ICONS_IMAGE'			=> 'Icon image',
 	'ICONS_IMPORTED'		=> 'The icons pack has been installed successfully.',
-	'ICONS_IMPORT_SUCCESS'	=> 'The icons pack was imported successfully',
+	'ICONS_IMPORT_SUCCESS'	=> 'The icons pack was imported successfully.',
 	'ICONS_LOCATION'		=> 'Icon location',
 	'ICONS_NOT_DISPLAYED'	=> 'The following icons are not displayed on the posting page',
 	'ICONS_ORDER'			=> 'Icon order',
@@ -126,7 +126,7 @@ $lang = array_merge($lang, array(
 	'NO_SMILIES_EXPORT'	=> 'You have no smilies with which to create a package.',
 	'NO_SMILIES_PAK'	=> 'No smiley packages found.',
 
-	'PAK_FILE_NOT_READABLE'		=> 'Could not read pak file',
+	'PAK_FILE_NOT_READABLE'		=> 'Could not read pak file.',
 
 	'REPLACE_MATCHES'	=> 'Replace matches',
 
@@ -142,7 +142,7 @@ $lang = array_merge($lang, array(
 	'SMILIES_HEIGHT'			=> 'Smiley height',
 	'SMILIES_IMAGE'				=> 'Smiley image',
 	'SMILIES_IMPORTED'			=> 'The smilies pack has been installed successfully.',
-	'SMILIES_IMPORT_SUCCESS'	=> 'The smilies pack was imported successfully',
+	'SMILIES_IMPORT_SUCCESS'	=> 'The smilies pack was imported successfully.',
 	'SMILIES_LOCATION'			=> 'Smiley location',
 	'SMILIES_NOT_DISPLAYED'		=> 'The following smilies are not displayed on the posting page',
 	'SMILIES_ORDER'				=> 'Smiley order',
@@ -158,18 +158,18 @@ $lang = array_merge($lang, array(
 	'ADD_WORD'				=> 'Add new word',
 
 	'EDIT_WORD'		=> 'Edit word censor',
-	'ENTER_WORD'	=> 'You must enter a word and its replacement',
+	'ENTER_WORD'	=> 'You must enter a word and its replacement.',
 
-	'NO_WORD'	=> 'No word selected for editing',
+	'NO_WORD'	=> 'No word selected for editing.',
 
 	'REPLACEMENT'	=> 'Replacement',
 
 	'UPDATE_WORD'	=> 'Update word censor',
 
 	'WORD'				=> 'Word',
-	'WORD_ADDED'		=> 'The word censor has been successfully added',
-	'WORD_REMOVED'		=> 'The selected word censor has been successfully removed',
-	'WORD_UPDATED'		=> 'The selected word censor has been successfully updated',
+	'WORD_ADDED'		=> 'The word censor has been successfully added.',
+	'WORD_REMOVED'		=> 'The selected word censor has been successfully removed.',
+	'WORD_UPDATED'		=> 'The selected word censor has been successfully updated.',
 ));
 
 // Ranks
@@ -202,8 +202,8 @@ $lang = array_merge($lang, array(
 	'DELETE_DISALLOW_EXPLAIN'	=> 'You can remove a disallowed username by selecting the username from this list and clicking submit',
 	'DELETE_DISALLOW_TITLE'		=> 'Remove a disallowed username',
 	'DISALLOWED_ALREADY'		=> 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present.',
-	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed',
-	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added',
+	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed.',
+	'DISALLOW_SUCCESSFUL'		=> 'The disallowed username has been successfully added.',
 
 	'NO_DISALLOWED'				=> 'No disallowed usernames',
 	'NO_USERNAME_SPECIFIED'		=> 'You haven’t selected or entered a username to operate with.',
@@ -218,19 +218,19 @@ $lang = array_merge($lang, array(
 	'IS_NOT_TRANSLATED'		=> 'Reason has not been localised',
 	'IS_TRANSLATED'			=> 'Reason has been localised',
 	
-	'NO_REASON'					=> 'Reason could not be found',
+	'NO_REASON'					=> 'Reason could not be found.',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
 	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason "Other".',
 
 	'REASON_ADD'			=> 'Add report/denial reason',
-	'REASON_ADDED'			=> 'Report/denial reason successfully added',
+	'REASON_ADDED'			=> 'Report/denial reason successfully added.',
 	'REASON_ALREADY_EXIST'	=> 'A reason with this title already exist, please enter another title for this reason.',
 	'REASON_DESCRIPTION'	=> 'Reason description',
 	'REASON_EDIT'			=> 'Edit report/denial reason',
 	'REASON_EDIT_EXPLAIN'	=> 'Here you are able to add or edit a reason. If the reason is translated the localized version is used instead of the description entered here.',
-	'REASON_REMOVED'		=> 'Report/denial reason successfully removed',
+	'REASON_REMOVED'		=> 'Report/denial reason successfully removed.',
 	'REASON_TITLE'			=> 'Reason Title',
-	'REASON_UPDATED'		=> 'Report/denial reason successfully updated',
+	'REASON_UPDATED'		=> 'Report/denial reason successfully updated.',
 
 	'USED_IN_REPORTS'		=> 'Used in reports',
 ));

@@ -42,7 +42,7 @@ $lang = array_merge($lang, array(
 	'BAN_LENGTH'			=> 'Length of ban',
 	'BAN_REASON'			=> 'Reason for ban',
 	'BAN_GIVE_REASON'		=> 'Reason shown to the banned',
-	'BAN_UPDATE_SUCCESSFUL'	=> 'The banlist has been updated successfully',
+	'BAN_UPDATE_SUCCESSFUL'	=> 'The banlist has been updated successfully.',
 
 	'EMAIL_BAN'					=> 'Ban one or more email addresses',
 	'EMAIL_BAN_EXCLUDE_EXPLAIN'	=> 'Enable this to exclude the entered email address from all current bans.',

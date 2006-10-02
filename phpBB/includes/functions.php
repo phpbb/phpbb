@@ -2683,9 +2683,16 @@ function get_preg_expression($mode)
 * Truncates string while retaining special characters if going over the max length
 * The default max length is 60 at the moment
 */
-function truncate_string($string, $max_length = 60)
+function truncate_string($string, $max_length = 60, $allow_reply = true)
 {
 	$chars = array();
+
+	$strip_reply = false;
+	if ($allow_reply && strpos($string, 'Re: ') === 0)
+	{
+		$strip_reply = true;
+		$string = substr($string, 4);
+	}
 
 	// split the multibyte characters first
 	$string_ary = preg_split('/(&#[0-9]+;)/', $string, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
@@ -2705,13 +2712,18 @@ function truncate_string($string, $max_length = 60)
 	}
 
 	// Now check the length ;)
-	if (sizeof($chars) <= $max_length)
+	if (sizeof($chars) > $max_length)
 	{
-		return $string;
+		// Cut off the last elements from the array
+		$string = implode('', array_slice($chars, 0, $max_length));
 	}
 
-	// Cut off the last elements from the array
-	return implode('', array_slice($chars, 0, $max_length));
+	if ($strip_reply)
+	{
+		$string = 'Re: ' . $string;
+	}
+
+	return $string;
 }
 
 

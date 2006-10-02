@@ -101,7 +101,7 @@ $lang = array_merge($lang, array(
 	'APPLY_ALL_PERMISSIONS'		=> 'Apply all permissions',
 	'APPLY_PERMISSIONS'			=> 'Apply permissions',
 	'APPLY_PERMISSIONS_EXPLAIN'	=> 'The permissions and role defined for this item will only be applied to this item and all checked items.',
-	'AUTH_UPDATED'				=> 'Permissions have been updated',
+	'AUTH_UPDATED'				=> 'Permissions have been updated.',
 
 	'CREATE_ROLE'				=> 'Create role',
 	'CREATE_ROLE_FROM'			=> 'Use settings from…',
@@ -175,9 +175,9 @@ $lang = array_merge($lang, array(
 	'ROLE_NAME_ALREADY_EXIST'		=> 'A role named <strong>%s</strong> already exist for the specified permission type.',
 	'ROLE_NOT_ASSIGNED'				=> 'Role has not been assigned yet.',
 
-	'SELECTED_FORUM_NOT_EXIST'		=> 'The selected forum(s) do not exist',
-	'SELECTED_GROUP_NOT_EXIST'		=> 'The selected group(s) do not exist',
-	'SELECTED_USER_NOT_EXIST'		=> 'The selected user(s) do not exist',
+	'SELECTED_FORUM_NOT_EXIST'		=> 'The selected forum(s) do not exist.',
+	'SELECTED_GROUP_NOT_EXIST'		=> 'The selected group(s) do not exist.',
+	'SELECTED_USER_NOT_EXIST'		=> 'The selected user(s) do not exist.',
 	'SELECT_FORUM_SUBFORUM_EXPLAIN'	=> 'The forum you select here will include all subforums into the selection',
 	'SELECT_ROLE'					=> 'Select role…',
 	'SELECT_TYPE'					=> 'Select type',
@@ -221,7 +221,7 @@ $lang = array_merge($lang, array(
 	'VIEW_ASSIGNED_ITEMS'	=> 'View assigned items',
 	'VIEW_PERMISSIONS'		=> 'View permissions',
 
-	'WRONG_PERMISSION_TYPE'	=> 'Wrong permission type selected',
+	'WRONG_PERMISSION_TYPE'	=> 'Wrong permission type selected.',
 ));
 
 ?>

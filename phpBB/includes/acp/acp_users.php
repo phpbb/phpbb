@@ -158,7 +158,7 @@ class acp_users
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
-							trigger_error($user->lang['NO_ADMIN'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
 
 						// Check if the user wants to remove himself or the guest user account

@@ -72,8 +72,8 @@ $lang = array_merge($lang, array(
 
 	'SEARCH_GUEST_INTERVAL'					=> 'Guest search flood interval',
 	'SEARCH_GUEST_INTERVAL_EXPLAIN'			=> 'Number of seconds guests must wait between searches. If one guest searches all others have to wait until the time interval passed.',
-	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database',
-	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend',
+	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
+	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
 	'SEARCH_INTERVAL'						=> 'User search flood interval',
 	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independendly for each user.',
 	'SEARCH_STORE_RESULTS'					=> 'Search result cache length',

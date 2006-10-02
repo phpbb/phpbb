@@ -32,7 +32,7 @@ if (empty($lang) || !is_array($lang))
 
 // Custom profile fields
 $lang = array_merge($lang, array(
-	'ADDED_PROFILE_FIELD'	=> 'Successfully added custom profile field',
+	'ADDED_PROFILE_FIELD'	=> 'Successfully added custom profile field.',
 	'ALPHA_ONLY'			=> 'Alphanumeric only',
 	'ALPHA_SPACERS'			=> 'Alphanumeric and spacers',
 	'ALWAYS_TODAY'			=> 'Always the current date',
@@ -40,7 +40,7 @@ $lang = array_merge($lang, array(
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
 	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons',
 
-	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field',
+	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field.',
 	'CHARS_ANY'					=> 'Any character',
 	'CHECKBOX'					=> 'Checkbox',
 	'CP_LANG_DEFAULT_VALUE'		=> 'Default value',
@@ -52,6 +52,7 @@ $lang = array_merge($lang, array(
 	'COLUMNS'					=> 'Columns',
 
 	'DEFAULT_ISO_LANGUAGE'			=> 'Default language [%s]',
+	'DEFAULT_LANGUAGE_NOT_FILLED'	=> 'The language entries for the default language are not filled for this profile field.',
 	'DEFAULT_VALUE'					=> 'Default value',
 	'DELETE_PROFILE_FIELD'			=> 'Remove profile field',
 	'DELETE_PROFILE_FIELD_CONFIRM'	=> 'Are you sure you want to delete this profile field?',
@@ -79,7 +80,7 @@ $lang = array_merge($lang, array(
 	'FIELD_IDENT_EXPLAIN'		=> 'The field identification is a name to identify the profile field within the database and the templates.',
 	'FIELD_INT'					=> 'Numbers',
 	'FIELD_LENGTH'				=> 'Length of input box',
-	'FIELD_NOT_FOUND'			=> 'Profile field not found',
+	'FIELD_NOT_FOUND'			=> 'Profile field not found.',
 	'FIELD_STRING'				=> 'Single textfield',
 	'FIELD_TEXT'				=> 'Textarea',
 	'FIELD_TYPE'				=> 'Field type',
@@ -101,16 +102,16 @@ $lang = array_merge($lang, array(
 	'MIN_FIELD_NUMBER'		=> 'Lowest allowed number',
 
 	'NO_FIELD_ENTRIES'			=> 'No entries defined',
-	'NO_FIELD_ID'				=> 'No field id specified',
-	'NO_FIELD_TYPE'				=> 'No Field type specified',
+	'NO_FIELD_ID'				=> 'No field id specified.',
+	'NO_FIELD_TYPE'				=> 'No Field type specified.',
 	'NO_VALUE_OPTION'			=> 'Option equal to non entered value',
 	'NO_VALUE_OPTION_EXPLAIN'	=> 'Value for a non-entry. If the field is required, the user gets an error if he choose the option selected here',
 	'NUMBERS_ONLY'				=> 'Only numbers (0-9)',
 
 	'PREVIEW_PROFILE_FIELD'		=> 'Preview profile field',
 	'PROFILE_BASIC_OPTIONS'		=> 'Basic options',
-	'PROFILE_FIELD_ACTIVATED'	=> 'Profile field successfully activated',
-	'PROFILE_FIELD_DEACTIVATED'	=> 'Profile field successfully deactivated',
+	'PROFILE_FIELD_ACTIVATED'	=> 'Profile field successfully activated.',
+	'PROFILE_FIELD_DEACTIVATED'	=> 'Profile field successfully deactivated.',
 	'PROFILE_LANG_OPTIONS'		=> 'Language specific options',
 	'PROFILE_TYPE_OPTIONS'		=> 'Profile type specific options',
 

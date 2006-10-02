@@ -152,7 +152,7 @@ class acp_search
 						}
 						else
 						{
-							trigger_error($error, E_USER_WARNING);
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					else
@@ -168,7 +168,7 @@ class acp_search
 				}
 				else
 				{
-					trigger_error($error, E_USER_WARNING);
+					trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 
@@ -241,7 +241,7 @@ class acp_search
 			$error = false;
 			if ($this->init_search($this->state[0], $this->search, $error))
 			{
-				trigger_error($error, E_USER_WARNING);
+				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 	
 			$action = &$this->state[1];

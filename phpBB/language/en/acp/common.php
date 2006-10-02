@@ -199,7 +199,7 @@ $lang = array_merge($lang, array(
 	'BACK'					=> 'Back',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
-	'CONFIG_UPDATED'		=> 'Configuration updated successfully',
+	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
 
 	'DEACTIVATE'				=> 'Deactivate',
@@ -250,6 +250,7 @@ $lang = array_merge($lang, array(
 	'PERMISSIONS_TRANSFERED'			=> 'Permissions transfered',
 	'PERMISSIONS_TRANSFERED_EXPLAIN'	=> 'You are currently having the permissions from %1$s. You are able to browse the forum with the users permissions but not access the administration control panel since admin permissions were not transfered. You are able to <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
+
 	'REMIND'							=> 'Remind',
 	'REORDER'							=> 'Reorder',
 	'RESYNC'							=> 'Resyncronise',
@@ -352,6 +353,7 @@ $lang = array_merge($lang, array(
 	'SORT_REASON'		=> 'Reason',
 	'SORT_REG_DATE'		=> 'Registration date',
 ));
+
 // Log Entries
 $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<strong>Added or edited users user permissions</strong><br />» %s',

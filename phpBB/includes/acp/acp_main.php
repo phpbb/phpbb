@@ -56,7 +56,7 @@ class acp_main
 			case 'online':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				set_config('record_online_users', 1, true);
@@ -67,7 +67,7 @@ class acp_main
 			case 'stats':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT COUNT(post_id) AS stat 
@@ -119,7 +119,7 @@ class acp_main
 			case 'user':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
@@ -141,7 +141,7 @@ class acp_main
 			case 'date':
 				if (!$auth->acl_get('a_board'))
 				{
-					trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
+					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				set_config('board_startdate', time() - 1);

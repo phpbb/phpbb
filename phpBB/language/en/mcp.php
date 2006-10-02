@@ -319,8 +319,8 @@ $lang = array_merge($lang, array(
 	'UNLOCK_TOPICS_CONFIRM'			=> 'Are you sure you want to unlock all selected topics?',
 	'USER_CANNOT_POST'				=> 'You cannot post in this forum',
 	'USER_CANNOT_REPORT'			=> 'You cannot report posts in this forum',
-	'USER_FEEDBACK_ADDED'			=> 'User feedback added successfully',
-	'USER_WARNING_ADDED'			=> 'User warned successfully',
+	'USER_FEEDBACK_ADDED'			=> 'User feedback added successfully.',
+	'USER_WARNING_ADDED'			=> 'User warned successfully.',
 
 	'VIEW_DETAILS'			=> 'View details',
 

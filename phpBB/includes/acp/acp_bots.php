@@ -143,7 +143,7 @@ class acp_bots
 					$bot_row['bot_ip'] = str_replace(' ', '', $bot_row['bot_ip']);
 
 					// Make sure the admin is not adding a bot with an user agent similar to his one
-					if ($bot_row['bot_agent'] && substr($user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent']))
+					if ($bot_row['bot_agent'] && substr($user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent'], 0, 149))
 					{
 						$error[] = $user->lang['ERR_BOT_AGENT_MATCHES_UA'];
 					}
@@ -165,7 +165,7 @@ class acp_bots
 
 							if (!$group_row)
 							{
-								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 							$user_id = user_add(array(

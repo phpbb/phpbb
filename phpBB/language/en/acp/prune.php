@@ -46,8 +46,8 @@ $lang = array_merge($lang, array(
 
 	'SELECT_USERS_EXPLAIN'		=> 'Enter specific usernames here, they will be used in preference to the criteria above.',
 
-	'USER_DEACTIVATE_SUCCESS'	=> 'The selected users have been deactivated successfully',
-	'USER_DELETE_SUCCESS'		=> 'The selected users have been deleted successfully',
+	'USER_DEACTIVATE_SUCCESS'	=> 'The selected users have been deactivated successfully.',
+	'USER_DELETE_SUCCESS'		=> 'The selected users have been deleted successfully.',
 ));
 
 // Forum Pruning

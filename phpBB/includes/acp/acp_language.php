@@ -201,7 +201,7 @@ class acp_language
 
 				if (!$fp)
 				{
-					trigger_error($user->lang['UNABLE_TO_WRITE_FILE'], E_USER_WARNING);
+					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($this->language_directory == 'email')
@@ -320,7 +320,7 @@ class acp_language
 
 					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
 
-					trigger_error($user->lang['UPLOAD_COMPLETED']);
+					trigger_error($user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action));
 				}
 			
 				$action = 'details';

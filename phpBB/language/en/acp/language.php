@@ -45,7 +45,7 @@ $lang = array_merge($lang, array(
 	'INVALID_LANGUAGE_PACK'		=> 'The selected language pack seems to be not valid. Please verify the language pack and upload it again if necessary.',
 	'INVALID_UPLOAD_METHOD'		=> 'The selected upload method is not valid, please choose a different method.',
 
-	'LANGUAGE_DETAILS_UPDATED'			=> 'Language details successfully updated',
+	'LANGUAGE_DETAILS_UPDATED'			=> 'Language details successfully updated.',
 	'LANGUAGE_ENTRIES'					=> 'Language Entries',
 	'LANGUAGE_ENTRIES_EXPLAIN'			=> 'Here you are able to change existing language pack entries or not already translated ones.<br /><strong>Note:</strong> Once you changed a language file, the changes will be stored within a seperate folder for you to download. The changes will not be seen by your users until you replace the original language files at your webspace (by uploading them).',
 	'LANGUAGE_FILES'					=> 'Language files',
@@ -69,7 +69,8 @@ $lang = array_merge($lang, array(
 	'MISSING_LANG_VARIABLES'	=> 'Missing language variables',
 	'MODS_FILES'				=> 'MODs language files',
 
-	'NO_LANG_ID'					=> 'You haven’t specified a language pack',
+	'NO_FILE_SELECTED'				=> 'You haven’t specified a language file.',
+	'NO_LANG_ID'					=> 'You haven’t specified a language pack.',
 	'NO_REMOVE_DEFAULT_LANG'		=> 'You are not able to remove the default language pack.<br />If you want to remove this language pack, change your boards default language first.',
 	'NO_UNINSTALLED_LANGUAGE_PACKS'	=> 'No uninstalled language packs',
 
@@ -84,11 +85,12 @@ $lang = array_merge($lang, array(
 
 	'UNINSTALLED_LANGUAGE_PACKS'	=> 'Uninstalled language packs',
 
-	'UPLOAD_COMPLETED'			=> 'The upload has completed',
+	'UNABLE_TO_WRITE_FILE'		=> 'The file could not be written to %s.',
+	'UPLOAD_COMPLETED'			=> 'The upload was completed successfully.',
 	'UPLOAD_METHOD'				=> 'Upload method',
 	'UPLOAD_SETTINGS'			=> 'Upload settings',
 
-	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid',
+	'WRONG_LANGUAGE_FILE'		=> 'Selected language file is invalid.',
 ));
 
 ?>

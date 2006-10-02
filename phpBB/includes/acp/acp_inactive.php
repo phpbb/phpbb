@@ -26,6 +26,8 @@ class acp_inactive
 		global $config, $db, $user, $auth, $template;
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
+		$user->add_lang('memberlist');
+
 		$action = request_var('action', '');
 		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
 		$start	= request_var('start', 0);
@@ -71,7 +73,7 @@ class acp_inactive
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
-							trigger_error($user->lang['NO_ADMIN'], E_USER_WARNING);
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
@@ -87,7 +89,7 @@ class acp_inactive
 				case 'remind':
 					if (empty($config['email_enable']))
 					{
-						trigger_error($user->lang['EMAIL_DISABLED'], E_USER_WARNING);
+						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 

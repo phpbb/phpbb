@@ -1030,7 +1030,7 @@ if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
 {
-	$post_data['post_subject'] = ((!preg_match('/^Re:/', $post_data['post_subject'])) ? 'Re: ' : '') . censor_text($post_data['post_subject']);
+	$post_data['post_subject'] = ((strpos($post_data['post_subject'], 'Re: ') !== 0) ? 'Re: ' : '') . censor_text($post_data['post_subject']);
 }
 
 $attachment_data = $message_parser->attachment_data;

@@ -403,7 +403,7 @@ class ucp_pm
 			break;
 
 			default:
-				trigger_error('NO_ACTION_MODE');
+				trigger_error('NO_ACTION_MODE', E_USER_ERROR);
 			break;
 		}
 

@@ -417,12 +417,12 @@ class acp_attachments
 
 					if ($action != 'add' && $action != 'edit')
 					{
-						trigger_error('WRONG_MODE', E_USER_WARNING);
+						trigger_error('NO_MODE', E_USER_ERROR);
 					}
 
 					if (!$group_id && $action == 'edit')
 					{
-						trigger_error('NO_EXT_GROUP_SPECIFIED', E_USER_WARNING);
+						trigger_error($user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if ($group_id)
@@ -592,7 +592,7 @@ class acp_attachments
 					
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'SELECT *
@@ -784,7 +784,7 @@ class acp_attachments
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXTENSION_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error($user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . '
@@ -1362,7 +1362,7 @@ class acp_attachments
 				add_log('admin', $log_entry, $ip_list_log);
 			}
 
-			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS']);
+			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
 		}
 		else if (isset($_POST['unsecuresubmit']))
 		{
@@ -1391,7 +1391,7 @@ class acp_attachments
 				add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);
 			}
 
-			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS']);
+			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
 		}
 	}
 

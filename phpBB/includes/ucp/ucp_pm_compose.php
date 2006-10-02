@@ -149,7 +149,7 @@ function compose_pm($id, $mode, $action)
 		break;
 
 		default:
-			trigger_error('NO_ACTION_MODE');
+			trigger_error('NO_ACTION_MODE', E_USER_ERROR);
 	}
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))

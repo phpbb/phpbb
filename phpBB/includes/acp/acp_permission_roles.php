@@ -58,7 +58,7 @@ class acp_permission_roles
 			break;
 
 			default:
-				trigger_error('INVALID_MODE', E_USER_ERROR);
+				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
 

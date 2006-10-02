@@ -1051,7 +1051,7 @@ class acp_database
 						unset($sql_data);
 
 						add_log('admin', 'LOG_DB_BACKUP');
-						trigger_error($user->lang['BACKUP_SUCCESS']);
+						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
 					default:
@@ -1194,13 +1194,13 @@ class acp_database
 
 						if (!(file_exists($file_name) && is_readable($file_name)))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'], E_USER_WARNING);
+							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if ($delete)
 						{
 							unlink($file_name);
-							trigger_error($user->lang['BACKUP_DELETE']);
+							trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 						}
 
 						$data = file_get_contents($file_name);
@@ -1290,7 +1290,7 @@ class acp_database
 							}
 						}
 						add_log('admin', 'LOG_DB_RESTORE');
-						trigger_error($user->lang['RESTORE_SUCCESS']);
+						trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
 					default:
