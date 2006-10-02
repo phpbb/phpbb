@@ -1213,10 +1213,10 @@ class install_install extends module
 		$dbpasswd = html_entity_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $dbms;
+		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
@@ -1624,10 +1624,10 @@ class install_install extends module
 		global $phpbb_root_path, $phpEx, $config, $lang;
 
 		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate it and set return on error true
-		$sql_db = 'dbal_' . $dbms;
+		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_return_on_error(true);
 
