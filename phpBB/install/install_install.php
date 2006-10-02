@@ -566,7 +566,7 @@ class install_install extends module
 			$error = array();
 
 			// Check the entered email address and password
-/*			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
+			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}
@@ -606,7 +606,7 @@ class install_install extends module
 			if ($board_email1 != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
-			}*/
+			}
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
