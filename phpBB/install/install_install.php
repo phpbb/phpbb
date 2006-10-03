@@ -1770,6 +1770,7 @@ class install_install extends module
 				break;
 
 				case 'firebird':
+					// check the version of FB, use some hackery if we can't get access to the server info
 					if ($db->service_handle !== false && function_exists('ibase_server_info'))
 					{
 						$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
@@ -1778,6 +1779,32 @@ class install_install extends module
 						{
 							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
 						}
+					}
+					else
+					{
+						$sql = "SELECT *
+							FROM RDB$FUNCTIONS
+							WHERE RDB$SYSTEM_FLAG IS NULL
+								AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
+						$result = $db->sql_query($sql);
+
+						// if its a UDF, its too old
+						if ($db->sql_fetchrow($result))
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						}
+						else
+						{
+							$sql = "SELECT FIRST 0 char_length('')
+								FROM RDB\$DATABASE";
+							$result2 = $db->sql_query($sql);
+							if (!$result2) // This can only fail if char_length is not defined
+							{
+								$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+							}
+							$db->sql_freeresult($result2);
+						}
+						$db->sql_freeresult($result);
 					}
 				break;
 				
