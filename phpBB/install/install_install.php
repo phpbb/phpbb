@@ -886,7 +886,7 @@ class install_install extends module
 		$server_port = ($server_port !== '') ? $server_port : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
 		$server_protocol = ($server_protocol !== '') ? $server_protocol : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
-		
+
 		foreach ($this->advanced_config_options as $config_key => $vars)
 		{
 			if (!is_array($vars) && strpos($config_key, 'legend') === false)
@@ -964,6 +964,12 @@ class install_install extends module
 
 		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
 
+		// Try to come up with the best solution for cookie domain...
+		if (strpos($cookie_domain, 'www.') === 0)
+		{
+			$cookie_domain = str_replace('www.', '.', $cookie_domain);
+		}
+
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
 		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
 		{
@@ -982,6 +988,19 @@ class install_install extends module
 
 		// NOTE: trigger_error does not work here.
 		$db->return_on_error = true;
+
+		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
+		if ($dbms == 'mysql')
+		{
+			if (SQL_LAYER == 'mysql4' && version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$this->available_dbms[$dbms]['SCHEMA'] .= '_41';
+			}
+			else
+			{
+				$this->available_dbms[$dbms]['SCHEMA'] .= '_40';
+			}
+		}
 
 		// Ok we have the db info go ahead and read in the relevant schema
 		// and work on building the table
@@ -1649,33 +1668,31 @@ class install_install extends module
 		switch ($dbms)
 		{
 			case 'mysql':
-			case 'mysql4':
 			case 'mysqli':
-				if (stristr($table_prefix, '-') !== false)
+				if (strpos($table_prefix, '-') !== false)
 				{
 					$error[] = $lang['INST_ERR_PREFIX_INVALID'];
 					return false;
 				}
+
+			// no break;
+
 			case 'postgres':
 				$prefix_length = 36;
-
 			break;
 
 			case 'mssql':
 			case 'mssql_odbc':
 				$prefix_length = 90;
-			
 			break;
 
 			case 'sqlite':
 				$prefix_length = 200;
-			
 			break;
 
 			case 'firebird':
 			case 'oracle':
 				$prefix_length = 6;
-
 			break;
 		}
 
@@ -1696,10 +1713,9 @@ class install_install extends module
 			switch ($dbms)
 			{
 				case 'mysql':
-				case 'mysql4':
 				case 'mysqli':
 				case 'sqlite':
-					$sql = "SHOW TABLES";
+					$sql = 'SHOW TABLES';
 					$field = "Tables_in_{$dbname}";
 				break;
 
@@ -1755,13 +1771,6 @@ class install_install extends module
 			// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
 			switch ($dbms)
 			{
-				case 'mysql4':
-					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.0.0', '<'))
-					{
-						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
-					}
-				break;
-
 				case 'mysqli':
 					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 					{
@@ -1787,9 +1796,11 @@ class install_install extends module
 							WHERE RDB$SYSTEM_FLAG IS NULL
 								AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
 						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
 
 						// if its a UDF, its too old
-						if ($db->sql_fetchrow($result))
+						if ($row)
 						{
 							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
 						}
@@ -1797,14 +1808,13 @@ class install_install extends module
 						{
 							$sql = "SELECT FIRST 0 char_length('')
 								FROM RDB\$DATABASE";
-							$result2 = $db->sql_query($sql);
-							if (!$result2) // This can only fail if char_length is not defined
+							$result = $db->sql_query($sql);
+							if (!$result) // This can only fail if char_length is not defined
 							{
 								$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
 							}
-							$db->sql_freeresult($result2);
+							$db->sql_freeresult($result);
 						}
-						$db->sql_freeresult($result);
 					}
 				break;
 				
@@ -1819,7 +1829,6 @@ class install_install extends module
 					{
 						$stats[$row['parameter']] = $row['value'];
 					}
-
 					$db->sql_freeresult($result);
 
 					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
@@ -1831,9 +1840,7 @@ class install_install extends module
 				case 'postgres':
 					$sql = "SHOW server_encoding;";
 					$result = $db->sql_query($sql);
-
 					$row = $db->sql_fetchrow($result);
-
 					$db->sql_freeresult($result);
 
 					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
@@ -1949,24 +1956,16 @@ class install_install extends module
 			'DRIVER'		=> 'firebird'
 		),
 		'mysqli'	=> array(
-			'LABEL'			=> 'MySQL 4.1.x/5.x (MySQLi)',
+			'LABEL'			=> 'MySQL with MySQLi Extension',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysqli'
 		),
-		'mysql4'	=> array(
-			'LABEL'			=> 'MySQL 4.x/MySQL 5.x',
-			'SCHEMA'		=> 'mysql_41',
-			'MODULE'		=> 'mysql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysql'
-		),
 		'mysql'		=> array(
 			'LABEL'			=> 'MySQL',
-			'SCHEMA'		=> 'mysql_40',
+			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql', 
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks',

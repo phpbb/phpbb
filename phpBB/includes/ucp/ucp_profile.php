@@ -120,7 +120,7 @@ class ucp_profile
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $username, $user->data['user_email'], $email);
 						}
 
-						if ($config['email_enable'] && $email != $user->data['user_email'] && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
+						if ($config['email_enable'] && $email != $user->data['user_email'] && $user->data['user_type'] != USER_FOUNDER && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{
 							include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
@@ -185,11 +185,10 @@ class ucp_profile
 
 							$messenger->save_queue();
 
+							user_active_flip('deactivate', $user_id, INACTIVE_PROFILE);
+
 							$sql_ary += array(
-								'user_type'				=> USER_INACTIVE,
 								'user_actkey'			=> $user_actkey,
-								'user_inactive_reason'	=> INACTIVE_PROFILE,
-								'user_inactive_time'	=> time(),
 							);
 						}
 

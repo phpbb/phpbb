@@ -89,7 +89,7 @@ class acp_attachments
 						'legend1'				=> 'ACP_ATTACHMENT_SETTINGS',
 						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'validate' => 'path',	'type' => 'text:25:100', 'explain' => true),
+						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'validate' => 'wpath',	'type' => 'text:25:100', 'explain' => true),
 						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'custom', 'method' => 'display_order', 'explain' => true),
 						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'validate' => 'int',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'validate' => 'int',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),

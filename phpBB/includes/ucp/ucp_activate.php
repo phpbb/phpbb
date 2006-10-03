@@ -53,7 +53,6 @@ class ucp_activate
 		if ($update_password)
 		{
 			$sql_ary = array(
-				'user_type'			=> USER_NORMAL,
 				'user_actkey'		=> '',
 				'user_password'		=> $user_row['user_newpasswd'],
 				'user_newpasswd'	=> ''
@@ -69,12 +68,12 @@ class ucp_activate
 		{
 			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-			// Now we need to demote the user from the inactive group and add him to the registered group
-			user_active_flip($user_row['user_id'], $user_row['user_type'], '', $user_row['username'], 0, true);
+			user_active_flip('activate', $user_row['user_id']);
 
-			// Update last username
-			update_last_username();
-			set_config('num_users', $config['num_users'] + 1, true);
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_actkey = ''
+				WHERE user_id = {$user_row['user_id']}";
+			$db->sql_query($sql);
 		}
 
 		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)

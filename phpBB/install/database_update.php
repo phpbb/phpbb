@@ -701,7 +701,6 @@ function prepare_column_data($dbms, $column_data)
 				$sql .= ' COLLATE UNICODE';
 			}
 
-			$sql .= ",\n";
 		break;
 
 		case 'mssql':

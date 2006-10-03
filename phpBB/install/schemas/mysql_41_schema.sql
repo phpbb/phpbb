@@ -1005,7 +1005,6 @@ CREATE TABLE phpbb_users (
 	user_notify_pm tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_notify_type tinyint(4) DEFAULT '0' NOT NULL,
 	user_allow_pm tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	user_allow_email tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_viewonline tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_viewemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	user_allow_massemail tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,

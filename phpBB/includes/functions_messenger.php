@@ -417,13 +417,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-			$this->jabber = new jabber;
-
-			$this->jabber->server	= $config['jab_host'];
-			$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
-			$this->jabber->username = $config['jab_username'];
-			$this->jabber->password = $config['jab_password'];
-			$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
+			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
 
 			if (!$this->jabber->connect())
 			{
@@ -557,13 +551,7 @@ class queue
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-					$this->jabber = new jabber;
-
-					$this->jabber->server	= $config['jab_host'];
-					$this->jabber->port		= ($config['jab_port']) ? $config['jab_port'] : 5222;
-					$this->jabber->username = $config['jab_username'];
-					$this->jabber->password = $config['jab_password'];
-					$this->jabber->resource = ($config['jab_resource']) ? $config['jab_resource'] : '';
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
 
 					if (!$this->jabber->connect())
 					{
@@ -603,14 +591,19 @@ class queue
 
 							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
 							messenger::error('EMAIL', $message);
-							continue 3;
+							continue 2;
 						}
 					break;
 
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
-							$this->jabber->send_message($address, 'normal', NULL, array('body' => $msg));
+							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg)) === false)
+							{
+								$message = 'Method: [ JABBER ]<br /><br />' . $this->jabber->get_log() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
+								messenger::error('JABBER', $message);
+								continue 3;
+							}
 						}
 					break;
 				}

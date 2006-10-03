@@ -33,6 +33,8 @@ if (!defined('SQL_LAYER'))
 */
 class dbal_mysql extends dbal
 {
+	var $mysql_version;
+
 	/**
 	* Connect to server
 	* @access public
@@ -51,14 +53,14 @@ class dbal_mysql extends dbal
 			if (@mysql_select_db($this->dbname))
 			{
 				// Determine what version we are using and if it natively supports UNICODE
-				$mysql_version = mysql_get_server_info($this->db_connect_id);
+				$this->mysql_version = mysql_get_server_info($this->db_connect_id);
 
-				if (version_compare($mysql_version, '4.1.3', '>='))
+				if (version_compare($this->mysql_version, '4.1.3', '>='))
 				{
 					define('SQL_LAYER', 'mysql4');
 					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
 				}
-				else if (version_compare($mysql_version, '4.0.0', '>='))
+				else if (version_compare($this->mysql_version, '4.0.0', '>='))
 				{
 					define('SQL_LAYER', 'mysql4');
 				}
@@ -79,7 +81,7 @@ class dbal_mysql extends dbal
 	*/
 	function sql_server_info()
 	{
-		return 'MySQL ' . @mysql_get_server_info($this->db_connect_id);
+		return 'MySQL ' . $this->mysql_version;
 	}
 
 	/**

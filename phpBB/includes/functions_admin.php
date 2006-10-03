@@ -207,7 +207,7 @@ function group_select_options($group_id, $exclude_ids = false)
 	global $db, $user, $config;
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
-	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
+	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
 
 	$sql = 'SELECT group_id, group_name, group_type 
 		FROM ' . GROUPS_TABLE . "
@@ -245,6 +245,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 			ORDER BY left_id ASC';
 		$result = $db->sql_query($sql, $expire_time);
 
+		$forum_rows = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_rows[] = $row;
@@ -2343,7 +2344,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
 		FROM ' . USERS_TABLE . ' 
 		WHERE user_type = ' . USER_INACTIVE . 
-		(($limit_days) ? "AND user_inactive_time >= $limit_days" : '') . " 
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . " 
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
 
@@ -2363,15 +2364,19 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 			case INACTIVE_MANUAL:
 				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_MANUAL'];
 			break;
+
+			case INACTIVE_REMIND:
+				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REMIND'];
+			break;
 		}
 	
 		$users[] = $row;
 	}
 	
-	$sql = 'SELECT count(user_id) AS user_count
+	$sql = 'SELECT COUNT(user_id) AS user_count
 		FROM ' . USERS_TABLE . '
 		WHERE user_type = ' . USER_INACTIVE . 
-		(($limit_days) ? "AND user_inactive_time >= $limit_days" : '');
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
 	$result = $db->sql_query($sql);
 	$user_count = (int) $db->sql_fetchfield('user_count');
 	$db->sql_freeresult($result);

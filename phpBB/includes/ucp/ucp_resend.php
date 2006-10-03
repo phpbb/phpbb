@@ -46,7 +46,7 @@ class ucp_resend
 				trigger_error('ACCOUNT_ALREADY_ACTIVATED');
 			}
 
-			// Determine coppa status on group (INACTIVE(_COPPA))
+			// Determine coppa status on group (REGISTERED(_COPPA))
 			$sql = 'SELECT group_name, group_type
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_id = ' . $user_row['group_id'];
@@ -59,7 +59,7 @@ class ucp_resend
 				trigger_error('NO_GROUP');
 			}
 
-			$coppa = ($row['group_name'] == 'INACTIVE_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
+			$coppa = ($row['group_name'] == 'REGISTERED_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
 
 			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 			$messenger = new messenger(false);

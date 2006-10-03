@@ -127,9 +127,6 @@ class session
 	*
 	* @param bool $update_session_page if true the session page gets updated.
 	*			This can be set to circumvent certain scripts to update the users last visited page.
-	*
-	* @todo Introduce further user types, bot, guest
-	* @todo Change user_type (as above) to a bitfield? user_type & USER_FOUNDER for example
 	*/
 	function session_begin($update_session_page = true)
 	{
@@ -148,9 +145,6 @@ class session
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
-			// Switch to request_var ... can this cause issues, can a _GET/_POST param
-			// be used to poison this? Not sure that it makes any difference in terms of
-			// the end result, be it a cookie or param.
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
 			$this->session_id 		= request_var($config['cookie_name'] . '_sid', '', false, true);
@@ -265,7 +259,6 @@ class session
 							$db->sql_query($sql);
 						}
 
-						// Ultimately to be removed
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
 
@@ -275,7 +268,10 @@ class session
 				else
 				{
 					// Added logging temporarly to help debug bugs...
-					add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
+					if (defined('DEBUG_EXTRA'))
+					{
+						add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
+					}
 				}
 			}
 		}
@@ -374,7 +370,7 @@ class session
 			$sql = 'SELECT u.* 
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
 				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
-					AND u.user_type <> ' . USER_INACTIVE . "
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 					AND k.user_id = u.user_id
 					AND k.key_id = '" . $db->sql_escape(md5($this->cookie_data['k'])) . "'";
 			$result = $db->sql_query($sql);
@@ -389,7 +385,7 @@ class session
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . (int) $this->cookie_data['u'] . '
-					AND user_type <> ' . USER_INACTIVE;
+					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -439,18 +435,14 @@ class session
 		// session exists in which case session_id will also be set
 
 		// Is user banned? Are they excluded? Won't return on ban, exists within method
-		// @todo Change to !$this->data['user_type'] & USER_FOUNDER && !$this->data['user_type'] & USER_BOT in time
 		if ($this->data['user_type'] != USER_FOUNDER)
 		{
 			$this->check_ban($this->data['user_id'], $this->ip);
 		}
 
-		//
-		// Do away with ultimately?
-		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS) ? true : false;
+
+		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 		$this->data['is_bot'] = ($bot) ? true : false;
-		//
-		//
 
 		// If our friend is a bot, we re-assign a previously assigned session
 		if ($this->data['is_bot'] && $bot === $this->data['user_id'] && $this->data['session_id'])
@@ -493,8 +485,8 @@ class session
 			}
 		}
 
-		// @todo Change this ... check for "... && user_type & USER_NORMAL" ?
 		$session_autologin = (($this->cookie_data['k'] || $persist_login) && $this->data['is_registered']) ? true : false;
+		$set_admin = ($set_admin && $this->data['is_registered']) ? true : false;
 
 		// Create or update the session
 		$sql_ary = array(
@@ -734,20 +726,11 @@ class session
 	{
 		global $config;
 
-		if (!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1')
-		{
-			@setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path']);
-		}
-		else
-		{
-			// Firefox does not allow setting cookies with a domain containing no periods.
-			if (strpos($config['cookie_domain'], '.') === false)
-			{
-				$config['cookie_domain'] = '.' . $config['cookie_domain'];
-			}
+		$name_data = rawurlencode($config['cookie_name'] . '_' . $name) . '=' . rawurlencode($cookiedata);
+		$expire = gmdate('D, d-M-Y H:i:s \\G\\M\\T', $cookietime);
+		$domain = (!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain'];
 
-			@setcookie($config['cookie_name'] . '_' . $name, $cookiedata, $cookietime, $config['cookie_path'], $config['cookie_domain'], $config['cookie_secure']);
-		}
+		header('Set-Cookie: ' . $name_data . '; expires=' . $expire . '; path=' . $config['cookie_path'] . $domain . ((!$config['cookie_secure']) ? '' : '; secure') . '; HttpOnly', false);
 	}
 
 	/**
@@ -1020,15 +1003,20 @@ class user extends session
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
 
-/*			Browser-specific language setting removed - might re-appear later
+			/**
+			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
+			* @todo if re-enabled we need to make sure only those languages installed are checked
 
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{
 				$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+
 				foreach ($accept_lang_ary as $accept_lang)
 				{
 					// Set correct format ... guess full xx_YY form
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
+					$accept_lang = basename($accept_lang);
+
 					if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 					{
 						$this->lang_name = $config['default_lang'] = $accept_lang;
@@ -1039,6 +1027,8 @@ class user extends session
 					{
 						// No match on xx_YY so try xx
 						$accept_lang = substr($accept_lang, 0, 2);
+						$accept_lang = basename($accept_lang);
+
 						if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
 						{
 							$this->lang_name = $config['default_lang'] = $accept_lang;
@@ -1048,7 +1038,7 @@ class user extends session
 					}
 				}
 			}
-*/
+			*/
 		}
 
 		// We include common language file here to not load it every time a custom language file is included

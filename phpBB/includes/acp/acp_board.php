@@ -27,7 +27,7 @@ class acp_board
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
-		// Validation types are: string, int, bool, rpath, path
+		// Validation types are: string, int, bool, rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
 		switch ($mode)
 		{
 			case 'settings':
@@ -93,7 +93,7 @@ class acp_board
 						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
 						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
 						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true),
-						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
+						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),
 						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true)
 					)
 				);
@@ -279,7 +279,7 @@ class acp_board
 						'legend2'				=> 'PATH_SETTINGS',
 						'smilies_path'			=> array('lang' => 'SMILIES_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 						'icons_path'			=> array('lang' => 'ICONS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
-						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'validate' => 'path',	'type' => 'text:20:255', 'explain' => true),
+						'upload_icons_path'		=> array('lang' => 'UPLOAD_ICONS_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 
 						'legend3'				=> 'SERVER_URL_SETTINGS',

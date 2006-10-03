@@ -44,15 +44,8 @@ class acp_jabber
 		$jab_resource		= request_var('jab_resource', $config['jab_resource']);
 		$jab_package_size	= request_var('jab_package_size', $config['jab_package_size']);
 
-		$jabber = new jabber();
+		$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password, $jab_resource);
 		$error = array();
-
-		// Setup the basis vars for jabber connection
-		$jabber->server		= $jab_host;
-		$jabber->port		= ($jab_port) ? $jab_port : 5222;
-		$jabber->username	= $jab_username;
-		$jabber->password	= $jab_password;
-		$jabber->resource	= $jab_resource;
 
 		$message = $user->lang['JAB_SETTINGS_CHANGED'];
 		$log = 'JAB_SETTINGS_CHANGED';

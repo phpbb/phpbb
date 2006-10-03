@@ -27,12 +27,11 @@ define('USER_NORMAL', 0);
 define('USER_INACTIVE', 1);
 define('USER_IGNORE', 2);
 define('USER_FOUNDER', 3);
-//define('USER_BOT', 2);
-//define('USER_GUEST', 4);
 
 define('INACTIVE_REGISTER', 1);
 define('INACTIVE_PROFILE', 2);
 define('INACTIVE_MANUAL', 3);
+define('INACTIVE_REMIND', 4);
 
 // ACL
 define('ACL_NEVER', 0);

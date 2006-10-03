@@ -1265,7 +1265,6 @@ CREATE TABLE phpbb_users (
 	user_notify_pm INT2 DEFAULT '1' NOT NULL CHECK (user_notify_pm >= 0),
 	user_notify_type INT2 DEFAULT '0' NOT NULL,
 	user_allow_pm INT2 DEFAULT '1' NOT NULL CHECK (user_allow_pm >= 0),
-	user_allow_email INT2 DEFAULT '1' NOT NULL CHECK (user_allow_email >= 0),
 	user_allow_viewonline INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewonline >= 0),
 	user_allow_viewemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewemail >= 0),
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),

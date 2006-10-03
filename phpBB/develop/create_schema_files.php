@@ -1870,7 +1870,6 @@ function get_schema_struct()
 			'user_notify_pm'			=> array('BOOL', 1),
 			'user_notify_type'			=> array('TINT:4', 0),
 			'user_allow_pm'				=> array('BOOL', 1),
-			'user_allow_email'			=> array('BOOL', 1),
 			'user_allow_viewonline'		=> array('BOOL', 1),
 			'user_allow_viewemail'		=> array('BOOL', 1),
 			'user_allow_massemail'		=> array('BOOL', 1),

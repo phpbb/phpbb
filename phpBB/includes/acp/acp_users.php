@@ -174,7 +174,7 @@ class acp_users
 
 						if (confirm_box(true))
 						{
-							user_delete($delete_type, $user_id);
+							user_delete($delete_type, $user_id, $user_row['username']);
 
 							add_log('admin', 'LOG_USER_DELETED', $user_row['username']);
 							trigger_error($user->lang['USER_DELETED'] . adm_back_link($this->u_action));
@@ -203,6 +203,11 @@ class acp_users
 							if ($user_id == $user->data['user_id'])
 							{
 								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if ($user_row['user_type'] == USER_FOUNDER)
+							{
+								trigger_error($user->lang['CANNOT_BAN_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							$ban = array();
@@ -256,6 +261,16 @@ class acp_users
 								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
+							if ($user_row['user_type'] == USER_FOUNDER)
+							{
+								trigger_error($user->lang['CANNOT_FORCE_REACT_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if ($user_row['user_type'] == USER_IGNORE)
+							{
+								trigger_error($user->lang['CANNOT_FORCE_REACT_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							if ($config['email_enable'])
 							{
 								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
@@ -267,9 +282,14 @@ class acp_users
 								$key_len = ($key_len > 6) ? $key_len : 6;
 								$user_actkey = substr($user_actkey, 0, $key_len);
 
-								if ($user_row['user_type'] != USER_INACTIVE)
+								if ($user_row['user_type'] == USER_NORMAL)
 								{
-									user_active_flip($user_id, $user_row['user_type'], $user_actkey, $user_row['username'], INACTIVE_MANUAL);
+									user_active_flip('deactivate', $user_id, INACTIVE_REMIND);
+
+									$sql = 'UPDATE ' . USERS_TABLE . "
+										SET user_actkey = '" . $db->sql_escape($user_actkey) . "'
+										WHERE user_id = $user_id";
+									$db->sql_query($sql);
 								}
 
 								$messenger = new messenger(false);
@@ -311,24 +331,23 @@ class acp_users
 								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							user_active_flip($user_id, $user_row['user_type'], false, $user_row['username'], INACTIVE_MANUAL);
+							if ($user_row['user_type'] == USER_FOUNDER)
+							{
+								trigger_error($user->lang['CANNOT_DEACTIVATE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if ($user_row['user_type'] == USER_IGNORE)
+							{
+								trigger_error($user->lang['CANNOT_DEACTIVATE_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							user_active_flip('flip', $user_id);
 
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 
+							add_log('admin', $log, $user_row['username']);
 							add_log('user', $user_id, $log . '_USER');
-
-							if ($user_row['user_type'] == USER_INACTIVE)
-							{
-								set_config('num_users', $config['num_users'] + 1, true);
-							}
-							else
-							{
-								set_config('num_users', $config['num_users'] - 1, true);
-							}
-
-							// Update latest username
-							update_last_username();
 
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -783,9 +802,21 @@ class acp_users
 				}
 				else
 				{
-					$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					$quick_tool_ary = array();
+
+					if ($user_row['user_type'] != USER_FOUNDER)
+					{
+						$quick_tool_ary += array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP');
+					}
+
+					if ($user_row['user_type'] != USER_FOUNDER && $user_row['user_type'] != USER_IGNORE)
+					{
+						$quick_tool_ary += array('active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'));
+					}
 					
-					if ($config['email_enable'])
+					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					
+					if ($config['email_enable'] && ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
 					}
@@ -807,7 +838,7 @@ class acp_users
 					'S_USER_FOUNDER'	=> ($user_row['user_type'] == USER_FOUNDER) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 					'S_OWN_ACCOUNT'		=> ($user_id == $user->data['user_id']) ? true : false,
-					'S_USER_INACTIVE'	=> ($user_row['user_type'] == USER_IGNORE || $user_row['user_type'] == USER_INACTIVE) ? true : false,
+					'S_USER_INACTIVE'	=> ($user_row['user_type'] == USER_INACTIVE) ? true : false,
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
@@ -1854,11 +1885,11 @@ class acp_users
 				$s_group_options = '';
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if (!$config['coppa_enable'] && in_array($row['group_name'], array('INACTIVE_COPPA', 'REGISTERED_COPPA')))
+					if (!$config['coppa_enable'] && $row['group_name'] == 'REGISTERED_COPPA')
 					{
 						continue;
 					}
-					
+
 					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 				}
 				$db->sql_freeresult($result);

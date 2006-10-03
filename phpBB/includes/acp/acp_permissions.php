@@ -70,7 +70,7 @@ class acp_permissions
 		if ($select_all_groups)
 		{
 			// Add default groups to selection
-			$sql_and = (!$config['coppa_enable']) ? " AND group_name NOT IN ('INACTIVE_COPPA', 'REGISTERED_COPPA')" : '';
+			$sql_and = (!$config['coppa_enable']) ? " AND group_name <> 'REGISTERED_COPPA'" : '';
 
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . '

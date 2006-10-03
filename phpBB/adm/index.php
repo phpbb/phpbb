@@ -406,7 +406,9 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				$cfg_array[$config_name] = (int) $cfg_array[$config_name];
 			break;
 
+			// Relative path (appended $phpbb_root_path)
 			case 'rpath':
+			case 'rwpath':
 				if (!$cfg_array[$config_name])
 				{
 					break;
@@ -426,9 +428,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					$destination = '';
 				}
 
-				$cfg_array[$config_name] = $destination;
+				$cfg_array[$config_name] = trim($destination);
 
+			// Path being relative (still prefixed by phpbb_root_path), but with the ability to escape the root dir...
 			case 'path':
+			case 'wpath':
 
 				if (!$cfg_array[$config_name])
 				{
@@ -436,6 +440,13 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				}
 
 				$cfg_array[$config_name] = trim($cfg_array[$config_name]);
+
+				// Make sure no NUL byte is present...
+				if (strpos($cfg_array[$config_name], '\0') !== false || strpos($cfg_array[$config_name], '%00') !== false)
+				{
+					$cfg_array[$config_name] = '';
+					break;
+				}
 
 				if (!file_exists($phpbb_root_path . $cfg_array[$config_name]))
 				{
@@ -445,6 +456,15 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !is_dir($phpbb_root_path . $cfg_array[$config_name]))
 				{
 					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
+				}
+
+				// Check if the path is writeable
+				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath')
+				{
+					if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !is_writeable($phpbb_root_path . $cfg_array[$config_name]))
+					{
+						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $cfg_array[$config_name]);
+					}
 				}
 
 			break;

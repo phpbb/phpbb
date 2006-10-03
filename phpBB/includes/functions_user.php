@@ -141,10 +141,6 @@ function user_add($user_row, $cp_data = false)
 		'user_type'			=> $user_row['user_type'],
 	);
 
-	/**
-	* @todo user_allow_email is not used anywhere. Think about removing it.
-	*/
-
 	// These are the additional vars able to be specified
 	$additional_vars = array(
 		'user_permissions'	=> '',
@@ -182,7 +178,6 @@ function user_add($user_row, $cp_data = false)
 		'user_notify_pm'		=> 1,
 		'user_notify_type'		=> NOTIFY_EMAIL,
 		'user_allow_pm'			=> 1,
-		'user_allow_email'		=> 1,
 		'user_allow_viewonline'	=> 1,
 		'user_allow_viewemail'	=> 1,
 		'user_allow_massemail'	=> 1,
@@ -265,23 +260,34 @@ function user_delete($mode, $user_id, $post_username = false)
 	switch ($mode)
 	{
 		case 'retain':
+
+			if ($post_username === false)
+			{
+				$post_username = $user->lang['GUEST'];
+			}
+
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . ", forum_last_poster_colour = ''
+				SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
 				WHERE forum_last_poster_id = $user_id";
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", post_username = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
 				WHERE poster_id = $user_id";
 			$db->sql_query($sql);
 
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_edit_user = ' . ANONYMOUS . "
+				WHERE post_edit_user = $user_id";
+			$db->sql_query($sql);
+
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_poster = ' . ANONYMOUS . "
+				SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
 				WHERE topic_poster = $user_id";
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_last_poster_id = ' . ANONYMOUS . (($post_username !== false) ? ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "'" : '') . "
+				SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
 				WHERE topic_last_poster_id = $user_id";
 			$db->sql_query($sql);
 		break;
@@ -413,99 +419,96 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	set_config('num_users', $config['num_users'] - 1, true);
 
-	// Adjust last post info...
-
-
 	$db->sql_transaction('commit');
 
 	return false;
 }
 
 /**
-* Flips user_type from active to inactive and vice versa, handles
-* group membership updates
+* Flips user_type from active to inactive and vice versa, handles group membership updates
+* 
+* @param string $mode can be flip for flipping from active/inactive, activate or deactivate
 */
-function user_active_flip($user_id, $user_type, $user_actkey = false, $username = false, $reason = 0, $no_log = false)
+function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
-	global $db, $user, $auth;
+	global $config, $db, $user;
 
-	$sql = 'SELECT group_id, group_name
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name IN ('REGISTERED', 'REGISTERED_COPPA', 'INACTIVE', 'INACTIVE_COPPA')";
+	$deactivated = $activated = 0;
+	$sql_statements = array();
+
+	if (!is_array($user_id_ary))
+	{
+		$user_id_ary = array($user_id_ary);
+	}
+
+	if (!sizeof($user_id_ary))
+	{
+		return;
+	}
+
+	$sql = 'SELECT user_id, group_id, user_type, user_inactive_reason
+		FROM ' . USERS_TABLE . '
+		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
 	$result = $db->sql_query($sql);
 
-	$group_id_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$group_id_ary[$row['group_name']] = $row['group_id'];
+		$sql_ary = array();
+
+		if ($row['user_type'] == USER_IGNORE || $row['user_type'] == USER_FOUNDER || 
+			($mode == 'activate' && $row['user_type'] != USER_INACTIVE) || 
+			($mode == 'deactivate' && $row['user_type'] == USER_INACTIVE))
+		{
+			continue;
+		}
+
+		if ($row['user_type'] == USER_INACTIVE)
+		{
+			$activated++;
+		}
+		else
+		{
+			$deactivated++;
+
+			// Remove the users session key...
+			$user->reset_login_keys($row['user_id']);
+		}
+
+		$sql_ary += array(
+			'user_type'				=> ($row['user_type'] == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL,
+			'user_inactive_time'	=> ($row['user_type'] == USER_NORMAL) ? time() : 0,
+			'user_inactive_reason'	=> ($row['user_type'] == USER_NORMAL) ? $reason : 0,
+		);
+
+		$sql_statements[$row['user_id']] = $sql_ary;
 	}
 	$db->sql_freeresult($result);
 
-	$sql = 'SELECT group_id
-		FROM ' . USER_GROUP_TABLE . "
-		WHERE user_id = $user_id";
-	$result = $db->sql_query($sql);
-
-	$group_name = ($user_type == USER_NORMAL) ? 'REGISTERED' : 'INACTIVE';
-	while ($row = $db->sql_fetchrow($result))
+	if (sizeof($sql_statements))
 	{
-		if ($name = array_search($row['group_id'], $group_id_ary))
+		foreach ($sql_statements as $user_id => $sql_ary)
 		{
-			$group_name = $name;
-			break;
-		}
-	}
-	$db->sql_freeresult($result);
-
-	$current_group = ($user_type == USER_NORMAL) ? 'REGISTERED' : 'INACTIVE';
-	$switch_group = ($user_type == USER_NORMAL) ? 'INACTIVE' : 'REGISTERED';
-
-	$new_group_id = $group_id_ary[str_replace($current_group, $switch_group, $group_name)];
-
-	$sql = 'UPDATE ' . USER_GROUP_TABLE . "
-		SET group_id = $new_group_id
-		WHERE user_id = $user_id
-			AND group_id = " . $group_id_ary[$group_name];
-	$db->sql_query($sql);
-
-	$sql_ary = array(
-		'user_type'				=> ($user_type == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL,
-		'user_inactive_time'	=> ($user_type == USER_NORMAL) ? time() : 0,
-		'user_inactive_reason'	=> ($user_type == USER_NORMAL) ? $reason : 0,
-	);
-
-	if ($user_actkey !== false)
-	{
-		$sql_ary['user_actkey'] = $user_actkey;
-	}
-
-	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-		WHERE user_id = $user_id";
-	$db->sql_query($sql);
-
-	// Set the users default group from inactive to registered or registered to inactive
-	// only if the group id changed...
-	group_set_user_default($new_group_id, array($user_id));
-
-	$auth->acl_clear_prefetch($user_id);
-
-	if (!$no_log)
-	{
-		if ($username === false)
-		{
-			$sql = 'SELECT username
-				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id";
-			$result = $db->sql_query($sql);
-			$username = (string) $db->sql_fetchfield('username');
-			$db->sql_freeresult($result);
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE user_id = ' . $user_id;
+			$db->sql_query($sql);
 		}
 
-		$log = ($user_type == USER_NORMAL) ? 'LOG_USER_INACTIVE' : 'LOG_USER_ACTIVE';
-		add_log('admin', $log, $username);
+		$auth->acl_clear_prefetch(array_keys($sql_statements));
 	}
 
-	return false;
+	if ($deactivated)
+	{
+		set_config('num_users', $config['num_users'] - $deactivated, true);
+	}
+
+	if ($activated)
+	{
+		set_config('num_users', $config['num_users'] + $activated, true);
+	}
+
+	// Update latest username
+	update_last_username();
 }
 
 /**

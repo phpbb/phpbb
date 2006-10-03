@@ -58,16 +58,7 @@ class acp_inactive
 					if ($action == 'activate')
 					{
 						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-
-						foreach ($mark as $user_id)
-						{
-							user_active_flip($user_id, USER_INACTIVE);
-						}
-
-						set_config('num_users', $config['num_users'] + sizeof($mark), true);
-
-						// Update latest username
-						update_last_username();
+						user_active_flip('activate', $mark);
 					}
 					else if ($action == 'delete')
 					{

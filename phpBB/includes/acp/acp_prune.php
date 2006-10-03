@@ -267,11 +267,7 @@ class acp_prune
 				{
 					if ($action == 'deactivate')
 					{
-						foreach ($user_ids as $user_id)
-						{
-							user_active_flip($user_id, USER_NORMAL, false, false, INACTIVE_MANUAL, true);
-						}
-
+						user_active_flip('deactivate', $user_ids);
 						$l_log = 'LOG_PRUNE_USER_DEAC';
 					}
 					else if ($action == 'delete')

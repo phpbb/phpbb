@@ -976,7 +976,6 @@ CREATE TABLE phpbb_users (
 	user_notify_pm INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_notify_type tinyint(4) NOT NULL DEFAULT '0',
 	user_allow_pm INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	user_allow_email INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_viewonline INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_viewemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_massemail INTEGER UNSIGNED NOT NULL DEFAULT '1',

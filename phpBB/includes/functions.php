@@ -1913,7 +1913,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx"), // Needs to stay index.$phpEx because we are within the admin directory
+		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,

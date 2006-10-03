@@ -1814,7 +1814,6 @@ CREATE TABLE phpbb_users (
 	user_notify_pm number(1) DEFAULT '1' NOT NULL,
 	user_notify_type number(4) DEFAULT '0' NOT NULL,
 	user_allow_pm number(1) DEFAULT '1' NOT NULL,
-	user_allow_email number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewonline number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewemail number(1) DEFAULT '1' NOT NULL,
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,

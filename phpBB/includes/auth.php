@@ -714,7 +714,7 @@ class auth
 
 				$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 					FROM ' . USERS_TABLE . "
-					WHERE username = '" . $db->sql_escape($username) . "'";
+					WHERE LOWER(username) = '" . $db->sql_escape(strtolower($username)) . "'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -738,11 +738,36 @@ class auth
 			// If login succeeded, we will log the user in... else we pass the login array through...
 			if ($login['status'] == LOGIN_SUCCESS)
 			{
+				$old_session_id = $user->session_id;
+
+				if ($admin)
+				{
+					global $SID, $_SID;
+
+					$cookie_expire = time() - 31536000;
+					$user->set_cookie('u', '', $cookie_expire);
+					$user->set_cookie('sid', '', $cookie_expire);
+					unset($cookie_expire);
+
+					$SID = '?sid=';
+					$user->session_id = $_SID = '';
+				}
+
 				$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
 
 				// Successful session creation
 				if ($result === true)
 				{
+					// If admin re-authentication we remove the old session entry because a new one has been created...
+					if ($admin)
+					{
+						// the login array is used because the user ids do not differ for re-authentication
+						$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
+							WHERE session_id = '" . $db->sql_escape($old_session_id) . "'
+							AND session_user_id = {$login['user_row']['user_id']}";
+						$db->sql_query($sql);
+					}
+
 					return array(
 						'status'		=> LOGIN_SUCCESS,
 						'error_msg'		=> false,

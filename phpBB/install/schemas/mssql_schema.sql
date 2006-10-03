@@ -1645,7 +1645,6 @@ CREATE TABLE [phpbb_users] (
 	[user_notify_pm] [int] DEFAULT (1) NOT NULL ,
 	[user_notify_type] [int] DEFAULT (0) NOT NULL ,
 	[user_allow_pm] [int] DEFAULT (1) NOT NULL ,
-	[user_allow_email] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_viewemail] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_massemail] [int] DEFAULT (1) NOT NULL ,
