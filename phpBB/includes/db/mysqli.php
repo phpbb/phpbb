@@ -118,7 +118,7 @@ class dbal_mysqli extends dbal
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
-			if (!$this->query_result)
+			if ($this->query_result === false)
 			{
 				if (($this->query_result = @mysqli_query($this->db_connect_id, $query)) === false)
 				{
