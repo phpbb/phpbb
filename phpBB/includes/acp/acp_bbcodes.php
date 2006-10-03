@@ -53,7 +53,7 @@ class acp_bbcodes
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
 				$display_on_posting = $row['display_on_posting'];
-				$bbcode_helpline = html_entity_decode($row['bbcode_helpline']);
+				$bbcode_helpline = $row['bbcode_helpline'];
 			break;
 
 			case 'modify':
@@ -76,7 +76,7 @@ class acp_bbcodes
 
 				$bbcode_match = request_var('bbcode_match', '');
 				$bbcode_tpl = html_entity_decode(request_var('bbcode_tpl', ''));
-				$bbcode_helpline = htmlspecialchars(request_var('bbcode_helpline', ''));
+				$bbcode_helpline = request_var('bbcode_helpline', '');
 			break;
 		}
 
