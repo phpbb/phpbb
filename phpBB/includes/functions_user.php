@@ -431,7 +431,7 @@ function user_delete($mode, $user_id, $post_username = false)
 */
 function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
-	global $config, $db, $user;
+	global $config, $db, $user, $auth;
 
 	$deactivated = $activated = 0;
 	$sql_statements = array();
