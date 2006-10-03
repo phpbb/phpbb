@@ -48,7 +48,7 @@ $lang = array_merge($lang, array(
 	'APPROVE_POSTS_CONFIRM'	=> 'Are you sure you want to approve the selected posts?',
 
 	'CANNOT_MOVE_SAME_FORUM'=> 'You cannot move a topic to the forum it’s already in',
-	'CANNOT_WARN_ANONYMOUS'	=> 'You cannot warn an guest user',
+	'CANNOT_WARN_ANONYMOUS'	=> 'You cannot warn unregistered guest users',
 	'CANNOT_WARN_SELF'		=> 'You cannot warn yourself',
 	'CAN_LEAVE_BLANK'		=> 'This can be left blank.',
 	'CHANGE_POSTER'			=> 'Change poster',
