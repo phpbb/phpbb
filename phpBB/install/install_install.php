@@ -750,6 +750,11 @@ class install_install extends module
 
 		// Create a lock file to indicate that there is an install in progress
 		$fp = @fopen($phpbb_root_path . 'cache/install_lock', 'wb');
+		if ($fp === false)
+		{
+			// We were unable to create the lock file - abort
+			$this->p_master->error($lang['UNABLE_WRITE_LOCK'], __LINE__, __FILE__);
+		}
 		@fclose($fp);
 
 		$dbpasswd = html_entity_decode($dbpasswd);
