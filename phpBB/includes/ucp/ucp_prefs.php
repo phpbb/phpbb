@@ -59,6 +59,8 @@ class ucp_prefs
 						$data[$var] = request_var($var, $default);
 					}
 
+					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
+
 					$var_ary = array(
 						'dateformat'	=> array('string', false, 3, 30),
 						'lang'			=> array('match', false, '#^[a-z0-9_\-]{2,}$#i'),
@@ -141,7 +143,7 @@ class ucp_prefs
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'S_STYLE_OPTIONS'	=> ($config['override_user_style']) ? '' : style_select($data['style']),
 					'S_TZ_OPTIONS'		=> tz_select($data['tz']),
 					'S_CAN_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
