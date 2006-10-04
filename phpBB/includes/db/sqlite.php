@@ -170,27 +170,6 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return ($query_id) ? @sqlite_num_rows($query_id) : false;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -205,7 +184,7 @@ class dbal_sqlite extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -215,40 +194,7 @@ class dbal_sqlite extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$row = @sqlite_fetch_array($query_id, SQLITE_ASSOC);
-
-		return $row;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			return @sqlite_column($query_id, $field);
-		}
-
-		return false;
+		return ($query_id !== false) ? @sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
 	}
 
 	/**
@@ -259,7 +205,7 @@ class dbal_sqlite extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -269,7 +215,7 @@ class dbal_sqlite extends dbal
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id) ? @sqlite_seek($query_id, $rownum) : false;
+		return ($query_id !== false) ? @sqlite_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -287,7 +233,7 @@ class dbal_sqlite extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}

@@ -282,33 +282,6 @@ class dbal_oracle extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		$result = @ocifetchstatement($query_id, $this->rowset);
-
-		// OCIFetchStatment kills our query result so we have to execute the statment again
-		// if we ever want to use the query_id again.
-		@ociexecute($query_id, OCI_DEFAULT);
-
-		return $result;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -323,7 +296,7 @@ class dbal_oracle extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -333,56 +306,29 @@ class dbal_oracle extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$row = array();
-		$result = @ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
-
-		if (!$result || !$row)
+		if ($query_id !== false)
 		{
-			return false;
-		}
+			$row = array();
+			$result = @ocifetchinto($query_id, $row, OCI_ASSOC + OCI_RETURN_NULLS);
 
-		$result_row = array();
-		foreach ($row as $key => $value)
-		{
-			// OCI->CLOB?
-			if (is_object($value))
+			if (!$result || !$row)
 			{
-				$value = $value->load();
+				return false;
 			}
+
+			$result_row = array();
+			foreach ($row as $key => $value)
+			{
+				// OCI->CLOB?
+				if (is_object($value))
+				{
+					$value = $value->load();
+				}
 			
-			$result_row[strtolower($key)] = $value;
-		}
-
-		return ($query_id) ? $result_row : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
+				$result_row[strtolower($key)] = $value;
 			}
 
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
+			return $result_row;
 		}
 
 		return false;
@@ -396,7 +342,7 @@ class dbal_oracle extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -406,7 +352,7 @@ class dbal_oracle extends dbal
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			return false;
 		}
@@ -433,7 +379,7 @@ class dbal_oracle extends dbal
 	{
 		$query_id = $this->query_result;
 
-		if ($query_id && $this->last_query_text != '')
+		if ($query_id !== false && $this->last_query_text != '')
 		{
 			if (preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
@@ -465,7 +411,7 @@ class dbal_oracle extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}

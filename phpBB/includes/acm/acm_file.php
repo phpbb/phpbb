@@ -411,14 +411,6 @@ class acm
 	}
 
 	/**
-	* Fetch the number of rows from cache (database)
-	*/
-	function sql_numrows($query_id)
-	{
-		return sizeof($this->sql_rowset[$query_id]);
-	}
-
-	/**
 	* Fetch a field from the current row of a cached database result (database)
 	*/
 	function sql_fetchfield($query_id, $field)

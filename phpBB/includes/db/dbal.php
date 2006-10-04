@@ -110,12 +110,12 @@ class dbal
 	*/
 	function sql_fetchrowset($query_id = false)
 	{
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
 
-		if ($query_id)
+		if ($query_id !== false)
 		{
 			$result = array();
 			while ($row = $this->sql_fetchrow($query_id))
@@ -126,6 +126,38 @@ class dbal
 			return $result;
 		}
 		
+		return false;
+	}
+
+	/**
+	* Fetch field
+	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
+	*/
+	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	{
+		global $cache;
+
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($query_id !== false)
+		{
+			if ($rownum !== false)
+			{
+				$this->sql_rowseek($rownum, $query_id);
+			}
+
+			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
+			{
+				return $cache->sql_fetchfield($query_id, $field);
+			}
+
+			$row = $this->sql_fetchrow($query_id);
+			return (isset($row[$field])) ? $row[$field] : false;
+		}
+
 		return false;
 	}
 

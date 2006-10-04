@@ -122,7 +122,7 @@ class ucp_profile
 
 						if ($config['email_enable'] && $email != $user->data['user_email'] && $user->data['user_type'] != USER_FOUNDER && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{
-							include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 							$server_url = generate_board_url();
 
@@ -185,7 +185,7 @@ class ucp_profile
 
 							$messenger->save_queue();
 
-							user_active_flip('deactivate', $user_id, INACTIVE_PROFILE);
+							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
 
 							$sql_ary += array(
 								'user_actkey'			=> $user_actkey,

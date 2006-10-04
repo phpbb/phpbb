@@ -98,6 +98,8 @@ class dbal_postgres extends dbal
 		{
 			$query_id = @pg_query($this->db_connect_id, 'select version()');
 			$row = @pg_fetch_assoc($query_id, null);
+			@pg_free_result($query_id);
+
 			$version = $row['version'];
 			return ((!empty($version)) ? ' ' . $version : '');
 		}
@@ -222,27 +224,6 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return ($query_id) ? @pg_num_rows($query_id) : false;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -257,7 +238,7 @@ class dbal_postgres extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -267,41 +248,7 @@ class dbal_postgres extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		$row = @pg_fetch_assoc($query_id, null);
-
-		return ($query_id) ? $row : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
-		}
-
-		return false;
+		return ($query_id !== false) ? @pg_fetch_assoc($query_id, null) : false;
 	}
 
 	/**
@@ -312,7 +259,7 @@ class dbal_postgres extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -322,7 +269,7 @@ class dbal_postgres extends dbal
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id) ? @pg_result_seek($query_id, $rownum) : false;
+		return ($query_id !== false) ? @pg_result_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -332,7 +279,7 @@ class dbal_postgres extends dbal
 	{
 		$query_id = $this->query_result;
 
-		if ($query_id && $this->last_query_text != '')
+		if ($query_id !== false && $this->last_query_text != '')
 		{
 			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
 			{
@@ -361,7 +308,7 @@ class dbal_postgres extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}

@@ -339,7 +339,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_ID'				=> $row['forum_id'],
 			'FORUM_NAME'			=> $row['forum_name'],
 			'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
-			'TOPICS'				=> ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'],
+			'TOPICS'				=> $row['forum_topics'],
 			$l_post_click_count		=> $post_click_count,
 			'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : $user->img($folder_image, $folder_alt),
 			'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : $user->img($folder_image, $folder_alt, false, '', 'src'),

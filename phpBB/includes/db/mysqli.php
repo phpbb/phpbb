@@ -175,27 +175,6 @@ class dbal_mysqli extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-		return ($query_id) ? @mysqli_num_rows($query_id) : false;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -210,7 +189,7 @@ class dbal_mysqli extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -220,39 +199,7 @@ class dbal_mysqli extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @mysqli_fetch_assoc($query_id) : false;
-	}
-
-	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
-		}
-
-		return false;
+		return ($query_id !== false) ? @mysqli_fetch_assoc($query_id) : false;
 	}
 
 	/**
@@ -263,7 +210,7 @@ class dbal_mysqli extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -273,7 +220,7 @@ class dbal_mysqli extends dbal
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id) ? @mysqli_data_seek($query_id, $rownum) : false;
+		return ($query_id !== false) ? @mysqli_data_seek($query_id, $rownum) : false;
 	}
 
 	/**
@@ -291,7 +238,7 @@ class dbal_mysqli extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}

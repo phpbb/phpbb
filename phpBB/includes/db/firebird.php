@@ -166,39 +166,6 @@ class dbal_firebird extends dbal
 	}
 
 	/**
-	* Return number of rows
-	* Not used within core code
-	*/
-	function sql_numrows($query_id = false)//(&$query_id)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_numrows($query_id);
-		}
-
-/*
-		$num_rows = 0;
-		while ($this->sql_fetchrow($query_id))
-		{
-			$num_rows++;
-		}
-
-		// leave the query_id alone, it never hurt anybody
-		$query_id = $this->sql_query($this->last_query_text);
-
-		return $num_rows;
-*/
-		return false;
-	}
-
-	/**
 	* Return number of affected rows
 	*/
 	function sql_affectedrows()
@@ -221,7 +188,7 @@ class dbal_firebird extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -229,6 +196,11 @@ class dbal_firebird extends dbal
 		if (isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_fetchrow($query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return false;
 		}
 
 		$row = array();
@@ -248,38 +220,6 @@ class dbal_firebird extends dbal
 	}
 
 	/**
-	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
-	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
-	{
-		global $cache;
-
-		if (!$query_id)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id)
-		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
-			if (isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return isset($row[$field]) ? $row[$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
 	* Seek to given row number
 	* rownum is zero-based
 	*/
@@ -287,7 +227,7 @@ class dbal_firebird extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
@@ -295,6 +235,19 @@ class dbal_firebird extends dbal
 		if (isset($cache->sql_rowset[$query_id]))
 		{
 			return $cache->sql_rowseek($rownum, $query_id);
+		}
+
+		if ($query_id === false)
+		{
+			return;
+		}
+
+		$this->sql_freeresult($query_id);
+		$query_id = $this->sql_query($this->last_query_text);
+
+		if ($query_id === false)
+		{
+			return false;
 		}
 
 		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
@@ -316,7 +269,7 @@ class dbal_firebird extends dbal
 	{
 		$query_id = $this->query_result;
 
-		if ($query_id && $this->last_query_text != '')
+		if ($query_id !== false && $this->last_query_text != '')
 		{
 			if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
 			{
@@ -344,7 +297,7 @@ class dbal_firebird extends dbal
 	{
 		global $cache;
 
-		if (!$query_id)
+		if ($query_id === false)
 		{
 			$query_id = $this->query_result;
 		}
