@@ -48,11 +48,8 @@ class dbal_mysqli extends dbal
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
-			if (@mysqli_select_db($this->db_connect_id, $this->dbname))
-			{
-				@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
-				return $this->db_connect_id;
-			}
+			@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
+			return $this->db_connect_id;
 		}
 
 		return $this->sql_error('');
