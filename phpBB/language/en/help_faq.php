@@ -139,7 +139,7 @@ $help = array(
 		1 => 'Because you probably do not have appropriate access rights.'
 	),
 	array(
-		0 => 'Why did I receieve a warning',
+		0 => 'Why did I receieve a warning?',
 		1 => 'Because you were being an idiot and unable to follow rules, etc.'
 	),
 	array(
@@ -151,7 +151,7 @@ $help = array(
 		1 => 'This allows you to save half-composed messages to be completed and submitted at a later date. To reload then, go to the User Control Panel and follow the self explanatory options there.'
 	),
 	array(
-		0 => 'Why does my post need to be approved',
+		0 => 'Why does my post need to be approved?',
 		1 => 'Because the administrators of the forum have decided so.'
 	),
 	array(
