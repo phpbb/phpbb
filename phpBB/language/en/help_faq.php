@@ -59,6 +59,18 @@ $help = array(
 		1 => 'The most likely reasons for this are; you entered an incorrect username or password (check the email you were sent when you first registered) or the administrator has deleted your account for some reason. If it is the later case then perhaps you did not post anything? It is usual for boards to periodically remove users who have not posted anything so as to reduce the size of the database. Try registering again and get involved in discussions.'
 	),
 	array(
+		0 => 'What is COPPA?',
+		1 => 'Something explaining COPPA blah blah blah.',
+	),
+	array(
+		0 => 'Why can’t I register?',
+		1 => 'Registration has been disabled, etc.',
+	),
+	array(
+		0 => 'What does the “Delete all board cookies” do?',
+		1 => 'Deletes the cookies created by phpBB3 which keeps you authenticated and logged into the forum, etc.',
+	),
+	array(
 		0 => '--',
 		1 => 'User Preferences and settings'
 	),
@@ -121,6 +133,30 @@ $help = array(
 	array(
 		0 => 'Why can’t I vote in polls?',
 		1 => 'Only registered users can vote in polls (so as to prevent spoofing of results). If you have registered and still cannot vote then you probably do not have appropriate access rights.'
+	),
+	array(
+		0 => 'Why can’t I add attachements?',
+		1 => 'Because you probably do not have appropriate access rights.'
+	),
+	array(
+		0 => 'Why did I receieve a warning',
+		1 => 'Because you were being an idiot and unable to follow rules, etc.'
+	),
+	array(
+		0 => 'How can I report posts to a moderator?',
+		1 => 'Go to the offending post and click the “Report this post” button.'
+	),
+	array(
+		0 => 'What is the “Save” button for in topic posting?',
+		1 => 'This allows you to save half-composed messages to be completed and submitted at a later date. To reload then, go to the User Control Panel and follow the self explanatory options there.'
+	),
+	array(
+		0 => 'Why does my post need to be approved',
+		1 => 'Because the administrators of the forum have decided so.'
+	),
+	array(
+		0 => 'How do I bump my topic?',
+		1 => 'By clicking the “Bump topic” link when you are viewing it. If you do not see this, then topic bumping is disabled.'
 	),
 	array(
 		0 => '--',
@@ -191,11 +227,11 @@ $help = array(
 		1 => 'It is possible for the board administrator to assign a colour to the members of a usergroup to make it easy to identify the members of this group.'
 	),
 	array(
-		0 => 'What is a "Default Usergroup"?',
+		0 => 'What is a “Default Usergroup”?',
 		1 => 'If you are a member of more than one usergroup, your default is used to determine which group colour and group rank should be shown for you by default. The board administrator may grant you permission to change your default usergroup via your User Control Panel.'
 	),
 	array(
-		0 => 'What is "The team" link?',
+		0 => 'What is “The team” link?',
 		1 => 'This page provides you with a list of the board staff, including board administrators and moderators including details of which forums they moderate.'
 	),
 	array(
@@ -224,7 +260,59 @@ $help = array(
 	),
 	array(
 		0 => 'How can I add / remove users to my friends or foes list?',
-		1 => 'You can add users to your list in two ways. Within each user\'s profile, there is a link to add them to either your friend or foe list. Alternatively from your User Control Panel, you can directly add users by entering their member name. You may also remove users from your list using the same page.'
+		1 => 'You can add users to your list in two ways. Within each user’s profile, there is a link to add them to either your friend or foe list. Alternatively from your User Control Panel, you can directly add users by entering their member name. You may also remove users from your list using the same page.'
+	),
+	array(
+		0 => '--',
+		1 => 'Searching the Forums'
+	),
+	array(
+		0 => 'How can I search the forum?',
+		1 => 'By entering a search term in the search box located on the index view, forum view or topic view. Advanced search can be accessed by clicking the “Search” link which is available on all pages on the forum.'
+	),
+	array(
+		0 => 'Why does my search return no results?',
+		1 => 'Your search was probably too vague and included many common terms which are not indexed by phpBB3. Be more specific and use the options available within Advanced search.'
+	),
+	array(
+		0 => 'Why does my search return a blank page!?',
+		1 => 'Your search returned too many results for the webserver to handle. Use Advanced search and be more specific in the terms used and forums that are to be searched.'
+	),
+	array(
+		0 => 'How do I search for members?',
+		1 => 'Go to the “Members” page and click the “Find a member” link. Once there, fill out the self explanatory options.'
+	),
+	array(
+		0 => 'How can I find my own posts and topics?',
+		1 => 'Your own posts can be retrieved either by clicking the “Search user’s posts” within the User Control Panel or via your own profile page. To search for your topics, use the Advanced search page and fill in the various options appropiately.'
+	),
+	array(
+		0 => '--',
+		1 => 'Topic Subscriptions and Bookmarks'
+	),
+	array(
+		0 => 'What is the difference between bookmarking and subscribing?',
+		1 => 'Blah blah blah.'
+	),
+	array(
+		0 => 'How do I subscribe to specific forums or topics?',
+		1 => 'Blah blah blah.'
+	),
+	array(
+		0 => 'How do I remove my subscriptions?',
+		1 => 'Blah blah blah.'
+	),
+	array(
+		0 => '--',
+		1 => 'Attachments'
+	),
+	array(
+		0 => 'What attachments are allowed on this board?',
+		1 => 'Blah blah blah.'
+	),
+	array(
+		0 => 'How do I find all my attachemnts?',
+		1 => 'Look in the User Control Panel, etc.'
 	),
 	array(
 		0 => '--',
