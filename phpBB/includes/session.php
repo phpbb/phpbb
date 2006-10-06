@@ -785,6 +785,7 @@ class session
 
 		$result = $db->sql_query($sql);
 
+		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
@@ -800,6 +801,20 @@ class session
 				{
 					$banned = true;
 					$ban_row = $row;
+
+					if (!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id)
+					{
+						$ban_triggered_by = 'user';
+					}
+					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+					{
+						$ban_triggered_by = 'ip';
+					}
+					else
+					{
+						$ban_triggered_by = 'email';
+					}
+
 					// Don't break. Check if there is an exclude rule for this user
 				}
 			}
@@ -823,6 +838,8 @@ class session
 
 			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
+			$message .= '<br /><br /><em>' . $user->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+
 			trigger_error($message);
 		}
 

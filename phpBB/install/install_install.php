@@ -2089,7 +2089,6 @@ class install_install extends module
 			'UCP_PREFS'			=> null,
 			'UCP_PM'			=> null,
 			'UCP_USERGROUPS'	=> null,
-			'UCP_ATTACHMENTS'	=> null,
 			'UCP_ZEBRA'			=> null,
 		),
 	);

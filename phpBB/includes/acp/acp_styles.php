@@ -2310,7 +2310,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		{
 			foreach ($matches[0] as $idx => $match)
 			{
-				$stylesheet = str_replace($match, $this->load_css_file($theme_row['theme_path'], $matches[1][$idx]), $stylesheet);
+				$stylesheet = str_replace($match, acp_styles::load_css_file($theme_row['theme_path'], $matches[1][$idx]), $stylesheet);
 			}
 		}
 

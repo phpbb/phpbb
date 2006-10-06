@@ -83,6 +83,9 @@ $lang = array_merge($lang, array(
 
 	'BACK_TO_TOP'			=> 'Top',
 	'BACK_TO_PREV'			=> 'Back to previous page',
+	'BAN_TRIGGERED_BY_EMAIL'=> 'This ban has been issued on your email address.',
+	'BAN_TRIGGERED_BY_IP'	=> 'This ban has been issued on your ip address.',
+	'BAN_TRIGGERED_BY_USER'	=> 'This ban has been issued on your username.',
 	'BBCODE_GUIDE'			=> 'BBCode guide',
 	'BCC'					=> 'BCC',
 	'BIRTHDAYS'				=> 'Birthdays',
@@ -445,6 +448,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_FOR'				=> 'Search for',
 	'SEARCH_FORUM'				=> 'Search this forum',	
 	'SEARCH_NEW'				=> 'View new posts',
+	'SEARCH_POSTS_BY'			=> 'Search posts by',
 	'SEARCH_SELF'				=> 'View your posts',
 	'SEARCH_TOPIC'				=> 'Search this topic',
 	'SEARCH_UNANSWERED'			=> 'View unanswered posts',

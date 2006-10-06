@@ -74,6 +74,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'S_CAN_LOCK'			=> $auth->acl_get('m_lock', $forum_id),
 		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
+		'S_MERGE_SELECT'		=> ($action == 'merge_select') ? true : false,
 
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',

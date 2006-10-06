@@ -689,13 +689,14 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Validate username
-	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['post_username']))
+	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['username'] && $post_data['post_username'] != $post_data['username']))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-		if (($result = validate_username(($mode == 'edit' && $post_data['post_username']) ? $post_data['post_username'] : $post_data['username'])) != false)
+		if (($result = validate_username($post_data['username'])) !== false)
 		{
-			$error[] = $user->lang[$result];
+			$user->add_lang('ucp');
+			$error[] = $user->lang[$result . '_USERNAME'];
 		}
 	}
 

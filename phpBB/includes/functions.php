@@ -406,6 +406,7 @@ if (!function_exists('realpath'))
 		* @copyright 2006 Project Minerva Team
 		* @param string $path The path which we should attempt to resolve.
 		* @return mixed
+		* @ignore
 		*/
 		function phpbb_realpath($path)
 		{
@@ -582,6 +583,7 @@ else
 {
 	/**
 	* A wrapper for realpath
+	* @ignore
 	*/
 	function phpbb_realpath($path)
 	{

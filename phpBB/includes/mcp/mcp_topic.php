@@ -197,6 +197,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
+		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 
 		'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 		'S_TOPIC_ICON'			=> $icon_id,

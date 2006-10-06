@@ -264,6 +264,7 @@ $lang = array_merge($lang, array(
 
 	'SEARCH_POSTS_BY_USER'	=> 'Search posts by',
 	'SELECT_ACTION'			=> 'Select desired action',
+	'SELECT_TOPICS_FROM'	=> 'Select topics from',
 	'SELECT_TOPIC'			=> 'Select topic',
 	'SELECT_USER'			=> 'Select user',
 	'SORT_ACTION'			=> 'Log action',

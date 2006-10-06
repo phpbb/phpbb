@@ -127,12 +127,8 @@
 			<td colspan="2" class="cat"><b class="gen">{L_OTHER_USERS}</b></td>
 		</tr>
 		<!-- BEGIN userrow -->
-			<!-- IF userrow.S_ROW_COUNT is even -->
-				<tr class="row1">
-			<!-- ELSE -->
-				<tr class="row2">
-			<!-- ENDIF -->
-				<td><span class="gen"><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a> [ {userrow.NUM_POSTS} {userrow.L_POST_S} ]</span></td>
+			<!-- IF userrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+				<td><span class="gen"><!-- IF userrow.U_PROFILE --><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a><!-- ELSE -->{userrow.USERNAME}<!-- ENDIF --> [ {userrow.NUM_POSTS} {userrow.L_POST_S} ]</span></td>
 				<td align="center"><a href="{userrow.U_SEARCHPOSTS}">{SEARCH_IMG}</a></td>
 			</tr>
 		<!-- BEGINELSE -->
