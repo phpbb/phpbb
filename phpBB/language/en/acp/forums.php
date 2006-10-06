@@ -102,8 +102,8 @@ $lang = array_merge($lang, array(
 	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
 	'LINK'					=> 'Link',
-	'LIST_INDEX'			=> 'List forum on index',
-	'LIST_INDEX_EXPLAIN'	=> 'Displays a link to this forum under the root parent forum on the index.',
+	'LIST_INDEX'			=> 'List forum in subforum listings',
+	'LIST_INDEX_EXPLAIN'	=> 'Displays a link to this forum under the parent forums subforum listing if one exist.',
 	'LOCKED'				=> 'Locked',
 
 	'MOVE_POSTS_TO'		=> 'Move posts',
