@@ -135,7 +135,7 @@ class acp_profile
 							foreach ($old_table_cols as $declaration)
 							{
 								$entities = preg_split('#\s+#', trim($declaration));
-								if ($entities[0] !== '_' . $field_ident)
+								if ($entities[0] !== 'pf_' . $field_ident)
 								{
 									$column_list[] = $entities[0];
 								}
@@ -143,7 +143,7 @@ class acp_profile
 
 							$columns = implode(',', $column_list);
 
-							$new_table_cols = preg_replace('/' . '_' . $field_ident . '[^,]+,/', '', $new_table_cols);
+							$new_table_cols = preg_replace('/' . 'pf_' . $field_ident . '[^,]+,/', '', $new_table_cols);
 
 							// create a new table and fill it up. destroy the temp one
 							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
@@ -154,7 +154,7 @@ class acp_profile
 						break;
 
 						default:
-							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP _$field_ident");
+							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP pf_$field_ident");
 					}
 
 					$order = 0;
@@ -968,7 +968,7 @@ class acp_profile
 		
 		if ($action == 'create')
 		{
-			$field_ident = '_' . $field_ident;
+			$field_ident = 'pf_' . $field_ident;
 			$profile_sql[] = $this->add_field_ident($field_ident, $field_type);
 		}
 
@@ -1176,7 +1176,7 @@ class acp_profile
 		}
 		else
 		{
-			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 1) . ':' . $cp->vars['lang_name']);
+			add_log('admin', 'LOG_PROFILE_FIELD_CREATE', substr($field_ident, 3) . ':' . $cp->vars['lang_name']);
 			trigger_error($user->lang['ADDED_PROFILE_FIELD'] . adm_back_link($this->u_action));
 		}
 	}

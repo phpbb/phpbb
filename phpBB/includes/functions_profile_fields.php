@@ -286,8 +286,8 @@ class custom_profile
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$cp_data['_' . $row['field_ident']] = $this->get_profile_field($row);
-			$check_value = $cp_data['_' . $row['field_ident']];
+			$cp_data['pf_' . $row['field_ident']] = $this->get_profile_field($row);
+			$check_value = $cp_data['pf_' . $row['field_ident']];
 
 			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
 			{
@@ -382,7 +382,7 @@ class custom_profile
 			{
 				foreach ($field_data as $user_id => $row)
 				{
-					$user_fields[$user_id][$used_ident]['value'] = $row['_' . $used_ident];
+					$user_fields[$user_id][$used_ident]['value'] = $row['pf_' . $used_ident];
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 				}
 			}
@@ -542,7 +542,7 @@ class custom_profile
 		global $user;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = 'pf_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
@@ -609,7 +609,7 @@ class custom_profile
 		global $user, $template;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = 'pf_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		$now = getdate();
 
@@ -787,7 +787,7 @@ class custom_profile
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
 		{
-			$sql_not_in[] = (strncmp($key, '_', 1) === 0) ? substr($key, 1) : $key;
+			$sql_not_in[] = (strncmp($key, 'pf_', 3) === 0) ? substr($key, 3) : $key;
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
@@ -805,7 +805,7 @@ class custom_profile
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
 
-			$cp_data['_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
+			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
 		$db->sql_freeresult($result);
 		
