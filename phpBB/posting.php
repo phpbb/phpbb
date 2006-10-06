@@ -523,6 +523,8 @@ if ($load && $post_data['drafts'])
 	load_drafts($topic_id, $forum_id);
 }
 
+$solved_captcha = false;
+
 if ($submit || $preview || $refresh)
 {
 	$post_data['topic_cur_post_id'] = request_var('topic_cur_post_id', 0);
@@ -717,6 +719,10 @@ if ($submit || $preview || $refresh)
 		if (empty($confirm_row['code']) || strcasecmp($confirm_row['code'], $confirm_code) !== 0)
 		{
 			$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+		}
+		else
+		{
+			$solved_captcha = true;
 		}
 	}
 
@@ -1125,23 +1131,26 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode ==
 	$db->sql_query($sql);
 
 	// Generate code
-	$code = gen_rand_string(mt_rand(5, 8));
-	$confirm_id = md5(unique_id($user->ip));
+	if ($solved_captcha === false)
+	{
+		$code = gen_rand_string(mt_rand(5, 8));
+		$confirm_id = md5(unique_id($user->ip));
 
-	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-		'confirm_id'	=> (string) $confirm_id,
-		'session_id'	=> (string) $user->session_id,
-		'confirm_type'	=> (int) CONFIRM_POST,
-		'code'			=> (string) $code)
-	);
-	$db->sql_query($sql);
+		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			'confirm_id'	=> (string) $confirm_id,
+			'session_id'	=> (string) $user->session_id,
+			'confirm_type'	=> (int) CONFIRM_POST,
+			'code'			=> (string) $code)
+		);
+		$db->sql_query($sql);
 
-	$template->assign_vars(array(
-		'S_CONFIRM_CODE'			=> true,
-		'CONFIRM_ID'				=> $confirm_id,
-		'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
-		'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
-	));
+		$template->assign_vars(array(
+			'S_CONFIRM_CODE'			=> true,
+			'CONFIRM_ID'				=> $confirm_id,
+			'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
+			'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+		));
+	}
 }
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
