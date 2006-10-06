@@ -38,48 +38,45 @@ class dbal_postgres extends dbal
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
 	{
-		$this->connect_string = '';
+		$connect_string = '';
 
 		if ($sqluser)
 		{
-			$this->connect_string .= "user=$sqluser ";
+			$connect_string .= "user=$sqluser ";
 		}
 
 		if ($sqlpassword)
 		{
-			$this->connect_string .= "password=$sqlpassword ";
+			$connect_string .= "password=$sqlpassword ";
 		}
 
 		if ($sqlserver)
 		{
 			if (strpos($sqlserver, ':') !== false)
 			{
-				list($sqlserver, $sqlport) = explode(':', $sqlserver);
-				$this->connect_string .= "host=$sqlserver port=$sqlport ";
+				list($sqlserver, $port) = explode(':', $sqlserver);
 			}
-			else
+
+			if ($sqlserver !== 'localhost')
 			{
-				if ($sqlserver != "localhost")
-				{
-					$this->connect_string .= "host=$sqlserver ";
-				}
-			
-				if ($port)
-				{
-					$this->connect_string .= "port=$port ";
-				}
+				$connect_string .= "host=$sqlserver ";
+			}
+		
+			if ($port)
+			{
+				$connect_string .= "port=$port ";
 			}
 		}
 
 		if ($database)
 		{
 			$this->dbname = $database;
-			$this->connect_string .= "dbname=$database";
+			$connect_string .= "dbname=$database";
 		}
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($this->connect_string) : @pg_connect($this->connect_string);
+		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string) : @pg_connect($connect_string);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
