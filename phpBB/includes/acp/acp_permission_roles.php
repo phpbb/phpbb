@@ -146,13 +146,13 @@ class acp_permission_roles
 					$sql = 'SELECT role_id
 						FROM ' . ACL_ROLES_TABLE . "
 						WHERE role_type = '" . $db->sql_escape($permission_type) . "'
-							AND LOWER(role_name) = '" . $db->sql_escape(utf8_strtolower($role_name)) . "'";
+							AND role_name = '" . $db->sql_escape($role_name) . "'";
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
 					// Make sure we only print out the error if we add the role or change it's name
-					if ($row && ($mode == 'add' || ($mode == 'edit' && utf8_strtolower($role_row['role_name']) != utf8_strtolower($role_name))))
+					if ($row && ($mode == 'add' || ($mode == 'edit' && $role_row['role_name']) != $role_name)))
 					{
 						trigger_error(sprintf($user->lang['ROLE_NAME_ALREADY_EXIST'], $role_name) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
