@@ -244,7 +244,7 @@ if (!$user->data['is_registered'])
 $update_time = $config['load_online_time'] * 60;
 
 $sql = $db->sql_build_query('SELECT_DISTINCT', array(
-	'SELECT'	=> 'u.user_id, u.username, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+	'SELECT'	=> 'u.user_id, u.username, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -276,8 +276,9 @@ while ($row = $db->sql_fetchrow($result))
 	$template->assign_block_vars("friends_{$which}", array(
 		'U_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 
-		'USER_ID'	=> $row['user_id'],
-		'USERNAME'	=> $row['username'])
+		'USER_ID'		=> $row['user_id'],
+		'USER_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
+		'USERNAME'		=> $row['username'])
 	);
 }
 $db->sql_freeresult($result);
