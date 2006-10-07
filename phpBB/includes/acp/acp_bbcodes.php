@@ -122,12 +122,12 @@ class acp_bbcodes
 				{
 					$sql = 'SELECT 1 as test
 						FROM ' . BBCODES_TABLE . "
-						WHERE LOWER(bbcode_tag) = '" . $db->sql_escape(utf8_strtolower($data['bbcode_tag'])) . "'";
+						WHERE LOWER(bbcode_tag) = '" . $db->sql_escape(strtolower($data['bbcode_tag'])) . "'";
 					$result = $db->sql_query($sql);
 					$info = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
-					if ($info['test'] === '1' || in_array(utf8_strtolower($data['bbcode_tag']), $hard_coded))
+					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded))
 					{
 						trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -358,10 +358,10 @@ class acp_bbcodes
 
 		// Lowercase tags
 		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+=?).*/i', '$1', $bbcode_match);
-		$fp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "utf8_strtolower('\$0')", $fp_match);
-		$fp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "utf8_strtolower('\$0')", $fp_replace);
-		$sp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "utf8_strtolower('\$0')", $sp_match);
-		$sp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "utf8_strtolower('\$0')", $sp_replace);
+		$fp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_match);
+		$fp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_replace);
+		$sp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_match);
+		$sp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_replace);
 
 		return array(
 			'bbcode_tag'				=> $bbcode_tag,

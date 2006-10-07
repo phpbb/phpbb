@@ -447,12 +447,6 @@ function compose_pm($id, $mode, $action)
 	if ($submit || $preview || $refresh)
 	{
 		$subject = request_var('subject', '', true);
-
-		if ($subject && strcmp($subject, utf8_strtoupper($subject)) === 0)
-		{
-			$subject = utf8_strtolower($subject);
-		}
-
 		$message_parser->message = request_var('message', '', true);
 
 		$icon_id			= request_var('icon', 0);

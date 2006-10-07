@@ -425,7 +425,7 @@ class dbal
 				$this->sql_transaction('rollback');
 			}
 
-			if (utf8_strlen($message) > 1024)
+			if (strlen($message) > 1024)
 			{
 				// We need to define $msg_long_text here to circumvent text stripping.
 				global $msg_long_text;
