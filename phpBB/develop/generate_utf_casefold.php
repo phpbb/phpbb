@@ -10,7 +10,7 @@
 
 if (php_sapi_name() != 'cli')
 {
-//	die("This program must be run from the command line.\n");
+	die("This program must be run from the command line.\n");
 }
 
 set_time_limit(0);
