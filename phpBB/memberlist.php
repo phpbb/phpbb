@@ -332,7 +332,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE LOWER(username) = '" . strtolower($db->sql_escape($username)) . "'
+				WHERE LOWER(username) = '" . utf8_strtolower($db->sql_escape($username)) . "'
 					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		}
 		else

@@ -594,7 +594,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$username = trim($username);
 					if ($username != '')
 					{
-						$sql_usernames[] = strtolower($username);
+						$sql_usernames[] = utf8_strtolower($username);
 					}
 				}
 
@@ -1044,11 +1044,11 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 		return false;
 	}
 
-	if ($min && strlen($string) < $min)
+	if ($min && utf8_strlen($string) < $min)
 	{
 		return 'TOO_SHORT';
 	}
-	else if ($max && strlen($string) > $max)
+	else if ($max && utf8_strlen($string) > $max)
 	{
 		return 'TOO_LONG';
 	}
@@ -1112,7 +1112,7 @@ function validate_username($username)
 {
 	global $config, $db, $user;
 
-	if (strtolower($user->data['username']) == strtolower($username))
+	if (utf8_strtolower($user->data['username']) == utf8_strtolower($username))
 	{
 		return false;
 	}
@@ -1124,7 +1124,7 @@ function validate_username($username)
 
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . "
-		WHERE LOWER(username) = '" . strtolower($db->sql_escape($username)) . "'";
+		WHERE LOWER(username) = '" . utf8_strtolower($db->sql_escape($username)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1136,7 +1136,7 @@ function validate_username($username)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . strtolower($db->sql_escape($username)) . "'";
+		WHERE LOWER(group_name) = '" . utf8_strtolower($db->sql_escape($username)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1515,12 +1515,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit');
 
 	// Check data
-	if (!strlen($name) || strlen($name) > 40)
+	if (!utf8_strlen($name) || utf8_strlen($name) > 40)
 	{
-		$error[] = (!strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
+		$error[] = (!utf8_strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
 	}
 
-	if (strlen($desc) > 255)
+	if (utf8_strlen($desc) > 255)
 	{
 		$error[] = $user->lang['GROUP_ERR_DESC_LONG'];
 	}

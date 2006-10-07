@@ -396,7 +396,7 @@ class auth
 				$hold_str .= str_repeat("\n", $f - $last_f);
 			
 				// Convert bitstring for storage - we do not use binary/bytes because PHP's string functions are not fully binary safe
-				for ($i = 0; $i < strlen($bitstring); $i += 31)
+				for ($i = 0, $bit_length = strlen($bitstring); $i < $bit_length; $i += 31)
 				{
 					$hold_str .= str_pad(base_convert(str_pad(substr($bitstring, $i, 31), 31, 0, STR_PAD_RIGHT), 2, 36), 6, 0, STR_PAD_LEFT);
 				}
@@ -714,7 +714,7 @@ class auth
 
 				$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
 					FROM ' . USERS_TABLE . "
-					WHERE LOWER(username) = '" . $db->sql_escape(strtolower($username)) . "'";
+					WHERE LOWER(username) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);

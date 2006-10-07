@@ -532,9 +532,9 @@ if ($submit || $preview || $refresh)
 
 	// If subject is all-uppercase then we make all lowercase (we do not want to be yelled at too :P)
 	// Admins/Mods might want to create all-uppercase topics, therefore we do not apply this check to them (they should know better ;))
-	if ($post_data['post_subject'] && !$auth->acl_gets('a_', 'm_', $forum_id) && strcmp($post_data['post_subject'], strtoupper($post_data['post_subject'])) == 0)
+	if ($post_data['post_subject'] && !$auth->acl_gets('a_', 'm_', $forum_id) && strcmp($post_data['post_subject'], utf8_strtoupper($post_data['post_subject'])) === 0)
 	{
-		$post_data['post_subject'] = strtolower($post_data['post_subject']);
+		$post_data['post_subject'] = utf8_strtolower($post_data['post_subject']);
 	}
 
 	$message_parser->message = request_var('message', '', true);

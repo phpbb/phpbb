@@ -153,7 +153,7 @@ class fulltext_mysql extends search_backend
 			$clean_word = preg_replace('#^[+\-|]#', '', $word);
 
 			// check word length
-			$clean_len = strlen(str_replace('*', '', $clean_word));
+			$clean_len = utf8_strlen(str_replace('*', '', $clean_word));
 			if (($clean_len < $config['fulltext_mysql_min_word_len']) || ($clean_len > $config['fulltext_mysql_max_word_len']))
 			{
 				$this->common_words[] = $word;
@@ -203,7 +203,7 @@ class fulltext_mysql extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || strlen($text[$i]) > $config['fulltext_mysql_max_word_len'])
+			if (utf8_strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $config['fulltext_mysql_max_word_len'])
 			{
 				unset($text[$i]);
 			}

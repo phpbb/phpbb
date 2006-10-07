@@ -6,6 +6,10 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* @todo make sure the replacements are called correctly
+* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!)
+* remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset), html_entity_decode (own function to reverse htmlspecialchars and not htmlentities)
+*				substr, strpos, strspn, chr, ord
 */
 
 /**
@@ -136,6 +140,7 @@ if (extension_loaded('mbstring'))
 	* @param string needle
 	* @param integer (optional) offset (from left)
 	* @return mixed integer position or FALSE on failure
+	* @ignore
 	*/
 	if (version_compare(phpversion(), '5.2.0', '>='))
 	{
@@ -209,15 +214,7 @@ if (extension_loaded('mbstring'))
 
 	/**
 	* UTF-8 aware alternative to strtolower
-	* Make a string lowercase
-	* Note: The concept of a characters "case" only exists is some alphabets
-	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
-	* not exist in the Chinese alphabet, for example. See Unicode Standard
-	* Annex #21: Case Mappings
-	* 
-	* @author Andreas Gohr <andi@splitbrain.org>
-	* @param string
-	* @return mixed either string in lowercase or FALSE is UTF-8 invalid
+	* @ignore
 	*/
 	function utf8_strtolower($str)
 	{
@@ -226,15 +223,7 @@ if (extension_loaded('mbstring'))
 
 	/**
 	* UTF-8 aware alternative to strtoupper
-	* Make a string uppercase
-	* Note: The concept of a characters "case" only exists is some alphabets
-	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
-	* not exist in the Chinese alphabet, for example. See Unicode Standard
-	* Annex #21: Case Mappings
-	* 
-	* @author Andreas Gohr <andi@splitbrain.org>
-	* @param string
-	* @return mixed either string in lowercase or FALSE is UTF-8 invalid
+	* @ignore
 	*/
 	function utf8_strtoupper($str)
 	{

@@ -451,7 +451,7 @@ class acp_attachments
 					{
 						$sql = 'SELECT group_id 
 							FROM ' . EXTENSION_GROUPS_TABLE . "
-							WHERE LOWER(group_name) = '" . $db->sql_escape(strtolower($new_group_name)) . "'";
+							WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($new_group_name)) . "'";
 						$result = $db->sql_query($sql);
 
 						if ($db->sql_fetchrow($result))

@@ -31,7 +31,7 @@ class ucp_remind
 			$sql = 'SELECT user_id, username, user_email, user_jabber, user_notify_type, user_type, user_lang
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND LOWER(username) = '" . $db->sql_escape(strtolower($username)) . "'";
+					AND LOWER(username) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);

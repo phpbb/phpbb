@@ -445,7 +445,7 @@ class bbcode_firstpass extends bbcode
 					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#', '</span>', $code);
 
 					// remove newline at the end
-					if (!empty($code) && $code{strlen($code)-1} == "\n")
+					if (!empty($code) && $code{utf8_strlen($code)-1} == "\n")
 					{
 						$code = substr($code, 0, -1);
 					}
@@ -597,7 +597,7 @@ class bbcode_firstpass extends bbcode
 		do
 		{
 			$pos = strlen($in);
-			for ($i = 0; $i < strlen($tok); ++$i)
+			for ($i = 0, $tok_len = strlen($tok); $i < $tok_len; ++$i)
 			{
 				$tmp_pos = strpos($in, $tok{$i});
 				if ($tmp_pos !== false && $tmp_pos < $pos)
@@ -912,7 +912,7 @@ class parse_message extends bbcode_firstpass
 		// Message length check. -1 disables this check completely.
 		if ($config['max_' . $mode . '_chars'] != -1)
 		{
-			$msg_len = ($mode == 'post') ? strlen($this->message) : strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#is', ' ', $this->message));
+			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#is', ' ', $this->message));
 	
 			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{

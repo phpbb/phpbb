@@ -577,23 +577,23 @@ class install_install extends module
 			}
 
 			// Test against the default username rules
-			if ($admin_name != '' && strlen($admin_name) < 3)
+			if ($admin_name != '' && utf8_strlen($admin_name) < 3)
 			{
 				$error[] = $lang['INST_ERR_USER_TOO_SHORT'];
 			}
 
-			if ($admin_name != '' && strlen($admin_name) > 20)
+			if ($admin_name != '' && utf8_strlen($admin_name) > 20)
 			{
 				$error[] = $lang['INST_ERR_USER_TOO_LONG'];
 			}
 
 			// Test against the default password rules
-			if ($admin_pass1 != '' && strlen($admin_pass1) < 6)
+			if ($admin_pass1 != '' && utf8_strlen($admin_pass1) < 6)
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_SHORT'];
 			}
 
-			if ($admin_pass1 != '' && strlen($admin_pass1) > 30)
+			if ($admin_pass1 != '' && utf8_strlen($admin_pass1) > 30)
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_TOO_LONG'];
 			}

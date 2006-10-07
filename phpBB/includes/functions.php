@@ -653,7 +653,7 @@ function tz_select($default = '', $truncate = false)
 	{
 		if ($truncate)
 		{
-			$zone = (strlen($zone) > 70) ? substr($zone, 0, 70) . '...' : $zone;
+			$zone = (utf8_strlen($zone) > 70) ? utf8_substr($zone, 0, 70) . '...' : $zone;
 		}
 
 		if (is_numeric($offset))
@@ -1793,7 +1793,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$admin 		= ($admin) ? 1 : 0;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && strtolower($username) != strtolower($user->data['username']))
+		if ($admin && utf8_strtolower($username) != utf8_strtolower($user->data['username']))
 		{
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
@@ -2696,22 +2696,8 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 		$string = substr($string, 4);
 	}
 
-	// split the multibyte characters first
-	$string_ary = preg_split('/(&#[0-9]+;)/', $string, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-
-	// Now go through the array and split the other characters
-	foreach ($string_ary as $key => $value)
-	{
-		if (strpos($value, '&#') === 0)
-		{
-			$chars[] = $value;
-			continue;
-		}
-
-		// decode html entities and put them back later
-		$_chars = str_split(html_entity_decode($value));
-		$chars = array_merge($chars, array_map('htmlspecialchars', $_chars));
-	}
+	$_chars = utf8_str_split(html_entity_decode($string));
+	$chars = array_map('htmlspecialchars', $_chars);
 
 	// Now check the length ;)
 	if (sizeof($chars) > $max_length)

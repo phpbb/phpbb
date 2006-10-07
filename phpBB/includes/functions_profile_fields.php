@@ -161,11 +161,11 @@ class custom_profile
 					return 'FIELD_REQUIRED';
 				}
 
-				if ($field_data['field_minlen'] && strlen($field_value) < $field_data['field_minlen'])
+				if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])
 				{
 					return 'FIELD_TOO_SHORT';
 				}
-				else if ($field_data['field_maxlen'] && strlen($field_value) > $field_data['field_maxlen'])
+				else if ($field_data['field_maxlen'] && utf8_strlen($field_value) > $field_data['field_maxlen'])
 				{
 					return 'FIELD_TOO_LONG';
 				}

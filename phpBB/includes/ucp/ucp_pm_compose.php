@@ -448,9 +448,9 @@ function compose_pm($id, $mode, $action)
 	{
 		$subject = request_var('subject', '', true);
 
-		if (strcmp($subject, strtoupper($subject)) == 0 && $subject)
+		if ($subject && strcmp($subject, utf8_strtoupper($subject)) === 0)
 		{
-			$subject = strtolower($subject);
+			$subject = utf8_strtolower($subject);
 		}
 
 		$message_parser->message = request_var('message', '', true);

@@ -42,7 +42,7 @@ class ucp_zebra
 
 			if ($data['add'])
 			{
-				$data['add'] = array_map('trim', array_map('strtolower', explode("\n", $data['add'])));
+				$data['add'] = array_map('trim', array_map('utf8_strtolower', explode("\n", $data['add'])));
 
 				// Do these name/s exist on a list already? If so, ignore ... we could be
 				// 'nice' and automatically handle names added to one list present on 
@@ -59,11 +59,11 @@ class ucp_zebra
 				{
 					if ($row['friend'])
 					{
-						$friends[] = strtolower($row['username']);
+						$friends[] = utf8_strtolower($row['username']);
 					}
 					else
 					{
-						$foes[] = strtolower($row['username']);
+						$foes[] = utf8_strtolower($row['username']);
 					}
 				}
 				$db->sql_freeresult($result);
@@ -88,7 +88,7 @@ class ucp_zebra
 
 				// remove the user himself from the username array
 				$n = sizeof($data['add']);
-				$data['add'] = array_diff($data['add'], array(strtolower($user->data['username'])));
+				$data['add'] = array_diff($data['add'], array(utf8_strtolower($user->data['username'])));
 
 				if (sizeof($data['add']) < $n)
 				{

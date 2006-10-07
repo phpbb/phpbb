@@ -616,7 +616,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$rowset[] = $row;
-				if (($return_chars == -1) || (strlen($row['post_text']) < $return_chars + 3))
+				if (($return_chars == -1) || (utf8_strlen($row['post_text']) < $return_chars + 3))
 				{
 					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
@@ -777,7 +777,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$row['post_subject'] = censor_text($row['post_subject']);
 				$message = $row['post_text'];
 
-				if (($return_chars != -1) && (strlen($message) >= $return_chars + 3))
+				if ($return_chars != -1 && utf8_strlen($message) >= ($return_chars + 3))
 				{
 					$message = censor_text($message);
 

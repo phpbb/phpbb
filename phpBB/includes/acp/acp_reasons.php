@@ -65,7 +65,7 @@ class acp_reasons
 						{
 							$reason_row['reason_title'] = 'other';
 						}
-						else if (strtolower($row['reason_title']) != strtolower($reason_row['reason_title']))
+						else if (utf8_strtolower($row['reason_title']) != utf8_strtolower($reason_row['reason_title']))
 						{
 							$check_double = true;
 						}
@@ -76,7 +76,7 @@ class acp_reasons
 					{
 						$sql = 'SELECT reason_id
 							FROM ' . REPORTS_REASONS_TABLE . "
-							WHERE LOWER(reason_title) = '" . strtolower($db->sql_escape($reason_row['reason_title'])) . "'";
+							WHERE LOWER(reason_title) = '" . $db->sql_escape(utf8_strtolower($reason_row['reason_title'])) . "'";
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);

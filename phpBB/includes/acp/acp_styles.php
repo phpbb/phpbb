@@ -2059,12 +2059,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			if (!sizeof($error))
 			{
 				// Check length settings
-				if (strlen($name) > 30)
+				if (utf8_strlen($name) > 30)
 				{
 					$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
 				}
 
-				if (strlen($copyright) > 60)
+				if (utf8_strlen($copyright) > 60)
 				{
 					$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
 				}
@@ -2824,12 +2824,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 
 		// Check length settings
-		if (strlen($name) > 30)
+		if (utf8_strlen($name) > 30)
 		{
 			$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
 		}
 
-		if (strlen($copyright) > 60)
+		if (utf8_strlen($copyright) > 60)
 		{
 			$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
 		}
@@ -2934,12 +2934,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 
 		// Check length settings
-		if (strlen($name) > 30)
+		if (utf8_strlen($name) > 30)
 		{
 			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
 		}
 
-		if (strlen($copyright) > 60)
+		if (utf8_strlen($copyright) > 60)
 		{
 			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
 		}

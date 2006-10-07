@@ -653,7 +653,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . "
-					WHERE LOWER(username) = '" . $db->sql_escape(strtolower($rule_string)) . "'";
+					WHERE LOWER(username) = '" . $db->sql_escape(utf8_strtolower($rule_string)) . "'";
 				$result = $db->sql_query($sql);
 				$rule_user_id = (int) $db->sql_fetchfield('user_id');
 				$db->sql_freeresult($result);

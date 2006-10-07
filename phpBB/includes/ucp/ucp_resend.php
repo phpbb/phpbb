@@ -31,7 +31,7 @@ class ucp_resend
 			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND LOWER(username) = '" . $db->sql_escape(strtolower($username)) . "'";
+					AND LOWER(username) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
