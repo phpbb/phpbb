@@ -930,4 +930,48 @@ function utf8_from_unicode($array)
 	return $str;
 }
 
+
+/**
+* Takes an array of ints representing the Unicode characters and returns
+* a UTF-8 string.
+*
+* @param string $text text to be case folded
+* @param string $option determines how we will fold the cases
+* @return string case folded text
+*/
+function utf8_case_fold($text, $option = 'full')
+{
+	static $uniarray = array();
+	global $phpbb_root_path, $phpEx;
+
+	// common is always set
+	if (!isset($uniarray['C']))
+	{
+		$uniarray['C'] = include($phpbb_root_path . 'includes/utf/data/case_fold_C.' . $phpEx);
+	}
+
+	// only set full if we need to
+	if ($option === 'full' && !isset($uniarray['F']))
+	{
+		$uniarray['F'] = include($phpbb_root_path . 'includes/utf/data/case_fold_F.' . $phpEx);
+	}
+
+	// only set simple if we need to
+	if ($option !== 'full' && !isset($uniarray['S']))
+	{
+		$uniarray['S'] = include($phpbb_root_path . 'includes/utf/data/case_fold_S.' . $phpEx);
+	}
+
+	$text = strtr($text, $uniarray['C']);
+	if ($option === 'full')
+	{
+		$text = strtr($text, $uniarray['F']);
+	}
+	else
+	{
+		$text = strtr($text, $uniarray['S']);
+	}
+	return $text;
+}
+
 ?>
