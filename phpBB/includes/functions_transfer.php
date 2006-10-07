@@ -263,7 +263,7 @@ class ftp extends transfer
 
 		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+		$this->root_path	= (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
 
 		// Init some needed values
 		transfer::transfer();
@@ -475,9 +475,9 @@ class ftp_fsock extends transfer
 		$this->password		= $password;
 		$this->timeout		= $timeout;
 
-		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (prefixed with / and no / at the end)
+		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
-		$this->root_path	= (($root_path{0} != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+		$this->root_path	= (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
 
 		// Init some needed values
 		transfer::transfer();

@@ -347,7 +347,7 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 				$matches[$dir][] = $fname;
 			}
 		}
-		else if ($fname{0} != '.' && is_dir("$rootdir$dir$fname"))
+		else if ($fname[0] != '.' && is_dir("$rootdir$dir$fname"))
 		{
 			$matches += filelist($rootdir, "$dir$fname", $type);
 		}
@@ -1047,7 +1047,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		else if ($where_type == 'range')
 		{
 			// Only check a range of topics/forums. For instance: 'topic_id BETWEEN 1 AND 60'
-			$where_sql = 'WHERE (' . $mode{0} . ".$where_ids)";
+			$where_sql = 'WHERE (' . $mode[0] . ".$where_ids)";
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
 		else
@@ -1063,7 +1063,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// Limit the topics/forums we are syncing, use specific topic/forum IDs.
 			// $where_type contains the field for the where clause (forum_id, topic_id)
-			$where_sql = 'WHERE ' . $db->sql_in_set($mode{0} . '.' . $where_type, $where_ids);
+			$where_sql = 'WHERE ' . $db->sql_in_set($mode[0] . '.' . $where_type, $where_ids);
 			$where_sql_and = $where_sql . "\n\tAND";
 		}
 	}
@@ -1075,7 +1075,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		}
 
 		// $where_type contains the field for the where clause (forum_id, topic_id)
-		$where_sql = 'WHERE ' . $db->sql_in_set($mode{0} . '.' . $where_type, $where_ids);
+		$where_sql = 'WHERE ' . $db->sql_in_set($mode[0] . '.' . $where_type, $where_ids);
 		$where_sql_and = $where_sql . "\n\tAND";
 	}
 

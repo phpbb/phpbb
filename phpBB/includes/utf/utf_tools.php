@@ -7,9 +7,9 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
 * @todo make sure the replacements are called correctly
-* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos
+* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr
 * remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset), html_entity_decode (own function to reverse htmlspecialchars and not htmlentities)
-*				substr, strspn, chr, ord
+*				strspn, chr, ord
 */
 
 /**
@@ -226,13 +226,7 @@ if (extension_loaded('mbstring'))
 
 	/**
 	* UTF-8 aware alternative to substr
-	* Return part of a string given character offset (and optionally length)
-	* 
-	* @author Harry Fuecks
-	* @param string
-	* @param integer number of UTF-8 characters offset (from left)
-	* @param integer (optional) length in UTF-8 characters from offset
-	* @return mixed string or FALSE if failure
+	* @ignore
 	*/
 	function utf8_substr($str, $offset,	$length	= null)
 	{
@@ -248,9 +242,7 @@ if (extension_loaded('mbstring'))
 
 	/**
 	* Return the length (in characters) of a UTF-8 string
-	*
-	* @param	string	$text		UTF-8 string
-	* @return	integer				Length (in chars) of given string
+	* @ignore
 	*/
 	function utf8_strlen($text)
 	{

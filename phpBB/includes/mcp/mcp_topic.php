@@ -303,7 +303,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 			$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
-			if ($sort_order_sql{0} == 'u')
+			if ($sort_order_sql[0] == 'u')
 			{
 				$sql = 'SELECT p.post_id, p.forum_id, p.post_approved
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u

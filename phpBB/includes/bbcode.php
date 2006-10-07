@@ -536,7 +536,7 @@ class bbcode
 		$username = str_replace('\"', '"', $username);
 
 		// remove newline at the beginning
-		if ($quote{0} == "\n")
+		if ($quote[0] == "\n")
 		{
 			$quote = substr($quote, 1);
 		}
@@ -572,7 +572,7 @@ class bbcode
 				$code = str_replace('  ', ' &nbsp;', $code);
 
 				// remove newline at the beginning
-				if (!empty($code) && $code{0} == "\n")
+				if (!empty($code) && $code[0] == "\n")
 				{
 					$code = substr($code, 1);
 				}

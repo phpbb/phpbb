@@ -251,7 +251,7 @@ class acp_main
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
-				if ($file{0} != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
+				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
 				{
 					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
 				}

@@ -533,7 +533,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		while (($file = readdir($dp)) !== false)
 		{
 			$subpath = ($mode != 'style') ? "$mode/" : '';
-			if ($file{0} != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
+			if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
 			{
 				if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
 				{
@@ -1433,7 +1433,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		$dp = opendir($dir);
 		while (($file = readdir($dp)) !== false)
 		{
-			if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file{0} != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+			if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
 			{
 				$dp2 = opendir("$dir/$file");
 				while (($file2 = readdir($dp2)) !== false)

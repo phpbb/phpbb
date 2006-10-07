@@ -226,21 +226,6 @@ class filespec
 			return false;
 		}
 
-
-/*
-		// Adjust destination path (no trailing slash)
-		if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
-		{
-			$destination = substr($destination, 0, sizeof($destination)-2);
-		}
-
-		$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-		if ($destination && ($destination{0} == '/' || $destination{0} == "\\"))
-		{
-			$destination = '';
-		}
-*/
-
 		// We need to trust the admin in specifying valid upload directories and an attacker not being able to overwrite it...
 		$this->destination_path = $phpbb_root_path . $destination;
 

@@ -1372,7 +1372,7 @@ function avatar_upload($data, &$error)
 	}
 
 	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-	if ($destination && ($destination{0} == '/' || $destination{0} == "\\"))
+	if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
 	{
 		$destination = '';
 	}
@@ -1411,7 +1411,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 		while (($file = readdir($dp)) !== false)
 		{
-			if ($file{0} != '.' && is_dir("$path/$file"))
+			if ($file[0] != '.' && is_dir("$path/$file"))
 			{
 				$avatar_row_count = $avatar_col_count = 0;
 	

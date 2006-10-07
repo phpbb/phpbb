@@ -142,7 +142,7 @@ class acm
 	*/
 	function get($var_name)
 	{
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			global $phpEx;
 
@@ -165,7 +165,7 @@ class acm
 	*/
 	function put($var_name, $var, $ttl = 31536000)
 	{
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			global $phpEx;
 
@@ -249,7 +249,7 @@ class acm
 			return;
 		}
 
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			@unlink($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
@@ -269,7 +269,7 @@ class acm
 	*/
 	function _exists($var_name)
 	{
-		if ($var_name{0} == '_')
+		if ($var_name[0] == '_')
 		{
 			global $phpEx;
 			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");

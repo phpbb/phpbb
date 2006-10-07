@@ -649,7 +649,7 @@ class bbcode_firstpass extends bbcode
 						preg_match_all('#\[((?:/)?(?:[a-z]+))#i', $username, $tags);
 						foreach ($tags[1] as $tag)
 						{
-							if ($tag{0} != '/')
+							if ($tag[0] != '/')
 							{
 								$end_tags[] = '/' . $tag;
 							}

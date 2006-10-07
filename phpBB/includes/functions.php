@@ -1490,7 +1490,7 @@ function redirect($url)
 	{
 		// Full URL
 	}
-	else if ($url{0} == '/')
+	else if ($url[0] == '/')
 	{
 		// Absolute uri, prepend direct url...
 		$url = generate_board_url(true) . $url;
@@ -2510,7 +2510,7 @@ function parse_cfg_file($filename, $lines = false)
 	{
 		$line = trim($line);
 
-		if (!$line || $line{0} == '#' || ($delim_pos = strpos($line, '=')) === false)
+		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
 		{
 			continue;
 		}
@@ -2531,7 +2531,7 @@ function parse_cfg_file($filename, $lines = false)
 		{
 			$value = '';
 		}
-		else if (($value{0} == "'" && $value{sizeof($value)-1} == "'") || ($value{0} == '"' && $value{sizeof($value)-1} == '"'))
+		else if (($value[0] == "'" && $value[sizeof($value) - 1] == "'") || ($value[0] == '"' && $value[sizeof($value) - 1] == '"'))
 		{
 			$value = substr($value, 1, sizeof($value)-2);
 		}

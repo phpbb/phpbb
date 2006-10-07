@@ -424,7 +424,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				}
 
 				$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-				if ($destination && ($destination{0} == '/' || $destination{0} == "\\"))
+				if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
 				{
 					$destination = '';
 				}
