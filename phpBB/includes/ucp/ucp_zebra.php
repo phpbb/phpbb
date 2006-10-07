@@ -20,7 +20,7 @@ class ucp_zebra
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 
-		$submit	= (isset($_POST['submit']) || isset($_GET['add'])) ? true : false;
+		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
 		$s_hidden_fields = '';
 
 		$l_mode = strtoupper($mode);
@@ -32,7 +32,7 @@ class ucp_zebra
 
 			$var_ary = array(
 				'usernames'	=> array(0),
-				'add'		=> '', 
+				'add'		=> '',
 			);
 
 			foreach ($var_ary as $var => $default)

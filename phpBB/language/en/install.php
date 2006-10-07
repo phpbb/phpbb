@@ -251,6 +251,7 @@ $lang = array_merge($lang, array(
 	'TESTS_PASSED'				=> 'Tests passed',
 	'TESTS_FAILED'				=> 'Tests failed',
 
+	'UNABLE_WRITE_LOCK'			=> 'Unable to write lock file',
 	'UNAVAILABLE'				=> 'Unavailable',
 	'UNWRITEABLE'				=> 'Unwriteable',
 

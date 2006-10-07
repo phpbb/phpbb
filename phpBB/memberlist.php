@@ -367,6 +367,19 @@ switch ($mode)
 		{
 			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
+		$db->sql_freeresult($result);
+
+		// What colour is the zebra
+		$sql = 'SELECT friend, foe
+			FROM ' . ZEBRA_TABLE . "
+			WHERE zebra_id = $user_id
+				AND user_id = {$user->data['user_id']}";
+
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$foe = ($row['foe']) ? true : false;
+		$friend = ($row['friend']) ? true : false;
+		$db->sql_freeresult($result);
 
 		if ($config['load_onlinetrack'])
 		{
@@ -484,9 +497,11 @@ switch ($mode)
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode($member['username'])),
-			'U_ADD_FOE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode($member['username'])))
-		);
+			'U_ADD_FRIEND'		=> (!$friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode($member['username'])) : '',
+			'U_ADD_FOE'			=> (!$foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode($member['username'])) : '',
+			'U_REMOVE_FRIEND'	=> ($friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+			'U_REMOVE_FOE'		=> ($foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+		));
 
 		if (!empty($profile_fields['row']))
 		{

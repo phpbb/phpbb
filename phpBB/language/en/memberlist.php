@@ -103,6 +103,8 @@ $lang = array_merge($lang, array(
 	'RANK'					=> 'Rank',
 	'REAL_NAME'				=> 'Recipient name',
 	'RECIPIENT'				=> 'Recipient',
+	'REMOVE_FOE'			=> 'Remove foe',
+	'REMOVE_FRIEND'			=> 'Remove friend',
 
 	'SEARCH_USER_POSTS'		=> 'Search user’s posts',
 	'SELECT_MARKED'			=> 'Select marked',
