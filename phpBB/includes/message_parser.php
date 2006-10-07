@@ -445,7 +445,7 @@ class bbcode_firstpass extends bbcode
 					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#', '</span>', $code);
 
 					// remove newline at the end
-					if (!empty($code) && $code{utf8_strlen($code)-1} == "\n")
+					if (!empty($code) && $code{strlen($code)-1} == "\n")
 					{
 						$code = substr($code, 0, -1);
 					}
@@ -499,14 +499,15 @@ class bbcode_firstpass extends bbcode
 		$tok = ']';
 		$out = '[';
 
+		// First character is [
 		$in = substr($in, 1);
 		$list_end_tags = array();
 
 		do
 		{
 			$pos = strlen($in);
-			$tok_len = strlen($tok);
-			for ($i = 0; $i < $tok_len; ++$i)
+
+			for ($i = 0, $tok_len = strlen($tok); $i < $tok_len; ++$i)
 			{
 				$tmp_pos = strpos($in, $tok{$i});
 

@@ -7,9 +7,9 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
 * @todo make sure the replacements are called correctly
-* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!)
+* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos
 * remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset), html_entity_decode (own function to reverse htmlspecialchars and not htmlentities)
-*				substr, strpos, strspn, chr, ord
+*				substr, strspn, chr, ord
 */
 
 /**
@@ -192,13 +192,7 @@ if (extension_loaded('mbstring'))
 
 	/**
 	* UTF-8 aware alternative to strpos
-	* Find position of first occurrence of a string
-	*
-	* @author Harry Fuecks
-	* @param string haystack
-	* @param string needle
-	* @param integer offset in characters (from left)
-	* @return mixed integer position or FALSE on failure
+	* @ignore
 	*/
 	function utf8_strpos($str, $needle, $offset = null)
 	{

@@ -2064,7 +2064,7 @@ function get_context($text, $words, $length = 400)
 		{
 			if (preg_match('#(?:[^\w]|^)(' . str_replace('\*', '\w*?', preg_quote($word, '#')) . ')(?:[^\w]|$)#i', $text, $match))
 			{
-				$pos = strpos($text, $match[1]);
+				$pos = utf8_strpos($text, $match[1]);
 				if ($pos !== false)
 				{
 					$word_indizes[] = $pos;
