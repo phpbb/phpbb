@@ -110,17 +110,18 @@ include($phpbb_root_path . 'includes/template.' . $phpEx);
 include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
 include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');
 
 if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 {
-	$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+	$accept_lang_ary = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 	foreach ($accept_lang_ary as $accept_lang)
 	{
-		// Set correct format ... guess full xx_YY form
-		$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
+		// Set correct format ... guess full xx-yy form
+		$accept_lang = substr($accept_lang, 0, 2) . '-' . substr($accept_lang, 3, 2);
 
 		if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 		{
@@ -129,7 +130,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		}
 		else
 		{
-			// No match on xx_YY so try xx
+			// No match on xx-yy so try xx
 			$accept_lang = substr($accept_lang, 0, 2);
 			if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 			{
@@ -319,11 +320,11 @@ class module
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
-			'S_USER_LANG'			=> $language,
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
 			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
+			'S_USER_LANG'			=> $language,
 			)
 		);
 
