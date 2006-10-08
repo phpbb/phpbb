@@ -945,31 +945,31 @@ function utf8_case_fold($text, $option = 'full')
 	global $phpbb_root_path, $phpEx;
 
 	// common is always set
-	if (!isset($uniarray['C']))
+	if (!isset($uniarray['c']))
 	{
-		$uniarray['C'] = include($phpbb_root_path . 'includes/utf/data/case_fold_C.' . $phpEx);
+		$uniarray['c'] = include_once($phpbb_root_path . 'includes/utf/data/case_fold_c.' . $phpEx);
 	}
 
 	// only set full if we need to
-	if ($option === 'full' && !isset($uniarray['F']))
+	if ($option === 'full' && !isset($uniarray['f']))
 	{
-		$uniarray['F'] = include($phpbb_root_path . 'includes/utf/data/case_fold_F.' . $phpEx);
+		$uniarray['f'] = include_once($phpbb_root_path . 'includes/utf/data/case_fold_f.' . $phpEx);
 	}
 
 	// only set simple if we need to
-	if ($option !== 'full' && !isset($uniarray['S']))
+	if ($option !== 'full' && !isset($uniarray['s']))
 	{
-		$uniarray['S'] = include($phpbb_root_path . 'includes/utf/data/case_fold_S.' . $phpEx);
+		$uniarray['s'] = include_once($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
 	}
 
-	$text = strtr($text, $uniarray['C']);
+	$text = strtr($text, $uniarray['c']);
 	if ($option === 'full')
 	{
-		$text = strtr($text, $uniarray['F']);
+		$text = strtr($text, $uniarray['f']);
 	}
 	else
 	{
-		$text = strtr($text, $uniarray['S']);
+		$text = strtr($text, $uniarray['s']);
 	}
 	return $text;
 }

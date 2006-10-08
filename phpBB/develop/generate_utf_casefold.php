@@ -63,7 +63,7 @@ foreach ($array as $value)
 foreach ($uniarray as $idx => $contents)
 {
 	echo "Writing to case_fold_$idx.$phpEx\n";
-	$fp = fopen($phpbb_root_path . 'includes/utf/data/case_fold_' . $idx . '.' . $phpEx, 'wb');
+	$fp = fopen($phpbb_root_path . 'includes/utf/data/case_fold_' . strtolower($idx) . '.' . $phpEx, 'wb');
 	fwrite($fp, '<?php return ' . my_var_export($contents) . ';');
 	fclose($fp);
 }
