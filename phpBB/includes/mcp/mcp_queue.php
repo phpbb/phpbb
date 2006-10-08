@@ -644,7 +644,7 @@ function disapprove_post($post_id_list, $mode)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$row || (!$reason && $row['reason_title'] == 'other'))
+		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
 			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
 			unset($_POST['confirm']);
@@ -652,7 +652,7 @@ function disapprove_post($post_id_list, $mode)
 		else
 		{
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-			$disapprove_reason = ($row['reason_title'] != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
+			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
 			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
 		}
 	}

@@ -212,25 +212,29 @@ $lang = array_merge($lang, array(
 // Reasons
 $lang = array_merge($lang, array(
 	'ACP_REASONS_EXPLAIN'	=> 'Here you can manage the reasons used in reports and denial messages when disapproving posts. There is one default reason (marked with a *) you are not able to remove, this reason is normally used for custom messages if no reason fits.',
-
 	'ADD_NEW_REASON'		=> 'Add new reason',
+	'AVAILABLE_TITLES'		=> 'Available localized reason titles',
 	
-	'IS_NOT_TRANSLATED'		=> 'Reason has not been localised',
-	'IS_TRANSLATED'			=> 'Reason has been localised',
+	'IS_NOT_TRANSLATED'			=> 'Reason has <samp>not</samp> been localised.',
+	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <samp>not</samp> been localised. If you want to provide the localized form, specify the correct key from the language files report reasons section.',
+	'IS_TRANSLATED'				=> 'Reason has been localised.',
+	'IS_TRANSLATED_EXPLAIN'		=> 'Reason has been localised. If the title you enter here is specified within the language files report reasons section, the localized form of the title and description will be used.',
 	
 	'NO_REASON'					=> 'Reason could not be found.',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
 	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason "Other".',
 
-	'REASON_ADD'			=> 'Add report/denial reason',
-	'REASON_ADDED'			=> 'Report/denial reason successfully added.',
-	'REASON_ALREADY_EXIST'	=> 'A reason with this title already exist, please enter another title for this reason.',
-	'REASON_DESCRIPTION'	=> 'Reason description',
-	'REASON_EDIT'			=> 'Edit report/denial reason',
-	'REASON_EDIT_EXPLAIN'	=> 'Here you are able to add or edit a reason. If the reason is translated the localized version is used instead of the description entered here.',
-	'REASON_REMOVED'		=> 'Report/denial reason successfully removed.',
-	'REASON_TITLE'			=> 'Reason Title',
-	'REASON_UPDATED'		=> 'Report/denial reason successfully updated.',
+	'REASON_ADD'				=> 'Add report/denial reason',
+	'REASON_ADDED'				=> 'Report/denial reason successfully added.',
+	'REASON_ALREADY_EXIST'		=> 'A reason with this title already exist, please enter another title for this reason.',
+	'REASON_DESCRIPTION'		=> 'Reason description',
+	'REASON_DESC_TRANSLATED'	=> 'Displayed reason description',
+	'REASON_EDIT'				=> 'Edit report/denial reason',
+	'REASON_EDIT_EXPLAIN'		=> 'Here you are able to add or edit a reason. If the reason is translated the localized version is used instead of the description entered here.',
+	'REASON_REMOVED'			=> 'Report/denial reason successfully removed.',
+	'REASON_TITLE'				=> 'Reason title',
+	'REASON_TITLE_TRANSLATED'	=> 'Displayed reason title',
+	'REASON_UPDATED'			=> 'Report/denial reason successfully updated.',
 
 	'USED_IN_REPORTS'		=> 'Used in reports',
 ));

@@ -64,6 +64,7 @@ $sql = 'SELECT *
 	WHERE forum_id = ' . $forum_id;
 $result = $db->sql_query($sql);
 $forum_data = $db->sql_fetchrow($result);
+$db->sql_freeresult($result);
 
 if (!$forum_data)
 {
@@ -99,7 +100,7 @@ if ($submit && $reason_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row || (!$report_text && $row['reason_title'] == 'other'))
+	if (!$row || (!$report_text && strtolower($row['reason_title']) == 'other'))
 	{
 		trigger_error('EMPTY_REPORT');
 	}

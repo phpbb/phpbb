@@ -351,6 +351,7 @@
 			<tr>
 				<td style="width: 5%;">{forums.FOLDER_IMAGE}</td>
 				<td>
+					<!-- IF forums.FORUM_IMAGE --><div style="float: left;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
 					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
