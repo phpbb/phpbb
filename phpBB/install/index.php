@@ -120,8 +120,8 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 	$accept_lang_ary = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
 	foreach ($accept_lang_ary as $accept_lang)
 	{
-		// Set correct format ... guess full xx-yy form
-		$accept_lang = substr($accept_lang, 0, 2) . '-' . substr($accept_lang, 3, 2);
+		// Set correct format ... guess full xx_yy form
+		$accept_lang = substr($accept_lang, 0, 2) . '_' . substr($accept_lang, 3, 2);
 
 		if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 		{
@@ -130,7 +130,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		}
 		else
 		{
-			// No match on xx-yy so try xx
+			// No match on xx_yy so try xx
 			$accept_lang = substr($accept_lang, 0, 2);
 			if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
 			{
@@ -311,7 +311,7 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $language, $stage, $phpbb_root_path;
+		global $template, $lang, $stage, $phpbb_root_path;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
@@ -324,7 +324,7 @@ class module
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
 			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
-			'S_USER_LANG'			=> $language,
+			'S_USER_LANG'			=> $lang['USER_LANG'],
 			)
 		);
 

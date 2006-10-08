@@ -36,7 +36,7 @@ $lang = array_merge($lang, array(
 	'LEFT'				=> 'left',
 	'RIGHT'				=> 'right',
 	'DATE_FORMAT'		=> '|d M Y|',
-	'HTML_LANG'			=> 'en_EN',
+	'USER_LANG'			=> 'en-gb',
 
 	'1_DAY'			=> '1 day',
 	'1_MONTH'		=> '1 month',

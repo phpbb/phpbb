@@ -3212,7 +3212,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_IS_BOT'				=> $user->data['is_bot'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
-		'S_USER_LANG'			=> $user->data['user_lang'],
+		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
