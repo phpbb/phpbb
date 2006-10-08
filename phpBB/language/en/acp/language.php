@@ -78,7 +78,7 @@ $lang = array_merge($lang, array(
 
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download format',
 	'SUBMIT_AND_DOWNLOAD'		=> 'Submit and download file',
-	'SUBMIT_AND_UPLOAD'		=> 'Submit and upload file',
+	'SUBMIT_AND_UPLOAD'			=> 'Submit and upload file',
 
 	'THOSE_MISSING_LANG_FILES'			=> 'The following language files are missing from the %s language folder',
 	'THOSE_MISSING_LANG_VARIABLES'		=> 'The following language variables are missing from the <strong>%s</strong> language pack',

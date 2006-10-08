@@ -245,11 +245,11 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_COOKIE_SETTINGS_EXPLAIN'		=> 'These details define the data used to send cookies to your users browsers. In most cases the default values for the cookie settings should be sufficient. If you do need to change any do so with care, incorrect settings can prevent users logging in.',
 
-	'COOKIE_DOMAIN'			=> 'Cookie domain',
-	'COOKIE_NAME'			=> 'Cookie name',
-	'COOKIE_PATH'			=> 'Cookie path',
-	'COOKIE_SECURE'			=> 'Cookie secure',
-	'COOKIE_SECURE_EXPLAIN'	=> 'If your server is running via SSL set this to enabled else leave as disabled. Having this enabled and not running via SSL will result in server errors during redirects.',
+	'COOKIE_DOMAIN'				=> 'Cookie domain',
+	'COOKIE_NAME'				=> 'Cookie name',
+	'COOKIE_PATH'				=> 'Cookie path',
+	'COOKIE_SECURE'				=> 'Cookie secure',
+	'COOKIE_SECURE_EXPLAIN'		=> 'If your server is running via SSL set this to enabled else leave as disabled. Having this enabled and not running via SSL will result in server errors during redirects.',
 	'ONLINE_LENGTH'				=> 'View online time span',
 	'ONLINE_LENGTH_EXPLAIN'		=> 'Time in minutes after which inactive users will not appear in viewonline listings, lower equals less processing.',
 	'SESSION_LENGTH'			=> 'Session length',

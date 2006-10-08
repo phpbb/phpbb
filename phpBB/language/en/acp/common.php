@@ -337,15 +337,15 @@ $lang = array_merge($lang, array(
 
 // Inactive Users
 $lang = array_merge($lang, array(
-	'INACTIVE_DATE'				=> 'Inactive date',
-	'INACTIVE_REASON'			=> 'Reason',
-	'INACTIVE_REASON_MANUAL'	=> 'Account deactivated by administrator',
-	'INACTIVE_REASON_PROFILE'	=> 'Profile details changed',
-	'INACTIVE_REASON_REGISTER'	=> 'Newly registered account',
-	'INACTIVE_REASON_REMIND'	=> 'Forced user account reactivation',
-	'INACTIVE_REASON_UNKNOWN'	=> 'Unknown',
-	'INACTIVE_USERS'			=> 'Inactive Users',
-	'INACTIVE_USERS_EXPLAIN'	=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
+	'INACTIVE_DATE'					=> 'Inactive date',
+	'INACTIVE_REASON'				=> 'Reason',
+	'INACTIVE_REASON_MANUAL'		=> 'Account deactivated by administrator',
+	'INACTIVE_REASON_PROFILE'		=> 'Profile details changed',
+	'INACTIVE_REASON_REGISTER'		=> 'Newly registered account',
+	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
+	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
+	'INACTIVE_USERS'				=> 'Inactive Users',
+	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
 	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an email) these users if you wish.',
 
 	'NO_INACTIVE_USERS'	=> 'No inactive users',
