@@ -678,7 +678,7 @@ foreach ($supported_dbms as $dbms)
 			case 'mysql_41':
 				// Remove last line delimiter...
 				$line = substr($line, 0, -2);
-				$line .= "\n) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;\n\n";
+				$line .= "\n) CHARACTER SET `utf8` COLLATE `utf8_bin`;\n\n";
 			break;
 
 			// Create Generator

@@ -27,7 +27,7 @@ CREATE TABLE phpbb_attachments (
 	KEY topic_id (topic_id),
 	KEY poster_id (poster_id),
 	KEY is_orphan (is_orphan)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_acl_groups'
@@ -39,7 +39,7 @@ CREATE TABLE phpbb_acl_groups (
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY group_id (group_id),
 	KEY auth_opt_id (auth_option_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_acl_options'
@@ -51,7 +51,7 @@ CREATE TABLE phpbb_acl_options (
 	founder_only tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (auth_option_id),
 	KEY auth_option (auth_option)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_acl_roles'
@@ -64,7 +64,7 @@ CREATE TABLE phpbb_acl_roles (
 	PRIMARY KEY (role_id),
 	KEY role_type (role_type),
 	KEY role_order (role_order)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_acl_roles_data'
@@ -73,7 +73,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (role_id, auth_option_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_acl_users'
@@ -85,7 +85,7 @@ CREATE TABLE phpbb_acl_users (
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY user_id (user_id),
 	KEY auth_option_id (auth_option_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_banlist'
@@ -104,7 +104,7 @@ CREATE TABLE phpbb_banlist (
 	KEY ban_user (ban_userid, ban_exclude),
 	KEY ban_email (ban_email, ban_exclude),
 	KEY ban_ip (ban_ip, ban_exclude)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_bbcodes'
@@ -121,7 +121,7 @@ CREATE TABLE phpbb_bbcodes (
 	second_pass_replace mediumtext DEFAULT '' NOT NULL,
 	PRIMARY KEY (bbcode_id),
 	KEY display_on_post (display_on_posting)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_bookmarks'
@@ -131,7 +131,7 @@ CREATE TABLE phpbb_bookmarks (
 	order_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY order_id (order_id),
 	KEY topic_user_id (topic_id, user_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_bots'
@@ -144,7 +144,7 @@ CREATE TABLE phpbb_bots (
 	bot_ip varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (bot_id),
 	KEY bot_active (bot_active)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_config'
@@ -154,7 +154,7 @@ CREATE TABLE phpbb_config (
 	is_dynamic tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (config_name),
 	KEY is_dynamic (is_dynamic)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_confirm'
@@ -165,7 +165,7 @@ CREATE TABLE phpbb_confirm (
 	code varchar(8) DEFAULT '' NOT NULL,
 	PRIMARY KEY (session_id, confirm_id),
 	KEY confirm_type (confirm_type)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_disallow'
@@ -173,7 +173,7 @@ CREATE TABLE phpbb_disallow (
 	disallow_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	disallow_username varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (disallow_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_drafts'
@@ -187,7 +187,7 @@ CREATE TABLE phpbb_drafts (
 	draft_message mediumtext DEFAULT '' NOT NULL,
 	PRIMARY KEY (draft_id),
 	KEY save_time (save_time)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_extensions'
@@ -196,7 +196,7 @@ CREATE TABLE phpbb_extensions (
 	group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	extension varchar(100) DEFAULT '' NOT NULL,
 	PRIMARY KEY (extension_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_extension_groups'
@@ -211,7 +211,7 @@ CREATE TABLE phpbb_extension_groups (
 	allowed_forums text DEFAULT '' NOT NULL,
 	allow_in_pm tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (group_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_forums'
@@ -259,7 +259,7 @@ CREATE TABLE phpbb_forums (
 	PRIMARY KEY (forum_id),
 	KEY left_right_id (left_id, right_id),
 	KEY forum_lastpost_id (forum_last_post_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_forums_access'
@@ -268,7 +268,7 @@ CREATE TABLE phpbb_forums_access (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	session_id char(32) DEFAULT '' NOT NULL,
 	PRIMARY KEY (forum_id, user_id, session_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_forums_track'
@@ -277,7 +277,7 @@ CREATE TABLE phpbb_forums_track (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	mark_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, forum_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_forums_watch'
@@ -288,7 +288,7 @@ CREATE TABLE phpbb_forums_watch (
 	KEY forum_id (forum_id),
 	KEY user_id (user_id),
 	KEY notify_stat (notify_status)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_groups'
@@ -313,7 +313,7 @@ CREATE TABLE phpbb_groups (
 	group_legend tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (group_id),
 	KEY group_legend (group_legend)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_icons'
@@ -326,7 +326,7 @@ CREATE TABLE phpbb_icons (
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (icons_id),
 	KEY display_on_posting (display_on_posting)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_lang'
@@ -339,7 +339,7 @@ CREATE TABLE phpbb_lang (
 	lang_author varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (lang_id),
 	KEY lang_iso (lang_iso)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_log'
@@ -360,7 +360,7 @@ CREATE TABLE phpbb_log (
 	KEY topic_id (topic_id),
 	KEY reportee_id (reportee_id),
 	KEY user_id (user_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_moderator_cache'
@@ -373,7 +373,7 @@ CREATE TABLE phpbb_moderator_cache (
 	display_on_index tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	KEY disp_idx (display_on_index),
 	KEY forum_id (forum_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_modules'
@@ -393,7 +393,7 @@ CREATE TABLE phpbb_modules (
 	KEY left_right_id (left_id, right_id),
 	KEY module_enabled (module_enabled),
 	KEY class_left_id (module_class, left_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_poll_options'
@@ -404,7 +404,7 @@ CREATE TABLE phpbb_poll_options (
 	poll_option_total mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY poll_opt_id (poll_option_id),
 	KEY topic_id (topic_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_poll_votes'
@@ -416,7 +416,7 @@ CREATE TABLE phpbb_poll_votes (
 	KEY topic_id (topic_id),
 	KEY vote_user_id (vote_user_id),
 	KEY vote_user_ip (vote_user_ip)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_posts'
@@ -454,7 +454,7 @@ CREATE TABLE phpbb_posts (
 	KEY poster_id (poster_id),
 	KEY post_approved (post_approved),
 	KEY tid_post_time (topic_id, post_time)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_privmsgs'
@@ -485,7 +485,7 @@ CREATE TABLE phpbb_privmsgs (
 	KEY message_time (message_time),
 	KEY author_id (author_id),
 	KEY root_level (root_level)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_privmsgs_folder'
@@ -496,7 +496,7 @@ CREATE TABLE phpbb_privmsgs_folder (
 	pm_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (folder_id),
 	KEY user_id (user_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_privmsgs_rules'
@@ -512,7 +512,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_folder_id int(4) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (rule_id),
 	KEY user_id (user_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_privmsgs_to'
@@ -530,7 +530,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	KEY msg_id (msg_id),
 	KEY author_id (author_id),
 	KEY usr_flder_id (user_id, folder_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_profile_fields'
@@ -554,14 +554,14 @@ CREATE TABLE phpbb_profile_fields (
 	PRIMARY KEY (field_id),
 	KEY fld_type (field_type),
 	KEY fld_ordr (field_order)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_profile_fields_data'
 CREATE TABLE phpbb_profile_fields_data (
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_profile_fields_lang'
@@ -572,7 +572,7 @@ CREATE TABLE phpbb_profile_fields_lang (
 	field_type tinyint(4) DEFAULT '0' NOT NULL,
 	lang_value varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id, lang_id, option_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_profile_lang'
@@ -583,7 +583,7 @@ CREATE TABLE phpbb_profile_lang (
 	lang_explain text DEFAULT '' NOT NULL,
 	lang_default_value varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (field_id, lang_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_ranks'
@@ -594,7 +594,7 @@ CREATE TABLE phpbb_ranks (
 	rank_special tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	rank_image varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (rank_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_reports'
@@ -608,7 +608,7 @@ CREATE TABLE phpbb_reports (
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumtext DEFAULT '' NOT NULL,
 	PRIMARY KEY (report_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_reports_reasons'
@@ -618,7 +618,7 @@ CREATE TABLE phpbb_reports_reasons (
 	reason_description mediumtext DEFAULT '' NOT NULL,
 	reason_order smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (reason_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_search_results'
@@ -628,7 +628,7 @@ CREATE TABLE phpbb_search_results (
 	search_keywords mediumtext DEFAULT '' NOT NULL,
 	search_authors mediumtext DEFAULT '' NOT NULL,
 	PRIMARY KEY (search_key)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_search_wordlist'
@@ -638,7 +638,7 @@ CREATE TABLE phpbb_search_wordlist (
 	word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (word_id),
 	UNIQUE wrd_txt (word_text)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_search_wordmatch'
@@ -648,7 +648,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	title_match tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY word_id (word_id),
 	KEY post_id (post_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_sessions'
@@ -667,7 +667,7 @@ CREATE TABLE phpbb_sessions (
 	PRIMARY KEY (session_id),
 	KEY session_time (session_time),
 	KEY session_user_id (session_user_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_sessions_keys'
@@ -678,7 +678,7 @@ CREATE TABLE phpbb_sessions_keys (
 	last_login int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (key_id, user_id),
 	KEY last_login (last_login)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_sitelist'
@@ -688,7 +688,7 @@ CREATE TABLE phpbb_sitelist (
 	site_hostname varchar(255) DEFAULT '' NOT NULL,
 	ip_exclude tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (site_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_smilies'
@@ -703,7 +703,7 @@ CREATE TABLE phpbb_smilies (
 	display_on_posting tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (smiley_id),
 	KEY display_on_post (display_on_posting)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_styles'
@@ -720,7 +720,7 @@ CREATE TABLE phpbb_styles (
 	KEY template_id (template_id),
 	KEY theme_id (theme_id),
 	KEY imageset_id (imageset_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_styles_template'
@@ -733,7 +733,7 @@ CREATE TABLE phpbb_styles_template (
 	template_storedb tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (template_id),
 	UNIQUE tmplte_nm (template_name)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_styles_template_data'
@@ -745,7 +745,7 @@ CREATE TABLE phpbb_styles_template_data (
 	template_data mediumtext DEFAULT '' NOT NULL,
 	KEY tid (template_id),
 	KEY tfn (template_filename)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_styles_theme'
@@ -759,7 +759,7 @@ CREATE TABLE phpbb_styles_theme (
 	theme_data mediumtext DEFAULT '' NOT NULL,
 	PRIMARY KEY (theme_id),
 	UNIQUE theme_name (theme_name)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_styles_imageset'
@@ -864,7 +864,7 @@ CREATE TABLE phpbb_styles_imageset (
 	user_icon10 varchar(200) DEFAULT '' NOT NULL,
 	PRIMARY KEY (imageset_id),
 	UNIQUE imgset_nm (imageset_name)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_topics'
@@ -909,7 +909,7 @@ CREATE TABLE phpbb_topics (
 	KEY last_post_time (topic_last_post_time),
 	KEY topic_approved (topic_approved),
 	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_topics_track'
@@ -920,7 +920,7 @@ CREATE TABLE phpbb_topics_track (
 	mark_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, topic_id),
 	KEY forum_id (forum_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_topics_posted'
@@ -929,7 +929,7 @@ CREATE TABLE phpbb_topics_posted (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_posted tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, topic_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_topics_watch'
@@ -940,7 +940,7 @@ CREATE TABLE phpbb_topics_watch (
 	KEY topic_id (topic_id),
 	KEY user_id (user_id),
 	KEY notify_stat (notify_status)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_user_group'
@@ -952,7 +952,7 @@ CREATE TABLE phpbb_user_group (
 	KEY group_id (group_id),
 	KEY user_id (user_id),
 	KEY group_leader (group_leader)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_users'
@@ -1032,7 +1032,7 @@ CREATE TABLE phpbb_users (
 	KEY user_email_hash (user_email_hash),
 	KEY user_type (user_type),
 	KEY username (username)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_warnings'
@@ -1043,7 +1043,7 @@ CREATE TABLE phpbb_warnings (
 	log_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	warning_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (warning_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_words'
@@ -1052,7 +1052,7 @@ CREATE TABLE phpbb_words (
 	word varchar(255) DEFAULT '' NOT NULL,
 	replacement varchar(255) DEFAULT '' NOT NULL,
 	PRIMARY KEY (word_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
 # Table: 'phpbb_zebra'
@@ -1063,6 +1063,6 @@ CREATE TABLE phpbb_zebra (
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	KEY user_id (user_id),
 	KEY zebra_id (zebra_id)
-) CHARACTER SET `utf8` COLLATE `utf8_general_ci`;
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
