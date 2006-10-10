@@ -430,6 +430,9 @@ class session
 			$this->data['session_last_visit'] = $this->time_now;
 		}
 
+		// Force user id to be integer...
+		$this->data['user_id'] = (int) $this->data['user_id'];
+
 		// At this stage we should have a filled data array, defined cookie u and k data.
 		// data array should contain recent session info if we're a real user and a recent
 		// session exists in which case session_id will also be set
@@ -445,7 +448,7 @@ class session
 		$this->data['is_bot'] = ($bot) ? true : false;
 
 		// If our friend is a bot, we re-assign a previously assigned session
-		if ($this->data['is_bot'] && $bot === $this->data['user_id'] && $this->data['session_id'])
+		if ($this->data['is_bot'] && $bot == $this->data['user_id'] && $this->data['session_id'])
 		{
 			// Only assign the current session if the ip and browser match...
 			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
