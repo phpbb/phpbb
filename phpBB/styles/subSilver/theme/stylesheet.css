@@ -36,11 +36,9 @@ body {
 }
 
 #wrapheader {
-	height: 115px;
+	height: 120px;
 	background-image: url('./images/background.gif');
-	background-position: 0 2px;
 	background-repeat: repeat-x;
-	background-color: #dfe4e9;
 	padding: 0 25px 15px 25px;
 }
 
