@@ -36,9 +36,11 @@ body {
 }
 
 #wrapheader {
-	height: 120px;
+	height: 115px;
 	background-image: url('./images/background.gif');
+	background-position: 0 2px;
 	background-repeat: repeat-x;
+	background-color: #dfe4e9;
 	padding: 0 25px 15px 25px;
 }
 
@@ -293,7 +295,7 @@ td {
 	background-color: #A9B8C2;
 }
 
-.catdiv {
+.catdiv, .catdiv-rtl {
 	height: 28px;
 	margin: 0px;
 	padding: 0px;
@@ -301,6 +303,9 @@ td {
 	background-color: white;
 	background-image: url('./images/cellpic2.jpg');
 	background-repeat: repeat-y;
+}
+.catdiv-rtl {
+	background-image: url('./images/cellpic2_rtl.jpg');
 }
 
 .cat {
