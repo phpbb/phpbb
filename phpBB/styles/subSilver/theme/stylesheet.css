@@ -293,7 +293,7 @@ td {
 	background-color: #A9B8C2;
 }
 
-.catdiv, .catdiv-rtl {
+.catdiv {
 	height: 28px;
 	margin: 0px;
 	padding: 0px;
@@ -302,8 +302,14 @@ td {
 	background-image: url('./images/cellpic2.jpg');
 	background-repeat: repeat-y;
 }
-.catdiv-rtl {
+.rtl .catdiv {
+	height: 28px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	background-color: white;
 	background-image: url('./images/cellpic2_rtl.jpg');
+	background-repeat: repeat-y;	
 }
 
 .cat {
