@@ -1234,7 +1234,7 @@ $template->assign_vars(array(
 );
 
 // Output the posts
-$first_unread = false;
+$first_unread = $post_unread = false;
 for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 {
 	$row =& $rowset[$post_list[$i]];
