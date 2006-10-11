@@ -182,6 +182,26 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
+	// Check if the key is selectable. If not, we reset to the first key found.
+	// This ensures the values are always valid.
+	if (!isset($limit_days[$sort_days]))
+	{
+		@reset($limit_days);
+		$sort_days = key($limit_days);
+	}
+
+	if (!isset($sort_by_text[$sort_key]))
+	{
+		@reset($sort_by_text);
+		$sort_key = key($sort_by_text);
+	}
+
+	if (!isset($sort_dir_text[$sort_dir]))
+	{
+		@reset($sort_dir_text);
+		$sort_dir = key($sort_dir_text);
+	}
+
 	$s_limit_days = '<select name="st">';
 	foreach ($limit_days as $day => $text)
 	{

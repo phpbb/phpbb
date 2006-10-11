@@ -576,6 +576,11 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		break;
 	}
 
+	if (!isset($sort_by_sql[$sort_key]))
+	{
+		$sort_key = $default_key;
+	}
+
 	$sort_order_sql = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $sort_url = '';
