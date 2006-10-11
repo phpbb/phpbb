@@ -303,13 +303,7 @@ td {
 	background-repeat: repeat-y;
 }
 .rtl .catdiv {
-	height: 28px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	background-color: white;
 	background-image: url('./images/cellpic2_rtl.jpg');
-	background-repeat: repeat-y;	
 }
 
 .cat {
