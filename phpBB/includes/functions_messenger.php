@@ -530,7 +530,7 @@ class queue
 			}
 
 			$package_size = $data_ary['package_size'];
-			$num_items = (sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
+			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
 
 			switch ($object)
 			{

@@ -131,6 +131,11 @@ $result = $db->sql_query($sql);
 $post_data = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
+if (!$post_data)
+{
+	trigger_error(($mode == 'post' || $mode == 'bump' || $mode == 'reply') ? 'NO_TOPIC' : 'NO_POST');
+}
+
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
@@ -683,7 +688,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Validate username
-	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['username'] && $post_data['post_username'] != $post_data['username']))
+	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 

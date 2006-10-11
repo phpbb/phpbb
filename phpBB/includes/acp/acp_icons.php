@@ -136,7 +136,7 @@ class acp_icons
 						}
 
 						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
-						$order_list = '<option value="' . ($row[$fields . '_order']) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
+						$order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
 					}
 				}
 				$db->sql_freeresult($result);
@@ -242,11 +242,32 @@ class acp_icons
 							);
 						}
 
+						// Image_order holds the 'new' order value
 						if (!empty($image_order[$image]))
 						{
 							$img_sql = array_merge($img_sql, array(
-								$fields . '_order'	=>	$image_order[$image] . '.5')
+								$fields . '_order'	=>	$image_order[$image])
 							);
+
+							// Since we always add 'after' an item, we just need to increase all following + the current by one
+							$sql = "UPDATE $table
+								SET {$fields}_order = {$fields}_order + 1
+								WHERE {$fields}_order >= {$image_order[$image]}";
+							$db->sql_query($sql);
+
+							// If we adjust the order, we need to adjust all other orders too - they became inaccurate...
+							foreach ($image_order as $_image => $_order)
+							{
+								if ($_image == $image)
+								{
+									continue;
+								}
+
+								if ($_order >= $image_order[$image])
+								{
+									$image_order[$_image]++;
+								}
+							}
 						}
 
 						if ($action == 'modify')
@@ -259,45 +280,6 @@ class acp_icons
 						else
 						{
 							$sql = "INSERT INTO $table " . $db->sql_build_array('INSERT', $img_sql);
-							$db->sql_query($sql);
-						}
-
-						$update = false;
-
-						if ($action == 'modify' && !empty($image_order[$image]))
-						{
-							$update = true;
-
-							$sql = "SELECT {$fields}_order 
-								FROM $table
-								WHERE {$fields}_id = " . $image_id[$image];
-							$result = $db->sql_query($sql);
-							$order_old = (int) $db->sql_fetchfield($fields . '_order');
-							$db->sql_freeresult($result);
-
-							if ($order_old == $image_order[$image])
-							{
-								$update = false;
-							}
-
-							if ($order_old > $image_order[$image])
-							{
-								$sign = '+';
-								$where = $fields . '_order >= ' . $image_order[$image] . " AND {$fields}_order < $order_old";
-							}
-							else if ($order_old < $image_order[$image])
-							{
-								$sign = '-';
-								$where = "{$fields}_order > $order_old AND {$fields}_order < " . $image_order[$image];
-								$sql[$fields . '_order'] = $image_order[$image] - 1;
-							}
-						}
-
-						if ($update)
-						{
-							$sql = "UPDATE $table
-								SET {$fields}_order = {$fields}_order $sign 1
-								WHERE $where";
 							$db->sql_query($sql);
 						}
 					}
@@ -562,13 +544,39 @@ class acp_icons
 			case 'move_up':
 			case 'move_down':
 
-				$image_order = request_var('order', 0);
-				$order_total = $image_order * 2 + (($action == 'move_up') ? -1 : 1);
+				// Get current order id...
+				$sql = "SELECT {$fields}_order as current_order
+					FROM $table
+					WHERE {$fields}_id = $icon_id";
+				$result = $db->sql_query($sql);
+				$current_order = (int) $db->sql_fetchfield('current_order');
+				$db->sql_freeresult($result);
 
-				$sql = 'UPDATE ' . $table . '
-					SET ' . $fields . "_order = $order_total - " . $fields . '_order
-					WHERE ' . $fields . "_order IN ($image_order, " . (($action == 'move_up') ? $image_order - 1 : $image_order + 1) . ')';
+				if ($current_order == 0 && $action == 'move_up')
+				{
+					break;
+				}
+
+				// on move_down, switch position with next order_id...
+				// on move_up, switch position with previous order_id...
+				$switch_order_id = ($action == 'move_down') ? $current_order + 1 : $current_order - 1;
+
+				// 
+				$sql = "UPDATE $table
+					SET {$fields}_order = $current_order
+					WHERE {$fields}_order = $switch_order_id
+						AND {$fields}_id <> $icon_id";
 				$db->sql_query($sql);
+
+				// Only update the other entry too if the previous entry got updated
+				if ($db->sql_affectedrows())
+				{
+					$sql = "UPDATE $table
+						SET {$fields}_order = $switch_order_id
+						WHERE {$fields}_order = $current_order
+							AND {$fields}_id = $icon_id";
+					$db->sql_query($sql);
+				}
 
 				$cache->destroy('icons');
 				$cache->destroy('sql', $table);
@@ -640,8 +648,8 @@ class acp_icons
 				'EMOTION'		=> (isset($row['emotion'])) ? $row['emotion'] : '',
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;order=' . $row[$fields . '_order'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;order=' . $row[$fields . '_order'])
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'],
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'])
 			);
 
 			if (!$spacer && !$row['display_on_posting'])
