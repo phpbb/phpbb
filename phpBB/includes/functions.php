@@ -1607,8 +1607,19 @@ function build_url($strip_vars = false)
 		}
 
 		$query = $_query = array();
-		parse_str(substr($redirect, strpos($redirect, '?') + 1), $query);
+
+		$args = substr($redirect, strpos($redirect, '?') + 1);
+		$args = ($args) ? explode('&', $args) : array();
 		$redirect = substr($redirect, 0, strpos($redirect, '?'));
+
+		foreach ($args as $argument)
+		{
+			$arguments = explode('=', $argument);
+			$key = $arguments[0];
+			unset($arguments[0]);
+
+			$query[$key] = implode('=', $arguments);
+		}
 
 		// Strip the vars off
 		foreach ($strip_vars as $strip)
@@ -1619,7 +1630,7 @@ function build_url($strip_vars = false)
 			}
 		}
 	
-		// 
+		// Glue the remaining parts together... already urlencoded
 		foreach ($query as $key => $value)
 		{
 			$_query[] = $key . '=' . $value;
