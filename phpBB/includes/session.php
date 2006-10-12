@@ -113,10 +113,12 @@ class session
 			'page'				=> $page
 		);
 
+/*
 		if (!file_exists($page_name))
 		{
 			trigger_error('You are on a page that does not exist!', E_USER_ERROR);
 		}
+*/
 
 		return $page_array;
 	}
