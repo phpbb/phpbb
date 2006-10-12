@@ -920,7 +920,8 @@ table.pmask td.name {
 }
 
 .errorbox {
-	background-color: #ECECEC;
+	background-color: #ECD7DA;
+	color: #990000;
 }
 
 .successbox h3, .errorbox h3 {
