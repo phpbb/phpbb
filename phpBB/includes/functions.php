@@ -1478,7 +1478,7 @@ function generate_board_url($without_script_path = false)
 /**
 * Redirects the user to another page then exits the script nicely
 */
-function redirect($url)
+function redirect($url, $return = false)
 {
 	global $db, $cache, $config, $user;
 
@@ -1552,6 +1552,17 @@ function redirect($url)
 			$url = $dir . '/' . str_replace($pathinfo['dirname'] . '/', '', $url);
 			$url = generate_board_url() . '/' . $url;
 		}
+	}
+
+	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
+	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false || strpos($url, generate_board_url()) !== 0)
+	{
+		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
+	if ($return)
+	{
+		return $url;
 	}
 
 	// Redirect via an HTML form for PITA webservers
@@ -1669,6 +1680,8 @@ function build_url($strip_vars = false)
 function meta_refresh($time, $url)
 {
 	global $template;
+
+	$url = redirect($url, true);
 
 	$template->assign_vars(array(
 		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')

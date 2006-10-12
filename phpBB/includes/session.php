@@ -64,7 +64,8 @@ class session
 		$query_string = trim(implode('&', $args));
 
 		// basenamed page name (for example: index.php)
-		$page_name = htmlspecialchars(basename($script_name));
+		$page_name = basename($script_name);
+		$page_name = urlencode(htmlspecialchars($page_name));
 
 		// current directory within the phpBB root (for example: adm)
 		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
@@ -111,6 +112,11 @@ class session
 
 			'page'				=> $page
 		);
+
+		if (!file_exists($page_name))
+		{
+			trigger_error('You are on a page that does not exist!', E_USER_ERROR);
+		}
 
 		return $page_array;
 	}
