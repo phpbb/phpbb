@@ -348,7 +348,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 			'SUBFORUMS'				=> $subforums_list,
-			'LAST_POST_SUBJECT'		=> $last_post_subject,
+			'LAST_POST_SUBJECT'		=> censor_text($last_post_subject),
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> $last_poster,
 			'LAST_POSTER_COLOUR'	=> $last_poster_colour,
