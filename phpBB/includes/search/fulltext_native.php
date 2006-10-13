@@ -91,7 +91,7 @@ class fulltext_native extends search_backend
 		}
 
 		$open_bracket = $space = false;
-		for ($i = 0, $n = utf8_strlen($keywords); $i < $n; $i++)
+		for ($i = 0, $n = $keywords; $i < $n; $i++)
 		{
 			if ($open_bracket !== false)
 			{

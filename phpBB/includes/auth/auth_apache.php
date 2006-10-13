@@ -141,7 +141,7 @@ function autologin_apache()
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
-			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
+			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($php_auth_user)) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -178,7 +178,7 @@ function user_row_apache($username, $password)
 	// generate user account data
 	return array(
 		'username'		=> $username,
-		'user_password'	=> $password,
+		'user_password'	=> md5($password),
 		'user_email'	=> '',
 		'group_id'		=> (int) $row['group_id'],
 		'user_type'		=> USER_NORMAL,

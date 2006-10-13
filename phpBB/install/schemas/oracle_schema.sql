@@ -349,7 +349,7 @@ CREATE INDEX phpbb_confirm_confirm_type ON phpbb_confirm (confirm_type)
 */
 CREATE TABLE phpbb_disallow (
 	disallow_id number(8) NOT NULL,
-	disallow_username varchar2(756) DEFAULT '' ,
+	disallow_username varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_disallow PRIMARY KEY (disallow_id)
 )
 /
@@ -739,7 +739,7 @@ END;
 CREATE TABLE phpbb_moderator_cache (
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	username varchar2(756) DEFAULT '' ,
+	username varchar2(765) DEFAULT '' ,
 	group_id number(8) DEFAULT '0' NOT NULL,
 	group_name varchar2(765) DEFAULT '' ,
 	display_on_index number(1) DEFAULT '1' NOT NULL
@@ -844,7 +844,7 @@ CREATE TABLE phpbb_posts (
 	enable_smilies number(1) DEFAULT '1' NOT NULL,
 	enable_magic_url number(1) DEFAULT '1' NOT NULL,
 	enable_sig number(1) DEFAULT '1' NOT NULL,
-	post_username varchar2(756) DEFAULT '' ,
+	post_username varchar2(765) DEFAULT '' ,
 	post_subject varchar2(300) DEFAULT '' ,
 	post_text clob DEFAULT '' ,
 	post_checksum varchar2(32) DEFAULT '' ,
@@ -1375,7 +1375,7 @@ END;
 */
 CREATE TABLE phpbb_styles (
 	style_id number(4) NOT NULL,
-	style_name varchar2(756) DEFAULT '' ,
+	style_name varchar2(765) DEFAULT '' ,
 	style_copyright varchar2(765) DEFAULT '' ,
 	style_active number(1) DEFAULT '1' NOT NULL,
 	template_id number(4) DEFAULT '0' NOT NULL,
@@ -1414,7 +1414,7 @@ END;
 */
 CREATE TABLE phpbb_styles_template (
 	template_id number(4) NOT NULL,
-	template_name varchar2(756) DEFAULT '' ,
+	template_name varchar2(765) DEFAULT '' ,
 	template_copyright varchar2(765) DEFAULT '' ,
 	template_path varchar2(100) DEFAULT '' ,
 	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
@@ -1479,7 +1479,7 @@ END;
 */
 CREATE TABLE phpbb_styles_theme (
 	theme_id number(4) NOT NULL,
-	theme_name varchar2(756) DEFAULT '' ,
+	theme_name varchar2(765) DEFAULT '' ,
 	theme_copyright varchar2(765) DEFAULT '' ,
 	theme_path varchar2(100) DEFAULT '' ,
 	theme_storedb number(1) DEFAULT '0' NOT NULL,
@@ -1512,7 +1512,7 @@ END;
 */
 CREATE TABLE phpbb_styles_imageset (
 	imageset_id number(4) NOT NULL,
-	imageset_name varchar2(756) DEFAULT '' ,
+	imageset_name varchar2(765) DEFAULT '' ,
 	imageset_copyright varchar2(765) DEFAULT '' ,
 	imageset_path varchar2(100) DEFAULT '' ,
 	site_logo varchar2(200) DEFAULT '' ,
@@ -1774,6 +1774,7 @@ CREATE TABLE phpbb_users (
 	user_ip varchar2(40) DEFAULT '' ,
 	user_regdate number(11) DEFAULT '0' NOT NULL,
 	username varchar2(255) DEFAULT '' ,
+	username_clean varchar2(255) DEFAULT '' ,
 	user_password varchar2(120) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
 	user_email varchar2(300) DEFAULT '' ,

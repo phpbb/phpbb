@@ -22,7 +22,7 @@ function login_db(&$username, &$password)
 
 	$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type, user_login_attempts
 		FROM ' . USERS_TABLE . "
-		WHERE username = '" . $db->sql_escape($username) . "'";
+		WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);

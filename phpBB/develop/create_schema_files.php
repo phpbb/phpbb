@@ -1830,6 +1830,7 @@ function get_schema_struct()
 			'user_ip'					=> array('VCHAR:40', ''),
 			'user_regdate'				=> array('TIMESTAMP', 0),
 			'username'					=> array('VCHAR_CI', ''),
+			'username_clean'			=> array('VCHAR_CI', ''),
 			'user_password'				=> array('VCHAR_UNI:40', ''),
 			'user_passchg'				=> array('TIMESTAMP', 0),
 			'user_email'				=> array('VCHAR_UNI:100', ''),
@@ -1898,7 +1899,7 @@ function get_schema_struct()
 			'user_birthday'				=> array('INDEX', 'user_birthday'),
 			'user_email_hash'			=> array('INDEX', 'user_email_hash'),
 			'user_type'					=> array('INDEX', 'user_type'),
-			'username'					=> array('INDEX', 'username'),
+			'username_clean'					=> array('INDEX', 'username_clean'),
 		),
 	);
 

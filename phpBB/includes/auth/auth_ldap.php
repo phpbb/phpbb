@@ -114,7 +114,7 @@ function login_ldap(&$username, &$password)
 
 			$sql ='SELECT user_id, username, user_password, user_passchg, user_email, user_type
 				FROM ' . USERS_TABLE . "
-				WHERE username = '" . $db->sql_escape($username) . "'";
+				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -159,7 +159,7 @@ function login_ldap(&$username, &$password)
 				// generate user account data
 				$ldap_user_row = array(
 					'username'		=> $username,
-					'user_password'	=> $password,
+					'user_password'	=> md5($password),
 					'user_email'	=> (!empty($config['ldap_email'])) ? $ldap_result[0][$config['ldap_email']][0] : '',
 					'group_id'		=> (int) $row['group_id'],
 					'user_type'		=> USER_NORMAL,

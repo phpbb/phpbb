@@ -1830,14 +1830,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if (isset($_POST['login']))
 	{
-		$username	= request_var('username', '');
-		$password	= request_var('password', '');
+		$username	= request_var('username', '', true);
+		$password	= request_var('password', '', true);
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && utf8_strtolower($username) != utf8_strtolower($user->data['username']))
+		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
 		{
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');

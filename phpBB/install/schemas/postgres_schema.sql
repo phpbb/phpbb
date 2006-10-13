@@ -1225,6 +1225,7 @@ CREATE TABLE phpbb_users (
 	user_ip varchar(40) DEFAULT '' NOT NULL,
 	user_regdate INT4 DEFAULT '0' NOT NULL CHECK (user_regdate >= 0),
 	username varchar_ci DEFAULT '' NOT NULL,
+	username_clean varchar_ci DEFAULT '' NOT NULL,
 	user_password varchar(40) DEFAULT '' NOT NULL,
 	user_passchg INT4 DEFAULT '0' NOT NULL CHECK (user_passchg >= 0),
 	user_email varchar(100) DEFAULT '' NOT NULL,

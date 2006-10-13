@@ -246,7 +246,7 @@ function mcp_post_details($id, $mode, $action)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$users_ary[$row['user_id']]['username'] = $row['username'];
-				$usernames_ary[utf8_strtolower($row['username'])] = $users_ary[$row['user_id']];
+				$usernames_ary[utf8_sclean_string($row['username'])] = $users_ary[$row['user_id']];
 			}
 			$db->sql_freeresult($result);
 

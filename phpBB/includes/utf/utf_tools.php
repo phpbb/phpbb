@@ -928,4 +928,39 @@ function utf8_case_fold($text, $option = 'full')
 	return $text;
 }
 
+function utf8_clean_string($text)
+{
+	$text = utf8_case_fold($text);
+
+	if (!class_exists('utf_normalizer'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+	}
+
+	$text = utf_normalizer::nfc($text);
+
+	static $homographs = array(
+		// cyrllic
+		"\xD0\xB0" => "\x61",
+		"\xD0\xB5" => "\x65",
+		"\xD0\xBE" => "\x6F",
+		"\xD1\x80" => "\x70",
+		"\xD1\x81" => "\x63",
+		"\xD1\x83" => "\x79",
+		"\xD1\x85" => "\x78",
+		"\xD1\x95" => "\x73",
+		"\xD1\x96" => "\x69",
+		"\xD1\x98" => "\x6A",
+		"\xD2\xBB" => "\x68",
+		// greek
+		"\xCE\xB1" => "\x61",
+		"\xCE\xBF" => "\x6F",
+	);
+
+	$text = strtr($text, $homographs);
+
+	return $text;
+}
+
 ?>

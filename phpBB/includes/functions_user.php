@@ -34,13 +34,13 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 		$$which_ary = array($$which_ary);
 	}
 
-	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : $$which_ary;
+	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', $$which_ary) : array_map('utf8_clean_string', $$which_ary);
 	unset($$which_ary);
 
 	$user_id_ary = $username_ary = array();
 
 	// Grab the user id/username records
-	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username';
+	$sql_where = ($which_ary == 'user_id_ary') ? 'user_id' : 'username_clean';
 	$sql = 'SELECT user_id, username
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_where, $sql_in);
@@ -134,6 +134,7 @@ function user_add($user_row, $cp_data = false)
 
 	$sql_ary = array(
 		'username'			=> $user_row['username'],
+		'username_clean'	=> utf8_clean_string($user_row['username']),
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
 		'user_email'		=> $user_row['user_email'],
 		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
@@ -594,7 +595,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$username = trim($username);
 					if ($username != '')
 					{
-						$sql_usernames[] = utf8_strtolower($username);
+						$sql_usernames[] = utf8_clean_string($username);
 					}
 				}
 
@@ -606,7 +607,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('LOWER(username)', $sql_usernames);
+					WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
 
 				// Do not allow banning yourself
 				if (sizeof($founder))
@@ -1112,7 +1113,7 @@ function validate_username($username)
 {
 	global $config, $db, $user;
 
-	if (utf8_strtolower($user->data['username']) == utf8_strtolower($username))
+	if (utf8_clean_string($user->data['username']) == utf8_clean_string($username))
 	{
 		return false;
 	}
@@ -1124,7 +1125,7 @@ function validate_username($username)
 
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . "
-		WHERE LOWER(username) = '" . utf8_strtolower($db->sql_escape($username)) . "'";
+		WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1136,7 +1137,7 @@ function validate_username($username)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . utf8_strtolower($db->sql_escape($username)) . "'";
+		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
