@@ -1009,7 +1009,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// Used in an sprintf statement to generate appropriate output for rawcss mode
 		$map_elements = array(
 			'colors'	=> '%s',
-			'sizes'		=> '%d',
+			'sizes'		=> '%1.1f',
 			'images'	=> 'url(\'./%s\')',
 			'repeat'	=> '%s',
 			'other'		=> '%s',
@@ -1185,11 +1185,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					$value = '';
 					$unit = '';
 
-					// retrieve and validate date for this setting
+					// retrieve and validate data for this setting
 					switch ($type)
 					{
 						case 'sizes':
-							$value = request_var($var, 0);
+							$value = request_var($var, 0.0);
 							$unit = request_var($var . '_unit', '');
 
 							if ((request_var($var, '') === '') || !in_array($unit, $units))
