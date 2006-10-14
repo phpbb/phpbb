@@ -133,7 +133,7 @@ class acp_database
 						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $time) . " GMT\n";
 						$sql_data .= "#\n";
 
-						switch (SQL_LAYER)
+						switch ($db->sql_layer)
 						{
 							case 'sqlite':
 								$sql_data .= "BEGIN TRANSACTION;\n";
@@ -151,7 +151,7 @@ class acp_database
 							break;
 						}
 
-						if ($structure && SQL_LAYER == 'firebird')
+						if ($structure && $db->sql_layer == 'firebird')
 						{
 							$sql = 'SELECT RDB$FUNCTION_NAME, RDB$DESCRIPTION
 								FROM RDB$FUNCTIONS
@@ -181,7 +181,7 @@ class acp_database
 							// Get the table structure
 							if ($structure)
 							{
-								switch (SQL_LAYER)
+								switch ($db->sql_layer)
 								{
 									case 'mysqli':
 									case 'mysql4':
@@ -224,27 +224,12 @@ class acp_database
 								}
 								$sql_data .= $this->get_table_structure($table_name);
 							}
-							// We might wanna empty out all that junk :D
 							else
 							{
-								switch (SQL_LAYER)
-								{
-									case 'mysqli':
-									case 'mysql4':
-									case 'mysql':
-									case 'mssql':
-									case 'mssql_odbc':
-									case 'oracle':
-									case 'postgres':
-									case 'firebird':
-										$sql_data .= 'TRUNCATE TABLE ' . $table_name . ";\n";
-									break;
-									
-									case 'sqlite':
-										$sql_data .= 'DELETE FROM ' . $table_name . ";\n";
-									break;
-								}
+								// We might wanna empty out all that junk :D
+								$sql_data .= (($db->sql_layer == 'sqlite') ? 'DELETE FROM ' : 'TRUNCATE TABLE ') . $table_name . ";\n";
 							}
+
 							// Now write the data for the first time. :)
 							if ($store == true)
 							{
@@ -270,7 +255,7 @@ class acp_database
 							{
 								$sql_data .= "\n";
 
-								switch (SQL_LAYER)
+								switch ($db->sql_layer)
 								{
 									case 'mysqli':
 
@@ -1016,7 +1001,7 @@ class acp_database
 							}
 						}
 
-						switch (SQL_LAYER)
+						switch ($db->sql_layer)
 						{
 							case 'sqlite':
 							case 'postgres':
@@ -1056,7 +1041,7 @@ class acp_database
 
 					default:
 						$tables = array();
-						switch (SQL_LAYER)
+						switch ($db->sql_layer)
 						{
 							case 'sqlite':
 								$sql = "SELECT name
@@ -1247,13 +1232,13 @@ class acp_database
 							remove_remarks($data);
 
 							// SQLite gets improved performance when you shove all of these disk write queries at once :D
-							if (SQL_LAYER == 'sqlite')
+							if ($db->sql_layer == 'sqlite')
 							{
 								$db->sql_query($data);
 							}
 							else
 							{
-								switch (SQL_LAYER)
+								switch ($db->sql_layer)
 								{
 									case 'firebird':
 										$delim = ';;';
@@ -1351,7 +1336,7 @@ class acp_database
 
 		$sql_data = '';
 
-		switch (SQL_LAYER)
+		switch ($db->sql_layer)
 		{
 			case 'mysqli':
 			case 'mysql4':

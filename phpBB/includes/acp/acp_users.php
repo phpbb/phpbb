@@ -1040,7 +1040,7 @@ class acp_users
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
-							switch (SQL_LAYER)
+							switch ($db->sql_layer)
 							{
 								case 'oracle':
 								case 'firebird':
@@ -1944,7 +1944,7 @@ class acp_users
 					FROM ' . ACL_OPTIONS_TABLE . "
 					WHERE auth_option LIKE '%\_'";
 
-				if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 				{
 					$sql .= " ESCAPE '\\'";
 				}
@@ -1964,7 +1964,7 @@ class acp_users
 					FROM ' . ACL_OPTIONS_TABLE . "
 					WHERE auth_option LIKE '%\_'";
 
-				if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 				{
 					$sql .= " ESCAPE '\\'";
 				}

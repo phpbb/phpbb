@@ -12,7 +12,7 @@
 // -------------------------------------------------------------
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './';
+$phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.'.$phpEx);
 include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
@@ -22,13 +22,13 @@ header('Expires: 0');
 ignore_user_abort(true);
 
 // number of topics to create
-$num_topics = 5000000;
+$num_topics = 10000;
 
 // number of topics to be generated per call
-$batch_size = 100000;
+$batch_size = 2000;
 
 // max number of posts per topic
-$posts_per_topic = 500000;
+$posts_per_topic = 500;
 
 
 // general vars
@@ -40,7 +40,7 @@ switch ($mode)
 	case 'generate':
 		$user_ids = $forum_ids = $topic_rows = array();
 
-		$sql = 'SELECT user_id FROM ' . USERS_TABLE;
+		$sql = 'SELECT user_id FROM ' . USERS_TABLE . ' WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ') OR user_id = ' . ANONYMOUS;
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -60,7 +60,7 @@ switch ($mode)
 		{
 			$db->sql_query('TRUNCATE TABLE ' . POSTS_TABLE);
 			$db->sql_query('TRUNCATE TABLE ' . TOPICS_TABLE);
-			$db->sql_query('TRUNCATE TABLE ' . TOPICS_TABLE . '_prefetch');
+//			$db->sql_query('TRUNCATE TABLE ' . TOPICS_TABLE . '_prefetch');
 		}
 
 		$db->sql_query('LOCK TABLES ' . POSTS_TABLE . ' WRITE, ' . TOPICS_TABLE . ' WRITE');
@@ -86,7 +86,7 @@ switch ($mode)
 			$rows = array();
 			$post_time = mt_rand(0, time());
 
-			$num_posts = mt_rand(1, $posts_per_topic);
+			$num_posts = $posts_per_topic; //mt_rand(1, $posts_per_topic);
 			for ($i = 0; $i < $num_posts; ++$i)
 			{
 				$poster_id = $user_ids[array_rand($user_ids)];
@@ -108,18 +108,20 @@ switch ($mode)
 
 		if ($topic_id >= $num_topics)
 		{
-			echo '<meta http-equiv="refresh" content="0; url=fill.' . $phpEx . '?mode=sync&amp;' . time() . '">And now for something completely different...';
+			echo '<meta http-equiv="refresh" content="10; url=fill.' . $phpEx . '?mode=sync&amp;' . time() . '">And now for something completely different...';
 
 			$db->sql_query('ANALYZE TABLES ' . TOPICS_TABLE . ', ' . POSTS_TABLE);
+			flush();
 		}
 		else
 		{
-			echo '<meta http-equiv="refresh" content="0; url=fill.' . $phpEx . '?start=' . $topic_id . '&amp;' . time() . '">To the next page... (' . $topic_id . '/' . $num_topics . ')';
+			echo '<meta http-equiv="refresh" content="10; url=fill.' . $phpEx . '?start=' . $topic_id . '&amp;' . time() . '">To the next page... (' . $topic_id . '/' . $num_topics . ')';
+			flush();
 		}
 	break;
 
 	case 'sync':
-		error_reporting(E_ALL);
+/*		error_reporting(E_ALL);
 		$sync_all = TRUE;
 
 		if ($sync_all)
@@ -158,7 +160,10 @@ switch ($mode)
 		{
 			trigger_error('Done');
 		}
+	*/
 }
+
+$db->sql_close();
 
 function rndm_username()
 {

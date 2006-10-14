@@ -210,34 +210,8 @@ class acp_forums
 							$db->sql_freeresult($result);
 
 							// Now insert the data
-							switch (SQL_LAYER)
-							{
-								case 'mysql':
-								case 'mysql4':
-								case 'mysqli':
-									if (sizeof($users_sql_ary))
-									{
-										$db->sql_query('INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $users_sql_ary));
-									}
-									
-									if (sizeof($groups_sql_ary))
-									{
-										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
-									}
-								break;
-
-								default:
-									foreach ($users_sql_ary as $ary)
-									{
-										$db->sql_query('INSERT INTO ' . ACL_USERS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-									}
-
-									foreach ($groups_sql_ary as $ary)
-									{
-										$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-									}
-								break;
-							}
+							$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
+							$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 						}
 
 						$auth->acl_clear_prefetch();
@@ -1408,7 +1382,7 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		switch (SQL_LAYER)
+		switch ($db->sql_layer)
 		{
 			case 'mysql4':
 			case 'mysqli':

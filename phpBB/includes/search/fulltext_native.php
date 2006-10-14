@@ -596,27 +596,25 @@ class fulltext_native extends search_backend
 			$sql = '';
 			$sql_array_count = $sql_array;
 
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
-				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
+
 					// 3.x does not support SQL_CALC_FOUND_ROWS
-					if (SQL_LAYER != 'mysql' || $db->sql_server_info[6] != '3')
-					{
-						$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
-						$is_mysql = true;
+					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+					$is_mysql = true;
 
-						// that's everything for MySQL >= 4.0
-						break;
-					}
-					// no break for MySQL 3.x
+				break;
 
+				case 'mysql':
 				case 'sqlite':
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
 					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
 							FROM (' . $db->sql_build_query('SELECT', $sql_array_count) . ')';
+
 				// no break
+
 				default:
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
 					$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
@@ -798,9 +796,8 @@ class fulltext_native extends search_backend
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
-				case 'mysql':
 				case 'mysql4':
 				case 'mysqli':
 					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
@@ -820,7 +817,7 @@ class fulltext_native extends search_backend
 					}
 					else
 					{
-						if (SQL_LAYER == 'sqlite')
+						if ($db->sql_layer == 'sqlite')
 						{
 							$sql = 'SELECT COUNT(topic_id) as total_results
 								FROM (SELECT DISTINCT t.topic_id';
@@ -836,7 +833,7 @@ class fulltext_native extends search_backend
 								$m_approve_fid_sql
 								$sql_fora
 								AND t.topic_id = p.topic_id
-								$sql_time" . ((SQL_LAYER == 'sqlite') ? ')' : '');
+								$sql_time" . (($db->sql_layer == 'sqlite') ? ')' : '');
 					}
 					$result = $db->sql_query($sql);
 		
@@ -1086,26 +1083,16 @@ class fulltext_native extends search_backend
 
 			if (sizeof($new_words))
 			{
-				switch (SQL_LAYER)
-				{
-					case 'mysql':
-					case 'mysql4':
-					case 'mysqli':
-						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-							VALUES ('" . implode("'),('", array_map(array(&$db, 'sql_escape'), $new_words)) . "')";
-						$db->sql_query($sql);
-					break;
+				$sql_ary = array();
 
-					default:
-						foreach ($new_words as $word)
-						{
-							$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-								VALUES ('" . $db->sql_escape($word) . "')";
-							$db->sql_query($sql);
-						}
+				foreach ($new_words as $word)
+				{
+					$sql_ary[] = array('word_text' => $word);
 				}
+
+				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
 			}
-			unset($new_words);
+			unset($new_words, $sql_ary);
 		}
 
 		// now update the search match table, remove links to removed words and add links to new words
@@ -1246,9 +1233,9 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDLIST_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDMATCH_TABLE);
-		$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_RESULTS_TABLE);
+		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDLIST_TABLE);
+		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDMATCH_TABLE);
+		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_RESULTS_TABLE);
 	}
 
 	/**

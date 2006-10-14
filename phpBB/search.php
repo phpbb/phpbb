@@ -970,7 +970,7 @@ $template->assign_vars(array(
 );
 
 // Can't do comparisons w/ TEXT on MSSQL, CAST is good enough
-switch (SQL_LAYER)
+switch ($db->sql_layer)
 {
 	case 'mssql':
 	case 'mssql_odbc':

@@ -149,7 +149,7 @@ class acp_main
 			break;
 		
 			case 'db_track':
-				$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
+				$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
 
 				// This can get really nasty... therefore we only do the last six months
 				$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
@@ -204,24 +204,7 @@ class acp_main
 					}
 					unset($posted);
 
-					if (sizeof($sql_ary))
-					{
-						switch (SQL_LAYER)
-						{
-							case 'mysql':
-							case 'mysql4':
-							case 'mysqli':
-								$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-							break;
-
-							default:
-								foreach ($sql_ary as $ary)
-								{
-									$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-								}
-							break;
-						}
-					}
+					$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
 				}
 	
 				add_log('admin', 'LOG_RESYNC_POST_MARKING');

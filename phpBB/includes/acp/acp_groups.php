@@ -368,24 +368,7 @@ class acp_groups
 								$db->sql_freeresult($result);
 
 								// Now insert the data
-								if (sizeof($groups_sql_ary))
-								{
-									switch (SQL_LAYER)
-									{
-										case 'mysql':
-										case 'mysql4':
-										case 'mysqli':
-											$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $groups_sql_ary));
-										break;
-
-										default:
-											foreach ($groups_sql_ary as $ary)
-											{
-												$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-											}
-										break;
-									}
-								}
+								$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 
 								$auth->acl_clear_prefetch();
 							}

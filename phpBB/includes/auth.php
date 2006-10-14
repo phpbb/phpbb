@@ -802,7 +802,7 @@ class auth
 				if (strpos($auth_options, '_') !== false)
 				{
 					$sql_opts = "AND $key LIKE '" . $db->sql_escape(str_replace('_', "\_", $auth_options)) . "'";
-					$sql_escape = (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+					$sql_escape = ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
 				}
 				else
 				{
@@ -848,7 +848,7 @@ class auth
 
 				if ($is_underline)
 				{
-					$sql_escape = (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+					$sql_escape = ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
 				}
 			}
 		}

@@ -808,24 +808,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			);
 		}
 		
-		if (sizeof($sql_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . BANLIST_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-				break;
-
-				default:
-					foreach ($sql_ary as $ary)
-					{
-						$db->sql_query('INSERT INTO ' . BANLIST_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert(BANLIST_TABLE, $sql_ary);
 
 		// If we are banning we want to logout anyone matching the ban
 		if (!$ban_exclude)
@@ -1719,11 +1702,11 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	$add_id_ary = $update_id_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$add_id_ary[] = $row['user_id'];
+		$add_id_ary[] = (int) $row['user_id'];
 
 		if ($leader && !$row['group_leader'])
 		{
-			$update_id_ary[] = $row['user_id'];
+			$update_id_ary[] = (int) $row['user_id'];
 		}
 	}
 	$db->sql_freeresult($result);
@@ -1739,29 +1722,22 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$db->sql_transaction('begin');
 
+	// Insert the new users
 	if (sizeof($add_id_ary))
 	{
-		// Insert the new users
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-			case 'sqlite':
-				$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
-					VALUES " . implode(', ', preg_replace('#^([0-9]+)$#', "(\\1, $group_id, $leader, $pending)",  $add_id_ary));
-				$db->sql_query($sql);
-			break;
+		$sql_ary = array();
 
-			default:
-				foreach ($add_id_ary as $user_id)
-				{
-					$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, group_leader, user_pending)
-						VALUES ($user_id, $group_id, $leader, $pending)";
-					$db->sql_query($sql);
-				}
-			break;
+		foreach ($add_id_ary as $user_id)
+		{
+			$sql_ary[] = array(
+				'user_id'		=> $user_id,
+				'group_id'		=> $group_id,
+				'group_leader'	=> $leader,
+				'user_pending'	=> $pending,
+			);
 		}
+
+		$db->sql_multi_insert(USER_GROUP_TABLE, $sql_ary);
 	}
 
 	if (sizeof($update_id_ary))

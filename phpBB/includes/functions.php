@@ -783,24 +783,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					);
 				}
 
-				if (sizeof($sql_ary))
-				{
-					switch (SQL_LAYER)
-					{
-						case 'mysql':
-						case 'mysql4':
-						case 'mysqli':
-							$db->sql_query('INSERT INTO ' . FORUMS_TRACK_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-						break;
-
-						default:
-							foreach ($sql_ary as $ary)
-							{
-								$db->sql_query('INSERT INTO ' . FORUMS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-							}
-						break;
-					}
-				}
+				$db->sql_multi_insert(FORUMS_TRACK_TABLE, $sql_ary);
 			}
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
@@ -3010,7 +2993,7 @@ function page_header($page_title = '', $display_online_list = true)
 			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
 
 			// Specify escape character for MSSQL
-			if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+			if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 			{
 				$reading_sql .= " ESCAPE '\\'";
 			}

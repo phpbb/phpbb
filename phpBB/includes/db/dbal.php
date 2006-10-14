@@ -39,6 +39,11 @@ class dbal
 	var $sql_error_sql = '';
 
 	/**
+	* Current sql layer
+	*/
+	var $sql_layer = '';
+
+	/**
 	* Constructor
 	*/
 	function dbal()
@@ -48,6 +53,10 @@ class dbal
 			'normal'		=> 0,
 			'total'			=> 0,
 		);
+
+		// Fill default sql layer based on the class being called.
+		// This can be changed by the specified layer itself later if needed.
+		$this->sql_layer = substr(get_class($this), 5);
 	}
 
 	/**
@@ -243,6 +252,12 @@ class dbal
 			$ary = array();
 			foreach ($assoc_ary as $id => $sql_ary)
 			{
+				// If by accident the sql array is only one-dimensional we build a normal insert statement
+				if (!is_array($sql_ary))
+				{
+					return $this->sql_build_array('INSERT', $assoc_ary);
+				}
+
 				$values = array();
 				foreach ($sql_ary as $key => $var)
 				{
@@ -266,6 +281,10 @@ class dbal
 		return $query;
 	}
 
+	/**
+	* Build IN, NOT IN, = and <> sql comparison string.
+	* @access public
+	*/
 	function sql_in_set($field, $array, $negate = false)
 	{
 		if (!sizeof($array))
@@ -293,6 +312,47 @@ class dbal
 		{
 			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', $values) . ')';
 		}
+	}
+
+	/**
+	* Run more than one insert statement.
+	*
+	* @param $sql_ary array multi-dimensional array holding the statement data.
+	* @param $table string table name to run the statements on
+	*
+	* @return bool false if no statements were executed.
+	* @access public
+	*/
+	function sql_multi_insert($table, &$sql_ary)
+	{
+		if (!sizeof($sql_ary))
+		{
+			return false;
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+			case 'sqlite':
+				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
+			break;
+
+			default:
+				foreach ($sql_ary as $ary)
+				{
+					if (!is_array($ary))
+					{
+						return false;
+					}
+
+					$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+				}
+			break;
+		}
+
+		return true;
 	}
 
 	/**
@@ -392,7 +452,7 @@ class dbal
 
 		if (!$this->return_on_error)
 		{
-			$message = '<u>SQL ERROR</u> [ ' . SQL_LAYER . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
+			$message = '<u>SQL ERROR</u> [ ' . $db->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
@@ -491,7 +551,7 @@ class dbal
 									<br />
 									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries['normal']} queries" . (($this->num_queries['cached']) ? " + {$this->num_queries['cached']} " . (($this->num_queries['cached'] == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
 
-									<p>Time spent on ' . SQL_LAYER . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
+									<p>Time spent on ' . $db->sql_layer . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
 
 									<br /><br />
 									' . $this->sql_report . '
@@ -542,7 +602,7 @@ class dbal
 				else
 				{
 					$error = $this->sql_error();
-					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . SQL_LAYER . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
+					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . $db->sql_layer . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
 				$this->sql_report .= '</p><br /><br />';

@@ -313,7 +313,7 @@ function make_post($new_topic_id, $forum_id, $user_id, $post_username, $text, $m
 		else
 		{
 			// Rollback
-			if(SQL_LAYER == "mysql")
+			if($db->sql_layer == "mysql")
 			{
 				$sql = "DELETE FROM " . POSTS_TABLE . "
 					WHERE post_id = $new_post_id";

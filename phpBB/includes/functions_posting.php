@@ -1708,24 +1708,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 		}
 
-		if (sizeof($sql_insert_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_insert_ary));
-				break;
-
-				default:
-					foreach ($sql_insert_ary as $ary)
-					{
-						$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert(POLL_OPTIONS_TABLE, $sql_insert_ary);
 
 		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
 		{

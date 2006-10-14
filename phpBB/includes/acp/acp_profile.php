@@ -107,7 +107,7 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
-					switch (SQL_LAYER)
+					switch ($db->sql_layer)
 					{
 						case 'sqlite':
 							$sql = "SELECT sql
@@ -1236,7 +1236,7 @@ class acp_profile
 	{
 		global $db;
 
-		switch (SQL_LAYER)
+		switch ($db->sql_layer)
 		{
 			case 'mysql':
 			case 'mysql4':

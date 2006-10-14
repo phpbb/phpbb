@@ -304,9 +304,7 @@ $database_update_info = array(
 );
 
 // Determine mapping database type
-$map_dbms = SQL_LAYER;
-
-switch (SQL_LAYER)
+switch ($db->sql_layer)
 {
 	case 'mysql':
 		$map_dbms = 'mysql_40';
@@ -320,6 +318,10 @@ switch (SQL_LAYER)
 	case 'mssql':
 	case 'mssql_odbc':
 		$map_dbms = 'mssql';
+	break;
+
+	default:
+		$map_dbms = $db->sql_layer;
 	break;
 }
 
@@ -356,7 +358,7 @@ $errored = false;
 
 	<br />
 
-	<p><?php echo $lang['DATABASE_TYPE']; ?> :: <strong><?php echo SQL_LAYER; ?></strong><br />
+	<p><?php echo $lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
 <?php
 
 $sql = "SELECT config_value
@@ -490,9 +492,10 @@ _sql($sql, $errored, $error_ary);
 // Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
 // the version number update
-switch (SQL_LAYER)
+switch ($db->sql_layer)
 {
 	case 'mysql':
+	case 'mysqli':
 	case 'mysql4':
 		$sql = 'OPTIMIZE TABLE ' . $table_prefix . 'auth_access, ' . $table_prefix . 'banlist, ' . $table_prefix . 'categories, ' . $table_prefix . 'config, ' . $table_prefix . 'disallow, ' . $table_prefix . 'forum_prune, ' . $table_prefix . 'forums, ' . $table_prefix . 'groups, ' . $table_prefix . 'posts, ' . $table_prefix . 'posts_text, ' . $table_prefix . 'privmsgs, ' . $table_prefix . 'privmsgs_text, ' . $table_prefix . 'ranks, ' . $table_prefix . 'search_results, ' . $table_prefix . 'search_wordlist, ' . $table_prefix . 'search_wordmatch, ' . $table_prefix . 'sessions_keys' . $table_prefix . 'smilies, ' . $table_prefix . 'themes, ' . $table_prefix . 'themes_name, ' . $table_prefix . 'topics, ' . $table_prefix . 'topics_watch, ' . $table_prefix . 'user_group, ' . $table_prefix . 'users, ' . $table_prefix . 'vote_desc, ' . $table_prefix . 'vote_results, ' . $table_prefix . 'vote_voters, ' . $table_prefix . 'words';
 		_sql($sql, $errored, $error_ary);

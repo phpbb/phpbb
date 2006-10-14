@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'mysqli');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * MySQLi Database Abstraction Layer
@@ -362,7 +356,5 @@ class dbal_mysqli extends dbal
 		}
 	}
 }
-
-} // if ... define
 
 ?>

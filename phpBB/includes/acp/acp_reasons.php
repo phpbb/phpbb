@@ -202,7 +202,7 @@ class acp_reasons
 					$other_reason_id = (int) $db->sql_fetchfield('reason_id');
 					$db->sql_freeresult($result);
 
-					switch (SQL_LAYER)
+					switch ($db->sql_layer)
 					{
 						// The ugly one!
 						case 'mysqli':

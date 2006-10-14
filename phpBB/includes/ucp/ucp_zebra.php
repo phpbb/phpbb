@@ -159,24 +159,7 @@ class ucp_zebra
 								);
 							}
 
-							if (sizeof($sql_ary))
-							{
-								switch (SQL_LAYER)
-								{
-									case 'mysql':
-									case 'mysql4':
-									case 'mysqli':
-										$db->sql_query('INSERT INTO ' . ZEBRA_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-									break;
-
-									default:
-										foreach ($sql_ary as $ary)
-										{
-											$db->sql_query('INSERT INTO ' . ZEBRA_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-										}
-									break;
-								}
-							}
+							$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 
 							$updated = true;
 						}

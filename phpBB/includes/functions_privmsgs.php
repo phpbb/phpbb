@@ -1389,24 +1389,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 			);
 		}
 
-		if (sizeof($sql_ary))
-		{
-			switch (SQL_LAYER)
-			{
-				case 'mysql':
-				case 'mysql4':
-				case 'mysqli':
-					$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-				break;
-
-				default:
-					foreach ($sql_ary as $ary)
-					{
-						$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-					}
-				break;
-			}
-		}
+		$db->sql_multi_insert(PRIVMSGS_TO_TABLE, $sql_ary);
 
 		$sql = 'UPDATE ' . USERS_TABLE . ' 
 			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1, user_last_privmsg = ' . time() . '

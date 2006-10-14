@@ -266,7 +266,7 @@ class cache extends acm
 		{
 			global $db;
 	
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mssql':
 				case 'mssql_odbc':

@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'firebird');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Firebird/Interbase Database Abstraction Layer
@@ -389,9 +383,6 @@ class dbal_firebird extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

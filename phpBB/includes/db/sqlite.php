@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'sqlite');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Sqlite Database Abstraction Layer
@@ -313,9 +307,6 @@ class dbal_sqlite extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

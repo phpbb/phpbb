@@ -880,7 +880,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 {
 	$where = (is_array($forum_id)) ? 'AND ' . $db->sql_in_set('t.forum_id', array_map('intval', $forum_id)) : (($forum_id) ? 'AND t.forum_id = ' . (int) $forum_id : '');
 
-	switch (SQL_LAYER)
+	switch ($db->sql_layer)
 	{
 		case 'mysql4':
 		case 'mysqli':
@@ -971,24 +971,7 @@ function update_posted_info(&$topic_ids)
 	}
 	unset($posted);
 
-	if (sizeof($sql_ary))
-	{
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
-				{
-					$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-				}
-			break;
-		}
-	}
+	$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
 }
 
 /**
@@ -1082,7 +1065,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 	switch ($mode)
 	{
 		case 'topic_moved':
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -1121,7 +1104,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		break;
 
 		case 'topic_approved':
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mysql4':
 				case 'mysqli':
@@ -1956,7 +1939,7 @@ function cache_moderators()
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
+	$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$hold_ary = $ug_id_ary = $sql_ary = array();
@@ -1994,7 +1977,7 @@ function cache_moderators()
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
 				AND o.auth_option LIKE 'm\_%'" . 
-				((SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc') ? " ESCAPE '\\'" : ''),
+				(($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : ''),
 		));
 		$result = $db->sql_query($sql);
 
@@ -2093,24 +2076,7 @@ function cache_moderators()
 		}
 	}
 
-	if (sizeof($sql_ary))
-	{
-		switch (SQL_LAYER)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$db->sql_query('INSERT INTO ' . MODERATOR_CACHE_TABLE . ' ' . $db->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
-				{
-					$db->sql_query('INSERT INTO ' . MODERATOR_CACHE_TABLE . ' ' . $db->sql_build_array('INSERT', $ary));
-				}
-			break;
-		}
-	}
+	$db->sql_multi_insert(MODERATOR_CACHE_TABLE, $sql_ary);
 }
 
 /**
@@ -2422,7 +2388,7 @@ function get_database_size()
 	$database_size = false;
 
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-	switch (SQL_LAYER)
+	switch ($db->sql_layer)
 	{
 		case 'mysql':
 		case 'mysql4':

@@ -87,7 +87,7 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	switch (SQL_LAYER)
+	switch ($db->sql_layer)
 	{
 		case 'sqlite':
 			$sql = 'SELECT COUNT(session_ip) as num_guests
@@ -104,6 +104,7 @@ if (!$show_guests)
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . ANONYMOUS . '
 					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
+		break;
 	}
 	$result = $db->sql_query($sql);
 	$guest_counter = (int) $db->sql_fetchfield('num_guests');

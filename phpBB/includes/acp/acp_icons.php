@@ -311,7 +311,7 @@ class acp_icons
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						$db->sql_query(((SQL_LAYER != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . $table);
+						$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . $table);
 
 						switch ($mode)
 						{

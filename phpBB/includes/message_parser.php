@@ -1078,7 +1078,7 @@ class parse_message extends bbcode_firstpass
 			// NOTE: obtain_* function? chaching the table contents?
 	
 			// For now setting the ttl to 10 minutes
-			switch (SQL_LAYER)
+			switch ($db->sql_layer)
 			{
 				case 'mssql':
 				case 'mssql_odbc':

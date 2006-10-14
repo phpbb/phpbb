@@ -9,20 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-
-	define('SQL_LAYER', 'mssql_odbc');
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Unified ODBC functions
@@ -417,9 +411,6 @@ class dbal_mssql_odbc extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

@@ -9,18 +9,14 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
-/**
-* @ignore
-*/
-if (!defined('SQL_LAYER'))
-{
-	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * MySQL4 Database Abstraction Layer
@@ -57,16 +53,11 @@ class dbal_mysql extends dbal
 
 				if (version_compare($this->mysql_version, '4.1.3', '>='))
 				{
-					define('SQL_LAYER', 'mysql4');
 					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
 				}
-				else if (version_compare($this->mysql_version, '4.0.0', '>='))
+				else if (version_compare($this->mysql_version, '4.0.0', '<'))
 				{
-					define('SQL_LAYER', 'mysql4');
-				}
-				else
-				{
-					define('SQL_LAYER', 'mysql');
+					$this->sql_layer = 'mysql';
 				}
 
 				return $this->db_connect_id;
@@ -394,9 +385,6 @@ class dbal_mysql extends dbal
 			break;
 		}
 	}
-
 }
-
-} // if ... define
 
 ?>

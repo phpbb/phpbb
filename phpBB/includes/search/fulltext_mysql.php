@@ -49,7 +49,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $db, $user;
 
-		if (strpos(SQL_LAYER, 'mysql') === false)
+		if (strpos($db->sql_layer, 'mysql') === false)
 		{
 			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
 		}
@@ -732,7 +732,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $db;
 
-		if (strpos(SQL_LAYER, 'mysql') === false)
+		if (strpos($db->sql_layer, 'mysql') === false)
 		{
 			$this->stats = array();
 			return;
