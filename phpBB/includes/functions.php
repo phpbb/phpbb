@@ -1470,7 +1470,10 @@ function redirect($url, $return = false)
 		$user->add_lang('common');
 	}
 
-	garbage_collection();
+	if (!$return)
+	{
+		garbage_collection();
+	}
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
