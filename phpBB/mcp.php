@@ -420,7 +420,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 {
 	global $db, $user, $auth, $template;
 
-	$sort_days = request_var('sort_days', 0);
+	$sort_days = request_var('st', 0);
 	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
 
 	switch ($mode)
