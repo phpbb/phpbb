@@ -452,7 +452,7 @@ class dbal
 
 		if (!$this->return_on_error)
 		{
-			$message = '<u>SQL ERROR</u> [ ' . $db->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
+			$message = '<u>SQL ERROR</u> [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
@@ -551,7 +551,7 @@ class dbal
 									<br />
 									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries['normal']} queries" . (($this->num_queries['cached']) ? " + {$this->num_queries['cached']} " . (($this->num_queries['cached'] == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
 
-									<p>Time spent on ' . $db->sql_layer . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
+									<p>Time spent on ' . $this->sql_layer . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
 
 									<br /><br />
 									' . $this->sql_report . '
@@ -602,7 +602,7 @@ class dbal
 				else
 				{
 					$error = $this->sql_error();
-					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . $db->sql_layer . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
+					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . $this->sql_layer . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message']);
 				}
 
 				$this->sql_report .= '</p><br /><br />';
