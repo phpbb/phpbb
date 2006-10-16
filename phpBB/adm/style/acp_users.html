@@ -546,22 +546,26 @@
 	bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
 	imageTag = false;
 
-	// Helpline messages
-	b_help = "{LA_BBCODE_B_HELP}";
-	i_help = "{LA_BBCODE_I_HELP}";
-	u_help = "{LA_BBCODE_U_HELP}";
-	q_help = "{LA_BBCODE_Q_HELP}";
-	c_help = "{LA_BBCODE_C_HELP}";
-	l_help = "{LA_BBCODE_L_HELP}";
-	o_help = "{LA_BBCODE_O_HELP}";
-	p_help = "{LA_BBCODE_P_HELP}";
-	w_help = "{LA_BBCODE_W_HELP}";
-	a_help = "{LA_BBCODE_A_HELP}";
-	s_help = "{LA_BBCODE_S_HELP}";
-	f_help = "{LA_BBCODE_F_HELP}";
-	e_help = "{LA_BBCODE_E_HELP}";
-	d_help = "{LA_BBCODE_D_HELP}";
-	<!-- BEGIN custom_tags -->cb_{custom_tags.BBCODE_ID}_help = "{custom_tags.BBCODE_HELPLINE}";<!-- END custom_tags -->
+// Helpline messages
+var help_line = {
+	b: '{LA_BBCODE_B_HELP}',
+	i: '{LA_BBCODE_I_HELP}',
+	u: '{LA_BBCODE_U_HELP}',
+	q: '{LA_BBCODE_Q_HELP}',
+	c: '{LA_BBCODE_C_HELP}',
+	l: '{LA_BBCODE_L_HELP}',
+	o: '{LA_BBCODE_O_HELP}',
+	p: '{LA_BBCODE_P_HELP}',
+	w: '{LA_BBCODE_W_HELP}',
+	a: '{LA_BBCODE_A_HELP}',
+	s: '{LA_BBCODE_S_HELP}',
+	f: '{LA_BBCODE_F_HELP}',
+	e: '{LA_BBCODE_E_HELP}',
+	d: '{LA_BBCODE_D_HELP}'
+	<!-- BEGIN custom_tags -->
+		,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
+	<!-- END custom_tags -->
+}
 
 	//-->
 	</script>
