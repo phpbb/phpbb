@@ -23,7 +23,7 @@ var is_mac = (clientPC.indexOf('mac') != -1);
 */
 function helpline(help)
 {
-	document.forms[form_name].helpbox.value = eval(help + '_help');
+	document.forms[form_name].helpbox.value = help_line[help];
 }
 
 /**
@@ -123,9 +123,11 @@ function insert_text(text, spaces, popup)
 {
 	var textarea;
 	
-	if (!popup) {
+	if (!popup) 
+	{
 		textarea = document.forms[form_name].elements[text_name];
-	} else {
+	} else 
+	{
 		textarea = opener.document.forms[form_name].elements[text_name];
 	}
 	if (spaces) 
@@ -172,11 +174,11 @@ function addquote(post_id, username)
 
 	if (document.all)
 	{
-		eval('divarea = document.all.' + message_name + ';');
+		divarea = document.all[message_name];
 	}
 	else
 	{
-		eval("divarea = document.getElementById('" + message_name + "');");
+		divarea = document.getElementById(message_name);
 	}
 
 	// Get text selection - not only the post content :(
@@ -239,11 +241,11 @@ function bbstyle(bbnumber)
 		{
 			butnumber = arraypop(bbcode) - 1;
 			document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
+			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
 		
 			if (buttext != '[*]')
 			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));				
 			}
 		}
 
@@ -351,11 +353,11 @@ function bbstyle(bbnumber)
 				insert_text(bbtags[butnumber]);
 			}
 
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
+			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
 
 			if (bbtags[butnumber] != '[*]')
 			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));
 			}
 			imageTag = false;
 		}
@@ -391,7 +393,7 @@ function bbstyle(bbnumber)
 		if (bbtags[bbnumber] != '[*]')
 		{
 			arraypush(bbcode, bbnumber + 1);
-			eval('document.forms[form_name].addbbcode'+bbnumber+'.value += "*"');
+			document.forms[form_name]['addbbcode' + bbnumber].value += "*";
 		}
 
 		document.forms[form_name].elements[text_name].focus();
