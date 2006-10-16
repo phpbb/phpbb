@@ -1387,6 +1387,10 @@ class acp_database
 						$kname = "UNIQUE|$kname";
 					}
 
+					if ($row['Sub_part'])
+					{
+						$row['Column_name'] .= '(' . $row['Sub_part'] . ')';
+					}
 					$index[$kname][] = $row['Column_name'];
 				}
 				$db->sql_freeresult($result);
