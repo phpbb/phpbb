@@ -65,32 +65,6 @@ function arraypop(thearray)
 }
 
 /**
-* Insert emoticon
-*/
-function smiley(text) 
-{
-	text = ' ' + text + ' ';
-
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
-	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
-		document.forms[form_name].elements[text_name].focus();
-	}
-	else
-	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
-
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].focus();
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
-	}
-}
-
-/**
 * Apply bbcodes
 */
 function bbfontstyle(bbopen, bbclose)
@@ -145,25 +119,36 @@ function bbfontstyle(bbopen, bbclose)
 /**
 * Insert text at position
 */
-function insert_text(text)
+function insert_text(text, spaces, popup)
 {
-	if (document.forms[form_name].elements[text_name].createTextRange && !isNaN(document.forms[form_name].elements[text_name].caretPos))
-	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
+	var textarea;
+	
+	if (!popup) {
+		textarea = document.forms[form_name].elements[text_name];
+	} else {
+		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	else if (!isNaN(document.forms[form_name].elements[text_name].selectionStart))
+	if (spaces) 
 	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
+		text = ' ' + text + ' ';
+	}
+	if (textarea.createTextRange && !isNaN(textarea.caretPos))
+	{
+		var caret_pos = textarea.caretPos;
+		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+	}
+	else if (!isNaN(textarea.selectionStart))
+	{
+		var sel_start = textarea.selectionStart;
+		var sel_end = textarea.selectionEnd;
 
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
+		mozWrap(textarea, text, '')
+		textarea.selectionStart = sel_start + text.length;
+		textarea.selectionEnd = sel_end + text.length;
 	}
 	else
 	{
-		document.forms[form_name].elements[text_name].value = document.forms[form_name].elements[text_name].value + text;
+		textarea.value = textarea.value + text;
 	}
 }
 
