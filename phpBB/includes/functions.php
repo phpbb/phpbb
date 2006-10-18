@@ -1541,7 +1541,7 @@ function redirect($url, $return = false)
 	}
 
 	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
-	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false || strpos($url, generate_board_url()) !== 0)
+	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
 	{
 		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
 	}
