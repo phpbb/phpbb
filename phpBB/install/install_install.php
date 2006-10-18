@@ -997,7 +997,7 @@ class install_install extends module
 		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
 		if ($dbms == 'mysql')
 		{
-			if ($db->sql_layer == 'mysql4' && version_compare($db->mysql_version, '4.1.3', '>='))
+			if (version_compare($db->mysql_version, '4.1.3', '>='))
 			{
 				$this->available_dbms[$dbms]['SCHEMA'] .= '_41';
 			}
