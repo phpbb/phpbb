@@ -586,7 +586,7 @@ if (!function_exists('realpath'))
 
 			// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
 			// because we must be inside that basedir, the question is where...
-			// @interal The slash in is_dir() gets around an open_basedir restriction
+			// @internal The slash in is_dir() gets around an open_basedir restriction
 			if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
 			{
 				return false;

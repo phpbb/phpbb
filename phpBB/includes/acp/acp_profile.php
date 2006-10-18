@@ -365,6 +365,12 @@ class acp_profile
 				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);
 				
+
+				if (strlen($cp->vars['field_ident']) > 17)
+				{
+					$error[] = $user->lang['INVALID_FIELD_IDENT_LEN'];
+				}
+				
 				// Field option...
 				if (isset($_REQUEST['field_option']))
 				{

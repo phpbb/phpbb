@@ -92,6 +92,7 @@ $lang = array_merge($lang, array(
 	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only Administrators and Moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in user profiles.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field identification can only contain lowercase a-z and _',
+	'INVALID_FIELD_IDENT_LEN'	=> 'Field identification can only be 17 characters long',
 	'ISO_LANGUAGE'				=> 'Language [%s]',
 
 	'LANG_SPECIFIC_OPTIONS'		=> 'Language specific options [<strong>%s</strong>]',
