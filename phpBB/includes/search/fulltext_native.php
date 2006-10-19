@@ -199,7 +199,7 @@ class fulltext_native extends search_backend
 			{
 				if ($row['word_common'])
 				{
-					$this->common_words[] = $row['wort_text'];
+					$this->common_words[] = $row['word_text'];
 					continue;
 				}
 

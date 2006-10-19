@@ -597,11 +597,7 @@ class ucp_profile
 							// Delete old avatar if present
 							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'] && $user->data['user_avatar_type'] != AVATAR_GALLERY)
 							{
-								// Check if the users avatar is actually a group avatar
-								if (strpos($user->data['user_avatar'], 'g' . $user->data['group_id'] . '_') !== 0 && strpos($user->data['user_avatar'], $user->data['user_id'] . '_') === 0)
-								{
-									avatar_delete($user->data['user_avatar']);
-								}
+								avatar_delete('user', $user->data);
 							}
 						}
 

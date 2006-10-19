@@ -535,10 +535,12 @@ class acp_attachments
 				}
 			
 				$cat_lang = array(
-					ATTACHMENT_CATEGORY_NONE	=> $user->lang['NO_FILE_CAT'],
-					ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
-					ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
-					ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
+					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
+					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
+					ATTACHMENT_CATEGORY_WM			=> $user->lang['CAT_WM_FILES'],
+					ATTACHMENT_CATEGORY_RM			=> $user->lang['CAT_RM_FILES'],
+					ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
+					ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 				);
 
 				$group_id = request_var('g', 0);
@@ -1016,10 +1018,12 @@ class acp_attachments
 		global $db, $user;
 
 		$types = array(
-			ATTACHMENT_CATEGORY_NONE	=> $user->lang['NO_FILE_CAT'],
-			ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
-			ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
-			ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
+			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
+			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
+			ATTACHMENT_CATEGORY_WM			=> $user->lang['CAT_WM_FILES'],
+			ATTACHMENT_CATEGORY_RM			=> $user->lang['CAT_RM_FILES'],
+			ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
+			ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 		);
 		
 		if ($group_id)

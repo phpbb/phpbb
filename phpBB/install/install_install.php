@@ -1394,6 +1394,21 @@ class install_install extends module
 				$_module->move_module_by($row, 'move_up', 5);
 			}
 
+			if ($module_class == 'ucp')
+			{
+				// Move attachment module 4 down...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'attachments'
+						AND module_class = 'ucp'
+						AND module_mode = 'attachments'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+	
+				$_module->move_module_by($row, 'move_down', 4);
+			}
+
 			// And now for the special ones
 			// (these are modules which appear in multiple categories and thus get added manually to some for more control)
 			if (isset($this->module_extras[$module_class]))

@@ -837,6 +837,8 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
 
+			$download_link_full = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : generate_board_url() . $filename;
+
 			switch ($display_cat)
 			{
 				// Images
@@ -865,53 +867,51 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				case ATTACHMENT_CATEGORY_WM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 
-					// The download link is slightly different, because somehow phpBB is not able to get the correct results if called
-					// within the wmp object (cookies are not present).
-					// $download_link = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&f=' . $forum_id, false, $user->session_id) : $filename;
-
 					// Giving the filename directly because within the wm object all variables are in local context making it impossible
 					// to validate against a valid session (all params can differ)
 					$download_link = $filename;
 
 					$block_array += array(
+						'U_FORUM'		=> generate_board_url(),
 						'S_WM_FILE'		=> true,
 					);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
+					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
 
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
+				case ATTACHMENT_CATEGORY_QUICKTIME:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 
 					$block_array += array(
-						'S_RM_FILE'		=> true,
-						'U_FORUM'		=> generate_board_url(),
-						'ATTACH_ID'		=> $attachment['attach_id'],
+						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
+						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
+						'U_FORUM'			=> generate_board_url(),
+						'ATTACH_ID'			=> $attachment['attach_id'],
 					);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
+					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
 
-/*				// Macromedia Flash Files
-				case SWF_CAT:
-					list($width, $height) = swf_getdimension($filename);
+				// Macromedia Flash Files
+				case ATTACHMENT_CATEGORY_FLASH:
+					list($width, $height) = @getimagesize($filename);
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
 
 					$block_array += array(
-						'S_SWF_FILE'	=> true,
+						'S_FLASH_FILE'	=> true,
 						'WIDTH'			=> $width,
 						'HEIGHT'		=> $height,
 					);
 
-					// Viewed/Heared File ... update the download count (download.php is not called here)
+					// Viewed/Heared File ... update the download count
 					$update_count[] = $attachment['attach_id'];
 				break;
-*/
+
 				default:
 					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
 

@@ -256,9 +256,9 @@ class p_master
 			// If no category or module selected, go active for first module in first category
 			if (
 				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
-				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat) ||
+				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat && $item_ary['display']) ||
 				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
-				(!$id && !$mode && !$item_ary['cat'])
+				(!$id && !$mode && !$item_ary['cat'] && $item_ary['display'])
 				)
 			{
 				if ($item_ary['cat'])

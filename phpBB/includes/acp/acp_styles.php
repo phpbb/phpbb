@@ -397,9 +397,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							}
 							unset($cfg_data);
 
-							$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-								WHERE imageset_id = $style_id";
-							$db->sql_query($sql);
+							if (sizeof($sql_ary))
+							{
+								$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+									WHERE imageset_id = $style_id";
+								$db->sql_query($sql);
+							}
 
 							$cache->destroy('sql', STYLES_IMAGESET_TABLE);
 
@@ -1845,7 +1848,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				{
 					foreach ($key_array as $key)
 					{
-						$imageset_cfg .= "\n" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
+						$imageset_cfg .= "\nimg_" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
 					}
 				}
 

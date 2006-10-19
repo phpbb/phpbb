@@ -59,7 +59,9 @@ $lang = array_merge($lang, array(
 	'ATTACH_QUOTA_EXPLAIN'				=> 'Maximum drive space available for attachments in total, 0 is unlimited.',
 	'ATTACH_TO_POST'					=> 'Attach file to post',
 
+	'CAT_FLASH_FILES'			=> 'Flash Files',
 	'CAT_IMAGES'				=> 'Images',
+	'CAT_QUICKTIME_FILES'		=> 'Quicktime Media',
 	'CAT_RM_FILES'				=> 'Real Media Streams',
 	'CAT_WM_FILES'				=> 'Window Media Streams',
 	'CREATE_GROUP'				=> 'Create new group',

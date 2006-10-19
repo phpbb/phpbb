@@ -47,8 +47,10 @@ class acp_language
 			$missing_file = request_var('missing_file', array('' => 0));
 			list($_REQUEST['language_file'], ) = array_keys($missing_file);
 		}
-		
-		list($this->language_directory, $this->language_file) = explode('|', request_var('language_file', '|common.' . $phpEx));
+
+		$selected_lang_file = request_var('language_file', '|common.' . $phpEx);
+
+		list($this->language_directory, $this->language_file) = explode('|', $selected_lang_file);
 
 		$this->language_directory = basename($this->language_directory);
 		$this->language_file = basename($this->language_file);
@@ -201,7 +203,7 @@ class acp_language
 
 				if (!$fp)
 				{
-					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 				}
 
 				if ($this->language_directory == 'email')
@@ -285,6 +287,8 @@ class acp_language
 					$file = request_var('file', '');
 					$dir = request_var('dir', '');
 
+					$selected_lang_file = $dir . '|' . $file;
+
 					$old_file = '/' . $this->get_filename($row['lang_iso'], $dir, $file, false, true);
 					$lang_path = 'language/' . $row['lang_iso'] . '/' . (($dir) ? $dir . '/' : '');
 
@@ -308,7 +312,7 @@ class acp_language
 
 					if (($result = $transfer->open_session()) !== true)
 					{
-						trigger_error($user->lang[$result] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error($user->lang[$result] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 					}
 
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
@@ -320,7 +324,7 @@ class acp_language
 
 					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
 
-					trigger_error($user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)));
 				}
 			
 				$action = 'details';

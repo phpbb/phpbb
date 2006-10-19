@@ -276,7 +276,8 @@ class acp_main
 		{
 			$sql = 'SELECT COUNT(attach_id) AS total_orphan
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE is_orphan = 1';
+				WHERE is_orphan = 1
+					AND filetime < ' . (time() - 3*60*60);
 			$result = $db->sql_query($sql);
 			$total_orphan = (int) $db->sql_fetchfield('total_orphan');
 			$db->sql_freeresult($result);

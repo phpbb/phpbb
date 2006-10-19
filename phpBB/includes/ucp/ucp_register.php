@@ -47,6 +47,9 @@ class ucp_register
 				$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
 				$user->lang = array();
 				$user->add_lang(array('common', 'ucp'));
+
+				// Setting back agreed to let the user view the agreement in his/her language
+				$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
 			}
 			else
 			{
@@ -61,6 +64,8 @@ class ucp_register
 		//
 		if (!$agreed)
 		{
+			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
+
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
@@ -71,11 +76,12 @@ class ucp_register
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0'),
-					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1'),
+					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0' . $add_lang),
+					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $add_lang),
 
 					'S_SHOW_COPPA'		=> true,
-					'S_REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
+					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
 				);
 			}
 			else
@@ -85,12 +91,23 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
-					'S_REGISTER_ACTION'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
+					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
 				);
 			}
 
 			$this->tpl_name = 'ucp_agreement';
 			return;
+		}
+
+		// Try to manually determine the timezone
+		$timezone = date('Z') / 3600;
+		$is_dst = date('I');
+		$timezone = ($is_dst) ? $timezone - 1 : $timezone;
+
+		if (!isset($user->lang['tz_zones'][(string) $timezone]))
+		{
+			$timezone = $config['board_timezone'];
 		}
 
 		$var_ary = array(
@@ -101,8 +118,8 @@ class ucp_register
 			'email'				=> (string) '',
 			'email_confirm'		=> (string) '',
 			'confirm_code'		=> (string) '',
-			'lang'				=> (string) $config['default_lang'],
-			'tz'				=> (float) $config['board_timezone'],
+			'lang'				=> (string) $user->lang_name,
+			'tz'				=> (float) $timezone,
 		);
 
 		// If we change the language inline, we do not want to display errors, but pre-fill already filled out values
@@ -263,6 +280,7 @@ class ucp_register
 					'user_email'			=> $email,
 					'group_id'				=> (int) $group_id,
 					'user_timezone'			=> (float) $tz,
+					'user_dst'				=> $is_dst,
 					'user_lang'				=> $lang,
 					'user_type'				=> $user_type,
 					'user_actkey'			=> $user_actkey,
@@ -351,7 +369,7 @@ class ucp_register
 
 						if (sizeof($admin_ary))
 						{
-							$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
+							$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary);
 						}
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
@@ -472,7 +490,7 @@ class ucp_register
 		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
 
 		$lang = (isset($lang)) ? $lang : $config['default_lang'];
-		$tz = (isset($tz)) ? $tz : $config['board_timezone'];
+		$tz = (isset($tz)) ? $tz : $timezone;
 
 		//
 		$template->assign_vars(array(

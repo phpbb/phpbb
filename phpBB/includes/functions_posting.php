@@ -111,7 +111,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$ids = array($ids);
 	}
 
-	$update_sql = $empty_forums = array();
+	$update_sql = $empty_forums = $not_empty_forums = array();
 
 	if (sizeof($ids) == 1)
 	{
@@ -140,7 +140,12 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 		if ($type == 'forum')
 		{
-			$empty_forums[] = $row['forum_id'];
+			$not_empty_forums[] = $row['forum_id'];
+
+			if (empty($row['last_post_id']))
+			{
+				$empty_forums[] = $row['forum_id'];
+			}
 		}
 
 		$last_post_ids[] = $row['last_post_id'];
@@ -149,7 +154,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 	if ($type == 'forum')
 	{
-		$empty_forums = array_diff($ids, $empty_forums);
+		$empty_forums = array_merge($empty_forums, array_diff($ids, $not_empty_forums));
 
 		foreach ($empty_forums as $void => $forum_id)
 		{

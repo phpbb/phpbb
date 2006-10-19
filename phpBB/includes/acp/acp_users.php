@@ -389,7 +389,7 @@ class acp_users
 							// Delete old avatar if present
 							if ($user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
 							{
-								avatar_delete($user_row['user_avatar']);
+								avatar_delete('user', $user_row);
 							}
 
 							add_log('admin', 'LOG_USER_DEL_AVATAR', $user_row['username']);
@@ -1476,7 +1476,7 @@ class acp_users
 							// Delete old avatar if present
 							if ($user_row['user_avatar'] && $filename != $user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
 							{
-								avatar_delete($user_row['user_avatar']);
+								avatar_delete('user', $user_row);
 							}
 						}
 

@@ -635,8 +635,11 @@ INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mo
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Archives', 0, 1, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Plain Text', 0, 0, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Documents', 0, 0, 1, '', 0, '');
-INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Real Media', 3, 0, 2, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Real Media', 3, 0, 1, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Windows Media', 2, 0, 1, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Flash Files', 5, 0, 1, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Quicktime Media', 6, 0, 1, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('Downloadable Files', 0, 0, 1, '', 0, '');
 
 # -- extensions
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'gif');
@@ -644,19 +647,32 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'png');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'jpeg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'jpg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'tif');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'tiff');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'tga');
+
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'gtar');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'gz');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'tar');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'zip');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'rar');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'ace');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'torrent');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'tgz');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, 'bz2');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (2, '7z');
+
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'txt');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'c');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'h');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'cpp');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'hpp');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'diz');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'csv');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'ini');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'log');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'js');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (3, 'xml');
+
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'xls');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'doc');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'dot');
@@ -664,8 +680,32 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'pdf');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ai');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ps');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ppt');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odp');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ods');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odt');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'rtf');
+
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'rm');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ram');
+
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wma');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wmv');
+
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'swf');
+
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'mov');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'm4v');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'm4a');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'mp4');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, '3gp');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, '3g2');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (8, 'qt');
+
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mpeg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mpg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'mp3');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (9, 'ogm');
 
 # POSTGRES COMMIT #

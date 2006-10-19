@@ -344,7 +344,7 @@ function user_delete($mode, $user_id, $post_username = false)
 		break;
 	}
 
-	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE);
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE);
 
 	foreach ($table_ary as $table)
 	{
@@ -352,6 +352,8 @@ function user_delete($mode, $user_id, $post_username = false)
 			WHERE user_id = $user_id";
 		$db->sql_query($sql);
 	}
+
+	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 
@@ -1241,13 +1243,23 @@ function validate_email($email)
 /**
 * Remove avatar
 */
-function avatar_delete($id)
+function avatar_delete($mode, $row)
 {
 	global $phpbb_root_path, $config, $db, $user;
 
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . basename($id)))
+	// Check if the users avatar is actually *not* a group avatar
+	if ($mode == 'user')
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . basename($id));
+		if (strpos($row['user_avatar'], 'g' . $row['group_id'] . '_') === 0 || strpos($row['user_avatar'], $row['user_id'] . '_') !== 0)
+		{
+			return false;
+		}
+	}
+
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . basename($row[$mode . '_avatar'])))
+	{
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . basename($row[$mode . '_avatar']));
+		return true;
 	}
 
 	return false;
@@ -1616,7 +1628,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db;
+	global $db, $phpbb_root_path, $phpEx;
 
 	if (!$group_name)
 	{
@@ -1668,6 +1680,11 @@ function group_delete($group_id, $group_name = false)
 	$db->sql_query($sql);
 
 	// Re-cache moderators
+	if (!function_exists('cache_moderators'))
+	{
+		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+	}
+
 	cache_moderators();
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
@@ -2056,7 +2073,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	if (in_array('user_avatar', array_keys($sql_ary)))
 	{
 		// Ok, get the original avatar data from users having an uploaded one (we need to remove these from the filesystem)
-		$sql = 'SELECT user_id, user_avatar
+		$sql = 'SELECT user_id, group_id, user_avatar
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
 				AND user_avatar_type = ' . AVATAR_UPLOAD;
@@ -2064,7 +2081,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			avatar_delete($row['user_avatar']);
+			avatar_delete('user', $row);
 		}
 		$db->sql_freeresult($result);
 	}
@@ -2073,18 +2090,21 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
 	$db->sql_query($sql);
 
-	// Update any cached colour information for these users
-	$sql = 'UPDATE ' . FORUMS_TABLE . " SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
-		WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
-	$db->sql_query($sql);
+	if (in_array('user_colour', array_keys($sql_ary)))
+	{
+		// Update any cached colour information for these users
+		$sql = 'UPDATE ' . FORUMS_TABLE . " SET forum_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('forum_last_poster_id', $user_id_ary);
+		$db->sql_query($sql);
 
-	$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
-		WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
-	$db->sql_query($sql);
+		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
+		$db->sql_query($sql);
 
-	$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
-		WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
-	$db->sql_query($sql);
+		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
+		$db->sql_query($sql);
+	}
 }
 
 /**
@@ -2224,6 +2244,10 @@ function group_update_listings($group_id)
 
 	if ($mod_permissions)
 	{
+		if (!function_exists('cache_moderators'))
+		{
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
 		cache_moderators();
 	}
 

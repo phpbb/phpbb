@@ -2006,6 +2006,12 @@ function cache_moderators()
 
 			foreach ($hold_ary as $user_id => $forum_id_ary)
 			{
+				// Do not continue if user does not exist
+				if (!isset($usernames_ary[$user_id]))
+				{
+					continue;
+				}
+
 				foreach ($forum_id_ary as $forum_id => $auth_ary)
 				{
 					$sql_ary[] = array(
@@ -2047,6 +2053,12 @@ function cache_moderators()
 
 		foreach ($hold_ary as $group_id => $forum_id_ary)
 		{
+			// If there is no group, we do not assign it...
+			if (!isset($groupnames_ary[$group_id]))
+			{
+				continue;
+			}
+
 			foreach ($forum_id_ary as $forum_id => $auth_ary)
 			{
 				$flag = false;

@@ -130,7 +130,8 @@ define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
 define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming
 define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
-//define('SWF_CAT', 5); // Replaced by [flash]? or an additional possibility?
+define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files
+define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 5);
