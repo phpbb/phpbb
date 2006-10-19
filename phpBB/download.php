@@ -24,13 +24,6 @@ $user->session_begin(false);
 $auth->acl($user->data);
 $user->setup('viewtopic');
 
-/*
-$fp = fopen('session.txt', 'at');
-fwrite($fp, print_r($_GET, true));
-fwrite($fp, print_r($user->data, true));
-fclose($fp);
-*/
-
 if (!$download_id)
 {
 	trigger_error('NO_ATTACHMENT_SELECTED');
