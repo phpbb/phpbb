@@ -291,6 +291,23 @@ function user_delete($mode, $user_id, $post_username = false)
 				SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
 				WHERE topic_last_poster_id = $user_id";
 			$db->sql_query($sql);
+
+			// Since we change every post by this author, we need to count this amount towards the anonymous user
+			$sql = 'SELECT user_posts
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$num_posts = (int) $db->sql_fetchfield('user_posts');
+			$db->sql_freeresult($result);
+
+			// Update the post count for the anonymous user
+			if ($num_posts)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_posts = user_posts + ' . $num_posts . '
+					WHERE user_id = ' . ANONYMOUS;
+				$db->sql_query($sql);
+			}
 		break;
 
 		case 'remove':

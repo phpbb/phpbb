@@ -30,7 +30,7 @@ class acp_groups
 		$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
 		$group_id	= request_var('g', 0);
 		$mark_ary	= request_var('mark', array(0));
-		$name_ary	= request_var('usernames', '');
+		$name_ary	= request_var('usernames', '', true);
 		$leader		= request_var('leader', 0);
 		$default	= request_var('default', 0);
 		$start		= request_var('start', 0);

@@ -28,7 +28,7 @@ class acp_email
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = array();
 
-		$usernames	= request_var('usernames', '');
+		$usernames	= request_var('usernames', '', true);
 		$group_id	= request_var('g', 0);
 		$subject	= request_var('subject', '', true);
 		$message	= request_var('message', '', true);
@@ -57,7 +57,7 @@ class acp_email
 				{
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('username', explode("\n", $usernames)) . '
+						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
 							AND user_allow_massemail = 1
 						ORDER BY user_lang, user_notify_type'; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
 				}

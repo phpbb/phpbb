@@ -18,7 +18,7 @@
 	<td class="row2"><input class="post" type="text" name="poll_max_options" size="3" maxlength="3" value="{POLL_MAX_OPTIONS}" /></td>
 </tr>
 <tr>
-	<td class="row1"><b class="genmed">{L_POLL_FOR}</b></td>
+	<td class="row1"><b class="genmed">{L_POLL_FOR}:</b></td>
 	<td class="row2"><input class="post" type="text" name="poll_length" size="3" maxlength="3" value="{POLL_LENGTH}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_POLL_FOR_EXPLAIN}</span></td>
 </tr>
 <!-- IF S_POLL_VOTE_CHANGE -->
@@ -30,7 +30,7 @@
 
 <!-- IF S_POLL_DELETE -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_POLL_DELETE}</b></td>
-		<td class="row2"><input type="checkbox" class="radio" name="poll_delete" /></td>
+		<td class="row1"><b class="genmed">{L_POLL_DELETE}:</b></td>
+		<td class="row2"><input type="checkbox" class="radio" name="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /></td>
 	</tr>
 <!-- ENDIF -->

@@ -98,6 +98,7 @@ class ucp_profile
 					{
 						$sql_ary = array(
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $username : $user->data['username'],
+							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($username) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $email : $user->data['user_email'],
 							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32(strtolower($email)) . strlen($email) : $user->data['user_email_hash'],
 							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $new_password) ? md5($new_password) : $user->data['user_password'],

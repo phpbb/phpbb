@@ -22,7 +22,7 @@ class ucp_resend
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
-		$username	= request_var('username', '');
+		$username	= request_var('username', '', true);
 		$email		= request_var('email', '');
 		$submit		= (isset($_POST['submit'])) ? true : false;
 

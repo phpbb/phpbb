@@ -68,13 +68,13 @@ class mcp_notes
 		global $template, $db, $user, $auth;
 
 		$user_id = request_var('u', 0);
-		$username = request_var('username', '');
+		$username = request_var('username', '', true);
 		$start = request_var('start', 0);
 		$st	= request_var('st', 0);
 		$sk	= request_var('sk', 'b');
 		$sd	= request_var('sd', 'd');
 
-		$sql_where = ($user_id) ? "user_id = $user_id" : "username = '" . $db->sql_escape($username) . "'";
+		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "

@@ -25,7 +25,7 @@ $user->setup(array('memberlist', 'groups'));
 $mode		= request_var('mode', '');
 $action		= request_var('action', '');
 $user_id	= request_var('u', ANONYMOUS);
-$username	= request_var('un', '');
+$username	= request_var('un', '', true);
 $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
@@ -814,7 +814,7 @@ switch ($mode)
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
-			$username	= request_var('username', '');
+			$username	= request_var('username', '', true);
 			$email		= request_var('email', '');
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');
@@ -856,7 +856,7 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? " AND u.username LIKE '" . str_replace('*', '%', $db->sql_escape($username)) . "'" : '';
+			$sql_where .= ($username) ? " AND u.username_clean LIKE '" . str_replace('*', '%', $db->sql_escape(utf8_clean_string($username))) . "'" : '';
 			$sql_where .= ($email) ? " AND u.user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) . "' " : '';
 			$sql_where .= ($icq) ? " AND u.user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) . "' " : '';
 			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) . "' " : '';

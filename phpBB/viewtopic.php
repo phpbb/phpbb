@@ -69,27 +69,32 @@ if ($view && !$post_id)
 
 		$topic_last_read = (isset($topic_tracking_info[$topic_id])) ? $topic_tracking_info[$topic_id] : 0;
 
-		$sql = 'SELECT p.post_id, p.topic_id, p.forum_id
-			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
-			WHERE t.topic_id = $topic_id
-				AND p.topic_id = t.topic_id
-				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1') . "
-				AND (p.post_time > $topic_last_read
-					OR p.post_id = t.topic_last_post_id)
-			ORDER BY p.post_time ASC";
+		$sql = 'SELECT post_id, topic_id, forum_id
+			FROM ' . POSTS_TABLE . "
+			WHERE topic_id = $topic_id
+				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
+				AND post_time > $topic_last_read
+			ORDER BY post_time ASC";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		if (!$row)
 		{
+			$sql = 'SELECT topic_last_post_id as post_id, topic_id, forum_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $topic_id;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		if (!$row)
+		{
 			// Setup user environment so we can process lang string
 			$user->setup('viewtopic');
 
-			$redirect = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
-
-			meta_refresh(3, $redirect);
-			trigger_error($user->lang['NO_UNREAD_POSTS'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error('NO_TOPIC');
 		}
 
 		$post_id = $row['post_id'];

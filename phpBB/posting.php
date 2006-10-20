@@ -536,7 +536,7 @@ if ($submit || $preview || $refresh)
 	$post_data['post_subject'] = request_var('subject', '', true);
 	$message_parser->message = request_var('message', '', true);
 
-	$post_data['username']			= request_var('username', $post_data['username']);
+	$post_data['username']			= request_var('username', $post_data['username'], true);
 	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
 
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -575,27 +575,30 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) && 
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
-		$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
+		if ($submit)
+		{
+			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
+				WHERE topic_id = $topic_id";
+			$db->sql_query($sql);
 
-		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
-		
-		$topic_sql = array(
-			'poll_title'		=> '',
-			'poll_start' 		=> 0,
-			'poll_length'		=> 0,
-			'poll_last_vote'	=> 0,
-			'poll_max_options'	=> 0,
-			'poll_vote_change'	=> 0
-		);
+			$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
+				WHERE topic_id = $topic_id";
+			$db->sql_query($sql);
+			
+			$topic_sql = array(
+				'poll_title'		=> '',
+				'poll_start' 		=> 0,
+				'poll_length'		=> 0,
+				'poll_last_vote'	=> 0,
+				'poll_max_options'	=> 0,
+				'poll_vote_change'	=> 0
+			);
 
-		$sql = 'UPDATE ' . TOPICS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $topic_sql) . "
-			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $topic_sql) . "
+				WHERE topic_id = $topic_id";
+			$db->sql_query($sql);
+		}
 
 		$post_data['poll_title'] = $post_data['poll_option_text'] = '';
 		$post_data['poll_vote_change'] = $post_data['poll_max_options'] = $post_data['poll_length'] = 0;
@@ -954,7 +957,7 @@ if (!sizeof($error) && $preview)
 	$preview_subject = censor_text($post_data['post_subject']);
 
 	// Poll Preview
-	if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))))
+	if (!$poll_delete && ($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))))
 	&& $auth->acl_get('f_poll', $forum_id))
 	{
 		$parse_poll = new parse_message($post_data['poll_title']);
@@ -1230,6 +1233,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 		'S_SHOW_POLL_BOX'		=> true,
 		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id)),
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
+		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
 
 		'L_POLL_OPTIONS_EXPLAIN'	=> sprintf($user->lang['POLL_OPTIONS_EXPLAIN'], $config['max_poll_options']),
 

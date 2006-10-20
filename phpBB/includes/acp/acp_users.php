@@ -34,7 +34,7 @@ class acp_users
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$error		= array();
-		$username	= request_var('username', '');
+		$username	= request_var('username', '', true);
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
@@ -86,7 +86,7 @@ class acp_users
 		{
 			$sql = 'SELECT user_id
 				FROM ' . USERS_TABLE . "
-				WHERE username = '" . $db->sql_escape($username) . "'";
+				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 			$result = $db->sql_query($sql);
 			$user_id = (int) $db->sql_fetchfield('user_id');
 			$db->sql_freeresult($result);
@@ -736,6 +736,7 @@ class acp_users
 						if ($update_username !== false)
 						{
 							$sql_ary['username'] = $update_username;
+							$sql_ary['username_clean'] = utf8_clean_string($update_username);
 
 							add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $user_row['username'], $update_username);
 						}

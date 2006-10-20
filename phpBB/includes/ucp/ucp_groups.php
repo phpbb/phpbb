@@ -863,7 +863,7 @@ class ucp_groups
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
 
-						$name_ary = request_var('usernames', '');
+						$name_ary = request_var('usernames', '', true);
 
 						if (!$group_id)
 						{
