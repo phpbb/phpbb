@@ -253,7 +253,7 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $config, $db, $user, $auth;
+	global $cache, $config, $db, $user, $auth;
 	global $phpbb_root_path, $phpEx;
 
 	$db->sql_transaction('begin');
