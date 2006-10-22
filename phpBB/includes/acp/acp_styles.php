@@ -1353,16 +1353,19 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		if ($imageset_id)
 		{
 			$sql_select = ($imgname) ? ", $imgname" : '';
+
 			$sql = "SELECT imageset_path, imageset_name, imageset_copyright$sql_select
 				FROM " . STYLES_IMAGESET_TABLE . "
 				WHERE imageset_id = $imageset_id";
 			$result = $db->sql_query($sql);
+			$imageset_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			if (!extract($db->sql_fetchrow($result)))
+			if (!$imageset_row)
 			{
 				trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			$db->sql_freeresult($result);
+			extract($imageset_row);
 
 			// Check to see whether the selected image exists in the table
 			$valid_name = ($update) ? false : true;

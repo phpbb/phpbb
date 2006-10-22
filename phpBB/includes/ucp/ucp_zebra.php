@@ -37,7 +37,7 @@ class ucp_zebra
 
 			foreach ($var_ary as $var => $default)
 			{
-				$data[$var] = request_var($var, $default);
+				$data[$var] = request_var($var, $default, true);
 			}
 
 			if ($data['add'])

@@ -635,7 +635,7 @@ class acp_users
 					// Get the data from the form. Use data from the database if no info is provided
 					foreach ($var_ary as $var => $default)
 					{
-						$data[$var] = request_var($var, $default);
+						$data[$var] = ($var == 'user') ? request_var($var, $default, true) : request_var($var, $default);
 					}
 
 					// We use user within the form to circumvent auto filling
@@ -984,7 +984,7 @@ class acp_users
 
 					foreach ($var_ary as $var => $default)
 					{
-						$data[$var] = (in_array($var, array('location', 'occupation', 'interests'))) ? request_var($var, $default, true) : $data[$var] = request_var($var, $default);
+						$data[$var] = (in_array($var, array('location', 'occupation', 'interests'))) ? request_var($var, $default, true) : request_var($var, $default);
 					}
 
 					$var_ary = array(

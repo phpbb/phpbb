@@ -197,7 +197,11 @@ class template
 
 		global $db, $phpbb_root_path;
 
-		include_once($phpbb_root_path . 'includes/functions_template.' . $phpEx);
+		if (!class_exists('template_compile'))
+		{
+			include($phpbb_root_path . 'includes/functions_template.' . $phpEx);
+		}
+
 		$compile = new template_compile($this);
 
 		// If the file for this handle is already loaded and compiled, do nothing.

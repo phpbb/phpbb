@@ -901,19 +901,19 @@ function utf8_case_fold($text, $option = 'full')
 	// common is always set
 	if (!isset($uniarray['c']))
 	{
-		$uniarray['c'] = include_once($phpbb_root_path . 'includes/utf/data/case_fold_c.' . $phpEx);
+		$uniarray['c'] = include($phpbb_root_path . 'includes/utf/data/case_fold_c.' . $phpEx);
 	}
 
 	// only set full if we need to
 	if ($option === 'full' && !isset($uniarray['f']))
 	{
-		$uniarray['f'] = include_once($phpbb_root_path . 'includes/utf/data/case_fold_f.' . $phpEx);
+		$uniarray['f'] = include($phpbb_root_path . 'includes/utf/data/case_fold_f.' . $phpEx);
 	}
 
 	// only set simple if we need to
 	if ($option !== 'full' && !isset($uniarray['s']))
 	{
-		$uniarray['s'] = include_once($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
+		$uniarray['s'] = include($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
 	}
 
 	$text = strtr($text, $uniarray['c']);

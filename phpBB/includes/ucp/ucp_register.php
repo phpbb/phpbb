@@ -127,7 +127,7 @@ class ucp_register
 		{
 			foreach ($var_ary as $var => $default)
 			{
-				$$var = request_var($var, $default, true);
+				$data[$var] = ($var == 'username') ? request_var($var, $default, true) : request_var($var, $default);
 			}
 		}
 
@@ -136,7 +136,7 @@ class ucp_register
 		{
 			foreach ($var_ary as $var => $default)
 			{
-				$data[$var] = request_var($var, $default, true);
+				$data[$var] = ($var == 'username') ? request_var($var, $default, true) : request_var($var, $default);
 			}
 
 			$var_ary = array(
@@ -157,8 +157,6 @@ class ucp_register
 			);
 
 			$error = validate_data($data, $var_ary);
-			extract($data);
-			unset($data);
 
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
@@ -197,7 +195,7 @@ class ucp_register
 
 					if ($row)
 					{
-						if (strcasecmp($row['code'], $confirm_code) === 0)
+						if (strcasecmp($row['code'], $data['confirm_code']) === 0)
 						{
 							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
 								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
@@ -221,12 +219,12 @@ class ucp_register
 
 			if (!sizeof($error))
 			{
-				if ($new_password != $password_confirm)
+				if ($data['new_password'] != $data['password_confirm'])
 				{
 					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
 				}
 
-				if ($email != $email_confirm)
+				if ($data['email'] != $data['email_confirm'])
 				{
 					$error[] = $user->lang['NEW_EMAIL_ERROR'];
 				}
@@ -262,6 +260,7 @@ class ucp_register
 					$key_len = 54 - (strlen($server_url));
 					$key_len = ($key_len < 6) ? 6 : $key_len;
 					$user_actkey = substr($user_actkey, 0, $key_len);
+
 					$user_type = USER_INACTIVE;
 					$user_inactive_reason = INACTIVE_REGISTER;
 					$user_inactive_time = time();
@@ -275,13 +274,13 @@ class ucp_register
 				}
 
 				$user_row = array(
-					'username'				=> $username,
-					'user_password'			=> md5($new_password),
-					'user_email'			=> $email,
+					'username'				=> $data['username'],
+					'user_password'			=> md5($data['new_password']),
+					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
-					'user_timezone'			=> (float) $tz,
+					'user_timezone'			=> (float) $data['tz'],
 					'user_dst'				=> $is_dst,
-					'user_lang'				=> $lang,
+					'user_lang'				=> $data['lang'],
 					'user_type'				=> $user_type,
 					'user_actkey'			=> $user_actkey,
 					'user_ip'				=> $user->ip,
@@ -326,10 +325,10 @@ class ucp_register
 
 					$messenger = new messenger(false);
 
-					$messenger->template($email_template, $lang);
+					$messenger->template($email_template, $data['lang']);
 
 					$messenger->replyto($config['board_contact']);
-					$messenger->to($email, $username);
+					$messenger->to($data['email'], $data['username']);
 
 					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
 					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
@@ -339,7 +338,7 @@ class ucp_register
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-						'USERNAME'		=> html_entity_decode($username),
+						'USERNAME'		=> html_entity_decode($username, ENT_QUOTES, 'UTF-8'),
 						'PASSWORD'		=> html_entity_decode($password_confirm),
 						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
@@ -351,7 +350,7 @@ class ucp_register
 						$messenger->assign_vars(array(
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
-							'EMAIL_ADDRESS'	=> $email,
+							'EMAIL_ADDRESS'	=> $data['email'],
 							'SITENAME'		=> $config['sitename'])
 						);
 					}
@@ -385,7 +384,7 @@ class ucp_register
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> html_entity_decode($username),
+								'USERNAME'		=> html_entity_decode($username, ENT_QUOTES, 'UTF-8'),
 								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
@@ -396,7 +395,6 @@ class ucp_register
 						$db->sql_freeresult($result);
 					}
 				}
-				unset($data);
 
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
@@ -489,17 +487,17 @@ class ucp_register
 		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
 		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
 
-		$lang = (isset($lang)) ? $lang : $config['default_lang'];
-		$tz = (isset($tz)) ? $tz : $timezone;
+		$data['lang'] = (isset($data['lang'])) ? $data['lang'] : $config['default_lang'];
+		$data['tz'] = (isset($data['tz'])) ? $data['tz'] : $timezone;
 
 		//
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'USERNAME'			=> (isset($username)) ? $username : '',
-			'PASSWORD'			=> (isset($new_password)) ? $new_password : '',
-			'PASSWORD_CONFIRM'	=> (isset($password_confirm)) ? $password_confirm : '',
-			'EMAIL'				=> (isset($email)) ? $email : '',
-			'EMAIL_CONFIRM'		=> (isset($email_confirm)) ? $email_confirm : '',
+			'USERNAME'			=> (isset($data['username'])) ? $data['username'] : '',
+			'PASSWORD'			=> (isset($data['new_password'])) ? $data['new_password'] : '',
+			'PASSWORD_CONFIRM'	=> (isset($data['password_confirm'])) ? $data['password_confirm'] : '',
+			'EMAIL'				=> (isset($data['email'])) ? $data['email'] : '',
+			'EMAIL_CONFIRM'		=> (isset($data['email_confirm'])) ? $data['email_confirm'] : '',
 			'CONFIRM_IMG'		=> $confirm_image,
 
 			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
@@ -507,8 +505,8 @@ class ucp_register
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
-			'S_LANG_OPTIONS'	=> language_select($lang),
-			'S_TZ_OPTIONS'		=> tz_select($tz),
+			'S_LANG_OPTIONS'	=> language_select($data['lang']),
+			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,

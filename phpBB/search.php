@@ -623,7 +623,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					// Does this post have an attachment? If so, add it to the list
 					if ($row['post_attachment'] && $config['allow_attachments'])
 					{
-						$attach_list[] = $row['post_id'];
+						$attach_list[$row['forum_id']][] = $row['post_id'];
 					}
 				}
 			}
@@ -639,25 +639,32 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			// Pull attachment data
 			if (sizeof($attach_list))
 			{
-				if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
+				$use_attach_list = $attach_list;
+				$attach_list = array();
+
+				foreach ($use_attach_list as $forum_id => $_list)
 				{
-					$sql = 'SELECT *
-						FROM ' . ATTACHMENTS_TABLE . '
-						WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
-							AND in_message = 0
-						ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
-					$result = $db->sql_query($sql);
-			
-					while ($row = $db->sql_fetchrow($result))
+					if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
 					{
-						$attachments[$row['post_msg_id']][] = $row;
+						$attach_list = array_merge($attach_list, $_list);
 					}
-					$db->sql_freeresult($result);
 				}
-				else
+			}
+
+			if (sizeof($attach_list))
+			{
+				$sql = 'SELECT *
+					FROM ' . ATTACHMENTS_TABLE . '
+					WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
+						AND in_message = 0
+					ORDER BY filetime ' . ((!$config['display_order']) ? 'DESC' : 'ASC') . ', post_msg_id ASC';
+				$result = $db->sql_query($sql);
+		
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$display_notice = true;
+					$attachments[$row['post_msg_id']][] = $row;
 				}
+				$db->sql_freeresult($result);
 			}
 		}
 

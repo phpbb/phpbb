@@ -16,6 +16,7 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -726,7 +727,6 @@ if (!empty($topic_data['poll_start']))
 
 	if ($poll_info[0]['bbcode_bitfield'])
 	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		$poll_bbcode = new bbcode();
 	}
 	else
@@ -1227,7 +1227,6 @@ if (sizeof($attach_list))
 // Instantiate BBCode if need be
 if ($bbcode_bitfield !== '')
 {
-	include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 	$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 }
 
