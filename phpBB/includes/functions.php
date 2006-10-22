@@ -3303,7 +3303,7 @@ function page_header($page_title = '', $display_online_list = true)
 /**
 * Generate page footer
 */
-function page_footer()
+function page_footer($run_cron = true)
 {
 	global $db, $config, $template, $user, $auth, $cache, $messenger, $starttime, $phpbb_root_path, $phpEx;
 
@@ -3345,7 +3345,7 @@ function page_footer()
 	);
 
 	// Call cron-type script
-	if (!defined('IN_CRON'))
+	if (!defined('IN_CRON') && $run_cron)
 	{
 		$cron_type = '';
 	
