@@ -338,7 +338,7 @@ class ucp_register
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-						'USERNAME'		=> html_entity_decode($username, ENT_QUOTES, 'UTF-8'),
+						'USERNAME'		=> html_entity_decode($username, ENT_COMPAT, 'UTF-8'),
 						'PASSWORD'		=> html_entity_decode($password_confirm),
 						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
@@ -384,7 +384,7 @@ class ucp_register
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> html_entity_decode($username, ENT_QUOTES, 'UTF-8'),
+								'USERNAME'		=> html_entity_decode($username, ENT_COMPAT, 'UTF-8'),
 								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
