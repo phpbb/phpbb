@@ -180,11 +180,11 @@ $lang = array_merge($lang, array(
 	'ACP_VC_SETTINGS'					=> 'Visual confirmation settings',
 	'ACP_VC_CAPTCHA_DISPLAY'			=> 'CAPTCHA image preview',
 	'ACP_VERSION_CHECK'					=> 'Check for updates',
-	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View effective administrative permissions',
-	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View effective forum moderation permissions',
-	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View effective forum-based permissions',
-	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View effective global moderatoration permissions',
-	'ACP_VIEW_USER_PERMISSIONS'			=> 'View effective user-based permissions',
+	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View administrative permissions',
+	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View forum moderation permissions',
+	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View forum-based permissions',
+	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderatoration permissions',
+	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
 	
 	'ACP_WORDS'					=> 'Word censoring',
 
