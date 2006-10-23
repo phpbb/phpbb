@@ -102,6 +102,7 @@ class acp_forums
 						'forum_type'			=> request_var('forum_type', FORUM_POST),
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
+						'forum_parents'			=> '',
 						'forum_name'			=> request_var('forum_name', '', true),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
