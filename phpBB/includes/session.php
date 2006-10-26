@@ -690,7 +690,7 @@ class session
 		$del_user_id = array();
 		$del_sessions = 0;
 
-		while ($row = $db->sql_fetchrow($result));
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'

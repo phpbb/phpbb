@@ -428,12 +428,6 @@ if ($mode != 'post' && $config['allow_topic_notify'] && $user->data['is_register
 	$db->sql_freeresult($result);
 }
 
-// If the user is replying or posting and not already watching this topic but set to always being notified we need to overwrite this setting
-if ($mode != 'edit' && $config['allow_topic_notify'] && $user->data['is_registered'] && !$post_data['notify_set'])
-{
-	$post_data['notify_set'] = $user->data['user_notify'];
-}
-
 // Do we want to edit our post ?
 if ($mode == 'edit' && $post_data['bbcode_uid'])
 {
@@ -1091,8 +1085,9 @@ $sig_checked		= $post_data['enable_sig'];
 $lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($post_data['topic_status'] == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_locked'];
 
-// If in edit mode, and the user is not the poster, we do not take the notification into account
-$notify_checked		= (isset($notify)) ? $notify : (($mode == 'post') ? $user->data['user_notify'] : $post_data['notify_set']);
+// If the user is replying or posting and not already watching this topic but set to always being notified we need to overwrite this setting
+$notify_set			= ($mode != 'edit' && $config['allow_topic_notify'] && $user->data['is_registered'] && !$post_data['notify_set']) ? $user->data['user_notify'] : $post_data['notify_set'];
+$notify_checked		= (isset($notify)) ? $notify : (($mode == 'post') ? $user->data['user_notify'] : $notify_set);
 
 // Page title & action URL, include session_id for security purpose
 $s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id", true, $user->session_id);

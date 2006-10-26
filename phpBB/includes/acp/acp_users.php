@@ -829,6 +829,22 @@ class acp_users
 					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
 				}
 
+				if ($config['load_onlinetrack'])
+				{
+					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
+						FROM ' . SESSIONS_TABLE . "
+						WHERE session_user_id = $user_id";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
+					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
+					unset($row);
+				}
+
+				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
+
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
@@ -849,7 +865,7 @@ class acp_users
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
 					'REGISTERED_IP'		=> ($ip == 'hostname') ? gethostbyaddr($user_row['user_ip']) : $user_row['user_ip'],
-					'USER_LASTACTIVE'	=> ($user_row['user_lastvisit']) ? $user->format_date($user_row['user_lastvisit']) : ' - ',
+					'USER_LASTACTIVE'	=> ($last_visit) ? $user->format_date($last_visit) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
