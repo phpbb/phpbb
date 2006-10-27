@@ -136,6 +136,13 @@ function autologin_apache()
 			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? array() : $row;
 		}
 
+		if (!function_exists('user_add'))
+		{
+			global $phpbb_root_path, $phpEx;
+
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
 		// create the user if he does not exist yet
 		user_add(user_row_apache($php_auth_user, $php_auth_pw));
 
