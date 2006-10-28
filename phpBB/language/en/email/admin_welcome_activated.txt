@@ -1,4 +1,4 @@
-Subject: Account Activated
+Subject: Account activated
 
 Hello {USERNAME},
 
