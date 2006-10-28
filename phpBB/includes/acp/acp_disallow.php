@@ -57,8 +57,8 @@ class acp_disallow
 				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$sql = 'DELETE FROM ' . DISALLOW_TABLE . "
-				WHERE disallow_id = $disallowed_id";
+			$sql = 'DELETE FROM ' . DISALLOW_TABLE . '
+				WHERE disallow_id = ' . $disallowed_id;
 			$db->sql_query($sql);
 
 			add_log('admin', 'LOG_DISALLOW_DELETE');

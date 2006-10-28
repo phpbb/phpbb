@@ -545,7 +545,6 @@ class acp_attachments
 
 				$group_id = request_var('g', 0);
 				$action = (isset($_POST['add'])) ? 'add' : $action;
-//				$action = (($action == 'add' || $action == 'edit') && $submit && !sizeof($error)) ? 'show' : $action;
 
 				switch ($action)
 				{
