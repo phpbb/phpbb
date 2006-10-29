@@ -935,14 +935,14 @@ switch ($mode)
 
 		if ($first_char == 'other')
 		{
-			for ($i = 65; $i < 91; $i++)
+			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= " AND u.username NOT LIKE '" . chr($i) . "%'";
+				$sql_where .= " AND u.username_clean NOT LIKE '" . chr($i) . "%'";
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= " AND u.username LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
+			$sql_where .= " AND u.username_clean LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -1068,9 +1068,9 @@ switch ($mode)
 		}
 
 		$s_char_options = '<option value=""' . ((!$first_char) ? ' selected="selected"' : '') . '>&nbsp; &nbsp;</option>';
-		for ($i = 65; $i < 91; $i++)
+		for ($i = 97; $i < 123; $i++)
 		{
-			$s_char_options .= '<option value="' . chr($i) . '"' . (($first_char == chr($i)) ? ' selected="selected"' : '') . '>' . chr($i) . '</option>';
+			$s_char_options .= '<option value="' . chr($i) . '"' . (($first_char == chr($i)) ? ' selected="selected"' : '') . '>' . chr($i-32) . '</option>';
 		}
 		$s_char_options .= '<option value="other"' . (($first_char == 'other') ? ' selected="selected"' : '') . '>' . $user->lang['OTHER'] . '</option>';
 
