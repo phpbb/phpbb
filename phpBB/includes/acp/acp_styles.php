@@ -966,7 +966,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Pull out a list of classes
 		$classes = array();
-		if (preg_match_all('/^([a-z0-9\.:#> \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
+		if (preg_match_all('/^([a-z0-9\.,:#> \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
 		{
 			$classes = $matches[1];
 		}
