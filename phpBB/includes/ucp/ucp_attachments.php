@@ -78,11 +78,17 @@ class ucp_attachments
 			$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 		}
 
+		if (!isset($sort_key_sql[$sort_key]))
+		{
+			$sort_key = 'a';
+		}
+
 		$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		$sql = 'SELECT COUNT(attach_id) as num_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE poster_id = ' . $user->data['user_id'];
+			WHERE poster_id = ' . $user->data['user_id'] . '
+				AND is_orphan = 0';
 		$result = $db->sql_query($sql);
 		$num_attachments = $db->sql_fetchfield('num_attachments');
 		$db->sql_freeresult($result);
@@ -92,6 +98,7 @@ class ucp_attachments
 				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
 				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id AND a.in_message = 1)
 			WHERE a.poster_id = ' . $user->data['user_id'] . "
+				AND a.is_orphan = 0
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 

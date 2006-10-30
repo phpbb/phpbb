@@ -66,6 +66,7 @@ $lang = array_merge($lang, array(
 	'GROUP_RESIGNED_PENDING'			=> 'Your pending membership was successfully removed from the selected group',
 	'GROUP_TYPE'						=> 'Group type',
 	'GROUP_UNDISCLOSED'					=> 'Hidden group',
+	'FORUM_UNDISCLOSED'					=> 'Moderating hidden forum(s)',
 
 	'LOGIN_EXPLAIN_GROUP'	=> 'You need to login to view group details',
 

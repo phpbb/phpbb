@@ -27,10 +27,17 @@
 			<dt><label>{L_FIELD_TYPE}:</label><br /><span>{L_FIELD_TYPE_EXPLAIN}</span></dt>
 			<dd><b>{FIELD_TYPE}</b></dd>
 		</dl>
+		<!-- IF S_EDIT_MODE -->
+		<dl>
+			<dt><label>{L_FIELD_IDENT}:</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
+			<dd><input type="hidden" name="field_ident" value="{FIELD_IDENT}" /><strong>{FIELD_IDENT}</strong></dd>
+		</dl>
+		<!-- ELSE -->
 		<dl>
 			<dt><label for="field_ident">{L_FIELD_IDENT}:</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
 			<dd><input class="medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
 		</dl>
+		<!-- ENDIF -->
 		<dl>
 			<dt><label for="field_no_view">{L_DISPLAY_PROFILE_FIELD}:</label><br /><span>{L_DISPLAY_PROFILE_FIELD_EXPLAIN}</span></dt>
 			<dd><input type="radio" class="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES} <input type="radio" class="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>

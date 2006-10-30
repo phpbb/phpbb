@@ -1741,7 +1741,12 @@ class acp_users
 					$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 				}
 
-				$order_by = $sk_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+				if (!isset($sk_sql[$sort_key]))
+				{
+					$sort_key = 'a';
+				}
+
+				$order_by = $sk_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 				$sql = 'SELECT COUNT(attach_id) as num_attachments
 					FROM ' . ATTACHMENTS_TABLE . "

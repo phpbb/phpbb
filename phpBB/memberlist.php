@@ -52,7 +52,8 @@ switch ($mode)
 $start	= request_var('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
 
-$sort_key = request_var('sk', 'c');
+$default_key = 'c';
+$sort_key = request_var('sk', $default_key);
 $sort_dir = request_var('sd', 'a');
 
 
@@ -168,6 +169,7 @@ switch ($mode)
 			}
 
 			$s_forum_select = '';
+			$undisclosed_forum = false;
 
 			if (isset($forum_id_ary[$row['user_id']]))
 			{
@@ -175,12 +177,26 @@ switch ($mode)
 				{
 					foreach ($forum_id_ary[$row['user_id']] as $forum_id)
 					{
-						if (isset($forums[$forum_id]) && $auth->acl_get('f_list', $forum_id))
+						if (isset($forums[$forum_id]))
 						{
-							$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
+							if ($auth->acl_get('f_list', $forum_id))
+							{
+								$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
+							}
+							else
+							{
+								$undisclosed_forum = true;
+							}
 						}
 					}
 				}
+			}
+
+			// If the mod is only moderating non-viewable forums let us display this circumstance
+			// instead of saying they are moderating all forums
+			if (!$s_forum_select && $undisclosed_forum)
+			{
+				$s_forum_select = $user->lang['FORUM_UNDISCLOSED'];
 			}
 
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
@@ -1049,6 +1065,11 @@ switch ($mode)
 		}
 		
 		// Sorting and order
+		if (!isset($sort_key_sql[$sort_key]))
+		{
+			$sort_key = $default_key;
+		}
+
 		$order_by .= $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		// Count the users ...

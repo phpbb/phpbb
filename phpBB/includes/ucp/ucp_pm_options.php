@@ -479,6 +479,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 
 	// Check
+	if (!isset($global_privmsgs_rules[$check_option]))
+	{
+		$check_option = 0;
+	}
+
 	define_check_option(($check_option && !isset($back['rule'])) ? true : false, $check_option, $check_lang);
 
 	if ($check_option && !isset($back['rule']))

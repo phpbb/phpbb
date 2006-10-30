@@ -33,6 +33,11 @@ $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['
 $sort_key_sql = array('a' => 'u.username', 'b' => 's.session_time', 'c' => 's.session_page');
 
 // Sorting and order
+if (!isset($sort_key_text[$sort_key]))
+{
+	$sort_key = 'b';
+}
+
 $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 // Whois requested

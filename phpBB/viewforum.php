@@ -194,8 +194,6 @@ $limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7
 $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
 $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
-$sort_key = (!in_array($sort_key, array('a', 't', 'r', 's', 'v'))) ? 't' : $sort_key;
-
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
@@ -225,15 +223,7 @@ if ($sort_days)
 }
 else
 {
-	if ($auth->acl_get('m_approve', $forum_id))
-	{
-		$topics_count = ($forum_data['forum_topics_real']) ? $forum_data['forum_topics_real'] : 1;
-	}
-	else
-	{
-		$topics_count = ($forum_data['forum_topics']) ? $forum_data['forum_topics'] : 1;
-	}
-
+	$topics_count = ($auth->acl_get('m_approve', $forum_id)) ? $forum_data['forum_topics_real'] : $forum_data['forum_topics'];
 	$sql_limit_time = '';
 }
 
