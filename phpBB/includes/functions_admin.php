@@ -2608,9 +2608,46 @@ function tidy_database()
 {
 	global $db;
 
-
-
 	set_config('database_last_gc', time(), true);
+}
+
+/**
+* Add permission language - this will make sure custom files will be included
+*/
+function add_permission_language()
+{
+	global $user, $phpEx;
+
+	// First of all, our own file.
+	$user->add_lang('acp/permissions_phpbb');
+
+	$files_to_add = array();
+
+	// Now search in acp and mods folder for permissions_ files.
+	foreach (array('acp/', 'mods/') as $path)
+	{
+		$dh = opendir($user->lang_path . $path);
+
+		if ($dh !== false)
+		{
+			while (($file = readdir($dh)) !== false)
+			{
+				if (strpos($file, 'permissions_') === 0 && strpos($file, 'permissions_phpbb') === false && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
+				{
+					$files_to_add[] = $path . substr($file, 0, -(strlen($phpEx) + 1));
+				}
+			}
+			closedir($dh);
+		}
+	}
+
+	if (!sizeof($files_to_add))
+	{
+		return false;
+	}
+
+	$user->add_lang($files_to_add);
+	return true;
 }
 
 ?>

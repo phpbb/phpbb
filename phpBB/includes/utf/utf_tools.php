@@ -111,16 +111,13 @@ if (extension_loaded('mbstring'))
 	*
 	* Notes:
 	* - offset for mb_strrpos was added in 5.2.0, we emulate if it is lower
-	* 
-	* @author Harry Fuecks
-	* @param string haystack
-	* @param string needle
-	* @param integer (optional) offset (from left)
-	* @return mixed integer position or FALSE on failure
-	* @ignore
 	*/
 	if (version_compare(phpversion(), '5.2.0', '>='))
 	{
+		/**
+		* UTF-8 aware alternative to strrpos
+		* @ignore
+		*/
 		function utf8_strrpos($str,	$needle, $offset = null)
 		{
 			// Emulate behaviour of strrpos rather than raising warning
@@ -134,6 +131,10 @@ if (extension_loaded('mbstring'))
 	}
 	else
 	{
+		/**
+		* UTF-8 aware alternative to strrpos
+		* @ignore
+		*/
 		function utf8_strrpos($str,	$needle, $offset = null)
 		{
 			// offset for mb_strrpos was added in 5.2.0

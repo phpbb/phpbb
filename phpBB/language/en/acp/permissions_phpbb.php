@@ -1,14 +1,11 @@
 <?php
 /** 
-*
 * acp_permissions (phpBB Permission Set) [English]
 *
 * @package language
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
-*
-* @todo You are able to put your permission sets into a seperate file too by prefixing it with permissions_ and putting it into the acp language folder.
 */
 
 /**
@@ -31,22 +28,35 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-/*
-	MODDERS PLEASE NOTE
-	
-	Please add your permission settings this way:
-
-	// Adding new category
-	$lang['permission_cat']['bugs'] = 'Bugs';
-
-	// Adding new permission set
-	$lang['permission_type']['bug_'] = 'Bug Permissions';
-
-	// Adding the permissions
-	$lang = array_merge($lang, array(
-		'acl_bug_view'		=> array('lang' => 'Can view bug reports', 'cat' => 'bugs'),
-		'acl_bug_post'		=> array('lang' => 'Can post bugs', 'cat' => 'post'), // Using a phpBB category here
-	));
+/**
+*	MODDERS PLEASE NOTE
+*	
+*	You are able to put your permission sets into a seperate file too by
+*	prefixing the new file with permissions_ and putting it into the acp 
+*	language folder.
+*
+*	An example of how the file could look like:
+*
+*	<code>
+*
+*	if (empty($lang) || !is_array($lang))
+*	{
+*		$lang = array();
+*	}
+*
+*	// Adding new category
+*	$lang['permission_cat']['bugs'] = 'Bugs';
+*
+*	// Adding new permission set
+*	$lang['permission_type']['bug_'] = 'Bug Permissions';
+*
+*	// Adding the permissions
+*	$lang = array_merge($lang, array(
+*		'acl_bug_view'		=> array('lang' => 'Can view bug reports', 'cat' => 'bugs'),
+*		'acl_bug_post'		=> array('lang' => 'Can post bugs', 'cat' => 'post'), // Using a phpBB category here
+*	));
+*
+*	</code>
 */
 
 // Define categories and permission types
@@ -214,8 +224,7 @@ $lang = array_merge($lang, array(
 	'acl_a_email'		=> array('lang' => 'Can send mass email', 'cat' => 'misc'),
 	'acl_a_bots'		=> array('lang' => 'Can manage bots', 'cat' => 'misc'),
 	'acl_a_reasons'		=> array('lang' => 'Can manage report/denial reasons', 'cat' => 'misc'),
-	'acl_a_backup'		=> array('lang' => 'Can backup database', 'cat' => 'misc'),
-#	'acl_a_restore'		=> array('lang' => 'Can restore database', 'cat' => 'misc'),
+	'acl_a_backup'		=> array('lang' => 'Can backup/restore database', 'cat' => 'misc'),
 	'acl_a_search'		=> array('lang' => 'Can manage search backends and settings', 'cat' => 'misc'),
 ));
 

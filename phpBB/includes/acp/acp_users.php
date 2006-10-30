@@ -1959,7 +1959,7 @@ class acp_users
 				$auth_admin = new auth_admin();
 
 				$user->add_lang('acp/permissions');
-				$user->add_lang('acp/permissions_phpbb');
+				add_permission_language();
 
 				// Select auth options
 				$sql = 'SELECT auth_option, is_local, is_global

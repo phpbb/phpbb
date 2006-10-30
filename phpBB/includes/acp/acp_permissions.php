@@ -27,7 +27,7 @@ class acp_permissions
 		$auth_admin = new auth_admin();
 
 		$user->add_lang('acp/permissions');
-		$user->add_lang('acp/permissions_phpbb');
+		add_permission_language();
 
 		$this->tpl_name = 'acp_permissions';
 

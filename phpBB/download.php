@@ -222,14 +222,20 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Now the tricky part... let's dance
 	header('Pragma: public');
 
-	// Try X-Sendfile since it is much more server friendly - only works if the path is *not* outside of the root path...
-	// lighttpd has core support for it. An apache2 module is available at http://celebnamer.celebworld.ws/stuff/mod_xsendfile/
-
-	// Not really ideal, but should work fine...
-	if (strpos($upload_dir, '/') !== 0 && strpos($upload_dir, '../') === false)
-	{
-		header('X-Sendfile: ' . $filename);
-	}
+	/**
+	* Commented out X-Sendfile support. To not expose the physical filename within the header if xsendfile is absent we need to look into methods of checking it's status.
+	*
+	* Try X-Sendfile since it is much more server friendly - only works if the path is *not* outside of the root path...
+	* lighttpd has core support for it. An apache2 module is available at http://celebnamer.celebworld.ws/stuff/mod_xsendfile/
+	*
+	* Not really ideal, but should work fine...
+	* <code>
+	*	if (strpos($upload_dir, '/') !== 0 && strpos($upload_dir, '../') === false)
+		{
+			header('X-Sendfile: ' . $filename);
+		}
+	* </code>
+	*/
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);

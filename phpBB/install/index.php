@@ -8,10 +8,12 @@
 *
 */
 
-/**
+/**#@+
+* @ignore
 */
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
+/**#@-*/
 
 $phpbb_root_path = './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
