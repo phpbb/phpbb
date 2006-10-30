@@ -1012,7 +1012,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		// Used in an sprintf statement to generate appropriate output for rawcss mode
 		$map_elements = array(
 			'colors'	=> '%s',
-			'sizes'		=> '%1.1f',
+			'sizes'		=> '%1.10f',
 			'images'	=> 'url(\'./%s\')',
 			'repeat'	=> '%s',
 			'other'		=> '%s',
@@ -1232,7 +1232,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					// use the element mapping to create raw css code
 					if ($value !== '')
 					{
-						$css_data .= $match . ': ' . sprintf($map_elements[$type], $value) . $unit . ";\n";
+						$css_data .= $match . ': ' . ($type == 'sizes' ? rtrim(sprintf($map_elements[$type], $value), '0') : sprintf($map_elements[$type], $value)) . $unit . ";\n";
 					}
 				}
 			}
