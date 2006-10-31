@@ -164,9 +164,10 @@ function unique_id($extra = 'c')
 	$val = md5($val);
 	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
 
-	if ($dss_seeded !== true)
+	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
 	{
 		set_config('rand_seed', $config['rand_seed'], true);
+		set_config('rand_seed_last_update', time(), true);
 		$dss_seeded = true;
 	}
 
