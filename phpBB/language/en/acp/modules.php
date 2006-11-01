@@ -60,7 +60,7 @@ $lang = array_merge($lang, array(
 	'MODULE_DISPLAYED_EXPLAIN'	=> 'If you do not wish to display this module, but want to use it, set this to no.',
 	'MODULE_EDITED'				=> 'Module successfully edited.',
 	'MODULE_ENABLED'			=> 'Module enabled',
-	'MODULE_LANGNAME'			=> 'Module language mame',
+	'MODULE_LANGNAME'			=> 'Module language name',
 	'MODULE_LANGNAME_EXPLAIN'	=> 'Enter the displayed module name. Use language constant if name is served from language file.',
 	'MODULE_TYPE'				=> 'Module type',
 
