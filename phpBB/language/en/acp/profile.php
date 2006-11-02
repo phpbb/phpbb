@@ -43,13 +43,14 @@ $lang = array_merge($lang, array(
 	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field.',
 	'CHARS_ANY'					=> 'Any character',
 	'CHECKBOX'					=> 'Checkbox',
+	'COLUMNS'					=> 'Columns',
 	'CP_LANG_DEFAULT_VALUE'		=> 'Default value',
 	'CP_LANG_EXPLAIN'			=> 'Field Description',
 	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The explanation for this field presented to the user',
 	'CP_LANG_NAME'				=> 'Field name/title presented to the user',
 	'CP_LANG_OPTIONS'			=> 'Options',
 	'CREATE_NEW_FIELD'			=> 'Create new field',
-	'COLUMNS'					=> 'Columns',
+	'CUSTOM_FIELDS_NOT_TRANSLATED'	=> 'At least one custom profile field has not yet been translated. Please enter the required information by clicking on the &quot;Translate&quot; link.',
 
 	'DEFAULT_ISO_LANGUAGE'			=> 'Default language [%s]',
 	'DEFAULT_LANGUAGE_NOT_FILLED'	=> 'The language entries for the default language are not filled for this profile field.',
@@ -139,6 +140,7 @@ $lang = array_merge($lang, array(
 	'STRING_DEFAULT_VALUE_EXPLAIN'	=> 'Enter a default phrase to be displayed, a default value. Leave empty if you want to show it empty at the first place.',
 
 	'TEXT_DEFAULT_VALUE_EXPLAIN'	=> 'Enter a default text to be displayed, a default value. Leave empty if you want to show it empty at the first place.',
+	'TRANSLATE'						=> 'Translate',
 
 	'UPDATE_PREVIEW'	=> 'Update preview',
 	'USER_FIELD_NAME'	=> 'Field name/title presented to the user',

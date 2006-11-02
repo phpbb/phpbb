@@ -530,7 +530,8 @@ class acp_profile
 					}
 				}
 
-				if ($submit && $step == 1)
+				// Check for general issues in every step
+				if ($submit) //  && $step == 1
 				{
 					// Check values for step 1
 					if ($cp->vars['field_ident'] == '')
@@ -553,12 +554,14 @@ class acp_profile
 						$error[] = $user->lang['EMPTY_USER_FIELD_NAME'];
 					}
 
-					if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
+					if ($field_type == FIELD_DROPDOWN && !sizeof($cp->vars['lang_options']))
 					{
-						if (!sizeof($cp->vars['lang_options']))
-						{
-							$error[] = $user->lang['NO_FIELD_ENTRIES'];
-						}
+						$error[] = $user->lang['NO_FIELD_ENTRIES'];
+					}
+
+					if ($field_type == FIELD_BOOL && (empty($cp->vars['lang_options'][0]) || empty($cp->vars['lang_options'][1])))
+					{
+						$error[] = $user->lang['NO_FIELD_ENTRIES'];
 					}
 
 					// Check for already existing field ident
@@ -756,11 +759,19 @@ class acp_profile
 			ORDER BY field_order';
 		$result = $db->sql_query($sql);
 
+		$s_one_need_edit = false;
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$active_lang = (!$row['field_active']) ? 'ACTIVATE' : 'DEACTIVATE';
 			$active_value = (!$row['field_active']) ? 'activate' : 'deactivate';
 			$id = $row['field_id'];
+
+			$s_need_edit = (sizeof($lang_defs['diff'][$row['field_id']])) ? true : false;
+
+			if ($s_need_edit)
+			{
+				$s_one_need_edit = true;
+			}
 
 			$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
@@ -769,14 +780,21 @@ class acp_profile
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
 				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
 				'U_EDIT'					=> $this->u_action . "&amp;action=edit&amp;field_id=$id",
+				'U_TRANSLATE'				=> $this->u_action . "&amp;action=edit&amp;field_id=$id&amp;step=3",
 				'U_DELETE'					=> $this->u_action . "&amp;action=delete&amp;field_id=$id",
 				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;order={$row['field_order']}",
 				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;order={$row['field_order']}",
 
-				'S_NEED_EDIT'		=> (sizeof($lang_defs['diff'][$row['field_id']])) ? true : false)
+				'S_NEED_EDIT'				=> $s_need_edit)
 			);
 		}
 		$db->sql_freeresult($result);
+
+		// At least one option field needs editing?
+		if ($s_one_need_edit)
+		{
+			$template->assign_var('S_NEED_EDIT', true);
+		}
 
 		$s_select_type = '';
 		foreach ($cp->profile_types as $key => $value)
@@ -858,10 +876,10 @@ class acp_profile
 			foreach ($options as $field => $field_type)
 			{
 				$value = ($action == 'create') ? request_var('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
-					 
+
 				if ($field == 'lang_options')
 				{
-					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['l_lang_options'] : $cp->vars['l_lang_options'][$lang_id];
+					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
 					
 					switch ($field_type)
 					{

@@ -161,7 +161,14 @@
 <!-- ELSE -->
 
 	<h1>{L_ACP_CUSTOM_PROFILE_FIELDS}</h1>
-	
+
+	<!-- IF S_NEED_EDIT -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{L_CUSTOM_FIELDS_NOT_TRANSLATED}</p>
+		</div>
+	<!-- ENDIF -->
+
 	<table cellspacing="1">
 	<thead>
 	<tr>
@@ -176,17 +183,17 @@
 
 		<td>{fields.FIELD_IDENT}</td>
 		<td>{fields.FIELD_TYPE}</td>
-		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_EDIT}" style="color: red;">{L_EDIT}</a><!-- ENDIF --></td>
+		<td style="text-align: center;"><a href="{fields.U_ACTIVATE_DEACTIVATE}">{fields.L_ACTIVATE_DEACTIVATE}</a><!-- IF fields.S_NEED_EDIT --> | <a href="{fields.U_TRANSLATE}" style="color: red;">{L_TRANSLATE}</a><!-- ENDIF --></td>
 
 		<td style="width: 80px; text-align: right; white-space: nowrap;">
 			<!-- IF fields.S_FIRST_ROW && not fields.S_LAST_ROW -->
 				{ICON_MOVE_UP_DISABLED}
-				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>					 	
+				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 			<!-- ELSEIF not fields.S_FIRST_ROW && not fields.S_LAST_ROW-->
 				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
 				<a href="{fields.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-			<!-- ELSEIF fields.S_LAST_ROW && not fields.S_FIRST_ROW -->						
-				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+			<!-- ELSEIF fields.S_LAST_ROW && not fields.S_FIRST_ROW -->
+				<a href="{fields.U_MOVE_UP}">{ICON_MOVE_UP}</a>
 				{ICON_MOVE_DOWN_DISABLED}	
 			<!-- ENDIF -->
 			<!-- IF not fields.S_NEED_EDIT -->

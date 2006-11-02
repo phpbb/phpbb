@@ -12,7 +12,7 @@
 * Obtain user_ids from usernames or vice versa. Returns false on
 * success else the error string
 */
-function user_get_id_name(&$user_id_ary, &$username_ary)
+function user_get_id_name(&$user_id_ary, &$username_ary, $only_active = false)
 {
 	global $db;
 
@@ -44,6 +44,12 @@ function user_get_id_name(&$user_id_ary, &$username_ary)
 	$sql = 'SELECT user_id, username
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_where, $sql_in);
+
+	if ($only_active)
+	{
+		$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+	}
+
 	$result = $db->sql_query($sql);
 
 	if (!($row = $db->sql_fetchrow($result)))

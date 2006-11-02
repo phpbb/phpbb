@@ -231,9 +231,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	* Not really ideal, but should work fine...
 	* <code>
 	*	if (strpos($upload_dir, '/') !== 0 && strpos($upload_dir, '../') === false)
-		{
-			header('X-Sendfile: ' . $filename);
-		}
+	*	{
+	*		header('X-Sendfile: ' . $filename);
+	*	}
 	* </code>
 	*/
 

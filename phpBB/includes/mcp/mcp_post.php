@@ -372,7 +372,16 @@ function change_poster(&$post_info, $userdata)
 		}
 	}
 
-	// Do not change the poster_id within the attachments table, since they were still posted by the original user
+	// change the poster_id within the attachments table, else the data becomes out of sync and errors displayed because of wrong ownership
+	if ($post_info['post_attachment'])
+	{
+		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+			SET poster_id = ' . $userdata['user_id'] . '
+			WHERE poster_id = ' . $post_info['user_id'] . '
+				AND post_msg_id = ' . $post_info['post_id'] . '
+				AND topic_id = ' . $post_info['topic_id'];
+		$db->sql_query($sql);
+	}
 
 	$from_username = $post_info['username'];
 	$to_username = $userdata['username'];

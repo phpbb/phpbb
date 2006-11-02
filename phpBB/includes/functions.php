@@ -1464,7 +1464,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false)
 {
-	global $db, $cache, $config, $user;
+	global $db, $cache, $config, $user, $phpbb_root_path;
 
 	if (empty($user->lang))
 	{
@@ -1521,8 +1521,8 @@ function redirect($url, $return = false)
 		}
 		else
 		{
-			// Get the realpath of dirname
-			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
+			// Used ./ before, but $phpbb_root_path is working better with urls within another root path
+			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
 			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
 			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
