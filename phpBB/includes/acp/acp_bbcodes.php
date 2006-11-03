@@ -127,7 +127,9 @@ class acp_bbcodes
 					$info = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
-					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded))
+					// Grab the end, interrogate the last closing tag
+					preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs);
+					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || in_array(strtolower($regs[1]), $hard_coded))
 					{
 						trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
