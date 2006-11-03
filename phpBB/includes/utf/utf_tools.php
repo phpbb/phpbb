@@ -8,7 +8,7 @@
 *
 * @todo make sure the replacements are called correctly
 * already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr
-* remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset), html_entity_decode (own function to reverse htmlspecialchars and not htmlentities)
+* remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset)
 *				strspn, chr, ord
 */
 
@@ -929,6 +929,9 @@ function utf8_case_fold($text, $option = 'full')
 	return $text;
 }
 
+/**
+* @todo needs documenting
+*/
 function utf8_clean_string($text)
 {
 	$text = utf8_case_fold($text);
@@ -962,6 +965,46 @@ function utf8_clean_string($text)
 	$text = strtr($text, $homographs);
 
 	return $text;
+}
+
+if (version_compare(phpversion(), '5', '>='))
+{
+	/**
+	* @ignore
+	*/
+	function utf8_html_entity_decode($string, $quote_style = ENT_COMPAT)
+	{
+		return html_entity_decode($string, $quote_style, 'UTF-8');
+	}
+}
+else
+{
+	/**
+	* @todo needs documenting
+	*/
+	function utf8_html_entity_decode($string, $quote_style = ENT_COMPAT)
+	{
+		static $static_table;
+
+		if ($static_table === null)
+		{
+			$static_table = array_map('utf8_encode', array_flip(get_html_translation_table(HTML_ENTITIES)));
+		}
+
+		$modified_table = $static_table;
+
+		if ($quote_style === ENT_QUOTES)
+		{
+			$modified_table['&#039;'] = "'";
+		}
+
+		if ($quote_style === ENT_NOQUOTES)
+		{
+			unset($modified_table['&quot;']);
+		}
+
+		return strtr($string, $modified_table);
+	}
 }
 
 ?>

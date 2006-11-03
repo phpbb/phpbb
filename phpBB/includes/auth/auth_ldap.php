@@ -38,7 +38,7 @@ function init_ldap()
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . ldap_escape(html_entity_decode($user->data['username'])) . ')',
+		'(' . $config['ldap_uid'] . '=' . ldap_escape(utf8_html_entity_decode($user->data['username'])) . ')',
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -98,7 +98,7 @@ function login_ldap(&$username, &$password)
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . ldap_escape(html_entity_decode($username)) . ')',
+		'(' . $config['ldap_uid'] . '=' . ldap_escape(utf8_html_entity_decode($username)) . ')',
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1

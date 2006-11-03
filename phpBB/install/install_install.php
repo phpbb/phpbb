@@ -1624,10 +1624,10 @@ class install_install extends module
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 			$messenger->assign_vars(array(
-				'USERNAME'		=> html_entity_decode($admin_name),
+				'USERNAME'		=> utf8_html_entity_decode($admin_name),
 				'PASSWORD'		=> html_entity_decode($admin_pass1),
 				'U_BOARD'		=> generate_board_url(),
-				'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']))
+				'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])))
 			);
 
 			$messenger->send(NOTIFY_EMAIL);

@@ -150,15 +150,15 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 			
-					$messenger->subject(html_entity_decode($subject));
+					$messenger->subject(utf8_html_entity_decode($subject));
 					$messenger->replyto($config['board_email']);
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
-						'SITENAME'		=> $config['sitename'],
+						'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 						'CONTACT_EMAIL' => $config['board_contact'],
-						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
-						'MESSAGE'		=> html_entity_decode($message))
+						'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
+						'MESSAGE'		=> utf8_html_entity_decode($message))
 					);
 	
 					if (!($messenger->send($used_method)))

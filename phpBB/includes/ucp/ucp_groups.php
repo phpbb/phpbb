@@ -190,10 +190,10 @@ class ucp_groups
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'EMAIL_SIG'		=> $email_sig,
-										'SITENAME'		=> $config['sitename'],
-										'USERNAME'		=> html_entity_decode($row['username']),
-										'GROUP_NAME'	=> html_entity_decode($group_row[$group_id]['group_name']),
+										'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
+										'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+										'USERNAME'		=> utf8_html_entity_decode($row['username']),
+										'GROUP_NAME'	=> utf8_html_entity_decode($group_row[$group_id]['group_name']),
 
 										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
 										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")

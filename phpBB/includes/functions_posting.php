@@ -1116,11 +1116,11 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				$messenger->im($addr['jabber'], $addr['name']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> html_entity_decode($config['sitename']),
-					'USERNAME'		=> html_entity_decode($addr['name']),
-					'TOPIC_TITLE'	=> html_entity_decode($topic_title),
-					'FORUM_NAME'	=> html_entity_decode($forum_name),
+					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
+					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+					'USERNAME'		=> utf8_html_entity_decode($addr['name']),
+					'TOPIC_TITLE'	=> utf8_html_entity_decode($topic_title),
+					'FORUM_NAME'	=> utf8_html_entity_decode($forum_name),
 
 					'U_FORUM'				=> generate_board_url() . "/viewforum.$phpEx?f=$forum_id&e=0",
 					'U_TOPIC'				=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t=$topic_id&e=0",

@@ -537,11 +537,11 @@ function approve_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($post_data['username']),
-					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_data['topic_title'])),
+					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
+					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+					'USERNAME'		=> utf8_html_entity_decode($post_data['username']),
+					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_data['topic_title'])),
 
 					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&e=0",
 					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
@@ -752,12 +752,12 @@ function disapprove_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($post_data['username']),
-					'REASON'		=> html_entity_decode($disapprove_reason),
-					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_data['topic_title'])))
+					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
+					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+					'USERNAME'		=> utf8_html_entity_decode($post_data['username']),
+					'REASON'		=> utf8_html_entity_decode($disapprove_reason),
+					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_data['topic_title'])))
 				);
 
 				$messenger->send($post_data['user_notify_type']);

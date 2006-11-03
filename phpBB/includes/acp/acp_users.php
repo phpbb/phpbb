@@ -305,10 +305,10 @@ class acp_users
 								$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 								$messenger->assign_vars(array(
-									'SITENAME'		=> $config['sitename'],
-									'WELCOME_MSG'	=> sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']),
-									'USERNAME'		=> html_entity_decode($user_row['username']),
-									'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+									'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+									'WELCOME_MSG'	=> utf8_html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+									'USERNAME'		=> utf8_html_entity_decode($user_row['username']),
+									'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
 
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);

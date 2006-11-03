@@ -365,10 +365,10 @@ class bbcode_firstpass extends bbcode
 		// Having it here saves us one preg_replace per message containing [code] blocks
 		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
 		$htm_match = get_preg_expression('bbcode_htm');
-		$htm_match[3] = '#&\#([0-9]+);#';
-		unset($htm_match[4]);
+//		$htm_match[3] = '/&#([0-9]+);/';
+		unset($htm_match[3], $htm_match[4]);
 
-		$htm_replace = array('\1', '\2', '\1', '&amp;#\1;');
+		$htm_replace = array('\1', '\2', '\1'); //, '&amp;#\1;');
 
 		$out = '';
 
@@ -419,7 +419,7 @@ class bbcode_firstpass extends bbcode
 					}
 
 					// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
-					$code = html_entity_decode($code);
+					$code = utf8_html_entity_decode($code);
 					$code = highlight_string($code, true);
 
 					$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');

@@ -491,12 +491,12 @@ function close_report($post_id_list, $mode, $action)
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> $email_sig,
-					'SITENAME'		=> $config['sitename'],
-					'USERNAME'		=> html_entity_decode($reporter['username']),
-					'CLOSER_NAME'	=> html_entity_decode($user->data['username']),
-					'POST_SUBJECT'	=> html_entity_decode(censor_text($post_info[$post_id]['post_subject'])),
-					'TOPIC_TITLE'	=> html_entity_decode(censor_text($post_info[$post_id]['topic_title'])))
+					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
+					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+					'USERNAME'		=> utf8_html_entity_decode($reporter['username']),
+					'CLOSER_NAME'	=> utf8_html_entity_decode($user->data['username']),
+					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_info[$post_id]['post_subject'])),
+					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_info[$post_id]['topic_title'])))
 				);
 
 				$messenger->send($reporter['user_notify_type']);

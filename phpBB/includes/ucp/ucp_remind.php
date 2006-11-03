@@ -69,10 +69,10 @@ class ucp_remind
 			$messenger->im($user_row['user_jabber'], $user_row['username']);
 
 			$messenger->assign_vars(array(
-				'SITENAME'	=> $config['sitename'],
-				'USERNAME'	=> html_entity_decode($user_row['username']),
+				'SITENAME'	=> utf8_html_entity_decode($config['sitename']),
+				'USERNAME'	=> utf8_html_entity_decode($user_row['username']),
 				'PASSWORD'	=> html_entity_decode($user_password),
-				'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+				'EMAIL_SIG'	=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
 
 				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 			);

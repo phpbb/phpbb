@@ -2728,7 +2728,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 		$string = substr($string, 4);
 	}
 
-	$_chars = utf8_str_split(html_entity_decode($string));
+	$_chars = utf8_str_split(utf8_html_entity_decode($string));
 	$chars = array_map('htmlspecialchars', $_chars);
 
 	// Now check the length ;)

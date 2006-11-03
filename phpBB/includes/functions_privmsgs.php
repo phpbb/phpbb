@@ -1598,11 +1598,11 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		$messenger->im($addr['jabber'], $addr['name']);
 
 		$messenger->assign_vars(array(
-			'EMAIL_SIG'		=> $email_sig,
-			'SITENAME'		=> $config['sitename'],
-			'SUBJECT'		=> html_entity_decode($subject),
-			'AUTHOR_NAME'	=> html_entity_decode($author),
-			'USERNAME'		=> html_entity_decode($addr['name']),
+			'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
+			'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+			'SUBJECT'		=> utf8_html_entity_decode($subject),
+			'AUTHOR_NAME'	=> utf8_html_entity_decode($author),
+			'USERNAME'		=> utf8_html_entity_decode($addr['name']),
 
 			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
 		);

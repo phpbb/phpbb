@@ -144,9 +144,9 @@ class ucp_profile
 							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 							$messenger->assign_vars(array(
-								'SITENAME'		=> $config['sitename'],
-								'USERNAME'		=> html_entity_decode($username, ENT_COMPAT, 'UTF-8'),
-								'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+								'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
+								'USERNAME'		=> utf8_html_entity_decode($username),
+								'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
 
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 							);
@@ -180,8 +180,8 @@ class ucp_profile
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> html_entity_decode($username, ENT_COMPAT, 'UTF-8'),
-										'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
+										'USERNAME'		=> utf8_html_entity_decode($username),
+										'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
 
 										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
