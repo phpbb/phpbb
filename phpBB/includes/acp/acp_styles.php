@@ -783,7 +783,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
 			'TEMPLATE_FILE'		=> $template_file,
-			'TEMPLATE_DATA'		=> htmlentities($template_data),
+			'TEMPLATE_DATA'		=> htmlspecialchars($template_data),
 			'TEXT_ROWS'			=> $text_rows)
 		);
 	}

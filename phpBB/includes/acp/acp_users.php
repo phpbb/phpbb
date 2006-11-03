@@ -305,8 +305,8 @@ class acp_users
 								$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 								$messenger->assign_vars(array(
-									'WELCOME_MSG'	=> utf8_html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
-									'USERNAME'		=> utf8_html_entity_decode($user_row['username']),
+									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+									'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);
 

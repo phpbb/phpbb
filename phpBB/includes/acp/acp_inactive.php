@@ -107,7 +107,7 @@ class acp_inactive
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> utf8_html_entity_decode($row['username']),
+								'USERNAME'		=> htmlspecialchars_decode($row['username']),
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
 								'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);

@@ -535,9 +535,9 @@ function approve_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'USERNAME'		=> utf8_html_entity_decode($post_data['username']),
-					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_data['topic_title'])),
+					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
+					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
 
 					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&e=0",
 					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
@@ -746,10 +746,10 @@ function disapprove_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'USERNAME'		=> utf8_html_entity_decode($post_data['username']),
-					'REASON'		=> utf8_html_entity_decode($disapprove_reason),
-					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_data['post_subject'])),
-					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_data['topic_title'])))
+					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
+					'REASON'		=> htmlspecialchars_decode($disapprove_reason),
+					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
+					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
 				);
 
 				$messenger->send($post_data['user_notify_type']);

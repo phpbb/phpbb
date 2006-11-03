@@ -191,8 +191,8 @@ class messenger
 
 		// We add some standard variables we always use, no need to specify them always
 		$this->vars['U_BOARD'] = (!isset($this->vars['U_BOARD'])) ? generate_board_url() : $this->vars['U_BOARD'];
-		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . utf8_html_entity_decode($config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
-		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? utf8_html_entity_decode($config['sitename']) : $this->vars['SITENAME'];
+		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
+		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? htmlspecialchars_decode($config['sitename']) : $this->vars['SITENAME'];
 
 		// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);

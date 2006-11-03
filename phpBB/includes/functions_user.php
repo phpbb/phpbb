@@ -1054,11 +1054,11 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 		return false;
 	}
 
-	if ($min && utf8_strlen(utf8_html_entity_decode($string)) < $min)
+	if ($min && utf8_strlen(htmlspecialchars_decode($string)) < $min)
 	{
 		return 'TOO_SHORT';
 	}
-	else if ($max && utf8_strlen(utf8_html_entity_decode($string)) > $max)
+	else if ($max && utf8_strlen(htmlspecialchars_decode($string)) > $max)
 	{
 		return 'TOO_LONG';
 	}
@@ -2009,8 +2009,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				$messenger->im($row['user_jabber'], $row['username']);
 
 				$messenger->assign_vars(array(
-					'USERNAME'		=> utf8_html_entity_decode($row['username']),
-					'GROUP_NAME'	=> utf8_html_entity_decode($group_name),
+					'USERNAME'		=> htmlspecialchars_decode($row['username']),
+					'GROUP_NAME'	=> htmlspecialchars_decode($group_name),
 					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
 				);
 

@@ -336,9 +336,9 @@ class ucp_register
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 					$messenger->assign_vars(array(
-						'WELCOME_MSG'	=> utf8_html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
-						'USERNAME'		=> utf8_html_entity_decode($data['username']),
-						'PASSWORD'		=> html_entity_decode($data['new_password']),
+						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+						'USERNAME'		=> htmlspecialchars_decode($data['username']),
+						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 					);
 
@@ -380,7 +380,7 @@ class ucp_register
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> utf8_html_entity_decode($data['username']),
+								'USERNAME'		=> htmlspecialchars_decode($data['username']),
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 							);
 
@@ -494,7 +494,7 @@ class ucp_register
 			'EMAIL_CONFIRM'		=> (isset($data['email_confirm'])) ? $data['email_confirm'] : '',
 			'CONFIRM_IMG'		=> $confirm_image,
 
-			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),

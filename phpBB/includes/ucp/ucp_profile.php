@@ -144,7 +144,7 @@ class ucp_profile
 							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 							$messenger->assign_vars(array(
-								'USERNAME'		=> utf8_html_entity_decode($username),
+								'USERNAME'		=> htmlspecialchars_decode($username),
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 							);
 
@@ -177,7 +177,7 @@ class ucp_profile
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> utf8_html_entity_decode($username),
+										'USERNAME'		=> htmlspecialchars_decode($username),
 										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
 

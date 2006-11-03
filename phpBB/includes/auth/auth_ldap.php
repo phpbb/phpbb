@@ -38,7 +38,7 @@ function init_ldap()
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . ldap_escape(utf8_html_entity_decode($user->data['username'])) . ')',
+		'(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($user->data['username'])) . ')',
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -98,7 +98,7 @@ function login_ldap(&$username, &$password)
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . ldap_escape(utf8_html_entity_decode($username)) . ')',
+		'(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')',
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -108,7 +108,7 @@ function login_ldap(&$username, &$password)
 
 	if (is_array($ldap_result) && sizeof($ldap_result) > 1)
 	{
-		if (@ldap_bind($ldap, $ldap_result[0]['dn'], html_entity_decode($password)))
+		if (@ldap_bind($ldap, $ldap_result[0]['dn'], htmlspecialchars_decode($password)))
 		{
 			@ldap_close($ldap);
 

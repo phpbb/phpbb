@@ -967,44 +967,4 @@ function utf8_clean_string($text)
 	return $text;
 }
 
-if (version_compare(phpversion(), '5', '>='))
-{
-	/**
-	* @ignore
-	*/
-	function utf8_html_entity_decode($string, $quote_style = ENT_COMPAT)
-	{
-		return html_entity_decode($string, $quote_style, 'UTF-8');
-	}
-}
-else
-{
-	/**
-	* @todo needs documenting
-	*/
-	function utf8_html_entity_decode($string, $quote_style = ENT_COMPAT)
-	{
-		static $static_table;
-
-		if ($static_table === null)
-		{
-			$static_table = array_map('utf8_encode', array_flip(get_html_translation_table(HTML_ENTITIES)));
-		}
-
-		$modified_table = $static_table;
-
-		if ($quote_style === ENT_QUOTES)
-		{
-			$modified_table['&#039;'] = "'";
-		}
-
-		if ($quote_style === ENT_NOQUOTES)
-		{
-			unset($modified_table['&quot;']);
-		}
-
-		return strtr($string, $modified_table);
-	}
-}
-
 ?>

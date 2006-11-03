@@ -298,16 +298,16 @@ switch ($mode)
 					$messenger = new messenger(false);
 
 					$messenger->template('profile_send_im', $row['user_lang']);
-					$messenger->subject(utf8_html_entity_decode($subject));
+					$messenger->subject(htmlspecialchars_decode($subject));
 
 					$messenger->replyto($user->data['user_email']);
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
 						'BOARD_EMAIL'	=> $config['board_contact'],
-						'FROM_USERNAME'	=> utf8_html_entity_decode($user->data['username']),
-						'TO_USERNAME'	=> utf8_html_entity_decode($row['username']),
-						'MESSAGE'		=> utf8_html_entity_decode($message))
+						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+						'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
+						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 
 					$messenger->send(NOTIFY_IM);
@@ -727,7 +727,7 @@ switch ($mode)
 
 					if ($user_id)
 					{
-						$messenger->subject(utf8_html_entity_decode($subject));
+						$messenger->subject(htmlspecialchars_decode($subject));
 						$messenger->im($row['user_jabber'], $row['username']);
 						$notify_type = $row['user_notify_type'];
 					}
@@ -743,15 +743,15 @@ switch ($mode)
 
 					$messenger->assign_vars(array(
 						'BOARD_EMAIL'	=> $config['board_contact'],
-						'TO_USERNAME'	=> utf8_html_entity_decode($row['to_name']),
-						'FROM_USERNAME'	=> utf8_html_entity_decode($user->data['username']),
-						'MESSAGE'		=> utf8_html_entity_decode($message))
+						'TO_USERNAME'	=> htmlspecialchars_decode($row['to_name']),
+						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 
 					if ($topic_id)
 					{
 						$messenger->assign_vars(array(
-							'TOPIC_NAME'	=> utf8_html_entity_decode($row['topic_title']),
+							'TOPIC_NAME'	=> htmlspecialchars_decode($row['topic_title']),
 							'U_TOPIC'		=> generate_board_url() . "/viewtopic.$phpEx?f=" . $row['forum_id'] . "&t=$topic_id")
 						);
 					}

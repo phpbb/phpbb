@@ -188,8 +188,8 @@ class ucp_groups
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> utf8_html_entity_decode($row['username']),
-										'GROUP_NAME'	=> utf8_html_entity_decode($group_row[$group_id]['group_name']),
+										'USERNAME'		=> htmlspecialchars_decode($row['username']),
+										'GROUP_NAME'	=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
 
 										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
 										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")

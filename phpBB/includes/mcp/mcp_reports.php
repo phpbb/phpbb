@@ -489,10 +489,10 @@ function close_report($post_id_list, $mode, $action)
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 
 				$messenger->assign_vars(array(
-					'USERNAME'		=> utf8_html_entity_decode($reporter['username']),
-					'CLOSER_NAME'	=> utf8_html_entity_decode($user->data['username']),
-					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_info[$post_id]['post_subject'])),
-					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_info[$post_id]['topic_title'])))
+					'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
+					'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
+					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
+					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
 				);
 
 				$messenger->send($reporter['user_notify_type']);

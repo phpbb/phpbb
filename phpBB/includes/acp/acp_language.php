@@ -829,9 +829,9 @@ class acp_language
 				$this->add_to_archive($compress, $mod_files, $row['lang_iso'], 'mods');
 
 				// Write ISO File
-				$iso_src = html_entity_decode($row['lang_english_name']) . "\n";
-				$iso_src .= utf8_html_entity_decode($row['lang_local_name']) . "\n";
-				$iso_src .= utf8_html_entity_decode($row['lang_author']);
+				$iso_src = htmlspecialchars_decode($row['lang_english_name']) . "\n";
+				$iso_src .= htmlspecialchars_decode($row['lang_local_name']) . "\n";
+				$iso_src .= htmlspecialchars_decode($row['lang_author']);
 				$compress->add_data($iso_src, 'language/' . $row['lang_iso'] . '/iso.txt');
 
 				// index.html files

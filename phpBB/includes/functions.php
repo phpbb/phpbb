@@ -1900,7 +1900,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'S_CONFIRM_CODE'			=> true,
 					'CONFIRM_ID'				=> $confirm_id,
 					'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_LOGIN) . '" alt="" title="" />',
-					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
+					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				));
 
 				$err = $user->lang[$result['error_msg']];
@@ -1914,7 +1914,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>');
+					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
 			break;
 		}
@@ -2728,7 +2728,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 		$string = substr($string, 4);
 	}
 
-	$_chars = utf8_str_split(utf8_html_entity_decode($string));
+	$_chars = utf8_str_split(htmlspecialchars_decode($string));
 	$chars = array_map('htmlspecialchars', $_chars);
 
 	// Now check the length ;)

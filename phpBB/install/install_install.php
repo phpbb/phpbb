@@ -421,7 +421,7 @@ class install_install extends module
 				}
 			}
 			
-			$dbpasswd = html_entity_decode($dbpasswd);
+			$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
@@ -757,7 +757,7 @@ class install_install extends module
 		}
 		@fclose($fp);
 
-		$dbpasswd = html_entity_decode($dbpasswd);
+		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 		$load_extensions = implode(',', $load_extensions);
 
 		// Time to convert the data provided into a config file
@@ -981,7 +981,7 @@ class install_install extends module
 			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
 		}
 
-		$dbpasswd = html_entity_decode($dbpasswd);
+		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
@@ -1234,7 +1234,7 @@ class install_install extends module
 			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
 		}
 
-		$dbpasswd = html_entity_decode($dbpasswd);
+		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
@@ -1624,8 +1624,8 @@ class install_install extends module
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 			$messenger->assign_vars(array(
-				'USERNAME'		=> utf8_html_entity_decode($admin_name),
-				'PASSWORD'		=> html_entity_decode($admin_pass1))
+				'USERNAME'		=> htmlspecialchars_decode($admin_name),
+				'PASSWORD'		=> htmlspecialchars_decode($admin_pass1))
 			);
 
 			$messenger->send(NOTIFY_EMAIL);

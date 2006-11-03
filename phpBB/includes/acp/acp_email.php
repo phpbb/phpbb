@@ -150,13 +150,13 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 			
-					$messenger->subject(utf8_html_entity_decode($subject));
+					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->replyto($config['board_email']);
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
 						'CONTACT_EMAIL' => $config['board_contact'],
-						'MESSAGE'		=> utf8_html_entity_decode($message))
+						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 	
 					if (!($messenger->send($used_method)))

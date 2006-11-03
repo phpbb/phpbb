@@ -69,8 +69,8 @@ class ucp_remind
 			$messenger->im($user_row['user_jabber'], $user_row['username']);
 
 			$messenger->assign_vars(array(
-				'USERNAME'		=> utf8_html_entity_decode($user_row['username']),
-				'PASSWORD'		=> html_entity_decode($user_password),
+				'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
+				'PASSWORD'		=> htmlspecialchars_decode($user_password),
 				'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 			);
 

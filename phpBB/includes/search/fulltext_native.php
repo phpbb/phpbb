@@ -1323,7 +1323,7 @@ class fulltext_native extends search_backend
 		/**
 		* Replace HTML entities and NCRs
 		*/
-		$text = html_entity_decode(utf8_decode_ncr($text), ENT_QUOTES);
+		$text = htmlspecialchars_decode(utf8_decode_ncr($text), ENT_QUOTES);
 
 		/**
 		* Load the UTF-8 normalizer
