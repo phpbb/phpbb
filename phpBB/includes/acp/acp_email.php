@@ -155,9 +155,7 @@ class acp_email
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
-						'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 						'CONTACT_EMAIL' => $config['board_contact'],
-						'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
 						'MESSAGE'		=> utf8_html_entity_decode($message))
 					);
 	

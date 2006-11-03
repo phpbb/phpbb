@@ -1090,8 +1090,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 		$messenger = new messenger();
 
-		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 		$msg_list_ary = array();
 		foreach ($msg_users as $row)
 		{ 
@@ -1116,8 +1114,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				$messenger->im($addr['jabber'], $addr['name']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 					'USERNAME'		=> utf8_html_entity_decode($addr['name']),
 					'TOPIC_TITLE'	=> utf8_html_entity_decode($topic_title),
 					'FORUM_NAME'	=> utf8_html_entity_decode($forum_name),

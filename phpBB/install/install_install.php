@@ -1625,9 +1625,7 @@ class install_install extends module
 
 			$messenger->assign_vars(array(
 				'USERNAME'		=> utf8_html_entity_decode($admin_name),
-				'PASSWORD'		=> html_entity_decode($admin_pass1),
-				'U_BOARD'		=> generate_board_url(),
-				'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])))
+				'PASSWORD'		=> html_entity_decode($admin_pass1))
 			);
 
 			$messenger->send(NOTIFY_EMAIL);

@@ -144,10 +144,7 @@ class ucp_profile
 							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 							$messenger->assign_vars(array(
-								'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 								'USERNAME'		=> utf8_html_entity_decode($username),
-								'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
-
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 							);
 
@@ -181,8 +178,6 @@ class ucp_profile
 
 									$messenger->assign_vars(array(
 										'USERNAME'		=> utf8_html_entity_decode($username),
-										'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
-
 										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
 

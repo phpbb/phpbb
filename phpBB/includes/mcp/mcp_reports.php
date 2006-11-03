@@ -475,8 +475,6 @@ function close_report($post_id_list, $mode, $action)
 		// Notify reporters
 		if (sizeof($notify_reporters))
 		{
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($notify_reporters as $post_id => $reporter)
 			{
 				if ($reporter['user_id'] == ANONYMOUS)
@@ -491,8 +489,6 @@ function close_report($post_id_list, $mode, $action)
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 					'USERNAME'		=> utf8_html_entity_decode($reporter['username']),
 					'CLOSER_NAME'	=> utf8_html_entity_decode($user->data['username']),
 					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_info[$post_id]['post_subject'])),

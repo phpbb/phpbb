@@ -2000,8 +2000,6 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 			$messenger = new messenger();
 
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($email_users as $row)
 			{
 				$messenger->template('group_approved', $row['user_lang']);
@@ -2011,11 +2009,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				$messenger->im($row['user_jabber'], $row['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 					'USERNAME'		=> utf8_html_entity_decode($row['username']),
 					'GROUP_NAME'	=> utf8_html_entity_decode($group_name),
-
 					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
 				);
 

@@ -93,10 +93,7 @@ class ucp_activate
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 			$messenger->assign_vars(array(
-				'SITENAME'	=> utf8_html_entity_decode($config['sitename']),
-				'USERNAME'	=> utf8_html_entity_decode($user_row['username']),
-
-				'EMAIL_SIG' => utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])))
+				'USERNAME'	=> utf8_html_entity_decode($user_row['username']))
 			);
 
 			$messenger->send($user_row['user_notify_type']);

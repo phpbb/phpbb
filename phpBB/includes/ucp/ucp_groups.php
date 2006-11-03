@@ -172,8 +172,6 @@ class ucp_groups
 								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 								$messenger = new messenger();
 
-								$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 								$sql = 'SELECT u.username, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
 									FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
 									WHERE ug.user_id = u.user_id
@@ -190,8 +188,6 @@ class ucp_groups
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-										'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 										'USERNAME'		=> utf8_html_entity_decode($row['username']),
 										'GROUP_NAME'	=> utf8_html_entity_decode($group_row[$group_id]['group_name']),
 

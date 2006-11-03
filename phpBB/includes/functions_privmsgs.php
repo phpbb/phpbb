@@ -1587,8 +1587,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 	$messenger = new messenger();
 
-	$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 	foreach ($msg_list_ary as $pos => $addr)
 	{
 		$messenger->template('privmsg_notify', $addr['lang']);
@@ -1598,8 +1596,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		$messenger->im($addr['jabber'], $addr['name']);
 
 		$messenger->assign_vars(array(
-			'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-			'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 			'SUBJECT'		=> utf8_html_entity_decode($subject),
 			'AUTHOR_NAME'	=> utf8_html_entity_decode($author),
 			'USERNAME'		=> utf8_html_entity_decode($addr['name']),

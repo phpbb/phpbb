@@ -305,11 +305,8 @@ class acp_users
 								$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 								$messenger->assign_vars(array(
-									'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 									'WELCOME_MSG'	=> utf8_html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
 									'USERNAME'		=> utf8_html_entity_decode($user_row['username']),
-									'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
-
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);
 
@@ -640,7 +637,8 @@ class acp_users
 
 					// We use user within the form to circumvent auto filling
 					$data['username'] = $data['user'];
-					unset($data['user']);
+					$data['email'] = $data['user_email'];
+					unset($data['user'], $data['user_email']);
 
 					// Validation data - we do not check the password complexity setting here
 					$var_ary = array(
@@ -662,10 +660,10 @@ class acp_users
 					}
 
 					// Check email if altered
-					if ($data['user_email'] != $user_row['user_email'])
+					if ($data['email'] != $user_row['user_email'])
 					{
 						$var_ary += array(
-							'user_email'		=> array(
+							'email'				=> array(
 								array('string', false, 6, 60),
 								array('email', $user_row['user_email'])
 								), 
@@ -680,7 +678,7 @@ class acp_users
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if ($data['user_email'] != $user_row['user_email'] && $data['email_confirm'] != $data['user_email'])
+					if ($data['email'] != $user_row['user_email'] && $data['email_confirm'] != $data['email'])
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
 					}
@@ -689,7 +687,7 @@ class acp_users
 					$update_warning = ($user_row['user_warnings'] != $data['warnings']) ? true : false;
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
 					$update_password = ($data['user_password'] && $user_row['user_password'] != md5($data['user_password'])) ? true : false;
-					$update_email = ($data['user_email'] != $user_row['user_email']) ? $data['user_email'] : false;
+					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
 					{

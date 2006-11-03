@@ -815,7 +815,7 @@ class jabber
 			{
 				$this->stream_id = $incoming_array['stream:stream']['@']['id'];
 
-				if ($incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-tls')
+				if (!empty($incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns']) && $incoming_array['stream:stream']['#']['stream:features'][0]['#']['starttls'][0]['@']['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-tls')
 				{
 					return $this->_starttls();
 				}

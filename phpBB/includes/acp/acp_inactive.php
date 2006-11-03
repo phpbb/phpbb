@@ -96,7 +96,6 @@ class acp_inactive
 						$messenger = new messenger();
 
 						$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
-						$sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
 
 						$usernames = array();
 						do
@@ -108,11 +107,8 @@ class acp_inactive
 							$messenger->im($row['user_jabber'], $row['username']);
 
 							$messenger->assign_vars(array(
-								'EMAIL_SIG'		=> utf8_html_entity_decode($sig),
 								'USERNAME'		=> utf8_html_entity_decode($row['username']),
-								'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-							
 								'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 

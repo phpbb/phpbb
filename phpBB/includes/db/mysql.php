@@ -42,6 +42,8 @@ class dbal_mysql extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
+		$this->sql_layer = 'mysql4';
+
 		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword) : @mysql_connect($this->server, $this->user, $sqlpassword);
 
 		if ($this->db_connect_id && $this->dbname != '')

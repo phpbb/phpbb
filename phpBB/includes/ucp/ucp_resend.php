@@ -77,11 +77,8 @@ class ucp_resend
 				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 				$messenger->assign_vars(array(
-					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 					'WELCOME_MSG'	=> utf8_html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
 					'USERNAME'		=> utf8_html_entity_decode($user_row['username']),
-					'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
-
 					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 				);
 
@@ -90,8 +87,7 @@ class ucp_resend
 					$messenger->assign_vars(array(
 						'FAX_INFO'		=> $config['coppa_fax'],
 						'MAIL_INFO'		=> $config['coppa_mail'],
-						'EMAIL_ADDRESS'	=> $user_row['user_email'],
-						'SITENAME'		=> $config['sitename'])
+						'EMAIL_ADDRESS'	=> $user_row['user_email'])
 					);
 				}
 
@@ -117,8 +113,6 @@ class ucp_resend
 
 					$messenger->assign_vars(array(
 						'USERNAME'		=> utf8_html_entity_decode($user_row['username']),
-						'EMAIL_SIG'		=> utf8_html_entity_decode(str_replace('<br />', "\n", "-- \n" . $config['board_email_sig'])),
-
 						'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 					);
 

@@ -156,7 +156,7 @@ class acp_language
 			case 'download_file':
 			case 'upload_data':
 
-				if (!$lang_id || !isset($_POST['entry']) || !is_array($_POST['entry']))
+				if (!$lang_id || empty($_POST['entry']))
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -497,7 +497,7 @@ class acp_language
 							'S_MISSING_FILES'		=> true,
 							'L_MISSING_FILES'		=> sprintf($user->lang['THOSE_MISSING_LANG_FILES'], $lang_entries['lang_local_name']),
 							'MISSING_FILES'			=> implode('<br />', $missing_files))
-						);		
+						);
 					}
 
 					if ($is_missing_var)
@@ -506,7 +506,7 @@ class acp_language
 							'S_MISSING_VARS'			=> true,
 							'L_MISSING_VARS_EXPLAIN'	=> sprintf($user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries['lang_local_name']),
 							'U_MISSING_ACTION'			=> $this->u_action . "&amp;action=$action&amp;id=$lang_id")
-						);						
+						);
 
 						foreach ($missing_vars as $file => $vars)
 						{
@@ -538,7 +538,7 @@ class acp_language
 					$selected = (!$this->language_directory && $this->language_file == $file) ? ' selected="selected"' : '';
 					$s_lang_options .= '<option value="|' . $file . '"' . $selected . '>' . $prefix . $file . '</option>';
 				}
-				
+
 				// Help Files
 				$s_lang_options .= '<option value="|common.' . $phpEx . '" class="sep">' . $user->lang['HELP_FILES'] . '</option>';
 				foreach ($this->main_files as $file)
@@ -565,7 +565,7 @@ class acp_language
 					}
 
 					$s_lang_options .= '<option value="|common.' . $phpEx . '" class="sep">' . $user->lang[strtoupper($check) . '_FILES'] . '</option>';
-					
+
 					foreach (${$check . '_files'} as $file)
 					{
 						$prefix = (file_exists($phpbb_root_path . $this->get_filename($lang_iso, $check, $file, true, true))) ? '* ' : '';
@@ -605,6 +605,7 @@ class acp_language
 							unset($help);
 						}
 					}
+
 					$print_message = (($this->language_directory) ? $this->language_directory . '/' : '') . $this->language_file;
 				}
 
@@ -617,7 +618,7 @@ class acp_language
 					'PRINT_MESSAGE'			=> $print_message,
 					)
 				);
-				
+
 				if (!$is_email_file)
 				{
 					$method = ($is_help_file) ? 'print_help_entries' : 'print_language_entries';
@@ -628,7 +629,7 @@ class acp_language
 					{
 						$tpl .= $this->$method($missing_vars[$name], '* ');
 					}
-					
+
 					$tpl .= $this->$method($lang);
 
 					$template->assign_var('TPL', $tpl);
@@ -639,20 +640,21 @@ class acp_language
 					$template->assign_vars(array(
 						'LANG'		=> $lang)
 					);
+
 					unset($lang);
 				}
 
 				return;
-			
+
 			break;
 
 			case 'delete':
-			
+
 				if (!$lang_id)
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				
+
 				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
@@ -668,12 +670,12 @@ class acp_language
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
 				$sql = 'UPDATE ' . USERS_TABLE . " 
-					SET user_lang = '{$config['default_lang']}'
-					WHERE user_lang = '{$row['lang_iso']}'";
+					SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
+					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
 				$db->sql_query($sql);
-					
+
 				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
-				
+
 				trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
 			break;
 
@@ -691,8 +693,8 @@ class acp_language
 				$lang_pack = array(
 					'iso'		=> $lang_iso,
 					'name'		=> trim(htmlspecialchars($file[0])),
-					'local_name'=> trim(htmlspecialchars($file[1])),
-					'author'	=> trim(htmlspecialchars($file[2]))
+					'local_name'=> trim(htmlspecialchars($file[1], ENT_COMPAT, 'UTF-8')),
+					'author'	=> trim(htmlspecialchars($file[2], ENT_COMPAT, 'UTF-8'))
 				);
 				unset($file);
 
@@ -700,18 +702,19 @@ class acp_language
 					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if ($row = $db->sql_fetchrow($result))
+				if (!$row)
 				{
 					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				$db->sql_freeresult($result);
 
 				if (!$lang_pack['name'] || !$lang_pack['local_name'])
 				{
 					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				
+
 				// Add language pack
 				$sql_ary = array(
 					'lang_iso'			=> $lang_pack['iso'],
@@ -722,15 +725,15 @@ class acp_language
 				);
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-				
+
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
-				
+
 				trigger_error(sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($this->u_action));
 
 			break;
 
 			case 'download':
-		
+
 				if (!$lang_id)
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -753,7 +756,7 @@ class acp_language
 					{
 						continue;
 					}
-		
+
 					$methods[] = $type;
 				}
 
@@ -774,7 +777,7 @@ class acp_language
 						'U_ACTION'				=> $this->u_action . "&amp;action=$action&amp;id=$lang_id",
 						'RADIO_BUTTONS'			=> $radio_buttons)
 					);
-				
+
 					return;
 				}
 
@@ -828,7 +831,7 @@ class acp_language
 				// Write ISO File
 				$iso_src = html_entity_decode($row['lang_english_name']) . "\n";
 				$iso_src .= utf8_html_entity_decode($row['lang_local_name']) . "\n";
-				$iso_src .= html_entity_decode($row['lang_author']);
+				$iso_src .= utf8_html_entity_decode($row['lang_author']);
 				$compress->add_data($iso_src, 'language/' . $row['lang_iso'] . '/iso.txt');
 
 				// index.html files
@@ -876,18 +879,16 @@ class acp_language
 			$tagstyle = ($row['lang_iso'] == $config['default_lang']) ? '*' : '';
 
 			$template->assign_block_vars('lang', array(
-					'U_DETAILS'			=> $this->u_action . "&amp;action=details&amp;id={$row['lang_id']}",
-					'U_DOWNLOAD'		=> $this->u_action . "&amp;action=download&amp;id={$row['lang_id']}",
-					'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;id={$row['lang_id']}",
+				'U_DETAILS'			=> $this->u_action . "&amp;action=details&amp;id={$row['lang_id']}",
+				'U_DOWNLOAD'		=> $this->u_action . "&amp;action=download&amp;id={$row['lang_id']}",
+				'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;id={$row['lang_id']}",
 
-					'ENGLISH_NAME'		=> $row['lang_english_name'],
-					'TAG'				=> $tagstyle,
-					'LOCAL_NAME'		=> $row['lang_local_name'],
-					'ISO'				=> $row['lang_iso'],
-					'USED_BY'			=> (isset($lang_count[$row['lang_iso']])) ? $lang_count[$row['lang_iso']] : 0,
-					
-				)
-			);
+				'ENGLISH_NAME'		=> $row['lang_english_name'],
+				'TAG'				=> $tagstyle,
+				'LOCAL_NAME'		=> $row['lang_local_name'],
+				'ISO'				=> $row['lang_iso'],
+				'USED_BY'			=> (isset($lang_count[$row['lang_iso']])) ? $lang_count[$row['lang_iso']] : 0,
+			));
 		}
 		$db->sql_freeresult($result);
 
@@ -923,14 +924,14 @@ class acp_language
 			foreach ($new_ary as $iso => $lang_ary)
 			{
 				$template->assign_block_vars('notinst', array(
-					'ISO'			=> $lang_ary['iso'],
-					'LOCAL_NAME'	=> $lang_ary['local_name'],
-					'NAME'			=> $lang_ary['name'],
+					'ISO'			=> htmlspecialchars($lang_ary['iso']),
+					'LOCAL_NAME'	=> htmlspecialchars($lang_ary['local_name'], ENT_COMPAT, 'UTF-8'),
+					'NAME'			=> htmlspecialchars($lang_ary['name'], ENT_COMPAT, 'UTF-8'),
 					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']))
 				);
 			}
 		}
-	
+
 		unset($new_ary);
 	}
 
@@ -948,7 +949,7 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @copyright (c) 2005 phpBB Group 
+* @copyright (c) 2006 phpBB Group 
 * @author {CHANGED} - {AUTHOR}
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
@@ -1040,7 +1041,7 @@ $lang = array_merge($lang, array(
 			{
 				$tpl .= '
 				<tr>
-					<td class="row3" colspan="2">' . $key_prefix . '<b>' . $key . '</b></td>
+					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
 				</tr>';
 
 				foreach ($value as $_key => $_value)
@@ -1049,23 +1050,23 @@ $lang = array_merge($lang, array(
 					{
 						$tpl .= '
 							<tr>
-								<td class="row3" colspan="2">' . $key_prefix . '&nbsp; &nbsp;<b>' . $_key . '</b></td>
+								<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '&nbsp; &nbsp;<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
 							</tr>';
 
 						foreach ($_value as $__key => $__value)
 						{
 							$tpl .= '
 								<tr>
-									<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $__key . '</b></td>
+									<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . '</b></td>
 									<td class="row2">';
 
 							if ($input_field)
 							{
-								$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . '][' . $__key . ']" value="' . htmlspecialchars($__value) . '" size="50" />';
+								$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($__value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
 							}
 							else
 							{
-								$tpl .= '<b>' . htmlspecialchars($__value) . '</b>';
+								$tpl .= '<b>' . htmlspecialchars($__value, ENT_COMPAT, 'UTF-8') . '</b>';
 							}
 							
 							$tpl .= '</td>
@@ -1076,16 +1077,16 @@ $lang = array_merge($lang, array(
 					{
 						$tpl .= '
 							<tr>
-								<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
+								<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
 								<td class="row2">';
-						
+
 						if ($input_field)
 						{
-							$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" size="50" />';
+							$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
 						}
 						else
 						{
-							$tpl .= '<b>' . htmlspecialchars($_value) . '</b>';
+							$tpl .= '<b>' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</b>';
 						}
 						
 						$tpl .= '</td>
@@ -1102,16 +1103,16 @@ $lang = array_merge($lang, array(
 			{
 				$tpl .= '
 				<tr>
-					<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $key . '</b></td>
+					<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
 					<td class="row2">';
 
 				if ($input_field)
 				{
-					$tpl .= '<input type="text" name="entry[' . $key . ']" value="' . htmlspecialchars($value) . '" size="50" />';
+					$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
 				}
 				else
 				{
-					$tpl .= '<b>' . htmlspecialchars($value) . '</b>';
+					$tpl .= '<b>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</b>';
 				}
 				
 				$tpl .= '</td>
@@ -1135,23 +1136,23 @@ $lang = array_merge($lang, array(
 			{
 				$tpl .= '
 				<tr>
-					<td class="row3" colspan="2">' . $key_prefix . '<b>' . $key . '</b></td>
+					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
 				</tr>';
 
 				foreach ($value as $_key => $_value)
 				{
 					$tpl .= '
 						<tr>
-							<td class="row1" style="width: 10%; white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
+							<td class="row1" style="width: 10%; white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
 							<td class="row2">';
 					
 					if ($text_field)
 					{
-						$tpl .= '<textarea name="entry[' . $key . '][' . $_key . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($_value) . '</textarea>';
+						$tpl .= '<textarea name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</textarea>';
 					}
 					else
 					{
-						$tpl .= '<b>' . htmlspecialchars($_value) . '</b>';
+						$tpl .= '<b>' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</b>';
 					}
 					
 					$tpl .= '</td>
@@ -1167,23 +1168,23 @@ $lang = array_merge($lang, array(
 			{
 				$tpl .= '
 				<tr>
-					<td class="row1" style="width: 10%; white-space: nowrap;">' . $key_prefix . '<b>' . $key . '</b></td>
+					<td class="row1" style="width: 10%; white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
 					<td class="row2">';
 
 				if ($text_field)
 				{
-					$tpl .= '<textarea name="entry[' . $key . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($value) . '</textarea>';
+					$tpl .= '<textarea name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</textarea>';
 				}
 				else
 				{
-					$tpl .= '<b>' . htmlspecialchars($value) . '</b>';
+					$tpl .= '<b>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</b>';
 				}
 
 				$tpl .= '</td>
 					</tr>';
 			}
 		}
-		
+
 		return $tpl;
 	}
 

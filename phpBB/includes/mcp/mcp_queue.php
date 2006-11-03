@@ -519,8 +519,6 @@ function approve_post($post_id_list, $mode)
 		// Notify Poster?
 		if ($notify_poster)
 		{
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($post_info as $post_id => $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
@@ -537,8 +535,6 @@ function approve_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 					'USERNAME'		=> utf8_html_entity_decode($post_data['username']),
 					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_data['post_subject'])),
 					'TOPIC_TITLE'	=> utf8_html_entity_decode(censor_text($post_data['topic_title'])),
@@ -734,8 +730,6 @@ function disapprove_post($post_id_list, $mode)
 		// Notify Poster?
 		if ($notify_poster)
 		{
-			$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
-
 			foreach ($post_info as $post_id => $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
@@ -752,8 +746,6 @@ function disapprove_post($post_id_list, $mode)
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
 				$messenger->assign_vars(array(
-					'EMAIL_SIG'		=> utf8_html_entity_decode($email_sig),
-					'SITENAME'		=> utf8_html_entity_decode($config['sitename']),
 					'USERNAME'		=> utf8_html_entity_decode($post_data['username']),
 					'REASON'		=> utf8_html_entity_decode($disapprove_reason),
 					'POST_SUBJECT'	=> utf8_html_entity_decode(censor_text($post_data['post_subject'])),

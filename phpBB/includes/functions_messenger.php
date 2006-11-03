@@ -189,23 +189,16 @@ class messenger
 	{
 		global $config, $user;
 
+		// We add some standard variables we always use, no need to specify them always
+		$this->vars['U_BOARD'] = (!isset($this->vars['U_BOARD'])) ? generate_board_url() : $this->vars['U_BOARD'];
+		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . utf8_html_entity_decode($config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
+		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? utf8_html_entity_decode($config['sitename']) : $this->vars['SITENAME'];
+
 		// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
-		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . $\\1 . '", $this->msg);
-
-		// Set vars
-		foreach ($this->vars as $key => $val)
-		{
-			$$key = $val;
-		}
+		$this->msg = preg_replace('#\{([a-z0-9\-_]*?)\}#is', "' . ((isset(\$this->vars['\\1'])) ? \$this->vars['\\1'] : '') . '", $this->msg);
 
 		eval("\$this->msg = '$this->msg';");
-
-		// Clear vars
-		foreach ($this->vars as $key => $val)
-		{
-			unset($$key);
-		}
 
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
