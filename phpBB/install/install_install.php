@@ -1185,12 +1185,12 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
-		// This is for people who have TTF disabled
-		if (!(@function_exists('imagettfbbox') && @function_exists('imagettftext')))
+		// This is for people who have TTF and GD
+		if (@extension_loaded('gd') && function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
 			$sql_ary[] = 'UPDATE ' . $table_prefix . "config
-					SET config_value = '0'
-					WHERE config_name = 'policy_shape'";
+					SET config_value = '1'
+					WHERE config_name = 'captcha_gd'";
 		}
 
 		foreach ($sql_ary as $sql)
@@ -1732,9 +1732,15 @@ class install_install extends module
 			{
 				case 'mysql':
 				case 'mysqli':
-				case 'sqlite':
 					$sql = 'SHOW TABLES';
 					$field = "Tables_in_{$dbname}";
+				break;
+
+				case 'sqlite':
+					$sql = 'SELECT name
+						FROM sqlite_master
+						WHERE type = "table"';
+					$field = 'name';
 				break;
 
 				case 'mssql':

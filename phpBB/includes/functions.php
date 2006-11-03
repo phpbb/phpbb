@@ -612,6 +612,14 @@ else
 	}
 }
 
+if (!function_exists('htmlspecialchars_decode'))
+{
+	function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
+	{
+		return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
+	}
+}
+
 // functions used for building option fields
 
 /**

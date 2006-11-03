@@ -2430,7 +2430,7 @@ function get_database_size()
 						{
 							if ($table_prefix != '')
 							{
-								if (strstr($row['Name'], $table_prefix))
+								if (strpos($row['Name'], $table_prefix) !== false)
 								{
 									$database_size += $row['Data_length'] + $row['Index_length'];
 								}

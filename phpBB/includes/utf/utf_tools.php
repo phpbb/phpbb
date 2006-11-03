@@ -781,7 +781,7 @@ function utf8_recode($string, $encoding)
 */
 function utf8_encode_ncr($text)
 {
-	return preg_replace_callback('#[\\xC2-\\xF4][\\x80-\\xBF]?[\\x80-\\xBF]?[\\x80-\\xBF]+#', 'utf8_encode_ncr_callback', $text);
+	return preg_replace_callback('#[\\xC2-\\xF4][\\x80-\\xBF]{1,3}#', 'utf8_encode_ncr_callback', $text);
 }
 
 /**
@@ -824,7 +824,7 @@ function utf8_ord($chr)
 		break;
 
 		default:
-			return $m;
+			return $chr;
 	}
 }
 
