@@ -825,7 +825,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				if ($hilit)
 				{
 					// post highlighting
-					$message = preg_replace('#(?!(?:<(?:s(?:cript|tyle))?)[^<]*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $message);
+					$message = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $message);
 				}
 
 				$tpl_ary = array(

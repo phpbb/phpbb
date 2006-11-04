@@ -1299,7 +1299,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
-		$message = preg_replace('#(?!(?:<(?:s(?:cript|tyle))?)[^<]*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
+		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
 	}
 
 	// Replace naughty words such as farty pants
