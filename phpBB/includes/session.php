@@ -849,7 +849,7 @@ class session
 
 			$message = sprintf($this->lang[$message], $till_date, '<a href="mailto:' . $config['board_contact'] . '">', '</a>');
 			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
-			$message .= '<br /><br /><em>' . $user->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
 
 			trigger_error($message);
 		}
