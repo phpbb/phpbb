@@ -59,7 +59,7 @@ class ucp_register
 
 		$cp = new custom_profile();
 
-		$error = $data = $cp_data = $cp_error = array();
+		$error = $cp_data = $cp_error = array();
 
 		//
 		if (!$agreed)
@@ -110,36 +110,22 @@ class ucp_register
 			$timezone = $config['board_timezone'];
 		}
 
-		$var_ary = array(
-			'username'			=> (string) '',
-			'password_confirm'	=> (string) '',
-			'new_password'		=> (string) '',
-			'cur_password'		=> (string) '',
-			'email'				=> (string) '',
-			'email_confirm'		=> (string) '',
-			'confirm_code'		=> (string) '',
-			'lang'				=> (string) $user->lang_name,
-			'tz'				=> (float) $timezone,
+		$data = array(
+			'username'			=> request_var('username', '', true),
+			'password_confirm'	=> request_var('password_confirm', '', true),
+			'new_password'		=> request_var('new_password', '', true),
+			'cur_password'		=> request_var('cur_password', '', true),
+			'email'				=> request_var('email', ''),
+			'email_confirm'		=> request_var('email_confirm', ''),
+			'confirm_code'		=> request_var('confirm_code', ''),
+			'lang'				=> request_var('lang', $user->lang_name),
+			'tz'				=> request_var('tz', (float) $timezone),
 		);
-
-		// If we change the language inline, we do not want to display errors, but pre-fill already filled out values
-		if ($change_lang)
-		{
-			foreach ($var_ary as $var => $default)
-			{
-				$data[$var] = ($var == 'username') ? request_var($var, $default, true) : request_var($var, $default);
-			}
-		}
 
 		// Check and initialize some variables if needed
 		if ($submit)
 		{
-			foreach ($var_ary as $var => $default)
-			{
-				$data[$var] = ($var == 'username') ? request_var($var, $default, true) : request_var($var, $default);
-			}
-
-			$var_ary = array(
+			$error = validate_data($data, array(
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username')),
@@ -154,9 +140,7 @@ class ucp_register
 				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
-			);
-
-			$error = validate_data($data, $var_ary);
+			));
 
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
@@ -480,9 +464,6 @@ class ucp_register
 
 		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
 		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
-
-		$data['lang'] = (isset($data['lang'])) ? $data['lang'] : $config['default_lang'];
-		$data['tz'] = (isset($data['tz'])) ? $data['tz'] : $timezone;
 
 		//
 		$template->assign_vars(array(

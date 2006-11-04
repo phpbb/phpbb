@@ -1979,7 +1979,7 @@ function login_forum_box($forum_data)
 {
 	global $db, $config, $user, $template, $phpEx;
 
-	$password = request_var('password', '');
+	$password = request_var('password', '', true);
 
 	$sql = 'SELECT forum_id
 		FROM ' . FORUMS_ACCESS_TABLE . '

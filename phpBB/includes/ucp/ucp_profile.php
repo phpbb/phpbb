@@ -34,23 +34,18 @@ class ucp_profile
 			case 'reg_details':
 
 				$data = array(
-					'username'			=> $user->data['username'],
-					'email'				=> $user->data['user_email'],
-					'email_confirm'		=> (string) '',
-					'new_password'		=> (string) '',
-					'cur_password'		=> (string) '',
-					'password_confirm'	=> (string) '',
+					'username'			=> request_var('username', $user->data['username'], true),
+					'email'				=> request_var('email', $user->data['user_email']),
+					'email_confirm'		=> request_var('email_confirm', ''),
+					'new_password'		=> request_var('new_password', '', true),
+					'cur_password'		=> request_var('cur_password', '', true),
+					'password_confirm'	=> request_var('password_confirm', '', true),
 				);
 
 				if ($submit)
 				{
-					foreach ($data as $var => $default)
-					{
-						$data[$var] = ($var == 'username') ? request_var($var, $default, true) : request_var($var, $default);
-					}
-
 					// Do not check cur_password, it is the old one.
-					$var_ary = array(
+					$check_ary = array(
 						'new_password'		=> array(
 							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 							array('password')),
@@ -63,13 +58,13 @@ class ucp_profile
 
 					if ($auth->acl_get('u_chgname') && $config['allow_namechange'])
 					{
-						$var_ary['username'] = array(
+						$check_ary['username'] = array(
 							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 							array('username', $data['username']),
 						);
 					}
 
-					$error = validate_data($data, $var_ary);
+					$error = validate_data($data, $check_ary);
 
 					if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
@@ -249,15 +244,15 @@ class ucp_profile
 				$cp_data = $cp_error = array();
 
 				$data = array(
-					'icq'			=> (string) $user->data['user_icq'],
-					'aim'			=> (string) $user->data['user_aim'],
-					'msn'			=> (string) $user->data['user_msnm'],
-					'yim'			=> (string) $user->data['user_yim'],
-					'jabber'		=> (string) $user->data['user_jabber'],
-					'website'		=> (string) $user->data['user_website'],
-					'location'		=> (string) $user->data['user_from'],
-					'occupation'	=> (string) $user->data['user_occ'],
-					'interests'		=> (string) $user->data['user_interests'],
+					'icq'			=> request_var('icq', $user->data['user_icq']),
+					'aim'			=> request_var('aim', $user->data['user_aim']),
+					'msn'			=> request_var('msn', $user->data['user_msnm']),
+					'yim'			=> request_var('yim', $user->data['user_yim']),
+					'jabber'		=> request_var('jabber', $user->data['user_jabber']),
+					'website'		=> request_var('website', $user->data['user_website']),
+					'location'		=> request_var('location', $user->data['user_from'], true),
+					'occupation'	=> request_var('occupation', $user->data['user_occ'], true),
+					'interests'		=> request_var('interests', $user->data['user_interests']),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
@@ -268,14 +263,13 @@ class ucp_profile
 					list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user->data['user_birthday']);
 				}
 
+				$data['bday_day'] = request_var('bday_day', $data['bday_day']);
+				$data['bday_month'] = request_var('bday_month', $data['bday_month']);
+				$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+
 				if ($submit)
 				{
-					foreach ($data as $var => $default)
-					{
-						$data[$var] = (in_array($var, array('location', 'occupation', 'interests'))) ? request_var($var, $default, true) : request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'icq'			=> array(
 							array('string', true, 3, 15),
 							array('match', true, '#^[0-9]+$#i')),
@@ -294,9 +288,7 @@ class ucp_profile
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
 						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					// validate custom profile fields
 					$cp->submit_cp_field('profile', $user->get_iso_lang_id(), $cp_data, $cp_error);
@@ -510,26 +502,19 @@ class ucp_profile
 
 				if ($submit)
 				{
-					$var_ary = array(
-						'uploadurl'		=> (string) '',
-						'remotelink'	=> (string) '',
-						'width'			=> (string) '',
-						'height'		=> (string) '',
+					$data = array(
+						'uploadurl'		=> request_var('uploadurl', ''),
+						'remotelink'	=> request_var('remotelink', ''),
+						'width'			=> request_var('width', ''),
+						'height'		=> request_var('height', ''),
 					);
 
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'uploadurl'		=> array('string', true, 5, 255),
 						'remotelink'	=> array('string', true, 5, 255),
 						'width'			=> array('string', true, 1, 3),
 						'height'		=> array('string', true, 1, 3),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					if (!sizeof($error))
 					{

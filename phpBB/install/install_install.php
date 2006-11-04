@@ -404,7 +404,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		$connect_test = false;
@@ -546,7 +546,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
@@ -718,7 +718,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
@@ -873,7 +873,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
@@ -957,7 +957,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		if ($dbms == '')
@@ -1231,7 +1231,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
@@ -1500,7 +1500,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		// Fill the config array - it is needed by those functions we call
@@ -1582,7 +1582,7 @@ class install_install extends module
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
-			$$var = ($var == 'admin_name') ? request_var($var, '', true) : request_var($var, '');
+			$$var = (in_array($var, array('admin_name', 'dbpasswd', 'admin_pass1', 'admin_pass2'))) ? request_var($var, '', true) : request_var($var, '');
 		}
 
 		// Load the basic configuration data

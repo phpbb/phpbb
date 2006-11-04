@@ -616,32 +616,19 @@ class acp_users
 						break;
 					}
 
-					$data = array();
-
 					// Handle registration info updates
-					$var_ary = array(
-						'user'				=> (string) $user_row['username'],
-						'user_founder'		=> (int) (($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
-						'user_email'		=> (string) $user_row['user_email'],
-						'email_confirm'		=> (string) '',
-						'user_password'		=> (string) '',
-						'password_confirm'	=> (string) '',
-						'warnings'			=> (int) $user_row['user_warnings'],
+					$data = array(
+						'username'			=> request_var('user', $user_row['username'], true),
+						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
+						'email'				=> request_var('user_email', $user_row['user_email']),
+						'email_confirm'		=> request_var('email_confirm', ''),
+						'user_password'		=> request_var('user_password', '', true),
+						'password_confirm'	=> request_var('password_confirm', '', true),
+						'warnings'			=> request_var('warnings', $user_row['user_warnings']),
 					);
 
-					// Get the data from the form. Use data from the database if no info is provided
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = ($var == 'user') ? request_var($var, $default, true) : request_var($var, $default);
-					}
-
-					// We use user within the form to circumvent auto filling
-					$data['username'] = $data['user'];
-					$data['email'] = $data['user_email'];
-					unset($data['user'], $data['user_email']);
-
 					// Validation data - we do not check the password complexity setting here
-					$var_ary = array(
+					$check_ary = array(
 						'user_password'		=> array(
 							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 							array('password')),
@@ -652,7 +639,7 @@ class acp_users
 					// Check username if altered
 					if ($data['username'] != $user_row['username'])
 					{
-						$var_ary += array(
+						$check_ary += array(
 							'username'			=> array(
 								array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 								array('username', $user_row['username'])),
@@ -662,7 +649,7 @@ class acp_users
 					// Check email if altered
 					if ($data['email'] != $user_row['user_email'])
 					{
-						$var_ary += array(
+						$check_ary += array(
 							'email'				=> array(
 								array('string', false, 6, 60),
 								array('email', $user_row['user_email'])
@@ -671,7 +658,7 @@ class acp_users
 						);
 					}
 
-					$error = validate_data($data, $var_ary);
+					$error = validate_data($data, $check_ary);
 
 					if ($data['user_password'] && $data['password_confirm'] != $data['user_password'])
 					{
@@ -979,7 +966,6 @@ class acp_users
 				$cp = new custom_profile();
 
 				$cp_data = $cp_error = array();
-				$data = array();
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
@@ -990,29 +976,33 @@ class acp_users
 
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
+				$data = array(
+					'icq'			=> request_var('icq', $user_row['user_icq']),
+					'aim'			=> request_var('aim', $user_row['user_aim']),
+					'msn'			=> request_var('msn', $user_row['user_msnm']),
+					'yim'			=> request_var('yim', $user_row['user_yim']),
+					'jabber'		=> request_var('jabber', $user_row['user_jabber']),
+					'website'		=> request_var('website', $user_row['user_website']),
+					'location'		=> request_var('location', $user_row['user_from'], true),
+					'occupation'	=> request_var('occupation', $user_row['user_occ'], true),
+					'interests'		=> request_var('interests', $user_row['user_interests']),
+					'bday_day'		=> 0,
+					'bday_month'	=> 0,
+					'bday_year'		=> 0,
+				);
+
+				if ($user_row['user_birthday'])
+				{
+					list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user_row['user_birthday']);
+				}
+
+				$data['bday_day'] = request_var('bday_day', $data['bday_day']);
+				$data['bday_month'] = request_var('bday_month', $data['bday_month']);
+				$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+
 				if ($submit)
 				{
-					$var_ary = array(
-						'icq'			=> (string) '',
-						'aim'			=> (string) '',
-						'msn'			=> (string) '',
-						'yim'			=> (string) '',
-						'jabber'		=> (string) '',
-						'website'		=> (string) '',
-						'location'		=> (string) '',
-						'occupation'	=> (string) '',
-						'interests'		=> (string) '',
-						'bday_day'		=> 0,
-						'bday_month'	=> 0,
-						'bday_year'		=> 0,
-					);
-
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = (in_array($var, array('location', 'occupation', 'interests'))) ? request_var($var, $default, true) : request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'icq'			=> array(
 							array('string', true, 3, 15),
 							array('match', true, '#^[0-9]+$#i')),
@@ -1031,9 +1021,7 @@ class acp_users
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
 						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					// validate custom profile fields
 					$cp->submit_cp_field('profile', $user_row['iso_lang_id'], $cp_data, $cp_error);
@@ -1119,18 +1107,6 @@ class acp_users
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				if (!isset($data['bday_day']))
-				{
-					if ($user_row['user_birthday'])
-					{
-						list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user_row['user_birthday']);
-					}
-					else
-					{
-						$data['bday_day'] = $data['bday_month'] = $data['bday_year'] = 0;
-					}
-				}
-
 				$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';
 				for ($i = 1; $i < 32; $i++)
 				{
@@ -1156,15 +1132,15 @@ class acp_users
 				unset($now);
 
 				$template->assign_vars(array(
-					'ICQ'			=> (isset($data['icq'])) ? $data['icq'] : $user_row['user_icq'],
-					'YIM'			=> (isset($data['yim'])) ? $data['yim'] : $user_row['user_yim'],
-					'AIM'			=> (isset($data['aim'])) ? $data['aim'] : $user_row['user_aim'],
-					'MSN'			=> (isset($data['msn'])) ? $data['msn'] : $user_row['user_msnm'],
-					'JABBER'		=> (isset($data['jabber'])) ? $data['jabber'] : $user_row['user_jabber'],
-					'WEBSITE'		=> (isset($data['website'])) ? $data['website']: $user_row['user_website'],
-					'LOCATION'		=> (isset($data['location'])) ? $data['location'] : $user_row['user_from'],
-					'OCCUPATION'	=> (isset($data['occupation'])) ? $data['occupation'] : $user_row['user_occ'],
-					'INTERESTS'		=> (isset($data['interests'])) ? $data['interests'] : $user_row['user_interests'],
+					'ICQ'			=> $data['icq'],
+					'YIM'			=> $data['yim'],
+					'AIM'			=> $data['aim'],
+					'MSN'			=> $data['msn'],
+					'JABBER'		=> $data['jabber'],
+					'WEBSITE'		=> $data['website'],
+					'LOCATION'		=> $data['location'],
+					'OCCUPATION'	=> $data['occupation'],
+					'INTERESTS'		=> $data['interests'],
 
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
@@ -1182,51 +1158,44 @@ class acp_users
 
 			case 'prefs':
 
-				$data = array();
+				$data = array(
+					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat']),
+					'lang'				=> request_var('lang', $user_row['user_lang']),
+					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
+					'style'				=> request_var('style', $user_row['user_style']),
+					'dst'				=> request_var('dst', $user_row['user_dst']),
+					'viewemail'			=> request_var('viewemail', $user_row['user_allow_viewemail']),
+					'massemail'			=> request_var('massemail', $user_row['user_allow_massemail']),
+					'hideonline'		=> request_var('hideonline', !$user_row['user_allow_viewonline']),
+					'notifymethod'		=> request_var('notifymethod', $user_row['user_notify_type']),
+					'notifypm'			=> request_var('notifypm', $user_row['user_notify_pm']),
+					'popuppm'			=> request_var('popuppm', $this->optionget($user_row, 'popuppm')),
+					'allowpm'			=> request_var('allowpm', $user_row['user_allow_pm']),
+
+					'topic_sk'			=> request_var('topic_sk', ($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't'),
+					'topic_sd'			=> request_var('topic_sd', ($user_row['user_topic_sortby_dir']) ? $user_row['user_topic_sortby_dir'] : 'd'),
+					'topic_st'			=> request_var('topic_st', ($user_row['user_topic_show_days']) ? $user_row['user_topic_show_days'] : 0),
+
+					'post_sk'			=> request_var('post_sk', ($user_row['user_post_sortby_type']) ? $user_row['user_post_sortby_type'] : 't'),
+					'post_sd'			=> request_var('post_sd', ($user_row['user_post_sortby_dir']) ? $user_row['user_post_sortby_dir'] : 'a'),
+					'post_st'			=> request_var('post_st', ($user_row['user_post_show_days']) ? $user_row['user_post_show_days'] : 0),
+
+					'view_images'		=> request_var('view_images', $this->optionget($user_row, 'viewimg')),
+					'view_flash'		=> request_var('view_flash', $this->optionget($user_row, 'viewflash')),
+					'view_smilies'		=> request_var('view_smilies', $this->optionget($user_row, 'viewsmilies')),
+					'view_sigs'			=> request_var('view_sigs', $this->optionget($user_row, 'viewsigs')),
+					'view_avatars'		=> request_var('view_avatars', $this->optionget($user_row, 'viewavatars')),
+					'view_wordcensor'	=> request_var('view_wordcensore', $this->optionget($user_row, 'viewcensors')),
+
+					'bbcode'	=> request_var('bbcode', $this->optionget($user_row, 'bbcode')),
+					'smilies'	=> request_var('smilies', $this->optionget($user_row, 'smilies')),
+					'sig'		=> request_var('sig', $this->optionget($user_row, 'attachsig')),
+					'notify'	=> request_var('notify', $user_row['user_notify']),
+				);
 
 				if ($submit)
 				{
-					$var_ary = array(
-						'dateformat'		=> (string) $config['default_dateformat'],
-						'lang'				=> (string) $config['default_lang'],
-						'tz'				=> (float) $config['board_timezone'],
-						'style'				=> (int) $config['default_style'],
-						'dst'				=> (bool) $config['board_dst'],
-						'viewemail'			=> false,
-						'massemail'			=> true,
-						'hideonline'		=> false,
-						'notifymethod'		=> 0,
-						'notifypm'			=> true,
-						'popuppm'			=> false,
-						'allowpm'			=> true,
-
-						'topic_sk'			=> (string) 't',
-						'topic_sd'			=> (string) 'd',
-						'topic_st'			=> 0,
-
-						'post_sk'			=> (string) 't',
-						'post_sd'			=> (string) 'a',
-						'post_st'			=> 0,
-
-						'view_images'		=> true,
-						'view_flash'		=> false,
-						'view_smilies'		=> true,
-						'view_sigs'			=> true,
-						'view_avatars'		=> true,
-						'view_wordcensor'	=> false,
-
-						'bbcode'	=> true,
-						'smilies'	=> true,
-						'sig'		=> true,
-						'notify'	=> false,
-					);
-
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 3, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
@@ -1235,9 +1204,7 @@ class acp_users
 						'topic_sd'		=> array('string', false, 1, 1),
 						'post_sk'		=> array('string', false, 1, 1),
 						'post_sd'		=> array('string', false, 1, 1),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					if (!sizeof($error))
 					{
@@ -1291,17 +1258,10 @@ class acp_users
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				$notify_method = (isset($data['notifymethod'])) ? $data['notifymethod'] : $user_row['user_notify_type'];
-				$dateformat = (isset($data['dateformat'])) ? $data['dateformat'] : $user_row['user_dateformat'];
-				$lang = (isset($data['lang'])) ? $data['lang'] : $user_row['user_lang'];
-				$style = (isset($data['style'])) ? $data['style'] : $user_row['user_style'];
-				$tz = (isset($data['tz'])) ? $data['tz'] : $user_row['user_timezone'];
-
 				$dateformat_options = '';
-
 				foreach ($user->lang['dateformats'] as $format => $null)
 				{
-					$dateformat_options .= '<option value="' . $format . '"' . (($format == $dateformat) ? ' selected="selected"' : '') . '>';
+					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
 					$dateformat_options .= $user->format_date(time(), $format, true) . ((strpos($format, '|') !== false) ? ' [' . $user->lang['RELATIVE_DAYS'] . ']' : '');
 					$dateformat_options .= '</option>';
 				}
@@ -1309,21 +1269,12 @@ class acp_users
 				$s_custom = false;
 
 				$dateformat_options .= '<option value="custom"';
-				if (!in_array($dateformat, array_keys($user->lang['dateformats'])))
+				if (!in_array($data['dateformat'], array_keys($user->lang['dateformats'])))
 				{
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
-
-				$topic_sk = (isset($data['topic_sk'])) ? $data['topic_sk'] : (($user_row['user_topic_sortby_type']) ? $user_row['user_topic_sortby_type'] : 't');
-				$post_sk = (isset($data['post_sk'])) ? $data['post_sk'] : (($user_row['user_post_sortby_type']) ? $user_row['user_post_sortby_type'] : 't');
-
-				$topic_sd = (isset($data['topic_sd'])) ? $data['topic_sd'] : (($user_row['user_topic_sortby_dir']) ? $user_row['user_topic_sortby_dir'] : 'd');
-				$post_sd = (isset($data['post_sd'])) ? $data['post_sd'] : (($user_row['user_post_sortby_dir']) ? $user_row['user_post_sortby_dir'] : 'd');
-				
-				$topic_st = (isset($data['topic_st'])) ? $data['topic_st'] : (($user_row['user_topic_show_days']) ? $user_row['user_topic_show_days'] : 0);
-				$post_st = (isset($data['post_st'])) ? $data['post_st'] : (($user_row['user_post_show_days']) ? $user_row['user_post_show_days'] : 0);
 
 				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -1341,7 +1292,7 @@ class acp_users
 					${'s_limit_' . $sort_option . '_days'} = '<select name="' . $sort_option . '_st">';
 					foreach (${'limit_' . $sort_option . '_days'} as $day => $text)
 					{
-						$selected = (${$sort_option . '_st'} == $day) ? ' selected="selected"' : '';
+						$selected = ($data[$sort_option . '_st'] == $day) ? ' selected="selected"' : '';
 						${'s_limit_' . $sort_option . '_days'} .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
 					}
 					${'s_limit_' . $sort_option . '_days'} .= '</select>';
@@ -1349,7 +1300,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_key'} = '<select name="' . $sort_option . '_sk">';
 					foreach (${'sort_by_' . $sort_option . '_text'} as $key => $text)
 					{
-						$selected = (${$sort_option . '_sk'} == $key) ? ' selected="selected"' : '';
+						$selected = ($data[$sort_option . '_sk'] == $key) ? ' selected="selected"' : '';
 						${'s_sort_' . $sort_option . '_key'} .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
 					}
 					${'s_sort_' . $sort_option . '_key'} .= '</select>';
@@ -1357,7 +1308,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} = '<select name="' . $sort_option . '_sd">';
 					foreach ($sort_dir_text as $key => $value)
 					{
-						$selected = (${$sort_option . '_sd'} == $key) ? ' selected="selected"' : '';
+						$selected = ($data[$sort_option . '_sd'] == $key) ? ' selected="selected"' : '';
 						${'s_sort_' . $sort_option . '_dir'} .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 					}
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
@@ -1365,28 +1316,28 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_PREFS'			=> true,
-					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? false : true,
+					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
 					
-					'VIEW_EMAIL'		=> (isset($data['viewemail'])) ? $data['viewemail'] : $user_row['user_allow_viewemail'],
-					'MASS_EMAIL'		=> (isset($data['massemail'])) ? $data['massemail'] : $user_row['user_allow_massemail'],
-					'ALLOW_PM'			=> (isset($data['allowpm'])) ? $data['allowpm'] : $user_row['user_allow_pm'],
-					'HIDE_ONLINE'		=> (isset($data['hideonline'])) ? $data['hideonline'] : !$user_row['user_allow_viewonline'],
-					'NOTIFY_EMAIL'		=> ($notify_method == NOTIFY_EMAIL) ? true : false,
-					'NOTIFY_IM'			=> ($notify_method == NOTIFY_IM) ? true : false,
-					'NOTIFY_BOTH'		=> ($notify_method == NOTIFY_BOTH) ? true : false,
-					'NOTIFY_PM'			=> (isset($data['notifypm'])) ? $data['notifypm'] : $user_row['user_notify_pm'],
-					'POPUP_PM'			=> (isset($data['popuppm'])) ? $data['popuppm'] : $this->optionget($user_row, 'popuppm'),
-					'DST'				=> (isset($data['dst'])) ? $data['dst'] : $user_row['user_dst'],
-					'BBCODE'			=> (isset($data['bbcode'])) ? $data['bbcode'] : $this->optionget($user_row, 'bbcode'),
-					'SMILIES'			=> (isset($data['smilies'])) ? $data['smilies'] : $this->optionget($user_row, 'smilies'),
-					'ATTACH_SIG'		=> (isset($data['sig'])) ? $data['sig'] : $this->optionget($user_row, 'attachsig'),
-					'NOTIFY'			=> (isset($data['notify'])) ? $data['notify'] : $user_row['user_notify'],
-					'VIEW_IMAGES'		=> (isset($data['view_images'])) ? $data['view_images'] : $this->optionget($user_row, 'viewimg'),
-					'VIEW_FLASH'		=> (isset($data['view_flash'])) ? $data['view_flash'] : $this->optionget($user_row, 'viewflash'),
-					'VIEW_SMILIES'		=> (isset($data['view_smilies'])) ? $data['view_smilies'] : $this->optionget($user_row, 'viewsmilies'),
-					'VIEW_SIGS'			=> (isset($data['view_sigs'])) ? $data['view_sigs'] : $this->optionget($user_row, 'viewsigs'),
-					'VIEW_AVATARS'		=> (isset($data['view_avatars'])) ? $data['view_avatars'] : $this->optionget($user_row, 'viewavatars'),
-					'VIEW_WORDCENSOR'	=> (isset($data['view_wordcensor'])) ? $data['view_wordcensor'] : $this->optionget($user_row, 'viewcensors'),
+					'VIEW_EMAIL'		=> $data['viewemail'],
+					'MASS_EMAIL'		=> $data['massemail'],
+					'ALLOW_PM'			=> $data['allowpm'],
+					'HIDE_ONLINE'		=> $data['hideonline'],
+					'NOTIFY_EMAIL'		=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
+					'NOTIFY_IM'			=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
+					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
+					'NOTIFY_PM'			=> $data['notifypm'],
+					'POPUP_PM'			=> $data['popuppm'],
+					'DST'				=> $data['dst'],
+					'BBCODE'			=> $data['bbcode'],
+					'SMILIES'			=> $data['smilies'],
+					'ATTACH_SIG'		=> $data['sig'],
+					'NOTIFY'			=> $data['notify'],
+					'VIEW_IMAGES'		=> $data['view_images'],
+					'VIEW_FLASH'		=> $data['view_flash'],
+					'VIEW_SMILIES'		=> $data['view_smilies'],
+					'VIEW_SIGS'			=> $data['view_sigs'],
+					'VIEW_AVATARS'		=> $data['view_avatars'],
+					'VIEW_WORDCENSOR'	=> $data['view_wordcensor'],
 					
 					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
 					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,
@@ -1395,15 +1346,15 @@ class acp_users
 					'S_POST_SORT_KEY'		=> $s_sort_post_key,
 					'S_POST_SORT_DIR'		=> $s_sort_post_dir,
 
-					'DATE_FORMAT'			=> $dateformat,
+					'DATE_FORMAT'			=> $data['dateformat'],
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
-					'S_LANG_OPTIONS'	=> language_select($lang),
-					'S_STYLE_OPTIONS'	=> style_select($style),
-					'S_TZ_OPTIONS'		=> tz_select($tz, true),
+					'S_LANG_OPTIONS'	=> language_select($data['lang']),
+					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
 					)
 				);
 
@@ -1421,26 +1372,19 @@ class acp_users
 				{
 					$delete = request_var('delete', '');
 
-					$var_ary = array(
-						'uploadurl'		=> (string) '',
-						'remotelink'	=> (string) '',
-						'width'			=> (string) '',
-						'height'		=> (string) '',
+					$data = array(
+						'uploadurl'		=> request_var('uploadurl', ''),
+						'remotelink'	=> request_var('remotelink', ''),
+						'width'			=> request_var('width', ''),
+						'height'		=> request_var('height', ''),
 					);
 
-					foreach ($var_ary as $var => $default)
-					{
-						$data[$var] = request_var($var, $default);
-					}
-
-					$var_ary = array(
+					$error = validate_data($data, array(
 						'uploadurl'		=> array('string', true, 5, 255),
 						'remotelink'	=> array('string', true, 5, 255),
 						'width'			=> array('string', true, 1, 3),
 						'height'		=> array('string', true, 1, 3),
-					);
-
-					$error = validate_data($data, $var_ary);
+					));
 
 					if (!sizeof($error))
 					{
