@@ -468,11 +468,11 @@ class ucp_register
 		//
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-			'USERNAME'			=> (isset($data['username'])) ? $data['username'] : '',
-			'PASSWORD'			=> (isset($data['new_password'])) ? $data['new_password'] : '',
-			'PASSWORD_CONFIRM'	=> (isset($data['password_confirm'])) ? $data['password_confirm'] : '',
-			'EMAIL'				=> (isset($data['email'])) ? $data['email'] : '',
-			'EMAIL_CONFIRM'		=> (isset($data['email_confirm'])) ? $data['email_confirm'] : '',
+			'USERNAME'			=> $data['username'],
+			'PASSWORD'			=> $data['new_password'],
+			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
+			'EMAIL'				=> $data['email'],
+			'EMAIL_CONFIRM'		=> $data['email_confirm'],
 			'CONFIRM_IMG'		=> $confirm_image,
 
 			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
