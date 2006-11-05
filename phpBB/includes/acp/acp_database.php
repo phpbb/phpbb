@@ -1382,9 +1382,16 @@ class acp_database
 				{
 					$kname = $row['Key_name'];
 
-					if ($kname != 'PRIMARY' && $row['Non_unique'] == 0)
+					if ($kname != 'PRIMARY')
 					{
-						$kname = "UNIQUE|$kname";
+						if ($row['Index_type'] == 'FULLTEXT')
+						{
+							$kname = "FULLTEXT|$kname";
+						}
+						else if ($row['Non_unique'] == 0)
+						{
+							$kname = "UNIQUE|$kname";
+						}
 					}
 
 					if ($row['Sub_part'])
@@ -1406,6 +1413,10 @@ class acp_database
 					else if (strpos($key, 'UNIQUE') === 0)
 					{
 						$line .= 'UNIQUE ' . substr($key, 7) . ' (' . implode(', ', $columns) . ')';
+					}
+					else if (strpos($key, 'FULLTEXT') === 0)
+					{
+						$line .= 'FULLTEXT ' . substr($key, 9) . ' (' . implode(', ', $columns) . ')';
 					}
 					else
 					{
