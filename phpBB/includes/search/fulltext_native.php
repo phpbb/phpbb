@@ -607,7 +607,6 @@ class fulltext_native extends search_backend
 
 				break;
 
-				case 'mysql':
 				case 'sqlite':
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
 					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
