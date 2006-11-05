@@ -60,7 +60,7 @@ $help = array(
 	),
 	array(
 		0 => 'What is COPPA?',
-		1 => 'COPPA, or Child Online Privacy and Protection Act of 1998 is a law in the United States that requires website that can potentially collect information from minors under the age of 13 to have written parental consent, or some other method of the legal guardians acknowledging they are allowing the collection of personally identifiable information from a minor under the age of 13. If you are unsure if this applies to you as someone trying to register, or to the website you are trying to register on, contact legal counsel for assistance.',
+		1 => 'COPPA, or Child Online Privacy and Protection Act of 1998 is a law in the United States that requires website that can potentially collect information from minors under the age of 13 to have written parental consent, or some other method of the legal guardians acknowledging they are allowing the collection of personally identifiable information from a minor under the age of 13. If you are unsure if this applies to you as someone trying to register, or to the website you are trying to register on, contact legal counsel for assistance. Please note that the phpBB Team cannot provide legal advice and are not the point of contact for legal concerns of any kind, except as outlined below.',
 	),
 	array(
 		0 => 'Why can’t I register?',
@@ -156,7 +156,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I bump my topic?',
-		1 => 'By clicking the “Bump topic” link when you are viewing it, you can “bump” the topic to the top of the forum on the first page. However; if you do not see this, then topic bumping is disabled.'
+		1 => 'By clicking the “Bump topic” link when you are viewing it, you can “bump” the topic to the top of the forum on the first page. However; if you do not see this, then topic bumping is disabled. However, if you do not see this, then topic bumping is disabled. It is also possible to bump the topic simply by replying to it. However, be sure to follow the rules of the site you are visiting.'
 	),
 	array(
 		0 => '--',
@@ -292,15 +292,15 @@ $help = array(
 	),
 	array(
 		0 => 'What is the difference between bookmarking and subscribing?',
-		1 => 'Blah blah blah.'
+		1 => 'Bookmarking in phpBB3 is much like bookmarking in your web browser. You aren’t necessarily alerted when there’s an update, but you can later come back to the topic. To contrast that with subscribing, subscribing will notify you when there is an update to the topic or forum on the board via your preferred method or methods.'
 	),
 	array(
 		0 => 'How do I subscribe to specific forums or topics?',
-		1 => 'Blah blah blah.'
+		1 => 'To subscribe to a specific forum, once you enter the forum, you will see a “Subscribe to forum” link. This will subscribe you to the forum just like you would for a topic. To subscribe to a topic, you can either reply to the topic and check the checkbox to subscribe or you can click the link that says subscribe to topic from within the topic itself.'
 	),
 	array(
 		0 => 'How do I remove my subscriptions?',
-		1 => 'Blah blah blah.'
+		1 => 'To remove your subscriptions, you simply go to your User Control Panel, or UCP for short, and follow the links to your subscriptions.'
 	),
 	array(
 		0 => '--',
@@ -308,11 +308,11 @@ $help = array(
 	),
 	array(
 		0 => 'What attachments are allowed on this board?',
-		1 => 'Blah blah blah.'
+		1 => 'Each board administrator can allow or disallow certain attachment types. If you are unsure what is allowed to be uploaded, contact the board administrator for assistance.'
 	),
 	array(
 		0 => 'How do I find all my attachemnts?',
-		1 => 'Look in the User Control Panel, etc.'
+		1 => 'To find your list of attachments that you have uploaded, go to your User Control Panel, or UCP, and follow the links to the attachments section.'
 	),
 	array(
 		0 => '--',
