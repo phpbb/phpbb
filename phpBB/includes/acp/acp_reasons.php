@@ -81,7 +81,7 @@ class acp_reasons
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						if ($row || ($add && strtolower($reason_row['reason_title']) == 'other'))
+						if ($row || ($action == 'add' && strtolower($reason_row['reason_title']) == 'other'))
 						{
 							$error[] = $user->lang['REASON_ALREADY_EXIST'];
 						}

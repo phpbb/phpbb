@@ -31,7 +31,7 @@ $submit = (isset($_POST['submit'])) ? true : false;
 
 if (!$post_id)
 {
-	trigger_error('INVALID_MODE');
+	trigger_error('NO_POST_SELECTED');
 }
 
 $redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=$post_id") . "#p$post_id";

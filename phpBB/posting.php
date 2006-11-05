@@ -118,12 +118,12 @@ switch ($mode)
 
 	default:
 		$sql = '';
-		trigger_error('NO_POST_MODE');
 	break;
 }
 
 if (!$sql)
 {
+	$user->setup(array('posting', 'mcp', 'viewtopic'));
 	trigger_error('NO_POST_MODE');
 }
 
