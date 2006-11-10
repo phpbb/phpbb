@@ -207,7 +207,7 @@ class dbal_firebird extends dbal
 
 		foreach (get_object_vars($cur_row) as $key => $value)
 		{
-			$row[strtolower($key)] = trim(str_replace("\\0", "\0", str_replace("\\n", "\n", $value)));
+			$row[strtolower($key)] = trim(str_replace(array("\\0", "\\n"), array("\0", "\n"), $value));
 		}
 
 		return (sizeof($row)) ? $row : false;
