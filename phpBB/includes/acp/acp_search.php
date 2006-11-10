@@ -295,7 +295,7 @@ class acp_search
 	
 					if ($post_counter <= $this->max_post_id)
 					{
-						redirect($this->u_action . '&amp;action=delete', 3);
+						redirect($this->u_action . '&amp;action=delete');
 					}
 				}
 	
@@ -339,7 +339,7 @@ class acp_search
 	
 					if ($post_counter <= $this->max_post_id)
 					{
-						redirect($this->u_action . '&amp;action=create', 3);
+						redirect($this->u_action . '&amp;action=create');
 					}
 				}
 	

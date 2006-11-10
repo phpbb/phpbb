@@ -1032,7 +1032,7 @@ CREATE TABLE phpbb_users (
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),
 	KEY user_type (user_type),
-	KEY username (username)
+	KEY username_clean (username_clean)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

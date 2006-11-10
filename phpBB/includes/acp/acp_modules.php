@@ -64,7 +64,7 @@ class acp_modules
 				{
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-				
+
 				if (confirm_box(true))
 				{
 					$errors = $this->delete_module($module_id);
@@ -94,7 +94,7 @@ class acp_modules
 				{
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-			
+
 				$sql = 'UPDATE ' . MODULES_TABLE . ' 
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
 					WHERE module_id = $module_id";
@@ -351,6 +351,7 @@ class acp_modules
 			$navigation = '<a href="' . $this->u_action . '">' . strtoupper($this->module_class) . '</a>';
 
 			$modules_nav = $this->get_module_branch($this->parent_id, 'parents', 'descending');
+
 			foreach ($modules_nav as $row)
 			{
 				$langname = $this->lang_name($row['module_langname']);
@@ -392,12 +393,15 @@ class acp_modules
 				}
 
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
-	
+
 				$template->assign_block_vars('modules', array(
 					'MODULE_IMAGE'		=> $module_image,
 					'MODULE_TITLE'		=> $langname,
 					'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
 					'MODULE_DISPLAYED'	=> ($row['module_display']) ? true : false,
+
+					'S_ACP_CAT_SYSTEM'			=> ($this->module_class == 'acp' && $row['module_langname'] == 'ACP_CAT_SYSTEM') ? true : false,
+					'S_ACP_MODULE_MANAGEMENT'	=> ($this->module_class == 'acp' && ($row['module_basename'] == 'modules' || $row['module_langname'] == 'ACP_MODULE_MANAGEMENT')) ? true : false,
 
 					'U_MODULE'			=> $this->u_action . '&amp;parent_id=' . $row['module_id'],
 					'U_MOVE_UP'			=> $url . '&amp;action=move_up',
@@ -1007,6 +1011,14 @@ class acp_modules
 		$this->remove_cache_file();
 
 		return $this->lang_name($target['module_langname']);
+	}
+
+	/**
+	* Check if the module or her childs hold the management module(s)
+	*/
+	function is_management_module($module_id)
+	{
+		
 	}
 }
 

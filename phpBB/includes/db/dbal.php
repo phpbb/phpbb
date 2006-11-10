@@ -298,19 +298,16 @@ class dbal
 			$array = array($array);
 		}
 
-		$values = array();
-		foreach ($array as $var)
+		if (sizeof($array) == 1)
 		{
-			$values[] = $this->_sql_validate_value($var);
-		}
+			@reset($array);
+			$var = current($array);
 
-		if (sizeof($values) == 1)
-		{
-			return $field . ($negate ? ' <> ' : ' = ') . $values[0];
+			return $field . ($negate ? ' <> ' : ' = ') . $this->_sql_validate_value($var);
 		}
 		else
 		{
-			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', $values) . ')';
+			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', array_map(array($this, '_sql_validate_value'), $array)) . ')';
 		}
 	}
 

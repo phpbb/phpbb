@@ -549,7 +549,7 @@ class template_compile
 	*/
 	function compile_tag_include_php($tag_args)
 	{
-		return "include('" . $this->template->root . '/' . $tag_args . "');";
+		return "include('" . $tag_args . "');";
 	}
 
 	/**
@@ -559,7 +559,7 @@ class template_compile
 	*/
 	function _parse_is_expr($is_arg, $tokens)
 	{
-		$expr_end =	0;
+		$expr_end = 0;
 		$negate_expr = false;
 
 		if (($first_token = array_shift($tokens)) == 'not')
@@ -578,12 +578,12 @@ class template_compile
 				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
-					$expr_arg =	$tokens[$expr_end++];
-					$expr =	"!(($is_arg	/ $expr_arg) % $expr_arg)";
+					$expr_arg = $tokens[$expr_end++];
+					$expr = "!(($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr =	"!($is_arg % 2)";
+					$expr = "!($is_arg % 2)";
 				}
 			break;
 
@@ -591,12 +591,12 @@ class template_compile
 				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
-					$expr_arg =	$tokens[$expr_end++];
-					$expr =	"(($is_arg / $expr_arg)	% $expr_arg)";
+					$expr_arg = $tokens[$expr_end++];
+					$expr = "(($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr =	"($is_arg %	2)";
+					$expr = "($is_arg % 2)";
 				}
 			break;
 
@@ -604,18 +604,18 @@ class template_compile
 				if (@$tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
-					$expr_arg =	$tokens[$expr_end++];
-					$expr =	"!($is_arg % $expr_arg)";
+					$expr_arg = $tokens[$expr_end++];
+					$expr = "!($is_arg % $expr_arg)";
 				}
 			break;
 		}
 
 		if ($negate_expr)
 		{
-			$expr =	"!($expr)";
+			$expr = "!($expr)";
 		}
 
-		array_splice($tokens, 0, $expr_end,	$expr);
+		array_splice($tokens, 0, $expr_end, $expr);
 
 		return $tokens;
 	}

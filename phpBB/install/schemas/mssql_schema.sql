@@ -1687,7 +1687,7 @@ GO
 CREATE  INDEX [user_type] ON [phpbb_users]([user_type]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [username] ON [phpbb_users]([username]) ON [PRIMARY]
+CREATE  INDEX [username_clean] ON [phpbb_users]([username_clean]) ON [PRIMARY]
 GO
 
 

@@ -931,6 +931,9 @@ function utf8_case_fold($text, $option = 'full')
 
 /**
 * @todo needs documenting
+*
+* Please be aware that if you change something within this function or within
+* functions used here you need to rebuild/update the complete users table.
 */
 function utf8_clean_string($text)
 {

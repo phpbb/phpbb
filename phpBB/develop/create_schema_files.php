@@ -12,7 +12,7 @@
 * If you overwrite the original schema files please make sure you save the file with UNIX linefeeds.
 */
 
-//die("Please read the first lines of this script for instructions on how to enable it");
+die("Please read the first lines of this script for instructions on how to enable it");
 
 set_time_limit(0);
 
@@ -1899,7 +1899,7 @@ function get_schema_struct()
 			'user_birthday'				=> array('INDEX', 'user_birthday'),
 			'user_email_hash'			=> array('INDEX', 'user_email_hash'),
 			'user_type'					=> array('INDEX', 'user_type'),
-			'username_clean'					=> array('INDEX', 'username_clean'),
+			'username_clean'			=> array('INDEX', 'username_clean'),
 		),
 	);
 

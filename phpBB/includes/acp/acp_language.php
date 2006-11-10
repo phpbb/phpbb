@@ -705,7 +705,7 @@ class acp_language
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				if (!$row)
+				if ($row)
 				{
 					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}

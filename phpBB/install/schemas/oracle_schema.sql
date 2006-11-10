@@ -1847,7 +1847,7 @@ CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash)
 /
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type)
 /
-CREATE INDEX phpbb_users_username ON phpbb_users (username)
+CREATE INDEX phpbb_users_username_clean ON phpbb_users (username_clean)
 /
 
 CREATE SEQUENCE phpbb_users_seq
