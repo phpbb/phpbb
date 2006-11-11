@@ -44,8 +44,8 @@ class messenger
 	*/
 	function reset()
 	{
-		$this->addresses = array();
-		$this->vars = $this->msg = $this->extra_headers = $this->replyto = $this->from = '';
+		$this->addresses = $this->extra_headers = array();
+		$this->vars = $this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = MAIL_NORMAL_PRIORITY;
 	}
 
@@ -118,7 +118,7 @@ class messenger
 	*/
 	function headers($headers)
 	{
-		$this->extra_headers .= trim($headers) . "\n";
+		$this->extra_headers[] = trim($headers);
 	}
 
 	/**
@@ -274,6 +274,50 @@ class messenger
 	}
 
 	/**
+	* Return email header
+	*/
+	function build_header($to, $cc, $bcc)
+	{
+		global $config;
+
+		$headers = array();
+
+		$headers[] = 'From: ' . $this->from;
+
+		if ($cc)
+		{
+			$headers[] = 'Cc: ' . $cc;
+		}
+
+		if ($bcc)
+		{
+			$headers[] = 'Bcc: ' . $bcc;
+		}
+
+		$headers[] = 'Reply-To: ' . $this->replyto;
+		$headers[] = 'Return-Path: <' . $config['board_email'] . '>';
+		$headers[] = 'Sender: <' . $config['board_email'] . '>';
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Message-ID: <' . md5(unique_id(time())) . '@' . $config['server_name'] . '>';
+		$headers[] = 'Date: ' . gmdate('D, d M Y H:i:s T', time());
+		$headers[] = 'Content-Type: text/plain; charset=UTF-8'; // format=flowed
+		$headers[] = 'Content-Transfer-Encoding: 8bit'; // 7bit
+
+		$headers[] = 'X-Priority: ' . $this->mail_priority;
+		$headers[] = 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High'));
+		$headers[] = 'X-Mailer: PhpBB3';
+		$headers[] = 'X-MimeOLE: phpBB3';
+		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
+
+		if (sizeof($this->extra_headers))
+		{
+			$headers[] = implode("\r\n", $this->extra_headers);
+		}
+
+		return implode("\r\n", $headers);
+	}
+
+	/**
 	* Send out emails
 	*/
 	function msg_email()
@@ -296,8 +340,18 @@ class messenger
 			$use_queue = true;
 		}
 
-		$to = $cc = $bcc = '';
+		if (empty($this->replyto))
+		{
+			$this->replyto = '<' . $config['board_email'] . '>';
+		}
+
+		if (empty($this->from))
+		{
+			$this->from = '<' . $config['board_email'] . '>';
+		}
+
 		// Build to, cc and bcc strings
+		$to = $cc = $bcc = '';
 		foreach ($this->addresses as $type => $address_ary)
 		{
 			if ($type == 'im')
@@ -311,34 +365,8 @@ class messenger
 			}
 		}
 
-		if (empty($this->replyto))
-		{
-			$this->replyto = '<' . $config['board_email'] . '>';
-		}
-
-		if (empty($this->from))
-		{
-			$this->from = '<' . $config['board_email'] . '>';
-		}
-
 		// Build header
-		$headers = 'From: ' . $this->from . "\n";
-		$headers .= ($cc != '') ? "Cc: $cc\n" : '';
-		$headers .= ($bcc != '') ? "Bcc: $bcc\n" : ''; 
-		$headers .= 'Reply-to: ' . $this->replyto . "\n";
-		$headers .= 'Return-Path: <' . $config['board_email'] . ">\n";
-		$headers .= 'Sender: <' . $config['board_email'] . ">\n";
-		$headers .= "MIME-Version: 1.0\n";
-		$headers .= 'Message-ID: <' . md5(unique_id(time())) . "@" . $config['server_name'] . ">\n";
-		$headers .= 'Date: ' . gmdate('D, d M Y H:i:s T', time()) . "\n";
-		$headers .= "Content-type: text/plain; charset=UTF-8\n";
-		$headers .= "Content-transfer-encoding: 8bit\n";
-		$headers .= "X-Priority: {$this->mail_priority}\n";
-		$headers .= 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High')) . "\n";
-		$headers .= "X-Mailer: PhpBB3\n";
-		$headers .= "X-MimeOLE: phpBB3\n";
-		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
-		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
+		$headers = $this->build_header($to, $cc, $bcc);
 
 		// Send message ...
 		if (!$use_queue)
@@ -348,11 +376,11 @@ class messenger
 
 			if ($config['smtp_delivery'])
 			{
-				$result = smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $headers);
+				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap($this->msg), $err_msg, $headers);
 			}
 			else
 			{
-				$result = @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				$result = @$config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
 			}
 
 			if (!$result)
@@ -576,7 +604,7 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, $subject, wordwrap($msg), $err_msg, $headers) : @$config['email_function_name']($to, $subject, implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						$result = ($config['smtp_delivery']) ? smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers) : @$config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
 
 						if (!$result)
 						{
@@ -724,7 +752,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	{
 		if (is_array($headers))
 		{
-			$headers = (sizeof($headers) > 1) ? join("\n", $headers) : $headers[0];
+			$headers = (sizeof($headers) > 1) ? join("\r\n", $headers) : $headers[0];
 		}
 		$headers = chop($headers);
 
@@ -1341,16 +1369,22 @@ class smtp_class
 * from php.net and modified. There is an alternative encoding method which 
 * may produce less output but it's questionable as to its worth in this 
 * scenario.
+*
+* This version is using base64 encoded date. The downside of this
+* is if the mail client does not understand this encoding the user
+* is basically doomed with an unreadable subject.
 */
 function mail_encode($str)
 {
 	// define start delimimter, end delimiter and spacer
-	$end = "?=";
-	$start = "=?UTF-8?B?";
-	$spacer = "$end\r\n $start";
+	$end = '?=';
+	$start = '=?UTF-8?B?';
+
+	// It may sound strange, but within my tests using \n instead of \r\n seem to work better
+	$spacer = "$end\n $start";
 
 	// determine length of encoded text within chunks and ensure length is even
-	$length = 75 - strlen($start) - strlen($end);
+	$length = 76 - strlen($start) - strlen($end);
 	$length = floor($length / 2) * 2;
 
 	// encode the string and split it into chunks with spacers after each chunk

@@ -639,11 +639,11 @@ switch ($mode)
 
 		$error = array();
 
-		$name		= request_var('name', '');
+		$name		= request_var('name', '', true);
 		$email		= request_var('email', '');
 		$email_lang = request_var('lang', $config['default_lang']);
-		$subject	= request_var('subject', '');
-		$message	= request_var('message', '');
+		$subject	= request_var('subject', '', true);
+		$message	= request_var('message', '', true);
 		$cc			= (isset($_POST['cc_email'])) ? true : false;
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
