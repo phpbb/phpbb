@@ -311,7 +311,7 @@ $help = array(
 		1 => 'Each board administrator can allow or disallow certain attachment types. If you are unsure what is allowed to be uploaded, contact the board administrator for assistance.'
 	),
 	array(
-		0 => 'How do I find all my attachemnts?',
+		0 => 'How do I find all my attachments?',
 		1 => 'To find your list of attachments that you have uploaded, go to your User Control Panel, or UCP, and follow the links to the attachments section.'
 	),
 	array(
