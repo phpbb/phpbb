@@ -1370,7 +1370,7 @@ class smtp_class
 * may produce less output but it's questionable as to its worth in this 
 * scenario.
 *
-* This version is using base64 encoded date. The downside of this
+* This version is using base64 encoded data. The downside of this
 * is if the mail client does not understand this encoding the user
 * is basically doomed with an unreadable subject.
 */

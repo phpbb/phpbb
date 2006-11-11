@@ -74,34 +74,33 @@ class acp_main
 					FROM ' . POSTS_TABLE . '
 					WHERE post_approved = 1';
 				$result = $db->sql_query($sql);
-
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
 				set_config('num_posts', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(topic_id) AS stat
 					FROM ' . TOPICS_TABLE . '
 					WHERE topic_approved = 1';
 				$result = $db->sql_query($sql);
-
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
 				set_config('num_topics', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(user_id) AS stat
 					FROM ' . USERS_TABLE . '
 					WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
 				$result = $db->sql_query($sql);
-
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
+
 				set_config('num_users', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(attach_id) as stat
 					FROM ' . ATTACHMENTS_TABLE . '
 					WHERE is_orphan = 0';
 				$result = $db->sql_query($sql);
-
 				set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
@@ -109,7 +108,6 @@ class acp_main
 					FROM ' . ATTACHMENTS_TABLE . '
 					WHERE is_orphan = 0';
 				$result = $db->sql_query($sql);
-
 				set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
 
