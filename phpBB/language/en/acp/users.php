@@ -82,7 +82,6 @@ $lang = array_merge($lang, array(
 	'SELECT_USER'			=> 'Select User',
 
 	'USER_ADMIN'					=> 'User administration',
-	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
 	'USER_ADMIN_ACTIVATED'			=> 'User activated successfully.',
 	'USER_ADMIN_AVATAR_REMOVED'		=> 'Successfully removed avatar from user account.',
