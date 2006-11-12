@@ -1803,6 +1803,13 @@ class install_install extends module
 					}
 				break;
 
+				case 'mysqli':
+					if (version_compare(sqlite_libversion(), '2.8.2', '<'))
+					{
+						$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
+					}
+				break;
+
 				case 'firebird':
 					// check the version of FB, use some hackery if we can't get access to the server info
 					if ($db->service_handle !== false && function_exists('ibase_server_info'))
