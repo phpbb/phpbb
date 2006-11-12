@@ -214,8 +214,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 	global $phpbb_root_path, $config, $template, $cache;
 
 	// Grab icons
-	$icons = array();
-	$cache->obtain_icons($icons);
+	$icons = $cache->obtain_icons();
 
 	if (!$icon_id)
 	{
@@ -339,9 +338,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		return $filedata;
 	}
 
-	$extensions = array();
-	$cache->obtain_attach_extensions($extensions, $forum_id);
-
+	$extensions = $cache->obtain_attach_extensions($forum_id);
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
 	$file = ($local) ? $upload->local_upload($local_storage) : $upload->form_upload($form_name);

@@ -2387,10 +2387,8 @@ function censor_text($text)
 
 	if (!isset($censors) || !is_array($censors))
 	{
-		$censors = array();
-
 		// obtain_word_list is taking care of the users censor option and the board-wide option
-		$cache->obtain_word_list($censors);
+		$censors = $cache->obtain_word_list();
 	}
 
 	if (sizeof($censors))
@@ -2466,9 +2464,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 	if (!sizeof($extensions))
 	{
 		global $cache;
-	
-		$extensions = array();
-		$cache->obtain_attach_extensions($extensions);
+		$extensions = $cache->obtain_attach_extensions();
 	}
 
 	if (!isset($extensions['_allowed_'][$extension]))

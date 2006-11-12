@@ -1159,8 +1159,7 @@ function validate_username($username)
 	}
 
 
-	$bad_usernames = array();
-	$cache->obtain_disallowed_usernames($bad_usernames);
+	$bad_usernames = $cache->obtain_disallowed_usernames();
 
 	foreach ($bad_usernames as $bad_username)
 	{

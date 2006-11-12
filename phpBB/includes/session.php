@@ -324,8 +324,7 @@ class session
 		* bot, act accordingly
 		*/		
 		$bot = false;
-		$active_bots = array();
-		$cache->obtain_bots($active_bots);
+		$active_bots = $cache->obtain_bots();
 
 		foreach ($active_bots as $row)
 		{

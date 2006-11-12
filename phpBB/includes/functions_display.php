@@ -709,8 +709,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 	if (empty($extensions) || !is_array($extensions))
 	{
-		$extensions = array();
-		$cache->obtain_attach_extensions($extensions);
+		$extensions = $cache->obtain_attach_extensions();
 	}
 
 	// Look for missing attachment informations...

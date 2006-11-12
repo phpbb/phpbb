@@ -63,8 +63,7 @@ if ($attachment['is_orphan'])
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
-	$extensions = array();
-	$cache->obtain_attach_extensions($extensions);
+	$extensions = $cache->obtain_attach_extensions();
 }
 else
 {

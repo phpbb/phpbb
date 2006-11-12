@@ -421,8 +421,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Grab icons
-	$icons = array();
-	$cache->obtain_icons($icons);
+	$icons = $cache->obtain_icons();
 
 	// Output header
 	if ($search_id && ($total_match_count > 1000))
