@@ -198,7 +198,6 @@ unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
 $config = $cache->obtain_config();
-$dss_seeded = false;
 
 // Disable board if the install/ directory is still present
 if (file_exists($phpbb_root_path . 'install') && !defined('ADMIN_START'))
