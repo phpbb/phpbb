@@ -309,12 +309,15 @@ class messenger
 		$headers[] = 'X-MimeOLE: phpBB3';
 		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
 
+		// We use \n here instead of \r\n because our smtp mailer is adjusting it to \r\n automatically, whereby the php mail function only works
+		// if using \n.
+
 		if (sizeof($this->extra_headers))
 		{
-			$headers[] = implode("\r\n", $this->extra_headers);
+			$headers[] = implode("\n", $this->extra_headers);
 		}
 
-		return implode("\r\n", $headers);
+		return implode("\n", $headers);
 	}
 
 	/**
@@ -752,7 +755,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	{
 		if (is_array($headers))
 		{
-			$headers = (sizeof($headers) > 1) ? join("\r\n", $headers) : $headers[0];
+			$headers = (sizeof($headers) > 1) ? join("\n", $headers) : $headers[0];
 		}
 		$headers = chop($headers);
 
@@ -1379,9 +1382,7 @@ function mail_encode($str)
 	// define start delimimter, end delimiter and spacer
 	$end = '?=';
 	$start = '=?UTF-8?B?';
-
-	// It may sound strange, but within my tests using \n instead of \r\n seem to work better
-	$spacer = "$end\n $start";
+	$spacer = "$end $start";
 
 	// determine length of encoded text within chunks and ensure length is even
 	$length = 76 - strlen($start) - strlen($end);
