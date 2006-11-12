@@ -257,8 +257,8 @@ class ucp_profile
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
 				);
-				
-				utf8_normalize_nfc(array(&$data['location'], &$data['occupation'], &$data['interests']))
+
+				utf8_normalize_nfc(array(&$data['location'], &$data['occupation'], &$data['interests']));
 
 				if ($user->data['user_birthday'])
 				{
