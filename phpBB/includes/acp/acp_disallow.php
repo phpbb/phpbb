@@ -43,6 +43,8 @@ class acp_disallow
 			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
 			$db->sql_query($sql);
 
+			$cache->destroy('disallowed_usernames');
+
 			$message = $user->lang['DISALLOW_SUCCESSFUL'];
 			add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
 
@@ -60,6 +62,8 @@ class acp_disallow
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . '
 				WHERE disallow_id = ' . $disallowed_id;
 			$db->sql_query($sql);
+
+			$cache->destroy('disallowed_usernames');
 
 			add_log('admin', 'LOG_DISALLOW_DELETE');
 

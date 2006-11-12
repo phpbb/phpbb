@@ -1120,9 +1120,11 @@ function validate_match($string, $optional = false, $match)
 */
 function validate_username($username)
 {
-	global $config, $db, $user;
+	global $config, $db, $user, $cache;
 
-	if (utf8_clean_string($user->data['username']) == utf8_clean_string($username))
+	$clean_username = utf8_clean_string($username);
+
+	if (utf8_clean_string($user->data['username']) == $clean_username)
 	{
 		return false;
 	}
@@ -1134,7 +1136,7 @@ function validate_username($username)
 
 	$sql = 'SELECT username
 		FROM ' . USERS_TABLE . "
-		WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+		WHERE username_clean = '" . $db->sql_escape($clean_username) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1156,19 +1158,17 @@ function validate_username($username)
 		return 'USERNAME_TAKEN';
 	}
 
-	$sql = 'SELECT disallow_username
-		FROM ' . DISALLOW_TABLE;
-	$result = $db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	$bad_usernames = array();
+	$cache->obtain_disallowed_usernames($bad_usernames);
+
+	foreach ($bad_usernames as $bad_username)
 	{
-		if (preg_match('#^' . str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')) . '#i', $username))
+		if (preg_match('#^' . $bad_username . '#', $clean_username))
 		{
-			$db->sql_freeresult($result);
 			return 'USERNAME_DISALLOWED';
 		}
 	}
-	$db->sql_freeresult($result);
 
 	$sql = 'SELECT word
 		FROM  ' . WORDS_TABLE;

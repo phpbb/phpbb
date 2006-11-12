@@ -354,6 +354,29 @@ class cache extends acm
 
 		return $parsed_items;
 	}
+
+	function obtain_disallowed_usernames(&$usernames)
+	{
+		if (($usernames = $this->get('disallowed_usernames')) === false)
+		{
+			global $db;
+
+			$sql = 'SELECT disallow_username
+				FROM  ' . DISALLOW_TABLE;
+			$result = $db->sql_query($sql);
+
+			$usernames = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$usernames[] = utf8_clean_string(str_replace('%', '.*?', preg_quote($row['disallow_username'], '$#')));
+			}
+			$db->sql_freeresult($result);
+
+			$this->put('disallowed_usernames', $usernames);
+		}
+
+		return true;
+	}
 }
 
 ?>
