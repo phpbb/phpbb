@@ -37,6 +37,8 @@ function mcp_topic_view($id, $mode, $action)
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
+	
+	utf8_normalize_nfc(&$subject);
 
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')

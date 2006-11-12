@@ -399,6 +399,8 @@ function compose_pm($id, $mode, $action)
 		$subject = request_var('subject', '', true);
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
 		$message = request_var('message', '', true);
+		
+		utf8_normalize_nfc(array(&$subject, &$message));
 
 		if ($subject && $message)
 		{
@@ -476,6 +478,8 @@ function compose_pm($id, $mode, $action)
 	{
 		$subject = request_var('subject', '', true);
 		$message_parser->message = request_var('message', '', true);
+		
+		utf8_normalize_nfc(array(&$subject, &$message_parser->message));
 
 		$icon_id			= request_var('icon', 0);
 

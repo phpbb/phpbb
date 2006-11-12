@@ -1139,6 +1139,7 @@ class parse_message extends bbcode_firstpass
 
 		$num_attachments = sizeof($this->attachment_data);
 		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
+		utf8_normalize_nfc(&$this->filename_data['filecomment']);
 		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
 
 		$add_file		= (isset($_POST['add_file'])) ? true : false;
@@ -1256,6 +1257,7 @@ class parse_message extends bbcode_firstpass
 				if ($edit_comment)
 				{
 					$actual_comment_list = request_var('comment_list', array(''), true);
+					utf8_normalize_nfc(&$actual_comment_list);
 
 					$edit_comment = request_var('edit_comment', array(0 => ''));
 					$edit_comment = key($edit_comment);
@@ -1321,6 +1323,7 @@ class parse_message extends bbcode_firstpass
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
 
 		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
+		utf8_normalize_nfc(&$this->filename_data['filecomment']);
 		$attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
 		$this->attachment_data = array();
 

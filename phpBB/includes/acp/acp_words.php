@@ -71,6 +71,8 @@ class acp_words
 				$word_id = request_var('id', 0);
 				$word = request_var('word', '', true);
 				$replacement = request_var('replacement', '', true);
+				
+				utf8_normalize_nfc(array(&$word, &$replacement));
 
 				if (!$word || !$replacement)
 				{

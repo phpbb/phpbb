@@ -930,15 +930,52 @@ function utf8_case_fold($text, $option = 'full')
 }
 
 /**
-* @todo needs documenting
+* A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
+* to be in NFC (Normalization Form Composition).
+*
+* @param	mixed	$strings Either an array of references to strings, a reference to an array of strings or a reference to a single string
+*/
+function utf8_normalize_nfc($strings)
+{
+	if (!is_array($strings) || (sizeof($strings) > 0))
+    {	
+		if (!class_exists('utf_normalizer'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		}
+
+		if (is_array($strings))
+		{
+			foreach ($strings as $key => $string)
+			{
+				$strings[$key] = utf_normalizer::nfc($strings[$key]);
+			}
+		}
+		else
+		{
+			$strings = utf_normalizer::nfc($strings);
+		}
+	}
+}
+
+/**
+* This function is used to generate a "clean" version of a string.
+* Clean means that it is a case insensitive form (case folding) and that it is normalized (NFC).
+* Additionally a homographs of one character are transformed into one specific character (preferably ASCII
+* if it is an ASCII character).
 *
 * Please be aware that if you change something within this function or within
-* functions used here you need to rebuild/update the complete users table.
+* functions used here you need to rebuild/update the username_clean column in the users table. And all other
+* columns that store a clean string otherwise you will break this functionality.
+*
+* @param	$text	An unclean string, mabye user input (has to be valid UTF-8!)
+* @return			Cleaned up version of the input string
 */
 function utf8_clean_string($text)
 {
 	$text = utf8_case_fold($text);
-
+	
 	if (!class_exists('utf_normalizer'))
 	{
 		global $phpbb_root_path, $phpEx;
@@ -963,6 +1000,8 @@ function utf8_clean_string($text)
 		// greek
 		"\xCE\xB1" => "\x61",
 		"\xCE\xBF" => "\x6F",
+		// other
+		"\xC2\xA1" => "\x69",
 	);
 
 	$text = strtr($text, $homographs);

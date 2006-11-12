@@ -662,6 +662,8 @@ class ucp_main
 				{
 					$draft_subject = request_var('subject', '', true);
 					$draft_message = request_var('message', '', true);
+					
+					utf8_normalize_nfc(array(&$draft_subject, &$draft_message));
 
 					if ($draft_message && $draft_subject)
 					{

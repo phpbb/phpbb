@@ -448,6 +448,8 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 	$subject = request_var('subject', '', true);
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
 	$message = request_var('message', '', true);
+	
+	utf8_normalize_nfc(array(&$subject, &$message));
 
 	if ($subject && $message)
 	{
@@ -532,6 +534,8 @@ if ($submit || $preview || $refresh)
 
 	$post_data['username']			= request_var('username', $post_data['username'], true);
 	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
+	
+	utf8_normalize_nfc(array(&$post_data['post_subject'], &$message_parser->message, &$post_data['username'], &$post_data['post_edit_reason']));
 
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
@@ -604,6 +608,8 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_option_text']	= request_var('poll_option_text', '', true);
 		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
 		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
+		
+		utf8_normalize_nfc(array(&$post_data['poll_title'], &$post_data['poll_option_text']));
 	}
 
 	// If replying/quoting and last post id has changed

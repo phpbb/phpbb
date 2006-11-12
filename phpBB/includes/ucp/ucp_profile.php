@@ -252,11 +252,13 @@ class ucp_profile
 					'website'		=> request_var('website', $user->data['user_website']),
 					'location'		=> request_var('location', $user->data['user_from'], true),
 					'occupation'	=> request_var('occupation', $user->data['user_occ'], true),
-					'interests'		=> request_var('interests', $user->data['user_interests']),
+					'interests'		=> request_var('interests', $user->data['user_interests'], true),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
 				);
+				
+				utf8_normalize_nfc(array(&$data['location'], &$data['occupation'], &$data['interests']))
 
 				if ($user->data['user_birthday'])
 				{
@@ -411,6 +413,8 @@ class ucp_profile
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
 				$signature		= request_var('signature', (string) $user->data['user_sig'], true);
+
+				utf8_normalize_nfc(&$signature);
 
 				if ($submit || $preview)
 				{

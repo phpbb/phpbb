@@ -576,6 +576,11 @@ class custom_profile
 		else
 		{
 			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			
+			if (gettype($value) == 'string')
+			{
+				utf8_normalize_nfc(&$value);
+			}
 		}
 
 		switch ($field_validation)
@@ -861,6 +866,7 @@ class custom_profile
 			case FIELD_STRING:
 			case FIELD_TEXT:
 				$var = request_var($var_name, $profile_row['field_default_value'], true);
+				utf8_normalize_nfc(&$var);
 			break;
 
 			case FIELD_INT:
