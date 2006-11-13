@@ -1803,7 +1803,7 @@ class install_install extends module
 					}
 				break;
 
-				case 'mysqli':
+				case 'sqlite':
 					if (version_compare(sqlite_libversion(), '2.8.2', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
