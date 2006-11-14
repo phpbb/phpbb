@@ -126,7 +126,7 @@ $lang = array_merge($lang, array(
 	'NO_SMILIES_EXPORT'	=> 'You have no smilies with which to create a package.',
 	'NO_SMILIES_PAK'	=> 'No smiley packages found.',
 
-	'PAK_FILE_NOT_READABLE'		=> 'Could not read pak file.',
+	'PAK_FILE_NOT_READABLE'		=> 'Could not read <samp>.pak</samp> file.',
 
 	'REPLACE_MATCHES'	=> 'Replace matches',
 
@@ -215,8 +215,8 @@ $lang = array_merge($lang, array(
 	'ADD_NEW_REASON'		=> 'Add new reason',
 	'AVAILABLE_TITLES'		=> 'Available localized reason titles',
 	
-	'IS_NOT_TRANSLATED'			=> 'Reason has <samp>not</samp> been localised.',
-	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <samp>not</samp> been localised. If you want to provide the localized form, specify the correct key from the language files report reasons section.',
+	'IS_NOT_TRANSLATED'			=> 'Reason has <strong>not</strong> been localised.',
+	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <strong>not</strong> been localised. If you want to provide the localized form, specify the correct key from the language files report reasons section.',
 	'IS_TRANSLATED'				=> 'Reason has been localised.',
 	'IS_TRANSLATED_EXPLAIN'		=> 'Reason has been localised. If the title you enter here is specified within the language files report reasons section, the localized form of the title and description will be used.',
 	
