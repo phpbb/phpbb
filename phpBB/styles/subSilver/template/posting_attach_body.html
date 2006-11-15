@@ -1,26 +1,28 @@
-<script type="text/javascript">
-<!--
-	/**
-	* Show upload progress bar
-	*/
-	function popup_progress_bar()
-	{
-		close_waitscreen = 0;
-		window.open('{UA_PROGRESS_BAR}', '_upload', 'HEIGHT=200,resizable=yes,scrollbars=no,WIDTH=400');
-	}
-//-->
-</script>
-
-<!-- IF S_CLOSE_PROGRESS_WINDOW -->
-	<script language="javascript" type="text/javascript">
-	<!--
-		close_waitscreen = 1;
-	//-->
-	</script>
-<!-- ENDIF -->
-
 <tr>
-	<th colspan="2">{L_ADD_ATTACHMENT}</th>
+	<th colspan="2">
+		<script type="text/javascript">
+		<!--
+			/**
+			* Show upload progress bar
+			*/
+			function popup_progress_bar()
+			{
+				close_waitscreen = 0;
+				window.open('{UA_PROGRESS_BAR}', '_upload', 'HEIGHT=200,resizable=yes,scrollbars=no,WIDTH=400');
+			}
+		//-->
+		</script>
+
+		<!-- IF S_CLOSE_PROGRESS_WINDOW -->
+			<script language="javascript" type="text/javascript">
+			<!--
+				close_waitscreen = 1;
+			//-->
+			</script>
+		<!-- ENDIF -->
+
+		{L_ADD_ATTACHMENT}
+	</th>
 </tr>
 <tr>
 	<td class="row3" colspan="2"><span class="gensmall">{L_ADD_ATTACHMENT_EXPLAIN}</span></td>
