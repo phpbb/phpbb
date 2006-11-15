@@ -346,11 +346,7 @@ class acp_board
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : $this->new_config;
-		if (isset($_REQUEST['config']))
-		{
-			utf8_normalize_nfc(&$cfg_array);
-		}
+		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if whished

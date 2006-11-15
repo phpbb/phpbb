@@ -615,8 +615,8 @@ class acp_forums
 				$forum_data = $this->get_forum_info($forum_id);
 
 				$subforums_id = array();
-
 				$subforums = get_forum_branch($forum_id, 'children');
+
 				foreach ($subforums as $row)
 				{
 					$subforums_id[] = $row['forum_id'];
@@ -647,6 +647,7 @@ class acp_forums
 
 					'FORUM_NAME'			=> $forum_data['forum_name'],
 					'S_FORUM_POST'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+					'S_FORUM_LINK'			=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 					'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
 					'S_FORUMS_LIST'			=> $forums_list,
 					'S_ERROR'				=> (sizeof($errors)) ? true : false,

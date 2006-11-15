@@ -1471,12 +1471,13 @@ class install_install extends module
 			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
 			{
 				$lang_pack = file("{$phpbb_root_path}language/$path/iso.txt");
+
 				$sql_ary = array(
 					'lang_iso'			=> basename($path),
 					'lang_dir'			=> basename($path),
 					'lang_english_name'	=> trim(htmlspecialchars($lang_pack[0])),
-					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1])),
-					'lang_author'		=> trim(htmlspecialchars($lang_pack[2])),
+					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1], ENT_COMPAT, 'UTF-8')),
+					'lang_author'		=> trim(htmlspecialchars($lang_pack[2], ENT_COMPAT, 'UTF-8')),
 				);
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));

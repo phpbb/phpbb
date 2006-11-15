@@ -1296,6 +1296,8 @@ class fulltext_native extends search_backend
 	* @param	string	$allowed_chars	String of special chars to allow
 	* @param	string	$encoding		Text encoding
 	* @return	string					Cleaned up text, only alphanumeric chars are left
+	*
+	* @todo normalizer::cleanup being able to be used?
 	*/
 	function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
 	{
@@ -1303,9 +1305,7 @@ class fulltext_native extends search_backend
 		static $conv = array(), $conv_loaded = array();
 		$words = $allow = array();
 
-		/**
-		* Convert the text to UTF-8
-		*/
+		// Convert the text to UTF-8
 		$encoding = strtolower($encoding);
 		if ($encoding != 'utf-8')
 		{
@@ -1330,7 +1330,7 @@ class fulltext_native extends search_backend
 		* If we use it more widely, an instance of that class should be held in a
 		* a global variable instead
 		*/
-		$text = utf_normalizer::nfc($text);
+		utf_normalizer::nfc($text);
 
 		/**
 		* The first thing we do is:

@@ -206,6 +206,7 @@ function adm_page_footer($copyright_html = true)
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
+		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'VERSION'			=> $config['version'])
 	);

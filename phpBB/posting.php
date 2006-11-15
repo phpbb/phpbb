@@ -445,12 +445,10 @@ $quote_status	= ($auth->acl_get('f_reply', $forum_id)) ? true : false;
 // Save Draft
 if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 {
-	$subject = request_var('subject', '', true);
+	$subject = utf8_normalize_nfc(request_var('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
-	$message = request_var('message', '', true);
+	$message = utf8_normalize_nfc(request_var('message', '', true));
 	
-	utf8_normalize_nfc(array(&$subject, &$message));
-
 	if ($subject && $message)
 	{
 		if (confirm_box(true))
@@ -528,15 +526,13 @@ $solved_captcha = false;
 
 if ($submit || $preview || $refresh)
 {
-	$post_data['topic_cur_post_id'] = request_var('topic_cur_post_id', 0);
-	$post_data['post_subject'] = request_var('subject', '', true);
-	$message_parser->message = request_var('message', '', true);
+	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
+	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
+	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
-	$post_data['username']			= request_var('username', $post_data['username'], true);
-	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
+	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
+	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
 	
-	utf8_normalize_nfc(array(&$post_data['post_subject'], &$message_parser->message, &$post_data['username'], &$post_data['post_edit_reason']));
-
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 	$post_data['icon_id']			= request_var('icon', 0);
@@ -603,13 +599,11 @@ if ($submit || $preview || $refresh)
 	}
 	else
 	{
-		$post_data['poll_title']		= request_var('poll_title', '', true);
+		$post_data['poll_title']		= utf8_normalize_nfc(request_var('poll_title', '', true));
 		$post_data['poll_length']		= request_var('poll_length', 0);
-		$post_data['poll_option_text']	= request_var('poll_option_text', '', true);
+		$post_data['poll_option_text']	= utf8_normalize_nfc(request_var('poll_option_text', '', true));
 		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
 		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && isset($_POST['poll_vote_change'])) ? 1 : 0;
-		
-		utf8_normalize_nfc(array(&$post_data['poll_title'], &$post_data['poll_option_text']));
 	}
 
 	// If replying/quoting and last post id has changed

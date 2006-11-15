@@ -247,12 +247,10 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		$rule_option	= request_var('rule_option', 0);
 		$cond_option	= request_var('cond_option', '');
 		$action_option	= explode('|', request_var('action_option', ''));
-		$rule_string	= ($cond_option != 'none') ? request_var('rule_string', '', true) : '';
+		$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc(request_var('rule_string', '', true)) : '';
 		$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
 		$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
 		
-		utf8_normalize_nfc(&$rule_string);
-
 		$action = (int) $action_option[0];
 		$folder_id = (int) $action_option[1];
 
@@ -640,10 +638,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 	switch ($condition)
 	{
 		case 'text':
-			$rule_string = request_var('rule_string', '', true);
+			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
 			
-			utf8_normalize_nfc(&$rule_string);
-
 			$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
 				'CURRENT_STRING'	=> $rule_string,
@@ -656,10 +652,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 		case 'user':
 			$rule_user_id = request_var('rule_user_id', 0);
-			$rule_string = request_var('rule_string', '', true);
+			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
 			
-			utf8_normalize_nfc(&$rule_string);
-
 			if ($rule_string && !$rule_user_id)
 			{
 				$sql = 'SELECT user_id
@@ -701,10 +695,8 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 
 		case 'group':
 			$rule_group_id = request_var('rule_group_id', 0);
-			$rule_string = request_var('rule_string', '', true);
+			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
 			
-			utf8_normalize_nfc(&$rule_string);
-
 			$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 			$sql = 'SELECT group_id, group_name, group_type
 				FROM ' . GROUPS_TABLE . "

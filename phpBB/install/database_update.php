@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.B2';
+$updates_to_version = '3.0.B4-dev';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -284,23 +284,21 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 $database_update_info = array(
 	// Changes within this version
 	'3.0.b3'		=> array(
-/*
 		// Change the following columns...
 		'change_columns'	=> array(
-			{table}			=> array(
-				{column_name}			=> array('USINT', 0), -> column type
+			BBCODES_TABLE		=> array(
+				'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			),
 		),
-		// Add the following columns
+		/* Add the following columns
 		'add_columns'		=> array(
 			{table}			=> array(
 				{column_name}			=> array('USINT', 0), -> column type
 			),
-		),
-*/
+		),*/
 	),
 	// Latest version
-	'3.0.0'			=> array(),
+	'3.0.b4-dev'			=> array(),
 );
 
 // Determine mapping database type
@@ -459,7 +457,7 @@ switch ($current_version)
 	// No need to change here, before no break should appear
 	break;
 
-	case '3.0.0':
+	case '3.0.b4-dev':
 	default:
 		$no_updates = true;
 	break;
@@ -483,13 +481,13 @@ flush();
 
 
 /* update the version
-
 $sql = "UPDATE " . CONFIG_TABLE . "
 	SET config_value = '$updates_to_version'
 	WHERE config_name = 'version'";
 _sql($sql, $errored, $error_ary);
+*/
 
-// Optimize/vacuum analyze the tables where appropriate 
+/* Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
 // the version number update
 switch ($db->sql_layer)
@@ -534,7 +532,7 @@ $cache->purge();
 	</div>
 	
 	<div id="page-footer">
-		Powered by phpBB &copy; 2006 <a href="http://www.phpbb.com/">phpBB Group</a>
+		Powered by phpBB &copy; <?php echo date('Y'); ?> <a href="http://www.phpbb.com/">phpBB Group</a>
 	</div>
 </div>
 
@@ -549,6 +547,11 @@ $cache->purge();
 function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
 	global $db;
+
+	if (defined('DEBUG_EXTRA'))
+	{
+		echo "\n{$sql}\n";
+	}
 
 	$db->sql_return_on_error(true);
 
@@ -732,7 +735,7 @@ function prepare_column_data($dbms, $column_data)
 			$sql .= " {$column_type} ";
 
 			// For hexadecimal values do not use single quotes
-			if (!is_null($column_data[1]))
+			if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text')
 			{
 				$sql .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 			}

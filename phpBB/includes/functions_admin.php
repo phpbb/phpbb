@@ -482,6 +482,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 {
 	global $db, $config;
 
+	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
 
 	if (is_array($where_ids))
@@ -502,7 +503,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 		'posts'	=>	delete_posts($where_type, $where_ids, false, true)
 	);
 
-	$sql = 'SELECT topic_id, forum_id
+	$sql = 'SELECT topic_id, forum_id, topic_approved
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set($where_type, $where_ids);
 	$result = $db->sql_query($sql);
@@ -511,6 +512,11 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 	{
 		$forum_ids[] = $row['forum_id'];
 		$topic_ids[] = $row['topic_id'];
+
+		if ($row['topic_approved'])
+		{
+			$approved_topics++;
+		}
 	}
 	$db->sql_freeresult($result);
 
@@ -545,7 +551,10 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 		sync('topic_reported', $where_type, $where_ids);
 	}
 
-	set_config('num_topics', $config['num_topics'] - sizeof($return['topics']), true);
+	if ($approved_topics)
+	{
+		set_config('num_topics', $config['num_topics'] - $approved_topics, true);
+	}
 
 	return $return;
 }
@@ -571,9 +580,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		return false;
 	}
 
+	$approved_posts = 0;
 	$post_ids = $topic_ids = $forum_ids = $post_counts = array();
 
-	$sql = 'SELECT post_id, poster_id, post_postcount, topic_id, forum_id
+	$sql = 'SELECT post_id, poster_id, post_approved, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
 		WHERE ' . $db->sql_in_set($where_type, array_map('intval', $where_ids));
 	$result = $db->sql_query($sql);
@@ -588,6 +598,11 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		if ($row['post_postcount'])
 		{
 			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
+		}
+
+		if ($row['post_approved'])
+		{
+			$approved_posts++;
 		}
 	}
 	$db->sql_freeresult($result);
@@ -658,7 +673,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		sync('forum', 'forum_id', $forum_ids, true);
 	}
 
-	set_config('num_posts', $config['num_posts'] - sizeof($post_ids), true);
+	if ($approved_posts)
+	{
+		set_config('num_posts', $config['num_posts'] - $approved_posts, true);
+	}
 
 	return sizeof($post_ids);
 }

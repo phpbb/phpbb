@@ -983,15 +983,13 @@ class acp_users
 					'yim'			=> request_var('yim', $user_row['user_yim']),
 					'jabber'		=> request_var('jabber', $user_row['user_jabber']),
 					'website'		=> request_var('website', $user_row['user_website']),
-					'location'		=> request_var('location', $user_row['user_from'], true),
-					'occupation'	=> request_var('occupation', $user_row['user_occ'], true),
-					'interests'		=> request_var('interests', $user_row['user_interests'], true),
+					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
+					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user_row['user_occ'], true)),
+					'interests'		=> utf8_normalize_nfc(request_var('interests', $user_row['user_interests'], true)),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
 				);
-				
-				utf8_normalize_nfc(array(&$data['location'], &$data['occupation'], &$data['interests']));
 
 				if ($user_row['user_birthday'])
 				{
@@ -1551,10 +1549,8 @@ class acp_users
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
 				$enable_urls	= request_var('enable_urls', true);
-				$signature		= request_var('signature', $user_row['user_sig'], true);
-				
-				utf8_normalize_nfc(&$signature);
-				
+				$signature		= utf8_normalize_nfc(request_var('signature', $user_row['user_sig'], true));
+
 				$preview		= (isset($_POST['preview'])) ? true : false;
 
 				if ($submit || $preview)

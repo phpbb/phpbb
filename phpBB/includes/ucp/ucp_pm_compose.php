@@ -396,12 +396,10 @@ function compose_pm($id, $mode, $action)
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
-		$subject = request_var('subject', '', true);
+		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
-		$message = request_var('message', '', true);
+		$message = utf8_normalize_nfc(request_var('message', '', true));
 		
-		utf8_normalize_nfc(array(&$subject, &$message));
-
 		if ($subject && $message)
 		{
 			if (confirm_box(true))
@@ -476,11 +474,9 @@ function compose_pm($id, $mode, $action)
 
 	if ($submit || $preview || $refresh)
 	{
-		$subject = request_var('subject', '', true);
-		$message_parser->message = request_var('message', '', true);
+		$subject = utf8_normalize_nfc(request_var('subject', '', true));
+		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
 		
-		utf8_normalize_nfc(array(&$subject, &$message_parser->message));
-
 		$icon_id			= request_var('icon', 0);
 
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;

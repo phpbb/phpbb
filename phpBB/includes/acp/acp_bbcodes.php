@@ -76,7 +76,7 @@ class acp_bbcodes
 
 				$bbcode_match = request_var('bbcode_match', '');
 				$bbcode_tpl = htmlspecialchars_decode(request_var('bbcode_tpl', ''));
-				$bbcode_helpline = request_var('bbcode_helpline', '');
+				$bbcode_helpline = request_var('bbcode_helpline', '', true);
 			break;
 		}
 

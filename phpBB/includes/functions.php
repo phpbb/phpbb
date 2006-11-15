@@ -614,6 +614,10 @@ else
 
 if (!function_exists('htmlspecialchars_decode'))
 {
+	/**
+	* A wrapper for htmlspecialchars_decode
+	* @ignore
+	*/
 	function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
 	{
 		return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
@@ -2493,14 +2497,14 @@ function extension_allowed($forum_id, $extension, &$extensions)
 /**
 * Little helper for the build_hidden_fields function
 */
-function _build_hidden_fields($key, $value, $specialchar)
+function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 {
 	$hidden_fields = '';
 
 	if (!is_array($value))
 	{
-		$key = ($specialchar) ? htmlspecialchars($key) : $key;
-		$value = ($specialchar) ? htmlspecialchars($value) : $value;
+		$value = ($stripslashes) ? stripslashes($value) : $value;
+		$value = ($specialchar) ? htmlspecialchars($value, ENT_COMPAT, 'UTF-8') : $value;
 
 		$hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
 	}
@@ -2508,7 +2512,10 @@ function _build_hidden_fields($key, $value, $specialchar)
 	{
 		foreach ($value as $_key => $_value)
 		{
-			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar);
+			$_key = ($stripslashes) ? stripslashes($_key) : $key;
+			$_key = ($specialchar) ? htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') : $_key;
+
+			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar, $stripslashes);
 		}
 	}
 
@@ -2517,14 +2524,23 @@ function _build_hidden_fields($key, $value, $specialchar)
 
 /**
 * Build simple hidden fields from array
+*
+* @param array $field_ary an array of values to build the hidden field from
+* @param bool $specialchar if true, keys and values get specialchared
+* @param bool $stripslashes if true, keys and values get stripslashed
+*
+* @return string the hidden fields
 */
-function build_hidden_fields($field_ary, $specialchar = false)
+function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = false)
 {
 	$s_hidden_fields = '';
 
 	foreach ($field_ary as $name => $vars)
 	{
-		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar);
+		$name = ($stripslashes) ? stripslashes($name) : $name;
+		$name = ($specialchar) ? htmlspecialchars($name, ENT_COMPAT, 'UTF-8') : $name;
+
+		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar, $stripslashes);
 	}
 
 	return $s_hidden_fields;
@@ -2772,6 +2788,12 @@ function phpbb_checkdnsrr($host, $type = '')
 		}
 
 		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
+
+		// If output is empty, the nslookup failed
+		if (empty($output))
+		{
+			return NULL;
+		}
 
 		foreach ($output as $line)
 		{
@@ -3344,7 +3366,8 @@ function page_footer($run_cron = true)
 	}
 
 	$template->assign_vars(array(
-		'DEBUG_OUTPUT'	=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
+		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 
 		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", '', true, $user->session_id) : '')
 	);
@@ -3385,7 +3408,7 @@ function page_footer($run_cron = true)
 
 		if ($cron_type)
 		{
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . $phpbb_root_path . 'cron.' . $phpEx . '?cron_type=' . $cron_type . '" width="1" height="1" alt="cron" />');
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $cron_type) . '" width="1" height="1" alt="cron" />');
 		}
 	}
 

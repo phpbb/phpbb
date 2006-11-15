@@ -660,11 +660,9 @@ class ucp_main
 
 				if ($submit && $edit)
 				{
-					$draft_subject = request_var('subject', '', true);
-					$draft_message = request_var('message', '', true);
+					$draft_subject = utf8_normalize_nfc(request_var('subject', '', true));
+					$draft_message = utf8_normalize_nfc(request_var('message', '', true));
 					
-					utf8_normalize_nfc(array(&$draft_subject, &$draft_message));
-
 					if ($draft_message && $draft_subject)
 					{
 						$draft_row = array(

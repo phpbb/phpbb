@@ -889,7 +889,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'bbcode_id'				=> array('TINT:3', 0),
 			'bbcode_tag'			=> array('VCHAR:16', ''),
-			'bbcode_helpline'		=> array('VCHAR', ''),
+			'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			'display_on_posting'	=> array('BOOL', 0),
 			'bbcode_match'			=> array('TEXT_UNI', ''),
 			'bbcode_tpl'			=> array('MTEXT_UNI', ''),

@@ -974,7 +974,7 @@ function display_custom_bbcodes()
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
-			'BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', '&#039;', '&lt;', '&gt;'), array('\&', '\"', '\\\'', '<', '>'), $row['bbcode_helpline']))
+			'BBCODE_HELPLINE'	=> str_replace(array('&amp;', '&quot;', "'", '&lt;', '&gt;'), array('\&', '\"', '\\\'', '<', '>'), $row['bbcode_helpline']))
 		);
 
 		$i++;

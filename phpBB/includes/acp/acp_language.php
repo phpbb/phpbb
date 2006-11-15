@@ -107,10 +107,10 @@ class acp_language
 				$hidden_data = build_hidden_fields(array(
 					'file'		=> $this->language_file,
 					'dir'		=> $this->language_directory,
-					'method'	=> $method,
-					'entry'		=> $_POST['entry']),
-					true
+					'method'	=> $method)
 				);
+
+				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,

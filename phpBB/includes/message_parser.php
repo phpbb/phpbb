@@ -88,8 +88,11 @@ class bbcode_firstpass extends bbcode
 		{
 			$in = str_replace("\r\n", "\n", $this->message);
 
-			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $this->message);
-			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([^\n])#is', '#([^\n])\[\/quote\]#is'), array("[quote\\1]\n\\2", "\\1\n[/quote]"), $this->message);
+			// We strip newlines and spaces after and before quotes in quotes (trimming)
+			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([\s|\n]+)#is', '#([\s|\n]+)\[\/quote\]#is'), array("[quote\\1]", "[/quote]"), $this->message);
+
+			// Now we add exactly one newline
+			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]#is', '#\[\/quote\]#is'), array("[quote\\1]\n", "\n[/quote]"), $this->message);
 		}
 
 		// Add other checks which needs to be placed before actually parsing anything (be it bbcodes, smilies, urls...)
@@ -600,7 +603,7 @@ class bbcode_firstpass extends bbcode
 			$pos = strlen($in);
 			for ($i = 0, $tok_len = strlen($tok); $i < $tok_len; ++$i)
 			{
-				$tmp_pos = strpos($in, $tok{$i});
+				$tmp_pos = strpos($in, $tok[$i]);
 				if ($tmp_pos !== false && $tmp_pos < $pos)
 				{
 					$pos = $tmp_pos;
@@ -608,7 +611,7 @@ class bbcode_firstpass extends bbcode
 			}
 
 			$buffer .= substr($in, 0, $pos);
-			$tok = $in{$pos};
+			$tok = $in[$pos];
 			$in = substr($in, $pos + 1);
 
 			if ($tok == ']')
@@ -616,10 +619,15 @@ class bbcode_firstpass extends bbcode
 				if ($buffer == '/quote' && sizeof($close_tags))
 				{
 					// we have found a closing tag
-					// Add space at the end of the closing tag to allow following urls/smilies to be parsed correctly
-					$out .= array_pop($close_tags) . '] ';
+					$out .= array_pop($close_tags) . ']';
 					$tok = '[';
 					$buffer = '';
+
+					// Add space at the end of the closing tag if not happened before to allow following urls/smilies to be parsed correctly
+					if (!$in || $in[0] !== ' ')
+					{
+						$out .= ' ';
+					}
 				}
 				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
 				{
@@ -1138,8 +1146,7 @@ class parse_message extends bbcode_firstpass
 		$error = array();
 
 		$num_attachments = sizeof($this->attachment_data);
-		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
-		utf8_normalize_nfc(&$this->filename_data['filecomment']);
+		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
 		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
 
 		$add_file		= (isset($_POST['add_file'])) ? true : false;
@@ -1256,8 +1263,7 @@ class parse_message extends bbcode_firstpass
 			{
 				if ($edit_comment)
 				{
-					$actual_comment_list = request_var('comment_list', array(''), true);
-					utf8_normalize_nfc(&$actual_comment_list);
+					$actual_comment_list = utf8_normalize_nfc(request_var('comment_list', array(''), true));
 
 					$edit_comment = request_var('edit_comment', array(0 => ''));
 					$edit_comment = key($edit_comment);
@@ -1322,8 +1328,7 @@ class parse_message extends bbcode_firstpass
 	{
 		global $user, $db, $phpbb_root_path, $phpEx, $config;
 
-		$this->filename_data['filecomment'] = request_var('filecomment', '', true);
-		utf8_normalize_nfc(&$this->filename_data['filecomment']);
+		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
 		$attachment_data = (isset($_POST['attachment_data'])) ? $_POST['attachment_data'] : array();
 		$this->attachment_data = array();
 

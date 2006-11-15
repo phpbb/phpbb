@@ -933,30 +933,35 @@ function utf8_case_fold($text, $option = 'full')
 * A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
 * to be in NFC (Normalization Form Composition).
 *
-* @param	mixed	$strings Either an array of references to strings, a reference to an array of strings or a reference to a single string
+* @param	mixed	$strings a string or an array of strings to normalize
+* @return	mixed	the normalized content, preserving array keys if array given.
 */
 function utf8_normalize_nfc($strings)
 {
-	if (!is_array($strings) || (sizeof($strings) > 0))
-    {	
-		if (!class_exists('utf_normalizer'))
-		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
-		}
+	if (empty($strings))
+	{
+		return $strings;
+	}
 
-		if (is_array($strings))
+	if (!class_exists('utf_normalizer'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+	}
+
+	if (!is_array($strings))
+	{
+		utf_normalizer::nfc($strings);
+	}
+	else if (is_array($strings))
+	{
+		foreach ($strings as $key => $string)
 		{
-			foreach ($strings as $key => $string)
-			{
-				$strings[$key] = utf_normalizer::nfc($strings[$key]);
-			}
-		}
-		else
-		{
-			$strings = utf_normalizer::nfc($strings);
+			utf_normalizer::nfc($strings[$key]);
 		}
 	}
+
+	return $strings;
 }
 
 /**
@@ -982,7 +987,7 @@ function utf8_clean_string($text)
 		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
 	}
 
-	$text = utf_normalizer::nfc($text);
+	utf_normalizer::nfc($text);
 
 	static $homographs = array(
 		// cyrllic

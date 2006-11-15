@@ -32,14 +32,12 @@ function mcp_topic_view($id, $mode, $action)
 
 	// Set up some vars
 	$icon_id		= request_var('icon', 0);
-	$subject		= request_var('subject', '', true);
+	$subject		= utf8_normalize_nfc(request_var('subject', '', true));
 	$start			= request_var('start', 0);
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
 	
-	utf8_normalize_nfc(&$subject);
-
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
 	{

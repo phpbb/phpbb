@@ -450,7 +450,6 @@ class session
 			$this->check_ban($this->data['user_id'], $this->ip);
 		}
 
-
 		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 		$this->data['is_bot'] = ($bot) ? true : false;
 
@@ -471,6 +470,8 @@ class session
 				// Only update session DB a minute or so after last update or if page changes
 				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
+					$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
+
 					$sql_ary = array('session_time' => $this->time_now, 'session_last_visit' => $this->time_now, 'session_admin' => 0);
 
 					if ($this->update_session_page)
@@ -480,6 +481,12 @@ class session
 
 					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 						WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+					$db->sql_query($sql);
+
+					// Update the last visit time
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+						WHERE user_id = ' . (int) $this->data['user_id'];
 					$db->sql_query($sql);
 				}
 
