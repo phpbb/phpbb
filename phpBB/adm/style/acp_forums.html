@@ -7,6 +7,9 @@
 	<script type="text/javascript">
 	<!--
 
+		/**
+		* Handle displaying/hiding several options based on the forum type
+		*/
 		function display_options(value)
 		{
 			<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_POST -->
@@ -43,6 +46,33 @@
 			}
 		}
 
+		/**
+		* Init the wanted display functionality if javascript is enabled.
+		* If javascript is not available, the user is still able to properly administrate.
+		*/
+		onload = function()
+		{
+			<!-- IF S_FORUM_POST -->
+				dE('type_actions', -1);
+			<!-- ENDIF -->
+
+			<!-- IF not S_FORUM_POST -->
+				dE('forum_post_options', -1);
+			<!-- ENDIF -->
+
+			<!-- IF not S_FORUM_CAT -->
+				dE('forum_cat_options', -1);
+			<!-- ENDIF -->
+
+			<!-- IF not S_FORUM_LINK -->
+				dE('forum_link_options', -1);
+			<!-- ENDIF -->
+
+			<!-- IF S_FORUM_LINK -->
+			dE('forum_rules_options', -1);
+			<!-- ENDIF -->
+		}
+
 	//-->
 	</script>
 
@@ -68,7 +98,7 @@
 		<dd><select id="forum_type" name="forum_type" onchange="display_options(this.options[this.selectedIndex].value);">{S_FORUM_TYPE_OPTIONS}</select></dd>
 	</dl>
 	<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_POST -->
-	<div id="type_actions"<!-- IF S_FORUM_POST --> style="display: none;"<!-- ENDIF -->>
+	<div id="type_actions">
 		<dl>
 			<dt><label for="type_action">{L_DECIDE_MOVE_DELETE_CONTENT}:</label></dt>
 			<dd><input type="radio" class="radio" id="type_action" name="type_action" value="delete" checked="checked" /> {L_DELETE_ALL_POSTS}</dd>
@@ -114,7 +144,7 @@
 	</dl>
 	</fieldset>
 
-	<div id="forum_cat_options"<!-- IF not S_FORUM_CAT --> style="display: none;"<!-- ENDIF -->>
+	<div id="forum_cat_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
@@ -124,7 +154,7 @@
 		</fieldset>	
 	</div>
 
-	<div id="forum_post_options"<!-- IF not S_FORUM_POST --> style="display: none;"<!-- ENDIF -->>
+	<div id="forum_post_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
@@ -192,7 +222,7 @@
 		</fieldset>
 	</div>
 
-	<div id="forum_link_options"<!-- IF not S_FORUM_LINK --> style="display: none;"<!-- ENDIF -->>
+	<div id="forum_link_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
 		<dl>
@@ -206,7 +236,7 @@
 		</fieldset>
 	</div>
 
-	<div id="forum_rules_options"<!-- IF S_FORUM_LINK --> style="display: none;"<!-- ENDIF -->>
+	<div id="forum_rules_options">
 		<fieldset>
 			<legend>{L_FORUM_RULES}</legend>
 		<dl>
