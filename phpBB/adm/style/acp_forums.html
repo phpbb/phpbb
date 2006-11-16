@@ -52,8 +52,10 @@
 		*/
 		onload = function()
 		{
-			<!-- IF S_FORUM_POST -->
-				dE('type_actions', -1);
+			<!-- IF not S_ADD_ACTION and S_FORUM_ORIG_POST -->
+				<!-- IF S_FORUM_POST -->
+					dE('type_actions', -1);
+				<!-- ENDIF -->
 			<!-- ENDIF -->
 
 			<!-- IF not S_FORUM_POST -->
