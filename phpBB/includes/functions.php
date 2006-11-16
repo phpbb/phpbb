@@ -2766,6 +2766,65 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 	return $string;
 }
 
+/**
+* Get username details for placing into templates.
+*
+* @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour) or full (for obtaining a html string representing a coloured link to the users profile).
+* @param int $user_id The users id
+* @param string $username The users name
+* @param string $username_colour The users colour
+* @param string $guest_username optional field to specify the guest username. It will be used in favor of the GUEST language variable then.
+*
+* @return string A string consisting of what is wanted based on $mode.
+*/
+function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false)
+{
+	global $phpbb_root_path, $phpEx, $user;
+
+	$full_string = $profile_url = '';
+	$username_colour = ($username_colour) ? '#' . $username_colour : '';
+
+	if ($guest_username === false)
+	{
+		$username = ($username) ? $username : $user->lang['GUEST'];
+	}
+	else
+	{
+		$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
+	}
+
+	// Only show the link if not anonymous
+	if ($user_id && $user_id != ANONYMOUS)
+	{
+		$profile_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . (int) $user_id);
+		$full_string = '<a href="' . $profile_url . '"' . (($username_colour) ? ' style="color: ' . $username_colour . '; font-weight: bold;"' : '') .  '>' . $username . '</a>';
+	}
+	else
+	{
+		$profile_url = '';
+		$full_string = ($username_colour) ? '<span style="color: ' . $username_colour . '; font-weight: bold;">' . $username . '</span>' : $username;
+	}
+
+	switch ($mode)
+	{
+		case 'profile':
+			return $profile_url;
+		break;
+
+		case 'username':
+			return $username;
+		break;
+
+		case 'colour':
+			return $username_colour;
+		break;
+
+		case 'full':
+		default:
+			return $full_string;
+		break;
+	}
+}
 
 /**
 * Wrapper for php's checkdnsrr function.

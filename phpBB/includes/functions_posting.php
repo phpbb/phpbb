@@ -890,20 +890,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	foreach ($rowset as $i => $row)
 	{
-		$poster_id = $row['user_id'];
-		$poster = $row['username'];
+		$poster_id		= $row['user_id'];
+		$post_subject	= $row['post_subject'];
+		$message		= censor_text($row['post_text']);
+		$message		= str_replace("\n", '<br />', $message);
 
-		// Handle anon users posting with usernames
-		if ($poster_id == ANONYMOUS)
-		{
-			$poster = ($row['post_username']) ? $row['post_username'] : $user->lang['GUEST'];
-			$poster_rank = ($row['post_username']) ? $user->lang['GUEST'] : '';
-		}
-
-		$post_subject = $row['post_subject'];
-		$message = $row['post_text'];
-		$message = censor_text($message);
-		$message = str_replace("\n", '<br />', $message);
 		$decoded_message = false;
 
 		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
@@ -925,7 +916,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$post_subject = censor_text($post_subject);
 
 		$template->assign_block_vars($mode . '_row', array(
-			'POSTER_NAME'		=> $poster,
+			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+			'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+			'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),

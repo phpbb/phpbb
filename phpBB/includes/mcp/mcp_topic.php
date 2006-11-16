@@ -105,8 +105,6 @@ function mcp_topic_view($id, $mode, $action)
 	foreach ($rowset as $i => $row)
 	{
 		$has_unapproved_posts = false;
-		$poster = ($row['poster_id'] != ANONYMOUS) ? $row['username'] : ((!$row['post_username']) ? $user->lang['GUEST'] : $row['post_username']);
-		$poster = ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster;
 
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
@@ -125,7 +123,11 @@ function mcp_topic_view($id, $mode, $action)
 		}
 
 		$template->assign_block_vars('postrow', array(
-			'POSTER_NAME'	=> $poster,
+			'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+			'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+			'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
+
 			'POST_DATE'		=> $user->format_date($row['post_time']),
 			'POST_SUBJECT'	=> $post_subject,
 			'MESSAGE'		=> $message,

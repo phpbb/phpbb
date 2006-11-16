@@ -893,22 +893,6 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$poster_id = $row['poster_id'];
-	$poster	= ($poster_id == ANONYMOUS) ? ((!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'];
-
-	if ($view != 'show' || $post_id != $row['post_id'])
-	{
-		if ($row['foe'])
-		{
-			$rowset[$row['post_id']] = array(
-				'foe'		=> true,
-				'user_id'	=> $row['user_id'],
-				'post_id'	=> $row['post_id'],
-				'poster'	=> $poster,
-			);
-
-			continue;
-		}
-	}
 
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
@@ -922,10 +906,13 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$rowset[$row['post_id']] = array(
+		'hide_post'			=> ($row['foe'] && ($view != 'show' || $post_id != $row['post_id'])) ? true : false,
+
 		'post_id'			=> $row['post_id'],
 		'post_time'			=> $row['post_time'],
-		'poster'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
 		'user_id'			=> $row['user_id'],
+		'username'			=> $row['username'],
+		'user_colour'		=> $row['user_colour'],
 		'topic_id'			=> $row['topic_id'],
 		'forum_id'			=> $row['forum_id'],
 		'post_subject'		=> $row['post_subject'],
@@ -939,12 +926,14 @@ while ($row = $db->sql_fetchrow($result))
 		'post_attachment'	=> $row['post_attachment'],
 		'post_approved'		=> $row['post_approved'],
 		'post_reported'		=> $row['post_reported'],
+		'post_username'		=> $row['post_username'],
 		'post_text'			=> $row['post_text'],
 		'bbcode_uid'		=> $row['bbcode_uid'],
 		'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 		'enable_smilies'	=> $row['enable_smilies'],
 		'enable_sig'		=> $row['enable_sig'],
 		'friend'			=> $row['friend'],
+		'foe'				=> $row['foe'],
 	);
 
 	// Define the global bbcode bitfield, will be used to load bbcodes
@@ -989,7 +978,6 @@ while ($row = $db->sql_fetchrow($result))
 				'yim'				=> '',
 				'jabber'			=> '',
 				'search'			=> '',
-				'username'			=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster,
 				'age'				=> '',
 
 				'warnings'			=> 0,
@@ -1033,7 +1021,6 @@ while ($row = $db->sql_fetchrow($result))
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $row['user_yim'] . '&amp;.src=pg' : '',
 				'jabber'		=> ($row['user_jabber']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'search_author=' . urlencode($row['username']) .'&amp;showresults=posts') : '',
-				'username'		=> ($row['user_colour']) ? '<span style="color:#' . $row['user_colour'] . '">' . $poster . '</span>' : $poster
 			);
 
 			if ($row['user_avatar'] && $user->optionget('viewavatars'))
@@ -1242,19 +1229,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$row =& $rowset[$post_list[$i]];
 	$poster_id = $row['user_id'];
 
-	// Two situations can prevent a post being display:
-	// i)  The poster is on the users ignore list
-	// ii) The post was made in a codepage different from the users
-	if (!empty($row['foe']))
-	{
-		$template->assign_block_vars('postrow', array(
-			'S_IGNORE_POST' => true,
-			'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['poster'], '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>'))
-		);
-
-		continue;
-	}
-
 	// End signature parsing, only if needed
 	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
@@ -1321,7 +1295,6 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 			$result2 = $db->sql_query($sql);
 			while ($user_edit_row = $db->sql_fetchrow($result2))
 			{
-				$user_edit_row['username'] = ($user_edit_row['user_colour']) ? '<span style="color:#' . $user_edit_row['user_colour'] . '">' . $user_edit_row['username'] . '</span>' : $user_edit_row['username'];
 				$post_edit_list[$user_edit_row['user_id']] = $user_edit_row;
 			}
 			$db->sql_freeresult($result2);
@@ -1334,8 +1307,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		if ($row['post_edit_reason'])
 		{
 			$user_edit_row = $post_edit_list[$row['post_edit_user']];
+			$display_username = (!$row['post_edit_user']) ? get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']) : get_username_string('full', $row['post_edit_user'], $user_edit_row['username'], $user_edit_row['user_colour']);
 
-			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_edit_row['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+			$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 		else
 		{
@@ -1344,7 +1318,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 				$user_cache[$row['post_edit_user']] = $post_edit_list[$row['post_edit_user']];
 			}
 
-			$l_edited_by = sprintf($l_edit_time_total, (!$row['post_edit_user']) ? $row['poster'] : $user_cache[$row['post_edit_user']]['username'], $user->format_date($row['post_edit_time']), $row['post_edit_count']);
+			$display_username = (!$row['post_edit_user']) ? get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']) : get_username_string('full', $row['post_edit_user'], $user_cache[$row['post_edit_user']]['username'], $user_cache[$row['post_edit_user']]['user_colour']);
+			$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 	}
 	else
@@ -1383,7 +1358,11 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	//
 	$postrow = array(
-		'POSTER_NAME'		=> $row['poster'],
+		'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+		'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
+
 		'POSTER_RANK'		=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMAGE'		=> $user_cache[$poster_id]['rank_image'],
 		'RANK_IMAGE_SRC'	=> $user_cache[$poster_id]['rank_image_src'],
@@ -1444,7 +1423,10 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
 		'S_UNREAD_POST'		=> $post_unread,
 		'S_FIRST_UNREAD'	=> $s_first_unread,
-		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false
+		'S_CUSTOM_FIELDS'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
+
+		'S_IGNORE_POST'		=> ($row['hide_post']) ? true : false,
+		'L_IGNORE_POST'		=> ($row['hide_post']) ? sprintf($user->lang['POST_BY_FOE'], get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']), '<a href="' . $viewtopic_url . "&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}" . '">', '</a>') : '',
 	);
 
 	if (isset($cp_row['row']) && sizeof($cp_row['row']))
