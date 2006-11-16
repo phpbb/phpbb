@@ -322,16 +322,11 @@ class utf_normalizer
 							*/
 							if ($utf_char[0] >= "\xF8")
 							{
-								if ($utf_char[0] < "\xF8")
-								{
-									$trailing_bytes = 3;
-								}
-								else if ($utf_char[0] < "\xFC")
+								if ($utf_char[0] < "\xFC")
 								{
 									$trailing_bytes = 4;
 								}
-
-								if ($utf_char[0] > "\xFD")
+								else if ($utf_char[0] > "\xFD")
 								{
 									$trailing_bytes = 0;
 								}
@@ -931,7 +926,7 @@ class utf_normalizer
 	*/
 	function decompose($str, $pos, $len, &$decomp_map)
 	{
-		global $utf_combining_class, $utf_canonical_decomp, $phpbb_root_path;
+		global $utf_combining_class, $phpbb_root_path;
 
 		// Load some commonly-used tables
 		if (!isset($utf_combining_class))

@@ -126,7 +126,14 @@ if (extension_loaded('mbstring'))
 				return false;
 			}
 
-			return mb_strrpos($str, $search);
+			if (is_null($offset))
+			{
+				return mb_strrpos($str, $search);
+			}
+			else
+			{
+				return mb_strrpos($str, $search, $offset);
+			}
 		}
 	}
 	else
@@ -138,7 +145,7 @@ if (extension_loaded('mbstring'))
 		function utf8_strrpos($str,	$needle, $offset = null)
 		{
 			// offset for mb_strrpos was added in 5.2.0
-			if ($offset === false)
+			if (is_null($offset))
 			{
 				// Emulate behaviour of strrpos rather than raising warning
 				if (empty($str))
@@ -174,7 +181,7 @@ if (extension_loaded('mbstring'))
 	*/
 	function utf8_strpos($str, $needle, $offset = null)
 	{
-		if ($offset === false)
+		if (is_null($offset))
 		{
 			return mb_strpos($str, $needle);
 		}
@@ -208,7 +215,7 @@ if (extension_loaded('mbstring'))
 	*/
 	function utf8_substr($str, $offset,	$length	= null)
 	{
-		if ($length === false)
+		if (is_null($length))
 		{
 			return mb_substr($str, $offset);
 		}
