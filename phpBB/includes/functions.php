@@ -237,7 +237,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false)
 {
-	global $config, $auth, $template, $user, $db, $phpEx;
+	global $config, $auth, $template, $user, $db;
 
 	if (!$config['load_jumpbox'])
 	{
@@ -679,7 +679,7 @@ function style_select($default = '', $all = false)
 */
 function tz_select($default = '', $truncate = false)
 {
-	global $sys_timezone, $user;
+	global $user;
 
 	$tz_select = '';
 	foreach ($user->lang['tz_zones'] as $offset => $zone)

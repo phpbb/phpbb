@@ -2264,6 +2264,7 @@ function group_update_listings($group_id)
 	{
 		if (!function_exists('cache_moderators'))
 		{
+			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
 		cache_moderators();
