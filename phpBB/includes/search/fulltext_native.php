@@ -39,7 +39,7 @@ class fulltext_native extends search_backend
 	/**
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
 	*
-	* @param	boolean|string	$error	is passed by reference and should either be set to false on success or an error message on failure.
+	* @param	boolean|string	&$error	is passed by reference and should either be set to false on success or an error message on failure.
 	*
 	* @access	public
 	*/
@@ -341,17 +341,17 @@ class fulltext_native extends search_backend
 	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
-	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
-	* @param	array		$id_ary				passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	string		&$fields			contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
+	* @param	string		&$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
+	* @param	array		&$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		&$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		&$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		&$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		&$ex_fid_ary		specifies an array of forum ids which should not be searched
+	* @param	array		&$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			&$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		&$author_ary		an array of author ids if the author should be ignored during the search the array is empty
+	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
@@ -701,15 +701,15 @@ class fulltext_native extends search_backend
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
-	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
-	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		$author_ary			an array of author ids
-	* @param	array		$id_ary				passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	array		&$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		&$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		&$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		&$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		&$ex_fid_ary		specifies an array of forum ids which should not be searched
+	* @param	array		&$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			&$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		&$author_ary		an array of author ids
+	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
 	* @return	boolean|int						total number of results
@@ -996,8 +996,8 @@ class fulltext_native extends search_backend
 	*
 	* @param	string	$mode		Contains the post mode: edit, post, reply, quote
 	* @param	int		$post_id	The id of the post which is modified/created
-	* @param	string	$message	New or updated post content
-	* @param	string	$subject	New or updated post subject
+	* @param	string	&$message	New or updated post content
+	* @param	string	&$subject	New or updated post subject
 	* @param	int		$poster_id	Post author's user id
 	* @param	int		$forum_id	The id of the forum in which the post is located
 	*

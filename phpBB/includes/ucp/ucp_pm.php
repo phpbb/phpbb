@@ -10,9 +10,8 @@
 /** 
 * Private Message Class
 *
-* @param int $folder display folder with the id used
-* @param inbox|outbox|sentbox display folder with the associated name
-*
+* $_REQUEST['folder'] display folder with the id used
+* $_REQUEST['folder'] inbox|outbox|sentbox display folder with the associated name
 *
 *	Display Messages (default to inbox) - mode=view
 *	Display single message - mode=view&p=[msg_id] or &p=[msg_id] (short linkage)

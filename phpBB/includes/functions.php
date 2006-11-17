@@ -153,7 +153,7 @@ function gen_rand_string($num_chars = 8)
 
 /**
 * Return unique id
-* @param $extra additional entropy
+* @param string $extra additional entropy
 */
 function unique_id($extra = 'c')
 {
@@ -401,9 +401,9 @@ if (!function_exists('stripos'))
 	* Find position of first occurrence of a case-insensitive string
 	*
 	* @param string $haystack is the string to search in
-	* @param string needle is the string to search for
+	* @param string $needle is the string to search for
 	*
-	* @return Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
+	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
 	* Note that the needle may be a string of one or more characters.
 	* If needle is not found, stripos() will return boolean FALSE. 
 	*/

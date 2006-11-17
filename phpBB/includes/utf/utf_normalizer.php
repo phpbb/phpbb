@@ -214,12 +214,12 @@ class utf_normalizer
 	/**
 	* Recompose a UTF string
 	*
-	* @param	string	$str		Unchecked UTF string
-	* @param	integer	$pos		Position of the first UTF char (in bytes)
-	* @param	integer	$len		Length of the string (in bytes)
-	* @param	array	$qc			Quick-check array, passed by reference but never modified
-	* @param	array	$decomp_map	Decomposition mapping, passed by reference but never modified
-	* @return	string				The string, validated and recomposed
+	* @param	string	$str			Unchecked UTF string
+	* @param	integer	$pos			Position of the first UTF char (in bytes)
+	* @param	integer	$len			Length of the string (in bytes)
+	* @param	array	&$qc			Quick-check array, passed by reference but never modified
+	* @param	array	&$decomp_map	Decomposition mapping, passed by reference but never modified
+	* @return	string					The string, validated and recomposed
 	*
 	* @access	private
 	*/
@@ -916,11 +916,11 @@ class utf_normalizer
 	/**
 	* Decompose a UTF string
 	*
-	* @param	string	$str		UTF string
-	* @param	integer	$pos		Position of the first UTF char (in bytes)
-	* @param	integer	$len		Length of the string (in bytes)
-	* @param	array	$decomp_map	Decomposition mapping, passed by reference but never modified
-	* @return	string				The string, decomposed and sorted canonically
+	* @param	string	$str			UTF string
+	* @param	integer	$pos			Position of the first UTF char (in bytes)
+	* @param	integer	$len			Length of the string (in bytes)
+	* @param	array	&$decomp_map	Decomposition mapping, passed by reference but never modified
+	* @return	string					The string, decomposed and sorted canonically
 	*
 	* @access	private
 	*/

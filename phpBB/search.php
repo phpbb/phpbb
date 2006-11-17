@@ -227,7 +227,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$search->split_keywords($keywords, $search_terms);
 		if (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id)
 		{
-			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words))) . '<br />' : '';
+			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words), ENT_COMPAT, 'UTF-8')) . '<br />' : '';
 			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
 		}
 	}
@@ -436,6 +436,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
+	// @todo preg_replace still needed?
 	$hilit = preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords))))));
 	$u_hilit = urlencode($keywords);
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';

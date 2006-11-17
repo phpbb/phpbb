@@ -368,23 +368,12 @@ class template
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
-	* Some Examples:
-	* <code>
-	* alter_block_array('loop', $vararray); // Insert vararray at the beginning
-	* alter_block_array('loop', $vararray, 2); // Insert vararray at position 2
-	* alter_block_array('loop', $vararray, array('KEY' => 'value')); // Insert vararray at the position where the key 'KEY' has the value of 'value' 
-	* alter_block_array('loop', $vararray, false); // Insert vararray at first position
-	* alter_block_array('loop', $vararray, true); // Insert vararray at last position (assign_block_vars equivalence)
+	* An example of how to use this function:
+	* {@example alter_block_array.php}
 	*
-	* alter_block_array('loop', $vararray, 2, 'change'); // Change/Merge vararray with existing array at position 2
-	* alter_block_array('loop', $vararray, array('KEY' => 'value'), 'change'); // Change/Merge vararray with existing array at the position where the key 'KEY' has the value of 'value' 
-	* alter_block_array('loop', $vararray, false, 'change'); // Change/Merge vararray with existing array at first position
-	* alter_block_array('loop', $vararray, true, 'change'); // Change/Merge vararray with existing array at last position
-	* </code>
-	*
-	* @param string $blockname the blockname, for example 'loop'
-	* @param array $vararray the var array to insert/add or merge
-	* @param mixed $key Key to search for
+	* @param	string	$blockname	the blockname, for example 'loop'
+	* @param	array	$vararray	the var array to insert/add or merge
+	* @param	mixed	$key		Key to search for
 	*
 	* array: KEY => VALUE [the key/value pair to search for within the loop to determine the correct position]
 	*
@@ -393,7 +382,7 @@ class template
 	* If key is false the position is set to 0
 	* If key is true the position is set to the last entry
 	* 
-	* @param insert|change $mode Mode to execute
+	* @param	string	$mode		Mode to execute (valid modes are 'insert' and 'change')
 	*
 	*	If insert, the vararray is inserted at the given position (position counting from zero). 
 	*	If change, the current block gets merged with the vararray (resulting in new key/value pairs be added and existing keys be replaced by the new value).
@@ -401,7 +390,7 @@ class template
 	* Since counting begins by zero, inserting at the last position will result in this array: array(vararray, last positioned array)
 	* and inserting at position 1 will result in this array: array(first positioned array, vararray, following vars)
 	*
-	* @return false on error, true on success
+	* @return bool false on error, true on success
 	* @access public
 	*/
 	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')

@@ -7,9 +7,8 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
 * @todo make sure the replacements are called correctly
-* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr
-* remaining:	clean_username, htmlentities (no longer needed for internal data?), htmlspecialchars (using charset)
-*				strspn, chr, ord
+* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr, htmlspecialchars
+* remaining:	strspn, chr, ord
 */
 
 /**
@@ -63,7 +62,7 @@ if (!extension_loaded('xml'))
 	/**
 	* Implementation of PHP's native utf8_decode for people without XML support
 	*
-	* @param string $string UTF-8 encoded data
+	* @param string $str UTF-8 encoded data
 	* @return string ISO-8859-1 encoded data
 	*/
 	function utf8_decode($str)
@@ -241,9 +240,9 @@ else
 	* Find position of last occurrence of a char in a string
 	* 
 	* @author Harry Fuecks
-	* @param string haystack
-	* @param string needle
-	* @param integer (optional) offset (from left)
+	* @param string $str haystack
+	* @param string $needle needle
+	* @param integer $offset (optional) offset (from left)
 	* @return mixed integer position or FALSE on failure
 	*/
 	function utf8_strrpos($str,	$needle, $offset = null)
@@ -286,9 +285,9 @@ else
 	* Find position of first occurrence of a string
 	*
 	* @author Harry Fuecks
-	* @param string haystack
-	* @param string needle
-	* @param integer offset in characters (from left)
+	* @param string $str haystack
+	* @param string $needle needle
+	* @param integer $offset offset in characters (from left)
 	* @return mixed integer position or FALSE on failure
 	*/
 	function utf8_strpos($str, $needle, $offset = null)
@@ -489,9 +488,9 @@ else
 	* necessary. It isn't necessary for +ve offsets and no specified length
 	*
 	* @author Chris Smith<chris@jalakai.co.uk>
-	* @param string
-	* @param integer number of UTF-8 characters offset (from left)
-	* @param integer (optional) length in UTF-8 characters from offset
+	* @param string $str
+	* @param integer $offset number of UTF-8 characters offset (from left)
+	* @param integer $length (optional) length in UTF-8 characters from offset
 	* @return mixed string or FALSE if failure
 	*/
 	function utf8_substr($str, $offset, $length = NULL)
@@ -631,8 +630,8 @@ else
 * Convert a string to an array
 * 
 * @author Harry Fuecks
-* @param string UTF-8 encoded
-* @param int number to characters to split string by
+* @param string $str UTF-8 encoded
+* @param int $split_len number to characters to split string by
 * @return string characters in string reverses
 */
 function utf8_str_split($str, $split_len = 1)
@@ -657,8 +656,6 @@ function utf8_str_split($str, $split_len = 1)
 * Find length of initial segment not matching mask
 * 
 * @author Harry Fuecks
-* @param string
-* @return int
 */
 function utf8_strspn($str, $mask, $start = null, $length = null)
 {
@@ -838,8 +835,8 @@ function utf8_ord($chr)
 /**
 * Converts an NCR to a UTF-8 char
 *
-* @param integer $cp UNICODE code point
-* @return string UTF-8 char
+* @param	int		$cp	UNICODE code point
+* @return	string		UTF-8 char
 */
 function utf8_chr($cp)
 {
@@ -865,9 +862,8 @@ function utf8_chr($cp)
 * Convert Numeric Character References to UTF-8 chars
 *
 * Notes:
-*  - we do not convert NCRs recursively, if you pass &#38;#38; it will return &#38;
-*  - we DO NOT check for the existence of the Unicode characters, therefore an entity
-*    may be converted to an inexistent codepoint
+*	- we do not convert NCRs recursively, if you pass &#38;#38; it will return &#38;
+*	- we DO NOT check for the existence of the Unicode characters, therefore an entity may be converted to an inexistent codepoint
 *
 * @param	string	$text		String to convert, encoded in UTF-8 (no normal form required)
 * @return	string				UTF-8 string where NCRs have been replaced with the actual chars
@@ -897,9 +893,9 @@ function utf8_decode_ncr_callback($m)
 * Takes an array of ints representing the Unicode characters and returns
 * a UTF-8 string.
 *
-* @param string $text text to be case folded
-* @param string $option determines how we will fold the cases
-* @return string case folded text
+* @param	string	$text	text to be case folded
+* @param	string	$option	determines how we will fold the cases
+* @return	string			case folded text
 */
 function utf8_case_fold($text, $option = 'full')
 {
@@ -940,8 +936,8 @@ function utf8_case_fold($text, $option = 'full')
 * A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
 * to be in NFC (Normalization Form Composition).
 *
-* @param	mixed	$strings a string or an array of strings to normalize
-* @return	mixed	the normalized content, preserving array keys if array given.
+* @param	mixed	$strings	a string or an array of strings to normalize
+* @return	mixed				the normalized content, preserving array keys if array given.
 */
 function utf8_normalize_nfc($strings)
 {
@@ -981,8 +977,8 @@ function utf8_normalize_nfc($strings)
 * functions used here you need to rebuild/update the username_clean column in the users table. And all other
 * columns that store a clean string otherwise you will break this functionality.
 *
-* @param	$text	An unclean string, mabye user input (has to be valid UTF-8!)
-* @return			Cleaned up version of the input string
+* @param	string	$text	An unclean string, mabye user input (has to be valid UTF-8!)
+* @return	string			Cleaned up version of the input string
 */
 function utf8_clean_string($text)
 {

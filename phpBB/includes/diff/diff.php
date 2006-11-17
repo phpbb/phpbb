@@ -23,16 +23,11 @@ include_once($phpbb_root_path . 'includes/diff/renderer.' . $phpEx);
 * Code from pear.php.net, Text_Diff-0.2.1 (beta) package
 * http://pear.php.net/package/Text_Diff/
 *
-* Modified by Acyd Burn to meet our coding standards
+* Modified by phpBB Group to meet our coding standards
 * and being able to integrate into phpBB
-*/
-
-/**
+*
 * General API for generating and formatting diffs - the differences between
 * two sequences of strings.
-*
-* The PHP diff code used in this package was originally written by Geoffrey
-* T. Dairiki and is used with his permission.
 *
 * @package phpBB3
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
@@ -182,7 +177,7 @@ class diff
 	/**
 	* Removes trailing newlines from a line of text. This is meant to be used with array_walk().
 	*
-	* @param string $line  The line to trim.
+	* @param string &$line  The line to trim.
 	* @param integer $key  The index of the line in the array. Not used.
 	*/
 	function trim_newlines(&$line, $key)
