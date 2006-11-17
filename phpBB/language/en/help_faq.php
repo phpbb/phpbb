@@ -139,7 +139,7 @@ $help = array(
 		1 => 'The ability to add attachments can be done on a per forum, per group, or per user basis. The board administrator may not have allowed attachments to be added for the specific forum you are posting in, or perhaps only the administrator group can post attachments. Contact the board administrator if you are unsure about why you are unable to add attachments.'
 	),
 	array(
-		0 => 'Why did I recieve a warning?',
+		0 => 'Why did I receive a warning?',
 		1 => 'Each board administrator has their own set of rules for their site. If they feel you have broken one of your rules, they may issue you a warning. Please note that this is the board administrator’s decision, and the phpBB Group does not have anything to do with the warning on the given site.'
 	),
 	array(
