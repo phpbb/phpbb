@@ -980,6 +980,9 @@ while ($row = $db->sql_fetchrow($result))
 				'search'			=> '',
 				'age'				=> '',
 
+				'username'			=> $row['username'],
+				'user_colour'		=> $row['user_colour'],
+
 				'warnings'			=> 0,
 			);
 		}
@@ -1012,6 +1015,9 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_title'		=> '',
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
+
+				'username'			=> $row['username'],
+				'user_colour'		=> $row['user_colour'],
 
 				'online'		=> false,
 				'profile'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u=$poster_id"),
@@ -1306,8 +1312,15 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 		if ($row['post_edit_reason'])
 		{
-			$user_edit_row = $post_edit_list[$row['post_edit_user']];
-			$display_username = (!$row['post_edit_user']) ? get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']) : get_username_string('full', $row['post_edit_user'], $user_edit_row['username'], $user_edit_row['user_colour']);
+			// User having edited the post also being the post author?
+			if (!$row['post_edit_user'] || $row['post_edit_user'] == $poster_id)
+			{
+				$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_edit_user'], $post_edit_list[$row['post_edit_user']]['username'], $post_edit_list[$row['post_edit_user']]['user_colour']);
+			}
 
 			$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
@@ -1318,7 +1331,16 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 				$user_cache[$row['post_edit_user']] = $post_edit_list[$row['post_edit_user']];
 			}
 
-			$display_username = (!$row['post_edit_user']) ? get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']) : get_username_string('full', $row['post_edit_user'], $user_cache[$row['post_edit_user']]['username'], $user_cache[$row['post_edit_user']]['user_colour']);
+			// User having edited the post also being the post author?
+			if (!$row['post_edit_user'] || $row['post_edit_user'] == $poster_id)
+			{
+				$display_username = get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']);
+			}
+			else
+			{
+				$display_username = get_username_string('full', $row['post_edit_user'], $user_cache[$row['post_edit_user']]['username'], $user_cache[$row['post_edit_user']]['user_colour']);
+			}
+
 			$l_edited_by = sprintf($l_edit_time_total, $display_username, $user->format_date($row['post_edit_time']), $row['post_edit_count']);
 		}
 	}
