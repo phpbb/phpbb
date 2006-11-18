@@ -10,8 +10,7 @@
 
 /**
 */
-
-if ( !defined('IN_INSTALL') )
+if (!defined('IN_INSTALL'))
 {
 	// Someone has tried to access the file direct. This is not a good idea, so exit
 	exit;
@@ -314,18 +313,33 @@ class install_install extends module
 		$passed['files'] = true;
 		foreach ($directories as $dir)
 		{
-			$write = $exists = true;
+			$exists = $write = false;
+
+			// Try to create the directory if it does not exist
+			if (!file_exists($phpbb_root_path . $dir))
+			{
+				@mkdir($phpbb_root_path . $dir, 0777);
+				@chmod($phpbb_root_path . $dir, 0777);
+			}
+
+			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
 				if (!is_writeable($phpbb_root_path . $dir))
 				{
-					$write = (@chmod($phpbb_root_path . $dir, 0777)) ? true : false;
+					@chmod($phpbb_root_path . $dir, 0777);
 				}
+				$exists = true;
 			}
-			else
+
+			// Now check if it is writeable by storing a simple file
+			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
+			if ($fp !== false)
 			{
-				$write = $exists = (@mkdir($phpbb_root_path . $dir, 0777)) ? true : false;
+				@unlink($phpbb_root_path . $dir . 'test_lock');
+				$write = true;
 			}
+			@fclose($fp);
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
