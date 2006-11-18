@@ -1047,7 +1047,7 @@ function display_user_activity(&$userdata)
 			$forum_sql
 		GROUP BY forum_id
 		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1, 0, 3600);
+	$result = $db->sql_query_limit($sql, 1);
 	$active_f_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
@@ -1069,7 +1069,7 @@ function display_user_activity(&$userdata)
 			$forum_sql
 		GROUP BY topic_id
 		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1, 0, 3600);
+	$result = $db->sql_query_limit($sql, 1);
 	$active_t_row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 

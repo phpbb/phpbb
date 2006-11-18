@@ -195,6 +195,7 @@ function checkForm()
 	<tr>
 		<td class="row1"><b class="genmed">{L_TO}:</b></td>
 		<td class="row2">
+			{S_HIDDEN_ADDRESS_FIELD}
 		<!-- BEGIN to_recipient -->
 			<span class="genmed">
 			<a href="{to_recipient.U_VIEW}"<!-- IF to_recipient.COLOUR --> style="color:#{to_recipient.COLOUR}"<!-- ELSEIF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><b>{to_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
@@ -214,7 +215,6 @@ function checkForm()
 		<!-- END bcc_recipient -->
 		</td>
 	</tr>
-	{S_HIDDEN_ADDRESS_FIELD}
 <!-- ENDIF -->
 
 <tr>
