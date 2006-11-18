@@ -248,7 +248,7 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
@@ -279,7 +279,7 @@ class mcp_queue
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . TOPICS_TABLE . " t
 						WHERE forum_id IN (0, $forum_list)
 							AND topic_approved = 0
@@ -321,6 +321,11 @@ class mcp_queue
 					if ($global_topic)
 					{
 						$row['forum_id'] = $global_id;
+					}
+
+					if (empty($row['post_username']))
+					{
+						$row['post_username'] = $user->lang['GUEST'];
 					}
 
 					$template->assign_block_vars('postrow', array(
@@ -372,19 +377,18 @@ function approve_post($post_id_list, $mode)
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_approve')))
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_')));
 	$success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'queue',
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
-		'f'				=> $forum_id,
 		'action'		=> 'approve',
 		'redirect'		=> $redirect)
 	);
@@ -398,8 +402,8 @@ function approve_post($post_id_list, $mode)
 		// If Topic -> total_topics = total_topics+1, total_posts = total_posts+1, forum_topics = forum_topics+1, forum_posts = forum_posts+1
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
 
-		$total_topics = $total_posts = $forum_topics = $forum_posts = 0;
-		$topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = array();
+		$total_topics = $total_posts = 0;
+		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = array();
 
 		$update_forum_information = false;
 
@@ -407,13 +411,26 @@ function approve_post($post_id_list, $mode)
 		{
 			$topic_id_list[$post_data['topic_id']] = 1;
 
+			if ($post_data['forum_id'])
+			{
+				$forum_id_list[$post_data['forum_id']] = 1;
+			}
+
 			// Topic or Post. ;)
 			if ($post_data['topic_first_post_id'] == $post_id)
 			{
 				if ($post_data['forum_id'])
 				{
+					if (!isset($forum_topics_posts[$post_data['forum_id']]))
+					{
+						$forum_topics_posts[$post_data['forum_id']] = array(
+							'forum_posts'	=> 0,
+							'forum_topics'	=> 0
+						);
+					}
+
 					$total_topics++;
-					$forum_topics++;
+					$forum_topics_posts[$post_data['forum_id']]['forum_topics']++;
 				}
 
 				$topic_approve_sql[] = $post_data['topic_id'];
@@ -422,18 +439,23 @@ function approve_post($post_id_list, $mode)
 			{
 				if (!isset($topic_replies_sql[$post_data['topic_id']]))
 				{
-					$topic_replies_sql[$post_data['topic_id']] = 1;
+					$topic_replies_sql[$post_data['topic_id']] = 0;
 				}
-				else
-				{
-					$topic_replies_sql[$post_data['topic_id']]++;
-				}
+				$topic_replies_sql[$post_data['topic_id']]++;
 			}
 
 			if ($post_data['forum_id'])
 			{
+				if (!isset($forum_topics_posts[$post_data['forum_id']]))
+				{
+					$forum_topics_posts[$post_data['forum_id']] = array(
+						'forum_posts'	=> 0,
+						'forum_topics'	=> 0
+					);
+				}
+
 				$total_posts++;
-				$forum_posts++;
+				$forum_topics_posts[$post_data['forum_id']]['forum_posts']++;
 			}
 
 			$post_approve_sql[] = $post_id;
@@ -472,16 +494,19 @@ function approve_post($post_id_list, $mode)
 			}
 		}
 
-		if ($forum_topics || $forum_posts)
+		if (sizeof($forum_topics_posts))
 		{
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ';
-			$sql .= ($forum_topics) ? "forum_topics = forum_topics + $forum_topics" : '';
-			$sql .= ($forum_topics && $forum_posts) ? ', ' : '';
-			$sql .= ($forum_posts) ? "forum_posts = forum_posts + $forum_posts" : '';
-			$sql .= " WHERE forum_id = $forum_id";
+			foreach ($forum_topics_posts as $forum_id => $row)
+			{
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET ';
+				$sql .= ($row['forum_topics']) ? "forum_topics = forum_topics + {$row['forum_topics']}" : '';
+				$sql .= ($row['forum_topics'] && $row['forum_posts']) ? ', ' : '';
+				$sql .= ($row['forum_posts']) ? "forum_posts = forum_posts + {$row['forum_posts']}" : '';
+				$sql .= " WHERE forum_id = $forum_id";
 
-			$db->sql_query($sql);
+				$db->sql_query($sql);
+			}
 		}
 
 		if ($total_topics)
@@ -499,9 +524,9 @@ function approve_post($post_id_list, $mode)
 
 		if ($update_forum_information)
 		{
-			update_post_information('forum', $forum_id);
+			update_post_information('forum', array_keys($forum_id_list));
 		}
-		unset($topic_id_list);
+		unset($topic_id_list, $forum_id_list);
 
 		$messenger = new messenger();
 
@@ -528,8 +553,8 @@ function approve_post($post_id_list, $mode)
 					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
 
-					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&e=0",
-					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
+					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
+					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
 				);
 
 				$messenger->send($post_data['user_notify_type']);
@@ -547,19 +572,19 @@ function approve_post($post_id_list, $mode)
 			if ($post_id == $post_data['topic_first_post_id'] && $post_id == $post_data['topic_last_post_id'])
 			{
 				// Forum Notifications
-				user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $forum_id, $post_data['topic_id'], $post_id);
+				user_notification('post', $post_data['topic_title'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
 			}
 			else
 			{
 				// Topic Notifications
-				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $forum_id, $post_data['topic_id'], $post_id);
+				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
 			}
 		}
 		unset($post_info);
 
-		if ($forum_topics)
+		if ($total_topics)
 		{
-			$success_msg = ($forum_topics == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
+			$success_msg = ($total_topics == 1) ? 'TOPIC_APPROVED_SUCCESS' : 'TOPICS_APPROVED_SUCCESS';
 		}
 		else
 		{
@@ -598,12 +623,12 @@ function disapprove_post($post_id_list, $mode)
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_approve')))
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('t', 'mode')) . '&amp;mode=unapproved_topics');
+	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_')) . '&amp;mode=unapproved_topics');
 	$reason = request_var('reason', '', true);
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';
@@ -612,7 +637,6 @@ function disapprove_post($post_id_list, $mode)
 		'i'				=> 'queue',
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
-		'f'				=> $forum_id,
 		'action'		=> 'disapprove',
 		'redirect'		=> $redirect)
 	);
@@ -649,42 +673,52 @@ function disapprove_post($post_id_list, $mode)
 		// If Topic -> forum_topics_real -= 1
 		// If Post -> topic_replies_real -= 1
 
-		$forum_topics_real = 0;
-		$topic_replies_real_sql = $post_disapprove_sql = $topic_id_list = array();
+		$num_disapproved = 0;
+		$forum_topics_real = $topic_id_list = $forum_id_list = $topic_replies_real_sql = $post_disapprove_sql = array();
 
 		foreach ($post_info as $post_id => $post_data)
 		{
 			$topic_id_list[$post_data['topic_id']] = 1;
+
+			if ($post_data['forum_id'])
+			{
+				$forum_id_list[$post_data['forum_id']] = 1;
+			}
 
 			// Topic or Post. ;)
 			if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_last_post_id'] == $post_id)
 			{
 				if ($post_data['forum_id'])
 				{
-					$forum_topics_real++;
+					if (!isset($forum_topics_real[$post_data['forum_id']]))
+					{
+						$forum_topics_real[$post_data['forum_id']] = 0;
+					}
+					$forum_topics_real[$post_data['forum_id']]++;
+					$num_disapproved++;
 				}
 			}
 			else
 			{
 				if (!isset($topic_replies_real_sql[$post_data['topic_id']]))
 				{
-					$topic_replies_real_sql[$post_data['topic_id']] = 1;
+					$topic_replies_real_sql[$post_data['topic_id']] = 0;
 				}
-				else
-				{
-					$topic_replies_real_sql[$post_data['topic_id']]++;
-				}
+				$topic_replies_real_sql[$post_data['topic_id']]++;
 			}
 
 			$post_disapprove_sql[] = $post_id;
 		}
 
-		if ($forum_topics_real)
+		if (sizeof($forum_topics_real))
 		{
-			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_topics_real = forum_topics_real - $forum_topics_real
-				WHERE forum_id = $forum_id";
-			$db->sql_query($sql);
+			foreach ($forum_topics_real as $forum_id => $topics_real)
+			{
+				$sql = 'UPDATE ' . FORUMS_TABLE . "
+					SET forum_topics_real = forum_topics_real - $topics_real
+					WHERE forum_id = $forum_id";
+				$db->sql_query($sql);
+			}
 		}
 
 		if (sizeof($topic_replies_real_sql))
@@ -711,8 +745,12 @@ function disapprove_post($post_id_list, $mode)
 		unset($post_disapprove_sql, $topic_replies_real_sql);
 
 		update_post_information('topic', array_keys($topic_id_list));
-		update_post_information('forum', $forum_id);
-		unset($topic_id_list);
+
+		if (sizeof($forum_id_list))
+		{
+			update_post_information('forum', array_keys($forum_id_list));
+		}
+		unset($topic_id_list, $forum_id_list);
 
 		$messenger = new messenger();
 
@@ -749,9 +787,9 @@ function disapprove_post($post_id_list, $mode)
 		}
 		unset($post_info, $disapprove_reason);
 
-		if ($forum_topics_real)
+		if (sizeof($forum_topics_real))
 		{
-			$success_msg = ($forum_topics_real == 1) ? 'TOPIC_DISAPPROVED_SUCCESS' : 'TOPICS_DISAPPROVED_SUCCESS';
+			$success_msg = ($num_disapproved == 1) ? 'TOPIC_DISAPPROVED_SUCCESS' : 'TOPICS_DISAPPROVED_SUCCESS';
 		}
 		else
 		{

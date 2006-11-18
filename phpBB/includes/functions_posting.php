@@ -367,7 +367,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	// Check Image Size, if it is an image
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
 	{
-		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);		
+		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
 	}
 
 	// Admins and mods are allowed to exceed the allowed filesize
@@ -560,6 +560,12 @@ function create_thumbnail($source, $destination, $mimetype)
 	}
 
 	list($new_width, $new_height) = get_img_size_format($width, $height);
+
+	// Do not create a thumbnail if the resulting width/height is bigger than the original one
+	if ($new_width > $width && $new_height > $height)
+	{
+		return false;
+	}
 
 	$used_imagick = false;
 

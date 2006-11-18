@@ -179,7 +179,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
-		'U_VIEWTOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
+		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
 		'TO_TOPIC_ID'		=> $to_topic_id,
 		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
@@ -223,6 +223,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
 
 	$post_id_list	= request_var('post_id_list', array(0));
+	$forum_id		= request_var('forum_id', 0);
 	$start			= request_var('start', 0);
 
 	if (!sizeof($post_id_list))
@@ -231,7 +232,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_split')))
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_split')))
 	{
 		return;
 	}
@@ -430,7 +431,7 @@ function merge_posts($topic_id, $to_topic_id)
 		return;
 	}
 
-	if (!($forum_id = check_ids($post_id_list, POSTS_TABLE, 'post_id', 'm_merge')))
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
 	{
 		return;
 	}
@@ -445,7 +446,6 @@ function merge_posts($topic_id, $to_topic_id)
 		'action'		=> 'merge_posts',
 		'start'			=> $start,
 		'redirect'		=> $redirect,
-		'f'				=> $forum_id,
 		't'				=> $topic_id)
 	);
 	$success_msg = $return_link = '';
@@ -465,7 +465,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 		if (sizeof($topic_data))
 		{
-			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $forum_id . '&amp;t=' . $topic_id) . '">', '</a>');
+			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_data['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
 
 		// Link to the new topic

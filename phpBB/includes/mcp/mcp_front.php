@@ -222,7 +222,7 @@ function mcp_front_view($id, $mode, $action)
 				'IP'			=> $row['ip'],
 				'TIME'			=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
-				'U_VIEWTOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
+				'U_VIEW_TOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
 				'U_VIEWLOGS'	=> (!empty($row['viewlogs'])) ? $row['viewlogs'] : '')
 			);
 		}

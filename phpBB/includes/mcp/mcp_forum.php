@@ -79,7 +79,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
-		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
+		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
 
 		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($action == 'merge_select') ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
@@ -159,14 +159,13 @@ function mcp_resync_topics($topic_ids)
 {
 	global $auth, $db, $template, $phpEx, $user, $phpbb_root_path;
 
-	if (!($forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', 'm_')))
-	{
-		return;
-	}
-
 	if (!sizeof($topic_ids))
 	{
 		trigger_error($user->lang['NO_TOPIC_SELECTED']);
+	}
+
+	if (check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
+	{
 		return;
 	}
 

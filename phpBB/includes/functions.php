@@ -2512,7 +2512,7 @@ function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 	{
 		foreach ($value as $_key => $_value)
 		{
-			$_key = ($stripslashes) ? stripslashes($_key) : $key;
+			$_key = ($stripslashes) ? stripslashes($_key) : $_key;
 			$_key = ($specialchar) ? htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') : $_key;
 
 			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar, $stripslashes);
@@ -3085,7 +3085,7 @@ function page_header($page_title = '', $display_online_list = true)
 			// Specify escape character for MSSQL
 			if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 			{
-				$reading_sql .= " ESCAPE '\\'";
+				$reading_sql .= " ESCAPE '\\' ";
 			}
 		}
 

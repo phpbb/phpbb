@@ -1921,7 +1921,7 @@ class acp_users
 
 				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 				{
-					$sql .= " ESCAPE '\\'";
+					$sql .= " ESCAPE '\\' ";
 				}
 
 				$sql .= 'AND is_global = 1
@@ -1941,7 +1941,7 @@ class acp_users
 
 				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 				{
-					$sql .= " ESCAPE '\\'";
+					$sql .= " ESCAPE '\\' ";
 				}
 
 				$sql .= 'AND is_local = 1

@@ -606,74 +606,74 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 /**
 * Validate ids
+*
+* @param	array	&$ids			The relevant ids to check
+* @param	string	$table			The table to find the ids in
+* @param	string	$sql_id			The ids relevant column name
+* @param	array	$acl_list		A list of permissions the user need to have
+* @param	mixed	$singe_forum	Limit to one forum id (int) or the first forum found (true)
+*
+* @return	mixed	False if no ids were able to be retrieved, true if at least one id left.
+*					Additionally, this value can be the forum_id assigned if $single_forum was set.
+*					Therefore checking the result for with !== false is the best method.
 */
-function check_ids(&$ids, $table, $sql_id, $acl_list = false)
+function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
 {
 	global $db, $auth;
 
-	if (!is_array($ids) || !$ids)
+	if (!is_array($ids) || empty($ids))
 	{
-		return 0;
+		return false;
 	}
 
-	// a small logical error, since global announcement are assigned to forum_id == 0
-	// If the first topic id is a global announcement, we can force the forum. Though only global announcements can be
-	// tricked... i really do not know how to prevent this atm.
-
-	// With those two queries we make sure all ids are within one forum...
-	$sql = "SELECT forum_id FROM $table
-		WHERE $sql_id = {$ids[0]}";
-	$result = $db->sql_query($sql);
-	$forum_id = (int) $db->sql_fetchfield('forum_id');
-	$db->sql_freeresult($result);
-
-	if (!$forum_id)
-	{
-		// Global Announcement?
-		$forum_id = request_var('f', 0);
-	}
-
-	if ($forum_id === 0)
-	{
-		// Determine first forum the user is able to read - for global announcements
-		$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
-
-		$sql = 'SELECT forum_id 
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_type = ' . FORUM_POST;
-		if (sizeof($forum_ary))
-		{
-			$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
-		}
-
-		$result = $db->sql_query_limit($sql, 1);
-		$forum_id = (int) $db->sql_fetchfield('forum_id');
-		$db->sql_freeresult($result);
-	}
-
-	if ($acl_list && !$auth->acl_gets($acl_list, $forum_id))
-	{
-		trigger_error('NOT_AUTHORIZED');
-	}
-
-	if (!$forum_id)
-	{
-		trigger_error('Missing forum_id, has to be in url if global announcement...', E_USER_ERROR);
-	}
-
-	$sql = "SELECT $sql_id FROM $table
-		WHERE " . $db->sql_in_set($sql_id, $ids) . "
-			AND (forum_id = $forum_id OR forum_id = 0)";
+	$sql = "SELECT $sql_id, forum_id FROM $table
+		WHERE " . $db->sql_in_set($sql_id, $ids);
 	$result = $db->sql_query($sql);
 
 	$ids = array();
+	$forum_id = false;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$ids[] = $row[$sql_id];
+		if ($acl_list && $row['forum_id'] && !$auth->acl_gets($acl_list, $row['forum_id']))
+		{
+			continue;
+		}
+
+		if ($acl_list && !$row['forum_id'] && !$auth->acl_getf_global($acl_list))
+		{
+			continue;
+		}
+
+		// Limit forum? If not, just assign the id.
+		if ($single_forum === false)
+		{
+			$ids[] = $row[$sql_id];
+			continue;
+		}
+
+		// Limit forum to a specific forum id?
+		if ($single_forum !== true && $row['forum_id'] == (int) $single_forum)
+		{
+			$forum_id = (int) $single_forum;
+		}
+		else if ($forum_id === false)
+		{
+			$forum_id = $row['forum_id'];
+		}
+
+		if ($row['forum_id'] == $forum_id)
+		{
+			$ids[] = $row[$sql_id];
+		}
 	}
 	$db->sql_freeresult($result);
 
-	return $forum_id;
+	if (!sizeof($ids))
+	{
+		return false;
+	}
+
+	return ($single_forum === false) ? true : (int) $forum_id;
 }
 
 ?>

@@ -1117,7 +1117,7 @@ generate_forum_nav($post_data);
 // Build Forum Rules
 generate_forum_rules($post_data);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
+if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_captcha === false && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
 	// Show confirm image
 	$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
@@ -1126,31 +1126,37 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && ($mode ==
 	$db->sql_query($sql);
 
 	// Generate code
-	if ($solved_captcha === false)
-	{
-		$code = gen_rand_string(mt_rand(5, 8));
-		$confirm_id = md5(unique_id($user->ip));
+	$code = gen_rand_string(mt_rand(5, 8));
+	$confirm_id = md5(unique_id($user->ip));
 
-		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'confirm_id'	=> (string) $confirm_id,
-			'session_id'	=> (string) $user->session_id,
-			'confirm_type'	=> (int) CONFIRM_POST,
-			'code'			=> (string) $code)
-		);
-		$db->sql_query($sql);
+	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		'confirm_id'	=> (string) $confirm_id,
+		'session_id'	=> (string) $user->session_id,
+		'confirm_type'	=> (int) CONFIRM_POST,
+		'code'			=> (string) $code)
+	);
+	$db->sql_query($sql);
 
-		$template->assign_vars(array(
-			'S_CONFIRM_CODE'			=> true,
-			'CONFIRM_ID'				=> $confirm_id,
-			'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
-			'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
-		));
-	}
+	$template->assign_vars(array(
+		'S_CONFIRM_CODE'			=> true,
+		'CONFIRM_ID'				=> $confirm_id,
+		'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
+		'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
+	));
 }
 
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', $draft_id) . '" />' : '';
+
+// Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
+if ($solved_captcha !== false)
+{
+	$s_hidden_fields .= build_hidden_fields(array(
+		'confirm_id'		=> request_var('confirm_id', ''),
+		'confirm_code'		=> request_var('confirm_code', ''))
+	);
+}
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 
@@ -1178,7 +1184,7 @@ $template->assign_vars(array(
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
 	'EDIT_REASON'			=> $post_data['post_edit_reason'],
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
-	'U_VIEWTOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
+	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
 	'UA_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&mode=popup", false),
 

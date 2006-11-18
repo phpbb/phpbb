@@ -877,11 +877,12 @@ class ucp_groups
 						}
 
 						$name_ary = array_unique(explode("\n", $name_ary));
+						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 						$default = request_var('default', 0);
 
 						// Add user/s to group
-						if ($error = group_user_add($group_id, false, $name_ary, $group_row['group_name'], $default, 0, 0, $group_row))
+						if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
 						{
 							trigger_error($user->lang[$error] . $return_page);
 						}

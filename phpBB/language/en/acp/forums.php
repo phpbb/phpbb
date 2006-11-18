@@ -45,6 +45,7 @@ $lang = array_merge($lang, array(
 	'CREATE_FORUM'					=> 'Create new forum',
 
 	'DECIDE_MOVE_DELETE_CONTENT'		=> 'Delete content or move to forum',
+	'DECIDE_MOVE_DELETE_SUBFORUMS'		=> 'Delete subforums or move to forum',
 	'DEFAULT_STYLE'						=> 'Default Style',
 	'DELETE_ALL_POSTS'					=> 'Delete posts',
 	'DELETE_SUBFORUMS'					=> 'Delete subforums and posts',
@@ -106,8 +107,8 @@ $lang = array_merge($lang, array(
 	'LIST_INDEX_EXPLAIN'	=> 'Displays a link to this forum under the parent forums subforum listing if one exist.',
 	'LOCKED'				=> 'Locked',
 
-	'MOVE_POSTS_TO'		=> 'Move posts',
-	'MOVE_SUBFORUMS_TO'	=> 'Move subforums',
+	'MOVE_POSTS_TO'		=> 'Move posts to',
+	'MOVE_SUBFORUMS_TO'	=> 'Move subforums to',
 
 	'NO_DESTINATION_FORUM'			=> 'You have not specified a forum to move content to',
 	'NO_FORUM_ACTION'				=> 'No action defined for what happens with the forum content',
