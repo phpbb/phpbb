@@ -1115,8 +1115,7 @@ function validate_match($string, $optional = false, $match)
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
 *
-* @todo do we really check and disallow the " character in usernames as written above. Has it only be forgotten to include the check?
-* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+* @return	mixed	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_username($username)
 {

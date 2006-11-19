@@ -1039,7 +1039,8 @@ class user extends session
 
 			/**
 			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
-			* @todo if re-enabled we need to make sure only those languages installed are checked
+			* If re-enabled we need to make sure only those languages installed are checked
+			* Commented out so we do not loose the code.
 
 			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
 			{

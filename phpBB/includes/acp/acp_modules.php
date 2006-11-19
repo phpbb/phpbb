@@ -580,14 +580,9 @@ class acp_modules
 
 			$right = $row['right_id'];
 
-			/**
-			* @todo think about using module class here
-			*/
 			if (!$ignore_acl && $row['module_auth'])
 			{
-				$is_auth = false;
-				eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $auth->acl_getf_global("\\1")', '(int) $config["\\1"]'), $row['module_auth']) . ');');
-				if (!$is_auth)
+				if (!p_master::module_auth($row['module_auth']))
 				{
 					continue;
 				}

@@ -583,6 +583,10 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 /**
 * User authorisation levels output
+*
+* @param	string	$mode			Can be forum or topic. Not in use at the moment.
+* @param	int		$forum_id		The current forum the user is in.
+* @param	int		$forum_status	The forums status bit.
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
@@ -955,12 +959,10 @@ function display_custom_bbcodes()
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
 
-	/*
-	* @todo while adjusting custom bbcodes, think about caching this query as well as correct ordering
-	*/
 	$sql = 'SELECT bbcode_id, bbcode_tag, bbcode_helpline
 		FROM ' . BBCODES_TABLE . '
-		WHERE display_on_posting = 1';
+		WHERE display_on_posting = 1
+		ORDER BY bbcode_tag';
 	$result = $db->sql_query($sql);
 
 	$i = 0;

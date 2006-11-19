@@ -302,9 +302,7 @@ function compose_pm($id, $mode, $action)
 		{
 			delete_pm($user->data['user_id'], $msg_id, $folder_id);
 
-			/**
-			* @todo jump to next message in "history"?
-			*/
+			// jump to next message in "history"? nope, not for the moment. But able to be included later.
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
 			$message = $user->lang['MESSAGE_DELETED'];
 

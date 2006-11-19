@@ -1946,8 +1946,6 @@ function split_sql_file($sql, $delimiter)
 /**
 * Cache moderators, called whenever permissions are changed via admin_permissions. Changes of username
 * and group names must be carried through for the moderators table
-*
-* @todo let the admin define if he wants to display moderators (forum-based) - display_on_index already present and checked for...
 */
 function cache_moderators()
 {

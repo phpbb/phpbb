@@ -502,7 +502,7 @@ if (!function_exists('realpath'))
 				else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
 				{
 					// Warning: If chdir() has been used this will lie!
-					// @todo This has some problems sometime (CLI can create them easily)
+					// Warning: This has some problems sometime (CLI can create them easily)
 					$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
 					$absolute = true;
 					$path_prefix = '';
@@ -2907,9 +2907,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				return;
 			}
 
-			/**
-			* @todo Think about removing the if-condition within the final product, since we no longer enable DEBUG by default and we will maybe adjust the error reporting level
-			*/			
 			if (defined('DEBUG'))
 			{
 				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
