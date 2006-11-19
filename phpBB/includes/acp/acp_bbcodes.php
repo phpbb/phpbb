@@ -237,7 +237,7 @@ class acp_bbcodes
 
 		$sql = 'SELECT *
 			FROM ' . BBCODES_TABLE . '
-			ORDER BY bbcode_id';
+			ORDER BY bbcode_tag';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
