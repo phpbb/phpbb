@@ -128,8 +128,7 @@ class acp_bbcodes
 					$db->sql_freeresult($result);
 
 					// Grab the end, interrogate the last closing tag
-					preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs);
-					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || in_array(strtolower($regs[1]), $hard_coded))
+					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
 					{
 						trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
