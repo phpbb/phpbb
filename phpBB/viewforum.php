@@ -147,9 +147,16 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 	page_footer();
 }
 
-// Ok, if someone has only list-access, we only display the forum list
+// Ok, if someone has only list-access, we only display the forum list.
+// We also make this circumstance available to the template in case we want to display a notice. ;)
 if (!$auth->acl_get('f_read', $forum_id))
 {
+	$template->assign_vars(array(
+		'S_NO_READ_ACCESS'		=> true,
+		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
+		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . urlencode(build_url(array('_f_'))))
+	));
+
 	page_footer();
 }
 
