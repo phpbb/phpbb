@@ -317,9 +317,6 @@ class utf_normalizer
 						{
 							// Current char isn't well-formed or legal: either one or several trailing bytes are missing, or the Unicode char
 							// has been encoded in a five- or six- byte sequence
-							/**
-							* @todo $trailing_bytes always == 5?
-							*/
 							if ($utf_char[0] >= "\xF8")
 							{
 								if ($utf_char[0] < "\xFC")
@@ -411,9 +408,6 @@ class utf_normalizer
 
 								default:
 									// Five- and six- byte sequences do not need being checked for here anymore
-									/**
-									* @todo $trailing_bytes always == 5?
-									*/
 									if ($utf_char > UTF8_MAX)
 									{
 										// Out of the Unicode range
