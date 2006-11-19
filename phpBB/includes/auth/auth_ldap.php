@@ -230,8 +230,8 @@ function acp_ldap(&$new)
 		<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_uid]" value="' . $new['ldap_uid'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_uid">' . $user->lang['LDAP_EMAIL'] . ':</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
-		<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
+		<dt><label for="ldap_email">' . $user->lang['LDAP_EMAIL'] . ':</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
 	</dl>
 	';
 

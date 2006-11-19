@@ -22,18 +22,18 @@
 </style>
 <!-- ENDIF -->
 
-<script language="Javascript" type="text/javascript">
+<script type="text/javascript">
 <!--
 <!-- IF S_USER_PM_POPUP -->
 	if ({S_NEW_PM})
 	{
-		window.open('{UA_POPUP_PM}', '_phpbbprivmsg', 'HEIGHT=225,resizable=yes,WIDTH=400');
+		window.open('{UA_POPUP_PM}', '_phpbbprivmsg', 'height=225,resizable=yes,width=400');
 	}
 <!-- ENDIF -->
 
 function popup(url, width, height)
 {
-	window.open(url, '_popup', 'HEIGHT=' + height + ',resizable=yes,scrollbars=yes, WIDTH=' + width);
+	window.open(url.replace(/&amp;/g, '&'), '_popup', 'HEIGHT=' + height + ',resizable=yes,scrollbars=yes, WIDTH=' + width);
 	return false;
 }
 
@@ -47,6 +47,17 @@ function jumpto()
 	{
 		document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * perpage);
 	}
+}
+
+/**
+* Find a member
+*/
+function find_username()
+{
+	<!-- IF UA_FIND_USERNAME -->
+	window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740');
+	<!-- ENDIF -->
+	return false;
 }
 
 // Mark/unmark checkboxes
