@@ -86,7 +86,7 @@ class bbcode_firstpass extends bbcode
 		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
 		if (strpos($this->message, '[quote') !== false)
 		{
-			$in = str_replace("\r\n", "\n", $this->message);
+			$this->message = str_replace("\r\n", "\n", $this->message);
 
 			// We strip newlines and spaces after and before quotes in quotes (trimming)
 			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([\s|\n]+)#is', '#([\s|\n]+)\[\/quote\]#is'), array("[quote\\1]", "[/quote]"), $this->message);
