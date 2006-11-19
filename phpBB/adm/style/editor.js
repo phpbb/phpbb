@@ -23,7 +23,7 @@ var is_mac = (clientPC.indexOf('mac') != -1);
 */
 function helpline(help)
 {
-	document.forms[form_name].helpbox.value = eval(help + '_help');
+	document.forms[form_name].helpbox.value = help_line[help];
 }
 
 /**

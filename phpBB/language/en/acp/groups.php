@@ -95,6 +95,7 @@ $lang = array_merge($lang, array(
 	'MEMBERS'				=> 'Members',
 
 	'NO_GROUP'					=> 'No group specified.',
+	'NO_GROUPS_CREATED'			=> 'No groups created yet.',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
 	'NO_USERS'					=> 'You haven’t entered any users.',
 

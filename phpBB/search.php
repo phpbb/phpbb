@@ -1002,7 +1002,7 @@ $result = $db->sql_query_limit($sql, 5);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$keywords = htmlspecialchars($row['search_keywords']);
+	$keywords = htmlspecialchars($row['search_keywords'], ENT_COMPAT, 'UTF-8');
 
 	$template->assign_block_vars('recentsearch', array(
 		'KEYWORDS'	=> $keywords,

@@ -33,7 +33,9 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'ACTIVE_TOPICS'			=> 'Active topics',
 	'ANNOUNCEMENTS'			=> 'Announcements',
-	
+
+	'FORUM_PERMISSIONS'		=> 'Forum permissions',
+
 	'ICON_ANNOUNCEMENT'		=> 'Announcement',
 	'ICON_STICKY'			=> 'Sticky',
 
