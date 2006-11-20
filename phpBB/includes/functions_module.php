@@ -244,6 +244,7 @@ class p_master
 				case '(':
 				case '&&':
 				case '||':
+				case ',':
 				break;
 
 				default:
@@ -254,7 +255,11 @@ class p_master
 				break;
 			}
 		}
+
 		$module_auth = implode(' ', $tokens);
+
+		// Make sure $id seperation is working fine
+		$module_auth = str_replace(' , ', ',', $module_auth);
 
 		$is_auth = false;
 		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $this->acl_forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth) . ');');

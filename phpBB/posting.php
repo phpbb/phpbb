@@ -163,7 +163,7 @@ if ($post_data['forum_password'])
 // Is the user able to read within this forum?
 if (!$auth->acl_get('f_read', $forum_id))
 {
-	if ($user->data['is_registered'])
+	if ($user->data['user_id'] != ANONYMOUS)
 	{
 		trigger_error('USER_CANNOT_READ');
 	}
