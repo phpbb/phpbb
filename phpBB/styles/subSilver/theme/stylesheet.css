@@ -36,6 +36,8 @@ body {
 }
 
 #wrapheader {
+	min-height: 120px;
+	height: auto !important;
 	height: 120px;
 	background-image: url('./images/background.gif');
 	background-repeat: repeat-x;
