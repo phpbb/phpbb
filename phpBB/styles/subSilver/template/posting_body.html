@@ -145,7 +145,7 @@ function checkForm()
 	<tr>
 		<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row2" align="center"><span class="gen">{L_UNGLOBALISE_EXPLAIN}<br /><br />{L_SELECT_DESTINATION_FORUM}&nbsp;&nbsp;</span><select name="to_forum_id">{S_FORUM_SELECT}</select><br /><br /><input class="btnmain" type="submit" name="post" value="{L_CONFIRM}" />&nbsp;&nbsp; <input class="btnlite" type="submit" name="cancel_unglobalise" value="{L_CANCEL}" /></td>
 	</tr>
 	</table>
@@ -238,7 +238,7 @@ function checkForm()
 
 		<!-- IF S_SHOW_SMILEY_LINK -->
 			<tr>
-				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;" target="_phpbbsmilies">{L_MORE_SMILIES}</a></td>
+				<td align="center"><a class="nav" href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300');return false;">{L_MORE_SMILIES}</a></td>
 			</tr>
 		<!-- ENDIF -->
 
@@ -246,7 +246,7 @@ function checkForm()
 	<!-- ENDIF -->
 	</td>
 	<td class="row2" valign="top">
-	
+
 		<table width="100%" cellspacing="0" cellpadding="0" border="0">
 		<tr valign="middle" align="left">
 			<td colspan="2">
@@ -376,7 +376,7 @@ function checkForm()
 					<td class="gen">{L_LOCK_TOPIC}</td>
 				</tr>
 			<!-- ENDIF -->
-	
+
 			<!-- IF S_LOCK_POST_ALLOWED -->
 				<tr>
 					<td><input type="checkbox" class="radio" name="lock_post"{S_LOCK_POST_CHECKED} /></td>
@@ -397,7 +397,7 @@ function checkForm()
 
 <!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}:</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td> 
+		<td class="row1"><b class="genmed">{L_STICK_TOPIC_FOR}:</b><br /><span class="gensmall">{L_STICKY_ANNOUNCE_TIME_LIMIT}</span></td>
 		<td class="row2"><input class="post" type="text" name="topic_time_limit" size="3" maxlength="3" value="{TOPIC_TIME_LIMIT}" />&nbsp;<b class="gen">{L_DAYS}</b> <span class="gensmall">{L_STICK_TOPIC_FOR_EXPLAIN}</span></td>
 	</tr>
 <!-- ENDIF -->
@@ -410,10 +410,10 @@ function checkForm()
 <!-- ENDIF -->
 
 <!-- IF S_CONFIRM_CODE -->
-	<tr> 
+	<tr>
 		<th colspan="2" valign="middle">{L_POST_CONFIRMATION}</th>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row3" colspan="2"><span class="gensmall">{L_POST_CONFIRM_EXPLAIN}</span></td>
 	</tr>
 	<tr>
@@ -422,7 +422,7 @@ function checkForm()
 			{CONFIRM_IMAGE}
 		</td>
 	</tr>
-	<tr> 
+	<tr>
 		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}:  </b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
 		<td class="row2"><input class="post" type="text"  name="confirm_code" size="8" maxlength="8" /></td>
 	</tr>
@@ -438,7 +438,7 @@ function checkForm()
 			&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="7" name="cancel" value="{L_CANCEL}" />
 		</td>
 	</tr>
-	
+
 	<!-- IF S_SHOW_ATTACH_BOX --><!-- INCLUDE posting_attach_body.html --><!-- ENDIF -->
 
 	<!-- IF S_SHOW_POLL_BOX -->
