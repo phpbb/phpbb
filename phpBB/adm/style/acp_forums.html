@@ -182,7 +182,7 @@
 			<dt><label for="display_active">{L_DISPLAY_ACTIVE_TOPICS}:</label><br /><span>{L_DISPLAY_ACTIVE_TOPICS_EXPLAIN}</span></dt>
 			<dd><input type="radio" class="radio" name="display_active" value="1"<!-- IF S_DISPLAY_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="display_active" value="0"<!-- IF not S_DISPLAY_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
 		</dl>
-		</fieldset>	
+		</fieldset>
 	</div>
 
 	<div id="forum_post_options">
@@ -412,7 +412,7 @@
 			<tr>
 				<td style="width: 5%;">{forums.FOLDER_IMAGE}</td>
 				<td>
-					<!-- IF forums.FORUM_IMAGE --><div style="float: left;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
+					<!-- IF forums.FORUM_IMAGE --><div style="float: left; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
 					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
@@ -422,18 +422,18 @@
 						{ICON_MOVE_UP_DISABLED}
 						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 					<!-- ELSEIF not forums.S_FIRST_ROW && not forums.S_LAST_ROW-->
-						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
+						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a>
+						<a href="{forums.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
 					<!-- ELSEIF forums.S_LAST_ROW && not forums.S_FIRST_ROW -->
-						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
+						<a href="{forums.U_MOVE_UP}">{ICON_MOVE_UP}</a>
 						{ICON_MOVE_DOWN_DISABLED}
 					<!-- ELSE -->
 						{ICON_MOVE_UP_DISABLED}
 						{ICON_MOVE_DOWN_DISABLED}
-					<!-- ENDIF -->	
-					<a href="{forums.U_EDIT}">{ICON_EDIT}</a> 
+					<!-- ENDIF -->
+					<a href="{forums.U_EDIT}">{ICON_EDIT}</a>
 					<!-- IF not forums.S_FORUM_LINK -->
-						<a href="{forums.U_SYNC}" onclick="popup_progress_bar();">{ICON_SYNC}</a> 
+						<a href="{forums.U_SYNC}" onclick="popup_progress_bar();">{ICON_SYNC}</a>
 					<!-- ELSE -->
 						{ICON_SYNC_DISABLED}
 					<!-- ENDIF -->
@@ -448,11 +448,11 @@
 	<form id="fselect" method="post" action="{U_SEL_ACTION}">
 
 	<fieldset class="quick">
-		{L_SELECT_FORUM}: <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{FORUM_BOX}</select> 
+		{L_SELECT_FORUM}: <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{FORUM_BOX}</select>
 
 		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>
-	
+
 	</form>
 
 	<form id="forums" method="post" action="{U_ACTION}">
@@ -460,7 +460,7 @@
 	<fieldset class="quick">
 		<input type="hidden" name="action" value="add" />
 
-		<input type="text" name="forum_name" value="" /> 
+		<input type="text" name="forum_name" value="" />
 		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
 	</fieldset>
 
