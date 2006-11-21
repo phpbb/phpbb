@@ -2901,24 +2901,21 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// Additionally do not display notices if we suppress them via @
-			// If DEBUG_EXTRA is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG_EXTRA') && error_reporting()) ? E_ALL : error_reporting())) == 0)
+			// If DEBUG is defined the default level is E_ALL
+			if (($errno & ((defined('DEBUG') && error_reporting()) ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
 
-			if (defined('DEBUG'))
+			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
-				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
-				{
-					// remove complete path to installation, with the risk of changing backslashes meant to be there
-					$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
-					$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
+				// remove complete path to installation, with the risk of changing backslashes meant to be there
+				$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
+				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
 
-					echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
-				}
+				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 			}
-		
+
 		break;
 
 		case E_USER_ERROR:

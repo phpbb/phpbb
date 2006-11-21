@@ -962,7 +962,7 @@ class smtp_class
 
 	function smtp_class()
 	{
-		if (defined('DEBUG_EXTRA'))
+		if (defined('DEBUG'))
 		{
 			$this->backtrace = true;
 			$this->backtrace_log = array();
