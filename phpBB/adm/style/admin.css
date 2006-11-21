@@ -54,6 +54,12 @@ p {
 	font-size: 1.1em;
 }
 
+ul {
+	list-style: disc;
+	margin-left: 2em;	
+	margin-bottom: 1em;
+}
+
 hr {
 	border: 0 none;
 	border-top: 1px solid #999999;
@@ -237,6 +243,7 @@ span.corners-top span, span.corners-bottom span {
 
 #menu ul {
 	list-style: none;
+	margin: 0;
 }
 
 /* Default list state */
