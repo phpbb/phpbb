@@ -263,10 +263,8 @@ class p_master
 
 		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
 
-		$test = preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth);
-
 		$is_auth = false;
-		eval('$is_auth = (int) (' . $test . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth) . ');');
 
 		return $is_auth;
 	}
