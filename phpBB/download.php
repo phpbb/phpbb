@@ -254,7 +254,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	{
 		while (!feof($fp))
 		{
-			echo fgets($fp, 8192);
+			echo fread($fp, 8192);
 		}
 		fclose($fp);
 	}
