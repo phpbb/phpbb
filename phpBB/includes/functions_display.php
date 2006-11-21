@@ -597,8 +597,8 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 	$rules = array(
 		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
 		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
-		($auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
+		($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
 	);
 
 	if ($config['allow_attachments'])
@@ -744,7 +744,17 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			$attachment_data[$attach_ids[$row['attach_id']]] = $row;
 		}
 		$db->sql_freeresult($result);
+	}
 
+	// Sort correctly (please note that the attachment_data array itself get changed by this
+	if ($config['display_order'])
+	{
+		// Ascending sort
+		krsort($attachment_data);
+	}
+	else
+	{
+		// Descending sort
 		ksort($attachment_data);
 	}
 

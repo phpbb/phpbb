@@ -68,6 +68,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 
+		'S_CAN_REPORT'			=> $auth->acl_get('m_report', $forum_id),
 		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
 		'S_CAN_MOVE'			=> $auth->acl_get('m_move', $forum_id),
 		'S_CAN_FORK'			=> $auth->acl_get('m_', $forum_id),
@@ -127,7 +128,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
 			'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
 			'U_MCP_QUEUE'		=> $u_mcp_queue,
-			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports'),
+			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
 
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),

@@ -2433,8 +2433,8 @@ function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_
 		include("{$phpbb_root_path}includes/functions_display.$phpEx");
 	}
 
-	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
-	$tpl_size = sizeof($attachments);
+	$attachment_tpl = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
+	$tpl_size = sizeof($attachment_tpl);
 
 	$unset_tpl = array();
 
@@ -2447,7 +2447,7 @@ function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_
 		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
-		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
+		$replace['to'][] = (isset($attachment_tpl[$index])) ? $attachment_tpl[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
 
 		$unset_tpl[] = $index;
 	}

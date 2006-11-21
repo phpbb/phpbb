@@ -354,6 +354,8 @@ $lang = array_merge($lang, array(
 	'SORT_LAST_VISIT'	=> 'Last visit',
 	'SORT_REASON'		=> 'Reason',
 	'SORT_REG_DATE'		=> 'Registration date',
+
+	'USER_IS_INACTIVE'		=> 'User is inactive',
 ));
 
 // Log Entries

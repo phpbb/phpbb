@@ -582,7 +582,8 @@ class acp_modules
 
 			if (!$ignore_acl && $row['module_auth'])
 			{
-				if (!p_master::module_auth($row['module_auth']))
+				// We use zero as the forum id to check - global setting.
+				if (!p_master::module_auth($row['module_auth'], 0))
 				{
 					continue;
 				}

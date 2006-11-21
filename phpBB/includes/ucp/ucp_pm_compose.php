@@ -345,7 +345,7 @@ function compose_pm($id, $mode, $action)
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
 				AND is_orphan = 0
-			ORDER BY filetime " . ((!$config['display_order']) ? 'DESC' : 'ASC');
+			ORDER BY filetime DESC";
 		$result = $db->sql_query($sql);
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
@@ -750,15 +750,30 @@ function compose_pm($id, $mode, $action)
 				$type = ($type == 'u') ? 'u' : 'g';
 				$id = (int) $id;
 
-				$template->assign_block_vars($field . '_recipient', array(
-					'NAME'		=> ${$type}[$id]['name'],
-					'IS_GROUP'	=> ($type == 'g'),
-					'IS_USER'	=> ($type == 'u'),
-					'COLOUR'	=> (${$type}[$id]['colour']) ? ${$type}[$id]['colour'] : '',
+				$tpl_ary = array(
+					'IS_GROUP'	=> ($type == 'g') ? true : false,
+					'IS_USER'	=> ($type == 'u') ? true : false,
 					'UG_ID'		=> $id,
-					'U_VIEW'	=> ($type == 'u') ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
-					'TYPE'		=> $type)
+					'NAME'		=> ${$type}[$id]['name'],
+					'COLOUR'	=> (${$type}[$id]['colour']) ? '#' . ${$type}[$id]['colour'] : '',
+					'TYPE'		=> $type,
 				);
+
+				if ($type == 'u')
+				{
+					$tpl_ary = array_merge($tpl_ary, array(
+						'U_VIEW'		=> get_username_string('profile', $id, ${$type}[$id]['name'], ${$type}[$id]['colour']),
+						'NAME_FULL'		=> get_username_string('full', $id, ${$type}[$id]['name'], ${$type}[$id]['colour']),
+					));
+				}
+				else
+				{
+					$tpl_ary = array_merge($tpl_ary, array(
+						'U_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+					));
+				}
+
+				$template->assign_block_vars($field . '_recipient', $tpl_ary);
 			}
 		}
 	}

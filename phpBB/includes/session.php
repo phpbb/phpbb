@@ -1208,6 +1208,23 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
+		// Disable board if the install/ directory is still present
+		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
+		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
+		{
+			// Adjust the message slightly according to the permissions
+			if ($auth->acl_gets('a_', 'm_'))
+			{
+				$message = 'REMOVE_INSTALL';
+			}
+			else
+			{
+				$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
+			}
+
+			trigger_error($message);
+		}
+
 		// Is board disabled and user not an admin or moderator?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
 		{

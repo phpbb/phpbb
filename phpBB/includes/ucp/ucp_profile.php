@@ -35,8 +35,8 @@ class ucp_profile
 
 				$data = array(
 					'username'			=> request_var('username', $user->data['username'], true),
-					'email'				=> request_var('email', $user->data['user_email']),
-					'email_confirm'		=> request_var('email_confirm', ''),
+					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
+					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 					'new_password'		=> request_var('new_password', '', true),
 					'cur_password'		=> request_var('cur_password', '', true),
 					'password_confirm'	=> request_var('password_confirm', '', true),
@@ -93,7 +93,7 @@ class ucp_profile
 							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
 							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'],
-							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32(strtolower($data['email'])) . strlen($data['email']) : $user->data['user_email_hash'],
+							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? crc32($data['email']) . strlen($data['email']) : $user->data['user_email_hash'],
 							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? md5($data['new_password']) : $user->data['user_password'],
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
@@ -172,8 +172,9 @@ class ucp_profile
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> htmlspecialchars_decode($username),
-										'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
+										'USERNAME'			=> htmlspecialchars_decode($username),
+										'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&amp;u={$user->data['user_id']}",
+										'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
 
 									$messenger->send($row['user_notify_type']);

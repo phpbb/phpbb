@@ -199,11 +199,4 @@ unset($dbpasswd);
 // Grab global variables, re-cache if necessary
 $config = $cache->obtain_config();
 
-// Disable board if the install/ directory is still present
-if (file_exists($phpbb_root_path . 'install') && !defined('ADMIN_START'))
-{
-	$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
-	trigger_error($message);
-}
-
 ?>

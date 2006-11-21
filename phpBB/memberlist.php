@@ -346,15 +346,20 @@ switch ($mode)
 		{
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 		}
 		else
 		{
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				WHERE user_id = $user_id";
+		}
+
+		// a_user admins and founder are able to view inactive users and bots to be able to
+		// manage them more easily
+		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
+		{
+			$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		}
 
 		$result = $db->sql_query($sql);
@@ -528,6 +533,38 @@ switch ($mode)
 			{
 				$template->assign_block_vars('custom_fields', $field_data);
 			}
+		}
+
+		// Inactive reason/account?
+		if ($member['user_type'] == USER_INACTIVE)
+		{
+			$user->add_lang('acp/common');
+
+			$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
+
+			switch ($member['user_inactive_reason'])
+			{
+				case INACTIVE_REGISTER:
+					$inactive_reason = $user->lang['INACTIVE_REASON_REGISTER'];
+				break;
+
+				case INACTIVE_PROFILE:
+					$inactive_reason = $user->lang['INACTIVE_REASON_PROFILE'];
+				break;
+
+				case INACTIVE_MANUAL:
+					$inactive_reason = $user->lang['INACTIVE_REASON_MANUAL'];
+				break;
+
+				case INACTIVE_REMIND:
+					$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+				break;
+			}
+	
+			$template->assign_vars(array(
+				'S_USER_INACTIVE'		=> true,
+				'USER_INACTIVE_REASON'	=> $inactive_reason)
+			);
 		}
 
 		// Now generate page tilte
@@ -799,8 +836,21 @@ switch ($mode)
 		$template_html = 'memberlist_body.html';
 
 		// Sorting
-		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER'], 'l' => $user->lang['SORT_LAST_ACTIVE'], 'm' => $user->lang['SORT_RANK'] );
-		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber', 'l' => 'u.user_lastvisit', 'm' => 'u.user_rank DESC, u.user_posts');
+		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT'], 'e' => $user->lang['SORT_EMAIL'], 'f' => $user->lang['WEBSITE'], 'g' => $user->lang['ICQ'], 'h' => $user->lang['AIM'], 'i' => $user->lang['MSNM'], 'j' => $user->lang['YIM'], 'k' => $user->lang['JABBER']);
+
+		if ($auth->acl_get('u_viewonline'))
+		{
+			$sort_key_text['l'] = $user->lang['SORT_LAST_ACTIVE'];
+		}
+		$sort_key_text['m'] = $user->lang['SORT_RANK'];
+
+		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+
+		if ($auth->acl_get('u_viewonline'))
+		{
+			$sort_key_sql['l'] = 'u.user_lastvisit';
+		}
+		$sort_key_sql['m'] = 'u.user_rank DESC, u.user_posts';
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -828,7 +878,7 @@ switch ($mode)
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
-			$email		= request_var('email', '');
+			$email		= strtolower(request_var('email', ''));
 			$icq		= request_var('icq', '');
 			$aim		= request_var('aim', '');
 			$yahoo		= request_var('yahoo', '');
@@ -1345,8 +1395,6 @@ function show_profile($data)
 		$email = '';
 	}
 
-	$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
-
 	if ($config['load_onlinetrack'])
 	{
 		$update_time = $config['load_online_time'] * 60;
@@ -1355,6 +1403,15 @@ function show_profile($data)
 	else
 	{
 		$online = false;
+	}
+
+	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
+	{
+		$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+	}
+	else
+	{
+		$last_visit = '';
 	}
 
 	$age = '';

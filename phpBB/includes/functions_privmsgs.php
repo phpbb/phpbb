@@ -1166,15 +1166,30 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 			{
 				foreach ($adr_ary as $id => $row)
 				{
-					$template->assign_block_vars($check_type . '_recipient', array(
-						'NAME'		=> $row['name'],
-						'IS_GROUP'	=> ($type == 'group'),
-						'IS_USER'	=> ($type == 'user'),
-						'COLOUR'	=> ($row['colour']) ? $row['colour'] : '',
+					$tpl_ary = array(
+						'IS_GROUP'	=> ($type == 'group') ? true : false,
+						'IS_USER'	=> ($type == 'user') ? true : false,
 						'UG_ID'		=> $id,
-						'U_VIEW'	=> ($type == 'user') ? (($id != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $id) : '') : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
-						'TYPE'		=> $type)
+						'NAME'		=> $row['name'],
+						'COLOUR'	=> ($row['colour']) ? '#' . $row['colour'] : '',
+						'TYPE'		=> $type,
 					);
+
+					if ($type == 'user')
+					{
+						$tpl_ary = array_merge($tpl_ary, array(
+							'U_VIEW'		=> get_username_string('profile', $id, $row['name'], $row['colour']),
+							'NAME_FULL'		=> get_username_string('full', $id, $row['name'], $row['colour']),
+						));
+					}
+					else
+					{
+						$tpl_ary = array_merge($tpl_ary, array(
+							'U_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+						));
+					}
+
+					$template->assign_block_vars($check_type . '_recipient', $tpl_ary);
 				}
 			}
 		}

@@ -197,8 +197,8 @@ function checkForm()
 		<td class="row2">
 			{S_HIDDEN_ADDRESS_FIELD}
 		<!-- BEGIN to_recipient -->
-			<span class="genmed">
-			<a href="{to_recipient.U_VIEW}"<!-- IF to_recipient.COLOUR --> style="color:#{to_recipient.COLOUR}"<!-- ELSEIF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><b>{to_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
+			<span class="genmed"><strong>
+			<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><span class="blue">{to_recipient.NAME}</span></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF --></strong>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
 		<!-- BEGINELSE -->
 			<span class="genmed">{L_NO_TO_RECIPIENT}</span>
 		<!-- END to_recipient -->
@@ -208,8 +208,8 @@ function checkForm()
 		<td class="row1"><b class="genmed">{L_BCC}:</b></td>
 		<td class="row2">
 		<!-- BEGIN bcc_recipient -->
-			<span class="genmed">
-			<a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:#{bcc_recipient.COLOUR}"<!-- ELSEIF bcc_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><b>{bcc_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
+			<span class="genmed"><strong>
+			<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><span class="blue">{bcc_recipient.NAME}</span></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF --></strong>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
 		<!-- BEGINELSE -->
 			<span class="genmed">{L_NO_BCC_RECIPIENT}</span>
 		<!-- END bcc_recipient -->

@@ -16,6 +16,11 @@
 		<td class="row1" align="center">
 
 			<table cellspacing="1" cellpadding="2" border="0">
+			<!-- IF S_USER_INACTIVE -->
+			<tr>
+				<td align="center" style="color: red;"><b class="gen">{L_USER_IS_INACTIVE}</b><br />{L_INACTIVE_REASON}: {USER_INACTIVE_REASON}<br /><br /></td>
+			</tr>
+			<!-- ENDIF -->
 			<tr>
 				<td align="center"><!-- IF USER_COLOR --><b class="gen" style="color: #{USER_COLOR}"><!-- ELSE --><b class="gen"><!-- ENDIF -->{USERNAME}</b><!-- IF U_USER_ADMIN --><span class="genmed"> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]</span><!-- ENDIF --></td>
 			</tr>

@@ -575,12 +575,15 @@ class install_install extends module
 
 		$default_lang = ($default_lang !== '') ? $default_lang : $language;
 
+		$board_email1 = strtolower($board_email1);
+		$board_email2 = strtolower($board_email2);
+
 		if (isset($_POST['check']))
 		{
 			$error = array();
 
 			// Check the entered email address and password
-			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 =='')
+			if ($admin_name == '' || $admin_pass1 == '' || $admin_pass2 == '' || $board_email1 == '' || $board_email2 == '')
 			{
 				$error[] = $lang['INST_ERR_MISSING_DATA'];
 			}

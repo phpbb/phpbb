@@ -214,10 +214,10 @@ class p_master
 	/**
 	* Check module authorisation
 	*/
-	function module_auth($module_auth)
+	function module_auth($module_auth, $forum_id = false)
 	{
 		global $auth, $config;
-		
+
 		$module_auth = trim($module_auth);
 
 		// Generally allowed to access module if module_auth is empty
@@ -261,8 +261,12 @@ class p_master
 		// Make sure $id seperation is working fine
 		$module_auth = str_replace(' , ', ',', $module_auth);
 
+		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
+
+		$test = preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth);
+
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $this->acl_forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . $test . ');');
 
 		return $is_auth;
 	}

@@ -692,7 +692,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 /**
 * Generate inline attachment entry
 */
-function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
+function posting_gen_attachment_entry($attachment_data, &$filename_data)
 {
 	global $template, $config, $phpbb_root_path, $phpEx, $user;
 
@@ -706,8 +706,10 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 			'S_HAS_ATTACHMENTS'	=> true)
 		);
 
-		$count = 0;
-		foreach ($attachment_data as $attach_row)
+		// We display the posted attachments within the desired order.
+		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
+
+		foreach ($attachment_data as $count => $attach_row)
 		{
 			$hidden = '';
 			$attach_row['real_filename'] = basename($attach_row['real_filename']);
@@ -729,8 +731,6 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 				'U_VIEW_ATTACHMENT'	=> $download_link,
 				'S_HIDDEN'			=> $hidden)
 			);
-
-			$count++;
 		}
 	}
 

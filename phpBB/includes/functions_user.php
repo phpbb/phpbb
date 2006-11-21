@@ -142,7 +142,7 @@ function user_add($user_row, $cp_data = false)
 		'username'			=> $user_row['username'],
 		'username_clean'	=> utf8_clean_string($user_row['username']),
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
-		'user_email'		=> $user_row['user_email'],
+		'user_email'		=> strtolower($user_row['user_email']),
 		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
 		'user_type'			=> $user_row['user_type'],
@@ -1217,7 +1217,9 @@ function validate_email($email)
 {
 	global $config, $db, $user;
 
-	if (strtolower($user->data['user_email']) == strtolower($email))
+	$email = strtolower($email);
+
+	if (strtolower($user->data['user_email']) == $email)
 	{
 		return false;
 	}
@@ -1248,7 +1250,7 @@ function validate_email($email)
 	{
 		$sql = 'SELECT user_email_hash
 			FROM ' . USERS_TABLE . "
-			WHERE user_email_hash = " . crc32(strtolower($email)) . strlen($email);
+			WHERE user_email_hash = " . crc32($email) . strlen($email);
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

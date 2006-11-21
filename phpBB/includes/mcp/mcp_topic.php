@@ -81,10 +81,11 @@ function mcp_topic_view($id, $mode, $action)
 
 	$sql = 'SELECT u.username, u.user_colour, p.*
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . "
-			p.topic_id = {$topic_id}
+		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
+			p.topic_id = ' . $topic_id . ' ' .
+			((!$auth->acl_get('m_approve', $topic_info['forum_id'])) ? ' AND p.post_approved = 1 ' : '') . '
 			AND p.poster_id = u.user_id
-		ORDER BY $sort_order_sql";
+		ORDER BY ' . $sort_order_sql;
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = array();
@@ -141,8 +142,8 @@ function mcp_topic_view($id, $mode, $action)
 			'S_CHECKED'			=> ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? true : false,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
-			'U_MCP_APPROVE'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']),
-			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']))
+			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
+			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
 		);
 
 		unset($rowset[$i]);
@@ -198,6 +199,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_DELETE'		=> ($auth->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? true : false,
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 

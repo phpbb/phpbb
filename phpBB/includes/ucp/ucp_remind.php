@@ -23,7 +23,7 @@ class ucp_remind
 		global $db, $user, $auth, $template;
 
 		$username	= request_var('username', '', true);
-		$email		= request_var('email', '');
+		$email		= strtolower(request_var('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
 		if ($submit)

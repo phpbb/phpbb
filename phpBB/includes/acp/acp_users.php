@@ -140,7 +140,7 @@ class acp_users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		switch ($mode)
@@ -620,8 +620,8 @@ class acp_users
 					$data = array(
 						'username'			=> request_var('user', $user_row['username'], true),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
-						'email'				=> request_var('user_email', $user_row['user_email']),
-						'email_confirm'		=> request_var('email_confirm', ''),
+						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
+						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 						'user_password'		=> request_var('user_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
 						'warnings'			=> request_var('warnings', $user_row['user_warnings']),
@@ -841,6 +841,31 @@ class acp_users
 
 				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
 
+				$inactive_reason = '';
+				if ($user_row['user_type'] == USER_INACTIVE)
+				{
+					$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
+
+					switch ($user_row['user_inactive_reason'])
+					{
+						case INACTIVE_REGISTER:
+							$inactive_reason = $user->lang['INACTIVE_REASON_REGISTER'];
+						break;
+
+						case INACTIVE_PROFILE:
+							$inactive_reason = $user->lang['INACTIVE_REASON_PROFILE'];
+						break;
+
+						case INACTIVE_MANUAL:
+							$inactive_reason = $user->lang['INACTIVE_REASON_MANUAL'];
+						break;
+
+						case INACTIVE_REMIND:
+							$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
+						break;
+					}
+				}
+
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$pass_char_ary[str_replace('\\\\', '\\', $config['pass_complex'])] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
@@ -865,6 +890,7 @@ class acp_users
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
+					'USER_INACTIVE_REASON'	=> $inactive_reason,
 					)
 				);
 
