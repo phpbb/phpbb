@@ -134,7 +134,7 @@ function insert_text(text, spaces, popup)
 	{
 		text = ' ' + text + ' ';
 	}
-	if (textarea.createTextRange && !isNaN(textarea.caretPos))
+	if (textarea.createTextRange && textarea.caretPos)
 	{
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
