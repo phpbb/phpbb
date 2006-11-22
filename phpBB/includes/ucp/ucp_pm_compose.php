@@ -131,7 +131,7 @@ function compose_pm($id, $mode, $action)
 			}
 			else
 			{
-				$sql = 'SELECT t.*, p.*, u.username as quote_username
+				$sql = 'SELECT t.folder_id, p.*, u.username as quote_username
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE t.user_id = ' . $user->data['user_id'] . "
 						AND p.author_id = u.user_id
@@ -147,7 +147,7 @@ function compose_pm($id, $mode, $action)
 			}
 
 			// check for outbox (not read) status, we do not allow editing if one user already having the message
-			$sql = 'SELECT p.*, t.*
+			$sql = 'SELECT p.*, t.folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
 				WHERE t.user_id = ' . $user->data['user_id'] . '
 					AND t.folder_id = ' . PRIVMSGS_OUTBOX . "

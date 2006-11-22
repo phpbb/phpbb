@@ -134,7 +134,7 @@ function mcp_front_view($id, $mode, $action)
 			$global_id = $forum_list[0];
 
 			$sql = $db->sql_build_query('SELECT', array(
-				'SELECT'	=> 'r.*, p.post_id, p.post_subject, u.username, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+				'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, u.username, u.user_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 				'FROM'		=> array(
 					REPORTS_TABLE			=> 'r',

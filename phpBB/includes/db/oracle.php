@@ -219,52 +219,6 @@ class dbal_oracle extends dbal
 		{
 			$this->query_result = false; 
 
-			// Any implicit columns exist?
-			if (strpos($query, '.*') !== false)
-			{
-				// This sucker does a few things for us. It grabs all the explicitly named columns and what tables are being used
-				preg_match('/SELECT (?:DISTINCT )?(.*?)FROM(.*?)(?:WHERE|(ORDER|GROUP) BY|$)/s', $query, $tables);
-
-				// The prefixes of the explicit columns don't matter, they simply get in the way
-				preg_match_all('/\.(\w+)/', trim($tables[1]), $columns);
-
-				// Flip lets us do an easy isset() call
-				$columns = array_flip($columns[1]);
-
-				$table_data = trim($tables[2]);
-
-				// Grab the implicitly named columns, they need expanding...
-				preg_match_all('/(\w)\.\*/', $query, $info);
-
-				$cols = array();
-
-				foreach ($info[1] as $table_alias)
-				{
-					// We need to get the name of the aliased table
-					preg_match('/(\w+) ' . $table_alias . '/', $table_data, $table_name);
-					$table_name = $table_name[1];
-
-					$sql  = "SELECT column_name
-						FROM all_tab_cols
-						WHERE table_name = '" . strtoupper($table_name) . "'";
-
-					$result = $this->sql_query($sql);
-					while ($row = $this->sql_fetchrow($result))
-					{
-						if (!isset($columns[strtolower($row['column_name'])]))
-						{
-							$cols[] = $table_alias . '.' . strtolower($row['column_name']);
-						}
-					}
-					$this->sql_freeresult($result);
-
-					// Remove the implicity .* with it's full expansion
-					$query = str_replace($table_alias . '.*', implode(', ', $cols), $query);
-
-					unset($cols);
-				}
-			}
-
 			$query = 'SELECT * FROM (SELECT /*+ FIRST_ROWS */ rownum AS xrownum, a.* FROM (' . $query . ') a WHERE rownum <= ' . ($offset + $total) . ') WHERE xrownum >= ' . $offset;
 
 			return $this->sql_query($query, $cache_ttl); 
