@@ -305,17 +305,17 @@ function bbstyle(bbnumber)
 		if (donotinsert)
 		{
 			document.forms[form_name].addbbcode12.value = 'List=';
-			tmp_help = o_help;
-			o_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['o'];
+			help_line['o'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[12] = '[list=]';
 		}
 		else
 		{
 			document.forms[form_name].addbbcode12.value = '[*]';
-			tmp_help = o_help;
-			o_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['o'];
+			help_line['o'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[12] = '[*]';
 		}
 	}
@@ -325,17 +325,17 @@ function bbstyle(bbnumber)
 		if (donotinsert)
 		{
 			document.forms[form_name].addbbcode10.value = 'List';
-			tmp_help = l_help;
-			l_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['l'];
+			help_line['l'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[10] = '[list]';
 		}
 		else
 		{
 			document.forms[form_name].addbbcode10.value = '[*]';
-			tmp_help = l_help;
-			l_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['l'];
+			help_line['l'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[10] = '[*]';
 		}
 	}
