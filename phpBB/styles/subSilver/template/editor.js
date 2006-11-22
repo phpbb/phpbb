@@ -176,13 +176,10 @@ function insert_text(text, spaces, popup)
 /**
 * Add inline attachment at position
 */
-function attach_inline(index, filename, element)
+function attach_inline(index, filename)
 {
 	insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
-	if (element)
-	{
-		element.focus();
-	}
+	document.forms[form_name].elements[text_name].focus();
 }
 
 /**
