@@ -110,9 +110,28 @@ function bbfontstyle(bbopen, bbclose)
 	// Open tag
 	insert_text(bbopen + bbclose);
 
+	// Center the cursor when we don't have a selection
+	var textarea = document.forms[form_name].elements[text_name];
+	var new_pos = getCaretPosition(textarea).start - bbclose.length;
+	
+	// IE & Opera
+	if (document.selection)
+	{
+		var range = textarea.createTextRange(); 
+        range.move("character", new_pos); 
+        range.select();
+	}
+	//Gecko
+	else if (!isNaN(textarea.selectionStart))
+	{
+		textarea.selectionStart = new_pos;
+		textarea.selectionEnd = new_pos;
+	}
+
 	document.forms[form_name].elements[text_name].focus();
 
 	storeCaret(document.forms[form_name].elements[text_name]);
+	
 	return;
 }
 
@@ -435,7 +454,7 @@ function mozWrap(txtarea, open, close)
 }
 
 /**
-* Insert at Claret position. Code from
+* Insert at Caret position. Code from
 * http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
 */
 function storeCaret(textEl)
@@ -497,3 +516,50 @@ function colorPalette(dir, width, height)
 	}
 	document.writeln('</table>');
 }
+
+
+/**
+* Caret Position object
+*/
+function caretPosition()
+{
+	var start = null;
+	var end = null;
+}
+
+
+/**
+* Get the caret position in an textarea
+*/
+function getCaretPosition(txtarea)
+{
+	var caretPos = new caretPosition();
+	
+	// dirty IE way
+	if(document.selection)
+	{
+		txtarea.focus();
+		
+		//the current selection
+		var curr_sel = document.selection.createRange();
+		var curr_length = curr_sel.text.length;
+	
+		// back to 0
+		curr_sel.moveStart ('character', -txtarea.value.length);
+		
+		//start = selected text - original selection
+		caretPos.start = curr_sel.text.length - curr_length;
+		
+		// end = selection length 
+		caretPos.end = curr_sel.text.length;
+	}
+	// simple Gecko way
+	else if(!isNaN(txtarea.selectionStart))
+	{
+		caretPos.start = txtarea.selectionStart;
+		caretPos.end = txtarea.selectionEnd;
+	}
+	
+	return (caretPos);
+}
+

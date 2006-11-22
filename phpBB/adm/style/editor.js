@@ -65,32 +65,6 @@ function arraypop(thearray)
 }
 
 /**
-* Insert emoticon
-*/
-function smiley(text) 
-{
-	text = ' ' + text + ' ';
-
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
-	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
-		document.forms[form_name].elements[text_name].focus();
-	}
-	else
-	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
-
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].focus();
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
-	}
-}
-
-/**
 * Apply bbcodes
 */
 function bbfontstyle(bbopen, bbclose)
@@ -136,34 +110,66 @@ function bbfontstyle(bbopen, bbclose)
 	// Open tag
 	insert_text(bbopen + bbclose);
 
+	// Center the cursor when we don't have a selection
+	var textarea = document.forms[form_name].elements[text_name];
+	var new_pos = getCaretPosition(textarea).start - bbclose.length;
+	
+	// IE & Opera
+	if (document.selection)
+	{
+		var range = textarea.createTextRange(); 
+        range.move("character", new_pos); 
+        range.select();
+	}
+	//Gecko
+	else if (!isNaN(textarea.selectionStart))
+	{
+		textarea.selectionStart = new_pos;
+		textarea.selectionEnd = new_pos;
+	}
+
 	document.forms[form_name].elements[text_name].focus();
 
 	storeCaret(document.forms[form_name].elements[text_name]);
+	
 	return;
 }
 
 /**
 * Insert text at position
 */
-function insert_text(text)
+function insert_text(text, spaces, popup)
 {
-	if (document.forms[form_name].elements[text_name].createTextRange && document.forms[form_name].elements[text_name].caretPos)
+	var textarea;
+	
+	if (!popup) 
 	{
-		var caretPos = document.forms[form_name].elements[text_name].caretPos;
-		caretPos.text = caretPos.text.charAt(caretPos.text.length - 1) == ' ' ? caretPos.text + text + ' ' : caretPos.text + text;
+		textarea = document.forms[form_name].elements[text_name];
+	} else 
+	{
+		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	else if (document.forms[form_name].elements[text_name].selectionStart)
+	if (spaces) 
 	{
-		var selStart = document.forms[form_name].elements[text_name].selectionStart;
-		var selEnd = document.forms[form_name].elements[text_name].selectionEnd;
+		text = ' ' + text + ' ';
+	}
+	if (textarea.createTextRange && textarea.caretPos)
+	{
+		var caret_pos = textarea.caretPos;
+		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+	}
+	else if (!isNaN(textarea.selectionStart))
+	{
+		var sel_start = textarea.selectionStart;
+		var sel_end = textarea.selectionEnd;
 
-		mozWrap(document.forms[form_name].elements[text_name], text, '')
-		document.forms[form_name].elements[text_name].selectionStart = selStart + text.length;
-		document.forms[form_name].elements[text_name].selectionEnd = selEnd + text.length;
+		mozWrap(textarea, text, '')
+		textarea.selectionStart = sel_start + text.length;
+		textarea.selectionEnd = sel_end + text.length;
 	}
 	else
 	{
-		document.forms[form_name].elements[text_name].value = document.forms[form_name].elements[text_name].value + text;
+		textarea.value = textarea.value + text;
 	}
 }
 
@@ -187,11 +193,11 @@ function addquote(post_id, username)
 
 	if (document.all)
 	{
-		eval('divarea = document.all.' + message_name + ';');
+		divarea = document.all[message_name];
 	}
 	else
 	{
-		eval("divarea = document.getElementById('" + message_name + "');");
+		divarea = document.getElementById(message_name);
 	}
 
 	// Get text selection - not only the post content :(
@@ -210,7 +216,15 @@ function addquote(post_id, username)
 
 	if (theSelection == '' || typeof theSelection == 'undefined' || theSelection == null)
 	{
-		if (document.all)
+		if (divarea.innerHTML)
+		{
+			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
+			theSelection = theSelection.replace(/<br\/>/ig, '\n');
+			theSelection = theSelection.replace(/&lt\;/ig, '<');
+			theSelection = theSelection.replace(/&gt\;/ig, '>');
+			theSelection = theSelection.replace(/&amp\;/ig, '&');			
+		}
+		else if (document.all)
 		{
 			theSelection = divarea.innerText;
 		}
@@ -249,11 +263,11 @@ function bbstyle(bbnumber)
 		{
 			butnumber = arraypop(bbcode) - 1;
 			document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
+			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
 		
 			if (buttext != '[*]')
 			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));				
 			}
 		}
 
@@ -310,17 +324,17 @@ function bbstyle(bbnumber)
 		if (donotinsert)
 		{
 			document.forms[form_name].addbbcode12.value = 'List=';
-			tmp_help = o_help;
-			o_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['o'];
+			help_line['o'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[12] = '[list=]';
 		}
 		else
 		{
 			document.forms[form_name].addbbcode12.value = '[*]';
-			tmp_help = o_help;
-			o_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['o'];
+			help_line['o'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[12] = '[*]';
 		}
 	}
@@ -330,17 +344,17 @@ function bbstyle(bbnumber)
 		if (donotinsert)
 		{
 			document.forms[form_name].addbbcode10.value = 'List';
-			tmp_help = l_help;
-			l_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['l'];
+			help_line['l'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[10] = '[list]';
 		}
 		else
 		{
 			document.forms[form_name].addbbcode10.value = '[*]';
-			tmp_help = l_help;
-			l_help = e_help;
-			e_help = tmp_help;
+			tmp_help = help_line['l'];
+			help_line['l'] = help_line['e'];
+			help_line['e'] = tmp_help;
 			bbtags[10] = '[*]';
 		}
 	}
@@ -361,11 +375,11 @@ function bbstyle(bbnumber)
 				insert_text(bbtags[butnumber]);
 			}
 
-			buttext = eval('document.forms[form_name].addbbcode' + butnumber + '.value');
+			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
 
 			if (bbtags[butnumber] != '[*]')
 			{
-				eval('document.forms[form_name].addbbcode' + butnumber + '.value ="' + buttext.substr(0,(buttext.length - 1)) + '"');
+				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));
 			}
 			imageTag = false;
 		}
@@ -401,7 +415,7 @@ function bbstyle(bbnumber)
 		if (bbtags[bbnumber] != '[*]')
 		{
 			arraypush(bbcode, bbnumber + 1);
-			eval('document.forms[form_name].addbbcode'+bbnumber+'.value += "*"');
+			document.forms[form_name]['addbbcode' + bbnumber].value += "*";
 		}
 
 		document.forms[form_name].elements[text_name].focus();
@@ -440,7 +454,7 @@ function mozWrap(txtarea, open, close)
 }
 
 /**
-* Insert at Claret position. Code from
+* Insert at Caret position. Code from
 * http://www.faqts.com/knowledge_base/view.phtml/aid/1052/fid/130
 */
 function storeCaret(textEl)
@@ -465,7 +479,7 @@ function colorPalette(dir, width, height)
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	document.write('<table cellspacing="1" cellpadding="0" border="0" class="type2">');
+	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
 
 	for (r = 0; r < 5; r++)
 	{
@@ -484,7 +498,7 @@ function colorPalette(dir, width, height)
 			for (b = 0; b < 5; b++)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
-				document.write('<td style="line-height: ' + height + 'px; background-color:#' + color + '; width: ' + width + 'px; height: ' + height + 'px;">');
+				document.write('<td bgcolor="#' + color + '">');
 				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
@@ -502,3 +516,50 @@ function colorPalette(dir, width, height)
 	}
 	document.writeln('</table>');
 }
+
+
+/**
+* Caret Position object
+*/
+function caretPosition()
+{
+	var start = null;
+	var end = null;
+}
+
+
+/**
+* Get the caret position in an textarea
+*/
+function getCaretPosition(txtarea)
+{
+	var caretPos = new caretPosition();
+	
+	// dirty IE way
+	if(document.selection)
+	{
+		txtarea.focus();
+		
+		//the current selection
+		var curr_sel = document.selection.createRange();
+		var curr_length = curr_sel.text.length;
+	
+		// back to 0
+		curr_sel.moveStart ('character', -txtarea.value.length);
+		
+		//start = selected text - original selection
+		caretPos.start = curr_sel.text.length - curr_length;
+		
+		// end = selection length 
+		caretPos.end = curr_sel.text.length;
+	}
+	// simple Gecko way
+	else if(!isNaN(txtarea.selectionStart))
+	{
+		caretPos.start = txtarea.selectionStart;
+		caretPos.end = txtarea.selectionEnd;
+	}
+	
+	return (caretPos);
+}
+
