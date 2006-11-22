@@ -176,10 +176,13 @@ function insert_text(text, spaces, popup)
 /**
 * Add inline attachment at position
 */
-function attach_inline()
+function attach_inline(index, filename, element)
 {
-	insert_text('[attachment=' + document.forms[form_name].elements['attachments'].value + ']' + document.forms[form_name].elements['attachments'].options[document.forms[form_name].elements['attachments'].selectedIndex].text + '[/attachment]');
-	document.forms[form_name].elements[text_name].focus();
+	insert_text('[attachment=' + index + ']' + filename + '[/attachment]');
+	if (element)
+	{
+		element.focus();
+	}
 }
 
 /**
@@ -562,4 +565,3 @@ function getCaretPosition(txtarea)
 	
 	return (caretPos);
 }
-
