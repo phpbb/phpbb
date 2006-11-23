@@ -195,7 +195,7 @@ switch ($mode)
 			// instead of saying they are moderating all forums
 			if (!$s_forum_select && $undisclosed_forum)
 			{
-				$s_forum_select = $user->lang['FORUM_UNDISCLOSED'];
+				$s_forum_select = '<option value="">' . $user->lang['FORUM_UNDISCLOSED'] . '</option>';
 			}
 
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
@@ -215,8 +215,6 @@ switch ($mode)
 			$template->assign_block_vars($which_row, array(
 				'USER_ID'		=> $row['user_id'],
 				'FORUMS'		=> $s_forum_select,
-				'USERNAME'		=> $row['username'],
-				'USER_COLOR'	=> $row['user_colour'],
 				'RANK_TITLE'	=> $rank_title,
 				'GROUP_NAME'	=> $group_name,
 				'GROUP_COLOR'	=> $row['group_colour'],
@@ -225,9 +223,13 @@ switch ($mode)
 				'RANK_IMG_SRC'	=> $rank_img_src,
 
 				'U_GROUP'			=> $u_group,
-				'U_VIEW_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
-				'U_PM'				=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '')
-			);
+				'U_PM'				=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+
+				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+				'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+				'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
+			));
 		}
 		$db->sql_freeresult($result);
 

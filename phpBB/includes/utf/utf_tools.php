@@ -212,7 +212,7 @@ if (extension_loaded('mbstring'))
 	* UTF-8 aware alternative to substr
 	* @ignore
 	*/
-	function utf8_substr($str, $offset,	$length	= null)
+	function utf8_substr($str, $offset, $length = null)
 	{
 		if (is_null($length))
 		{

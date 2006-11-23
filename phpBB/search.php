@@ -253,22 +253,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$show_results = 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
+				$sort_days = request_var('st', 7);
 				$sort_by_sql['t'] = 't.topic_last_post_time';
 
-				if (!$sort_days)
-				{
-					$sort_days = 3;
-				}
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 				$s_sort_key = $s_sort_dir = '';
-				$u_sort_param = 'st=' . $sort_days;
 
-				$last_post_time = (time() - ($sort_days * 24 * 3600));
+				$last_post_time_sql = ($sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($sort_days * 24 * 3600)) : '';
 
 				$sql = 'SELECT t.topic_last_post_time, t.topic_id
 					FROM ' . TOPICS_TABLE . " t
-					WHERE t.topic_last_post_time > $last_post_time
-						AND t.topic_moved_id = 0
+					WHERE t.topic_moved_id = 0
+						$last_post_time_sql
 						" . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
 						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
@@ -365,6 +361,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// show_results should not change after this
 	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
+	$total_match_count = 0;
 
 	if ($search_id)
 	{
@@ -402,14 +399,20 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$total_match_count = $search->author_search($show_results, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
 
-	if (!sizeof($id_ary))
+	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
+	if (!sizeof($id_ary) && $search_id !== 'active_topics')
 	{
 		trigger_error($user->lang['NO_SEARCH_RESULTS']);
 	}
 
-	$sql_where = $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
-	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
-	$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
+	$sql_where = '';
+
+	if (sizeof($id_ary))
+	{
+		$sql_where .= $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
+		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
+		$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
+	}
 
 	if ($show_results == 'posts')
 	{

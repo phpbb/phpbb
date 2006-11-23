@@ -360,6 +360,10 @@ function close_report($post_id_list, $mode, $action)
 	{
 		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r')) . '&amp;mode=reports');
 	}
+	else if ($action == 'close' && !request_var('r', 0))
+	{
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p')) . '&amp;mode=reports');
+	}
 	else
 	{
 		$redirect = request_var('redirect', build_url(array('_f_')));
