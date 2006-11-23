@@ -171,7 +171,7 @@ $lang = array_merge($lang, array(
 	'DRAFTS_EXPLAIN'			=> 'Here you can view, edit and delete your saved drafts.',
 	'DRAFT_UPDATED'				=> 'Draft successfully updated.',
 
-	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll informations.',
+	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll information.',
 	'EMAIL_BANNED_EMAIL'		=> 'The email address you entered is not allowed to be used.',
 	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
 	'EMAIL_REMIND'				=> 'This must be the email address you supplied when registering.',

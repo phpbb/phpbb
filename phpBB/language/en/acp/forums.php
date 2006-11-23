@@ -98,7 +98,7 @@ $lang = array_merge($lang, array(
 	'FORUM_TOPICS_PAGE'					=> 'Topics per page',
 	'FORUM_TOPICS_PAGE_EXPLAIN'			=> 'If non-zero this value will override the default topics per page setting.',
 	'FORUM_TYPE'						=> 'Forum type',
-	'FORUM_UPDATED'						=> 'Forum informations updated successfully.',
+	'FORUM_UPDATED'						=> 'Forum information updated successfully.',
 
 	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
