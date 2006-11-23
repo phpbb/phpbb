@@ -1395,6 +1395,12 @@ function mail_encode($str, $compliant = true)
 		return $start . $encoded_str . $end;
 	}
 
+	// If there is only ASCII data, we just return what we want, no need to process.
+	if (strlen($str) === utf8_strlen($str))
+	{
+		return $start . implode($spacer, str_split($encoded_str, $split_length)) . $end;
+	}
+
 	// What we do is encoding/decoding forth and back and checking
 	// for a valid utf8 string to make sure no lines include half-baked data.
 	$correct_encode = false;
