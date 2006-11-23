@@ -1374,63 +1374,47 @@ class smtp_class
 * is if the mail client does not understand this encoding the user
 * is basically doomed with an unreadable subject.
 *
-* Please note that this version fully supports RFC 2045 section 6.8 to
-* the expense of using more resources. It downgrades to non-compliance (but workable)
-* if the string is not able to be splitted properly.
-* You are able to force non-compliance.
+* Please note that this version fully supports RFC 2045 section 6.8.
 */
-function mail_encode($str, $compliant = true)
+function mail_encode($str)
 {
 	// define start delimimter, end delimiter and spacer
-	$end = '?=';
-	$start = '=?UTF-8?B?';
-	$spacer = "$end $start";
-
-	$encoded_str = base64_encode($str);
+	$start = "=?UTF-8?B?";
+	$end = "?=";
+	$spacer = $end . ' ' . $start;
 	$split_length = 64;
 
-	// Pass back if the encoded string does not need to be split or forced.
-	if (!$compliant || strlen($encoded_str) <= $split_length)
+	$encoded_str = base64_encode($str);
+
+	// If encoded string meets the limits, we just return with the correct data.
+	if (strlen($encoded_str) <= $split_length)
 	{
 		return $start . $encoded_str . $end;
 	}
 
-	// If there is only ASCII data, we just return what we want, no need to process.
+	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
 	if (strlen($str) === utf8_strlen($str))
 	{
 		return $start . implode($spacer, str_split($encoded_str, $split_length)) . $end;
 	}
 
-	// What we do is encoding/decoding forth and back and checking
-	// for a valid utf8 string to make sure no lines include half-baked data.
-	$correct_encode = false;
+	// UTF-8 data, compose encoded lines
+	$array = utf8_str_split($str);
+	$str = '';
 
-	// Also quit the operation if the chunks get too small
-	while (!$correct_encode || $split_length < 10)
+	while (sizeof($array))
 	{
-		$chunks = str_split($encoded_str, $split_length);
-		$correct_encode = true;
+		$text = '';
 
-		foreach ($chunks as $chunk)
+		while (sizeof($array) && strlen(base64_encode($text . $array[0])) <= $split_length)
 		{
-			// Not well-formed utf8 data?
-			if (!preg_match('/^./u', base64_decode($chunk)))
-			{
-				$correct_encode = false;
-
-				// Always odd length
-				$split_length -= 2;
-			}
+			$text .= array_shift($array);
 		}
+
+		$str .= $start . base64_encode($text) . $end . ' ';
 	}
 
-	if (!$correct_encode)
-	{
-		// Not RFC-compliant, but working with all setups
-		return $start . $encoded_str . $end;
-	}
-
-	return $start . implode($spacer, $chunks) . $end;
+	return substr($str, 0, -1);
 }
 
 ?>
