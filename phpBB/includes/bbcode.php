@@ -221,7 +221,7 @@ class bbcode
 					{
 						$this->bbcode_cache[$bbcode_id] = array(
 							'preg' => array(
-								'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=> str_replace('$2', '[ img ]', $this->bbcode_tpl('url', $bbcode_id)),
+								'#\[img:$uid\](.*?)\[/img:$uid\]#s'		=> str_replace('$2', '[ img ]', $this->bbcode_tpl('url', $bbcode_id, true)),
 							)
 						);
 					}
@@ -300,7 +300,7 @@ class bbcode
 					{
 						$this->bbcode_cache[$bbcode_id] = array(
 							'preg' => array(
-								'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=> str_replace('$1', '$3', str_replace('$2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id)))
+								'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=> str_replace('$1', '$3', str_replace('$2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id, true)))
 							)
 						);
 					}
@@ -381,7 +381,7 @@ class bbcode
 	/**
 	* Return bbcode template
 	*/
-	function bbcode_tpl($tpl_name, $bbcode_id = -1)
+	function bbcode_tpl($tpl_name, $bbcode_id = -1, $skip_bitfield_check = false)
 	{
 		if (empty($bbcode_hardtpl))
 		{
@@ -403,7 +403,7 @@ class bbcode
 			$template_bitfield = new bitfield($this->template_bitfield);
 		}
 
-		if ($bbcode_id != -1 && !$template_bitfield->get($bbcode_id))
+		if ($bbcode_id != -1 && !$template_bitfield->get($bbcode_id) && !$skip_bitfield_check)
 		{
 			return (isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : false;
 		}

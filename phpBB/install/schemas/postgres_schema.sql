@@ -437,6 +437,7 @@ CREATE SEQUENCE phpbb_groups_seq;
 CREATE TABLE phpbb_groups (
 	group_id INT4 DEFAULT nextval('phpbb_groups_seq'),
 	group_type INT2 DEFAULT '1' NOT NULL,
+	group_founder_manage INT2 DEFAULT '0' NOT NULL CHECK (group_founder_manage >= 0),
 	group_name varchar_ci DEFAULT '' NOT NULL,
 	group_desc varchar(4000) DEFAULT '' NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,
@@ -1284,7 +1285,7 @@ CREATE TABLE phpbb_users (
 	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
 	user_website varchar(200) DEFAULT '' NOT NULL,
-	user_occ varchar(255) DEFAULT '' NOT NULL,
+	user_occ varchar(4000) DEFAULT '' NOT NULL,
 	user_interests varchar(4000) DEFAULT '' NOT NULL,
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(32) DEFAULT '' NOT NULL,

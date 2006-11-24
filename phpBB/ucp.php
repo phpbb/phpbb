@@ -264,7 +264,7 @@ $sql = $db->sql_build_query('SELECT_DISTINCT', array(
 
 	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline, u.user_colour',
 
-	'ORDER_BY'	=> 'u.username ASC',
+	'ORDER_BY'	=> 'u.username_clean ASC',
 ));
 
 $result = $db->sql_query($sql);

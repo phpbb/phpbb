@@ -368,6 +368,8 @@ $lang = array_merge($lang, array(
 	'RULE_ALREADY_DEFINED'				=> 'This rule was defined previously',
 	'RULE_DELETED'						=> 'Rule successfully removed',
 	'RULE_NOT_DEFINED'					=> 'Rule not correctly specified',
+	'RULE_REMOVED_MESSAGE'				=> 'One private message had been removed due to private message filters.',
+	'RULE_REMOVED_MESSAGES'				=> '%d private messages were removed due to private message filters.',
 
 	'SAME_PASSWORD_ERROR'		=> 'The new password you entered is the same as your current password',
 	'SEARCH_YOUR_POSTS'			=> 'Show your posts',

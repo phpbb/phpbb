@@ -289,13 +289,19 @@ $database_update_info = array(
 			BBCODES_TABLE		=> array(
 				'bbcode_helpline'		=> array('VCHAR_UNI', ''),
 			),
-		),
-		/* Add the following columns
-		'add_columns'		=> array(
-			{table}			=> array(
-				{column_name}			=> array('USINT', 0), -> column type
+			USERS_TABLE			=> array(
+				'user_occ'				=> array('TEXT_UNI', ''),
 			),
-		),*/
+			CONFIG_TABLE		=> array(
+				'config_value'			=> array('VCHAR_UNI', ''),
+			),
+		),
+		// Add the following columns
+		'add_columns'		=> array(
+			GROUPS_TABLE		=> array(
+				'group_founder_manage'	=> array('BOOL', 0),
+			),
+		),
 	),
 	// Latest version
 	'3.0.b4-dev'			=> array(),
@@ -448,13 +454,26 @@ $errored = $no_updates = false;
 
 flush();
 
+// some code magic
 switch ($current_version)
 {
 	case '3.0.b3':
-/*
-	some code magic
-*/
-	// No need to change here, before no break should appear
+		// Set group_founder_manage for administrators group
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'ADMINISTRATORS'
+				AND group_type = " . GROUP_SPECIAL;
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		if ($group_id)
+		{
+			$sql = 'UPDATE ' . GROUPS_TABLE . ' SET group_founder_manage = 1 WHERE group_id = ' . $group_id;
+			_sql($sql, $errored, $error_ary);
+		}
+
+	// No need to change here. Before this line, no break should appear
 	break;
 
 	case '3.0.b4-dev':
@@ -628,7 +647,7 @@ function column_exists($dbms, $table, $column_name)
 }
 
 /**
-* Function to prepare some column informations for better usage
+* Function to prepare some column information for better usage
 */
 function prepare_column_data($dbms, $column_data)
 {

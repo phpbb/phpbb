@@ -139,7 +139,7 @@ switch ($mode)
 			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . '
 				AND u.group_id = g.group_id',
 
-			'ORDER_BY'	=> 'g.group_name ASC, u.username ASC'
+			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
 		));
 
 		$result = $db->sql_query($sql);
@@ -846,7 +846,7 @@ switch ($mode)
 		}
 		$sort_key_text['m'] = $user->lang['SORT_RANK'];
 
-		$sort_key_sql = array('a' => 'u.username', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
+		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
 
 		if ($auth->acl_get('u_viewonline'))
 		{

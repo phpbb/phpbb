@@ -9,7 +9,7 @@
 */
 
 /**
-* Responsible for holding all file relevant informations, as well as doing file-specific operations.
+* Responsible for holding all file relevant information, as well as doing file-specific operations.
 * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
 * @package phpBB3
 */

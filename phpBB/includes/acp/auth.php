@@ -293,7 +293,7 @@ class auth_admin extends auth
 			$sql = 'SELECT user_id as ug_id, username as ug_name
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', array_keys($hold_ary)) . '
-				ORDER BY username ASC';
+				ORDER BY username_clean ASC';
 		}
 		else
 		{
@@ -606,7 +606,7 @@ class auth_admin extends auth
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('user_id', $auth_ary['users']) . '
-					ORDER BY username';
+					ORDER BY username_clean ASC';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))

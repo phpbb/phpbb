@@ -160,7 +160,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 
 		if ($return_array)
 		{
-			// Include some more informations...
+			// Include some more information...
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? true : false) : (($row['forum_id'] == $select_id) ? true : false);
 			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => $selected), $row);
 		}
@@ -471,7 +471,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		sync('forum', 'forum_id', $forum_ids, true);
 	}
 
-	// Update posted informations
+	// Update posted information
 	update_posted_info($topic_ids);
 }
 
@@ -942,7 +942,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 }
 
 /**
-* Update/Sync posted informations for topics
+* Update/Sync posted information for topics
 */
 function update_posted_info(&$topic_ids)
 {
@@ -2144,7 +2144,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		case 'user':
 			$log_type = LOG_USERS;
-			$sql_forum = 'AND l.reportee_id = ' . intval($user_id);
+			$sql_forum = 'AND l.reportee_id = ' . (int) $user_id;
 		break;
 		
 		case 'users':
@@ -2161,7 +2161,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			return;
 	}
 
-	$sql = "SELECT l.*, u.username
+	$sql = "SELECT l.*, u.username, u.user_colour
 		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
 		WHERE l.log_type = $log_type
 			AND u.user_id = l.user_id
@@ -2186,10 +2186,15 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		$log[$i] = array(
 			'id'				=> $row['log_id'],
-			'reportee_id'		=> $row['reportee_id'],
-			'reportee_username'	=> '',
+
+			'reportee_id'			=> $row['reportee_id'],
+			'reportee_username'		=> '',
+			'reportee_username_full'=> '',
+
 			'user_id'			=> $row['user_id'],
-			'username'			=> '<a href="' . $profile_url . '&amp;u=' . $row['user_id'] . '">' . $row['username'] . '</a>',
+			'username'			=> $row['username'],
+			'username_full'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, $profile_url),
+
 			'ip'				=> $row['log_ip'],
 			'time'				=> $row['log_time'],
 			'forum_id'			=> $row['forum_id'],
@@ -2272,21 +2277,31 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		}
 	}
 
-	if ($reportee_id_list)
+	if (sizeof($reportee_id_list))
 	{
 		$reportee_id_list = array_unique($reportee_id_list);
 		$reportee_names_list = array();
 
-		if (!function_exists('user_get_id_name'))
-		{
-			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		}
+		$sql = 'SELECT user_id, username, user_colour
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', $reportee_id_list);
+		$result = $db->sql_query($sql);
 
-		user_get_id_name($reportee_id_list, $reportee_names_list);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$reportee_names_list[$row['user_id']] = $row;
+		}
+		$db->sql_freeresult($result);
 
 		foreach ($log as $key => $row)
 		{
-			$log[$key]['reportee_username'] = (isset($reportee_names_list[$row['reportee_id']])) ? '<a href="' . $profile_url . '&amp;u=' . $row['reportee_id'] . '">' . $reportee_names_list[$row['reportee_id']] . '</a>' : false;
+			if (!isset($reportee_names_list[$row['reportee_id']]))
+			{
+				continue;
+			}
+
+			$log[$key]['reportee_username'] = $reportee_names_list[$row['reportee_id']]['username'];
+			$log[$key]['reportee_username_full'] = get_username_string('full', $row['reportee_id'], $reportee_names_list[$row['reportee_id']]['username'], $reportee_names_list[$row['reportee_id']]['user_colour'], false, $profile_url);
 		}
 	}
 
@@ -2385,7 +2400,7 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 {
 	global $db;
 
-	$sql = 'SELECT user_id, username, user_warnings, user_last_warning
+	$sql = 'SELECT user_id, username, user_colour, user_warnings, user_last_warning
 		FROM ' . USERS_TABLE . '
 		WHERE user_warnings > 0
 		' . (($limit_days) ? "AND user_last_warning >= $limit_days" : '') . "

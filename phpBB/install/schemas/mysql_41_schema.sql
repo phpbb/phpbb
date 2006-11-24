@@ -295,6 +295,7 @@ CREATE TABLE phpbb_forums_watch (
 CREATE TABLE phpbb_groups (
 	group_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
+	group_founder_manage tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name varchar(255) DEFAULT '' NOT NULL,
 	group_desc text NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,
@@ -1024,7 +1025,7 @@ CREATE TABLE phpbb_users (
 	user_msnm varchar(255) DEFAULT '' NOT NULL,
 	user_jabber varchar(255) DEFAULT '' NOT NULL,
 	user_website varchar(200) DEFAULT '' NOT NULL,
-	user_occ varchar(255) DEFAULT '' NOT NULL,
+	user_occ text NOT NULL,
 	user_interests text NOT NULL,
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(32) DEFAULT '' NOT NULL,

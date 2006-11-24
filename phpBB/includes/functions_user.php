@@ -408,7 +408,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			AND folder_id = ' . PRIVMSGS_NO_BOX;
 	$db->sql_query($sql);
 
-	// Delete all to-informations
+	// Delete all to-information
 	$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE user_id = ' . $user_id;
 	$db->sql_query($sql);
@@ -1529,10 +1529,12 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		'group_receive_pm'		=> 'int',
 		'group_legend'			=> 'int',
 		'group_message_limit'	=> 'int',
+
+		'group_founder_manage'	=> 'int',
 	);
 
 	// Those are group-only attributes
-	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit');
+	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_founder_manage');
 
 	// Check data
 	if (!utf8_strlen($name) || utf8_strlen($name) > 40)
@@ -1719,7 +1721,7 @@ function group_delete($group_id, $group_name = false)
 /**
 * Add user(s) to group
 *
-* @return false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
+* @return mixed false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {

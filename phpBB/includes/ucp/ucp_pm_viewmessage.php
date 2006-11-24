@@ -49,7 +49,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Assign TO/BCC Addresses to template
 	write_pm_addresses(array('to' => $message_row['to_address'], 'bcc' => $message_row['bcc_address']), $author_id);
 
-	$user_info = get_user_informations($author_id, $message_row);
+	$user_info = get_user_information($author_id, $message_row);
 
 	// Parse the message and subject
 	$message = $message_row['message_text'];
@@ -376,9 +376,9 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 }
 
 /**
-* Get User Informations (only for message display)
+* Get user information (only for message display)
 */
-function get_user_informations($user_id, $user_row)
+function get_user_information($user_id, $user_row)
 {
 	global $db, $auth, $user, $cache;
 	global $phpbb_root_path, $phpEx, $config;

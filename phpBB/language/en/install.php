@@ -325,7 +325,7 @@ $lang = array_merge($lang, array(
 	'ERROR'		=> 'Error',
 
 	'FILE_ALREADY_UP_TO_DATE'		=> 'File is already up to date',
-	'FILE_USED'						=> 'Informations used from',
+	'FILE_USED'						=> 'Information used from',			// Single file
 	'FILES_CONFLICT'				=> 'Conflict files',
 	'FILES_CONFLICT_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. phpBB determined that these files create conflicts if they are tried to be merged. Please investigate the conflicts and try to manually resolve them or continue the update choosing the preferred merging method. If you resolve the conflicts manually check the files again after you modified the them. You are also able to choose between the preferred merge method for every file. The first one will result in a file where the conflicting lines from your old file will be lost, the other one will result in loosing the changes from the newer file.',
 	'FILES_MODIFIED'				=> 'Modified files',

@@ -311,6 +311,7 @@ $lang = array_merge($lang, array(
 	'NEXT'						=> 'Next',
 	'NEVER'						=> 'Never',
 	'NO'						=> 'No',
+	'NOT_ALLOWED_MANAGE_GROUP'	=> 'You are not allowed to manage this group from the administration control panel.',
 	'NOT_AUTHORIZED'			=> 'You are not authorised to access this area.',
 	'NOT_WATCHING_FORUM'		=> 'You are no longer subscribed to updates on this forum.',
 	'NOT_WATCHING_TOPIC'		=> 'You are no longer subscribed to this topic.',

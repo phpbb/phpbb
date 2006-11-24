@@ -30,7 +30,7 @@ $sort_dir	= request_var('sd', 'd');
 $show_guests= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
 
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
-$sort_key_sql = array('a' => 'u.username', 'b' => 's.session_time', 'c' => 's.session_page');
+$sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
 
 // Sorting and order
 if (!isset($sort_key_text[$sort_key]))

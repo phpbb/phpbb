@@ -802,7 +802,7 @@ class install_update extends module
 			return $update_list;
 		}
 
-		// Now diff the remaining files to get informations about their status (not modified/modified/up-to-date)
+		// Now diff the remaining files to get information about their status (not modified/modified/up-to-date)
 
 		// not modified?
 		foreach ($this->update_info['files'] as $index => $file)
@@ -960,7 +960,7 @@ class install_update extends module
 
 				if ($info !== false)
 				{
-					// Adjust the update info file to hold some specific style-related informations
+					// Adjust the update info file to hold some specific style-related information
 					$info['custom'] = array();
 
 					// Get custom installed styles...

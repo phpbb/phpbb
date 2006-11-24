@@ -936,7 +936,7 @@ class acp_profile
 
 		$field_id = request_var('field_id', 0);
 
-		// Collect all informations, if something is going wrong, abort the operation
+		// Collect all information, if something is going wrong, abort the operation
 		$profile_sql = $profile_lang = $empty_lang = $profile_lang_fields = array();
 
 		$default_lang_id = $lang_defs['iso'][$config['default_lang']];

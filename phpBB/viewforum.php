@@ -429,7 +429,7 @@ if ($num_rows < $sql_limit)
 	$db->sql_freeresult($result);
 }
 
-// If we have some shadow topics, update the rowset to reflect their topic informations
+// If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
 {
 	$sql = 'SELECT *
@@ -531,7 +531,7 @@ if (sizeof($topic_list))
 			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 		}
 
-		// Get folder img, topic status/type related informations
+		// Get folder img, topic status/type related information
 		$folder_img = $folder_alt = $topic_type = '';
 		topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 

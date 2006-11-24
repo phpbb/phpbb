@@ -265,7 +265,7 @@ class acp_modules
 				// Category/not category?
 				$is_cat = (!$module_data['module_basename']) ? true : false;
 
-				// Get module informations
+				// Get module information
 				$module_infos = $this->get_module_infos();
 
 				// Build name options
@@ -488,7 +488,7 @@ class acp_modules
 	}
 	
 	/**
-	* Get available module informations from module files
+	* Get available module information from module files
 	*/
 	function get_module_infos($module = '', $module_class = false)
 	{

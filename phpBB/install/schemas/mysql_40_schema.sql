@@ -150,7 +150,7 @@ CREATE TABLE phpbb_bots (
 # Table: 'phpbb_config'
 CREATE TABLE phpbb_config (
 	config_name varchar(255) DEFAULT '' NOT NULL,
-	config_value varchar(255) DEFAULT '' NOT NULL,
+	config_value text NOT NULL,
 	is_dynamic tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (config_name),
 	KEY is_dynamic (is_dynamic)
@@ -295,6 +295,7 @@ CREATE TABLE phpbb_forums_watch (
 CREATE TABLE phpbb_groups (
 	group_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
+	group_founder_manage tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name text NOT NULL,
 	group_desc text NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,

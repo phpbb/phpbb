@@ -126,7 +126,7 @@ class acp_ban
 						AND u.user_id = b.ban_userid
 						AND b.ban_userid <> 0
 						AND u.user_id <> ' . ANONYMOUS . '
-					ORDER BY u.username ASC';
+					ORDER BY u.username_clean ASC';
 			break;
 
 			case 'ip':

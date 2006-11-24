@@ -140,7 +140,7 @@ class session
 	{
 		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
 
-		// Give us some basic informations
+		// Give us some basic information
 		$this->time_now				= time();
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;

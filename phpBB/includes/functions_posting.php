@@ -96,8 +96,8 @@ function generate_smilies($mode, $forum_id)
 }
 
 /**
-* Update Post Informations (First/Last Post in topic/forum)
-* Should be used instead of sync() if only the last post informations are out of sync... faster
+* Update Post Information (First/Last Post in topic/forum)
+* Should be used instead of sync() if only the last post information are out of sync... faster
 *
 * @param string $type Can be forum|topic
 * @param mixed $ids topic/forum ids
@@ -1388,11 +1388,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$subject = truncate_string($subject);
 	$data['topic_title'] = truncate_string($data['topic_title']);
 
-	// Collect some basic informations about which tables and which rows to update/insert
+	// Collect some basic information about which tables and which rows to update/insert
 	$sql_data = array();
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
 
-	// Collect Informations
+	// Collect Information
 	switch ($post_mode)
 	{
 		case 'post':

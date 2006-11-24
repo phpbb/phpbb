@@ -202,7 +202,7 @@ class ucp_zebra
 			WHERE z.user_id = ' . $user->data['user_id'] . "
 				AND $sql_and 
 				AND u.user_id = z.zebra_id
-			ORDER BY u.username ASC";
+			ORDER BY u.username_clean ASC";
 		$result = $db->sql_query($sql);
 
 		$s_username_options = '';

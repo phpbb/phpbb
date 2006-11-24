@@ -159,7 +159,7 @@ function mcp_post_details($id, $mode, $action)
 		foreach ($log_data as $row)
 		{
 			$template->assign_block_vars('usernotes', array(
-				'REPORT_BY'		=> $row['username'],
+				'REPORT_BY'		=> $row['username_full'],
 				'REPORT_AT'		=> $user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
 				'ID'			=> $row['id'])

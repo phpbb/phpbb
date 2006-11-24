@@ -949,7 +949,7 @@ class acp_users
 				// Sorting
 				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 				$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
-				$sort_by_sql = array('u' => 'l.username', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+				$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -977,7 +977,7 @@ class acp_users
 				foreach ($log_data as $row)
 				{
 					$template->assign_block_vars('log', array(
-						'USERNAME'		=> $row['username'],
+						'USERNAME'		=> $row['username_full'],
 						'IP'			=> $row['ip'],
 						'DATE'			=> $user->format_date($row['time']),
 						'ACTION'		=> nl2br($row['action']),
@@ -1185,7 +1185,7 @@ class acp_users
 			case 'prefs':
 
 				$data = array(
-					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat']),
+					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat'], true),
 					'lang'				=> request_var('lang', $user_row['user_lang']),
 					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
@@ -1843,6 +1843,19 @@ class acp_users
 						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
+					// Check the founder only entry for this group to make sure everything is well
+					$sql = 'SELECT group_founder_manage
+						FROM ' . GROUPS_TABLE . '
+						WHERE group_id = ' . $group_id;
+					$result = $db->sql_query($sql);
+					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
+					$db->sql_freeresult($result);
+
+					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
+					{
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					// Add user/s to group
 					if ($error = group_user_add($group_id, $user_id))
 					{
@@ -1877,7 +1890,7 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				// Select box for other groups
-				$sql = 'SELECT group_id, group_name, group_type
+				$sql = 'SELECT group_id, group_name, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
 					' . ((sizeof($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
 					ORDER BY group_type DESC, group_name ASC';
@@ -1887,6 +1900,12 @@ class acp_users
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if (!$config['coppa_enable'] && $row['group_name'] == 'REGISTERED_COPPA')
+					{
+						continue;
+					}
+
+					// Do not display those groups not allowed to be managed
+					if ($user->data['user_type'] != USER_FOUNDER && $row['group_founder_manage'])
 					{
 						continue;
 					}

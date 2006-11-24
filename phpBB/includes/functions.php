@@ -1865,7 +1865,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 		}
 
-		// The result parameter is always an array, holding the relevant informations...
+		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
 			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
@@ -2676,7 +2676,7 @@ function get_backtrace()
 		$trace['file'] = substr($trace['file'], 1);
 		$args = array();
 
-		// If include/require/include_once is not called, do not show arguments - they may contain sensible informations
+		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
 		if (!in_array($trace['function'], array('include', 'require', 'include_once')))
 		{
 			unset($trace['args']);
@@ -2773,11 +2773,12 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 * @param int $user_id The users id
 * @param string $username The users name
 * @param string $username_colour The users colour
-* @param string $guest_username optional field to specify the guest username. It will be used in favor of the GUEST language variable then.
+* @param string $guest_username optional parameter to specify the guest username. It will be used in favor of the GUEST language variable then.
+* @param string $custom_profile_url optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
 *
 * @return string A string consisting of what is wanted based on $mode.
 */
-function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false)
+function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
 	global $phpbb_root_path, $phpEx, $user;
 
@@ -2796,7 +2797,8 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	// Only show the link if not anonymous
 	if ($user_id && $user_id != ANONYMOUS)
 	{
-		$profile_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . (int) $user_id);
+		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
+		$profile_url .= '&amp;u=' . (int) $user_id;
 		$full_string = '<a href="' . $profile_url . '"' . (($username_colour) ? ' style="color: ' . $username_colour . '; font-weight: bold;"' : '') .  '>' . $username . '</a>';
 	}
 	else
@@ -3116,7 +3118,7 @@ function page_header($page_title = '', $display_online_list = true)
 				$reading_sql .
 				((!$config['load_online_guests']) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
 				AND u.user_id = s.session_user_id 
-			ORDER BY u.username ASC, s.session_ip ASC';
+			ORDER BY u.username_clean ASC, s.session_ip ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

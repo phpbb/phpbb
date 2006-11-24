@@ -114,7 +114,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
-		// Get folder img, topic status/type related informations
+		// Get folder img, topic status/type related information
 		$folder_img = $folder_alt = $topic_type = '';
 		topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
 

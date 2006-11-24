@@ -54,6 +54,12 @@
 
 	<fieldset>
 		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
+	<!-- IF S_USER_FOUNDER -->
+	<dl>
+		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}:</label><br /><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
+		<dd><input name="group_founder_manage" type="checkbox" class="radio" id="group_founder_manage"{GROUP_FOUNDER_MANAGE} /></dd>
+	</dl>
+	<!-- ENDIF -->
 	<dl>
 		<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
 		<dd><input name="group_legend" type="checkbox" class="radio" id="group_legend"{GROUP_LEGEND} /></dd>

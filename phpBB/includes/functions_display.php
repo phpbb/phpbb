@@ -712,7 +712,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		$extensions = $cache->obtain_attach_extensions();
 	}
 
-	// Look for missing attachment informations...
+	// Look for missing attachment information...
 	$attach_ids = array();
 	foreach ($attachment_data as $pos => $attachment)
 	{

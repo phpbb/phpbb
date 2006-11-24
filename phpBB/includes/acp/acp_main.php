@@ -324,7 +324,7 @@ class acp_main
 			foreach ($log_data as $row)
 			{
 				$template->assign_block_vars('log', array(
-					'USERNAME'	=> $row['username'],
+					'USERNAME'	=> $row['username_full'],
 					'IP'		=> $row['ip'],
 					'DATE'		=> $user->format_date($row['time']),
 					'ACTION'	=> $row['action'])
