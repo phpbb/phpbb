@@ -64,6 +64,21 @@ function arraypop(thearray)
 	return retval;
 }
 
+
+/**
+* bbstyle
+*/
+function bbstyle(bbnumber)
+{	
+	if (bbnumber != -1)
+	{
+		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
+	} else {
+		insert_text('[*]');
+		document.forms[form_name].elements[text_name].focus();		
+	}
+}
+
 /**
 * Apply bbcodes
 */
@@ -247,185 +262,6 @@ function addquote(post_id, username)
 }
 
 /**
-* bbstyle
-*/
-function bbstyle(bbnumber)
-{
-	donotinsert = false;
-	theSelection = false;
-	bblast = 0;
-	document.forms[form_name].elements[text_name].focus();
-
-	// Close all open tags & default button names
-	if (bbnumber == -1)
-	{
-		while (bbcode[0])
-		{
-			butnumber = arraypop(bbcode) - 1;
-			document.forms[form_name].elements[text_name].value += bbtags[butnumber + 1];
-			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
-		
-			if (buttext != '[*]')
-			{
-				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));				
-			}
-		}
-
-		document.forms[form_name].addbbcode10.value = 'List';
-		bbtags[10] = '[list]';
-
-		document.forms[form_name].addbbcode12.value = 'List=';
-		bbtags[12] = '[list=]';
-		
-		// All tags are closed including image tags :D
-		imageTag = false;
-		document.forms[form_name].elements[text_name].focus();
-
-		return;
-	}
-
-	// [*] doesn't have an end tag
-	noEndTag = (bbtags[bbnumber] == '[*]')
-
-	if ((clientVer >= 4) && is_ie && is_win)
-	{
-		// Get text selection
-		theSelection = document.selection.createRange().text;
-
-		if (theSelection) 
-		{
-			// Add tags around selection
-			document.selection.createRange().text = bbtags[bbnumber] + theSelection + ((!noEndTag) ? bbtags[bbnumber+1] : '');
-			document.forms[form_name].elements[text_name].focus();
-			theSelection = '';
-			return;
-		}
-	}
-	else if (document.forms[form_name].elements[text_name].selectionEnd && (document.forms[form_name].elements[text_name].selectionEnd - document.forms[form_name].elements[text_name].selectionStart > 0))
-	{
-		mozWrap(document.forms[form_name].elements[text_name], bbtags[bbnumber], ((!noEndTag) ? bbtags[bbnumber+1] : ''));
-		document.forms[form_name].elements[text_name].focus();
-		theSelection = '';
-		return;
-	}
-
-	// Find last occurance of an open tag the same as the one just clicked
-	for (i = 0; i < bbcode.length; i++)
-	{
-		if (bbcode[i] == bbnumber+1)
-		{
-			bblast = i;
-			donotinsert = true;
-		}
-	}
-
-	if (bbnumber == 10 && bbtags[10] != '[*]')
-	{
-		if (donotinsert)
-		{
-			document.forms[form_name].addbbcode12.value = 'List=';
-			tmp_help = help_line['o'];
-			help_line['o'] = help_line['e'];
-			help_line['e'] = tmp_help;
-			bbtags[12] = '[list=]';
-		}
-		else
-		{
-			document.forms[form_name].addbbcode12.value = '[*]';
-			tmp_help = help_line['o'];
-			help_line['o'] = help_line['e'];
-			help_line['e'] = tmp_help;
-			bbtags[12] = '[*]';
-		}
-	}
-
-	if (bbnumber == 12 && bbtags[12] != '[*]')
-	{
-		if (donotinsert)
-		{
-			document.forms[form_name].addbbcode10.value = 'List';
-			tmp_help = help_line['l'];
-			help_line['l'] = help_line['e'];
-			help_line['e'] = tmp_help;
-			bbtags[10] = '[list]';
-		}
-		else
-		{
-			document.forms[form_name].addbbcode10.value = '[*]';
-			tmp_help = help_line['l'];
-			help_line['l'] = help_line['e'];
-			help_line['e'] = tmp_help;
-			bbtags[10] = '[*]';
-		}
-	}
-
-	// Close all open tags up to the one just clicked & default button names
-	if (donotinsert)
-	{
-		while (bbcode[bblast])
-		{
-			butnumber = arraypop(bbcode) - 1;
-
-			if (bbtags[butnumber] != '[*]')
-			{
-				insert_text(bbtags[butnumber + 1]);
-			}
-			else
-			{
-				insert_text(bbtags[butnumber]);
-			}
-
-			buttext = document.forms[form_name]['addbbcode' + butnumber].value;
-
-			if (bbtags[butnumber] != '[*]')
-			{
-				document.forms[form_name]['addbbcode' + butnumber].value = buttext.substr(0,(buttext.length - 1));
-			}
-			imageTag = false;
-		}
-		document.forms[form_name].elements[text_name].focus();
-		return;
-	}
-	else
-	{
-		// Open tags
-
-		// Close image tag before adding another
-		if (imageTag && (bbnumber != 14))
-		{
-			insert_text(bbtags[15]);
-
-			// Remove the close image tag from the list
-			lastValue = arraypop(bbcode) - 1;
-
-			// Return button back to normal state
-			document.forms[form_name].addbbcode14.value = 'Img';
-			imageTag = false;
-		}
-
-		// Open tag
-		insert_text(bbtags[bbnumber]);
-
-		// Check to stop additional tags after an unclosed image tag
-		if (bbnumber == 14 && imageTag == false)
-		{
-			imageTag = 1; 
-		}
-
-		if (bbtags[bbnumber] != '[*]')
-		{
-			arraypush(bbcode, bbnumber + 1);
-			document.forms[form_name]['addbbcode' + bbnumber].value += "*";
-		}
-
-		document.forms[form_name].elements[text_name].focus();
-		return;
-	}
-
-	storeCaret(document.forms[form_name].elements[text_name]);
-}
-
-/**
 * From http://www.massless.org/mozedit/
 */
 function mozWrap(txtarea, open, close)
@@ -499,7 +335,7 @@ function colorPalette(dir, width, height)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"  onmouseout="helpline(\'tip\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 
