@@ -40,7 +40,6 @@ $lang = array_merge($lang, array(
 	'ATTACH_QUOTA_REACHED'		=> 'Sorry, the board attachment quota has been reached.',
 	'ATTACH_SIG'				=> 'Attach a signature (signatures can be altered via the UCP)',
 
-	'BBCODE_A_HELP'				=> 'Close all open BBCode tags',
 	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]  (alt+b)',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]  (alt+c)',
 	'BBCODE_E_HELP'				=> 'List: Add list element',
