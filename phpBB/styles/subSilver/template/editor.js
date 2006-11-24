@@ -85,10 +85,9 @@ function bbstyle(bbnumber)
 function bbfontstyle(bbopen, bbclose)
 {
 	theSelection = false;
-	document.forms[form_name].elements[text_name].focus();
-	
+		
 	var textarea = document.forms[form_name].elements[text_name];
-	var new_pos = getCaretPosition(textarea).start + bbopen.length;	
+	textarea.focus();
 
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
@@ -112,12 +111,13 @@ function bbfontstyle(bbopen, bbclose)
 		return;
 	}
 
+	//The new position for the cursor after adding the bbcode
+	var new_pos = getCaretPosition(textarea).start + bbopen.length;
+
 	// Open tag
 	insert_text(bbopen + bbclose);
 
 	// Center the cursor when we don't have a selection
-
-	
 	// IE & Opera
 	if (document.selection)
 	{
@@ -373,13 +373,13 @@ function getCaretPosition(txtarea)
 		sel.text = dummy;		
 
 		//find dummy chraracter again
-		len	= (dul.text.indexOf(c));
+		len	= (dul.text.indexOf(dummy));
 		sel.moveStart('character',-1);
 		sel.text = "";
 		
 		if (len == -1)
 		{
-			len = 0;
+			len = txtarea.value.length;
 		}
 		
 		caretPos.start = len;
