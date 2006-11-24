@@ -86,6 +86,9 @@ function bbfontstyle(bbopen, bbclose)
 {
 	theSelection = false;
 	document.forms[form_name].elements[text_name].focus();
+	
+	var textarea = document.forms[form_name].elements[text_name];
+	var new_pos = getCaretPosition(textarea).start + bbopen.length;	
 
 	if ((clientVer >= 4) && is_ie && is_win)
 	{
@@ -109,32 +112,19 @@ function bbfontstyle(bbopen, bbclose)
 		return;
 	}
 
-	// Close image tag before adding
-	if (imageTag)
-	{
-		insert_text(bbtags[15]);
-
-		// Remove the close image tag from the list
-		lastValue = arraypop(bbcode) - 1;
-
-		// Return button back to normal state
-		document.forms[form_name].addbbcode14.value = 'Img';
-		imageTag = false;
-	}
-
 	// Open tag
 	insert_text(bbopen + bbclose);
 
 	// Center the cursor when we don't have a selection
-	var textarea = document.forms[form_name].elements[text_name];
-	var new_pos = getCaretPosition(textarea).start - bbclose.length;
+
 	
 	// IE & Opera
 	if (document.selection)
 	{
 		var range = textarea.createTextRange(); 
         range.move("character", new_pos); 
-        range.select();
+		range.select();
+		storeCaret(document.forms[form_name].elements[text_name]);		
 	}
 	//Gecko
 	else if (!isNaN(textarea.selectionStart))
@@ -144,9 +134,6 @@ function bbfontstyle(bbopen, bbclose)
 	}
 
 	document.forms[form_name].elements[text_name].focus();
-
-	storeCaret(document.forms[form_name].elements[text_name]);
-	
 	return;
 }
 
@@ -172,6 +159,7 @@ function insert_text(text, spaces, popup)
 	{
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+		
 	}
 	else if (!isNaN(textarea.selectionStart))
 	{
@@ -186,6 +174,7 @@ function insert_text(text, spaces, popup)
 	{
 		textarea.value = textarea.value + text;
 	}
+	document.forms[form_name].elements[text_name].focus();
 }
 
 /**
@@ -372,29 +361,36 @@ function getCaretPosition(txtarea)
 	var caretPos = new caretPosition();
 	
 	// dirty IE way
-	if(document.selection)
-	{
-		txtarea.focus();
+	// Idea by tkirby on http://www.csie.ntu.edu.tw/~b88039/html/jslib/caret.html
+	if(document.selection && is_ie)
+	{				
+		//insert dummy caracter at current position
+		var dummy = "\001";
+		var sel	= document.selection.createRange();
+		var dul	= sel.duplicate();
+		var len	= 0;
+		dul.moveToElementText(txtarea);
+		sel.text = dummy;		
+
+		//find dummy chraracter again
+		len	= (dul.text.indexOf(c));
+		sel.moveStart('character',-1);
+		sel.text = "";
 		
-		//the current selection
-		var curr_sel = document.selection.createRange();
-		var curr_length = curr_sel.text.length;
-	
-		// back to 0
-		curr_sel.moveStart ('character', -txtarea.value.length);
+		if (len == -1)
+		{
+			len = 0;
+		}
 		
-		//start = selected text - original selection
-		caretPos.start = curr_sel.text.length - curr_length;
-		
-		// end = selection length 
-		caretPos.end = curr_sel.text.length;
+		caretPos.start = len;
+		caretPos.end = len;		
 	}
-	// simple Gecko way
-	else if(!isNaN(txtarea.selectionStart))
+	// simple Gecko/Opera way
+	else if(txtarea.selectionStart || txtarea.selectionStart == 0)
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
 	}
-	
-	return (caretPos);
+
+	return caretPos;
 }
