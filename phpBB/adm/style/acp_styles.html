@@ -22,10 +22,10 @@
 		<dt><label for="new_id">{L_REPLACE}:</label><br /><span>{L_REPLACE_EXPLAIN}</span></dt>
 		<dd><select name="new_id">{S_REPLACE_OPTIONS}</select></dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -62,6 +62,7 @@
 	<form method="post" action="{U_ACTION}">
 
 	<fieldset class="quick" style="text-align: left;">
+		<legend>{L_SELECT_IMAGE}</legend>
 		{L_SELECT_IMAGE}: <select name="imgname" onchange="this.form.submit();">
 		<!-- BEGIN category -->
 			<option class="sep" value="">{category.NAME}</option>
@@ -84,6 +85,7 @@
 	</fieldset>
 
 	<fieldset>
+	<legend>{L_IMAGE}</legend>
 	<dl>
 		<dt><label for="imgpath">{L_IMAGE}:</label></dt>
 		<dd><select id="imgpath" name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><option value=""<!-- IF not IMAGE_SELECT--> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>
@@ -103,7 +105,8 @@
 	</fieldset>
 
 	<fieldset class="submit-buttons">
-			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="button2" type="reset" value="{L_RESET}" />
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="button2" type="reset" value="{L_RESET}" />
 	</fieldset>
 
 	</form>
@@ -213,6 +216,7 @@
 			</fieldset>
 
 			<fieldset class="submit-buttons">
+				<legend>{L_SUBMIT}</legend>
 				{S_HIDDEN_FIELDS}
 				<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
 			</fieldset>
@@ -338,6 +342,7 @@
 			<!-- ENDIF -->
 
 			<fieldset class="submit-buttons">
+				<legend>{L_SUBMIT}</legend>
 				{S_HIDDEN_FIELDS}
 				<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 				<!-- IF S_SHOWCSS -->
@@ -365,10 +370,10 @@
 			<dt><label for="custom_class">{L_CSS_CLASS_NAME}:</label></dt>
 			<dd><input id="custom_class" name="custom_class" type="text" value="" maxlength="40" size="40" /></dd>
 		</dl>
-		</fieldset>
 
-		<fieldset class="quick">
+		<p class="quick">
 			<input class="button1" type="submit" id="add_custom" name="add_custom" value="{L_SUBMIT}" />
+		</p>
 		</fieldset>
 
 		</form>
@@ -396,6 +401,8 @@
 	<p>{L_TEMPLATE_CACHE_EXPLAIN}</p>
 	
 	<form name="acp_styles" method="post" action="{U_ACTION}">
+	<fieldset class="tabulated">
+	<legend>{L_TEMPLATE_CACHE}</legend>
 
 	<table cellspacing="1">
 	<thead>
@@ -424,10 +431,11 @@
 	</tbody>
 	</table>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<span class="small"><a href="#" onclick="marklist('acp_styles', 'delete', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('acp_styles', 'delete', false); return false;">{L_UNMARK_ALL}</a></span><br />
 
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_DELETE_MARKED}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -477,10 +485,10 @@
 		<dt><label for="format">{L_ARCHIVE_FORMAT}:</label></dt>
 		<dd>{FORMAT_BUTTONS}</dd>
 	</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -547,6 +555,7 @@
 		<form id="acp_styles" method="post" action="{U_ACTION}">
 
 		<fieldset class="quick">
+			<legend>{L_CREATE}</legend>
 			{L_CREATE}: <input type="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
 		</fieldset>
 
@@ -618,7 +627,8 @@
 	<!-- ENDIF -->
 	</fieldset>
 
-	<fieldset class="quick">
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</fieldset>
 

@@ -12,6 +12,9 @@
 
 	<form id="acp_icons" method="post" action="{U_ACTION}">
 
+	<fieldset class="tabulated">
+	<legend>{L_TITLE}</legend>
+
 	<table cellspacing="1">
 	<thead>
 	<tr>
@@ -64,9 +67,10 @@
 	</tbody>
 	</table>
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -86,7 +90,6 @@
 	
 	<!-- IF not S_PAK_OPTIONS -->
 		<p>{L_NO_PAK_OPTIONS}</p>
-	</fieldset>
 
 	<!-- ELSE -->
 		<dl>
@@ -96,12 +99,12 @@
 			<dt><label for="current">{L_CURRENT}</label><br /><span>{L_CURRENT_EXPLAIN}</span></dt>
 			<dd><input type="radio" class="radio" id="current" name="current" value="keep" checked="checked" /> {L_KEEP_ALL}&nbsp; &nbsp;<input type="radio" class="radio" name="current" value="replace" /> {L_REPLACE_MATCHES}&nbsp; &nbsp;<input type="radio" class="radio" name="current" value="delete" /> {L_DELETE_ALL}&nbsp;</dd>
 		</dl>
-	</fieldset>
 
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" id="import" name="import" value="{L_IMPORT_SUBMIT}" />
-	</fieldset>
+	</p>
 	<!-- ENDIF -->
+	</fieldset>
 
 	</form>
 
@@ -117,6 +120,10 @@
 			<p>{NOTICE}</p>
 		</div>
 	<!-- ENDIF -->
+
+	<form id="acp_icons" method="post" action="{U_ACTION}">
+	<fieldset class="tabular">
+	<legend>{L_TITLE}<legend>
 
 	<div style="text-align: right;"><a href="{U_IMPORT}">{L_IMPORT}</a> | <a href="{U_EXPORT}">{L_EXPORT}</a></div>
 
@@ -163,10 +170,9 @@
 	</tbody>
 	</table>
 
-	<form id="acp_icons" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button2" name="add" type="submit" value="{L_ICON_ADD}" />&nbsp; &nbsp;<input class="button2" type="submit" name="edit" value="{L_ICON_EDIT}" />
+	</p>
 	</fieldset>
 
 	</form>

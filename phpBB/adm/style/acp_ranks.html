@@ -43,13 +43,13 @@
 		<dd><input name="min_posts" type="text" id="min_posts" maxlength="10" value="{MIN_POSTS}" /></dd>
 	</dl>
 	</div>
-	</fieldset>
 
-	<fieldset class="submit-buttons">
+	<p class="submit-buttons">
 		<input type="hidden" name="action" value="save" />
 
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+	</p>
 	</fieldset>
 
 	</form>
@@ -59,6 +59,10 @@
 	<h1>{L_ACP_MANAGE_RANKS}</h1>
 
 	<p>{L_ACP_RANKS_EXPLAIN}</p>
+
+	<form id="acp_ranks" method="post" action="{U_ACTION}">
+	<fieldset class="tabulated">
+	<legend>{L_ACP_MANAGE_RANKS}</legend>
 
 	<table cellspacing="1">
 	<thead>
@@ -81,10 +85,9 @@
 	</tbody>
 	</table>
 
-	<form id="acp_ranks" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button2" name="add" type="submit" value="{L_ADD_RANK}" />
+	</p>
 	</fieldset>
 
 	</form>

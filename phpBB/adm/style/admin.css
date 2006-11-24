@@ -470,13 +470,21 @@ label img {
 	vertical-align: middle;
 }
 
-fieldset.quick {
+fieldset.quick, p.quick {
 	margin: 0 0 5px 0;
 	padding: 5px 0 0 0; 
 	border: none;
 	background-color: transparent;
 	text-align: right;
 	font-size: 1.1em;
+}
+
+fieldset.quick legend {
+	display: none;
+}
+
+fieldset.tabulated {
+	background-color: #DADFE4;
 }
 
 fieldset.nobg {
@@ -603,7 +611,7 @@ input:focus, textarea:focus {
 }
 
 
-/* Submit button fieldset
+/* Submit button fieldset or paragraph
 ---------------------------------------- */
 fieldset.submit-buttons {
 	text-align: center;
@@ -613,8 +621,19 @@ fieldset.submit-buttons {
 	margin-top: -1px;
 }
 
-fieldset.submit-buttons input {
+p.submit-buttons {
+	text-align: center;
+	margin: 0;
+	padding: 4px;
+	margin-top: 10px;
+}
+
+fieldset.submit-buttons input, p.submit-buttons input {
 	padding: 3px 2px;
+}
+
+fieldset.submit-buttons legend {
+	display: none;
 }
 
 
