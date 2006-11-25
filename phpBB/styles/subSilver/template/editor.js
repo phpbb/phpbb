@@ -360,36 +360,34 @@ function getCaretPosition(txtarea)
 {
 	var caretPos = new caretPosition();
 	
-	// dirty IE way
-	// Idea by tkirby on http://www.csie.ntu.edu.tw/~b88039/html/jslib/caret.html
-	if(document.selection && is_ie)
-	{				
-		//insert dummy caracter at current position
-		var dummy = "\001";
-		var sel	= document.selection.createRange();
-		var dul	= sel.duplicate();
-		var len	= 0;
-		dul.moveToElementText(txtarea);
-		sel.text = dummy;		
-
-		//find dummy chraracter again
-		len	= (dul.text.indexOf(dummy));
-		sel.moveStart('character',-1);
-		sel.text = "";
-		
-		if (len == -1)
-		{
-			len = txtarea.value.length;
-		}
-		
-		caretPos.start = len;
-		caretPos.end = len;		
-	}
 	// simple Gecko/Opera way
-	else if(txtarea.selectionStart || txtarea.selectionStart == 0)
+	if(txtarea.selectionStart || txtarea.selectionStart == 0)
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
+	}
+	// dirty and slow IE way
+	else if(document.selection)
+	{
+		// get current selection
+		var range = document.selection.createRange();
+
+		// a new selection of the whole textarea
+		var range_all = document.body.createTextRange();
+		range_all.moveToElementText(txtarea);
+		
+		// calculate selection start point by moving beginning of range_all to beginning of range
+		var sel_start;
+		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++)
+		{		
+			range_all.moveStart('character', 1);
+		}
+		
+		txtarea.sel_start = sel_start;
+				
+		// we ignore the end value for IE, this is already dirty enough and we don't need it
+		caretPos.start = txtarea.sel_start;
+		caretPos.end = txtarea.sel_start;		
 	}
 
 	return caretPos;
