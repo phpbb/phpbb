@@ -1834,6 +1834,7 @@ function get_schema_struct()
 			'username_clean'			=> array('VCHAR_CI', ''),
 			'user_password'				=> array('VCHAR_UNI:40', ''),
 			'user_passchg'				=> array('TIMESTAMP', 0),
+			'user_pass_convert'			=> array('BOOL', 0),
 			'user_email'				=> array('VCHAR_UNI:100', ''),
 			'user_email_hash'			=> array('BINT', 0),
 			'user_birthday'				=> array('VCHAR:10', ''),

@@ -1609,6 +1609,7 @@ CREATE TABLE [phpbb_users] (
 	[username_clean] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_password] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[user_passchg] [int] DEFAULT (0) NOT NULL ,
+	[user_pass_convert] [int] DEFAULT (0) NOT NULL ,
 	[user_email] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[user_email_hash] [float] DEFAULT (0) NOT NULL ,
 	[user_birthday] [varchar] (10) DEFAULT ('') NOT NULL ,

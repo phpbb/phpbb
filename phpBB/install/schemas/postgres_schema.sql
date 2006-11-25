@@ -1229,6 +1229,7 @@ CREATE TABLE phpbb_users (
 	username_clean varchar_ci DEFAULT '' NOT NULL,
 	user_password varchar(40) DEFAULT '' NOT NULL,
 	user_passchg INT4 DEFAULT '0' NOT NULL CHECK (user_passchg >= 0),
+	user_pass_convert INT2 DEFAULT '0' NOT NULL CHECK (user_pass_convert >= 0),
 	user_email varchar(100) DEFAULT '' NOT NULL,
 	user_email_hash INT8 DEFAULT '0' NOT NULL,
 	user_birthday varchar(10) DEFAULT '' NOT NULL,

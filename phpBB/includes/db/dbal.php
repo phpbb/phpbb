@@ -332,7 +332,6 @@ class dbal
 			case 'mysql':
 			case 'mysql4':
 			case 'mysqli':
-			case 'sqlite':
 				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
 			break;
 

@@ -81,8 +81,68 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// clear arrays
 	$id_ary = array();
 
-	// Which forums should not be searched?
-	$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
+	// egosearch is an author search
+	if ($search_id == 'egosearch')
+	{
+		$author = $user->data['username'];
+	}
+
+	// If we are looking for authors get their ids
+	$author_id_ary = array();
+	if ($author_id)
+	{
+		$author_id_ary[] = $author_id;
+	}
+	else if ($author)
+	{
+		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
+		{
+			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
+		}
+
+		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
+		$sql = 'SELECT user_id
+			FROM ' . USERS_TABLE . "
+			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
+				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		$result = $db->sql_query_limit($sql, 100);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$author_id_ary[] = (int) $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (!sizeof($author_id_ary))
+		{
+			trigger_error($user->lang['NO_SEARCH_RESULTS']);
+		}
+	}
+
+	// if we search in an existing search result just add the additional keywords. But we need to use "all search terms"-mode
+	// so we can keep the old keywords in their old mode, but add the new ones as required words
+	if ($add_keywords)
+	{
+		if ($search_terms == 'all')
+		{
+			$keywords .= ' ' . $add_keywords;
+		}
+		else
+		{
+			$search_terms = 'all';
+			$keywords = implode(' |', explode(' ', preg_replace('#\s+#', ' ', $keywords))) . ' ' .$add_keywords;
+		}
+	}
+
+	// Which forums should not be searched? Author searches are also carried out in unindexed forums
+	if (empty($search->search_query) && sizeof($author_id_ary))
+	{
+		$ex_fid_ary = array_keys($auth->acl_getf('!f_read', true));
+	}
+	else
+	{
+		$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
+	}
 
 	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
@@ -147,59 +207,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	if ($reset_search_forum)
 	{
 		$search_forum = array();
-	}
-
-	// egosearch is an author search
-	if ($search_id == 'egosearch')
-	{
-		$author = $user->data['username'];
-	}
-
-	// If we are looking for authors get their ids
-	$author_id_ary = array();
-	if ($author_id)
-	{
-		$author_id_ary[] = $author_id;
-	}
-	else if ($author)
-	{
-		if ((strpos($author, '*') !== false) && (str_replace(array('*', '%'), '', $author) < $config['min_search_author_chars']))
-		{
-			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
-		}
-
-		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
-		$sql = 'SELECT user_id
-			FROM ' . USERS_TABLE . "
-			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
-				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-		$result = $db->sql_query_limit($sql, 100);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$author_id_ary[] = (int) $row['user_id'];
-		}
-		$db->sql_freeresult($result);
-
-		if (!sizeof($author_id_ary))
-		{
-			trigger_error($user->lang['NO_SEARCH_RESULTS']);
-		}
-	}
-
-	// if we search in an existing search result just add the additional keywords. But we need to use "all search terms"-mode
-	// so we can keep the old keywords in their old mode, but add the new ones as required words
-	if ($add_keywords)
-	{
-		if ($search_terms == 'all')
-		{
-			$keywords .= ' ' . $add_keywords;
-		}
-		else
-		{
-			$search_terms = 'all';
-			$keywords = implode(' |', explode(' ', preg_replace('#\s+#', ' ', $keywords))) . ' ' .$add_keywords;
-		}
 	}
 
 	// Select which method we'll use to obtain the post_id or topic_id information
@@ -400,7 +407,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
-	if (!sizeof($id_ary) && $search_id !== 'active_topics')
+	if (!sizeof($id_ary) && !$search_id)
 	{
 		trigger_error($user->lang['NO_SEARCH_RESULTS']);
 	}

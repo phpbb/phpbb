@@ -940,6 +940,7 @@ CREATE TABLE phpbb_users (
 	username_clean varchar(255) NOT NULL DEFAULT '',
 	user_password varchar(40) NOT NULL DEFAULT '',
 	user_passchg INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	user_pass_convert INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_email varchar(100) NOT NULL DEFAULT '',
 	user_email_hash bigint(20) NOT NULL DEFAULT '0',
 	user_birthday varchar(10) NOT NULL DEFAULT '',

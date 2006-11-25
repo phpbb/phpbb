@@ -1778,6 +1778,7 @@ CREATE TABLE phpbb_users (
 	username_clean varchar2(255) DEFAULT '' ,
 	user_password varchar2(120) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
+	user_pass_convert number(1) DEFAULT '0' NOT NULL,
 	user_email varchar2(300) DEFAULT '' ,
 	user_email_hash number(20) DEFAULT '0' NOT NULL,
 	user_birthday varchar2(10) DEFAULT '' ,
