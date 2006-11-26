@@ -23,7 +23,7 @@ html {
 
 body {
 	/* Text-Sizing with ems: http://www.clagnut.com/blog/348/ */
-	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	color: #536482;
 	background: #E4EDF0 url("../images/bg_header.gif") 0 0 repeat-x;
 	font-size: 62.5%;			/* This sets the default font size to be equivalent to 10px */
@@ -35,13 +35,13 @@ img {
 }
 
 h1 {
-	font: bold 1.8em 'Trebuchet MS', Verdana, sans-serif;
+	font: bold 1.8em "Lucida Grande", 'Trebuchet MS', Verdana, sans-serif;
 	text-decoration: none; 
 	color: #333333;
 }
 
 h2, caption {
-	font: bold 1.2em Arial, Helvetica, sans-serif;
+	font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif;
 	text-decoration: none; 
 	line-height: 120%; 
 	text-align: left;
@@ -99,7 +99,7 @@ a:hover {
 }
 
 #page-header h1 {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 	font-size: 1.5em;
 	font-weight: normal;
 	padding-top: 15px;
@@ -281,7 +281,7 @@ span.corners-top span, span.corners-bottom span {
 	display: block;
 	padding: 5px;
 	font-size: 0.9em;
-	font-family: Verdana;
+	font-family: "Lucida Grande", Verdana;
 	color: #FFA34F; 
 	font-weight: bold;
 	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
@@ -311,7 +311,7 @@ table {
 }
 
 th, td { 
-	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 	font-size: 1.1em;
 	text-align: left;
 }
@@ -384,7 +384,7 @@ fieldset p {
 
 legend {
 	padding: 1px 0; 
-	font-family: arial,Verdana,Sans-serif;
+	font-family: "Lucida Grande", Arial, Verdana,Sans-serif;
 	font-size: 1.1em;
 	font-weight: bold;
 	color: #006699;
@@ -402,7 +402,7 @@ legend {
 }
 
 input {
-	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 100%;
 	font-weight: normal;
 	background-color: #FAFAFA;
@@ -417,7 +417,7 @@ input {
 }
 
 select {
-	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 100%;
 	font-weight: normal;
 	font-style: normal;
@@ -443,7 +443,7 @@ option {
 }
 
 textarea {
-	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 100%;
 	width: 60%;
 	padding: 2px;
@@ -525,7 +525,7 @@ select#full_folder_action {
    Other general def. list properties defined in prosilver_main.css
 ---------------------------------------- */
 dl {
-	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 }
 
 dt {
@@ -738,7 +738,7 @@ a.button1, input.button1, input.button3,
 a.button2, input.button2  {
 	width: auto !important;
 	padding: 1px 3px 0 3px;
-	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	color: #000;
 	background-color: #EFEFEF;
 	cursor: pointer;
@@ -1038,7 +1038,7 @@ table.pmask td.name {
 ---------------------------------------- */
 .sourcenum {
 	color: gray;
-	font-family: 'Courier New', monospace;
+	font-family: Monaco, 'Courier New', monospace;
 	font-size: 125%;
 	font-weight: bold;
 	line-height: 120%;
@@ -1047,7 +1047,7 @@ table.pmask td.name {
 }
 
 .source {
-	font-family: 'Courier New', monospace;
+	font-family: Monaco, 'Courier New', monospace;
 	font-size: 125%;
 	line-height: 120%;
 	padding: 0px;
