@@ -572,7 +572,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	if (defined('DEBUG_EXTRA'))
 	{
-		echo "\n{$sql}\n";
+		echo "<br />\n{$sql}\n<br />";
 	}
 
 	$db->sql_return_on_error(true);
