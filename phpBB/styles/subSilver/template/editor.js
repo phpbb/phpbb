@@ -118,19 +118,19 @@ function bbfontstyle(bbopen, bbclose)
 	insert_text(bbopen + bbclose);
 
 	// Center the cursor when we don't have a selection
-	// IE & Opera
-	if (document.selection)
+	// Gecko and proper browsers
+	if (!isNaN(textarea.selectionStart))
+	{
+		textarea.selectionStart = new_pos;
+		textarea.selectionEnd = new_pos;
+	}	
+	// IE
+	else if (document.selection)
 	{
 		var range = textarea.createTextRange(); 
         range.move("character", new_pos); 
 		range.select();
 		storeCaret(document.forms[form_name].elements[text_name]);		
-	}
-	//Gecko
-	else if (!isNaN(textarea.selectionStart))
-	{
-		textarea.selectionStart = new_pos;
-		textarea.selectionEnd = new_pos;
 	}
 
 	document.forms[form_name].elements[text_name].focus();
@@ -155,13 +155,8 @@ function insert_text(text, spaces, popup)
 	{
 		text = ' ' + text + ' ';
 	}
-	if (textarea.createTextRange && textarea.caretPos)
-	{
-		var caret_pos = textarea.caretPos;
-		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
-		
-	}
-	else if (!isNaN(textarea.selectionStart))
+	
+	if (!isNaN(textarea.selectionStart))
 	{
 		var sel_start = textarea.selectionStart;
 		var sel_end = textarea.selectionEnd;
@@ -169,7 +164,15 @@ function insert_text(text, spaces, popup)
 		mozWrap(textarea, text, '')
 		textarea.selectionStart = sel_start + text.length;
 		textarea.selectionEnd = sel_end + text.length;
+	}	
+	
+	else if (textarea.createTextRange && textarea.caretPos)
+	{
+		var caret_pos = textarea.caretPos;
+		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+		
 	}
+
 	else
 	{
 		textarea.value = textarea.value + text;
