@@ -171,6 +171,7 @@ function user_add($user_row, $cp_data = false)
 		'user_posts'			=> 0,
 		'user_dst'				=> 0,
 		'user_colour'			=> '',
+		'user_occ'				=> '',
 		'user_interests'		=> '',
 		'user_avatar'			=> '',
 		'user_avatar_type'		=> 0,

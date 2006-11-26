@@ -891,6 +891,16 @@ class install_update extends module
 		// If the file is not modified we are finished here...
 		if ($diff->is_empty())
 		{
+			// Further check if it is already up to date - it could happen that non-modified files
+			// slip through
+			$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
+
+			if ($diff->is_empty())
+			{
+				$update_list['up_to_date'][] = $update_ary;
+				return;
+			}
+
 			$update_list['not_modified'][] = $update_ary;
 			return;
 		}

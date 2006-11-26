@@ -372,7 +372,7 @@ $lang = array_merge($lang, array(
 	'NOTICE'						=> 'Notice',
 	'NUM_CONFLICTS'					=> 'Number of conflicts',
 
-	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating to phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
+	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
 
 	'PERFORM_DATABASE_UPDATE'			=> 'Perform database update',
 	'PERFORM_DATABASE_UPDATE_EXPLAIN'	=> 'Below you will find a link to the database update script. This script needs to be run seperatly because updating the database might result in unexpected behaviour if you are logged in. The database update can take a while, so please do not stop the execution if it only seems to hang. After you clicked the link and the update finished you can close this window too.',
