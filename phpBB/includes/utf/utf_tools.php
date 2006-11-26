@@ -127,11 +127,11 @@ if (extension_loaded('mbstring'))
 
 			if (is_null($offset))
 			{
-				return mb_strrpos($str, $search);
+				return mb_strrpos($str, $needle);
 			}
 			else
 			{
-				return mb_strrpos($str, $search, $offset);
+				return mb_strrpos($str, $needle, $offset);
 			}
 		}
 	}
@@ -152,7 +152,7 @@ if (extension_loaded('mbstring'))
 					return false;
 				}
 
-				return mb_strrpos($str, $search);
+				return mb_strrpos($str, $needle);
 			}
 			else
 			{
@@ -164,7 +164,7 @@ if (extension_loaded('mbstring'))
 
 				$str = mb_substr($str, $offset);
 
-				if (false !== ($pos = mb_strrpos($str, $search)))
+				if (false !== ($pos = mb_strrpos($str, $needle)))
 				{
 					return $pos + $offset;
 				}
