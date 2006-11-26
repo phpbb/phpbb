@@ -943,41 +943,35 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		$friend_list = (is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
-		if (sizeof($user_id_ary))
+		foreach ($user_id_ary as $user_id)
 		{
-			// We need to check their PM status (do they want to receive PM's?)
-			// Only check if not a moderator or admin, since they are allowed to override this user setting
-			if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+			if ($user_id == ANONYMOUS)
 			{
-				$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
-						AND user_allow_pm = 1';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if ($row['user_id'] == ANONYMOUS)
-					{
-						continue;
-					}
-
-					$address_list['u'][$row['user_id']] = $type;
-				}
-				$db->sql_freeresult($result);
+				continue;
 			}
-			else
+
+			$address_list['u'][$user_id] = $type;
+		}
+	}
+
+	// Check for disallowed recipients
+	if (sizeof($address_list['u']))
+	{
+		// We need to check their PM status (do they want to receive PM's?)
+		// Only check if not a moderator or admin, since they are allowed to override this user setting
+		if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		{
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
+					AND user_allow_pm = 0';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
 			{
-				foreach ($user_id_ary as $user_id)
-				{
-					if ($user_id == ANONYMOUS)
-					{
-						continue;
-					}
-
-					$address_list['u'][$user_id] = $type;
-				}
+				unset($address_list['u'][$row['user_id']]);
 			}
+			$db->sql_freeresult($result);
 		}
 	}
 }
