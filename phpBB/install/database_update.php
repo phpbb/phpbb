@@ -301,6 +301,9 @@ $database_update_info = array(
 			GROUPS_TABLE		=> array(
 				'group_founder_manage'	=> array('BOOL', 0),
 			),
+			USERS_TABLE			=> array(
+				'user_pass_convert'		=> array('BOOL', 0),
+			),
 		),
 	),
 	// Latest version
