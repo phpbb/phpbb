@@ -450,6 +450,8 @@ class acp_groups
 
 				if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 				{
+					$avatar_img = '';
+
 					switch ($group_row['group_avatar_type'])
 					{
 						case AVATAR_UPLOAD:
@@ -460,8 +462,8 @@ class acp_groups
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 						break;
 					}
-					$avatar_img .= $group_row['group_avatar'];
 
+					$avatar_img .= $group_row['group_avatar'];
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
 				}
 				else

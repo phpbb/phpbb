@@ -1124,7 +1124,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				));
 
 				$messenger->send($addr['method']);
-				$messenger->reset();
 			}
 		}
 		unset($msg_list_ary);

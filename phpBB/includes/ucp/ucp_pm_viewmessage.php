@@ -426,6 +426,7 @@ function get_user_information($user_id, $user_row)
 	if ($user_row['user_avatar'] && $user->optionget('viewavatars'))
 	{
 		$avatar_img = '';
+
 		switch ($user_row['user_avatar_type'])
 		{
 			case AVATAR_UPLOAD:
@@ -436,8 +437,8 @@ function get_user_information($user_id, $user_row)
 				$avatar_img = $config['avatar_gallery_path'] . '/';
 			break;
 		}
-		$avatar_img .= $user_row['user_avatar'];
 
+		$avatar_img .= $user_row['user_avatar'];
 		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="' . $user->lang['USER_AVATAR'] . '" />';
 	}
 

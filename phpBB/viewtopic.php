@@ -1032,6 +1032,7 @@ while ($row = $db->sql_fetchrow($result))
 			if ($row['user_avatar'] && $user->optionget('viewavatars'))
 			{
 				$avatar_img = '';
+
 				switch ($row['user_avatar_type'])
 				{
 					case AVATAR_UPLOAD:
@@ -1042,8 +1043,8 @@ while ($row = $db->sql_fetchrow($result))
 						$avatar_img = $config['avatar_gallery_path'] . '/';
 					break;
 				}
-				$avatar_img .= $row['user_avatar'];
 
+				$avatar_img .= $row['user_avatar'];
 				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" alt="" />';
 			}
 

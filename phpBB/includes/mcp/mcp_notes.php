@@ -142,6 +142,7 @@ class mcp_notes
 //		get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
 
 		$avatar_img = '';
+
 		if (!empty($userrow['user_avatar']))
 		{
 			switch ($userrow['user_avatar_type'])
@@ -154,8 +155,8 @@ class mcp_notes
 					$avatar_img = $config['avatar_gallery_path'] . '/';
 				break;
 			}
-			$avatar_img .= $userrow['user_avatar'];
 
+			$avatar_img .= $userrow['user_avatar'];
 			$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 		}
 

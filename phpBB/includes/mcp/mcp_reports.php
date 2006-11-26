@@ -494,12 +494,11 @@ function close_report($post_id_list, $mode, $action)
 				);
 
 				$messenger->send($reporter['user_notify_type']);
-				$messenger->reset();
 			}
-
-			$messenger->save_queue();
 		}
 		unset($notify_reporters, $post_info);
+
+		$messenger->save_queue();
 
 		$success_msg = (sizeof($post_id_list) == 1) ? 'REPORT_' . strtoupper($action) . 'D_SUCCESS' : 'REPORTS_' . strtoupper($action) . 'D_SUCCESS';
 	}

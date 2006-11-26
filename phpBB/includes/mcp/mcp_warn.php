@@ -275,6 +275,7 @@ function mcp_warn_post_view($id, $mode, $action)
 //	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
 
 	$avatar_img = '';
+
 	if (!empty($userrow['user_avatar']))
 	{
 		switch ($userrow['user_avatar_type'])
@@ -287,8 +288,8 @@ function mcp_warn_post_view($id, $mode, $action)
 				$avatar_img = $config['avatar_gallery_path'] . '/';
 			break;
 		}
-		$avatar_img .= $userrow['user_avatar'];
 
+		$avatar_img .= $userrow['user_avatar'];
 		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 	}
 
@@ -359,6 +360,7 @@ function mcp_warn_user_view($id, $mode, $action)
 //	get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
 
 	$avatar_img = '';
+
 	if (!empty($userrow['user_avatar']))
 	{
 		switch ($userrow['user_avatar_type'])
@@ -371,8 +373,8 @@ function mcp_warn_user_view($id, $mode, $action)
 				$avatar_img = $config['avatar_gallery_path'] . '/';
 			break;
 		}
-		$avatar_img .= $userrow['user_avatar'];
 
+		$avatar_img .= $userrow['user_avatar'];
 		$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
 	}
 

@@ -1623,7 +1623,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		);
 
 		$messenger->send($addr['method']);
-		$messenger->reset();
 	}
 	unset($msg_list_ary);
 

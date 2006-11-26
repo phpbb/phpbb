@@ -2018,7 +2018,6 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				);
 
 				$messenger->send($row['user_notify_type']);
-				$messenger->reset();
 			}
 
 			$messenger->save_queue();

@@ -125,7 +125,7 @@ class ucp_profile
 							$key_len = ($key_len > 6) ? $key_len : 6;
 							$user_actkey = substr($user_actkey, 0, $key_len);
 
-							$messenger = new messenger();
+							$messenger = new messenger(false);
 
 							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
 							$messenger->template($template_file, $user->data['user_lang']);
@@ -181,8 +181,6 @@ class ucp_profile
 								}
 								$db->sql_freeresult($result);
 							}
-
-							$messenger->save_queue();
 
 							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
 
@@ -605,8 +603,8 @@ class ucp_profile
 							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
 						break;
 					}
-					$avatar_img .= $user->data['user_avatar'];
 
+					$avatar_img .= $user->data['user_avatar'];
 					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" alt="" />';
 				}
 

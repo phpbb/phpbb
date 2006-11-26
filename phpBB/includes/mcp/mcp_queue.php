@@ -558,11 +558,10 @@ function approve_post($post_id_list, $mode)
 				);
 
 				$messenger->send($post_data['user_notify_type']);
-				$messenger->reset();
 			}
-
-			$messenger->save_queue();
 		}
+
+		$messenger->save_queue();
 
 		// Send out normal user notifications
 		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
@@ -780,12 +779,11 @@ function disapprove_post($post_id_list, $mode)
 				);
 
 				$messenger->send($post_data['user_notify_type']);
-				$messenger->reset();
 			}
-
-			$messenger->save_queue();
 		}
 		unset($post_info, $disapprove_reason);
+
+		$messenger->save_queue();
 
 		if (sizeof($forum_topics_real))
 		{
