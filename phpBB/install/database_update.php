@@ -825,7 +825,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 		break;
 
 		case 'oracle':
-			$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $coumn_data['column_type_sql'];
+			$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			_sql($sql, $errored, $error_ary);
 		break;
 
@@ -888,7 +888,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			}
 			else
 			{
-				$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $colum_data['column_type_sql'] . ']';
+				$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
 				_sql($sql, $errored, $error_ary);
 			}
 		break;
@@ -901,6 +901,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 function sql_column_change($dbms, $table_name, $column_name, $column_data)
 {
 	global $dbms_type_map, $db;
+	global $errored, $error_ary;
 
 	$column_data = prepare_column_data($dbms, $column_data);
 
