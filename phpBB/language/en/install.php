@@ -222,6 +222,8 @@ $lang = array_merge($lang, array(
 	'NO_TABLES_FOUND'			=> 'No tables found.',
 // TODO: Write some explanatory introduction text
 	'OVERVIEW_BODY'					=> 'Welcome to our public beta of the next-generation of phpBB after 2.0.x, phpBB 3.0! This beta release is intended for advanced users to try out on dedicated development enviroments to help us finish creating the best Opensource Bulletin Board solution available.</p><p><strong style="text-transform: uppercase;">Note:</strong> This release is <strong style="text-transform: uppercase;">not final</strong> and made available for testing purposes <strong style="text-transform: uppercase;">only</strong>.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above.',
+	'PCRE_UTF_SUPPORT'				=> 'PCRE UTF-8 Support',
+	'PCRE_UTF_SUPPORT_EXPLAIN'		=> 'phpBB will <strong>not</strong> run if your PHP installation is not compiled with UTF-8 support in the PCRE extension',
 	'PHP_OPTIONAL_MODULE'			=> 'Optional Modules',
 	'PHP_OPTIONAL_MODULE_EXPLAIN'	=> '<strong>Optional</strong> - These modules or applications are optional, you do not need these to use phpBB 3.0. However if you do have them they will will enable greater functionality.',
 	'PHP_SUPPORTED_DB'				=> 'Supported Databases',

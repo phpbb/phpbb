@@ -129,7 +129,7 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		$passed = array('php' => false, 'db' => false, 'files' => false);
+		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false);
 
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
@@ -180,6 +180,26 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
 			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
+
+		// Check for PCRE UTF-8 support
+		if (preg_match('//u', ''))
+		{
+			$passed['pcre'] = true;
+			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+		}
+		else
+		{
+			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PCRE_UTF_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PCRE_UTF_SUPPORT_EXPLAIN'],
 			'RESULT'		=> $result,
 
 			'S_EXPLAIN'		=> true,
@@ -395,8 +415,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
+		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(
