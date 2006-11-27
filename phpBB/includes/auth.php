@@ -223,6 +223,16 @@ class auth
 	{
 		$allowed = false;
 
+		if (is_array($opt))
+		{
+			foreach ($opt as $check_option)
+			{
+				$allowed |= $this->acl_getf_global($check_option);
+			}
+
+			return $allowed;
+		}
+
 		if (isset($this->acl_options['local'][$opt]))
 		{
 			foreach ($this->acl as $f => $bitstring)
