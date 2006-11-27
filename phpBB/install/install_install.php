@@ -187,7 +187,7 @@ class install_install extends module
 		));
 
 		// Check for PCRE UTF-8 support
-		if (preg_match('//u', ''))
+		if (@preg_match('//u', ''))
 		{
 			$passed['pcre'] = true;
 			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
