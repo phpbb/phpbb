@@ -173,7 +173,7 @@ class fulltext_native extends search_backend
 		{
 			$words = array();
 
-			preg_match_all('#([^\\s+\\-|()]+)(?:$|[\\s+\\-|()])#', $keywords, $words);
+			preg_match_all('#([^\\s+\\-|()]+)(?:$|[\\s+\\-|()])#u', $keywords, $words);
 			if (sizeof($words[1]))
 			{
 				$keywords = '(' . implode('|', $words[1]) . ')';
@@ -184,7 +184,7 @@ class fulltext_native extends search_backend
 		$this->search_query = $keywords;
 
 		$exact_words = array();
-		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#', $keywords, $exact_words);
+		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
 		$exact_words = $exact_words[1];
 
 		if (sizeof($exact_words))

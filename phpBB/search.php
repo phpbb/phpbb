@@ -130,7 +130,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		else
 		{
 			$search_terms = 'all';
-			$keywords = implode(' |', explode(' ', preg_replace('#\s+#', ' ', $keywords))) . ' ' .$add_keywords;
+			$keywords = implode(' |', explode(' ', preg_replace('#\s+#u', ' ', $keywords))) . ' ' .$add_keywords;
 		}
 	}
 
@@ -447,7 +447,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// define some vars for urls
 	// @todo preg_replace still needed?
-	$hilit = preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords))))));
+	$hilit = htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords)))));
 	$u_hilit = urlencode($keywords);
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);

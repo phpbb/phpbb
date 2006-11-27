@@ -89,7 +89,7 @@ class bbcode_firstpass extends bbcode
 			$this->message = str_replace("\r\n", "\n", $this->message);
 
 			// We strip newlines and spaces after and before quotes in quotes (trimming)
-			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([\s|\n]+)#is', '#([\s|\n]+)\[\/quote\]#is'), array("[quote\\1]", "[/quote]"), $this->message);
+			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([\s|\n]+)#ius', '#([\s|\n]+)\[\/quote\]#ius'), array("[quote\\1]", "[/quote]"), $this->message);
 
 			// Now we add exactly one newline
 			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]#is', '#\[\/quote\]#is'), array("[quote\\1]\n", "\n[/quote]"), $this->message);
@@ -445,7 +445,7 @@ class bbcode_firstpass extends bbcode
 					}
 
 					$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
-					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#', '</span>', $code);
+					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
 
 					// remove newline at the end
 					if (!empty($code) && $code{strlen($code)-1} == "\n")
@@ -933,14 +933,14 @@ class parse_message extends bbcode_firstpass
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
 		// Transform \r\n and \r into \n
-		$match = array('#\r\n?#', "#([\n][\s]+){3,}#", '#(script|about|applet|activex|chrome):#i');
+		$match = array('#\r\n?#', "#([\n][\s]+){3,}#u", '#(script|about|applet|activex|chrome):#i');
 		$replace = array("\n", "\n\n", "\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely.
 		if ($config['max_' . $mode . '_chars'] != -1)
 		{
-			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#is', ' ', $this->message));
+			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 	
 			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
