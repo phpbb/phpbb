@@ -2810,12 +2810,10 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	{
 		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
 		$profile_url .= '&amp;u=' . (int) $user_id;
-		$full_string = '<a href="' . $profile_url . '"' . (($username_colour) ? ' style="color: ' . $username_colour . '; font-weight: bold;"' : '') .  '>' . $username . '</a>';
 	}
 	else
 	{
 		$profile_url = '';
-		$full_string = ($username_colour) ? '<span style="color: ' . $username_colour . '; font-weight: bold;">' . $username . '</span>' : $username;
 	}
 
 	switch ($mode)
@@ -2834,7 +2832,26 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 
 		case 'full':
 		default:
-			return $full_string;
+
+			$tpl = '';
+			if (!$profile_url && !$username_colour)
+			{
+				$tpl = '{USERNAME}';
+			}
+			else if (!$profile_url &&  $username_colour)
+			{
+				$tpl = '<span style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</span>';
+			}
+			else if ($profile_url && !$username_colour)
+			{
+				$tpl = '<a href="{PROFILE_URL}">{USERNAME}</a>';
+			}
+			else if ($profile_url && $username_colour)
+			{
+				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</a>';
+			}
+
+			return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
 		break;
 	}
 }
