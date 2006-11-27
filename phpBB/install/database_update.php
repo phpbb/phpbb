@@ -308,7 +308,7 @@ $database_update_info = array(
 		),
 	),
 	// Latest version
-	'3.0.b4-dev'			=> array(),
+	'3.0.b4'			=> array(),
 );
 
 // Determine mapping database type
@@ -458,34 +458,29 @@ $errored = $no_updates = false;
 
 flush();
 
+$no_updates = true;
+
 // some code magic
-switch ($current_version)
+if (version_compare($current_version, '3.0.b3', '<'))
 {
-	case '3.0.b3':
-		// Set group_founder_manage for administrators group
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'ADMINISTRATORS'
-				AND group_type = " . GROUP_SPECIAL;
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
+	// Set group_founder_manage for administrators group
+	$sql = 'SELECT group_id
+		FROM ' . GROUPS_TABLE . "
+		WHERE group_name = 'ADMINISTRATORS'
+			AND group_type = " . GROUP_SPECIAL;
+	$result = $db->sql_query($sql);
+	$group_id = (int) $db->sql_fetchfield('group_id');
+	$db->sql_freeresult($result);
 
-		if ($group_id)
-		{
-			$sql = 'UPDATE ' . GROUPS_TABLE . ' SET group_founder_manage = 1 WHERE group_id = ' . $group_id;
-			_sql($sql, $errored, $error_ary);
-		}
+	if ($group_id)
+	{
+		$sql = 'UPDATE ' . GROUPS_TABLE . ' SET group_founder_manage = 1 WHERE group_id = ' . $group_id;
+		_sql($sql, $errored, $error_ary);
+	}
 
-		add_bots();
+	add_bots();
 
-	// No need to change here. Before this line, no break should appear
-	break;
-
-	case '3.0.b4-dev':
-	default:
-		$no_updates = true;
-	break;
+	$no_updates = false;
 }
 
 _write_result($no_updates, $errored, $error_ary);

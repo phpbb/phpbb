@@ -687,7 +687,7 @@ function tz_select($default = '', $truncate = false)
 		if ($truncate)
 		{
 			$zone_trunc = truncate_string($zone, 50, false, '...');
-		} 
+		}
 		else
 		{
 			$zone_trunc = $zone;
