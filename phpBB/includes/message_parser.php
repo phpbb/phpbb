@@ -664,14 +664,7 @@ class bbcode_firstpass extends bbcode
 							else
 							{
 								$end_tag = array_pop($end_tags);
-								if ($end_tag != $tag)
-								{
-									$error = true;
-								}
-								else
-								{
-									$error = false;
-								}
+								$error = ($end_tag != $tag) ? true : false;
 							}
 						}
 
@@ -704,9 +697,35 @@ class bbcode_firstpass extends bbcode
 			}
 			else
 			{
+/**
+*				Old quote code working fine, but having errors listed in bug #3572
+*
+*				$out .= $buffer . $tok;
+*				$tok = ($tok == '[') ? ']' : '[]';
+*				$buffer = '';
+*/
+
 				$out .= $buffer . $tok;
-				// $tok = ($tok == '[') ? ']' : '[]';
-				$tok = '[]';
+
+				if ($tok == '[')
+				{
+					// Search the text for the next tok... if an ending quote comes first, then change tok to []
+					$pos1 = strpos($in, '[/quote');
+					$pos2 = strpos($in, ']');
+
+					if ($pos1 !== false && ($pos2 === false || $pos1 < $pos2))
+					{
+						$tok = '[]';
+					}
+					else
+					{
+						$tok = ']';
+					}
+				}
+				else
+				{
+					$tok = '[]';
+				}
 				$buffer = '';
 			}
 		}
