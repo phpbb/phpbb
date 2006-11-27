@@ -231,8 +231,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// let the search module split up the keywords
 	if ($keywords)
 	{
-		$search->split_keywords($keywords, $search_terms);
-		if (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id)
+		$correct_query = $search->split_keywords($keywords, $search_terms);
+		if (!$correct_query || (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id))
 		{
 			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words), ENT_COMPAT, 'UTF-8')) . '<br />' : '';
 			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
