@@ -686,13 +686,17 @@ function tz_select($default = '', $truncate = false)
 	{
 		if ($truncate)
 		{
-			$zone = (utf8_strlen($zone) > 70) ? utf8_substr($zone, 0, 70) . '...' : $zone;
+			$zone_trunc = truncate_string($zone, 50, false, "...");
+		} 
+		else
+		{
+			$zone_trunc = $zone;
 		}
 
 		if (is_numeric($offset))
 		{
 			$selected = ($offset == $default) ? ' selected="selected"' : '';
-			$tz_select .= '<option value="' . $offset . '"' . $selected . '>' . $zone . '</option>';
+			$tz_select .= '<option title="'.$zone.'" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
 		}
 	}
 
@@ -2737,11 +2741,12 @@ function get_preg_expression($mode)
 * Truncates string while retaining special characters if going over the max length
 * The default max length is 60 at the moment
 */
-function truncate_string($string, $max_length = 60, $allow_reply = true)
+function truncate_string($string, $max_length = 60, $allow_reply = true, $append = '')
 {
 	$chars = array();
 
 	$strip_reply = false;
+	$stripped = false;
 	if ($allow_reply && strpos($string, 'Re: ') === 0)
 	{
 		$strip_reply = true;
@@ -2756,11 +2761,17 @@ function truncate_string($string, $max_length = 60, $allow_reply = true)
 	{
 		// Cut off the last elements from the array
 		$string = implode('', array_slice($chars, 0, $max_length));
+		$stripped = true;		
 	}
 
 	if ($strip_reply)
 	{
 		$string = 'Re: ' . $string;
+	}
+	
+	if ($append != '' && $stripped)
+	{
+		$string = $string . $append;
 	}
 
 	return $string;
