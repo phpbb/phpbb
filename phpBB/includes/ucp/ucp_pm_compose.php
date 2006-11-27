@@ -955,7 +955,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 	}
 
 	// Check for disallowed recipients
-	if (sizeof($address_list['u']))
+	if (!empty($address_list['u']))
 	{
 		// We need to check their PM status (do they want to receive PM's?)
 		// Only check if not a moderator or admin, since they are allowed to override this user setting
