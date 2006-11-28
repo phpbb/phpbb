@@ -862,11 +862,19 @@ class install_update extends module
 		// Check for this circumstance, the new file need to be up-to-date with the current file then...
 		if (!file_exists($this->old_location . $original_file) && file_exists($this->new_location . $original_file) && file_exists($phpbb_root_path . $file))
 		{
+			$tmp = array(
+				'file1'		=> file_get_contents($this->new_location . $original_file),
+				'file2'		=> file_get_contents($phpbb_root_path . $file),
+			);
+
 			// We need to diff the contents here to make sure the file is really the one we expect
-			$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
+			$diff = &new diff($tmp['file1'], $tmp['file2']);
+			$empty = $diff->is_empty();
+
+			unset($tmp, $diff);
 
 			// if there are no differences we have an up-to-date file...
-			if ($diff->is_empty())
+			if ($empty)
 			{
 				$update_list['up_to_date'][] = $update_ary;
 				return;
@@ -883,16 +891,34 @@ class install_update extends module
 			trigger_error($user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
 		}
 
-		$diff = &new diff(file($this->old_location . $original_file), file($phpbb_root_path . $file));
+		$tmp = array(
+			'file1'		=> file_get_contents($this->old_location . $original_file),
+			'file2'		=> file_get_contents($phpbb_root_path . $file),
+		);
+
+		// We need to diff the contents here to make sure the file is really the one we expect
+		$diff = &new diff($tmp['file1'], $tmp['file2']);
+		$empty_1 = $diff->is_empty();
+
+		unset($tmp, $diff);
+
+		$tmp = array(
+			'file1'		=> file_get_contents($this->new_location . $original_file),
+			'file2'		=> file_get_contents($phpbb_root_path . $file),
+		);
+
+		// We need to diff the contents here to make sure the file is really the one we expect
+		$diff = &new diff($tmp['file1'], $tmp['file2']);
+		$empty_2 = $diff->is_empty();
+
+		unset($tmp, $diff);
 
 		// If the file is not modified we are finished here...
-		if ($diff->is_empty())
+		if ($empty_1)
 		{
 			// Further check if it is already up to date - it could happen that non-modified files
 			// slip through
-			$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
-
-			if ($diff->is_empty())
+			if ($empty_2)
 			{
 				$update_list['up_to_date'][] = $update_ary;
 				return;
@@ -903,10 +929,9 @@ class install_update extends module
 		}
 
 		// If the file had been modified then we need to check if it is already up to date
-		$diff = &new diff(file($this->new_location . $original_file), file($phpbb_root_path . $file));
 
 		// if there are no differences we have an up-to-date file...
-		if ($diff->is_empty())
+		if ($empty_2)
 		{
 			$update_list['up_to_date'][] = $update_ary;
 			return;
@@ -922,10 +947,16 @@ class install_update extends module
 			return;
 		}
 
-		// now compare the merged output with the original file to see if the modified file is up to date
-		$diff = &new diff(file($phpbb_root_path . $file), $diff->merged_output());
+		$tmp = array(
+			'file1'		=> file_get_contents($phpbb_root_path . $file),
+			'file2'		=> implode("\n", $diff->merged_output()),
+		);
 
-		if ($diff->is_empty())
+		// now compare the merged output with the original file to see if the modified file is up to date
+		$diff = &new diff($tmp['file1'], $tmp['file2']);
+		$empty = $diff->is_empty();
+
+		if ($empty)
 		{
 			$update_list['up_to_date'][] = $update_ary;
 			return;

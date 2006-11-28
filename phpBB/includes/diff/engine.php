@@ -49,8 +49,9 @@ class diff_engine
 {
 	function diff($from_lines, $to_lines)
 	{
-		array_walk($from_lines, array('diff', 'trim_newlines'));
-		array_walk($to_lines, array('diff', 'trim_newlines'));
+		// Remove empty lines...
+//		array_walk($from_lines, array('diff', 'trim_newlines'));
+//		array_walk($to_lines, array('diff', 'trim_newlines'));
 
 		$n_from = sizeof($from_lines);
 		$n_to = sizeof($to_lines);

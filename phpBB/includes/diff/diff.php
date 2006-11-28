@@ -46,10 +46,17 @@ class diff
 	* @param array $from_lines  An array of strings. Typically these are lines from a file.
 	* @param array $to_lines    An array of strings.
 	*/
-	function diff($from_lines, $to_lines)
+	function diff(&$from_content, &$to_content)
 	{
 		$diff_engine = &new diff_engine();
-		$this->_edits = call_user_func_array(array($diff_engine, 'diff'), array($from_lines, $to_lines));
+
+		$match = array('#\r\n?#', "#([\n]+){2,}#u");
+		$replace = array("\n", "\n");
+
+		$from_content = preg_replace($match, $replace, $from_content);
+		$to_content = preg_replace($match, $replace, $to_content);
+
+		$this->_edits = call_user_func_array(array($diff_engine, 'diff'), array(explode("\n", $from_content), explode("\n", $to_content)));
 	}
 
 	/**
