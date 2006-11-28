@@ -96,9 +96,7 @@ class install_update extends module
 
 		include_once($phpbb_root_path . 'includes/diff/diff.' . $phpEx);
 
-		/**
-		* Check for user session
-		* - commented out for beta3 with "broken" install check routine
+		// Check for user session
 		if (!$user->data['is_registered'])
 		{
 			login_box('', $user->lang['LOGIN_UPDATE_EXPLAIN']);
@@ -108,7 +106,6 @@ class install_update extends module
 		{
 			trigger_error($user->lang['NO_AUTH_UPDATE']);
 		}
-		*/
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
