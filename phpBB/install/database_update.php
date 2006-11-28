@@ -27,7 +27,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 //error_reporting(E_ALL ^ E_NOTICE);
 error_reporting(E_ALL);
 
-@set_time_limit(120);
+@set_time_limit(0);
 
 // Include essential scripts
 include($phpbb_root_path . 'config.' . $phpEx);

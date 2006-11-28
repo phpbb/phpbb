@@ -102,7 +102,7 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
-@set_time_limit(120);
+@set_time_limit(0);
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
