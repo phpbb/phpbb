@@ -70,6 +70,7 @@ class captcha
 		// fill with noise or grid
 		if ($config['captcha_gd_noise'])
 		{
+			$chars_allowed = array_merge(range('1', '9'), range('A', 'Z'));
 			// random characters in background with random position, angle, color
 			for ($i = 0 ; $i < 72; $i++)
 			{
@@ -78,9 +79,10 @@ class captcha
 				$x		= mt_rand(0, 360);
 				$y		= mt_rand(0, (int)($this->height - ($size / 5)));
 				$color	= $func2($image, mt_rand(160, 224), mt_rand(160, 224), mt_rand(160, 224));
-				$text	= chr(mt_rand(45, 250));
+				$text	= $chars_allowed[array_rand($chars_allowed)];
 				imagettftext($image, $size, $angle, $x, $y, $color, $this->get_font(), $text);
 			}
+			unset($chars_allowed);
 		}
 		else
 		{
