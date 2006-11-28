@@ -196,7 +196,9 @@ class transfer
 		global $phpbb_root_path;
 
 		$directory = $this->root_path . str_replace($phpbb_root_path, '', $directory);
-		$result = $this->_ls($directory);
+
+		$this->_chdir($directory);
+		$result = $this->_ls('');
 
 		if ($result !== false && is_array($result))
 		{
