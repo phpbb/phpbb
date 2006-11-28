@@ -134,7 +134,18 @@ class acp_bbcodes
 					}
 				}
 
-				if (!preg_match('#\[' . $data['bbcode_tag'] .'].*?\[/' . $data['bbcode_tag'] . ']#s', $bbcode_match))
+				if (substr($data['bbcode_tag'], -1) === '=')
+				{
+					$open = '\[' . $data['bbcode_tag'] . '.*?]';
+					$close = '\[/' . substr($data['bbcode_tag'], 0, -1) . ']';
+				}
+				else
+				{
+					$open = '\[' . $data['bbcode_tag'] . ']';
+					$close = '\[/' . $data['bbcode_tag'] . ']';
+				}
+
+				if (!preg_match('#' . $open . '.*?' . $close . '#s', $bbcode_match))
 				{
 					trigger_error($user->lang['BBCODE_OPEN_ENDED_TAG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
