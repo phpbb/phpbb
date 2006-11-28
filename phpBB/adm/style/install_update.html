@@ -127,7 +127,7 @@ function popup(url, width, height)
 					<!-- IF files.STATUS eq 'up_to_date' -->
 						<dd class="full" style="text-align: left;"><strong>{files.FILENAME}</strong></dd>
 					<!-- ELSE -->
-						<dt>
+						<dt style="width: 60%;">
 							<strong>{files.FILENAME}</strong>
 							<!-- IF files.S_CUSTOM -->
 							<br /><span><em>{L_FILE_USED}: </em>{files.CUSTOM_ORIGINAL}</span>
@@ -136,12 +136,12 @@ function popup(url, width, height)
 							<br /><span>{L_NUM_CONFLICTS}: {files.NUM_CONFLICTS}</span>
 							<!-- ENDIF -->
 						</dt>
-						<dd>[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]</dd>
+						<dd style="margin-left: 60%;">[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]</dd>
 						<!-- IF files.S_CUSTOM -->
-							<dd><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
+							<dd style="margin-left: 60%;"><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
 						<!-- ENDIF -->
 						<!-- IF files.STATUS eq 'conflict' -->
-							<dd><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" />&nbsp; {L_MERGE_NEW_FILE_OPTION}<br /><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" />&nbsp; {L_MERGE_MOD_FILE_OPTION}</dd>
+							<dd style="margin-left: 60%;"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" />&nbsp; {L_MERGE_NEW_FILE_OPTION}<br /><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" />&nbsp; {L_MERGE_MOD_FILE_OPTION}</dd>
 						<!-- ENDIF -->
 					<!-- ENDIF -->
 				</dl>
