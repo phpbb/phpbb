@@ -50,11 +50,8 @@ class diff
 	{
 		$diff_engine = &new diff_engine();
 
-		$match = array('#\r\n?#', "#([\n]+){2,}#u");
-		$replace = array("\n", "\n");
-
-		$from_content = preg_replace($match, $replace, $from_content);
-		$to_content = preg_replace($match, $replace, $to_content);
+		$from_content = preg_replace('#[\n\r]+#', "\n", $from_content);
+		$to_content = preg_replace('#[\n\r]+#', "\n", $to_content);
 
 		$this->_edits = call_user_func_array(array($diff_engine, 'diff'), array(explode("\n", $from_content), explode("\n", $to_content)));
 	}
