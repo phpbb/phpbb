@@ -225,7 +225,7 @@ $lang = array_merge($lang, array(
 	'PCRE_UTF_SUPPORT'				=> 'PCRE UTF-8 Support',
 	'PCRE_UTF_SUPPORT_EXPLAIN'		=> 'phpBB will <strong>not</strong> run if your PHP installation is not compiled with UTF-8 support in the PCRE extension',
 	'PHP_OPTIONAL_MODULE'			=> 'Optional Modules',
-	'PHP_OPTIONAL_MODULE_EXPLAIN'	=> '<strong>Optional</strong> - These modules or applications are optional, you do not need these to use phpBB 3.0. However if you do have them they will will enable greater functionality.',
+	'PHP_OPTIONAL_MODULE_EXPLAIN'	=> '<strong>Optional</strong> - These modules or applications are optional, you do not need these to use phpBB 3.0. However if you have them available they will enable greater functionality.',
 	'PHP_SUPPORTED_DB'				=> 'Supported Databases',
 	'PHP_SUPPORTED_DB_EXPLAIN'		=> '<strong>Required</strong> - You must have support for at least one compatible database within PHP. If no database modules are shown as available you should contact your hosting provider or review the relevant PHP installation documentation for advice.',
 	'PHP_REGISTER_GLOBALS'			=> 'PHP setting <var>register_globals</var> is disabled',
@@ -305,7 +305,7 @@ $lang = array_merge($lang, array(
 	'CHECK_FILES_UP_TO_DATE'		=> 'According to your database your version is up to date. You may want to proceed with the file check to make sure all files are really up to date with the latest phpBB version.',
 	'COLLECTED_INFORMATION'			=> 'Information on collected files',
 	'COLLECTED_INFORMATION_EXPLAIN'	=> 'The list below shows information about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
-	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Don’t forget to delete, rename or move your install directory!',
+	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
 	'CURRENT_FILE'					=> 'Current original file',
 	'CURRENT_VERSION'				=> 'Current version',
 
@@ -434,7 +434,7 @@ $lang = array_merge($lang, array(
 		<p>Once uploaded your board will be offline for normal users.<br /><br />
 		<strong><a href="%3$s" title="%3$s">Now start the update process by pointing your browser to the install folder</a>.</strong><br />
 		<br />
-		You will then be guided through the update process. The update is complete after the database update script has been completed successfully - this is the last step within the udpate process.
+		You will then be guided through the update process. The update is complete after the database update script has been completed successfully - this is the last step within the update process.
 		</p>
 
 	',
