@@ -94,7 +94,10 @@ class install_update extends module
 		$auth->acl($user->data);
 		$user->setup('install');
 
+		// Include renderer and engine
 		include_once($phpbb_root_path . 'includes/diff/diff.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/diff/engine.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/diff/renderer.' . $phpEx);
 
 		// Check for user session
 		if (!$user->data['is_registered'])
@@ -574,8 +577,17 @@ class install_update extends module
 							break;
 
 							case 'modified':
-								$diff = &new diff3(file($this->old_location . $original_filename), file($phpbb_root_path . $file_struct['filename']), file($this->new_location . $original_filename));
+
+								$tmp = array(
+									'file1'		=> file_get_contents($this->old_location . $original_filename),
+									'file2'		=> file_get_contents($phpbb_root_path . $file_struct['filename']),
+									'file3'		=> file_get_contents($this->new_location . $original_filename),
+								);
+
+								$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
 								$contents = implode("\n", $diff->merged_output());
+
+								unset($tmp, $diff);
 
 								if ($update_mode == 'download')
 								{
@@ -583,13 +595,23 @@ class install_update extends module
 								}
 								else
 								{
+									// @todo add option to specify if a backup file should be created?
 									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
 									$transfer->write_file($file_struct['filename'], $contents);
 								}
 							break;
 
 							case 'conflict':
-								$diff = &new diff3(file($this->old_location . $original_filename), file($phpbb_root_path . $file_struct['filename']), file($this->new_location . $original_filename));
+
+								$tmp = array(
+									'file1'		=> file_get_contents($this->old_location . $original_filename),
+									'file2'		=> file_get_contents($phpbb_root_path . $file_struct['filename']),
+									'file3'		=> file_get_contents($this->new_location . $original_filename),
+								);
+
+								$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
+
+								unset($tmp);
 
 								if ($conflicts[$file_struct['filename']] == 1)
 								{
@@ -601,8 +623,11 @@ class install_update extends module
 								}
 								else
 								{
+									unset($diff);
 									break;
 								}
+
+								unset($diff);
 
 								if ($update_mode == 'download')
 								{
@@ -716,7 +741,15 @@ class install_update extends module
 		switch ($status)
 		{
 			case 'conflict':
-				$diff = &new diff3(file($this->old_location . $original_file), file($phpbb_root_path . $file), file($this->new_location . $original_file));
+				$tmp = array(
+					'file1'		=> file_get_contents($this->old_location . $original_file),
+					'file2'		=> file_get_contents($phpbb_root_path . $file),
+					'file3'		=> file_get_contents($this->new_location . $original_file),
+				);
+
+				$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
+
+				unset($tmp);
 
 				$template->assign_vars(array(
 					'S_DIFF_CONFLICT_FILE'	=> true,
@@ -725,16 +758,39 @@ class install_update extends module
 			break;
 
 			case 'modified':
-				$diff = &new diff3(file($this->old_location . $original_file), file($phpbb_root_path . $original_file), file($this->new_location . $file));
+				$tmp = array(
+					'file1'		=> file_get_contents($this->old_location . $original_file),
+					'file2'		=> file_get_contents($phpbb_root_path . $original_file),
+					'file3'		=> file_get_contents($this->new_location . $file),
+				);
+
+				$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
+
+				unset($tmp);
 			break;
 
 			case 'not_modified':
 			case 'new_conflict':
-				$diff = &new diff(file($phpbb_root_path . $file), file($this->new_location . $original_file));
+				$tmp = array(
+					'file1'		=> file_get_contents($phpbb_root_path . $file),
+					'file2'		=> file_get_contents($this->new_location . $original_file),
+				);
+
+				$diff = &new diff($tmp['file1'], $tmp['file2']);
+
+				unset($tmp);
 			break;
 
 			case 'new':
-				$diff = &new diff(array(), file($this->new_location . $original_file));
+				$tmp = array(
+					'file1'		=> array(),
+					'file2'		=> file_get_contents($this->new_location . $original_file),
+				);
+
+				$diff = &new diff($tmp['file1'], $tmp['file2']);
+
+				unset($tmp);
+
 				$template->assign_var('S_DIFF_NEW_FILE', true);
 				$diff_mode = 'inline';
 				$this->page_title = 'VIEWING_FILE_CONTENTS';
@@ -762,6 +818,8 @@ class install_update extends module
 			'S_DIFF_MODE_OPTIONS'	=> $diff_mode_options,
 			'S_SHOW_DIFF'			=> true,
 		));
+
+		unset($diff, $renderer);
 	}
 
 	/**
@@ -868,7 +926,7 @@ class install_update extends module
 			);
 
 			// We need to diff the contents here to make sure the file is really the one we expect
-			$diff = &new diff($tmp['file1'], $tmp['file2']);
+			$diff = &new diff($tmp['file1'], $tmp['file2'], false);
 			$empty = $diff->is_empty();
 
 			unset($tmp, $diff);
@@ -897,7 +955,7 @@ class install_update extends module
 		);
 
 		// We need to diff the contents here to make sure the file is really the one we expect
-		$diff = &new diff($tmp['file1'], $tmp['file2']);
+		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
 		$empty_1 = $diff->is_empty();
 
 		unset($tmp, $diff);
@@ -908,7 +966,7 @@ class install_update extends module
 		);
 
 		// We need to diff the contents here to make sure the file is really the one we expect
-		$diff = &new diff($tmp['file1'], $tmp['file2']);
+		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
 		$empty_2 = $diff->is_empty();
 
 		unset($tmp, $diff);
@@ -938,12 +996,23 @@ class install_update extends module
 		}
 
 		// if the file is modified we try to make sure a merge succeed
-		$diff = &new diff3(file($this->old_location . $original_file), file($phpbb_root_path . $file), file($this->new_location . $original_file));
+		$tmp = array(
+			'file1'		=> file_get_contents($this->old_location . $original_file),
+			'file2'		=> file_get_contents($phpbb_root_path . $file),
+			'file3'		=> file_get_contents($this->new_location . $original_file),
+		);
+
+		$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3'], false);
+
+		unset($tmp);
 
 		if ($diff->merged_output(false, false, false, true))
 		{
 			$update_ary['conflicts'] = $diff->_conflicting_blocks;
 			$update_list['conflict'][] = $update_ary;
+
+			unset($diff);
+
 			return;
 		}
 
@@ -953,7 +1022,7 @@ class install_update extends module
 		);
 
 		// now compare the merged output with the original file to see if the modified file is up to date
-		$diff = &new diff($tmp['file1'], $tmp['file2']);
+		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
 		$empty = $diff->is_empty();
 
 		if ($empty)

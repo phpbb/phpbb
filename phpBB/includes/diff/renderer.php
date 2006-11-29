@@ -98,15 +98,20 @@ class diff_renderer
 		if (is_a($diff, 'diff3'))
 		{
 			$diff3 = &$diff;
-			$diff = &new diff($diff3->get_original(), $diff3->merged_output());
+
+			$diff_1 = $diff3->get_original();
+			$diff_2 = $diff3->merged_output();
+
 			unset($diff3);
+
+			$diff = &new diff($diff_1, $diff_2);
 		}
 
 		$nlead = $this->_leading_context_lines;
 		$ntrail = $this->_trailing_context_lines;
 
 		$output = $this->_start_diff();
-		$diffs = $diff->get_diff();
+		$diffs = &$diff->get_diff();
 
 		foreach ($diffs as $i => $edit)
 		{
@@ -440,7 +445,11 @@ class diff_renderer_inline extends diff_renderer
 
 		// We want to split on word boundaries, but we need to preserve whitespace as well.
 		// Therefore we split on words, but include all blocks of whitespace in the wordlist.
-		$diff = &new diff($this->_split_on_words($text1, $nl), $this->_split_on_words($text2, $nl));
+		$splitted_text_1 = $this->_split_on_words($text1, $nl);
+		$splitted_text_2 = $this->_split_on_words($text2, $nl);
+		
+		$diff = &new diff($splitted_text_1, $splitted_text_2);
+		unset($splitted_text_1, $splitted_text_2);
 
 		// Get the diff in inline format.
 		$renderer = &new diff_renderer_inline(array_merge($this->get_params(), array('split_level' => 'words')));
