@@ -484,7 +484,16 @@ fieldset.quick legend {
 }
 
 fieldset.tabulated {
-	background-color: #DADFE4;
+/*	background-color: #DADFE4;*/
+	background: none;
+	margin: 0;
+	padding: 0;
+	padding-top: 5px;
+	border: 0;
+}
+
+fieldset.tabulated legend {
+	display: none;
 }
 
 fieldset.nobg {
