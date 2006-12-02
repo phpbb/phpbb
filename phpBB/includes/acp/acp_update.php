@@ -23,7 +23,7 @@ class acp_update
 		$user->add_lang('install');
 
 		$this->tpl_name = 'acp_update';
-		$this->page_title = 'ACP_UPDATE';
+		$this->page_title = 'ACP_VERSION_CHECK';
 
 		// Get current and latest version
 		$errstr = '';

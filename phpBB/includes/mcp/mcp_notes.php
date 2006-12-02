@@ -41,7 +41,8 @@ class mcp_notes
 		{
 			case 'front':
 				$template->assign_vars(array(
-					'U_FIND_MEMBER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username'),
+					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username'),
+					'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp&field=username', false),
 					'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes'),
 
 					'L_TITLE'			=> $user->lang['MCP_NOTES'])

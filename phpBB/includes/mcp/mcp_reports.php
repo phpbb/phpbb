@@ -64,7 +64,7 @@ class mcp_reports
 				// closed reports are accessed by report id
 				$report_id = request_var('r', 0);
 
-				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.user_colour
+				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
 					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
 						AND rr.reason_id = r.reason_id
@@ -279,7 +279,7 @@ class mcp_reports
 
 				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -361,15 +361,15 @@ function close_report($post_id_list, $mode, $action)
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
-		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
 	else if ($action == 'close' && !request_var('r', 0))
 	{
-		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p', 'quickmod')) . '&amp;mode=reports');
 	}
 	else
 	{
-		$redirect = request_var('redirect', build_url(array('_f_')));
+		$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 	}
 	$success_msg = '';
 
@@ -385,7 +385,7 @@ function close_report($post_id_list, $mode, $action)
 	{
 		$post_info = get_post_data($post_id_list, 'm_report');
 
-		$sql = 'SELECT r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
+		$sql = 'SELECT r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
 			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
 			WHERE ' . $db->sql_in_set('r.post_id', array_keys($post_info)) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '

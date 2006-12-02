@@ -119,7 +119,7 @@ class acp_ban
 				$field = 'username';
 				$l_ban_cell = $user->lang['USERNAME'];
 
-				$sql = 'SELECT b.*, u.user_id, u.username
+				$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
 					FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u
 					WHERE (b.ban_end >= ' . time() . '
 							OR b.ban_end = 0)

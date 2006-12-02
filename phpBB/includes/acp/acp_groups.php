@@ -574,11 +574,11 @@ class acp_groups
 				$db->sql_freeresult($result);
 
 				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 					WHERE ug.group_id = $group_id 
 						AND u.user_id = ug.user_id 
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username";
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$leader = $member = 0;

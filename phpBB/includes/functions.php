@@ -3140,7 +3140,7 @@ function page_header($page_title = '', $display_online_list = true)
 			$db->sql_freeresult($result);
 		}
 
-		$sql = 'SELECT u.username, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
+		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
 			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . 
 				$reading_sql .

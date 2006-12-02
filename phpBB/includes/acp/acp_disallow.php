@@ -26,7 +26,7 @@ class acp_disallow
 
 		// Set up general vars
 		$this->tpl_name = 'acp_disallow';
-		$this->page_header = 'ACP_DISALLOW_USERNAMES';
+		$this->page_title = 'ACP_DISALLOW_USERNAMES';
 
 		$disallow = (isset($_POST['disallow'])) ? true : false;
 		$allow = (isset($_POST['allow'])) ? true : false;

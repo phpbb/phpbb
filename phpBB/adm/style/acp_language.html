@@ -185,7 +185,7 @@
 	<!-- BEGIN data -->
 	<dl>
 		<dt><label for="{data.DATA}">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
-		<dd><input type="text" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
+		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
 	</dl>
 	<!-- END data -->
 	</fieldset>

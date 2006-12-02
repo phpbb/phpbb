@@ -71,7 +71,8 @@ function mcp_warn_front_view($id, $mode)
 	global $template, $db, $user, $auth;
 
 	$template->assign_vars(array(
-		'U_FIND_MEMBER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username'),
+		'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username'),
+		'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp&field=username', false),
 		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user'),
 		)
 	);
@@ -102,7 +103,7 @@ function mcp_warn_front_view($id, $mode)
 
 	// And now the 5 most recent users to get in trouble
 
-	$sql = 'SELECT u.user_id, u.username, u.user_colour, u.user_warnings, w.warning_time
+	$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_warnings, w.warning_time
 		FROM ' . USERS_TABLE . ' u, ' . WARNINGS_TABLE . ' w
 		WHERE u.user_id = w.user_id
 		ORDER BY w.warning_time DESC';

@@ -180,7 +180,7 @@ function mcp_resync_topics($topic_ids)
 		trigger_error($user->lang['NO_TOPIC_SELECTED']);
 	}
 
-	if (check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
+	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
 	}

@@ -36,6 +36,8 @@ class acp_database
 		{
 			case 'backup':
 
+				$this->page_title = 'ACP_BACKUP';
+
 				switch ($action)
 				{
 					case 'download':
@@ -1168,6 +1170,9 @@ class acp_database
 			break;
 
 			case 'restore':
+
+				$this->page_title = 'ACP_RESTORE';
+
 				switch ($action)
 				{
 					case 'submit':

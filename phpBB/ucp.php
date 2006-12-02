@@ -244,7 +244,7 @@ if (!$user->data['is_registered'])
 $update_time = $config['load_online_time'] * 60;
 
 $sql = $db->sql_build_query('SELECT_DISTINCT', array(
-	'SELECT'	=> 'u.user_id, u.username, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+	'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 	'FROM'		=> array(
 		USERS_TABLE		=> 'u',
@@ -262,7 +262,7 @@ $sql = $db->sql_build_query('SELECT_DISTINCT', array(
 		AND z.friend = 1
 		AND u.user_id = z.zebra_id',
 
-	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username, u.user_allow_viewonline, u.user_colour',
+	'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_allow_viewonline, u.user_colour, u.username',
 
 	'ORDER_BY'	=> 'u.username_clean ASC',
 ));

@@ -870,9 +870,10 @@ class session
 	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
 	*
 	* @author satmd (from the php manual)
+	* @param string $mode register/post - spamcop for example is ommitted for posting
 	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
 	*/
-	function check_dnsbl($ip = false)
+	function check_dnsbl($mode, $ip = false)
 	{
 		if ($ip === false)
 		{
@@ -880,10 +881,14 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'bl.spamcop.net'		=> 'http://spamcop.net/bl.shtml?',
 			'list.dsbl.org'			=> 'http://dsbl.org/listing?',
 			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
 		);
+
+		if ($mode == 'register')
+		{
+			$dnsbl_check['bl.spamcop.net'] = 'http://spamcop.net/bl.shtml?';
+		}
 
 		if ($ip)
 		{

@@ -6,6 +6,12 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* @todo add successful file update to log
+* @todo add successful database update to log
+* @todo do database update before updating files. Within the updater create a new config variable (version_update_from). Use this version in favor of the real versino to check for the database update successfully run through. After successful file update remove the information.
+* @todo check memory by setting limit to 8MB locally.
+* @todo make sure binary files get updated too, omitting the diff engine for this (handle like a conflict)
+* @todo do not require login...
 */
 
 /**
@@ -71,6 +77,8 @@ class install_update extends module
 		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth;
 
 		$this->tpl_name = 'install_update';
+		$this->page_title = 'UPDATE_INSTALLATION';
+
 		$this->old_location = $phpbb_root_path . 'install/update/old/';
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
 
@@ -87,7 +95,17 @@ class install_update extends module
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
 
-		$config = $cache->obtain_config();
+		$config = array();
+
+		$sql = 'SELECT config_name, config_value
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
 
 		// First of all, init the user session
 		$user->session_begin();
@@ -98,17 +116,6 @@ class install_update extends module
 		include_once($phpbb_root_path . 'includes/diff/diff.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/diff/engine.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/diff/renderer.' . $phpEx);
-
-		// Check for user session
-		if (!$user->data['is_registered'])
-		{
-			login_box('', $user->lang['LOGIN_UPDATE_EXPLAIN']);
-		}
-
-		if (!$auth->acl_get('a_'))
-		{
-			trigger_error($user->lang['NO_AUTH_UPDATE']);
-		}
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
@@ -695,6 +702,8 @@ class install_update extends module
 					'S_DB_UPDATE'		=> true,
 					'U_DB_UPDATE'		=> $phpbb_root_path . 'install/database_update.' . $phpEx)
 				);
+
+				
 
 			break;
 		}

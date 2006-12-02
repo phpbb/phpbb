@@ -48,7 +48,7 @@ class ucp_zebra
 				// 'nice' and automatically handle names added to one list present on 
 				// the other (by removing the existing one) ... but I have a feeling this
 				// may lead to complaints
-				$sql = 'SELECT z.*, u.username 
+				$sql = 'SELECT z.*, u.username, u.username_clean 
 					FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u 
 					WHERE z.user_id = ' . $user->data['user_id'] . '
 						AND u.user_id = z.zebra_id';
@@ -197,7 +197,7 @@ class ucp_zebra
 		}
 
 		$sql_and = ($mode == 'friends') ? 'z.friend = 1' : 'z.foe = 1';
-		$sql = 'SELECT z.*, u.username 
+		$sql = 'SELECT z.*, u.username, u.username_clean 
 			FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u 
 			WHERE z.user_id = ' . $user->data['user_id'] . "
 				AND $sql_and 
@@ -215,7 +215,8 @@ class ucp_zebra
 		$template->assign_vars(array( 
 			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . $l_mode],
 
-			'U_SEARCH_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'), 
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'),
+			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=ucp&field=add', true),
 
 			'S_USERNAME_OPTIONS'	=> $s_username_options,
 			'S_HIDDEN_FIELDS'		=> $s_hidden_fields,

@@ -65,7 +65,7 @@ class acp_email
 				{
 					if ($group_id)
 					{
-						$sql = 'SELECT u.user_email, u.username, u.user_lang, u.user_jabber, u.user_notify_type 
+						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
 								AND ug.user_pending = 0
@@ -75,7 +75,7 @@ class acp_email
 					}
 					else
 					{
-						$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
+						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang 
 							FROM ' . USERS_TABLE . '
 							WHERE user_allow_massemail = 1
 							ORDER BY user_lang, user_notify_type';

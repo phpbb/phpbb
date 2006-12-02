@@ -157,7 +157,7 @@ class ucp_register
 			// DNSBL check
 			if ($config['check_dnsbl'])
 			{
-				if (($dnsbl = $user->check_dnsbl()) !== false)
+				if (($dnsbl = $user->check_dnsbl('register')) !== false)
 				{
 					$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
 				}

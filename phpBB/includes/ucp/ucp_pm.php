@@ -368,6 +368,7 @@ class ucp_pm
 					'U_OUTBOX'				=> $this->u_action . '&amp;folder=outbox',
 					'U_SENTBOX'				=> $this->u_action . '&amp;folder=sentbox',
 					'U_CREATE_FOLDER'		=> $this->u_action . '&amp;mode=options',
+					'U_CURRENT_FOLDER'		=> $this->u_action . '&amp;folder=' . $folder_id,
 
 					'S_IN_INBOX'			=> ($folder_id == PRIVMSGS_INBOX) ? true : false,
 					'S_IN_OUTBOX'			=> ($folder_id == PRIVMSGS_OUTBOX) ? true : false,

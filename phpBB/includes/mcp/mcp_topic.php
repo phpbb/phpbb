@@ -79,7 +79,7 @@ function mcp_topic_view($id, $mode, $action)
 		$posts_per_page = $total;
 	}
 
-	$sql = 'SELECT u.username, u.user_colour, p.*
+	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . ' ' .
@@ -467,6 +467,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 		if (sizeof($topic_data))
 		{
+			$topic_data = $topic_data[$topic_id];
 			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_data['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
 

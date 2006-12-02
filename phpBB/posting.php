@@ -88,7 +88,7 @@ switch ($mode)
 			trigger_error('NO_POST');
 		}
 
-		$sql = 'SELECT f.*, t.*, p.*, u.username, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
+		$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
 				AND t.topic_id = p.topic_id
@@ -794,7 +794,7 @@ if ($submit || $preview || $refresh)
 	// DNSBL check
 	if ($config['check_dnsbl'] && !$refresh)
 	{
-		if (($dnsbl = $user->check_dnsbl()) !== false)
+		if (($dnsbl = $user->check_dnsbl('post')) !== false)
 		{
 			$error[] = sprintf($user->lang['IP_BLACKLISTED'], $user->ip, $dnsbl[1]);
 		}

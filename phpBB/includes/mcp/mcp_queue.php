@@ -248,7 +248,7 @@ class mcp_queue
 
 					if (sizeof($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.user_colour
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
@@ -382,7 +382,7 @@ function approve_post($post_id_list, $mode)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_')));
+	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
 	$success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -627,7 +627,7 @@ function disapprove_post($post_id_list, $mode)
 		trigger_error('NOT_AUTHORIZED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_')) . '&amp;mode=unapproved_topics');
+	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . '&amp;mode=unapproved_topics');
 	$reason = request_var('reason', '', true);
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';

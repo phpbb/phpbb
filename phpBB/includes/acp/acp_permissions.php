@@ -1064,7 +1064,7 @@ class acp_permissions
 		$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
 
 		$sql = $db->sql_build_query('SELECT_DISTINCT', array(
-			'SELECT'	=> 'u.username, u.user_regdate, u.user_id',
+			'SELECT'	=> 'u.username, u.username_clean, u.user_regdate, u.user_id',
 
 			'FROM'		=> array(
 				USERS_TABLE			=> 'u',
@@ -1084,7 +1084,7 @@ class acp_permissions
 				$sql_forum_id
 				AND u.user_id = a.user_id",
 
-			'ORDER_BY'	=> 'u.username, u.user_regdate ASC'
+			'ORDER_BY'	=> 'u.username_clean, u.user_regdate ASC'
 		));
 		$result = $db->sql_query($sql);
 
