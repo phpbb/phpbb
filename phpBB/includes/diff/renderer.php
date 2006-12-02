@@ -111,7 +111,7 @@ class diff_renderer
 		$ntrail = $this->_trailing_context_lines;
 
 		$output = $this->_start_diff();
-		$diffs = &$diff->get_diff();
+		$diffs = $diff->get_diff();
 
 		foreach ($diffs as $i => $edit)
 		{
