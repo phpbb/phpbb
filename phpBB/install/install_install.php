@@ -206,6 +206,64 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
+		$passed['mbstring'] = true;
+		if (extension_loaded('mbstring'))
+		{
+			// Test for available database modules
+			$template->assign_block_vars('checks', array(
+				'S_LEGEND'			=> true,
+				'S_FIRST_ROW'		=> false,
+				'LEGEND'			=> $lang['MBSTRING_CHECK'],
+				'LEGEND_EXPLAIN'	=> $lang['MBSTRING_CHECK_EXPLAIN'],
+			));
+
+			$checks = array(
+				array('func_overload', '&', MB_OVERLOAD_MAIL|MB_OVERLOAD_STRING),
+				array('encoding_translation', '!=', 0),
+				array('http_input', '!=', 'pass'),
+				array('http_output', '!=', 'pass')
+			);
+
+			foreach ($checks as $mb_checks)
+			{
+				$ini_val = ini_get('mbstring.' . $mb_checks[0]);
+				switch ($mb_checks[1])
+				{
+					case '&':
+						if (intval($ini_val) & $mb_checks[2])
+						{
+							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$passed['mbstring'] = false;
+						}
+						else
+						{
+							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+						}
+					break;
+
+					case '!=':
+						if ($ini_val != $mb_checks[2])
+						{
+							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$passed['mbstring'] = false;
+						}
+						else
+						{
+							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+						}
+					break;
+				}
+				$template->assign_block_vars('checks', array(
+					'TITLE'			=> $lang['MBSTRING_' . strtoupper($mb_checks[0])],
+					'TITLE_EXPLAIN'	=> $lang['MBSTRING_' . strtoupper($mb_checks[0]) . '_EXPLAIN'],
+					'RESULT'		=> $result,
+
+					'S_EXPLAIN'		=> true,
+					'S_LEGEND'		=> false,
+				));
+			}
+		}
+
 		// Test for available database modules
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
@@ -415,8 +473,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
+		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(

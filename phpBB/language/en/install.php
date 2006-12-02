@@ -209,6 +209,18 @@ $lang = array_merge($lang, array(
 	'INST_ERR_USER_TOO_SHORT'	=> 'The username you entered is too short. The minimum length is 3 characters.',
 	'INVALID_PRIMARY_KEY'		=> 'Invalid primary key : %s',
 
+	// mbstring
+	'MBSTRING_CHECK'			=> 'mbstring Extension Check',
+	'MBSTRING_CHECK_EXPLAIN'	=> 'mbstring is a PHP extension that provides multibyte string functions. Certain features of mbstring are not compatible with phpBB and must be disabled',
+	'MBSTRING_FUNC_OVERLOAD' => 'Function overloading',
+	'MBSTRING_FUNC_OVERLOAD_EXPLAIN' => 'mbstring.func_overload must be set to either 0 or 4',
+	'MBSTRING_ENCODING_TRANSLATION' => 'Transparent character encoding',
+	'MBSTRING_ENCODING_TRANSLATION_EXPLAIN' => 'mbstring.encoding_translation must be set to either 0',
+	'MBSTRING_HTTP_INPUT' => 'HTTP input character conversion',
+	'MBSTRING_HTTP_INPUT_EXPLAIN' => 'mbstring.http_input must be set to pass',
+	'MBSTRING_HTTP_OUTPUT' => 'HTTP output character conversion',
+	'MBSTRING_HTTP_OUTPUT_EXPLAIN' => 'mbstring.http_output must be set to pass',
+
 	'MAKE_FOLDER_WRITABLE'		=> 'Please make sure that this folder exists and is writable by the webserver then try again:<br />»<strong>%s</strong>',
 	'MAKE_FOLDERS_WRITABLE'		=> 'Please make sure that these folders exist and are writable by the webserver then try again:<br />»<strong>%s</strong>',
 
