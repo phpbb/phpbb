@@ -46,6 +46,11 @@ class dbal_mssql extends dbal
 			}
 		}
 
+		if (ini_get('mssql.charset'))
+		{
+			ini_set('mssql.charset', 'UTF-8');
+		}
+
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
 
