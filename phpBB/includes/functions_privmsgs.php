@@ -1242,7 +1242,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user;
+	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')

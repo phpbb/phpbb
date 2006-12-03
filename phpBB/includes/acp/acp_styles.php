@@ -262,7 +262,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 										}
 										else
 										{
-											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slashpos - 1);
+											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
 										}
 									}
 								}

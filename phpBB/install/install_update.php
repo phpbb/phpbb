@@ -12,6 +12,7 @@
 * @todo check memory by setting limit to 8MB locally.
 * @todo make sure binary files get updated too, omitting the diff engine for this (handle like a conflict)
 * @todo do not require login...
+* @todo check for writeable cache/store/files directory
 */
 
 /**
@@ -113,9 +114,9 @@ class install_update extends module
 		$user->setup('install');
 
 		// Include renderer and engine
-		include_once($phpbb_root_path . 'includes/diff/diff.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/diff/engine.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/diff/renderer.' . $phpEx);
+		$this->include_file('includes/diff/diff.' . $phpEx);
+		$this->include_file('includes/diff/engine.' . $phpEx);
+		$this->include_file('includes/diff/renderer.' . $phpEx);
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
@@ -187,7 +188,7 @@ class install_update extends module
 		if (in_array('language/en/install.php', $this->update_info['files']))
 		{
 			$lang = array();
-			include('./update/new/language/en/install.php');
+			include($this->new_location . 'language/en/install.php');
 			$user->lang = array_merge($user->lang, $lang);
 		}
 
@@ -349,7 +350,7 @@ class install_update extends module
 
 				if (!empty($_POST['download']))
 				{
-					include_once($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
+					$this->include_file('includes/functions_compress.' . $phpEx);
 
 					$use_method = request_var('use_method', '');
 					$methods = array('.tar');
@@ -419,7 +420,7 @@ class install_update extends module
 				}
 				else
 				{
-					include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
+					$this->include_file('includes/functions_transfer.' . $phpEx);
 
 					// Choose FTP, if not available use fsock...
 					$method = request_var('method', '');
@@ -1146,6 +1147,23 @@ class install_update extends module
 		}
 
 		return $info;
+	}
+
+	/**
+	* Function for including files...
+	*/
+	function include_file($filename)
+	{
+		global $phpbb_root_path;
+
+		if (!empty($this->update_info['files']) && in_array($filename, $this->update_info['files']))
+		{
+			include_once($this->new_location . $filename);
+		}
+		else
+		{
+			include_once($phpbb_root_path . $filename);
+		}
 	}
 }
 

@@ -735,7 +735,14 @@ class acp_board
 	*/
 	function dateformat_select($value, $key)
 	{
-		global $user;
+		global $user, $config;
+
+		// Let the format_date function operate with the acp values
+		$old_tz = $user->timezone;
+		$old_dst = $user->dst;
+
+		$user->timezone = $config['board_timezone'];
+		$user->dst = $config['board_dst'];
 
 		$dateformat_options = '';
 
@@ -752,6 +759,10 @@ class acp_board
 			$dateformat_options .= ' selected="selected"';
 		}
 		$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+
+		// Reset users date options
+		$user->timezone = $old_tz;
+		$user->dst = $old_dst;
 
 		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('$key').value = '$value'; } else { document.getElementById('$key').value = this.value; }\">$dateformat_options</select>
 		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";
