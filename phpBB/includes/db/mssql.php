@@ -35,6 +35,11 @@ class dbal_mssql extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
+		if (ini_get('mssql.charset'))
+		{
+			ini_set('mssql.charset', 'UTF-8');
+		}
+
 		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword) : @mssql_connect($this->server, $this->user, $sqlpassword);
 
 		if ($this->db_connect_id && $this->dbname != '')
@@ -44,11 +49,6 @@ class dbal_mssql extends dbal
 				@mssql_close($this->db_connect_id);
 				return false;
 			}
-		}
-
-		if (ini_get('mssql.charset'))
-		{
-			ini_set('mssql.charset', 'UTF-8');
 		}
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
