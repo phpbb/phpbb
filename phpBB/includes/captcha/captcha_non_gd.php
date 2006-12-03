@@ -30,15 +30,14 @@ class captcha
 	}
 
 	/**
-	* Create the image containing $code
+	* Create the image containing $code with a seed of $seed
 	*/
-	function execute($code)
+	function execute($code, $seed)
 	{
 		$img_height = $this->height - 10;
 		$img_width = 0;
 
-		list($usec, $sec) = explode(' ', microtime()); 
-		mt_srand($sec * $usec);
+		mt_srand($seed);
 
 		$char_widths = $hold_chars = array();
 		$code_len = strlen($code);

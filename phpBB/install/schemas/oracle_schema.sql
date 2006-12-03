@@ -337,6 +337,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' ,
 	confirm_type number(3) DEFAULT '0' NOT NULL,
 	code varchar2(8) DEFAULT '' ,
+	seed number(10) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
 )
 /

@@ -441,12 +441,14 @@ class ucp_register
 
 				$code = gen_rand_string(mt_rand(5, 8));
 				$confirm_id = md5(unique_id($user->ip));
+				$seed = hexdec(substr(unique_id(), 4, 10));
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,
 					'session_id'	=> (string) $user->session_id,
 					'confirm_type'	=> (int) CONFIRM_REG,
-					'code'			=> (string) $code)
+					'code'			=> (string) $code,
+					'seed'			=> (int) $seed)
 				);
 				$db->sql_query($sql);
 			}

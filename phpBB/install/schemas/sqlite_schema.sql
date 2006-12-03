@@ -160,6 +160,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) NOT NULL DEFAULT '',
 	confirm_type tinyint(3) NOT NULL DEFAULT '0',
 	code varchar(8) NOT NULL DEFAULT '',
+	seed INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (session_id, confirm_id)
 );
 

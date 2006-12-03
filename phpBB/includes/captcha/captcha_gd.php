@@ -19,7 +19,7 @@ class captcha
 	var $width = 360;
 	var $height = 96;
 
-	function execute($code)
+	function execute($code, $seed)
 	{
 		global $config;
 		$stats = gd_info();
@@ -47,6 +47,9 @@ class captcha
 		{
 			imageantialias($image, true);
 		}
+
+		// seed the random generator
+		mt_srand($seed);
 
 		// set background color
 		$back =  imagecolorallocate($image, mt_rand(224, 255), mt_rand(224, 255), mt_rand(224, 255));
@@ -79,7 +82,7 @@ class captcha
 				$x		= mt_rand(0, 360);
 				$y		= mt_rand(0, (int)($this->height - ($size / 5)));
 				$color	= $func2($image, mt_rand(160, 224), mt_rand(160, 224), mt_rand(160, 224));
-				$text	= $chars_allowed[array_rand($chars_allowed)];
+				$text	= $chars_allowed[mt_rand(0, sizeof($chars_allowed) - 1)];
 				imagettftext($image, $size, $angle, $x, $y, $color, $this->get_font(), $text);
 			}
 			unset($chars_allowed);
@@ -145,7 +148,7 @@ class captcha
 			closedir($dr);
 		}
 
-		return $fonts[array_rand($fonts)];
+		return $fonts[mt_rand(0, sizeof($fonts) - 1)];
 	}
 }
 

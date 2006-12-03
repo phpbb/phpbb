@@ -275,6 +275,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' NOT NULL,
 	confirm_type INT2 DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
+	seed INT4 DEFAULT '0' NOT NULL CHECK (seed >= 0),
 	PRIMARY KEY (session_id, confirm_id)
 );
 

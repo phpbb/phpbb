@@ -292,7 +292,8 @@ CREATE TABLE [phpbb_confirm] (
 	[confirm_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[confirm_type] [int] DEFAULT (0) NOT NULL ,
-	[code] [varchar] (8) DEFAULT ('') NOT NULL 
+	[code] [varchar] (8) DEFAULT ('') NOT NULL ,
+	[seed] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 

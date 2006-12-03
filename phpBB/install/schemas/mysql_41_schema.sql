@@ -163,6 +163,7 @@ CREATE TABLE phpbb_confirm (
 	session_id char(32) DEFAULT '' NOT NULL,
 	confirm_type tinyint(3) DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
+	seed int(10) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (session_id, confirm_id),
 	KEY confirm_type (confirm_type)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;

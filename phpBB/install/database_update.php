@@ -196,6 +196,33 @@ $dbms_type_map = array(
 		'VARBINARY'	=> '[varchar] (255)',
 	),
 
+	'db2'		=> array(
+		'INT:'		=> 'integer',
+		'BINT'		=> 'float',
+		'UINT'		=> 'integer',
+		'UINT:'		=> 'integer',
+		'TINT:'		=> 'smallint',
+		'USINT'		=> 'smallint',
+		'BOOL'		=> 'smallint',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'varchar(1000)',
+		'STEXT'		=> 'varchar(3000)',
+		'TEXT'		=> 'varchar(8000)',
+		'MTEXT'		=> 'varchar(32672)',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT_UNI'	=> 'varchar(4000)',
+		'MTEXT_UNI'	=> 'varchar(32672)',
+		'TIMESTAMP'	=> 'integer',
+		'DECIMAL'	=> 'float',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VCHAR_CI'	=> 'varchar(255)',
+		'VARBINARY'	=> 'varchar(255)',
+	),
+
 	'oracle'	=> array(
 		'INT:'		=> 'number(%d)',
 		'BINT'		=> 'number(20)',
@@ -308,7 +335,14 @@ $database_update_info = array(
 		),
 	),
 	// Latest version
-	'3.0.b4'			=> array(),
+	'3.0.b4'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			CONFIRM_TABLE		=> array(
+				'seed'				=> array('UINT:10', 0),
+			),
+		),
+	),
 );
 
 // Determine mapping database type

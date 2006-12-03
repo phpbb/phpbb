@@ -949,6 +949,7 @@ function get_schema_struct()
 			'session_id'		=> array('CHAR:32', ''),
 			'confirm_type'		=> array('TINT:3', 0),
 			'code'				=> array('VCHAR:8', ''),
+			'seed'				=> array('UINT:10', 0),
 		),
 		'PRIMARY_KEY'	=> array('session_id', 'confirm_id'),
 		'KEYS'			=> array(
