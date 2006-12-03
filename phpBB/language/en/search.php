@@ -50,8 +50,8 @@ $lang = array_merge($lang, array(
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
 	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
 	'NO_SEARCH_TIME'		=> 'Sorry but you cannot use search at this time. Please try again in a few minutes.',
-	'WORD_IN_NO_POST'		=> 'No posts were found because the word %s is not contained in any post.',
-	'WORDS_IN_NO_POST'		=> 'No posts were found because the words %s are not contained in any post.',
+	'WORD_IN_NO_POST'		=> 'No posts were found because the word <strong>%s</strong> is not contained in any post.',
+	'WORDS_IN_NO_POST'		=> 'No posts were found because the words <strong>%s</strong> are not contained in any post.',
 
 	'POST_CHARACTERS'		=> 'characters of posts',
 

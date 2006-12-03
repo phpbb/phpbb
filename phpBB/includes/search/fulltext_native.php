@@ -187,6 +187,8 @@ class fulltext_native extends search_backend
 		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
 		$exact_words = $exact_words[1];
 
+		$common_ids = array();
+
 		if (sizeof($exact_words))
 		{
 			$sql = 'SELECT word_id, word_text, word_common
@@ -200,6 +202,7 @@ class fulltext_native extends search_backend
 				if ($row['word_common'])
 				{
 					$this->common_words[] = $row['word_text'];
+					$common_ids[$row['word_text']] = (int) $row['word_id'];
 					continue;
 				}
 
@@ -316,7 +319,10 @@ class fulltext_native extends search_backend
 			// throw an error if we shall not ignore unexistant words
 			else if (!$ignore_no_id)
 			{
-				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+				if (!isset($common_ids[$word]))
+				{
+					trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+				}
 			}
 		}
 

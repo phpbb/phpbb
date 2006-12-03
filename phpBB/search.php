@@ -103,7 +103,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
-			WHERE username $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', $author)) . "'
+			WHERE username_clean $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', utf8_clean_string($author))) . "'
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query_limit($sql, 100);
 

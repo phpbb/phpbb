@@ -1218,7 +1218,7 @@ class user extends session
 		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
-			if ($auth->acl_gets('a_', 'm_'))
+			if ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))
 			{
 				$message = 'REMOVE_INSTALL';
 			}
@@ -1231,7 +1231,7 @@ class user extends session
 		}
 
 		// Is board disabled and user not an admin or moderator?
-		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
+		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
@@ -1240,7 +1240,7 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_gets('a_', 'm_'))
 			{
 				trigger_error('BOARD_UNAVAILABLE');
 			}
