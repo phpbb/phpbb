@@ -1261,7 +1261,7 @@ class acp_database
 									break;
 
 									case 'mssql':
-									case 'mssql-odbc':
+									case 'mssql_odbc':
 										$delim = 'GO';
 									break;
 								}
