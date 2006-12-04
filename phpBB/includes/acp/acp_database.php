@@ -638,8 +638,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[$i] = odbc_field_type($result, $i);
-											$ary_name[$i] = odbc_field_name($result, $i);
+											$ary_type[$i] = odbc_field_type($result, $i + 1);
+											$ary_name[$i] = odbc_field_name($result, $i + 1);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
