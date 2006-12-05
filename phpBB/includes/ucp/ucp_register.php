@@ -448,7 +448,7 @@ class ucp_register
 					'session_id'	=> (string) $user->session_id,
 					'confirm_type'	=> (int) CONFIRM_REG,
 					'code'			=> (string) $code,
-					'seed'			=> (int) $seed)
+					'seed'			=> (float) $seed)
 				);
 				$db->sql_query($sql);
 			}

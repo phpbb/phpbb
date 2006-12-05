@@ -1910,7 +1910,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'session_id'	=> (string) $user->session_id,
 					'confirm_type'	=> (int) CONFIRM_LOGIN,
 					'code'			=> (string) $code,
-					'seed'			=> (int) $seed)
+					'seed'			=> (float) $seed)
 				);
 				$db->sql_query($sql);
 

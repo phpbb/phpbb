@@ -1135,7 +1135,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_c
 		'session_id'	=> (string) $user->session_id,
 		'confirm_type'	=> (int) CONFIRM_POST,
 		'code'			=> (string) $code,
-		'seed'			=> (int) $seed)
+		'seed'			=> (float) $seed)
 	);
 	$db->sql_query($sql);
 
