@@ -103,6 +103,8 @@ class acp_profile
 					$field_ident = (string) $db->sql_fetchfield('field_ident');
 					$db->sql_freeresult($result);
 
+					$db->sql_transaction('begin');
+
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
@@ -118,8 +120,6 @@ class acp_profile
 							$result = $db->sql_query($sql);
 							$row = $db->sql_fetchrow($result);
 							$db->sql_freeresult($result);
-
-							$db->sql_transaction('begin');
 
 							// Create a temp table and populate it, destroy the existing one
 							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
@@ -149,12 +149,10 @@ class acp_profile
 							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
 							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
-
-							$db->sql_transaction('commit');
 						break;
 
 						default:
-							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP pf_$field_ident");
+							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP COLUMN pf_$field_ident");
 					}
 
 					$order = 0;
@@ -176,6 +174,8 @@ class acp_profile
 						}
 					}
 					$db->sql_freeresult($result);
+
+					$db->sql_transaction('commit');
 
 					add_log('admin', 'LOG_PROFILE_FIELD_REMOVED', $field_ident);
 					trigger_error($user->lang['REMOVED_PROFILE_FIELD'] . adm_back_link($this->u_action));
