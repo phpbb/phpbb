@@ -418,7 +418,7 @@ class bbcode_firstpass extends bbcode
 					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 					foreach ($conf as $ini_var)
 					{
-						ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
+						@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
 					}
 
 					// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results

@@ -368,8 +368,10 @@ $lang = array_merge($lang, array(
 	'LOGIN_UPDATE_EXPLAIN'	=> 'In order to update your installation you need to login first.',
 
 	'MAPPING_FILE_STRUCTURE'	=> 'To ease the upload here are the file locations which map your phpBB installation.',
-	'MERGE_MOD_FILE_OPTION'		=> 'Use modified file code on final merge',
-	'MERGE_NEW_FILE_OPTION'		=> 'Use new file code on final merge',
+	'MERGE_NO_MERGE_NEW_OPTION'	=> 'Do not merge - use new file',
+	'MERGE_NO_MERGE_MOD_OPTION'	=> 'Do not merge - use currently installed file',
+	'MERGE_MOD_FILE_OPTION'		=> 'Merge differences and use modified code within conflicting block',
+	'MERGE_NEW_FILE_OPTION'		=> 'Merge differences and use new file code within conflicting block',
 	'MERGE_SELECT_ERROR'		=> 'Conflicting file merge modes are not correctly selected.',
 
 	'NEW_FILE'						=> 'New updated file',
@@ -400,6 +402,7 @@ $lang = array_merge($lang, array(
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download archive format',
 	'SELECT_FTP_SETTINGS'		=> 'Select FTP Settings',
 	'SHOW_DIFF_CONFLICT'		=> 'Show differences/conflicts',
+	'SHOW_DIFF_FINAL'			=> 'Show resulting file',
 	'SHOW_DIFF_MODIFIED'		=> 'Show merged differences',
 	'SHOW_DIFF_NEW'				=> 'Show file contents',
 	'SHOW_DIFF_NEW_CONFLICT'	=> 'Show differences',

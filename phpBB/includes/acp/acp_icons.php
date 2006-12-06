@@ -308,6 +308,29 @@ class acp_icons
 				{
 					$order = 0;
 
+					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
+					{
+						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
+					// Make sure the pak_ary is valid
+					foreach ($pak_ary as $pak_entry)
+					{
+						if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
+						{
+							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
+								(sizeof($data[1]) != 6 && $mode == 'smilies'))
+							{
+								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+							}
+						}
+						else
+						{
+							trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+					}
+
+
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
@@ -341,11 +364,6 @@ class acp_icons
 							$cur_img[$row[$field_sql]] = 1;
 						}
 						$db->sql_freeresult($result);
-					}
-
-					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
-					{
-						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					foreach ($pak_ary as $pak_entry)
