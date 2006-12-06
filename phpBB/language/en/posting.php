@@ -61,7 +61,6 @@ $lang = array_merge($lang, array(
 	'CANNOT_EDIT_POST_LOCKED'	=> 'This post has been locked. You can no longer edit that post.',
 	'CANNOT_EDIT_TIME'			=> 'You can no longer edit or delete that post',
 	'CANNOT_POST_ANNOUNCE'		=> 'Sorry but you cannot post announcements.',
-	'CANNOT_POST_NEWS'			=> 'Sorry but you cannot post news topics.',
 	'CANNOT_POST_STICKY'		=> 'Sorry but you cannot post sticky topics.',
 	'CHANGE_TOPIC_TO'			=> 'Change topic type to',
 	'CLOSE_TAGS'				=> 'Close tags',
