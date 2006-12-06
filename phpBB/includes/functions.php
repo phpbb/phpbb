@@ -636,7 +636,7 @@ function language_select($default = '')
 	$sql = 'SELECT lang_iso, lang_local_name
 		FROM ' . LANG_TABLE . '
 		ORDER BY lang_english_name';
-	$result = $db->sql_query($sql, 600);
+	$result = $db->sql_query($sql);
 
 	$lang_options = '';
 	while ($row = $db->sql_fetchrow($result))

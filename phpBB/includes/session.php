@@ -895,12 +895,25 @@ class session
 			$quads = explode('.', $ip);
 			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
 
+			// Need to be listed on all servers...
+			$listed = true;
+			$info = array();
+
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
 				if (phpbb_checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
 				{
-					return array($dnsbl, $lookup . $ip);
+					$info = array($dnsbl, $lookup . $ip);
 				}
+				else
+				{
+					$listed = false;
+				}
+			}
+
+			if ($listed)
+			{
+				return $info;
 			}
 		}
 

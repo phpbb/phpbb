@@ -116,6 +116,7 @@ class acp_language
 					'S_UPLOAD'	=> true,
 					'NAME'		=> $method,
 					'U_ACTION'	=> $this->u_action . "&amp;id=$lang_id&amp;action=upload_data",
+					'U_BACK'	=> $this->u_action . "&amp;id=$lang_id&amp;action=details&amp;language_file=" . urlencode($selected_lang_file),
 					'HIDDEN'	=> $hidden_data,
 
 					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
@@ -203,7 +204,7 @@ class acp_language
 
 				if (!$fp)
 				{
-					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 				}
 
 				if ($this->language_directory == 'email')

@@ -67,6 +67,17 @@ class acp_modules
 
 				if (confirm_box(true))
 				{
+					// Make sure we are not directly within a module
+					if ($module_id == $this->parent_id)
+					{
+						$sql = 'SELECT parent_id
+							FROM ' . MODULES_TABLE . '
+							WHERE module_id = ' . $module_id;
+						$result = $db->sql_query($sql);
+						$this->parent_id = (int) $db->sql_fetchfield('parent_id');
+						$db->sql_freeresult($result);
+					}
+
 					$errors = $this->delete_module($module_id);
 
 					if (!sizeof($errors))

@@ -438,7 +438,7 @@ class dbal
 	*/
 	function sql_error($sql = '')
 	{
-		global $auth, $user;
+		global $auth, $user, $config;
 
 		// Set var to retrieve errored status
 		$this->sql_error_triggered = true;
@@ -472,7 +472,14 @@ class dbal
 				}
 				else
 				{
-					$message .= '<br /><br />' . $user->lang['SQL_ERROR_OCCURRED'];
+					if (!empty($config['board_contact']))
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+					}
+					else
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '', '');
+					}
 				}
 			}
 

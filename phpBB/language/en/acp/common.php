@@ -220,8 +220,6 @@ $lang = array_merge($lang, array(
 	'EXPORT_DOWNLOAD'		=> 'Download',
 	'EXPORT_STORE'			=> 'Store',
 
-	'FORUM_INDEX'			=> 'Forum index',
-
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',
 	'GLOBAL_MASK'			=> 'Global permission mask',

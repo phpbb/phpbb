@@ -241,9 +241,6 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LO
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
 $template->assign_vars(array(
-	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),
-	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
-	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
 	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
 	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', $post_alt) : $user->img('button_topic_new', $post_alt),
@@ -441,6 +438,17 @@ if (sizeof($shadow_topic_list))
 	{
 		$orig_topic_id = $shadow_topic_list[$row['topic_id']];
 
+		// Do not include those topics the user has no permission to access
+		if (!$auth->acl_get('f_read', $row['forum_id']))
+		{
+			// We need to remove any trace regarding this topic. :)
+			unset($rowset[$orig_topic_id]);
+			unset($topic_list[array_search($orig_topic_id, $topic_list)]);
+			$topics_count--;
+
+			continue;
+		}
+
 		// We want to retain some values
 		$row = array_merge($row, array(
 			'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
@@ -452,6 +460,12 @@ if (sizeof($shadow_topic_list))
 	$db->sql_freeresult($result);
 }
 unset($shadow_topic_list);
+
+$template->assign_vars(array(
+	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
+	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
+);
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
