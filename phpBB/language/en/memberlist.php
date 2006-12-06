@@ -92,7 +92,6 @@ $lang = array_merge($lang, array(
 	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board administrator requires you to be registered and logged in to view profiles.',
 
 	'MORE_THAN'				=> 'More than',
-	'MSNM'					=> 'MSNM',
 
 	'NO_EMAIL'				=> 'You are not permitted to send email to this user.',
 	'NO_VIEW_USERS'			=> 'You are not authorised to view the member list or profiles.',

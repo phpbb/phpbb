@@ -299,6 +299,7 @@ $lang = array_merge($lang, array(
 	'MODERATORS'			=> 'Moderators',
 	'MONTH'					=> 'Month',
 	'MOVE'					=> 'Move',
+	'MSNM'					=> 'MSNM/WLM',	
 
 	'NA'						=> 'N/A',
 	'NEWEST_USER'				=> 'Our newest member <strong>%s%s%s</strong>',
