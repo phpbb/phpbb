@@ -249,7 +249,7 @@ class messenger
 	*/
 	function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path;
+		global $user, $phpEx, $phpbb_root_path, $config;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -257,7 +257,22 @@ class messenger
 			$user->session_begin();
 		}
 
-		add_log('critical', 'LOG_ERROR_' . $type, $msg);
+		$calling_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
+
+		$message = '';
+		switch ($type)
+		{
+			case 'EMAIL':
+				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/' . $config['email_function_name'] . '()') . '</strong>';
+			break;
+
+			default:
+				$message = "<strong>$type</strong>";
+			break;
+		}
+
+		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '<em><br /><br />' . $msg . '<br />';
+		add_log('critical', 'LOG_ERROR_' . $type, $message);
 	}
 
 	/**
@@ -388,9 +403,7 @@ class messenger
 
 			if (!$result)
 			{
-				$message = '<u>EMAIL ERROR</u> [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']) . '<br />';
-				
-				$this->error('EMAIL', $message);
+				$this->error('EMAIL', $err_msg);
 				return false;
 			}
 		}
@@ -613,8 +626,7 @@ class queue
 						{
 							@unlink($this->cache_file . '.lock');
 
-							$message = 'Method: [ ' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP') . ' ]<br /><br />' . $err_msg . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
-							messenger::error('EMAIL', $message);
+							messenger::error('EMAIL', $err_msg);
 							continue 2;
 						}
 					break;
@@ -624,8 +636,7 @@ class queue
 						{
 							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg)) === false)
 							{
-								$message = 'Method: [ JABBER ]<br /><br />' . $this->jabber->get_log() . '<br /><br /><u>CALLING PAGE</u><br /><br />'  . ((!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF']);
-								messenger::error('JABBER', $message);
+								messenger::error('JABBER', $this->jabber_get_log());
 								continue 3;
 							}
 						}
@@ -976,7 +987,7 @@ class smtp_class
 	{
 		if ($this->backtrace)
 		{
-			$this->backtrace_log[] = $message;
+			$this->backtrace_log[] = htmlspecialchars($message, ENT_COMPAT, 'UTF-8');
 		}
 	}
 
@@ -1033,7 +1044,7 @@ class smtp_class
 
 		if ($this->backtrace)
 		{
-			$message = '<h1>Backtrace</h1><p>' . implode('<br />', array_map('htmlspecialchars', $this->backtrace_log)) . '</p>';
+			$message = '<h1>Backtrace</h1><p>' . implode('<br />', $this->backtrace_log) . '</p>';
 			$err_msg .= $message;
 		}
 	}

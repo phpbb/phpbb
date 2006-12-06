@@ -321,6 +321,7 @@ $lang = array_merge($lang, array(
 	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
 	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must be mixed case',
 	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must contain symbols',
+	'PASSWORD'					=> 'Password',
 	'PASSWORD_ACTIVATED'		=> 'Your new password has been activated',
 	'PASSWORD_UPDATED'			=> 'Your password has been sent successfully to your original email address.',
 	'PERMISSIONS_RESTORED'		=> 'Successfully restored original permissions.',
