@@ -430,6 +430,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		'S_HOLD_CHECKED'		=> $s_hold_checked,
 		'S_MOVE_CHECKED'		=> $s_move_checked,
 		'S_MAX_FOLDER_REACHED'	=> ($num_user_folder >= $config['pm_max_boxes']) ? true : false,
+		'S_MAX_FOLDER_ZERO'		=> ($config['pm_max_boxes'] == 0) ? true : false,
 
 		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
 

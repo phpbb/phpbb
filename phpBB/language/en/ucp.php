@@ -245,7 +245,7 @@ $lang = array_merge($lang, array(
 
 	'MARK_IMPORTANT'				=> 'Mark as important',
 	'MARKED_MESSAGE'				=> 'Marked message',
-	'MAX_FOLDER_REACHED'			=> 'Maximum number of allowed user defined folder reached',
+	'MAX_FOLDER_REACHED'			=> 'Maximum number of allowed user defined folders reached',
 	'MESSAGE_BY_AUTHOR'				=> 'by',
 	'MESSAGE_COLOURS'				=> 'Message colours',
 	'MESSAGE_DELETED'				=> 'Message successfully deleted',
