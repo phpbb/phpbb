@@ -18,6 +18,9 @@ var is_nav = ((clientPC.indexOf('mozilla') != -1) && (clientPC.indexOf('spoofer'
 var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
 var is_mac = (clientPC.indexOf('mac') != -1);
 
+var baseHeight;
+window.onload = initInsertions;
+
 /**
 * Shows the help messages in the helpline window
 */
@@ -63,6 +66,19 @@ function arraypop(thearray)
 
 	return retval;
 }
+
+/**
+* Fix a bug involving the TextRange object. From
+* http://www.frostjedi.com/terra/scripts/demo/caretBug.html
+*/ 
+function initInsertions() 
+{
+	document.post.message.focus();
+	if (is_ie && typeof(baseHeight) != 'number')
+	{
+		baseHeight = document.selection.createRange().duplicate().boundingHeight;
+	}
+}		
 
 
 /**
@@ -168,6 +184,11 @@ function insert_text(text, spaces, popup)
 	
 	else if (textarea.createTextRange && textarea.caretPos)
 	{
+		if (baseHeight != textarea.caretPos.boundingHeight) 
+		{
+			textarea.focus();
+			storeCaret(textarea);
+		}		
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 		
