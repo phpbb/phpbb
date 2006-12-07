@@ -28,18 +28,24 @@
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE -->
-			<object classid="CLSID:22D6F312-B0F6-11D0-94AB-0080C74C7E95" codebase="http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=6,4,7,1112" standby="Loading Microsoft Windows Media Player components..." type="application/x-oleobject">
-				<param name="FileName" VALUE="{_file.U_DOWNLOAD_LINK}">
-				<param name="ShowControls" value="1">
-				<param name="ShowDisplay" value="0">
-				<param name="ShowStatusBar" value="1"> 
-				<param name="AutoSize" value="1">
-				<param name="AutoStart" value="0">
-				<param name="Visible" value="1">
-				<param name="AnimationStart" value="0">
-				<param name="Loop" value="0"> 
-			<embed type="application/x-mplayer2" pluginspage="http://www.microsoft.com/windows/windowsmedia/download/AllDownloads.aspx/" filename="{_file.U_DOWNLOAD_LINK}" src="{_file.U_DOWNLOAD_LINK}" name="MediaPlayer" ShowControls="1" ShowDisplay="0" ShowStatusBar="1" AutoSize="1" AutoStart="0" Visible="1" AnimationStart="0" Loop="0"></embed>
-			</object>
+		<object width="320" height="285" CLASSID="CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6" type="application/x-oleobject">
+			<param name="URL" value="{_file.U_DOWNLOAD_LINK}" />
+			<param name="AutoStart" value="False" />
+			<param name="ShowControls" value="True" />
+			<embed name="application/x-mplayer2"
+				pluginspage="http://www.microsoft.com/Windows/MediaPlayer/"
+				src="{_file.U_DOWNLOAD_LINK}"
+				name="MediaPlayer"
+				autostart="0"
+				height="285"
+				width="320"
+				transparentatstart="0"
+				animationatstart="0"
+				showcontrols="1"
+				autosize="0"
+				displaysize="0">
+			</embed>
+		</object>
 
 		<!-- ELSEIF _file.S_FLASH_FILE -->
 			<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0" width="{_file.WIDTH}" height="{_file.HEIGHT}">
