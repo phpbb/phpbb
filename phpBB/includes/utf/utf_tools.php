@@ -648,8 +648,6 @@ function utf8_str_split($str, $split_len = 1)
 */
 function utf8_strspn($str, $mask, $start = null, $length = null)
 {
-	$mask = preg_replace('!([\\\\\\-\\]\\[/^])!', '\\\${1}', $mask);
-
 	if ($start !== null || $length !== null)
 	{
 		$str = utf8_substr($str, $start, $length);
