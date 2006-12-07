@@ -625,7 +625,7 @@ else
 */
 function utf8_str_split($str, $split_len = 1)
 {
-	if (!preg_match('/^[0-9]+$/', $split_len) || $split_len < 1)
+	if (!is_int($split_len) || $split_len < 1)
 	{
 		return false;
 	}
