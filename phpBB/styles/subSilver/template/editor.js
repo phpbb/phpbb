@@ -19,7 +19,7 @@ var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -
 var is_mac = (clientPC.indexOf('mac') != -1);
 
 var baseHeight;
-window.onload = initInsertions();
+window.onload = initInsertions;
 
 /**
 * Shows the help messages in the helpline window
@@ -73,13 +73,11 @@ function arraypop(thearray)
 */ 
 function initInsertions() 
 {
-	if(is_ie)
+	var textarea = document.forms[form_name].elements[text_name];
+	textarea.focus();
+	if (is_ie && typeof(baseHeight) != 'number')
 	{
-		document.post.message.focus();
-		if (is_ie && typeof(baseHeight) != 'number')
-		{
-			baseHeight = document.selection.createRange().duplicate().boundingHeight;
-		}
+		baseHeight = document.selection.createRange().duplicate().boundingHeight;
 	}
 }		
 
