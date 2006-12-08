@@ -1905,12 +1905,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$confirm_id = md5(unique_id($user->ip));
 				$seed = hexdec(substr(unique_id(), 4, 10));
 
+				if ($seed > 0x7FFFFFFF)
+				{
+					$seed -= 0x7FFFFFFF;
+				}
+
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,
 					'session_id'	=> (string) $user->session_id,
 					'confirm_type'	=> (int) CONFIRM_LOGIN,
 					'code'			=> (string) $code,
-					'seed'			=> (float) $seed)
+					'seed'			=> (int) $seed)
 				);
 				$db->sql_query($sql);
 
@@ -2795,7 +2800,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 {
 	global $phpbb_root_path, $phpEx, $user;
 
-	$full_string = $profile_url = '';
+	$profile_url = '';
 	$username_colour = ($username_colour) ? '#' . $username_colour : '';
 
 	if ($guest_username === false)
@@ -2918,7 +2923,7 @@ function phpbb_checkdnsrr($host, $type = '')
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $starttime, $msg_title, $msg_long_text;
+	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
 
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
@@ -3097,7 +3102,6 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
-		$userlist_ary = $userlist_visible = array();
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
 		$prev_session_ip = $reading_sql = '';
 
@@ -3417,7 +3421,7 @@ function page_header($page_title = '', $display_online_list = true)
 */
 function page_footer($run_cron = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $messenger, $starttime, $phpbb_root_path, $phpEx;
+	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
 
 	// Output page creation time
 	if (defined('DEBUG'))

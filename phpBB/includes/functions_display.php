@@ -47,7 +47,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
 	$sql_from = FORUMS_TABLE . ' f ';
-	$lastread_select = $sql_lastread = '';
+	$lastread_select = '';
 
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
@@ -845,8 +845,6 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 			}
 
 			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
-
-			$download_link_full = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : generate_board_url() . $filename;
 
 			switch ($display_cat)
 			{
