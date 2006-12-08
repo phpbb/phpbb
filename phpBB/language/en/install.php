@@ -259,7 +259,7 @@ $lang = array_merge($lang, array(
 	'RETRY_WRITE_EXPLAIN'		=> 'If you wish you can change the permissions on config.php to allow phpBB to write to it. Should you wish to do that you can click Retry below to try again. Remember to return the permissions on config.php after phpBB has finished installation.',
 
 	'SCRIPT_PATH'				=> 'Script path',
-	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name',
+	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>',
 	'SELECT_LANG'				=> 'Select language',
 	'SERVER_CONFIG'				=> 'Server Configuration',
 	'SOFTWARE'					=> 'Forum Software',

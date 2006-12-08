@@ -27,7 +27,12 @@ class acp_board
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
-		// Validation types are: string, int, bool, rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
+		/**
+		*	Validation types are:
+		*		string, int, bool,
+		*		script_path (absolute path in url - beginning with / and no trailing slash),
+		*		rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
+		*/
 		switch ($mode)
 		{
 			case 'settings':
@@ -283,10 +288,11 @@ class acp_board
 						'ranks_path'			=> array('lang' => 'RANKS_PATH',		'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true),
 
 						'legend3'				=> 'SERVER_URL_SETTINGS',
-						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'validate' => 'string',	'type' => 'text:10:10', 'explain' => true),
-						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
-						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int',	'type' => 'text:5:5', 'explain' => true),
+						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'validate' => 'bool',			'type' => 'radio:yes_no', 'explain' => true),
+						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'validate' => 'string',			'type' => 'text:10:10', 'explain' => true),
+						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',			'type' => 'text:40:255', 'explain' => true),
+						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int',			'type' => 'text:5:5', 'explain' => true),
+						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'validate' => 'script_path',	'type' => 'text::255', 'explain' => true),
 					)
 				);
 			break;

@@ -1444,13 +1444,16 @@ function show_profile($data)
 	// Dump it out to the template
 	return array(
 		'AGE'			=> $age,
-		'USERNAME'		=> $username,
-		'USER_COLOR'	=> (!empty($data['user_colour'])) ? $data['user_colour'] : '',
 		'RANK_TITLE'	=> $rank_title,
 		'JOINED'		=> $user->format_date($data['user_regdate']),
 		'VISITED'		=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 		'POSTS'			=> ($data['user_posts']) ? $data['user_posts'] : 0,
 		'WARNINGS'		=> isset($data['user_warnings']) ? $data['user_warnings'] : 0,
+
+		'USERNAME_FULL'		=> get_username_string('full', $user_id, $username, $data['user_colour']),
+		'USERNAME'			=> get_username_string('username', $user_id, $username, $data['user_colour']),
+		'USER_COLOR'		=> get_username_string('colour', $user_id, $username, $data['user_colour']),
+		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
 
 		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
@@ -1459,7 +1462,6 @@ function show_profile($data)
 		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
 		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
-		'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id),
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
 		'U_NOTES'		=> $auth->acl_getf_global('m_') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_WARN'		=> $auth->acl_getf_global('m_warn') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',

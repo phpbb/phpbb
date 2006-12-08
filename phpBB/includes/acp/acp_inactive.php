@@ -94,10 +94,8 @@ class acp_inactive
 						include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
 
 						$messenger = new messenger();
-
-						$board_url = generate_board_url() . "/ucp.$phpEx?mode=activate";
-
 						$usernames = array();
+
 						do
 						{
 							$messenger->template('user_remind_inactive', $row['user_lang']);
@@ -109,7 +107,7 @@ class acp_inactive
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']), 
-								'U_ACTIVATE'	=> "$board_url&mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
+								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 
 							$messenger->send($row['user_notify_type']);

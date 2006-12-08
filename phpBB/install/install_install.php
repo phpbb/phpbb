@@ -987,6 +987,19 @@ class install_install extends module
 		$server_protocol = ($server_protocol !== '') ? $server_protocol : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
 
+		if ($script_path === '')
+		{
+			$name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+			if (!$name)
+			{
+				$name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			}
+
+			// Replace backslashes and doubled slashes (could happen on some proxy setups)
+			$name = str_replace(array('\\', '//', '/install'), '/', $name);
+			$script_path = trim(dirname($name));
+		}
+
 		foreach ($this->advanced_config_options as $config_key => $vars)
 		{
 			if (!is_array($vars) && strpos($config_key, 'legend') === false)
@@ -1166,6 +1179,22 @@ class install_install extends module
 
 		$user_ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 
+		if ($script_path !== '/')
+		{
+			// Adjust destination path (no trailing slash)
+			if ($script_path[sizeof($script_path) - 1] == '/')
+			{
+				$script_path = substr($script_path, 0, -1);
+			}
+
+			$script_path = str_replace(array('../', './'), '', $script_path);
+
+			if ($script_path[0] != '/')
+			{
+				$script_path = '/' . $script_path;
+			}
+		}
+
 		// Set default config and post data, this applies to all DB's
 		$sql_ary = array(
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
@@ -1235,16 +1264,12 @@ class install_install extends module
 				WHERE config_name = 'force_server_vars'",
 
 			'UPDATE ' . $table_prefix . "config
-				SET config_value = '" . $db->sql_escape($server_name) . "'
-				WHERE config_name = 'server_name'",
+				SET config_value = '" . $db->sql_escape($script_path) . "'
+				WHERE config_name = 'script_path'",
 
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($server_protocol) . "'
 				WHERE config_name = 'server_protocol'",
-
-			'UPDATE ' . $table_prefix . "config
-				SET config_value = '" . $db->sql_escape($server_port) . "'
-				WHERE config_name = 'server_port'",
 
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($admin_name) . "'
@@ -2025,7 +2050,7 @@ class install_install extends module
 	* The variables that we will be passing between pages
 	* Used to retrieve data quickly on each page
 	*/
-	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'default_lang', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
+	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'default_lang', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port', 'script_path');
 
 	/**
 	* The information below will be used to build the input fields presented to the user
@@ -2064,6 +2089,7 @@ class install_install extends module
 		'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'type' => 'text:10:10', 'explain' => true),
 		'server_name'			=> array('lang' => 'SERVER_NAME',		'type' => 'text:40:255', 'explain' => true),
 		'server_port'			=> array('lang' => 'SERVER_PORT',		'type' => 'text:5:5', 'explain' => true),
+		'script_path'			=> array('lang' => 'SCRIPT_PATH',		'type' => 'text::255', 'explain' => true),
 	);
 
 	/**

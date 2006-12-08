@@ -408,6 +408,35 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				$cfg_array[$config_name] = (int) $cfg_array[$config_name];
 			break;
 
+			// Absolute path
+			case 'script_path':
+				if (!$cfg_array[$config_name])
+				{
+					break;
+				}
+
+				$destination = str_replace('\\', '/', $cfg_array[$config_name]);
+
+				if ($destination !== '/')
+				{
+					// Adjust destination path (no trailing slash)
+					if (substr($destination, -1, 1) == '/')
+					{
+						$destination = substr($destination, 0, -1);
+					}
+
+					$destination = str_replace(array('../', './'), '', $destination);
+
+					if ($destination[0] != '/')
+					{
+						$destination = '/' . $destination;
+					}
+				}
+
+				$cfg_array[$config_name] = trim($destination);
+
+			break;
+
 			// Relative path (appended $phpbb_root_path)
 			case 'rpath':
 			case 'rwpath':
@@ -419,9 +448,9 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				$destination = $cfg_array[$config_name];
 
 				// Adjust destination path (no trailing slash)
-				if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
+				if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
 				{
-					$destination = substr($destination, 0, sizeof($destination)-2);
+					$destination = substr($destination, 0, -1);
 				}
 
 				$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);

@@ -412,6 +412,7 @@ class install_update extends module
 
 						// To ease the update process create a file location map
 						$update_list = $cache->get('_update_list');
+						$script_path = ($config['force_server_vars']) ? (($config['script_path'] == '/') ? '/' : $config['script_path'] . '/') : $user->page['root_script_path'];
 
 						foreach ($update_list as $status => $files)
 						{
@@ -429,7 +430,7 @@ class install_update extends module
 
 								$template->assign_block_vars('location', array(
 									'SOURCE'		=> htmlspecialchars($file_struct['filename']),
-									'DESTINATION'	=> $user->page['root_script_path'] . htmlspecialchars($file_struct['filename']),
+									'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
 								));
 							}
 						}

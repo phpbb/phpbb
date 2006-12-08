@@ -840,7 +840,14 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $phpEx, $user;
 
-		$check_path = ($user->page['root_script_path'] != '/') ? substr($user->page['root_script_path'], 0, -1) : '/';
+		if ($config['force_server_vars'])
+		{
+			$check_path = $config['script_path'];
+		}
+		else
+		{
+			$check_path = ($user->page['root_script_path'] != '/') ? substr($user->page['root_script_path'], 0, -1) : '/';
+		}
 
 		// Is the user trying to link to a php file in this domain and script path?
 		if (strpos($url, ".{$phpEx}") !== false && strpos($url, $check_path) !== false)

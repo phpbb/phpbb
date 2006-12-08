@@ -490,6 +490,14 @@ if (version_compare($current_version, '3.0.b3', '<'))
 	$no_updates = false;
 }
 
+if (version_compare($current_version, '3.0.b4', '<'))
+{
+	// Add config value
+	set_config('script_path', '/');
+
+	$no_updates = false;
+}
+
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();

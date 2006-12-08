@@ -359,9 +359,12 @@ class ftp extends transfer
 	*/
 	function _chdir($dir = '')
 	{
-		if (substr($dir, -1, 1) == '/')
+		if ($dir && $dir !== '/')
 		{
-			$dir = substr($dir, 0, -1);
+			if (substr($dir, -1, 1) == '/')
+			{
+				$dir = substr($dir, 0, -1);
+			}
 		}
 
 		return @ftp_chdir($this->connection, $dir);
@@ -585,9 +588,12 @@ class ftp_fsock extends transfer
 	*/
 	function _chdir($dir = '')
 	{
-		if (substr($dir, -1, 1) == '/')
+		if ($dir && $dir !== '/')
 		{
-			$dir = substr($dir, 0, -1);
+			if (substr($dir, -1, 1) == '/')
+			{
+				$dir = substr($dir, 0, -1);
+			}
 		}
 
 		return $this->_send_command('CWD', $dir);

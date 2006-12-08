@@ -1451,6 +1451,7 @@ function generate_board_url($without_script_path = false)
 		$server_protocol = ($config['server_protocol']) ? $config['server_protocol'] : (($config['cookie_secure']) ? 'https://' : 'http://');
 		$server_name = $config['server_name'];
 		$server_port = (int) $config['server_port'];
+		$script_path = $config['script_path'];
 
 		$url = $server_protocol . $server_name;
 	}
@@ -1459,6 +1460,8 @@ function generate_board_url($without_script_path = false)
 		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
 		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
 		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
+
+		$script_path = $user->page['root_script_path'];
 	}
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
@@ -1466,13 +1469,18 @@ function generate_board_url($without_script_path = false)
 		$url .= ':' . $server_port;
 	}
 
-	if ($without_script_path)
+	if (!$without_script_path)
 	{
-		return $url;
+		$url .= $script_path;
 	}
 
 	// Strip / from the end
-	return $url . substr($user->page['root_script_path'], 0, -1);
+	if (substr($url, -1, 1) == '/')
+	{
+		$url = substr($url, 0, -1);
+	}
+
+	return $url;
 }
 
 /**
