@@ -940,7 +940,7 @@ switch ($mode)
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
 			{
-				if (preg_match('#[a-z]#', $ipdomain))
+				if (strspn($ipdomain, 'abcdefghijklmnopqrstuvwxyz'))
 				{
 					$hostnames = gethostbynamel($ipdomain);
 
@@ -969,7 +969,7 @@ switch ($mode)
 
 					$sql = 'SELECT DISTINCT poster_id
 						FROM ' . POSTS_TABLE . '
-						WHERE poster_ip ' . ((preg_match('#%#', $ips)) ? 'LIKE' : 'IN') . " ($ips)
+						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
 							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
 					$result = $db->sql_query($sql);
 

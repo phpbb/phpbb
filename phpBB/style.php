@@ -33,7 +33,7 @@ if (!empty($load_extensions))
 $sid = (isset($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
-if (!preg_match('/^[A-Za-z0-9]*$/', $sid))
+if (!ctype_alnum($sid))
 {
 	$sid = '';
 }
