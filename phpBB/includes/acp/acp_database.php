@@ -1028,7 +1028,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['name'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || strpos($row['name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['name'];
 									}
@@ -1056,7 +1056,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['relname'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || strpos($row['relname'], $table_prefix) === 0)
 									{
 										$tables[] = $row['relname'];
 									}
@@ -1073,7 +1073,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (strpos($row['TABLE_NAME'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || strpos($row['TABLE_NAME'], $table_prefix) === 0)
 									{
 										$tables[] = $row['TABLE_NAME'];
 									}
@@ -1089,7 +1089,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (stripos($row['table_name'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || stripos($row['table_name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['table_name'];
 									}
@@ -1103,7 +1103,7 @@ class acp_database
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (stripos($row['table_name'], $table_prefix) === 0)
+									if (strlen($table_prefix) == 0 || stripos($row['table_name'], $table_prefix) === 0)
 									{
 										$tables[] = $row['table_name'];
 									}
