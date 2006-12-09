@@ -153,31 +153,6 @@ class acp_database
 							break;
 						}
 
-						if ($structure && $db->sql_layer == 'firebird')
-						{
-							$sql = 'SELECT RDB$FUNCTION_NAME, RDB$DESCRIPTION
-								FROM RDB$FUNCTIONS
-								ORDER BY RDB$FUNCTION_NAME';
-							$result = $db->sql_query($sql);
-
-							$rows = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$sql = 'SELECT F.RDB$FUNCTION_NAME, F.RDB$MODULE_NAME, F.RDB$ENTRYPOINT, F.RDB$RETURN_ARGUMENT, F.RDB$DESCRIPTION, FA.RDB$ARGUMENT_POSITION, FA.RDB$MECHANISM, FA.RDB$FIELD_TYPE, FA.RDB$FIELD_SCALE, FA.RDB$FIELD_LENGTH, FA.RDB$FIELD_SUB_TYPE, C.RDB$BYTES_PER_CHARACTER, C.RDB$CHARACTER_SET_NAME ,FA.RDB$FIELD_PRECISION
-									FROM RDB$FUNCTIONS F
-									LEFT JOIN RDB$FUNCTION_ARGUMENTS FA ON F.RDB$FUNCTION_NAME = FA.RDB$FUNCTION_NAME
-									LEFT JOIN RDB$CHARACTER_SETS C ON FA.RDB$CHARACTER_SET_ID = C.RDB$CHARACTER_SET_ID
-									WHERE (F.RDB$FUNCTION_NAME = ' . $row['FUNCTION_NAME'] . ')
-									ORDER BY FA.RDB$ARGUMENT_POSITION';
-								$result2 = $db->sql_query($sql);
-								while ($row2 = $db->sql_fetchrow($result2))
-								{
-								}
-								$db->sql_freeresult($result2);
-							}
-							$db->sql_freeresult($result);
-						}
-
 						foreach ($table as $table_name)
 						{
 							// Get the table structure
@@ -1268,7 +1243,7 @@ class acp_database
 								$pieces = split_sql_file($data, $delim);
 
 								$sql_count = count($pieces);
-								for($i = 0; $i < $sql_count; $i++)
+								for ($i = 0; $i < $sql_count; $i++)
 								{
 									$sql = trim($pieces[$i]);
 
@@ -1338,6 +1313,7 @@ class acp_database
 	function get_table_structure($table_name)
 	{
 		global $db, $domains_created;
+		static $has_index_type;
 
 		$sql_data = '';
 
@@ -1346,6 +1322,18 @@ class acp_database
 			case 'mysqli':
 			case 'mysql4':
 			case 'mysql':
+
+				if ($has_index_type === null)
+				{
+					if ($db->sql_layer === 'mysqli' || version_compare($this->mysql_version, '4.0.2', '>='))
+					{
+						$has_index_type = true;
+					}
+					else
+					{
+						$has_index_type = false;
+					}
+				}
 
 				$sql_data .= "CREATE TABLE $table_name(\n";
 				$rows = array();
@@ -1389,7 +1377,7 @@ class acp_database
 
 					if ($kname != 'PRIMARY')
 					{
-						if ($row['Index_type'] == 'FULLTEXT')
+						if ($has_index_type && $row['Index_type'] == 'FULLTEXT')
 						{
 							$kname = "FULLTEXT|$kname";
 						}
