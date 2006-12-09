@@ -443,10 +443,8 @@ class ucp_register
 				$confirm_id = md5(unique_id($user->ip));
 				$seed = hexdec(substr(unique_id(), 4, 10));
 
-				if ($seed > 0x7FFFFFFF)
-				{
-					$seed -= 0x7FFFFFFF;
-				}
+				// compute $seed % 0x7fffffff
+				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
 
 				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 					'confirm_id'	=> (string) $confirm_id,
