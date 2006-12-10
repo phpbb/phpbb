@@ -518,6 +518,16 @@ if (version_compare($current_version, '3.0.b4', '<'))
 	set_config('ldap_password', '');
 	set_config('ldap_user', '');
 
+	$sql = 'SELECT user_colour
+		FROM ' . USERS_TABLE . '
+		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+		ORDER BY user_id DESC';
+	$result = $db->sql_query_limit($sql, 1);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	set_config('newest_user_colour', $row['user_colour'], true);
+
 	$no_updates = false;
 }
 

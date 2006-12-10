@@ -77,7 +77,7 @@ function update_last_username()
 	global $db;
 
 	// Get latest username
-	$sql = 'SELECT user_id, username
+	$sql = 'SELECT user_id, username, user_colour
 		FROM ' . USERS_TABLE . '
 		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 		ORDER BY user_id DESC';
@@ -89,6 +89,7 @@ function update_last_username()
 	{
 		set_config('newest_user_id', $row['user_id'], true);
 		set_config('newest_username', $row['username'], true);
+		set_config('newest_user_colour', $row['user_colour'], true);
 	}
 }
 
@@ -142,7 +143,7 @@ function user_add($user_row, $cp_data = false)
 		'username'			=> $user_row['username'],
 		'username_clean'	=> utf8_clean_string($user_row['username']),
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
-		'user_pass_convert'	=> 0,
+		//'user_pass_convert'	=> 0,
 		'user_email'		=> strtolower($user_row['user_email']),
 		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
@@ -244,7 +245,7 @@ function user_add($user_row, $cp_data = false)
 	$db->sql_query($sql);
 
 	// Now make it the users default group...
-	group_set_user_default($user_row['group_id'], array($user_id));
+	group_set_user_default($user_row['group_id'], array($user_id), false, true);
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
 	if ($user_row['user_type'] == USER_NORMAL)
@@ -2043,7 +2044,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 /**
 * Set users default group
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $new_user = false)
 {
 	global $db;
 
@@ -2126,6 +2127,15 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
+
+		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
+			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
+		$db->sql_query($sql);
+
+		if ($new_user || in_array($config['newest_user_id'], $user_id_ary))
+		{
+			set_config('newest_user_colour', $sql_ary['user_colour'], true);
+		}
 	}
 }
 
