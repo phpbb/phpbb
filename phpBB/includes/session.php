@@ -166,7 +166,7 @@ class session
 			foreach ($ips as $ip)
 			{
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-				if (!empty($ip) && !preg_match($ipv4, $this->forwarded_for) && !preg_match($ipv6, $ip))
+				if (!empty($ip) && !preg_match($ipv4, $ip) && !preg_match($ipv6, $ip))
 				{
 					if (!defined('DEBUG_EXTRA'))
 					{
