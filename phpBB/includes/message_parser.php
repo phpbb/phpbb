@@ -265,7 +265,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_img($in)
 	{
-		global $user, $config, $phpEx;
+		global $user, $config;
 
 		if (!$this->check_bbcode('img', $in))
 		{
@@ -309,7 +309,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_flash($width, $height, $in)
 	{
-		global $user, $config, $phpEx;
+		global $user, $config;
 
 		if (!$this->check_bbcode('flash', $in))
 		{
@@ -940,7 +940,8 @@ class parse_message extends bbcode_firstpass
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
 		// Transform \r\n and \r into \n
-		$match = array('#\r\n?#', "#([\n][\s]+){3,}#u", '#(script|about|applet|activex|chrome):#i');
+		// TODO: Second regex looks wrong...
+		$match = array('#\r\n?#', "#(\n\s+){3,}#u", '#(script|about|applet|activex|chrome):#i');
 		$replace = array("\n", "\n\n", "\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
@@ -994,7 +995,7 @@ class parse_message extends bbcode_firstpass
 	
 			if ($config['max_' . $mode . '_urls'])
 			{
-				$num_urls += preg_match_all('#\<!-- (l|m|w|e) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
+				$num_urls += preg_match_all('#\<!-- ([lmwe]) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
 			}
 		}
 
@@ -1100,7 +1101,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function smilies($max_smilies = 0)
 	{
-		global $db, $user, $phpbb_root_path;
+		global $db, $user;
 		static $match;
 		static $replace;
 
@@ -1139,7 +1140,7 @@ class parse_message extends bbcode_firstpass
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// (assertion)
-				$match[] = '#(?<=^|[\n ]|\.)' . preg_quote($row['code'], '#') . '#';
+				$match[] = '#(?<=^|[\n .])' . preg_quote($row['code'], '#') . '#';
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['emotion'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			$db->sql_freeresult($result);
@@ -1456,15 +1457,21 @@ class parse_message extends bbcode_firstpass
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_title'];
 
+		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
+		$poll['poll_options_size'] = sizeof($poll['poll_options']);
 
-		$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+		if (!$poll['poll_title'] && $poll['poll_options_size'])
+		{
+			$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
+		}
+		else
+		{
+			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+		}
 
 		$this->message = $tmp_message;
 
 		unset($tmp_message);
-
-		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
-		$poll['poll_options_size'] = sizeof($poll['poll_options']);
 
 		if (sizeof($poll['poll_options']) == 1)
 		{
@@ -1477,11 +1484,6 @@ class parse_message extends bbcode_firstpass
 		else if ($poll_max_options > $poll['poll_options_size'])
 		{
 			$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
-		}
-
-		if (!$poll['poll_title'] && $poll['poll_options_size'])
-		{
-			$this->warn_msg[] = $user->lang['NO_POLL_TITLE'];
 		}
 
 		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
