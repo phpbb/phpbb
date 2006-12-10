@@ -14,7 +14,7 @@
 	<td colspan="5"><b class="gensmall">{L_ADMINISTRATORS}</b></td>
 </tr>
 <!-- BEGIN admin -->
-	<!-- IF admin.S_ROW_COUNT is even -->	<tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
+	<!-- IF admin.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
 	<td class="gen" align="center"><strong>{admin.USERNAME_FULL}</strong></td>
 	<td class="gensmall" align="center">&nbsp;</td>
@@ -30,14 +30,14 @@
 </tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="9" align="center"><span class="gen">{L_NO_ADMINISTRATORS}</span></td>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_ADMINISTRATORS}</span></td>
 	</tr>
 <!-- END admin -->
 <tr class="row3">
-	<td colspan="9"><b class="gensmall">{L_MODERATORS}</b></td>
+	<td colspan="5"><b class="gensmall">{L_MODERATORS}</b></td>
 </tr>
 <!-- BEGIN mod -->
-	<!-- IF mod.S_ROW_COUNT is even -->	<tr class="row2"><!-- ELSE -->	<tr class="row1"><!-- ENDIF -->
+	<!-- IF mod.S_ROW_COUNT is even --><tr class="row2"><!-- ELSE --><tr class="row1"><!-- ENDIF -->
 
 	<td class="gen" align="center"><strong>{mod.USERNAME_FULL}</strong></td>
 	<td align="center"><!-- IF not mod.FORUMS -->{L_ALL_FORUMS}<!-- ELSE --><select style="width: 200px;">{mod.FORUMS}</select><!-- ENDIF -->&nbsp;</td>
@@ -53,11 +53,11 @@
 </tr>
 <!-- BEGINELSE -->
 	<tr>
-		<td class="row1" colspan="9" align="center"><span class="gen">{L_NO_MODERATORS}</span></td>
+		<td class="row1" colspan="5" align="center"><span class="gen">{L_NO_MODERATORS}</span></td>
 	</tr>
 <!-- END mod -->
 </table>
-	
+
 </form>
 
 <br clear="all" />
