@@ -143,7 +143,7 @@ function user_add($user_row, $cp_data = false)
 		'username'			=> $user_row['username'],
 		'username_clean'	=> utf8_clean_string($user_row['username']),
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
-		//'user_pass_convert'	=> 0,
+		'user_pass_convert'	=> 0,
 		'user_email'		=> strtolower($user_row['user_email']),
 		'user_email_hash'	=> (int) crc32(strtolower($user_row['user_email'])) . strlen($user_row['user_email']),
 		'group_id'			=> $user_row['group_id'],
@@ -2122,10 +2122,6 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_first_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
 			WHERE " . $db->sql_in_set('topic_poster', $user_id_ary);
-		$db->sql_query($sql);
-
-		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
-			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . " SET topic_last_poster_colour = '" . $db->sql_escape($sql_ary['user_colour']) . "'
