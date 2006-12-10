@@ -388,7 +388,7 @@ class acp_permission_roles
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$template->assign_block_vars('roles', array(
-				'ROLE_NAME'				=> $row['role_name'],
+				'ROLE_NAME'				=> (!empty($user->lang[$row['role_name']])) ? $user->lang[$row['role_name']] : $row['role_name'],
 				'ROLE_DESCRIPTION'		=> (!empty($user->lang[$row['role_description']])) ? $user->lang[$row['role_description']] : nl2br($row['role_description']),
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
