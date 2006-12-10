@@ -22,7 +22,6 @@ class session
 	var $host = '';
 	var $session_id = '';
 	var $ip = '';
-	var $ips = array();
 	var $load = 0;
 	var $time_now = 0;
 	var $update_session_page = true;
@@ -167,7 +166,7 @@ class session
 			foreach ($ips as $ip)
 			{
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
-				if (!preg_match("#^$ipv4$#", $this->forwarded_for) && !preg_match("#^$ipv6$#", $this->forwarded_for))
+				if (!empty($ip) && !preg_match($ipv4, $this->forwarded_for) && !preg_match($ipv6, $this->forwarded_for))
 				{
 					if (!defined('DEBUG_EXTRA'))
 					{
@@ -249,7 +248,7 @@ class session
 				$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 				$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
 
-				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['forwarded_for'], 0, 254) : '';
+				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
 				$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
 
 				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
@@ -864,8 +863,28 @@ class session
 		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$ip_banned = false;
+			if (!empty($row['ban_ip']))
+			{
+				if (!is_array($user_ips))
+				{
+					$ip_banned = preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips);
+				}
+				else
+				{
+					foreach ($user_ips as $user_ip)
+					{
+						if (preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+						{
+							$ip_banned = true;
+							break;
+						}
+					}
+				}
+			}
+
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
-				(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips)) ||
+				$ip_banned ||
 				(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
 			{
 				if (!empty($row['ban_exclude']))
