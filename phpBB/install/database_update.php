@@ -512,8 +512,11 @@ if (version_compare($current_version, '3.0.b3', '<'))
 
 if (version_compare($current_version, '3.0.b4', '<'))
 {
-	// Add config value
+	// Add config values
 	set_config('script_path', '/');
+	set_config('forwarded_for_check', '0');
+	set_config('ldap_password', '');
+	set_config('ldap_user', '');
 
 	$no_updates = false;
 }
