@@ -510,7 +510,7 @@ $lang = array_merge($lang, array(
 	'LOG_INSTALL_CONVERTED'	=> '<strong>Converted from %1$s to phpBB %2$s</strong>',
 	'LOG_INSTALL_INSTALLED'	=> '<strong>Installed phpBB %s</strong>',
 
-	'LOG_IP_BROWSER_CHECK'	=> '<strong>Session IP/browser check failed</strong><br />»User IP "<em>%1$s</em>" checked against session IP "<em>%2$s</em>" and user browser string "<em>%3$s</em>" checked against session browser string "<em>%4$s</em>".',
+	'LOG_IP_BROWSER_FORWARDED_CHECK'	=> '<strong>Session IP/browser/X_FORWARDED_FOR check failed</strong><br />»User IP "<em>%1$s</em>" checked against session IP "<em>%2$s</em>", user browser string "<em>%3$s</em>" checked against session browser string "<em>%4$s</em>" and user X_FORWARDED_FOR string "<em>%5$s</em>" checked against session X_FORWARDED_FOR string "<em>%6$s</em>".',
 
 	'LOG_JAB_CHANGED'			=> '<strong>Jabber account changed</strong>',
 	'LOG_JAB_PASSCHG'			=> '<strong>Jabber password changed</strong>',

@@ -1121,7 +1121,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_UNIT'] . '</option>' . $s_units;
 
 							$template->assign_vars(array(
-								strtoupper($var) => $value,
+								strtoupper($var) => htmlspecialchars($value),
 								'S_' . strtoupper($var) . '_UNITS' => $s_units)
 							);
 						break;
@@ -1162,7 +1162,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 						default:
 							$template->assign_vars(array(
-								strtoupper($var) => $value)
+								strtoupper($var) => htmlspecialchars($value))
 							);
 					}
 				}
@@ -1226,7 +1226,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						break;
 
 						default:
-							$value = request_var($var, '');
+							$value = htmlspecialchars_decode(request_var($var, ''));
 					}
 
 					// use the element mapping to create raw css code

@@ -49,16 +49,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $db, $user;
 
-		if (strpos($db->sql_layer, 'mysql') === false)
-		{
-			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
-		}
-
-		$result = $db->sql_query('SELECT VERSION() AS mysql_version');
-		$version = $db->sql_fetchfield('mysql_version');
-		$db->sql_freeresult($result);
-
-		if (!preg_match('#^4|5|6#s', $version))
+		if ($db->sql_layer != 'mysql4' && $db->sql_layer != 'mysqli')
 		{
 			return $user->lang['FULLTEXT_MYSQL_INCOMPATIBLE_VERSION'];
 		}

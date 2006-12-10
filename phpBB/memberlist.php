@@ -1425,7 +1425,7 @@ function show_profile($data)
 
 		if ($bday_year)
 		{
-			$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
+			$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 
 			$diff = $now['mon'] - $bday_month;
 			if ($diff == 0)

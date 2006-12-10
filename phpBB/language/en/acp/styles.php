@@ -354,7 +354,7 @@ $lang = array_merge($lang, array(
 	'STYLE_NAME'				=> 'Style name',
 	'STYLE_TEMPLATE'			=> 'Template',
 	'STYLE_THEME'				=> 'Theme',
-	'STYLE_USED_BY'				=> 'Used by',
+	'STYLE_USED_BY'				=> 'Used by (including robots)',
 
 	'TEMPLATE_ADDED'			=> 'Template set added and stored on filesystem.',
 	'TEMPLATE_ADDED_DB'			=> 'Template set added and stored in database.',

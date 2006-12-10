@@ -314,7 +314,10 @@ $database_update_info = array(
 		// Add the following columns
 		'add_columns'		=> array(
 			CONFIRM_TABLE		=> array(
-				'seed'				=> array('UINT:10', 0),
+				'seed'					=> array('UINT:10', 0),
+			),
+			SESSIONS_TABLE		=> array(
+				'session_forwarded_for'	=> array('VCHAR:255', 0),
 			),
 		),
 	),

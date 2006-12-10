@@ -86,6 +86,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confir
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('forwarded_for_check', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
@@ -114,8 +115,10 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_resource', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_email', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_password', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_user', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_anon_lastread', '0');

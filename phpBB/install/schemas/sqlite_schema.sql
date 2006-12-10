@@ -640,6 +640,7 @@ CREATE TABLE phpbb_sessions (
 	session_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	session_ip varchar(40) NOT NULL DEFAULT '',
 	session_browser varchar(150) NOT NULL DEFAULT '',
+	session_forwarded_for varchar(255) NOT NULL DEFAULT '',
 	session_page varchar(255) NOT NULL DEFAULT '',
 	session_viewonline INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	session_autologin INTEGER UNSIGNED NOT NULL DEFAULT '0',

@@ -1488,6 +1488,7 @@ function get_schema_struct()
 			'session_time'			=> array('TIMESTAMP', 0),
 			'session_ip'			=> array('VCHAR:40', ''),
 			'session_browser'		=> array('VCHAR:150', ''),
+			'session_forwarded_for'	=> array('VCHAR:255', ''),
 			'session_page'			=> array('VCHAR_UNI', ''),
 			'session_viewonline'	=> array('BOOL', 1),
 			'session_autologin'		=> array('BOOL', 0),

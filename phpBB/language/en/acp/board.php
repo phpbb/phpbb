@@ -281,16 +281,21 @@ $lang = array_merge($lang, array(
 
 	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username.',
 
-	'LDAP_DN'					=> 'LDAP base <var>dn</var>',
-	'LDAP_DN_EXPLAIN'			=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>',
-	'LDAP_EMAIL'				=> 'LDAP email attribute',
-	'LDAP_EMAIL_EXPLAIN'		=> 'Set this to the name of your user entry email attribute (if one exists) in order to automatically set the email address for new users. Leaving this empty results in empty email address for users who log in for the first time.',
-	'LDAP_NO_EMAIL'				=> 'The specified email attribute does not exist.',
-	'LDAP_NO_IDENTITY'			=> 'Could not find a login identity for %s',
-	'LDAP_SERVER'				=> 'LDAP server name',
-	'LDAP_SERVER_EXPLAIN'		=> 'If using LDAP this is the name or IP address of the server.',
-	'LDAP_UID'					=> 'LDAP <var>uid</var>',
-	'LDAP_UID_EXPLAIN'			=> 'This is the key under which to search for a given login identity, e.g. <var>uid</var>, <var>sn</var>, etc.',
+	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
+	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>',
+	'LDAP_EMAIL'					=> 'LDAP email attribute',
+	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry email attribute (if one exists) in order to automatically set the email address for new users. Leaving this empty results in empty email address for users who log in for the first time.',
+	'LDAP_INCORRECT_USER_PASSWORD'	=> 'Binding to LDAP server failed with specified user/password.',
+	'LDAP_NO_EMAIL'					=> 'The specified email attribute does not exist.',
+	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s',
+	'LDAP_PASSWORD'					=> 'LDAP password',
+	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous access. Else fill in the password for the above user. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database.',
+	'LDAP_SERVER'					=> 'LDAP server name',
+	'LDAP_SERVER_EXPLAIN'			=> 'If using LDAP this is the name or IP address of the server.',
+	'LDAP_UID'						=> 'LDAP <var>uid</var>',
+	'LDAP_UID_EXPLAIN'				=> 'This is the key under which to search for a given login identity, e.g. <var>uid</var>, <var>sn</var>, etc.',
+	'LDAP_USER'						=> 'LDAP user',
+	'LDAP_USER_EXPLAIN'				=> 'Leave blank to use anonymous access. If filled in phpBB will connect to the LDAP server as the specified user.',
 ));
 
 // Server Settings

@@ -876,6 +876,7 @@ CREATE TABLE phpbb_sessions (
 	session_time INT4 DEFAULT '0' NOT NULL CHECK (session_time >= 0),
 	session_ip varchar(40) DEFAULT '' NOT NULL,
 	session_browser varchar(150) DEFAULT '' NOT NULL,
+	session_forwarded_for varchar(255) DEFAULT '' NOT NULL,
 	session_page varchar(255) DEFAULT '' NOT NULL,
 	session_viewonline INT2 DEFAULT '1' NOT NULL CHECK (session_viewonline >= 0),
 	session_autologin INT2 DEFAULT '0' NOT NULL CHECK (session_autologin >= 0),

@@ -80,7 +80,7 @@ function mcp_front_view($id, $mode, $action)
 				}
 
 				$template->assign_block_vars('unapproved', array(
-					'U_POST_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
+					'U_POST_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
 					'U_MCP_FORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']) : '',
 					'U_MCP_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 					'U_FORUM'			=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
@@ -88,6 +88,7 @@ function mcp_front_view($id, $mode, $action)
 					'U_AUTHOR'			=> ($row['poster_id'] == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']),
 
 					'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+					'POST_ID'		=> $row['post_id'],
 					'TOPIC_TITLE'	=> $row['topic_title'],
 					'AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? (($row['post_username']) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
 					'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
@@ -96,6 +97,10 @@ function mcp_front_view($id, $mode, $action)
 			}
 			$db->sql_freeresult($result);
 		}
+
+		$template->assign_vars(array(
+			'S_MCP_QUEUE_ACTION'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue"),
+		));
 
 		if ($total == 0)
 		{

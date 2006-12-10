@@ -880,7 +880,7 @@ $sql = $db->sql_build_query('SELECT', array(
 
 $result = $db->sql_query($sql);
 
-$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
+$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built

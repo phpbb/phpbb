@@ -17,7 +17,7 @@ class acp_search
 	var $state;
 	var $search;
 	var $max_post_id;
-	var $batch_size = 4000;
+	var $batch_size = 5000;
 
 	function main($id, $mode)
 	{
@@ -320,6 +320,16 @@ class acp_search
 				}
 				else
 				{
+					$sql = 'SELECT forum_id, enable_indexing
+						FROM ' . FORUMS_TABLE;
+					$result = $db->sql_query($sql, 3600);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
+					}
+					$db->sql_freeresult($result);
+
 					$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 						FROM ' . POSTS_TABLE . '
 						WHERE post_id >= ' . (int) ($post_counter + 1) . '
@@ -328,7 +338,10 @@ class acp_search
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+						if ($forums[$row['forum_id']])
+						{
+							$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+						}
 					}
 					$db->sql_freeresult($result);
 

@@ -1280,6 +1280,7 @@ CREATE TABLE phpbb_sessions (
 	session_time number(11) DEFAULT '0' NOT NULL,
 	session_ip varchar2(40) DEFAULT '' ,
 	session_browser varchar2(150) DEFAULT '' ,
+	session_forwarded_for varchar2(255) DEFAULT '' ,
 	session_page varchar2(765) DEFAULT '' ,
 	session_viewonline number(1) DEFAULT '1' NOT NULL,
 	session_autologin number(1) DEFAULT '0' NOT NULL,

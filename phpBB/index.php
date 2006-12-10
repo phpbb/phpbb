@@ -61,7 +61,7 @@ $db->sql_freeresult($result);
 $birthday_list = '';
 if ($config['load_birthdays'])
 {
-	$now = getdate(time() + $user->timezone + $user->dst - (date('H', time()) - gmdate('H', time())) * 3600);
+	$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 	$sql = 'SELECT user_id, username, user_colour, user_birthday
 		FROM ' . USERS_TABLE . "
 		WHERE user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%'

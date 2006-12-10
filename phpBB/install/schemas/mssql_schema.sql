@@ -1141,6 +1141,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_time] [int] DEFAULT (0) NOT NULL ,
 	[session_ip] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[session_browser] [varchar] (150) DEFAULT ('') NOT NULL ,
+	[session_forwarded_for] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[session_page] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[session_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[session_autologin] [int] DEFAULT (0) NOT NULL ,

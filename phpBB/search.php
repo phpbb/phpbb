@@ -960,6 +960,12 @@ while ($row = $db->sql_fetchrow($result))
 		$holding = '';
 	}
 }
+
+if ($holding)
+{
+	$s_forums .= $holding;
+}
+
 $db->sql_freeresult($result);
 unset($pad_store);
 

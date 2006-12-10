@@ -18,9 +18,11 @@ class session
 	var $page = array();
 	var $data = array();
 	var $browser = '';
+	var $forwarded_for = '';
 	var $host = '';
 	var $session_id = '';
 	var $ip = '';
+	var $ips = array();
 	var $load = 0;
 	var $time_now = 0;
 	var $update_session_page = true;
@@ -145,8 +147,39 @@ class session
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
 		$this->page					= $this->extract_current_page($phpbb_root_path);
+
+		// if the forwarded for header shall be checked we have to validate its contents
+		if ($config['forwarded_for_check'])
+		{
+			$this->forwarded_for = preg_replace('#, +#', ', ', $this->forwarded_for);
+
+			// Whoa these look impressive!
+			// The code to generate the following two regular expressions which match valid IPv4/IPv6 addresses
+			// can be found in the develop directory
+			$ipv4 = '#^(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])$#';
+			$ipv6 = '#^(?:(?:(?:[\dA-F]{1,4}:){6}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:::(?:[\dA-F]{1,4}:){5}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:):(?:[\dA-F]{1,4}:){4}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,2}:(?:[\dA-F]{1,4}:){3}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,3}:(?:[\dA-F]{1,4}:){2}(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,4}:(?:[\dA-F]{1,4}:)(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,5}:(?:[\dA-F]{1,4}:[\dA-F]{1,4}|(?:(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])\.){3}(?:\d?\d|1\d\d|2[0-4]\d|25[0-5])))|(?:(?:[\dA-F]{1,4}:){1,6}:[\dA-F]{1,4})|(?:(?:[\dA-F]{1,4}:){1,7}:))$#';
+
+			// split the list of IPs
+			$ips = explode(', ', $this->forwarded_for);
+			foreach ($ips as $ip)
+			{
+				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
+				if (!preg_match("#^$ipv4$#", $this->forwarded_for) && !preg_match("#^$ipv6$#", $this->forwarded_for))
+				{
+					if (!defined('DEBUG_EXTRA'))
+					{
+						trigger_error('Hacking attempt!');
+					}
+					else
+					{
+						trigger_error('Invalid HTTP_X_FORWARDED_FOR header detected: ' . htmlspecialchars($this->forwarded_for));
+					}
+				}
+			}
+		}
 
 		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
 		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
@@ -216,7 +249,10 @@ class session
 				$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 				$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
 
-				if ($u_ip === $s_ip && $s_browser === $u_browser)
+				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['forwarded_for'], 0, 254) : '';
+				$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
+
+				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
 				{
 					$session_expired = false;
 
@@ -278,7 +314,7 @@ class session
 					// Added logging temporarly to help debug bugs...
 					if (defined('DEBUG_EXTRA'))
 					{
-						add_log('critical', 'LOG_IP_BROWSER_CHECK', $u_ip, $s_ip, $u_browser, $s_browser);
+						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, $u_forwarded, $s_forwarded);
 					}
 				}
 			}
@@ -447,7 +483,16 @@ class session
 		// Is user banned? Are they excluded? Won't return on ban, exists within method
 		if ($this->data['user_type'] != USER_FOUNDER)
 		{
-			$this->check_ban($this->data['user_id'], $this->ip);
+			if (!$config['forwarded_for_check'])
+			{
+				$this->check_ban($this->data['user_id'], $this->ip);
+			}
+			else
+			{
+				$ips = explode(', ', $this->forwarded_for);
+				$ips[] = $this->ip;
+				$this->check_ban($this->data['user_id'], $ips);
+			}
 		}
 
 		$this->data['is_registered'] = (!$bot && $this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
@@ -456,14 +501,17 @@ class session
 		// If our friend is a bot, we re-assign a previously assigned session
 		if ($this->data['is_bot'] && $bot == $this->data['user_id'] && $this->data['session_id'])
 		{
-			// Only assign the current session if the ip and browser match...
+			// Only assign the current session if the ip, browser and forwarded_for match...
 			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
 			$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 			$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
 
-			if ($u_ip === $s_ip && $s_browser === $u_browser)
+			$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
+			$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
+
+			if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
 			{
 				$this->session_id = $this->data['session_id'];
 
@@ -512,6 +560,7 @@ class session
 			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) $this->browser,
+			'session_forwarded_for'	=> (string) $this->forwarded_for,
 			'session_ip'			=> (string) $this->ip,
 			'session_autologin'		=> ($session_autologin) ? 1 : 0,
 			'session_admin'			=> ($set_admin) ? 1 : 0,
@@ -580,6 +629,14 @@ class session
 		}
 		else
 		{
+			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
+
+			// Update the last visit time
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				WHERE user_id = ' . (int) $this->data['user_id'];
+			$db->sql_query($sql);
+
 			$SID = '?sid=';
 			$_SID = '';
 		}
@@ -757,8 +814,10 @@ class session
 	* are passed to the method pre-existing session data is used. If $return is false
 	* this routine does not return on finding a banned user, it outputs a relevant 
 	* message and stops execution.
+	*
+	* @param string|array	$user_ips	Can contain a string with one IP or an array of multiple IPs
 	*/
-	function check_ban($user_id = false, $user_ip = false, $user_email = false, $return = false)
+	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
 		global $config, $db;
 
@@ -774,14 +833,14 @@ class session
 			$sql .= " AND ban_email = ''";
 		}
 
-		if ($user_ip === false)
+		if ($user_ips === false)
 		{
-			$sql .= " AND (ban_ip = '' OR (ban_ip <> '' AND ban_exclude = 1))";
+			$sql .= " AND (ban_ip = '' OR ban_exclude = 1)";
 		}
 
 		if ($user_id === false)
 		{
-			$sql .= ' AND (ban_userid = 0 OR (ban_userid <> 0 AND ban_exclude = 1))';
+			$sql .= ' AND (ban_userid = 0 OR ban_exclude = 1)';
 		}
 		else
 		{
@@ -792,7 +851,7 @@ class session
 				$sql .= " OR ban_email <> ''";
 			}
 
-			if ($user_ip !== false)
+			if ($user_ips !== false)
 			{
 				$sql .= " OR ban_ip <> ''";
 			}
@@ -806,7 +865,7 @@ class session
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
-				(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip)) ||
+				(!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips)) ||
 				(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
 			{
 				if (!empty($row['ban_exclude']))
@@ -823,7 +882,7 @@ class session
 					{
 						$ban_triggered_by = 'user';
 					}
-					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips))
 					{
 						$ban_triggered_by = 'ip';
 					}
@@ -1253,7 +1312,7 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_gets('a_', 'm_'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 			{
 				trigger_error('BOARD_UNAVAILABLE');
 			}

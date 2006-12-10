@@ -321,6 +321,7 @@ th {
 	color: #FFA34F;
 	font-weight: bold;
 	background: #006699 url("../images/cellpic3.gif") 0 0 repeat-x;
+	white-space: nowrap;
 }
 
 td {
