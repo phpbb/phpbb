@@ -60,6 +60,7 @@ require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
+$user = new user();
 $cache = new cache();
 $db = new $sql_db();
 
@@ -85,6 +86,7 @@ include($phpbb_root_path . 'language/' . $row['config_value'] . '/install.' . $p
 //set_error_handler('msg_handler');
 
 // Define some variables for the database update
+$inline_update = (request_var('type', 0)) ? true : false;
 
 // Database column types mapping
 $dbms_type_map = array(
@@ -388,6 +390,21 @@ echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong
 
 $current_version = strtolower($row['config_value']);
 $latest_version = strtolower($updates_to_version);
+$orig_version = $row['config_value'];
+
+// If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
+if ($inline_update)
+{
+	if ($current_version !== $latest_version)
+	{
+		set_config('version_update_from', $row['config_value']);
+	}
+}
+else
+{
+	// If not called from the update script, we will actually remove the traces
+	$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+}
 
 // Schema updates
 ?>
@@ -548,11 +565,33 @@ _write_result($no_updates, $errored, $error_ary);
 
 <br />
 
-<p style="color:red"><?php echo $lang['UPDATE_FILES_NOTICE']; ?></p>
+<?php
 
-<p><?php echo $lang['COMPLETE_LOGIN_TO_BOARD']; ?></p>
+if (!$inline_update)
+{
+?>
+
+	<p style="color:red"><?php echo $lang['UPDATE_FILES_NOTICE']; ?></p>
+
+	<p><?php echo $lang['COMPLETE_LOGIN_TO_BOARD']; ?></p>
 
 <?php
+}
+else
+{
+?>
+
+	<p><?php echo $lang['CONTINUE_INLINE_UPDATE']; ?></p>
+
+	<p><a href="#" onclick="window.close();">&raquo; <?php echo $lang['CLOSE_WINDOW']; ?></a></p>
+
+<?php
+}
+
+// Add database update to log
+
+$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
 $cache->purge();

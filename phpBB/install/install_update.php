@@ -6,12 +6,6 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
-* @todo add successful file update to log
-* @todo add successful database update to log
-* @todo do database update before updating files. Within the updater create a new config variable (version_update_from). Use this version in favor of the real versino to check for the database update successfully run through. After successful file update remove the information.
-* @todo check memory by setting limit to 8MB locally.
-* @todo make sure binary files get updated too, omitting the diff engine for this (handle like a conflict)
-* @todo do not require login...
 * @todo check for writeable cache/store/files directory
 */
 
@@ -46,7 +40,7 @@ if (!empty($setmodules))
 		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order'		=> 30,
 		'module_subs'		=> '',
-		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'FILE_CHECK', 'UPDATE_FILES', 'UPDATE_DB'),
+		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'UPDATE_DB', 'FILE_CHECK', 'UPDATE_FILES'),
 		'module_reqs'		=> ''
 	);
 }
@@ -129,8 +123,6 @@ class install_update extends module
 		$template->set_custom_template('../adm/style', 'admin');
 
 		// Get current and latest version
-		$this->current_version = $config['version'];
-
 		if (($latest_version = $cache->get('_version_info')) === false)
 		{
 			$this->latest_version = $this->get_file('version_info');
@@ -140,6 +132,9 @@ class install_update extends module
 		{
 			$this->latest_version = $latest_version;
 		}
+
+		// For the current version we trick a bit. ;)
+		$this->current_version = (!empty($config['version_update_from'])) ? $config['version_update_from'] : $config['version'];
 
 		$up_to_date = (version_compare(strtolower($this->current_version), strtolower($this->latest_version), '<')) ? false : true;
 
@@ -179,18 +174,21 @@ class install_update extends module
 			return;
 		}
 
-		// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
-		if (in_array('adm/style/install_update.html', $this->update_info['files']))
+		if ($this->test_update === false)
 		{
-			$this->tpl_name = '../../install/update/new/adm/style/install_update';
-		}
+			// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
+			if (in_array('adm/style/install_update.html', $this->update_info['files']))
+			{
+				$this->tpl_name = '../../install/update/new/adm/style/install_update';
+			}
 
-		// What about the language file? Got it updated?
-		if (in_array('language/en/install.php', $this->update_info['files']))
-		{
-			$lang = array();
-			include($this->new_location . 'language/en/install.php');
-			$user->lang = array_merge($user->lang, $lang);
+			// What about the language file? Got it updated?
+			if (in_array('language/en/install.php', $this->update_info['files']))
+			{
+				$lang = array();
+				include($this->new_location . 'language/en/install.php');
+				$user->lang = array_merge($user->lang, $lang);
+			}
 		}
 
 		// Include renderer and engine
@@ -224,11 +222,49 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_UP_TO_DATE'		=> $up_to_date,
 					'S_VERSION_CHECK'	=> true,
-					'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 
 					'LATEST_VERSION'	=> $this->latest_version,
-					'CURRENT_VERSION'	=> $config['version'])
+					'CURRENT_VERSION'	=> $this->current_version)
 				);
+
+			break;
+
+			case 'update_db':
+
+				// Make sure the database update is valid for the latest version
+				$valid = false;
+				$updates_to_version = '';
+
+				if (file_exists($phpbb_root_path . 'install/database_update.' . $phpEx))
+				{
+					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
+
+					if ($updates_to_version === $this->latest_version)
+					{
+						$valid = true;
+					}
+				}
+
+				// Should not happen at all
+				if (!$valid)
+				{
+					trigger_error($user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
+				}
+
+				// Just a precaution
+				$cache->purge();
+
+				// Redirect the user to the database update script with some explanations...
+				$template->assign_vars(array(
+					'S_DB_UPDATE'			=> true,
+					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
+					'U_DB_UPDATE'			=> $phpbb_root_path . 'install/database_update.' . $phpEx . '?type=1',
+					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
+					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+				));
 
 			break;
 
@@ -300,6 +336,8 @@ class install_update extends module
 
 					foreach ($filelist as $file_struct)
 					{
+						$s_binary = (!empty($this->update_info['binary']) && in_array($file_struct['filename'], $this->update_info['binary'])) ? true : false;
+
 						$filename = htmlspecialchars($file_struct['filename']);
 						if (strrpos($filename, '/') !== false)
 						{
@@ -323,6 +361,7 @@ class install_update extends module
 							'NUM_CONFLICTS'		=> (isset($file_struct['conflicts'])) ? $file_struct['conflicts'] : 0,
 
 							'S_CUSTOM'			=> ($file_struct['custom']) ? true : false,
+							'S_BINARY'			=> $s_binary,
 							'CUSTOM_ORIGINAL'	=> ($file_struct['custom']) ? $file_struct['original'] : '',
 
 							'U_SHOW_DIFF'		=> $diff_url,
@@ -354,6 +393,16 @@ class install_update extends module
 					'U_UPDATE_ACTION'		=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 				));
+
+				if ($all_up_to_date)
+				{
+					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+
+					// Add database update to log
+					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
+
+					$cache->purge();
+				}
 
 			break;
 
@@ -703,40 +752,6 @@ class install_update extends module
 
 			break;
 
-			case 'update_db':
-
-				// Make sure the database update is valid for the latest version
-				$valid = false;
-				$updates_to_version = '';
-
-				if (file_exists($phpbb_root_path . 'install/database_update.' . $phpEx))
-				{
-					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
-
-					if ($updates_to_version === $this->latest_version)
-					{
-						$valid = true;
-					}
-				}
-
-				// Should not happen at all
-				if (!$valid)
-				{
-					trigger_error($user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
-				}
-
-				// Because we are done with the file update we purge the cache directory
-				$cache->purge();
-
-				// Redirect the user to the database update script with some explanations...
-				$template->assign_vars(array(
-					'S_DB_UPDATE'		=> true,
-					'U_DB_UPDATE'		=> $phpbb_root_path . 'install/database_update.' . $phpEx)
-				);
-
-				
-
-			break;
 		}
 	}
 

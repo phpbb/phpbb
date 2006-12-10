@@ -592,6 +592,9 @@ $lang = array_merge($lang, array(
 	'LOG_THEME_EXPORT'			=> '<strong>Exported theme</strong><br />» %s',
 	'LOG_THEME_REFRESHED'		=> '<strong>Refreshed theme</strong><br />» %s',
 
+	'LOG_UPDATE_DATABASE'	=> '<strong>Updated Database from version %1$s to version %2$s</strong>',
+	'LOG_UPDATE_PHPBB'		=> '<strong>Updated phpBB from version %1$s to version %2$s</strong>',
+
 	'LOG_USER_ACTIVE'		=> '<strong>User activated</strong><br />» %s',
 	'LOG_USER_BAN_USER'		=> '<strong>Banned User via user management</strong> for reason "<em>%1$s</em>"<br />» %2$s',
 	'LOG_USER_BAN_IP'		=> '<strong>Banned IP via user management</strong> for reason "<em>%1$s</em>"<br />» %2$s',
