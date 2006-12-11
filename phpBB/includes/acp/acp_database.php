@@ -1325,7 +1325,7 @@ class acp_database
 
 				if ($has_index_type === null)
 				{
-					if ($db->sql_layer === 'mysqli' || version_compare($this->mysql_version, '4.0.2', '>='))
+					if ($db->sql_layer === 'mysqli' || version_compare($db->mysql_version, '4.0.2', '>='))
 					{
 						$has_index_type = true;
 					}
