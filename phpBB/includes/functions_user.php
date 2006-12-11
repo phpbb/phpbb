@@ -2128,6 +2128,8 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			WHERE " . $db->sql_in_set('topic_last_poster_id', $user_id_ary);
 		$db->sql_query($sql);
 
+		global $config;
+
 		if ($new_user || in_array($config['newest_user_id'], $user_id_ary))
 		{
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
