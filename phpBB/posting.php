@@ -222,9 +222,8 @@ switch ( $mode )
 		message_die(GENERAL_MESSAGE, $lang['No_valid_mode']);
 }
 
-if ( $result = $db->sql_query($sql) )
+if ( ($result = $db->sql_query($sql)) && ($post_info = $db->sql_fetchrow($result)) )
 {
-	$post_info = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
 	$forum_id = $post_info['forum_id'];

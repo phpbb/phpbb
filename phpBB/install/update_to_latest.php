@@ -658,6 +658,19 @@ switch ($row['config_value'])
 		}
 
 		break;
+
+	case '.0.21':
+
+		// MySQL only change
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = 'ALTER TABLE ' . SEARCH_TABLE . '
+					MODIFY COLUMN search_array MEDIUMTEXT NOT NULL';
+		}
+
+		break;
 }
 
 echo "<h2>Updating database schema</h2>\n";
@@ -860,7 +873,7 @@ switch ($row['config_value'])
 			if (preg_match("#^lang_#i", $file) && !is_file($phpbb_root_path . $dirname . "/" . $file) && !is_link($phpbb_root_path . $dirname . "/" . $file) && file_exists($phpbb_root_path . $dirname . "/" . $file . '/search_stopwords.txt'))
 			{
 
-				$stopword_list = trim(preg_replace('#([\w\.\-_\+\'±µ-ÿ\\\]+?)[ \n\r]*?(,|$)#', '\'\1\'\2', str_replace("'", "\'", implode(', ', file($phpbb_root_path . $dirname . "/" . $file . '/search_stopwords.txt')))));
+				$stopword_list = trim(preg_replace('#([\w\.\-_\+\'-\\\]+?)[ \n\r]*?(,|$)#', '\'\1\'\2', str_replace("'", "\'", implode(', ', file($phpbb_root_path . $dirname . "/" . $file . '/search_stopwords.txt')))));
 
 				$sql = "SELECT word_id 
 					FROM " . SEARCH_WORD_TABLE . " 
