@@ -799,16 +799,23 @@ class bbcode_firstpass extends bbcode
 			return '';
 		}
 
-		// Checking urls
-		if (preg_match('#' . preg_quote(generate_board_url(), '#') . '/([^ \t\n\r<"\']+)#i', $url) ||
-			preg_match('#([\w]+?://.*?[^ \t\n\r<"\']*)#i', $url) ||
-			preg_match('#(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#i', $url))
+		// Before we check anything, we make sure certain characters are not included
+		if (!preg_match('#[\t\n\r<"\']#', $url))
 		{
-			$valid = true;
+			// Checking urls
+			if (preg_match('#' . preg_quote(generate_board_url(), '#') . '/([^ \t\n\r<"\']+)#i', $url) ||
+				preg_match('#([\w]+?://.*?[^ \t\n\r<"\']*)#i', $url) ||
+				preg_match('#(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#i', $url))
+			{
+				$valid = true;
+			}
 		}
 
 		if ($valid)
 		{
+			// Do we want to transform some characters?
+			$url = str_replace(' ', '%20', $url);
+
 			$this->parsed_items['url']++;
 
 			if (!preg_match('#^[\w]+?://.*?#i', $url))
