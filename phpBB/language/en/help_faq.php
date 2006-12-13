@@ -140,7 +140,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why did I receive a warning?',
-		1 => 'Each board administrator has their own set of rules for their site. If they feel you have broken one of your rules, they may issue you a warning. Please note that this is the board administrator’s decision, and the phpBB Group does not have anything to do with the warning on the given site.'
+		1 => 'Each board administrator has their own set of rules for their site. If they feel you have broken one of their rules, they may issue you a warning. Please note that this is the board administrator’s decision, and the phpBB Group does not have anything to do with the warning on the given site.'
 	),
 	array(
 		0 => 'How can I report posts to a moderator?',
