@@ -90,7 +90,6 @@ class acp_database
 								$open = 'bzopen';
 								$write = 'bzwrite';
 								$close = 'bzclose';
-								$oper = 'bzcompress';
 								$mimetype = 'application/x-bzip2';
 							break;
 							case 'gzip':
@@ -98,7 +97,6 @@ class acp_database
 								$open = 'gzopen';
 								$write = 'gzwrite';
 								$close = 'gzclose';
-								$oper = 'gzencode';
 								$mimetype = 'application/x-gzip';
 							break;
 						}
@@ -106,6 +104,25 @@ class acp_database
 						// We write the file to "store" first (and then compress the file) to not use too much
 						// memory. The server process can be easily killed by storing too much data at once.
 
+						if ($download == true)
+						{
+							$fh = fopen('php://output', 'wb');
+
+							switch ($format)
+							{
+								case 'bzip2':
+									ob_start('ob_bz2handler');
+								break;
+								case 'gzip':
+									ob_start('ob_gzhandler');
+								break;
+							}
+
+							$name = $filename . $ext;
+							header('Pragma: no-cache');
+							header("Content-Type: $mimetype; name=\"$name\"");
+							header("Content-disposition: attachment; filename=$name");
+						}
 						
 						if ($store == true)
 						{
@@ -117,14 +134,6 @@ class acp_database
 							{
 								trigger_error('Unable to write temporary file to storage folder', E_USER_ERROR);
 							}
-						}
-
-						if ($download == true)
-						{
-							$name = $filename . $ext;
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
 						}
 
 						// All of the generated queries go here
@@ -215,14 +224,7 @@ class acp_database
 
 							if ($download == true)
 							{
-								if (!empty($oper))
-								{
-									echo $oper($sql_data);
-								}
-								else
-								{
-									echo $sql_data;
-								}
+								fwrite($fh, $sql_data);
 							}
 
 							$sql_data = '';
@@ -284,14 +286,7 @@ class acp_database
 
 												if ($download == true)
 												{
-													if (!empty($oper))
-													{
-														echo $oper($sql_data);
-													}
-													else
-													{
-														echo $sql_data;
-													}
+													fwrite($fh, $sql_data);
 												}
 												$sql_data = '';
 
@@ -358,14 +353,7 @@ class acp_database
 
 												if ($download == true)
 												{
-													if (!empty($oper))
-													{
-														echo $oper($sql_data);
-													}
-													else
-													{
-														echo $sql_data;
-													}
+													fwrite($fh, $sql_data);
 												}
 												$sql_data = '';
 											}
@@ -447,14 +435,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 											$sql_data = '';
 
@@ -548,14 +529,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -669,14 +643,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -780,14 +747,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -875,14 +835,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -959,14 +912,7 @@ class acp_database
 
 											if ($download == true)
 											{
-												if (!empty($oper))
-												{
-													echo $oper($sql_data);
-												}
-												else
-												{
-													echo $sql_data;
-												}
+												fwrite($fh, $sql_data);
 											}
 
 											$sql_data = '';
@@ -999,14 +945,8 @@ class acp_database
 
 						if ($download == true)
 						{
-							if (!empty($oper))
-							{
-								echo $oper($sql_data);
-							}
-							else
-							{
-								echo $sql_data;
-							}
+							fwrite($fh, $sql_data);
+							fclose($fh);
 							exit;
 						}
 
@@ -2022,6 +1962,17 @@ class acp_database
 		}
 
 		return $sql_data;
+	}
+}
+
+// Internal handler for BZip2
+function ob_bz2handler($data, $mode)
+{
+	static $internal = '';
+	$internal .= $data;
+	if ($mode & PHP_OUTPUT_HANDLER_END)
+	{
+		return bzcompress($internal);
 	}
 }
 
