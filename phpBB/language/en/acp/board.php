@@ -49,7 +49,7 @@ $lang = array_merge($lang, array(
 	'SYSTEM_DST'					=> 'Enable Daylight Savings Time',
 	'SYSTEM_TIMEZONE'				=> 'System timezone',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
-	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days after it is issued before a warning will expire from a user’s record',
+	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record',
 ));
 
 // Board Features
@@ -117,7 +117,7 @@ $lang = array_merge($lang, array(
 	'BOXES_MAX_EXPLAIN'			=> 'By default users may create this many personal folders for private messages.',
 	'ENABLE_PM_ICONS'			=> 'Enable use of topic icons in private messages',
 	'FULL_FOLDER_ACTION'		=> 'Full folder default action',
-	'FULL_FOLDER_ACTION_EXPLAIN'=> 'Default Action to take if a user’s folder is full and if the users folder action set is not applicable. For the “sent messages” folder the default action is always deleting old messages.',
+	'FULL_FOLDER_ACTION_EXPLAIN'=> 'Default action to take if a user’s folder is full assuming the user’s folder action, if set at all, is not applicable. The only exception is for the “Sent messages” folder where the default action is always to delete old messages.',
 	'HOLD_NEW_MESSAGES'			=> 'Hold new messages',
 	'PM_EDIT_TIME'				=> 'Limit editing time',
 	'PM_EDIT_TIME_EXPLAIN'		=> 'Limits the time available to edit a private message not already delivered, zero equals infinity',

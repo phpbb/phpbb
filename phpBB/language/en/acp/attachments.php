@@ -56,7 +56,7 @@ $lang = array_merge($lang, array(
 	'ATTACH_ORPHAN_URL'					=> 'Orphan attachments',
 	'ATTACH_POST_ID'					=> 'Post ID',
 	'ATTACH_QUOTA'						=> 'Total attachment quota',
-	'ATTACH_QUOTA_EXPLAIN'				=> 'Maximum drive space available for attachments in total, 0 is unlimited.',
+	'ATTACH_QUOTA_EXPLAIN'				=> 'Maximum drive space available for attachments for the whole board, with 0 being unlimited.',
 	'ATTACH_TO_POST'					=> 'Attach file to post',
 
 	'CAT_FLASH_FILES'			=> 'Flash Files',
@@ -124,14 +124,14 @@ $lang = array_merge($lang, array(
 	'ORDER_ALLOW_DENY'		=> 'Allow',
 	'ORDER_DENY_ALLOW'		=> 'Deny',
 
-	'REMOVE_ALLOWED_IPS'		=> 'Remove or un-exclude allowed IPs/hostnames',
-	'REMOVE_DISALLOWED_IPS'		=> 'Remove or un-exclude disallowed IPs/hostnames',
+	'REMOVE_ALLOWED_IPS'		=> 'Remove or un-exclude <em>allowed</em> IPs/hostnames',
+	'REMOVE_DISALLOWED_IPS'		=> 'Remove or un-exclude <em>disallowed</em> IPs/hostnames',
 
 	'SEARCH_IMAGICK'				=> 'Search for Imagemagick',
 	'SECURE_ALLOW_DENY'				=> 'Allow/Deny list',
-	'SECURE_ALLOW_DENY_EXPLAIN'		=> 'Allow or Deny the list of addresses, this setting only applies to downloading files',
+	'SECURE_ALLOW_DENY_EXPLAIN'		=> 'Change the default behaviour when secure downloads are enabled of the Allow/Deny list to that of a <strong>whitelist</strong> (Allow) or a <strong>blacklist</strong> (Deny)',
 	'SECURE_DOWNLOADS'				=> 'Enable secure downloads',
-	'SECURE_DOWNLOADS_EXPLAIN'		=> 'With this option enabled, downloads are limited to IP’s/hostnames you defined.',
+	'SECURE_DOWNLOADS_EXPLAIN'		=> 'With this option enabled, downloads are limited to IP’s/hostnames you define.',
 	'SECURE_DOWNLOAD_NOTICE'		=> 'Secure Downloads are not enabled. The settings below will be applied after enabling secure downloads.',
 	'SECURE_DOWNLOAD_UPDATE_SUCCESS'=> 'The IP list has been updated successfully.',
 	'SECURE_EMPTY_REFERRER'			=> 'Allow empty referrer',
