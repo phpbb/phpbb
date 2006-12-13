@@ -81,7 +81,7 @@ $lang = array_merge($lang, array(
 
 	'FEEDBACK'				=> 'Feedback',
 	'FORK'					=> 'Fork',
-	'FORK_TOPIC'			=> 'Fork Topic',
+	'FORK_TOPIC'			=> 'Fork topic',
 	'FORK_TOPIC_CONFIRM'	=> 'Are you sure you want to copy this topic?',
 	'FORK_TOPICS'			=> 'Fork selected topics',
 	'FORK_TOPICS_CONFIRM'	=> 'Are you sure you want to copy the selected topics?',
