@@ -216,11 +216,11 @@ $help = array(
 	),
 	array(
 		0 => 'How do I join a Usergroup?',
-		1 => 'To join a Usergroup click the Usergroup link within your User Control Panel, you can then view all usergroups. Not all groups are <em>open access</em>, some may require approval to join, some are closed and some may even have hidden memberships. If the group is open then you can join it by clicking the appropriate button. If a group requires approval to join you may request to join it by clicking the appropriate button. The user group moderator will need to approve your request, they may ask why you want to join the group. Please do not pester a group moderator if they turn your request down, they will have their reasons.'
+		1 => 'To join a Usergroup click the Usergroup link within your User Control Panel, you can then view all usergroups. Not all groups are <em>open access</em>, some may require approval to join, some are closed and some may even have hidden memberships. If the group is open then you can join it by clicking the appropriate button. If a group requires approval to join you may request to join it by clicking the appropriate button. The user group leader will need to approve your request, they may ask why you want to join the group. Please do not pester a group leader if they turn your request down, they will have their reasons.'
 	),
 	array(
-		0 => 'How do I become a Usergroup Moderator?',
-		1 => 'When Usergroups are initially created by the board administrator, they also assign a Usergroup moderator. If you are interested in creating a Usergroup then your first point of contact should be the administrator, try sending them a private message.'
+		0 => 'How do I become a Usergroup Leader?',
+		1 => 'When Usergroups are initially created by the board administrator, they also assign a Usergroup leader. If you are interested in creating a Usergroup then your first point of contact should be the administrator, try sending them a private message.'
 	),
 	array(
 		0 => 'Why do some Usergroups appear in a different colour?',
