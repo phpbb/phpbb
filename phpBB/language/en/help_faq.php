@@ -172,7 +172,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are Smilies?',
-		1 => 'Smilies, or Emoticons are small graphical images which can be used to express some feeling using a short code, e.g. :) means happy, :( means sad. The full list of emoticons can be seen via the posting form. Try not to overuse smileys though, they can quickly render a post unreadable and a moderator may decide to edit them out or remove the post altogether.'
+		1 => 'Smilies, or Emoticons are small graphical images which can be used to express some feeling using a short code, e.g. :) means happy, :( means sad. The full list of emoticons can be seen via the posting form. Try not to overuse smileys though, they can quickly render a post unreadable and a moderator may decide to edit them out or remove the post altogether. The board administrator may also have set a limit to the number of such smilies you may use within a post.'
 	),
 	array(
 		0 => 'Can I post images?',
