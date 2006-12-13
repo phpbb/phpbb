@@ -94,7 +94,7 @@ $lang = array_merge($lang, array(
 	'GROUP_NAME'			=> 'Group name',
 
 	'IMAGE_LINK_SIZE'			=> 'Image link dimensions',
-	'IMAGE_LINK_SIZE_EXPLAIN'	=> 'Display image attachment as link if image is larger than this, set to 0px by 0px to disable.',
+	'IMAGE_LINK_SIZE_EXPLAIN'	=> 'Display image attachment as an inline text link if image is larger than this, set to 0px by 0px to disable.',
 	'IMAGICK_PATH'				=> 'Imagemagick path',
 	'IMAGICK_PATH_EXPLAIN'		=> 'Full path to the imagemagick convert application, e.g. <samp>/usr/bin/</samp>',
 
@@ -102,7 +102,7 @@ $lang = array_merge($lang, array(
 	'MAX_ATTACHMENTS_PM'			=> 'Max attachments per message',
 	'MAX_EXTGROUP_FILESIZE'			=> 'Maximum filesize',
 	'MAX_IMAGE_SIZE'				=> 'Maximum image dimensions',
-	'MAX_IMAGE_SIZE_EXPLAIN'		=> 'Maximum size of image attachments, 0px by 0px disables image attachments.',
+	'MAX_IMAGE_SIZE_EXPLAIN'		=> 'Maximum size of image attachments, set to 0px by 0px to disable dimension checking.',
 	'MAX_THUMB_WIDTH'				=> 'Maximum thumbnail width in pixel',
 	'MAX_THUMB_WIDTH_EXPLAIN'		=> 'A generated thumbnail will not exceed the width set here',
 	'MIN_THUMB_FILESIZE'			=> 'Minimum thumbnail filesize',
