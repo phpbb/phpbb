@@ -999,11 +999,18 @@ $template->assign_vars(array(
 // Can't do comparisons w/ TEXT on MSSQL, CAST is good enough
 switch ($db->sql_layer)
 {
+	case 'oracle':
+		$sql = 'SELECT search_time, search_keywords
+			FROM ' . SEARCH_RESULTS_TABLE . '
+			WHERE dbms_lob.getlength(search_keywords) > 0
+			ORDER BY search_time DESC';
+	break;
+
 	case 'mssql':
 	case 'mssql_odbc':
 		$sql = 'SELECT search_time, search_keywords
 			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE CAST(search_keywords AS varchar) <> \'\'
+			WHERE DATALENGTH(search_keywords) > 0
 			ORDER BY search_time DESC';
 	break;
 
