@@ -86,7 +86,7 @@ $template->assign_vars(array(
 	'TOTAL_POSTS'	=> sprintf($user->lang[$l_total_post_s], $total_posts),
 	'TOTAL_TOPICS'	=> sprintf($user->lang[$l_total_topic_s], $total_topics),
 	'TOTAL_USERS'	=> sprintf($user->lang[$l_total_user_s], $total_users),
-	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $newest_uid) . '">', $newest_user, '</a>'),
+	'NEWEST_USER'	=> sprintf($user->lang['NEWEST_USER'], '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $newest_uid) . '" style="color:#' . $config['newest_user_colour'] . '">', $newest_user, '</a>'),
 	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> $birthday_list,
 
