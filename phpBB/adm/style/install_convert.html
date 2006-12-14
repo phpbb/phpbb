@@ -39,6 +39,22 @@
 	</table>
 <!-- ENDIF -->
 
+<!-- IF S_CONTINUE -->
+	</form>
+
+	<fieldset class="submit-buttons">
+		<form method="post" action="{U_NEW_ACTION}">
+			<input class="button1" type="submit" name="submit_new" value="{L_NEW}" />
+		</form>
+		<br />
+		<form method="post" action="{U_CONTINUE_ACTION}">
+			<input class="button1" type="submit" name="submit_cont" value="{L_CONTINUE}" />
+		</form>
+	</fieldset>
+
+	<form method="post" action="{U_ACTION}">
+<!-- ENDIF -->
+
 <!-- IF .checks -->
 	<fieldset>
 
