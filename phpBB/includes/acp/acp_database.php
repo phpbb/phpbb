@@ -1199,7 +1199,6 @@ class acp_database
 					break;
 
 					default:
-						$selected = false;
 						$methods = array('sql');
 						$available_methods = array('sql.gz' => 'zlib', 'sql.bz2' => 'bz2');
 
@@ -1227,16 +1226,10 @@ class acp_database
 										'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
 										'SUPPORTED'	=> $supported
 									));
-									$selected = true;
 								}
 							}
 						}
 						closedir($dh);
-
-						if ($selected === true)
-						{
-							$template->assign_var('EXISTS', true);
-						}
 
 						$template->assign_vars(array(
 							'U_ACTION'	=> $this->u_action . '&amp;action=submit'

@@ -16,7 +16,7 @@
 		<dd><select id="file" name="file" size="10"><!-- BEGIN files --><option value="{files.FILE}"<!-- IF files.S_LAST_ROW --> selected="selected"<!-- ENDIF -->>{files.NAME}</option><!-- END files --></select></dd>
 	</dl>
 
-	<!-- IF EXISTS -->
+	<!-- IF .files -->
 		<p class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_START_RESTORE}" />&nbsp;
 			<input class="button2" type="submit" id="delete" name="delete" value="{L_DELETE_BACKUP}" />&nbsp;
