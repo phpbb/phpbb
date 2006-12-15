@@ -488,7 +488,7 @@ flush();
 $no_updates = true;
 
 // some code magic
-if (version_compare($current_version, '3.0.b3', '<'))
+if (version_compare($current_version, '3.0.b3', '<='))
 {
 	// Set group_founder_manage for administrators group
 	$sql = 'SELECT group_id
@@ -510,7 +510,7 @@ if (version_compare($current_version, '3.0.b3', '<'))
 	$no_updates = false;
 }
 
-if (version_compare($current_version, '3.0.b4', '<'))
+if (version_compare($current_version, '3.0.b4', '<='))
 {
 	// Add config values
 	set_config('script_path', '/');

@@ -1324,12 +1324,12 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	$db->sql_transaction('commit');
 
 	// Adjust posted info for this user by looking for a post by him/her within this topic...
-	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $user->data['is_registered'])
+	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $data['poster_id'] != ANONYMOUS)
 	{
 		$sql = 'SELECT poster_id
 			FROM ' . POSTS_TABLE . '
 			WHERE topic_id = ' . $topic_id . '
-				AND poster_id = ' . $user->data['user_id'];
+				AND poster_id = ' . $data['poster_id'];
 		$result = $db->sql_query_limit($sql, 1);
 		$poster_id = (int) $db->sql_fetchfield('poster_id');
 		$db->sql_freeresult($result);
@@ -1339,7 +1339,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		{
 			$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
 				WHERE topic_id = ' . $topic_id . '
-					AND user_id = ' . $user->data['user_id'];
+					AND user_id = ' . $data['poster_id'];
 			$db->sql_query($sql);
 		}
 	}

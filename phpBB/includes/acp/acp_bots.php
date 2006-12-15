@@ -206,7 +206,7 @@ class acp_bots
 						}
 						else if ($bot_id)
 						{
-							$sql = 'SELECT user_id 
+							$sql = 'SELECT user_id, bot_name 
 								FROM ' . BOTS_TABLE . " 
 								WHERE bot_id = $bot_id";
 							$result = $db->sql_query($sql);
@@ -218,10 +218,18 @@ class acp_bots
 								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+							$sql_ary = array(
 								'user_style'	=> (int) $bot_row['bot_style'],
-								'user_lang'		=> (string) $bot_row['bot_lang'])
-							) . " WHERE user_id = {$row['user_id']}";
+								'user_lang'		=> (string) $bot_row['bot_lang'],
+							);
+
+							if ($bot_row['bot_name'] !== $row['bot_name'])
+							{
+								$sql_ary['username'] = (string) $bot_row['bot_name'];
+								$sql_ary['username_clean'] = (string) utf8_clean_string($bot_row['bot_name']);
+							}
+
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE user_id = {$row['user_id']}";
 							$db->sql_query($sql);
 
 							$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
@@ -231,6 +239,12 @@ class acp_bots
 								'bot_ip'		=> (string) $bot_row['bot_ip'])
 							) . " WHERE bot_id = $bot_id";
 							$db->sql_query($sql);
+
+							// Updated username?
+							if ($bot_row['bot_name'] !== $row['bot_name'])
+							{
+								user_update_name($row['bot_name'], $bot_row['bot_name']);
+							}
 
 							$log = 'UPDATED';
 						}

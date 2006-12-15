@@ -1388,7 +1388,7 @@ function show_profile($data)
 
 	$rank_title = $rank_img = $rank_img_src = '';
 	get_user_rank($data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
-	
+
 	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
 		$email = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id) : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $data['user_email']);
