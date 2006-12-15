@@ -72,7 +72,7 @@ class acp_database
 
 						$time = time();
 
-						$filename = 'backup_' . $time;
+						$filename = 'backup_' . $time . '_' . unique_id();
 
 						// We set up the info needed for our on-the-fly creation :D
 						switch ($format)
@@ -856,8 +856,8 @@ class acp_database
 
 										for ($i = 0; $i < $i_num_fields; $i++)
 										{
-											$ary_type[$i] = ocicolumntype($result, $i);
-											$ary_name[$i] = ocicolumnname($result, $i);
+											$ary_type[$i] = ocicolumntype($result, $i + 1);
+											$ary_name[$i] = ocicolumnname($result, $i + 1);
 										}
 
 										while ($row = $db->sql_fetchrow($result))
@@ -1216,7 +1216,7 @@ class acp_database
 						$dh = opendir($dir);
 						while (($file = readdir($dh)) !== false)
 						{
-							if (preg_match('#^backup_(\d{10,})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
+							if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 							{
 								$supported = in_array($matches[2], $methods);
 
