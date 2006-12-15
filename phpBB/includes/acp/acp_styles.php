@@ -1178,7 +1178,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		// else if we are showing raw css or the user submitted data from the simple view
 		// then we need to turn the given information into raw css
-		elseif (!$css_data && !$add_custom)
+		else if (!$css_data && !$add_custom)
 		{
 			foreach ($match_elements as $type => $match_ary)
 			{
@@ -1245,7 +1245,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			}
 		}
 		// make sure we have $show_css set, so we can link to the show_css page if we need to
-		elseif (!$hide_css)
+		else if (!$hide_css)
 		{
 			$show_css = true;
 		}

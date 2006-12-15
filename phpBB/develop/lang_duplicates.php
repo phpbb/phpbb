@@ -60,7 +60,7 @@ while ($module = array_shift($keys))
 				$compare = "Equal";
 				$equal++;
 			}
-			elseif (strcasecmp($kkeys[$module][$dup], $kkeys[$other_module][$dup]) == 0)
+			else if (strcasecmp($kkeys[$module][$dup], $kkeys[$other_module][$dup]) == 0)
 			{
 				$compare = "Differ in case";
 				$case++;

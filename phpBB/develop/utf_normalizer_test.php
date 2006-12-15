@@ -365,11 +365,11 @@ function cp_to_utf($cp)
 	{
 		return chr(0xF0 | ($cp >> 18)) . chr(0x80 | (($cp >> 12) & 0x3F)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
 	}
-	elseif ($cp > 0x7FF)
+	else if ($cp > 0x7FF)
 	{
 		return chr(0xE0 | ($cp >> 12)) . chr(0x80 | (($cp >> 6) & 0x3F)) . chr(0x80 | ($cp & 0x3F));
 	}
-	elseif ($cp > 0x7F)
+	else if ($cp > 0x7F)
 	{
 		return chr(0xC0 | ($cp >> 6)) . chr(0x80 | ($cp & 0x3F));
 	}
