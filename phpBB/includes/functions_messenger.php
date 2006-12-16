@@ -453,18 +453,18 @@ class messenger
 
 		if (!$use_queue)
 		{
-			include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
+			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
 			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
 
 			if (!$this->jabber->connect())
 			{
-				$this->error('JABBER', 'Could not connect to Jabber server');
+				$this->error('JABBER', 'Could not connect to Jabber server<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->send_auth())
 			{
-				$this->error('JABBER', 'Could not authorise on Jabber server');
+				$this->error('JABBER', 'Could not authorise on Jabber server<br />' . $this->jabber->get_log());
 				return false;
 			}
 			$this->jabber->send_presence(NULL, NULL, 'online');
@@ -636,7 +636,7 @@ class queue
 						{
 							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg)) === false)
 							{
-								messenger::error('JABBER', $this->jabber_get_log());
+								messenger::error('JABBER', $this->jabber->get_log());
 								continue 3;
 							}
 						}
