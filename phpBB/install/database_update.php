@@ -381,19 +381,25 @@ $errored = false;
 	<p><?php echo $lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
 <?php
 
-$sql = "SELECT config_value
-	FROM " . CONFIG_TABLE . "
-	WHERE config_name = 'version'";
+// To let set_config() calls success, we need to make the config array available globally
+$config = array();
+$sql = 'SELECT *
+	FROM ' . CONFIG_TABLE;
 $result = $db->sql_query($sql);
-$row = $db->sql_fetchrow($result);
+
+while ($row = $db->sql_fetchrow($result))
+{
+	$config[$row['config_name']] = $row['config_value'];
+}
 $db->sql_freeresult($result);
 
-echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $row['config_value'] . '</strong><br />';
+
+echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
 
-$current_version = strtolower($row['config_value']);
+$current_version = strtolower($config['version']);
 $latest_version = strtolower($updates_to_version);
-$orig_version = $row['config_value'];
+$orig_version = $config['version'];
 
 // If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
 if ($inline_update)
