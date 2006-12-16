@@ -783,6 +783,9 @@ class bbcode_firstpass extends bbcode
 
 	/**
 	* Validate url
+	*
+	* @param string $var1 optional url parameter for url bbcode: [url(=$var1)]$var2[/url]
+	* @param string $var2 url bbcode content: [url(=$var1)]$var2[/url] 
 	*/
 	function validate_url($var1, $var2)
 	{
@@ -792,38 +795,35 @@ class bbcode_firstpass extends bbcode
 		$var2 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var2)));
 
 		$url = ($var1) ? $var1 : $var2;
-		$valid = false;
 
 		if (!$url || ($var1 && !$var2))
 		{
 			return '';
 		}
 
-		// Before we check anything, we make sure certain characters are not included
-		if (!preg_match('#[\t\n\r<"\']#', $url))
+		$valid = false;
+
+		$url = str_replace(' ', '%20', $url);
+
+		// Checking urls
+		if (preg_match('#^' . get_preg_expression('url') . '$#i', $url) ||
+			preg_match('#^' . get_preg_expression('www_url') . '$#i', $url) ||
+			preg_match('#^' . preg_quote(generate_board_url(), '#') . get_preg_expression('relative_url') . '$#i', $url))
 		{
-			// Checking urls
-			if (preg_match('#' . preg_quote(generate_board_url(), '#') . '/([^ \t\n\r<"\']+)#i', $url) ||
-				preg_match('#([\w]+?://.*?[^ \t\n\r<"\']*)#i', $url) ||
-				preg_match('#(www\.[\w\-]+\.[\w\-.\~]+(?:/[^ \t\n\r<"\']*)?)#i', $url))
-			{
-				$valid = true;
-			}
+			$valid = true;
 		}
 
 		if ($valid)
 		{
-			// Do we want to transform some characters?
-			$url = str_replace(' ', '%20', $url);
-
 			$this->parsed_items['url']++;
 
-			if (!preg_match('#^[\w]+?://.*?#i', $url))
+			// if there is no scheme, then add http schema
+			if (!preg_match('#^[a-z][a-z\d+\-.]*:/{2}#i', $url))
 			{
 				$url = 'http://' . $url;
 			}
 
-			// We take our test url and stick on the first bit of text we get to check if we are really at the domain. If so, lets go!
+			// Is this a link to somewhere inside this board? If so then remove the session id from the url
 			if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
 			{
 				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\1', $url);

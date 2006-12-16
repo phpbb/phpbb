@@ -2379,15 +2379,16 @@ function make_clickable($text, $server_url = false)
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
-		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\1', '\$3') . '</a><!-- l -->'";
+		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url') . ')#ie';
+		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (])([\w]+:/{2}.*?([^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		//$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url') . ')([[ \t\n\r<"\'\)]|&(?!lt;|quot;))*#ie';
+		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (])(w{3}\.[\w\-]+\.[\w\-.\~]+(?:[^[ \t\n\r<"\'\)&]+|&(?!lt;|quot;))*)#ie';
+		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('www_url') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
@@ -2725,8 +2726,8 @@ function get_backtrace()
 
 /**
 * This function returns a regular expression pattern for commonly used expressions
-* Use with / as delimiter for email mode
-* mode can be: email|bbcode_htm
+* Use with / as delimiter for email mode and # for url modes
+* mode can be: email|bbcode_htm|url|www_url|relative_url
 */
 function get_preg_expression($mode)
 {
@@ -2744,6 +2745,19 @@ function get_preg_expression($mode)
 				'#<!\-\- .*? \-\->#s',
 				'#<.*?>#s',
 			);
+		break;
+
+		case 'url':
+			// generated with regex generation file in the develop folder
+			return "[a-z][a-z\d+\-.]*:/{2}(?:(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[\dA-F]{2}))*@)?(?:(?:[a-z0-9\-._~!$&'()*+,;=|]|%[\dA-F]{2})+|[0-9.]+|\[[a-z0-9.:]+\])(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'()*+,;=:@|]|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?|]|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'()*+,;=:@/?|]|%[\dA-F]{2})*)?";
+		break;
+
+		case 'www_url':
+			return "www\.(?:[a-z0-9\-._~!$&'()*+,;=|]|%[\dA-F]{2})+(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'()*+,;=:@|]|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?|]|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'()*+,;=:@/?|]|%[\dA-F]{2})*)?";
+		break;
+
+		case 'relative_url':
+			return "(?:[a-z0-9\-._~!$&'()*+,;=:@|]|%[\dA-F]{2})*(?:/(?:[a-z0-9\-._~!$&'()*+,;=:@|]|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?|]|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'()*+,;=:@/?|]|%[\dA-F]{2})*)?";
 		break;
 	}
 

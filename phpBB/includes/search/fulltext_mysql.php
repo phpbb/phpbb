@@ -639,14 +639,29 @@ class fulltext_mysql extends search_backend
 			$this->get_stats();
 		}
 
+		$alter = array();
+
 		if (!isset($this->stats['post_subject']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_subject)');
+			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+			}
+			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
 
 		if (!isset($this->stats['post_text']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ADD FULLTEXT (post_text)');
+			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
+			}
+			$alter[] = 'ADD FULLTEXT (post_text)';
+		}
+
+		if (sizeof($alter))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -672,14 +687,21 @@ class fulltext_mysql extends search_backend
 			$this->get_stats();
 		}
 
+		$alter = array();
+
 		if (isset($this->stats['post_subject']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_subject');
+			$alter[] = 'DROP INDEX post_subject';
 		}
 
 		if (isset($this->stats['post_text']))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' DROP INDEX post_text');
+			$alter[] = 'DROP INDEX post_text';
+		}
+
+		if (sizeof($alter))
+		{
+			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
