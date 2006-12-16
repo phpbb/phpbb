@@ -194,7 +194,7 @@ p,ul,td {font-size:10pt;}
 
 <a name="upgradeSTABLE_files"></a><h3 class="h3">7.ii. Changed files only</h3>
 
-<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have 2.0.20 you should select the phpBB-2.0.20_to_2.0.21.zip/tar.gz file.</p>
+<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have 2.0.21 you should select the phpBB-2.0.21_to_2.0.22.zip/tar.gz file.</p>
 
 <p>The directory structure has been preserved enabling you (if you wish) to simply upload the contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any Mods these files will overwrite the originals possibly destroying them in the process. You will need to re-add Mods to any affected file before uploading.</p>
 
@@ -204,7 +204,7 @@ p,ul,td {font-size:10pt;}
 
 <p>The patch file is probably the best solution for those with many Mods or other changes who do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <b>patch</b> application.</p>
 
-<p>A number of patch files are provided to allow you to upgrade from previous stable releases. Select the correct patch, e.g. if your current version is 2.0.20 you need the phpBB-2.0.20_to_2.0.21.patch. Place the correct patch in the parent directory containing the phpBB 2 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <b>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</b> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB2, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
+<p>A number of patch files are provided to allow you to upgrade from previous stable releases. Select the correct patch, e.g. if your current version is 2.0.21 you need the phpBB-2.0.21_to_2.0.22.patch. Place the correct patch in the parent directory containing the phpBB 2 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <b>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</b> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB2, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
 <p>If you do get failures you should look at using the <a href="#upgradeSTABLE_files">Changed files only</a> package to replace the files which failed to patch, please note that you will need to manually re-add any Mods to these particular files. Alternatively if you know how you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 

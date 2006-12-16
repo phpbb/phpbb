@@ -123,7 +123,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 				$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : '';
 				$redirect = str_replace('?', '&', $redirect);
 
-				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r"))
+				if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
 				{
 					message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 				}
@@ -142,7 +142,7 @@ if( isset($HTTP_POST_VARS['login']) || isset($HTTP_GET_VARS['login']) || isset($
 			$redirect = ( !empty($HTTP_POST_VARS['redirect']) ) ? str_replace('&amp;', '&', htmlspecialchars($HTTP_POST_VARS['redirect'])) : "";
 			$redirect = str_replace("?", "&", $redirect);
 
-			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r"))
+			if (strstr(urldecode($redirect), "\n") || strstr(urldecode($redirect), "\r") || strstr(urldecode($redirect), ';url'))
 			{
 				message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 			}

@@ -46,6 +46,7 @@ if ( isset($HTTP_GET_VARS[POST_POST_URL]))
 
 
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ($start < 0) ? 0 : $start;
 
 if (!$topic_id && !$post_id)
 {

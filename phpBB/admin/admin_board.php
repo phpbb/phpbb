@@ -59,6 +59,16 @@ else
 			$new['server_name'] = str_replace('http://', '', $new['server_name']);
 		}
 
+		// Attempt to prevent a mistake with this value.
+		if ($config_name == 'avatar_path')
+		{
+			$new['avatar_path'] = trim($new['avatar_path']);
+			if (strstr($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path']))
+			{
+				$new['avatar_path'] = $default_config['avatar_path'];
+			}
+		}
+
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
 			$sql = "UPDATE " . CONFIG_TABLE . " SET

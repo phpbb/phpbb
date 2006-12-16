@@ -50,6 +50,7 @@ $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
 $delete = ( isset($HTTP_POST_VARS['delete']) ) ? TRUE : 0;
 $delete_all = ( isset($HTTP_POST_VARS['deleteall']) ) ? TRUE : 0;
 $save = ( isset($HTTP_POST_VARS['save']) ) ? TRUE : 0;
+$sid = (isset($HTTP_POST_VARS['sid'])) ? $HTTP_POST_VARS['sid'] : 0;
 
 $refresh = $preview || $submit_search;
 
@@ -101,6 +102,7 @@ else
 }
 
 $start = ( !empty($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
+$start = ($start < 0) ? 0 : $start;
 
 if ( isset($HTTP_POST_VARS[POST_POST_URL]) || isset($HTTP_GET_VARS[POST_POST_URL]) )
 {
@@ -1161,6 +1163,13 @@ else if ( $submit || $refresh || $mode != '' )
 
 	if ( $submit )
 	{
+		// session id check
+		if ($sid == '' || $sid != $userdata['session_id'])
+		{
+			$error = true;
+			$error_msg .= ( ( !empty($error_msg) ) ? '<br />' : '' ) . $lang['Session_invalid'];
+		}
+
 		if ( !empty($HTTP_POST_VARS['username']) )
 		{
 			$to_username = phpbb_clean_username($HTTP_POST_VARS['username']);
@@ -1376,7 +1385,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 		$privmsg_subject = ( isset($HTTP_POST_VARS['subject']) ) ? trim(htmlspecialchars(stripslashes($HTTP_POST_VARS['subject']))) : '';
 		$privmsg_message = ( isset($HTTP_POST_VARS['message']) ) ? trim($HTTP_POST_VARS['message']) : '';
-		$privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
+		// $privmsg_message = preg_replace('#<textarea>#si', '&lt;textarea&gt;', $privmsg_message);
 		if ( !$preview )
 		{
 			$privmsg_message = stripslashes($privmsg_message);
@@ -1480,7 +1489,7 @@ else if ( $submit || $refresh || $mode != '' )
 			}
 			
 			$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
-			$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
+			// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 
 			$user_sig = ( $board_config['allow_sig'] ) ? (($privmsg['privmsgs_type'] == PRIVMSGS_NEW_MAIL) ? $user_sig : $privmsg['user_sig']) : '';
 
@@ -1523,7 +1532,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 				$privmsg_message = preg_replace("/\:(([a-z0-9]:)?)$privmsg_bbcode_uid/si", '', $privmsg_message);
 				$privmsg_message = str_replace('<br />', "\n", $privmsg_message);
-				$privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
+				// $privmsg_message = preg_replace('#</textarea>#si', '&lt;/textarea&gt;', $privmsg_message);
 				$privmsg_message = preg_replace($orig_word, $replacement_word, $privmsg_message);
 				
 				$msg_date =  create_date($board_config['default_dateformat'], $privmsg['privmsgs_date'], $board_config['board_timezone']); 
@@ -1650,6 +1659,7 @@ else if ( $submit || $refresh || $mode != '' )
 	//
 	if ($error)
 	{
+		$privmsg_message = htmlspecialchars($privmsg_message);
 		$template->set_filenames(array(
 			'reg_header' => 'error_body.tpl')
 		);
@@ -1736,6 +1746,7 @@ else if ( $submit || $refresh || $mode != '' )
 
 	$s_hidden_fields = '<input type="hidden" name="folder" value="' . $folder . '" />';
 	$s_hidden_fields .= '<input type="hidden" name="mode" value="' . $mode . '" />';
+	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 	if ( $mode == 'edit' )
 	{
 		$s_hidden_fields .= '<input type="hidden" name="' . POST_POST_URL . '" value="' . $privmsg_id . '" />';

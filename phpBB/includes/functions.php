@@ -917,7 +917,7 @@ function redirect($url)
 		$db->sql_close();
 	}
 
-	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r"))
+	if (strstr(urldecode($url), "\n") || strstr(urldecode($url), "\r") || strstr(urldecode($url), ';url'))
 	{
 		message_die(GENERAL_ERROR, 'Tried to redirect to potentially insecure url.');
 	}

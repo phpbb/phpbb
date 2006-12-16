@@ -1018,6 +1018,8 @@ $lang['Admin_reauthenticate'] = 'To administer the board you must re-authenticat
 $lang['Login_attempts_exceeded'] = 'The maximum number of %s login attempts has been exceeded. You are not allowed to login for the next %s minutes.';
 $lang['Please_remove_install_contrib'] = 'Please ensure both the install/ and contrib/ directories are deleted';
 
+$lang['Session_invalid'] = 'Invalid Session. Please resubmit the form.';
+
 //
 // That's all, Folks!
 // -------------------------------------------------
