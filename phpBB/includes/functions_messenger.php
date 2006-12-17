@@ -26,15 +26,6 @@ class messenger
 	*/
 	function messenger($use_queue = true)
 	{
-		global $config;
-
-		if (preg_match('#^[c-z]:\\\#i', getenv('PATH')) && !$config['smtp_delivery'] && phpversion() < '4.3')
-		{
-			// We are running on windows, force delivery to use our smtp functions since php's are broken by default
-			$config['smtp_delivery'] = 1;
-			$config['smtp_host'] = @ini_get('SMTP');
-		}
-
 		$this->use_queue = $use_queue;
 		$this->subject = '';
 	}
