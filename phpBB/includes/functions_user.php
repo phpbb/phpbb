@@ -245,7 +245,7 @@ function user_add($user_row, $cp_data = false)
 	$db->sql_query($sql);
 
 	// Now make it the users default group...
-	group_set_user_default($user_row['group_id'], array($user_id), false, true);
+	group_set_user_default($user_row['group_id'], array($user_id), false, $user_row['user_type'] == USER_NORMAL);
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
 	if ($user_row['user_type'] == USER_NORMAL)
