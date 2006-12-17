@@ -300,7 +300,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 					AND session_id = '" . $userdata['session_id'] . "'";
 			if (!($result = $db->sql_query($sql)))
 			{
-				message_die(GENERAL_ERROR, 'Could not obtain confirmation code', __LINE__, __FILE__, $sql);
+				message_die(GENERAL_ERROR, 'Could not obtain confirmation code', '', __LINE__, __FILE__, $sql);
 			}
 
 			if ($row = $db->sql_fetchrow($result))
@@ -317,7 +317,7 @@ if ( isset($HTTP_POST_VARS['submit']) )
 							AND session_id = '" . $userdata['session_id'] . "'";
 					if (!$db->sql_query($sql))
 					{
-						message_die(GENERAL_ERROR, 'Could not delete confirmation code', __LINE__, __FILE__, $sql);
+						message_die(GENERAL_ERROR, 'Could not delete confirmation code', '', __LINE__, __FILE__, $sql);
 					}
 				}
 			}
