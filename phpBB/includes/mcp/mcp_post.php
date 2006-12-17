@@ -38,12 +38,12 @@ function mcp_post_details($id, $mode, $action)
 
 			$ip = request_var('ip', '');
 			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-			
+
 			$whois = user_ipwhois($ip);
-			
+
 			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-			$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
-			
+			$whois = preg_replace('#(\s)(ht{2}p:/{2}\S*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
+
 			$template->assign_vars(array(
 				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
 				'WHOIS'			=> trim($whois))
@@ -275,6 +275,7 @@ function mcp_post_details($id, $mode, $action)
 		$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
 			FROM ' . POSTS_TABLE . '
 			WHERE poster_id = ' . $post_info['poster_id'] . '
+				AND poster_ip <> ' . $db->sql_escape($post_info['poster_ip']) . '
 			GROUP BY poster_ip
 			ORDER BY postings DESC';
 		$result = $db->sql_query($sql);
