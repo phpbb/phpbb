@@ -119,7 +119,7 @@ class bbcode_firstpass extends bbcode
 			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9A-Fa-f]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
 			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#ise' => "\$this->bbcode_underline('\$1')")),
-			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(=[a-z|0-9|(?:disc|circle|square))]+)?\].*\[/list\]#ise' => "\$this->bbcode_parse_list('\$0')")),
+			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#ise' => "\$this->bbcode_parse_list('\$0')")),
 			'email'			=> array('bbcode_id' => 10,	'regexp' => array('#\[email=?(.*?)?\](.*?)\[/email\]#ise' => "\$this->validate_email('\$1', '\$2')")),
 			'flash'			=> array('bbcode_id' => 11,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ie' => "\$this->bbcode_flash('\$1', '\$2', '\$3')"))
 		);
@@ -484,27 +484,13 @@ class bbcode_firstpass extends bbcode
 			return '';
 		}
 
-		$out = '[';
-
-		// Grab item_start with no item_end
-		$in = preg_replace('#\[\*\](.*?)(\[\/list\]|\[list(=?(?:[0-9]|[a-z]|))\]|\[\*\])#is', '[*:' . $this->bbcode_uid . ']\1[/*:m:' . $this->bbcode_uid . ']\2', $in);
-
-		// Grab them again as backreference
-		$in = preg_replace('#\[\*\](.*?)(\[\/list\]|\[list(=?(?:[0-9]|[a-z]|))\]|\[\*\])(^\[\/*\])#is', '[*:' . $this->bbcode_uid . ']\1[/*:m:' . $this->bbcode_uid . ']\2', $in);
-
-		// Grab end tag following start tag
-		$in = preg_replace('#\[\/\*:m:' . $this->bbcode_uid . '\](\n|)\[\*\]#is', '[/*:m:' . $this->bbcode_uid . '][*:' . $this->bbcode_uid . ']', $in);
-
-		// Replace end tag
-		$in = preg_replace('#\[\/\*\]#i', '[/*:' . $this->bbcode_uid . ']', $in);
-
 		// $tok holds characters to stop at. Since the string starts with a '[' we'll get everything up to the first ']' which should be the opening [list] tag
 		$tok = ']';
 		$out = '[';
 
 		// First character is [
 		$in = substr($in, 1);
-		$list_end_tags = array();
+		$list_end_tags = $item_end_tags = array();
 
 		do
 		{
@@ -512,7 +498,7 @@ class bbcode_firstpass extends bbcode
 
 			for ($i = 0, $tok_len = strlen($tok); $i < $tok_len; ++$i)
 			{
-				$tmp_pos = strpos($in, $tok{$i});
+				$tmp_pos = strpos($in, $tok[$i]);
 
 				if ($tmp_pos !== false && $tmp_pos < $pos)
 				{
@@ -521,7 +507,7 @@ class bbcode_firstpass extends bbcode
 			}
 
 			$buffer = substr($in, 0, $pos);
-			$tok = $in{$pos};
+			$tok = $in[$pos];
 
 			$in = substr($in, $pos + 1);
 
@@ -530,13 +516,20 @@ class bbcode_firstpass extends bbcode
 				// if $tok is ']' the buffer holds a tag
 				if (strtolower($buffer) == '/list' && sizeof($list_end_tags))
 				{
+					// valid [/list] tag
+					if (sizeof($item_end_tags))
+					{
+						// current li tag has not been closed
+						$out = preg_replace('/\n?\[$/', '[', $out) . array_pop($item_end_tags) . '][';
+					}
+
 					$out .= array_pop($list_end_tags) . ']';
 					$tok = '[';
 				}
-				else if (preg_match('#list(=?(?:[0-9]|[a-z]|))#i', $buffer, $m))
+				else if (preg_match('#list(=[0-9a-z])?#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
-					if (!$m[1] || preg_match('/^(disc|square|circle)$/i', $m[1]))
+					if (empty($m[1]) || preg_match('/^(disc|square|circle)$/i', $m[1]))
 					{
 						array_push($list_end_tags, '/list:u:' . $this->bbcode_uid);
 					}
@@ -544,17 +537,47 @@ class bbcode_firstpass extends bbcode
 					{
 						array_push($list_end_tags, '/list:o:' . $this->bbcode_uid);
 					}
-
-					if (strtolower(substr($buffer, 0, 4)) == 'list')
-					{
-						$buffer = 'list' . substr($buffer, 4, $pos);
-					}
-
 					$out .= $buffer . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}
 				else
 				{
+					if (($buffer == '*' || substr($buffer, -2) == '[*') && sizeof($list_end_tags))
+					{
+						// the buffer holds a bullet tag and we have a [list] tag open
+						if (sizeof($item_end_tags) >= sizeof($list_end_tags))
+						{
+							if (substr($buffer, -2) == '[*')
+							{
+								$out .= substr($buffer, 0, -2) . '[';
+							}
+							// current li tag has not been closed
+							if (preg_match('/\n\[$/', $out, $m))
+							{
+								$out = preg_replace('/\n\[$/', '[', $out);
+								$buffer = array_pop($item_end_tags) . "]\n[*:" . $this->bbcode_uid;
+							}
+							else
+							{
+								$buffer = array_pop($item_end_tags) . '][*:' . $this->bbcode_uid;
+							}
+						}
+						else
+						{
+							$buffer = '*:' . $this->bbcode_uid;
+						}
+
+						$item_end_tags[] = '/*:m:' . $this->bbcode_uid;
+					}
+					else if ($buffer == '/*')
+					{
+						if (array_pop($item_end_tags) == '/*:m:' . $this->bbcode_uid)
+						{
+							array_pop($item_end_tags);
+						}
+						$buffer = '/*:' . $this->bbcode_uid;
+					}
+
 					$out .= $buffer . $tok;
 					$tok = '[]';
 				}
@@ -568,6 +591,11 @@ class bbcode_firstpass extends bbcode
 		}
 		while ($in);
 
+		// do we have some tags open? close them now
+		if (sizeof($item_end_tags))
+		{
+			$out .= '[' . implode('][', $item_end_tags) . ']';
+		}
 		if (sizeof($list_end_tags))
 		{
 			$out .= '[' . implode('][', $list_end_tags) . ']';
