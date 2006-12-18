@@ -227,6 +227,14 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				$user->data['user_full_folder'] = PRIVMSGS_INBOX;
 			}
 
+			// Now make sure the folder is not used for rules
+			// We assign another folder id (the one the messages got moved to) or assign the INBOX (to not have to remove any rule)
+			$sql = 'UPDATE ' . PRIVMSGS_RULES_TABLE . ' SET rule_folder_id = ';
+			$sql .= ($remove_action == 1) ? $move_to : PRIVMSGS_INBOX;
+			$sql .= ' WHERE rule_folder_id = ' . $remove_folder_id;
+
+			$db->sql_query($sql);
+
 			$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=$mode");
 			$message = $user->lang['FOLDER_REMOVED'];
 

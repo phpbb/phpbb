@@ -16,6 +16,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	global $template, $db, $user, $auth, $cache;
 	global $phpEx, $phpbb_root_path, $config;
 
+	$user->add_lang('viewtopic');
+
 	include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
@@ -78,6 +80,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
 		'S_MERGE_SELECT'		=> ($action == 'merge_select') ? true : false,
+		'S_CAN_MAKE_NORMAL'		=> $auth->acl_gets('f_sticky', 'f_announce', $forum_id),
+		'S_CAN_MAKE_STICKY'		=> $auth->acl_get('f_sticky', $forum_id),
+		'S_CAN_MAKE_ANNOUNCE'	=> $auth->acl_get('f_announce', $forum_id),
 
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',

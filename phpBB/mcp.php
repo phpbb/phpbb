@@ -632,6 +632,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	$ids = array();
 	$forum_id = false;
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($acl_list && $row['forum_id'] && !$auth->acl_gets($acl_list, $row['forum_id']))
@@ -652,17 +653,26 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 		}
 
 		// Limit forum to a specific forum id?
-		if ($single_forum !== true && $row['forum_id'] == (int) $single_forum)
+		// This can get really tricky, because we do not want to create a failure on global topics. :)
+		if ($row['forum_id'])
 		{
-			$forum_id = (int) $single_forum;
-		}
-		else if ($forum_id === false)
-		{
-			$forum_id = $row['forum_id'];
-		}
+			if ($single_forum !== true && $row['forum_id'] == (int) $single_forum)
+			{
+				$forum_id = (int) $single_forum;
+			}
+			else if ($forum_id === false)
+			{
+				$forum_id = $row['forum_id'];
+			}
 
-		if ($row['forum_id'] == $forum_id)
+			if ($row['forum_id'] == $forum_id)
+			{
+				$ids[] = $row[$sql_id];
+			}
+		}
+		else
 		{
+			// Always add a global topic
 			$ids[] = $row[$sql_id];
 		}
 	}
@@ -672,6 +682,8 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 	{
 		return false;
 	}
+
+	// If forum id is false and ids populated we may have only global announcements selected (returning 0 because of (int) $forum_id)
 
 	return ($single_forum === false) ? true : (int) $forum_id;
 }

@@ -145,8 +145,10 @@ function mcp_post_details($id, $mode, $action)
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
 		'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']),
-		'POST_ID'				=> $post_info['post_id'])
-	);
+		'POST_ID'				=> $post_info['post_id'],
+
+		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
+	));
 
 	// Get User Notes
 	$log_data = array();
@@ -274,10 +276,9 @@ function mcp_post_details($id, $mode, $action)
 
 		$sql = 'SELECT poster_ip, COUNT(poster_ip) AS postings
 			FROM ' . POSTS_TABLE . '
-			WHERE poster_id = ' . $post_info['poster_id'] . '
-				AND poster_ip <> ' . $db->sql_escape($post_info['poster_ip']) . '
+			WHERE poster_id = ' . $post_info['poster_id'] . "
 			GROUP BY poster_ip
-			ORDER BY postings DESC';
+			ORDER BY postings DESC";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

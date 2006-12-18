@@ -185,7 +185,7 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View administrative permissions',
 	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View forum moderation permissions',
 	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View forum-based permissions',
-	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderatoration permissions',
+	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
 	
 	'ACP_WORDS'					=> 'Word censoring',

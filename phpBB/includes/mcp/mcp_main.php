@@ -312,13 +312,13 @@ function change_topic_type($action, $topic_ids)
 		break;
 	}
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
 
-	$s_hidden_fields = build_hidden_fields(array(
+	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
 		'f'				=> $forum_id,
 		'action'		=> $action,
-		'redirect'		=> $redirect)
+		'redirect'		=> $redirect,
 	);
 	$success_msg = '';
 
@@ -333,22 +333,24 @@ function change_topic_type($action, $topic_ids)
 			$db->sql_query($sql);
 
 			// Reset forum id if a global topic is within the array
-			if ($forum_id)
+			$to_forum_id = request_var('to_forum_id', 0);
+
+			if ($to_forum_id)
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
-					SET topic_type = $new_topic_type, forum_id = $forum_id
+					SET topic_type = $new_topic_type, forum_id = $to_forum_id
 					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
 				$db->sql_query($sql);
 
 				// Update forum_ids for all posts
 				$sql = 'UPDATE ' . POSTS_TABLE . "
-					SET forum_id = $forum_id
+					SET forum_id = $to_forum_id
 					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
 				$db->sql_query($sql);
 
-				sync('forum', 'forum_id', $forum_id);
+				sync('forum', 'forum_id', $to_forum_id);
 			}
 		}
 		else
@@ -403,7 +405,41 @@ function change_topic_type($action, $topic_ids)
 	}
 	else
 	{
-		confirm_box(false, $l_new_type, $s_hidden_fields);
+		// Global topic involved?
+		$global_involved = false;
+
+		if ($new_topic_type != POST_GLOBAL)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+					AND forum_id = 0';
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				$global_involved = true;
+			}
+		}
+
+		if ($global_involved)
+		{
+			global $template;
+
+			$template->assign_vars(array(
+				'S_FORUM_SELECT'		=> make_forum_select(request_var('f', $forum_id), false, false, true, true),
+				'S_CAN_LEAVE_SHADOW'	=> false,
+				'ADDITIONAL_MSG'		=> (sizeof($topic_ids) == 1) ? $user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENT'] : $user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENTS'])
+			);
+
+			confirm_box(false, $l_new_type, build_hidden_fields($s_hidden_fields), 'mcp_move.html');
+		}
+		else
+		{
+			confirm_box(false, $l_new_type, build_hidden_fields($s_hidden_fields));
+		}
 	}
 
 	$redirect = request_var('redirect', "index.$phpEx");
@@ -437,7 +473,7 @@ function mcp_move_topic($topic_ids)
 	}
 
 	$to_forum_id = request_var('to_forum_id', 0);
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
 	$additional_msg = $success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(

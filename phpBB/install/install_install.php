@@ -97,7 +97,6 @@ class install_install extends module
 
 			case 'create_table':
 				$this->load_schema($mode, $sub);
-			
 			break;
 
 			case 'final' :
@@ -206,8 +205,16 @@ class install_install extends module
 			'S_LEGEND'		=> false,
 		));
 
+/**
+*		Better not enabling and adding to the loaded extensions due to the specific requirements needed
+		if (!@extension_loaded('mbstring'))
+		{
+			$this->can_load_dll('mbstring');
+		}
+*/
+
 		$passed['mbstring'] = true;
-		if (extension_loaded('mbstring'))
+		if (@extension_loaded('mbstring'))
 		{
 			// Test for available database modules
 			$template->assign_block_vars('checks', array(
@@ -338,7 +345,7 @@ class install_install extends module
 		}
 
 		// Can we find Imagemagick anywhere on the system?
-		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
+		$exe = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 		$img_imagick = '';
@@ -831,6 +838,8 @@ class install_install extends module
 		$load_extensions = array();
 		$check_exts = array_merge(array($this->available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
 
+		$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
+
 		foreach ($check_exts as $dll)
 		{
 			if (!@extension_loaded($dll))
@@ -839,6 +848,7 @@ class install_install extends module
 				{
 					continue;
 				}
+
 				$load_extensions[] = "$dll.$suffix";
 			}
 		}
@@ -1086,7 +1096,7 @@ class install_install extends module
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
 		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
 		{
-			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
+			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
 		}
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
@@ -1305,6 +1315,11 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
+		if (!@extension_loaded('gd'))
+		{
+			$this->can_load_dll('gd');
+		}
+
 		// This is for people who have TTF and GD
 		if (@extension_loaded('gd') && function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
@@ -1355,6 +1370,12 @@ class install_install extends module
 		}
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
+
+		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
+		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
+		{
+			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
+		}
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
@@ -1769,6 +1790,11 @@ class install_install extends module
 	function can_load_dll($dll)
 	{
 		global $suffix;
+
+		if (empty($suffix))
+		{
+			$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
+		}
 
 		return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
 	}

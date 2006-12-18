@@ -65,6 +65,7 @@ class ucp_register
 		if (!$agreed)
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
+			$add_coppa = ($coppa) ? '&amp;coppa=1' : '';
 
 			if ($coppa === false && $config['coppa_enable'])
 			{
@@ -92,7 +93,7 @@ class ucp_register
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa))
 				);
 			}
 
