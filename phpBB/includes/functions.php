@@ -524,8 +524,8 @@ if (!function_exists('realpath'))
 			// Break the string into little bits for us to nibble on
 			$bits = explode('/', $path);
 
-			// Remove any . in the path
-			$bits = array_diff($bits, array('.'));
+			// Remove any . in the path, renumber array for the loop below
+			$bits = array_keys(array_diff($bits, array('.')));
 
 			// Lets get looping, run over and resolve any .. (up directory)
 			for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
