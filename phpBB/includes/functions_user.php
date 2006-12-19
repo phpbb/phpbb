@@ -245,7 +245,7 @@ function user_add($user_row, $cp_data = false)
 	$db->sql_query($sql);
 
 	// Now make it the users default group...
-	group_set_user_default($user_row['group_id'], array($user_id), false, $user_row['user_type'] == USER_NORMAL);
+	group_set_user_default($user_row['group_id'], array($user_id), false);
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
 	if ($user_row['user_type'] == USER_NORMAL)
@@ -253,6 +253,15 @@ function user_add($user_row, $cp_data = false)
 		set_config('newest_user_id', $user_id, true);
 		set_config('newest_username', $user_row['username'], true);
 		set_config('num_users', $config['num_users'] + 1, true);
+
+		$sql = 'SELECT group_colour
+			FROM ' . GROUPS_TABLE . '
+			WHERE group_id = ' . $user_row['group_id'];
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('newest_user_colour', $row['group_colour'], true);
 	}
 
 	return $user_id;
@@ -2044,7 +2053,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 /**
 * Set users default group
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $new_user = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false)
 {
 	global $db;
 
@@ -2130,7 +2139,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 
 		global $config;
 
-		if ($new_user || in_array($config['newest_user_id'], $user_id_ary))
+		if (in_array($config['newest_user_id'], $user_id_ary))
 		{
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
