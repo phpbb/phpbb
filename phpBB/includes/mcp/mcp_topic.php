@@ -463,13 +463,17 @@ function merge_posts($topic_id, $to_topic_id)
 		$success_msg = 'POSTS_MERGED_SUCCESS';
 
 		// Does the original topic still exist? If yes, link back to it
-		$topic_data = get_topic_data(array($topic_id));
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query_limit($sql, 1);
 
-		if (sizeof($topic_data))
+		if ($row = $db->sql_fetchrow($result))
 		{
-			$topic_data = $topic_data[$topic_id];
-			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_data['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
+			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
+
+		$db->sql_freeresult($result);
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
