@@ -133,7 +133,6 @@ class install_install extends module
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> true,
 			'LEGEND'			=> $lang['PHP_SETTINGS'],
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SETTINGS_EXPLAIN'],
 		));
@@ -219,7 +218,6 @@ class install_install extends module
 			// Test for available database modules
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
-				'S_FIRST_ROW'		=> false,
 				'LEGEND'			=> $lang['MBSTRING_CHECK'],
 				'LEGEND_EXPLAIN'	=> $lang['MBSTRING_CHECK_EXPLAIN'],
 			));
@@ -274,7 +272,6 @@ class install_install extends module
 		// Test for available database modules
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['PHP_SUPPORTED_DB'],
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SUPPORTED_DB_EXPLAIN'],
 		));
@@ -313,7 +310,6 @@ class install_install extends module
 		// Test for other modules
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['PHP_OPTIONAL_MODULE'],
 			'LEGEND_EXPLAIN'	=> $lang['PHP_OPTIONAL_MODULE_EXPLAIN'],
 		));
@@ -386,7 +382,6 @@ class install_install extends module
 		// Check permissions on files/directories we need access to
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['FILES_REQUIRED'],
 			'LEGEND_EXPLAIN'	=> $lang['FILES_REQUIRED_EXPLAIN'],
 		));
@@ -443,7 +438,6 @@ class install_install extends module
 		// Check permissions on files/directories it would be useful access to
 		$template->assign_block_vars('checks', array(
 			'S_LEGEND'			=> true,
-			'S_FIRST_ROW'		=> false,
 			'LEGEND'			=> $lang['FILES_OPTIONAL'],
 			'LEGEND_EXPLAIN'	=> $lang['FILES_OPTIONAL_EXPLAIN'],
 		));
@@ -526,7 +520,6 @@ class install_install extends module
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
-				'S_FIRST_ROW'		=> true,
 				'LEGEND'			=> $lang['DB_CONNECTION'],
 				'LEGEND_EXPLAIN'	=> false,
 			));
@@ -712,7 +705,6 @@ class install_install extends module
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
-				'S_FIRST_ROW'		=> true,
 				'LEGEND'			=> $lang['STAGE_ADMINISTRATOR'],
 				'LEGEND_EXPLAIN'	=> false,
 			));
@@ -1192,7 +1184,7 @@ class install_install extends module
 		if ($script_path !== '/')
 		{
 			// Adjust destination path (no trailing slash)
-			if ($script_path[sizeof($script_path) - 1] == '/')
+			if (substr($script_path, -1) == '/')
 			{
 				$script_path = substr($script_path, 0, -1);
 			}
