@@ -941,6 +941,7 @@ class acp_users
 				if ($submit && $message)
 				{
 					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
+					add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
 
 					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));

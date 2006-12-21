@@ -227,24 +227,35 @@ $module->display($module->get_page_title(), false);
 /**
 * Functions used to generate additional URL paramters
 */
-function _module_main_url($mode)
+function _module__url($mode, &$module_row)
 {
 	return extra_url();
 }
 
-function _module_logs_url($mode)
+function _module_main_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_logs_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_ban_url($mode, &$module_row)
 {
 	return extra_url();
 }
 
 function extra_url()
 {
-	global $forum_id, $topic_id, $post_id;
+	global $forum_id, $topic_id, $post_id, $user_id;
 
 	$url_extra = '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
 	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
 	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
 
 	return $url_extra;
 }

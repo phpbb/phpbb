@@ -96,7 +96,7 @@ function generate_smilies($mode, $forum_id)
 }
 
 /**
-* Update Post Information (First/Last Post in topic/forum)
+* Update last post information
 * Should be used instead of sync() if only the last post information are out of sync... faster
 *
 * @param string $type Can be forum|topic

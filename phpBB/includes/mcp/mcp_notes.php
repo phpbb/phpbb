@@ -131,6 +131,8 @@ class mcp_notes
 		if ($usernote && $action == 'add_feedback')
 		{
 			add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
+			add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
+
 			add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
 
 			$redirect = $this->u_action . '&amp;u=' . $user_id;

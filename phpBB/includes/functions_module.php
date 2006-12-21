@@ -166,7 +166,7 @@ class p_master
 			$depth = sizeof($this->module_cache['parents'][$row['module_id']]);
 
 			// We need to prefix the functions to not create a naming conflict
-			
+
 			// Function for building 'url_extra'
 			$url_func = '_module_' . $row['module_basename'] . '_url';
 
@@ -191,7 +191,7 @@ class p_master
 				'mode'		=> (string) $row['module_mode'],
 				'display'	=> (int) $row['module_display'],
 
-				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode']) : '',
+				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode'], $row) : '',
 				
 				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
@@ -578,7 +578,9 @@ class p_master
 			}
 
 			$u_title = $module_url . $delim . 'i=' . (($item_ary['cat']) ? $item_ary['id'] : $item_ary['name'] . (($item_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $item_ary['mode']);
-			$u_title .= (!$item_ary['cat'] && isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
+
+			// Was not allowed in categories before - /*!$item_ary['cat'] && */
+			$u_title .= (isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
 
 			// Only output a categories items if it's currently selected
 			if (!$depth || ($depth && (in_array($item_ary['parent'], array_values($this->module_cache['parents'])) || $item_ary['parent'] == $this->p_parent)))

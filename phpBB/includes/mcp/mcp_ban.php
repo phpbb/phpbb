@@ -104,8 +104,41 @@ class mcp_ban
 
 			'U_ACTION'			=> $this->u_action,
 			'U_FIND_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
-			)
-		);
+		));
+
+		if ($mode != 'user')
+		{
+			return;
+		}
+
+		// As a "service" we will check if any post id is specified and populate the username of the poster id if given
+		$post_id = request_var('p', 0);
+		$user_id = request_var('u', 0);
+		$username = false;
+
+		if ($user_id && $user_id <> ANONYMOUS)
+		{
+			$sql = 'SELECT username
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$username = (string) $db->sql_fetchfield('username');
+			$db->sql_freeresult($result);
+		}
+		else if ($post_id)
+		{
+			$post_info = get_post_data($post_id, 'm_ban');
+
+			if (sizeof($post_info) && !empty($post_info[$post_id]))
+			{
+				$username = $post_info[$post_id]['username'];
+			}
+		}
+
+		if ($username)
+		{
+			$template->assign_var('USERNAMES', $username);
+		}
 	}
 }
 

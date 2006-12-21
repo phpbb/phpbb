@@ -1409,7 +1409,8 @@ function avatar_upload($data, &$error)
 		$destination = '';
 	}
 
-	$file->move_file($destination);
+	// Move file and overwrite any existing image
+	$file->move_file($destination, true);
 
 	if (sizeof($file->error))
 	{

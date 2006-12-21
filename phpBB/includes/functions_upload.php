@@ -214,10 +214,11 @@ class filespec
 	* The phpbb_root_path variable will be applied to the destination path
 	*
 	* @param string $destination_path Destination path, for example $config['avatar_path']
+	* @param bool $overwrite If set to true, an already existing file will be overwritten
 	* @param octal $chmod Permission mask for chmodding the file after a successful move
 	* @access public
 	*/
-	function move_file($destination, $chmod = 0666)
+	function move_file($destination, $overwrite = false, $chmod = 0666)
 	{
 		global $user, $phpbb_root_path;
 
@@ -241,61 +242,63 @@ class filespec
 		$this->destination_file = $this->destination_path . '/' . basename($this->realname);
 
 		// Check if the file already exist, else there is something wrong...
-		if (file_exists($this->destination_file))
+		if (file_exists($this->destination_file) && !$overwrite)
 		{
 			@unlink($this->filename);
-			return false;
 		}
-
-		switch ($upload_mode)
+		else
 		{
-			case 'copy':
+			if (file_exists($this->destination_file))
+			{
+				@unlink($this->destination_file);
+			}
 
-				if (!@copy($this->filename, $this->destination_file)) 
-				{
+			switch ($upload_mode)
+			{
+				case 'copy':
+
+					if (!@copy($this->filename, $this->destination_file)) 
+					{
+						if (!@move_uploaded_file($this->filename, $this->destination_file)) 
+						{
+							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+							return false;
+						}
+					}
+
+					@unlink($this->filename);
+
+				break;
+
+				case 'move':
+
 					if (!@move_uploaded_file($this->filename, $this->destination_file)) 
 					{
-						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-						return false;
+						if (!@copy($this->filename, $this->destination_file)) 
+						{
+							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+							return false;
+						}
 					}
-				}
-				else
-				{
+
 					@unlink($this->filename);
-				}
 
-			break;
+				break;
 
-			case 'move':
+				case 'local':
 
-				if (!@move_uploaded_file($this->filename, $this->destination_file)) 
-				{
 					if (!@copy($this->filename, $this->destination_file)) 
 					{
 						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 						return false;
 					}
-					else
-					{
-						@unlink($this->filename);
-					}
-				}
+					@unlink($this->filename);
 
-			break;
+				break;
+			}
 
-			case 'local':
-
-				if (!@copy($this->filename, $this->destination_file)) 
-				{
-					$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-					return false;
-				}
-				@unlink($this->filename);
-
-			break;
+			@chmod($this->destination_file, $chmod);
 		}
-
-		@chmod($this->destination_file, $chmod);
 
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
