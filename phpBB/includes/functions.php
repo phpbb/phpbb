@@ -3568,17 +3568,18 @@ class bitfield
 		// Get the ($n / 8)th char
 		$byte = $n >> 3;
 
-		if (!isset($this->data[$byte]))
+		if (strlen($this->data) >= $byte + 1)
 		{
-			// Of course, if it doesn't exist then the result if FALSE
+			$c = $this->data[$byte];
+	
+			// Lookup the ($n % 8)th bit of the byte
+			$bit = 7 - ($n & 7);
+			return (bool) (ord($c) & (1 << $bit));
+		}
+		else
+		{
 			return false;
 		}
-
-		$c = $this->data[$byte];
-
-		// Lookup the ($n % 8)th bit of the byte
-		$bit = 7 - ($n & 7);
-		return (bool) (ord($c) & (1 << $bit));
 	}
 
 	function set($n)
@@ -3586,16 +3587,13 @@ class bitfield
 		$byte = $n >> 3;
 		$bit = 7 - ($n & 7);
 
-		if (isset($this->data[$byte]))
+		if (strlen($this->data) >= $byte + 1)
 		{
 			$this->data[$byte] = $this->data[$byte] | chr(1 << $bit);
 		}
 		else
 		{
-			if ($byte - strlen($this->data) > 0)
-			{
-				$this->data .= str_repeat("\0", $byte - strlen($this->data));
-			}
+			$this->data .= str_repeat("\0", $byte - strlen($this->data));
 			$this->data .= chr(1 << $bit);
 		}
 	}
@@ -3604,13 +3602,11 @@ class bitfield
 	{
 		$byte = $n >> 3;
 
-		if (!isset($this->data[$byte]))
+		if (strlen($this->data) >= $byte + 1)
 		{
-			return;
+			$bit = 7 - ($n & 7);
+			$this->data[$byte] = $this->data[$byte] &~ chr(1 << $bit);
 		}
-
-		$bit = 7 - ($n & 7);
-		$this->data[$byte] = $this->data[$byte] &~ chr(1 << $bit);
 	}
 
 	function get_blob()
