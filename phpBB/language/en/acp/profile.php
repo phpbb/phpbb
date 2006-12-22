@@ -45,7 +45,7 @@ $lang = array_merge($lang, array(
 	'CHECKBOX'					=> 'Checkbox',
 	'COLUMNS'					=> 'Columns',
 	'CP_LANG_DEFAULT_VALUE'		=> 'Default value',
-	'CP_LANG_EXPLAIN'			=> 'Field Description',
+	'CP_LANG_EXPLAIN'			=> 'Field description',
 	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The explanation for this field presented to the user',
 	'CP_LANG_NAME'				=> 'Field name/title presented to the user',
 	'CP_LANG_OPTIONS'			=> 'Options',
@@ -90,7 +90,7 @@ $lang = array_merge($lang, array(
 	'FIRST_OPTION'				=> 'First option',
 
 	'HIDE_PROFILE_FIELD'			=> 'Hide profile field',
-	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only Administrators and Moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in user profiles.',
+	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only administrators and moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in users’ profiles.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field identification can only contain lowercase a-z and _',
 	'INVALID_FIELD_IDENT_LEN'	=> 'Field identification can only be 17 characters long',
@@ -119,7 +119,7 @@ $lang = array_merge($lang, array(
 
 	'RADIO_BUTTONS'				=> 'Radio buttons',
 	'REMOVED_PROFILE_FIELD'		=> 'Successfully removed profile field.',
-	'REQUIRED_FIELD'			=> 'Required Field',
+	'REQUIRED_FIELD'			=> 'Required field',
 	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user. This will display the profile field at registration and within the user control panel.',
 	'ROWS'						=> 'Rows',
 

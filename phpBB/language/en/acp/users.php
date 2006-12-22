@@ -79,7 +79,7 @@ $lang = array_merge($lang, array(
 	'RETAIN_POSTS'			=> 'Retain posts',
 
 	'SELECT_FORM'			=> 'Select form',
-	'SELECT_USER'			=> 'Select User',
+	'SELECT_USER'			=> 'Select user',
 
 	'USER_ADMIN'					=> 'User administration',
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
@@ -113,9 +113,9 @@ $lang = array_merge($lang, array(
 	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user.',
 	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum.',
 	'USER_PREFS_UPDATED'			=> 'User preferences updated.',
-	'USER_PROFILE'					=> 'User Profile',
+	'USER_PROFILE'					=> 'User profile',
 	'USER_PROFILE_UPDATED'			=> 'User profile updated.',
-	'USER_RANK'						=> 'User Rank',
+	'USER_RANK'						=> 'User rank',
 	'USER_RANK_UPDATED'				=> 'User rank updated.',
 	'USER_SIG_UPDATED'				=> 'User signature successfully updated.',
 	'USER_TOOLS'					=> 'Basic tools',

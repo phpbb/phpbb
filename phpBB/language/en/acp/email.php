@@ -37,7 +37,7 @@ $lang = array_merge($lang, array(
 
 	'COMPOSE'				=> 'Compose',
 
-	'EMAIL_SEND_ERROR'		=> 'There were one or more errors while sending the email. Please check the %sError Log%s for detailed error messages.',
+	'EMAIL_SEND_ERROR'		=> 'There were one or more errors while sending the email. Please check the %sError log%s for detailed error messages.',
 	'EMAIL_SENT'			=> 'This message has been sent.',
 	'EMAIL_SENT_QUEUE'		=> 'This message has been queued for sending.',
 

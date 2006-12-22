@@ -134,7 +134,7 @@ $lang = array_merge($lang, array(
 
 	'ONLY_FORUM_DEFINED'	=> 'You only defined forums in your selection. Please also select at least one user or one group.',
 
-	'PERMISSION_APPLIED_TO_ALL'		=> 'Permissions and Role will also be applied to all checked objects',
+	'PERMISSION_APPLIED_TO_ALL'		=> 'Permissions and role will also be applied to all checked objects',
 	'PLUS_SUBFORUMS'				=> '+Subforums',
 
 	'REMOVE_PERMISSIONS'			=> 'Remove permissions',

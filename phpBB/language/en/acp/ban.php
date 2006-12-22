@@ -56,7 +56,7 @@ $lang = array_merge($lang, array(
 	'IP_BAN_EXPLAIN'			=> 'To specify several different IPs or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use *',
 	'IP_HOSTNAME'				=> 'IP addresses or hostnames',
 	'IP_NO_BANNED'				=> 'No banned IP addresses',
-	'IP_UNBAN'					=> 'Un-ban or Un-exclude IPs',
+	'IP_UNBAN'					=> 'Un-ban or un-exclude IPs',
 	'IP_UNBAN_EXPLAIN'			=> 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IPs have a marked background.',
 
 	'PERMANENT'		=> 'Permanent',
@@ -66,7 +66,7 @@ $lang = array_merge($lang, array(
 	'USER_BAN_EXCLUDE_EXPLAIN'	=> 'Enable this to exclude the entered users from all current bans.',
 	'USER_BAN_EXPLAIN'			=> 'You can ban multiple users in one go by entering each name on a new line. Use the <u>Find a member</u> facility to look up and add one or more users automatically.',
 	'USER_NO_BANNED'			=> 'No banned usernames',
-	'USER_UNBAN'				=> 'Un-ban or Un-exclude usernames',
+	'USER_UNBAN'				=> 'Un-ban or un-exclude usernames',
 	'USER_UNBAN_EXPLAIN'		=> 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users have a marked background.',
 ));
 

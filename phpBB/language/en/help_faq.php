@@ -44,7 +44,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I prevent my username appearing in the online user listings?',
-		1 => 'In your profile you will find an option <em>Hide your online status</em>, if you switch this <em>on</em> you’ll only appear to board administrators, moderators, or to yourself. You will be counted as a hidden user.'
+		1 => 'Within the UCP under “Forum preferences” you will find an option <em>Hide your online status</em>, if you enable this option with <samp>Yes</samp>, you’ll only appear to the administrators, moderators or yourself. You will be counted as a hidden user.'
 	),
 	array(
 		0 => 'I’ve lost my password!',

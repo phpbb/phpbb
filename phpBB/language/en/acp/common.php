@@ -101,7 +101,7 @@ $lang = array_merge($lang, array(
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_IMAGESETS'				=> 'Imagesets',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
-	'ACP_INDEX'					=> 'Admin index',
+	'ACP_INDEX'					=> 'ACP index',
 	
 	'ACP_JABBER_SETTINGS'		=> 'Jabber settings',
 	
@@ -110,7 +110,7 @@ $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS'			=> 'Load settings',
 	'ACP_LOGGING'				=> 'Logging',
 	
-	'ACP_MAIN'					=> 'Admin index',
+	'ACP_MAIN'					=> 'ACP index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
@@ -139,7 +139,7 @@ $lang = array_merge($lang, array(
 	'ACP_QUICK_ACCESS'			=> 'Quick access',
 	
 	'ACP_RANKS'					=> 'Ranks',
-	'ACP_REASONS'				=> 'Report/Denial reasons',
+	'ACP_REASONS'				=> 'Report/denial reasons',
 	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
 
 	'ACP_RESTORE'				=> 'Restore',
@@ -258,7 +258,7 @@ $lang = array_merge($lang, array(
 	'RESYNC'							=> 'Resyncronise',
 	'RETURN_TO'							=> 'Return to…',
 
-	'SELECT_ANONYMOUS'		=> 'Select Anonymous User',
+	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
 
 	'UCP'					=> 'User Control Panel',
@@ -270,7 +270,7 @@ $lang = array_merge($lang, array(
 
 // PHP info
 $lang = array_merge($lang, array(
-	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by support or other Team Member on the support forums.',
+	'ACP_PHP_INFO_EXPLAIN'	=> 'This page lists information on the version of PHP installed on this server. It includes details of loaded modules, available variables and default settings. This information may be useful when diagnosing problems. Please be aware that some hosting companies will limit what information is displayed here for security reasons. You are advised to not give out any details on this page except when asked by <a href="http://www.phpbb.com/about/">official team members</a> on the support forums.',
 
 	'NO_PHPINFO_AVAILABLE'	=> 'The PHP informations are unable to be determined. Phpinfo() has been disabled for security reasons.',
 ));
@@ -347,7 +347,7 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_REGISTER'		=> 'Newly registered account',
 	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
-	'INACTIVE_USERS'				=> 'Inactive Users',
+	'INACTIVE_USERS'				=> 'Inactive users',
 	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
 	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an email) these users if you wish.',
 
@@ -367,8 +367,8 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_GROUP_GLOBAL_U_'		=> '<strong>Added or edited groups user permissions</strong><br />» %s',
 	'LOG_ACL_ADD_USER_GLOBAL_M_'		=> '<strong>Added or edited users global moderator permissions</strong><br />» %s',
 	'LOG_ACL_ADD_GROUP_GLOBAL_M_'		=> '<strong>Added or edited groups global moderator permissions</strong><br />» %s',
-	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<strong>Added or edited users admin permissions</strong><br />» %s',
-	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<strong>Added or edited groups admin permissions</strong><br />» %s',
+	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<strong>Added or edited users administrator permissions</strong><br />» %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<strong>Added or edited groups administrator permissions</strong><br />» %s',
 
 	'LOG_ACL_ADD_ADMIN_GLOBAL_A_'		=> '<strong>Added or edited Administrators</strong><br />» %s',
 	'LOG_ACL_ADD_MOD_GLOBAL_M_'			=> '<strong>Added or edited Global Moderators</strong><br />» %s',
@@ -379,12 +379,12 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<strong>Added or edited groups forum moderator access</strong> from %1$s<br />» %2$s',
 
 	'LOG_ACL_ADD_MOD_LOCAL_M_'			=> '<strong>Added or edited Moderators</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<strong>Added or edited Forum Permissions</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<strong>Added or edited forum permissions</strong> from %1$s<br />» %2$s',
 
 	'LOG_ACL_DEL_ADMIN_GLOBAL_A_'		=> '<strong>Removed Administrators</strong><br />» %s',
 	'LOG_ACL_DEL_MOD_GLOBAL_M_'			=> '<strong>Removed Global Moderators</strong><br />» %s',
 	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<strong>Removed Moderators</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<strong>Removed User/Group Forum Permissions</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<strong>Removed User/Group forum permissions</strong> from %1$s<br />» %2$s',
 
 	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<strong>Permissions transfered from</strong><br />» %s',
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<strong>Own permissions restored after using permissions from</strong><br />» %s',
@@ -404,11 +404,11 @@ $lang = array_merge($lang, array(
 	'LOG_BAN_EXCLUDE_USER'	=> '<strong>Excluded user from ban</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
 	'LOG_BAN_EXCLUDE_IP'	=> '<strong>Excluded IP from ban</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
 	'LOG_BAN_EXCLUDE_EMAIL' => '<strong>Excluded email from ban</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
-	'LOG_BAN_USER'			=> '<strong>Banned User</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
+	'LOG_BAN_USER'			=> '<strong>Banned user</strong> for reason "<em>%1$s</em>"<br />» %2$s ',
 	'LOG_BAN_IP'			=> '<strong>Banned IP</strong> for reason "<em>%1$s</em>"<br />» %2$s',
 	'LOG_BAN_EMAIL'			=> '<strong>Banned email</strong> for reason "<em>%1$s</em>"<br />» %2$s',
 	'LOG_UNBAN_USER'		=> '<strong>Unbanned user</strong><br />» %s',
-	'LOG_UNBAN_IP'			=> '<strong>Unbanned ip</strong><br />» %s',
+	'LOG_UNBAN_IP'			=> '<strong>Unbanned IP</strong><br />» %s',
 	'LOG_UNBAN_EMAIL'		=> '<strong>Unbanned email</strong><br />» %s',
 
 	'LOG_BBCODE_ADD'		=> '<strong>Added new BBCode</strong><br />» %s',

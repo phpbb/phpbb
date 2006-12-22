@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'INVALID_UPLOAD_METHOD'		=> 'The selected upload method is not valid, please choose a different method.',
 
 	'LANGUAGE_DETAILS_UPDATED'			=> 'Language details successfully updated.',
-	'LANGUAGE_ENTRIES'					=> 'Language Entries',
+	'LANGUAGE_ENTRIES'					=> 'Language entries',
 	'LANGUAGE_ENTRIES_EXPLAIN'			=> 'Here you are able to change existing language pack entries or not already translated ones.<br /><strong>Note:</strong> Once you changed a language file, the changes will be stored within a seperate folder for you to download. The changes will not be seen by your users until you replace the original language files at your webspace (by uploading them).',
 	'LANGUAGE_FILES'					=> 'Language files',
 	'LANGUAGE_KEY'						=> 'Language key',
@@ -59,13 +59,13 @@ $lang = array_merge($lang, array(
 	'LANGUAGE_PACK_NAME'				=> 'Name',
 	'LANGUAGE_PACK_NOT_EXIST'			=> 'The selected language pack does not exist.',
 	'LANGUAGE_PACK_USED_BY'				=> 'Used by (including robots)',
-	'LANGUAGE_VARIABLE'					=> 'Language Variable',
-	'LANG_AUTHOR'						=> 'Language Pack Author',
+	'LANGUAGE_VARIABLE'					=> 'Language variable',
+	'LANG_AUTHOR'						=> 'Language pack author',
 	'LANG_ENGLISH_NAME'					=> 'English name',
-	'LANG_ISO_CODE'						=> 'ISO Code',
+	'LANG_ISO_CODE'						=> 'ISO code',
 	'LANG_LOCAL_NAME'					=> 'Local name',
 
-	'MISSING_LANGUAGE_FILE'		=> 'Missing Language File: <strong style="color:red">%s</strong>',
+	'MISSING_LANGUAGE_FILE'		=> 'Missing language file: <strong style="color:red">%s</strong>',
 	'MISSING_LANG_VARIABLES'	=> 'Missing language variables',
 	'MODS_FILES'				=> 'MODs language files',
 

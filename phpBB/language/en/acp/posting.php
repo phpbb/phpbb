@@ -100,7 +100,7 @@ $lang = array_merge($lang, array(
 
 	'FIRST'			=> 'First',
 
-	'ICONS_ADD'				=> 'Add a new Icon',
+	'ICONS_ADD'				=> 'Add a new icon',
 	'ICONS_ADDED'			=> 'The icon has been added successfully.',
 	'ICONS_CONFIG'			=> 'Icon configuration',
 	'ICONS_DELETED'			=> 'The icon has been removed successfully.',
@@ -137,7 +137,7 @@ $lang = array_merge($lang, array(
 	'SMILIES_CODE'				=> 'Smiley code',
 	'SMILIES_CONFIG'			=> 'Smiley configuration',
 	'SMILIES_DELETED'			=> 'The smiley has been removed successfully.',
-	'SMILIES_EDIT'				=> 'Edit Smiley',
+	'SMILIES_EDIT'				=> 'Edit smiley',
 	'SMILIES_EDITED'			=> 'The smiley has been updated successfully.',
 	'SMILIES_EMOTION'			=> 'Emotion',
 	'SMILIES_HEIGHT'			=> 'Smiley height',

@@ -32,7 +32,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ATTACHMENT'						=> 'Attachment',
-	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'Attachment has been disabled',
+	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled',
 
 	'BOOKMARK_ADDED'		=> 'Bookmarked topic successfully.',
 	'BOOKMARK_REMOVED'		=> 'Removed bookmarked topic successfully.',
@@ -49,7 +49,7 @@ $lang = array_merge($lang, array(
 	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total',
 	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total',
 	'EMAIL_TOPIC'			=> 'Email friend',
-	'ERROR_NO_ATTACHMENT'	=> 'The selected Attachment does not exist anymore',
+	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore',
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
@@ -58,10 +58,10 @@ $lang = array_merge($lang, array(
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
 	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.',
 
-	'MAKE_ANNOUNCE'				=> 'Change to Announcement',
-	'MAKE_GLOBAL'				=> 'Change to Global',
-	'MAKE_NORMAL'				=> 'Change to Standard Topic',
-	'MAKE_STICKY'				=> 'Change to Sticky',
+	'MAKE_ANNOUNCE'				=> 'Change to “Announcement”',
+	'MAKE_GLOBAL'				=> 'Change to “Global”',
+	'MAKE_NORMAL'				=> 'Change to “Standard Topic”',
+	'MAKE_STICKY'				=> 'Change to “Sticky”',
 	'MAX_OPTIONS_SELECT'		=> 'You may select up to <strong>%d</strong> options',
 	'MAX_OPTION_SELECT'			=> 'You may select <strong>1</strong> option',
 	'MISSING_INLINE_ATTACHMENT'	=> 'The attachment <strong>%s</strong> is no longer available',
@@ -95,8 +95,8 @@ $lang = array_merge($lang, array(
 	'VIEW_NEXT_TOPIC'		=> 'Next topic',
 	'VIEW_PREVIOUS_TOPIC'	=> 'Previous topic',
 	'VIEW_RESULTS'			=> 'View results',
-	'VIEW_TOPIC_POST'		=> '1 Post',
-	'VIEW_TOPIC_POSTS'		=> '%d Posts',
+	'VIEW_TOPIC_POST'		=> '1 post',
+	'VIEW_TOPIC_POSTS'		=> '%d posts',
 	'VIEW_UNREAD_POST'		=> 'First unread post',
 	'VISIT_WEBSITE'			=> 'WWW',
 	'VOTE_SUBMITTED'		=> 'Your vote has been cast',
