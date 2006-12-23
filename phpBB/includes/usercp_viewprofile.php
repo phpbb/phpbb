@@ -31,7 +31,12 @@ if ( empty($HTTP_GET_VARS[POST_USERS_URL]) || $HTTP_GET_VARS[POST_USERS_URL] == 
 {
 	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
 }
-$profiledata = get_userdata(intval($HTTP_GET_VARS[POST_USERS_URL]));
+$profiledata = get_userdata($HTTP_GET_VARS[POST_USERS_URL]);
+
+if (!$profiledata)
+{
+	message_die(GENERAL_MESSAGE, $lang['No_user_id_specified']);
+}
 
 $sql = "SELECT *
 	FROM " . RANKS_TABLE . "
@@ -41,6 +46,7 @@ if ( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Could not obtain ranks information', '', __LINE__, __FILE__, $sql);
 }
 
+$ranksrow = array();
 while ( $row = $db->sql_fetchrow($result) )
 {
 	$ranksrow[] = $row;
@@ -159,14 +165,23 @@ $yim_img = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config
 $yim = ( $profiledata['user_yim'] ) ? '<a href="http://edit.yahoo.com/config/send_webmesg?.target=' . $profiledata['user_yim'] . '&amp;.src=pg">' . $lang['YIM'] . '</a>' : '';
 
 $temp_url = append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username']) . "&amp;showresults=posts");
-$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . $lang['Search_user_posts'] . '" title="' . $lang['Search_user_posts'] . '" border="0" /></a>';
-$search = '<a href="' . $temp_url . '">' . $lang['Search_user_posts'] . '</a>';
+$search_img = '<a href="' . $temp_url . '"><img src="' . $images['icon_search'] . '" alt="' . sprintf($lang['Search_user_posts'], $profiledata['username']) . '" title="' . sprintf($lang['Search_user_posts'], $profiledata['username']) . '" border="0" /></a>';
+$search = '<a href="' . $temp_url . '">' . sprintf($lang['Search_user_posts'], $profiledata['username']) . '</a>';
 
 //
 // Generate page
 //
 $page_title = $lang['Viewing_profile'];
 include($phpbb_root_path . 'includes/page_header.'.$phpEx);
+
+if (function_exists('get_html_translation_table'))
+{
+	$u_search_author = urlencode(strtr($profiledata['username'], array_flip(get_html_translation_table(HTML_ENTITIES))));
+}
+else
+{
+	$u_search_author = urlencode(str_replace(array('&amp;', '&#039;', '&quot;', '&lt;', '&gt;'), array('&', "'", '"', '<', '>'), $profiledata['username']));
+}
 
 $template->assign_vars(array(
 	'USERNAME' => $profiledata['username'],
@@ -222,7 +237,7 @@ $template->assign_vars(array(
 	'L_OCCUPATION' => $lang['Occupation'],
 	'L_INTERESTS' => $lang['Interests'],
 
-	'U_SEARCH_USER' => append_sid("search.$phpEx?search_author=" . urlencode($profiledata['username'])),
+	'U_SEARCH_USER' => append_sid("search.$phpEx?search_author=" . $u_search_author),
 
 	'S_PROFILE_ACTION' => append_sid("profile.$phpEx"))
 );

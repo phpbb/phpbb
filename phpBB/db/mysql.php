@@ -259,7 +259,7 @@ class sql_db
 				{
 					if($this->rowset[$query_id])
 					{
-						$result = $this->rowset[$query_id][$field];
+						$result = $this->rowset[$query_id][0][$field];
 					}
 					else if($this->row[$query_id])
 					{

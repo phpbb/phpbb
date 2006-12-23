@@ -118,7 +118,12 @@ if( !($result = $db->sql_query($sql)) )
 	message_die(GENERAL_ERROR, 'Could not query categories list', '', __LINE__, __FILE__, $sql);
 }
 
-while( $category_rows[] = $db->sql_fetchrow($result) );
+$category_rows = array();
+while ($row = $db->sql_fetchrow($result))
+{
+	$category_rows[] = $row;
+}
+$db->sql_freeresult($result);
 
 if( ( $total_categories = count($category_rows) ) )
 {
@@ -170,6 +175,7 @@ if( ( $total_categories = count($category_rows) ) )
 	{
 		$forum_data[] = $row;
 	}
+	$db->sql_freeresult($result);
 
 	if ( !($total_forums = count($forum_data)) )
 	{
@@ -180,8 +186,14 @@ if( ( $total_categories = count($category_rows) ) )
 	// Obtain a list of topic ids which contain
 	// posts made since user last visited
 	//
-	if ( $userdata['session_logged_in'] )
+	if ($userdata['session_logged_in'])
 	{
+		// 60 days limit
+		if ($userdata['user_lastvisit'] < (time() - 5184000))
+		{
+			$userdata['user_lastvisit'] = time() - 5184000;
+		}
+
 		$sql = "SELECT t.forum_id, t.topic_id, p.post_time 
 			FROM " . TOPICS_TABLE . " t, " . POSTS_TABLE . " p 
 			WHERE p.post_id = t.topic_last_post_id 
@@ -197,6 +209,7 @@ if( ( $total_categories = count($category_rows) ) )
 		{
 			$new_topic_data[$topic_data['forum_id']][$topic_data['topic_id']] = $topic_data['post_time'];
 		}
+		$db->sql_freeresult($result);
 	}
 
 	//
@@ -222,6 +235,7 @@ if( ( $total_categories = count($category_rows) ) )
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="' . append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . "=" . $row['user_id']) . '">' . $row['username'] . '</a>';
 	}
+	$db->sql_freeresult($result);
 
 	$sql = "SELECT aa.forum_id, g.group_id, g.group_name 
 		FROM " . AUTH_ACCESS_TABLE . " aa, " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
@@ -241,6 +255,7 @@ if( ( $total_categories = count($category_rows) ) )
 	{
 		$forum_moderators[$row['forum_id']][] = '<a href="' . append_sid("groupcp.$phpEx?" . POST_GROUPS_URL . "=" . $row['group_id']) . '">' . $row['group_name'] . '</a>';
 	}
+	$db->sql_freeresult($result);
 
 	//
 	// Find which forums are visible for this user
@@ -251,6 +266,7 @@ if( ( $total_categories = count($category_rows) ) )
 	//
 	// Start output of page
 	//
+	define('SHOW_ONLINE', true);
 	$page_title = $lang['Index'];
 	include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
@@ -287,6 +303,19 @@ if( ( $total_categories = count($category_rows) ) )
 	);
 
 	//
+	// Let's decide which categories we should display
+	//
+	$display_categories = array();
+
+	for ($i = 0; $i < $total_forums; $i++ )
+	{
+		if ($is_auth_ary[$forum_data[$i]['forum_id']]['auth_view'])
+		{
+			$display_categories[$forum_data[$i]['cat_id']] = true;
+		}
+	}
+
+	//
 	// Okay, let's build the index
 	//
 	for($i = 0; $i < $total_categories; $i++)
@@ -294,22 +323,10 @@ if( ( $total_categories = count($category_rows) ) )
 		$cat_id = $category_rows[$i]['cat_id'];
 
 		//
-		// Should we display this category/forum set?
-		//
-		$display_forums = false;
-		for($j = 0; $j < $total_forums; $j++)
-		{
-			if ( $is_auth_ary[$forum_data[$j]['forum_id']]['auth_view'] && $forum_data[$j]['cat_id'] == $cat_id )
-			{
-				$display_forums = true;
-			}
-		}
-
-		//
 		// Yes, we should, so first dump out the category
 		// title, then, if appropriate the forum list
 		//
-		if ( $display_forums )
+		if (isset($display_categories[$cat_id]) && $display_categories[$cat_id])
 		{
 			$template->assign_block_vars('catrow', array(
 				'CAT_ID' => $cat_id,

@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<title>phpBB 2.0.x :: FAQ</title>
+<link rel="stylesheet" href="../templates/subSilver/subSilver.css" type="text/css" />
+<style type="text/css">
+<!--
+p,ul,td {font-size:10pt;}
+h2 {font-size:15pt;font-weight:bold;}
+h3 {font-size:12pt;}
+//-->
+</style>
+</head>
+<body bgcolor="#E5E5E5" text="#000000" link="#006699" vlink="#006699">
+
+<table width="100%" border="0" cellspacing="0" cellpadding="10" align="center">
+	<tr>
+		<td class="bodyline"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+			<tr>
+				<td>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+	<tr>
+		<td><img src="../templates/subSilver/images/logo_phpBB.gif" border="0" alt="phpBB 2 : Creating Communities" vspace="1" /></a></td>
+		<td align="center" width="100%" valign="middle"><span class="maintitle">phpBB 2.0.x FAQ</span></td>
+	</tr>
+</table>
+
+<!-- BEGIN DOCUMENT -->
+<p>This is a very basic Frequently Asked Questions (FAQ) page which attempts to answer some of the more commonly asked questions. It is by no means exhaustive and should be used in combination with the 'built-in' User FAQ within phpBB2, the community forums (particularly the Tutorials forum) and our IRC channel (see <a href="README.html">README</a> for details).</p>
+
+<ol>
+
+<li><b>I cannot install this it is too difficult! Will you do it?</b></li>
+
+<p>Simple answer, no we will not. We are not being difficult when we say this we are actually trying to help you. phpBB has a reputation for being easy to install, that reputation is we believe well deserved. It is a simple process of unarchiving a single file, uploading the resulting directory/files to their intended location and entering some data in a web based form. The sequence of events, what to type where, etc. is covered in detail in the accompanying <a href="INSTALL.html">INSTALL.html</a> documentation. If you cannot install phpBB 2.0.x the chances are you will be unable to administer or update it.</p>
+
+<p>There are people, companies (unrelated to your hosting provider), etc. that will install your forum, either for free or for a payment. We do not recommend you make use of these offers. Unless the service is provided by your hosting company you will have to divulge passwords and other sensitive details. If you did not know how to use an ATM would you give a passer-by your bank card and PIN and ask them to show you what to do? No, probably not! The same applies to your hosting account details!</p>
+
+<p>We think a better solution is for you to carefully read the enclosed documentation, read our tutorials forum at www.phpbb.com and if necessary ask for help on any thing you get stuck on. However, the decision is yours but please note we may not offer support if we believe you have had the board installed by a third party. In such cases you should direct your questions to that company or person/s.</p>
+
+<li><b>How do I install this board on Lycos/coolfreepages/other free host?</b></li>
+
+<p>The old addage "You get what you pay for" is particularly true for hosting services! However if you must use a free service (and recognise its limitations) you will find details on common pitfalls in our tutorials forum at <a href="http://www.phpbb.com/phpBB/">http://www.phpbb.com/phpBB/</a>.</p>
+
+<li><b>I am having problems with the admin at a certain board, help!</b></li>
+<li><b>A board has ripped off my graphics/software/etc., stop them!</b></li>
+<li><b>A board is dealing in warez/porn/etc., you need to prevent them doing this!</b></li>
+
+<p>We provide the software, we have absolutely nothing to do with any board that runs it (beyond phpbb.com of course!). The GPL grants the user an unlimited right of use subject to their adherence of that licence. Therefore we cannot prevent, dictate, control or otherwise limit the use of phpBB 2 software. So please do not contact us for such matters.</p>
+
+<p>If you have a problem with a given board please take it up with them, not us. We are not and cannot be held legally responsible for any third party use of this software (much like Microsoft et al cannot be held responsible for the use of Windows in illegal activities, etc.). Additionally we do <b>not</b> track the use of phpBB software in any way. So please do not ask us for details on a "given" board we will not be able to help you. If any law firms or lawyers out there send us writs, Cease and Desist orders, etc. for third party website use of this software we reserve the right to charge for time wasted dealing with such issues ...</p>
+
+<li><b>According to viewonline a user is doing/reading something they should not be able to!</b></li>
+
+<p>No, they probably are not. phpBB uses sessions to keep track of users as they move between pages. The session information tells us who this user is. Therefore in order to determine what a user can do on a page we first need the session details. Once this data is available we can check whether the user is permitted to do whatever it is they are trying to do. This can result in it appearing as if a user is reading a topic in a forum they should not be able to access. Or perhaps viewing private messages when they are only guests, etc. In practice the user is not doing these things, they are viewing a "You are not permitted to do this" type message. The session data has simply been updated before we were able to determine what the user could or could not do.</p>
+
+<p>Of course this only applies where permissions have been set correctly!</p>
+
+<li><b>I keep getting Mail sending errors when I (or my users) post/send PM's/etc.!</b></li>
+
+<p>This error will occur if phpBB cannot send mail. phpBB can send email two ways; using the PHP mail() function or directly via SMTP. Some hosting providers limit the mail() function to prevent its use in spamming, others may rename it or limit its functionality. In either case you may need to make use of SMTP. This requires that you have access to such a facility, e.g. your hosting provider may provide one (perhaps requiring specific written authorisation), etc. Note that if your provider requires authorisation we only support the simple AUTH method using plaintext username/password. We do not support secure sockets layer (SSL), POP3 send or any other method. Please see <a href="http://www.phpbb.com/phpBB/" target="_blank">http://www.phpbb.com/phpBB/</a> for additional help on this matter.</p>
+
+<p>If you do require SMTP services please do not ask (on our forums or elsewhere) for someone to provide you with one. Open relays are now things of the past thanks to the unthinking spammers out there. Therefore you are unlikely to find someone willing to offer you (free) services.</p>
+
+<li><b>My users are complaining that emails are not in their selected language!</b></li>
+
+<p>You must have deleted a language pack or the language pack is incomplete. phpBB will try to send emails in the users selected language. If it cannot find a suitable email template it will switch to the boards default language.</p>
+
+<li><b>The first four letters of my text disappeared when I hit submit!</b></li>
+
+<p>Some forms in phpBB make use of arrays to "post" or submit data, e.g. polls, forum management, etc. A bug exists in PHP 4.2.3 (and perhaps older versions) which can cause such data to lose the first four characters of text. This bug is related to the presence of the mbstring module and certain compile time parameters (the problem exists for both compiled in and modular version of mbstring). Please see: <a href="http://bugs.php.net/bug.php?id=19460" target="_blank">http://bugs.php.net/bug.php?id=19460</a> for more details. Note the bug is fixed in PHP CVS and thus future versions should be immune. Remember, this is <b>not</b> a bug in phpBB 2.</p>
+
+<li><b>My AOL based users keep getting logged out!</b></li>
+
+<p>phpBB2 uses sessions to keep track of users as they browse the board. These sessions use a combination of a unique session id and the users IP to identify each user. We make use of the IP as an extra safe-guard to help prevent sessions being hijacked (by discovering the unique session id).</p>
+
+<p>Unfortunately this only works when the users IP is constant as they browse the board. For most users this will be the case. However certain providers route their users via a cluster of proxys. In some cases, particularly AOL this results in different IPs being forwarded as the user moves between pages. We take account of this by not checking the entire IP but only the first "three quads". Again in most cases this will be fine. However again AOL uses IPs which can vary so much that checking only the first two quads results in a fairly static IP being available for session validation.</p>
+
+<p>If you are experiencing problems related to this you can make a small change to the code. Please note that reducing the IP validation length does potentially increase the risk of sessions being hijacked (this is something for you to consider, phpBB Group takes no responsibility should anything happen!). The change requires you to open the file sessions.php in the includes/ directory of the distribution. Find line 250, it contains the following <pre>$ip_check_s = substr($userdata['session_ip'], 0, 6);</pre>change this to: <pre>$ip_check_s = substr($userdata['session_ip'], 0, <b>4</b>);</pre>You need to make exactly the same change to the number 6 in the next line. Save the file (and upload it if required). This should reduce or eliminate the problem noted.</p></li>
+
+<li><b>I selected X for my timezone but the time is not correct!</b></li>
+
+<p>I suspect the time is correct but that you may have switched (locally) to daylight savings time. At present we do not support daylight savings only standard local times. Therefore during summer months (depending on whether your nation/state switches to daylight savings) the board times may appear to be <b>one hour</b> behind the <i>real</i> local time. The solution is to either put up with it (just let your users know) or to move the timezone of everyone who is affected (remember that not all your users may be from nations who have switched to daylight savings) on one hour, eg. GMT becomes GMT+1. This requires running some SQL and you should search our forums for information.</p>
+
+<p>If this is not the case then I suspect your servers time is at fault. phpBB 2 stores all times in the form of a unix timestamp. This is a 32bit integer value containing the number of seconds since the unix epoch event, 1st January 1970 00:00:00 GMT. This value is global in nature and will be the same wherever you are in the world. So, if your time is incorrect and you have selected the appropriate timezone chances are your server time is off.</p></li>
+
+<li><b>I am seeing &amp;#nnnn; sequences output instead of what I typed!</b></li>
+
+<p>To enable compliance with HTML and XHTML specifications as well as enabling browsers to automatically support a users selected language we enable a <i>charset</i> tag to be output to the browser. This identifies the primary character set the user has selected, eg. iso-8859-1 for Western European languages (English, German, French, etc.), windows-1251 for Cyrillic alphabets (Russian, Bulgarian, etc.) and so on. The downside to doing this is that most modern browsers (such as Internet Explorer) convert any character not present in that character set into what are termed <i>Numerical Character References</i> or NCR's. These take the form of &amp;#nnnn; where nnnn is the hexadecimal number of that characters UNICODE reference.</p>
+
+<p>Unfortunately PHP (which effectively supports only iso-8859-1 at this time) does not appear to attempt to process this data back into normal characters. Therefore phpBB treats them as text the user has entered and wishes to <i>see</i>. phpBB enables this  by turning the &amp; into &amp;amp;. This results in the characters appearing as they do. Although we could ignore &amp;#nnnn; (there are pro's and of course con's to doing so) at present we don't.</p>
+
+<p>If you are finding this to be problem the solution is to remove the <pre>charset={S_CONTENT_ENCODING}</pre> text from <b>all</b> the _header.tpl template files in all templates. The downside to this is a users browser will not automatically switch its charset to that selected by the user (however this is unlikely to be a big problem since users typically run their browser by default in the language they wish to use). Alternatively you can modify the $lang['ENCODING'] entry in the appropriate language file. Until PHP (and all browsers!) trully support UNICODE these problems will persist across all boards.</p></li>
+
+<li><b>I cannot search for certain words!</b>
+
+<p>phpBB 2 uses a Fulltext search system, this has both advantages and disadvantages. The advantage is that on large or busy forums it has far less impact on server load than <i>standard</i> search methods as used by many alternative forums (including phpBB 1.x). The disadvantage is that to reduce the size of the database (every post is examined and unique words stored in a table) we have to limit the size and type of words we store. By default words must contain at least three characters but no more than 25, they must be either alpha or combinations of alpha and numerals (numbers alone are not stored). In addition all non-alphanumeric characters are removed, eg. _, +, -, etc. This is standard practice for fulltext search solutions.</p>
+
+<p>A further downside is that non-latin alphabets, eg. Cyrillic, Greek, etc. require proper locale support to be compiled in and available on the server your board is running on. If this is not the case it is quite likely that words will not be properly indexed for storage. In many cases this can be recified by altering the setlocale(LC_ALL, '[LOCALE_HERE]'); statement in the appropriate language file. If you are experiencing problems you should change whatever is currently in place of [LOCALE_HERE] with the locale as available on your server. If you do not know this please ask your hosting provider. Some examples may be ru_RU.WIN_CP_1251 for the codepage used for the Russian translation, ko.KOI8 for Korean, etc.</p>
+
+<p>Please note that support for multibyte character sets remains very limited in PHP4 and therefore Japanese, Chinese, etc. may have difficulty getting the fulltext search working correctly at all.</p>
+
+<li><b>My screen is filled with errors when I try to view the forum!</b>
+
+<p>Are they errors? Are you sure they are not warnings? They probably are ... What you're seeing is PHP warn you about unset variables. Great care has been taken with phpBB 2.0 to ensure it is secure. Unset variables while being a potential security risk really shouldn't be in 2.0. Unfortunately some hosting providers have decided that any unset variables equal security problems and force PHP to output these warnings even though phpBB 2.0 is set to ignore them.</p>
+
+<p>We have worked some way toward checking and/or setting all variables before use but this will take time to complete (if it can be). Therefore I am afraid for the time being you will have to manually modify the code or ask your hosting provider to be more realistic with their setup.</p></li>
+
+<li><b>How do I use the avatar settings?</b>
+
+<p>There are three types of avatar; upload, remote and local.</p>
+<p><ul>
+<li>Upload types require you to create a directory (the default is images/avatars) and to set this to public read/write (ie. chmod a+rw), users can then upload avatars (subject to width, height and size limits definable by you).</li>
+<li>Remote avatars allow the user to supply a URI pointing to an image available on the internet, <b>PLEASE NOTE</b> that size limits do not apply to remote avatars!</li>
+<li>Local avatars allow you to upload your own avatars to a set directory, users can then pick from this avatar gallery. The default location for this is images/avatars/gallery. PLEASE NOTE that avatars are categorised according to sub-folders in this location! ie. you <b>MUST</b> place your avatars in subdirectories, eg. images/avatars/gallery/cartoons, images/avatars/gallery/real-life, etc.</li>
+</ul></p></li>
+
+<li><b>No matter what I set the uploadable avatars to I cannot upload one from my computer!</b>
+
+<p>There are two possibilities here, the first is you have not created the directory you specified as the storage location for avatars, ie. as specified in the Admin->General Configuration->Avatars section. If the directory does not exist uploadeable avatars are automatically disabled. You should create the required directory (ensuring it has global write access or other appropriate permissions to allow the webserver to write files to it).</p>
+
+<p>The second possibility is that your provider has disabled file_upload support, possibly because of a recently found serious security issue with PHP before version 4.1.2. You should contact your provider and ask them if this is the case. It may be unrelated to the security issue and your provider has simply decided to disable such things in general. In either case I'm afraid there is not a lot you can do, there are still three other avatar settings left to choose from including uploading via a URL which will work fine</p></li>
+
+<li><b>I just cannot get gallery avatars to appear!</b>
+
+<p>Chances are you have not followed our instructions above. phpBB 2 categorises gallery avatars and it does this by reading through folders contained in the location you specified as being the gallery path. For example, if you set the gallery path to "images/avatars/gallery" phpBB 2 will expect to find a series of folders within that path, eg. "images/avatars/gallery/moviestars", "images/avatars/gallery/cartoons", "images/avatars/gallery/misc", etc. Placing images directly in "images/avatars/gallery/" will result in nothing being listed in your gallery.</p></li>
+
+<li><b>How do I set forum permissions?</b>
+
+<p>You set forum permissions from the administration control panel -> Forums -> Permissions. This system has two modes of operation; Simple and Advanced. Simple uses a set of pre-defined authorisation levels, these set each type of authorisation setting to a specific level. Advanced settings allow you to specify individual levels for each operation in each forum. Experiment!</p></li>
+
+<li><b>How do I set user and group permissions?</b>
+
+<p>These are set from Admin -> Users (Groups) -> Permissions. The system may appear strange but it's very powerful. When you look up a user or group it will give you basic information (at the top of the page) followed by the available forum listing and current settings for this user. You can assign moderator status to users and groups and if you have PRIVATE forums (or forums with any of their individual operations set to PRIVATE) you can also assign access.</p></li>
+
+<li><b>How do I set a user (group) as moderator?</b>
+
+<p>See above</p></li>
+
+<li><b>Why are there no entries in the user (group) permission "Allow Access" column?</b>
+
+<p>You can only allow (or deny) users access to PRIVATE forums, or forums which have one or more operations set to PRIVATE</p></li>
+
+<li><b>How come I cannot set "Vote" to ALL?</b></li>
+
+<p>phpBB does not by default allow guest voting. This was done to prevent guest users (who cannot be reliably tracked) from voting time and time again in the same poll. There is a Mod available if you really need this feature, please see our Mod forums at <a href="http://www.phpbb.com/phpBB/">http://www.phpbb.com/phpBB/</a>.</p>
+
+<li><b>I (or my users) cannot stay logged in to the forum!</b>
+
+<p>If you (or your users) are, after attempting a login, being returned to the index (or other page) without appearing to be logged in the most likely problem is incorrect cookie settings. phpBB 2 uses cookies to store a session id and a small amount of user data. For this data to be stored correctly the cookie domain, path and secure settings must be correct. You can check this in Admin->General Configuration->Cookie settings. Typically the cookie domain can be left blank and the cookie path set to / (a single forward slash). Do <b>not</b> set the cookie as being secure unless your board is running over a secure sockets layer connection, ie. https://</p>
+
+<p>If you still have problems try setting the cookie domain to your full domain name, eg. www.mysystem.tld, www.something.mydomain.tld. You <b>must</b> ensure the domain name contains at least two dots or browsers will be unlikely to recognise the cookie, eg. .mydomain.com, mydomain.com. Do <b>not</b> add http:// or anything else to the domain name!</p></li>
+
+<li><b>My users are complaining about being logged out too quickly!</b>
+
+<p>You can increase the default length of sessions (ie. how long before a users session is considered 'dead') in Admin->General->Configuration->Cookie Settings->Session Length. Set it to whatever value your users feel comfortable with, remember that security issues may affect your decision (ie. having too long a session may allow non-users to abuse your board should a user forget to logout or otherwise leave a current session on a public workstation).</p></li>
+
+<li><b>I am having problems with HTML!</b>
+
+<p>If you want to allow your users to make use of HTML in posts you need to do two things. Firstly enable HTML in Admin -> General -> Configuration. Secondly to need to make sure that the tags your users will post are in the Allowed HTML Tags field (again Admin -> General -> Configuration). If users post using tags not on this list they won't be displayed as HTML! eg. to enable someone to post Flash you could add the embed tag to this field. Be careful which tags you allow, it is very easy to break the boards own output if the wrong tags are used in posts. </p></p></li>
+
+<li><b>Can I suggest a feature for phpBB 3.0?</b>
+
+<p>No, the feature list for phpBB 3.0 is now frozen and no new features will be added to that list. At the moment we do not accept new feature requests.</p>
+<!--
+You may however add requests for the next release after that, 3.2, in our feature tracker:</p>
+
+<p><a href="http://sourceforge.net/tracker/?atid=580201&group_id=7885&func=browse" target="_new">http://sourceforge.net/tracker/?atid=580201&group_id=7885&func=browse</a></p>
+
+<p>Before submitting your idea please <b>ensure</b> you have read through the entries in that list. If your idea is similar to an existing one please feel free to add a comment to it. Please <b>do not</b> submit duplicate suggestions!</p>
+
+<p>We make no promises to the inclusion of features but we will endeavour to introduce the most requested or most interesting ones.</p></li>
+//-->
+<p>If you wish to follow the progress of phpBB 3.0 you may like to visit our development forum to see how things are progressing:</p>
+
+<p><a href="http://area51.phpbb.com/phpBB/" target="_new">http://area51.phpbb.com/phpBB/</a></p>
+
+<p>Please note that this forum should <b>NOT</b> be used to obtain support for or ask questions about phpBB 2.0.x, the main community forums are the place for this. Any such posts will be locked and go unanswered.</p>
+
+<li><b>Why is phpBB 1.x faster than phpBB 2.0?</b>
+
+<p>The original phpBB 1.0 saw a very large decrease in page generation times from version 1.0/1.2 to 1.4. This was achieved by rewriting many of the SQL queries and splitting the database. These changes came about from work on phpBB 2.0. With phpBB 2.0 we have introduced numerous additional functions and features, not least of which is full templating (the separation of page design from code). This results in a slowdown from phpBB 1.4, we suspect though that the new features will outweigh the small difference in page generation times.</p></p></li>
+
+
+<li><b>My question isn't answered here!</b>
+
+Feel free to search our community forum for the information you require. <b>PLEASE DO NOT</b> post your question without having first used search, chances are someone has already asked and answered your question. You can find our board here:</p>
+
+<p><a href="http://www.phpbb.com/phpBB/" target="_new">http://www.phpbb.com/phpBB/</a></p></li>
+
+</ol>
+
+<h2><u>Copyright and disclaimer</u></h2>
+
+<p>This application is opensource software released under the <a href="http://www.gnu.org/licenses/gpl.html" target="_new">GPL</a>. Please see source code and the Docs directory for more details. This package and its contents are Copyright © 2002 <a href="http://www.phpbb.com/" target="_new">phpBB Group</a>, All Rights Reserved.</p>
+<!-- END DOCUMENT -->
+
+				</td>
+			</tr>
+		</table></td>
+	</tr>
+</table>
+
+</body>
+</html>

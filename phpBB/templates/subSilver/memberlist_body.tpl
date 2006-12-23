@@ -32,7 +32,7 @@
 	</tr>
 	<!-- END memberrow -->
 	<tr> 
-	  <td class="catbottom" colspan="8" height="28">&nbsp;</td>
+	  <td class="catBottom" colspan="8" height="28">&nbsp;</td>
 	</tr>
   </table>
   <table width="100%" cellspacing="2" border="0" align="center" cellpadding="2">

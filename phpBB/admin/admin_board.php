@@ -16,16 +16,16 @@ define('IN_PHPBB', 1);
 if( !empty($setmodules) )
 {
 	$file = basename(__FILE__);
-	$module['General']['Configuration'] = "$file?mode=config";
+	$module['General']['Configuration'] = $file;
 	return;
 }
 
 //
 // Let's set the root dir for phpBB
 //
-$phpbb_root_path = "../";
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_selects.'.$phpEx);
 
 //
@@ -43,9 +43,31 @@ else
 	{
 		$config_name = $row['config_name'];
 		$config_value = $row['config_value'];
-		$default_config[$config_name] = $config_value;
+		$default_config[$config_name] = isset($HTTP_POST_VARS['submit']) ? str_replace("'", "\'", $config_value) : $config_value;
 		
 		$new[$config_name] = ( isset($HTTP_POST_VARS[$config_name]) ) ? $HTTP_POST_VARS[$config_name] : $default_config[$config_name];
+
+		if ($config_name == 'cookie_name')
+		{
+			$new['cookie_name'] = str_replace('.', '_', $new['cookie_name']);
+		}
+
+		// Attempt to prevent a common mistake with this value,
+		// http:// is the protocol and not part of the server name
+		if ($config_name == 'server_name')
+		{
+			$new['server_name'] = str_replace('http://', '', $new['server_name']);
+		}
+
+		// Attempt to prevent a mistake with this value.
+		if ($config_name == 'avatar_path')
+		{
+			$new['avatar_path'] = trim($new['avatar_path']);
+			if (strstr($new['avatar_path'], "\0") || !is_dir($phpbb_root_path . $new['avatar_path']) || !is_writable($phpbb_root_path . $new['avatar_path']))
+			{
+				$new['avatar_path'] = $default_config['avatar_path'];
+			}
+		}
 
 		if( isset($HTTP_POST_VARS['submit']) )
 		{
@@ -68,7 +90,7 @@ else
 }
 
 $style_select = style_select($new['default_style'], 'default_style', "../templates");
-$lang_select = language_select($new['default_lang'], 'default_lang', "../language");
+$lang_select = language_select($new['default_lang'], 'default_lang', "language");
 $timezone_select = tz_select($new['board_timezone'], 'board_timezone');
 
 $disable_board_yes = ( $new['board_disable'] ) ? "checked=\"checked\"" : "";
@@ -91,6 +113,12 @@ $bbcode_no = ( !$new['allow_bbcode'] ) ? "checked=\"checked\"" : "";
 $activation_none = ( $new['require_activation'] == USER_ACTIVATION_NONE ) ? "checked=\"checked\"" : "";
 $activation_user = ( $new['require_activation'] == USER_ACTIVATION_SELF ) ? "checked=\"checked\"" : "";
 $activation_admin = ( $new['require_activation'] == USER_ACTIVATION_ADMIN ) ? "checked=\"checked\"" : "";
+
+$confirm_yes = ($new['enable_confirm']) ? 'checked="checked"' : '';
+$confirm_no = (!$new['enable_confirm']) ? 'checked="checked"' : '';
+
+$allow_autologin_yes = ($new['allow_autologin']) ? 'checked="checked"' : '';
+$allow_autologin_no = (!$new['allow_autologin']) ? 'checked="checked"' : '';
 
 $board_email_form_yes = ( $new['board_email_form'] ) ? "checked=\"checked\"" : "";
 $board_email_form_no = ( !$new['board_email_form'] ) ? "checked=\"checked\"" : "";
@@ -155,6 +183,12 @@ $template->assign_vars(array(
 	"L_NONE" => $lang['Acc_None'], 
 	"L_USER" => $lang['Acc_User'], 
 	"L_ADMIN" => $lang['Acc_Admin'], 
+	"L_VISUAL_CONFIRM" => $lang['Visual_confirm'], 
+	"L_VISUAL_CONFIRM_EXPLAIN" => $lang['Visual_confirm_explain'], 
+	"L_ALLOW_AUTOLOGIN" => $lang['Allow_autologin'],
+	"L_ALLOW_AUTOLOGIN_EXPLAIN" => $lang['Allow_autologin_explain'],
+	"L_AUTOLOGIN_TIME" => $lang['Autologin_time'],
+	"L_AUTOLOGIN_TIME_EXPLAIN" => $lang['Autologin_time_explain'],
 	"L_COOKIE_SETTINGS" => $lang['Cookie_settings'], 
 	"L_COOKIE_SETTINGS_EXPLAIN" => $lang['Cookie_settings_explain'], 
 	"L_COOKIE_DOMAIN" => $lang['Cookie_domain'],
@@ -174,6 +208,16 @@ $template->assign_vars(array(
 	"L_MAX_POLL_OPTIONS" => $lang['Max_poll_options'],
 	"L_FLOOD_INTERVAL" => $lang['Flood_Interval'],
 	"L_FLOOD_INTERVAL_EXPLAIN" => $lang['Flood_Interval_explain'], 
+	"L_SEARCH_FLOOD_INTERVAL" => $lang['Search_Flood_Interval'],
+	"L_SEARCH_FLOOD_INTERVAL_EXPLAIN" => $lang['Search_Flood_Interval_explain'], 
+
+	'L_MAX_LOGIN_ATTEMPTS'			=> $lang['Max_login_attempts'],
+	'L_MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> $lang['Max_login_attempts_explain'],
+	'L_LOGIN_RESET_TIME'			=> $lang['Login_reset_time'],
+	'L_LOGIN_RESET_TIME_EXPLAIN'	=> $lang['Login_reset_time_explain'],
+	'MAX_LOGIN_ATTEMPTS'			=> $new['max_login_attempts'],
+	'LOGIN_RESET_TIME'				=> $new['login_reset_time'],
+
 	"L_BOARD_EMAIL_FORM" => $lang['Board_email_form'], 
 	"L_BOARD_EMAIL_FORM_EXPLAIN" => $lang['Board_email_form_explain'], 
 	"L_TOPICS_PER_PAGE" => $lang['Topics_per_page'],
@@ -242,10 +286,16 @@ $template->assign_vars(array(
 	"ACTIVATION_USER_CHECKED" => $activation_user,
 	"ACTIVATION_ADMIN" => USER_ACTIVATION_ADMIN, 
 	"ACTIVATION_ADMIN_CHECKED" => $activation_admin, 
+	"CONFIRM_ENABLE" => $confirm_yes,
+	"CONFIRM_DISABLE" => $confirm_no,
+	'ALLOW_AUTOLOGIN_YES' => $allow_autologin_yes,
+	'ALLOW_AUTOLOGIN_NO' => $allow_autologin_no,
+	'AUTOLOGIN_TIME' => (int) $new['max_autologin_time'],
 	"BOARD_EMAIL_FORM_ENABLE" => $board_email_form_yes, 
 	"BOARD_EMAIL_FORM_DISABLE" => $board_email_form_no, 
 	"MAX_POLL_OPTIONS" => $new['max_poll_options'], 
 	"FLOOD_INTERVAL" => $new['flood_interval'],
+	"SEARCH_FLOOD_INTERVAL" => $new['search_flood_interval'],
 	"TOPICS_PER_PAGE" => $new['topics_per_page'],
 	"POSTS_PER_PAGE" => $new['posts_per_page'],
 	"HOT_TOPIC" => $new['hot_threshold'],
@@ -311,6 +361,6 @@ $template->assign_vars(array(
 
 $template->pparse("body");
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

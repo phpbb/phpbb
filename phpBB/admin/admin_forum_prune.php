@@ -32,9 +32,9 @@ if ( !empty($setmodules) )
 //
 // Load default header
 //
-$phpbb_root_path = '../';
+$phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
-require('pagestart.' . $phpEx);
+require('./pagestart.' . $phpEx);
 require($phpbb_root_path . 'includes/prune.'.$phpEx);
 require($phpbb_root_path . 'includes/functions_admin.'.$phpEx); 
 
@@ -168,9 +168,9 @@ else
 		$forum_name = ( $forum_id == -1 ) ? $lang['All_Forums'] : $forum_rows[0]['forum_name'];
 
 		$prune_data = $lang['Prune_topics_not_posted'] . " "; 
-		$prune_data .= '<input type="text" name="prunedays" size="4"> ' . $lang['Days'];
+		$prune_data .= '<input class="post" type="text" name="prunedays" size="4"> ' . $lang['Days'];
 
-		$hidden_input = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '">';
+		$hidden_input = '<input type="hidden" name="' . POST_FORUM_URL . '" value="' . $forum_id . '" />';
 
 		//
 		// Assign the template variables.
@@ -178,6 +178,7 @@ else
 		$template->assign_vars(array(
 			'FORUM_NAME' => $forum_name,
 
+			'L_FORUM' => $lang['Forum'], 
 			'L_FORUM_PRUNE' => $lang['Forum_Prune'], 
 			'L_FORUM_PRUNE_EXPLAIN' => $lang['Forum_Prune_explain'], 
 			'L_DO_PRUNE' => $lang['Do_Prune'],
@@ -193,6 +194,6 @@ else
 //
 $template->pparse('body');
 
-include('page_footer_admin.'.$phpEx);
+include('./page_footer_admin.'.$phpEx);
 
 ?>

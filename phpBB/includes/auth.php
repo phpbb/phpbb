@@ -129,9 +129,9 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 
 		if ( !($f_access = $db->$sql_fetchrow($result)) )
 		{
-			message_die(GENERAL_ERROR, 'No forum access control lists exist', '', __LINE__, __FILE__, $sql);
+			$db->sql_freeresult($result);
+			return array();
 		}
-
 		$db->sql_freeresult($result);
 	}
 
@@ -158,19 +158,20 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 
 		if ( $row = $db->sql_fetchrow($result) )
 		{
-			if ( $forum_id != AUTH_LIST_ALL)
+			do
 			{
-				$u_access[] = $row;
-			}
-			else
-			{
-				do
+				if ( $forum_id != AUTH_LIST_ALL)
+				{
+					$u_access[] = $row;
+				}
+				else
 				{
 					$u_access[$row['forum_id']][] = $row;
 				}
-				while( $row = $db->sql_fetchrow($result) );
 			}
+			while( $row = $db->sql_fetchrow($result) );
 		}
+		$db->sql_freeresult($result);
 	}
 
 	$is_admin = ( $userdata['user_level'] == ADMIN && $userdata['session_logged_in'] ) ? TRUE : 0;
@@ -199,7 +200,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 			{
 				case AUTH_ALL:
 					$auth_user[$key] = TRUE;
-					$auth_user[$key . '_type'] = $lang['Auth_Anonymous_users'];
+					$auth_user[$key . '_type'] = $lang['Auth_Anonymous_Users'];
 					break;
 
 				case AUTH_REG:
@@ -233,12 +234,13 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 			{
 				$value = $f_access[$k][$key];
 				$f_forum_id = $f_access[$k]['forum_id'];
+				$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
 
 				switch( $value )
 				{
 					case AUTH_ALL:
 						$auth_user[$f_forum_id][$key] = TRUE;
-						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_users'];
+						$auth_user[$f_forum_id][$key . '_type'] = $lang['Auth_Anonymous_Users'];
 						break;
 
 					case AUTH_REG:
@@ -281,6 +283,7 @@ function auth($type, $forum_id, $userdata, $f_access = '')
 		for($k = 0; $k < count($f_access); $k++)
 		{
 			$f_forum_id = $f_access[$k]['forum_id'];
+			$u_access[$f_forum_id] = isset($u_access[$f_forum_id]) ? $u_access[$f_forum_id] : array();
 
 			$auth_user[$f_forum_id]['auth_mod'] = ( $userdata['session_logged_in'] ) ? auth_check_user(AUTH_MOD, 'auth_mod', $u_access[$f_forum_id], $is_admin) : 0;
 		}
