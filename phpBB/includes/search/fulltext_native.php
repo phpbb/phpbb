@@ -953,10 +953,9 @@ class fulltext_native extends search_backend
 		*/
 		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
 
-		while (isset($word[0]))
+		while (strlen($word))
 		{
-			if (isset($word[255])
-			 || !isset($word[$isset_min]))
+			if (strlen($word) > 255 || strlen($word) <= $isset_min)
 			{
 				/**
 				* Words longer than 255 bytes are ignored. This will have to be
