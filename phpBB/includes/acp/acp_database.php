@@ -1094,7 +1094,7 @@ class acp_database
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
 
-						preg_match('#^(backup_\d{10,})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
+						preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
 						$file_name = $phpbb_root_path . 'store/' . $matches[0];
 
 						if (!(file_exists($file_name) && is_readable($file_name)))
@@ -1110,7 +1110,7 @@ class acp_database
 
 						$data = file_get_contents($file_name);
 
-						switch ($matches[2])
+						switch ($matches[1])
 						{
 							case 'sql.bz2':
 								$data = bzdecompress($data);
@@ -1126,7 +1126,7 @@ class acp_database
 						{
 							$name = $matches[0];
 
-							switch ($matches[2])
+							switch ($matches[1])
 							{
 								case 'sql':
 									$mimetype = 'text/x-sql';
@@ -1215,7 +1215,7 @@ class acp_database
 						$dh = opendir($dir);
 						while (($file = readdir($dh)) !== false)
 						{
-							if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
+							if (preg_match('#^backup_(\d{10,})_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 							{
 								$supported = in_array($matches[2], $methods);
 
