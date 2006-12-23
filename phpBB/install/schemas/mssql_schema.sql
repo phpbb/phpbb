@@ -1744,10 +1744,12 @@ CREATE TABLE [phpbb_zebra] (
 ) ON [PRIMARY]
 GO
 
-CREATE  INDEX [user_id] ON [phpbb_zebra]([user_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [zebra_id] ON [phpbb_zebra]([zebra_id]) ON [PRIMARY]
+ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_zebra] PRIMARY KEY  CLUSTERED 
+	(
+		[user_id],
+		[zebra_id]
+	)  ON [PRIMARY] 
 GO
 
 

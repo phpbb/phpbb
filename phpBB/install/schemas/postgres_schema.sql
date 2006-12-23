@@ -1335,11 +1335,10 @@ CREATE TABLE phpbb_zebra (
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	zebra_id INT4 DEFAULT '0' NOT NULL CHECK (zebra_id >= 0),
 	friend INT2 DEFAULT '0' NOT NULL CHECK (friend >= 0),
-	foe INT2 DEFAULT '0' NOT NULL CHECK (foe >= 0)
+	foe INT2 DEFAULT '0' NOT NULL CHECK (foe >= 0),
+	PRIMARY KEY (user_id, zebra_id)
 );
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id);
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id);
 
 
 COMMIT;

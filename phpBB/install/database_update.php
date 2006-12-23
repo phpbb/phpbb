@@ -321,6 +321,23 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Latest version
+	'3.0.b5'			=> array(
+		// Remove the following keys
+		'drop_keys'		=> array(
+			ZEBRA_TABLE		=> array(
+				'user_id',
+				'zebra_id',
+			),
+		),
+		// Add the following primary keys
+		'add_primary_keys'	=> array(
+			ZEBRA_TABLE			=> array(
+				'user_id',
+				'zebra_id',
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -470,6 +487,27 @@ foreach ($database_update_info as $version => $schema_changes)
 					sql_column_add($map_dbms, $table, $column_name, $column_data);
 				}
 			}
+		}
+	}
+
+	// Remove keys?
+	if (!empty($schema_changes['drop_keys']))
+	{
+		foreach ($schema_changes['drop_keys'] as $table => $indexes)
+		{
+			foreach ($indexes as $index_name)
+			{
+				sql_index_drop($map_dbms, $index_name, $table);
+			}
+		}
+	}
+
+	// Add primary keys?
+	if (!empty($schema_changes['add_primary_keys']))
+	{
+		foreach ($schema_changes['add_primary_keys'] as $table => $columns)
+		{
+			sql_create_primary_key($map_dbms, $table, $columns);
 		}
 	}
 }
@@ -964,6 +1002,117 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 				$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
 				_sql($sql, $errored, $error_ary);
 			}
+		break;
+	}
+}
+
+function sql_index_drop($dbms, $index_name, $table_name)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'mssql':
+			$sql = 'DROP INDEX ' . $table_name . '\.' . $index_name . ' ON ' . $table_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'firebird':
+		case 'oracle':
+		case 'postgres':
+		case 'sqlite':
+			$sql = 'DROP INDEX ' . $table_name . '_' . $index_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+	}
+}
+
+function sql_create_primary_key($dbms, $table_name, $column)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'firebird':
+		case 'postgres':
+			$sql = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mssql':
+			$sql = "ALTER TABLE [{$table_name}] WITH NOCHECK ADD ";
+			$sql .= "CONSTRAINT [PK_{$table_name}] PRIMARY KEY  CLUSTERED (";
+			$sql .= '[' . implode("],\n\t\t[", $column) . ']';
+			$sql .= ') ON [PRIMARY]';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'oracle':
+			$sql = 'ALTER TABLE ' . $table_name . 'add CONSTRAINT pk_' . $table_name . ' PRIMARY KEY (' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'sqlite':
+			$sql = "SELECT sql
+				FROM sqlite_master 
+				WHERE type = 'table' 
+					AND name = '{$table_name}'
+				ORDER BY type DESC, name;";
+			$result = _sql($sql, $errored, $error_ary);
+
+			if (!$result)
+			{
+				break;
+			}
+
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$db->sql_transaction('begin');
+
+			// Create a backup table and populate it, destroy the existing one
+			$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']));
+			$db->sql_query('INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name);
+			$db->sql_query('DROP TABLE ' . $table_name);
+
+			preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+			$new_table_cols = trim($matches[1]);
+			$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
+			$column_list = array();
+
+			foreach ($old_table_cols as $declaration)
+			{
+				$entities = preg_split('#\s+#', trim($declaration));
+				if ($entities == 'PRIMARY')
+				{
+					continue;
+				}
+				$column_list[] = $entities[0];
+			}
+
+			$columns = implode(',', $column_list);
+
+			// create a new table and fill it up. destroy the temp one
+			$db->sql_query('CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ', PRIMARY KEY (' . implode(', ', $column) . '));');
+			$db->sql_query('INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;');
+			$db->sql_query('DROP TABLE ' . $table_name . '_temp');
+
+			$db->sql_transaction('commit');
 		break;
 	}
 }

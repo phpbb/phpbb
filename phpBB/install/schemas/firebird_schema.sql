@@ -1502,6 +1502,6 @@ CREATE TABLE phpbb_zebra (
 	foe INTEGER DEFAULT 0 NOT NULL
 );;
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra(user_id);;
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra(zebra_id);;
+ALTER TABLE phpbb_zebra ADD PRIMARY KEY (user_id, zebra_id);;
+
 

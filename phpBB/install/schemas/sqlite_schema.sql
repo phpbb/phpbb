@@ -1033,11 +1033,10 @@ CREATE TABLE phpbb_zebra (
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	zebra_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	friend INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	foe INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	foe INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	PRIMARY KEY (user_id, zebra_id)
 );
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id);
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id);
 
 
 COMMIT;

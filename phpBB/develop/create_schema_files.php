@@ -1934,10 +1934,7 @@ function get_schema_struct()
 			'friend'				=> array('BOOL', 0),
 			'foe'					=> array('BOOL', 0),
 		),
-		'KEYS'			=> array(
-			'user_id'				=> array('INDEX', 'user_id'),
-			'zebra_id'				=> array('INDEX', 'zebra_id'),
-		),
+		'PRIMARY_KEY'	=> array('user_id', 'zebra_id'),
 	);
 
 	return $schema_data;

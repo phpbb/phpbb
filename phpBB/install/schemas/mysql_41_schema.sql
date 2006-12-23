@@ -1066,8 +1066,7 @@ CREATE TABLE phpbb_zebra (
 	zebra_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	friend tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY user_id (user_id),
-	KEY zebra_id (zebra_id)
+	PRIMARY KEY (user_id, zebra_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

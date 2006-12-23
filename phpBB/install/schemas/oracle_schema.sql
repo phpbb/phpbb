@@ -1935,12 +1935,9 @@ CREATE TABLE phpbb_zebra (
 	user_id number(8) DEFAULT '0' NOT NULL,
 	zebra_id number(8) DEFAULT '0' NOT NULL,
 	friend number(1) DEFAULT '0' NOT NULL,
-	foe number(1) DEFAULT '0' NOT NULL
+	foe number(1) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_zebra PRIMARY KEY (user_id, zebra_id)
 )
 /
 
-CREATE INDEX phpbb_zebra_user_id ON phpbb_zebra (user_id)
-/
-CREATE INDEX phpbb_zebra_zebra_id ON phpbb_zebra (zebra_id)
-/
 
