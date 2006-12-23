@@ -43,12 +43,11 @@ echo 'IPv4: ' . $ipv4 . "<br />\nIPv6: " . $ipv6 . "<br />\n";
 $pct_encoded = "%[\dA-F]{2}";
 $unreserved = 'a-z0-9\-._~';
 $sub_delims = '!$&\'()*+,;=';
-$pchar = "(?:[$unreserved$sub_delims:@|]|$pct_encoded)"; // rfc: no "|"
+$pchar = "(?:[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
 
 $scheme = '[a-z][a-z\d+\-.]*';
-$reg_name = "(?:[$unreserved$sub_delims|]|$pct_encoded)+"; // rfc: * instead of + and no "|"
-$authority = "(?:(?:[\w\-.~!$&'()*+,;=:]|$pct_encoded)*@){0,1}(?:$reg_name|$ipv4|\[$ipv6\])[:]?\d*";
-$userinfo = "(?:(?:[$unreserved$sub_delims:]|$pct_encoded))*";
+$reg_name = "(?:[$unreserved$sub_delims|]+|$pct_encoded)+"; // rfc: * instead of + and no "|"
+$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
 $ipv4_simple = '[0-9.]+';
 $ipv6_simple = '\[[a-z0-9.:]+\]';
 $host = "(?:$reg_name|$ipv4_simple|$ipv6_simple)";
@@ -57,7 +56,7 @@ $authority = "(?:$userinfo@)?$host(?::$port)?";
 $segment = "$pchar*";
 $path_abempty = "(?:/$segment)*";
 $hier_part = "/{2}$authority$path_abempty";
-$query = "(?:[$unreserved$sub_delims:@/?|]|$pct_encoded)*"; // pchar | "/" | "?", rfc: no "|"
+$query = "(?:[$unreserved$sub_delims:@/?|]+|$pct_encoded)*"; // pchar | "/" | "?", rfc: no "|"
 $fragment = $query;
 
 $url =  "$scheme:$hier_part(?:\?$query)?(?:\#$fragment)?";
