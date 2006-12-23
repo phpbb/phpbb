@@ -643,7 +643,7 @@ class fulltext_mysql extends search_backend
 
 		if (!isset($this->stats['post_subject']))
 		{
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			if ($db->sql_layer == 'mysqli' || version_compare($db->mysql_version, '4.1.3', '>='))
 			{
 				$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
@@ -652,7 +652,7 @@ class fulltext_mysql extends search_backend
 
 		if (!isset($this->stats['post_text']))
 		{
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			if ($db->sql_layer == 'mysqli' || version_compare($db->mysql_version, '4.1.3', '>='))
 			{
 				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			}
