@@ -569,6 +569,17 @@ if (version_compare($current_version, '3.0.b4', '<='))
 
 	set_config('newest_user_colour', $row['user_colour'], true);
 
+	switch ($config['allow_name_chars'])
+	{
+		case '[\w]+':
+			set_config('allow_name_chars', '[a-z]+');
+		break;
+
+		case '[\w_\+\. \-\[\]]+':
+			set_config('allow_name_chars', '[-\]_+ [a-z]+');
+		break;
+	}
+
 	$no_updates = false;
 }
 

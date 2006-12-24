@@ -478,7 +478,7 @@ class ucp_register
 			break;
 		}
 
-		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
+		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[a-z]+' => 'USERNAME_ALPHA_ONLY', '[-\]_+ [a-z]+' => 'USERNAME_ALPHA_SPACERS', '\w+' => 'USERNAME_LETTER_NUM', '[-\]_+ [\w]+' => 'USERNAME_LETTER_NUM_SPACERS');
 		$pass_char_ary = array('.*' => 'PASS_TYPE_ANY', '[a-zA-Z]' => 'PASS_TYPE_CASE', '[a-zA-Z0-9]' => 'PASS_TYPE_ALPHA', '[a-zA-Z\W]' => 'PASS_TYPE_SYMBOL');
 
 		//

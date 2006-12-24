@@ -1148,7 +1148,7 @@ function validate_username($username)
 		return false;
 	}
 
-	if (!preg_match('#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#i', $username) || strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
+	if (!preg_match('#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#ui', $username) || strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
 	{
 		return 'INVALID_CHARS';
 	}
