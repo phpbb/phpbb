@@ -805,7 +805,7 @@ function mcp_fork_topic($topic_ids)
 	}
 
 	$to_forum_id = request_var('to_forum_id', 0);
-	$forum_id = request_var('forum_id', 0);
+	$forum_id = request_var('f', 0);
 	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
 	$additional_msg = $success_msg = '';
 
