@@ -84,15 +84,12 @@ class bbcode_firstpass extends bbcode
 	function prepare_bbcodes()
 	{
 		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
-		if (strpos($this->message, '[quote') !== false)
+		if (strpos($this->message, '[quote') !== false && strpos($this->message, '[/quote]') !== false)
 		{
 			$this->message = str_replace("\r\n", "\n", $this->message);
 
-			// We strip newlines and spaces after and before quotes in quotes (trimming)
-			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]([\s|\n]+)#ius', '#([\s|\n]+)\[\/quote\]#ius'), array("[quote\\1]", "[/quote]"), $this->message);
-
-			// Now we add exactly one newline
-			$this->message = preg_replace(array('#\[quote(=&quot;.*?&quot;)?\]#is', '#\[\/quote\]#is'), array("[quote\\1]\n", "\n[/quote]"), $this->message);
+			// We strip newlines and spaces after and before quotes in quotes (trimming) and then add exactly one newline
+			$this->message = preg_replace('#\[quote(=&quot;.*?&quot;)?\]\s*(.*?)\s*\[/quote\]#siu', '[quote\1]' . "\n" . '\2' ."\n[/quote]", $this->message);
 		}
 
 		// Add other checks which needs to be placed before actually parsing anything (be it bbcodes, smilies, urls...)
