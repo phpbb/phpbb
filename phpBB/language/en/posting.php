@@ -184,7 +184,7 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more options per user than existing poll options',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully',
 
-	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain BBCodes: ',
+	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain BBCodes: %s',
 	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you wish this topic to be displayed.',
 	'UPDATE_COMMENT'			=> 'Update comment',
 	'URL_INVALID'				=> 'The URL you specified is invalid.',

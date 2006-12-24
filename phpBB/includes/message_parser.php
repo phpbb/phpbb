@@ -55,7 +55,7 @@ class bbcode_firstpass extends bbcode
 				{
 					if (preg_match($regexp, $this->message))
 					{
-						$this->warn_msg[] = $user->lang['UNAUTHORISED_BBCODE'] . '[' . $bbcode_name . ']';
+						$this->warn_msg[] = sprintf($user->lang['UNAUTHORISED_BBCODE'] , '[' . $bbcode_name . ']');
 						continue;
 					}
 				}
