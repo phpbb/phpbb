@@ -488,6 +488,18 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 		}
 	}
+	else
+	{
+		if (!$subject)
+		{
+			$error[] = $user->lang['EMPTY_SUBJECT'];
+		}
+
+		if (!$message)
+		{
+			$error[] = $user->lang['TOO_FEW_CHARS'];
+		}
+	}
 
 	unset($subject, $message);
 }
