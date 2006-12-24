@@ -39,7 +39,7 @@ $load		= (isset($_POST['load'])) ? true : false;
 $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['edit_comment']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
@@ -733,7 +733,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$preview && !$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}
@@ -999,17 +999,12 @@ if (!sizeof($error) && $preview)
 	// Attachment Preview
 	if (sizeof($message_parser->attachment_data))
 	{
-		$extensions = $update_count = array();
-
 		$template->assign_var('S_HAS_ATTACHMENTS', true);
 
+		$update_count = array();
 		$attachment_data = $message_parser->attachment_data;
-		$unset_attachments = parse_inline_attachments($preview_message, $attachment_data, $update_count, $forum_id, true);
 
-		foreach ($unset_attachments as $index)
-		{
-			unset($attachment_data[$index]);
-		}
+		parse_attachments($forum_id, $preview_message, $attachment_data, $update_count, true);
 
 		foreach ($attachment_data as $i => $attachment)
 		{
@@ -1017,7 +1012,7 @@ if (!sizeof($error) && $preview)
 				'DISPLAY_ATTACHMENT'	=> $attachment)
 			);
 		}
-		unset($attachment_data, $attachment);
+		unset($attachment_data);
 	}
 
 	if (!sizeof($error))

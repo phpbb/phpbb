@@ -1887,6 +1887,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
 
+			// Special case... the user is effectively banned, but we allow founders to login
+			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
+			{
+				return;
+			}
+
 			meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
@@ -2439,24 +2445,288 @@ function smiley_text($text, $force_option = false)
 }
 
 /**
-* Inline Attachment processing
+* General attachment parsing
+*
+* @param int $forum_id The forum id the attachments are displayed in (0 for private messages)
+* @param string &$message The post/private message
+* @param array &$attachments The attachments to parse for (inline) display. The attachments array will hold templated data after parsing.
+* @param array &$update_count The attachment counts to be updated - will be filled
+* @param bool $preview If set to true the attachments are parsed for preview. Within preview mode the comments are fetched from the given $attachments array and not fetched from the database.
 */
-function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_id = 0, $preview = false)
+function parse_attachments($forum_id, &$message, &$attachments, &$update_count, $preview = false)
 {
-	global $config, $user;
-
-	if (!function_exists('display_attachments'))
+	if (!sizeof($attachments))
 	{
-		global $phpbb_root_path, $phpEx;
-		include("{$phpbb_root_path}includes/functions_display.$phpEx");
+		return;
 	}
 
-	$attachments = display_attachments($forum_id, NULL, $attachments, $update_count, false, true);
+	global $template, $cache, $user;
+	global $extensions, $config, $phpbb_root_path, $phpEx;
+
+	// 
+	$force_physical = false;
+	$compiled_attachments = array();
+
+	if (!isset($template->filename['attachment_tpl']))
+	{
+		$template->set_filenames(array(
+			'attachment_tpl'	=> 'attachment.html')
+		);
+	}
+
+	if (empty($extensions) || !is_array($extensions))
+	{
+		$extensions = $cache->obtain_attach_extensions();
+	}
+
+	// Look for missing attachment information...
+	$attach_ids = array();
+	foreach ($attachments as $pos => $attachment)
+	{
+		// If is_orphan is set, we need to retrieve the attachments again...
+		if (!isset($attachment['extension']) && !isset($attachment['physical_filename']))
+		{
+			$attach_ids[(int) $attachment['attach_id']] = $pos;
+		}
+	}
+
+	// Grab attachments (security precaution)
+	if (sizeof($attach_ids))
+	{
+		global $db;
+
+		$new_attachment_data = array();
+
+		$sql = 'SELECT *
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('attach_id', array_keys($attach_ids));
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!isset($attach_ids[$row['attach_id']]))
+			{
+				continue;
+			}
+
+			// If we preview attachments we will set some retrieved values here
+			if ($preview)
+			{
+				$row['attach_comment'] = $attachments[$attach_ids[$row['attach_id']]]['attach_comment'];
+			}
+
+			$new_attachment_data[$attach_ids[$row['attach_id']]] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		$attachments = $new_attachment_data;
+		unset($new_attachment_data);
+	}
+
+	// Sort correctly
+	if ($config['display_order'])
+	{
+		// Ascending sort
+		krsort($attachments);
+	}
+	else
+	{
+		// Descending sort
+		ksort($attachments);
+	}
+
+	foreach ($attachments as $attachment)
+	{
+		if (!sizeof($attachment))
+		{
+			continue;
+		}
+
+		// We need to reset/empty the _file block var, because this function might be called more than once
+		$template->destroy_block_vars('_file');
+
+		$block_array = array();
+		
+		// Some basics...
+		$attachment['extension'] = strtolower(trim($attachment['extension']));
+		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
+		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
+
+		$upload_icon = '';
+
+		if (isset($extensions[$attachment['extension']]))
+		{
+			if ($user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+			{
+				$upload_icon = $user->img('icon_topic_attach', '');
+			}
+			else if ($extensions[$attachment['extension']]['upload_icon'])
+			{
+				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+			}
+		}
+
+		$filesize = $attachment['filesize'];
+		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
+		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
+
+		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
+
+		$block_array += array(
+			'UPLOAD_ICON'		=> $upload_icon,
+			'FILESIZE'			=> $filesize,
+			'SIZE_LANG'			=> $size_lang,
+			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
+			'COMMENT'			=> $comment,
+		);
+
+		$denied = false;
+
+		if (!extension_allowed($forum_id, $attachment['extension'], $extensions))
+		{
+			$denied = true;
+
+			$block_array += array(
+				'S_DENIED'			=> true,
+				'DENIED_MESSAGE'	=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension'])
+			);
+		}
+
+		if (!$denied)
+		{
+			$l_downloaded_viewed = $download_link = '';
+			$display_cat = $extensions[$attachment['extension']]['display_cat'];
+
+			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
+			{
+				if ($attachment['thumbnail'])
+				{
+					$display_cat = ATTACHMENT_CATEGORY_THUMB;
+				}
+				else
+				{
+					if ($config['img_display_inlined'])
+					{
+						if ($config['img_link_width'] || $config['img_link_height'])
+						{
+							list($width, $height) = @getimagesize($filename);
+
+							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
+						}
+					}
+					else
+					{
+						$display_cat = ATTACHMENT_CATEGORY_NONE;
+					}
+				}
+			}
+
+			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
+
+			switch ($display_cat)
+			{
+				// Images
+				case ATTACHMENT_CATEGORY_IMAGE:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					$block_array += array(
+						'S_IMAGE'		=> true,
+					);
+
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				// Images, but display Thumbnail
+				case ATTACHMENT_CATEGORY_THUMB:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$thumbnail_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . $forum_id) : $thumbnail_filename;
+
+					$block_array += array(
+						'S_THUMBNAIL'		=> true,
+						'THUMB_IMAGE'		=> $thumbnail_link,
+					);
+				break;
+
+				// Windows Media Streams
+				case ATTACHMENT_CATEGORY_WM:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					// Giving the filename directly because within the wm object all variables are in local context making it impossible
+					// to validate against a valid session (all params can differ)
+					$download_link = $filename;
+
+					$block_array += array(
+						'U_FORUM'		=> generate_board_url(),
+						'S_WM_FILE'		=> true,
+					);
+
+					// Viewed/Heared File ... update the download count
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				// Real Media Streams
+				case ATTACHMENT_CATEGORY_RM:
+				case ATTACHMENT_CATEGORY_QUICKTIME:
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					$block_array += array(
+						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
+						'S_QUICKTIME_FILE'	=> ($display_cat == ATTACHMENT_CATEGORY_QUICKTIME) ? true : false,
+						'U_FORUM'			=> generate_board_url(),
+						'ATTACH_ID'			=> $attachment['attach_id'],
+					);
+
+					// Viewed/Heared File ... update the download count
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				// Macromedia Flash Files
+				case ATTACHMENT_CATEGORY_FLASH:
+					list($width, $height) = @getimagesize($filename);
+
+					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					$block_array += array(
+						'S_FLASH_FILE'	=> true,
+						'WIDTH'			=> $width,
+						'HEIGHT'		=> $height,
+					);
+
+					// Viewed/Heared File ... update the download count
+					$update_count[] = $attachment['attach_id'];
+				break;
+
+				default:
+					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+
+					$block_array += array(
+						'S_FILE'		=> true,
+					);
+				break;
+			}
+
+			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
+
+			$block_array += array(
+				'U_DOWNLOAD_LINK'		=> $download_link,
+				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
+				'L_DOWNLOAD_COUNT'		=> $l_download_count
+			);
+		}
+
+		$template->assign_block_vars('_file', $block_array);
+
+		$compiled_attachments[] = $template->assign_display('attachment_tpl');
+	}
+
+	$attachments = $compiled_attachments;
+	unset($compiled_attachments);
+
 	$tpl_size = sizeof($attachments);
 
 	$unset_tpl = array();
 
-	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $text, $matches, PREG_PATTERN_ORDER);
+	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches, PREG_PATTERN_ORDER);
 
 	$replace = array();
 	foreach ($matches[0] as $num => $capture)
@@ -2472,10 +2742,16 @@ function parse_inline_attachments(&$text, &$attachments, &$update_count, $forum_
 
 	if (isset($replace['from']))
 	{
-		$text = str_replace($replace['from'], $replace['to'], $text);
+		$message = str_replace($replace['from'], $replace['to'], $message);
 	}
 
-	return array_unique($unset_tpl);
+	$unset_tpl = array_unique($unset_tpl);
+
+	// Needed to let not display the inlined attachments at the end of the post again
+	foreach ($unset_tpl as $index)
+	{
+		unset($attachments[$index]);
+	}
 }
 
 /**

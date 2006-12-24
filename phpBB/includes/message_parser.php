@@ -1213,7 +1213,22 @@ class parse_message extends bbcode_firstpass
 
 		$add_file		= (isset($_POST['add_file'])) ? true : false;
 		$delete_file	= (isset($_POST['delete_file'])) ? true : false;
-		$edit_comment	= (isset($_POST['edit_comment'])) ? true : false;
+
+		// First of all adjust comments if changed
+		$actual_comment_list = utf8_normalize_nfc(request_var('comment_list', array(''), true));
+
+		foreach ($actual_comment_list as $comment_key => $comment)
+		{
+			if (!isset($this->attachment_data[$comment_key]))
+			{
+				continue;
+			}
+
+			if ($this->attachment_data[$comment_key]['attach_comment'] != $actual_comment_list[$comment_key])
+			{
+				$this->attachment_data[$comment_key]['attach_comment'] = $actual_comment_list[$comment_key];
+			}
+		}
 
 		$cfg = array();
 		$cfg['max_attachments'] = ($is_message) ? $config['max_attachments_pm'] : $config['max_attachments'];
@@ -1284,7 +1299,6 @@ class parse_message extends bbcode_firstpass
 
 				if (!empty($this->attachment_data[$index]))
 				{
-
 					// delete selected attachment
 					if ($this->attachment_data[$index]['is_orphan'])
 					{
@@ -1321,58 +1335,46 @@ class parse_message extends bbcode_firstpass
 					$this->attachment_data = array_values($this->attachment_data);
 				}
 			}
-			else if ($edit_comment || $add_file || $preview)
+			else if (($add_file || $preview) && $upload_file)
 			{
-				if ($edit_comment)
+				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
 				{
-					$actual_comment_list = utf8_normalize_nfc(request_var('comment_list', array(''), true));
+					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
+					$error = array_merge($error, $filedata['error']);
 
-					$edit_comment = request_var('edit_comment', array(0 => ''));
-					$edit_comment = key($edit_comment);
-					$this->attachment_data[$edit_comment]['attach_comment'] = $actual_comment_list[$edit_comment];
+					if (!sizeof($error))
+					{
+						$sql_ary = array(
+							'physical_filename'	=> $filedata['physical_filename'],
+							'attach_comment'	=> $this->filename_data['filecomment'],
+							'real_filename'		=> $filedata['real_filename'],
+							'extension'			=> $filedata['extension'],
+							'mimetype'			=> $filedata['mimetype'],
+							'filesize'			=> $filedata['filesize'],
+							'filetime'			=> $filedata['filetime'],
+							'thumbnail'			=> $filedata['thumbnail'],
+							'is_orphan'			=> 1,
+							'in_message'		=> ($is_message) ? 1 : 0,
+							'poster_id'			=> $user->data['user_id'],
+						);
+
+						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+
+						$new_entry = array(
+							'attach_id'		=> $db->sql_nextid(),
+							'is_orphan'		=> 1,
+							'real_filename'	=> $filedata['real_filename'],
+							'attach_comment'=> $this->filename_data['filecomment'],
+						);
+
+						$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
+						$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
+						$this->filename_data['filecomment'] = '';
+					}
 				}
-
-				if (($add_file || $preview) && $upload_file)
+				else
 				{
-					if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
-					{
-						$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
-						$error = array_merge($error, $filedata['error']);
-
-						if (!sizeof($error))
-						{
-							$sql_ary = array(
-								'physical_filename'	=> $filedata['physical_filename'],
-								'attach_comment'	=> $this->filename_data['filecomment'],
-								'real_filename'		=> $filedata['real_filename'],
-								'extension'			=> $filedata['extension'],
-								'mimetype'			=> $filedata['mimetype'],
-								'filesize'			=> $filedata['filesize'],
-								'filetime'			=> $filedata['filetime'],
-								'thumbnail'			=> $filedata['thumbnail'],
-								'is_orphan'			=> 1,
-								'in_message'		=> ($is_message) ? 1 : 0,
-								'poster_id'			=> $user->data['user_id'],
-							);
-
-							$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-
-							$new_entry = array(
-								'attach_id'		=> $db->sql_nextid(),
-								'is_orphan'		=> 1,
-								'real_filename'	=> $filedata['real_filename'],
-								'attach_comment'=> $this->filename_data['filecomment'],
-							);
-
-							$this->attachment_data = array_merge(array(0 => $new_entry), $this->attachment_data);
-							$this->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#e', "'[attachment='.(\\1 + 1).']\\2[/attachment]'", $this->message);
-							$this->filename_data['filecomment'] = '';
-						}
-					}
-					else
-					{
-						$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
-					}
+					$error[] = sprintf($user->lang['TOO_MANY_ATTACHMENTS'], $cfg['max_attachments']);
 				}
 			}
 		}

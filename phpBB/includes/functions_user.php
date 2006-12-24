@@ -275,6 +275,18 @@ function user_delete($mode, $user_id, $post_username = false)
 	global $cache, $config, $db, $user, $auth;
 	global $phpbb_root_path, $phpEx;
 
+	$sql = 'SELECT *
+		FROM ' . USERS_TABLE . '
+		WHERE user_id = ' . $user_id;
+	$result = $db->sql_query($sql);
+	$user_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if (!$user_row)
+	{
+		return false;
+	}
+
 	$db->sql_transaction('begin');
 
 	switch ($mode)
@@ -312,18 +324,12 @@ function user_delete($mode, $user_id, $post_username = false)
 			$db->sql_query($sql);
 
 			// Since we change every post by this author, we need to count this amount towards the anonymous user
-			$sql = 'SELECT user_posts
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$num_posts = (int) $db->sql_fetchfield('user_posts');
-			$db->sql_freeresult($result);
 
 			// Update the post count for the anonymous user
-			if ($num_posts)
+			if ($user_row['user_posts'])
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_posts = user_posts + ' . $num_posts . '
+					SET user_posts = user_posts + ' . $user_row['user_posts'] . '
 					WHERE user_id = ' . ANONYMOUS;
 				$db->sql_query($sql);
 			}
@@ -333,7 +339,7 @@ function user_delete($mode, $user_id, $post_username = false)
 
 			if (!function_exists('delete_posts'))
 			{
-				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 			}
 
 			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
@@ -390,8 +396,6 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
-
-	include_once($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
 
 	// Remove any undelivered mails...
 	$sql = 'SELECT msg_id, user_id
@@ -456,7 +460,11 @@ function user_delete($mode, $user_id, $post_username = false)
 		update_last_username();
 	}
 
-	set_config('num_users', $config['num_users'] - 1, true);
+	// Decrement number of users if this user is active
+	if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
+	{
+		set_config('num_users', $config['num_users'] - 1, true);
+	}
 
 	$db->sql_transaction('commit');
 
@@ -1247,7 +1255,7 @@ function validate_email($email)
 	{
 		list(, $domain) = explode('@', $email);
 
-		if (phpbb_checkdnsrr($domain, 'MX') === false)
+		if (phpbb_checkdnsrr($domain, 'A') === false && phpbb_checkdnsrr($domain, 'MX') === false)
 		{
 			return 'DOMAIN_NO_MX_RECORD';
 		}
@@ -1603,12 +1611,19 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 				WHERE group_id = $group_id";
+			$db->sql_query($sql);
+
+			// Since we may update the name too, we need to do this on other tables too...
+			$sql = 'UPDATE ' . MODERATOR_CACHE_TABLE . "
+				SET group_name = '" . $db->sql_escape($sql_ary['group_name']) . "'
+				WHERE group_id = $group_id";
+			$db->sql_query($sql);
 		}
 		else
 		{
 			$sql = 'INSERT INTO ' . GROUPS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			$db->sql_query($sql);
 		}
-		$db->sql_query($sql);
 
 		if (!$group_id)
 		{

@@ -117,16 +117,10 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Assign inline attachments
-	if (isset($attachments) && sizeof($attachments))
+	if (!empty($attachments))
 	{
 		$update_count = array();
-		$unset_attachments = parse_inline_attachments($message, $attachments, $update_count, 0);
-
-		// Needed to let not display the inlined attachments at the end of the message again
-		foreach ($unset_attachments as $index)
-		{
-			unset($attachments[$index]);
-		}
+		parse_attachments(0, $message, $attachments, $update_count);
 
 		// Update the attachment download counts
 		if (sizeof($update_count))

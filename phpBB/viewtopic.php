@@ -1266,15 +1266,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	// Always process smilies after parsing bbcodes
 	$message = smiley_text($message);
 
-	if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+	if (!empty($attachments[$row['post_id']]))
 	{
-		$unset_attachments = parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
-
-		// Needed to let not display the inlined attachments at the end of the post again
-		foreach ($unset_attachments as $index)
-		{
-			unset($attachments[$row['post_id']][$index]);
-		}
+		parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 	}
 
 	// Highlight active words (primarily for search)

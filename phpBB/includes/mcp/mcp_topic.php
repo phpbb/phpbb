@@ -57,6 +57,21 @@ function mcp_topic_view($id, $mode, $action)
 		$subject = $topic_info['topic_title'];
 	}
 
+	// Approve posts?
+	if ($action == 'approve' && $auth->acl_get('m_approve', $topic_info['forum_id']))
+	{
+		include($phpbb_root_path . 'includes/mcp/mcp_queue.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+		if (!sizeof($post_id_list))
+		{
+			trigger_error('NO_POST_SELECTED');
+		}
+
+		approve_post($post_id_list, $id, $mode);
+	}
+
 	// Jumpbox, sort selects and that kind of things
 	make_jumpbox($url . "&amp;i=$id&amp;mode=forum_view", $topic_info['forum_id'], false, 'm_');
 	$where_sql = ($action == 'reports') ? 'WHERE post_reported = 1 AND ' : 'WHERE';

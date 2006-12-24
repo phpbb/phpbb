@@ -69,6 +69,11 @@ class p_master
 			$cache->put('_modules_' . $this->p_class, $this->module_cache);
 		}
 
+		if (empty($this->module_cache))
+		{
+			$this->module_cache = array('modules' => array(), 'parents' => array());
+		}
+
 		// We "could" build a true tree with this function - maybe mod authors want to use this...
 		// Functions for traversing and manipulating the tree are not available though
 		// We might re-structure the module system to use true trees in 3.2.x...
@@ -370,7 +375,7 @@ class p_master
 			if (defined('IN_ADMIN'))
 			{
 				// Not being able to overwrite ;)
-				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_id}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 			else
 			{
@@ -384,7 +389,7 @@ class p_master
 					$this->module->u_action = $phpbb_root_path . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
 				}
 
-				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_id}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 
 			// Assign the module path for re-usage
@@ -394,7 +399,7 @@ class p_master
 			// Users are able to call the main method after this function to be able to assign additional parameters manually
 			if ($execute_module)
 			{
-				$this->module->main(($this->p_name) ? $this->p_name : $this->p_id, $this->p_mode);
+				$this->module->main($this->p_name, $this->p_mode);
 			}
 
 			return;

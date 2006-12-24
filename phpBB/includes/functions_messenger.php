@@ -45,9 +45,21 @@ class messenger
 	*/
 	function to($address, $realname = '')
 	{
+		global $config;
+
 		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
+
 		$this->addresses['to'][$pos]['email'] = trim($address);
-		$this->addresses['to'][$pos]['name'] = trim($realname);
+
+		// If empty sendmail_path on windows, PHP changes the to line
+		if (!$config['smtp_delivery'] && strpos(strtolower(PHP_OS), 'win') === 0)
+		{
+			$this->addresses['to'][$pos]['name'] = '';
+		}
+		else
+		{
+			$this->addresses['to'][$pos]['name'] = trim($realname);
+		}
 	}
 
 	/**

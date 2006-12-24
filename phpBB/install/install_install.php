@@ -1670,17 +1670,18 @@ class install_install extends module
 		foreach ($this->bot_list as $bot_name => $bot_ary)
 		{
 			$user_row = array(
-				'user_type'			=> USER_IGNORE,
-				'group_id'			=> $group_id,
-				'username'			=> $bot_name,
-				'user_regdate'		=> time(),
-				'user_password'		=> '',
-				'user_colour'		=> '9E8DA7',
-				'user_email'		=> '',
-				'user_lang'			=> $default_lang,
-				'user_style'		=> 1,
-				'user_timezone'		=> 0,
-				'user_dateformat'	=> $lang['default_dateformat'],
+				'user_type'				=> USER_IGNORE,
+				'group_id'				=> $group_id,
+				'username'				=> $bot_name,
+				'user_regdate'			=> time(),
+				'user_password'			=> '',
+				'user_colour'			=> '9E8DA7',
+				'user_email'			=> '',
+				'user_lang'				=> $default_lang,
+				'user_style'			=> 1,
+				'user_timezone'			=> 0,
+				'user_dateformat'		=> $lang['default_dateformat'],
+				'user_allow_massemail'	=> 0,
 			);
 			
 			$user_id = user_add($user_row);

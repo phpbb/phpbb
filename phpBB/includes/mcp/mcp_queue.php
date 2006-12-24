@@ -50,11 +50,11 @@ class mcp_queue
 
 				if ($action == 'approve')
 				{
-					approve_post($post_id_list, $mode);
+					approve_post($post_id_list, 'queue', $mode);
 				}
 				else
 				{
-					disapprove_post($post_id_list, $mode);
+					disapprove_post($post_id_list, 'queue', $mode);
 				}
 
 			break;
@@ -372,7 +372,7 @@ class mcp_queue
 /**
 * Approve Post/Topic
 */
-function approve_post($post_id_list, $mode)
+function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
@@ -386,7 +386,7 @@ function approve_post($post_id_list, $mode)
 	$success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'i'				=> 'queue',
+		'i'				=> $id,
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
 		'action'		=> 'approve',
@@ -617,7 +617,7 @@ function approve_post($post_id_list, $mode)
 /**
 * Disapprove Post/Topic
 */
-function disapprove_post($post_id_list, $mode)
+function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
 	global $phpEx, $phpbb_root_path;
@@ -633,7 +633,7 @@ function disapprove_post($post_id_list, $mode)
 	$success_msg = $additional_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'i'				=> 'queue',
+		'i'				=> $id,
 		'mode'			=> $mode,
 		'post_id_list'	=> $post_id_list,
 		'action'		=> 'disapprove',

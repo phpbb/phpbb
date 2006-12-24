@@ -822,9 +822,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 					}
 
-					if (isset($attachments[$row['post_id']]) && sizeof($attachments[$row['post_id']]))
+					if (!empty($attachments[$row['post_id']]))
 					{
-						parse_inline_attachments($message, $attachments[$row['post_id']], $update_count, $forum_id);
+						parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 				
 						// we only display inline attachments
 						unset($attachments[$row['post_id']]);

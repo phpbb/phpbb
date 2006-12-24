@@ -651,7 +651,7 @@ class session
 	* and update the users information from the relevant session data. It will then
 	* grab guest user information.
 	*/
-	function session_kill()
+	function session_kill($new_session = true)
 	{
 		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
 
@@ -712,7 +712,10 @@ class session
 		$this->session_id = $_SID = '';
 
 		// To make sure a valid session is created we create one for the anonymous user
-		$this->session_create(ANONYMOUS);
+		if ($new_session)
+		{
+			$this->session_create(ANONYMOUS);
+		}
 
 		return true;
 	}
@@ -820,6 +823,11 @@ class session
 	{
 		global $config, $db;
 
+		if (defined('IN_CHECK_BAN'))
+		{
+			return;
+		}
+
 		$banned = false;
 
 		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
@@ -925,6 +933,23 @@ class session
 			if ($this->data['user_id'] != ANONYMOUS)
 			{
 				$this->session_kill();
+			}
+
+			// We show a login box here to allow founders accessing the board if banned by IP
+			if (defined('IN_LOGIN') && $this->data['user_id'] == ANONYMOUS)
+			{
+				global $phpEx;
+
+				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
+				define('IN_CHECK_BAN', 1);
+
+				$this->setup('ucp');
+				$this->data['is_registered'] = $this->data['is_bot'] = false;
+
+				login_box("index.$phpEx");
+
+				// The false here is needed, else the user is able to circumvent the ban.
+				$this->session_kill(false);
 			}
 
 			// Determine which message to output

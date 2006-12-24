@@ -181,17 +181,17 @@ class acp_bots
 							}
 
 							$user_id = user_add(array(
-								'user_type'		=> (int) USER_IGNORE, 
-								'group_id'		=> (int) $group_row['group_id'], 
-								'username'		=> (string) $bot_row['bot_name'], 
-								'user_regdate'	=> time(),
-								'user_password'	=> '',
-								'user_colour'	=> (string) $group_row['group_colour'],
-								'user_email'	=> '',
-								'user_lang'		=> (string) $bot_row['bot_lang'], 
-								'user_style'	=> (int) $bot_row['bot_style'],
-								'user_options'	=> 0)
-							);
+								'user_type'				=> (int) USER_IGNORE, 
+								'group_id'				=> (int) $group_row['group_id'], 
+								'username'				=> (string) $bot_row['bot_name'], 
+								'user_regdate'			=> time(),
+								'user_password'			=> '',
+								'user_colour'			=> (string) $group_row['group_colour'],
+								'user_email'			=> '',
+								'user_lang'				=> (string) $bot_row['bot_lang'], 
+								'user_style'			=> (int) $bot_row['bot_style'],
+								'user_allow_massemail'	=> 0,
+							));
 
 							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 								'user_id'		=> (int) $user_id,
