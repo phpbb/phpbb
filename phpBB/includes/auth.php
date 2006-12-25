@@ -113,7 +113,7 @@ class auth
 			{
 				if (isset($this->acl[0]))
 				{
-					$this->cache[$f][$opt] = $this->acl[0]{$this->acl_options['global'][$opt]};
+					$this->cache[$f][$opt] = $this->acl[0][$this->acl_options['global'][$opt]];
 				}
 			}
 
@@ -123,7 +123,7 @@ class auth
 			{
 				if (isset($this->acl[$f]))
 				{
-					$this->cache[$f][$opt] |= $this->acl[$f]{$this->acl_options['local'][$opt]};
+					$this->cache[$f][$opt] |= $this->acl[$f][$this->acl_options['local'][$opt]];
 				}
 			}
 		}

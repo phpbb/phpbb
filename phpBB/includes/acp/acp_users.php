@@ -1960,49 +1960,75 @@ class acp_users
 				$user->add_lang('acp/permissions');
 				add_permission_language();
 
-				// Select auth options
-				$sql = 'SELECT auth_option, is_local, is_global
-					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '%\_'";
+				$forum_id = request_var('f', 0);
 
-				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
+				// Global Permissions
+				if (!$forum_id)
 				{
-					$sql .= " ESCAPE '\\' ";
+					// Select auth options
+					$sql = 'SELECT auth_option, is_local, is_global
+						FROM ' . ACL_OPTIONS_TABLE . "
+						WHERE auth_option LIKE '%\_'";
+
+					if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
+					{
+						$sql .= " ESCAPE '\\' ";
+					}
+
+					$sql .= 'AND is_global = 1
+						ORDER BY auth_option';
+					$result = $db->sql_query($sql);
+
+					$hold_ary = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
+						$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
+					}
+					$db->sql_freeresult($result);
+
+					unset($hold_ary);
+				}
+				else
+				{
+					$sql = 'SELECT auth_option, is_local, is_global
+						FROM ' . ACL_OPTIONS_TABLE . "
+						WHERE auth_option LIKE '%\_'";
+
+					if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
+					{
+						$sql .= " ESCAPE '\\' ";
+					}
+
+					$sql .= 'AND is_local = 1
+						ORDER BY is_global DESC, auth_option';
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$hold_ary = $auth_admin->get_mask('view', $user_id, false, $forum_id, $row['auth_option'], 'local', ACL_NEVER);
+						$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
+					}
+					$db->sql_freeresult($result);
 				}
 
-				$sql .= 'AND is_global = 1
-					ORDER BY auth_option';
-				$result = $db->sql_query($sql);
+				$s_forum_options = '<option value="0"' . ((!$forum_id) ? ' selected="selected"' : '') . '>' . $user->lang['VIEW_GLOBAL_PERMS'] . '</option>';
 
-				while ($row = $db->sql_fetchrow($result))
+				$forum_list = make_forum_select($forum_id, false, true, false, false, false, true);
+
+				// Build forum options
+				foreach ($forum_list as $f_id => $f_row)
 				{
-					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
-					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
+					$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 				}
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT auth_option, is_local, is_global
-					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '%\_'";
-
-				if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
-				{
-					$sql .= " ESCAPE '\\' ";
-				}
-
-				$sql .= 'AND is_local = 1
-					ORDER BY is_global DESC, auth_option';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'local', ACL_NEVER);
-					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
-				}
-				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'S_PERMISSIONS'				=> true,
+
+					'S_GLOBAL'					=> (!$forum_id) ? true : false,
+					'S_FORUM_OPTIONS'			=> $s_forum_options,
+
+					'U_ACTION'					=> $this->u_action . '&amp;u=' . $user_id,
 					'U_USER_PERMISSIONS'		=> append_sid("{$phpbb_admin_path}index.$phpEx" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
 					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id))
 				);

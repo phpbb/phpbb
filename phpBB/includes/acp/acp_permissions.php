@@ -305,7 +305,7 @@ class acp_permissions
 					$s_forum_options = '';
 					foreach ($forum_list as $f_id => $f_row)
 					{
-						$s_forum_options .= '<option value="' . $f_id . '"' . $f_row['selected'] . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 					}
 
 					// Build subforum options
@@ -488,7 +488,7 @@ class acp_permissions
 
 		foreach ($forum_list as $key => $row)
 		{
-			$s_options .= '<option value="' . $row['forum_id'] . '"' . $row['selected'] . '>' . $row['padding'] . $row['forum_name'];
+			$s_options .= '<option value="' . $row['forum_id'] . '"' . (($row['selected']) ? ' selected="selected"' : '') . '>' . $row['padding'] . $row['forum_name'];
 
 			// We check if a branch is there...
 			$branch_there = false;

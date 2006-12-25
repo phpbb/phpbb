@@ -242,6 +242,8 @@ $lang = array_merge($lang, array(
 	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following custom groups',
 
 	'VIEW_ASSIGNED_ITEMS'	=> 'View assigned items',
+	'VIEW_LOCAL_PERMS'		=> 'Local permissions',
+	'VIEW_GLOBAL_PERMS'		=> 'Global permissions',
 	'VIEW_PERMISSIONS'		=> 'View permissions',
 
 	'WRONG_PERMISSION_TYPE'	=> 'Wrong permission type selected.',

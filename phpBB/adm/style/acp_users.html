@@ -731,10 +731,21 @@ var help_line = {
 
 <!-- ELSEIF S_PERMISSIONS -->
 
-	<fieldset class="quick">
+	<div style="float: right;">
 		<a href="{U_USER_PERMISSIONS}">&raquo; {L_SET_USERS_PERMISSIONS}</a><br />
 		<a href="{U_USER_FORUM_PERMISSIONS}">&raquo; {L_SET_USERS_FORUM_PERMISSIONS}</a>
-	</fieldset>
+	</div>
+
+	<form id="select_forum" method="post" action="{U_ACTION}">
+
+		<fieldset class="quick" style="text-align: left;">
+			{L_SELECT_FORUM}: <select name="f">{S_FORUM_OPTIONS}</select> 
+			<input class="button2" type="submit" value="{L_GO}" name="select" />
+		</fieldset>
+
+	</form>
+
+	<br clear="all" />
 
 	<!-- INCLUDE permission_mask.html -->
 

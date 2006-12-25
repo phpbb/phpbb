@@ -380,6 +380,7 @@ class auth_admin extends auth
 		}
 
 		$template->assign_var('S_ROLE_JS_ARRAY', $s_role_js_array);
+		unset($s_role_js_array);
 
 		// Now obtain memberships
 		$user_groups_default = $user_groups_custom = array();
@@ -481,7 +482,11 @@ class auth_admin extends auth
 					);
 
 					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+
+					unset($content_array[$ug_id]);
 				}
+
+				unset($hold_ary[$forum_id]);
 			}
 		}
 		else
@@ -569,6 +574,8 @@ class auth_admin extends auth
 
 					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 				}
+
+				unset($hold_ary[$ug_id], $ug_names_ary[$ug_id]);
 			}
 		}
 	}
