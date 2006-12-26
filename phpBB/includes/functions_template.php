@@ -315,7 +315,17 @@ class template_compile
 		$tag_template_php = '';
 		array_push($this->block_names, $tag_args);
 
-		if (sizeof($this->block_names) < 2)
+		if ($no_nesting !== false)
+		{
+			// We need to implode $no_nesting times from the end...
+			$block = array_slice($this->block_names, -$no_nesting);
+		}
+		else
+		{
+			$block = $this->block_names;
+		}
+
+		if (sizeof($block) < 2)
 		{
 			// Block is not nested.
 			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$this->_tpldata['$tag_args'])) ?  sizeof(\$this->_tpldata['$tag_args']) : 0;";
@@ -324,17 +334,8 @@ class template_compile
 		else
 		{
 			// This block is nested.
-
 			// Generate a namespace string for this block.
-			if ($no_nesting !== false)
-			{
-				// We need to implode $no_nesting times from the end...
-				$namespace = implode('.', array_slice($this->block_names, -$no_nesting));
-			}
-			else
-			{
-				$namespace = implode('.', $this->block_names);
-			}
+			$namespace = implode('.', $block);
 
 			// Get a reference to the data array for this block that depends on the
 			// current indices of all parent blocks.
