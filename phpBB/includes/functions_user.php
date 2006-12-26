@@ -1406,13 +1406,13 @@ function avatar_upload($data, &$error)
 
 	$destination = $config['avatar_path'];
 
-	if ($destination{(sizeof($destination)-1)} == '/' || $destination{(sizeof($destination)-1)} == '\\')
+	if ($destination[sizeof($destination) - 1] == '/' || $destination[sizeof($destination) - 1] == '\\')
 	{
-		$destination = substr($destination, 0, sizeof($destination)-2);
+		$destination = substr($destination, 0, -1);
 	}
 
 	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-	if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
+	if ($destination && ($destination[0] == '/' || $destination[0] == '\\'))
 	{
 		$destination = '';
 	}

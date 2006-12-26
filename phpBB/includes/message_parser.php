@@ -445,7 +445,7 @@ class bbcode_firstpass extends bbcode
 					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
 
 					// remove newline at the end
-					if (!empty($code) && $code{strlen($code)-1} == "\n")
+					if (!empty($code) && $code[strlen($code) - 1] == "\n")
 					{
 						$code = substr($code, 0, -1);
 					}
