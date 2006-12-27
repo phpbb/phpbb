@@ -984,7 +984,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_viewemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	user_allow_massemail INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	user_options INTEGER UNSIGNED NOT NULL DEFAULT '893',
+	user_options INTEGER UNSIGNED NOT NULL DEFAULT '895',
 	user_avatar varchar(255) NOT NULL DEFAULT '',
 	user_avatar_type tinyint(2) NOT NULL DEFAULT '0',
 	user_avatar_width INTEGER UNSIGNED NOT NULL DEFAULT '0',

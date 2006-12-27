@@ -668,7 +668,8 @@ class acp_board
 	{
 		global $user;
 
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[\w]+', 'USERNAME_ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
+		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[a-z]+', 'USERNAME_ALPHA_SPACERS' => '[-\]_+ [a-z]+', 'USERNAME_LETTER_NUM' => '\w+', 'USERNAME_LETTER_NUM_SPACERS' => '[-\]_+ [\w]+', 'USERNAME_ASCII' => '[\x01-\x7F]+');
+
 		$user_char_options = '';
 		foreach ($user_char_ary as $lang => $value)
 		{
@@ -696,12 +697,12 @@ class acp_board
 	{
 		global $user;
 
-		$pass_type_ary = array('PASS_TYPE_ANY' => '.*', 'PASS_TYPE_CASE' => '[a-zA-Z]', 'PASS_TYPE_ALPHA' => '[a-zA-Z0-9]', 'PASS_TYPE_SYMBOL' => '[a-zA-Z\W]');
+		$pass_type_ary = array('PASS_TYPE_ANY', 'PASS_TYPE_CASE', 'PASS_TYPE_ALPHA', 'PASS_TYPE_SYMBOL');
 		$pass_char_options = '';
-		foreach ($pass_type_ary as $lang => $value)
+		foreach ($pass_type_ary as $pass_type)
 		{
-			$selected = ($selected_value == $value) ? ' selected="selected"' : '';
-			$pass_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$selected = ($selected_value == $pass_type) ? ' selected="selected"' : '';
+			$pass_char_options .= '<option value="' . $pass_type . '"' . $selected . '>' . $user->lang[$pass_type] . '</option>';
 		}
 
 		return $pass_char_options;

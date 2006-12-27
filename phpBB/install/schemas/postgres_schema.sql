@@ -1273,7 +1273,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewonline >= 0),
 	user_allow_viewemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_viewemail >= 0),
 	user_allow_massemail INT2 DEFAULT '1' NOT NULL CHECK (user_allow_massemail >= 0),
-	user_options INT4 DEFAULT '893' NOT NULL CHECK (user_options >= 0),
+	user_options INT4 DEFAULT '895' NOT NULL CHECK (user_options >= 0),
 	user_avatar varchar(255) DEFAULT '' NOT NULL,
 	user_avatar_type INT2 DEFAULT '0' NOT NULL,
 	user_avatar_width INT2 DEFAULT '0' NOT NULL CHECK (user_avatar_width >= 0),

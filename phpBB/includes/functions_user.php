@@ -1219,10 +1219,51 @@ function validate_password($password)
 		return false;
 	}
 
-	// We only check for existance of characters
-	if (!preg_match('#' . str_replace('\\\\', '\\', $config['pass_complex']) . '#i', $password))
+	// generic UTF-8 character types supported?
+	if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
 	{
-		return 'INVALID_CHARS';
+		$upp = '\p{Lu}';
+		$low = '\p{Ll}';
+		$num = '\p{N}';
+		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
+	}
+	else
+	{
+		$upp = '[A-Z]';
+		$low = '[a-z]';
+		$num = '[0-9]';
+		$sym = '[^A-Za-z0-9]';
+	}
+
+	$chars = array();
+
+	switch ($config['pass_complex'])
+	{
+		case 'PASS_TYPE_CASE':
+			$chars[] = $low;
+			$chars[] = $upp;
+		break;
+
+		case 'PASS_TYPE_ALPHA':
+			$chars[] = $low;
+			$chars[] = $upp;
+			$chars[] = $num;
+		break;
+
+		case 'PASS_TYPE_SYMBOL':
+			$chars[] = $low;
+			$chars[] = $upp;
+			$chars[] = $num;
+			$chars[] = $sym;
+		break;
+	}
+
+	foreach ($chars as $char)
+	{
+		if (!preg_match('#' . $char . '#u', $password))
+		{
+			return 'INVALID_CHARS';
+		}
 	}
 
 	return false;

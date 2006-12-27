@@ -90,6 +90,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('forwarded_for_chec
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_common_thres', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_load_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_max_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_min_chars', '3');
@@ -164,7 +165,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', '.*');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_boxes', '4');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50');
@@ -589,13 +590,20 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 
 
 # -- wordlist
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('this', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('example', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('post', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('your', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('phpbb', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('installation', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('you', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('may', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('delete', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('topic', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('and', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('even', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('forum', 0);
+INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('like', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('since', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('everything', 0);
 INSERT INTO phpbb_search_wordlist (word_text, word_common) VALUES ('seems', 0);
@@ -614,8 +622,15 @@ INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (8, 1,
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (9, 1, 0);
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (10, 1, 0);
 INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (11, 1, 0);
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (12, 1, 1);
-INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (3, 1, 1);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (12, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (13, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (14, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (15, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (16, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (17, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (18, 1, 0);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (5, 1, 1);
+INSERT INTO phpbb_search_wordmatch (word_id, post_id, title_match) VALUES (19, 1, 1);
 
 
 # -- reasons

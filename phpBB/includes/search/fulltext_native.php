@@ -1136,7 +1136,7 @@ class fulltext_native extends search_backend
 		}
 
 		// destroy cached search results containing any of the words removed or added
-		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['post'])), array($poster_id));
+		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['title'])), array($poster_id));
 
 		unset($unique_add_words);
 		unset($words);
@@ -1179,14 +1179,15 @@ class fulltext_native extends search_backend
 
 		$destroy_cache_words = array();
 
-		// Remove common (> 20% of posts ) words
-		if ($config['num_posts'] >= 100)
+		// Remove common words
+		if ($config['num_posts'] >= 100 && $config['fulltext_native_common_thres'])
 		{
+			$common_threshold = ((double) $config['fulltext_native_common_thres']) / 100.0;
 			// First, get the IDs of common words
 			$sql = 'SELECT word_id
 				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
-				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.2);
+				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * $common_threshold);
 			$result = $db->sql_query($sql);
 
 			$sql_in = array();
@@ -1556,12 +1557,16 @@ class fulltext_native extends search_backend
 			<dt><label for="fulltext_native_max_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) $config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
+		<dl>
+			<dt><label for="fulltext_native_common_thres">' . $user->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . $user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (int) $config['fulltext_native_common_thres'] . '" /> %</dd>
+		</dl>
 		';
 
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255', 'fulltext_native_common_thres' => 'double:0:100')
 		);
 	}
 }

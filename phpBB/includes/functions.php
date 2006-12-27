@@ -2389,7 +2389,6 @@ function make_clickable($text, $server_url = false)
 		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		//$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url') . ')([[ \t\n\r<"\'\)]|&(?!lt;|quot;))*#ie';
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
 

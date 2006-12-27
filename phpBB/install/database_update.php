@@ -320,6 +320,10 @@ $database_update_info = array(
 				'session_forwarded_for'	=> array('VCHAR:255', 0),
 			),
 		),
+		'change_columns'	=> array(
+			USERS_TABLE		=> array(
+				'user_options'		=> array('UINT:11', 895),
+			),
 		// Remove the following keys
 		'drop_keys'		=> array(
 			ZEBRA_TABLE		=> array(
@@ -558,6 +562,7 @@ if (version_compare($current_version, '3.0.b4', '<='))
 	set_config('forwarded_for_check', '0');
 	set_config('ldap_password', '');
 	set_config('ldap_user', '');
+	set_config('fulltext_native_common_thres', '20');
 
 	$sql = 'SELECT user_colour
 		FROM ' . USERS_TABLE . '
@@ -579,6 +584,28 @@ if (version_compare($current_version, '3.0.b4', '<='))
 			set_config('allow_name_chars', '[-\]_+ [a-z]+');
 		break;
 	}
+
+	switch ($config['pass_complex'])
+	{
+		case '.*':
+			set_config('pass_complex', 'PASS_TYPE_ANY');
+		break;
+
+		case '[a-zA-Z]':
+			set_config('pass_complex', 'PASS_TYPE_CASE');
+		break;
+
+		case '[a-zA-Z0-9]':
+			set_config('pass_complex', 'PASS_TYPE_ALPHA');
+		break;
+
+		case '[a-zA-Z\W]':
+			set_config('pass_complex', 'PASS_TYPE_SYMBOL');
+		break;
+	}
+
+	$sql = 'UPDATE ' . USERS_TABLE . ' SET user_options = 895 WHERE user_options = 893';
+	_sql($sql, $errored, $error_ary);
 
 	$no_updates = false;
 }

@@ -1653,7 +1653,7 @@ CREATE TABLE [phpbb_users] (
 	[user_allow_viewonline] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_viewemail] [int] DEFAULT (1) NOT NULL ,
 	[user_allow_massemail] [int] DEFAULT (1) NOT NULL ,
-	[user_options] [int] DEFAULT (893) NOT NULL ,
+	[user_options] [int] DEFAULT (895) NOT NULL ,
 	[user_avatar] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[user_avatar_type] [int] DEFAULT (0) NOT NULL ,
 	[user_avatar_width] [int] DEFAULT (0) NOT NULL ,

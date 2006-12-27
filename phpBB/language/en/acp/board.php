@@ -204,6 +204,7 @@ $lang = array_merge($lang, array(
 	'REG_LIMIT_EXPLAIN'			=> 'Number of attempts users can make at the confirmation code before being locked out that session.',
 	'USERNAME_ALPHA_ONLY'		=> 'Alphanumeric only',
 	'USERNAME_ALPHA_SPACERS'	=> 'Alphanumeric and spacers',
+	'USERNAME_ASCII'			=> 'ASCII (no international unicode)',
 	'USERNAME_LETTER_NUM'		=> 'Any letter and number',
 	'USERNAME_LETTER_NUM_SPACERS'	=> 'Any letter, number, and spacer',
 	'USERNAME_CHARS'			=> 'Limit username chars',

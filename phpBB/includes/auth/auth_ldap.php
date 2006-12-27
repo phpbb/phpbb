@@ -36,7 +36,7 @@ function init_ldap()
 
 	if ($config['ldap_user'] || $config['ldap_password'])
 	{
-		if (!@ldap_bind($ldap, ldap_escape(htmlspecialchars_decode($config['ldap_user'])), htmlspecialchars_decode($config['ldap_password'])))
+		if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
 		{
 			return $user->lang['LDAP_INCORRECT_USER_PASSWORD'];
 		}

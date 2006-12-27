@@ -250,13 +250,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$sort_by_sql = array('a' => 'u.username_clean', 't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'), 'f' => 'f.forum_id', 'i' => 't.topic_title', 's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title'));
 
 	// pre-made searches
-	$sql = $field = '';
+	$sql = $field = $l_search_title = '';
 	if ($search_id)
 	{
 		switch ($search_id)
 		{
 			// Oh holy Bob, bring us some activity...
 			case 'active_topics':
+				$l_search_title = $user->lang['SEARCH_ACTIVE_TOPICS'];
 				$show_results = 'topics';
 				$sort_key = 't';
 				$sort_dir = 'd';
@@ -279,6 +280,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'unanswered':
+				$l_search_title = $user->lang['SEARCH_UNANSWERED'];
 				$show_results = request_var('sr', 'topics');
 				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
@@ -331,6 +333,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'newposts':
+				$l_search_title = $user->lang['SEARCH_NEW'];
 				// force sorting
 				$show_results = (request_var('sr', 'topics') == 'posts') ? 'posts' : 'topics';
 				$sort_key = 't';
@@ -362,6 +365,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						$sql_sort";
 					$field = 'topic_id';
 				}
+			break;
+
+			case 'egosearch':
+				$l_search_title = $user->lang['SEARCH_SELF'];
 			break;
 		}
 	}
@@ -464,6 +471,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($return_chars != 200) ? '&amp;ch=' . $return_chars : '';
 
 	$template->assign_vars(array(
+		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars($search->search_query)),
 		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? htmlspecialchars(implode(' ', $search->common_words)) : '',
@@ -794,26 +802,23 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				// Replace naughty words such as farty pants
 				$row['post_subject'] = censor_text($row['post_subject']);
-				$message = $row['post_text'];
+				$message = censor_text($row['post_text']);
 
-				if ($return_chars != -1 && utf8_strlen($message) >= ($return_chars + 3))
+				$text_only_message = $message;
+				// make list items visible as such
+				$text_only_message = str_replace('[*:' . $row['bbcode_uid'] . ']', '&sdot;&nbsp;', $message);
+				// no BBCode in text only message
+				strip_bbcode($text_only_message, $row['bbcode_uid']);
+
+				if ($return_chars != -1 && utf8_strlen($text_only_message) >= ($return_chars + 3))
 				{
-					$message = censor_text($message);
-
-					// make list items visible as such
-					$message = str_replace('[*:' . $row['bbcode_uid'] . ']', '&sdot;&nbsp;', $message);
-
-					// do not display raw bbcode
-					strip_bbcode($message, $row['bbcode_uid']);
-
 					// now find context for the searched words
-					$message = get_context($message, array_filter(explode('|', $hilit), 'strlen'), $return_chars);
+					$message = get_context($text_only_message, array_filter(explode('|', $hilit), 'strlen'), $return_chars);
 
 					$message = str_replace("\n", '<br />', $message);
 				}
 				else
 				{
-					$message = censor_text($message);
 					$message = str_replace("\n", '<br />', $message);
 
 					// Second parse bbcode here
@@ -833,6 +838,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					// Always process smilies after parsing bbcodes
 					$message = smiley_text($message);
 				}
+				unset($text_only_message);
 
 				if ($hilit)
 				{
@@ -878,7 +884,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	unset($rowset);
 
-	page_header($user->lang['SEARCH']);
+	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
 
 	$template->set_filenames(array(
 		'body' =>  'search_results.html')
