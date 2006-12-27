@@ -831,7 +831,7 @@ function handle_mark_actions($user_id, $mark_action)
 {
 	global $db, $user, $_POST, $phpbb_root_path, $phpEx;
 
-	$msg_ids		= (isset($_POST['marked_msg_id'])) ? array_map('intval', $_POST['marked_msg_id']) : array();
+	$msg_ids		= request_var('marked_msg_id', array(0));
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 	$confirm		= (isset($_POST['confirm'])) ? true : false;
 

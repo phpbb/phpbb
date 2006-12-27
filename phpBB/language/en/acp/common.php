@@ -559,6 +559,10 @@ $lang = array_merge($lang, array(
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<strong>Users pruned and posts retained</strong><br />» %s',
 
+	'LOG_RANK_ADDED'		=> '<strong>Added new rank</strong><br />» %s',
+	'LOG_RANK_REMOVED'		=> '<strong>Removed rank</strong><br />» %s',
+	'LOG_RANK_UPDATED'		=> '<strong>Updated rank</strong><br />» %s',
+
 	'LOG_REASON_ADDED'		=> '<strong>Added report/denial reason</strong><br />» %s',
 	'LOG_REASON_REMOVED'	=> '<strong>Removed report/denial reason</strong><br />» %s',
 	'LOG_REASON_UPDATED'	=> '<strong>Updated report/denial reason</strong><br />» %s',

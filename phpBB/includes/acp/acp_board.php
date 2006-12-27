@@ -278,7 +278,6 @@ class acp_board
 					'title'	=> 'ACP_SERVER_SETTINGS',
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
-						'send_encoding'			=> array('lang' => 'SEND_ENCODING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 
 						'legend2'				=> 'PATH_SETTINGS',

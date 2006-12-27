@@ -154,10 +154,9 @@ function adm_page_header($page_title)
 		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'])
 	);
 
-	if ($config['send_encoding'])
-	{
-		header('Content-type: text/html; charset=UTF-8');
-	}
+	// application/xhtml+xml not used because of IE
+	header('Content-type: text/html; charset=UTF-8');
+
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');

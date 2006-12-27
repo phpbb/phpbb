@@ -668,7 +668,7 @@ class acp_forums
 				if ($db->sql_fetchrow($result))
 				{
 					$template->assign_vars(array(
-						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)) // , false, true, false???
+						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id, false, true)) // , false, true, false???
 					);
 				}
 				$db->sql_freeresult($result);
@@ -989,7 +989,6 @@ class acp_forums
 
 					if ($action_subforums == 'delete')
 					{
-						$log_action_forums = 'FORUMS';
 						$rows = get_forum_branch($row['forum_id'], 'children', 'descending', false);
 
 						foreach ($rows as $_row)
@@ -1055,8 +1054,6 @@ class acp_forums
 							return array($user->lang['NO_DESTINATION_FORUM']);
 						}
 
-						$log_action_forums = 'MOVE_FORUMS';
-
 						$sql = 'SELECT forum_name 
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_id = ' . $subforums_to_id;
@@ -1115,11 +1112,9 @@ class acp_forums
 
 			if ($row['forum_name'] != $forum_data_sql['forum_name'])
 			{
-				// the forum name has changed, clear the parents list of child forums
+				// the forum name has changed, clear the parents list of all forums (for safety)
 				$sql = 'UPDATE ' . FORUMS_TABLE . "
-					SET forum_parents = ''
-					WHERE left_id > " . $row['left_id'] . '
-						AND right_id < ' . $row['right_id'];
+					SET forum_parents = ''";
 				$db->sql_query($sql);
 			}
 
@@ -1373,6 +1368,9 @@ class acp_forums
 						$this->move_forum($row['forum_id'], $subforums_to_id);
 					}
 					$db->sql_freeresult($result);
+
+					// Grab new forum data for correct tree updating later
+					$forum_data = $this->get_forum_info($forum_id);
 
 					$sql = 'UPDATE ' . FORUMS_TABLE . "
 						SET parent_id = $subforums_to_id

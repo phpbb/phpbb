@@ -110,23 +110,35 @@ class acp_words
 					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$sql = 'SELECT word
-					FROM ' . WORDS_TABLE . "
-					WHERE word_id = $word_id";
-				$result = $db->sql_query($sql);
-				$deleted_word = $db->sql_fetchfield('word');
-				$db->sql_freeresult($result);
+				if (confirm_box(true))
+				{
+					$sql = 'SELECT word
+						FROM ' . WORDS_TABLE . "
+						WHERE word_id = $word_id";
+					$result = $db->sql_query($sql);
+					$deleted_word = $db->sql_fetchfield('word');
+					$db->sql_freeresult($result);
 
-				$sql = 'DELETE FROM ' . WORDS_TABLE . "
-					WHERE word_id = $word_id";
-				$db->sql_query($sql);
+					$sql = 'DELETE FROM ' . WORDS_TABLE . "
+						WHERE word_id = $word_id";
+					$db->sql_query($sql);
 
-				$cache->destroy('word_censors');
+					$cache->destroy('word_censors');
 
-				add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
+					add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
 
-				trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
-				
+					trigger_error($user->lang['WORD_REMOVED'] . adm_back_link($this->u_action));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'id'		=> $word_id,
+						'action'	=> 'delete',
+					)));
+				}
+
 			break;
 		}
 

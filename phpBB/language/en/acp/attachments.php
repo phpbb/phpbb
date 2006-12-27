@@ -121,6 +121,7 @@ $lang = array_merge($lang, array(
 	'NO_UPLOAD_DIR'				=> 'The upload directory you specified does not exist.',
 	'NO_WRITE_UPLOAD'			=> 'The upload directory you specified cannot be written to. Please alter the permissions to allow the webserver to write to it.',
 
+	'ONLY_ALLOWED_IN_PM'	=> 'Only allowed in private messages',
 	'ORDER_ALLOW_DENY'		=> 'Allow',
 	'ORDER_DENY_ALLOW'		=> 'Deny',
 

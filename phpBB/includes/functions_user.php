@@ -746,19 +746,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						$ip_1_counter++;
 					}
 				}
-				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
-				{
-					// hostname
-					$ip_ary = gethostbynamel(trim($ban_item));
-
-					foreach ($ip_ary as $ip)
-					{
-						if ($ip)
-						{
-							$banlist_ary[] = $ip;
-						}
-					}
-				}
 				else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($ban_item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($ban_item)))
 				{
 					// Normal IP address
@@ -768,6 +755,22 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				{
 					// Ban all IPs
 					$banlist_ary[] = "*";
+				}
+				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
+				{
+					// hostname
+					$ip_ary = gethostbynamel(trim($ban_item));
+
+					if (!empty($ip_ary))
+					{
+						foreach ($ip_ary as $ip)
+						{
+							if ($ip)
+							{
+								$banlist_ary[] = $ip;
+							}
+						}
+					}
 				}
 				else
 				{

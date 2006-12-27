@@ -324,6 +324,7 @@ $database_update_info = array(
 			USERS_TABLE		=> array(
 				'user_options'		=> array('UINT:11', 895),
 			),
+		),
 		// Remove the following keys
 		'drop_keys'		=> array(
 			ZEBRA_TABLE		=> array(
@@ -564,6 +565,10 @@ if (version_compare($current_version, '3.0.b4', '<='))
 	set_config('ldap_user', '');
 	set_config('fulltext_native_common_thres', '20');
 
+	// Remove config variables
+	$sql = 'DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'send_encoding'";
+	_sql($sql, $errored, $error_ary);
+
 	$sql = 'SELECT user_colour
 		FROM ' . USERS_TABLE . '
 		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
@@ -605,6 +610,10 @@ if (version_compare($current_version, '3.0.b4', '<='))
 	}
 
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET user_options = 895 WHERE user_options = 893';
+	_sql($sql, $errored, $error_ary);
+
+	$sql = 'UPDATE ' . MODULES_TABLE . " SET module_auth = 'acl_a_board'
+		WHERE module_class = 'acp' AND module_mode = 'version_check' AND module_auth = 'acl_a_'";
 	_sql($sql, $errored, $error_ary);
 
 	$no_updates = false;

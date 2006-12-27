@@ -338,7 +338,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		return $filedata;
 	}
 
-	$extensions = $cache->obtain_attach_extensions($forum_id);
+	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
 	$file = ($local) ? $upload->local_upload($local_storage) : $upload->form_upload($form_name);

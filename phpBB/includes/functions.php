@@ -2446,7 +2446,7 @@ function smiley_text($text, $force_option = false)
 /**
 * General attachment parsing
 *
-* @param int $forum_id The forum id the attachments are displayed in (0 for private messages)
+* @param mixed $forum_id The forum id the attachments are displayed in (false if in private message)
 * @param string &$message The post/private message
 * @param array &$attachments The attachments to parse for (inline) display. The attachments array will hold templated data after parsing.
 * @param array &$update_count The attachment counts to be updated - will be filled
@@ -2475,7 +2475,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 	if (empty($extensions) || !is_array($extensions))
 	{
-		$extensions = $cache->obtain_attach_extensions();
+		$extensions = $cache->obtain_attach_extensions($forum_id);
 	}
 
 	// Look for missing attachment information...
@@ -2620,7 +2620,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				}
 			}
 
-			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
+			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id) : $filename;
 
 			switch ($display_cat)
 			{
@@ -2638,7 +2638,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$thumbnail_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . $forum_id) : $thumbnail_filename;
+					$thumbnail_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . (int) $forum_id) : $thumbnail_filename;
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
@@ -2754,35 +2754,23 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 }
 
 /**
-* Check if extension is allowed to be posted within forum X (forum_id 0 == private messaging)
+* Check if extension is allowed to be posted.
+*
+* @param mixed $forum_id The forum id to check or false if private message
+* @param string $extension The extension to check, for example zip.
+* @param array &$extensions The extension array holding the information from the cache (will be obtained if empty)
+*
+* @return bool False if the extension is not allowed to be posted, else true.
 */
 function extension_allowed($forum_id, $extension, &$extensions)
 {
-	if (!sizeof($extensions))
+	if (empty($extensions))
 	{
 		global $cache;
-		$extensions = $cache->obtain_attach_extensions();
+		$extensions = $cache->obtain_attach_extensions($forum_id);
 	}
 
-	if (!isset($extensions['_allowed_'][$extension]))
-	{
-		return false;
-	}
-
-	$check = $extensions['_allowed_'][$extension];
-
-	if (is_array($check))
-	{
-		// Check for private messaging AND all forums allowed
-		if (sizeof($check) == 1 && $check[0] == 0)
-		{
-			return true;
-		}
-
-		return (!in_array($forum_id, $check)) ? false : true;
-	}
-
-	return ($forum_id == 0) ? false : true;
+	return (!isset($extensions['_allowed_'][$extension])) ? false : true;
 }
 
 // Little helpers
@@ -3700,10 +3688,9 @@ function page_header($page_title = '', $display_online_list = true)
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
 
-	if ($config['send_encoding'])
-	{
-		header('Content-type: text/html; charset=UTF-8');
-	}
+	// application/xhtml+xml not used because of IE
+	header('Content-type: text/html; charset=UTF-8');
+
 	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');

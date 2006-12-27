@@ -193,8 +193,8 @@ class ucp_main
 
 				if ($unwatch)
 				{
-					$forums = (isset($_POST['f'])) ? array_map('intval', array_keys($_POST['f'])) : array();
-					$topics = (isset($_POST['t'])) ? array_map('intval', array_keys($_POST['t'])) : array();
+					$forums = array_keys(request_var('f', array(0 => 0)));
+					$topics = array_keys(request_var('t', array(0 => 0)));
 
 					if (sizeof($forums) || sizeof($topics))
 					{
@@ -512,7 +512,7 @@ class ucp_main
 				if (isset($_POST['unbookmark']))
 				{
 					$s_hidden_fields = array('unbookmark' => 1);
-					$topics = (isset($_POST['t'])) ? array_map('intval', array_keys($_POST['t'])) : array();
+					$topics = (isset($_POST['t'])) ? array_keys(request_var('t', array(0 => 0))) : array();
 					$url = $this->u_action;
 
 					if (!sizeof($topics))
@@ -644,7 +644,7 @@ class ucp_main
 
 				if ($delete)
 				{
-					$drafts = (!empty($_POST['d'])) ? array_map('intval', array_keys($_POST['d'])) : array();
+					$drafts = array_keys(request_var('d', array(0 => 0)));
 
 					if (sizeof($drafts))
 					{

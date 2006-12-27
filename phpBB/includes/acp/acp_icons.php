@@ -203,14 +203,14 @@ class acp_icons
 				$images = (isset($_POST['image'])) ? array_keys(request_var('image', array('' => 0))) : array();
 				
 				// Now really get the items
-				$image_id		= (isset($_POST['id'])) ? array_map('intval', $_POST['id']) : array();
-				$image_order	= (isset($_POST['order'])) ? array_map('intval', $_POST['order']) : array();
-				$image_width	= (isset($_POST['width'])) ? array_map('intval', $_POST['width']) : array();
-				$image_height	= (isset($_POST['height'])) ? array_map('intval', $_POST['height']) : array();
-				$image_add		= (isset($_POST['add_img'])) ? array_map('intval', $_POST['add_img']) : array();
+				$image_id		= (isset($_POST['id'])) ? request_var('id', array(0)) : array();
+				$image_order	= (isset($_POST['order'])) ? request_var('order', array(0)) : array();
+				$image_width	= (isset($_POST['width'])) ? request_var('width', array(0)) : array();
+				$image_height	= (isset($_POST['height'])) ? request_var('height', array(0)) : array();
+				$image_add		= (isset($_POST['add_img'])) ? request_var('add_img', array(0)) : array();
 				$image_emotion	= request_var('emotion', array('' => ''));
 				$image_code		= request_var('code', array('' => ''));
-				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? array_map('intval', $_POST['display_on_posting']) : array();
+				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array(0)) : array();
 
 				foreach ($images as $image)
 				{
@@ -530,32 +530,43 @@ class acp_icons
 
 			case 'delete':
 
-				$sql = "DELETE FROM $table
-					WHERE {$fields}_id = $icon_id";
-				$db->sql_query($sql);
-
-				switch ($mode)
+				if (confirm_box(true))
 				{
-					case 'smilies':
-					break;
+					$sql = "DELETE FROM $table
+						WHERE {$fields}_id = $icon_id";
+					$db->sql_query($sql);
 
-					case 'icons':
-						// Reset appropriate icon_ids
-						$db->sql_query('UPDATE ' . TOPICS_TABLE . " 
-							SET icon_id = 0 
-							WHERE icon_id = $icon_id");
+					switch ($mode)
+					{
+						case 'smilies':
+						break;
 
-						$db->sql_query('UPDATE ' . POSTS_TABLE . " 
-							SET icon_id = 0 
-							WHERE icon_id = $icon_id");
+						case 'icons':
+							// Reset appropriate icon_ids
+							$db->sql_query('UPDATE ' . TOPICS_TABLE . " 
+								SET icon_id = 0 
+								WHERE icon_id = $icon_id");
 
-					break;
+							$db->sql_query('UPDATE ' . POSTS_TABLE . " 
+								SET icon_id = 0 
+								WHERE icon_id = $icon_id");
+						break;
+					}
+
+					$notice = $user->lang[$lang . '_DELETED'];
+
+					$cache->destroy('icons');
+					$cache->destroy('sql', $table);
 				}
-
-				$notice = $user->lang[$lang . '_DELETED'];
-
-				$cache->destroy('icons');
-				$cache->destroy('sql', $table);
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'id'		=> $icon_id,
+						'action'	=> 'delete',
+					)));
+				}
 
 			break;
 

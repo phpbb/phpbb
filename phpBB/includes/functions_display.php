@@ -563,18 +563,43 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			return;
 		}
 
-		$forum_sql = 'AND ' . $db->sql_in_set('forum_id', $forum_id);
+		$forum_sql = 'AND m.' . $db->sql_in_set('forum_id', $forum_id);
 	}
 
-	$sql = 'SELECT *
-		FROM ' . MODERATOR_CACHE_TABLE . "
-		WHERE display_on_index = 1
-			$forum_sql";
+	$sql_array = array(
+		'SELECT'	=> 'm.*, u.user_colour, g.group_colour, g.group_type',
+
+		'FROM'		=> array(
+			MODERATOR_CACHE_TABLE	=> 'm',
+		),
+
+		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(USERS_TABLE => 'u'),
+				'ON'	=> 'm.user_id = u.user_id',
+			),
+			array(
+				'FROM'	=> array(GROUPS_TABLE => 'g'),
+				'ON'	=> 'm.group_id = g.group_id',
+			),
+		),
+
+		'WHERE'		=> "m.display_on_index = 1 $forum_sql",
+	);
+
+	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql, 3600);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$forum_moderators[$row['forum_id']][] = (!empty($row['user_id'])) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>' : '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $row['group_name'] . '</a>';
+		if (!empty($row['user_id']))
+		{
+			$forum_moderators[$row['forum_id']][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+		}
+		else
+		{
+			$forum_moderators[$row['forum_id']][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '') . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+		}
 	}
 	$db->sql_freeresult($result);
 
@@ -846,13 +871,15 @@ function display_user_activity(&$userdata)
 		$active_t_pct = ($userdata['user_posts']) ? ($active_t_count / $userdata['user_posts']) * 100 : 0;
 	}
 
+	$l_active_pct = ($userdata['user_id'] != ANONYMOUS && $userdata['user_id'] == $user->data['user_id']) ? $user->lang['POST_PCT_ACTIVE_OWN'] : $user->lang['POST_PCT_ACTIVE'];
+
 	$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
 		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
-		'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_f_pct),
+		'ACTIVE_FORUM_PCT'		=> sprintf($l_active_pct, $active_f_pct),
 		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
-		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_t_pct),
+		'ACTIVE_TOPIC_PCT'		=> sprintf($l_active_pct, $active_t_pct),
 		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
 		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id),
 		'S_SHOW_ACTIVITY'		=> true)

@@ -120,7 +120,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	if (!empty($attachments))
 	{
 		$update_count = array();
-		parse_attachments(0, $message, $attachments, $update_count);
+		parse_attachments(false, $message, $attachments, $update_count);
 
 		// Update the attachment download counts
 		if (sizeof($update_count))

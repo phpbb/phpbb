@@ -480,7 +480,7 @@ $icons = $cache->obtain_icons();
 $extensions = array();
 if ($topic_data['topic_attachment'])
 {
-	$extensions = $cache->obtain_attach_extensions();
+	$extensions = $cache->obtain_attach_extensions($forum_id);
 }
 
 // Forum rules listing

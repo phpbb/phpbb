@@ -358,35 +358,49 @@ class acp_groups
 							$group_perm_from = request_var('group_perm_from', 0);
 
 							// Copy permissions?
-							if ($group_perm_from && $action == 'add')
+							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transfered.
+							// We do not limit on one auth category because this can lead to incomplete permissions being tricky to fix for the admin, roles being assigned or added non-default permissions.
+							// Since the user only has the option to copy permissions from non leader managed groups this seems to be a good compromise.
+							if ($group_perm_from && $action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
 							{
-								// From the mysql documentation:
-								// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
-								// Due to this we stay on the safe side if we do the insertion "the manual way"
-								
-								// Copy permisisons from/to the acl groups table (only group_id gets changed)
-								$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
-									FROM ' . ACL_GROUPS_TABLE . '
+								$sql = 'SELECT group_manage_founder
+									FROM ' . GROUPS_TABLE . '
 									WHERE group_id = ' . $group_perm_from;
 								$result = $db->sql_query($sql);
-
-								$groups_sql_ary = array();
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$groups_sql_ary[] = array(
-										'group_id'			=> (int) $group_id,
-										'forum_id'			=> (int) $row['forum_id'],
-										'auth_option_id'	=> (int) $row['auth_option_id'],
-										'auth_role_id'		=> (int) $row['auth_role_id'],
-										'auth_setting'		=> (int) $row['auth_setting']
-									);
-								}
+								$check_row = $db->sql_fetchrow($result);
 								$db->sql_freeresult($result);
 
-								// Now insert the data
-								$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+								// Check the group if non-founder
+								if ($check_row && ($user->data['user_type'] == USER_FOUNDER || $check_row['group_manage_founder'] == 0))
+								{
+									// From the mysql documentation:
+									// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+									// Due to this we stay on the safe side if we do the insertion "the manual way"
 
-								$auth->acl_clear_prefetch();
+									// Copy permisisons from/to the acl groups table (only group_id gets changed)
+									$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
+										FROM ' . ACL_GROUPS_TABLE . '
+										WHERE group_id = ' . $group_perm_from;
+									$result = $db->sql_query($sql);
+
+									$groups_sql_ary = array();
+									while ($row = $db->sql_fetchrow($result))
+									{
+										$groups_sql_ary[] = array(
+											'group_id'			=> (int) $group_id,
+											'forum_id'			=> (int) $row['forum_id'],
+											'auth_option_id'	=> (int) $row['auth_option_id'],
+											'auth_role_id'		=> (int) $row['auth_role_id'],
+											'auth_setting'		=> (int) $row['auth_setting']
+										);
+									}
+									$db->sql_freeresult($result);
+
+									// Now insert the data
+									$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+
+									$auth->acl_clear_prefetch();
+								}
 							}
 
 							$cache->destroy('sql', GROUPS_TABLE);
@@ -494,6 +508,7 @@ class acp_groups
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
+					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
 					'S_CAN_UPLOAD'		=> $can_upload,
 					'S_ERROR'			=> (sizeof($error)) ? true : false,
@@ -518,7 +533,7 @@ class acp_groups
 					'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 					'S_RANK_OPTIONS'		=> $rank_options,
-					'S_GROUP_OPTIONS'		=> group_select_options(0),
+					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 					'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',

@@ -20,7 +20,7 @@ class acp_update_info
 			'title'		=> 'ACP_UPDATE',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'version_check'		=> array('title' => 'ACP_VERSION_CHECK', 'auth' => 'acl_a_', 'cat' => array('ACP_AUTOMATION')),
+				'version_check'		=> array('title' => 'ACP_VERSION_CHECK', 'auth' => 'acl_a_board', 'cat' => array('ACP_AUTOMATION')),
 			),
 		);
 	}

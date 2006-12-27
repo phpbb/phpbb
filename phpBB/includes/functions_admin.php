@@ -200,19 +200,27 @@ function size_select_options($size_compare)
 }
 
 /**
-* Generate list of groups
+* Generate list of groups (option fields without select)
+*
+* @param int $group_id The default group id to mark as selected
+* @param array $exclude_ids The group ids to exclude from the list, false (default) if you whish to exclude no id
+* @param int $manage_founder If set to false (default) all groups are returned, if 0 only those groups returned not being managed by founders only, if 1 only those groups returned managed by founders only.
+*
+* @return string The list of options.
 */
-function group_select_options($group_id, $exclude_ids = false)
+function group_select_options($group_id, $exclude_ids = false, $manage_founder = false)
 {
 	global $db, $user, $config;
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
 	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
+	$sql_founder = ($manage_founder !== false) ? (($exclude_sql || $sql_and) ? ' AND ' : ' WHERE ') . 'group_founder_manage = ' . (int) $manage_founder : '';
 
 	$sql = 'SELECT group_id, group_name, group_type 
 		FROM ' . GROUPS_TABLE . "
 		$exclude_sql
 		$sql_and
+		$sql_founder
 		ORDER BY group_type DESC, group_name ASC";
 	$result = $db->sql_query($sql);
 

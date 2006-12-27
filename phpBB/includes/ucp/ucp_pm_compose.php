@@ -605,7 +605,7 @@ function compose_pm($id, $mode, $action)
 			$update_count = array();
 			$attachment_data = $message_parser->attachment_data;
 
-			parse_attachments(0, $preview_message, $attachment_data, $update_count, true);
+			parse_attachments(false, $preview_message, $attachment_data, $update_count, true);
 
 			foreach ($attachment_data as $i => $attachment)
 			{

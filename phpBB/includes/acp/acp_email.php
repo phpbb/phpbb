@@ -107,7 +107,12 @@ class acp_email
 						if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
 						{
 							$i = 0;
-							$j++;
+
+							if (sizeof($email_list))
+							{
+								$j++;
+							}
+
 							$old_lang = $row['user_lang'];
 							$old_notify_type = $row['user_notify_type'];
 						}

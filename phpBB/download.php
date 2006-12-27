@@ -63,7 +63,8 @@ if ($attachment['is_orphan'])
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
 
-	$extensions = $cache->obtain_attach_extensions();
+	// Obtain all extensions...
+	$extensions = $cache->obtain_attach_extensions(true);
 }
 else
 {
@@ -106,14 +107,14 @@ else
 	}
 	else
 	{
-		$row['forum_id'] = 0;
+		$row['forum_id'] = false;
 		if (!$auth->acl_get('u_pm_download'))
 		{
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');
 		}
 	}
 
-	// disallowed ?
+	// disallowed?
 	$extensions = array();
 	if (!extension_allowed($row['forum_id'], $attachment['extension'], $extensions))
 	{
