@@ -1322,7 +1322,7 @@ class install_install extends module
 
 		foreach ($sql_ary as $sql)
 		{
-			$sql = trim(str_replace('|', ';', $sql));
+			//$sql = trim(str_replace('|', ';', $sql));
 
 			if (!$db->sql_query($sql))
 			{
