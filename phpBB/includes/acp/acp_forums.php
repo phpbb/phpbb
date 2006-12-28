@@ -390,6 +390,11 @@ class acp_forums
 					{
 						$forum_data = $row;
 					}
+					else
+					{
+						$forum_data['left_id'] = $row['left_id'];
+						$forum_data['right_id'] = $row['right_id'];
+					}
 
 					// Make sure there is no forum displayed for parents_list having the current forum id as a parent...
 					$sql = 'SELECT forum_id

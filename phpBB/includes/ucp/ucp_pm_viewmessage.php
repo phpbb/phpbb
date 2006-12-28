@@ -164,8 +164,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 
-		'AUTHOR_RANK'		=> $user_info['rank_title'],
-		'RANK_IMAGE'		=> $user_info['rank_image'],
+		'RANK_TITLE'		=> $user_info['rank_title'],
+		'RANK_IMG'			=> $user_info['rank_image'],
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',

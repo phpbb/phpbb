@@ -1382,9 +1382,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 		'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 
-		'POSTER_RANK'		=> $user_cache[$poster_id]['rank_title'],
-		'RANK_IMAGE'		=> $user_cache[$poster_id]['rank_image'],
-		'RANK_IMAGE_SRC'	=> $user_cache[$poster_id]['rank_image_src'],
+		'RANK_TITLE'		=> $user_cache[$poster_id]['rank_title'],
+		'RANK_IMG'			=> $user_cache[$poster_id]['rank_image'],
+		'RANK_IMG_SRC'		=> $user_cache[$poster_id]['rank_image_src'],
 		'POSTER_JOINED'		=> $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS'		=> $user_cache[$poster_id]['posts'],
 		'POSTER_FROM'		=> $user_cache[$poster_id]['from'],

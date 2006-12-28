@@ -1705,7 +1705,6 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			{
 				$user_ary[] = $row['user_id'];
 			}
-
 			$db->sql_freeresult($result);
 
 			if (sizeof($user_ary))
