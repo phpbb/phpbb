@@ -261,6 +261,7 @@ $lang = array_merge($lang, array(
 	'RETURN_POST'				=> '%sReturn to the post%s',
 	'RETURN_QUEUE'				=> '%sReturn to the queue%s',
 	'RETURN_REPORTS'			=> '%sReturn to the reports%s',
+	'RETURN_TOPIC_SIMPLE'		=> '%sReturn to the topic%s',
 
 	'SEARCH_POSTS_BY_USER'				=> 'Search posts by',
 	'SELECT_ACTION'						=> 'Select desired action',

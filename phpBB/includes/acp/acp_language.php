@@ -622,16 +622,15 @@ class acp_language
 
 				if (!$is_email_file)
 				{
-					$method = ($is_help_file) ? 'print_help_entries' : 'print_language_entries';
 					$tpl = '';
 					$name = (($this->language_directory) ? $this->language_directory . '/' : '') . $this->language_file;
 
 					if (isset($missing_vars[$name]) && sizeof($missing_vars[$name]))
 					{
-						$tpl .= $this->$method($missing_vars[$name], '* ');
+						$tpl .= $this->print_language_entries($missing_vars[$name], '* ');
 					}
 
-					$tpl .= $this->$method($lang);
+					$tpl .= $this->print_language_entries($lang);
 
 					$template->assign_var('TPL', $tpl);
 					unset($tpl);
@@ -950,7 +949,7 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @copyright (c) 2006 phpBB Group 
+* @copyright (c) ' . date('Y') . ' phpBB Group 
 * @author {CHANGED} - {AUTHOR}
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
@@ -1030,6 +1029,35 @@ $lang = array_merge($lang, array(
 	}
 
 	/**
+	* Little helper to add some hardcoded template bits
+	*/
+	function add_input_field()
+	{
+		$keys = func_get_args();
+
+		$non_static		= array_shift($keys);
+		$value			= array_shift($keys);
+
+		if (!$non_static)
+		{
+			return '<strong>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</strong>';
+		}
+
+		// If more then 270 characters, then we present a textarea, else an input field
+		$textarea = (utf8_strlen($value) > 270) ? true : false;
+		$tpl = '';
+
+		$tpl .= ($textarea) ? '<textarea name="' : '<input type="text" name="';
+		$tpl .= 'entry[' . implode('][', array_map('utf8_htmlspecialchars', $keys)) . ']"';
+
+		$tpl .= ($textarea) ? ' cols="80" rows="5" style="width: 90%;">' : ' style="width: 90%" value="';
+		$tpl .= htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+		$tpl .= ($textarea) ? '</textarea>' : '" />';
+
+		return $tpl;
+	}
+
+	/**
 	* Print language entries
 	*/
 	function print_language_entries(&$lang_ary, $key_prefix = '', $input_field = true)
@@ -1040,56 +1068,46 @@ $lang = array_merge($lang, array(
 		{
 			if (is_array($value))
 			{
+				// Write key
 				$tpl .= '
 				<tr>
-					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
+					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 				</tr>';
 
 				foreach ($value as $_key => $_value)
 				{
 					if (is_array($_value))
 					{
+						// Write key
 						$tpl .= '
 							<tr>
-								<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '&nbsp; &nbsp;<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
+								<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '&nbsp; &nbsp;<strong>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 							</tr>';
 
 						foreach ($_value as $__key => $__value)
 						{
+							// Write key
 							$tpl .= '
 								<tr>
-									<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . '</b></td>
+									<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 									<td class="row2">';
 
-							if ($input_field)
-							{
-								$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($__key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($__value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
-							}
-							else
-							{
-								$tpl .= '<b>' . htmlspecialchars($__value, ENT_COMPAT, 'UTF-8') . '</b>';
-							}
-							
+							$tpl .= $this->add_input_field($input_field, $__value, $key, $_key, $__key);
+
 							$tpl .= '</td>
 								</tr>';
 						}
 					}
 					else
 					{
+						// Write key
 						$tpl .= '
 							<tr>
-								<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
+								<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 								<td class="row2">';
 
-						if ($input_field)
-						{
-							$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
-						}
-						else
-						{
-							$tpl .= '<b>' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</b>';
-						}
-						
+						$tpl .= $this->add_input_field($input_field, $_value, $key, $_key);
+
 						$tpl .= '</td>
 							</tr>';
 					}
@@ -1102,84 +1120,13 @@ $lang = array_merge($lang, array(
 			}
 			else
 			{
+				// Write key
 				$tpl .= '
 				<tr>
-					<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
+					<td class="row1" style="white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<strong>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</strong></td>
 					<td class="row2">';
 
-				if ($input_field)
-				{
-					$tpl .= '<input type="text" name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . ']" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" size="50" />';
-				}
-				else
-				{
-					$tpl .= '<b>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</b>';
-				}
-				
-				$tpl .= '</td>
-					</tr>';
-			}
-		}
-
-		return $tpl;
-	}
-
-	/**
-	* Print help entries
-	*/
-	function print_help_entries(&$lang_ary, $key_prefix = '', $text_field = true)
-	{
-		$tpl = '';
-		
-		foreach ($lang_ary as $key => $value)
-		{
-			if (is_array($value))
-			{
-				$tpl .= '
-				<tr>
-					<td class="row3" colspan="2">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
-				</tr>';
-
-				foreach ($value as $_key => $_value)
-				{
-					$tpl .= '
-						<tr>
-							<td class="row1" style="width: 10%; white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . '</b></td>
-							<td class="row2">';
-					
-					if ($text_field)
-					{
-						$tpl .= '<textarea name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '][' . htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</textarea>';
-					}
-					else
-					{
-						$tpl .= '<b>' . htmlspecialchars($_value, ENT_COMPAT, 'UTF-8') . '</b>';
-					}
-					
-					$tpl .= '</td>
-						</tr>';
-				}
-
-				$tpl .= '
-				<tr>
-					<td class="spacer" colspan="2">&nbsp;</td>
-				</tr>';
-			}
-			else
-			{
-				$tpl .= '
-				<tr>
-					<td class="row1" style="width: 10%; white-space: nowrap;">' . htmlspecialchars($key_prefix, ENT_COMPAT, 'UTF-8') . '<b>' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . '</b></td>
-					<td class="row2">';
-
-				if ($text_field)
-				{
-					$tpl .= '<textarea name="entry[' . htmlspecialchars($key, ENT_COMPAT, 'UTF-8') . ']" cols="80" rows="5" style="width: 90%;">' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</textarea>';
-				}
-				else
-				{
-					$tpl .= '<b>' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '</b>';
-				}
+				$tpl .= $this->add_input_field($input_field, $value, $key);
 
 				$tpl .= '</td>
 					</tr>';

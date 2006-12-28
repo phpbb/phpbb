@@ -1004,4 +1004,12 @@ function utf8_clean_string($text)
 	return $text;
 }
 
+/**
+* A wrapper for htmlspecialchars($value, ENT_COMPAT, 'UTF-8')
+*/
+function utf8_htmlspecialchars(&$value)
+{
+	return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+}
+
 ?>
