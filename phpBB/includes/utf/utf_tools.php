@@ -815,7 +815,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// SJIS
-	if (preg_match('/sjis(?:[_ -]?win)?|(?:cp|ibm)[_ -]?932|shift[_ -]?jis/i', $encoding)
+	if (preg_match('/sjis(?:[_ -]?win)?|(?:cp|ibm)[_ -]?932|shift[_ -]?jis/i', $encoding))
 	{
 		if (!function_exists('sjis'))
 		{
@@ -829,7 +829,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// EUC_KR
-	if (preg_match('/euc[_ -]?kr/i', $encoding)
+	if (preg_match('/euc[_ -]?kr/i', $encoding))
 	{
 		if (!function_exists('euc_kr'))
 		{
@@ -843,7 +843,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// BIG-5
-	if (preg_match('/big[_ -]?5/i', $encoding)
+	if (preg_match('/big[_ -]?5/i', $encoding))
 	{
 		if (!function_exists('big5'))
 		{
