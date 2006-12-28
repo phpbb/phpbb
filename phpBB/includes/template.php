@@ -207,12 +207,6 @@ class template
 
 		$compile = new template_compile($this);
 
-		// If the file for this handle is already loaded and compiled, do nothing.
-		if (!empty($this->compiled_code[$handle]))
-		{
-			return true;
-		}
-
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
 		{
