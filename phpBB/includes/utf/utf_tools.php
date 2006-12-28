@@ -754,14 +754,111 @@ function utf8_recode($string, $encoding)
 		trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
 	}
 
-	global $phpbb_root_path;
+	global $phpbb_root_path, $phpEx;
 
-	if (!file_exists($phpbb_root_path . 'includes/utf/data/'))
+	// CP/WIN character encoding
+	if (preg_match('/(?:cp|win)[_\- ]?(\\d+)/i', $encoding, $array))
 	{
-		return $string;
+		switch ($array[1])
+		{
+			case '932':
+			break;
+			case '1250':
+			case '1254':
+			case '1255':
+			case '1256':
+			case '1257':
+			case '874':
+				if (!function_exists('cp' . $array[1]))
+				{
+					if (!file_exists($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx))
+					{
+						trigger_error('Reencoder file is missing', E_USER_ERROR);
+					}
+					include($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx);
+				}
+				return call_user_func('cp' . $array[1], $string);
+			break;
+
+			default:
+				trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
+			break;
+		}
 	}
 
-	die('Finish me!! ' . basename(__FILE__) . ' at line ' . __LINE__);
+	// iso-8859-* character encoding
+	if (preg_match('/iso[_ -]?8859[_ -]?(\\d+)/', $encoding, $array))
+	{
+		switch ($array[1])
+		{
+			case '1':
+			case '2':
+			case '4':
+			case '7':
+			case '9':
+			case '15':
+				if (!function_exists('iso_8895_' . $array[1]))
+				{
+					if (!file_exists($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx))
+					{
+						trigger_error('Basic reencoder file is missing', E_USER_ERROR);
+					}
+					include($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx);
+				}
+				return call_user_func('iso_8895_' . $array[1], $string);
+			break;
+
+			default:
+				trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
+			break;
+		}
+	}
+
+	// SJIS
+	if (preg_match('/sjis(?:[_ -]?win)?|(?:cp|ibm)[_ -]?932|shift[_ -]?jis/i', $encoding)
+	{
+		if (!function_exists('sjis'))
+		{
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			{
+				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
+			}
+			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+		}
+		return sjis($string);
+	}
+
+	// EUC_KR
+	if (preg_match('/euc[_ -]?kr/i', $encoding)
+	{
+		if (!function_exists('euc_kr'))
+		{
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			{
+				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
+			}
+			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+		}
+		return euc_kr($string);
+	}
+
+	// BIG-5
+	if (preg_match('/big[_ -]?5/i', $encoding)
+	{
+		if (!function_exists('big5'))
+		{
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			{
+				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
+			}
+			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+		}
+		return big5($string);
+	}
+
+	// Trigger an error?! Fow now just give bad data :-(
+	//trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
+	return $string;
 }
 
 /**
