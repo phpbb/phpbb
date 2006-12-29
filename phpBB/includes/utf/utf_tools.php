@@ -757,7 +757,7 @@ function utf8_recode($string, $encoding)
 	global $phpbb_root_path, $phpEx;
 
 	// CP/WIN character encoding
-	if (preg_match('/(?:cp|win)[_\- ]?(\\d+)/i', $encoding, $array))
+	if (preg_match('/(?:cp|windows)[_\- ]?(\\d+)/', $encoding, $array))
 	{
 		switch ($array[1])
 		{
@@ -773,7 +773,7 @@ function utf8_recode($string, $encoding)
 				{
 					if (!file_exists($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx))
 					{
-						trigger_error('Reencoder file is missing', E_USER_ERROR);
+						trigger_error('Basic reencoder file is missing', E_USER_ERROR);
 					}
 					include($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx);
 				}
@@ -815,7 +815,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// SJIS
-	if (preg_match('/sjis(?:[_ -]?win)?|(?:cp|ibm)[_ -]?932|shift[_ -]?jis/i', $encoding))
+	if (preg_match('/sjis(?:[_ -]?win)?|(?:cp|ibm)[_ -]?932|shift[_ -]?jis/', $encoding))
 	{
 		if (!function_exists('sjis'))
 		{
@@ -829,7 +829,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// EUC_KR
-	if (preg_match('/euc[_ -]?kr/i', $encoding))
+	if (preg_match('/euc[_ -]?kr/', $encoding))
 	{
 		if (!function_exists('euc_kr'))
 		{
@@ -843,7 +843,7 @@ function utf8_recode($string, $encoding)
 	}
 
 	// BIG-5
-	if (preg_match('/big[_ -]?5/i', $encoding))
+	if (preg_match('/big[_ -]?5/', $encoding))
 	{
 		if (!function_exists('big5'))
 		{
@@ -854,6 +854,20 @@ function utf8_recode($string, $encoding)
 			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
 		}
 		return big5($string);
+	}
+
+	// GB2312
+	if (preg_match('/gb[_ -]?2312/', $encoding))
+	{
+		if (!function_exists('gb2312'))
+		{
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			{
+				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
+			}
+			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+		}
+		return gb2312($string);
 	}
 
 	// Trigger an error?! Fow now just give bad data :-(
