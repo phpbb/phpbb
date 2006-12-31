@@ -156,7 +156,6 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 			
 					$messenger->subject(htmlspecialchars_decode($subject));
-					$messenger->replyto($config['board_email']);
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(

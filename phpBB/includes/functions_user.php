@@ -2077,7 +2077,6 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			{
 				$messenger->template('group_approved', $row['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($row['user_email'], $row['username']);
 				$messenger->im($row['user_jabber'], $row['username']);
 

@@ -183,7 +183,6 @@ class ucp_groups
 								{
 									$messenger->template($email_template, $row['user_lang']);
 
-									$messenger->replyto($config['board_email']);
 									$messenger->to($row['user_email'], $row['username']);
 									$messenger->im($row['user_jabber'], $row['username']);
 

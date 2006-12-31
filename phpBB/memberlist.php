@@ -305,7 +305,7 @@ switch ($mode)
 					$messenger->im($row['user_jabber'], $row['username']);
 
 					$messenger->assign_vars(array(
-						'BOARD_EMAIL'	=> $config['board_contact'],
+						'BOARD_CONTACT'	=> $config['board_contact'],
 						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 						'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
 						'MESSAGE'		=> htmlspecialchars_decode($message))
@@ -780,7 +780,7 @@ switch ($mode)
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 					$messenger->assign_vars(array(
-						'BOARD_EMAIL'	=> $config['board_contact'],
+						'BOARD_CONTACT'	=> $config['board_contact'],
 						'TO_USERNAME'	=> htmlspecialchars_decode($row['to_name']),
 						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
 						'MESSAGE'		=> htmlspecialchars_decode($message))

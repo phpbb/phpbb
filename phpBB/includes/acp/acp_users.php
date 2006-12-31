@@ -296,7 +296,6 @@ class acp_users
 
 								$messenger->template('user_resend_inactive', $user_row['user_lang']);
 
-								$messenger->replyto($config['board_contact']);
 								$messenger->to($user_row['user_email'], $user_row['username']);
 
 								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);

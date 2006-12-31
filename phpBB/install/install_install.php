@@ -1750,7 +1750,6 @@ class install_install extends module
 
 			$messenger->template('installed', $language);
 
-			$messenger->replyto($config['board_contact']);
 			$messenger->to($board_email1, $admin_name);
 
 			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);

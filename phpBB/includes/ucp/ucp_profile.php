@@ -130,7 +130,6 @@ class ucp_profile
 							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
 							$messenger->template($template_file, $user->data['user_lang']);
 
-							$messenger->replyto($config['board_contact']);
 							$messenger->to($data['email'], $data['username']);
 
 							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -167,7 +166,6 @@ class ucp_profile
 								while ($row = $db->sql_fetchrow($result))
 								{
 									$messenger->template('admin_activate', $row['user_lang']);
-									$messenger->replyto($config['board_contact']);
 									$messenger->to($row['user_email'], $row['username']);
 									$messenger->im($row['user_jabber'], $row['username']);
 

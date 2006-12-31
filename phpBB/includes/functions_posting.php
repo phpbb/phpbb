@@ -1107,7 +1107,6 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			{
 				$messenger->template($email_template, $addr['lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($addr['email'], $addr['name']);
 				$messenger->im($addr['jabber'], $addr['name']);
 

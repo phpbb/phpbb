@@ -363,12 +363,12 @@ class messenger
 
 		if (empty($this->replyto))
 		{
-			$this->replyto = '<' . $config['board_email'] . '>';
+			$this->replyto = '<' . $config['board_contact'] . '>';
 		}
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_email'] . '>';
+			$this->from = '<' . $config['board_conact'] . '>';
 		}
 
 		// Build to, cc and bcc strings
@@ -474,7 +474,7 @@ class messenger
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg));
+				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg, 'subject' => $this->subject));
 			}
 
 			sleep(1);
@@ -637,7 +637,7 @@ class queue
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
-							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg)) === false)
+							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg, 'subject' => $subject)) === false)
 							{
 								messenger::error('JABBER', $this->jabber->get_log());
 								continue 3;
@@ -781,10 +781,10 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 		// Something we really didn't take into consideration originally
 		$header_array = explode("\r\n", $headers);
 		$headers = '';
-		
+
 		foreach ($header_array as $header)
 		{
-			if (preg_match('#^cc:#si', $header) || preg_match('#^bcc:#si', $header))
+			if (strpos(strtolower($header), 'cc:') === 0 || strpos(strtolower($header), 'bcc:') === 0)
 			{
 				$header = '';
 			}
@@ -865,7 +865,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
+	$smtp->server_send('MAIL FROM:<' . $config['board_contact'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		$smtp->close_session($err_msg);

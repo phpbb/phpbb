@@ -1610,7 +1610,6 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	{
 		$messenger->template('privmsg_notify', $addr['lang']);
 
-		$messenger->replyto($config['board_email']);
 		$messenger->to($addr['email'], $addr['name']);
 		$messenger->im($addr['jabber'], $addr['name']);
 

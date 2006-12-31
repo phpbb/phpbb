@@ -482,7 +482,6 @@ function close_report($post_id_list, $mode, $action)
 
 				$messenger->template('report_' . $action . 'd', $reporter['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($reporter['user_email'], $reporter['username']);
 				$messenger->im($reporter['user_jabber'], $reporter['username']);
 

@@ -321,7 +321,6 @@ class ucp_register
 
 					$messenger->template($email_template, $data['lang']);
 
-					$messenger->replyto($config['board_contact']);
 					$messenger->to($data['email'], $data['username']);
 
 					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
@@ -369,7 +368,6 @@ class ucp_register
 						while ($row = $db->sql_fetchrow($result))
 						{
 							$messenger->template('admin_activate', $row['user_lang']);
-							$messenger->replyto($config['board_contact']);
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
 

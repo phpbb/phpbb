@@ -64,7 +64,6 @@ class ucp_remind
 
 			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
-			$messenger->replyto($user->data['user_email']);
 			$messenger->to($user_row['user_email'], $user_row['username']);
 			$messenger->im($user_row['user_jabber'], $user_row['username']);
 

@@ -549,7 +549,6 @@ function approve_post($post_id_list, $id, $mode)
 
 				$messenger->template($email_template, $post_data['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($post_data['user_email'], $post_data['username']);
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 
@@ -772,7 +771,6 @@ function disapprove_post($post_id_list, $id, $mode)
 
 				$messenger->template($email_template, $post_data['user_lang']);
 
-				$messenger->replyto($config['board_email']);
 				$messenger->to($post_data['user_email'], $post_data['username']);
 				$messenger->im($post_data['user_jabber'], $post_data['username']);
 

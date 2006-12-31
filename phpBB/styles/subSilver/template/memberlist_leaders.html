@@ -25,7 +25,7 @@
 			{admin.GROUP_NAME}
 		<!-- ENDIF -->
 	&nbsp;</td>
-	<td class="gen" align="center">{admin.RANK_IMG}</td>
+	<td class="gen" align="center"><!-- IF admin.RANK_IMG -->{admin.RANK_IMG}<!-- ELSE -->{admin.RANK_TITLE}<!-- ENDIF --></td>
 	<td class="gen" align="center">&nbsp;<!-- IF admin.U_PM --><a href="{admin.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
 </tr>
 <!-- BEGINELSE -->
@@ -48,7 +48,7 @@
 			{mod.GROUP_NAME}
 		<!-- ENDIF -->
 	&nbsp;</td>
-	<td class="gen" align="center">{mod.RANK_IMG}</td>
+	<td class="gen" align="center"><!-- IF mod.RANK_IMG -->{mod.RANK_IMG}<!-- ELSE -->{mod.RANK_TITLE}<!-- ENDIF --></td>
 	<td class="gen" align="center">&nbsp;<!-- IF mod.U_PM --><a href="{mod.U_PM}">{PM_IMG}</a><!-- ENDIF -->&nbsp;</td>
 </tr>
 <!-- BEGINELSE -->

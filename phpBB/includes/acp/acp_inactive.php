@@ -102,7 +102,6 @@ class acp_inactive
 						{
 							$messenger->template('user_remind_inactive', $row['user_lang']);
 
-							$messenger->replyto($config['board_email']);
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
 
