@@ -368,7 +368,7 @@ class messenger
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_conact'] . '>';
+			$this->from = '<' . $config['board_contact'] . '>';
 		}
 
 		// Build to, cc and bcc strings
