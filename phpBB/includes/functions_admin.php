@@ -1935,10 +1935,7 @@ function split_sql_file($sql, $delimiter)
 	$sql = str_replace("\r" , '', $sql);
 	$data = preg_split('/' . preg_quote($delimiter, '/') . '$/m', $sql);
 
-	foreach ($data as $key => $value)
-	{
-		$data[$key] = trim($value);
-	}
+	$data = array_map('trim', $data);
 
 	// The empty case
 	$end_data = end($data);
