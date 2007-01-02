@@ -256,6 +256,12 @@
 	<div id="forum_link_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
+	<!-- IF S_SHOW_DISPLAY_ON_INDEX -->
+		<dl>
+			<dt><label for="link_display_on_index">{L_LIST_INDEX}:</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
+			<dd><input type="radio" class="radio" name="link_display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES} &nbsp; <input type="radio" class="radio" name="link_display_on_index" value="0"<!-- IF not S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+		</dl>
+	<!-- ENDIF -->
 		<dl>
 			<dt><label for="forum_link">{L_FORUM_LINK}:</label><br /><span>{L_FORUM_LINK_EXPLAIN}</span></dt>
 			<dd><input class="medium" type="text" id="forum_link" name="forum_link" value="{FORUM_DATA_LINK}" /></dd>

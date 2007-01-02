@@ -998,4 +998,48 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 	return;
 }
 
+/**
+* Get user rank title and image
+*
+* @param int $user_rank the current stored users rank id
+* @param int $user_posts the users number of posts
+* @param string &$rank_title the rank title will be stored here after execution
+* @param string &$rank_img the rank image as full img tag is stored here after execution
+* @param string &$rank_img_src the rank image source is stored here after execution
+*
+*/
+function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
+{
+	global $ranks, $config;
+
+	if (empty($ranks))
+	{
+		global $cache;
+		$ranks = $cache->obtain_ranks();
+	}
+
+	if (!empty($user_rank))
+	{
+		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
+		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
+		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
+	}
+	else
+	{
+		if (!empty($ranks['normal']))
+		{
+			foreach ($ranks['normal'] as $rank)
+			{
+				if ($user_posts >= $rank['rank_min'])
+				{
+					$rank_title = $rank['rank_title'];
+					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$rank_img_src = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
+					break;
+				}
+			}
+		}
+	}
+}
+
 ?>

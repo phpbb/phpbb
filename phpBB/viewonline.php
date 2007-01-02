@@ -83,7 +83,7 @@ $result = $db->sql_query($sql, 600);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$forum_data[$row['forum_id']] = $row['forum_name'];
+	$forum_data[$row['forum_id']] = $row;
 }
 $db->sql_freeresult($result);
 
@@ -209,6 +209,14 @@ while ($row = $db->sql_fetchrow($result))
 			if ($forum_id && $auth->acl_get('f_list', $forum_id))
 			{
 				$location = '';
+				$location_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+
+				if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
+				{
+					$location = sprintf($user->lang['READING_LINK'], $forum_data[$forum_id]['forum_name']);
+					break;
+				}
+
 				switch ($on_page[1])
 				{
 					case 'posting':
@@ -234,8 +242,6 @@ while ($row = $db->sql_fetchrow($result))
 						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]);
 					break;
 				}
-
-				$location_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 			}
 			else
 			{
@@ -265,16 +271,30 @@ while ($row = $db->sql_fetchrow($result))
 		break;
 
 		case 'mcp':
+			$location = $user->lang['VIEWING_MCP'];
+			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+		break;
+
 		case 'ucp':
 			$location = $user->lang['VIEWING_UCP'];
 
-			/**
-			* @todo getting module/mode for ucp and mcp
-			*/
-/*			if (strpos($row['session_page'], 'i=pm&mode=compose') !== false)
+			// Grab some common modules
+			$url_params = array(
+				'mode=register'		=> 'VIEWING_REGISTER',
+				'i=pm&mode=compose'	=> 'POSTING_PRIVATE_MESSAGE',
+				'i=pm&'				=> 'VIEWING_PRIVATE_MESSAGES',
+				'i=profile&'		=> 'CHANGING_PROFILE',
+				'i=prefs&'			=> 'CHANGING_PREFERENCES',
+			);
+
+			foreach ($url_params as $param => $lang)
 			{
-				$location = 'Composing PM';
-			}*/
+				if (strpos($row['session_page'], $param) !== false)
+				{
+					$location = $user->lang[$lang];
+					break;
+				}
+			}
 
 			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 		break;

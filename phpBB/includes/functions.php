@@ -2620,6 +2620,17 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				}
 			}
 
+			// Make some descisions based on user options being set.
+			if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
+			{
+				$display_cat = ATTACHMENT_CATEGORY_NONE;
+			}
+
+			if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
+			{
+				$display_cat = ATTACHMENT_CATEGORY_NONE;
+			}
+
 			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id) : $filename;
 
 			switch ($display_cat)

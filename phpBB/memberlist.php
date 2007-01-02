@@ -15,6 +15,7 @@ define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 // Start session management
 $user->session_begin();
@@ -418,10 +419,6 @@ switch ($mode)
 
 		if ($config['load_user_activity'])
 		{
-			if (!function_exists('display_user_activity'))
-			{
-				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-			}
 			display_user_activity($member);
 		}
 
@@ -1344,37 +1341,6 @@ $template->set_filenames(array(
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();
-
-/**
-* Get user rank title and image
-*/
-function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
-{
-	global $ranks, $config;
-
-	if (!empty($user_rank))
-	{
-		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
-		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
-		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
-	}
-	else
-	{
-		if (isset($ranks['normal']))
-		{
-			foreach ($ranks['normal'] as $rank)
-			{
-				if ($user_posts >= $rank['rank_min'])
-				{
-					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
-					$rank_img_src = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
-					break;
-				}
-			}
-		}
-	}
-}
 
 /**
 * Prepare profile data

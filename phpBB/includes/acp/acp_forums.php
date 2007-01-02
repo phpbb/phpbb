@@ -133,6 +133,12 @@ class acp_forums
 						'forum_password_confirm'=> request_var('forum_password_confirm', ''),
 					);
 
+					// Use link_display_on_index setting if forum type is link
+					if ($forum_data['forum_type'] == FORUM_LINK)
+					{
+						$forum_data['display_on_index'] = request_var('link_display_on_index', false);
+					}
+
 					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', false) : request_var('display_active', false);
 
 					// Get data for forum rules if specified...
@@ -396,18 +402,14 @@ class acp_forums
 						$forum_data['right_id'] = $row['right_id'];
 					}
 
-					// Make sure there is no forum displayed for parents_list having the current forum id as a parent...
-					$sql = 'SELECT forum_id
-						FROM ' . FORUMS_TABLE . '
-						WHERE parent_id = ' . $forum_id;
-					$result = $db->sql_query($sql);
+					// Make sure no direct child forums are able to be selected as parents.
+					$childs = get_forum_branch($forum_id, 'children');
 
-					$exclude_forums = array($forum_id);
-					while ($row = $db->sql_fetchrow($result))
+					$exclude_forums = array();
+					foreach ($childs as $row)
 					{
 						$exclude_forums[] = $row['forum_id'];
 					}
-					$db->sql_freeresult($result);
 
 					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
