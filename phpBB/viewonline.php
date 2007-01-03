@@ -225,21 +225,22 @@ while ($row = $db->sql_fetchrow($result))
 						switch ($on_page[1])
 						{
 							case 'reply':
-								$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]);
+							case 'quote':
+								$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
 							break;
 
 							default:
-								$location = sprintf($user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]);
+								$location = sprintf($user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
 							break;
 						}
 					break;
 
 					case 'viewtopic':
-						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]);
+						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]['forum_name']);
 					break;
 	
 					case 'viewforum':
-						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]);
+						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]['forum_name']);
 					break;
 				}
 			}
