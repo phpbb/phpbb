@@ -45,6 +45,8 @@ $lang = array_merge($lang, array(
 	'IGNORED_TERMS'			=> 'ignored',
 	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored: <strong>%s</strong>',
 
+	'JUMP_TO_POST'			=> 'Jump to post',
+
 	'NO_KEYWORDS'			=> 'You must specify at least one word to search for. Each word must consist of at least %d characters and must not contain more than %d characters excluding wildcards.',
 	'NO_RECENT_SEARCHES'	=> 'No searches have been carried out recently',
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
