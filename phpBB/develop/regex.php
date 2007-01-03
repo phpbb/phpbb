@@ -46,13 +46,14 @@ $sub_delims = '!$&\'()*+,;=';
 $pchar = "(?:[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
 
 $scheme = '[a-z][a-z\d+\-.]*';
-$reg_name = "(?:[$unreserved$sub_delims|]+|$pct_encoded)+"; // rfc: * instead of + and no "|"
-$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
+$reg_name = "(?:[$unreserved$sub_delims|@]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" (included instead of userinfo
+//$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
 $ipv4_simple = '[0-9.]+';
 $ipv6_simple = '\[[a-z0-9.:]+\]';
 $host = "(?:$reg_name|$ipv4_simple|$ipv6_simple)";
 $port = '\d*';
-$authority = "(?:$userinfo@)?$host(?::$port)?";
+//$authority = "(?:$userinfo@)?$host(?::$port)?";
+$authority = "$host(?::$port)?";
 $segment = "$pchar*";
 $path_abempty = "(?:/$segment)*";
 $hier_part = "/{2}$authority$path_abempty";

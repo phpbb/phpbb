@@ -78,7 +78,7 @@ switch ($mode)
 			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
-		login_box("index.$phpEx");
+		login_box(request_var('redirect', "index.$phpEx"));
 	break;
 
 	case 'logout':

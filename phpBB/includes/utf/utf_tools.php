@@ -1092,22 +1092,26 @@ function utf8_clean_string($text)
 
 	static $homographs = array(
 		// cyrllic
-		"\xD0\xB0" => "\x61",
-		"\xD0\xB5" => "\x65",
-		"\xD0\xBE" => "\x6F",
-		"\xD1\x80" => "\x70",
-		"\xD1\x81" => "\x63",
-		"\xD1\x83" => "\x79",
-		"\xD1\x85" => "\x78",
-		"\xD1\x95" => "\x73",
-		"\xD1\x96" => "\x69",
-		"\xD1\x98" => "\x6A",
-		"\xD2\xBB" => "\x68",
+		"\xD0\xB0"	=> "\x61",
+		"\xD0\xB5"	=> "\x65",
+		"\xD0\xBE"	=> "\x6F",
+		"\xD1\x80"	=> "\x70",
+		"\xD1\x81"	=> "\x63",
+		"\xD1\x83"	=> "\x79",
+		"\xD1\x85"	=> "\x78",
+		"\xD1\x95"	=> "\x73",
+		"\xD1\x96"	=> "\x69",
+		"\xD1\x98"	=> "\x6A",
+		"\xD2\xBB"	=> "\x68",
 		// greek
-		"\xCE\xB1" => "\x61",
-		"\xCE\xBF" => "\x6F",
+		"\xCE\xB1"	=> "\x61",
+		"\xCE\xBF"	=> "\x6F",
 		// other
-		"\xC2\xA1" => "\x69",
+		"\xC2\xA1"	=> "\x69",
+		"\xC2\xAD"	=> '',
+		"\x08"		=> '',
+		"\x09"		=> "\x32",
+		"\x11"		=> "\x32",
 	);
 
 	$text = strtr($text, $homographs);
