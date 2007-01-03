@@ -27,7 +27,7 @@ class ucp_attachments
 
 		$delete		= (isset($_POST['delete'])) ? true : false;
 		$confirm	= (isset($_POST['confirm'])) ? true : false;
-		$delete_ids	= request_var('attachment', array(0));
+		$delete_ids	= array_keys(request_var('attachment', array(0)));
 
 		if ($delete && sizeof($delete_ids))
 		{

@@ -976,6 +976,7 @@ function mcp_fork_topic($topic_ids)
 							'post_msg_id'		=> (int) $new_post_id,
 							'topic_id'			=> (int) $new_topic_id,
 							'in_message'		=> 0,
+							'is_orphan'			=> (int) $attach_row['is_orphan'],
 							'poster_id'			=> (int) $attach_row['poster_id'],
 							'physical_filename'	=> (string) basename($attach_row['physical_filename']),
 							'real_filename'		=> (string) basename($attach_row['real_filename']),

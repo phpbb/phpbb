@@ -188,10 +188,6 @@
 			<dd><input type="checkbox" class="radio" id="allow_in_pm" name="allow_in_pm" value="1"<!-- IF ALLOW_IN_PM --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
-			<dt><label for="download_mode">{L_DOWNLOAD_MODE}:</label><br /><span>{L_DOWNLOAD_MODE_EXPLAIN}</span></dt>
-			<dd>{S_DOWNLOAD_SELECT}</dd>
-		</dl>
-		<dl>
 			<dt><label for="upload_icon">{L_UPLOAD_ICON}:</label></dt>
 			<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
 					<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}

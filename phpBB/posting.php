@@ -191,6 +191,11 @@ switch ($mode)
 	break;
 
 	case 'quote':
+
+		$post_data['post_edit_locked'] = 0;
+
+	// no break;
+
 	case 'reply':
 		if ($auth->acl_get('f_reply', $forum_id))
 		{

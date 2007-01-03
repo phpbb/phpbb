@@ -161,6 +161,7 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT
 // Determine the 'presenting'-method
 if ($download_mode == PHYSICAL_LINK)
 {
+	// This presenting method should no longer be used
 	if (!@is_dir($phpbb_root_path . $config['upload_path']))
 	{
 		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);

@@ -30,8 +30,7 @@ class acp_php_info
 		
 		ob_start(); 
 		@phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES | INFO_VARIABLES); 
-		$phpinfo = ob_get_contents(); 
-		ob_end_clean(); 
+		$phpinfo = ob_get_clean(); 
 
 		$phpinfo = trim($phpinfo);
 

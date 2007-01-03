@@ -76,7 +76,7 @@ class filespec
 	/**
 	* Cleans destination filename
 	* 
-	* @param real|unique $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
+	* @param real|unique|unique_ext $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
 	* @param string $prefix Prefix applied to filename
 	* @access public
 	*/
@@ -106,6 +106,10 @@ class filespec
 			break;
 
 			case 'unique':
+				$this->realname = $prefix . md5(unique_id());
+			break;
+
+			case 'unique_ext':
 			default:
 				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;
 			break;

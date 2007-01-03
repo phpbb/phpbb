@@ -767,7 +767,7 @@ function delete_attachments($mode, $ids, $resync = true)
 	$space_removed = $files_removed = 0;
 	foreach ($physical as $file_ary)
 	{
-		if (phpbb_unlink($file_ary['filename'], 'file'))
+		if (phpbb_unlink($file_ary['filename'], 'file', true))
 		{
 			$space_removed += $file_ary['filesize'];
 			$files_removed++;
@@ -775,7 +775,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 		if ($file_ary['thumbnail'])
 		{
-			phpbb_unlink($file_ary['filename'], 'thumbnail');
+			phpbb_unlink($file_ary['filename'], 'thumbnail', true);
 		}
 	}
 	set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
@@ -1001,14 +1001,28 @@ function update_posted_info(&$topic_ids)
 }
 
 /**
-* Delete File
+* Delete attached file
 */
-function phpbb_unlink($filename, $mode = 'file')
+function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $config, $user, $phpbb_root_path;
+	global $db, $phpbb_root_path, $config;
 
-	$filename = ($mode == 'thumbnail') ? $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($filename) : $phpbb_root_path . $config['upload_path'] . '/' . basename($filename);
-	return @unlink($filename);
+	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
+	$sql = 'SELECT COUNT(attach_id) AS num_entries
+		FROM ' . ATTACHMENTS_TABLE . "
+		WHERE physical_filename = '" . $db->sql_escape(basename($filename)) . "'";
+	$result = $db->sql_query($sql);
+	$num_entries = (int) $db->sql_fetchfield('num_entries');
+	$db->sql_freeresult($result);
+
+	// Do not remove file if at least one additional entry with the same name exist.
+	if (($entry_removed && $num_entries > 0) || (!$entry_removed && $num_entries > 1))
+	{
+		return false;
+	}
+
+	$filename = ($mode == 'thumbnail') ? 'thumb_' . basename($filename) : basename($filename);
+	return @unlink($phpbb_root_path . $config['upload_path'] . '/' . $filename);
 }
 
 /**

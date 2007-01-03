@@ -117,6 +117,7 @@ define('FULL_FOLDER_HOLD', -1);
 
 // Download Modes - Attachments
 define('INLINE_LINK', 1);
+// This mode is only used internally to allow modders extending the attachment functionality
 define('PHYSICAL_LINK', 2);
 
 // Confirm types
