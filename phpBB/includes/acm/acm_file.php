@@ -71,12 +71,11 @@ class acm
 		}
 
 		global $phpEx;
-		$file = "<?php\n\$this->vars = " . $this->format_array($this->vars) . ";\n\n\$this->var_expires = " . $this->format_array($this->var_expires) . "\n?>";
 
 		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, $file);
+			fwrite($fp, "<?php\n\$this->vars = " . var_export($this->vars, true) . ";\n\n\$this->var_expires = " . var_export($this->var_expires, true) . "\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
@@ -151,7 +150,7 @@ class acm
 				return false;
 			}
 
-			include($this->cache_dir . 'data' . $var_name . ".$phpEx");
+			include($this->cache_dir . "data{$var_name}.$phpEx");
 			return (isset($data)) ? $data : false;
 		}
 		else
@@ -169,10 +168,10 @@ class acm
 		{
 			global $phpEx;
 
-			if ($fp = @fopen($this->cache_dir . 'data' . $var_name . ".$phpEx", 'wb'))
+			if ($fp = @fopen($this->cache_dir . "data{$var_name}.$phpEx", 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = unserialize('" . str_replace("'", "\\'", str_replace('\\', '\\\\', serialize($var))) . "');\n?>");
+				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = " . var_export($var, true) . ";\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 			}
@@ -291,37 +290,6 @@ class acm
 	}
 
 	/**
-	* Format an array to be stored on filesystem
-	*/
-	function format_array($array, $tab = '')
-	{
-		$tab .= "\t";
-
-		$lines = array();
-		foreach ($array as $k => $v)
-		{
-			if (is_array($v))
-			{
-				$lines[] = "\n{$tab}'$k' => " . $this->format_array($v, $tab);
-			}
-			else if (is_int($v))
-			{
-				$lines[] = "\n{$tab}'$k' => $v";
-			}
-			else if (is_bool($v))
-			{
-				$lines[] = "\n{$tab}'$k' => " . (($v) ? 'true' : 'false');
-			}
-			else
-			{
-				$lines[] = "\n{$tab}'$k' => '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $v)) . "'";
-			}
-		}
-
-		return 'array(' . implode(',', $lines) . ')';
-	}
-
-	/**
 	* Load cached sql query
 	*/
 	function sql_load($query)
@@ -368,7 +336,6 @@ class acm
 		{
 			@flock($fp, LOCK_EX);
 
-			$lines = array();
 			$query_id = sizeof($this->sql_rowset);
 			$this->sql_rowset[$query_id] = array();
 			$this->sql_row_pointer[$query_id] = 0;
@@ -376,12 +343,13 @@ class acm
 			while ($row = $db->sql_fetchrow($query_result))
 			{
 				$this->sql_rowset[$query_id][] = $row;
-
-				$lines[] = "unserialize('" . str_replace("'", "\\'", str_replace('\\', '\\\\', serialize($row))) . "')";
 			}
 			$db->sql_freeresult($query_result);
 
-			fwrite($fp, "<?php\n\n/*\n" . str_replace('*/', '*\/', $query) . "\n*/\n\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$this->sql_rowset[\$query_id] = array(" . implode(',', $lines) . ') ?>');
+			$file = "<?php\n\n/*\n" . str_replace('*/', '*\/', $query) . "\n*/\n";
+			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
+
+			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . var_export($this->sql_rowset[$query_id], true) . ";\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 

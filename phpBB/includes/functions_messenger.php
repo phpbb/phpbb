@@ -401,7 +401,9 @@ class messenger
 			}
 			else
 			{
-				$result = @$config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				ob_start();
+				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+				$err_msg = ob_get_clean();
 			}
 
 			if (!$result)
@@ -623,7 +625,16 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
 
-						$result = ($config['smtp_delivery']) ? smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers) : @$config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+						if ($config['smtp_delivery'])
+						{
+							$result = smtpmail($addresses, mail_encode($subject), wordwrap($msg), $err_msg, $headers);
+						}
+						else
+						{
+							ob_start();
+							$result = $config['email_function_name']($to, mail_encode($subject), implode("\n", preg_split("/\r?\n/", wordwrap($msg))), $headers);
+							$err_msg = ob_get_clean();
+						}
 
 						if (!$result)
 						{
@@ -671,12 +682,10 @@ class queue
 		}
 		else
 		{
-			$file = '<?php $this->queue_data=' . $this->format_array($this->queue_data) . '; ?>';
-
 			if ($fp = @fopen($this->cache_file, 'w'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, $file);
+				fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->queue_data) . ";\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 			}
@@ -711,48 +720,15 @@ class queue
 				}
 			}
 		}
-		
-		$file = '<?php $this->queue_data = ' . $this->format_array($this->data) . '; ?>';
 
 		if ($fp = @fopen($this->cache_file, 'w'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, $file);
+			fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->data) . ";\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
 	}
-
-	/**
-	* Format array
-	* @access private
-	*/
-	function format_array($array)
-	{
-		$lines = array();
-		foreach ($array as $k => $v)
-		{
-			if (is_array($v))
-			{
-				$lines[] = "'$k'=>" . $this->format_array($v);
-			}
-			else if (is_int($v))
-			{
-				$lines[] = "'$k'=>$v";
-			}
-			else if (is_bool($v))
-			{
-				$lines[] = "'$k'=>" . (($v) ? 'true' : 'false');
-			}
-			else
-			{
-				$lines[] = "'$k'=>'" . str_replace("'", "\'", str_replace('\\', '\\\\', $v)) . "'";
-			}
-		}
-
-		return 'array(' . implode(',', $lines) . ')';
-	}
-
 }
 
 /**

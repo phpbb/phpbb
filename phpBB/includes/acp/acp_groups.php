@@ -363,7 +363,7 @@ class acp_groups
 							// Since the user only has the option to copy permissions from non leader managed groups this seems to be a good compromise.
 							if ($group_perm_from && $action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
 							{
-								$sql = 'SELECT group_manage_founder
+								$sql = 'SELECT group_founder_manage
 									FROM ' . GROUPS_TABLE . '
 									WHERE group_id = ' . $group_perm_from;
 								$result = $db->sql_query($sql);
@@ -371,7 +371,7 @@ class acp_groups
 								$db->sql_freeresult($result);
 
 								// Check the group if non-founder
-								if ($check_row && ($user->data['user_type'] == USER_FOUNDER || $check_row['group_manage_founder'] == 0))
+								if ($check_row && ($user->data['user_type'] == USER_FOUNDER || $check_row['group_founder_manage'] == 0))
 								{
 									// From the mysql documentation:
 									// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.

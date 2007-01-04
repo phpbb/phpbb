@@ -674,6 +674,13 @@ class acp_language
 					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
 				$db->sql_query($sql);
 
+				// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
+				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
+				$db->sql_query($sql);
+
+				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
+				$db->sql_query($sql);
+
 				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
 				trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
@@ -725,6 +732,43 @@ class acp_language
 				);
 
 				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+				$lang_id = $db->sql_nextid();
+
+				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
+				$sql = 'SELECT lang_id
+					FROM ' . LANG_TABLE . "
+					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+				$result = $db->sql_query($sql);
+				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
+				$db->sql_freeresult($result);
+
+				// From the mysql documentation:
+				// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+				// Due to this we stay on the safe side if we do the insertion "the manual way"
+
+				$sql = 'SELECT field_id, lang_name, lang_explain, lang_default_value
+					FROM ' . PROFILE_LANG_TABLE . '
+					WHERE lang_id = ' . $default_lang_id;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$row['lang_id'] = $lang_id;
+					$db->sql_query('INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+				}
+				$db->sql_freeresult($result);
+
+				$sql = 'SELECT field_id, option_id, field_type, lang_value
+					FROM ' . PROFILE_FIELDS_LANG_TABLE . '
+					WHERE lang_id = ' . $default_lang_id;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$row['lang_id'] = $lang_id;
+					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+				}
+				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
