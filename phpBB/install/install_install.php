@@ -1320,6 +1320,14 @@ class install_install extends module
 					WHERE config_name = 'captcha_gd'";
 		}
 
+		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
+		$cookie_name = 'phpbb3_';
+		$cookie_name .= strtolower(gen_rand_string(5));
+
+		$sql_ary[] = 'UPDATE ' . $table_prefix . "config
+			SET config_value = '" . $db->sql_escape($cookie_name) . "'
+			WHERE config_name = 'cookie_name'";
+
 		foreach ($sql_ary as $sql)
 		{
 			//$sql = trim(str_replace('|', ';', $sql));
