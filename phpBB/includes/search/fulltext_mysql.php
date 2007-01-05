@@ -32,12 +32,18 @@ class fulltext_mysql extends search_backend
 	var $split_words = array();
 	var $search_query;
 	var $common_words = array();
+	var $pcre_properties = false;
 
 	function fulltext_mysql(&$error)
 	{
 		global $config;
 
 		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
+
+		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+		{
+			$this->pcre_properties = true;
+		}
 
 		$error = false;
 	}
@@ -123,9 +129,9 @@ class fulltext_mysql extends search_backend
 		$keywords = preg_replace($match, ' ', trim($keywords));
 
 		// Split words
-		$split_keywords = preg_replace('#([^\w\'*])#', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
+		$split_keywords = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
 		$matches = array();
-		preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#', $split_keywords, $matches);
+		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $split_keywords, $matches);
 		$this->split_words = $matches[1];
 
 		if (sizeof($this->ignore_words))
@@ -174,9 +180,9 @@ class fulltext_mysql extends search_backend
 		$this->get_synonyms();
 
 		// Split words
-		$text = preg_replace('#([^\w\'*])#', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		$text = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
 		$matches = array();
-		preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#', $text, $matches);
+		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
 		$text = $matches[1];
 
 		if (sizeof($this->ignore_words))
