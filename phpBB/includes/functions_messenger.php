@@ -685,7 +685,7 @@ class queue
 			if ($fp = @fopen($this->cache_file, 'w'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->queue_data) . ";\n?>");
+				fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->queue_data, true) . ";\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 			}
@@ -724,7 +724,7 @@ class queue
 		if ($fp = @fopen($this->cache_file, 'w'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->data) . ";\n?>");
+			fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->data, true) . ";\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 		}
