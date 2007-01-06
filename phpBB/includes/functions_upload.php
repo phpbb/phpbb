@@ -649,6 +649,9 @@ class fileupload
 		$filename = $url['path'];
 		$filesize = 0;
 
+		$errno = 0;
+		$errstr = '';
+
 		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
 		{
 			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
@@ -677,11 +680,11 @@ class fileupload
 				}
 				else
 				{
-					if (strpos($line, 'Content-Type: ') !== false)
+					if (stripos($line, 'content-type: ') !== false)
 					{
-						$upload_ary['type'] = rtrim(str_replace('Content-Type: ', '', $line));
+						$upload_ary['type'] = rtrim(str_replace('content-type: ', '', strtolower($line)));
 					}
-					else if (strpos($line, '404 Not Found') !== false)
+					else if (stripos($line, '404 not found') !== false)
 					{
 						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
 						return $file;

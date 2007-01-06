@@ -2580,7 +2580,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 				{
 					$get_info = true;
 				}
-				else if (strpos($line, '404 Not Found') !== false)
+				else if (stripos($line, '404 not found') !== false)
 				{
 					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
 					return false;
@@ -2593,11 +2593,13 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	{
 		if ($errstr)
 		{
+			// convert possible localized errstr to utf8
+			// $errstr = utf8_convert_message($errstr);
 			return false;
 		}
 		else
 		{
-			$errstr = 'fsock disabled';
+			$errstr = $user->lang['FSOCK_DISABLED'];
 			return false;
 		}
 	}

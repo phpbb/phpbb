@@ -821,6 +821,11 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	// Ok we have error checked as much as we can to this point let's get on it already.
 	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
+		if ($errstr)
+		{
+			$errstr = utf8_convert_message($errstr);
+		}
+
 		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		return false;
 	}
@@ -1062,6 +1067,11 @@ class smtp_class
 			// able to get our ip for matching...
 			if (!$this->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 10))
 			{
+				if ($errstr)
+				{
+					$errstr = utf8_convert_message($errstr);
+				}
+
 				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 				return $err_msg;
 			}
@@ -1152,6 +1162,11 @@ class smtp_class
 
 		if (!$this->socket = @fsockopen($hostname, 110, $errno, $errstr, 10))
 		{
+			if ($errstr)
+			{
+				$errstr = utf8_convert_message($errstr);
+			}
+
 			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
