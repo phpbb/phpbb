@@ -771,11 +771,11 @@ function utf8_recode($string, $encoding)
 			case '874':
 				if (!function_exists('cp' . $array[1]))
 				{
-					if (!file_exists($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx))
+					if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx))
 					{
 						trigger_error('Basic reencoder file is missing', E_USER_ERROR);
 					}
-					include($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx);
+					include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
 				}
 				return call_user_func('cp' . $array[1], $string);
 			break;
@@ -799,11 +799,11 @@ function utf8_recode($string, $encoding)
 			case '15':
 				if (!function_exists('iso_8895_' . $array[1]))
 				{
-					if (!file_exists($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx))
+					if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx))
 					{
 						trigger_error('Basic reencoder file is missing', E_USER_ERROR);
 					}
-					include($phpbb_root_path . 'includes/utf/data/basic.' . $phpEx);
+					include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
 				}
 				return call_user_func('iso_8895_' . $array[1], $string);
 			break;
@@ -819,11 +819,11 @@ function utf8_recode($string, $encoding)
 	{
 		if (!function_exists('sjis'))
 		{
-			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx))
 			{
 				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
 			}
-			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+			include($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx);
 		}
 		return sjis($string);
 	}
@@ -833,11 +833,11 @@ function utf8_recode($string, $encoding)
 	{
 		if (!function_exists('euc_kr'))
 		{
-			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx))
 			{
 				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
 			}
-			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+			include($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx);
 		}
 		return euc_kr($string);
 	}
@@ -847,11 +847,11 @@ function utf8_recode($string, $encoding)
 	{
 		if (!function_exists('big5'))
 		{
-			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx))
 			{
 				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
 			}
-			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+			include($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx);
 		}
 		return big5($string);
 	}
@@ -861,11 +861,11 @@ function utf8_recode($string, $encoding)
 	{
 		if (!function_exists('gb2312'))
 		{
-			if (!file_exists($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx))
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx))
 			{
 				trigger_error('CJK reencoder file is missing', E_USER_ERROR);
 			}
-			include($phpbb_root_path . 'includes/utf/data/cjk.' . $phpEx);
+			include($phpbb_root_path . 'includes/utf/data/recode_cjk.' . $phpEx);
 		}
 		return gb2312($string);
 	}
@@ -1126,5 +1126,29 @@ function utf8_htmlspecialchars(&$value)
 {
 	return htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
 }
+
+/**
+* Trying to convert returned system message to utf8
+function utf8_convert_message($message)
+{
+	// First of all check if conversion is possible/needed
+	if (empty($_SERVER['HTTP_ACCEPT_CHARSET']) || !preg_match('/[\x80-\xFF]/', $message))
+	{
+		return htmlspecialchars($message);
+	}
+
+	// Guess the encoding. Because it is used for system messages we check the system/server.
+	$encoding = explode(',', $_SERVER['HTTP_ACCEPT_CHARSET']);
+	$encoding = (empty($encoding)) ? array() : explode(';', $encoding[0]);
+	$encoding = (empty($encoding)) ? false : trim(strtolower($encoding[0]));
+
+	if (empty($encoding) || $encoding == 'utf-8')
+	{
+		return utf8_htmlspecialchars($message);
+	}
+
+	return utf8_htmlspecialchars(utf8_recode($message, $encoding));
+}
+*/
 
 ?>
