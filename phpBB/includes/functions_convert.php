@@ -1648,7 +1648,7 @@ function add_default_groups()
 */
 function add_bots()
 {
-	global $db, $convert, $user;
+	global $db, $convert, $user, $config;
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
@@ -1725,22 +1725,19 @@ function add_bots()
 
 	foreach ($bots as $bot_name => $bot_ary)
 	{
-		$sql = 'INSERT INTO ' . USERS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'user_type'			=> GROUP_HIDDEN,
-			'group_id'			=> $group_id,
-			'username'			=> $bot_name,
-			'username_clean'	=> utf8_clean_string($bot_name),
-			'user_regdate'		=> time(),
-			'user_permissions'	=> '',
-			'user_sig'			=> '',
-			'user_interests'	=> '',
-			'user_password'		=> '',
-			'user_lang'			=> 'en',
-			'user_style'		=> 1,
-			'user_rank'			=> 1,
-			'user_colour'		=> '9E8DA7')
+		$user_row = array(
+			'user_type'				=> USER_IGNORE,
+			'group_id'				=> $group_id,
+			'username'				=> $bot_name,
+			'user_regdate'			=> time(),
+			'user_password'			=> '',
+			'user_colour'			=> '9E8DA7',
+			'user_email'			=> '',
+			'user_lang'				=> $config['default_lang'],
+			'user_style'			=> 1,
+			'user_timezone'			=> 0,
+			'user_allow_massemail'	=> 0,
 		);
-		$db->sql_query($sql);
 
 		$user_id = $db->sql_nextid();
 

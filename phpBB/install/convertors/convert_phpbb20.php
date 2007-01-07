@@ -813,6 +813,7 @@ if (!$get_info)
 				array('user_icq',				'users.user_icq',					''),
 				array('user_from',				'users.user_from',					'utf8_htmlspecialchars'),
 				array('user_rank',				'users.user_rank',					''),
+				array('user_permissions',		'',									''),
 
 				array('user_avatar',			'users.user_avatar',				'phpbb_import_avatar'),
 				array('user_avatar_type',		'users.user_avatar_type',			'phpbb_avatar_type'),
