@@ -1129,26 +1129,21 @@ function utf8_htmlspecialchars(&$value)
 
 /**
 * Trying to convert returned system message to utf8
+*
+* PHP assumes such messages are ISO-8859-1 so we'll do that too
+* and if it breaks messages we'll blame it on them ;-)
+*/
 function utf8_convert_message($message)
 {
-	// First of all check if conversion is possible/needed
-	if (empty($_SERVER['HTTP_ACCEPT_CHARSET']) || !preg_match('/[\x80-\xFF]/', $message))
-	{
-		return htmlspecialchars($message);
-	}
-
-	// Guess the encoding. Because it is used for system messages we check the system/server.
-	$encoding = explode(',', $_SERVER['HTTP_ACCEPT_CHARSET']);
-	$encoding = (empty($encoding)) ? array() : explode(';', $encoding[0]);
-	$encoding = (empty($encoding)) ? false : trim(strtolower($encoding[0]));
-
-	if (empty($encoding) || $encoding == 'utf-8')
+	// First of all check if conversion is neded at all, as there is no point
+	// in converting ASCII messages from ISO-8859-1 to UTF-8
+	if (!preg_match('/[\x80-\xFF]/', $message))
 	{
 		return utf8_htmlspecialchars($message);
 	}
 
-	return utf8_htmlspecialchars(utf8_recode($message, $encoding));
+	// else we need to convert some part of the message
+	return utf8_htmlspecialchars(utf8_recode($message, 'ISO-8859-1'));
 }
-*/
 
 ?>
