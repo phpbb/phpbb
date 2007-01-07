@@ -2593,8 +2593,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 	{
 		if ($errstr)
 		{
-			// convert possible localized errstr to utf8
-			// $errstr = utf8_convert_message($errstr);
+			$errstr = utf8_convert_message($errstr);
 			return false;
 		}
 		else
