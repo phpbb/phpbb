@@ -877,6 +877,21 @@ class install_convert extends module
 			$counting = -1;
 			$batch_time = 0;
 
+			$mysql_convert = false;
+
+			switch ($db->sql_layer)
+			{
+				// Thanks MySQL, for silently converting...
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					if (version_compare($db->mysql_version, '4.1.3', '>='))
+					{
+						$mysql_convert = true;
+					}
+				break;
+			}
+
 			while (($counting === -1 || $counting >= $convert->batch_size) && still_on_time())
 			{
 				$old_current_table = $current_table;
@@ -899,8 +914,18 @@ class install_convert extends module
 				$mtime = explode(' ', microtime());
 				$batch_time = $mtime[0] + $mtime[1];
 
+				if ($mysql_convert)
+				{
+					$db->sql_query("SET NAMES 'latin1'");
+				}
+
 				// Take skip rows into account and only fetch batch_size amount of rows
 				$___result = $db->sql_query_limit($sql, $convert->batch_size, $skip_rows);
+
+				if ($mysql_convert)
+				{
+					$db->sql_query("SET NAMES 'utf8'");
+				}
 
 				// This loop processes each row
 				$counting = 0;
