@@ -1648,7 +1648,7 @@ function add_default_groups()
 */
 function add_bots()
 {
-	global $db, $convert, $user, $config;
+	global $db, $convert, $user, $config, $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
@@ -1723,6 +1723,11 @@ function add_bots()
 		'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
 	);
 
+	if (!function_exists('user_add'))
+	{
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	}
+
 	foreach ($bots as $bot_name => $bot_ary)
 	{
 		$user_row = array(
@@ -1739,18 +1744,21 @@ function add_bots()
 			'user_allow_massemail'	=> 0,
 		);
 
-		$user_id = $db->sql_nextid();
+		$user_id = user_add($user_row);
 
-		add_user_group($group_id, $user_id, false);
+		if ($user_id)
+		{
+			add_user_group($group_id, $user_id, false);
 
-		$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'bot_active'	=> 1,
-			'bot_name'		=> $bot_name,
-			'user_id'		=> $user_id,
-			'bot_agent'		=> $bot_ary[0],
-			'bot_ip'		=> $bot_ary[1])
-		);
-		$db->sql_query($sql);
+			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'bot_active'	=> 1,
+				'bot_name'		=> $bot_name,
+				'user_id'		=> $user_id,
+				'bot_agent'		=> $bot_ary[0],
+				'bot_ip'		=> $bot_ary[1])
+			);
+			$db->sql_query($sql);
+		}
 	}
 }
 
