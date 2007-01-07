@@ -70,7 +70,7 @@ function phpbb_insert_forums()
 	{
 		$sql_ary = array(
 			'forum_id'		=> $max_forum_id,
-			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_encoding($row['cat_title']), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
+			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_encoding($row['cat_title'], false), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
 			'forum_desc'	=> '',
@@ -170,10 +170,10 @@ function phpbb_insert_forums()
 		// Define the new forums sql ary
 		$sql_ary = array(
 			'forum_id'			=> (int) $row['forum_id'],
-			'forum_name'		=> htmlspecialchars(phpbb_set_encoding($row['forum_name']), ENT_COMPAT, 'UTF-8'),
+			'forum_name'		=> htmlspecialchars(phpbb_set_encoding($row['forum_name'], false), ENT_COMPAT, 'UTF-8'),
 			'parent_id'			=> $cats_added[$row['cat_id']],
 			'forum_parents'		=> '',
-			'forum_desc'		=> htmlspecialchars(phpbb_set_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
+			'forum_desc'		=> htmlspecialchars(phpbb_set_encoding($row['forum_desc'], false), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
 			'enable_prune'		=> $row['prune_enable'],
@@ -239,24 +239,113 @@ function phpbb_insert_forums()
 	$db->sql_freeresult($result);
 }
 
-function phpbb_set_encoding($text)
+/**
+* Function for recoding text with the default language
+*
+* @param string $text text to recode to utf8
+* @param bool $grab_user_lang if set to true the function tries to use $convert_row['user_lang'] (and falls back to $convert_row['poster_id']) instead of the boards default language
+*/
+function phpbb_set_encoding($text, $grab_user_lang = true)
 {
-	global $lang_enc_array;
+	global $lang_enc_array, $convert_row;
+	global $convert, $phpEx;
 
-	$default_lang = trim(get_config_value('default_lang'));
+	/*static $lang_enc_array = array(
+		'korean'						=> 'euc-kr',
+		'serbian'						=> 'windows-1250',
+		'polish'						=> 'iso-8859-2',
+		'kurdish'						=> 'windows-1254',
+		'slovak'						=> 'Windows-1250',
+		'russian'						=> 'windows-1251',
+		'estonian'						=> 'iso-8859-4',
+		'chinese_simplified'			=> 'gb2312',
+		'macedonian'					=> 'windows-1251',
+		'azerbaijani'					=> 'UTF-8',
+		'romanian'						=> 'iso-8859-2',
+		'romanian_diacritice'			=> 'iso-8859-2',
+		'lithuanian'					=> 'windows-1257',
+		'turkish'						=> 'iso-8859-9',
+		'ukrainian'						=> 'windows-1251',
+		'japanese'						=> 'shift_jis',
+		'hungarian'						=> 'ISO-8859-2',
+		'romanian_no_diacritics'		=> 'iso-8859-2',
+		'mongolian'						=> 'UTF-8',
+		'slovenian'						=> 'windows-1250',
+		'bosnian'						=> 'windows-1250',
+		'czech'							=> 'Windows-1250',
+		'farsi'							=> 'Windows-1256',
+		'croatian'						=> 'windows-1250',
+		'greek'							=> 'iso-8859-7',
+		'russian_tu'					=> 'windows-1251',
+		'sakha'							=> 'UTF-8',
+		'serbian_cyrillic'				=> 'windows-1251',
+		'bulgarian'						=> 'windows-1251',
+		'chinese_traditional_taiwan'	=> 'big5',
+		'chinese_traditional'			=> 'big5',
+		'arabic'						=> 'windows-1256',
+		'hebrew'						=> 'WINDOWS-1255',
+		'thai'							=> 'windows-874',
+		//'chinese_traditional_taiwan'	=> 'utf-8' // custom modified, we may have to do an include :-(
+	);*/
 
-	if (!isset($lang_enc_array[$default_lang]))
+	if (empty($lang_enc_array))
 	{
-		global $phpEx, $convert;
-
-		include($convert->convertor_status['forum_path'] . '/language/lang_' . $default_lang . '/lang_main.' . $phpEx);
-		$lang_enc_array[$default_lang] = $lang['ENCODING'];
-		unset($lang);
+		$lang_enc_array = array();
 	}
 
-	return utf8_recode($text, $lang_enc_array[$default_lang]);
+	$get_lang = trim(get_config_value('default_lang'));
+
+	// Do we need the users language encoding?
+	if ($grab_user_lang && !empty($convert_row))
+	{
+		if (!empty($convert_row['user_lang']))
+		{
+			$get_lang = trim($convert_row['user_lang']);
+		}
+		else if (!empty($convert_row['poster_id']))
+		{
+			global $db;
+
+			$sql = 'SELECT user_lang
+				FROM ' . $convert->src_table_prefix . 'users
+				WHERE user_id = ' . (int) $convert_row['poster_id'];
+			$result = $db->sql_query($sql);
+			$get_lang = (string) $db->sql_fetchfield('user_lang');
+			$db->sql_freeresult($result);
+
+			$get_lang = (!trim($get_lang)) ? trim(get_config_value('default_lang')) : trim($get_lang);
+		}
+	}
+
+	if (!isset($lang_enc_array[$get_lang]))
+	{
+		$filename = $convert->convertor_status['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx;
+
+		if (!file_exists($filename))
+		{
+			$get_lang = trim(get_config_value('default_lang'));
+		}
+
+		if (!isset($lang_enc_array[$get_lang]))
+		{
+			include($convert->convertor_status['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx);
+			$lang_enc_array[$get_lang] = $lang['ENCODING'];
+			unset($lang);
+		}
+	}
+
+	$encoding = $lang_enc_array[$get_lang];
+
+	return utf8_recode($text, $lang_enc_array[$get_lang]);
 }
 
+/**
+* Same as phpbb_set_encoding, but forcing boards default language
+*/
+function phpbb_set_default_encoding($text)
+{
+	return phpbb_set_encoding($text, false);
+}
 
 /**
 * Convert Birthday from Birthday MOD to phpBB Format
@@ -855,7 +944,7 @@ function phpbb_convert_group_name($group_name)
 		return 'phpBB2 - ' . $group_name;
 	}
 
-	return phpbb_set_encoding($group_name);
+	return phpbb_set_encoding($group_name, false);
 }
 
 /**
@@ -915,45 +1004,6 @@ function phpbb_convert_topic_type($topic_type)
 function phpbb_prepare_message($message)
 {
 	global $phpbb_root_path, $phpEx, $db, $convert, $user, $config, $cache, $convert_row, $message_parser;
-	global $lang_enc_array;
-
-	/*static $lang_enc_array = array(
-		'korean'						=> 'euc-kr',
-		'serbian'						=> 'windows-1250',
-		'polish'						=> 'iso-8859-2',
-		'kurdish'						=> 'windows-1254',
-		'slovak'						=> 'Windows-1250',
-		'russian'						=> 'windows-1251',
-		'estonian'						=> 'iso-8859-4',
-		'chinese_simplified'			=> 'gb2312',
-		'macedonian'					=> 'windows-1251',
-		'azerbaijani'					=> 'UTF-8',
-		'romanian'						=> 'iso-8859-2',
-		'romanian_diacritice'			=> 'iso-8859-2',
-		'lithuanian'					=> 'windows-1257',
-		'turkish'						=> 'iso-8859-9',
-		'ukrainian'						=> 'windows-1251',
-		'japanese'						=> 'shift_jis',
-		'hungarian'						=> 'ISO-8859-2',
-		'romanian_no_diacritics'		=> 'iso-8859-2',
-		'mongolian'						=> 'UTF-8',
-		'slovenian'						=> 'windows-1250',
-		'bosnian'						=> 'windows-1250',
-		'czech'							=> 'Windows-1250',
-		'farsi'							=> 'Windows-1256',
-		'croatian'						=> 'windows-1250',
-		'greek'							=> 'iso-8859-7',
-		'russian_tu'					=> 'windows-1251',
-		'sakha'							=> 'UTF-8',
-		'serbian_cyrillic'				=> 'windows-1251',
-		'bulgarian'						=> 'windows-1251',
-		'chinese_traditional_taiwan'	=> 'big5',
-		'chinese_traditional'			=> 'big5',
-		'arabic'						=> 'windows-1256',
-		'hebrew'						=> 'WINDOWS-1255',
-		'thai'							=> 'windows-874',
-		//'chinese_traditional_taiwan'	=> 'utf-8' // custom modified, we may have to do an include :-(
-	);*/
 
 	if (!$message)
 	{
@@ -974,45 +1024,12 @@ function phpbb_prepare_message($message)
 
 	$user_id = $convert->row['poster_id'];
 
-	$sql = 'SELECT user_lang
-		FROM ' . $convert->src_table_prefix . 'users
-		WHERE user_id = ' . (int) $user_id;
-	$result = $db->sql_query($sql);
-	$user_lang = (string) $db->sql_fetchfield('user_lang');
-	$db->sql_freeresult($result);
-
-	if (empty($lang_enc_array))
-	{
-		$lang_enc_array = array();
-	}
-
-	$user_lang = (!trim($user_lang)) ? trim(get_config_value('default_lang')) : trim($user_lang);
-
-	if (!isset($lang_enc_array[$user_lang]))
-	{
-		$filename = $convert->convertor_status['forum_path'] . '/language/lang_' . $user_lang . '/lang_main.' . $phpEx;
-
-		if (!file_exists($filename))
-		{
-			$user_lang = trim(get_config_value('default_lang'));
-		}
-
-		if (!isset($lang_enc_array[$user_lang]))
-		{
-			include($convert->convertor_status['forum_path'] . '/language/lang_' . $user_lang . '/lang_main.' . $phpEx);
-			$lang_enc_array[$user_lang] = $lang['ENCODING'];
-			unset($lang);
-		}
-	}
-
-	$encoding = $lang_enc_array[$user_lang];
-
 	$message = str_replace('<', '&lt;', $message);
 	$message = str_replace('>', '&gt;', $message);
 	$message = str_replace('<br />', "\n", $message);
 
 	// make the post UTF-8
-	$message = utf8_recode($message, $encoding);
+	$message = phpbb_set_encoding($message);
 
 	$message_parser->warn_msg = array(); // Reset the errors from the previous message
 	$message_parser->bbcode_uid = make_uid($convert->row['post_time']);
