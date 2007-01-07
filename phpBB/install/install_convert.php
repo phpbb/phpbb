@@ -916,7 +916,7 @@ class install_convert extends module
 
 				if ($mysql_convert)
 				{
-					$db->sql_query("SET NAMES 'latin1'");
+					$db->sql_query("SET NAMES 'binary'");
 				}
 
 				// Take skip rows into account and only fetch batch_size amount of rows
