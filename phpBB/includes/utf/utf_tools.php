@@ -767,7 +767,7 @@ function utf8_recode($string, $encoding)
 			case '7':
 			case '9':
 			case '15':
-				if (!function_exists('iso_8895_' . $array[1]))
+				if (!function_exists('iso_8859_' . $array[1]))
 				{
 					if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx))
 					{
@@ -775,7 +775,7 @@ function utf8_recode($string, $encoding)
 					}
 					include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
 				}
-				return call_user_func('iso_8895_' . $array[1], $string);
+				return call_user_func('iso_8859_' . $array[1], $string);
 			break;
 
 			default:

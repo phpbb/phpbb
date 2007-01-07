@@ -406,7 +406,7 @@ function iso_8859_7($string)
 	return strtr($string, $transform);
 }
 
-function iso_8895_9($string)
+function iso_8859_9($string)
 {
 	static $tranform = array(
 		"\xC3\x90" => "\xC4\x9E",
@@ -419,7 +419,7 @@ function iso_8895_9($string)
 	return strtr(utf8_encode($string), $transform);
 }
 
-function iso_8895_15($string)
+function iso_8859_15($string)
 {
 	static $tranform = array(
 		"\xC2\xA4" => "\xE2\x82\xAC",
