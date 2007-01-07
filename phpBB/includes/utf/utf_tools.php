@@ -756,36 +756,6 @@ function utf8_recode($string, $encoding)
 
 	global $phpbb_root_path, $phpEx;
 
-	// CP/WIN character encoding
-	if (preg_match('/(?:cp|windows)[_\- ]?(\\d+)/', $encoding, $array))
-	{
-		switch ($array[1])
-		{
-			case '932':
-			break;
-			case '1250':
-			case '1254':
-			case '1255':
-			case '1256':
-			case '1257':
-			case '874':
-				if (!function_exists('cp' . $array[1]))
-				{
-					if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx))
-					{
-						trigger_error('Basic reencoder file is missing', E_USER_ERROR);
-					}
-					include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
-				}
-				return call_user_func('cp' . $array[1], $string);
-			break;
-
-			default:
-				trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
-			break;
-		}
-	}
-
 	// iso-8859-* character encoding
 	if (preg_match('/iso[_ -]?8859[_ -]?(\\d+)/', $encoding, $array))
 	{
@@ -812,6 +782,51 @@ function utf8_recode($string, $encoding)
 				trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
 			break;
 		}
+	}
+
+	// CP/WIN character encoding
+	if (preg_match('/(?:cp|windows)[_\- ]?(\\d+)/', $encoding, $array))
+	{
+		switch ($array[1])
+		{
+			case '932':
+			break;
+			case '1250':
+			case '1251':
+			case '1254':
+			case '1255':
+			case '1256':
+			case '1257':
+			case '874':
+				if (!function_exists('cp' . $array[1]))
+				{
+					if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx))
+					{
+						trigger_error('Basic reencoder file is missing', E_USER_ERROR);
+					}
+					include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+				}
+				return call_user_func('cp' . $array[1], $string);
+			break;
+
+			default:
+				trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
+			break;
+		}
+	}
+
+	// TIS-620
+	if (preg_match('/tis[_ -]?620/', $encoding))
+	{
+		if (!function_exists('tis_620'))
+		{
+			if (!file_exists($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx))
+			{
+				trigger_error('Basic reencoder file is missing', E_USER_ERROR);
+			}
+			include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+		}
+		return tis_620($string);
 	}
 
 	// SJIS
