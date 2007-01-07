@@ -884,11 +884,14 @@ class install_convert extends module
 				// Thanks MySQL, for silently converting...
 				case 'mysql':
 				case 'mysql4':
-				case 'mysqli':
 					if (version_compare($db->mysql_version, '4.1.3', '>='))
 					{
 						$mysql_convert = true;
 					}
+				break;
+
+				case 'mysqli':
+					$mysql_convert = true;
 				break;
 			}
 
