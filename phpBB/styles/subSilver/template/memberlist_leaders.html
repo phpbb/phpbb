@@ -20,7 +20,7 @@
 	<td class="gensmall" align="center">&nbsp;</td>
 	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
 		<!-- IF admin.U_GROUP -->
-			<a<!-- IF admin.GROUP_COLOR --> style="color:#{admin.GROUP_COLOR}"<!-- ENDIF --> href="{admin.U_GROUP}">{admin.GROUP_NAME}</a>
+			<a<!-- IF admin.GROUP_COLOR --> style="font-weight: bold; color:#{admin.GROUP_COLOR}"<!-- ENDIF --> href="{admin.U_GROUP}">{admin.GROUP_NAME}</a>
 		<!-- ELSE -->
 			{admin.GROUP_NAME}
 		<!-- ENDIF -->
@@ -43,7 +43,7 @@
 	<td align="center"><!-- IF not mod.FORUMS -->{L_ALL_FORUMS}<!-- ELSE --><select style="width: 200px;">{mod.FORUMS}</select><!-- ENDIF -->&nbsp;</td>
 	<td class="gensmall" align="center" nowrap="nowrap">&nbsp;
 		<!-- IF mod.U_GROUP -->
-			<a<!-- IF mod.GROUP_COLOR --> style="color:#{mod.GROUP_COLOR}"<!-- ENDIF --> href="{mod.U_GROUP}">{mod.GROUP_NAME}</a>
+			<a<!-- IF mod.GROUP_COLOR --> style="font-weight: bold; color:#{mod.GROUP_COLOR}"<!-- ENDIF --> href="{mod.U_GROUP}">{mod.GROUP_NAME}</a>
 		<!-- ELSE -->
 			{mod.GROUP_NAME}
 		<!-- ENDIF -->

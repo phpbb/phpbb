@@ -444,7 +444,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 			{
 				while ($entry = readdir($handle))
 				{
-					if ($entry[0] == '.')
+					if ($entry[0] == '.' || $entry == 'CVS' || $entry == 'index.htm')
 					{
 						continue;
 					}
@@ -460,7 +460,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 			{
 				while ($entry = $dir->read())
 				{
-					if (substr($entry, 0, 1) == '.')
+					if ($entry[0] == '.' || $entry == 'CVS' || $entry == 'index.htm')
 					{
 						continue;
 					}
@@ -2173,7 +2173,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 	{
 		while ($entry = readdir($handle))
 		{
-			if ($entry[0] == '.')
+			if ($entry[0] == '.' || $entry == 'CVS' || $entry == 'index.htm')
 			{
 				continue;
 			}
@@ -2193,7 +2193,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 	{
 		while ($entry = $dir->read())
 		{
-			if (substr($entry, 0, 1) == '.')
+			if ($entry[0] == '.' || $entry == 'CVS' || $entry == 'index.htm')
 			{
 				continue;
 			}

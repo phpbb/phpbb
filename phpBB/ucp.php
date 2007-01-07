@@ -139,7 +139,9 @@ switch ($mode)
 			foreach ($_COOKIE as $cookie_name => $cookie_data)
 			{
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
-				if (strpos($cookie_name, '_poll') === false)
+
+				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
+				if (strpos($cookie_name, 'poll_') !== 0)
 				{
 					$user->set_cookie($cookie_name, '', $set_time);
 				}

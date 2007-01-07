@@ -96,6 +96,56 @@ function phpbb_insert_forums()
 	}
 	$db->sql_freeresult($result);
 
+	// There may be installations having forums with non-existant category ids.
+	// We try to catch them and add them to an "unknown" category instead of leaving them out.
+	$sql = 'SELECT cat_id
+		FROM ' . $convert->src_table_prefix . 'forums
+		GROUP BY cat_id';
+	$result = $db->sql_query($sql);
+
+	$unknown_cat_id = false;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// Catch those categories not been added before
+		if (!isset($cats_added[$row['cat_id']]))
+		{
+			$unknown_cat_id = true;
+		}
+	}
+	$db->sql_freeresult($result);
+
+	// Is there at least one category not known?
+	if ($unknown_cat_id === true)
+	{
+		$unknown_cat_id = 'ghost';
+
+		$sql_ary = array(
+			'forum_id'		=> $max_forum_id,
+			'forum_name'	=> $user->lang['CATEGORY'],
+			'parent_id'		=> 0,
+			'forum_parents'	=> '',
+			'forum_desc'	=> '',
+			'forum_type'	=> FORUM_CAT,
+			'forum_status'	=> ITEM_UNLOCKED,
+			'forum_rules'	=> '',
+		);
+
+		$sql = 'SELECT MAX(right_id) AS right_id
+			FROM ' . FORUMS_TABLE;
+		$_result = $db->sql_query($sql);
+		$cat_row = $db->sql_fetchrow($_result);
+		$db->sql_freeresult($_result);
+
+		$sql_ary['left_id'] = $cat_row['right_id'] + 1;
+		$sql_ary['right_id'] = $cat_row['right_id'] + 2;
+
+		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
+		$cats_added[$unknown_cat_id] = $max_forum_id;
+		$max_forum_id++;
+	}
+
 	// Now insert the forums
 	$sql = 'SELECT f.*, fp.prune_days, fp.prune_freq FROM ' . $convert->src_table_prefix . 'forums f
 		LEFT JOIN ' . $convert->src_table_prefix . 'forum_prune fp ON f.forum_id = fp.forum_id
@@ -105,6 +155,18 @@ function phpbb_insert_forums()
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		// Some might have forums here with an id not being "possible"...
+		// To be somewhat friendly we "change" the category id for those to a previously created ghost category
+		if (!isset($cats_added[$row['cat_id']]) && $unknown_cat_id !== false)
+		{
+			$row['cat_id'] = $unknown_cat_id;
+		}
+
+		if (!isset($cats_added[$row['cat_id']]))
+		{
+			continue;
+		}
+
 		// Define the new forums sql ary
 		$sql_ary = array(
 			'forum_id'			=> (int) $row['forum_id'],
@@ -179,40 +241,56 @@ function phpbb_insert_forums()
 
 function phpbb_set_encoding($text)
 {
-	global $lang_enc_array, $config;
+	global $lang_enc_array;
 
-	if (!isset($lang_enc_array[$config['default_lang']]))
+	$default_lang = trim(get_config_value('default_lang'));
+
+	if (!isset($lang_enc_array[$default_lang]))
 	{
 		global $phpEx, $convert;
 
-		include($convert->convertor_status['forum_path'] . '/language/lang_' . $config['default_lang'] . '/lang_main.' . $phpEx);
-		$lang_enc_array[$config['default_lang']] = $lang['ENCODING'];
+		include($convert->convertor_status['forum_path'] . '/language/lang_' . $default_lang . '/lang_main.' . $phpEx);
+		$lang_enc_array[$default_lang] = $lang['ENCODING'];
 		unset($lang);
 	}
 
-	return utf8_recode($text, $lang_enc_array[$user_lang]);
+	return utf8_recode($text, $lang_enc_array[$default_lang]);
 }
 
 
 /**
 * Convert Birthday from Birthday MOD to phpBB Format
-* @todo See which birthday MOD's this supports - there appear to be several
 */
 function phpbb_get_birthday($birthday = '')
 {
 	$birthday = (int) $birthday;
 
-	if (!$birthday || $birthday == 999999)
+	if (defined('MOD_BIRTHDAY_TERRA'))
 	{
-		return ' 0- 0-   0';
+		// stored as month, day, year
+		if (!$birthday)
+		{
+			return ' 0- 0-   0';
+		}
+
+		$birthday = (string) $birthday;
+
+		$month = substr($birthday, 0, 2);
+		$day = substr($birthday, 2, 2);
+		$year = substr($birthday, -4);
+
+		return sprintf('%02d-%02d-%04d', $day, $month, $year);
 	}
+	else
+	{
+		if (!$birthday || $birthday == 999999 || $birthday < 0)
+		{
+			return ' 0- 0-   0';
+		}
 
-	// @todo Can't this be done with one call to create_date?
-	$bday_day = create_date('j', $birthday * 86400 + 1, 0);
-	$bday_month = create_date('n', $birthday * 86400 + 1, 0);
-	$bday_year = create_date('Y', $birthday * 86400 + 1, 0);
-
-	return sprintf('%2d-%2d-%4d', $bday_day, $bday_month, $bday_year);
+		// The birthday mod from niels is using this code to transform to day/month/year
+		return gmdate('d-m-Y', $birthday * 86400 + 1);
+	}
 }
 
 /**
@@ -718,13 +796,16 @@ function phpbb_convert_authentication($mode)
 				}
 			}
 
-			// Now make sure the user is able to read these forums
-			$hold_ary = $auth->acl_group_raw_data(get_group_id('guests'), 'f_list', $forum_ids);
-
-			if (!empty($hold_ary))
+			if (sizeof($forum_ids))
 			{
-				mass_auth('group', $row['forum_id'], 'guests', 'f_list', ACL_YES);
-				mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
+				// Now make sure the user is able to read these forums
+				$hold_ary = $auth->acl_group_raw_data(get_group_id('guests'), 'f_list', $forum_ids);
+
+				if (!empty($hold_ary))
+				{
+					mass_auth('group', $row['forum_id'], 'guests', 'f_list', ACL_YES);
+					mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
+				}
 			}
 		}
 	}
@@ -897,7 +978,7 @@ function phpbb_prepare_message($message)
 		FROM ' . $convert->src_table_prefix . 'users
 		WHERE user_id = ' . (int) $user_id;
 	$result = $db->sql_query($sql);
-	$user_lang = $db->sql_fetchfield('user_lang');
+	$user_lang = (string) $db->sql_fetchfield('user_lang');
 	$db->sql_freeresult($result);
 
 	if (empty($lang_enc_array))
@@ -905,13 +986,15 @@ function phpbb_prepare_message($message)
 		$lang_enc_array = array();
 	}
 
+	$user_lang = (!trim($user_lang)) ? trim(get_config_value('default_lang')) : trim($user_lang);
+
 	if (!isset($lang_enc_array[$user_lang]))
 	{
 		$filename = $convert->convertor_status['forum_path'] . '/language/lang_' . $user_lang . '/lang_main.' . $phpEx;
 
 		if (!file_exists($filename))
 		{
-			$user_lang = $config['default_lang'];
+			$user_lang = trim(get_config_value('default_lang'));
 		}
 
 		if (!isset($lang_enc_array[$user_lang]))
@@ -1243,7 +1326,12 @@ function phpbb_import_attach_config()
 	$db->sql_freeresult($result);
 
 	set_config('allow_attachments', 1);
-	set_config('display_order', $attach_config['display_order']);
+
+	// old attachment mod? Must be very old if this entry do not exist...
+	if (!empty($attach_config['display_order']))
+	{
+		set_config('display_order', $attach_config['display_order']);
+	}
 	set_config('max_filesize', $attach_config['max_filesize']);
 	set_config('max_filesize_pm', $attach_config['max_filesize_pm']);
 	set_config('attachment_quota', $attach_config['attachment_quota']);

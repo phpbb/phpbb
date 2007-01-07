@@ -142,10 +142,17 @@ $test_file = 'modcp.php';
 if (!$get_info)
 {
 	// Test to see if the birthday MOD is installed on the source forum
-	// @todo Check the relevant MODs - I believe there are 2 that add this, but am not sure if their data is compatible or not
+	// Nils' birthday mod
 	if (get_config_value('birthday_required') !== false)
 	{
 		define('MOD_BIRTHDAY', true);
+	}
+
+	// TerraFrost's validated birthday mod
+	if (get_config_value('bday_required') !== false)
+	{
+		define('MOD_BIRTHDAY', true);
+		define('MOD_BIRTHDAY_TERRA', true);
 	}
 
 	// Test to see if the attachment MOD is installed on the source forum
