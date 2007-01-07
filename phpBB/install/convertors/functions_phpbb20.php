@@ -957,7 +957,7 @@ function phpbb_prepare_message($message)
 
 	if (!$message)
 	{
-		$convert->row['mp_bbcode_bitfield'] = $convert_row = 0;
+		$convert->row['mp_bbcode_bitfield'] = $convert_row['mp_bbcode_bitfield'] = 0;
 		return '';
 	}
 

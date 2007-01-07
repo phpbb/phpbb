@@ -142,7 +142,7 @@ $test_file = 'modcp.php';
 if (!$get_info)
 {
 	// Test to see if the birthday MOD is installed on the source forum
-	// Nils' birthday mod
+	// Niels' birthday mod
 	if (get_config_value('birthday_required') !== false)
 	{
 		define('MOD_BIRTHDAY', true);
