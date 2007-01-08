@@ -82,11 +82,6 @@ version = {VERSION}
 # images within your css file.
 #
 parse_css_file = {PARSE_CSS_FILE}
-
-#
-# This option defines the pagination seperator in templates.
-#
-pagination_sep = \'{PAGINATION_SEP}\'
 ';
 
 		$this->imageset_keys = array(
@@ -1812,12 +1807,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					$items['parse_css_file'] = 'off';
 				}
 
-				if (!isset($items['pagination_sep']))
-				{
-					$items['pagination_sep'] = ', ';
-				}
-
-				$theme_cfg = str_replace(array('{PARSE_CSS_FILE}', '{PAGINATION_SEP}'), array($items['parse_css_file'], $items['pagination_sep']), $theme_cfg);
+				$theme_cfg = str_replace(array('{PARSE_CSS_FILE}'), array($items['parse_css_file']), $theme_cfg);
 
 				$files[] = array(
 					'src'		=> "styles/{$style_row['theme_path']}/theme/",
