@@ -46,9 +46,14 @@ class convert
 	var $fulltext_search;
 
 	// Batch size, can be adjusted by the conversion file
-	var $batch_size = 6000;
+	// For big boards a value of 6000 seems to be optimal
+	var $batch_size = 2000;
 	// Number of rows to be inserted at once (extended insert) if supported
-	var $num_wait_rows = 30;
+	// For installations having enough memory a value of 60 may be good.
+	var $num_wait_rows = 20;
+
+	// Mysqls internal recoding engine messing up with our (better) functions? We at least support more encodings than mysql so should use it in favor.
+	var $mysql_convert = false;
 
 	var $p_master;
 
@@ -606,9 +611,16 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!is_writeable($phpbb_root_path . $local_path))
+						if (!$local_path || !is_writeable($phpbb_root_path . $local_path))
 						{
-							$bad_folders[] = $local_path;
+							if (!$local_path)
+							{
+								$bad_folders[] = sprintf($user->lang['CONFIG_PHPBB_EMPTY'], $folder);
+							}
+							else
+							{
+								$bad_folders[] = $local_path;
+							}
 						}
 					}
 				}
@@ -877,7 +889,7 @@ class install_convert extends module
 			$counting = -1;
 			$batch_time = 0;
 
-			$mysql_convert = false;
+			$convert->mysql_convert = false;
 
 			switch ($db->sql_layer)
 			{
@@ -886,12 +898,12 @@ class install_convert extends module
 				case 'mysql4':
 					if (version_compare($db->mysql_version, '4.1.3', '>='))
 					{
-						$mysql_convert = true;
+						$convert->mysql_convert = true;
 					}
 				break;
 
 				case 'mysqli':
-					$mysql_convert = true;
+					$convert->mysql_convert = true;
 				break;
 			}
 
@@ -917,7 +929,7 @@ class install_convert extends module
 				$mtime = explode(' ', microtime());
 				$batch_time = $mtime[0] + $mtime[1];
 
-				if ($mysql_convert)
+				if ($convert->mysql_convert)
 				{
 					$db->sql_query("SET NAMES 'binary'");
 				}
@@ -925,7 +937,7 @@ class install_convert extends module
 				// Take skip rows into account and only fetch batch_size amount of rows
 				$___result = $db->sql_query_limit($sql, $convert->batch_size, $skip_rows);
 
-				if ($mysql_convert)
+				if ($convert->mysql_convert)
 				{
 					$db->sql_query("SET NAMES 'utf8'");
 				}
@@ -1677,7 +1689,7 @@ class install_convert extends module
 	{
 		if (!defined('DEBUG_EXTRA'))
 		{
-			meta_refresh(5, $url);
+			// meta_refresh(5, $url);
 		}
 	}
 

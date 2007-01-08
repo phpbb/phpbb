@@ -58,6 +58,7 @@ $lang = array_merge($lang, array(
 	'CONFIG_CONVERT'			=> 'Converting the configuration',
 	'CONFIG_FILE_UNABLE_WRITE'	=> 'It was not possible to write the configuration file. Alternative methods for this file to be created are presented below',
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written, you may now proceed to the next step of the installation',
+	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB3 config variable for "%s" is empty.'
 	'CONFIG_RETRY'				=> 'Retry',
 	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',

@@ -63,7 +63,18 @@ function phpbb_insert_forums()
 	$sql = 'SELECT cat_id, cat_title
 		FROM ' . $convert->src_table_prefix . 'categories
 		ORDER BY cat_order';
+
+	if ($convert->mysql_convert)
+	{
+		$db->sql_query("SET NAMES 'binary'");
+	}
+
 	$result = $db->sql_query($sql);
+
+	if ($convert->mysql_convert)
+	{
+		$db->sql_query("SET NAMES 'utf8'");
+	}
 
 	$cats_added = array();
 	while ($row = $db->sql_fetchrow($result))
@@ -151,7 +162,18 @@ function phpbb_insert_forums()
 		LEFT JOIN ' . $convert->src_table_prefix . 'forum_prune fp ON f.forum_id = fp.forum_id
 		GROUP BY f.forum_id
 		ORDER BY f.cat_id, f.forum_order';
+
+	if ($convert->mysql_convert)
+	{
+		$db->sql_query("SET NAMES 'binary'");
+	}
+
 	$result = $db->sql_query($sql);
+
+	if ($convert->mysql_convert)
+	{
+		$db->sql_query("SET NAMES 'utf8'");
+	}
 
 	while ($row = $db->sql_fetchrow($result))
 	{

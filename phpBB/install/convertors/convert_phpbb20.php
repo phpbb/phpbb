@@ -517,7 +517,7 @@ if (!$get_info)
 
 				array('poll_option_id',			'vote_results.vote_option_id',		''),
 				array('topic_id',				'vote_desc.topic_id',				''),
-				array('',						'topics.topic_poster AS poster_id',	''),
+				array('',						'topics.topic_poster AS poster_id',	'phpbb_user_id'),
 				array('poll_option_text',		'vote_results.vote_option_text',	array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('poll_option_total',		'vote_results.vote_result',			''),
 
@@ -605,7 +605,7 @@ if (!$get_info)
 
 				array('msg_id',					'privmsgs.privmsgs_id',				''),
 				array('root_level',				0,									''),
-				array('author_id',				'privmsgs.privmsgs_from_userid',	'phpbb_user_id'),
+				array('author_id',				'privmsgs.privmsgs_from_userid AS poster_id',	'phpbb_user_id'),
 				array('icon_id',				0,									''),
 				array('author_ip',				'privmsgs.privmsgs_ip',				'decode_ip'),
 				array('message_time',			'privmsgs.privmsgs_date',			''),
@@ -624,7 +624,6 @@ if (!$get_info)
 				array('bbcode_uid',				'privmsgs.privmsgs_date AS post_time',	'make_uid'),
 				array('message_text',			'privmsgs_text.privmsgs_text',			'phpbb_prepare_message'),
 				array('',						'privmsgs_text.privmsgs_bbcode_uid AS old_bbcode_uid',			''),
-				array('',						'privmsgs.privmsgs_from_userid AS poster_id',	''),
 				array('bbcode_bitfield',		'',										'get_bbcode_bitfield'),
 				array('to_address',				'privmsgs.privmsgs_to_userid',			'phpbb_privmsgs_to_userid'),
 
@@ -787,6 +786,7 @@ if (!$get_info)
 				),
 				
 				array('user_id',				'users.user_id',					'phpbb_user_id'),
+				array('',						'users.user_id AS poster_id',		'phpbb_user_id'),
 				array('user_type',				'users.user_active',				'set_user_type'),
 				array('group_id',				'users.user_level',					'phpbb_set_primary_group'),
 				array('user_regdate',			'users.user_regdate',				''),
