@@ -324,6 +324,11 @@ $database_update_info = array(
 			USERS_TABLE		=> array(
 				'user_options'		=> array('UINT:11', 895),
 			),
+			FORUMS_TABLE	=> array(
+				'prune_days'			=> array('UINT', 0),
+				'prune_viewed'			=> array('UINT', 0),
+				'prune_freq'			=> array('UINT', 0),
+			),
 		),
 		// Remove the following keys
 		'drop_keys'		=> array(

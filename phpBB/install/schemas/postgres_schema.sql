@@ -386,9 +386,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons INT2 DEFAULT '1' NOT NULL CHECK (enable_icons >= 0),
 	enable_prune INT2 DEFAULT '0' NOT NULL CHECK (enable_prune >= 0),
 	prune_next INT4 DEFAULT '0' NOT NULL CHECK (prune_next >= 0),
-	prune_days INT2 DEFAULT '0' NOT NULL,
-	prune_viewed INT2 DEFAULT '0' NOT NULL,
-	prune_freq INT2 DEFAULT '0' NOT NULL,
+	prune_days INT4 DEFAULT '0' NOT NULL CHECK (prune_days >= 0),
+	prune_viewed INT4 DEFAULT '0' NOT NULL CHECK (prune_viewed >= 0),
+	prune_freq INT4 DEFAULT '0' NOT NULL CHECK (prune_freq >= 0),
 	PRIMARY KEY (forum_id)
 );
 

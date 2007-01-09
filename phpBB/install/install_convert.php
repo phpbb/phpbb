@@ -479,6 +479,24 @@ class install_convert extends module
 		// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
 		$config['max_post_chars'] = -1; 
 
+		$convert->mysql_convert = false;
+
+		switch ($db->sql_layer)
+		{
+			// Thanks MySQL, for silently converting...
+			case 'mysql':
+			case 'mysql4':
+				if (version_compare($db->mysql_version, '4.1.3', '>='))
+				{
+					$convert->mysql_convert = true;
+				}
+			break;
+
+			case 'mysqli':
+				$convert->mysql_convert = true;
+			break;
+		}
+
 		// Set up a user as well. We _should_ have enough of a database here at this point to do this
 		// and it helps for any core code we call
 		$user->session_begin();
@@ -888,24 +906,6 @@ class install_convert extends module
 			// Counting basically holds the amount of rows processed.
 			$counting = -1;
 			$batch_time = 0;
-
-			$convert->mysql_convert = false;
-
-			switch ($db->sql_layer)
-			{
-				// Thanks MySQL, for silently converting...
-				case 'mysql':
-				case 'mysql4':
-					if (version_compare($db->mysql_version, '4.1.3', '>='))
-					{
-						$convert->mysql_convert = true;
-					}
-				break;
-
-				case 'mysqli':
-					$convert->mysql_convert = true;
-				break;
-			}
 
 			while (($counting === -1 || $counting >= $convert->batch_size) && still_on_time())
 			{
@@ -1600,7 +1600,12 @@ class install_convert extends module
 						{
 							if (strpos($type, 'typecast') === 0)
 							{
-								$value = settype($value, $execution);
+								if (!is_array($value))
+								{
+									$value = array($value);
+								}
+								$value = $value[0];
+								settype($value, $execution);
 							}
 							else if (strpos($type, 'function') === 0)
 							{

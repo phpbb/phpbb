@@ -271,6 +271,7 @@ class diff_engine
 					}
 				}
 
+				// no reset() here
 				while (list($junk, $y) = each($matches))
 				{
 					if ($y > $this->seq[$k - 1])

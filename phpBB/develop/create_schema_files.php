@@ -1044,9 +1044,9 @@ function get_schema_struct()
 			'enable_icons'			=> array('BOOL', 1),
 			'enable_prune'			=> array('BOOL', 0),
 			'prune_next'			=> array('TIMESTAMP', 0),
-			'prune_days'			=> array('TINT:4', 0),
-			'prune_viewed'			=> array('TINT:4', 0),
-			'prune_freq'			=> array('TINT:4', 0),
+			'prune_days'			=> array('UINT', 0),
+			'prune_viewed'			=> array('UINT', 0),
+			'prune_freq'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'forum_id',
 		'KEYS'			=> array(

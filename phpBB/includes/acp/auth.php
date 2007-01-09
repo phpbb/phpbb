@@ -518,12 +518,15 @@ class auth_admin extends auth
 					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
 				);
 
+				@reset($content_array);
 				while (list($forum_id, $forum_array) = each($content_array))
 				{
 					// Build role dropdown options
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
 					$s_role_options = '';
+
+					@reset($roles);
 					while (list($role_id, $role_row) = each($roles))
 					{
 						$role_description = (!empty($user->lang[$role_row['role_description']])) ? $user->lang[$role_row['role_description']] : nl2br($role_row['role_description']);
@@ -1056,6 +1059,7 @@ class auth_admin extends auth
 	{
 		global $template, $user, $phpbb_admin_path, $phpEx;
 
+		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
 		{
 			$template->assign_block_vars($tpl_cat, array(
@@ -1066,6 +1070,7 @@ class auth_admin extends auth
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
 
+			@reset($cat_array['permissions']);
 			while (list($permission, $allowed) = each($cat_array['permissions']))
 			{
 				if ($s_view)
@@ -1125,6 +1130,7 @@ class auth_admin extends auth
 			$permissions = $permission_row[$forum_id];
 			ksort($permissions);
 
+			@reset($permissions);
 			while (list($permission, $auth_setting) = each($permissions))
 			{
 				if (!isset($user->lang['acl_' . $permission]))

@@ -390,6 +390,7 @@ if (!$get_info)
 
 				array('ban_ip',					'banlist.ban_ip',					'decode_ban_ip'),
 				array('ban_userid',				'banlist.ban_userid',				'phpbb_user_id'),
+				array('ban_email',				'banlist.ban_email',				''),
 
 				'where'			=> "banlist.ban_ip NOT LIKE '%.%'",
 			),
@@ -397,10 +398,11 @@ if (!$get_info)
 			array(
 				'target'		=> BANLIST_TABLE,
 
-				array('ban_email',				'banlist.ban_email',				''),
-				array('ban_userid',				'banlist.ban_userid',				'phpbb_user_id'),
+				array('ban_ip',					'banlist.ban_ip',	''),
+				array('ban_userid',				'0',				''),
+				array('ban_email',				'',					''),
 
-				'where'			=> "banlist.ban_ip = ''",
+				'where'			=> "banlist.ban_ip LIKE '%.%'",
 			),
 
 			array(

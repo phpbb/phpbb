@@ -749,7 +749,7 @@ function phpbb_convert_authentication($mode)
 										// We only check for ACL_YES equivalence entry
 										if (isset($access[$old_auth_key]) && $access[$old_auth_key] == 1)
 										{
-											mass_auth('group', $new_forum_id, $access['group_id'], $new_acl, ACL_YES);
+											mass_auth('group', $new_forum_id, (int) $access['group_id'], $new_acl, ACL_YES);
 										}
 									}
 								}
@@ -761,7 +761,7 @@ function phpbb_convert_authentication($mode)
 										// We only check for ACL_YES equivalence entry
 										if (isset($access[$old_auth_key]) && $access[$old_auth_key] == 1)
 										{
-											mass_auth('user', $new_forum_id, phpbb_user_id($access['user_id']), $new_acl, ACL_YES);
+											mass_auth('user', $new_forum_id, (int) phpbb_user_id($access['user_id']), $new_acl, ACL_YES);
 										}
 									}
 								}
@@ -776,7 +776,7 @@ function phpbb_convert_authentication($mode)
 										// We only check for ACL_YES equivalence entry
 										if (isset($access[$old_auth_key]) && $access[$old_auth_key] == 1)
 										{
-											mass_auth('group', $new_forum_id, $access['group_id'], $new_acl, ACL_YES);
+											mass_auth('group', $new_forum_id, (int) $access['group_id'], $new_acl, ACL_YES);
 										}
 									}
 								}
@@ -788,7 +788,7 @@ function phpbb_convert_authentication($mode)
 										// We only check for ACL_YES equivalence entry
 										if (isset($access[$old_auth_key]) && $access[$old_auth_key] == 1)
 										{
-											mass_auth('user', $new_forum_id, phpbb_user_id($access['user_id']), $new_acl, ACL_YES);
+											mass_auth('user', $new_forum_id, (int) phpbb_user_id($access['user_id']), $new_acl, ACL_YES);
 										}
 									}
 								}
@@ -820,7 +820,7 @@ function phpbb_convert_authentication($mode)
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			mass_auth('user_role', 0, phpbb_user_id($row['user_id']), 'USER_NOAVATAR');
+			mass_auth('user_role', 0, (int) phpbb_user_id($row['user_id']), 'USER_NOAVATAR');
 		}
 		$db->sql_freeresult($result);
 
@@ -832,7 +832,7 @@ function phpbb_convert_authentication($mode)
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			mass_auth('user_role', 0, phpbb_user_id($row['user_id']), 'USER_NOPM');
+			mass_auth('user_role', 0, (int) phpbb_user_id($row['user_id']), 'USER_NOPM');
 		}
 		$db->sql_freeresult($result);
 	}
@@ -848,8 +848,8 @@ function phpbb_convert_authentication($mode)
 			{
 				if (isset($access['auth_mod']) && $access['auth_mod'] == 1)
 				{
-					mass_auth('user_role', $forum_id, phpbb_user_id($access['user_id']), 'MOD_STANDARD');
-					mass_auth('user_role', $forum_id, phpbb_user_id($access['user_id']), 'FORUM_STANDARD');
+					mass_auth('user_role', $forum_id, (int) phpbb_user_id($access['user_id']), 'MOD_STANDARD');
+					mass_auth('user_role', $forum_id, (int) phpbb_user_id($access['user_id']), 'FORUM_STANDARD');
 				}
 			}
 		}
@@ -862,8 +862,8 @@ function phpbb_convert_authentication($mode)
 			{
 				if (isset($access['auth_mod']) && $access['auth_mod'] == 1)
 				{
-					mass_auth('group_role', $forum_id, $access['group_id'], 'MOD_STANDARD');
-					mass_auth('group_role', $forum_id, $access['group_id'], 'FORUM_STANDARD');
+					mass_auth('group_role', $forum_id, (int) $access['group_id'], 'MOD_STANDARD');
+					mass_auth('group_role', $forum_id, (int) $access['group_id'], 'FORUM_STANDARD');
 				}
 			}
 		}

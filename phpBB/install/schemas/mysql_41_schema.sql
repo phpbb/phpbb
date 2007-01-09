@@ -254,9 +254,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	enable_prune tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	prune_next int(11) UNSIGNED DEFAULT '0' NOT NULL,
-	prune_days tinyint(4) DEFAULT '0' NOT NULL,
-	prune_viewed tinyint(4) DEFAULT '0' NOT NULL,
-	prune_freq tinyint(4) DEFAULT '0' NOT NULL,
+	prune_days mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	prune_viewed mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	prune_freq mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (forum_id),
 	KEY left_right_id (left_id, right_id),
 	KEY forum_lastpost_id (forum_last_post_id)

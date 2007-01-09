@@ -37,10 +37,13 @@ function still_on_time()
 		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
 		if ($max_execution_time === 0)
 		{
-			$max_execution_time = 300;
+			$max_execution_time = 250;
 		}
 
-		$max_execution_time = min(max(10, $max_execution_time), 300);
+		$max_execution_time = min(max(10, ($max_execution_time - 15)), 250);
+
+		// For debugging purposes
+		// $max_execution_time = 30;
 
 		global $starttime;
 		$start_time = (empty($starttime)) ? $current_time : $starttime;
@@ -1417,8 +1420,12 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = "INSERT INTO $table ($id_field, forum_id, auth_role_id) VALUES ($ug_id, $forum_id, " . $row['role_id'] . ')';
-		$db->sql_query($sql);
+		// If we have no role id there is something wrong here
+		if ($row)
+		{
+			$sql = "INSERT INTO $table ($id_field, forum_id, auth_role_id) VALUES ($ug_id, $forum_id, " . $row['role_id'] . ')';
+			$db->sql_query($sql);
+		}
 
 		return;
 	}

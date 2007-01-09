@@ -247,9 +247,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_prune INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	prune_next INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	prune_days tinyint(4) NOT NULL DEFAULT '0',
-	prune_viewed tinyint(4) NOT NULL DEFAULT '0',
-	prune_freq tinyint(4) NOT NULL DEFAULT '0'
+	prune_days INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_viewed INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	prune_freq INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_forums_left_right_id ON phpbb_forums (left_id, right_id);

@@ -509,9 +509,9 @@ CREATE TABLE phpbb_forums (
 	enable_icons number(1) DEFAULT '1' NOT NULL,
 	enable_prune number(1) DEFAULT '0' NOT NULL,
 	prune_next number(11) DEFAULT '0' NOT NULL,
-	prune_days number(4) DEFAULT '0' NOT NULL,
-	prune_viewed number(4) DEFAULT '0' NOT NULL,
-	prune_freq number(4) DEFAULT '0' NOT NULL,
+	prune_days number(8) DEFAULT '0' NOT NULL,
+	prune_viewed number(8) DEFAULT '0' NOT NULL,
+	prune_freq number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_forums PRIMARY KEY (forum_id)
 )
 /
