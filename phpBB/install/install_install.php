@@ -1967,6 +1967,14 @@ class install_install extends module
 						{
 							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
 						}
+						$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
+
+						preg_match('/^\\s*Page size\\s*(\\d+)/m', $db_info, $regs);
+						$page_size = intval($regs[1]);
+						if ($page_size < 8192)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+						}
 					}
 					else
 					{
@@ -1994,6 +2002,39 @@ class install_install extends module
 							}
 							$db->sql_freeresult($result);
 						}
+
+						// Setup the stuff for our random table
+						$char_array = array_merge(range('A', 'Z'), range('0', '9'));
+						$char_len = mt_rand(7, 9);
+						$char_array_len = sizeof($char_array) - 1;
+
+						$final = '';
+
+						for ($i = 0; $i < $char_len; $i++)
+						{
+							$final .= $char_array[mt_rand(0, $char_array_len)];
+						}
+
+						// Create some random table
+						$sql = 'CREATE TABLE ' . $final . " (
+							FIELD1 VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+							FIELD2 INTEGER DEFAULT 0 NOT NULL);";
+						$db->sql_query($sql);
+
+						// Create an index that should fail if the page size is less than 8192
+						$sql = 'CREATE INDEX ' . $final . ' ON ' . $final . '(FIELD1, FIELD2);';
+						$db->sql_query($sql);
+
+						if (ibase_errmsg() !== false)
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+						}
+						else
+						{
+							// Kill the old table
+							$db->sql_query('DROP TABLE ' . $final . ';');
+						}
+						unset($final);
 					}
 				break;
 				

@@ -97,6 +97,12 @@ class dbal_firebird extends dbal
 		{
 			global $cache;
 
+			// EXPLAIN only in extra debug mode
+			if (defined('DEBUG_EXTRA'))
+			{
+				$this->sql_report('start', $query);
+			}
+
 			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
@@ -106,6 +112,11 @@ class dbal_firebird extends dbal
 				if (($this->query_result = @ibase_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
+				}
+
+				if (defined('DEBUG_EXTRA'))
+				{
+					$this->sql_report('stop', $query);
 				}
 
 				if (!$this->transaction)
@@ -130,6 +141,10 @@ class dbal_firebird extends dbal
 				{
 					$this->open_queries[(int) $this->query_result] = $this->query_result;
 				}
+			}
+			else if (defined('DEBUG_EXTRA'))
+			{
+				$this->sql_report('fromcache', $query);
 			}
 		}
 		else
