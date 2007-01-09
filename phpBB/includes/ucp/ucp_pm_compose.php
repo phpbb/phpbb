@@ -52,6 +52,7 @@ function compose_pm($id, $mode, $action)
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
+	$select_single = ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? false : true;
 
 	$error = array();
 	$current_time = time();
@@ -90,8 +91,8 @@ function compose_pm($id, $mode, $action)
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=post&amp;field=username&amp;select_single=true'),
-			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=post&field=username&select_single=true', true))
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=post&amp;field=username_list&amp;select_single=$select_single"),
+			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&form=post&field=username_list&select_single=$select_single", true))
 		);
 	}
 
