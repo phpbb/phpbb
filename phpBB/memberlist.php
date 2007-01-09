@@ -23,12 +23,12 @@ $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
 // Grab data
-$mode		= request_var('mode', '');
-$action		= request_var('action', '');
-$user_id	= request_var('u', ANONYMOUS);
-$username	= request_var('un', '', true);
-$group_id	= request_var('g', 0);
-$topic_id	= request_var('t', 0);
+$mode			= request_var('mode', '');
+$action			= request_var('action', '');
+$user_id		= request_var('u', ANONYMOUS);
+$username		= request_var('un', '', true);
+$group_id		= request_var('g', 0);
+$topic_id		= request_var('t', 0);
 
 switch ($mode)
 {
@@ -871,8 +871,9 @@ switch ($mode)
 		// then only admins can make use of this (for ACP functionality)
 		$sql_select = $sql_from = $sql_where = $order_by = '';
 
-		$form	= request_var('form', '');
-		$field	= request_var('field', '');
+		$form			= request_var('form', '');
+		$field			= request_var('field', '');
+		$select_single 	= request_var('select_single', false);	
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
@@ -1201,6 +1202,7 @@ switch ($mode)
 				'S_SEARCH_USER'			=> true,
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
+				'S_SELECT_SINGLE'      	=> $select_single,
 				'S_COUNT_OPTIONS'		=> $s_find_count,
 				'S_SORT_OPTIONS'		=> $s_sort_key,
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,

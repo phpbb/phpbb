@@ -74,8 +74,8 @@ class acp_users
 				'ANONYMOUS_USER_ID'	=> ANONYMOUS,
 
 				'S_SELECT_USER'		=> true,
-				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username'),
-				'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_user&field=username', false),
+				'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_user&amp;field=username&amp;select_single=true'),
+				'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_user&field=username&select_single=true', false),
 				)
 			);
 

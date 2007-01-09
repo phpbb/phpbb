@@ -28,6 +28,12 @@
 			self.close();
 		}
 
+		function insert_single(user)
+		{
+			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = user;
+			self.close();
+		}		
+
 		/**
 		* Mark/unmark checklist
 		* id = ID of parent container, name = name prefix, state = state [true/false]

@@ -331,8 +331,8 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_USER'			=> true,
-						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username'),
-						'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_victim&field=username', false))
+						'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
+						'UA_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=select_victim&field=username&select_single=true', false))
 					);
 
 				break;

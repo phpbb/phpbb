@@ -14,7 +14,7 @@
 		<th>{L_PM_TO}</th>
 	</tr>
 	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b></td>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	<tr>
 		<td class="row2"><input class="post" type="text" name="username" size="20" maxlength="40" value="" />&nbsp;<input class="post" type="submit" name="add_to" value="{L_ADD}" /></td>
@@ -24,7 +24,7 @@
 			<td class="row1"><b class="genmed">{L_USERNAMES}:</b></td>
 		</tr>
 		<tr>
-			<td class="row2"><textarea name="username_list" rows="5" cols="22"></textarea><br />
+			<td class="row2"><input name="username" value="" /><br />
 				<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
 					<li>&#187; <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a></li>
 				</ul>
