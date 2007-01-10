@@ -96,8 +96,6 @@ class install_convert extends module
 
 				if (!defined('PHPBB_INSTALLED'))
 				{
-					$config['load_tplcompile'] = true;
-
 					$template->assign_vars(array(
 						'S_NOT_INSTALLED'		=> true,
 						'TITLE'					=> $lang['BOARD_NOT_INSTALLED'],
