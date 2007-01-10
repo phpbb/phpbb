@@ -394,8 +394,8 @@ class acp_permissions
 						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
 						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
 						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids'], (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
-						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username'),
-						'UA_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=add_user&field=username', false))
+						'U_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
+						'UA_FIND_USERNAME'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=add_user&field=username&select_single=true', false))
 					);
 
 				break;
