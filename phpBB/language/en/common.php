@@ -35,7 +35,7 @@ $lang = array_merge($lang, array(
 	'DIRECTION'			=> 'ltr',
 	'LEFT'				=> 'left',
 	'RIGHT'				=> 'right',
-	'DATE_FORMAT'		=> '|d M Y|',
+	'DATE_FORMAT'		=> '|d M Y|', // 01 Jan 2007 (with Relative days enabled)
 	'USER_LANG'			=> 'en-gb',
 
 	'1_DAY'			=> '1 day',
@@ -764,17 +764,17 @@ $lang = array_merge($lang, array(
 
 	// The value is only an example and will get replaced by the current time on view
 	'dateformats'	=> array(
-		'|d M Y| H:i'			=> '10 Jan 2005 17:54 [Relative days]',
-		'd M Y, H:i'			=> '10 Jan 2005, 17:57',
-		'd M Y H:i'				=> '10 Jan 2005 17:57',
-		'D M d, Y g:i a'		=> 'Mon Jan 10, 2005 5:57 pm',
-		'M j, y, H:i'			=> 'Jan 10, 05, 5:57 pm',
-		'F j, Y, g:i a'			=> 'January 10, 2005, 5:57 pm'
+		'|d M Y| H:i'			=> '01 Jan 2007 13:37 [Relative days]',
+		'd M Y, H:i'			=> '01 Jan 2007, 13:37',
+		'd M Y H:i'				=> '01 Jan 2007 13:37',
+		'D M d, Y g:i a'		=> 'Mon Jan 01, 2007 1:37 pm',
+		'M jS, y, H:i'			=> 'Jan 1st, 07, 1:37 pm',
+		'F jS, Y, g:i a'			=> 'January 1st, 2007, 1:37 pm'
 	),
 
 	// The default dateformat which will be used on new installs in this language
 	// Translators should change this if a the usual date format is different
-	'default_dateformat'	=> 'D M d, Y g:i a', // Mon Jan 10, 2005 5:57 pm
+	'default_dateformat'	=> 'D M d, Y g:i a', // Mon Jan 01, 2007 1:37 pm
 
 ));
 
