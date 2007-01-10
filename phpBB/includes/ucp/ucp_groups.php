@@ -799,6 +799,7 @@ class ucp_groups
 								group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 							}
 
+							group_update_listings($group_id);
 							$user->add_lang('acp/groups');
 
 							trigger_error($user->lang['GROUP_DEFS_UPDATED'] . $return_page);

@@ -43,8 +43,10 @@ $lang = array_merge($lang, array(
 	'AVAILABLE'					=> 'Available',
 	'AVAILABLE_CONVERTORS'		=> 'Available convertors',
 
-	'BEGIN_CONVERT'				=> 'Begin conversion',
-	'BLANK_PREFIX_FOUND'		=> 'A scan of your tables has shown a valid installation using no table prefix.',
+	'BEGIN_CONVERT'					=> 'Begin conversion',
+	'BLANK_PREFIX_FOUND'			=> 'A scan of your tables has shown a valid installation using no table prefix.',
+	'BOARD_NOT_INSTALLED'			=> 'No installation found',
+	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'To perform a conversion you need to have a default installation of phpBB3. Please note that for a conversion the new installation and the old installation need to reside within the same database. You may now want to <a href="%s">perform an installation</a>.',
 
 	'CATEGORY'					=> 'Category',
 	'CACHE_STORE'				=> 'Cache type',
@@ -258,6 +260,8 @@ $lang = array_merge($lang, array(
 	'PRE_CONVERT_COMPLETE'			=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process.',
 	'PROCESS_LAST'					=> 'Processing last statements',
 
+	'REFRESH_PAGE'				=> 'Refresh page to continue conversion',
+	'REFRESH_PAGE_EXPLAIN'		=> 'If set to yes, the convertor will refresh the page to continue the conversion after having finished a step. If this is your first conversion for testing purposes and to determine any errors in advance, we suggest to set this to No.',
 //	'REQUIRED'					=> 'Required',
 	'REQUIREMENTS_TITLE'		=> 'Installation compatibility',
 	'REQUIREMENTS_EXPLAIN'		=> 'Before proceeding with full installation phpBB will carry out some tests on your server configuration and files to ensure that you are able to install and run phpBB. Please ensure you read through the results thoroughly and do not proceed until all the required tests are passed. If you wish to enable any of the functionality listed by the optional tests, you should ensure that these tests are passed also.',

@@ -515,7 +515,6 @@ class install_install extends module
 			}
 			
 			$dbpasswd = htmlspecialchars_decode($dbpasswd);
-
 			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
 			$template->assign_block_vars('checks', array(

@@ -985,7 +985,7 @@ function set_user_options()
 
 	foreach ($keyoptions as $key => $key_ary)
 	{
-		$value = (isset($row[$key])) ? (int) $row[$key] : $key_ary['default'];
+		$value = (isset($convert_row[$key])) ? (int) $convert_row[$key] : $key_ary['default'];
 
 		if ($value && !($option_field & 1 << $key_ary['bit']))
 		{
@@ -1158,7 +1158,7 @@ function get_config()
 	}
 	else if ($convert->config_schema['table_format'] == 'file')
 	{
-		$filename = $convert->convertor_status['forum_path'] . '/' . $convert->config_schema['filename'];
+		$filename = $convert->options['forum_path'] . '/' . $convert->config_schema['filename'];
 		if (!file_exists($filename))
 		{
 			$convert->p_master->error($user->lang['FILE_NOT_FOUND'] . ': ' . $filename, __LINE__, __FILE__);
@@ -2278,7 +2278,7 @@ function relative_base($path, $is_relative = true, $line = false, $file = false)
 		return $path;
 	}
 
-	if (empty($convert->convertor_status['forum_path']) && $is_relative)
+	if (empty($convert->options['forum_path']) && $is_relative)
 	{
 		$line = $line ? $line : __LINE__;
 		$file = $file ? $file : __FILE__;
@@ -2286,7 +2286,7 @@ function relative_base($path, $is_relative = true, $line = false, $file = false)
 		$convert->p_master->error($user->lang['CONV_ERROR_NO_FORUM_PATH'], $line, $file);
 	}
 
-	return $convert->convertor_status['forum_path'] . '/' . $path;
+	return $convert->options['forum_path'] . '/' . $path;
 }
 
 ?>

@@ -241,6 +241,9 @@ class acp_language
 							$entry .= "\t),\n";
 							fwrite($fp, $entry);
 						}
+
+						$footer = ");\n\n?>";
+						fwrite($fp, $footer);
 					}
 					else
 					{
@@ -253,10 +256,10 @@ class acp_language
 							$entry = $this->format_lang_array($key, $value);
 							fwrite($fp, $entry);
 						}
-					}
 
-					$footer = "));\n\n?>";
-					fwrite($fp, $footer);
+						$footer = "));\n\n?>";
+						fwrite($fp, $footer);
+					}
 				}
 
 				fclose($fp);

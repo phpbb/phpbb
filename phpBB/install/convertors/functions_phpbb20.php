@@ -341,7 +341,7 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 
 	if (!isset($lang_enc_array[$get_lang]))
 	{
-		$filename = $convert->convertor_status['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx;
+		$filename = $convert->options['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx;
 
 		if (!file_exists($filename))
 		{
@@ -350,7 +350,7 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 
 		if (!isset($lang_enc_array[$get_lang]))
 		{
-			include($convert->convertor_status['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx);
+			include($convert->options['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx);
 			$lang_enc_array[$get_lang] = $lang['ENCODING'];
 			unset($lang);
 		}
@@ -1150,7 +1150,7 @@ function phpbb_copy_thumbnails()
 {
 	global $db, $convert, $user, $config, $cache, $phpbb_root_path;
 
-	$src_path = $convert->convertor_status['forum_path'] . '/' . phpbb_get_files_dir() . '/thumbs/';
+	$src_path = $convert->options['forum_path'] . '/' . phpbb_get_files_dir() . '/thumbs/';
 	
 	if ($handle = @opendir($src_path))
 	{

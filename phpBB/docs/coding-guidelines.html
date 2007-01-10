@@ -862,7 +862,7 @@ $sql_array = array(
 			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
 			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
 		)
-	);
+	),
 
 	'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
 		AND f.forum_id = fw.forum_id',

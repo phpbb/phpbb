@@ -32,7 +32,7 @@ if (!empty($setmodules))
 
 class convert
 {
-	var $convertor_status = array();
+	var $options = array();
 
 	var $convertor_tag = '';
 	var $src_table_prefix = '';
@@ -96,7 +96,15 @@ class install_convert extends module
 
 				if (!defined('PHPBB_INSTALLED'))
 				{
-					$this->p_master->redirect("index.$phpEx?mode=install");
+					$config['load_tplcompile'] = true;
+
+					$template->assign_vars(array(
+						'S_NOT_INSTALLED'		=> true,
+						'TITLE'					=> $lang['BOARD_NOT_INSTALLED'],
+						'BODY'					=> sprintf($lang['BOARD_NOT_INSTALLED_EXPLAIN'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=install')),
+					));
+
+					return;
 				}
 
 				require($phpbb_root_path . 'config.' . $phpEx);
@@ -132,16 +140,15 @@ class install_convert extends module
 				}
 
 				// Let's see if there is a conversion in the works...
-				$convertor_status = array();
+				$options = array();
 				if (isset($config['convert_progress']))
 				{
-					$convertor_status = unserialize($config['convert_progress']);
-					// $convertor_status['forum_address'] = $config['conv_forum_address'];
-					$convertor_status['forum_path'] = $config['conv_forum_path'];
+					$options = unserialize($config['convert_progress']);
+					$options = array_merge($options, unserialize($config['convert_options']));
 				}
 
 				// This information should have already been checked once, but do it again for safety
-				if (!empty($convertor_status) && !empty($convertor_status['tag']) && isset($convertor_status['table_prefix']))
+				if (!empty($options) && !empty($options['tag']) && isset($options['table_prefix']))
 				{
 					$this->page_title = $lang['CONTINUE_CONVERT'];
 
@@ -153,7 +160,7 @@ class install_convert extends module
 						'S_CONTINUE'	=> true,
 
 						'U_NEW_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=intro&amp;new_conv=1",
-						'U_CONTINUE_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convertor_status['tag']}{$convertor_status['step']}",
+						'U_CONTINUE_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$options['tag']}{$options['step']}",
 					));
 
 					return;
@@ -302,7 +309,8 @@ class install_convert extends module
 		$submit = (isset($_POST['submit'])) ? true : false;
 
 		$src_table_prefix	= request_var('src_table_prefix', $convertor_data['table_prefix']);
-		$src_path			= request_var('src_path', $convertor_data['forum_path']);
+		$forum_path			= request_var('forum_path', $convertor_data['forum_path']);
+		$refresh			= request_var('refresh', 1);
 
 		// Default URL of the old board
 		// @todo Are we going to use this for attempting to convert URL references in posts, or should we remove it?
@@ -312,9 +320,9 @@ class install_convert extends module
 		$error = array();
 		if ($submit)
 		{
-			if (!file_exists('./../' . $src_path . '/' . $test_file))
+			if (!file_exists('./../' . $forum_path . '/' . $test_file))
 			{
-				$error[] = sprintf($lang['COULD_NOT_FIND_PATH'], $src_path);
+				$error[] = sprintf($lang['COULD_NOT_FIND_PATH'], $forum_path);
 			}
 
 			// The forum prefix of the old and the new forum can't be the same because the
@@ -384,8 +392,9 @@ class install_convert extends module
 			{
 				// Save convertor Status
 				set_config('convert_progress', serialize(array('step' => '', 'table_prefix' => $src_table_prefix, 'tag' => $convertor_tag)), true);
-				// set_config('conv_forum_address', $src_url, true); // @todo See note above about this variable
-				set_config('conv_forum_path', './../' . $src_path, true);
+
+				// Save options
+				set_config('convert_options', serialize(array('forum_path' => './../' . $forum_path, 'refresh' => $refresh)), true);
 
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['SPECIFY_OPTIONS'],
@@ -508,23 +517,22 @@ class install_convert extends module
 
 		$this->page_title = $user->lang['STAGE_IN_PROGRESS'];
 
-		$convert->convertor_status = array();
+		$convert->options = array();
 		if (isset($config['convert_progress']))
 		{
-			$convert->convertor_status = unserialize($config['convert_progress']);
-			// $convert->convertor_status['forum_address'] = $config['conv_forum_address'];
-			$convert->convertor_status['forum_path'] = $config['conv_forum_path'];
+			$convert->options = unserialize($config['convert_progress']);
+			$convert->options = array_merge($convert->options, unserialize($config['convert_options']));
 		}
 
 		// This information should have already been checked once, but do it again for safety
-		if (empty($convert->convertor_status) || empty($convert->convertor_status['tag']) || !isset($convert->convertor_status['table_prefix']))
+		if (empty($convert->options) || empty($convert->options['tag']) || !isset($convert->options['table_prefix']))
 		{
 			$this->p_master->error($user->lang['NO_CONVERT_SPECIFIED'], __LINE__, __FILE__);
 		}
 
 		// Make some short variables accessible, for easier referencing
-		$convert->convertor_tag = basename($convert->convertor_status['tag']);
-		$convert->src_table_prefix = $convert->convertor_status['table_prefix'];
+		$convert->convertor_tag = basename($convert->options['tag']);
+		$convert->src_table_prefix = $convert->options['table_prefix'];
 		$convert->truncate_statement = ($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ';
 
 		$get_info = false;
@@ -558,9 +566,9 @@ class install_convert extends module
 		$convert->convertor = $convertor;
 
 		// The test_file is a file that should be present in the location of the old board.
-		if (!file_exists($convert->convertor_status['forum_path'] . '/' . $test_file))
+		if (!file_exists($convert->options['forum_path'] . '/' . $test_file))
 		{
-			$this->p_master->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->convertor_status['forum_path']), __LINE__, __FILE__);
+			$this->p_master->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
 		$search_type = $config['search_type'];
@@ -1177,7 +1185,7 @@ class install_convert extends module
 			$sync_batch = -1;
 
 			$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
-				WHERE config_name = 'convert_progress' OR config_name = 'conv_forum_path' OR config_name = 'conv_forum_address'");
+				WHERE config_name = 'convert_progress' OR config_name = 'convert_options'");
 			$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
 			@unlink($phpbb_root_path . 'cache/data_global.php');
@@ -1204,7 +1212,7 @@ class install_convert extends module
 		$step = '&amp;sync_batch=' . $sync_batch;
 
 		// Save convertor Status
-		set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->convertor_status['table_prefix'], 'tag' => $convert->convertor_tag)), true);
+		set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->options['table_prefix'], 'tag' => $convert->convertor_tag)), true);
 
 		$url = $this->p_master->module_url . "?mode=$this->mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
@@ -1692,9 +1700,11 @@ class install_convert extends module
 	*/
 	function meta_refresh($url)
 	{
-		if (!defined('DEBUG_EXTRA'))
+		global $convert;
+
+		if ($convert->options['refresh'])
 		{
-			// meta_refresh(5, $url);
+			meta_refresh(5, $url);
 		}
 	}
 
@@ -1705,7 +1715,8 @@ class install_convert extends module
 		'legend1'			=> 'SPECIFY_OPTIONS',
 		'src_table_prefix'	=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => false),
 		//'src_url'			=> array('lang' => 'FORUM_ADDRESS',	'type' => 'text:50:100', 'explain' => true),
-		'src_path'			=> array('lang' => 'FORUM_PATH',	'type' => 'text:25:100', 'explain' => true),
+		'forum_path'		=> array('lang' => 'FORUM_PATH',	'type' => 'text:25:100', 'explain' => true),
+		'refresh'			=> array('lang' => 'REFRESH_PAGE', 'type' => 'radio:yes_no', 'explain' => true),
 	);
 }
 
