@@ -1234,13 +1234,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 	// Parse the message and subject
 	$message = censor_text($row['post_text']);
-	$message = str_replace("\n", '<br />', $message);
 
 	// Second parse bbcode here
 	if ($row['bbcode_bitfield'])
 	{
 		$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 	}
+
+	$message = str_replace("\n", '<br />', $message);
 
 	// Always process smilies after parsing bbcodes
 	$message = smiley_text($message);
