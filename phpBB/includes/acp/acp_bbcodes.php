@@ -153,9 +153,9 @@ class acp_bbcodes
 					trigger_error($user->lang['BBCODE_TAG_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if (strlen($data['bbcode_tag']) > 4000)
+				if (strlen($bbcode_match) > 4000)
 				{
-					trigger_error($user->lang['BBCODE_TAG_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
