@@ -797,7 +797,7 @@ if (!$get_info)
 				array('user_password',			'users.user_password',				''),
 				array('user_pass_convert',		1,									''),
 				array('user_posts',				'users.user_posts',					''),
-				array('user_email',				'users.user_email',					''),
+				array('user_email',				'users.user_email',					'strtolower'),
 				array('user_email_hash',		'users.user_email',					'gen_email_hash'),
 				array('user_birthday',			((defined('MOD_BIRTHDAY')) ? 'users.user_birthday' : ''),	'phpbb_get_birthday'),
 				array('user_lastvisit',			'users.user_lastvisit',				''),
