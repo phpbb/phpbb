@@ -13,10 +13,7 @@ var clientPC = navigator.userAgent.toLowerCase(); // Get client info
 var clientVer = parseInt(navigator.appVersion); // Get browser version
 
 var is_ie = ((clientPC.indexOf('msie') != -1) && (clientPC.indexOf('opera') == -1));
-var is_nav = ((clientPC.indexOf('mozilla') != -1) && (clientPC.indexOf('spoofer') == -1) && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera') == -1) && (clientPC.indexOf('webtv') == -1) && (clientPC.indexOf('hotjava') == -1));
-
 var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
-var is_mac = (clientPC.indexOf('mac') != -1);
 
 var baseHeight;
 window.onload = initInsertions;
@@ -27,44 +24,6 @@ window.onload = initInsertions;
 function helpline(help)
 {
 	document.forms[form_name].helpbox.value = help_line[help];
-}
-
-/**
-* Replacement for arrayname.length property
-*/
-function getarraysize(thearray)
-{
-	for (i = 0; i < thearray.length; i++)
-	{
-		if (typeof thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
-		{
-			return i;
-		}
-	}
-
-	return thearray.length;
-}
-
-/**
-* Replacement for arrayname.push(value) not implemented in IE until version 5.5
-* Appends element to the array
-*/
-function arraypush(thearray,value)
-{
-	thearray[getarraysize(thearray)] = value;
-}
-
-/**
-* Replacement for arrayname.pop() not implemented in IE until version 5.5
-* Removes and returns the last element of an array
-*/
-function arraypop(thearray)
-{
-	thearraysize = getarraysize(thearray);
-	retval = thearray[thearraysize - 1];
-	delete thearray[thearraysize - 1];
-
-	return retval;
 }
 
 /**
@@ -79,8 +38,7 @@ function initInsertions()
 	{
 		baseHeight = document.selection.createRange().duplicate().boundingHeight;
 	}
-}		
-
+}
 
 /**
 * bbstyle

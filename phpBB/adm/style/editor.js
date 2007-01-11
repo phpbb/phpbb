@@ -13,10 +13,10 @@ var clientPC = navigator.userAgent.toLowerCase(); // Get client info
 var clientVer = parseInt(navigator.appVersion); // Get browser version
 
 var is_ie = ((clientPC.indexOf('msie') != -1) && (clientPC.indexOf('opera') == -1));
-var is_nav = ((clientPC.indexOf('mozilla') != -1) && (clientPC.indexOf('spoofer') == -1) && (clientPC.indexOf('compatible') == -1) && (clientPC.indexOf('opera') == -1) && (clientPC.indexOf('webtv') == -1) && (clientPC.indexOf('hotjava') == -1));
-
 var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
-var is_mac = (clientPC.indexOf('mac') != -1);
+
+var baseHeight;
+window.onload = initInsertions;
 
 /**
 * Shows the help messages in the helpline window
@@ -27,43 +27,18 @@ function helpline(help)
 }
 
 /**
-* Replacement for arrayname.length property
-*/
-function getarraysize(thearray)
+* Fix a bug involving the TextRange object. From
+* http://www.frostjedi.com/terra/scripts/demo/caretBug.html
+*/ 
+function initInsertions() 
 {
-	for (i = 0; i < thearray.length; i++)
+	var textarea = document.forms[form_name].elements[text_name];
+	textarea.focus();
+	if (is_ie && typeof(baseHeight) != 'number')
 	{
-		if (typeof thearray[i] == 'undefined' || thearray[i] == '' || thearray[i] == null)
-		{
-			return i;
-		}
+		baseHeight = document.selection.createRange().duplicate().boundingHeight;
 	}
-
-	return thearray.length;
 }
-
-/**
-* Replacement for arrayname.push(value) not implemented in IE until version 5.5
-* Appends element to the array
-*/
-function arraypush(thearray,value)
-{
-	thearray[getarraysize(thearray)] = value;
-}
-
-/**
-* Replacement for arrayname.pop() not implemented in IE until version 5.5
-* Removes and returns the last element of an array
-*/
-function arraypop(thearray)
-{
-	thearraysize = getarraysize(thearray);
-	retval = thearray[thearraysize - 1];
-	delete thearray[thearraysize - 1];
-
-	return retval;
-}
-
 
 /**
 * bbstyle
@@ -168,6 +143,11 @@ function insert_text(text, spaces, popup)
 	
 	else if (textarea.createTextRange && textarea.caretPos)
 	{
+		if (baseHeight != textarea.caretPos.boundingHeight) 
+		{
+			textarea.focus();
+			storeCaret(textarea);
+		}		
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 		

@@ -23,12 +23,12 @@ $auth->acl($user->data);
 $user->setup(array('memberlist', 'groups'));
 
 // Grab data
-$mode			= request_var('mode', '');
-$action			= request_var('action', '');
-$user_id		= request_var('u', ANONYMOUS);
-$username		= request_var('un', '', true);
-$group_id		= request_var('g', 0);
-$topic_id		= request_var('t', 0);
+$mode		= request_var('mode', '');
+$action		= request_var('action', '');
+$user_id	= request_var('u', ANONYMOUS);
+$username	= request_var('un', '', true);
+$group_id	= request_var('g', 0);
+$topic_id	= request_var('t', 0);
 
 switch ($mode)
 {
