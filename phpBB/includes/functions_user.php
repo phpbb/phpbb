@@ -767,6 +767,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						{
 							if ($ip)
 							{
+								if (strlen($ip) > 40)
+								{
+									continue;
+								}
+
 								$banlist_ary[] = $ip;
 							}
 						}
@@ -788,6 +793,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', $ban_item))
 				{
+					if (strlen($ban_item) > 100)
+					{
+						continue;
+					}
+
 					if (!sizeof($founder) || !in_array($ban_item, $founder))
 					{
 						$banlist_ary[] = $ban_item;

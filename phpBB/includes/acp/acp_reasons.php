@@ -214,7 +214,7 @@ class acp_reasons
 								WHERE reason_id = $reason_id";
 						break;
 
-						// Nearly standard, not quite
+						// Standard? What's that?
 						case 'mssql':
 						case 'mssql_odbc':
 							// Change the reports using this reason to 'other'

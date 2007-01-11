@@ -67,7 +67,7 @@ class acp_icons
 				{
 					$img_size = @getimagesize($phpbb_root_path . $img_path . '/' . $path . $img);
 
-					if (!$img_size[0] || !$img_size[1])
+					if (!$img_size[0] || !$img_size[1] || strlen($img) > 255)
 					{
 						continue;
 					}

@@ -164,6 +164,11 @@ class acp_ranks
 								$selected = '';
 							}
 
+							if (strlen($img) > 255)
+							{
+								continue;
+							}
+
 							$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
 						}
 					}

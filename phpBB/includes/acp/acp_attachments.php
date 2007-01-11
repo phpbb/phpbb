@@ -673,6 +673,11 @@ class acp_attachments
 									$selected = ($ext_group_row['upload_icon'] == $img) ? ' selected="selected"' : '';
 								}
 
+								if (strlen($img) > 255)
+								{
+									continue;
+								}
+
 								$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
 							}
 						}
@@ -1266,10 +1271,20 @@ class acp_attachments
 				{
 					if ($row['site_ip'])
 					{
+						if (strlen($row['site_ip']) > 40)
+						{
+							continue;
+						}
+
 						$iplist_tmp[] = "'" . $row['site_ip'] . "'";
 					}
 					else if ($row['site_hostname'])
 					{
+						if (strlen($row['site_hostname']) > 255)
+						{
+							continue;
+						}
+
 						$hostlist_tmp[] = "'" . $row['site_hostname'] . "'";
 					}
 					// break;

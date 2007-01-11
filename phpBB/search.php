@@ -1011,7 +1011,7 @@ $template->assign_vars(array(
 	'S_SELECT_SORT_DAYS'	=> $s_limit_days)
 );
 
-// Can't do comparisons w/ TEXT on MSSQL, CAST is good enough
+// Handle large objects differently for Oracle and MSSQL
 switch ($db->sql_layer)
 {
 	case 'oracle':

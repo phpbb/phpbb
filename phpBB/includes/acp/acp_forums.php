@@ -853,6 +853,16 @@ class acp_forums
 			$errors[] = $user->lang['FORUM_NAME_EMPTY'];
 		}
 
+		if (utf8_strlen($forum_data['forum_desc']) > 4000)
+		{
+			$errors[] = $user->lang['FORUM_DESC_TOO_LONG'];
+		}
+
+		if (utf8_strlen($forum_data['forum_rules']) > 4000)
+		{
+			$errors[] = $user->lang['FORUM_RULES_TOO_LONG'];
+		}
+
 		if ($forum_data['forum_password'] || $forum_data['forum_password_confirm'])
 		{
 			if ($forum_data['forum_password'] != $forum_data['forum_password_confirm'])

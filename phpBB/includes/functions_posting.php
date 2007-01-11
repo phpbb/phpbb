@@ -1577,7 +1577,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 		}
 
-		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .	$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
 		$db->sql_query($sql);
 		$data['post_id'] = $db->sql_nextid();
 

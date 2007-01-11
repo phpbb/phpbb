@@ -192,6 +192,7 @@ $lang = array_merge($lang, array(
 	'ROLE_DESCRIPTION_USER_STANDARD'		=> 'Can access most but not all user features. Cannot change user name or ignore the flood limit, for instance.',
 	
 	'ROLE_DESCRIPTION_EXPLAIN'		=> 'You are able to enter a short explanation of what the role is doing or for what it is meant for. The text you enter here will be displayed within the permissions screens too.',
+	'ROLE_DESCRIPTION_LONG'			=> 'The role description is too long, please limit it to 4000 characters.',
 	'ROLE_DETAILS'					=> 'Role details',
 	'ROLE_EDIT_SUCCESS'				=> 'Role successfully edited.',
 	'ROLE_NAME'						=> 'Role name',

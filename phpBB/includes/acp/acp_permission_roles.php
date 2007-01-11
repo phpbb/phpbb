@@ -142,6 +142,11 @@ class acp_permission_roles
 						trigger_error($user->lang['NO_ROLE_NAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
+					if (utf8_strlen($role_description) > 4000)
+					{
+						trigger_error($user->lang['ROLE_DESCRIPTION_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					// if we add/edit a role we check the name to be unique among the settings...
 					$sql = 'SELECT role_id
 						FROM ' . ACL_ROLES_TABLE . "
