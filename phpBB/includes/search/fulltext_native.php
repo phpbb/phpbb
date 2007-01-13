@@ -80,7 +80,7 @@ class fulltext_native extends search_backend
 	*/
 	function split_keywords($keywords, $terms)
 	{
-		global $db, $config, $user;
+		global $db, $user;
 
 		$keywords = trim($this->cleanup($keywords, '+-|()*'));
 
@@ -273,16 +273,19 @@ class fulltext_native extends search_backend
 			// if this is an array of words then retrieve an id for each
 			if (is_array($word))
 			{
+				$non_common_words = array();
 				$id_words = array();
 				foreach ($word as $i => $word_part)
 				{
 					if (strpos($word_part, '*') !== false)
 					{
 						$id_words[] = '\'' . $db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
+						$non_common_words[] = $word_part;
 					}
-					if (isset($words[$word_part]))
+					else if (isset($words[$word_part]))
 					{
 						$id_words[] = $words[$word_part];
+						$non_common_words[] = $word_part;
 					}
 				}
 				if (sizeof($id_words))
@@ -299,10 +302,11 @@ class fulltext_native extends search_backend
 					}
 				}
 				// throw an error if we shall not ignore unexistant words
-				else if (!$ignore_no_id)
+				else if (!$ignore_no_id && sizeof($non_common_words))
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $word)));
+					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $non_common_words)));
 				}
+				unset($non_common_words);
 			}
 			// else we only need one id
 			else if (($wildcard = strpos($word, '*') !== false) || isset($words[$word]))
@@ -930,8 +934,7 @@ class fulltext_native extends search_backend
 	*/
 	function split_message($text)
 	{
-		global $phpbb_root_path, $phpEx;
-		global $config, $user;
+		global $phpbb_root_path, $phpEx, $user;
 
 		$match = $words = array();
 
@@ -943,8 +946,8 @@ class fulltext_native extends search_backend
 		// BBcode
 		$match[] = '#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?[0-9a-z]{5,})\]#';
 
-		$min = $config['fulltext_native_min_chars'];
-		$max = $config['fulltext_native_max_chars'];
+		$min = $this->word_length['min'];
+		$max = $this->word_length['max'];
 
 		$isset_min = $min - 1;
 

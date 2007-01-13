@@ -289,8 +289,16 @@ class dbal
 	{
 		if (!sizeof($array))
 		{
-			// Not optimal, but at least the backtrace should help in identifying where the problem lies.
-			$this->sql_error('No values specified for SQL IN comparison');
+			// NOT IN () actually means everything so use a tautology
+			if ($negate)
+			{
+				return '1=1';
+			}
+			// IN () actually means nothing so use a contradiction
+			else
+			{
+				return '1=0';
+			}
 		}
 
 		if (!is_array($array))
