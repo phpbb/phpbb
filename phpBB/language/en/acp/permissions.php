@@ -93,6 +93,7 @@ $lang = array_merge($lang, array(
 	'ADD_GROUPS'				=> 'Add groups',
 	'ADD_PERMISSIONS'			=> 'Add permissions',
 	'ADD_USERS'					=> 'Add users',
+	'ADVANCED_PERMISSIONS'		=> 'Advanced Permissions',
 	'ALL_GROUPS'				=> 'Select all groups',
 	'ALL_NEVER'					=> 'All <samp>NEVER</samp>',
 	'ALL_NO'					=> 'All <samp>NO</samp>',
