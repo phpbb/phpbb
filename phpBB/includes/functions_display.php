@@ -707,7 +707,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		}
 	}
 
-	if ($topic_row['poll_start'])
+	if ($topic_row['poll_start'] && $topic_row['topic_status'] != ITEM_MOVED)
 	{
 		$topic_type = $user->lang['VIEW_TOPIC_POLL'];
 	}
