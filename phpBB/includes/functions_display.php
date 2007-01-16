@@ -709,7 +709,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 	if ($topic_row['poll_start'])
 	{
-		$topic_type .= $user->lang['VIEW_TOPIC_POLL'];
+		$topic_type = $user->lang['VIEW_TOPIC_POLL'];
 	}
 }
 
