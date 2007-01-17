@@ -152,9 +152,11 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 if (!$auth->acl_get('f_read', $forum_id))
 {
 	$template->assign_vars(array(
+		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;start=$start"),
+
 		'S_NO_READ_ACCESS'		=> true,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
-		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login&amp;redirect=' . urlencode(build_url(array('_f_'))))
+		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') . '&amp;redirect=' . urlencode(build_url(array('_f_'))),
 	));
 
 	page_footer();

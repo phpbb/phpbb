@@ -549,7 +549,8 @@ if ($submit || $preview || $refresh)
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
 	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? utf8_normalize_nfc(request_var('edit_reason', '', true)) : '';
-	
+
+	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
 	$post_data['icon_id']			= request_var('icon', 0);
@@ -799,7 +800,16 @@ if ($submit || $preview || $refresh)
 
 		if (!$auth->acl_get($auth_option, $forum_id))
 		{
-			$error[] = $user->lang['CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option))];
+			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod
+			if ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id'])
+			{
+				// To prevent non-authed users messing around with the topic type we reset it to the original one.
+				$post_data['topic_type'] = $post_data['orig_topic_type'];
+			}
+			else
+			{
+				$error[] = $user->lang['CANNOT_POST_' . str_replace('F_', '', strtoupper($auth_option))];
+			}
 		}
 	}
 

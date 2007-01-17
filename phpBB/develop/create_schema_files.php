@@ -1327,7 +1327,7 @@ function get_schema_struct()
 			'rule_user_id'			=> array('UINT', 0),
 			'rule_group_id'			=> array('UINT', 0),
 			'rule_action'			=> array('UINT', 0),
-			'rule_folder_id'		=> array('INT:4', 0),
+			'rule_folder_id'		=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'rule_id',
 		'KEYS'			=> array(
@@ -1346,7 +1346,7 @@ function get_schema_struct()
 			'pm_replied'			=> array('BOOL', 0),
 			'pm_marked'				=> array('BOOL', 0),
 			'pm_forwarded'			=> array('BOOL', 0),
-			'folder_id'				=> array('INT:4', 0),
+			'folder_id'				=> array('UINT', 0),
 		),
 		'KEYS'			=> array(
 			'msg_id'				=> array('INDEX', 'msg_id'),

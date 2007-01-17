@@ -60,7 +60,7 @@ class ucp_profile
 					{
 						$check_ary['username'] = array(
 							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-							array('username', $data['username']),
+							array('username'),
 						);
 					}
 

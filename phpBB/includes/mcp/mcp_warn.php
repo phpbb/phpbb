@@ -432,7 +432,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 			'address_list'			=> array('u' => array($user_row['user_id'] => 'to')),
 		);
 
-		submit_pm('post', $lang['WARNING_PM_SUBJECT'], $pm_data, false, false);
+		submit_pm('post', $lang['WARNING_PM_SUBJECT'], $pm_data, false);
 	}
 
 	add_log('admin', 'LOG_USER_WARNING', $user_row['username']);

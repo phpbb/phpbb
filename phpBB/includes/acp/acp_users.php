@@ -623,7 +623,6 @@ class acp_users
 						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 						'user_password'		=> request_var('user_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
-						'warnings'			=> request_var('warnings', $user_row['user_warnings']),
 					);
 
 					// Validation data - we do not check the password complexity setting here
@@ -632,7 +631,6 @@ class acp_users
 							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 							array('password')),
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
-						'warnings'			=> array('num'),
 					);
 
 					// Check username if altered
@@ -641,7 +639,8 @@ class acp_users
 						$check_ary += array(
 							'username'			=> array(
 								array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-								array('username', $user_row['username'])),
+								array('username', $user_row['username'])
+							),
 						);
 					}
 
@@ -670,7 +669,6 @@ class acp_users
 					}
 
 					// Which updates do we need to do?
-					$update_warning = ($user_row['user_warnings'] != $data['warnings']) ? true : false;
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
 					$update_password = ($data['user_password'] && $user_row['user_password'] != md5($data['user_password'])) ? true : false;
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
@@ -681,11 +679,6 @@ class acp_users
 
 						if ($user_row['user_type'] != USER_FOUNDER || $user->data['user_type'] == USER_FOUNDER)
 						{
-							if ($update_warning)
-							{
-								$sql_ary['user_warnings'] = $data['warnings'];
-							}
-
 							// Only allow founders updating the founder status...
 							if ($user->data['user_type'] == USER_FOUNDER)
 							{
@@ -763,13 +756,6 @@ class acp_users
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . $user_id;
 							$db->sql_query($sql);
-						}
-
-						/**
-						* @todo adjust every data based in the number of user warnings
-						*/
-						if ($update_warning)
-						{
 						}
 
 						if ($update_username)

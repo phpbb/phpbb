@@ -91,8 +91,6 @@ class acp_groups
 					break;
 				}
 
-				group_update_listings($group_id);
-
 				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
@@ -141,8 +139,6 @@ class acp_groups
 					{
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
 					}
-
-					group_update_listings($group_id);
 
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}

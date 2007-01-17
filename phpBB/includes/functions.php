@@ -1285,8 +1285,11 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 {
 	global $template, $user;
 
+	// Make sure $per_page is a valid value
+	$per_page = ($per_page <= 0) ? 1 : $per_page;
+
 	$seperator = '<span class="page-sep">' . $user->lang['PAGINATION_SEPERATOR'] . '</span>';
-	$total_pages = ceil($num_items/$per_page);
+	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
 	{
@@ -1360,6 +1363,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 function on_page($num_items, $per_page, $start)
 {
 	global $template, $user;
+
+	// Make sure $per_page is a valid value
+	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
 	$on_page = floor($start / $per_page) + 1;
 
@@ -1502,12 +1508,6 @@ function redirect($url, $return = false)
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
-
-	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
-	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false)
-	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
-	}
 
 	// Determine which type of redirect we need to handle...
 	$url_parts = parse_url($url);

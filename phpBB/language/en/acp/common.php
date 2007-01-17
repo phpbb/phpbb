@@ -451,6 +451,9 @@ $lang = array_merge($lang, array(
 	'LOG_LOCK_POST'				=> '<strong>Locked post</strong><br />» %s',
 	'LOG_MERGE'					=> '<strong>Merged posts</strong> into topic<br />» %s',
 	'LOG_MOVE'					=> '<strong>Moved topic</strong><br />» from %s',
+	'LOG_SPLIT_DESTINATION'		=> '<strong>Moved splitted posts</strong><br />» to %s',
+	'LOG_SPLIT_SOURCE'			=> '<strong>Splitted posts</strong><br />» from %s',
+
 	'LOG_TOPIC_DELETED'			=> '<strong>Deleted topic</strong><br />» %s',
 	'LOG_TOPIC_RESYNC'			=> '<strong>Resynchronised topic counters</strong><br />» %s',
 	'LOG_TOPIC_TYPE_CHANGED'	=> '<strong>Changed topic type</strong><br />» %s',

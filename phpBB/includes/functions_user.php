@@ -817,9 +817,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	}
 
 	// Fetch currently set bans of the specified type and exclude state. Prevent duplicate bans.
+	$sql_where = ($type == 'ban_userid') ? 'ban_userid <> 0' : "$type <> ''";
+
 	$sql = "SELECT $type
 		FROM " . BANLIST_TABLE . "
-		WHERE $type <> ''
+		WHERE $sql_where
 			AND ban_exclude = $ban_exclude";
 	$result = $db->sql_query($sql);
 
@@ -1148,15 +1150,19 @@ function validate_match($string, $optional = false, $match)
 * Also checks if it includes the " character, which we don't allow in usernames.
 * Used for registering, changing names, and posting anonymously with a username
 *
+* @param string $username The username to check
+* @param string $allowed_username An allowed username, default being $user->data['username']
+*
 * @return	mixed	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
-function validate_username($username)
+function validate_username($username, $allowed_username = false)
 {
 	global $config, $db, $user, $cache;
 
 	$clean_username = utf8_clean_string($username);
+	$allowed_username = ($allowed_username === false) ? $user->data['username_clean'] : utf8_clean_string($allowed_username);
 
-	if (utf8_clean_string($user->data['username']) == $clean_username)
+	if ($allowed_username == $clean_username)
 	{
 		return false;
 	}
@@ -1189,7 +1195,6 @@ function validate_username($username)
 	{
 		return 'USERNAME_TAKEN';
 	}
-
 
 	$bad_usernames = $cache->obtain_disallowed_usernames();
 
@@ -1725,6 +1730,8 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
 		add_log('admin', $log, $name);
+
+		group_update_listings($group_id);
 	}
 
 	return (sizeof($error)) ? $error : false;
@@ -2013,6 +2020,8 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
+	group_update_listings($group_id);
+
 	// Return false - no error
 	return false;
 }
@@ -2115,13 +2124,17 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
+	group_update_listings($group_id);
+
 	return true;
 }
 
 /**
 * Set users default group
+*
+* @private
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
 	global $db;
 
@@ -2211,6 +2224,11 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		{
 			set_config('newest_user_colour', $sql_ary['user_colour'], true);
 		}
+	}
+
+	if ($update_listing)
+	{
+		group_update_listings($group_id);
 	}
 }
 

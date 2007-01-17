@@ -495,7 +495,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	rule_group_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	rule_action INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	rule_folder_id int(4) NOT NULL DEFAULT '0'
+	rule_folder_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_privmsgs_rules_user_id ON phpbb_privmsgs_rules (user_id);
@@ -511,7 +511,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	pm_marked INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	pm_forwarded INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	folder_id int(4) NOT NULL DEFAULT '0'
+	folder_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_privmsgs_to_msg_id ON phpbb_privmsgs_to (msg_id);

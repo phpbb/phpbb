@@ -119,8 +119,6 @@ $lang = array_merge($lang, array(
 	'USER_RANK_UPDATED'				=> 'User rank updated.',
 	'USER_SIG_UPDATED'				=> 'User signature successfully updated.',
 	'USER_TOOLS'					=> 'Basic tools',
-
-	'WARNINGS_EXPLAIN'		=> 'You can directly alter the warnings this users has received.',
 ));
 
 ?>

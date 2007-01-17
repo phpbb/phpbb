@@ -558,7 +558,7 @@ function compose_pm($id, $mode, $action)
 			unset($message_parser);
 
 			// ((!$message_subject) ? $subject : $message_subject)
-			$msg_id = submit_pm($action, $subject, $pm_data, true);
+			$msg_id = submit_pm($action, $subject, $pm_data);
 
 			$return_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;p=' . $msg_id);
 			$return_folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=outbox');

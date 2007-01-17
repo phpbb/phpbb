@@ -112,6 +112,10 @@
 		<dd><strong>{USER_POSTS}</strong></dd>
 	</dl>
 	<dl>
+		<dt><label>{L_WARNINGS}:</label></dt>
+		<dd><strong>{USER_WARNINGS}</strong></dd>
+	</dl>
+	<dl>
 		<dt><label for="user_founder">{L_FOUNDER}:</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
 		<dd><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp; <input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_NO}&nbsp;</dd>
 	</dl>
@@ -136,10 +140,6 @@
 
 	<fieldset>
 		<legend>{L_USER_TOOLS}</legend>
-	<dl>
-		<dt><label for="warnings">{L_WARNINGS}:</label><br /><span>{L_WARNINGS_EXPLAIN}</span></dt>
-		<dd><input type="text" id="warnings" name="warnings" value="{USER_WARNINGS}" size="2" /></dd>
-	</dl>
 	<dl>
 		<dt><label for="quicktools">{L_QUICK_TOOLS}:</label></dt>
 		<dd><select id="quicktools" name="action">{S_ACTION_OPTIONS}</select></dd>

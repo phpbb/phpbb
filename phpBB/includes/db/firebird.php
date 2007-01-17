@@ -158,20 +158,13 @@ class dbal_firebird extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
 	{
-		if ($query != '')
-		{
-			$this->query_result = false;
+		$this->query_result = false;
 
-			$query = 'SELECT FIRST ' . $total . ((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
+		$query = 'SELECT FIRST ' . $total . ((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
 
-			return $this->sql_query($query, $cache_ttl); 
-		}
-		else
-		{
-			return false;
-		}
+		return $this->sql_query($query, $cache_ttl); 
 	}
 
 	/**

@@ -124,6 +124,7 @@ $lang = array_merge($lang, array(
 	'NOTIFY_REPLY'				=> 'Send me an email when a reply is posted',
 	'NOT_UPLOADED'				=> 'File could not be uploaded.',
 	'NO_DELETE_POLL_OPTIONS'	=> 'You cannot delete existing poll options',
+	'NO_PM_ICON'				=> 'No PM icon',
 	'NO_POLL_TITLE'				=> 'You have to enter a poll title',
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified',

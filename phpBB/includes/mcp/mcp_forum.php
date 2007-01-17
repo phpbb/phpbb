@@ -129,14 +129,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
 
-		$template->assign_block_vars('topicrow', array(
-			'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view"),
-
-			'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
-			'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
-			'U_MCP_QUEUE'		=> $u_mcp_queue,
-			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
-
+		$topic_row = array(
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
@@ -159,16 +152,38 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'TOPIC_TITLE'		=> $topic_title,
 			'REPLIES'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
 			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-			'TOPIC_ID'			=> $row['topic_id'],
-			'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? 'checked="checked" ' : '',
 			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],
 			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
 
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
-			'S_POSTS_UNAPPROVED'	=> $posts_unapproved)
+			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 		);
+
+		if ($row['topic_status'] == ITEM_MOVED)
+		{
+			$topic_row = array_merge($topic_row, array(
+				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_moved_id']}"),
+				'S_MOVED_TOPIC'		=> true,
+				'TOPIC_ID'			=> $row['topic_moved_id'],
+			));
+		}
+		else
+		{
+			$topic_row = array_merge($topic_row, array(
+				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view"),
+
+				'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
+				'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
+				'U_MCP_QUEUE'		=> $u_mcp_queue,
+				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
+				'TOPIC_ID'			=> $row['topic_id'],
+				'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? true : false,
+			));
+		}
+
+		$template->assign_block_vars('topicrow', $topic_row);
 	}
 	unset($topic_rows);
 }

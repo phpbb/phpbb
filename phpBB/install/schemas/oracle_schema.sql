@@ -989,7 +989,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id number(8) DEFAULT '0' NOT NULL,
 	rule_group_id number(8) DEFAULT '0' NOT NULL,
 	rule_action number(8) DEFAULT '0' NOT NULL,
-	rule_folder_id number(4) DEFAULT '0' NOT NULL,
+	rule_folder_id number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_privmsgs_rules PRIMARY KEY (rule_id)
 )
 /
@@ -1026,7 +1026,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied number(1) DEFAULT '0' NOT NULL,
 	pm_marked number(1) DEFAULT '0' NOT NULL,
 	pm_forwarded number(1) DEFAULT '0' NOT NULL,
-	folder_id number(4) DEFAULT '0' NOT NULL
+	folder_id number(8) DEFAULT '0' NOT NULL
 )
 /
 

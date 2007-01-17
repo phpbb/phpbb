@@ -115,6 +115,24 @@ class dbal
 	}
 
 	/**
+	* Build LIMIT query
+	* Doing some validation here.
+	*/
+	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	{
+		if (empty($query))
+		{
+			return false;
+		}
+
+		// Never use a negative total or offset
+		$total = ($total < 0) ? 0 : $total;
+		$offset = ($offset < 0) ? 0 : $offset;
+
+		return $this->_sql_query_limit($query, $total, $offset, $cache_ttl);
+	}
+
+	/**
 	* Fetch all rows
 	*/
 	function sql_fetchrowset($query_id = false)

@@ -386,6 +386,12 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
+		$topic_info = get_post_data(array($topic_id));
+		$topic_info = $topic_info[$topic_id];
+
+		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_SPLIT_DESTINATION', $subject);
+		add_log('mod', $forum_id, $topic_id, 'LOG_SPLIT_SOURCE', $topic_info['topic_title']);
+
 		// Change topic title of first post
 		$sql = 'UPDATE ' . POSTS_TABLE . "
 			SET post_subject = '" . $db->sql_escape($subject) . "'

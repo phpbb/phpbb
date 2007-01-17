@@ -1202,7 +1202,7 @@ switch ($mode)
 				'S_SEARCH_USER'			=> true,
 				'S_FORM_NAME'			=> $form,
 				'S_FIELD_NAME'			=> $field,
-				'S_SELECT_SINGLE'      	=> $select_single,
+				'S_SELECT_SINGLE'		=> $select_single,
 				'S_COUNT_OPTIONS'		=> $s_find_count,
 				'S_SORT_OPTIONS'		=> $s_sort_key,
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
@@ -1239,7 +1239,8 @@ switch ($mode)
 		$id_cache = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : '';
+			$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
+			$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 			$id_cache[$row['user_id']] = $row;
 		}
@@ -1253,6 +1254,13 @@ switch ($mode)
 
 			// Grab all profile fields from users in id cache for later use - similar to the poster cache
 			$profile_fields_cache = $cp->generate_profile_fields_template('grab', array_keys($id_cache));
+		}
+
+		// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
+		if ($sort_key == 'l')
+		{
+			$lesser_than = ($sort_dir == 'a') ? -1 : 1;
+			uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
 		}
 
 		$i = 0;

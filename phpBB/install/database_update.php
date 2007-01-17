@@ -329,6 +329,12 @@ $database_update_info = array(
 				'prune_viewed'			=> array('UINT', 0),
 				'prune_freq'			=> array('UINT', 0),
 			),
+			PRIVMSGS_RULES_TABLE	=> array(
+				'rule_folder_id'		=> array('UINT', 0),
+			),
+			PRIVMSGS_TO_TABLE		=> array(
+				'folder_id'				=> array('UINT', 0),
+			),
 		),
 		// Remove the following keys
 		'drop_keys'		=> array(

@@ -40,7 +40,9 @@
 		</td>
 		<td class="row1" width="50" align="center"><p class="topicdetails">{topicrow.REPLIES}</p></td>
 		<td class="row1" width="120" align="center"><p class="topicdetails">{topicrow.LAST_POST_TIME}</p></td>
-		<td class="row2" align="center"><input type="checkbox" class="radio" name="topic_id_list[]" value="{topicrow.TOPIC_ID}" {topicrow.S_TOPIC_CHECKED}/></td>
+		<td class="row2" align="center">
+			<!-- IF not topicrow.S_MOVED_TOPIC --><input type="checkbox" class="radio" name="topic_id_list[]" value="{topicrow.TOPIC_ID}"<!-- IF topicrow.S_TOPIC_CHECKED --> checked="checked"<!-- ENDIF --> /><!-- ELSE -->&nbsp;<!-- ENDIF -->
+		</td>
 	</tr>
 <!-- BEGINELSE -->
 	<tr>

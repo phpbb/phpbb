@@ -1240,7 +1240,7 @@ function get_folder_status($folder_id, $folder)
 /**
 * Submit PM
 */
-function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = true)
+function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
 	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
 

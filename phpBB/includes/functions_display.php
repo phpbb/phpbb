@@ -504,20 +504,23 @@ function topic_generate_pagination($replies, $url)
 {
 	global $config, $user;
 
-	if (($replies + 1) > $config['posts_per_page'])
+	// Make sure $per_page is a valid value
+	$per_page = ($config['posts_per_page'] <= 0) ? 1 : $config['posts_per_page'];
+
+	if (($replies + 1) > $per_page)
 	{
-		$total_pages = ceil(($replies + 1) / $config['posts_per_page']);
+		$total_pages = ceil(($replies + 1) / $per_page);
 		$pagination = '';
 
 		$times = 1;
-		for ($j = 0; $j < $replies + 1; $j += $config['posts_per_page'])
+		for ($j = 0; $j < $replies + 1; $j += $per_page)
 		{
 			$pagination .= '<a href="' . $url . '&amp;start=' . $j . '">' . $times . '</a>';
 			if ($times == 1 && $total_pages > 4)
 			{
 				$pagination .= ' ... ';
 				$times = $total_pages - 3;
-				$j += ($total_pages - 4) * $config['posts_per_page'];
+				$j += ($total_pages - 4) * $per_page;
 			}
 			else if ($times < $total_pages)
 			{

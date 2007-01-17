@@ -239,7 +239,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 			$template->assign_vars(array(
 				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
-				'S_SHOW_COLOUR_LEGEND'	=> true)
+				'S_SHOW_COLOUR_LEGEND'	=> true,
+
+				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
 			);
 		}
 	}
