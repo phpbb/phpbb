@@ -164,20 +164,9 @@
 
 	<form id="list" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick" style="float: left;">
-		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
-		<input class="button2" type="submit" value="{L_GO}" name="sort" />
-	</fieldset>
-
-	<div class="clearfix"></div>
-
 	<!-- IF PAGINATION -->
 	<div class="pagination">
-		<!-- IF PAGINATION -->
 			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-		<!-- ELSE -->
-			{S_ON_PAGE}
-		<!-- ENDIF -->
 	</div>
 	<!-- ENDIF -->
 
@@ -188,7 +177,7 @@
 		<th>{L_REPORT_BY}</th>
 		<th>{L_IP}</th>
 		<th>{L_TIME}</th>
-		<th>{L_ACTION}</th>
+		<th>{L_FEEDBACK}</th>
 		<th>{L_MARK}</th>
 	</tr>
 	</thead>
@@ -213,12 +202,23 @@
 			<p>{L_NO_ENTRIES}</p>
 		</div>
 	<!-- ENDIF -->
+	
+	<fieldset class="display-options">
+		{L_DISPLAY_LOG}: &nbsp;{S_LIMIT_DAYS}&nbsp;{L_SORT_BY}: {S_SORT_KEY} {S_SORT_DIR}
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+	<hr />
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+	</div>
+	<!-- ENDIF -->
 
 	<!-- IF S_CLEARLOGS -->
 		<fieldset class="quick">
-			<b class="small"><a href="#" onclick="marklist('list', 'mark', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></b><br />
 			<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />&nbsp;
-			<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
+			<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />
+			<p class="small"><a href="#" onclick="marklist('list', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></p>
 		</fieldset>
 	<!-- ENDIF -->
 
@@ -678,20 +678,12 @@ var help_line = {
 
 	<form id="user_attachments" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick" style="float: left;">
-		{L_SORT_BY}: <select name="sk">{S_SORT_KEY}</select> <select name="sd">{S_SORT_DIR}</select>
-		<input class="button2" type="submit" value="{L_GO}" name="sort" />
-	</fieldset>
 
-	<div class="pagination" style="float: right;">
-		<!-- IF PAGINATION -->
-			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
-		<!-- ELSE -->
-			{S_ON_PAGE}
-		<!-- ENDIF -->
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
 	</div>
-
-	<div class="clearfix"></div>
+	<!-- ENDIF -->
 
 	<!-- IF .attach -->
 	<table cellspacing="1">
@@ -701,17 +693,17 @@ var help_line = {
 		<th>{L_POST_TIME}</th>
 		<th>{L_FILESIZE}</th>
 		<th>{L_DOWNLOADS}</th>
-		<th>{L_DELETE}</th>
+		<th>{L_MARK}</th>
 	</tr>
 	</thead>
 	<tbody>
 	<!-- BEGIN attach -->
 		<!-- IF attach.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td><a href="{attach.U_DOWNLOAD}">{attach.REAL_FILENAME}</a><br /><span class="small"><!-- IF attach.S_IN_MESSAGE --><b>{L_PM}: </b><!-- ELSE --><b>{L_TOPIC}: </b><!-- ENDIF --><a href="{attach.U_VIEW_TOPIC}">{attach.TOPIC_TITLE}</a></span></td>
-		<td>{attach.POST_TIME}</td>
-		<td>{attach.SIZE}</td>
-		<td>{attach.DOWNLOAD_COUNT}</td>
-		<td><input type="checkbox" class="radio" name="mark[]" value="{attach.ATTACH_ID}" /></td>
+		<td style="text-align: center">{attach.POST_TIME}</td>
+		<td style="text-align: center">{attach.SIZE}</td>
+		<td style="text-align: center">{attach.DOWNLOAD_COUNT}</td>
+		<td style="text-align: center"><input type="checkbox" class="radio" name="mark[]" value="{attach.ATTACH_ID}" /></td>
 	</tr>
 	<!-- END attach -->
 	</tbody>
@@ -721,10 +713,20 @@ var help_line = {
 		<p>{L_NO_ENTRIES}</p>
 	</div>
 	<!-- ENDIF -->
-
+	<fieldset class="display-options">
+		{L_SORT_BY}: <select name="sk">{S_SORT_KEY}</select> <select name="sd">{S_SORT_DIR}</select>
+		<input class="button2" type="submit" value="{L_GO}" name="sort" />
+	</fieldset>
+	<hr />
+	<!-- IF PAGINATION -->
+	<div class="pagination">
+		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
+	</div>
+	<!-- ENDIF -->
+	
 	<fieldset class="quick">
-		<b class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></b><br />
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
+		<p class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></p>
 	</fieldset>
 
 	</form>
