@@ -625,3 +625,7 @@ pre {
 	font-size: 1.1em;
 	font-family: Monaco, 'Courier New', monospace;
 }
+
+.nowrap {
+	white-space: nowrap;
+}
