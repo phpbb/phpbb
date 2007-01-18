@@ -91,7 +91,7 @@
 			<div class="perm_panel" id="options00{auth.S_ROW_COUNT}"<!-- IF auth.S_FIRST_ROW --><!-- ELSE --> style="display: none;"<!-- ENDIF -->>
 				<span class="corners-top"><span></span></span>
 				<div class="tablewrap">
-					<table cellspacing="1">
+					<table id="table00{auth.S_ROW_COUNT}" cellspacing="1">
 					<colgroup>
 						<col class="permissions_name" />
 						<col class="permissions_yes" />
@@ -111,9 +111,9 @@
 						<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 						<th class="permission_name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
 							
-						<td><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="{auth.mask.FIELD_NAME}_y" name="{auth.mask.FIELD_NAME}" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
-						<td><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="{auth.mask.FIELD_NAME}_u" name="{auth.mask.FIELD_NAME}" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
-						<td><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="{auth.mask.FIELD_NAME}_n" name="{auth.mask.FIELD_NAME}" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
+						<td><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
+						<td><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
+						<td><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
 					</tr>
 					<!-- END mask -->
 					</tbody>
