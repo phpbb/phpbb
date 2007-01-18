@@ -539,7 +539,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	if (sizeof($important_ids))
 	{
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-			SET pm_marked = !pm_marked
+			SET pm_marked = 1 - pm_marked
 			WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
 				AND user_id = $user_id
 				AND " . $db->sql_in_set('msg_id', $important_ids);
@@ -845,7 +845,7 @@ function handle_mark_actions($user_id, $mark_action)
 		case 'mark_important':
 
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
-				SET pm_marked = !pm_marked
+				SET pm_marked = 1 - pm_marked
 				WHERE folder_id = $cur_folder_id
 					AND user_id = $user_id
 					AND " . $db->sql_in_set('msg_id', $msg_ids);

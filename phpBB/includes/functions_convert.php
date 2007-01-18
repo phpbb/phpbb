@@ -541,7 +541,43 @@ function base64_unpack($string)
 	return $number; 
 }
 
-function import_attachment($source, $target = '')
+function _import_check($config_var, $source, $use_target)
+{
+	global $convert, $config;
+
+	$result = array(
+		'orig_source'	=> $source,
+		'copy'			=> false,
+		'relative_path'	=> (empty($convert->convertor['source_path_absolute'])) ? true : false,
+	);
+
+	$target = $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
+
+	if (!empty($convert->convertor[$config_var]) && strpos($source, $convert->convertor[$config_var]) !== 0)
+	{
+		$source = $convert->convertor[$config_var] . $source;
+	}
+
+	$result['source'] = $source;
+
+	if (file_exists(relative_base($source, $result['relative_path'], __LINE__, __FILE__)))
+	{
+		$result['copied'] = copy_file($source, $target, false, false, $result['relative_path']);
+	}
+
+	if ($result['copied'])
+	{
+		$result['target'] = basename($target);
+	}
+	else
+	{
+		$result['target'] = ($use_target !== false) ? $result['orig_source'] : basename($target);
+	}
+
+	return $result;
+}
+
+function import_attachment($source, $use_target = false)
 {
 	if (empty($source))
 	{
@@ -549,53 +585,40 @@ function import_attachment($source, $target = '')
 	}
 
 	global $convert, $phpbb_root_path, $config, $user;
-
-	$relative_path = empty($convert->convertor['source_path_absolute']);
 
 	if (empty($convert->convertor['upload_path']))
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_UPLOAD_DIR'], 'import_attachment()'), __LINE__, __FILE__);
 	}
 
-	$target = $config['upload_path'] . '/' . basename(empty($target) ? $source : $target);
+	$result = _import_check('upload_path', $source, $use_target);
 
-	if (strpos($source, $convert->convertor['upload_path']) !== 0)
+	if ($result['copied'])
 	{
-		$source = $convert->convertor['upload_path'] . $source;
-	}
-
-	if (file_exists(relative_base($source, $relative_path, __LINE__, __FILE__)))
-	{
-		if ($result = copy_file($source, $target, false, false, $relative_path))
+		// Thumbnails?
+		if (is_array($convert->convertor['thumbnails']))
 		{
-			// Thumbnails?
-			if (is_array($convert->convertor['thumbnails']))
+			$thumb_dir = $convert->convertor['thumbnails'][0];
+			$thumb_prefix = $convert->convertor['thumbnails'][1];
+			$thumb_source = $thumb_dir . $thumb_prefix . basename($result['source']);
+
+			if (strpos($thumb_source, $convert->convertor['upload_path']) !== 0)
 			{
-				$thumb_dir = $convert->convertor['thumbnails'][0];
-				$thumb_prefix = $convert->convertor['thumbnails'][1];
-				$thumb_source = $thumb_dir . $thumb_prefix . basename($source);
-
-				if (strpos($thumb_source, $convert->convertor['upload_path']) !== 0)
-				{
-					$thumb_source = $convert->convertor['upload_path'] . $thumb_source;
-				}
-				$thumb_target = $config['upload_path'] . '/thumb_' . basename($target);
-
-				if (file_exists(relative_base($thumb_source, $relative_path, __LINE__, __FILE__)))
-				{
-					copy_file($thumb_source, $thumb_target, false, false, $relative_path);
-				}
+				$thumb_source = $convert->convertor['upload_path'] . $thumb_source;
 			}
+			$thumb_target = $config['upload_path'] . '/thumb_' . $result['target'];
 
-			return basename($target);
+			if (file_exists(relative_base($thumb_source, $result['relative_path'], __LINE__, __FILE__)))
+			{
+				copy_file($thumb_source, $thumb_target, false, false, $result['relative_path']);
+			}
 		}
 	}
 
-	// Even though the image might not be displayed, the admin is able to manually copy the relevant files
-	return $source;
+	return $result['target'];
 }
 
-function import_rank($source, $target = '')
+function import_rank($source, $use_target = false)
 {
 	if (empty($source))
 	{
@@ -603,34 +626,17 @@ function import_rank($source, $target = '')
 	}
 
 	global $convert, $phpbb_root_path, $config, $user;
-
-	$relative_path = empty($convert->convertor['source_path_absolute']);
 
 	if (!isset($convert->convertor['ranks_path']))
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_RANKS_PATH'], 'import_rank()'), __LINE__, __FILE__);
 	}
 
-	$target = $config['ranks_path'] . '/' . basename(empty($target) ? $source : $target);
-
-	if (!empty($convert->convertor['ranks_path']) && strpos($source, $convert->convertor['ranks_path']) !== 0)
-	{
-		$source = $convert->convertor['ranks_path'] . $source;
-	}
-
-	if (file_exists(relative_base($source, $relative_path, __LINE__, __FILE__)))
-	{
-		if ($result = copy_file($source, $target, false, false, $relative_path))
-		{
-			return basename($target);
-		}
-	}
-
-	// Even though the image might not be displayed, the admin is able to manually copy the relevant files
-	return $source;
+	$result = _import_check('ranks_path', $source, $use_target);
+	return $result['target'];
 }
 
-function import_smiley($source, $target = '')
+function import_smiley($source, $use_target = false)
 {
 	if (empty($source))
 	{
@@ -639,32 +645,16 @@ function import_smiley($source, $target = '')
 
 	global $convert, $phpbb_root_path, $config, $user;
 
-	$relative_path = empty($convert->convertor['source_path_absolute']);
-
 	if (!isset($convert->convertor['smilies_path']))
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_SMILIES_PATH'], 'import_smiley()'), __LINE__, __FILE__);
 	}
 
-	$target = $config['smilies_path'] . '/' . basename(empty($target) ? $source : $target);
-
-	if (!empty($convert->convertor['smilies_path']) && strpos($source, $convert->convertor['smilies_path']) !== 0)
-	{
-		$source = $convert->convertor['smilies_path'] . $source;
-	}
-
-	if (file_exists(relative_base($source, $relative_path, __LINE__, __FILE__)))
-	{
-		if ($result = copy_file($source, $target, false, false, $relative_path))
-		{
-			return basename($target);
-		}
-	}
-
-	return $source;
+	$result = _import_check('smilies_path', $source, $use_target);
+	return $result['target'];
 }
 
-function import_avatar($source, $target = '')
+function import_avatar($source, $use_target = false)
 {
 	if (empty($source) || preg_match('#^https?:#i', $source) || preg_match('#blank\.(gif|png)$#i', $source))
 	{
@@ -673,29 +663,13 @@ function import_avatar($source, $target = '')
 
 	global $convert, $phpbb_root_path, $config, $user;
 
-	$relative_path = empty($convert->convertor['source_path_absolute']);
-
 	if (!isset($convert->convertor['avatar_path']))
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_AVATAR_PATH'], 'import_avatar()'), __LINE__, __FILE__);
 	}
 
-	$target = $config['avatar_path'] . '/' . basename(empty($target) ? $source : $target);
-
-	if (!empty($convert->convertor['avatar_path']) && strpos($source, $convert->convertor['avatar_path']) !== 0)
-	{
-		$source = $convert->convertor['avatar_path'] . $source;
-	}
-
-	if (file_exists(relative_base($source, $relative_path, __LINE__, __FILE__)))
-	{
-		if ($result = copy_file($source, $target, false, false, $relative_path))
-		{
-			return basename($target);
-		}
-	}
-
-	return $source;
+	$result = _import_check('avatar_path', $source, $use_target);
+	return $result['target'];
 }
 
 /**
@@ -1657,6 +1631,8 @@ function add_bots()
 {
 	global $db, $convert, $user, $config, $phpbb_root_path, $phpEx;
 
+	$db->sql_query($convert->truncate_statement . BOTS_TABLE);
+
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
@@ -1755,8 +1731,6 @@ function add_bots()
 
 		if ($user_id)
 		{
-			add_user_group($group_id, $user_id, false);
-
 			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'bot_active'	=> 1,
 				'bot_name'		=> $bot_name,

@@ -150,9 +150,7 @@ function adm_page_header($page_title)
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
-		'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'])
-	);
+	));
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');

@@ -36,8 +36,6 @@ $template->assign_vars(array(
 	'S_USER_LANG'			=> $user->lang['USER_LANG'],
 	'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 	'S_CONTENT_ENCODING'	=> 'UTF-8',
-	'S_CONTENT_DIR_LEFT'	=> $user->lang['LEFT'],
-	'S_CONTENT_DIR_RIGHT'	=> $user->lang['RIGHT'],
 ));
 
 $template->display('body');

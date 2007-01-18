@@ -324,8 +324,6 @@ class module
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
-			'S_CONTENT_DIR_LEFT' 	=> $lang['LEFT'],
-			'S_CONTENT_DIR_RIGHT' 	=> $lang['RIGHT'],
 			'S_USER_LANG'			=> $lang['USER_LANG'],
 			)
 		);

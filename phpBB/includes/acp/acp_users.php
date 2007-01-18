@@ -1373,95 +1373,13 @@ class acp_users
 
 			case 'avatar':
 
-				$avatar_select = basename(request_var('avatar_select', ''));
-				$category = basename(request_var('category', ''));
 				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
-
-				$data = array();
 
 				if ($submit)
 				{
-					$delete = request_var('delete', '');
-
-					$data = array(
-						'uploadurl'		=> request_var('uploadurl', ''),
-						'remotelink'	=> request_var('remotelink', ''),
-						'width'			=> request_var('width', ''),
-						'height'		=> request_var('height', ''),
-					);
-
-					$error = validate_data($data, array(
-						'uploadurl'		=> array('string', true, 5, 255),
-						'remotelink'	=> array('string', true, 5, 255),
-						'width'			=> array('string', true, 1, 3),
-						'height'		=> array('string', true, 1, 3),
-					));
-
-					if (!sizeof($error))
+					if (avatar_process_user($error, $user_row))
 					{
-						$data['user_id'] = $user_id;
-
-						if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload && $config['allow_avatar_upload'])
-						{
-							list($type, $filename, $width, $height) = avatar_upload($data, $error);
-						}
-						else if ($data['remotelink'] && $config['allow_avatar_remote'])
-						{
-							list($type, $filename, $width, $height) = avatar_remote($data, $error);
-						}
-						else if ($avatar_select && $config['allow_avatar_local'])
-						{
-							$type = AVATAR_GALLERY;
-							$filename = $avatar_select;
-							
-							// check avatar gallery
-							if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
-							{
-								$type = $width = $height = 0;
-								$filename = '';
-							}
-							else
-							{
-								list($width, $height) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $filename);
-								$filename = $category . '/' . $filename;
-							}
-						}
-						else if ($delete)
-						{
-							$filename = '';
-							$type = $width = $height = 0;
-						}
-						else
-						{
-							$data = array();
-						}
-					}
-
-					if (!sizeof($error))
-					{
-						// Do we actually have any data to update?
-						if (sizeof($data))
-						{
-							$sql_ary = array(
-								'user_avatar'			=> $filename,
-								'user_avatar_type'		=> $type,
-								'user_avatar_width'		=> $width,
-								'user_avatar_height'	=> $height,
-							);
-
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-								WHERE user_id = ' . $user_id;
-							$db->sql_query($sql);
-
-							// Delete old avatar if present
-							if ($user_row['user_avatar'] && $filename != $user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
-							{
-								avatar_delete('user', $user_row);
-							}
-						}
-
-						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_row['user_id']));
 					}
 
 					// Replace "error" strings with their real, localised form
@@ -1493,6 +1411,8 @@ class acp_users
 				}
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
+				$avatar_select = basename(request_var('avatar_select', ''));
+				$category = basename(request_var('category', ''));
 
 				if ($config['allow_avatar_local'] && $display_gallery)
 				{

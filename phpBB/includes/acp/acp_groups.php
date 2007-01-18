@@ -261,7 +261,9 @@ class acp_groups
 					$allow_desc_smilies	= request_var('desc_parse_smilies', false);
 
 					$data['uploadurl']	= request_var('uploadurl', '');
-					$data['remotelink'] = request_var('remotelink', '');
+					$data['remotelink']	= request_var('remotelink', '');
+					$data['width']		= request_var('width', '');
+					$data['height']		= request_var('height', '');
 					$delete				= request_var('delete', '');
 
 					$submit_ary = array(
@@ -283,9 +285,6 @@ class acp_groups
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 					{
-						$data['width']		= request_var('width', '');
-						$data['height']		= request_var('height', '');
-
 						// Avatar stuff
 						$var_ary = array(
 							'uploadurl'		=> array('string', true, 5, 255), 
@@ -317,6 +316,34 @@ class acp_groups
 
 							list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
 							$submit_ary['avatar'] = $category . '/' . $avatar_select;
+						}
+					}
+					else if ($data['width'] && $data['height'])
+					{
+						// Only update the dimensions?
+						if ($config['avatar_max_width'] || $config['avatar_max_height'])
+						{
+							if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+							{
+								$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+							}
+						}
+
+						if (!sizeof($error))
+						{
+							if ($config['avatar_min_width'] || $config['avatar_min_height'])
+							{
+								if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
+								{
+									$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+								}
+							}
+						}
+
+						if (!sizeof($error))
+						{
+							$submit_ary['avatar_width'] = $data['width'];
+							$submit_ary['avatar_height'] = $data['height'];
 						}
 					}
 					else if ($delete)

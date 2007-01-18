@@ -1585,6 +1585,127 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 	return $avatar_list;
 }
 
+/**
+* Uploading/Changing user avatar
+*/
+function avatar_process_user(&$error, $custom_userdata = false)
+{
+	global $config, $phpbb_root_path, $auth, $user, $db;
+
+	$data = array(
+		'uploadurl'		=> request_var('uploadurl', ''),
+		'remotelink'	=> request_var('remotelink', ''),
+		'width'			=> request_var('width', ''),
+		'height'		=> request_var('height', ''),
+	);
+
+	$error = validate_data($data, array(
+		'uploadurl'		=> array('string', true, 5, 255),
+		'remotelink'	=> array('string', true, 5, 255),
+		'width'			=> array('string', true, 1, 3),
+		'height'		=> array('string', true, 1, 3),
+	));
+
+	if (sizeof($error))
+	{
+		return false;
+	}
+
+	$sql_ary = array();
+	$data['user_id'] = ($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id'];
+	$change_avatar = ($custom_userdata === false) ? $auth->acl_get('u_chgavatar') : true;
+	$avatar_select = basename(request_var('avatar_select', ''));
+
+	// Can we upload?
+	$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+
+	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
+	{
+		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_upload($data, $error);
+	}
+	else if ($data['remotelink'] && $change_avatar && $config['allow_avatar_remote'])
+	{
+		list($sql_ary['user_avatar_type'], $sql_ary['user_avatar'], $sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = avatar_remote($data, $error);
+	}
+	else if ($avatar_select && $change_avatar && $config['allow_avatar_local'])
+	{
+		$category = basename(request_var('category', ''));
+
+		$sql_ary['user_avatar_type'] = AVATAR_GALLERY;
+		$sql_ary['user_avatar'] = $avatar_select;
+
+		// check avatar gallery
+		if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
+		{
+			$sql_ary['user_avatar'] = '';
+			$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
+		}
+		else
+		{
+			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $sql_ary['user_avatar']);
+			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
+		}
+	}
+	else if (isset($_POST['delete']) && $change_avatar)
+	{
+		$sql_ary['user_avatar'] = '';
+		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
+	}
+	else if ($data['width'] && $data['height'])
+	{
+		// Only update the dimensions?
+		if ($config['avatar_max_width'] || $config['avatar_max_height'])
+		{
+			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+			{
+				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+			}
+		}
+
+		if (!sizeof($error))
+		{
+			if ($config['avatar_min_width'] || $config['avatar_min_height'])
+			{
+				if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
+				{
+					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+				}
+			}
+		}
+
+		if (!sizeof($error))
+		{
+			$sql_ary['user_avatar_width'] = $data['width'];
+			$sql_ary['user_avatar_height'] = $data['height'];
+		}
+	}
+
+	if (!sizeof($error))
+	{
+		// Do we actually have any data to update?
+		if (sizeof($sql_ary))
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
+			$db->sql_query($sql);
+
+			if (isset($sql_ary['user_avatar']))
+			{
+				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
+
+				// Delete old avatar if present
+				if ($userdata['user_avatar'] && $sql_ary['user_avatar'] != $userdata['user_avatar'] && $userdata['user_avatar_type'] != AVATAR_GALLERY)
+				{
+					avatar_delete('user', $userdata);
+				}
+			}
+		}
+	}
+
+	return (sizeof($error)) ? false : true;
+}
+
 //
 // Usergroup functions
 //

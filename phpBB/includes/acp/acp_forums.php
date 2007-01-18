@@ -224,7 +224,7 @@ class acp_forums
 						$auth->acl_clear_prefetch();
 						$cache->destroy('sql', FORUMS_TABLE);
 	
-						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'] . '&amp;select_all_groups=1';
+						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 
 						$message = ($action == 'add') ? $user->lang['FORUM_CREATED'] : $user->lang['FORUM_UPDATED'];
 

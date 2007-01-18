@@ -488,94 +488,15 @@ class ucp_profile
 			case 'avatar':
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
-				$delete = (isset($_POST['delete'])) ? true : false;
-
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				// Can we upload?
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				if ($submit)
 				{
-					$data = array(
-						'uploadurl'		=> request_var('uploadurl', ''),
-						'remotelink'	=> request_var('remotelink', ''),
-						'width'			=> request_var('width', ''),
-						'height'		=> request_var('height', ''),
-					);
-
-					$error = validate_data($data, array(
-						'uploadurl'		=> array('string', true, 5, 255),
-						'remotelink'	=> array('string', true, 5, 255),
-						'width'			=> array('string', true, 1, 3),
-						'height'		=> array('string', true, 1, 3),
-					));
-
-					if (!sizeof($error))
+					if (avatar_process_user($error))
 					{
-						$data['user_id'] = $user->data['user_id'];
-
-						if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
-						{
-							list($type, $filename, $width, $height) = avatar_upload($data, $error);
-						}
-						else if ($data['remotelink'] && $auth->acl_get('u_chgavatar') && $config['allow_avatar_remote'])
-						{
-							list($type, $filename, $width, $height) = avatar_remote($data, $error);
-						}
-						else if ($avatar_select && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
-						{
-							$type = AVATAR_GALLERY;
-							$filename = $avatar_select;
-							
-							// check avatar gallery
-							if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
-							{
-								$filename = '';
-								$type = $width = $height = 0;
-							}
-							else
-							{
-								list($width, $height) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $filename);
-								$filename = $category . '/' . $filename;
-							}
-						}
-						else if ($delete && $auth->acl_get('u_chgavatar'))
-						{
-							$filename = '';
-							$type = $width = $height = 0;
-						}
-						else
-						{
-							$data = array();
-						}
-					}
-
-					if (!sizeof($error))
-					{
-						// Do we actually have any data to update?
-						if (sizeof($data))
-						{
-							$sql_ary = array(
-								'user_avatar'			=> $filename,
-								'user_avatar_type'		=> $type,
-								'user_avatar_width'		=> $width,
-								'user_avatar_height'	=> $height,
-							);
-
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-								WHERE user_id = ' . $user->data['user_id'];
-							$db->sql_query($sql);
-
-							// Delete old avatar if present
-							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'] && $user->data['user_avatar_type'] != AVATAR_GALLERY)
-							{
-								avatar_delete('user', $user->data);
-							}
-						}
-
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
@@ -624,8 +545,8 @@ class ucp_profile
 					$template->assign_vars(array(
 						'AVATAR'		=> $avatar_img,
 						'AVATAR_SIZE'	=> $config['avatar_filesize'],
-						'WIDTH'			=> (isset($data['width'])) ? $data['width'] : $user->data['user_avatar_width'],
-						'HEIGHT'		=> (isset($data['height'])) ? $data['height'] : $user->data['user_avatar_height'],
+						'WIDTH'			=> request_var('width', $user->data['user_avatar_width']),
+						'HEIGHT'		=> request_var('height', $user->data['user_avatar_height']),
 
 						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 						'S_UPLOAD_AVATAR_URL'	=> $can_upload,

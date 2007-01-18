@@ -33,8 +33,6 @@ if (empty($lang) || !is_array($lang))
 $lang = array_merge($lang, array(
 	'TRANSLATION_INFO'	=> '',
 	'DIRECTION'			=> 'ltr',
-	'LEFT'				=> 'left',
-	'RIGHT'				=> 'right',
 	'DATE_FORMAT'		=> '|d M Y|', // 01 Jan 2007 (with Relative days enabled)
 	'USER_LANG'			=> 'en-gb',
 
