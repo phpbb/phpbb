@@ -23,7 +23,7 @@
 
 <!-- BEGIN f_mask -->
 <fieldset class="perm">
-	<legend>{p_mask.f_mask.NAME}</legend>
+	<legend><!-- IF not p_mask.S_VIEW --><input type="checkbox" class="radio" name="inherit[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" id="checkbox{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" value="1" /> <!-- ELSE --><!-- ENDIF -->{p_mask.f_mask.NAME}</legend>
 
 	<!-- IF not p_mask.S_VIEW -->
 		<div class="perm_switch">
@@ -65,7 +65,7 @@
 		<div class="perm_panel" id="options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}" <!-- IF p_mask.S_FIRST_ROW and p_mask.f_mask.S_FIRST_ROW and p_mask.f_mask.category.S_FIRST_ROW --><!-- ELSE --> style="display: none;"<!-- ENDIF -->>
 			<span class="corners-top"><span></span></span>
 			<div class="tablewrap">
-				<table cellspacing="1">
+				<table id="table{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}" cellspacing="1">
 				<colgroup>
 					<col class="permissions_name" />
 					<col class="permissions_yes" />
@@ -104,6 +104,12 @@
 				</tbody>
 				</table>
 			</div>
+			<!-- IF not p_mask.S_VIEW -->
+			<fieldset class="quick" style="margin-right: 11px;">
+				<p class="small">{L_APPLY_PERMISSIONS_EXPLAIN}</p>
+				<input class="button1" type="submit" name="psubmit[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" value="{L_APPLY_PERMISSIONS}" />
+			</fieldset>
+			<!-- ENDIF -->
 			<span class="corners-bottom"><span></span></span>
 		</div>
 	<!-- END category -->

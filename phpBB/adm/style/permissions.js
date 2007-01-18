@@ -32,7 +32,7 @@ function get_radio_status(index, rb)
 */
 function set_colours(id, init, quick)
 {
-	var table = document.getElementById('options' + id);
+	var table = document.getElementById('table' + id);
 	var tab = document.getElementById('tab' + id);
 
 	if (typeof(quick) != 'undefined') 
@@ -120,12 +120,14 @@ function swap_options(pmask, fmask, cat, adv, view)
 	if (adv_block.style.display == 'block' && adv == true)
 	{
 		dE('advanced' + pmask + fmask, -1);
+		document.getElementById('checkbox' + pmask + fmask).style.display = 'inline';
 		return;
 	}
 
 	// init colours
 	if (adv)
 	{
+		dE('checkbox' + pmask + fmask, -1);
 		init_colours(pmask + fmask);
 	}
 
