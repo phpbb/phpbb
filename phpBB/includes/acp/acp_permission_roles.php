@@ -330,7 +330,7 @@ class acp_permission_roles
 
 					if (sizeof($hold_ary))
 					{
-						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name']
+						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
 
 						$template->assign_var(array(
 							'S_DISPLAY_ROLE_MASK'	=> true,
