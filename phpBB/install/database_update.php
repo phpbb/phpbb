@@ -330,10 +330,10 @@ $database_update_info = array(
 				'prune_freq'			=> array('UINT', 0),
 			),
 			PRIVMSGS_RULES_TABLE	=> array(
-				'rule_folder_id'		=> array('UINT', 0),
+				'rule_folder_id'		=> array('INT:11', 0),
 			),
 			PRIVMSGS_TO_TABLE		=> array(
-				'folder_id'				=> array('UINT', 0),
+				'folder_id'				=> array('INT:11', 0),
 			),
 		),
 		// Remove the following keys

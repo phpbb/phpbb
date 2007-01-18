@@ -511,7 +511,7 @@ CREATE TABLE phpbb_privmsgs_rules (
 	rule_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_group_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	rule_action mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	rule_folder_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	rule_folder_id int(11) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (rule_id),
 	KEY user_id (user_id)
 );
@@ -528,7 +528,7 @@ CREATE TABLE phpbb_privmsgs_to (
 	pm_replied tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_marked tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	pm_forwarded tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	folder_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	folder_id int(11) DEFAULT '0' NOT NULL,
 	KEY msg_id (msg_id),
 	KEY author_id (author_id),
 	KEY usr_flder_id (user_id, folder_id)
