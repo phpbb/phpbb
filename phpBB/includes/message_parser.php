@@ -513,8 +513,8 @@ class bbcode_firstpass extends bbcode
 				// if $tok is ']' the buffer holds a tag
 				if (strtolower($buffer) == '/list' && sizeof($list_end_tags))
 				{
-					// valid [/list] tag
-					if (sizeof($item_end_tags))
+					// valid [/list] tag, check nesting so that we don't hit false positives
+					if (sizeof($item_end_tags) && sizeof($item_end_tags) >= sizeof($list_end_tags))
 					{
 						// current li tag has not been closed
 						$out = preg_replace('/\n?\[$/', '[', $out) . array_pop($item_end_tags) . '][';
@@ -568,10 +568,7 @@ class bbcode_firstpass extends bbcode
 					}
 					else if ($buffer == '/*')
 					{
-						if (array_pop($item_end_tags) == '/*:m:' . $this->bbcode_uid)
-						{
-							array_pop($item_end_tags);
-						}
+						array_pop($item_end_tags);
 						$buffer = '/*:' . $this->bbcode_uid;
 					}
 
@@ -1182,16 +1179,26 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
-				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
-				unset($matches);
-
-				if ($num_matches !== false && $num_matches > $max_smilies)
+				$count = 0;
+				foreach ($match as $key => $smilie)
 				{
-					$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
-					return;
+					if ($small_count = preg_match_all($smilie, $this->message, $array))
+					{
+						$count += $small_count;
+						if ($count > $max_smilies)
+						{
+							$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
+							return;
+						}
+					}
+					$this->message = preg_replace($smilie, $replace[$key], $this->message);
 				}
+				$this->message = trim($this->message);
 			}
-			$this->message = trim(preg_replace($match, $replace, $this->message));
+			else
+			{
+				$this->message = trim(preg_replace($match, $replace, $this->message));
+			}
 		}
 	}
 
