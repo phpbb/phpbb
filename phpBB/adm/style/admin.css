@@ -48,6 +48,13 @@ h2, caption {
 	margin-top: 25px;
 }
 
+h3, h4 {
+	font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif;
+	text-decoration: none; 
+	line-height: 120%; 
+	margin-top: 25px;
+}
+
 p {
 	margin-bottom: 0.7em;
 	line-height: 1.4em;
@@ -374,6 +381,7 @@ fieldset {
 	border-top: 1px solid #D5D5C8;
 	background-color: #ECECEC;	
 	position: relative;
+	z-index: 10;
 }
 legend {
 	position: absolute;
@@ -384,7 +392,7 @@ legend {
 	font-weight: bold;
 	line-height: 100%;
 	text-transform: uppercase;
-	
+	z-index: 20;
 }
 
 fieldset p {
@@ -918,6 +926,9 @@ a.button2, a.button2:link, a.button2:visited, a.button2:active {
 
 fieldset.perm legend {
 	text-transform: none;
+}
+fieldset.perm legend input{
+	height: 1.1em;
 }
 
 /* Permission sections */ 

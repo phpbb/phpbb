@@ -1,3 +1,49 @@
+/**
+* Change opacity of element
+* e = element
+* value = 0 (hidden) till 10 (fully visible)
+*/
+function set_opacity(e, value) {
+	e.style.opacity = value/10;
+	
+	//IE opacity currently turned off, because of its astronomical stupidity
+	//e.style.filter = 'alpha(opacity=' + value*10 + ')';
+}
+
+/**
+* Reset the opacity and checkboxes
+* block_id = id of the element that needs to be toggled
+*/
+function toggle_opacity(block_id) {
+	var cb = document.getElementById('checkbox' + block_id);
+	var fs = document.getElementById('perm' + block_id);
+	
+	if (cb.checked) 
+	{
+		set_opacity(fs, 5);
+	} 
+	else 
+	{
+		set_opacity(fs, 10);
+	}
+}
+
+/**
+* Reset the opacity and checkboxes
+*/
+function reset_opacity() {
+	var perm = document.getElementById('set_permissions');
+	var fs = perm.getElementsByTagName('fieldset');
+	
+	for (var i = 0; i < fs.length; i++ )
+	{
+		set_opacity(fs[i], 10);
+	}
+	
+	//reset checkboxes too
+	marklist('set_permissions', 'inherit', false);
+}
+
 
 /**
 * Check whether we have a full radiobutton row of true
@@ -61,7 +107,7 @@ function set_colours(id, init, quick)
 		}
 		else if (status == 0) 
 		{
-			// We move on to Mever
+			// We move on to Never
 			status = get_radio_status(2, rb);
 
 			if (status == 1)
@@ -124,17 +170,22 @@ function swap_options(pmask, fmask, cat, adv, view)
 		return;
 	}
 
-	// init colours
-	if (adv)
-	{
-		dE('checkbox' + pmask + fmask, -1);
-		init_colours(pmask + fmask);
-	}
-
 	// no need to set anything if we are clicking on the same tab again
 	if (new_tab == old_tab && !adv)
 	{
 		return;
+	}
+
+	// init colours
+	if (adv && (pmask + fmask) != (active_pmask + active_fmask))
+	{
+		init_colours(pmask + fmask);
+		reset_opacity();
+	} 
+	else if (adv) 
+	{
+		//Checkbox might have been clicked, but we need full visibility
+		set_opacity(document.getElementById('perm' + pmask + fmask), 10);
 	}
 
 	// set active tab
@@ -147,6 +198,17 @@ function swap_options(pmask, fmask, cat, adv, view)
 	}
 
 	dE('options' + active_option, -1);
+	
+	//hiding and showing the checkbox
+	if (document.getElementById('checkbox' + active_pmask + active_fmask))
+	{
+		dE('checkbox' + pmask + fmask, -1);	
+		
+		if ((pmask + fmask) != (active_pmask + active_fmask))
+		{
+			document.getElementById('checkbox' + active_pmask + active_fmask).style.display = 'inline';
+		}
+	}
 
 	if (!view)
 	{
