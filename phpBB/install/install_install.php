@@ -1603,7 +1603,7 @@ class install_install extends module
 	{
 		global $db, $lang, $phpbb_root_path, $phpEx;
 
-		$dir = @opendir($phpbb_root_path . 'language');
+		$dir = opendir($phpbb_root_path . 'language');
 		while (($file = readdir($dir)) !== false)
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
@@ -1629,6 +1629,7 @@ class install_install extends module
 				}
 			}
 		}
+		closedir($dir);
 	}
 
 	/**

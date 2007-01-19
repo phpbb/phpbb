@@ -147,7 +147,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 // dir, this may or may not be English
 if (!$language)
 {
-	$dir = @opendir($phpbb_root_path . 'language');
+	$dir = opendir($phpbb_root_path . 'language');
 	while (($file = readdir($dir)) !== false)
 	{
 		$path = $phpbb_root_path . 'language/' . $file;
@@ -158,6 +158,7 @@ if (!$language)
 			break;
 		}
 	}
+	closedir($dir);
 }
 
 // And finally, load the relevant language files
@@ -220,7 +221,12 @@ class module
 		$module = array();
 
 		// Grab module information using Bart's "neat-o-module" system (tm)
-		$dir = @opendir('.');
+		$dir = opendir('.');
+
+		if (!$dir)
+		{
+			$this->error('Unable to access the installation directory', __LINE__, __FILE__);
+		}
 
 		$setmodules = 1;
 		while (($file = readdir($dir)) !== false)
@@ -230,7 +236,7 @@ class module
 				include($file);
 			}
 		}
-		@closedir($dir);
+		closedir($dir);
 
 		unset($setmodules);
 
@@ -648,7 +654,7 @@ class module
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$dir = @opendir($phpbb_root_path . 'language');
+		$dir = opendir($phpbb_root_path . 'language');
 
 		while ($file = readdir($dir))
 		{
@@ -665,7 +671,7 @@ class module
 				$lang[$localname] = $file;
 			}
 		}
-		@closedir($dir);
+		closedir($dir);
 
 		@asort($lang);
 		@reset($lang);
