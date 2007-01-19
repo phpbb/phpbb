@@ -547,7 +547,7 @@ function _import_check($config_var, $source, $use_target)
 
 	$result = array(
 		'orig_source'	=> $source,
-		'copy'			=> false,
+		'copied'		=> false,
 		'relative_path'	=> (empty($convert->convertor['source_path_absolute'])) ? true : false,
 	);
 
