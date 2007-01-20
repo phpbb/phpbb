@@ -149,7 +149,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			if ($row['forum_type'] != FORUM_CAT)
 			{
-				$forum_ids_moderator[] = $forum_id;
+				$forum_ids_moderator[] = (int) $forum_id;
 			}
 
 			// Direct child of current branch
