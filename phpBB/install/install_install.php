@@ -1925,7 +1925,8 @@ class install_install extends module
 			if ($row = $db->sql_fetchrow($result))
 			{
 				// Likely matches for an existing phpBB installation
-				$table_ary = array($table_prefix . 'attachments', $table_prefix . 'config', $table_prefix . 'sessions', $table_prefix . 'topics', $table_prefix . 'users');
+				$temp_prefix = strtolower($table_prefix);
+				$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
 
 				do
 				{
