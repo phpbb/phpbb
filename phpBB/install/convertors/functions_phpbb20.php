@@ -1282,7 +1282,7 @@ function phpbb_import_avatar($user_avatar)
 	else if ($convert_row['user_avatar_type'] == 1)
 	{
 		// Uploaded avatar
-		return import_avatar($user_avatar, '');
+		return import_avatar($user_avatar);
 	}
 	else if ($convert_row['user_avatar_type'] == 2)
 	{

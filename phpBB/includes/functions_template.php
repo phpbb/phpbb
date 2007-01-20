@@ -483,6 +483,7 @@ class template_compile
 						// Allow checking if loops are set with .loopname
 						// It is also possible to check the loop count by doing <!-- IF .loopname > 1 --> for example
 						$blocks = explode('.', $varrefs[1]);
+
 						// If the block is nested, we have a reference that we can grab.
 						// If the block is not nested, we just go and grab the block from _tpldata
 						if (sizeof($blocks) > 1)
@@ -490,12 +491,14 @@ class template_compile
 							$block = array_pop($blocks);
 							$namespace = implode('.', $blocks);
 							$varref = $this->generate_block_data_ref($namespace, true);
+
 							// Add the block reference for the last child.
 							$varref .= "['" . $block . "']";
 						}
 						else
 						{
 							$varref = '$this->_tpldata';
+
 							// Add the block reference for the last child.
 							$varref .= "['" . $blocks[0] . "']";
 						}

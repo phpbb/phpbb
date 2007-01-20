@@ -147,7 +147,14 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 // dir, this may or may not be English
 if (!$language)
 {
-	$dir = opendir($phpbb_root_path . 'language');
+	$dir = @opendir($phpbb_root_path . 'language');
+
+	if (!$dir)
+	{
+		die('Unable to access the language directory');
+		exit;
+	}
+
 	while (($file = readdir($dir)) !== false)
 	{
 		$path = $phpbb_root_path . 'language/' . $file;
@@ -221,7 +228,7 @@ class module
 		$module = array();
 
 		// Grab module information using Bart's "neat-o-module" system (tm)
-		$dir = opendir('.');
+		$dir = @opendir('.');
 
 		if (!$dir)
 		{
@@ -654,7 +661,12 @@ class module
 	{
 		global $phpbb_root_path, $phpEx;
 
-		$dir = opendir($phpbb_root_path . 'language');
+		$dir = @opendir($phpbb_root_path . 'language');
+
+		if (!$dir)
+		{
+			$this->error('Unable to access the language directory', __LINE__, __FILE__);
+		}
 
 		while ($file = readdir($dir))
 		{

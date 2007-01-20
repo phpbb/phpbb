@@ -215,7 +215,13 @@ class install_convert extends module
 		$convertors = $sort = array();
 		$get_info = true;
 
-		$handle = opendir('./convertors/');
+		$handle = @opendir('./convertors/');
+
+		if (!$handle)
+		{
+			$this->error('Unable to access the convertors directory', __LINE__, __FILE__);
+		}
+
 		while ($entry = readdir($handle))
 		{
 			if (preg_match('/^convert_([a-z0-9_]+).' . $phpEx . '/i', $entry, $m))

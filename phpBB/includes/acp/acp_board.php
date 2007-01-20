@@ -397,16 +397,21 @@ class acp_board
 			// Retrieve a list of auth plugins and check their config values
 			$auth_plugins = array();
 
-			$dp = opendir($phpbb_root_path . 'includes/auth');
-			while (($file = readdir($dp)) !== false)
-			{
-				if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
-				{
-					$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
-				}
-			}
+			$dp = @opendir($phpbb_root_path . 'includes/auth');
 
-			sort($auth_plugins);
+			if ($dp)
+			{
+				while (($file = readdir($dp)) !== false)
+				{
+					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+					{
+						$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+					}
+				}
+				closedir($dp);
+
+				sort($auth_plugins);
+			}
 
 			$updated_auth_settings = false;
 			$old_auth_config = array();
@@ -575,7 +580,13 @@ class acp_board
 
 		$auth_plugins = array();
 
-		$dp = opendir($phpbb_root_path . 'includes/auth');
+		$dp = @opendir($phpbb_root_path . 'includes/auth');
+
+		if (!$dp)
+		{
+			return '';
+		}
+
 		while (($file = readdir($dp)) !== false)
 		{
 			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
@@ -583,6 +594,7 @@ class acp_board
 				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
 			}
 		}
+		closedir($dp);
 
 		sort($auth_plugins);
 

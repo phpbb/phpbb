@@ -940,31 +940,35 @@ class acp_language
 		$db->sql_freeresult($result);
 
 		$new_ary = $iso = array();
-		$dp = opendir("{$phpbb_root_path}language");
+		$dp = @opendir("{$phpbb_root_path}language");
 
-		while (($file = readdir($dp)) !== false)
+		if ($dp)
 		{
-			if ($file[0] != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
+			while (($file = readdir($dp)) !== false)
 			{
-				if (!in_array($file, $installed))
+				if ($file[0] != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
 				{
-					if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
+					if (!in_array($file, $installed))
 					{
-						if (sizeof($iso) == 3)
+						if ($iso = file("{$phpbb_root_path}language/$file/iso.txt"))
 						{
-							$new_ary[$file] = array(
-								'iso'		=> $file,
-								'name'		=> trim($iso[0]),
-								'local_name'=> trim($iso[1]),
-								'author'	=> trim($iso[2])
-							);
+							if (sizeof($iso) == 3)
+							{
+								$new_ary[$file] = array(
+									'iso'		=> $file,
+									'name'		=> trim($iso[0]),
+									'local_name'=> trim($iso[1]),
+									'author'	=> trim($iso[2])
+								);
+							}
 						}
 					}
 				}
 			}
+			closedir($dp);
 		}
+
 		unset($installed);
-		@closedir($dp);
 
 		if (sizeof($new_ary))
 		{

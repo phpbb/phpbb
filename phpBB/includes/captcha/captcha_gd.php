@@ -137,7 +137,13 @@ class captcha
 		{
 			global $phpbb_root_path;
 	
-			$dr = opendir($phpbb_root_path . 'includes/captcha/fonts');
+			$dr = @opendir($phpbb_root_path . 'includes/captcha/fonts');
+
+			if (!$dr)
+			{
+				trigger_error('Unable to open includes/captcha/fonts directory.', E_USER_ERROR);
+			}
+
 			while (false !== ($entry = readdir($dr)))
 			{
 				if (strtolower(pathinfo($entry, PATHINFO_EXTENSION)) == 'ttf')

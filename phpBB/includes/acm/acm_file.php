@@ -100,7 +100,13 @@ class acm
 	{
 		global $phpEx;
 
-		$dir = opendir($this->cache_dir);
+		$dir = @opendir($this->cache_dir);
+
+		if (!$dir)
+		{
+			return;
+		}
+
 		while (($entry = readdir($dir)) !== false)
 		{
 			if (!preg_match('/^(sql_|data_(?!global))/', $entry))
@@ -115,7 +121,7 @@ class acm
 				@unlink($this->cache_dir . $entry);
 			}
 		}
-		@closedir($dir);
+		closedir($dir);
 
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
@@ -190,7 +196,13 @@ class acm
 	function purge()
 	{
 		// Purge all phpbb cache files
-		$dir = opendir($this->cache_dir);
+		$dir = @opendir($this->cache_dir);
+
+		if (!$dir)
+		{
+			return;
+		}
+
 		while (($entry = readdir($dir)) !== false)
 		{
 			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
@@ -200,7 +212,7 @@ class acm
 
 			@unlink($this->cache_dir . $entry);
 		}
-		@closedir($dir);
+		closedir($dir);
 
 		unset($this->vars);
 		unset($this->var_expires);
@@ -221,7 +233,13 @@ class acm
 		{
 			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
 
-			$dir = opendir($this->cache_dir);
+			$dir = @opendir($this->cache_dir);
+
+			if (!$dir)
+			{
+				return;
+			}
+
 			while (($entry = readdir($dir)) !== false)
 			{
 				if (strpos($entry, 'sql_') !== 0)
@@ -238,7 +256,7 @@ class acm
 					@unlink($this->cache_dir . $entry);
 				}
 			}
-			@closedir($dir);
+			closedir($dir);
 
 			return;
 		}

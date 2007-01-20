@@ -1306,7 +1306,7 @@ class user extends session
 					}
 					$stylesheet = str_replace($match, $content, $stylesheet);
 				}
-				unset ($content);
+				unset($content);
 			}
 
 			$stylesheet = str_replace('./', 'styles/' . $this->theme['theme_path'] . '/theme/', $stylesheet);

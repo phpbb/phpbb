@@ -527,30 +527,35 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Grab uninstalled items
 		$new_ary = $cfg = array();
 
-		$dp = opendir("{$phpbb_root_path}styles");
-		while (($file = readdir($dp)) !== false)
-		{
-			$subpath = ($mode != 'style') ? "$mode/" : '';
-			if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
-			{
-				if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
-				{
-					$items = parse_cfg_file('', $cfg);
-					$name = (isset($items['name'])) ? trim($items['name']) : false;
+		$dp = @opendir("{$phpbb_root_path}styles");
 
-					if ($name && !in_array($name, $installed))
+		if ($dp)
+		{
+			while (($file = readdir($dp)) !== false)
+			{
+				$subpath = ($mode != 'style') ? "$mode/" : '';
+				if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
+				{
+					if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
 					{
-						$new_ary[] = array(
-							'path'		=> $file,
-							'name'		=> $name,
-							'copyright'	=> $items['copyright'],
-						);
+						$items = parse_cfg_file('', $cfg);
+						$name = (isset($items['name'])) ? trim($items['name']) : false;
+
+						if ($name && !in_array($name, $installed))
+						{
+							$new_ary[] = array(
+								'path'		=> $file,
+								'name'		=> $name,
+								'copyright'	=> $items['copyright'],
+							);
+						}
 					}
 				}
 			}
+			@closedir($dp);
 		}
+
 		unset($installed);
-		@closedir($dp);
 
 		if (sizeof($new_ary))
 		{
@@ -1431,28 +1436,38 @@ parse_css_file = {PARSE_CSS_FILE}
 		$imagesetlist = array('nolang' => array(), 'lang' => array());
 
 		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
-		$dp = opendir($dir);
-		while (($file = readdir($dp)) !== false)
+		$dp = @opendir($dir);
+
+		if ($dp)
 		{
-			if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+			while (($file = readdir($dp)) !== false)
 			{
-				$dp2 = opendir("$dir/$file");
-				while (($file2 = readdir($dp2)) !== false)
+				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
 				{
-					$imglang = $file;
-					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+					$dp2 = @opendir("$dir/$file");
+
+					if (!$dp2)
 					{
-						$imagesetlist['lang'][] = "$file/$file2";
+						continue;
 					}
+
+					while (($file2 = readdir($dp2)) !== false)
+					{
+						$imglang = $file;
+						if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+						{
+							$imagesetlist['lang'][] = "$file/$file2";
+						}
+					}
+					closedir($dp2);
 				}
-				closedir($dp2);
+				else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
+				{
+					$imagesetlist['nolang'][] = $file;
+				}
 			}
-			else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
-			{
-				$imagesetlist['nolang'][] = $file;
-			}
+			closedir($dp);
 		}
-		closedir($dp);
 
 		// Make sure the list of possible images is sorted alphabetically
 		sort($imagesetlist['nolang']);

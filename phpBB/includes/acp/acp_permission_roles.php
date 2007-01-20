@@ -394,8 +394,10 @@ class acp_permission_roles
 		$s_role_options = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$role_name = (!empty($user->lang[$row['role_name']])) ? $user->lang[$row['role_name']] : $row['role_name'];
+
 			$template->assign_block_vars('roles', array(
-				'ROLE_NAME'				=> (!empty($user->lang[$row['role_name']])) ? $user->lang[$row['role_name']] : $row['role_name'],
+				'ROLE_NAME'				=> $role_name,
 				'ROLE_DESCRIPTION'		=> (!empty($user->lang[$row['role_description']])) ? $user->lang[$row['role_description']] : nl2br($row['role_description']),
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;role_id=' . $row['role_id'],
@@ -405,12 +407,12 @@ class acp_permission_roles
 				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
 			);
 
-			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $row['role_name'] . '</option>';
+			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $role_name . '</option>';
 
 			if ($display_item == $row['role_id'])
 			{
 				$template->assign_vars(array(
-					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $row['role_name']))
+					'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
 				);
 			}
 		}

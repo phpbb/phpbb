@@ -1212,24 +1212,28 @@ class acp_database
 						}
 
 						$dir = $phpbb_root_path . 'store/';
-						$dh = opendir($dir);
-						while (($file = readdir($dh)) !== false)
-						{
-							if (preg_match('#^backup_(\d{10,})_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
-							{
-								$supported = in_array($matches[2], $methods);
+						$dh = @opendir($dir);
 
-								if ($supported == 'true')
+						if ($dh)
+						{
+							while (($file = readdir($dh)) !== false)
+							{
+								if (preg_match('#^backup_(\d{10,})_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 								{
-									$template->assign_block_vars('files', array(
-										'FILE'		=> $file,
-										'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
-										'SUPPORTED'	=> $supported
-									));
+									$supported = in_array($matches[2], $methods);
+
+									if ($supported == 'true')
+									{
+										$template->assign_block_vars('files', array(
+											'FILE'		=> $file,
+											'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
+											'SUPPORTED'	=> $supported
+										));
+									}
 								}
 							}
+							closedir($dh);
 						}
-						closedir($dh);
 
 						$template->assign_vars(array(
 							'U_ACTION'	=> $this->u_action . '&amp;action=submit'

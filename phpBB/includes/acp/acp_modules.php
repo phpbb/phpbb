@@ -512,7 +512,13 @@ class acp_modules
 
 		if (!$module)
 		{
-			$dh = opendir($directory);
+			$dh = @opendir($directory);
+
+			if (!$dh)
+			{
+				return $fileinfo;
+			}
+
 			while (($file = readdir($dh)) !== false)
 			{
 				// Is module?

@@ -345,7 +345,13 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 		return false;
 	}
 
-	$dh = opendir($rootdir . $dir);
+	$dh = @opendir($rootdir . $dir);
+
+	if (!$dh)
+	{
+		return false;
+	}
+
 	while (($fname = readdir($dh)) !== false)
 	{
 		if (is_file("$rootdir$dir$fname"))
@@ -2677,9 +2683,9 @@ function add_permission_language()
 	// Now search in acp and mods folder for permissions_ files.
 	foreach (array('acp/', 'mods/') as $path)
 	{
-		$dh = opendir($user->lang_path . $path);
+		$dh = @opendir($user->lang_path . $path);
 
-		if ($dh !== false)
+		if ($dh)
 		{
 			while (($file = readdir($dh)) !== false)
 			{

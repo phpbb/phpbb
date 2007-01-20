@@ -485,15 +485,21 @@ class acp_search
 
 		$search_types = array();
 
-		$dp = opendir($phpbb_root_path . 'includes/search');
-		while (($file = readdir($dp)) !== false)
+		$dp = @opendir($phpbb_root_path . 'includes/search');
+
+		if ($dp)
 		{
-			if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
+			while (($file = readdir($dp)) !== false)
 			{
-				$search_types[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
+				if ((preg_match('#\.' . $phpEx . '$#', $file)) && ($file != "search.$phpEx"))
+				{
+					$search_types[] = preg_replace('#^(.*?)\.' . $phpEx . '$#', '\1', $file);
+				}
 			}
+			closedir($dp);
+
+			sort($search_types);
 		}
-		sort($search_types);
 
 		return $search_types;
 	}
