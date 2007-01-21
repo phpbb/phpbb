@@ -1101,7 +1101,7 @@ $lang = array_merge($lang, array(
 		$tpl .= ($textarea) ? '<textarea name="' : '<input type="text" name="';
 		$tpl .= 'entry[' . implode('][', array_map('utf8_htmlspecialchars', $keys)) . ']"';
 
-		$tpl .= ($textarea) ? ' cols="80" rows="5" style="width: 90%;">' : ' style="width: 90%" value="';
+		$tpl .= ($textarea) ? ' cols="80" rows="5" class="langvalue">' : ' class="langvalue" value="';
 		$tpl .= htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
 		$tpl .= ($textarea) ? '</textarea>' : '" />';
 

@@ -381,7 +381,6 @@ fieldset {
 	border-top: 1px solid #D5D5C8;
 	background-color: #ECECEC;	
 	position: relative;
-	z-index: 10;
 }
 legend {
 	position: absolute;
@@ -392,7 +391,6 @@ legend {
 	font-weight: bold;
 	line-height: 100%;
 	text-transform: uppercase;
-	z-index: 20;
 }
 
 fieldset p {
@@ -412,6 +410,10 @@ input {
 	padding: 2px;
 	cursor: text;
 	vertical-align: middle;
+}
+
+input.langvalue, textarea.langvalue {
+	width: 90%;
 }
 
 select {
@@ -1170,7 +1172,7 @@ fieldset.perm .perm_switch {
 	background-color: #E4E8EB; 
 }
 
-.perm_panel th a {
+.perm_panel th a:link, .perm_panel th a:hover, .perm_panel th a:visited {
 	display: block;
 	color: #FFA34F; 
 	text-decoration: underline; 
