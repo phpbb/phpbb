@@ -570,7 +570,7 @@ dd textarea {
 	width: 100%;
 }
 
-input.radio {
+input.radio, input.perm_cb {
 	width: auto !important;
 	background-color: transparent;
 	border: none;

@@ -1,4 +1,37 @@
 /**
+* Hide and show all checkboxes
+* status = true (show boxes), false (hide boxes)
+*/
+function display_checkboxes(status) 
+{
+	var form = document.getElementById('set_permissions');
+	var cb = document.getElementsByTagName('input');
+	var display;
+
+	//show
+	if (status)
+	{
+		display = 'inline';
+	}
+	//hide
+	else
+	{
+		display = 'none';
+	}
+	
+	for (var i = 0; i < cb.length; i++ )
+	{
+		if (cb[i].className == 'perm_cb')
+		{
+			cb[i].style.display = display;
+		}
+		
+	}	
+	
+}
+
+
+/**
 * Change opacity of element
 * e = element
 * value = 0 (hidden) till 10 (fully visible)
@@ -30,18 +63,34 @@ function toggle_opacity(block_id) {
 
 /**
 * Reset the opacity and checkboxes
+* value = 0 (checked) and 1 (unchecked)
+* except_id = id of the element not to hide
 */
-function reset_opacity() {
+function reset_opacity(status, except_id) {
 	var perm = document.getElementById('set_permissions');
 	var fs = perm.getElementsByTagName('fieldset');
+	var opacity = 5;
+
+	if (status)
+	{
+		opacity = 10;	
+	}
 	
 	for (var i = 0; i < fs.length; i++ )
 	{
-		set_opacity(fs[i], 10);
+		if (fs[i].className != 'quick')
+		{
+			set_opacity(fs[i], opacity);
+		}
 	}
-	
+
+	if (typeof(except_id) != 'undefined')
+	{
+		set_opacity(document.getElementById('perm' + except_id), 10);
+	}
+
 	//reset checkboxes too
-	marklist('set_permissions', 'inherit', false);
+	marklist('set_permissions', 'inherit', !status);
 }
 
 
@@ -166,7 +215,8 @@ function swap_options(pmask, fmask, cat, adv, view)
 	if (adv_block.style.display == 'block' && adv == true)
 	{
 		dE('advanced' + pmask + fmask, -1);
-		document.getElementById('checkbox' + pmask + fmask).style.display = 'inline';
+		reset_opacity(1);
+		display_checkboxes(false);
 		return;
 	}
 
@@ -180,12 +230,14 @@ function swap_options(pmask, fmask, cat, adv, view)
 	if (adv && (pmask + fmask) != (active_pmask + active_fmask))
 	{
 		init_colours(pmask + fmask);
-		reset_opacity();
+		display_checkboxes(true);
+		reset_opacity(1);
 	} 
 	else if (adv) 
 	{
 		//Checkbox might have been clicked, but we need full visibility
-		set_opacity(document.getElementById('perm' + pmask + fmask), 10);
+		display_checkboxes(true);
+		reset_opacity(1);
 	}
 
 	// set active tab
