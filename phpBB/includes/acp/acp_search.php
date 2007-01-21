@@ -532,7 +532,7 @@ class acp_search
 	/**
 	* Initialises a search backend object
 	*
-	* @return false if no error occured else an error message
+	* @return false if no error occurred else an error message
 	*/
 	function init_search($type, &$search, &$error)
 	{

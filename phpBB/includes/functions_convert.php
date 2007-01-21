@@ -301,7 +301,7 @@ function get_config_value($config_name)
 }
 
 /**
-* Convert an IP address from the hexidecimal notation to normal dotted-quad notation
+* Convert an IP address from the hexadecimal notation to normal dotted-quad notation
 */
 function decode_ip($int_ip)
 {
@@ -1207,7 +1207,7 @@ function update_folder_pm_count()
 	$db->sql_freeresult($result);
 }
 
-// Functions mainly used by the main converter script
+// Functions mainly used by the main convertor script
 
 function path($path, $path_relative = true)
 {

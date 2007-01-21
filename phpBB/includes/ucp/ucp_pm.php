@@ -239,7 +239,7 @@ class ucp_pm
 					handle_mark_actions($user->data['user_id'], $mark_option);
 				}
 
-				// If new messages arrived, place them into the appropiate folder
+				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
 
 				if ($user->data['user_new_privmsg'] && $action == 'view_folder')

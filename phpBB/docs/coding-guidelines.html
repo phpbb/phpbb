@@ -256,7 +256,7 @@ p a {
 
 	<h3>Files containing only classes:</h3>
 	
-	<p>Do not forget to comment the class. Classes need a seperate @package definition, it is the same as the header package name. Apart from this special case the above statement for files containing only functions needs to be applied to classes and it's methods too.</p>
+	<p>Do not forget to comment the class. Classes need a separate @package definition, it is the same as the header package name. Apart from this special case the above statement for files containing only functions needs to be applied to classes and it's methods too.</p>
 
 	<h3>Code following the header but only functions/classes file:</h3>
 
@@ -291,7 +291,7 @@ class ...
 	<p>The following packages are defined, and related new features/functions should be placed within the mentioned files/locations, as well as specifying the correct package name. The package names are bold within this list:</p>
 
 	<ul class="menu">
-		<li><b>phpBB3</b><br />Core files and all files not assigned to a seperate package</li>
+		<li><b>phpBB3</b><br />Core files and all files not assigned to a separate package</li>
 		<li><b>acm</b><br /><code>/includes/acm</code>, <code>/includes/cache.php</code><br />Cache System</li>
 		<li><b>acp</b><br /><code>/adm</code>, <code>/includes/acp</code>, <code>/includes/functions_admin.php</code><br />Administration Control Panel</li>
 		<li><b>dbal</b><br /><code>/includes/db</code><br />Database Abstraction Layer.<br />Base class is <code>dbal</code>
@@ -1018,7 +1018,7 @@ trigger_error($user-&gt;lang['NO_FORUM']);
 	</pre></blockquote>
 
 	<blockquote><pre>
-trigger_error('NO_APPROPIATE_MODE', E_USER_ERROR);
+trigger_error('NO_APPROPRIATE_MODE', E_USER_ERROR);
 	</pre></blockquote>
 
 	<h3>Url formatting</h3>
@@ -1089,7 +1089,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 <p><strong>Use div container/css for styling and table for data representation.</strong></p>
 
-<p>The seperate catXXXX and thXXX classes are gone. When defining a header cell just use <code>&lt;th&gt;</code> rather than <code>&lt;th class="thHead"&gt;</code> etc. Similarly for cat, don't use <code>&lt;td class="catLeft"&gt;</code> use <code>&lt;td class="cat"&gt;</code> etc.</p>
+<p>The separate catXXXX and thXXX classes are gone. When defining a header cell just use <code>&lt;th&gt;</code> rather than <code>&lt;th class="thHead"&gt;</code> etc. Similarly for cat, don't use <code>&lt;td class="catLeft"&gt;</code> use <code>&lt;td class="cat"&gt;</code> etc.</p>
 
 <p>Try to retain consistency of basic layout and class useage, i.e. _EXPLAIN text should generally be placed below the title it explains, e.g. <code>{L_POST_USERNAME}&lt;br /&gt;&lt;span class="gensmall"&gt;{L_POST_USERNAME_EXPLAIN}&lt;/span&gt;</code> is the typical way of handling this ... there may be exceptions and this isn't a hard and fast rule.</p>
 

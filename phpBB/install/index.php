@@ -600,7 +600,7 @@ class module
 	}
 
 	/**
-	* Generate the relevant HTML for an input field and the assosciated label and explanatory text
+	* Generate the relevant HTML for an input field and the associated label and explanatory text
 	*/
 	function input_field($name, $type, $value='', $options='')
 	{

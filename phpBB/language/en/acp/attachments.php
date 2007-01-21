@@ -134,11 +134,11 @@ $lang = array_merge($lang, array(
 	'SECURE_DOWNLOAD_NOTICE'		=> 'Secure Downloads are not enabled. The settings below will be applied after enabling secure downloads.',
 	'SECURE_DOWNLOAD_UPDATE_SUCCESS'=> 'The IP list has been updated successfully.',
 	'SECURE_EMPTY_REFERRER'			=> 'Allow empty referrer',
-	'SECURE_EMPTY_REFERRER_EXPLAIN'	=> 'Secure downloads are based on referrers. Do you want to allow downloads for those ommitting the referrer?',
+	'SECURE_EMPTY_REFERRER_EXPLAIN'	=> 'Secure downloads are based on referrers. Do you want to allow downloads for those omitting the referrer?',
 	'SETTINGS_CAT_IMAGES'			=> 'Image category settings',
 	'SPECIAL_CATEGORY'				=> 'Special category',
 	'SPECIAL_CATEGORY_EXPLAIN'		=> 'Special categories differ between the way presented within posts.',
-	'SUCCESSFULLY_UPLOADED'			=> 'Succeessfully uploaded',
+	'SUCCESSFULLY_UPLOADED'			=> 'Successfully uploaded',
 	'SUCCESS_EXTENSION_GROUP_ADD'	=> 'Extension group successfully added',
 	'SUCCESS_EXTENSION_GROUP_EDIT'	=> 'Extension group successfully updated',
 

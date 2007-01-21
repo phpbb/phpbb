@@ -2115,7 +2115,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 * @param	string	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
 * @param	int		$length	The desired length of the resulting text, however the result might be shorter or longer than this value
 *
-* @return	string			Context of the specified words seperated by "..."
+* @return	string			Context of the specified words separated by "..."
 */
 function get_context($text, $words, $length = 400)
 {

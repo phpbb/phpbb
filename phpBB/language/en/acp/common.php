@@ -248,21 +248,21 @@ $lang = array_merge($lang, array(
 	'PARSE_BBCODE'						=> 'Parse BBCode',
 	'PARSE_SMILIES'						=> 'Parse smilies',
 	'PARSE_URLS'						=> 'Parse links',
-	'PERMISSIONS_TRANSFERED'			=> 'Permissions transfered',
-	'PERMISSIONS_TRANSFERED_EXPLAIN'	=> 'You are currently having the permissions from %1$s. You are able to browse the forum with the users permissions but not access the administration control panel since admin permissions were not transfered. You are able to <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
+	'PERMISSIONS_TRANSFERRED'			=> 'Permissions transferred',
+	'PERMISSIONS_TRANSFERRED_EXPLAIN'	=> 'You are currently having the permissions from %1$s. You are able to browse the forum with the users permissions but not access the administration control panel since admin permissions were not transferred. You are able to <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
 	'PIXEL'							=> 'px',	
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
 	'REMIND'							=> 'Remind',
 	'REORDER'							=> 'Reorder',
-	'RESYNC'							=> 'Resyncronise',
+	'RESYNC'							=> 'Resynchronise',
 	'RETURN_TO'							=> 'Return to…',
 
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
 
 	'UCP'					=> 'User Control Panel',
-	'USERNAMES_EXPLAIN'		=> 'Place each username on a seperate line',
+	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
 	'WARNING'				=> 'Warning',
@@ -320,9 +320,9 @@ $lang = array_merge($lang, array(
 
 	'RESET_DATE'			=> 'Reset date',
 	'RESET_ONLINE'			=> 'Reset online',
-	'RESYNC_POSTCOUNTS'		=> 'Resyncronise post counts',
-	'RESYNC_POST_MARKING'	=> 'Resyncronise dotted topics',
-	'RESYNC_STATS'			=> 'Resyncronise statistics',
+	'RESYNC_POSTCOUNTS'		=> 'Resynchronise post counts',
+	'RESYNC_POST_MARKING'	=> 'Resynchronise dotted topics',
+	'RESYNC_STATS'			=> 'Resynchronise statistics',
 
 	'STATISTIC'			=> 'Statistic',
 
@@ -348,7 +348,7 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
 	'INACTIVE_USERS'				=> 'Inactive users',
-	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whos accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
+	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
 	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an email) these users if you wish.',
 
 	'NO_INACTIVE_USERS'	=> 'No inactive users',
@@ -386,7 +386,7 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<strong>Removed Moderators</strong> from %1$s<br />» %2$s',
 	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<strong>Removed User/Group forum permissions</strong> from %1$s<br />» %2$s',
 
-	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<strong>Permissions transfered from</strong><br />» %s',
+	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<strong>Permissions transferred from</strong><br />» %s',
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<strong>Own permissions restored after using permissions from</strong><br />» %s',
 	
 	'LOG_ADMIN_AUTH_FAIL'		=> '<strong>Failed administration login attempt</strong>',
@@ -466,7 +466,7 @@ $lang = array_merge($lang, array(
 	'LOG_DB_BACKUP'			=> '<strong>Database backup</strong>',
 	'LOG_DB_RESTORE'		=> '<strong>Database restore</strong>',
 
-	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<strong>Exluded IP/hostname from download list</strong><br />» %s',
+	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<strong>Excluded IP/hostname from download list</strong><br />» %s',
 	'LOG_DOWNLOAD_IP'			=> '<strong>Added IP/hostname to download list</strong><br />» %s',
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<strong>Removed IP/hostname from download list</strong><br />» %s',
 
@@ -572,9 +572,9 @@ $lang = array_merge($lang, array(
 
 	'LOG_RESET_DATE'			=> '<strong>Board start date reset</strong>',
 	'LOG_RESET_ONLINE'			=> '<strong>Most users online reset</strong>',
-	'LOG_RESYNC_POSTCOUNTS'		=> '<strong>User post counts resyncronised</strong>',
-	'LOG_RESYNC_POST_MARKING'	=> '<strong>Dotted topics resyncronised</strong>',
-	'LOG_RESYNC_STATS'			=> '<strong>Post, topic and user statistics resyncronised</strong>',
+	'LOG_RESYNC_POSTCOUNTS'		=> '<strong>User post counts resynchronised</strong>',
+	'LOG_RESYNC_POST_MARKING'	=> '<strong>Dotted topics resynchronised</strong>',
+	'LOG_RESYNC_STATS'			=> '<strong>Post, topic and user statistics resynchronised</strong>',
 
 	'LOG_STYLE_ADD'				=> '<strong>Added new style</strong><br />» %s',
 	'LOG_STYLE_DELETE'			=> '<strong>Deleted style</strong><br />» %s',

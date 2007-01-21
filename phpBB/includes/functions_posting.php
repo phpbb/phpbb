@@ -9,7 +9,7 @@
 */
 
 /**
-* Fill smiley templates (or just the variables) with smileys, either in a window or inline
+* Fill smiley templates (or just the variables) with smilies, either in a window or inline
 */
 function generate_smilies($mode, $forum_id)
 {

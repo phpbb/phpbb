@@ -112,7 +112,7 @@ class template_compile
 		// if they wish to display < and >
 		$this->remove_php_tags($code);
 
-		// Pull out all block/statement level elements and seperate plain text
+		// Pull out all block/statement level elements and separate plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->.*?<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
@@ -209,7 +209,7 @@ class template_compile
 			$template_php .= (!$no_echo) ? ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 
-		// There will be a number of occassions where we switch into and out of
+		// There will be a number of occasions where we switch into and out of
 		// PHP mode instantaneously. Rather than "burden" the parser with this
 		// we'll strip out such occurences, minimising such switching
 		$template_php = str_replace(' ?><?php ', ' ', $template_php);

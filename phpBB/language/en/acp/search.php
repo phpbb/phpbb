@@ -77,7 +77,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
 	'SEARCH_INTERVAL'						=> 'User search flood interval',
-	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independendly for each user.',
+	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independently for each user.',
 	'SEARCH_STORE_RESULTS'					=> 'Search result cache length',
 	'SEARCH_STORE_RESULTS_EXPLAIN'			=> 'Cached search results will expire after this time, in seconds. Set to 0 if you want to disable search cache.',
 	'SEARCH_TYPE'							=> 'Search backend',
@@ -90,7 +90,7 @@ $lang = array_merge($lang, array(
 	'YES_SEARCH'							=> 'Enable search facilities',
 	'YES_SEARCH_EXPLAIN'					=> 'Enables user facing search functionality including member search.',
 	'YES_SEARCH_UPDATE'						=> 'Enable fulltext updating',
-	'YES_SEARCH_UPDATE_EXPLAIN'				=> 'Updating of fulltext indexes when posting, overriden if search is disabled.',
+	'YES_SEARCH_UPDATE_EXPLAIN'				=> 'Updating of fulltext indexes when posting, overridden if search is disabled.',
 ));
 
 ?>

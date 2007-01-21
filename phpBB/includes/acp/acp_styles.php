@@ -2095,7 +2095,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			);
 		}
 
-		// User has submitted form and no errors have occured
+		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
 			$sql_ary = array(
@@ -2558,7 +2558,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$style_row['style_active'] = request_var('style_active', 1);
 		$style_row['style_default'] = request_var('style_default', 0);
 
-		// User has submitted form and no errors have occured
+		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
 			if ($mode == 'style')
@@ -2693,7 +2693,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 		}
 
-		// User has submitted form and no errors have occured
+		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
 			if ($mode == 'style')

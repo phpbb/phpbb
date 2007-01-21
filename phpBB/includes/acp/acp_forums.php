@@ -403,10 +403,8 @@ class acp_forums
 					}
 
 					// Make sure no direct child forums are able to be selected as parents.
-					$childs = get_forum_branch($forum_id, 'children');
-
 					$exclude_forums = array();
-					foreach ($childs as $row)
+					foreach (get_forum_branch($forum_id, 'children') as $row)
 					{
 						$exclude_forums[] = $row['forum_id'];
 					}

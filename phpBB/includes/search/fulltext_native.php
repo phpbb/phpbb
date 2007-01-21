@@ -166,7 +166,7 @@ class fulltext_native extends search_backend
 
 		$keywords = preg_replace($match, $replace, $keywords);
 
-		// $keywords input format: each word seperated by a space, words in a bracket are not seperated
+		// $keywords input format: each word separated by a space, words in a bracket are not separated
 
 		// the user wants to search for any word, convert the search query
 		if ($terms == 'any')

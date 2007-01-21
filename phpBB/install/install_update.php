@@ -1010,7 +1010,7 @@ class install_update extends module
 			return;
 		}
 
-		// Check for existance, else abort immediatly
+		// Check for existance, else abort immediately
 		if (!file_exists($this->old_location . $original_file) || !file_exists($this->new_location . $original_file))
 		{
 			trigger_error($user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);

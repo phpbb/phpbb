@@ -2616,7 +2616,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 * Tidy Warnings
 * Remove all warnings which have now expired from the database
 * The duration of a warning can be defined by the administrator
-* This only removes the warning and reduces the assosciated count,
+* This only removes the warning and reduces the associated count,
 * it does not remove the user note recording the contents of the warning
 */
 function tidy_warnings()

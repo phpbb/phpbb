@@ -473,7 +473,7 @@ class template
 	}
 
 	/**
-	* Include a seperate template
+	* Include a separate template
 	* @access private
 	*/
 	function _tpl_include($filename, $include = true)

@@ -38,7 +38,7 @@ class acp_email
 		{
 			// Error checking needs to go here ... if no subject and/or no message then skip 
 			// over the send and return to the form
-			$use_queue		= (isset($_POST['send_immediatly'])) ? false : true;
+			$use_queue		= (isset($_POST['send_immediately'])) ? false : true;
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
 			if (!$subject)

@@ -47,11 +47,11 @@ $lang = array_merge($lang, array(
 
 	'LANGUAGE_DETAILS_UPDATED'			=> 'Language details successfully updated.',
 	'LANGUAGE_ENTRIES'					=> 'Language entries',
-	'LANGUAGE_ENTRIES_EXPLAIN'			=> 'Here you are able to change existing language pack entries or not already translated ones.<br /><strong>Note:</strong> Once you changed a language file, the changes will be stored within a seperate folder for you to download. The changes will not be seen by your users until you replace the original language files at your webspace (by uploading them).',
+	'LANGUAGE_ENTRIES_EXPLAIN'			=> 'Here you are able to change existing language pack entries or not already translated ones.<br /><strong>Note:</strong> Once you changed a language file, the changes will be stored within a separate folder for you to download. The changes will not be seen by your users until you replace the original language files at your webspace (by uploading them).',
 	'LANGUAGE_FILES'					=> 'Language files',
 	'LANGUAGE_KEY'						=> 'Language key',
 	'LANGUAGE_PACK_ALREADY_INSTALLED'	=> 'This language pack is already installed.',
-	'LANGUAGE_PACK_DELETED'				=> 'The language pack <strong>%s</strong> has been removed successfully. All users using this language have been resetted to the boards default language.',
+	'LANGUAGE_PACK_DELETED'				=> 'The language pack <strong>%s</strong> has been removed successfully. All users using this language have been reset to the boards default language.',
 	'LANGUAGE_PACK_DETAILS'				=> 'Language pack details',
 	'LANGUAGE_PACK_INSTALLED'			=> 'The language pack <strong>%s</strong> has been successfully installed.',
 	'LANGUAGE_PACK_ISO'					=> 'ISO',

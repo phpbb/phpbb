@@ -894,7 +894,7 @@ function phpbb_convert_authentication($mode)
 		// Let us see if guests/registered users have access to these forums...
 		foreach ($parent_forums as $row)
 		{
-			// Get the childs...
+			// Get the children
 			$branch = $forum_ids = array();
 
 			foreach ($forums as $key => $_row)

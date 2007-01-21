@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 /**
 *	MODDERS PLEASE NOTE
 *	
-*	You are able to put your permission sets into a seperate file too by
+*	You are able to put your permission sets into a separate file too by
 *	prefixing the new file with permissions_ and putting it into the acp 
 *	language folder.
 *

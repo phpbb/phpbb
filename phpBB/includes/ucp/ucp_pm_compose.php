@@ -574,8 +574,6 @@ function compose_pm($id, $mode, $action)
 	// Preview
 	if (!sizeof($error) && $preview)
 	{
-		$post_time = ($action == 'edit') ? $post_time : $current_time;
-
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
 		$preview_signature = $user->data['user_sig'];

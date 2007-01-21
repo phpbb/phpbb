@@ -531,7 +531,7 @@ if (sizeof($topic_list))
 		$row = &$rowset[$topic_id];
 
 		// This will allow the style designer to output a different header
-		// or even seperate the list of announcements from sticky and normal topics
+		// or even separate the list of announcements from sticky and normal topics
 		$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 		// Replies

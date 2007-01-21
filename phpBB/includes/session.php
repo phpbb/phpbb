@@ -433,7 +433,7 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		// If no data was returned one or more of the following occured:
+		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
 		// User is inactive
@@ -1446,7 +1446,7 @@ class user extends session
 
 		// $lang == $this->lang
 		// $help == $this->help
-		// - add appropiate variables here, name them as they are used within the language file...
+		// - add appropriate variables here, name them as they are used within the language file...
 		if (!$use_db)
 		{
 			if ((include($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx")) === false)

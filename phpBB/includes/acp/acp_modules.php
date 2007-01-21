@@ -1025,14 +1025,6 @@ class acp_modules
 
 		return $this->lang_name($target['module_langname']);
 	}
-
-	/**
-	* Check if the module or her childs hold the management module(s)
-	*/
-	function is_management_module($module_id)
-	{
-		
-	}
 }
 
 ?>

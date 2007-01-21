@@ -104,7 +104,7 @@ $lang = array_merge($lang, array(
 
 	'LOAD'						=> 'Load',
 	'LOAD_DRAFT'				=> 'Load draft',
-	'LOAD_DRAFT_EXPLAIN'		=> 'Here you are able to select the draft you want to continue writing. Your current post will be canceled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
+	'LOAD_DRAFT_EXPLAIN'		=> 'Here you are able to select the draft you want to continue writing. Your current post will be cancelled, all current post contents will be deleted. View, edit and delete drafts within your User Control Panel.',
 	'LOGIN_EXPLAIN_BUMP'		=> 'You need to login in order to bump topics within this forum.',
 	'LOGIN_EXPLAIN_DELETE'		=> 'You need to login in order to delete posts within this forum.',
 	'LOGIN_EXPLAIN_POST'		=> 'You need to login in order to post within this forum.',
@@ -131,7 +131,7 @@ $lang = array_merge($lang, array(
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
 	'PHP_SIZE_NA'				=> 'The attachment’s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
-	'PHP_SIZE_OVERRUN'			=> 'The attachment’s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overriden.',
+	'PHP_SIZE_OVERRUN'			=> 'The attachment’s filesize is too large, the maximum upload size is %d MB.<br />Please note this is set in php.ini and cannot be overridden.',
 	'PLACE_INLINE'				=> 'Place inline',
 	'POLL_DELETE'				=> 'Delete poll',
 	'POLL_FOR'					=> 'Run poll for',

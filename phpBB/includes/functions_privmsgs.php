@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 
 /*
 	Ability to simply add own rules by doing three things:
-		1) Add an appropiate constant
+		1) Add an appropriate constant
 		2) Add a new check array to the global_privmsgs_rules variable and the condition array (if one is required)
 		3) Add a new language variable to ucp.php
 
@@ -313,7 +313,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 }
 
 /**
-* Place new messages into appropiate folder
+* Place new messages into appropriate folder
 */
 function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 {
@@ -347,7 +347,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			AND t.folder_id = " . PRIVMSGS_NO_BOX . '
 			AND t.msg_id = p.msg_id';
 
-	// Just place into the appropiate arrays if no rules need to be checked
+	// Just place into the appropriate arrays if no rules need to be checked
 	if (!$user_message_rules)
 	{
 		$result = $db->sql_query($retrieve_sql);
@@ -420,7 +420,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			$db->sql_freeresult($result);
 		}
 
-		// Now place into the appropiate folder
+		// Now place into the appropriate folder
 		foreach ($check_rows as $row)
 		{
 			// Add membership if set

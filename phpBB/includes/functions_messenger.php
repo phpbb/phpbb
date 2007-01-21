@@ -982,7 +982,7 @@ class smtp_class
 	{
 		fputs($this->socket, $command . "\r\n");
 
-		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Ommitting sensitive information');
+		(!$private_info) ? $this->add_backtrace("# $command") : $this->add_backtrace('# Omitting sensitive information');
 
 		// We could put additional code here
 	}

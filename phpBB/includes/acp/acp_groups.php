@@ -381,7 +381,7 @@ class acp_groups
 							$group_perm_from = request_var('group_perm_from', 0);
 
 							// Copy permissions?
-							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transfered.
+							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transferred.
 							// We do not limit on one auth category because this can lead to incomplete permissions being tricky to fix for the admin, roles being assigned or added non-default permissions.
 							// Since the user only has the option to copy permissions from non leader managed groups this seems to be a good compromise.
 							if ($group_perm_from && $action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
