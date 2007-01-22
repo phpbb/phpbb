@@ -64,6 +64,7 @@ $lang = array_merge($lang, array(
 	'DELETE_REPORT_CONFIRM'		=> 'Are you sure you want to delete the selected report?',
 	'DELETE_REPORTS'			=> 'Delete reports',
 	'DELETE_REPORTS_CONFIRM'	=> 'Are you sure you want to delete the selected reports?',
+	'DELETE_SHADOW_TOPIC'		=> 'Delete shadow topic',
 	'DELETE_TOPICS'				=> 'Delete selected topics',
 	'DELETE_TOPICS_CONFIRM'		=> 'Are you sure you want to delete these topics?',
 	'DELETE_TOPIC_CONFIRM'		=> 'Are you sure you want to delete this topic?',

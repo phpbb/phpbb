@@ -317,7 +317,7 @@ function mcp_warn_post_view($id, $mode, $action)
 */
 function mcp_warn_user_view($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
+	global $phpEx, $phpbb_root_path, $config, $module;
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);

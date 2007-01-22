@@ -21,6 +21,7 @@ class p_master
 	var $p_parent;
 
 	var $active_module = false;
+	var $active_module_row_id = false;
 	var $acl_forum_id = false;
 	var $module_ary = array();
 
@@ -217,6 +218,50 @@ class p_master
 	}
 
 	/**
+	* Check if a certain main module is accessible/loaded
+	* By giving the module mode you are able to additionally check for only one mode within the main module
+	*
+	* @param string $module_basename The module base name, for example logs, reports, main (for the mcp).
+	* @param mixed $module_mode The module mode to check. If provided the mode will be checked in addition for presence.
+	*
+	* @return bool Returns true if module is loaded and accessible, else returns false
+	*/
+	function loaded($module_basename, $module_mode = false)
+	{
+		if (empty($this->loaded_cache))
+		{
+			$this->loaded_cache = array();
+
+			foreach ($this->module_ary as $row)
+			{
+				if (!$row['name'])
+				{
+					continue;
+				}
+
+				if (!isset($this->loaded_cache[$row['name']]))
+				{
+					$this->loaded_cache[$row['name']] = array();
+				}
+
+				if (!$row['mode'])
+				{
+					continue;
+				}
+
+				$this->loaded_cache[$row['name']][$row['mode']] = true;
+			}
+		}
+
+		if ($module_mode === false)
+		{
+			return (isset($this->loaded_cache[$module_basename])) ? true : false;
+		}
+
+		return (!empty($this->loaded_cache[$module_basename][$module_mode])) ? true : false;
+	}
+
+	/**
 	* Check module authorisation
 	*/
 	function module_auth($module_auth, $forum_id = false)
@@ -319,6 +364,7 @@ class p_master
 
 				$this->module_cache['parents'] = $this->module_cache['parents'][$this->p_id];
 				$this->active_module = $item_ary['id'];
+				$this->active_module_row_id = $row_id;
 
 				break;
 			}
@@ -374,6 +420,12 @@ class p_master
 			// We pre-define the action parameter we are using all over the place
 			if (defined('IN_ADMIN'))
 			{
+				// Is first module automatically enabled a duplicate and the category not passed yet?
+				if (!$icat && $this->module_ary[$this->active_module_row_id]['is_duplicate'])
+				{
+					$icat = $this->module_ary[$this->active_module_row_id]['parent'];
+				}
+
 				// Not being able to overwrite ;)
 				$this->module->u_action = append_sid("{$phpbb_admin_path}index.$phpEx", "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
@@ -390,6 +442,12 @@ class p_master
 				}
 
 				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+			}
+
+			// Add url_extra parameter to u_action url
+			if ($this->module_ary[$this->active_module_row_id]['url_extra'])
+			{
+				$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
 			}
 
 			// Assign the module path for re-usage

@@ -13,7 +13,7 @@
 */
 function mcp_forum_view($id, $mode, $action, $forum_info)
 {
-	global $template, $db, $user, $auth, $cache;
+	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
 
 	$user->add_lang('viewtopic');
@@ -85,7 +85,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'S_CAN_MAKE_ANNOUNCE'	=> $auth->acl_get('f_announce', $forum_id),
 
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
+		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id) && $module->loaded('logs')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
 		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
 
@@ -165,6 +165,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		{
 			$topic_row = array_merge($topic_row, array(
 				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_moved_id']}"),
+				'U_DELETE_TOPIC'	=> ($auth->acl_get('m_delete', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;topic_id_list[]={$row['topic_id']}&amp;mode=forum_view&amp;action=delete_topic") : '',
 				'S_MOVED_TOPIC'		=> true,
 				'TOPIC_ID'			=> $row['topic_moved_id'],
 			));
