@@ -35,6 +35,7 @@ class acp_styles
 		$bitfield->set(11);
 		$bitfield->set(12);
 		define('TEMPLATE_BITFIELD', $bitfield->get_base64());
+		unset($bitfield);
 
 		$user->add_lang('acp/styles');
 
@@ -853,7 +854,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
 			$code = str_replace($str_from, $str_to, $code);
-			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
+			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#ism', '$1$2$3', $code);
 
 			$code = explode("\n", $code);
 
