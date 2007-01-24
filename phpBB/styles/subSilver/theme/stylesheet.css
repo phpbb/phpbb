@@ -236,11 +236,11 @@ p.topicdetails {
 }
 
 .postbody li, ol, ul {
-	margin-left: 1.5em;
+	margin: 0 0 0 1.5em;
 }
 
 .rtl .postbody li, .rtl ol, .rtl ul {
-	margin-right: 1.5em;
+	margin: 0 1.5em 0 0;
 }
 
 .posthilit {
@@ -472,11 +472,11 @@ select {
 }
 
 option {
-	padding-right: 1em;
+	padding: 0 1em 0 0;
 }
 
 .rtl option {
-	padding-left: 1em;
+	padding: 0 0 0 1em;
 }
 
 input.radio {
