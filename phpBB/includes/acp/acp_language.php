@@ -320,7 +320,16 @@ class acp_language
 					}
 
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
-					$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
+					$result = $transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
+
+					if ($result === false)
+					{
+						// If failed, try to rename again and print error out...
+						$transfer->rename($lang_path . $file . '.bak', $lang_path . $file);
+
+						trigger_error($user->lang['UPLOAD_FAILED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+					}
+
 					$transfer->close_session();
 
 					// Remove from storage folder

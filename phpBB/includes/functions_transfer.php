@@ -32,8 +32,8 @@ class transfer
 	{
 		global $phpbb_root_path;
 
-		$this->file_perms	= 644;
-		$this->dir_perms	= 777;
+		$this->file_perms	= '0644';
+		$this->dir_perms	= '0777';
 
 		// We use the store directory as temporary path to circumvent open basedir restrictions
 		$this->tmp_path = $phpbb_root_path . 'store/';
@@ -382,7 +382,7 @@ class ftp extends transfer
 		}
 		else
 		{
-			$chmod_cmd = 'CHMOD 0' . $perms . ' ' . $file;
+			$chmod_cmd = 'CHMOD ' . $perms . ' ' . $file;
 			$err = $this->_site($chmod_cmd);
 		}
 

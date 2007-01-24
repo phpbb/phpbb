@@ -87,6 +87,7 @@ $lang = array_merge($lang, array(
 
 	'UNABLE_TO_WRITE_FILE'		=> 'The file could not be written to %s.',
 	'UPLOAD_COMPLETED'			=> 'The upload was completed successfully.',
+	'UPLOAD_FAILED'				=> 'The upload failed for unkown reasons. You may need to replace the relevant file manually.',
 	'UPLOAD_METHOD'				=> 'Upload method',
 	'UPLOAD_SETTINGS'			=> 'Upload settings',
 

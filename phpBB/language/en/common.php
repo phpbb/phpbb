@@ -110,6 +110,7 @@ $lang = array_merge($lang, array(
 	'CONFIRM_CODE'			=> 'Confirmation code',
 	'CONFIRM_CODE_EXPLAIN'	=> 'Enter the code exactly as you see it in the image, it is case insensitive. Please note that a zero does not exist.',
 	'CONFIRM_CODE_WRONG'	=> 'The confirmation code you entered was incorrect.',
+	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
 	'CONGRATULATIONS'		=> 'Congratulations to',
 	'CONNECTION_FAILED'		=> 'Connection failed',
 	'CONNECTION_SUCCESS'	=> 'Connection was successful!',

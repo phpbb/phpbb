@@ -139,7 +139,7 @@ class install_convert extends module
 
 				// Let's see if there is a conversion in the works...
 				$options = array();
-				if (isset($config['convert_progress']))
+				if (!empty($config['convert_progress']) && !empty($config['convert_options']))
 				{
 					$options = unserialize($config['convert_progress']);
 					$options = array_merge($options, unserialize($config['convert_options']));

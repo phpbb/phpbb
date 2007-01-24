@@ -202,7 +202,6 @@ $lang = array_merge($lang, array(
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
-	'CONFIRM_OPERATION'		=> 'Are you sure you wish to carry out this operation?',
 
 	'DEACTIVATE'				=> 'Deactivate',
 	'DIMENSIONS'				=> 'Dimensions',

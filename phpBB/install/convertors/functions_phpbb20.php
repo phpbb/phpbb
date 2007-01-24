@@ -390,7 +390,7 @@ function phpbb_get_birthday($birthday = '')
 		$day = substr($birthday, 2, 2);
 		$year = substr($birthday, -4);
 
-		return sprintf('%02d-%02d-%04d', $day, $month, $year);
+		return sprintf('%2d-%2d-%4d', $day, $month, $year);
 	}
 	else
 	{
@@ -656,6 +656,13 @@ function phpbb_convert_authentication($mode)
 		$auth_sql .= ', {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
 
 		user_group_auth('administrators', $auth_sql);
+
+		// Put administrators into global moderators group too...
+		$auth_sql = 'SELECT ';
+		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
+		$auth_sql .= ', {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+
+		user_group_auth('global_moderators', $auth_sql);
 	}
 	else if ($mode == 'first')
 	{
@@ -801,16 +808,24 @@ function phpbb_convert_authentication($mode)
 	}
 	else if ($mode == 'second')
 	{
-		// Assign permission roles
+		// Assign permission roles and other default permissions
 
-		// By default all converted administrators are given full access
-		// @todo Review the implications of this - we might want to remove access to clear logs, view phpinfo, etc
-		mass_auth('group_role', 0, 'administrators', 'ADMIN_FULL');
-		mass_auth('group_role', 0, 'administrators', 'MOD_FULL');
+		// guests having u_download and u_search ability
+		$db->sql_query('INSERT INTO ' . ACL_GROUPS_TABLE . ' (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) SELECT ' . get_group_id('guests') . ', 0, auth_option_id, 0, 1 FROM ' . ACL_OPTIONS_TABLE . " WHERE auth_option IN ('u_', 'u_download', 'u_search')");
+
+		// administrators/global mods having full user features
 		mass_auth('group_role', 0, 'administrators', 'USER_FULL');
+		mass_auth('group_role', 0, 'global_moderators', 'USER_FULL');
+
+		// By default all converted administrators are given standard access (the founder still have full access)
+		mass_auth('group_role', 0, 'administrators', 'ADMIN_STANDARD');
 
 		// All registered users are assigned the standard user role
 		mass_auth('group_role', 0, 'registered', 'USER_STANDARD');
+		mass_auth('group_role', 0, 'registered_coppa', 'USER_STANDARD');
+
+		// Instead of administrators being global moderators we give the MOD_FULL role to global mods (admins already assigned to this group)
+		mass_auth('group_role', 0, 'global_moderators', 'MOD_FULL');
 
 		// And now those who have had their avatar rights removed get assigned a more restrictive role
 		$sql = 'SELECT user_id FROM ' . $convert->src_table_prefix . 'users

@@ -825,6 +825,9 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			AND ban_exclude = $ban_exclude";
 	$result = $db->sql_query($sql);
 
+	// Reset $sql_where, because we use it later...
+	$sql_where = '';
+
 	if ($row = $db->sql_fetchrow($result))
 	{
 		$banlist_ary_tmp = array();

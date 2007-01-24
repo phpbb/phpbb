@@ -445,7 +445,7 @@ class p_master
 			}
 
 			// Add url_extra parameter to u_action url
-			if ($this->module_ary[$this->active_module_row_id]['url_extra'])
+			if (!empty($this->module_ary) && $this->active_module !== false && $this->module_ary[$this->active_module_row_id]['url_extra'])
 			{
 				$this->module->u_action .= $this->module_ary[$this->active_module_row_id]['url_extra'];
 			}

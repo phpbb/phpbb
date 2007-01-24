@@ -58,10 +58,11 @@ $lang = array_merge($lang, array(
 	'FOUNDER'						=> 'Founder',
 	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members',
 
-	'GROUP_DEFAULT'					=> 'Default',
-	'GROUP_DELETE'					=> 'Delete',
-	'GROUP_DEMOTE'					=> 'Demote',
-	'GROUP_PROMOTE'					=> 'Promote',
+	'GROUP_APPROVE'					=> 'Approve member',
+	'GROUP_DEFAULT'					=> 'Make group default for member',
+	'GROUP_DELETE'					=> 'Remove member from group',
+	'GROUP_DEMOTE'					=> 'Demote group leader',
+	'GROUP_PROMOTE'					=> 'Promote to group leader',
 
 	'IP_WHOIS_FOR'			=> 'IP whois for %s',
 

@@ -40,17 +40,23 @@ class acp_ban
 			$ban_reason			= request_var('banreason', '', true);
 			$ban_give_reason	= request_var('bangivereason', '', true);
 
-			user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
+			if ($ban)
+			{
+				user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
 
-			trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+			}
 		}
 		else if ($unbansubmit)
 		{
 			$ban = request_var('unban', array(''));
 
-			user_unban($mode, $ban);
+			if ($ban)
+			{
+				user_unban($mode, $ban);
 
-			trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+			}
 		}
 
 		// Define language vars
