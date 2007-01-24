@@ -517,6 +517,14 @@ input.radio {
 	font-size: 1.1em;
 }
 
+.btnfile {
+	font-weight: normal;
+	background-color: #ECECEC;
+	border: 1px solid #A9B8C2;
+	padding: 1px 5px;
+	font-size: 1.1em;
+}
+
 .helpline {
 	background-color: #DEE3E7;
 	border-style: none;
