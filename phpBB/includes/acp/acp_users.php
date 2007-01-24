@@ -733,7 +733,7 @@ class acp_users
 						{
 							$sql_ary += array(
 								'user_email'		=> $update_email,
-								'user_email_hash'	=> crc32(strtolower($update_email)) . strlen($update_email)
+								'user_email_hash'	=> crc32($update_email) . strlen($update_email)
 							);
 
 							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);

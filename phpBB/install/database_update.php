@@ -627,6 +627,24 @@ if (version_compare($current_version, '3.0.b4', '<='))
 		WHERE module_class = 'acp' AND module_mode = 'version_check' AND module_auth = 'acl_a_'";
 	_sql($sql, $errored, $error_ary);
 
+	// Because the email hash could have been calculated wrongly, we will update it for every user.
+	// Since this is not used in a live environment there are not much... not used in a live environment, yes!
+	$sql = 'SELECT user_id, user_email
+		FROM ' . USERS_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['user_email'])
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_email_hash = ' . (crc32($row['user_email']) . strlen($row['user_email'])) . '
+				WHERE user_id = ' . $row['user_id'];
+			_sql($sql, $errored, $error_ary);
+		}
+	}
+	$db->sql_freeresult($result);
+
 	$no_updates = false;
 }
 

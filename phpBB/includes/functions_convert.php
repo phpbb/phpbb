@@ -1181,6 +1181,12 @@ function restore_config($schema)
 
 		if ($config_value !== '')
 		{
+			// Most are...
+			if (is_string($config_value))
+			{
+				$config_value = utf8_htmlspecialchars($config_value);
+			}
+
 			set_config($config_name, $config_value);
 		}
 	}
