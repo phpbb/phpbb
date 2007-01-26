@@ -69,7 +69,7 @@ $lang = array_merge($lang, array(
 	'CSS_COLOUR_EXPLAIN'			=> 'You can either enter a hexadecimal number for the colour or use the web safe colour swatch to select one.',
 	'CURRENT_IMAGE'					=> 'Current image',
 	'CUSTOM_CLASS'					=> 'Custom class',
-	'CUSTOM_CLASS_EXPLAIN'			=> 'You can add additional classes to this theme if you wish. You must provide the actual CSS class name below, it must be the same as that you have or will use in your template. Please remember that class names may contain only alphanumeric characters, periods (.), colons (:), dash (-) and number/hash/pound (#). The new class will be added to class selection above.',
+	'CUSTOM_CLASS_EXPLAIN'			=> 'You can add additional classes to this theme if you wish. You must provide the actual CSS class name below, it must be the same as that you have or will use in your template. Please remember that class names may contain only alphanumeric characters, periods (.), colons (:), dash (-), underscore (_) and number/hash/pound (#). The new class will be added to class selection above.',
 
 	'DEACTIVATE_DEFAULT'		=> 'You cannot deactivate the default style.',
 	'DELETE_FROM_FS'			=> 'Delete from filesystem',
@@ -394,7 +394,7 @@ $lang = array_merge($lang, array(
 	'THEME_EDITOR'				=> 'Raw CSS theme editor',
 	'THEME_EDITOR_HEIGHT'		=> 'Theme editor height',
 	'THEME_ERR_ARCHIVE'			=> 'Please select an archive method.',
-	'THEME_ERR_CLASS_CHARS'		=> 'Only alphanumeric characters plus ., :, - and # are valid in class names.',
+	'THEME_ERR_CLASS_CHARS'		=> 'Only alphanumeric characters plus ., :, -, _ and # are valid in class names.',
 	'THEME_ERR_COPY_LONG'		=> 'The copyright can be no longer than 60 characters.',
 	'THEME_ERR_NAME_CHARS'		=> 'The theme name can only contain alphanumeric characters, -, +, _ and space.',
 	'THEME_ERR_NAME_EXIST'		=> 'A theme with that name already exists.',

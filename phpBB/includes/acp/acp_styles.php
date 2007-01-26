@@ -967,7 +967,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		// Pull out a list of classes
 		$classes = array();
-		if (preg_match_all('/^([a-z0-9\.,:#> \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
+		if (preg_match_all('/^([a-z0-9\.,:#_\->* \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
 		{
 			$classes = $matches[1];
 		}
@@ -1266,14 +1266,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			else
 			{
 				// check whether the custom class name is valid
-				if (!preg_match('/^[a-z0-9#:.\- ]+$/i', $custom_class))
+				if (!preg_match('/^[a-z0-9\.,:#_\->*]+$/i', $custom_class))
 				{
 					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"), E_USER_WARNING);
 				}
 				else
 				{
 					// append an empty class definition to the stylesheet
-					$stylesheet .= "\n$custom_class\n{\n}";
+					$stylesheet .= "\n$custom_class {\n\t\n}";
 					$message = $user->lang['THEME_CLASS_ADDED'];
 				}
 			}

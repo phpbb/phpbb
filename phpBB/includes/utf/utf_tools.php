@@ -1106,9 +1106,6 @@ function utf8_clean_string($text)
 	utf_normalizer::nfc($text);
 
 	static $homographs = array(
-		"\x08"				=>	'',					// BACKSPACE => empty string
-		"\x09"				=>	"\x20",				// CHARACTER TABULATION => SPACE
-		"\x11"				=>	"\x20",				// Device Controls => SPACE
 		"\xC2\xA1"			=>	"\x69",				// EXCLAMATION MARK, INVERTED => LATIN SMALL LETTER I
 		"\xC2\xAD"			=>	'',					// HYPHEN, SOFT => empty string
 		"\xC4\x90"			=>	"\xC3\x90",			// LATIN CAPITAL LETTER D WITH STROKE => LATIN CAPITAL LETTER ETH
@@ -1178,7 +1175,6 @@ function utf8_clean_string($text)
 		"\xE1\xB4\xA8"		=>	"\xD0\xBF",			// GREEK LETTER SMALL CAPITAL PI => CYRILLIC SMALL LETTER PE
 		"\xE1\xB4\xA9"		=>	"\xE1\xB4\x98",		// GREEK LETTER SMALL CAPITAL RHO => LATIN LETTER SMALL CAPITAL P
 		"\xE1\xB4\xAB"		=>	"\xD0\xBB",			// CYRILLIC LETTER SMALL CAPITAL EL => CYRILLIC SMALL LETTER EL
-		"\xE2\x80\x81"		=>	"\x20",				// EM QUAD => SPACE
 		"\xE2\x8D\xB3"		=>	"\xC9\xA9",			// APL FUNCTIONAL SYMBOL IOTA => LATIN SMALL LETTER IOTA
 		"\xE2\x8D\xB4"		=>	"\xCF\x81",			// APL FUNCTIONAL SYMBOL RHO => GREEK SMALL LETTER RHO
 		"\xE2\x8D\xB5"		=>	"\xCF\x89",			// APL FUNCcTIONAL SYMBOL OMEGA => GREEK SMALL LETTER OMEGA
@@ -1189,9 +1185,62 @@ function utf8_clean_string($text)
 		"\xF0\x90\x8F\x93"	=>	"\xF0\x90\x8E\x93",	// OLD PERSIAN NUMBER TEN => UGARITIC LETTER AIN
 		"\xF0\x90\x92\xA0"	=>	"\xF0\x90\x92\x86",	// OSMANYA DIGIT ZERO => OSMANYA LETTER DEEL
 		"\xF0\x92\x80\xB8"	=>	"\xF0\x90\x8E\x9A",	// CUNEIFORM SIGN ASH => UGARITIC LETTER TO
+
+		"\xC2\xA0"			=>	"\x20",				// NO-BREAK SPACE
+		"\xE1\x9A\x80"		=>	"\x20",				// OGHAM SPACE MARK
+		"\xE2\x80\x80"		=>	"\x20",				// EN QUAD
+		"\xE2\x80\x81"		=>	"\x20",				// EM QUAD
+		"\xE2\x80\x82"		=>	"\x20",				// EN SPACE
+		"\xE2\x80\x83"		=>	"\x20",				// EM SPACE
+		"\xE2\x80\x84"		=>	"\x20",				// THREE-PER-EM SPACE
+		"\xE2\x80\x85"		=>	"\x20",				// FOUR-PER-EM SPACE
+		"\xE2\x80\x86"		=>	"\x20",				// SIX-PER-EM SPACE
+		"\xE2\x80\x87"		=>	"\x20",				// FIGURE SPACE
+		"\xE2\x80\x88"		=>	"\x20",				// PUNCTUATION SPACE
+		"\xE2\x80\x89"		=>	"\x20",				// THIN SPACE
+		"\xE2\x80\x8A"		=>	"\x20",				// HAIR SPACE
+		"\xE2\x80\xAF"		=>	"\x20",				// NARROW NO-BREAK SPACE
+		"\xE2\x81\x9F"		=>	"\x20",				// MEDIUM MATHEMATICAL SPACE
+		"\xE3\x80\x80"		=>	"\x20",				// IDEOGRAPHIC SPACE
+
+		"\xDB\x9D"			=>	'',					// ARABIC END OF AYAH
+		"\xDC\x8F"			=>	'',					// SYRIAC ABBREVIATION MARK
+		"\xE1\xA0\x86"		=>	'',					// MONGOLIAN TODO SOFT HYPHEN
+		"\xE1\xA0\x8E"		=>	'',					// MONGOLIAN VOWEL SEPARATOR
+		"\xE2\x80\x8B"		=>	'',					// ZERO WIDTH SPACE
+		"\xE2\x80\x8C"		=>	'',					// ZERO WIDTH NON-JOINER
+		"\xE2\x80\x8D"		=>	'',					// ZERO WIDTH JOINER
+		"\xE2\x80\xA8"		=>	'',					// LINE SEPARATOR
+		"\xE2\x80\xA9"		=>	'',					// PARAGRAPH SEPARATOR
+		"\xE2\x81\xA0"		=>	'',					// WORD JOINER
+		"\xE2\x81\xA1"		=>	'',					// FUNCTION APPLICATION
+		"\xE2\x81\xA2"		=>	'',					// INVISIBLE TIMES
+		"\xE2\x81\xA3"		=>	'',					// INVISIBLE SEPARATOR
+		"\xE2\x81\xAA"		=>	'',					// [CONTROL CHARACTERS]
+		"\xE2\x81\xAB"		=>	'',					// [CONTROL CHARACTERS]
+		"\xE2\x81\xAC"		=>	'',					// [CONTROL CHARACTERS]
+		"\xE2\x81\xAD"		=>	'',					// [CONTROL CHARACTERS]
+		"\xE2\x81\xAE"		=>	'',					// [CONTROL CHARACTERS]
+		"\xE2\x81\xAF"		=>	'',					// [CONTROL CHARACTERS]
+		"\xEF\xBB\xBF"		=>	'',					// ZERO WIDTH NO-BREAK SPACE
+		"\xEF\xBF\xB9"		=>	'',					// [CONTROL CHARACTERS]
+		"\xEF\xBF\xBA"		=>	'',					// [CONTROL CHARACTERS]
+		"\xEF\xBF\xBB"		=>	'',					// [CONTROL CHARACTERS]
+		"\xEF\xBF\xBC"		=>	'',					// [CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB3"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB4"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB5"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB6"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB7"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB8"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xB9"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
+		"\xF0\x9D\x85\xBA"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
 	);
 
 	$text = strtr($text, $homographs);
+
+	// Other control characters
+	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text)
 
 	return $text;
 }
