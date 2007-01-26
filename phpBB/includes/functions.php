@@ -403,7 +403,7 @@ if (!function_exists('stripos'))
 	* @param string $haystack is the string to search in
 	* @param string $needle is the string to search for
 	*
-	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack  string. Unlike strpos(), stripos() is case-insensitive.
+	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack string. Unlike strpos(), stripos() is case-insensitive.
 	* Note that the needle may be a string of one or more characters.
 	* If needle is not found, stripos() will return boolean FALSE. 
 	*/
@@ -3145,7 +3145,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			{
 				$tpl = '{USERNAME}';
 			}
-			else if (!$profile_url &&  $username_colour)
+			else if (!$profile_url && $username_colour)
 			{
 				$tpl = '<span style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</span>';
 			}
@@ -3731,7 +3731,7 @@ function page_footer($run_cron = true)
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' .  (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{

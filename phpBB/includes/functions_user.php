@@ -1210,7 +1210,7 @@ function validate_username($username, $allowed_username = false)
 	}
 
 	$sql = 'SELECT word
-		FROM  ' . WORDS_TABLE;
+		FROM ' . WORDS_TABLE;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1293,15 +1293,19 @@ function validate_password($password)
 /**
 * Check to see if email address is banned or already present in the DB
 *
-* @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
+* @param string $email The email to check
+* @param string $allowed_email An allowed email, default being $user->data['user_email']
+*
+* @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
-function validate_email($email)
+function validate_email($email, $allowed_email = false)
 {
 	global $config, $db, $user;
 
 	$email = strtolower($email);
+	$allowed_email = ($allowed_email === false) ? strtolower($user->data['user_email']) : strtolower($allowed_email);
 
-	if (strtolower($user->data['user_email']) == $email)
+	if ($allowed_email == $email)
 	{
 		return false;
 	}
@@ -1468,13 +1472,14 @@ function avatar_upload($data, &$error)
 
 	$destination = $config['avatar_path'];
 
-	if ($destination[sizeof($destination) - 1] == '/' || $destination[sizeof($destination) - 1] == '\\')
+	// Adjust destination path (no trailing slash)
+	if (substr($destination, -1, 1) == '/' || substr($destination, -1, 1) == '\\')
 	{
 		$destination = substr($destination, 0, -1);
 	}
 
 	$destination = str_replace(array('../', '..\\', './', '.\\'), '', $destination);
-	if ($destination && ($destination[0] == '/' || $destination[0] == '\\'))
+	if ($destination && ($destination[0] == '/' || $destination[0] == "\\"))
 	{
 		$destination = '';
 	}

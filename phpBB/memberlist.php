@@ -795,7 +795,7 @@ switch ($mode)
 				}
 
 				meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');
+				$message = ($user_id) ? sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>') : sprintf($user->lang['RETURN_TOPIC'],  '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$row['forum_id']}&amp;t=$topic_id") . '">', '</a>');
 				trigger_error($user->lang['EMAIL_SENT'] . '<br /><br />' . $message);
 			}
 		}
@@ -1118,7 +1118,7 @@ switch ($mode)
 			$sort_key = $default_key;
 		}
 
-		$order_by .= $sort_key_sql[$sort_key] . '  ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+		$order_by .= $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 		// Count the users ...
 		if ($sql_where)
@@ -1431,7 +1431,7 @@ function show_profile($data)
 		'USER_COLOR'		=> get_username_string('colour', $user_id, $username, $data['user_colour']),
 		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
 
-		'ONLINE_IMG'		=>  (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
+		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
 		'RANK_IMG_SRC'		=> $rank_img_src,

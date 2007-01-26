@@ -268,7 +268,7 @@ class acp_reasons
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . '
-					SET reason_order = ' . $order_total  . ' - reason_order
+					SET reason_order = ' . $order_total . ' - reason_order
 					WHERE reason_order IN (' . $order . ', ' . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);
 

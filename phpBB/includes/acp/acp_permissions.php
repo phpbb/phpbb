@@ -305,7 +305,7 @@ class acp_permissions
 					$s_forum_options = '';
 					foreach ($forum_list as $f_id => $f_row)
 					{
-						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 					}
 
 					// Build subforum options
@@ -488,6 +488,11 @@ class acp_permissions
 
 		foreach ($forum_list as $key => $row)
 		{
+			if ($row['disabled'])
+			{
+				continue;
+			}
+
 			$s_options .= '<option value="' . $row['forum_id'] . '"' . (($row['selected']) ? ' selected="selected"' : '') . '>' . $row['padding'] . $row['forum_name'];
 
 			// We check if a branch is there...
@@ -812,7 +817,7 @@ class acp_permissions
 
 		// Logging ... first grab user or groupnames ...
 		$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE ' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE ';
-		$sql .=  $db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
+		$sql .= $db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
 		$result = $db->sql_query($sql);
 
 		$l_ug_list = '';
@@ -831,7 +836,7 @@ class acp_permissions
 		else
 		{
 			// Grab the forum details if non-zero forum_id
-			$sql = 'SELECT forum_name  
+			$sql = 'SELECT forum_name 
 				FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);

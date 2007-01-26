@@ -52,7 +52,7 @@ class ucp_profile
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'email'				=> array(
 							array('string', false, 6, 60),
-							array('email', $data['email'])),
+							array('email')),
 						'email_confirm'		=> array('string', true, 6, 60),
 					);
 

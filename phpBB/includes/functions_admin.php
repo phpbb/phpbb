@@ -114,7 +114,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
 
-	$right = $iteration = 0;
+	$right = 0;
 	$padding_store = array('0' => '');
 	$padding = '';
 	$forum_list = ($return_array) ? array() : '';
@@ -136,41 +136,44 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		}
 
 		$right = $row['right_id'];
+		$disabled = false;
 
 		if ($acl && !$auth->acl_gets($acl, $row['forum_id']))
 		{
-			continue;
+			// List permission?
+			if ($auth->acl_get('f_list', $row['forum_id']))
+			{
+				$disabled = true;
+			}
+			else
+			{
+				continue;
+			}
 		}
 
-		if ((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || $row['forum_id'] == $ignore_id)
-		{
-			continue;
-		}
-
-		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
-		{
+		if (
+			((is_array($ignore_id) && in_array($row['forum_id'], $ignore_id)) || $row['forum_id'] == $ignore_id)
+			||
 			// Non-postable forum with no subforums, don't display
-			continue;
-		}
-
-		if ($row['forum_type'] != FORUM_POST && $ignore_nonpost)
+			($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
+			||
+			($row['forum_type'] != FORUM_POST && $ignore_nonpost)
+			)
 		{
-			continue;
+			$disabled = true;
 		}
 
 		if ($return_array)
 		{
 			// Include some more information...
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? true : false) : (($row['forum_id'] == $select_id) ? true : false);
-			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => $selected), $row);
+			$forum_list[$row['forum_id']] = array_merge(array('padding' => $padding, 'selected' => ($selected && !$disabled), 'disabled' => $disabled), $row);
 		}
 		else
 		{
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
-			$forum_list .= '<option value="' . $row['forum_id'] . '"' . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+			$forum_list .= '<option value="' . $row['forum_id'] . '"' . (($disabled) ? ' disabled="disabled"' : $selected) . '>' . $padding . $row['forum_name'] . '</option>';
 		}
-
-		$iteration++;
 	}
 	$db->sql_freeresult($result);
 	unset($padding_store);
@@ -2076,7 +2079,7 @@ function cache_moderators()
 
 		// Make sure not hidden or special groups are involved...
 		$sql = 'SELECT group_name, group_id, group_type
-			FROM  ' . GROUPS_TABLE . '
+			FROM ' . GROUPS_TABLE . '
 			WHERE ' . $db->sql_in_set('group_id', $ug_id_ary);
 		$result = $db->sql_query($sql);
 

@@ -310,7 +310,7 @@ else
 		{
 			if (!is_int($offset))
 			{
-				trigger_error('utf8_strpos:  Offset must  be an integer', E_USER_ERROR);
+				trigger_error('utf8_strpos: Offset must  be an integer', E_USER_ERROR);
 				return false;
 			}
 
@@ -583,7 +583,7 @@ else
 				$ly = (-$length) % 65535;
 
 				// negative length requires ... capture everything
-				// except a group of  -length characters
+				// except a group of -length characters
 				// anchored at the tail-end of the string
 				if ($lx)
 				{

@@ -183,7 +183,7 @@ $lang = array_merge($lang, array(
 	
 	'NO_ASSIGNED_RANK'		=> 'No special rank assigned.',
 	'NO_RANK_TITLE'			=> 'You haven’t specified a title for the rank.',
-	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated.  You will need to manually reset the rank on these accounts.',
+	'NO_UPDATE_RANKS'		=> 'The rank was successfully deleted. However user accounts using this rank were not updated. You will need to manually reset the rank on these accounts.',
 
 	'RANK_ADDED'			=> 'The rank was successfully added.',
 	'RANK_IMAGE'			=> 'Rank image',
@@ -197,7 +197,7 @@ $lang = array_merge($lang, array(
 
 // Disallow Usernames
 $lang = array_merge($lang, array(
-	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used.  Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
 	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 

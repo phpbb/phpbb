@@ -51,23 +51,6 @@ $lang = array_merge($lang, array(
 	',
 ));
 
-$lang = array_merge($lang, array(
-	'CAPTCHA' =>array(
-		'cells'		=> array(
-			'Enter the code on',
-			'  the right, in  ',
-			' the order shown ',
-			'   on the left   ',
-		),
-		'shape'		=> array(
-			'Enter the code on',
-			' the right which ',
-			'matches the image',
-			'   on the left   ',
-		)
-	)
-));
-
 // Common language entries
 $lang = array_merge($lang, array(
 	'ACCOUNT_ACTIVE'				=> 'Your account has now been activated. Thank you for registering',

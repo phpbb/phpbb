@@ -82,7 +82,7 @@ class cache extends acm
 		if (($censors = $this->get('word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
-				FROM  ' . WORDS_TABLE;
+				FROM ' . WORDS_TABLE;
 			$result = $db->sql_query($sql);
 
 			$censors = array();
@@ -388,7 +388,7 @@ class cache extends acm
 			global $db;
 
 			$sql = 'SELECT disallow_username
-				FROM  ' . DISALLOW_TABLE;
+				FROM ' . DISALLOW_TABLE;
 			$result = $db->sql_query($sql);
 
 			$usernames = array();

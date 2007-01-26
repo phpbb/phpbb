@@ -43,7 +43,7 @@ function still_on_time()
 		$max_execution_time = min(max(10, ($max_execution_time - 15)), 250);
 
 		// For debugging purposes
-		// $max_execution_time = 30;
+		$max_execution_time = 10;
 
 		global $starttime;
 		$start_time = (empty($starttime)) ? $current_time : $starttime;
@@ -1388,7 +1388,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 	}
 
 	$table = ($ug_type == 'user' || $ug_type == 'user_role') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
-	$id_field  = ($ug_type == 'user' || $ug_type == 'user_role') ? 'user_id' : 'group_id';
+	$id_field = ($ug_type == 'user' || $ug_type == 'user_role') ? 'user_id' : 'group_id';
 
 	// Role based permissions are the simplest to handle so check for them first
 	if ($ug_type == 'user_role' || $ug_type == 'group_role')

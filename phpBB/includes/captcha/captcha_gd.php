@@ -52,7 +52,7 @@ class captcha
 		mt_srand($seed);
 
 		// set background color
-		$back =  imagecolorallocate($image, mt_rand(224, 255), mt_rand(224, 255), mt_rand(224, 255));
+		$back = imagecolorallocate($image, mt_rand(224, 255), mt_rand(224, 255), mt_rand(224, 255));
 		imagefilledrectangle($image, 0, 0, $this->width, $this->height, $back);
 
 		// allocates the 216 websafe color palette to the image

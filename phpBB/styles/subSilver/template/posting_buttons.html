@@ -60,7 +60,7 @@
 				<input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" onmouseout="helpline('tip')" />
 				<input type="button" class="btnbbcode" accesskey="t" name="addlitsitem" value="[*]" style="width: 40px" onclick="bbstyle(-1)" onmouseover="helpline('e')" onmouseout="helpline('tip')" />				
 				<!-- IF S_BBCODE_IMG -->
-					<input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" onmouseout="helpline('tip')" />
+					<input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px" onclick="bbstyle(14)" onmouseover="helpline('p')" onmouseout="helpline('tip')" />
 				<!-- ENDIF -->
 				<!-- IF S_LINKS_ALLOWED -->
 					<input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" onmouseout="helpline('tip')" />
@@ -73,7 +73,7 @@
 					<option value="9">{L_FONT_SMALL}</option>
 					<option value="12" selected="selected">{L_FONT_NORMAL}</option>
 					<option value="18">{L_FONT_LARGE}</option>
-					<option  value="24">{L_FONT_HUGE}</option>
+					<option value="24">{L_FONT_HUGE}</option>
 				</select></span>
 			</td>
 		</tr>
@@ -81,7 +81,7 @@
 			<tr valign="middle" align="left">
 				<td colspan="2">
 				<!-- BEGIN custom_tags -->
-					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')"  onmouseout="helpline('tip')"<!-- ENDIF --> />
+					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')" onmouseout="helpline('tip')"<!-- ENDIF --> />
 				<!-- END custom_tags -->
 				</td>
 			</tr>

@@ -2896,7 +2896,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		);
 
 		$sql = 'INSERT INTO ' . STYLES_TABLE . '
-			' .  $db->sql_build_array('INSERT', $sql_ary);
+			' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 
 		$id = $db->sql_nextid();

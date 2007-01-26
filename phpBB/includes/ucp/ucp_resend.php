@@ -121,7 +121,7 @@ class ucp_resend
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = $user->lang['ACTIVATION_EMAIL_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message = $user->lang['ACTIVATION_EMAIL_SENT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
 

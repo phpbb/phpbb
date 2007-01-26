@@ -323,6 +323,16 @@ class auth_admin extends auth
 		if ($local)
 		{
 			$forum_names_ary = make_forum_select(false, false, true, false, false, false, true);
+
+			// Remove the disabled ones, since we do not create an option field here...
+			foreach ($forum_names_ary as $key => $value)
+			{
+				if (!$value['disabled'])
+				{
+					continue;
+				}
+				unset($forum_names_ary[$key]);
+			}
 		}
 		else
 		{
@@ -956,7 +966,7 @@ class auth_admin extends auth
 
 		$option_id_ary = array();
 		$table = ($mode == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
-		$id_field  = $mode . '_id';
+		$id_field = $mode . '_id';
 
 		$where_sql = array();
 
@@ -1069,6 +1079,19 @@ class auth_admin extends auth
 							
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
+
+			// Sort array
+			$key_array = array_intersect(array_keys($user->lang), array_map(create_function('$a', 'return "acl_" . $a;'), array_keys($cat_array['permissions'])));
+			$values_array = $cat_array['permissions'];
+
+			$cat_array['permissions'] = array();
+
+			foreach ($key_array as $key)
+			{
+				$key = str_replace('acl_', '', $key);
+				$cat_array['permissions'][$key] = $values_array[$key];
+			}
+			unset($key_array, $values_array);
 
 			@reset($cat_array['permissions']);
 			while (list($permission, $allowed) = each($cat_array['permissions']))

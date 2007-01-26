@@ -1972,7 +1972,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 	else
 	{
-		$url = ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ?  append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}") . "#p{$data['post_id']}" : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}");
+		$url = ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}") . "#p{$data['post_id']}" : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}");
 	}
 
 	return $url;

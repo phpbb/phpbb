@@ -325,6 +325,7 @@ class acp_language
 					if ($result === false)
 					{
 						// If failed, try to rename again and print error out...
+						$transfer->delete_file($lang_path . $file);
 						$transfer->rename($lang_path . $file . '.bak', $lang_path . $file);
 
 						trigger_error($user->lang['UPLOAD_FAILED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
@@ -922,7 +923,7 @@ class acp_language
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT *  
+		$sql = 'SELECT * 
 			FROM ' . LANG_TABLE . '
 			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);

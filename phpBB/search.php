@@ -148,7 +148,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
-		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
+		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
 			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
 		$not_in_fid
 		ORDER BY f.left_id";
@@ -896,7 +896,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	page_header(($l_search_title) ? $l_search_title : $user->lang['SEARCH']);
 
 	$template->set_filenames(array(
-		'body' =>  'search_results.html')
+		'body' => 'search_results.html')
 	);
 	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
@@ -908,7 +908,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, fa.user_id
 	FROM ' . FORUMS_TABLE . ' f
-	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
+	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
 		AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
 	ORDER BY f.left_id ASC";
 $result = $db->sql_query($sql);

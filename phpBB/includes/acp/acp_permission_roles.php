@@ -351,7 +351,7 @@ class acp_permission_roles
 				$order_total = $order * 2 + (($action == 'move_up') ? -1 : 1);
 
 				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
-					SET role_order = ' . $order_total  . " - role_order
+					SET role_order = ' . $order_total . " - role_order
 					WHERE role_type = '" . $db->sql_escape($permission_type) . "'
 						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
 				$db->sql_query($sql);

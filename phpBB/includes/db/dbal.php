@@ -498,7 +498,7 @@ class dbal
 				$backtrace = get_backtrace();
 
 				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />'  . $backtrace : '';
+				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />' . $backtrace : '';
 				$message .= '<br />';
 			}
 			else

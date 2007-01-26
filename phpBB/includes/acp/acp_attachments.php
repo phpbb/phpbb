@@ -198,7 +198,7 @@ class acp_attachments
 					$value = ($row['site_ip']) ? $row['site_ip'] : $row['site_hostname'];
 					if ($value)
 					{
-						$defined_ips .=  '<option' . (($row['ip_exclude']) ? ' class="sep"' : '') . ' value="' . $row['site_id'] . '">' . $value . '</option>';
+						$defined_ips .= '<option' . (($row['ip_exclude']) ? ' class="sep"' : '') . ' value="' . $row['site_id'] . '">' . $value . '</option>';
 						$ips[$row['site_id']] = $value;
 					}
 				}

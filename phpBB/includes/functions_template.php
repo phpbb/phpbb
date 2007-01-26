@@ -214,7 +214,7 @@ class template_compile
 		// we'll strip out such occurences, minimising such switching
 		$template_php = str_replace(' ?><?php ', ' ', $template_php);
 
-		return  (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
+		return (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
 	}
 
 	/**
@@ -328,7 +328,7 @@ class template_compile
 		if (sizeof($block) < 2)
 		{
 			// Block is not nested.
-			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$this->_tpldata['$tag_args'])) ?  sizeof(\$this->_tpldata['$tag_args']) : 0;";
+			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$this->_tpldata['$tag_args'])) ? sizeof(\$this->_tpldata['$tag_args']) : 0;";
 			$varref = "\$this->_tpldata['$tag_args']";
 		}
 		else

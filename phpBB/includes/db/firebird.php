@@ -277,7 +277,7 @@ class dbal_firebird extends dbal
 			{
 				$sql = "SELECT GEN_ID(" . $tablename[1] . "_gen, 0) AS new_id FROM RDB\$DATABASE";
 
-				if (!($temp_q_id =  @ibase_query($this->db_connect_id, $sql)))
+				if (!($temp_q_id = @ibase_query($this->db_connect_id, $sql)))
 				{
 					return false;
 				}

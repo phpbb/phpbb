@@ -168,7 +168,7 @@ $lang = array_merge($lang, array(
 	'GPL'						=> 'General Public License',
 	
 	'INITIAL_CONFIG'			=> 'Basic configuration',
-	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or  use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
+	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
 	'INSTALL_CONGRATS'			=> 'Congratulations',
 	'INSTALL_CONGRATS_EXPLAIN'	=> 'You have now successfully installed phpBB 3.0. Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the <a href="http://www.phpbb.com/support/documentation/3.0/">Userguide</a> and the <a href="http://www.phpbb.com/phpBB/viewforum.php?f=46">Beta support forum</a>, see the %sREADME%s for further information.<br /><br /><strong>Please now delete, move or rename the install directory before you use your forum. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.</strong>',
 	'INSTALL_INTRO'				=> 'Welcome to Installation',

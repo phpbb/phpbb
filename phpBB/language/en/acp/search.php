@@ -81,7 +81,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_STORE_RESULTS'					=> 'Search result cache length',
 	'SEARCH_STORE_RESULTS_EXPLAIN'			=> 'Cached search results will expire after this time, in seconds. Set to 0 if you want to disable search cache.',
 	'SEARCH_TYPE'							=> 'Search backend',
-	'SEARCH_TYPE_EXPLAIN'					=> 'phpBB allows you to choose the backend that is used for searching text in post contents. By default the search  will use phpBB’s own fulltext search.',
+	'SEARCH_TYPE_EXPLAIN'					=> 'phpBB allows you to choose the backend that is used for searching text in post contents. By default the search will use phpBB’s own fulltext search.',
 	'SWITCHED_SEARCH_BACKEND'				=> 'You switched the search backend. In order to use the new search backend you should make sure that there is an index for the backend you chose.',
 
 	'TOTAL_WORDS'							=> 'Total number of indexed words',

@@ -1704,10 +1704,11 @@ class install_convert extends module
 	*/
 	function meta_refresh($url)
 	{
-		global $convert;
+		global $convert, $template;
 
 		if ($convert->options['refresh'])
 		{
+			$template->assign_var('S_REFRESH', true);
 			meta_refresh(5, $url);
 		}
 	}

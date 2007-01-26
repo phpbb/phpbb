@@ -141,7 +141,7 @@ class acp_database
 						$sql_data .= "#\n";
 						$sql_data .= "# phpBB Backup Script\n";
 						$sql_data .= "# Dump of tables for $table_prefix\n";
-						$sql_data .= "# DATE : " .  gmdate("d-m-Y H:i:s", $time) . " GMT\n";
+						$sql_data .= "# DATE : " . gmdate("d-m-Y H:i:s", $time) . " GMT\n";
 						$sql_data .= "#\n";
 
 						switch ($db->sql_layer)
@@ -1715,7 +1715,7 @@ class acp_database
 
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
+				$sql = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
 					FROM RDB$RELATION_FIELDS R
 					JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE=F.RDB$FIELD_NAME
 					LEFT JOIN RDB$FIELD_DIMENSIONS D ON R.RDB$FIELD_SOURCE = D.RDB$FIELD_NAME
@@ -1756,7 +1756,7 @@ class acp_database
 				$sql_data .= "\n);;\n";
 				$keys = array();
 
-				$sql  = 'SELECT I.RDB$FIELD_NAME as NAME
+				$sql = 'SELECT I.RDB$FIELD_NAME as NAME
 					FROM RDB$RELATION_CONSTRAINTS RC, RDB$INDEX_SEGMENTS I, RDB$INDICES IDX
 					WHERE (I.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
 						AND (IDX.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
@@ -1849,7 +1849,7 @@ class acp_database
 			case 'oracle':
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
+				$sql = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
 					FROM ALL_TAB_COLS
 					WHERE table_name = '{$table_name}'";
 				$result = $db->sql_query($sql);

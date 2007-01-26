@@ -383,7 +383,7 @@ class ucp_register
 					}
 				}
 
-				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 				trigger_error($message);
 			}
 		}
@@ -417,7 +417,7 @@ class ucp_register
 
 					if (sizeof($sql_in))
 					{
-						$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
+						$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
 							WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
 								AND confirm_type = ' . CONFIRM_REG;
 						$db->sql_query($sql);

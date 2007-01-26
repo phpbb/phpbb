@@ -92,7 +92,7 @@ class session
 		// The script path from the webroot to the phpBB root (for example: /phpBB2/)
 		$script_dirs = explode('/', $script_path);
 		array_splice($script_dirs, -sizeof($page_dirs));
-		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ?  '/' . implode('/', $root_dirs) : '');
+		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ? '/' . implode('/', $root_dirs) : '');
 
 		// We are on the base level (phpBB root == webroot), lets adjust the variables a bit...
 		if (!$root_script_path)

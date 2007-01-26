@@ -112,7 +112,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I edit or delete a post?',
-		1 => 'Unless you are the board admin or forum moderator you can only edit or delete your own posts. You can edit a post (sometimes for only a limited time after it was made) by clicking the <em>edit</em> button for the relevant post.  If someone has already replied to the post you will find a small piece of text output below the post when you return to the topic, which lists the number of times you edited it along with when. This will not appear if no one has replied, nor will not appear if moderators or administrators edit the post though they may leave a note as to why they’ve edited the post at their own disgression. Please note that normal users cannot delete a post once someone has replied.'
+		1 => 'Unless you are the board admin or forum moderator you can only edit or delete your own posts. You can edit a post (sometimes for only a limited time after it was made) by clicking the <em>edit</em> button for the relevant post. If someone has already replied to the post you will find a small piece of text output below the post when you return to the topic, which lists the number of times you edited it along with when. This will not appear if no one has replied, nor will not appear if moderators or administrators edit the post though they may leave a note as to why they’ve edited the post at their own disgression. Please note that normal users cannot delete a post once someone has replied.'
 	),
 	array(
 		0 => 'How do I add a signature to my post?',
@@ -320,7 +320,7 @@ $help = array(
 	),
 	array(
 		0 => 'Who wrote this bulletin board?',
-		1 => 'This software (in its unmodified form) is produced, released and is copyright  <a href="http://www.phpbb.com/" target="_blank">phpBB Group</a>. It is made available under the GNU General Public Licence and may be freely distributed, see link for more details'
+		1 => 'This software (in its unmodified form) is produced, released and is copyright <a href="http://www.phpbb.com/">phpBB Group</a>. It is made available under the GNU General Public Licence and may be freely distributed, see link for more details'
 	),
 	array(
 		0 => 'Why isn’t X feature available?',

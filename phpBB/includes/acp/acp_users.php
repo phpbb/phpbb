@@ -127,7 +127,7 @@ class acp_users
 			}
 			
 			$selected = ($mode == $value) ? ' selected="selected"' : '';
-			$s_form_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($value)]  . '</option>';
+			$s_form_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($value)] . '</option>';
 		}
 
 		$template->assign_vars(array(
@@ -651,7 +651,7 @@ class acp_users
 							'email'				=> array(
 								array('string', false, 6, 60),
 								array('email', $user_row['user_email'])
-								), 
+							),
 							'email_confirm'		=> array('string', true, 6, 60)
 						);
 					}
@@ -806,7 +806,7 @@ class acp_users
 				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
 				foreach ($quick_tool_ary as $value => $lang)
 				{
-					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang]  . '</option>';
+					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
 				}
 
 				if ($config['load_onlinetrack'])
@@ -1917,14 +1917,7 @@ class acp_users
 				}
 
 				$s_forum_options = '<option value="0"' . ((!$forum_id) ? ' selected="selected"' : '') . '>' . $user->lang['VIEW_GLOBAL_PERMS'] . '</option>';
-
-				$forum_list = make_forum_select($forum_id, false, true, false, false, false, true);
-
-				// Build forum options
-				foreach ($forum_list as $f_id => $f_row)
-				{
-					$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
-				}
+				$s_forum_options .= make_forum_select($forum_id, false, true, false, false, false);
 
 				$template->assign_vars(array(
 					'S_PERMISSIONS'				=> true,

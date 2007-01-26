@@ -52,7 +52,7 @@ class transfer
 		// ftp functions can only move files around and can't create.
 		// This means that the users will need to have access to write
 		// temporary files or have write access on a folder within phpBB
-		// like the cache folder.  If the user can't do either, then
+		// like the cache folder. If the user can't do either, then
 		// he/she needs to use the fsock ftp method
 		$temp_name = tempnam($this->tmp_path, 'transfer_');
 		@unlink($temp_name);
