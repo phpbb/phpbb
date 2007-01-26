@@ -1240,7 +1240,7 @@ function utf8_clean_string($text)
 	$text = strtr($text, $homographs);
 
 	// Other control characters
-	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text)
+	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
 
 	return $text;
 }
