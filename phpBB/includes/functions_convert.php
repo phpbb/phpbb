@@ -43,7 +43,7 @@ function still_on_time()
 		$max_execution_time = min(max(10, ($max_execution_time - 15)), 250);
 
 		// For debugging purposes
-		$max_execution_time = 10;
+		// $max_execution_time = 10;
 
 		global $starttime;
 		$start_time = (empty($starttime)) ? $current_time : $starttime;
