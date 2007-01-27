@@ -524,7 +524,7 @@ function topic_generate_pagination($replies, $url)
 			}
 			else if ($times < $total_pages)
 			{
-				$pagination .= '<span class="page-sep">' . $user->lang['PAGINATION_SEPERATOR'] . '</span>';
+				$pagination .= '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
 			}
 			$times++;
 		}
