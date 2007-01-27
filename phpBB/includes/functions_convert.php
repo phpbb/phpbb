@@ -8,17 +8,14 @@
 *
 */
 
-/*
-* @todo Make all spellings consistant with those in the main code (eg smilie, etc) as there are several used
+/**
+* Default avatar width/height
+* @ignore
 */
-
-// Default avatar width/height
 define('DEFAULT_AVATAR_X', 80);
 define('DEFAULT_AVATAR_Y', 80);
 
-/**
-* Global functions - all functions can be used by convertors
-*/
+// Global functions - all functions can be used by convertors
 
 /**
 * Determine whether we are approaching the maximum execution time
@@ -1055,10 +1052,9 @@ function add_user_group($group_id, $user_id, $group_leader=false)
 
 /**
 * Add users to the pre-defined "special" groups
+*
 * @param string $group The name of the special group to add to
 * @param string $select_query An SQL query to retrieve the user(s) to add to the group
-*
-* @todo Is this perhaps misnamed? It doesn't appear to directly have anything to do with auth
 */
 function user_group_auth($group, $select_query)
 {

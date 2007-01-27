@@ -30,6 +30,10 @@ if (!empty($setmodules))
 	);
 }
 
+/**
+* Class holding all convertor-specific details.
+* @package install
+*/
 class convert
 {
 	var $options = array();
@@ -63,6 +67,10 @@ class convert
 	}
 }
 
+/**
+* Convert class for conversions
+* @package install
+*/
 class install_convert extends module
 {
 	/**

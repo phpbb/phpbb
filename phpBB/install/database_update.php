@@ -1289,6 +1289,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 
 /**
 * Add search robots to the database
+* @ignore
 */
 function add_bots()
 {

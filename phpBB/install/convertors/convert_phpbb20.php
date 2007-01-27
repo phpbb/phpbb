@@ -143,7 +143,7 @@ if (!$get_info)
 {
 	// Test to see if the birthday MOD is installed on the source forum
 	// Niels' birthday mod
-	if (get_config_value('birthday_required') !== false)
+	if (get_config_value('birthday_required') !== false || get_config_value('bday_required') !== false)
 	{
 		define('MOD_BIRTHDAY', true);
 	}
@@ -151,7 +151,6 @@ if (!$get_info)
 	// TerraFrost's validated birthday mod
 	if (get_config_value('bday_required') !== false)
 	{
-		define('MOD_BIRTHDAY', true);
 		define('MOD_BIRTHDAY_TERRA', true);
 	}
 
