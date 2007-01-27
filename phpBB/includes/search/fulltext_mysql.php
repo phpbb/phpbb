@@ -786,6 +786,28 @@ class fulltext_mysql extends search_backend
 		$this->stats['total_posts'] = (int) $db->sql_fetchfield('total_posts');
 		$db->sql_freeresult($result);
 	}
+
+	/**
+	* Display a note, that UTF-8 support is not available with certain versions of PHP
+	*/
+	function acp()
+	{
+		global $user, $config;
+
+
+		$tpl = '
+		<dl>
+			<dt><label>' . $user->lang['FULLTEXT_MYSQL_UNICODE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_UNICODE_EXPLAIN'] . '</span></dt>
+			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
+		</dl>
+		';
+
+		// These are fields required in the config table
+		return array(
+			'tpl'		=> $tpl,
+			'config'	=> array()
+		);
+	}
 }
 
 ?>
