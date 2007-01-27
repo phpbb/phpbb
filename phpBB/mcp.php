@@ -373,14 +373,14 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
+			POSTS_TABLE		=> 'p',
 			TOPICS_TABLE	=> 't',
-			POSTS_TABLE		=> 'p'
 		),
 
 		'LEFT_JOIN'	=> array(
 			array(
 				'FROM'	=> array(FORUMS_TABLE => 'f'),
-				'ON'	=> 'f.forum_id = p.forum_id'
+				'ON'	=> 'f.forum_id = t.forum_id'
 			)
 		),
 
