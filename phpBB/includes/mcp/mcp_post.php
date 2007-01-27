@@ -22,7 +22,7 @@ function mcp_post_details($id, $mode, $action)
 	$start	= request_var('start', 0);
 
 	// Get post data
-	$post_info = get_post_data(array($post_id));
+	$post_info = get_post_data(array($post_id), false, true);
 
 	if (!sizeof($post_info))
 	{
@@ -91,6 +91,21 @@ function mcp_post_details($id, $mode, $action)
 	// Set some vars
 	$users_ary = $usernames_ary = array();
 	$post_id = $post_info['post_id'];
+	$topic_tracking_info = array();
+
+	// Get topic tracking info
+	if ($config['load_db_lastread'])
+	{
+		$tmp_topic_data = array($post_info['topic_id'] => $post_info);
+		$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
+		unset($tmp_topic_data);
+	}
+	else
+	{
+		$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+	}
+
+	$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
 	// Process message, leave it uncensored
 	$message = $post_info['post_text'];
@@ -127,7 +142,9 @@ function mcp_post_details($id, $mode, $action)
 		'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 		'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 		'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
-		
+
+		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
+
 		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),

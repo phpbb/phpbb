@@ -82,7 +82,7 @@ class mcp_queue
 					}
 				}
 
-				$post_info = get_post_data(array($post_id), 'm_approve');
+				$post_info = get_post_data(array($post_id), 'm_approve', true);
 
 				if (!sizeof($post_info))
 				{
@@ -98,6 +98,21 @@ class mcp_queue
 						'TOPIC_TITLE'		=> $post_info['topic_title'])
 					);
 				}
+
+				$topic_tracking_info = array();
+				// Get topic tracking info
+				if ($config['load_db_lastread'])
+				{
+					$tmp_topic_data = array($post_info['topic_id'] => $post_info);
+					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
+					unset($tmp_topic_data);
+				}
+				else
+				{
+					$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+				}
+
+				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
@@ -129,6 +144,8 @@ class mcp_queue
 					'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_POST'			=> $post_url,
 					'U_VIEW_TOPIC'			=> $topic_url,
+
+					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 
 					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
 					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),

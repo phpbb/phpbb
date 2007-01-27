@@ -145,7 +145,7 @@ class mcp_main
 
 				$forum_id = request_var('f', 0);
 
-				$forum_info = get_forum_data($forum_id, 'm_');
+				$forum_info = get_forum_data($forum_id, 'm_', true);
 
 				if (!sizeof($forum_info))
 				{

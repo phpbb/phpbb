@@ -99,8 +99,18 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$topic_rows = array();
 
-	$sql = 'SELECT t.*
-		FROM ' . TOPICS_TABLE . " t
+	if ($config['load_db_lastread'])
+	{
+		$read_tracking_join = ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')';
+		$read_tracking_select = ', tt.mark_time';
+	}
+	else
+	{
+		$read_tracking_join = $read_tracking_select = '';
+	}
+
+	$sql = "SELECT t.*$read_tracking_select
+		FROM " . TOPICS_TABLE . " t $read_tracking_join
 		WHERE (t.forum_id = $forum_id OR t.forum_id = 0)
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
@@ -109,19 +119,40 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$topic_rows[] = $row;
+		$topic_rows[$row['topic_id']] = $row;
+		$topic_list[] = $row['topic_id'];
 	}
 	$db->sql_freeresult($result);
 
-	foreach ($topic_rows as $row)
+	$topic_tracking_info = array();
+	// Get topic tracking info
+	if ($config['load_db_lastread'])
+	{
+		$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
+	}
+	else
+	{
+		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, array());
+	}
+
+	foreach ($topic_rows as $topic_id => $row)
 	{
 		$topic_title = '';
 
 		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
+		if ($row['topic_status'] == ITEM_MOVED)
+		{
+			$unread_topic = false;
+		}
+		else
+		{
+			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+		}
+
 		// Get folder img, topic status/type related information
 		$folder_img = $folder_alt = $topic_type = '';
-		topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
+		topic_status($row, $replies, $unread_topic, $folder_img, $folder_alt, $topic_type);
 
 		$topic_title = censor_text($row['topic_title']);
 
@@ -159,6 +190,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
+			'S_UNREAD_TOPIC'		=> $unread_topic,
 		);
 
 		if ($row['topic_status'] == ITEM_MOVED)

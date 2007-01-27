@@ -83,7 +83,7 @@ class mcp_reports
 					$post_id = $report['post_id'];
 				}
 
-				$post_info = get_post_data(array($post_id), 'm_report');
+				$post_info = get_post_data(array($post_id), 'm_report', true);
 
 				if (!sizeof($post_info))
 				{
@@ -107,13 +107,27 @@ class mcp_reports
 					);
 				}
 
+				$topic_tracking_info = array();
+				// Get topic tracking info
+				if ($config['load_db_lastread'])
+				{
+					$tmp_topic_data = array($post_info['topic_id'] => $post_info);
+					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
+					unset($tmp_topic_data);
+				}
+				else
+				{
+					$topic_tracking_info = get_complete_topic_tracking($post_info['forum_id'], $post_info['topic_id']);
+				}
+
+				$post_unread = (isset($topic_tracking_info[$post_info['topic_id']]) && $post_info['post_time'] > $topic_tracking_info[$post_info['topic_id']]) ? true : false;
+
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
 				$message = str_replace("\n", '<br />', $message);
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
-
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
@@ -139,6 +153,7 @@ class mcp_reports
 					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
 					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 
 					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),

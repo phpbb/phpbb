@@ -21,7 +21,7 @@ function mcp_topic_view($id, $mode, $action)
 	$user->add_lang('viewtopic');
 
 	$topic_id = request_var('t', 0);
-	$topic_info = get_topic_data(array($topic_id));
+	$topic_info = get_topic_data(array($topic_id), false, true);
 
 	if (!sizeof($topic_info))
 	{
@@ -118,6 +118,20 @@ function mcp_topic_view($id, $mode, $action)
 		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
+	$topic_tracking_info = array();
+
+	// Get topic tracking info
+	if ($config['load_db_lastread'])
+	{
+		$tmp_topic_data = array($topic_id => $topic_info);
+		$topic_tracking_info = get_topic_tracking($topic_info['forum_id'], $topic_id, $tmp_topic_data, array($topic_info['forum_id'] => $topic_info['forum_mark_time']));
+		unset($tmp_topic_data);
+	}
+	else
+	{
+		$topic_tracking_info = get_complete_topic_tracking($topic_info['forum_id'], $topic_id);
+	}
+
 	foreach ($rowset as $i => $row)
 	{
 		$has_unapproved_posts = false;
@@ -138,6 +152,8 @@ function mcp_topic_view($id, $mode, $action)
 			$has_unapproved_posts = true;
 		}
 
+		$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+
 		$template->assign_block_vars('postrow', array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
@@ -150,7 +166,7 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_ID'		=> $row['post_id'],
 			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
 
-			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_target_unread', $user->lang['NEW_POST']) : $user->img('icon_post_target', $user->lang['POST']),
+			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
