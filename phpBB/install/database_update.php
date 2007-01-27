@@ -411,7 +411,7 @@ $errored = false;
 	<p><?php echo $lang['DATABASE_TYPE']; ?> :: <strong><?php echo $db->sql_layer; ?></strong><br />
 <?php
 
-// To let set_config() calls success, we need to make the config array available globally
+// To let set_config() calls succeed, we need to make the config array available globally
 $config = array();
 $sql = 'SELECT *
 	FROM ' . CONFIG_TABLE;
@@ -627,21 +627,26 @@ if (version_compare($current_version, '3.0.b4', '<='))
 		WHERE module_class = 'acp' AND module_mode = 'version_check' AND module_auth = 'acl_a_'";
 	_sql($sql, $errored, $error_ary);
 
-	// Because the email hash could have been calculated wrongly, we will update it for every user.
+	// Because the email hash could have been calculated wrongly as well as the clean string function changed, 
+	// we will update it for every user.
+
 	// Since this is not used in a live environment there are not much... not used in a live environment, yes!
-	$sql = 'SELECT user_id, user_email
+	$sql = 'SELECT user_id, user_email, username
 		FROM ' . USERS_TABLE;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET username_clean = '" . $db->sql_escape(utf8_clean_string($row['username'])) . "'";
+		
 		if ($row['user_email'])
 		{
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_email_hash = ' . (crc32($row['user_email']) . strlen($row['user_email'])) . '
-				WHERE user_id = ' . $row['user_id'];
-			_sql($sql, $errored, $error_ary);
+			$sql .= ', user_email_hash = ' . (crc32($row['user_email']) . strlen($row['user_email']));
 		}
+
+		$sql .= ' WHERE user_id = ' . $row['user_id'];
+		_sql($sql, $errored, $error_ary);
 	}
 	$db->sql_freeresult($result);
 
@@ -1354,6 +1359,12 @@ function add_bots()
 				WHERE " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 		}
+	}
+	else
+	{
+		// If the old bots are missing we can safely assume the user tries to execute the database update twice and
+		// fiddled around...
+		return;
 	}
 
 	if (!function_exists('user_add'))

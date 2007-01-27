@@ -416,10 +416,11 @@ class install_install extends module
 			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
 			if ($fp !== false)
 			{
-				@unlink($phpbb_root_path . $dir . 'test_lock');
 				$write = true;
 			}
 			@fclose($fp);
+
+			@unlink($phpbb_root_path . $dir . 'test_lock');
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 

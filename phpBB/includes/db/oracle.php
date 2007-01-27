@@ -46,7 +46,7 @@ class dbal_oracle extends dbal
 	*/
 	function sql_server_info()
 	{
-		return 'Oracle ' . @ociserverversion($this->db_connect_id);
+		return @ociserverversion($this->db_connect_id);
 	}
 
 	/**
