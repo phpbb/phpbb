@@ -464,7 +464,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 		$read_tracking_join = $read_tracking_select = '';
 	}
 
-	$sql = "SELECT * $read_tracking_select
+	$sql = "SELECT f.* $read_tracking_select
 		FROM " . FORUMS_TABLE . " f$read_tracking_join
 		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
 	$result = $db->sql_query($sql);
