@@ -52,6 +52,7 @@ class filespec
 		$this->filesize = $upload_ary['size'];
 		$name = trim(htmlspecialchars(basename($upload_ary['name'])));
 		$this->realname = $this->uploadname = (STRIP) ? stripslashes($name) : $name;
+		$this->mimetype = $upload_ary['type'];
 
 		// Opera adds the name to the mime type
 		$this->mimetype	= (strpos($this->mimetype, '; name') !== false) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
@@ -186,6 +187,7 @@ class filespec
 
 	/**
 	* Get mimetype. Utilize mime_content_type if the function exist.
+	* Not used at the moment...
 	*/
 	function get_mimetype($filename)
 	{
