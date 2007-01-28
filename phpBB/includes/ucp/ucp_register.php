@@ -122,9 +122,8 @@ class ucp_register
 
 		$data = array(
 			'username'			=> request_var('username', '', true),
-			'password_confirm'	=> request_var('password_confirm', '', true),
 			'new_password'		=> request_var('new_password', '', true),
-			'cur_password'		=> request_var('cur_password', '', true),
+			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),
 			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 			'confirm_code'		=> request_var('confirm_code', ''),

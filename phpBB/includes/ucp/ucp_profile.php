@@ -11,6 +11,8 @@
 /**
 * ucp_profile
 * Changing profile settings
+*
+* @todo what about pertaining user_sig_options?
 * @package ucp
 */
 class ucp_profile
@@ -403,22 +405,23 @@ class ucp_profile
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
-				$enable_urls	= request_var('enable_urls', true);
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
+				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
 				if ($submit || $preview)
 				{
-					include($phpbb_root_path . 'includes/message_parser.'.$phpEx);
+					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 					if (!sizeof($error))
 					{
 						$message_parser = new parse_message($signature);
 
 						// Allowing Quote BBCode
-						$message_parser->parse($enable_bbcode, ($config['allow_sig_links']) ? $enable_urls : false, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
-						
+						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
+
 						if (sizeof($message_parser->warn_msg))
 						{
 							$error[] = implode('<br />', $message_parser->warn_msg);
@@ -441,7 +444,7 @@ class ucp_profile
 							trigger_error($message);
 						}
 					}
-	
+
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
@@ -461,9 +464,9 @@ class ucp_profile
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
-					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? 'checked="checked"' : '',
-					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? 'checked="checked"' : '',
-					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? 'checked="checked"' : '',
+					'S_BBCODE_CHECKED' 		=> (!$enable_bbcode) ? ' checked="checked"' : '',
+					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? ' checked="checked"' : '',
+					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? ' checked="checked"' : '',
 
 					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],

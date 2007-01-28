@@ -1477,10 +1477,10 @@ class acp_users
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
-				$enable_urls	= request_var('enable_urls', true);
-				$signature		= utf8_normalize_nfc(request_var('signature', $user_row['user_sig'], true));
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
+				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user_row['user_sig'], true));
 
 				$preview		= (isset($_POST['preview'])) ? true : false;
 
@@ -1491,7 +1491,7 @@ class acp_users
 					$message_parser = new parse_message($signature);
 
 					// Allowing Quote BBCode
-					$message_parser->parse($enable_bbcode, ($config['allow_sig_links']) ? $enable_urls : false, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
+					$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
 						
 					if (sizeof($message_parser->warn_msg))
 					{
@@ -1535,9 +1535,9 @@ class acp_users
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
 
-					'S_BBCODE_CHECKED'		=> (!$enable_bbcode) ? 'checked="checked"' : '',
-					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? 'checked="checked"' : '',
-					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? 'checked="checked"' : '',
+					'S_BBCODE_CHECKED'		=> (!$enable_bbcode) ? ' checked="checked"' : '',
+					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? ' checked="checked"' : '',
+					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? ' checked="checked"' : '',
 
 					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
