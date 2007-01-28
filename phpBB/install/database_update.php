@@ -436,7 +436,7 @@ if ($inline_update)
 {
 	if ($current_version !== $latest_version)
 	{
-		set_config('version_update_from', $row['config_value']);
+		set_config('version_update_from', $orig_version);
 	}
 }
 else
@@ -719,7 +719,7 @@ else
 {
 ?>
 
-	<p><?php echo $lang['CONTINUE_INLINE_UPDATE']; ?></p>
+	<p><?php echo ((isset($lang['CONTINUE_INLINE_UPDATE'])) ? $lang['CONTINUE_INLINE_UPDATE'] : 'The database update was successful. Now please close this window and continue the update process as explained.'); ?></p>
 
 	<p><a href="#" onclick="window.close();">&raquo; <?php echo $lang['CLOSE_WINDOW']; ?></a></p>
 

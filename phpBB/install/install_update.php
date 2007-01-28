@@ -111,6 +111,21 @@ class install_update extends module
 		// First of all, init the user session
 		$user->session_begin();
 		$auth->acl($user->data);
+
+		// Beta4 and below are having a bug displaying an error if the install directory is present.
+		// This bug got fixed, but we need to get around it by using a tiny 'hack'.
+		if (!defined('DEBUG_EXTRA'))
+		{
+			if (version_compare(strtolower($config['version']), '3.0.b4', '<='))
+			{
+				@define('DEBUG_EXTRA', true);
+			}
+			else if (!empty($config['version_update_from']) && version_compare(strtolower($config['version_update_from']), '3.0.b4', '<='))
+			{
+				@define('DEBUG_EXTRA', true);
+			}
+		}
+
 		$user->setup('install');
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
