@@ -42,7 +42,7 @@ function resize_panel()
 	width: 99%;
 }
 
-<!-- IF DIFF_MODE neq 'side_by_side' -->
+<!-- IF DIFF_MODE neq 'side_by_side' and DIFF_MODE neq 'raw' -->
 div#codepanel {
 	overflow: auto;
 	width: 100%;
@@ -199,7 +199,7 @@ table.hrdiff caption span {
 </head>
 
 
-<!-- IF DIFF_MODE neq 'side_by_side' -->
+<!-- IF DIFF_MODE neq 'side_by_side' and DIFF_MODE neq 'raw' -->
 <body onresize="resize_panel();" onload="resize_panel();">
 <!-- ELSE -->
 <body>
