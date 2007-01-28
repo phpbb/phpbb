@@ -298,17 +298,17 @@ class diff_renderer_unified extends diff_renderer
 
 	function _context($lines)
 	{
-		return '<pre class="diff context">' . htmlspecialchars($this->_lines($lines, ' ')) . '</pre>';
+		return '<pre class="diff context">' . htmlspecialchars($this->_lines($lines, ' ')) . '<br /></pre>';
 	}
 	
 	function _added($lines)
 	{
-		return '<pre class="diff added">' . htmlspecialchars($this->_lines($lines, '+')) . '</pre>';
+		return '<pre class="diff added">' . htmlspecialchars($this->_lines($lines, '+')) . '<br /></pre>';
 	}
 
 	function _deleted($lines)
 	{
-		return '<pre class="diff removed">' . htmlspecialchars($this->_lines($lines, '-')) . '</pre>';
+		return '<pre class="diff removed">' . htmlspecialchars($this->_lines($lines, '-')) . '<br /></pre>';
 	}
 
 	function _changed($orig, $final)
@@ -365,7 +365,7 @@ class diff_renderer_inline extends diff_renderer
 	*/
 	function get_diff_content($diff)
 	{
-		return '<pre>' . nl2br($this->render($diff)) . '</pre>';
+		return '<pre>' . nl2br($this->render($diff)) . '<br /></pre>';
 	}
 
 	function _start_diff()
@@ -614,8 +614,8 @@ class diff_renderer_side_by_side extends diff_renderer
 						$line = $current_context;
 						$current_context = '';
 
-						$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td>
-							<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td></tr>';
+						$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td>
+							<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';
 					}
 
 					switch ($change['type'])
@@ -628,7 +628,7 @@ class diff_renderer_side_by_side extends diff_renderer
 								$line .= htmlspecialchars($_line) . '<br />';
 							}
 
-							$output .= '<tr><td class="added_empty">&nbsp;</td><td class="added"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td></tr>';
+							$output .= '<tr><td class="added_empty">&nbsp;</td><td class="added"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';
 						break;
 
 						case 'remove':
@@ -639,7 +639,7 @@ class diff_renderer_side_by_side extends diff_renderer
 								$line .= htmlspecialchars($_line) . '<br />';
 							}
 
-							$output .= '<tr><td class="removed"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td><td class="removed_empty">&nbsp;</td></tr>';
+							$output .= '<tr><td class="removed"><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td><td class="removed_empty">&nbsp;</td></tr>';
 						break;
 
 						case 'empty':
@@ -664,7 +664,7 @@ class diff_renderer_side_by_side extends diff_renderer
 
 							if (!empty($left))
 							{
-								$output .= '<td class="modified"><pre>' . $left . '</pre></td>';
+								$output .= '<td class="modified"><pre>' . $left . '<br /></pre></td>';
 							}
 							else if ($row < $oldsize)
 							{
@@ -677,7 +677,7 @@ class diff_renderer_side_by_side extends diff_renderer
 
 							if (!empty($right))
 							{
-								$output .= '<td class="modified"><pre>' . $right . '</pre></td>';
+								$output .= '<td class="modified"><pre>' . $right . '<br /></pre></td>';
 							}
 							else if ($row < $newsize)
 							{
@@ -698,8 +698,8 @@ class diff_renderer_side_by_side extends diff_renderer
 					$line = $current_context;
 					$current_context = '';
 
-					$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td>';
-					$output .= '<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '</pre></td></tr>';
+					$output .= '<tr class="unmodified"><td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td>';
+					$output .= '<td><pre>' . ((strlen($line)) ? $line : '&nbsp;') . '<br /></pre></td></tr>';
 				}
 			}
 		}
