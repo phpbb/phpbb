@@ -195,7 +195,7 @@ class fulltext_native extends search_backend
 				FROM ' . SEARCH_WORDLIST_TABLE . '
 				WHERE ' . $db->sql_in_set('word_text', $exact_words);
 			$result = $db->sql_query($sql);
-	
+
 			// store an array of words and ids, remove common words
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -311,9 +311,18 @@ class fulltext_native extends search_backend
 			// else we only need one id
 			else if (($wildcard = strpos($word, '*') !== false) || isset($words[$word]))
 			{
+
 				if ($wildcard)
 				{
-					$this->{$mode . '_ids'}[] = '\'' . $db->sql_escape(str_replace('*', '%', $word)) . '\'';
+					$len = utf8_strlen(str_replace('*', '', $word));
+					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
+					{
+						$this->{$mode . '_ids'}[] = '\'' . $db->sql_escape(str_replace('*', '%', $word)) . '\'';
+					}
+					else
+					{
+						$this->common_words[] = $row['word_text'];
+					}
 				}
 				else
 				{
@@ -325,7 +334,23 @@ class fulltext_native extends search_backend
 			{
 				if (!isset($common_ids[$word]))
 				{
-					trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+					$len = utf8_strlen($word);
+					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
+					{
+						trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+					}
+					else
+					{
+						$this->common_words[] = $word;
+					}
+				}
+			}
+			else
+			{
+				$len = utf8_strlen($word);
+				if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
+				{
+					$this->common_words[] = $word;
 				}
 			}
 		}
@@ -470,7 +495,7 @@ class fulltext_native extends search_backend
 							'ON'	=> "w$w_num.word_text LIKE $id"
 						);
 						$word_ids[] = "w$w_num.word_id";
-		
+
 						$w_num++;
 					}
 					else
@@ -498,7 +523,7 @@ class fulltext_native extends search_backend
 			{
 				$sql_where[] = "m$m_num.word_id = $subquery";
 			}
-	
+
 			$sql_array['FROM'][SEARCH_WORDMATCH_TABLE][] = 'm' . $m_num;
 
 			if ($title_match)
@@ -627,11 +652,11 @@ class fulltext_native extends search_backend
 				default:
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
 					$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
-		
+
 					$result = $db->sql_query($sql);
 					$total_results = (int) $db->sql_fetchfield('total_results');
 					$db->sql_freeresult($result);
-		
+
 					if (!$total_results)
 					{
 						return false;
@@ -845,10 +870,10 @@ class fulltext_native extends search_backend
 								$sql_time" . (($db->sql_layer == 'sqlite') ? ')' : '');
 					}
 					$result = $db->sql_query($sql);
-		
+
 					$total_results = (int) $db->sql_fetchfield('total_results');
 					$db->sql_freeresult($result);
-		
+
 					if (!$total_results)
 					{
 						return false;
