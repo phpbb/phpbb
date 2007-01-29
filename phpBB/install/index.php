@@ -102,7 +102,9 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
+// Try to override some limits - maybe it helps some...
 @set_time_limit(0);
+@ini_set('memory_limit', '128M');
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);

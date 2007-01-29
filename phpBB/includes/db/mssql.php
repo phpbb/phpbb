@@ -35,7 +35,7 @@ class dbal_mssql extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		ini_set('mssql.charset', 'UTF-8');
+		@ini_set('mssql.charset', 'UTF-8');
 
 		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword) : @mssql_connect($this->server, $this->user, $sqlpassword);
 
