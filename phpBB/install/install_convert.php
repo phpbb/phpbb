@@ -555,7 +555,7 @@ class install_convert extends module
 			break;
 
 			default:
-				$convert->truncate_statement = 'TRUNCATE TABLE ');
+				$convert->truncate_statement = 'TRUNCATE TABLE ';
 			break;
 		}
 
