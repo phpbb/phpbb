@@ -1833,7 +1833,17 @@ function update_topics_posted()
 {
 	global $db, $config;
 
-	$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
+	switch ($db->sql_layer)
+	{
+		case 'sqlite':
+		case 'firebird':
+			$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
+		break;
+
+		default:
+			$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
+		break;
+	}
 
 	// This can get really nasty... therefore we only do the last six months
 	$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);

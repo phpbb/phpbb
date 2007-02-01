@@ -1266,9 +1266,41 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDLIST_TABLE);
-		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_WORDMATCH_TABLE);
-		$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . SEARCH_RESULTS_TABLE);
+		switch ($db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
+			break;
+
+			default:
+				$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE);
+			break;
+		}
+
+		switch ($db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
+			break;
+
+			default:
+				$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE);
+			break;
+		}
+
+		switch ($db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);
+			break;
+
+			default:
+				$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+			break;
+		}
 	}
 
 	/**

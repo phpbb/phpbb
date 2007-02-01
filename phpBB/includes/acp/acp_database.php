@@ -167,6 +167,7 @@ class acp_database
 							// Get the table structure
 							if ($structure)
 							{
+								$sql_data .= "\n";
 								switch ($db->sql_layer)
 								{
 									case 'mysqli':
@@ -213,7 +214,18 @@ class acp_database
 							else
 							{
 								// We might wanna empty out all that junk :D
-								$sql_data .= (($db->sql_layer == 'sqlite') ? 'DELETE FROM ' : 'TRUNCATE TABLE ') . $table_name . ";\n";
+								switch ($db->sql_layer)
+								{
+									case 'sqlite':
+									case 'firebird':
+										$sql_data .= 'DELETE FROM ';
+									break;
+
+									default:
+										$sql_data .= 'TRUNCATE TABLE ';
+									break;
+								}
+								$sql_data .= $table_name . ";\n";
 							}
 
 							// Now write the data for the first time. :)
@@ -757,7 +769,7 @@ class acp_database
 
 										if ($retrieved_data)
 										{
-											$sql_data = "\nGO\n";
+											$sql_data = "GO\n";
 											if ($ident_set)
 											{
 												$sql_data .= "\nSET IDENTITY_INSERT $table_name OFF\nGO\n";

@@ -545,7 +545,19 @@ class install_convert extends module
 		// Make some short variables accessible, for easier referencing
 		$convert->convertor_tag = basename($convert->options['tag']);
 		$convert->src_table_prefix = $convert->options['table_prefix'];
-		$convert->truncate_statement = ($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ';
+
+
+		switch ($db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$convert->truncate_statement = 'DELETE FROM ';
+			break;
+
+			default:
+				$convert->truncate_statement = 'TRUNCATE TABLE ');
+			break;
+		}
 
 		$get_info = false;
 

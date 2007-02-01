@@ -1983,7 +1983,17 @@ function cache_moderators()
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . MODERATOR_CACHE_TABLE);
+	switch ($db->sql_layer)
+	{
+		case 'sqlite':
+		case 'firebird':
+			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
+		break;
+
+		default:
+			$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
+		break;
+	}
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$hold_ary = $ug_id_ary = $sql_ary = array();
