@@ -585,7 +585,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('m_report'));
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('!m_report'), true, true);
 			}
 
 			if ($mode == 'reports')
