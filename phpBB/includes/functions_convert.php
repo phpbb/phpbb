@@ -1701,7 +1701,7 @@ function add_bots()
 		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
 		'W3C [Validator]'			=> array('W3C_*Validator', ''),
 		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
-		'Yacy [Bot]'				=> array('yacybot', ''),
+		'YaCy [Bot]'				=> array('yacybot', ''),
 		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
 		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
 		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),

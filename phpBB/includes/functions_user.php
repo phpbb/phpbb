@@ -2508,6 +2508,11 @@ function group_update_listings($group_id)
 
 	if ($mod_permissions || $admin_permissions)
 	{
+		if (!function_exists('update_foes'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		}
 		update_foes();
 	}
 }

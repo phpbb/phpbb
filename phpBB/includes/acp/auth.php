@@ -264,7 +264,7 @@ class auth_admin extends auth
 		{
 			$hold_ary[$row['forum_id']]['groups'][] = $row['group_id'];
 		}
-		$db->sql_freeresult($result);		
+		$db->sql_freeresult($result);
 
 		return $hold_ary;
 	}
@@ -620,6 +620,12 @@ class auth_admin extends auth
 
 		foreach ($hold_ary as $forum_id => $auth_ary)
 		{
+			// If there is no forum present the database holds auth information for a non-existent forum... continue then
+			if ($forum_id && !isset($forum_names[$forum_id]))
+			{
+				continue;
+			}
+
 			$template->assign_block_vars('role_mask', array(
 				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_names[$forum_id],
 				'FORUM_ID'			=> $forum_id)
