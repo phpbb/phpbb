@@ -1026,12 +1026,13 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 		case 'sqlite':
 			if (version_compare(sqlite_libversion(), '3.0') == -1)
 			{
+				global $db;
 				$sql = "SELECT sql
 					FROM sqlite_master 
 					WHERE type = 'table' 
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
-				$result = _sql($sql, $errored, $error_ary);
+				$result = $db->sql_query($sql);
 
 				if (!$result)
 				{
