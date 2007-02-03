@@ -1052,13 +1052,13 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 				preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
 				$new_table_cols = trim($matches[1]);
-				$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
+				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
 				$column_list = array();
 
 				foreach ($old_table_cols as $declaration)
 				{
 					$entities = preg_split('#\s+#', trim($declaration));
-					if ($entities == 'PRIMARY')
+					if ($entities[0] == 'PRIMARY')
 					{
 						continue;
 					}
@@ -1171,13 +1171,13 @@ function sql_create_primary_key($dbms, $table_name, $column)
 			preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
 			$new_table_cols = trim($matches[1]);
-			$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
+			$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
 			$column_list = array();
 
 			foreach ($old_table_cols as $declaration)
 			{
 				$entities = preg_split('#\s+#', trim($declaration));
-				if ($entities == 'PRIMARY')
+				if ($entities[0] == 'PRIMARY')
 				{
 					continue;
 				}
@@ -1262,7 +1262,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
 			$new_table_cols = trim($matches[1]);
-			$old_table_cols = preg_split('/,(?=[\\sa-z])/im', $new_table_cols);
+			$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
 			$column_list = array();
 
 			foreach ($old_table_cols as $key => $declaration)
