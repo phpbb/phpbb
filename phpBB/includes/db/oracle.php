@@ -113,7 +113,7 @@ class dbal_oracle extends dbal
 				$array = array();
 
 				// We overcome Oracle's 4000 char limit by binding vars
-				if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/', $query, $regs))
+				if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
 				{
 					if (strlen($regs[3]) > 4000)
 					{
@@ -143,26 +143,21 @@ class dbal_oracle extends dbal
 						preg_match_all('/(\\w++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
 						unset($data);
 
-						$cols = array();
+						$art = array();
 						foreach ($temp as $value)
 						{
-							if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 4002) // check to see if this thing is greater than the max + 'x2 + a space
+							if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 4002) // check to see if this thing is greater than the max + 'x2
 							{
-								$cols[$value[1]] = ':' . strtoupper($value[1]);
+								$art[] = $value[1] . '=:' . strtoupper($value[1]);
 								$array[$cols[$value[1]]] = str_replace("''", "'", substr($value[2], 1, -1));
 							}
 							else
 							{
-								$cols[$value[1]] = $value[2];
+								$art[] = $value[1] . '=' . $value[2];
 							}
 						}
 
-						$art = array();
-						foreach ($cols as $col => $val)
-						{
-							$art[] = $col . '=' . $val; 
-						}
-						$query = $update  . implode(', ', $art) . ' ' . $where;
+						$query = $update . implode(', ', $art) . ' ' . $where;
 					}
 				}
 
