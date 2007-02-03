@@ -191,7 +191,28 @@ class install_convert extends module
 					'TITLE'		=> $lang['CONVERT_COMPLETE'],
 					'BODY'		=> $lang['CONVERT_COMPLETE_EXPLAIN'],
 				));
-			
+
+				// If we reached this step (conversion completed) we want to purge the cache and log the user out.
+				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
+				$cache->purge();
+
+				// Make sure this session gets killed
+				$user->session_kill();
+
+				switch ($db->sql_layer)
+				{
+					case 'sqlite':
+					case 'firebird':
+						$db->sql_query('DELETE FROM ' . SESSIONS_KEYS_TABLE);
+						$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
+					break;
+
+					default:
+						$db->sql_query('TRUNCATE TABLE ' . SESSIONS_KEYS_TABLE);
+						$db->sql_query('TRUNCATE TABLE ' . SESSIONS_TABLE);
+					break;
+				}
+
 			break;
 		}
 	}
