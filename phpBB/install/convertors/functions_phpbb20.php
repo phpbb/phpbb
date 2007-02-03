@@ -475,22 +475,27 @@ function phpbb_convert_authentication($mode)
 		$db->sql_query($convert->truncate_statement . ACL_USERS_TABLE);
 		$db->sql_query($convert->truncate_statement . ACL_GROUPS_TABLE);
 
-		// Grab user id of first user with user_level of ADMIN
+		// What we will do is handling all 2.0.x admins as founder to replicate what is common in 2.0.x.
+		// After conversion the main admin need to make sure he is removing permissions and the founder status if wanted.
+
+		// Grab user ids of users with user_level of ADMIN
 		$sql = "SELECT user_id
 			FROM {$convert->src_table_prefix}users
 			WHERE user_level = 1
 			ORDER BY user_regdate ASC";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$user_id = (int) phpbb_user_id($row['user_id']);
+
+			// Set founder admin...
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_type = ' . USER_FOUNDER . "
+				WHERE user_id = $user_id";
+			$db->sql_query($sql);
+		}
 		$db->sql_freeresult($result);
-
-		$founder_id = phpbb_user_id($row['user_id']);
-
-		// Set a founder admin ... we'll assume it's the first user with admin level access
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_type = ' . USER_FOUNDER . "
-			WHERE user_id = $founder_id";
-		$db->sql_query($sql);
 	}
 
 	// Grab forum auth information
@@ -666,7 +671,7 @@ function phpbb_convert_authentication($mode)
 	}
 	else if ($mode == 'first')
 	{
-		// Go through all 2.0.x forums (we saved those ids for reference)
+		// Go through all 2.0.x forums
 		foreach ($forum_access as $forum)
 		{
 			$new_forum_id = (int) $forum['forum_id'];
@@ -817,8 +822,8 @@ function phpbb_convert_authentication($mode)
 		mass_auth('group_role', 0, 'administrators', 'USER_FULL');
 		mass_auth('group_role', 0, 'global_moderators', 'USER_FULL');
 
-		// By default all converted administrators are given standard access (the founder still have full access)
-		mass_auth('group_role', 0, 'administrators', 'ADMIN_STANDARD');
+		// By default all converted administrators are given full access
+		mass_auth('group_role', 0, 'administrators', 'ADMIN_FULL');
 
 		// All registered users are assigned the standard user role
 		mass_auth('group_role', 0, 'registered', 'USER_STANDARD');
