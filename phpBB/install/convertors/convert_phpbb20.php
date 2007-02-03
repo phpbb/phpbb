@@ -408,7 +408,7 @@ if (!$get_info)
 				'target'		=> DISALLOW_TABLE,
 				'query_first'	=> $convert->truncate_statement . DISALLOW_TABLE,
 
-				array('disallow_username',		'disallow.disallow_username',				'phpbb_set_encoding'),
+				array('disallow_username',		'disallow.disallow_username',				'phpbb_disallowed_username'),
 			),
 
 			array(

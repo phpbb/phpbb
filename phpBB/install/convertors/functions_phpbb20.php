@@ -1446,4 +1446,14 @@ function phpbb_inactive_reason()
 	return INACTIVE_REGISTER;
 }
 
+/**
+* Adjust 2.0.x disallowed names to 3.0.x format
+*/
+function phpbb_disallowed_username($username)
+{
+	// Replace * with %
+	$username = phpbb_set_default_encoding(str_replace('*', '%', $username));
+	return utf8_htmlspecialchars($username);
+}
+
 ?>
