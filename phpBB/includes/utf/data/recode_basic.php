@@ -1371,7 +1371,7 @@ function cp1257($string)
 	return strtr($string, $transform);
 }
 
-function cp1255_to_utf8($string)
+function cp1252_to_utf8($string)
 {
 	static $transform = array(
 		"\xE2\x82\xAC" => "\x80",
