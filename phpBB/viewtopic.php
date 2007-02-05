@@ -111,6 +111,7 @@ if ($view && !$post_id)
 			LEFT JOIN ' . TOPICS_TABLE . " t2 ON (t2.topic_id = $topic_id AND t.forum_id = t2.forum_id)
 			WHERE t.topic_last_post_time $sql_condition t2.topic_last_post_time
 				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+				AND t.topic_moved_id = 0
 			ORDER BY t.topic_last_post_time $sql_ordering";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);

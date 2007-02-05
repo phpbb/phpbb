@@ -1010,6 +1010,7 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
+* @version &#36;Id: &#36;
 * @copyright (c) ' . date('Y') . ' phpBB Group 
 * @author {CHANGED} - {AUTHOR}
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 

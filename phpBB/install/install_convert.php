@@ -196,8 +196,14 @@ class install_convert extends module
 				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 				$cache->purge();
 
-				// Make sure this session gets killed
-				$user->session_kill();
+				require($phpbb_root_path . 'config.' . $phpEx);
+				require($phpbb_root_path . 'includes/constants.' . $phpEx);
+				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+
+				$db = new $sql_db();
+				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+				unset($dbpasswd);
 
 				switch ($db->sql_layer)
 				{

@@ -1351,7 +1351,8 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$tpl_prefix . 'PER_PAGE'	=> $per_page,
 
 		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . '&amp;start=' . (($on_page - 2) * $per_page),
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . '&amp;start=' . ($on_page * $per_page))
+		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . '&amp;start=' . ($on_page * $per_page),
+		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages)
 	);
 
 	return $page_string;
@@ -1370,7 +1371,7 @@ function on_page($num_items, $per_page, $start)
 	$on_page = floor($start / $per_page) + 1;
 
 	$template->assign_vars(array(
-		'ON_PAGE'	=> $on_page)
+		'ON_PAGE'		=> $on_page)
 	);
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
