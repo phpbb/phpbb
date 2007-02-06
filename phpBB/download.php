@@ -265,21 +265,20 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	exit;
 }
 
-/*
+/**
 * Get a browser friendly UTF-8 encoded filename
 */
 function header_filename($file)
 {
 	// There be dragons here...
-	// IE follows no RFC, follow the RFC for extended filename for the rest
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false)
+	// IE and Safari follows no RFC.
+	if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Safari') !== false)
 	{
 		return "filename=" . rawurlencode($file);
 	}
-	else
-	{
-		return "filename*=UTF-8''" . rawurlencode($file);
-	}
+
+	// follow the RFC for extended filename for the rest
+	return "filename*=UTF-8''" . rawurlencode($file);
 }
 
 /**

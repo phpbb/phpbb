@@ -55,6 +55,7 @@ class acp_email
 			{
 				if ($usernames)
 				{
+					// If giving usernames the admin is able to email inactive users too...
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
@@ -66,18 +67,20 @@ class acp_email
 					if ($group_id)
 					{
 						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type 
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-							WHERE ug.group_id = $group_id 
+							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug 
+							WHERE ug.group_id = ' . $group_id . '
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id 
 								AND u.user_allow_massemail = 1
-							ORDER BY u.user_lang, u.user_notify_type";
+								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+							ORDER BY u.user_lang, u.user_notify_type';
 					}
 					else
 					{
 						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang 
 							FROM ' . USERS_TABLE . '
 							WHERE user_allow_massemail = 1
+								AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 							ORDER BY user_lang, user_notify_type';
 					}
 				}
@@ -172,17 +175,25 @@ class acp_email
 
 				$messenger->save_queue();
 
-				if ($group_id)
+				if ($usernames)
 				{
-					$group_name = get_group_name($group_id);
+					$usernames = explode("\n", $usernames);
+					add_log('admin', 'LOG_MASS_EMAIL', implode(', ', $usernames));
 				}
 				else
 				{
-					// Not great but the logging routine doesn't cope well with localising on the fly
-					$group_name = $user->lang['ALL_USERS'];
-				}
+					if ($group_id)
+					{
+						$group_name = get_group_name($group_id);
+					}
+					else
+					{
+						// Not great but the logging routine doesn't cope well with localising on the fly
+						$group_name = $user->lang['ALL_USERS'];
+					}
 
-				add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+					add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+				}
 
 				if (!$errored)
 				{

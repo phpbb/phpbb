@@ -94,12 +94,15 @@ class acp_bots
 							WHERE bot_id $sql_id";
 						$db->sql_query($sql);
 
-						$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
-						foreach ($_tables as $table)
+						if (sizeof($user_id_ary))
 						{
-							$sql = "DELETE FROM $table
-								WHERE " . $db->sql_in_set('user_id', $user_id_ary);
-							$db->sql_query($sql);
+							$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
+							foreach ($_tables as $table)
+							{
+								$sql = "DELETE FROM $table
+									WHERE " . $db->sql_in_set('user_id', $user_id_ary);
+								$db->sql_query($sql);
+							}
 						}
 
 						$db->sql_transaction('commit');

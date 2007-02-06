@@ -598,7 +598,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$approved_posts = 0;
-	$post_ids = $topic_ids = $forum_ids = $post_counts = array();
+	$post_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
 
 	$sql = 'SELECT post_id, poster_id, post_approved, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
@@ -653,6 +653,25 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		}
 	}
 
+	// Remove topics now having no posts?
+	if (sizeof($topic_ids))
+	{
+		$sql = 'SELECT topic_id
+			FROM ' . POSTS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+			GROUP BY topic_id';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$remove_topics[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Actually, those not within remove_topics should be removed. ;)
+		$remove_topics = array_diff($topic_ids, $remove_topics);
+	}
+
 	// Remove the message from the search index
 	$search_type = basename($config['search_type']);
 
@@ -693,6 +712,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	if ($approved_posts)
 	{
 		set_config('num_posts', $config['num_posts'] - $approved_posts, true);
+	}
+
+	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
+	if (sizeof($remove_topics))
+	{
+		delete_topics('topic_id', $remove_topics);
 	}
 
 	return sizeof($post_ids);

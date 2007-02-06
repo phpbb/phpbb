@@ -117,6 +117,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
 
+	$topic_list = $topic_tracking_info = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$topic_rows[$row['topic_id']] = $row;
@@ -124,15 +125,23 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	}
 	$db->sql_freeresult($result);
 
-	$topic_tracking_info = array();
-	// Get topic tracking info
-	if ($config['load_db_lastread'])
+	// If there is more than one page, but we have no topic list, then the start parameter is... erm... out of sync
+	if (!sizeof($topic_list) && $forum_topics && $start > 0)
 	{
-		$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
+		redirect($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode");
 	}
-	else
+
+	// Get topic tracking info
+	if (sizeof($topic_list))
 	{
-		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, array());
+		if ($config['load_db_lastread'])
+		{
+			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
+		}
+		else
+		{
+			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, array());
+		}
 	}
 
 	foreach ($topic_rows as $topic_id => $row)

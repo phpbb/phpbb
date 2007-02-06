@@ -192,7 +192,7 @@ class mcp_reports
 				$forum_info = array();
 				$forum_list_reports = get_forum_list('m_report', false, true);
 
-				if ($topic_id)
+				if ($topic_id && $forum_id)
 				{
 					$topic_info = get_topic_data(array($topic_id));
 
@@ -203,6 +203,10 @@ class mcp_reports
 
 					$topic_info = $topic_info[$topic_id];
 					$forum_id = $topic_info['forum_id'];
+				}
+				else if ($topic_id && !$forum_id)
+				{
+					$topic_id = 0;
 				}
 
 				$forum_list = array();

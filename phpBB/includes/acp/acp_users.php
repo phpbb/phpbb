@@ -134,7 +134,8 @@ class acp_users
 			'U_BACK'			=> $this->u_action,
 			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
-			'S_FORM_OPTIONS'	=> $s_form_options)
+			'S_FORM_OPTIONS'	=> $s_form_options,
+			'MANAGED_USERNAME'	=> $user_row['username'])
 		);
 
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
@@ -398,44 +399,6 @@ class acp_users
 
 							if (confirm_box(true))
 							{
-								$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
-									FROM ' . POSTS_TABLE . "
-									WHERE poster_id = $user_id
-									GROUP BY topic_id";
-								$result = $db->sql_query($sql);
-
-								$topic_id_ary = array();
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$topic_id_ary[$row['topic_id']] = $row['total_posts'];
-								}
-								$db->sql_freeresult($result);
-
-								if (sizeof($topic_id_ary))
-								{
-									$sql = 'SELECT topic_id, topic_replies, topic_replies_real
-										FROM ' . TOPICS_TABLE . '
-										WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
-									$result = $db->sql_query($sql);
-
-									$del_topic_ary = array();
-									while ($row = $db->sql_fetchrow($result))
-									{
-										if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
-										{
-											$del_topic_ary[] = $row['topic_id'];
-										}
-									}
-									$db->sql_freeresult($result);
-
-									if (sizeof($del_topic_ary))
-									{
-										$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-											WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
-										$db->sql_query($sql);
-									}
-								}
-
 								// Delete posts, attachments, etc.
 								delete_posts('poster_id', $user_id);
 

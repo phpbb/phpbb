@@ -355,7 +355,10 @@ class acp_permissions
 				case 'usergroup':
 				case 'usergroup_view':
 
-					if (sizeof($user_id) || sizeof($group_id))
+					$all_users = (isset($_POST['all_users'])) ? true : false;
+					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+
+					if ((sizeof($user_id) && !$all_users) || (sizeof($group_id) && !$all_groups))
 					{
 						if (sizeof($user_id))
 						{
@@ -370,11 +373,8 @@ class acp_permissions
 						continue 2;
 					}
 
-					$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
-
 					// Now we check the users... because the "all"-selection is different here (all defined users/groups)
-					$all_users = (isset($_POST['all_users'])) ? true : false;
-					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+					$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
 
 					if ($all_users && sizeof($items['user_ids']))
 					{
@@ -565,17 +565,20 @@ class acp_permissions
 			break;
 		}
 
-		$sql = "SELECT $sql_id
-			FROM $table
-			WHERE " . $db->sql_in_set($sql_id, $ids);
-		$result = $db->sql_query($sql);
-
-		$ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		if (sizeof($ids))
 		{
-			$ids[] = $row[$sql_id];
+			$sql = "SELECT $sql_id
+				FROM $table
+				WHERE " . $db->sql_in_set($sql_id, $ids);
+			$result = $db->sql_query($sql);
+
+			$ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$ids[] = $row[$sql_id];
+			}
+			$db->sql_freeresult($result);
 		}
-		$db->sql_freeresult($result);
 
 		if (!sizeof($ids))
 		{
