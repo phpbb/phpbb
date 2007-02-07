@@ -158,9 +158,9 @@ function phpbb_insert_forums()
 	}
 
 	// Now insert the forums
-	$sql = 'SELECT f.*, fp.prune_days, fp.prune_freq FROM ' . $convert->src_table_prefix . 'forums f
+	$sql = 'SELECT f.forum_id, f.forum_name, f.cat_id, f.forum_desc, f.forum_status, f.prune_enable, f.prune_next, fp.prune_days, fp.prune_freq FROM ' . $convert->src_table_prefix . 'forums f
 		LEFT JOIN ' . $convert->src_table_prefix . 'forum_prune fp ON f.forum_id = fp.forum_id
-		GROUP BY f.forum_id
+		GROUP BY f.forum_id, f.forum_name, f.cat_id, f.forum_desc, f.forum_status, f.prune_enable, f.prune_next, f.forum_order, fp.prune_days, fp.prune_freq
 		ORDER BY f.cat_id, f.forum_order';
 
 	if ($convert->mysql_convert)

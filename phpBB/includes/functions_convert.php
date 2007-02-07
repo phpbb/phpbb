@@ -1205,7 +1205,7 @@ function update_folder_pm_count()
 	$sql = 'SELECT user_id, folder_id, COUNT(msg_id) as num_messages
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ', ' . PRIVMSGS_INBOX . ', ' . PRIVMSGS_OUTBOX . ', ' . PRIVMSGS_SENTBOX . ')
-		GROUP BY folder_id';
+		GROUP BY folder_id, user_id';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

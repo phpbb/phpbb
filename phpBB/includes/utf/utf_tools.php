@@ -719,7 +719,7 @@ function utf8_recode($string, $encoding)
 	{
 		$ret = @iconv($encoding, 'utf-8', $string);
 
-		if (isset($ret[0]))
+		if (!empty($ret))
 		{
 			return $ret;
 		}
@@ -730,7 +730,7 @@ function utf8_recode($string, $encoding)
 	{
 		$ret = @mb_convert_encoding($string, 'utf-8', $encoding);
 
-		if (isset($ret[0]))
+		if (!empty($ret))
 		{
 			return $ret;
 		}
@@ -741,7 +741,7 @@ function utf8_recode($string, $encoding)
 	{
 		$ret = @recode_string($encoding . '..utf-8', $string);
 
-		if (isset($ret[0]))
+		if (!empty($ret))
 		{
 			return $ret;
 		}

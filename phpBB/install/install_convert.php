@@ -909,6 +909,51 @@ class install_convert extends module
 						$db->sql_query($query_first);
 					}
 				}
+
+				if ($db->sql_layer === 'postgres')
+				{
+					$tables = array(
+						ATTACHMENTS_TABLE => 'attach_id',
+						ACL_OPTIONS_TABLE => 'auth_option_id',
+						ACL_ROLES_TABLE => 'role_id',
+						BANLIST_TABLE => 'ban_id',
+						BOTS_TABLE => 'bot_id',
+						DISALLOW_TABLE => 'disallow_id',
+						DRAFTS_TABLE => 'draft_id',
+						EXTENSIONS_TABLE => 'extension_id',
+						EXTENSION_GROUPS_TABLE => 'group_id',
+						FORUMS_TABLE => 'forum_id',
+						GROUPS_TABLE => 'group_id',
+						ICONS_TABLE => 'icons_id',
+						LANG_TABLE => 'lang_id',
+						LOG_TABLE => 'log_id',
+						MODULES_TABLE => 'module_id',
+						POSTS_TABLE => 'post_id',
+						PRIVMSGS_TABLE => 'msg_id',
+						PRIVMSGS_FOLDER_TABLE => 'folder_id',
+						PRIVMSGS_RULES_TABLE => 'rule_id',
+						PROFILE_FIELDS_TABLE => 'field_id',
+						RANKS_TABLE => 'rank_id',
+						REPORTS_TABLE => 'report_id',
+						REPORTS_REASONS_TABLE => 'reason_id',
+						SEARCH_WORDLIST_TABLE => 'word_id',
+						SITELIST_TABLE => 'site_id',
+						SMILIES_TABLE => 'smiley_id',
+						STYLES_TABLE => 'style_id',
+						STYLES_TEMPLATE_TABLE => 'template_id',
+						STYLES_TEMPLATE_DATA_TABLE => 'template_id',
+						STYLES_THEME_TABLE => 'theme_id',
+						STYLES_IMAGESET_TABLE => 'imageset_id',
+						TOPICS_TABLE => 'topic_id',
+						USERS_TABLE => 'user_id',
+						WARNINGS_TABLE => 'warning_id',
+						WORDS_TABLE => 'word_id'
+					);
+					if (!empty($tables[$schema['target']]))
+					{
+						$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $tables[$schema['target']] . ")>0 then max(" . $tables[$schema['target']] . ")+1 else 1 end from " . $schema['target'] . '));');
+					}
+				}
 			}
 
 			// Process execute_always for this table
@@ -1121,6 +1166,51 @@ class install_convert extends module
 					}
 
 					$waiting_rows = array();
+				}
+
+				if ($db->sql_layer === 'postgres')
+				{
+					$tables = array(
+						ATTACHMENTS_TABLE => 'attach_id',
+						ACL_OPTIONS_TABLE => 'auth_option_id',
+						ACL_ROLES_TABLE => 'role_id',
+						BANLIST_TABLE => 'ban_id',
+						BOTS_TABLE => 'bot_id',
+						DISALLOW_TABLE => 'disallow_id',
+						DRAFTS_TABLE => 'draft_id',
+						EXTENSIONS_TABLE => 'extension_id',
+						EXTENSION_GROUPS_TABLE => 'group_id',
+						FORUMS_TABLE => 'forum_id',
+						GROUPS_TABLE => 'group_id',
+						ICONS_TABLE => 'icons_id',
+						LANG_TABLE => 'lang_id',
+						LOG_TABLE => 'log_id',
+						MODULES_TABLE => 'module_id',
+						POSTS_TABLE => 'post_id',
+						PRIVMSGS_TABLE => 'msg_id',
+						PRIVMSGS_FOLDER_TABLE => 'folder_id',
+						PRIVMSGS_RULES_TABLE => 'rule_id',
+						PROFILE_FIELDS_TABLE => 'field_id',
+						RANKS_TABLE => 'rank_id',
+						REPORTS_TABLE => 'report_id',
+						REPORTS_REASONS_TABLE => 'reason_id',
+						SEARCH_WORDLIST_TABLE => 'word_id',
+						SITELIST_TABLE => 'site_id',
+						SMILIES_TABLE => 'smiley_id',
+						STYLES_TABLE => 'style_id',
+						STYLES_TEMPLATE_TABLE => 'template_id',
+						STYLES_TEMPLATE_DATA_TABLE => 'template_id',
+						STYLES_THEME_TABLE => 'theme_id',
+						STYLES_IMAGESET_TABLE => 'imageset_id',
+						TOPICS_TABLE => 'topic_id',
+						USERS_TABLE => 'user_id',
+						WARNINGS_TABLE => 'warning_id',
+						WORDS_TABLE => 'word_id'
+					);
+					if (!empty($tables[$schema['target']]))
+					{
+						$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $tables[$schema['target']] . ")>0 then max(" . $tables[$schema['target']] . ")+1 else 1 end from " . $schema['target'] . '));');
+					}
 				}
 			}
 
