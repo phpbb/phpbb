@@ -900,6 +900,7 @@ function phpbb_convert_authentication($mode)
 			if ($row['parent_id'] == 0)
 			{
 				mass_auth('group_role', $row['forum_id'], 'administrators', 'FORUM_FULL');
+				mass_auth('group_role', $row['forum_id'], 'global_moderators', 'FORUM_FULL');
 				$parent_forums[] = $row;
 			}
 			else
@@ -936,6 +937,20 @@ function phpbb_convert_authentication($mode)
 				{
 					mass_auth('group', $row['forum_id'], 'guests', 'f_list', ACL_YES);
 					mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
+					mass_auth('group', $row['forum_id'], 'registered_coppa', 'f_list', ACL_YES);
+					mass_auth('group', $row['forum_id'], 'bots', 'f_list', ACL_YES);
+				}
+				else
+				{
+					// Now make sure the user is able to read these forums
+					$hold_ary = $auth->acl_group_raw_data(get_group_id('registered'), 'f_list', $forum_ids);
+
+					if (!empty($hold_ary))
+					{
+						mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
+						mass_auth('group', $row['forum_id'], 'registered_coppa', 'f_list', ACL_YES);
+						mass_auth('group', $row['forum_id'], 'bots', 'f_list', ACL_YES);
+					}
 				}
 			}
 		}

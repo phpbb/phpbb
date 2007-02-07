@@ -34,10 +34,10 @@ function still_on_time()
 		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
 		if ($max_execution_time === 0)
 		{
-			$max_execution_time = 250;
+			$max_execution_time = 65;
 		}
 
-		$max_execution_time = min(max(10, ($max_execution_time - 15)), 250);
+		$max_execution_time = min(max(10, ($max_execution_time - 15)), 50);
 
 		// For debugging purposes
 		// $max_execution_time = 10;
