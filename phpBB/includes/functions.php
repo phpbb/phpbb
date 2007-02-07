@@ -2619,7 +2619,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							list($width, $height) = @getimagesize($filename);
+							list($width, $height) = getimagesize($filename);
 
 							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
 						}
@@ -2704,7 +2704,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 				// Macromedia Flash Files
 				case ATTACHMENT_CATEGORY_FLASH:
-					list($width, $height) = @getimagesize($filename);
+					list($width, $height) = getimagesize($filename);
 
 					$l_downloaded_viewed = $user->lang['VIEWED'];
 

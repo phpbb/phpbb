@@ -65,6 +65,7 @@ $lang = array_merge($lang, array(
 	'ARE_WATCHING_TOPIC'			=> 'You have subscribed to receive updates on this topic.',
 	'ASCENDING'						=> 'Ascending',
 	'ATTACHMENTS'					=> 'Attachments',
+	'ATTACHED_IMAGE_NOT_IMAGE'		=> 'You tried to attach an invalid image file.',
 	'AUTHOR'						=> 'Author',
 	'AUTH_NO_PROFILE_CREATED'		=> 'Creating a user profile failed',
 	'AVATAR_DISALLOWED_EXTENSION'	=> 'The extension %s is not allowed',
@@ -559,7 +560,7 @@ $lang = array_merge($lang, array(
 	'TOTAL_USERS_ZERO'	=> 'Total members <strong>0</strong>',
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
 
-	'UNABLE_GET_IMAGE_SIZE'	=> 'Accessing the image was impossible or file isn’t a valid image.',
+	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image.',
 	'UNABLE_TO_DELIVER_FILE'=> 'Unable to deliver file.',
 	'UNKNOWN_BROWSER'		=> 'Unknown browser',
 	'UNMARK_ALL'			=> 'Unmark all',

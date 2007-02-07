@@ -65,7 +65,7 @@ class acp_icons
 			{
 				foreach ($img_ary as $img)
 				{
-					$img_size = @getimagesize($phpbb_root_path . $img_path . '/' . $path . $img);
+					$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $path . $img);
 
 					if (!$img_size[0] || !$img_size[1] || strlen($img) > 255)
 					{
@@ -222,7 +222,7 @@ class acp_icons
 					{
 						if ($image_width[$image] == 0 || $image_height[$image] == 0)
 						{
-							$img_size = @getimagesize($phpbb_root_path . $img_path . '/' . $image);
+							$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $image);
 							$image_width[$image] = $img_size[0];
 							$image_height[$image] = $img_size[1];
 						}

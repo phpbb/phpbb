@@ -358,7 +358,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 
 		// If this error occurs a user tried to exploit an IE Bug by renaming extensions
 		// Since the image category is displaying content inline we need to catch this.
-		trigger_error($user->lang['UNABLE_GET_IMAGE_SIZE']);
+		trigger_error($user->lang['ATTACHED_IMAGE_NOT_IMAGE']);
 	}
 
 	// Do we have to create a thumbnail?
@@ -552,7 +552,7 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	list($width, $height, $type, ) = @getimagesize($source);
+	list($width, $height, $type, ) = getimagesize($source);
 
 	if (!$width || !$height)
 	{
