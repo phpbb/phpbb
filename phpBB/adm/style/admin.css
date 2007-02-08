@@ -637,6 +637,7 @@ dt label {
 }
 
 dd label {
+	font-size:100%;
 	white-space: nowrap;
 	margin: 0 10px 0 0;
 }

@@ -51,6 +51,46 @@ class acp_main
 
 		$action = request_var('action', '');
 
+		if ($action && !confirm_box(true))
+		{
+			switch ($action)
+			{
+				case 'online':
+					$confirm = true;
+					$confirm_lang = 'RESET_ONLINE_CONFIRM';
+				break;
+				case 'stats':
+					$confirm = true;
+					$confirm_lang = 'RESYNC_STATS_CONFIRM';
+				break;
+				case 'user':
+					$confirm = true;
+					$confirm_lang = 'RESYNC_POSTCOUNTS_CONFIRM';
+				break;
+				case 'date':
+					$confirm = true;
+					$confirm_lang = 'RESET_DATE_CONFIRM';
+				break;
+				case 'db_track':
+					$confirm = true;
+					$confirm_lang = 'RESYNC_POST_MARKING_CONFIRM';
+				break;
+
+				default:
+					$confirm = true;
+					$confirm_lang = 'CONFIRM_OPERATION';
+			}
+
+			if ($confirm)
+			{
+				confirm_box(false, $user->lang[$confirm_lang], build_hidden_fields(array(
+					'i'			=> $id,
+					'mode'		=> $mode,
+					'action'	=> $action,
+				)));
+			}
+		}
+
 		switch ($action)
 		{
 			case 'online':
@@ -74,28 +114,22 @@ class acp_main
 					FROM ' . POSTS_TABLE . '
 					WHERE post_approved = 1';
 				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
+				set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
-
-				set_config('num_posts', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(topic_id) AS stat
 					FROM ' . TOPICS_TABLE . '
 					WHERE topic_approved = 1';
 				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
+				set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
-
-				set_config('num_topics', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(user_id) AS stat
 					FROM ' . USERS_TABLE . '
 					WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
 				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
+				set_config('num_users', (int) $db->sql_fetchfield('stat'), true);
 				$db->sql_freeresult($result);
-
-				set_config('num_users', (int) $row['stat'], true);
 
 				$sql = 'SELECT COUNT(attach_id) as stat
 					FROM ' . ATTACHMENTS_TABLE . '
@@ -296,7 +330,6 @@ class acp_main
 		}
 
 		$dbsize = get_database_size();
-		$s_action_options = build_select(array('online' => 'RESET_ONLINE', 'date' => 'RESET_DATE', 'stats' => 'RESYNC_STATS', 'user' => 'RESYNC_POSTCOUNTS', 'db_track' => 'RESYNC_POST_MARKING'));
 
 		$template->assign_vars(array(
 			'TOTAL_POSTS'		=> $total_posts,
@@ -320,7 +353,7 @@ class acp_main
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
 
-			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
+			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 			)
 		);
 

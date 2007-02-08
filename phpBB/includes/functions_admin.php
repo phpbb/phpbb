@@ -495,7 +495,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 /**
 * Remove topic(s)
 */
-function delete_topics($where_type, $where_ids, $auto_sync = true)
+function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true)
 {
 	global $db, $config;
 
@@ -517,7 +517,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 	}
 
 	$return = array(
-		'posts'	=>	delete_posts($where_type, $where_ids, false, true)
+		'posts'	=>	delete_posts($where_type, $where_ids, false, true, $post_count_sync)
 	);
 
 	$sql = 'SELECT topic_id, forum_id, topic_approved
@@ -579,7 +579,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true)
 /**
 * Remove post(s)
 */
-function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true)
+function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true)
 {
 	global $db, $config, $phpbb_root_path, $phpEx;
 
@@ -612,7 +612,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$topic_ids[] = $row['topic_id'];
 		$forum_ids[] = $row['forum_id'];
 
-		if ($row['post_postcount'])
+		if ($row['post_postcount'] && $post_count_sync)
 		{
 			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
 		}
@@ -642,7 +642,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	unset($table_ary);
 
 	// Adjust users post counts
-	if (sizeof($post_counts))
+	if (sizeof($post_counts) && $post_count_sync)
 	{
 		foreach ($post_counts as $poster_id => $substract)
 		{
@@ -1896,7 +1896,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		$topic_list = array_unique($topic_list);
 	}
 
-	return delete_topics('topic_id', $topic_list, $auto_sync);
+	return delete_topics('topic_id', $topic_list, $auto_sync, false);
 }
 
 /**

@@ -379,7 +379,7 @@ class mcp_queue
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 					'S_TOPICS'				=> ($mode == 'unapproved_posts') ? false : true,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total)

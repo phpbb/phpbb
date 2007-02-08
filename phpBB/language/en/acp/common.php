@@ -317,13 +317,23 @@ $lang = array_merge($lang, array(
 
 	'POSTS_PER_DAY'		=> 'Posts per day',
 
-	'RESET_DATE'			=> 'Reset date',
-	'RESET_ONLINE'			=> 'Reset online',
-	'RESYNC_POSTCOUNTS'		=> 'Resynchronise post counts',
-	'RESYNC_POST_MARKING'	=> 'Resynchronise dotted topics',
-	'RESYNC_STATS'			=> 'Resynchronise statistics',
+	'RESET_DATE'					=> 'Reset board’s start date',
+	'RESET_DATE_CONFIRM'			=> 'Are you sure you wish to reset the board’s start date?',
+	'RESET_ONLINE'					=> 'Reset most users ever online',
+	'RESET_ONLINE_CONFIRM'			=> 'Are you sure you wish to reset the most users ever online counter?',
+	'RESYNC_POSTCOUNTS'				=> 'Resynchronise post counts',
+	'RESYNC_POSTCOUNTS_EXPLAIN'		=> 'Only existing posts will be taken into consideration. Pruned posts will not be counted.',
+	'RESYNC_POSTCOUNTS_CONFIRM'		=> 'Are you sure you wish to resynchronise post counts?',
+	'RESYNC_POST_MARKING'			=> 'Resynchronise dotted topics',
+	'RESYNC_POST_MARKING_CONFIRM'	=> 'Are you sure you wish to resynchronise dotted topics?',
+	'RESYNC_POST_MARKING_EXPLAIN'	=> 'First unmarks all topics and then correctly marks topics that have seen any activity during the past six months',
+	'RESYNC_STATS'					=> 'Resynchronise statistics',
+	'RESYNC_STATS_CONFIRM'			=> 'Are you sure you wish to resynchronise statistics?',
+	'RESYNC_STATS_EXPLAIN'			=> 'Recalculates the total number of posts, topics, users and files.',
+	'RUN'							=> 'Run now',
 
-	'STATISTIC'			=> 'Statistic',
+	'STATISTIC'					=> 'Statistic',
+	'STATISTIC_RESYNC_OPTIONS'	=> 'Resynchronise or reset statistics',
 
 	'TOPICS_PER_DAY'	=> 'Topics per day',
 
@@ -362,20 +372,20 @@ $lang = array_merge($lang, array(
 
 // Log Entries
 $lang = array_merge($lang, array(
-	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<strong>Added or edited users user permissions</strong><br />» %s',
-	'LOG_ACL_ADD_GROUP_GLOBAL_U_'		=> '<strong>Added or edited groups user permissions</strong><br />» %s',
-	'LOG_ACL_ADD_USER_GLOBAL_M_'		=> '<strong>Added or edited users global moderator permissions</strong><br />» %s',
-	'LOG_ACL_ADD_GROUP_GLOBAL_M_'		=> '<strong>Added or edited groups global moderator permissions</strong><br />» %s',
-	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<strong>Added or edited users administrator permissions</strong><br />» %s',
-	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<strong>Added or edited groups administrator permissions</strong><br />» %s',
+	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<strong>Added or edited users’ user permissions</strong><br />» %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_U_'		=> '<strong>Added or edited groups’ user permissions</strong><br />» %s',
+	'LOG_ACL_ADD_USER_GLOBAL_M_'		=> '<strong>Added or edited users’ global moderator permissions</strong><br />» %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_M_'		=> '<strong>Added or edited groups’ global moderator permissions</strong><br />» %s',
+	'LOG_ACL_ADD_USER_GLOBAL_A_'		=> '<strong>Added or edited users’ administrator permissions</strong><br />» %s',
+	'LOG_ACL_ADD_GROUP_GLOBAL_A_'		=> '<strong>Added or edited groups’ administrator permissions</strong><br />» %s',
 
 	'LOG_ACL_ADD_ADMIN_GLOBAL_A_'		=> '<strong>Added or edited Administrators</strong><br />» %s',
 	'LOG_ACL_ADD_MOD_GLOBAL_M_'			=> '<strong>Added or edited Global Moderators</strong><br />» %s',
 
-	'LOG_ACL_ADD_USER_LOCAL_F_'			=> '<strong>Added or edited users forum access</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_ADD_USER_LOCAL_M_'			=> '<strong>Added or edited users forum moderator access</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_ADD_GROUP_LOCAL_F_'		=> '<strong>Added or edited groups forum access</strong> from %1$s<br />» %2$s',
-	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<strong>Added or edited groups forum moderator access</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_ADD_USER_LOCAL_F_'			=> '<strong>Added or edited users’ forum access</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_ADD_USER_LOCAL_M_'			=> '<strong>Added or edited users’ forum moderator access</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_ADD_GROUP_LOCAL_F_'		=> '<strong>Added or edited groups’ forum access</strong> from %1$s<br />» %2$s',
+	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<strong>Added or edited groups’ forum moderator access</strong> from %1$s<br />» %2$s',
 
 	'LOG_ACL_ADD_MOD_LOCAL_M_'			=> '<strong>Added or edited Moderators</strong> from %1$s<br />» %2$s',
 	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<strong>Added or edited forum permissions</strong> from %1$s<br />» %2$s',

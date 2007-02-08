@@ -939,6 +939,9 @@ parse_css_file = {PARSE_CSS_FILE}
 		$add_custom		= isset($_POST['add_custom']) ? true : false;
 		$matches		= array();
 
+		// no curly brackets inside a CSS block please
+		$css_data = str_replace(array('{', '}'), '', $css_data);
+
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
 			FROM ' . STYLES_THEME_TABLE . "
@@ -1266,7 +1269,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			else
 			{
 				// check whether the custom class name is valid
-				if (!preg_match('/^[a-z0-9\.,:#_\->*]+$/i', $custom_class))
+				if (!preg_match('/^[a-z0-9\.,:#_\ \t->*]+$/i', $custom_class))
 				{
 					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"), E_USER_WARNING);
 				}

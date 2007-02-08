@@ -353,7 +353,7 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id", $total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,

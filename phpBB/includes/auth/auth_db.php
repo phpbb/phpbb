@@ -98,9 +98,9 @@ function login_db(&$username, &$password)
 	// If the password convert flag is set we need to convert it
 	if ($row['user_pass_convert'])
 	{
-		// in phpBB2 passwords were used exactly as they were sent
+		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
-		$password_old_format = (STRIP) ? stripslashes($password_old_format) : $password_old_format;
+		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
 		$password_new_format = '';
 
 		set_var($password_new_format, $password_old_format, 'string');
