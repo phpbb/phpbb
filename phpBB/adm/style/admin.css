@@ -820,6 +820,10 @@ input.autowidth { width: auto !important;}
 	font-weight: normal;
 }
 
+.pagination span.page-sep {
+	display:none;
+}
+
 .pagination span strong {
 	padding: 0 2px;
 	margin: 0 2px;
