@@ -311,7 +311,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 * Upload Attachment - filedata is generated here
 * Uses upload class
 */
-function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false)
+function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
 {
 	global $auth, $user, $config, $db, $cache;
 	global $phpbb_root_path, $phpEx;
@@ -341,7 +341,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$extensions = $cache->obtain_attach_extensions((($is_message) ? false : (int) $forum_id));
 	$upload->set_allowed_extensions(array_keys($extensions['_allowed_']));
 
-	$file = ($local) ? $upload->local_upload($local_storage) : $upload->form_upload($form_name);
+	$file = ($local) ? $upload->local_upload($local_storage, $local_filedata) : $upload->form_upload($form_name);
 
 	if ($file->init_error)
 	{
