@@ -34,10 +34,10 @@ function still_on_time()
 		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
 		if ($max_execution_time === 0)
 		{
-			$max_execution_time = 65;
+			$max_execution_time = 250;
 		}
 
-		$max_execution_time = min(max(10, ($max_execution_time - 15)), 50);
+		$max_execution_time = min(max(10, ($max_execution_time - 15)), 250);
 
 		// For debugging purposes
 		// $max_execution_time = 10;
@@ -439,7 +439,8 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 
 	if (is_dir($src_path))
 	{
-		copy_dir($convert->convertor['avatar_gallery_path'], path($config['avatar_gallery_path']) . $gallery_name, !$subdirs_as_galleries, false, true, $relative_path);
+		// Do not die on failure... safe mode restrictions may be in effect.
+		copy_dir($convert->convertor['avatar_gallery_path'], path($config['avatar_gallery_path']) . $gallery_name, !$subdirs_as_galleries, false, false, $relative_path);
 
 		// only doing 1 level deep. (ibf 1.x)
 		// notes: ibf has 2 tiers: directly in the avatar directory for base gallery (handled in the above statement), plus subdirs(handled below).
@@ -483,7 +484,9 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 			for ($i = 0; $i < sizeof($dirlist); ++$i)
 			{
 				$dir = $dirlist[$i];
-				copy_dir(path($convert->convertor['avatar_gallery_path'], $relative_path) . $dir, path($config['avatar_gallery_path']) . $dir, true, false, true, $relative_path);
+
+				// Do not die on failure... safe mode restrictions may be in effect.
+				copy_dir(path($convert->convertor['avatar_gallery_path'], $relative_path) . $dir, path($config['avatar_gallery_path']) . $dir, true, false, false, $relative_path);
 			}
 		}
 	}
@@ -1926,22 +1929,6 @@ function fix_empty_primary_groups()
 	$db->sql_query($sql);
 
 	$db->sql_query('UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('guests') . ' WHERE user_id = ' . ANONYMOUS);
-
-	$sql = 'SELECT ban_userid as user_id FROM ' . BANLIST_TABLE . ' WHERE ban_userid > 0';
-	$result = $db->sql_query($sql);
-
-	$user_ids = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$user_ids[] = $row['user_id'];
-	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($user_ids))
-	{
-		$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_IGNORE . '
-			WHERE user_id IN (' . implode(',', $user_ids) . ')');
-	}
 
 	$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . ' WHERE group_id = ' . get_group_id('administrators');
 	$result = $db->sql_query($sql);

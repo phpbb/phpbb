@@ -561,7 +561,20 @@ class fileupload
 		{
 			$_FILES[$form_name]['name'] = basename($source_file);
 			$_FILES[$form_name]['size'] = 0;
-			$_FILES[$form_name]['type'] = '';
+			$mimetype = '';
+
+			if (function_exists('mime_content_type'))
+			{
+				$mimetype = mime_content_type($filename);
+			}
+
+			// Some browsers choke on a mimetype of application/octet-stream
+			if (!$mimetype || $mimetype == 'application/octet-stream')
+			{
+				$mimetype = 'application/octetstream';
+			}
+
+			$_FILES[$form_name]['type'] = $mimetype;
 		}
 		else
 		{

@@ -346,6 +346,7 @@ $lang = array_merge($lang, array(
 	'NO_ONLINE_USERS'			=> 'No registered users',
 	'NO_POSTS'					=> 'No posts',
 	'NO_POSTS_TIME_FRAME'		=> 'No posts exist inside this topic for the selected time frame.',
+	'NO_SUBJECT'				=> 'No subject specified',
 	'NO_SUCH_SEARCH_MODULE'		=> 'The specified search backend doesn’t exist',
 	'NO_SUPPORTED_AUTH_METHODS'	=> 'No supported authentication methods',
 	'NO_TOPIC'					=> 'The requested topic does not exist.',

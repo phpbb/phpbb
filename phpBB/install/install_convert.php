@@ -1845,8 +1845,11 @@ class install_convert extends module
 
 		if ($convert->options['refresh'])
 		{
-			$template->assign_var('S_REFRESH', true);
-			meta_refresh(5, $url);
+			// Because we should not rely on correct settings, we simply use the relative path here directly.
+			$template->assign_vars(array(
+				'S_REFRESH'	=> true,
+				'META'		=> '<meta http-equiv="refresh" content="5;url=' . $url . '" />')
+			);
 		}
 	}
 

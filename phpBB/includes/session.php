@@ -1440,7 +1440,7 @@ class user extends session
 		if (!$this->lang_path)
 		{
 			global $phpbb_root_path, $config;
-			
+
 			$this->lang_path = $phpbb_root_path . 'language/' . $config['default_lang'] . '/';
 		}
 

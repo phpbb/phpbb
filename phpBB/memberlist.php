@@ -74,14 +74,21 @@ switch ($mode)
 
 		$user_ary = $auth->acl_get_list(false, array('a_', 'm_'), false);
 
-		$admin_id_ary = $mod_id_ary = $forum_id_ary = array();
+		$admin_id_ary = $global_mod_id_ary = $mod_id_ary = $forum_id_ary = array();
 		foreach ($user_ary as $forum_id => $forum_ary)
 		{
 			foreach ($forum_ary as $auth_option => $id_ary)
 			{
-				if (!$forum_id && $auth_option == 'a_')
+				if (!$forum_id)
 				{
-					$admin_id_ary = array_merge($admin_id_ary, $id_ary);
+					if ($auth_option == 'a_')
+					{
+						$admin_id_ary = array_merge($admin_id_ary, $id_ary);
+					}
+					else
+					{
+						$global_mod_id_ary = array_merge($global_mod_id_ary, $id_ary);
+					}
 					continue;
 				}
 				else
@@ -100,6 +107,9 @@ switch ($mode)
 		}
 
 		$admin_id_ary = array_unique($admin_id_ary);
+		$global_mod_id_ary = array_unique($global_mod_id_ary);
+
+		$mod_id_ary = array_merge($mod_id_ary, $global_mod_id_ary);
 		$mod_id_ary = array_unique($mod_id_ary);
 
 		// Admin group id...
@@ -158,7 +168,7 @@ switch ($mode)
 				// Remove from admin_id_ary, because the user may be a mod instead
 				unset($admin_id_ary[array_search($row['user_id'], $admin_id_ary)]);
 
-				if (!in_array($row['user_id'], $mod_id_ary))
+				if (!in_array($row['user_id'], $mod_id_ary) && !in_array($row['user_id'], $global_mod_id_ary))
 				{
 					continue;
 				}
@@ -171,7 +181,7 @@ switch ($mode)
 			$s_forum_select = '';
 			$undisclosed_forum = false;
 
-			if (isset($forum_id_ary[$row['user_id']]))
+			if (isset($forum_id_ary[$row['user_id']]) && !in_array($row['user_id'], $global_mod_id_ary))
 			{
 				if ($which_row == 'mod' && sizeof(array_diff(array_keys($forums), $forum_id_ary[$row['user_id']])))
 				{

@@ -219,6 +219,11 @@ class acp_prune
 					$active = ($active) ? explode('-', $active) : array();
 					$joined = ($joined) ? explode('-', $joined) : array();
 
+					if ((sizeof($active) && sizeof($active) != 3) || (sizeof($joined) && sizeof($joined) != 3))
+					{
+						trigger_error($user->lang['WRONG_ACTIVE_JOINED_DATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					$count = request_var('count', 0);
 
 					$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
@@ -257,7 +262,8 @@ class acp_prune
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if (!in_array($row['user_id'], $bot_ids))
+					// Do not prune bots and the user currently pruning.
+					if ($row['user_id'] != $user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
 					{
 						$user_ids[] = $row['user_id'];
 						$usernames[$row['user_id']] = $row['username'];
