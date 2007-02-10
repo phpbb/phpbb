@@ -63,9 +63,6 @@ $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 // the acp template is never stored in the database
 $user->theme['template_storedb'] = false;
 
-// Force pagination seperation for admin style
-$user->theme['pagination_sep'] = '';
-
 // Instantiate new module
 $module = new p_master();
 
