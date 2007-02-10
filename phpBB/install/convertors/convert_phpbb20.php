@@ -314,6 +314,7 @@ if (!$get_info)
 				'target'		=> (defined('MOD_ATTACHMENT')) ? ATTACHMENTS_TABLE : '',
 				'primary'		=> 'attachments.attach_id',
 				'query_first'	=> (defined('MOD_ATTACHMENT')) ? $convert->truncate_statement . ATTACHMENTS_TABLE : '',
+				'autoincrement'	=> 'attach_id',
 
 				array('attach_id',				'attachments.attach_id',				''),
 				array('post_msg_id',			'attachments.post_id',					''),
@@ -338,6 +339,7 @@ if (!$get_info)
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? ATTACHMENTS_TABLE : '',
 				'primary'		=> 'attachments.attach_id',
+				'autoincrement'	=> 'attach_id',
 
 				array('attach_id',				'attachments.attach_id',				''),
 				array('post_msg_id',			'attachments.privmsgs_id',				''),
@@ -362,6 +364,7 @@ if (!$get_info)
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? EXTENSIONS_TABLE : '',
 				'query_first'	=> (defined('MOD_ATTACHMENT')) ? $convert->truncate_statement . EXTENSIONS_TABLE : '',
+				'autoincrement'	=> 'extension_id',
 
 				array('extension_id',			'extensions.ext_id',				''),
 				array('group_id',				'extensions.group_id',				''),
@@ -371,6 +374,7 @@ if (!$get_info)
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? EXTENSION_GROUPS_TABLE : '',
 				'query_first'	=> (defined('MOD_ATTACHMENT')) ? $convert->truncate_statement . EXTENSION_GROUPS_TABLE : '',
+				'autoincrement'	=> 'group_id',
 
 				array('group_id',				'extension_groups.group_id',			''),
 				array('group_name',				'extension_groups.group_name',			array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
@@ -414,6 +418,7 @@ if (!$get_info)
 			array(
 				'target'		=> RANKS_TABLE,
 				'query_first'	=> $convert->truncate_statement . RANKS_TABLE,
+				'autoincrement'	=> 'rank_id',
 
 				array('rank_id',					'ranks.rank_id',				''),
 				array('rank_title',					'ranks.rank_title',				array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
@@ -426,6 +431,7 @@ if (!$get_info)
 				'target'		=> TOPICS_TABLE,
 				'query_first'	=> $convert->truncate_statement . TOPICS_TABLE,
 				'primary'		=> 'topics.topic_id',
+				'autoincrement'	=> 'topic_id',
 
 				array('topic_id',				'topics.topic_id',					''),
 				array('forum_id',				'topics.forum_id',					''),
@@ -456,6 +462,7 @@ if (!$get_info)
 			array(
 				'target'		=> TOPICS_TABLE,
 				'primary'		=> 'topics.topic_id',
+				'autoincrement'	=> 'topic_id',
 
 				array('topic_id',				'topics.topic_id',					''),
 				array('forum_id',				'topics.forum_id',					''),
@@ -496,6 +503,7 @@ if (!$get_info)
 			array(
 				'target'		=> SMILIES_TABLE,
 				'query_first'	=> $convert->truncate_statement . SMILIES_TABLE,
+				'autoincrement'	=> 'smiley_id',
 
 				array('smiley_id',				'smilies.smilies_id',				''),
 				array('code',					'smilies.code',						'phpbb_set_encoding'),
@@ -543,6 +551,7 @@ if (!$get_info)
 				'target'		=> WORDS_TABLE,
 				'primary'		=> 'words.word_id',
 				'query_first'	=> $convert->truncate_statement . WORDS_TABLE,
+				'autoincrement'	=> 'word_id',
 
 				array('word_id',				'words.word_id',					''),
 				array('word',					'words.word',						'phpbb_set_encoding'),
@@ -552,6 +561,7 @@ if (!$get_info)
 			array(
 				'target'		=> POSTS_TABLE,
 				'primary'		=> 'posts.post_id',
+				'autoincrement'	=> 'post_id',
 				'query_first'	=> $convert->truncate_statement . POSTS_TABLE,
 				'execute_first'	=> '
 					$config["max_post_chars"] = 0;
@@ -595,6 +605,7 @@ if (!$get_info)
 			array(
 				'target'		=> PRIVMSGS_TABLE,
 				'primary'		=> 'privmsgs.privmsgs_id',
+				'autoincrement'	=> 'privmsgs_id',
 				'query_first'	=> array(
 					$convert->truncate_statement . PRIVMSGS_TABLE,
 					$convert->truncate_statement . PRIVMSGS_RULES_TABLE,
@@ -741,6 +752,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> GROUPS_TABLE,
+				'autoincrement'	=> 'group_id',
 				'query_first'	=> $convert->truncate_statement . GROUPS_TABLE,
 
 				array('group_id',				'groups.group_id',					''),
@@ -781,6 +793,7 @@ if (!$get_info)
 			array(
 				'target'		=> USERS_TABLE,
 				'primary'		=> 'users.user_id',
+				'autoincrement'	=> 'user_id',
 				'query_first'	=> array(
 					'DELETE FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS,
 					$convert->truncate_statement . BOTS_TABLE
