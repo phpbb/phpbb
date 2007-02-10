@@ -216,7 +216,7 @@ $lang['Ban_IP_explain'] = 'To specify several different IP addresses or hostname
 $lang['Ban_email'] = 'Ban one or more email addresses';
 $lang['Ban_email_explain'] = 'To specify more than one email address, separate them with commas. To specify a wildcard username, use * like *@hotmail.com';
 
-$lang['Unban_username'] = 'Un-ban one more specific users';
+$lang['Unban_username'] = 'Un-ban one or more specific users';
 $lang['Unban_username_explain'] = 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser';
 
 $lang['Unban_IP'] = 'Un-ban one or more IP addresses';
@@ -574,7 +574,7 @@ $lang['Disallow_explain'] = 'Here you can control usernames which will not be al
 
 $lang['Delete_disallow'] = 'Delete';
 $lang['Delete_disallow_title'] = 'Remove a Disallowed Username';
-$lang['Delete_disallow_explain'] = 'You can remove a disallowed username by selecting the username from this list and clicking submit';
+$lang['Delete_disallow_explain'] = 'You can remove a disallowed username by selecting the username from this list and clicking delete';
 
 $lang['Add_disallow'] = 'Add';
 $lang['Add_disallow_title'] = 'Add a disallowed username';

@@ -26,7 +26,7 @@
 //
 function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 {
-	global $db, $userdata;
+	global $db, $userdata, $lang;
 
 	$is_auth_ary = auth(AUTH_READ, AUTH_LIST_ALL, $userdata);
 
@@ -49,7 +49,7 @@ function make_forum_select($box_name, $ignore_forum = false, $select_forum = '')
 		}
 	}
 
-	$forum_list = ( $forum_list == '' ) ? '<option value="-1">-- ! No Forums ! --</option>' : '<select name="' . $box_name . '">' . $forum_list . '</select>';
+	$forum_list = ( $forum_list == '' ) ? $lang['No_forums'] : '<select name="' . $box_name . '">' . $forum_list . '</select>';
 
 	return $forum_list;
 }

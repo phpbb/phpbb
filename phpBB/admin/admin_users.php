@@ -109,30 +109,12 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 				message_die(GENERAL_ERROR, 'Could not update votes for this user', '', __LINE__, __FILE__, $sql);
 			}
 			
-			$sql = "SELECT group_id
-				FROM " . GROUPS_TABLE . "
+			$sql = "UPDATE " . GROUPS_TABLE . "
+				SET group_moderator = " . $userdata['user_id'] . "
 				WHERE group_moderator = $user_id";
-			if( !($result = $db->sql_query($sql)) )
+			if( !$db->sql_query($sql) )
 			{
-				message_die(GENERAL_ERROR, 'Could not select groups where user was moderator', '', __LINE__, __FILE__, $sql);
-			}
-			
-			while ( $row_group = $db->sql_fetchrow($result) )
-			{
-				$group_moderator[] = $row_group['group_id'];
-			}
-			
-			if ( count($group_moderator) )
-			{
-				$update_moderator_id = implode(', ', $group_moderator);
-				
-				$sql = "UPDATE " . GROUPS_TABLE . "
-					SET group_moderator = " . $userdata['user_id'] . "
-					WHERE group_moderator IN ($update_moderator_id)";
-				if( !$db->sql_query($sql) )
-				{
-					message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
-				}
+				message_die(GENERAL_ERROR, 'Could not update group moderators', '', __LINE__, __FILE__, $sql);
 			}
 
 			$sql = "DELETE FROM " . USERS_TABLE . "

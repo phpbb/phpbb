@@ -626,7 +626,7 @@ if( !empty($mode) )
 					$vote_ids = '';
 					do
 					{
-						$vote_ids = (($vote_ids != '') ? ', ' : '') . $row['vote_id'];
+						$vote_ids .= (($vote_ids != '') ? ', ' : '') . $row['vote_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 

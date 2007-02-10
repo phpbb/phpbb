@@ -420,7 +420,7 @@ else if ( $group_id )
 							WHERE aa.group_id = g.group_id  
 						)
 					)
-				ORDER BY aa.auth_mod DESC";
+				ORDER BY auth_mod DESC";
 			break;
 
 		case 'oracle':
