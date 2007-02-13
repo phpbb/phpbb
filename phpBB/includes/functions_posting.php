@@ -863,28 +863,48 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	global $config, $phpbb_root_path, $phpEx;
 
 	// Go ahead and pull all data for this topic
-	$sql = 'SELECT u.username, u.user_id, u.user_colour, p.*
-		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
+	$sql = 'SELECT p.post_id
+		FROM ' . POSTS_TABLE . ' p' . "
 		WHERE p.topic_id = $topic_id
-			AND p.poster_id = u.user_id
 			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 		ORDER BY p.post_time DESC';
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
-	if (!$row = $db->sql_fetchrow($result))
+	$post_list = array();
+
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$db->sql_freeresult($result);
+		$post_list[] = $row['post_id'];
+	}
+
+	$db->sql_freeresult($result);
+
+	if (!sizeof($post_list))
+	{
 		return false;
 	}
 
+	$sql = $db->sql_build_query('SELECT', array(
+		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*',
+
+		'FROM'		=> array(
+			USERS_TABLE		=> 'u',
+			POSTS_TABLE		=> 'p',
+		),
+
+		'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
+			AND u.user_id = p.poster_id'
+	));
+
+	$result = $db->sql_query($sql);
+
 	$bbcode_bitfield = '';
-	do
+	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
-	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
 	// Instantiate BBCode class
