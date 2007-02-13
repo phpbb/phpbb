@@ -1647,7 +1647,7 @@ function add_bots()
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
+	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 	$db->sql_freeresult($result);
 
 	if (!$group_id)
@@ -1656,11 +1656,12 @@ function add_bots()
 
 		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
+		$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 		$db->sql_freeresult($result);
 
 		if (!$group_id)
 		{
+			global $install;
 			$install->error($user->lang['CONV_ERROR_INCONSISTENT_GROUPS'], __LINE__, __FILE__);
 		}
 	}

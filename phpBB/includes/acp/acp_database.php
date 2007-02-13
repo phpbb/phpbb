@@ -1494,7 +1494,7 @@ class acp_database
 					}
 					else
 					{
-						$row['rowdefault'] = $db->sql_fetchfield('rowdefault', 0, $def_res);
+						$row['rowdefault'] = $db->sql_fetchfield('rowdefault', false, $def_res);
 					}
 					$db->sql_freeresult($def_res);
 

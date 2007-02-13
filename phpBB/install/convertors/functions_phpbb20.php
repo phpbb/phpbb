@@ -76,6 +76,14 @@ function phpbb_insert_forums()
 		$db->sql_query("SET NAMES 'utf8'");
 	}
 
+	switch ($db->sql_layer)
+	{
+		case 'mssql':
+		case 'mssql_odbc':
+			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
+		break;
+	}
+
 	$cats_added = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -259,6 +267,14 @@ function phpbb_insert_forums()
 		$db->sql_query($sql);
 	}
 	$db->sql_freeresult($result);
+
+	switch ($db->sql_layer)
+	{
+		case 'mssql':
+		case 'mssql_odbc':
+			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
+		break;
+	}
 }
 
 /**
