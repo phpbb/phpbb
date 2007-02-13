@@ -900,6 +900,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$result = $db->sql_query($sql);
 
 	$bbcode_bitfield = '';
+	$rowset = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
