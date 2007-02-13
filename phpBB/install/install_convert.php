@@ -835,6 +835,12 @@ class install_convert extends module
 			if (!empty($convert->config_schema))
 			{
 				restore_config($convert->config_schema);
+
+				// Override a couple of config variables for the duration
+				$config['max_quote_depth'] = 0;
+
+				// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
+				$config['max_post_chars'] = -1; 
 			}
 
 			$template->assign_block_vars('checks', array(
