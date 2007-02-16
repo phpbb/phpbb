@@ -46,6 +46,11 @@ class acp_database
 						$format	= request_var('method', '');
 						$where	= request_var('where', '');
 
+						if (!sizeof($table))
+						{
+							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action));
+						}
+
 						$store = $download = $structure = $schema_data = false;
 
 						if ($where == 'store_and_download' || $where == 'store')
@@ -144,7 +149,7 @@ class acp_database
 							}
 						}
 
-						$extractor->write_end($table_name);
+						$extractor->write_end();
 
 						if ($download == true)
 						{
