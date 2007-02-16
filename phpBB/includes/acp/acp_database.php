@@ -498,12 +498,15 @@ class base_extractor
 	var $store;
 	var $download;
 	var $time;
+	var $format;
 
 	function base_extractor($download = false, $store = false, $format, $filename, $time)
 	{
 		$this->download = $download;
 		$this->store = $store;
 		$this->time = $time;
+		$this->format = $format;
+
 		switch ($format)
 		{
 			case 'text':
@@ -531,8 +534,6 @@ class base_extractor
 
 		if ($download == true)
 		{
-			$this->fh = fopen('php://output', 'wb');
-	
 			$name = $filename . $ext;
 			header('Pragma: no-cache');
 			header("Content-Type: $mimetype; name=\"$name\"");
@@ -541,8 +542,9 @@ class base_extractor
 			switch ($format)
 			{
 				case 'bzip2':
-					ob_start('ob_bz2handler');
+					ob_start();
 				break;
+
 				case 'gzip':
 					ob_start('ob_gzhandler');
 				break;
@@ -575,9 +577,11 @@ class base_extractor
 			$close($this->fp);
 		}
 
-		if ($this->download)
+		// bzip2 must be written all the way at the end
+		if ($this->format === 'bzip2')
 		{
-			fclose($this->fh);
+			$c = ob_get_clean();
+			echo bzcompress($c);
 		}
 	}
 
@@ -595,7 +599,13 @@ class base_extractor
 
 		if ($this->download === true)
 		{
-			fwrite($this->fh, $data);
+			echo $data;
+
+			// we can write the gzip data as soon as we get it
+			if ($this->format === 'gzip')
+			{
+				ob_flush();
+			}
 		}
 	}
 }
@@ -2154,17 +2164,6 @@ function sanitize_data_generic($text)
 	}
 	
 	return implode('||', $val);
-}
-
-// Internal handler for BZip2
-function ob_bz2handler($data, $mode)
-{
-	static $internal = '';
-	$internal .= $data;
-	if ($mode & PHP_OUTPUT_HANDLER_END)
-	{
-		return bzcompress($internal);
-	}
 }
 
 // modified from PHP.net
