@@ -31,6 +31,12 @@ $convertor_data = array(
 	'version'		=> '0.9',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
+	'dbms'			=> 'mysql',
+	'dbhost'		=> 'localhost',
+	'dbport'		=> '',
+	'dbuser'		=> 'user',
+	'dbpasswd'		=> 'password',
+	'dbname'		=> '',
 	'table_prefix'	=> 'phpbb_',
 	'forum_path'	=> '../forums',
 	'author_notes'	=> 'Avatars may be on a different width/height than with the old forum. This is due to dimensions being stored within phpBB3 but not within phpBB2. The default dimension was set to 80x80 for avatars where dimension settings could not be determined. You might wish to instruct your users to check their profiles after the conversion to ensure that the size is correct.',
@@ -210,7 +216,8 @@ if (!$get_info)
 *	'schema' Syntax Description
 *		-> 'target'			=> Target Table. If not specified the next table will be handled
 *		-> 'primary'		=> Primary Key. If this is specified then this table is processed in batches
-*		-> 'query_first'	=> Query to execute before beginning the process (if more than one then specified as array)
+*		-> 'query_first'	=> array('target' or 'src', Query to execute before beginning the process
+*								(if more than one then specified as array))
 *		-> 'function_first'	=> Function to execute before beginning the process (if more than one then specified as array)
 *								(This is mostly useful if variables need to be given to the converting process)
 *		-> 'test_file'		=> This is not used at the moment but should be filled with a file from the old installation
@@ -276,10 +283,10 @@ if (!$get_info)
 
 		// We empty some tables to have clean data available
 		'query_first'			=> array(
-			$convert->truncate_statement . SEARCH_RESULTS_TABLE,
-			$convert->truncate_statement . SEARCH_WORDLIST_TABLE,
-			$convert->truncate_statement . SEARCH_WORDMATCH_TABLE,
-			$convert->truncate_statement . LOG_TABLE,
+			array('target', $convert->truncate_statement . SEARCH_RESULTS_TABLE),
+			array('target', $convert->truncate_statement . SEARCH_WORDLIST_TABLE),
+			array('target', $convert->truncate_statement . SEARCH_WORDMATCH_TABLE),
+			array('target', $convert->truncate_statement . LOG_TABLE),
 		),
 		
 //	with this you are able to import all attachment files on the fly. For large boards this is not an option, therefore commented out by default.
@@ -313,7 +320,7 @@ if (!$get_info)
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? ATTACHMENTS_TABLE : '',
 				'primary'		=> 'attachments.attach_id',
-				'query_first'	=> (defined('MOD_ATTACHMENT')) ? $convert->truncate_statement . ATTACHMENTS_TABLE : '',
+				'query_first'	=> (defined('MOD_ATTACHMENT')) ? array('target', $convert->truncate_statement . ATTACHMENTS_TABLE) : '',
 				'autoincrement'	=> 'attach_id',
 
 				array('attach_id',				'attachments.attach_id',				''),
@@ -363,7 +370,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? EXTENSIONS_TABLE : '',
-				'query_first'	=> (defined('MOD_ATTACHMENT')) ? $convert->truncate_statement . EXTENSIONS_TABLE : '',
+				'query_first'	=> (defined('MOD_ATTACHMENT')) ? array('target', $convert->truncate_statement . EXTENSIONS_TABLE) : '',
 				'autoincrement'	=> 'extension_id',
 
 				array('extension_id',			'extensions.ext_id',				''),
@@ -373,7 +380,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? EXTENSION_GROUPS_TABLE : '',
-				'query_first'	=> (defined('MOD_ATTACHMENT')) ? $convert->truncate_statement . EXTENSION_GROUPS_TABLE : '',
+				'query_first'	=> (defined('MOD_ATTACHMENT')) ? array('target', $convert->truncate_statement . EXTENSION_GROUPS_TABLE) : '',
 				'autoincrement'	=> 'group_id',
 
 				array('group_id',				'extension_groups.group_id',			''),
@@ -389,7 +396,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> BANLIST_TABLE,
-				'query_first'	=> $convert->truncate_statement . BANLIST_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . BANLIST_TABLE),
 
 				array('ban_ip',					'banlist.ban_ip',					'decode_ban_ip'),
 				array('ban_userid',				'banlist.ban_userid',				'phpbb_user_id'),
@@ -410,14 +417,14 @@ if (!$get_info)
 
 			array(
 				'target'		=> DISALLOW_TABLE,
-				'query_first'	=> $convert->truncate_statement . DISALLOW_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . DISALLOW_TABLE),
 
 				array('disallow_username',		'disallow.disallow_username',				'phpbb_disallowed_username'),
 			),
 
 			array(
 				'target'		=> RANKS_TABLE,
-				'query_first'	=> $convert->truncate_statement . RANKS_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . RANKS_TABLE),
 				'autoincrement'	=> 'rank_id',
 
 				array('rank_id',					'ranks.rank_id',				''),
@@ -429,7 +436,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> TOPICS_TABLE,
-				'query_first'	=> $convert->truncate_statement . TOPICS_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . TOPICS_TABLE),
 				'primary'		=> 'topics.topic_id',
 				'autoincrement'	=> 'topic_id',
 
@@ -493,7 +500,7 @@ if (!$get_info)
 			array(
 				'target'		=> TOPICS_WATCH_TABLE,
 				'primary'		=> 'topics_watch.topic_id',
-				'query_first'	=> $convert->truncate_statement . TOPICS_WATCH_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . TOPICS_WATCH_TABLE),
 
 				array('topic_id',				'topics_watch.topic_id',			''),
 				array('user_id',				'topics_watch.user_id',				'phpbb_user_id'),
@@ -502,7 +509,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> SMILIES_TABLE,
-				'query_first'	=> $convert->truncate_statement . SMILIES_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . SMILIES_TABLE),
 				'autoincrement'	=> 'smiley_id',
 
 				array('smiley_id',				'smilies.smilies_id',				''),
@@ -522,7 +529,7 @@ if (!$get_info)
 			array(
 				'target'		=> POLL_OPTIONS_TABLE,
 				'primary'		=> 'vote_results.vote_option_id',
-				'query_first'	=> $convert->truncate_statement . POLL_OPTIONS_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . POLL_OPTIONS_TABLE),
 
 				array('poll_option_id',			'vote_results.vote_option_id',		''),
 				array('topic_id',				'vote_desc.topic_id',				''),
@@ -537,7 +544,7 @@ if (!$get_info)
 			array(
 				'target'		=> POLL_VOTES_TABLE,
 				'primary'		=> 'vote_desc.topic_id',
-				'query_first'	=> $convert->truncate_statement . POLL_VOTES_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . POLL_VOTES_TABLE),
 
 				array('poll_option_id',			1,									''),
 				array('topic_id',				'vote_desc.topic_id',				''),
@@ -550,7 +557,7 @@ if (!$get_info)
 			array(
 				'target'		=> WORDS_TABLE,
 				'primary'		=> 'words.word_id',
-				'query_first'	=> $convert->truncate_statement . WORDS_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . WORDS_TABLE),
 				'autoincrement'	=> 'word_id',
 
 				array('word_id',				'words.word_id',					''),
@@ -562,7 +569,7 @@ if (!$get_info)
 				'target'		=> POSTS_TABLE,
 				'primary'		=> 'posts.post_id',
 				'autoincrement'	=> 'post_id',
-				'query_first'	=> $convert->truncate_statement . POSTS_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . POSTS_TABLE),
 				'execute_first'	=> '
 					$config["max_post_chars"] = 0;
 				',
@@ -607,8 +614,8 @@ if (!$get_info)
 				'primary'		=> 'privmsgs.privmsgs_id',
 				'autoincrement'	=> 'privmsgs_id',
 				'query_first'	=> array(
-					$convert->truncate_statement . PRIVMSGS_TABLE,
-					$convert->truncate_statement . PRIVMSGS_RULES_TABLE,
+					array('target', $convert->truncate_statement . PRIVMSGS_TABLE),
+					array('target', $convert->truncate_statement . PRIVMSGS_RULES_TABLE),
 				),
 
 				'execute_first'	=> '
@@ -645,7 +652,7 @@ if (!$get_info)
 			array(
 				'target'		=> PRIVMSGS_FOLDER_TABLE,
 				'primary'		=> 'users.user_id',
-				'query_first'	=> $convert->truncate_statement . PRIVMSGS_FOLDER_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . PRIVMSGS_FOLDER_TABLE),
 
 				array('user_id',				'users.user_id',						'phpbb_user_id'),
 				array('folder_name',			$user->lang['CONV_SAVED_MESSAGES'],		''),
@@ -658,7 +665,7 @@ if (!$get_info)
 			array(
 				'target'		=> PRIVMSGS_TO_TABLE,
 				'primary'		=> 'privmsgs.privmsgs_id',
-				'query_first'	=> $convert->truncate_statement . PRIVMSGS_TO_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . PRIVMSGS_TO_TABLE),
 
 				array('msg_id',					'privmsgs.privmsgs_id',					''),
 				array('user_id',				'privmsgs.privmsgs_to_userid',			'phpbb_user_id'),
@@ -753,7 +760,7 @@ if (!$get_info)
 			array(
 				'target'		=> GROUPS_TABLE,
 				'autoincrement'	=> 'group_id',
-				'query_first'	=> $convert->truncate_statement . GROUPS_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . GROUPS_TABLE),
 
 				array('group_id',				'groups.group_id',					''),
 				array('group_type',				'groups.group_type',				'phpbb_convert_group_type'),
@@ -766,7 +773,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> USER_GROUP_TABLE,
-				'query_first'	=> $convert->truncate_statement . USER_GROUP_TABLE,
+				'query_first'	=> array('target', $convert->truncate_statement . USER_GROUP_TABLE),
 				'execute_first'	=> '
 					add_default_groups();
 				',
@@ -795,8 +802,8 @@ if (!$get_info)
 				'primary'		=> 'users.user_id',
 				'autoincrement'	=> 'user_id',
 				'query_first'	=> array(
-					'DELETE FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS,
-					$convert->truncate_statement . BOTS_TABLE
+					array('target', 'DELETE FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS),
+					array('target', $convert->truncate_statement . BOTS_TABLE)
 				),
 				
 				array('user_id',				'users.user_id',					'phpbb_user_id'),

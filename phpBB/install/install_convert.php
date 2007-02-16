@@ -39,12 +39,19 @@ class convert
 	var $options = array();
 
 	var $convertor_tag = '';
+	var $src_dbms = '';
+	var $src_dbhost = '';
+	var $src_dbport = '';
+	var $src_dbuser = '';
+	var $src_dbpasswd = '';
+	var $src_dbname = '';
 	var $src_table_prefix = '';
 
 	var $convertor_data = array();
 	var $tables = array();
 	var $config_schema = array();
 	var $convertor = array();
+	var $src_truncate_statement = 'DELETE FROM ';
 	var $truncate_statement = 'DELETE FROM ';
 
 	var $fulltext_search;
@@ -142,19 +149,32 @@ class install_convert extends module
 				if ($new_conversion)
 				{
 					$config['convert_progress'] = '';
-					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'convert_progress'");
+					$config['convert_db_server'] = '';
+					$config['convert_db_user'] = '';
+					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
+						WHERE config_name = 'convert_progress'
+							OR config_name = 'convert_db_server'
+							OR config_name = 'convert_db_user'"
+					);
 				}
 
 				// Let's see if there is a conversion in the works...
 				$options = array();
-				if (!empty($config['convert_progress']) && !empty($config['convert_options']))
+				if (!empty($config['convert_progress']) && !empty($config['convert_db_server']) && !empty($config['convert_db_user']) && !empty($config['convert_options']))
 				{
 					$options = unserialize($config['convert_progress']);
-					$options = array_merge($options, unserialize($config['convert_options']));
+					$options = array_merge($options, unserialize($config['convert_db_server']), unserialize($config['convert_db_user']), unserialize($config['convert_options']));
 				}
 
 				// This information should have already been checked once, but do it again for safety
-				if (!empty($options) && !empty($options['tag']) && isset($options['table_prefix']))
+				if (!empty($options) && !empty($options['tag']) &&
+					isset($convert->options['dbms']) &&
+					isset($convert->options['dbhost']) &&
+					isset($convert->options['dbport']) &&
+					isset($convert->options['dbuser']) &&
+					isset($convert->options['dbpasswd']) &&
+					isset($convert->options['dbname']) &&
+					isset($convert->options['table_prefix']))
 				{
 					$this->page_title = $lang['CONTINUE_CONVERT'];
 
@@ -270,6 +290,12 @@ class install_convert extends module
 						'tag'			=>	$m[1],
 						'forum_name'	=>	$convertor_data['forum_name'],
 						'version'		=>	$convertor_data['version'],
+						'dbms'			=>	$convertor_data['dbms'],
+						'dbhost'		=>	$convertor_data['dbhost'],
+						'dbport'		=>	$convertor_data['dbport'],
+						'dbuser'		=>	$convertor_data['dbuser'],
+						'dbpasswd'		=>	$convertor_data['dbpasswd'],
+						'dbname'		=>	$convertor_data['dbname'],
 						'table_prefix'	=>	$convertor_data['table_prefix'],
 						'author'		=>	$convertor_data['author']
 					);
@@ -347,6 +373,12 @@ class install_convert extends module
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
+		$src_dbms			= request_var('src_dbms', $convertor_data['dbms']);
+		$src_dbhost			= request_var('src_dbhost', $convertor_data['dbhost']);
+		$src_dbport			= request_var('src_dbport', $convertor_data['dbport']);
+		$src_dbuser			= request_var('src_dbuser', $convertor_data['dbuser']);
+		$src_dbpasswd		= request_var('src_dbpasswd', $convertor_data['dbpasswd']);
+		$src_dbname			= request_var('src_dbname', $convertor_data['dbname']);
 		$src_table_prefix	= request_var('src_table_prefix', $convertor_data['table_prefix']);
 		$forum_path			= request_var('forum_path', $convertor_data['forum_path']);
 		$refresh			= request_var('refresh', 1);
@@ -364,10 +396,22 @@ class install_convert extends module
 				$error[] = sprintf($lang['COULD_NOT_FIND_PATH'], $forum_path);
 			}
 
-			// The forum prefix of the old and the new forum can't be the same because the
-			// convertor requires all tables to be in one database. I.e. there can't be
-			// two tables named 'phpbb_users'
-			if ($src_table_prefix == $table_prefix)
+			$connect_test = false;
+			$available_dbms = get_available_dbms(false, true);
+
+			if (!isset($available_dbms[$src_dbms]) || !$available_dbms[$src_dbms]['AVAILABLE'])
+			{
+				$error['db'][] = $lang['INST_ERR_NO_DB'];
+				$connect_test = false;
+			}
+			else
+			{
+				$src_dbpasswd = htmlspecialchars_decode($src_dbpasswd);
+				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], false, $src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, ($src_dbms == $dbms) ? false : true);
+			}
+
+			// The forum prefix of the old and the new forum can only be the same if two different databases are used.
+			if ($src_table_prefix == $table_prefix && $src_dbms == $dbms && $src_dbhost == $dbhost && $src_dbport == $dbport && $src_dbname == $dbname)
 			{
 				$error[] = sprintf($lang['TABLE_PREFIX_SAME'], $src_table_prefix);
 			}
@@ -375,17 +419,35 @@ class install_convert extends module
 			// Check table prefix
 			if (!sizeof($error))
 			{
+				// initiate database connection to old db if old and new db differ
+				global $src_db, $same_db;
+				$src_db = $same_db = null;
+
+				if ($src_dbms != $dbms || $src_dbhost != $dbhost || $src_dbport != $dbport || $src_dbname != $dbname || $src_dbuser != $dbuser)
+				{
+					$sql_db = 'dbal_' . $src_dbms;
+					$src_db = new $sql_db();
+					$src_db->sql_connect($src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, false);
+					$same_db = false;
+				}
+				else
+				{
+					$src_db = &$db;
+					$same_db = true;
+				}
+
+				$src_db->sql_return_on_error(true);
 				$db->sql_return_on_error(true);
 
 				// Try to select one row from the first table to see if the prefix is OK
-				$result = $db->sql_query_limit('SELECT * FROM ' . $src_table_prefix . $tables[0], 1);
+				$result = $src_db->sql_query_limit('SELECT * FROM ' . $src_table_prefix . $tables[0], 1);
 
 				if (!$result)
 				{
 					$prefixes = array();
-					if ($result = $db->sql_query('SHOW TABLES'))
+					if ($result = $src_db->sql_query('SHOW TABLES'))
 					{
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = $src_db->sql_fetchrow($result))
 						{
 							if (sizeof($row) > 1)
 							{
@@ -396,7 +458,7 @@ class install_convert extends module
 								compare_table($tables, $tablename, $prefixes);
 							}
 						}
-						$db->sql_freeresult($result);
+						$src_->sql_freeresult($result);
 					}
 
 					foreach ($prefixes as $prefix => $count)
@@ -423,14 +485,28 @@ class install_convert extends module
 
 					$error[] = $msg;
 				}
-				$db->sql_freeresult($result);
-				$db->sql_return_on_error(false);
+				$src_db->sql_freeresult($result);
+				$src_db->sql_return_on_error(false);
 			}
 
 			if (!sizeof($error))
 			{
 				// Save convertor Status
-				set_config('convert_progress', serialize(array('step' => '', 'table_prefix' => $src_table_prefix, 'tag' => $convertor_tag)), true);
+				set_config('convert_progress', serialize(array(
+					'step'			=> '',
+					'table_prefix'	=> $src_table_prefix,
+					'tag'			=> $convertor_tag,
+				)), true);
+				set_config('convert_db_server', serialize(array(
+					'dbms'			=> $src_dbms,
+					'dbhost'		=> $src_dbhost,
+					'dbport'		=> $src_dbport,
+					'dbname'		=> $src_dbname,
+				)), true);
+				set_config('convert_db_user', serialize(array(
+					'dbuser'		=> $src_dbuser,
+					'dbpasswd'		=> $src_dbpasswd,
+				)), true);
 
 				// Save options
 				set_config('convert_options', serialize(array('forum_path' => './../' . $forum_path, 'refresh' => $refresh)), true);
@@ -527,24 +603,6 @@ class install_convert extends module
 		// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
 		$config['max_post_chars'] = -1; 
 
-		$convert->mysql_convert = false;
-
-		switch ($db->sql_layer)
-		{
-			// Thanks MySQL, for silently converting...
-			case 'mysql':
-			case 'mysql4':
-				if (version_compare($db->mysql_version, '4.1.3', '>='))
-				{
-					$convert->mysql_convert = true;
-				}
-			break;
-
-			case 'mysqli':
-				$convert->mysql_convert = true;
-			break;
-		}
-
 		// Set up a user as well. We _should_ have enough of a database here at this point to do this
 		// and it helps for any core code we call
 		$user->session_begin();
@@ -560,19 +618,84 @@ class install_convert extends module
 		if (isset($config['convert_progress']))
 		{
 			$convert->options = unserialize($config['convert_progress']);
-			$convert->options = array_merge($convert->options, unserialize($config['convert_options']));
+			$convert->options = array_merge($convert->options, unserialize($config['convert_db_server']), unserialize($config['convert_db_user']), unserialize($config['convert_options']));
 		}
 
 		// This information should have already been checked once, but do it again for safety
-		if (empty($convert->options) || empty($convert->options['tag']) || !isset($convert->options['table_prefix']))
+		if (empty($convert->options) || empty($convert->options['tag']) ||
+			!isset($convert->options['dbms']) ||
+			!isset($convert->options['dbhost']) ||
+			!isset($convert->options['dbport']) ||
+			!isset($convert->options['dbuser']) ||
+			!isset($convert->options['dbpasswd']) ||
+			!isset($convert->options['dbname']) ||
+			!isset($convert->options['table_prefix']))
 		{
 			$this->p_master->error($user->lang['NO_CONVERT_SPECIFIED'], __LINE__, __FILE__);
 		}
 
 		// Make some short variables accessible, for easier referencing
 		$convert->convertor_tag = basename($convert->options['tag']);
+		$convert->src_dbms = $convert->options['dbms'];
+		$convert->src_dbhost = $convert->options['dbhost'];
+		$convert->src_dbport = $convert->options['dbport'];
+		$convert->src_dbuser = $convert->options['dbuser'];
+		$convert->src_dbpasswd = $convert->options['dbpasswd'];
+		$convert->src_dbname = $convert->options['dbname'];
 		$convert->src_table_prefix = $convert->options['table_prefix'];
 
+		// initiate database connection to old db if old and new db differ
+		global $src_db, $same_db;
+		$src_db = $same_db = null;
+		if ($convert->src_dbms != $dbms || $convert->src_dbhost != $dbhost || $convert->src_dbport != $dbport || $convert->src_dbname != $dbname || $convert->src_dbuser != $dbuser)
+		{
+			if ($convert->src_dbms != $dbms)
+			{
+				require($phpbb_root_path . 'includes/db/' . $convert->src_dbms . '.' . $phpEx);
+			}
+			$sql_db = 'dbal_' . $convert->src_dbms;
+			$src_db = new $sql_db();
+			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, $convert->src_dbpasswd, $convert->src_dbname, $convert->src_dbport, false);
+			$same_db = false;
+		}
+		else
+		{
+			$src_db = &$db;
+			$same_db = true;
+		}
+
+		$convert->mysql_convert = false;
+		switch ($src_db->sql_layer)
+		{
+			case 'sqlite':
+			case 'firebird':
+				$convert->src_truncate_statement = 'DELETE FROM ';
+			break;
+
+			// Thanks MySQL, for silently converting...
+			case 'mysql':
+			case 'mysql4':
+				if (version_compare($src_db->mysql_version, '4.1.3', '>='))
+				{
+					$convert->mysql_convert = true;
+				}
+				$convert->src_truncate_statement = 'TRUNCATE TABLE ';
+			break;
+
+			case 'mysqli':
+				$convert->mysql_convert = true;
+				$convert->src_truncate_statement = 'TRUNCATE TABLE ';
+			break;
+
+			default:
+				$convert->src_truncate_statement = 'TRUNCATE TABLE ';
+			break;
+		}
+
+		if ($convert->mysql_convert && !$same_db)
+		{
+			$src_db->sql_query("SET NAMES 'binary'");
+		}
 
 		switch ($db->sql_layer)
 		{
@@ -785,19 +908,19 @@ class install_convert extends module
 				}
 
 				// Check if the tables that we need exist
-				$db->sql_return_on_error(true);
+				$src_db->sql_return_on_error(true);
 				foreach ($tables_list as $table => $null)
 				{
 					$sql = 'SELECT 1 FROM ' . $table;
-					$_result = $db->sql_query_limit($sql, 1);
+					$_result = $src_db->sql_query_limit($sql, 1);
 
 					if (!$_result)
 					{
 						$missing_tables[] = $table;
 					}
-					$db->sql_freeresult($_result);
+					$src_db->sql_freeresult($_result);
 				}
-				$db->sql_return_on_error(false);
+				$src_db->sql_return_on_error(false);
 
 				// Throw an error if some tables are missing
 				// We used to do some guessing here, but since we have a suggestion of possible values earlier, I don't see it adding anything here to do it again
@@ -812,7 +935,21 @@ class install_convert extends module
 				}
 
 				$step = '&amp;confirm=1';
-				set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+				set_config('convert_progress', serialize(array(
+					'step'			=> $step,
+					'table_prefix'	=> $convert->src_table_prefix,
+					'tag'			=> $convert->convertor_tag,
+				)), true);
+				set_config('convert_db_server', serialize(array(
+					'dbms'			=> $convert->src_dbms,
+					'dbhost'		=> $convert->src_dbhost,
+					'dbport'		=> $convert->src_dbport,
+					'dbname'		=> $convert->src_dbname,
+				)), true);
+				set_config('convert_db_user', serialize(array(
+					'dbuser'		=> $convert->src_dbuser,
+					'dbpasswd'		=> $convert->src_dbpasswd,
+				)), true);
 
 				$msg = $user->lang['PRE_CONVERT_COMPLETE'] . '</p><p>' . sprintf($user->lang['AUTHOR_NOTES'], $convert->convertor_data['author_notes']);
 				$url = $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
@@ -858,12 +995,33 @@ class install_convert extends module
 			{
 				if (!is_array($convert->convertor['query_first']))
 				{
-					$convert->convertor['query_first'] = array($convert->convertor['query_first']);
+					$convert->convertor['query_first'] = array('target', array($convert->convertor['query_first']));
+				}
+				else if (!is_array($convert->convertor['query_first'][0]))
+				{
+					$convert->convertor['query_first'] = array(array($convert->convertor['query_first'][0], $convert->convertor['query_first'][1]));
 				}
 
 				foreach ($convert->convertor['query_first'] as $query_first)
 				{
-					$db->sql_query($query_first);
+					if ($query_first[0] == 'src')
+					{
+						if ($convert->mysql_convert && $same_db)
+						{
+							$src_db->sql_query("SET NAMES 'binary'");
+						}
+
+						$src_db->sql_query($query_first[1]);
+
+						if ($convert->mysql_convert && $same_db)
+						{
+							$src_db->sql_query("SET NAMES 'utf8'");
+						}
+					}
+					else
+					{
+						$db->sql_query($query_first[1]);
+					}
 				}
 			}
 
@@ -907,12 +1065,31 @@ class install_convert extends module
 				{
 					if (!is_array($schema['query_first']))
 					{
-						$schema['query_first'] = array($schema['query_first']);
+						$schema['query_first'] = array('target', array($schema['query_first']));
+					}
+					else if (!is_array($schema['query_first'][0]))
+					{
+						$schema['query_first'] = array(array($schema['query_first'][0], $schema['query_first'][1]));
 					}
 
 					foreach ($schema['query_first'] as $query_first)
 					{
-						$db->sql_query($query_first);
+						if ($query_first[0] == 'src')
+						{
+							if ($convert->mysql_convert && $same_db)
+							{
+								$src_db->sql_query("SET NAMES 'binary'");
+							}
+							$src_db->sql_query($query_first[1]);
+							if ($convert->mysql_convert && $same_db)
+							{
+								$src_db->sql_query("SET NAMES 'utf8'");
+							}
+						}
+						else
+						{
+							$db->sql_query($query_first[1]);
+						}
 					}
 				}
 
@@ -1004,17 +1181,17 @@ class install_convert extends module
 				$mtime = explode(' ', microtime());
 				$batch_time = $mtime[0] + $mtime[1];
 
-				if ($convert->mysql_convert)
+				if ($convert->mysql_convert && $same_db)
 				{
-					$db->sql_query("SET NAMES 'binary'");
+					$src_db->sql_query("SET NAMES 'binary'");
 				}
 
 				// Take skip rows into account and only fetch batch_size amount of rows
-				$___result = $db->sql_query_limit($sql, $convert->batch_size, $skip_rows);
+				$___result = $src_db->sql_query_limit($sql, $convert->batch_size, $skip_rows);
 
-				if ($convert->mysql_convert)
+				if ($convert->mysql_convert && $same_db)
 				{
-					$db->sql_query("SET NAMES 'utf8'");
+					$src_db->sql_query("SET NAMES 'utf8'");
 				}
 
 				// This loop processes each row
@@ -1036,12 +1213,12 @@ class install_convert extends module
 				// Now handle the rows until time is over or no more rows to process...
 				while (still_on_time())
 				{
-					$convert_row = $db->sql_fetchrow($___result);
+					$convert_row = $src_db->sql_fetchrow($___result);
 
 					if (!$convert_row)
 					{
 						// move to the next batch or table
-						$db->sql_freeresult($___result);
+						$src_db->sql_freeresult($___result);
 						break;
 					}
 
@@ -1184,7 +1361,21 @@ class install_convert extends module
 				$step = '&amp;current_table=' . $current_table . '&amp;skip_rows=' . $skip_rows;
 
 				// Save convertor Status
-				set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+				set_config('convert_progress', serialize(array(
+					'step'			=> $step,
+					'table_prefix'	=> $convert->src_table_prefix,
+					'tag'			=> $convert->convertor_tag,
+				)), true);
+				set_config('convert_db_server', serialize(array(
+					'dbms'			=> $convert->src_dbms,
+					'dbhost'		=> $convert->src_dbhost,
+					'dbport'		=> $convert->src_dbport,
+					'dbname'		=> $convert->src_dbname,
+				)), true);
+				set_config('convert_db_user', serialize(array(
+					'dbuser'		=> $convert->src_dbuser,
+					'dbpasswd'		=> $convert->src_dbpasswd,
+				)), true);
 
 				$current_table++;
 //				$percentage = ($skip_rows == 0) ? 0 : floor(100 / ($total_rows / $skip_rows));
@@ -1208,7 +1399,21 @@ class install_convert extends module
 		$step = '&amp;jump=1';
 
 		// Save convertor Status
-		set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+		set_config('convert_progress', serialize(array(
+			'step'			=> $step,
+			'table_prefix'	=> $convert->src_table_prefix,
+			'tag'			=> $convert->convertor_tag,
+		)), true);
+		set_config('convert_db_server', serialize(array(
+			'dbms'			=> $convert->src_dbms,
+			'dbhost'		=> $convert->src_dbhost,
+			'dbport'		=> $convert->src_dbport,
+			'dbname'		=> $convert->src_dbname,
+		)), true);
+		set_config('convert_db_user', serialize(array(
+			'dbuser'		=> $convert->src_dbuser,
+			'dbpasswd'		=> $convert->src_dbpasswd,
+		)), true);
 
 		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 	
@@ -1278,7 +1483,10 @@ class install_convert extends module
 			$sync_batch = -1;
 
 			$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
-				WHERE config_name = 'convert_progress' OR config_name = 'convert_options'");
+				WHERE config_name = 'convert_progress'
+					OR config_name = 'convert_options'
+					OR config_name = 'convert_db_server'
+					OR config_name = 'convert_db_user'");
 			$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
 			@unlink($phpbb_root_path . 'cache/data_global.php');
@@ -1305,7 +1513,21 @@ class install_convert extends module
 		$step = '&amp;sync_batch=' . $sync_batch;
 
 		// Save convertor Status
-		set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->options['table_prefix'], 'tag' => $convert->convertor_tag)), true);
+		set_config('convert_progress', serialize(array(
+			'step'			=> $step,
+			'table_prefix'	=> $convert->src_table_prefix,
+			'tag'			=> $convert->convertor_tag,
+		)), true);
+		set_config('convert_db_server', serialize(array(
+			'dbms'			=> $convert->src_dbms,
+			'dbhost'		=> $convert->src_dbhost,
+			'dbport'		=> $convert->src_dbport,
+			'dbname'		=> $convert->src_dbname,
+		)), true);
+		set_config('convert_db_user', serialize(array(
+			'dbuser'		=> $convert->src_dbuser,
+			'dbpasswd'		=> $convert->src_dbpasswd,
+		)), true);
 
 		$url = $this->p_master->module_url . "?mode=$this->mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
@@ -1323,7 +1545,7 @@ class install_convert extends module
 	*/
 	function jump($jump, $last_statement)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $template, $user, $src_db, $same_db, $db, $phpbb_root_path, $phpEx, $config, $cache;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1355,7 +1577,21 @@ class install_convert extends module
 						$step = '&amp;jump=1&amp;last=' . $last_statement;
 
 						// Save convertor Status
-						set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+						set_config('convert_progress', serialize(array(
+							'step'			=> $step,
+							'table_prefix'	=> $convert->src_table_prefix,
+							'tag'			=> $convert->convertor_tag,
+						)), true);
+						set_config('convert_db_server', serialize(array(
+							'dbms'			=> $convert->src_dbms,
+							'dbhost'		=> $convert->src_dbhost,
+							'dbport'		=> $convert->src_dbport,
+							'dbname'		=> $convert->src_dbname,
+						)), true);
+						set_config('convert_db_user', serialize(array(
+							'dbuser'		=> $convert->src_dbuser,
+							'dbpasswd'		=> $convert->src_dbpasswd,
+						)), true);
 
 						$percentage = ($last_statement == 0) ? 0 : floor(100 / (sizeof($convert->convertor['execute_last']) / $last_statement));
 						$msg = sprintf($user->lang['STEP_PERCENT_COMPLETED'], $last_statement, sizeof($convert->convertor['execute_last']), $percentage);
@@ -1377,17 +1613,39 @@ class install_convert extends module
 			{
 				if (!is_array($convert->convertor['query_last']))
 				{
-					$convert->convertor['query_last'] = array($convert->convertor['query_last']);
+					$convert->convertor['query_last'] = array('target', array($convert->convertor['query_last']));
+				}
+				else if (!is_array($convert->convertor['query_last'][0]))
+				{
+					$convert->convertor['query_last'] = array(array($convert->convertor['query_last'][0], $convert->convertor['query_last'][1]));
 				}
 
 				foreach ($convert->convertor['query_last'] as $query_last)
 				{
-					$db->sql_query($query_last);
+					if ($query_last[0] == 'src')
+					{
+						if ($convert->mysql_convert && $same_db)
+						{
+							$src_db->sql_query("SET NAMES 'binary'");
+						}
+
+						$src_db->sql_query($query_last[1]);
+
+						if ($convert->mysql_convert && $same_db)
+						{
+							$src_db->sql_query("SET NAMES 'utf8'");
+						}
+					}
+					else
+					{
+						$db->sql_query($query_last[1]);
+					}
 				}
 			}
 
 			// Sanity check
 			$db->sql_return_on_error(false);
+			$src_db->sql_return_on_error(false);
 
 			fix_empty_primary_groups();
 
@@ -1416,7 +1674,21 @@ class install_convert extends module
 			$step = '&amp;jump=2';
 
 			// Save convertor Status
-			set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+			set_config('convert_progress', serialize(array(
+				'step'			=> $step,
+				'table_prefix'	=> $convert->src_table_prefix,
+				'tag'			=> $convert->convertor_tag,
+			)), true);
+			set_config('convert_db_server', serialize(array(
+				'dbms'			=> $convert->src_dbms,
+				'dbhost'		=> $convert->src_dbhost,
+				'dbport'		=> $convert->src_dbport,
+				'dbname'		=> $convert->src_dbname,
+			)), true);
+			set_config('convert_db_user', serialize(array(
+				'dbuser'		=> $convert->src_dbuser,
+				'dbpasswd'		=> $convert->src_dbpasswd,
+			)), true);
 
 			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
@@ -1446,7 +1718,21 @@ class install_convert extends module
 			$step = '&amp;jump=3';
 
 			// Save convertor Status
-			set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+			set_config('convert_progress', serialize(array(
+				'step'			=> $step,
+				'table_prefix'	=> $convert->src_table_prefix,
+				'tag'			=> $convert->convertor_tag,
+			)), true);
+			set_config('convert_db_server', serialize(array(
+				'dbms'			=> $convert->src_dbms,
+				'dbhost'		=> $convert->src_dbhost,
+				'dbport'		=> $convert->src_dbport,
+				'dbname'		=> $convert->src_dbname,
+			)), true);
+			set_config('convert_db_user', serialize(array(
+				'dbuser'		=> $convert->src_dbuser,
+				'dbpasswd'		=> $convert->src_dbpasswd,
+			)), true);
 
 			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
@@ -1472,7 +1758,21 @@ class install_convert extends module
 			$step = '&amp;sync_batch=0';
 
 			// Save convertor Status
-			set_config('convert_progress', serialize(array('step' => $step, 'table_prefix' => $convert->src_table_prefix, 'tag' => $convert->convertor_tag)), true);
+			set_config('convert_progress', serialize(array(
+				'step'			=> $step,
+				'table_prefix'	=> $convert->src_table_prefix,
+				'tag'			=> $convert->convertor_tag,
+			)), true);
+			set_config('convert_db_server', serialize(array(
+				'dbms'			=> $convert->src_dbms,
+				'dbhost'		=> $convert->src_dbhost,
+				'dbport'		=> $convert->src_dbport,
+				'dbname'		=> $convert->src_dbname,
+			)), true);
+			set_config('convert_db_user', serialize(array(
+				'dbuser'		=> $convert->src_dbuser,
+				'dbpasswd'		=> $convert->src_dbpasswd,
+			)), true);
 
 			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
@@ -1810,10 +2110,16 @@ class install_convert extends module
 	*/
 	var $convert_options = array(
 		'legend1'			=> 'SPECIFY_OPTIONS',
+		'src_dbms'			=> array('lang' => 'DBMS',			'type' => 'select', 'options' => 'dbms_select(\'{VALUE}\')', 'explain' => false),
+		'src_dbhost'		=> array('lang' => 'DB_HOST',		'type' => 'text:25:100', 'explain' => true),
+		'src_dbport'		=> array('lang' => 'DB_PORT',		'type' => 'text:25:100', 'explain' => true),
+		'src_dbname'		=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
+		'src_dbuser'		=> array('lang' => 'DB_USERNAME',	'type' => 'text:25:100', 'explain' => false),
+		'src_dbpasswd'		=> array('lang' => 'DB_PASSWORD',	'type' => 'password:25:100', 'explain' => false),
 		'src_table_prefix'	=> array('lang' => 'TABLE_PREFIX',	'type' => 'text:25:100', 'explain' => false),
 		//'src_url'			=> array('lang' => 'FORUM_ADDRESS',	'type' => 'text:50:100', 'explain' => true),
 		'forum_path'		=> array('lang' => 'FORUM_PATH',	'type' => 'text:25:100', 'explain' => true),
-		'refresh'			=> array('lang' => 'REFRESH_PAGE', 'type' => 'radio:yes_no', 'explain' => true),
+		'refresh'			=> array('lang' => 'REFRESH_PAGE',	'type' => 'radio:yes_no', 'explain' => true),
 	);
 }
 

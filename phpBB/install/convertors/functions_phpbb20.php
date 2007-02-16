@@ -46,16 +46,16 @@ function phpbb_forum_flags()
 */
 function phpbb_insert_forums()
 {
-	global $db, $convert, $user, $config;
+	global $db, $src_db, $same_db, $convert, $user, $config;
 
 	$db->sql_query($convert->truncate_statement . FORUMS_TABLE);
 
 	// Determine the highest id used within the old forums table (we add the categories after the forum ids)
 	$sql = 'SELECT MAX(forum_id) AS max_forum_id
 		FROM ' . $convert->src_table_prefix . 'forums';
-	$result = $db->sql_query($sql);
-	$max_forum_id = (int) $db->sql_fetchfield('max_forum_id');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$max_forum_id = (int) $src_db->sql_fetchfield('max_forum_id');
+	$src_db->sql_freeresult($result);
 
 	$max_forum_id++;
 
@@ -64,16 +64,16 @@ function phpbb_insert_forums()
 		FROM ' . $convert->src_table_prefix . 'categories
 		ORDER BY cat_order';
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'binary'");
+		$src_db->sql_query("SET NAMES 'binary'");
 	}
 
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'utf8'");
+		$src_db->sql_query("SET NAMES 'utf8'");
 	}
 
 	switch ($db->sql_layer)
@@ -85,7 +85,7 @@ function phpbb_insert_forums()
 	}
 
 	$cats_added = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$sql_ary = array(
 			'forum_id'		=> $max_forum_id,
@@ -113,17 +113,17 @@ function phpbb_insert_forums()
 		$cats_added[$row['cat_id']] = $max_forum_id;
 		$max_forum_id++;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	// There may be installations having forums with non-existant category ids.
 	// We try to catch them and add them to an "unknown" category instead of leaving them out.
 	$sql = 'SELECT cat_id
 		FROM ' . $convert->src_table_prefix . 'forums
 		GROUP BY cat_id';
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$unknown_cat_id = false;
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		// Catch those categories not been added before
 		if (!isset($cats_added[$row['cat_id']]))
@@ -131,7 +131,7 @@ function phpbb_insert_forums()
 			$unknown_cat_id = true;
 		}
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	// Is there at least one category not known?
 	if ($unknown_cat_id === true)
@@ -171,19 +171,19 @@ function phpbb_insert_forums()
 		GROUP BY f.forum_id, f.forum_name, f.cat_id, f.forum_desc, f.forum_status, f.prune_enable, f.prune_next, f.forum_order, fp.prune_days, fp.prune_freq
 		ORDER BY f.cat_id, f.forum_order';
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'binary'");
+		$src_db->sql_query("SET NAMES 'binary'");
 	}
 
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'utf8'");
+		$src_db->sql_query("SET NAMES 'utf8'");
 	}
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		// Some might have forums here with an id not being "possible"...
 		// To be somewhat friendly we "change" the category id for those to a previously created ghost category
@@ -266,7 +266,7 @@ function phpbb_insert_forums()
 		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	switch ($db->sql_layer)
 	{
@@ -342,14 +342,24 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 		}
 		else if (!empty($convert_row['poster_id']))
 		{
-			global $db;
+			global $src_db, $same_db;
+
+			if ($convert->mysql_convert && $same_db)
+			{
+				$src_db->sql_query("SET NAMES 'binary'");
+			}
 
 			$sql = 'SELECT user_lang
 				FROM ' . $convert->src_table_prefix . 'users
 				WHERE user_id = ' . (int) $convert_row['poster_id'];
-			$result = $db->sql_query($sql);
-			$get_lang = (string) $db->sql_fetchfield('user_lang');
-			$db->sql_freeresult($result);
+			$result = $src_db->sql_query($sql);
+			$get_lang = (string) $src_db->sql_fetchfield('user_lang');
+			$src_db->sql_freeresult($result);
+
+			if ($convert->mysql_convert && $same_db)
+			{
+				$src_db->sql_query("SET NAMES 'utf8'");
+			}
 
 			$get_lang = (!trim($get_lang)) ? trim(get_config_value('default_lang')) : trim($get_lang);
 		}
@@ -441,15 +451,25 @@ function phpbb_user_id($user_id)
 	// Increment user id if the old forum is having a user with the id 1
 	if (!isset($config['increment_user_id']))
 	{
-		global $db, $convert;
+		global $src_db, $same_db, $convert;
+
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'binary'");
+		}
 
 		// Now let us set a temporary config variable for user id incrementing
 		$sql = "SELECT user_id
 			FROM {$convert->src_table_prefix}users
 			WHERE user_id = 1";
-		$result = $db->sql_query($sql);
-		$id = (int) $db->sql_fetchfield('user_id');
-		$db->sql_freeresult($result);
+		$result = $src_db->sql_query($sql);
+		$id = (int) $src_db->sql_fetchfield('user_id');
+		$src_db->sql_freeresult($result);
+
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'utf8'");
+		}
 
 		// If there is a user id 1, we need to increment user ids. :/
 		if ($id === 1)
@@ -484,7 +504,7 @@ function phpbb_copy_table_fields()
 */
 function phpbb_convert_authentication($mode)
 {
-	global $db, $convert, $user, $config, $cache;
+	global $db, $src_db, $same_db, $convert, $user, $config, $cache;
 
 	if ($mode == 'start')
 	{
@@ -494,14 +514,15 @@ function phpbb_convert_authentication($mode)
 		// What we will do is handling all 2.0.x admins as founder to replicate what is common in 2.0.x.
 		// After conversion the main admin need to make sure he is removing permissions and the founder status if wanted.
 
+
 		// Grab user ids of users with user_level of ADMIN
 		$sql = "SELECT user_id
 			FROM {$convert->src_table_prefix}users
 			WHERE user_level = 1
 			ORDER BY user_regdate ASC";
-		$result = $db->sql_query($sql);
+		$result = $src_db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $src_db->sql_fetchrow($result))
 		{
 			$user_id = (int) phpbb_user_id($row['user_id']);
 
@@ -511,49 +532,58 @@ function phpbb_convert_authentication($mode)
 				WHERE user_id = $user_id";
 			$db->sql_query($sql);
 		}
-		$db->sql_freeresult($result);
+		$src_db->sql_freeresult($result);
 	}
 
 	// Grab forum auth information
 	$sql = "SELECT *
 		FROM {$convert->src_table_prefix}forums";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$forum_access = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$forum_access[] = $row;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'binary'");
+	}
 	// Grab user auth information from 2.0.x board
 	$sql = "SELECT ug.user_id, aa.*
 		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}user_group ug, {$convert->src_table_prefix}groups g
 		WHERE g.group_id = aa.group_id
 			AND g.group_single_user = 1
 			AND ug.group_id = g.group_id";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$user_access = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$user_access[$row['forum_id']][] = $row;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	// Grab group auth information
 	$sql = "SELECT g.group_id, aa.*
 		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}groups g
 		WHERE g.group_id = aa.group_id
 			AND g.group_single_user <> 1";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$group_access = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$group_access[$row['forum_id']][] = $row;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
 
 	// Add Forum Access List
 	$auth_map = array(
@@ -852,25 +882,25 @@ function phpbb_convert_authentication($mode)
 		$sql = 'SELECT user_id FROM ' . $convert->src_table_prefix . 'users
 			WHERE user_allowavatar = 0
 				AND user_id > 0';
-		$result = $db->sql_query($sql);
+		$result = $src_db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $src_db->sql_fetchrow($result))
 		{
 			mass_auth('user_role', 0, (int) phpbb_user_id($row['user_id']), 'USER_NOAVATAR');
 		}
-		$db->sql_freeresult($result);
+		$src_db->sql_freeresult($result);
 
 		// And the same for those who have had their PM rights removed
 		$sql = 'SELECT user_id FROM ' . $convert->src_table_prefix . 'users
 			WHERE user_allow_pm = 0
 				AND user_id > 0';
-		$result = $db->sql_query($sql);
+		$result = $src_db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $src_db->sql_fetchrow($result))
 		{
 			mass_auth('user_role', 0, (int) phpbb_user_id($row['user_id']), 'USER_NOPM');
 		}
-		$db->sql_freeresult($result);
+		$src_db->sql_freeresult($result);
 	}
 	else if ($mode == 'third')
 	{
@@ -1169,21 +1199,30 @@ function phpbb_get_files_dir()
 		return;
 	}
 
-	global $db, $convert, $user, $config, $cache;
+	global $src_db, $same_db, $convert, $user, $config, $cache;
 
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'binary'");
+	}
 	$sql = 'SELECT config_value AS upload_dir
 		FROM ' . $convert->src_table_prefix . "attachments_config
 		WHERE config_name = 'upload_dir'";
-	$result = $db->sql_query($sql);
-	$upload_path = $db->sql_fetchfield('upload_dir');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$upload_path = $src_db->sql_fetchfield('upload_dir');
+	$src_db->sql_freeresult($result);
 
 	$sql = 'SELECT config_value AS ftp_upload
 		FROM ' . $convert->src_table_prefix . "attachments_config
 		WHERE config_name = 'allow_ftp_upload'";
-	$result = $db->sql_query($sql);
-	$ftp_upload = (int) $db->sql_fetchfield('ftp_upload');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$ftp_upload = (int) $src_db->sql_fetchfield('ftp_upload');
+	$src_db->sql_freeresult($result);
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
 
 	if ($ftp_upload)
 	{
@@ -1402,18 +1441,28 @@ function phpbb_get_savebox_id($user_id)
 */
 function phpbb_import_attach_config()
 {
-	global $db, $convert, $config;
+	global $db, $src_db, $same_db, $convert, $config;
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'binary'");
+	}
 
 	$sql = 'SELECT *
 		FROM ' . $convert->src_table_prefix . 'attachments_config';
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
 
 	$attach_config = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$attach_config[$row['config_name']] = $row['config_value'];
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	set_config('allow_attachments', 1);
 

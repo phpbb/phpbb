@@ -115,6 +115,7 @@ include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
 include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 // Try and load an appropriate language if required
 $language = request_var('language', '');

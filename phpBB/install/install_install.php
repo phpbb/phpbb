@@ -208,7 +208,7 @@ class install_install extends module
 *		Better not enabling and adding to the loaded extensions due to the specific requirements needed
 		if (!@extension_loaded('mbstring'))
 		{
-			$this->can_load_dll('mbstring');
+			can_load_dll('mbstring');
 		}
 */
 
@@ -276,35 +276,32 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SUPPORTED_DB_EXPLAIN'],
 		));
 
-		$dlls_db = array();
-		$passed['db'] = false;
-		foreach ($this->available_dbms as $db_name => $db_ary)
+		$available_dbms = get_available_dbms(false, true);
+		$passed['db'] = $available_dbms['ANY_DB_SUPPORT'];
+		unset($available_dbms['ANY_DB_SUPPORT']);
+
+		foreach ($available_dbms as $db_name => $db_ary)
 		{
-			$dll = $db_ary['MODULE'];
-
-			if (!@extension_loaded($dll))
+			if (!$db_ary['AVAILABLE'])
 			{
-				if (!$this->can_load_dll($dll))
-				{
-					$template->assign_block_vars('checks', array(
-						'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-						'RESULT'	=> '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>',
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
+					'RESULT'	=> '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>',
 
-						'S_EXPLAIN'	=> false,
-						'S_LEGEND'	=> false,
-					));
-					continue;
-				}
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
 			}
+			else
+			{
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
+					'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
 
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
-
-				'S_EXPLAIN'	=> false,
-				'S_LEGEND'	=> false,
-			));
-			$passed['db'] = true;
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+			}
 		}
 
 		// Test for other modules
@@ -318,7 +315,7 @@ class install_install extends module
 		{
 			if (!@extension_loaded($dll))
 			{
-				if (!$this->can_load_dll($dll))
+				if (!can_load_dll($dll))
 				{
 					$template->assign_block_vars('checks', array(
 						'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
@@ -502,21 +499,22 @@ class install_install extends module
 		}
 
 		$connect_test = false;
+		$error = array();
+		$available_dbms = get_available_dbms(false, true);
 
 		// Has the user opted to test the connection?
 		if (isset($_POST['testdb']))
 		{
-			// If the module for the selected database isn't loaded, let's try and load it now
-			if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
+			if (!isset($available_dbms[$dbms]) || !$available_dbms[$dbms]['AVAILABLE'])
 			{
-				if (!$this->can_load_dll($this->available_dbms[$dbms]['MODULE']))
-				{
-					$error['db'][] = $lang['INST_ERR_NO_DB'];
-				}
+				$error['db'][] = $lang['INST_ERR_NO_DB'];
+				$connect_test = false;
 			}
-			
-			$dbpasswd = htmlspecialchars_decode($dbpasswd);
-			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
+			else
+			{
+				$dbpasswd = htmlspecialchars_decode($dbpasswd);
+				$connect_test = connect_check_db(true, $error, $available_dbms[$dbms], $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
+			}
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
@@ -550,20 +548,17 @@ class install_install extends module
 		{
 			// Update the list of available DBMS modules to only contain those which can be used
 			$available_dbms_temp = array();
-			foreach ($this->available_dbms as $type => $dbms_ary)
+			foreach ($available_dbms as $type => $dbms_ary)
 			{
-				if (!@extension_loaded($dbms_ary['MODULE']))
+				if (!$dbms_ary['AVAILABLE'])
 				{
-					if (!$this->can_load_dll($dbms_ary['MODULE']))
-					{
-						continue;
-					}
+					continue;
 				}
 
 				$available_dbms_temp[$type] = $dbms_ary;
 			}
 
-			$this->available_dbms = &$available_dbms_temp;
+			$available_dbms = &$available_dbms_temp;
 
 			// And now for the main part of this page
 			$table_prefix = (!empty($table_prefix) ? $table_prefix : 'phpbb_');
@@ -828,7 +823,8 @@ class install_install extends module
 
 		// Create a list of any PHP modules we wish to have loaded
 		$load_extensions = array();
-		$check_exts = array_merge(array($this->available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
+		$available_dbms = get_available_dbms($dbms);
+		$check_exts = array_merge(array($available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
 
 		$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
 
@@ -836,7 +832,7 @@ class install_install extends module
 		{
 			if (!@extension_loaded($dll))
 			{
-				if (!$this->can_load_dll($dll))
+				if (!can_load_dll($dll))
 				{
 					continue;
 				}
@@ -860,7 +856,7 @@ class install_install extends module
 		// Time to convert the data provided into a config file
 		$config_data = "<?php\n";
 		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-		$config_data .= "\$dbms = '" . $this->available_dbms[$dbms]['DRIVER'] . "';\n";
+		$config_data .= "\$dbms = '" . $available_dbms[$dbms]['DRIVER'] . "';\n";
 		$config_data .= "\$dbhost = '$dbhost';\n";
 		$config_data .= "\$dbport = '$dbport';\n";
 		$config_data .= "\$dbname = '$dbname';\n";
@@ -1085,19 +1081,16 @@ class install_install extends module
 			$cookie_domain = str_replace('www.', '.', $cookie_domain);
 		}
 
-		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
-		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
-		{
-			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
-		}
+		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it
+		$available_dbms = get_available_dbms($dbms);
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
+		$sql_db = 'dbal_' . $available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
@@ -1109,21 +1102,21 @@ class install_install extends module
 		{
 			if (version_compare($db->mysql_version, '4.1.3', '>='))
 			{
-				$this->available_dbms[$dbms]['SCHEMA'] .= '_41';
+				$available_dbms[$dbms]['SCHEMA'] .= '_41';
 			}
 			else
 			{
-				$this->available_dbms[$dbms]['SCHEMA'] .= '_40';
+				$available_dbms[$dbms]['SCHEMA'] .= '_40';
 			}
 		}
 
 		// Ok we have the db info go ahead and read in the relevant schema
 		// and work on building the table
-		$dbms_schema = 'schemas/' . $this->available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
+		$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
 
 		// How should we treat this schema?
-		$remove_remarks = $this->available_dbms[$dbms]['COMMENTS'];
-		$delimiter = $this->available_dbms[$dbms]['DELIM'];
+		$remove_remarks = $available_dbms[$dbms]['COMMENTS'];
+		$delimiter = $available_dbms[$dbms]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
 
@@ -1309,7 +1302,7 @@ class install_install extends module
 
 		if (!@extension_loaded('gd'))
 		{
-			$this->can_load_dll('gd');
+			can_load_dll('gd');
 		}
 
 		// This is for people who have TTF and GD
@@ -1372,16 +1365,13 @@ class install_install extends module
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
-		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
-		{
-			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
-		}
+		$available_dbms = get_available_dbms($dbms);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
+		$sql_db = 'dbal_' . $available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
 
@@ -1790,317 +1780,6 @@ class install_install extends module
 			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx),
 		));
 	}
-	
-	/**
-	* Determine if we are able to load a specified PHP module
-	*/
-	function can_load_dll($dll)
-	{
-		global $suffix;
-
-		if (empty($suffix))
-		{
-			$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
-		}
-
-		return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
-	}
-
-	/**
-	* Used to test whether we are able to connect to the database the user has specified
-	* and identify any problems (eg there are already tables with the names we want to use
-	*/
-	function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport)
-	{
-		global $phpbb_root_path, $phpEx, $config, $lang;
-
-		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
-
-		// Instantiate it and set return on error true
-		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
-		$db = new $sql_db();
-		$db->sql_return_on_error(true);
-
-		// Check that we actually have a database name before going any further.....
-		if ($dbms != 'sqlite' && $dbname === '')
-		{
-			$error[] = $lang['INST_ERR_DB_NO_NAME'];
-			return false;
-		}
-
-		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-		if ($dbms == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
-		{
-			$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
-			return false;
-		}
-
-		// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
-		switch ($dbms)
-		{
-			case 'mysql':
-			case 'mysqli':
-				if (strpos($table_prefix, '-') !== false)
-				{
-					$error[] = $lang['INST_ERR_PREFIX_INVALID'];
-					return false;
-				}
-
-			// no break;
-
-			case 'postgres':
-				$prefix_length = 36;
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-				$prefix_length = 90;
-			break;
-
-			case 'sqlite':
-				$prefix_length = 200;
-			break;
-
-			case 'firebird':
-			case 'oracle':
-				$prefix_length = 6;
-			break;
-		}
-
-		if (strlen($table_prefix) > $prefix_length)
-		{
-			$error[] = sprintf($lang['INST_ERR_PREFIX_TOO_LONG'], $prefix_length);
-			return false;
-		}
-
-		// Try and connect ...
-		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
-		{
-			$db_error = $db->sql_error();
-			$error[] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
-		}
-		else
-		{
-			switch ($dbms)
-			{
-				case 'mysql':
-				case 'mysqli':
-					$sql = 'SHOW TABLES';
-					$field = "Tables_in_{$dbname}";
-				break;
-
-				case 'sqlite':
-					$sql = 'SELECT name
-						FROM sqlite_master
-						WHERE type = "table"';
-					$field = 'name';
-				break;
-
-				case 'mssql':
-				case 'mssql_odbc':
-					$sql = "SELECT name 
-						FROM sysobjects 
-						WHERE type='U'";
-					$field = 'name';
-				break;
-
-				case 'postgres':
-					$sql = "SELECT relname 
-						FROM pg_class 
-						WHERE relkind = 'r' 
-							AND relname NOT LIKE 'pg\_%'";
-					$field = 'relname';
-				break;
-
-				case 'firebird':
-					$sql = 'SELECT rdb$relation_name
-						FROM rdb$relations
-						WHERE rdb$view_source is null
-							AND rdb$system_flag = 0';
-					$field = 'rdb$relation_name';
-				break;
-
-				case 'oracle':
-					$sql = 'SELECT table_name
-						FROM USER_TABLES';
-					$field = 'table_name';
-				break;
-			}
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				// Likely matches for an existing phpBB installation
-				$temp_prefix = strtolower($table_prefix);
-				$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
-
-				do
-				{
-					// All phpBB installations will at least have config else it won't work
-					if (in_array(strtolower($row[$field]), $table_ary))
-					{
-						$error[] = $lang['INST_ERR_PREFIX'];
-						break;
-					}
-				}
-				while ($row = $db->sql_fetchrow($result));
-			}
-			$db->sql_freeresult($result);
-
-			// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
-			switch ($dbms)
-			{
-				case 'mysqli':
-					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
-					{
-						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
-					}
-				break;
-
-				case 'sqlite':
-					if (version_compare(sqlite_libversion(), '2.8.2', '<'))
-					{
-						$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
-					}
-				break;
-
-				case 'firebird':
-					// check the version of FB, use some hackery if we can't get access to the server info
-					if ($db->service_handle !== false && function_exists('ibase_server_info'))
-					{
-						$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
-						preg_match('#V([\d.]+)#', $val, $match);
-						if ($match[1] < 2)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
-						}
-						$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
-
-						preg_match('/^\\s*Page size\\s*(\\d+)/m', $db_info, $regs);
-						$page_size = intval($regs[1]);
-						if ($page_size < 8192)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
-						}
-					}
-					else
-					{
-						$sql = "SELECT *
-							FROM RDB$FUNCTIONS
-							WHERE RDB$SYSTEM_FLAG IS NULL
-								AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
-
-						// if its a UDF, its too old
-						if ($row)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
-						}
-						else
-						{
-							$sql = "SELECT FIRST 0 char_length('')
-								FROM RDB\$DATABASE";
-							$result = $db->sql_query($sql);
-							if (!$result) // This can only fail if char_length is not defined
-							{
-								$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
-							}
-							$db->sql_freeresult($result);
-						}
-
-						// Setup the stuff for our random table
-						$char_array = array_merge(range('A', 'Z'), range('0', '9'));
-						$char_len = mt_rand(7, 9);
-						$char_array_len = sizeof($char_array) - 1;
-
-						$final = '';
-
-						for ($i = 0; $i < $char_len; $i++)
-						{
-							$final .= $char_array[mt_rand(0, $char_array_len)];
-						}
-
-						// Create some random table
-						$sql = 'CREATE TABLE ' . $final . " (
-							FIELD1 VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-							FIELD2 INTEGER DEFAULT 0 NOT NULL);";
-						$db->sql_query($sql);
-
-						// Create an index that should fail if the page size is less than 8192
-						$sql = 'CREATE INDEX ' . $final . ' ON ' . $final . '(FIELD1, FIELD2);';
-						$db->sql_query($sql);
-
-						if (ibase_errmsg() !== false)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
-						}
-						else
-						{
-							// Kill the old table
-							$db->sql_query('DROP TABLE ' . $final . ';');
-						}
-						unset($final);
-					}
-				break;
-				
-				case 'oracle':
-					$sql = "SELECT *
-						FROM NLS_DATABASE_PARAMETERS
-						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
-							OR PARAMETER = 'NLS_CHARACTERSET'";
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$stats[$row['parameter']] = $row['value'];
-					}
-					$db->sql_freeresult($result);
-
-					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
-					{
-						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
-					}
-				break;
-				
-				case 'postgres':
-					$sql = "SHOW server_encoding;";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
-					{
-						$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
-					}
-				break;
-			}
-
-			$db->sql_close();
-		}
-
-		if ($error_connect && (!isset($error) || !sizeof($error)))
-		{
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	* Generate the drop down of available database options
-	*/
-	function dbms_select($default='')
-	{
-		$dbms_options = '';
-		foreach ($this->available_dbms as $dbms_name => $details)
-		{
-			$selected = ($dbms_name == $default) ? ' selected="selected"' : '';
-			$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';
-		}
-		return $dbms_options;
-	}
 
 	/**
 	* Generate a list of available mail server authentication methods
@@ -2132,7 +1811,7 @@ class install_install extends module
 	*/
 	var $db_config_options = array(
 		'legend1'				=> 'DB_CONFIG',
-		'dbms'					=> array('lang' => 'DBMS',			'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
+		'dbms'					=> array('lang' => 'DBMS',			'type' => 'select', 'options' => 'dbms_select(\'{VALUE}\')', 'explain' => false),
 		'dbhost'				=> array('lang' => 'DB_HOST',		'type' => 'text:25:100', 'explain' => true),
 		'dbport'				=> array('lang' => 'DB_PORT',		'type' => 'text:25:100', 'explain' => true),
 		'dbname'				=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
@@ -2171,76 +1850,6 @@ class install_install extends module
 	* Specific PHP modules we may require for certain optional or extended features
 	*/
 	var $php_dlls_other = array('zlib', 'ftp', 'gd', 'xml');
-
-	/**
-	* Details of the database management systems supported
-	*/
-	var $available_dbms = array(
-		'firebird'	=> array(
-			'LABEL'			=> 'FireBird',
-			'SCHEMA'		=> 'firebird',
-			'MODULE'		=> 'interbase', 
-			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'firebird'
-		),
-		'mysqli'	=> array(
-			'LABEL'			=> 'MySQL with MySQLi Extension',
-			'SCHEMA'		=> 'mysql_41',
-			'MODULE'		=> 'mysqli',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysqli'
-		),
-		'mysql'		=> array(
-			'LABEL'			=> 'MySQL',
-			'SCHEMA'		=> 'mysql',
-			'MODULE'		=> 'mysql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysql'
-		),
-		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'mssql', 
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql'
-		),
-		'mssql_odbc'=>	array(
-			'LABEL'			=> 'MS SQL Server [ ODBC ]',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'odbc', 
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql_odbc'
-		),
-		'oracle'	=>	array(
-			'LABEL'			=> 'Oracle',
-			'SCHEMA'		=> 'oracle',
-			'MODULE'		=> 'oci8', 
-			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'oracle'
-		),
-		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 7.x/8.x',
-			'SCHEMA'		=> 'postgres',
-			'MODULE'		=> 'pgsql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'postgres'
-		),
-		'sqlite'		=> array(
-			'LABEL'			=> 'SQLite',
-			'SCHEMA'		=> 'sqlite',
-			'MODULE'		=> 'sqlite', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'sqlite'
-		),
-	);
 
 	/**
 	* A list of the web-crawlers/bots we recognise by default

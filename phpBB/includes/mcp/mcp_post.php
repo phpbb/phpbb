@@ -426,7 +426,7 @@ function change_poster(&$post_info, $userdata)
 	$to_username = $userdata['username'];
 
 	// Renew post info
-	$post_info = get_post_data(array($post_id));
+	$post_info = get_post_data(array($post_id), false, true);
 
 	if (!sizeof($post_info))
 	{

@@ -558,7 +558,7 @@ function _import_check($config_var, $source, $use_target)
 		'relative_path'	=> (empty($convert->convertor['source_path_absolute'])) ? true : false,
 	);
 
-	$target = $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
+	$target = '../' . $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
 
 	if (!empty($convert->convertor[$config_var]) && strpos($source, $convert->convertor[$config_var]) !== 0)
 	{
@@ -1068,7 +1068,7 @@ function add_user_group($group_id, $user_id, $group_leader=false)
 */
 function user_group_auth($group, $select_query)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $phpbb_root_path, $config, $user, $db, $src_db, $same_db;
 
 	if (!in_array($group, array('guests', 'registered', 'registered_coppa', 'global_moderators', 'administrators', 'bots')))
 	{
@@ -1089,9 +1089,33 @@ function user_group_auth($group, $select_query)
 		return;
 	}
 
-	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
-		' . str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query);
-	$db->sql_query($sql);
+	if ($same_db)
+	{
+		$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
+			' . str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query);
+		$db->sql_query($sql);
+	}
+	else
+	{
+		$result = $src_db->sql_query(str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query));
+		while ($row = $src_db->sql_fetchrow($result))
+		{
+			// make sure it's exactly 3 ints that were returned
+			$data = array();
+			reset($row);
+			for ($i = 0; $i < 3; $i++)
+			{
+				$data[] = (int) current($row);
+				next($row);
+			}
+
+			// this might become quite a lot of INSERTS unfortunately
+			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
+				VALUES (' . implode(', ', $data) . ')';
+			$db->sql_query($sql);
+		}
+		$src_db->sql_freeresult($result);
+	}
 }
 
 /**
@@ -1109,14 +1133,19 @@ function get_config()
 		return $convert_config;
 	}
 
-	global $db, $phpbb_root_path, $config;
+	global $src_db, $same_db, $phpbb_root_path, $config;
 	global $convert;
 
 	if ($convert->config_schema['table_format'] != 'file')
 	{
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'binary'");
+		}
+
 		$sql = 'SELECT * FROM ' . $convert->src_table_prefix . $convert->config_schema['table_name'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
+		$result = $src_db->sql_query($sql);
+		$row = $src_db->sql_fetchrow($result);
 
 		if (!$row)
 		{
@@ -1133,8 +1162,13 @@ function get_config()
 		{
 			$convert_config[$row[$key]] = $row[$val];
 		}
-		while ($row = $db->sql_fetchrow($result));
-		$db->sql_freeresult($result);
+		while ($row = $src_db->sql_fetchrow($result));
+		$src_db->sql_freeresult($result);
+
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'utf8'");
+		}
 	}
 	else if ($convert->config_schema['table_format'] == 'file')
 	{
@@ -1153,6 +1187,10 @@ function get_config()
 	else
 	{
 		$convert_config = $row;
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'utf8'");
+		}
 	}
 
 	if (!sizeof($convert_config))

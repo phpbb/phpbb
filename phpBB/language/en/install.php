@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'BEGIN_CONVERT'					=> 'Begin conversion',
 	'BLANK_PREFIX_FOUND'			=> 'A scan of your tables has shown a valid installation using no table prefix.',
 	'BOARD_NOT_INSTALLED'			=> 'No installation found',
-	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'To perform a conversion you need to have a default installation of phpBB3. Please note that for a conversion the new installation and the old installation need to reside within the same database. You may now want to <a href="%s">perform an installation</a>.',
+	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'To perform a conversion you need to have a default installation of phpBB3. You may now want to <a href="%s">perform an installation</a>.',
 
 	'CATEGORY'					=> 'Category',
 	'CACHE_STORE'				=> 'Cache type',
