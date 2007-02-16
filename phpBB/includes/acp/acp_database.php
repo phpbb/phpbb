@@ -578,7 +578,7 @@ class base_extractor
 		}
 
 		// bzip2 must be written all the way at the end
-		if ($this->format === 'bzip2')
+		if ($this->download && $this->format === 'bzip2')
 		{
 			$c = ob_get_clean();
 			echo bzcompress($c);
