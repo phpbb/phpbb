@@ -355,14 +355,16 @@ class acp_database
 								$seek = 'fseek';
 								$eof = 'feof';
 								$close = 'fclose';
+								$fgetd = 'fgetd';
 							break;
 
 							case 'sql.bz2':
 								$fp = bzopen($file_name, 'r');
 								$read = 'bzread';
-								$seek = 'bzseek';
+								$seek = '';
 								$eof = 'feof';
 								$close = 'bzclose';
+								$fgetd = 'fgetd_seekless';
 							break;
 
 							case 'sql.gz':
@@ -371,6 +373,7 @@ class acp_database
 								$seek = 'gzseek';
 								$eof = 'gzeof';
 								$close = 'gzclose';
+								$fgetd = 'fgetd';
 							break;
 						}
 
@@ -382,7 +385,7 @@ class acp_database
 							case 'sqlite':
 								while (!$eof($fp))
 								{
-									$db->sql_query(fgetd($fp, ";\n", $read, $seek, $eof));
+									$db->sql_query($fgetd($fp, ";\n", $read, $seek, $eof));
 								}
 							break;
 
@@ -390,7 +393,7 @@ class acp_database
 								$delim = ";\n";
 								while (!$eof($fp))
 								{
-									$query = trim(fgetd($fp, $delim, $read, $seek, $eof));
+									$query = trim($fgetd($fp, $delim, $read, $seek, $eof));
 									if (substr($query, 0, 8) === 'SET TERM')
 									{
 										$delim = $query[9] . "\n";
@@ -403,11 +406,11 @@ class acp_database
 							case 'postgres':
 								while (!$eof($fp))
 								{
-									$query = trim(fgetd($fp, ";\n", $read, $seek, $eof));
+									$query = trim($fgetd($fp, ";\n", $read, $seek, $eof));
 									$db->sql_query($query);
 									if (substr($query, 0, 4) == 'COPY')
 									{
-										while (($sub = fgetd($fp, "\n", $read, $seek, $eof)) !== '\.')
+										while (($sub = $fgetd($fp, "\n", $read, $seek, $eof)) !== '\.')
 										{
 											pg_put_line($db->db_connect_id, $sub . "\n");
 										}
@@ -420,7 +423,7 @@ class acp_database
 							case 'oracle':
 								while (!$eof($fp))
 								{
-									$db->sql_query(fgetd($fp, "/\n", $read, $seek, $eof));
+									$db->sql_query($fgetd($fp, "/\n", $read, $seek, $eof));
 								}
 							break;
 
@@ -428,7 +431,7 @@ class acp_database
 							case 'mssql_odbc':
 								while (!$eof($fp))
 								{
-									$db->sql_query(fgetd($fp, "GO\n", $read, $seek, $eof));
+									$db->sql_query($fgetd($fp, "GO\n", $read, $seek, $eof));
 								}
 							break;
 						}
@@ -2187,6 +2190,41 @@ function fgetd(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
 			$seek($fp, $pos + $delim_len - strlen($record), SEEK_CUR);
 			return substr($record, 0, $pos);
 		}
+	}
+
+	return false;
+}
+
+function fgetd_seekless(&$fp, $delim, $read, $seek, $eof, $buffer = 8192)
+{
+	static $array = array();
+	static $record = '';
+
+	if (!sizeof($array))
+	{
+		while (!$eof($fp))
+		{
+			if (strpos($record, $delim) !== false)
+			{
+				$array = explode($delim, $record);
+				$record = array_pop($array);
+				break;
+			}
+			else
+			{
+				$record .= $read($fp, $buffer);
+			}
+		}
+		if ($eof($fp) && strpos($record, $delim) !== false)
+		{
+			$array = explode($delim, $record);
+			$record = array_pop($array);
+		}
+	}
+
+	if (sizeof($array))
+	{
+		return array_shift($array);
 	}
 
 	return false;
