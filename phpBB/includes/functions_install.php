@@ -27,7 +27,7 @@ function can_load_dll($dll)
 * Returns an array of available DBMS with some data, if a DBMS is specified it will only
 * return data for that DBMS and will load its extension if necessary.
 */
-function get_available_dbms($dbms = false, $return_unavailable = false)
+function get_available_dbms($dbms = false, $return_unavailable = false, $only_20x_options = false)
 {
 	$available_dbms = array(
 		'firebird'	=> array(
@@ -38,6 +38,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'firebird',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
 		),
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL with MySQLi Extension',
@@ -47,6 +48,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysqli',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
 		),
 		'mysql'		=> array(
 			'LABEL'			=> 'MySQL',
@@ -56,6 +58,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysql',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
 		),
 		'mssql'		=> array(
 			'LABEL'			=> 'MS SQL Server 2000+',
@@ -65,6 +68,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
 		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
@@ -74,6 +78,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'mssql_odbc',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
 		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
@@ -83,6 +88,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'oracle',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
 		),
 		'postgres' => array(
 			'LABEL'			=> 'PostgreSQL 7.x/8.x',
@@ -92,6 +98,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'postgres',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
 		),
 		'sqlite'		=> array(
 			'LABEL'			=> 'SQLite',
@@ -101,6 +108,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'sqlite',
 			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
 		),
 	);
 
@@ -119,6 +127,19 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 	// now perform some checks whether they are really available
 	foreach ($available_dbms as $db_name => $db_ary)
 	{
+		if ($only_20x_options && !$db_ary['2.0.x'])
+		{
+			if ($return_unavailable)
+			{
+				$available_dbms[$db_name]['AVAILABLE'] = false;
+			}
+			else
+			{
+				unset($available_dbms[$db_name]);
+			}
+			continue;
+		}
+
 		$dll = $db_ary['MODULE'];
 
 		if (!@extension_loaded($dll))
@@ -149,9 +170,9 @@ function get_available_dbms($dbms = false, $return_unavailable = false)
 /**
 * Generate the drop down of available database options
 */
-function dbms_select($default='')
+function dbms_select($default = '', $only_20x_options = false)
 {
-	$available_dbms = get_available_dbms();
+	$available_dbms = get_available_dbms(false, false, $only_20x_options);
 	$dbms_options = '';
 	foreach ($available_dbms as $dbms_name => $details)
 	{

@@ -397,7 +397,7 @@ class install_convert extends module
 			}
 
 			$connect_test = false;
-			$available_dbms = get_available_dbms(false, true);
+			$available_dbms = get_available_dbms(false, true, true);
 
 			if (!isset($available_dbms[$src_dbms]) || !$available_dbms[$src_dbms]['AVAILABLE'])
 			{
@@ -2110,7 +2110,7 @@ class install_convert extends module
 	*/
 	var $convert_options = array(
 		'legend1'			=> 'SPECIFY_OPTIONS',
-		'src_dbms'			=> array('lang' => 'DBMS',			'type' => 'select', 'options' => 'dbms_select(\'{VALUE}\')', 'explain' => false),
+		'src_dbms'			=> array('lang' => 'DBMS',			'type' => 'select', 'options' => 'dbms_select(\'{VALUE}\', true)', 'explain' => false),
 		'src_dbhost'		=> array('lang' => 'DB_HOST',		'type' => 'text:25:100', 'explain' => true),
 		'src_dbport'		=> array('lang' => 'DB_PORT',		'type' => 'text:25:100', 'explain' => true),
 		'src_dbname'		=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),

@@ -22,6 +22,9 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+include($phpbb_root_path . 'config.' . $phpEx);
+unset($dbpasswd);
+
 /**
 * $convertor_data provides some basic information about this convertor which is
 * used on the initial list of convertors and to populate the default settings
@@ -31,12 +34,12 @@ $convertor_data = array(
 	'version'		=> '0.9',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
-	'dbms'			=> 'mysql',
-	'dbhost'		=> 'localhost',
-	'dbport'		=> '',
-	'dbuser'		=> 'user',
-	'dbpasswd'		=> 'password',
-	'dbname'		=> '',
+	'dbms'			=> $dbms,
+	'dbhost'		=> $dbhost,
+	'dbport'		=> $dbport,
+	'dbuser'		=> $dbuser,
+	'dbpasswd'		=> '',
+	'dbname'		=> $dbname,
 	'table_prefix'	=> 'phpbb_',
 	'forum_path'	=> '../forums',
 	'author_notes'	=> 'Avatars may be on a different width/height than with the old forum. This is due to dimensions being stored within phpBB3 but not within phpBB2. The default dimension was set to 80x80 for avatars where dimension settings could not be determined. You might wish to instruct your users to check their profiles after the conversion to ensure that the size is correct.',
