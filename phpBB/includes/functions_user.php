@@ -602,12 +602,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$ban_end = 0;
 	}
 
-	$founder = array();
+	$founder = $founder_names = array();
 
 	if (!$ban_exclude)
 	{
 		// Create a list of founder...
-		$sql = 'SELECT user_id, user_email
+		$sql = 'SELECT user_id, user_email, username_clean
 			FROM ' . USERS_TABLE . '
 			WHERE user_type = ' . USER_FOUNDER;
 		$result = $db->sql_query($sql);
@@ -615,6 +615,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$founder[$row['user_id']] = $row['user_email'];
+			$founder_names[$row['user_id']] = $row['username_clean'];
 		}
 		$db->sql_freeresult($result);
 	}
@@ -641,7 +642,16 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 					$username = trim($username);
 					if ($username != '')
 					{
-						$sql_usernames[] = utf8_clean_string($username);
+						$clean_name = utf8_clean_string($username);
+						if ($clean_name == $user->data['username_clean'])
+						{
+							trigger_error($user->lang['CANNOT_BAN_YOURSELF']);
+						}
+						if (in_array($clean_name, $founder_names))
+						{
+							trigger_error($user->lang['CANNOT_BAN_FOUNDER']);
+						}
+						$sql_usernames[] = $clean_name;
 					}
 				}
 

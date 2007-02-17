@@ -26,7 +26,7 @@ class acp_ban
 		$unbansubmit= (isset($_POST['unbansubmit'])) ? true : false;
 		$current_time = time();
 
-		$user->add_lang('acp/ban');
+		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
 
 		// Ban submitted?
