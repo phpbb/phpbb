@@ -504,6 +504,7 @@ class base_extractor
 	var $download;
 	var $time;
 	var $format;
+	var $run_comp = false;
 
 	function base_extractor($download = false, $store = false, $format, $filename, $time)
 	{
@@ -551,7 +552,14 @@ class base_extractor
 				break;
 
 				case 'gzip':
-					ob_start('ob_gzhandler');
+					if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false)
+					{
+						ob_start('ob_gzhandler');
+					}
+					else
+					{
+						$this->run_comp = true;
+					}
 				break;
 			}
 		}
@@ -604,12 +612,23 @@ class base_extractor
 
 		if ($this->download === true)
 		{
-			echo $data;
+			if ($this->format === 'bzip2' || ($this->format === 'gzip' && !$this->run_comp))
+			{
+				echo $data;
+			}
 
 			// we can write the gzip data as soon as we get it
 			if ($this->format === 'gzip')
 			{
-				ob_flush();
+				if ($this->run_comp)
+				{
+					echo gzencode($data);
+				}
+				else
+				{
+					ob_flush();
+					flush();
+				}
 			}
 		}
 	}
