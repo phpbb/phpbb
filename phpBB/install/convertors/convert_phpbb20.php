@@ -431,7 +431,7 @@ if (!$get_info)
 				'autoincrement'	=> 'rank_id',
 
 				array('rank_id',					'ranks.rank_id',				''),
-				array('rank_title',					'ranks.rank_title',				array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
+				array('rank_title',					'ranks.rank_title',				array('function1' => 'phpbb_set_default_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('rank_min',					'ranks.rank_min',				array('typecast' => 'int', 'execute' => '{RESULT} = ({VALUE}[0] < 0) ? 0 : {VALUE}[0];')),
 				array('rank_special',				'ranks.rank_special',			''),
 				array('rank_image',					'ranks.rank_image',				'import_rank'),
@@ -615,7 +615,7 @@ if (!$get_info)
 			array(
 				'target'		=> PRIVMSGS_TABLE,
 				'primary'		=> 'privmsgs.privmsgs_id',
-				'autoincrement'	=> 'privmsgs_id',
+				'autoincrement'	=> 'msg_id',
 				'query_first'	=> array(
 					array('target', $convert->truncate_statement . PRIVMSGS_TABLE),
 					array('target', $convert->truncate_statement . PRIVMSGS_RULES_TABLE),

@@ -279,7 +279,7 @@ class install_convert extends module
 
 		while ($entry = readdir($handle))
 		{
-			if (preg_match('/^convert_([a-z0-9_]+).' . $phpEx . '/i', $entry, $m))
+			if (preg_match('/^convert_([a-z0-9_]+).' . $phpEx . '$/i', $entry, $m))
 			{
 				include('./convertors/' . $entry);
 				if (isset($convertor_data))
@@ -452,6 +452,7 @@ class install_convert extends module
 				if (!$result)
 				{
 					$prefixes = array();
+					// TODO: fixme
 					if ($result = $src_db->sql_query('SHOW TABLES'))
 					{
 						while ($row = $src_db->sql_fetchrow($result))
@@ -991,7 +992,7 @@ class install_convert extends module
 				$config['max_quote_depth'] = 0;
 
 				// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
-				$config['max_post_chars'] = -1; 
+				$config['max_post_chars'] = -1;
 			}
 
 			$template->assign_block_vars('checks', array(

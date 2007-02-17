@@ -463,7 +463,6 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 			break;
 		}
 
-		$db->sql_close();
 	}
 
 	if ($error_connect && (!isset($error) || !sizeof($error)))
