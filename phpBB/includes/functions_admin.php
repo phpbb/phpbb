@@ -502,13 +502,21 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
 
-	if (is_array($where_ids))
+	if ($where_type === 'range')
 	{
-		$where_ids = array_unique($where_ids);
+		$where_clause = $where_ids;
 	}
 	else
 	{
-		$where_ids = array($where_ids);
+		if (is_array($where_ids))
+		{
+			$where_ids = array_unique($where_ids);
+		}
+		else
+		{
+			$where_ids = array($where_ids);
+		}
+		$where_clause = $db->sql_in_set($where_type, $where_ids);
 	}
 
 	if (!sizeof($where_ids))
@@ -522,7 +530,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	$sql = 'SELECT topic_id, forum_id, topic_approved
 		FROM ' . TOPICS_TABLE . '
-		WHERE ' . $db->sql_in_set($where_type, $where_ids);
+		WHERE ' . ;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -583,18 +591,27 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 {
 	global $db, $config, $phpbb_root_path, $phpEx;
 
-	if (is_array($where_ids))
+	if ($where_type === 'range')
 	{
-		$where_ids = array_unique($where_ids);
+		$where_clause = $where_ids;
 	}
 	else
 	{
-		$where_ids = array($where_ids);
-	}
+		if (is_array($where_ids))
+		{
+			$where_ids = array_unique($where_ids);
+		}
+		else
+		{
+			$where_ids = array($where_ids);
+		}
 
-	if (!sizeof($where_ids))
-	{
-		return false;
+		if (!sizeof($where_ids))
+		{
+			return false;
+		}
+
+		$where_clause = $db->sql_in_set($where_type, array_map('intval', $where_ids);
 	}
 
 	$approved_posts = 0;
@@ -602,7 +619,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$sql = 'SELECT post_id, poster_id, post_approved, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
-		WHERE ' . $db->sql_in_set($where_type, array_map('intval', $where_ids));
+		WHERE ' . $where_clause);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
