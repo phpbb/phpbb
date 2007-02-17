@@ -530,7 +530,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	$sql = 'SELECT topic_id, forum_id, topic_approved
 		FROM ' . TOPICS_TABLE . '
-		WHERE ' . ;
+		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -611,7 +611,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 			return false;
 		}
 
-		$where_clause = $db->sql_in_set($where_type, array_map('intval', $where_ids);
+		$where_clause = $db->sql_in_set($where_type, array_map('intval', $where_ids));
 	}
 
 	$approved_posts = 0;
@@ -619,7 +619,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	$sql = 'SELECT post_id, poster_id, post_approved, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
-		WHERE ' . $where_clause);
+		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
