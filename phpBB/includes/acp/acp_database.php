@@ -388,15 +388,15 @@ class acp_database
 							case 'mysql4':
 							case 'mysqli':
 							case 'sqlite':
-								while (!$eof($fp))
+								while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 								{
-									$db->sql_query($fgetd($fp, ";\n", $read, $seek, $eof));
+									$db->sql_query($sql);
 								}
 							break;
 
 							case 'firebird':
 								$delim = ";\n";
-								while (!$eof($fp))
+								while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
 								{
 									$query = trim($fgetd($fp, $delim, $read, $seek, $eof));
 									if (substr($query, 0, 8) === 'SET TERM')
@@ -409,9 +409,9 @@ class acp_database
 							break;
 
 							case 'postgres':
-								while (!$eof($fp))
+								while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
 								{
-									$query = trim($fgetd($fp, ";\n", $read, $seek, $eof));
+									$query = trim($sql);
 									$db->sql_query($query);
 									if (substr($query, 0, 4) == 'COPY')
 									{
@@ -426,17 +426,17 @@ class acp_database
 							break;
 
 							case 'oracle':
-								while (!$eof($fp))
+								while (($sql = $fgetd($fp, "/\n", $read, $seek, $eof)) !== false)
 								{
-									$db->sql_query($fgetd($fp, "/\n", $read, $seek, $eof));
+									$db->sql_query($sql);
 								}
 							break;
 
 							case 'mssql':
 							case 'mssql_odbc':
-								while (!$eof($fp))
+								while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
 								{
-									$db->sql_query($fgetd($fp, "GO\n", $read, $seek, $eof));
+									$db->sql_query($sql);
 								}
 							break;
 						}
