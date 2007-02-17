@@ -407,7 +407,7 @@ class install_convert extends module
 			else
 			{
 				$src_dbpasswd = htmlspecialchars_decode($src_dbpasswd);
-				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], false, $src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, ($src_dbms == $dbms) ? false : true);
+				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, true, ($src_dbms == $dbms) ? false : true);
 			}
 
 			// The forum prefix of the old and the new forum can only be the same if two different databases are used.
@@ -421,7 +421,7 @@ class install_convert extends module
 			{
 				// initiate database connection to old db if old and new db differ
 				global $src_db, $same_db;
-				$src_db = $same_db = null;
+				$src_db = $same_db = false;
 
 				if ($src_dbms != $dbms || $src_dbhost != $dbhost || $src_dbport != $dbport || $src_dbname != $dbname || $src_dbuser != $dbuser)
 				{
@@ -432,7 +432,14 @@ class install_convert extends module
 				}
 				else
 				{
-					$src_db = &$db;
+					if (version_compare(PHP_VERSION, '5.0.0-dev', '<'))
+					{
+						$src_db = &$db;
+					}
+					else
+					{
+						$src_db = $db;
+					}
 					$same_db = true;
 				}
 
@@ -660,7 +667,14 @@ class install_convert extends module
 		}
 		else
 		{
-			$src_db = &$db;
+			if (version_compare(PHP_VERSION, '5.0.0-dev', '<'))
+			{
+				$src_db = &$db;
+			}
+			else
+			{
+				$src_db = $db;
+			}
 			$same_db = true;
 		}
 

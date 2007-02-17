@@ -698,22 +698,22 @@ function phpbb_convert_authentication($mode)
 
 	if ($mode == 'start')
 	{
-		user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS);
-		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS);
+		user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS, false);
+		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS, false);
 
 		// Selecting from old table
 		$auth_sql = 'SELECT ';
 		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
 		$auth_sql .= ', {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
 
-		user_group_auth('administrators', $auth_sql);
+		user_group_auth('administrators', $auth_sql, true);
 
 		// Put administrators into global moderators group too...
 		$auth_sql = 'SELECT ';
 		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
 		$auth_sql .= ', {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
 
-		user_group_auth('global_moderators', $auth_sql);
+		user_group_auth('global_moderators', $auth_sql, true);
 	}
 	else if ($mode == 'first')
 	{

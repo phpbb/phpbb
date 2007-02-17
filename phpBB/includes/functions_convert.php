@@ -1066,7 +1066,7 @@ function add_user_group($group_id, $user_id, $group_leader=false)
 * @param string $group The name of the special group to add to
 * @param string $select_query An SQL query to retrieve the user(s) to add to the group
 */
-function user_group_auth($group, $select_query)
+function user_group_auth($group, $select_query, $use_src_db)
 {
 	global $convert, $phpbb_root_path, $config, $user, $db, $src_db, $same_db;
 
@@ -1089,7 +1089,7 @@ function user_group_auth($group, $select_query)
 		return;
 	}
 
-	if ($same_db)
+	if ($same_db || !$use_src_db)
 	{
 		$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
 			' . str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query);
