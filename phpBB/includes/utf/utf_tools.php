@@ -728,11 +728,27 @@ function utf8_recode($string, $encoding)
 	// Try the mb_string extension
 	if (function_exists('mb_convert_encoding'))
 	{
-		$ret = @mb_convert_encoding($string, 'utf-8', $encoding);
-
-		if (!empty($ret))
+		// mbstring is nasty on PHP4, we must make *sure* that we send a good encoding
+		switch ($encoding)
 		{
-			return $ret;
+			case 'iso-8859-1':
+			case 'iso-8859-2':
+			case 'iso-8859-4':
+			case 'iso-8859-7':
+			case 'iso-8859-9':
+			case 'iso-8859-15':
+			case 'windows-1251':
+			case 'windows-1252':
+			case 'shift_jis':
+			case 'euc-kr':
+			case 'big5':
+			case 'gb2312':
+				$ret = @mb_convert_encoding($string, 'utf-8', $encoding);
+
+				if (!empty($ret))
+				{
+					return $ret;
+				}
 		}
 	}
 
