@@ -846,7 +846,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM:<' . $config['board_contact'] . '>');
+	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		$smtp->close_session($err_msg);

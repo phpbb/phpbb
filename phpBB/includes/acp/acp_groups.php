@@ -272,15 +272,12 @@ class acp_groups
 						'receive_pm'		=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
 						'legend'			=> isset($_REQUEST['group_legend']) ? 1 : 0,
 						'message_limit'		=> request_var('group_message_limit', 0),
+						'founder_manage'	=> 0,
 					);
 
 					if ($user->data['user_type'] == USER_FOUNDER)
 					{
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
-					}
-					else
-					{
-						$submit_ary['founder_manage'] = 0;
 					}
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
@@ -318,6 +315,11 @@ class acp_groups
 							$submit_ary['avatar'] = $category . '/' . $avatar_select;
 						}
 					}
+					else if ($delete)
+					{
+						$submit_ary['avatar'] = '';
+						$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
+					}
 					else if ($data['width'] && $data['height'])
 					{
 						// Only update the dimensions?
@@ -345,11 +347,6 @@ class acp_groups
 							$submit_ary['avatar_width'] = $data['width'];
 							$submit_ary['avatar_height'] = $data['height'];
 						}
-					}
-					else if ($delete)
-					{
-						$submit_ary['avatar'] = '';
-						$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
 					}
 
 					if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']) || $group_row['group_avatar'] != $submit_ary['avatar'])) || $delete)
@@ -593,51 +590,36 @@ class acp_groups
 
 				$this->page_title = 'GROUP_MEMBERS';
 
-				// Total number of group leaders
-				$sql = 'SELECT COUNT(user_id) AS total_leaders 
-					FROM ' . USER_GROUP_TABLE . " 
-					WHERE group_id = $group_id 
-						AND group_leader = 1";
+				// Grab the leaders - always, on every page...
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
+					WHERE ug.group_id = $group_id 
+						AND u.user_id = ug.user_id
+						AND ug.group_leader = 1
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
 				$result = $db->sql_query($sql);
-				$total_leaders = (int) $db->sql_fetchfield('total_leaders');
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$template->assign_block_vars('leader', array(
+						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+
+						'USERNAME'			=> $row['username'],
+						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
+						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
+						'USER_POSTS'		=> $row['user_posts'],
+						'USER_ID'			=> $row['user_id'])
+					);
+				}
 				$db->sql_freeresult($result);
 
 				// Total number of group members (non-leaders)
 				$sql = 'SELECT COUNT(user_id) AS total_members 
 					FROM ' . USER_GROUP_TABLE . " 
 					WHERE group_id = $group_id 
-						AND group_leader <> 1";
+						AND group_leader = 0";
 				$result = $db->sql_query($sql);
 				$total_members = (int) $db->sql_fetchfield('total_members');
-				$db->sql_freeresult($result);
-
-				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
-					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-					WHERE ug.group_id = $group_id 
-						AND u.user_id = ug.user_id 
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
-				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
-
-				$leader = $member = 0;
-				$group_data = array(
-					'leader'	=> array(),
-					'member'	=> array(),
-				);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$type = ($row['group_leader']) ? 'leader' : 'member';
-
-					$group_data[$type][$$type]['user_id'] = $row['user_id'];
-					$group_data[$type][$$type]['group_id'] = $row['group_id'];
-					$group_data[$type][$$type]['username'] = $row['username'];
-					$group_data[$type][$$type]['user_regdate'] = $row['user_regdate'];
-					$group_data[$type][$$type]['user_posts'] = $row['user_posts'];
-					$group_data[$type][$$type]['user_pending'] = ($row['user_pending']) ? 1 : 0;
-
-					$$type++;
-				}
 				$db->sql_freeresult($result);
 
 				$s_action_options = '';
@@ -664,22 +646,18 @@ class acp_groups
 					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id")
 				);
 
-				foreach ($group_data['leader'] as $row)
-				{
-					$template->assign_block_vars('leader', array(
-						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
-
-						'USERNAME'			=> $row['username'],
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
-						'USER_POSTS'		=> $row['user_posts'],
-						'USER_ID'			=> $row['user_id'])
-					);
-				}
+				// Grab the members
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
+					WHERE ug.group_id = $group_id 
+						AND u.user_id = ug.user_id
+						AND ug.group_leader = 0
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
+				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$pending = false;
 
-				foreach ($group_data['member'] as $row)
+				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($row['user_pending'] && !$pending)
 					{
@@ -700,6 +678,7 @@ class acp_groups
 						'USER_ID'			=> $row['user_id'])
 					);
 				}
+				$db->sql_freeresult($result);
 
 				return;
 			break;

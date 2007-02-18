@@ -355,18 +355,9 @@ switch ($mode)
 		}
 
 		// Get user...
-		if ($username)
-		{
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
-		}
-		else
-		{
-			$sql = 'SELECT *
-				FROM ' . USERS_TABLE . "
-				WHERE user_id = $user_id";
-		}
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE ' . (($username) ? "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : "user_id = $user_id");
 
 		// a_user admins and founder are able to view inactive users and bots to be able to
 		// manage them more easily
@@ -390,8 +381,9 @@ switch ($mode)
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type
 			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
 			WHERE ug.user_id = $user_id
-				AND g.group_id = ug.group_id" . ((!$auth->acl_get('a_group')) ? ' AND group_type <> ' . GROUP_HIDDEN : '') . '
-			ORDER BY group_type, group_name';
+				AND g.group_id = ug.group_id" . ((!$auth->acl_get('a_group')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
+				AND ug.user_pending = 0
+			ORDER BY g.group_type, g.group_name';
 		$result = $db->sql_query($sql);
 
 		$group_options = '';

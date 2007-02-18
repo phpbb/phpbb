@@ -147,7 +147,7 @@ class acp_language
 				$db->sql_query('UPDATE ' . LANG_TABLE . ' 
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE lang_id = ' . $lang_id);
-					
+
 				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
 
 				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
@@ -276,7 +276,9 @@ class acp_language
 						echo $buffer;
 					}
 					fclose($fp);
-					
+
+					add_log('admin', 'LOG_LANGUAGE_FILE_SUBMITTED', $this->language_file);
+
 					exit;
 				}
 				else if ($action == 'upload_data')
@@ -340,7 +342,8 @@ class acp_language
 
 					trigger_error($user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)));
 				}
-			
+
+				add_log('admin', 'LOG_LANGUAGE_FILE_SUBMITTED', $this->language_file);
 				$action = 'details';
 
 			// no break;
@@ -1010,7 +1013,7 @@ class acp_language
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
-* @version &#36;Id: &#36;
+* @version $' . 'Id: ' . '$
 * @copyright (c) ' . date('Y') . ' phpBB Group 
 * @author {CHANGED} - {AUTHOR}
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 

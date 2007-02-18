@@ -642,7 +642,7 @@ function compose_pm($id, $mode, $action)
 			$post_id = request_var('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$message_subject}[/url]\n\n";
+				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
 			}
 			else
 			{

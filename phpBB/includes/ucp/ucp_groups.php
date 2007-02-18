@@ -312,7 +312,7 @@ class ucp_groups
 				// Hide hidden groups unless user is an admin with group privileges
 				$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 
-				$sql = 'SELECT group_id, group_name, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type
+				$sql = 'SELECT group_id, group_name, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
 					WHERE ' . ((sizeof($group_id_ary)) ? $db->sql_in_set('group_id', $group_id_ary, true) . ' AND ' : '') . "
 						group_type $sql_and
@@ -392,6 +392,12 @@ class ucp_groups
 					{
 						trigger_error($user->lang['NO_GROUP'] . $return_page);
 					}
+
+					// Check if the user is allowed to manage this group if set to founder only.
+					if ($user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
+					{
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
+					}
 				}
 
 				switch ($action)
@@ -403,9 +409,15 @@ class ucp_groups
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
-						if (!($row = group_memberships($group_id, $user->data['user_id'])) || !$row[0]['group_leader'])
+						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+						}
+						list(, $row) = each($row);
+
+						if (!$row['group_leader'])
+						{
+							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
 						$file_uploads = (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on') ? true : false;
@@ -486,6 +498,34 @@ class ucp_groups
 							{
 								$submit_ary['avatar'] = '';
 								$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
+							}
+							else if ($data['width'] && $data['height'])
+							{
+								// Only update the dimensions?
+								if ($config['avatar_max_width'] || $config['avatar_max_height'])
+								{
+									if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+									{
+										$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+									}
+								}
+
+								if (!sizeof($error))
+								{
+									if ($config['avatar_min_width'] || $config['avatar_min_height'])
+									{
+										if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
+										{
+											$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+										}
+									}
+								}
+
+								if (!sizeof($error))
+								{
+									$submit_ary['avatar_width'] = $data['width'];
+									$submit_ary['avatar_height'] = $data['height'];
+								}
 							}
 
 							if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']) || $group_row['group_avatar'] != $submit_ary['avatar'])) || $delete)
@@ -656,29 +696,57 @@ class ucp_groups
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
-						if (!($row = group_memberships($group_id, $user->data['user_id'])) || !$row[0]['group_leader'])
+						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
 						}
+						list(, $row) = each($row);
+
+						if (!$row['group_leader'])
+						{
+							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
+						}
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
+						$start = request_var('start', 0);
+
+						// Grab the leaders - always, on every page...
+						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
+							WHERE ug.group_id = $group_id 
+								AND u.user_id = ug.user_id
+								AND ug.group_leader = 1
+							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$template->assign_block_vars('leader', array(
+								'USERNAME'			=> $row['username'],
+								'U_USER_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
+								'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
+								'USER_POSTS'		=> $row['user_posts'],
+								'USER_ID'			=> $row['user_id'])
+							);
+						}
+						$db->sql_freeresult($result);
 
 						// Total number of group members (non-leaders)
 						$sql = 'SELECT COUNT(user_id) AS total_members 
 							FROM ' . USER_GROUP_TABLE . " 
 							WHERE group_id = $group_id 
-								AND group_leader <> 1";
+								AND group_leader = 0";
 						$result = $db->sql_query($sql);
 						$total_members = (int) $db->sql_fetchfield('total_members');
 						$db->sql_freeresult($result);
-
-						$start = request_var('start', 0);
 
 						// Grab the members
 						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
 								AND u.user_id = ug.user_id
+								AND ug.group_leader = 0
 							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
 						$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
@@ -695,7 +763,7 @@ class ucp_groups
 								$pending = true;
 							}
 
-							$template->assign_block_vars($row['group_leader'] ? 'leader' : 'member', array(
+							$template->assign_block_vars('member', array(
 								'USERNAME'			=> $row['username'],
 								'U_USER_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
@@ -734,9 +802,15 @@ class ucp_groups
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
-						if (!($row = group_memberships($group_id, $user->data['user_id'])) || !$row[0]['group_leader'])
+						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+						}
+						list(, $row) = each($row);
+
+						if (!$row['group_leader'])
+						{
+							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
 						$user->add_lang('acp/groups');
@@ -755,9 +829,15 @@ class ucp_groups
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
-						if (!($row = group_memberships($group_id, $user->data['user_id'])) || !$row[0]['group_leader'])
+						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+						}
+						list(, $row) = each($row);
+
+						if (!$row['group_leader'])
+						{
+							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
 						if (confirm_box(true))
@@ -823,9 +903,15 @@ class ucp_groups
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
 
-						if (!($row = group_memberships($group_id, $user->data['user_id'])) || !$row[0]['group_leader'])
+						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+						}
+						list(, $row) = each($row);
+
+						if (!$row['group_leader'])
+						{
+							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
 						if (confirm_box(true))
@@ -873,9 +959,15 @@ class ucp_groups
 							trigger_error($user->lang['NO_USERS'] . $return_page);
 						}
 
-						if (!($row = group_memberships($group_id, $user->data['user_id'])) || !$row[0]['group_leader'])
+						if (!($row = group_memberships($group_id, $user->data['user_id'])))
 						{
 							trigger_error($user->lang['NOT_MEMBER_OF_GROUP'] . $return_page);
+						}
+						list(, $row) = each($row);
+
+						if (!$row['group_leader'])
+						{
+							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
 						$name_ary = array_unique(explode("\n", $name_ary));

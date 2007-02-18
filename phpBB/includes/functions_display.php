@@ -252,7 +252,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 		$forum_unread = (isset($forum_tracking_info[$forum_id]) && $row['orig_forum_last_post_time'] > $forum_tracking_info[$forum_id]) ? true : false;
 
-		$folder_image = $folder_alt = $subforums_list = $l_subforums = '';
+		$folder_image = $folder_alt = $l_subforums = '';
+		$subforums_list = array();
 
 		// Generate list of subforums if we need to
 		if (isset($subforums[$forum_id]))
@@ -267,8 +268,10 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
-					$subforums_list .= ($subforums_list == '') ? '' : ', ';
-					$subforums_list .= '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id) . '">' . $subforum_row['name'] . '</a>';
+					$subforums_list[] = array(
+						'link'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
+						'name'	=> $subforum_row['name']
+					);
 				}
 				else
 				{
@@ -327,11 +330,19 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$l_post_click_count = ($row['forum_type'] == FORUM_LINK) ? 'CLICKS' : 'POSTS';
 		$post_click_count = ($row['forum_type'] != FORUM_LINK || $row['forum_flags'] & FORUM_FLAG_LINK_TRACK) ? $row['forum_posts'] : '';
 
+		$s_subforums_list = array();
+		foreach ($subforums_list as $subforum)
+		{
+			$s_subforums_list[] = '<a href="' . $subforum['link'] . '">' . $subforum['name'] . '</a>';
+		}
+		$s_subforums_list = (string) implode(', ', $s_subforums_list);
+
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=> false,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_UNREAD_FORUM'	=> $forum_unread,
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
+			'S_SUBFORUMS'		=> (sizeof($subforums_list)) ? true : false,
 
 			'FORUM_ID'				=> $row['forum_id'],
 			'FORUM_NAME'			=> $row['forum_name'],
@@ -342,13 +353,13 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
-			'SUBFORUMS'				=> $subforums_list,
 			'LAST_POST_SUBJECT'		=> censor_text($last_post_subject),
 			'LAST_POST_TIME'		=> $last_post_time,
 			'LAST_POSTER'			=> get_username_string('username', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'LAST_POSTER_FULL'		=> get_username_string('full', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'MODERATORS'			=> $moderators_list,
+			'SUBFORUMS'				=> $s_subforums_list,
 
 			'L_SUBFORUM_STR'		=> $l_subforums,
 			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
@@ -358,6 +369,15 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
 		);
+
+		// Assign subforums loop for style authors
+		foreach ($subforums_list as $subforum)
+		{
+			$template->assign_block_vars('forumrow.subforum', array(
+				'U_SUBFORUM'	=> $subforum['link'],
+				'SUBFORUM_NAME'	=> $subforum['name'])
+			);
+		}
 	}
 
 	$template->assign_vars(array(

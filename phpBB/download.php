@@ -270,9 +270,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 */
 function header_filename($file)
 {
-	// There be dragons here...
-	// IE and Safari follows no RFC.
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== false || strpos($_SERVER['HTTP_USER_AGENT'], 'Safari') !== false)
+	$user_agent = $_SERVER['HTTP_USER_AGENT'];
+
+	// There be dragons here.
+	// Not many follows the RFC...
+	if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Safari') !== false || strpos($user_agent, 'Konqueror') !== false)
 	{
 		return "filename=" . rawurlencode($file);
 	}

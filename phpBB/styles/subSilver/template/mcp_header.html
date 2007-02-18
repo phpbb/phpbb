@@ -1,19 +1,20 @@
 <!-- INCLUDE overall_header.html -->
 
-<!-- IF TOPIC_TITLE or FORUM_NAME -->
-	<div id="pageheader">
-		<h2><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- ENDIF --></h2>
+<div id="pageheader">
+	<!-- IF U_MCP -->
+		<p class="linkmcp">
+			[ <a href="{U_MCP}">{L_MCP}</a><!-- IF U_MCP_FORUM --> | <a href="{U_MCP_FORUM}">{L_MODERATE_FORUM}</a><!-- ENDIF -->
+			<!-- IF U_MCP_TOPIC --> | <a href="{U_MCP_TOPIC}">{L_MODERATE_TOPIC}</a><!-- ENDIF -->
+			<!-- IF U_MCP_POST --> | <a href="{U_MCP_POST}">{L_MODERATE_POST}</a><!-- ENDIF --> ]
+		</p>
+	<!-- ENDIF -->
 
-		<!-- IF MODERATORS -->
-			<p class="moderators">{L_MODERATORS}: {MODERATORS}</p>
-		<!-- ENDIF -->
-		<!-- IF U_MCP -->
-			<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
-		<!-- ENDIF -->
-	</div>
+	<!-- IF TOPIC_TITLE or FORUM_NAME -->
+	<h2><!-- IF TOPIC_TITLE --><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- ELSE --><a class="titles" href="{U_VIEW_FORUM}">{FORUM_NAME}</a><!-- ENDIF --></h2>
+	<!-- ENDIF -->
+</div>
 
-	<br clear="all" />
-<!-- ENDIF -->
+<br clear="all" />
 
 <div id="pagecontent">
 

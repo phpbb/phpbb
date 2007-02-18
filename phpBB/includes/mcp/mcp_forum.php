@@ -28,11 +28,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		unset($_POST['sk'], $_POST['sd'], $_REQUEST['sk'], $_REQUEST['sd']);
 	}
 
-	$forum_id		= $forum_info['forum_id'];
-	$start			= request_var('start', 0);
-	$topic_id_list	= request_var('topic_id_list', array(0));
-	$post_id_list	= request_var('post_id_list', array(0));
-	$topic_id		= request_var('t', 0);
+	$forum_id			= $forum_info['forum_id'];
+	$start				= request_var('start', 0);
+	$topic_id_list		= request_var('topic_id_list', array(0));
+	$post_id_list		= request_var('post_id_list', array(0));
+	$source_topic_id	= request_var('t', 0);
 
 	// Resync Topics
 	if ($action == 'resync')
@@ -216,7 +216,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			$topic_row = array_merge($topic_row, array(
 				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view"),
 
-				'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $topic_id) ? true : false,
+				'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $source_topic_id) ? true : false,
 				'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
 				'U_MCP_QUEUE'		=> $u_mcp_queue,
 				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',

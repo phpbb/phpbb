@@ -51,7 +51,7 @@ class acp_email
 				$error[] = $user->lang['NO_EMAIL_MESSAGE'];
 			}
 
-			if (!sizeof($error))	
+			if (!sizeof($error))
 			{
 				if ($usernames)
 				{
@@ -208,16 +208,21 @@ class acp_email
 			}
 		}
 
-		// Exclude bots...
+		// Exclude bots and guests...
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'BOTS'";
+			WHERE group_name IN ('BOTS', 'GUESTS')";
 		$result = $db->sql_query($sql);
-		$bot_group_id = (int) $db->sql_fetchfield('group_id');
+
+		$exclude = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$exclude[] = $row['group_id'];
+		}
 		$db->sql_freeresult($result);
 
 		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_USERS'] . '</option>';
-		$select_list .= group_select_options($group_id, array($bot_group_id));
+		$select_list .= group_select_options($group_id, $exclude);
 		
 		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';

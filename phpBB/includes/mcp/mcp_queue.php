@@ -64,6 +64,8 @@ class mcp_queue
 		{
 			case 'approve_details':
 
+				$this->tpl_name = 'mcp_post';
+
 				$user->add_lang('posting');
 
 				$post_id = request_var('p', 0);
@@ -166,8 +168,6 @@ class mcp_queue
 					'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']),
 					'POST_ID'				=> $post_info['post_id'])
 				);
-
-				$this->tpl_name = 'mcp_post';
 
 			break;
 

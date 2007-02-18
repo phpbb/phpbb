@@ -121,7 +121,7 @@ $lang = array_merge($lang, array(
 	'MESSAGE_DELETED'			=> 'This message has been deleted successfully',
 	'MORE_SMILIES'				=> 'View more smilies',
 
-	'NOTIFY_REPLY'				=> 'Send me an email when a reply is posted',
+	'NOTIFY_REPLY'				=> 'Notify me when a reply is posted',
 	'NOT_UPLOADED'				=> 'File could not be uploaded.',
 	'NO_DELETE_POLL_OPTIONS'	=> 'You cannot delete existing poll options',
 	'NO_PM_ICON'				=> 'No PM icon',

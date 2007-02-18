@@ -1755,15 +1755,10 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	// Those are group-only attributes
 	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_founder_manage');
 
-	// Check data
-	if (!utf8_strlen($name) || utf8_strlen($name) > 40)
+	// Check data. Limit group name length.
+	if (!utf8_strlen($name) || utf8_strlen($name) > 60)
 	{
 		$error[] = (!utf8_strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
-	}
-
-	if (utf8_strlen($desc) > 255)
-	{
-		$error[] = $user->lang['GROUP_ERR_DESC_LONG'];
 	}
 
 	if (!in_array($type, array(GROUP_OPEN, GROUP_CLOSED, GROUP_HIDDEN, GROUP_SPECIAL, GROUP_FREE)))
@@ -2420,7 +2415,8 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 
 	$sql = 'SELECT ug.*, u.username, u.username_clean, u.user_email
 		FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
-		WHERE ug.user_id = u.user_id AND ';
+		WHERE ug.user_id = u.user_id
+			AND ug.user_pending = 0 AND ';
 
 	if ($group_id_ary)
 	{

@@ -2111,7 +2111,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	}
 
 	// Check bumper, only topic poster and last poster are allowed to bump
-	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'] && !$auth->acl_get('m_', $forum_id))
+	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'])
 	{
 		return false;
 	}

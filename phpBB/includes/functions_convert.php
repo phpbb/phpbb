@@ -304,7 +304,7 @@ function decode_ip($int_ip)
 {
 	if (!$int_ip)
 	{
-		return '';
+		return '127.0.0.1';
 	}
 
 	$hexipbang = explode('.', chunk_split($int_ip, 2, '.'));
@@ -315,7 +315,7 @@ function decode_ip($int_ip)
 		return '';
 	}
 
-	return hexdec($hexipbang[0]). '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
+	return hexdec($hexipbang[0]) . '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
 }
 
 /**

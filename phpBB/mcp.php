@@ -220,6 +220,14 @@ $module->load_active();
 // Assign data to the template engine for the list of modules
 $module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 
+// Generate urls for letting the moderation control panel being accessed in different modes
+$template->assign_vars(array(
+	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
+	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;f=$forum_id") : '',
+	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;t=$topic_id") : '',
+	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;t=$topic_id&amp;p=$post_id") : '',
+));
+
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title(), false);
 
@@ -242,6 +250,11 @@ function _module_logs_url($mode, &$module_row)
 }
 
 function _module_ban_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_queue_url($mode, &$module_row)
 {
 	return extra_url();
 }

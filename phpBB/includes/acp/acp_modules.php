@@ -726,7 +726,7 @@ class acp_modules
 			{
 				$sql = 'SELECT left_id, right_id
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 						AND module_id = {$module_data['parent_id']}";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -744,13 +744,13 @@ class acp_modules
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET left_id = left_id + 2, right_id = right_id + 2
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 						AND left_id > {$row['right_id']}";
 				$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET right_id = right_id + 2
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 						AND {$row['left_id']} BETWEEN left_id AND right_id";
 				$db->sql_query($sql);
 
@@ -761,7 +761,7 @@ class acp_modules
 			{
 				$sql = 'SELECT MAX(right_id) AS right_id
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'";
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -805,7 +805,7 @@ class acp_modules
 
 			$sql = 'UPDATE ' . MODULES_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $update_ary) . "
-				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 					AND module_id = {$module_data['module_id']}";
 			$db->sql_query($sql);
 
