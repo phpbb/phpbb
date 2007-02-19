@@ -161,107 +161,18 @@ class acp_database
 					break;
 
 					default:
-						$tables = array();
-						switch ($db->sql_layer)
+						include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+						$tables = get_tables($db);
+						foreach ($tables as $table_name)
 						{
-							case 'sqlite':
-								$sql = "SELECT name
-									FROM sqlite_master
-									WHERE type='table'
-									ORDER BY name";
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result))
-								{
-									if (strlen($table_prefix) == 0 || strpos($row['name'], $table_prefix) === 0)
-									{
-										$tables[] = $row['name'];
-									}
-								}
-								$db->sql_freeresult($result);
-							break;
-							
-							case 'mysqli':
-							case 'mysql4':
-							case 'mysql':
-								$sql = "SHOW TABLES
-									LIKE '{$table_prefix}%'";
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$tables[] = current($row);
-								}
-								$db->sql_freeresult($result);
-							break;
-
-							case 'postgres':
-								$sql = 'SELECT relname
-									FROM pg_stat_user_tables
-									ORDER BY relname';
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result))
-								{
-									if (strlen($table_prefix) == 0 || strpos($row['relname'], $table_prefix) === 0)
-									{
-										$tables[] = $row['relname'];
-									}
-								}
-								$db->sql_freeresult($result);
-							break;
-
-							case 'mssql':
-							case 'mssql_odbc':
-								$sql = "SELECT TABLE_NAME
-									FROM INFORMATION_SCHEMA.TABLES
-									WHERE TABLE_TYPE = 'BASE TABLE'
-									ORDER BY TABLE_NAME";
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result))
-								{
-									if (strlen($table_prefix) == 0 || strpos($row['TABLE_NAME'], $table_prefix) === 0)
-									{
-										$tables[] = $row['TABLE_NAME'];
-									}
-								}
-								$db->sql_freeresult($result);
-							break;
-
-							case 'firebird':
-								$sql = 'SELECT RDB$RELATION_NAME as TABLE_NAME
-									FROM RDB$RELATIONS
-									WHERE RDB$SYSTEM_FLAG=0
-										AND RDB$VIEW_BLR IS NULL';
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result))
-								{
-									if (strlen($table_prefix) == 0 || stripos($row['table_name'], $table_prefix) === 0)
-									{
-										$tables[] = $row['table_name'];
-									}
-								}
-								$db->sql_freeresult($result);
-							break;
-
-							case 'oracle':
-								$sql = 'SELECT TNAME as table_name
-									FROM TAB';
-								$result = $db->sql_query($sql);
-								while ($row = $db->sql_fetchrow($result))
-								{
-									if (strlen($table_prefix) == 0 || stripos($row['table_name'], $table_prefix) === 0)
-									{
-										$tables[] = $row['table_name'];
-									}
-								}
-								$db->sql_freeresult($result);
-							break;
+							if (strlen($table_prefix) === 0 || strpos($table_name, $table_prefix) === 0)
+							{
+								$template->assign_block_vars('tables', array(
+									'TABLE'	=> $table_name
+								));
+							}
 						}
-
-						foreach ($tables as $table)
-						{
-							$template->assign_block_vars('tables', array(
-								'TABLE'	=> $table
-							));
-						}
+						unset($tables);
 
 						$template->assign_vars(array(
 							'U_ACTION'	=> $this->u_action . '&amp;action=download'
@@ -398,7 +309,7 @@ class acp_database
 								$delim = ";\n";
 								while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
 								{
-									$query = trim($fgetd($fp, $delim, $read, $seek, $eof));
+									$query = trim($sql);
 									if (substr($query, 0, 8) === 'SET TERM')
 									{
 										$delim = $query[9] . "\n";
@@ -417,6 +328,10 @@ class acp_database
 									{
 										while (($sub = $fgetd($fp, "\n", $read, $seek, $eof)) !== '\.')
 										{
+											if ($sub === false)
+											{
+												trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action));
+											}
 											pg_put_line($db->db_connect_id, $sub . "\n");
 										}
 										pg_put_line($db->db_connect_id, "\\.\n");
@@ -612,7 +527,7 @@ class base_extractor
 
 		if ($this->download === true)
 		{
-			if ($this->format === 'bzip2' || ($this->format === 'gzip' && !$this->run_comp))
+			if ($this->format === 'bzip2' || $this->format === 'text' || ($this->format === 'gzip' && !$this->run_comp))
 			{
 				echo $data;
 			}
@@ -1367,6 +1282,7 @@ class mssql_extractor extends base_extractor
 	function write_end()
 	{
 		$this->flush("COMMIT\nGO\n");
+		parent::write_end();
 	}
 
 	function write_start($prefix)
