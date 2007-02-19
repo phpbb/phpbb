@@ -432,14 +432,7 @@ class install_convert extends module
 				}
 				else
 				{
-					if (version_compare(PHP_VERSION, '5.0.0-dev', '<'))
-					{
-						$src_db = &$db;
-					}
-					else
-					{
-						$src_db = $db;
-					}
+					$src_db = $db;
 					$same_db = true;
 				}
 
@@ -668,14 +661,7 @@ class install_convert extends module
 		}
 		else
 		{
-			if (version_compare(PHP_VERSION, '5.0.0-dev', '<'))
-			{
-				$src_db = &$db;
-			}
-			else
-			{
-				$src_db = $db;
-			}
+			$src_db = $db;
 			$same_db = true;
 		}
 
