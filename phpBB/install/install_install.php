@@ -1092,7 +1092,7 @@ class install_install extends module
 		// Instantiate the database
 		$sql_db = 'dbal_' . $available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// NOTE: trigger_error does not work here.
 		$db->return_on_error = true;
@@ -1373,7 +1373,7 @@ class install_install extends module
 		// Instantiate the database
 		$sql_db = 'dbal_' . $available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// NOTE: trigger_error does not work here.
 		$db->return_on_error = true;

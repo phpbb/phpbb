@@ -60,7 +60,7 @@ if ($id && $sid)
 	$cache = new cache();
 
 	// Connect to DB
-	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
+	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
 	{
 		exit;
 	}

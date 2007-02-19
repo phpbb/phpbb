@@ -91,7 +91,7 @@ class install_update extends module
 		$db = new $sql_db();
 
 		// Connect to DB
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
