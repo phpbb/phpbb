@@ -35,7 +35,7 @@ class dbal_mysql extends dbal
 	* Connect to server
 	* @access public
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
@@ -44,11 +44,11 @@ class dbal_mysql extends dbal
 
 		$this->sql_layer = 'mysql4';
 
-		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword) : @mysql_connect($this->server, $this->user, $sqlpassword);
+		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mysql_connect($this->server, $this->user, $sqlpassword, $new_link);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
-			if (@mysql_select_db($this->dbname))
+			if (@mysql_select_db($this->dbname, $this->db_connect_id))
 			{
 				// Determine what version we are using and if it natively supports UNICODE
 				$this->mysql_version = mysql_get_server_info($this->db_connect_id);

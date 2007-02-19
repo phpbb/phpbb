@@ -31,7 +31,7 @@ class dbal_mssql_odbc extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
@@ -267,7 +267,7 @@ class dbal_mssql_odbc extends dbal
 		{
 			if (@odbc_fetch_array($result_id))
 			{
-				$id = @odbc_result($result_id, 1);	
+				$id = @odbc_result($result_id, 1);
 				@odbc_free_result($result_id);
 				return $id;
 			}
@@ -363,7 +363,7 @@ class dbal_mssql_odbc extends dbal
 				if (preg_match('/^SELECT/', $explain_query))
 				{
 					$html_table = false;
-					@odbc_exec($this->db_connect_id, "SET SHOWPLAN_TEXT ON;");
+					@odbc_exec($this->db_connect_id, 'SET SHOWPLAN_TEXT ON;');
 					if ($result = @odbc_exec($this->db_connect_id, $explain_query))
 					{
 						@odbc_next_result($result);
@@ -372,7 +372,7 @@ class dbal_mssql_odbc extends dbal
 							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 						}
 					}
-					@odbc_exec($this->db_connect_id, "SET SHOWPLAN_TEXT OFF;");
+					@odbc_exec($this->db_connect_id, 'SET SHOWPLAN_TEXT OFF;');
 					@odbc_free_result($result);
 
 					if ($html_table)

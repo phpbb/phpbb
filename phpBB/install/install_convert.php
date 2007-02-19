@@ -126,7 +126,7 @@ class install_convert extends module
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
 				$db = new $sql_db();
-				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
 				// We need to fill the config to let internal functions correctly work
@@ -222,7 +222,7 @@ class install_convert extends module
 				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
 				$db = new $sql_db();
-				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
 				switch ($db->sql_layer)
@@ -331,7 +331,7 @@ class install_convert extends module
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
 		$this->page_title = $lang['STAGE_SETTINGS'];
@@ -427,7 +427,7 @@ class install_convert extends module
 				{
 					$sql_db = 'dbal_' . $src_dbms;
 					$src_db = new $sql_db();
-					$src_db->sql_connect($src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, false);
+					$src_db->sql_connect($src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, false, true);
 					$same_db = false;
 				}
 				else
@@ -466,7 +466,7 @@ class install_convert extends module
 								compare_table($tables, $tablename, $prefixes);
 							}
 						}
-						$src_->sql_freeresult($result);
+						$src_db->sql_freeresult($result);
 					}
 
 					foreach ($prefixes as $prefix => $count)
@@ -591,7 +591,7 @@ class install_convert extends module
 		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 		unset($dbpasswd);
 
 		$sql = 'SELECT *
@@ -663,7 +663,7 @@ class install_convert extends module
 			}
 			$sql_db = 'dbal_' . $convert->src_dbms;
 			$src_db = new $sql_db();
-			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, $convert->src_dbpasswd, $convert->src_dbname, $convert->src_dbport, false);
+			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, $convert->src_dbpasswd, $convert->src_dbname, $convert->src_dbport, false, true);
 			$same_db = false;
 		}
 		else

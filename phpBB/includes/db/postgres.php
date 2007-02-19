@@ -30,7 +30,7 @@ class dbal_postgres extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$connect_string = '';
 
@@ -70,7 +70,7 @@ class dbal_postgres extends dbal
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string) : @pg_connect($connect_string);
+		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}

@@ -28,7 +28,7 @@ class dbal_sqlite extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;

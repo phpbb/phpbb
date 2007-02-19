@@ -103,12 +103,9 @@ class dbal
 			$this->sql_transaction('commit');
 		}
 
-		if (sizeof($this->open_queries))
+		foreach ($this->open_queries as $query_id)
 		{
-			foreach ($this->open_queries as $i_query_id => $query_id)
-			{
-				$this->sql_freeresult($query_id);
-			}
+			$this->sql_freeresult($query_id);
 		}
 		
 		return $this->_sql_close();

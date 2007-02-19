@@ -31,7 +31,7 @@ class dbal_firebird extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
@@ -273,19 +273,19 @@ class dbal_firebird extends dbal
 
 		if ($query_id !== false && $this->last_query_text != '')
 		{
-			if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#is', $this->last_query_text, $tablename))
+			if ($this->query_result && preg_match('#^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)#i', $this->last_query_text, $tablename))
 			{
-				$sql = "SELECT GEN_ID(" . $tablename[1] . "_gen, 0) AS new_id FROM RDB\$DATABASE";
+				$sql = 'SELECT GEN_ID(' . $tablename[1] . '_gen, 0) AS new_id FROM RDB$DATABASE';
 
 				if (!($temp_q_id = @ibase_query($this->db_connect_id, $sql)))
 				{
 					return false;
 				}
 
-				$temp_result = @ibase_fetch_object($temp_q_id);
+				$temp_result = @ibase_fetch_assoc($temp_q_id);
 				@ibase_free_result($temp_q_id);
 
-				return ($temp_result) ? $temp_result->NEW_ID : false;
+				return ($temp_result) ? $temp_result['NEW_ID'] : false;
 			}
 		}
 

@@ -29,14 +29,14 @@ class dbal_oracle extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 		
-		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->server, 'UTF8');
+		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $this->server, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->server, 'UTF8'));
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
