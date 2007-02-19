@@ -50,6 +50,7 @@ $lang = array_merge($lang, array(
 	'FILE_TYPE'			=> 'File type',
 	'FULL_BACKUP'		=> 'Full',
 
+	'RESTORE_FAILURE'		=> 'The backup file may be corrupt.',
 	'RESTORE_OPTIONS'		=> 'Restore options',
 	'RESTORE_SUCCESS'		=> 'The database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
 

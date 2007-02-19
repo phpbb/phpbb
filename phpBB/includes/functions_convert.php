@@ -1374,7 +1374,7 @@ function get_path($src_path, $src_url, $test_file)
 
 function compare_table($tables, $tablename, &$prefixes)
 {
-	for ($i = 0; $i < sizeof($tables); ++$i)
+	for ($i = 0, $table_size = sizeof($tables); $i < $table_size; ++$i)
 	{
 		if (preg_match('/(.*)' . $tables[$i] . '$/', $tablename, $m))
 		{

@@ -182,6 +182,69 @@ function dbms_select($default = '', $only_20x_options = false)
 	return $dbms_options;
 }
 
+/**
+* Get tables of a database
+*/
+function get_tables($db)
+{
+	switch ($db->sql_layer)
+	{
+		case 'mysql':
+		case 'mysql4':
+		case 'mysqli':
+			$sql = 'SHOW TABLES';
+			$field = 'Tables_in_' . $db->dbname;
+		break;
+
+		case 'sqlite':
+			$sql = 'SELECT name
+				FROM sqlite_master
+				WHERE type = "table"';
+			$field = 'name';
+		break;
+
+		case 'mssql':
+		case 'mssql_odbc':
+			$sql = "SELECT name 
+				FROM sysobjects 
+				WHERE type='U'";
+			$field = 'name';
+		break;
+
+		case 'postgres':
+			$sql = 'SELECT relname
+				FROM pg_stat_user_tables';
+			$field = 'relname';
+		break;
+
+		case 'firebird':
+			$sql = 'SELECT rdb$relation_name
+				FROM rdb$relations
+				WHERE rdb$view_source is null
+					AND rdb$system_flag = 0';
+			$field = 'rdb$relation_name';
+		break;
+
+		case 'oracle':
+			$sql = 'SELECT table_name
+				FROM USER_TABLES';
+			$field = 'table_name';
+		break;
+	}
+
+	$result = $db->sql_query($sql);
+
+	$tables = array();
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$tables[] = $row[$field];
+	}
+
+	$db->sql_freeresult($result);
+
+	return $tables;
+}
 
 /**
 * Used to test whether we are able to connect to the database the user has specified
@@ -264,74 +327,20 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 	}
 	else
 	{
-		switch ($dbms['DRIVER'])
+		// Likely matches for an existing phpBB installation
+		if (!$prefix_may_exist)
 		{
-			case 'mysql':
-			case 'mysqli':
-				$sql = 'SHOW TABLES';
-				$field = "Tables_in_{$dbname}";
-			break;
-
-			case 'sqlite':
-				$sql = 'SELECT name
-					FROM sqlite_master
-					WHERE type = "table"';
-				$field = 'name';
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-				$sql = "SELECT name 
-					FROM sysobjects 
-					WHERE type='U'";
-				$field = 'name';
-			break;
-
-			case 'postgres':
-				$sql = "SELECT relname 
-					FROM pg_class 
-					WHERE relkind = 'r' 
-						AND relname NOT LIKE 'pg\_%'";
-				$field = 'relname';
-			break;
-
-			case 'firebird':
-				$sql = 'SELECT rdb$relation_name
-					FROM rdb$relations
-					WHERE rdb$view_source is null
-						AND rdb$system_flag = 0';
-				$field = 'rdb$relation_name';
-			break;
-
-			case 'oracle':
-				$sql = 'SELECT table_name
-					FROM USER_TABLES';
-				$field = 'table_name';
-			break;
-		}
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			// Likely matches for an existing phpBB installation
 			$temp_prefix = strtolower($table_prefix);
 			$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
 
-			do
+			$tables = get_tables($db);
+			$table_intersect = array_intersect($tables, $table_ary);
+
+			if (sizeof($table_intersect))
 			{
-				// All phpBB installations will at least have config else it won't work
-				if (in_array(strtolower($row[$field]), $table_ary))
-				{
-					if (!$prefix_may_exist)
-					{
-						$error[] = $lang['INST_ERR_PREFIX'];
-					}
-					break;
-				}
+				$error[] = $lang['INST_ERR_PREFIX'];
 			}
-			while ($row = $db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
 
 		// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
 		switch ($dbms['DRIVER'])

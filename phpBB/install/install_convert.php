@@ -445,22 +445,13 @@ class install_convert extends module
 				if (!$result)
 				{
 					$prefixes = array();
-					// TODO: fixme
-					if ($result = $src_db->sql_query('SHOW TABLES'))
+
+					$tables_existing = get_tables($src_db);
+					foreach ($tables_existing as $table_name)
 					{
-						while ($row = $src_db->sql_fetchrow($result))
-						{
-							if (sizeof($row) > 1)
-							{
-								compare_table($tables, $row[0], $prefixes);
-							}
-							else if (list(, $tablename) = @each($row))
-							{
-								compare_table($tables, $tablename, $prefixes);
-							}
-						}
-						$src_db->sql_freeresult($result);
+						compare_table($tables, $table_name, $prefixes);
 					}
+					unset($tables_existing);
 
 					foreach ($prefixes as $prefix => $count)
 					{
