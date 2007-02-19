@@ -2516,7 +2516,7 @@ function get_database_size()
 		case 'mysql':
 		case 'mysql4':
 		case 'mysqli':
-		
+
 			$sql = 'SELECT VERSION() AS mysql_version';
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
@@ -2560,6 +2560,16 @@ function get_database_size()
 
 		case 'mssql':
 		case 'mssql_odbc':
+			global $dbhost;
+
+			if (file_exists($dbhost))
+			{
+				$database_size = filesize($dbhost);
+			}
+
+		break;
+
+		case 'sqlite':
 		
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
