@@ -2558,8 +2558,7 @@ function get_database_size()
 
 		break;
 
-		case 'mssql':
-		case 'mssql_odbc':
+		case 'sqlite':
 			global $dbhost;
 
 			if (file_exists($dbhost))
