@@ -2516,7 +2516,6 @@ function get_database_size()
 		case 'mysql':
 		case 'mysql4':
 		case 'mysqli':
-
 			$sql = 'SELECT VERSION() AS mysql_version';
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
@@ -2555,7 +2554,6 @@ function get_database_size()
 					$db->sql_freeresult($result);
 				}
 			}
-
 		break;
 
 		case 'sqlite':
@@ -2568,18 +2566,16 @@ function get_database_size()
 
 		break;
 
-		case 'sqlite':
-		
+		case 'mssql':
+		case 'mssql_odbc':
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
 			$result = $db->sql_query($sql);
 			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);
-
 		break;
 
 		case 'postgres':
-
 			$sql = "SELECT proname
 				FROM pg_proc
 				WHERE proname = 'pg_database_size'";
@@ -2605,7 +2601,6 @@ function get_database_size()
 
 				$database_size = $row['size'];
 			}
-
 		break;
 	}
 
