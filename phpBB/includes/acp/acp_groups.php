@@ -103,6 +103,7 @@ class acp_groups
 
 				if (confirm_box(true))
 				{
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 					if (!sizeof($mark_ary))
 					{
 						$start = 0;
@@ -124,7 +125,7 @@ class acp_groups
 								}
 								while ($row = $db->sql_fetchrow($result));
 
-								group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
+								group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
 								$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
 							}
@@ -138,7 +139,7 @@ class acp_groups
 					}
 					else
 					{
-						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
+						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 					}
 
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
