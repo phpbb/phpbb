@@ -178,7 +178,8 @@ class acp_groups
 						break;
 
 						case 'deleteusers':
-							$error = group_user_del($group_id, $mark_ary, false, $group_row['group_name']);
+							$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+							$error = group_user_del($group_id, $mark_ary, false, $group_name);
 						break;
 					}
 
