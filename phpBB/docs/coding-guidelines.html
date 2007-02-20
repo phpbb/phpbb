@@ -598,7 +598,7 @@ if (isset($forum)) ...
 if (isset($forum) &amp;&amp; $forum == 5)
 	</pre></blockquote>
 
-	<p>The <code>empty()</code> function is useful if you want to check if a variable is not set or being empty (an empty string, 0 as an integer or string, NULL, false, an empty array or a variable declared, but without a value in a class). Therefore empty should be used in favor of <code>isset($array) &amp;&amp; sizeof($array) > 0</code> - this can be written in a shorter way as <code>!empty($array)</code>.</p>
+	<p>The <code>empty()</code> function is useful if you want to check if a variable is not set or being empty (an empty string, 0 as an integer or string, NULL, false, an empty array or a variable declared, but without a value in a class). Therefore empty should be used in favor of <code>isset($array) &amp;&amp; sizeof($array) &gt; 0</code> - this can be written in a shorter way as <code>!empty($array)</code>.</p>
 
 	<h3>Switch statements:</h3>
 	<p>Switch/case code blocks can get a bit long sometimes. To have some level of notice and being in-line with the opening/closing brace requirement (where they are on the same line for better readability), this also applies to switch/case code blocks and the breaks. An example:</p>
@@ -769,9 +769,9 @@ $sql = 'SELECT *
 
 	<blockquote><pre>
 $sql_ary = array(
-	'somedata'		=> $my_string,
-	'otherdata'		=> $an_int,
-	'moredata'		=> $another_int
+	'somedata'		=&gt; $my_string,
+	'otherdata'		=&gt; $an_int,
+	'moredata'		=&gt; $another_int
 );
 
 $db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('INSERT', $sql_ary));
@@ -781,9 +781,9 @@ $db-&gt;sql_query('INSERT INTO ' . SOME_TABLE . ' ' . $db-&gt;sql_build_array('I
 
 	<blockquote><pre>
 $sql_ary = array(
-	'somedata'		=> $my_string,
-	'otherdata'		=> $an_int,
-	'moredata'		=> $another_int
+	'somedata'		=&gt; $my_string,
+	'otherdata'		=&gt; $an_int,
+	'moredata'		=&gt; $another_int
 );
 
 $sql = 'UPDATE ' . SOME_TABLE . ' 
@@ -850,24 +850,24 @@ SELECT FROM phpbb_forums WHERE forum_id <strong>&lt;&gt;</strong> 1
 
 	<blockquote><pre>
 $sql_array = array(
-	'SELECT'	=> 'f.*, ft.mark_time',
+	'SELECT'	=&gt; 'f.*, ft.mark_time',
 
-	'FROM'		=> array(
-		FORUMS_WATCH_TABLE	=> 'fw',
-		FORUMS_TABLE		=> 'f'
+	'FROM'		=&gt; array(
+		FORUMS_WATCH_TABLE	=&gt; 'fw',
+		FORUMS_TABLE		=&gt; 'f'
 	),
 
-	'LEFT_JOIN'	=> array(
+	'LEFT_JOIN'	=&gt; array(
 		array(
-			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
+			'FROM'	=&gt; array(FORUMS_TRACK_TABLE =&gt; 'ft'),
+			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id'
 		)
 	),
 
-	'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
+	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . ' 
 		AND f.forum_id = fw.forum_id',
 
-	'ORDER_BY'	=> 'left_id'
+	'ORDER_BY'	=&gt; 'left_id'
 );
 
 $sql = $db-&gt;sql_build_query('SELECT', $sql_array);
@@ -877,25 +877,25 @@ $sql = $db-&gt;sql_build_query('SELECT', $sql_array);
 
 	<blockquote><pre>
 $sql_array = array(
-	'SELECT'	=> 'f.*',
+	'SELECT'	=&gt; 'f.*',
 
-	'FROM'		=> array(
-		FORUMS_WATCH_TABLE	=> 'fw',
-		FORUMS_TABLE		=> 'f'
+	'FROM'		=&gt; array(
+		FORUMS_WATCH_TABLE	=&gt; 'fw',
+		FORUMS_TABLE		=&gt; 'f'
 	),
 
-	'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
+	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . ' 
 		AND f.forum_id = fw.forum_id',
 
-	'ORDER_BY'	=> 'left_id'
+	'ORDER_BY'	=&gt; 'left_id'
 );
 
 if ($config['load_db_lastread'])
 {
 	$sql_array['LEFT_JOIN'] = array(
 		array(
-			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
+			'FROM'	=&gt; array(FORUMS_TRACK_TABLE =&gt; 'ft'),
+			'ON'	=&gt; 'ft.user_id = ' . $user-&gt;data['user_id'] . ' AND ft.forum_id = f.forum_id'
 		)
 	);
 
@@ -984,7 +984,7 @@ $mark_array = request_var('mark', array(0));
 
 	<p class="good">// Getting an array, keys are strings, value defaults to 0</p>
 	<blockquote><pre>
-$action_ary = request_var('action', array('' => 0));
+$action_ary = request_var('action', array('' =&gt; 0));
 	</pre></blockquote>
 
 	<h3>Login checks/redirection: </h3>
@@ -999,12 +999,12 @@ $action_ary = request_var('action', array('' => 0));
 	<p>Sessions should be initiated on each page, as near the top as possible using the following code:</p>
 
 	<blockquote><pre>
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup();
+$user-&gt;session_begin();
+$auth-&gt;acl($user-&gt;data);
+$user-&gt;setup();
 	</pre></blockquote>
 
-	<p>The <code>$user->setup()</code> call can be used to pass on additional language definition and a custom style (used in viewforum).</p>
+	<p>The <code>$user-&gt;setup()</code> call can be used to pass on additional language definition and a custom style (used in viewforum).</p>
 
 	<h3>Errors and messages: </h3>
 	<p>All messages/errors should be outputed by calling <code>trigger_error()</code> using the appropriate message type and language string. Example:</p>
@@ -1328,7 +1328,7 @@ div
 <p>You are even able to check the number of items within a loop by comparing it with values within the IF condition:</p>
 
 <blockquote><pre>
-<span class="comment">&lt;!-- IF .loop > 2 --&gt;</span>
+<span class="comment">&lt;!-- IF .loop &gt; 2 --&gt;</span>
 	<span class="comment">&lt;!-- BEGIN loop --&gt;</span>
 		markup
 	<span class="comment">&lt;!-- END loop --&gt;</span>
