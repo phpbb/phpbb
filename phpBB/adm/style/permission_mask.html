@@ -23,7 +23,7 @@
 <h3>{p_mask.NAME}<!-- IF p_mask.S_LOCAL --> <span class="small"> [{p_mask.L_ACL_TYPE}]</span><!-- ENDIF --></h3>
 
 <!-- BEGIN f_mask -->
-
+<div class="clearfix"></div>
 <fieldset class="perm" id="perm{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">
 	<legend id="legend{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">
 		<!-- IF not p_mask.S_VIEW -->
@@ -112,6 +112,7 @@
 				</tbody>
 				</table>
 			</div>
+			
 			<!-- IF not p_mask.S_VIEW -->
 			<fieldset class="quick" style="margin-right: 11px;">
 				<p class="small">{L_APPLY_PERMISSIONS_EXPLAIN}</p>
@@ -120,9 +121,11 @@
 			</fieldset>
 		
 			<!-- ENDIF -->
+
 			<span class="corners-bottom"><span></span></span>
 		</div>
 	<!-- END category -->
+			<div class="clearfix"></div>
 	</div>
 </fieldset>
 <!-- END f_mask -->
