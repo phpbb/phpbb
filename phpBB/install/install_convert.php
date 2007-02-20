@@ -90,7 +90,7 @@ class install_convert extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config;
+		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language;
 		global $convert;
 
 		$this->tpl_name = 'install_convert';
@@ -114,7 +114,7 @@ class install_convert extends module
 					$template->assign_vars(array(
 						'S_NOT_INSTALLED'		=> true,
 						'TITLE'					=> $lang['BOARD_NOT_INSTALLED'],
-						'BODY'					=> sprintf($lang['BOARD_NOT_INSTALLED_EXPLAIN'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=install')),
+						'BODY'					=> sprintf($lang['BOARD_NOT_INSTALLED_EXPLAIN'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=install&amp;language=' . $language)),
 					));
 
 					return;
