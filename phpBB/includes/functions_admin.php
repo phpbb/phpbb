@@ -2708,7 +2708,6 @@ function tidy_warnings()
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . " SET user_warnings = user_warnings - $value
 				WHERE user_id = $user_id";
-				var_dump($sql);
 			$db->sql_query($sql);
 		}
 
