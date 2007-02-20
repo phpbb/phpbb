@@ -165,12 +165,12 @@ if (!$get_info)
 
 	// Test to see if the attachment MOD is installed on the source forum
 	// If it is, we will convert this data as well
-	$db->sql_return_on_error(true);
+	$src_db->sql_return_on_error(true);
 
 	$sql = "SELECT config_value
 		FROM {$convert->src_table_prefix}attachments_config
 		WHERE config_name = 'upload_dir'";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	if ($result && $row = $db->sql_fetchrow($result))
 	{
@@ -193,15 +193,15 @@ if (!$get_info)
 	* Please use constants for this, prefixing them with MOD_
 	*/
 
-	$db->sql_return_on_error(false);
+	$src_db->sql_return_on_error(false);
 
 	// Now let us set a temporary config variable for user id incrementing
 	$sql = "SELECT user_id
 		FROM {$convert->src_table_prefix}users
 		WHERE user_id = 1";
-	$result = $db->sql_query($sql);
-	$user_id = (int) $db->sql_fetchfield('user_id');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$user_id = (int) $src_db->sql_fetchfield('user_id');
+	$src_db->sql_freeresult($result);
 
 	// If there is a user id 1, we need to increment user ids. :/
 	if ($user_id === 1)
@@ -333,7 +333,7 @@ if (!$get_info)
 				array('is_orphan',				0,										''),
 				array('poster_id',				'attachments.user_id_1 AS poster_id',	'phpbb_user_id'),
 				array('physical_filename',		'attachments_desc.physical_filename',	'import_attachment'),
-				array('real_filename',			'attachments_desc.real_filename',		''),
+				array('real_filename',			'attachments_desc.real_filename',		'phpbb_set_encoding'),
 				array('download_count',			'attachments_desc.download_count',		''),
 				array('attach_comment',			'attachments_desc.comment',				array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('extension',				'attachments_desc.extension',			''),

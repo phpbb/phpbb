@@ -89,7 +89,7 @@ function phpbb_insert_forums()
 	{
 		$sql_ary = array(
 			'forum_id'		=> $max_forum_id,
-			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_encoding($row['cat_title'], false), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
+			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_default_encoding($row['cat_title']), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
 			'forum_desc'	=> '',
@@ -200,10 +200,10 @@ function phpbb_insert_forums()
 		// Define the new forums sql ary
 		$sql_ary = array(
 			'forum_id'			=> (int) $row['forum_id'],
-			'forum_name'		=> htmlspecialchars(phpbb_set_encoding($row['forum_name'], false), ENT_COMPAT, 'UTF-8'),
+			'forum_name'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_name']), ENT_COMPAT, 'UTF-8'),
 			'parent_id'			=> $cats_added[$row['cat_id']],
 			'forum_parents'		=> '',
-			'forum_desc'		=> htmlspecialchars(phpbb_set_encoding($row['forum_desc'], false), ENT_COMPAT, 'UTF-8'),
+			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
 			'enable_prune'		=> $row['prune_enable'],
@@ -1047,7 +1047,7 @@ function phpbb_convert_group_name($group_name)
 		return 'phpBB2 - ' . $group_name;
 	}
 
-	return phpbb_set_encoding($group_name, false);
+	return phpbb_set_default_encoding($group_name);
 }
 
 /**
