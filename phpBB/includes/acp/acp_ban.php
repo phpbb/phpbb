@@ -130,8 +130,6 @@ class acp_ban
 					WHERE (b.ban_end >= ' . time() . '
 							OR b.ban_end = 0)
 						AND u.user_id = b.ban_userid
-						AND b.ban_userid <> 0
-						AND u.user_id <> ' . ANONYMOUS . '
 					ORDER BY u.username_clean ASC';
 			break;
 
