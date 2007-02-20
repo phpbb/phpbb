@@ -74,7 +74,8 @@ class acp_groups
 				}
 
 				// Approve, demote or promote
-				group_user_attributes($action, $group_id, $mark_ary, false, $group_row['group_name']);
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+				group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
 
 				switch ($action)
 				{
