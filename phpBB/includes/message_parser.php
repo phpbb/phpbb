@@ -1507,7 +1507,15 @@ class parse_message extends bbcode_firstpass
 		}
 		else
 		{
+			if (utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message)) > 100)
+			{
+				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
+			}
 			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+			if (strlen($poll['poll_title']) > 255)
+			{
+				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];
+			}
 		}
 
 		$this->message = $tmp_message;

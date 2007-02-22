@@ -1148,7 +1148,7 @@ CREATE TABLE phpbb_topics (
 	topic_moved_id INT4 DEFAULT '0' NOT NULL CHECK (topic_moved_id >= 0),
 	topic_bumped INT2 DEFAULT '0' NOT NULL CHECK (topic_bumped >= 0),
 	topic_bumper INT4 DEFAULT '0' NOT NULL CHECK (topic_bumper >= 0),
-	poll_title varchar(100) DEFAULT '' NOT NULL,
+	poll_title varchar(255) DEFAULT '' NOT NULL,
 	poll_start INT4 DEFAULT '0' NOT NULL CHECK (poll_start >= 0),
 	poll_length INT4 DEFAULT '0' NOT NULL CHECK (poll_length >= 0),
 	poll_max_options INT2 DEFAULT '1' NOT NULL,

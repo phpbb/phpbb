@@ -1481,7 +1481,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_moved_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_bumped] [int] DEFAULT (0) NOT NULL ,
 	[topic_bumper] [int] DEFAULT (0) NOT NULL ,
-	[poll_title] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[poll_title] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[poll_start] [int] DEFAULT (0) NOT NULL ,
 	[poll_length] [int] DEFAULT (0) NOT NULL ,
 	[poll_max_options] [int] DEFAULT (1) NOT NULL ,

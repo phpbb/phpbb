@@ -1757,7 +1757,7 @@ function get_schema_struct()
 			'topic_moved_id'			=> array('UINT', 0),
 			'topic_bumped'				=> array('BOOL', 0),
 			'topic_bumper'				=> array('UINT', 0),
-			'poll_title'				=> array('XSTEXT_UNI', ''),
+			'poll_title'				=> array('STEXT_UNI', ''),
 			'poll_start'				=> array('TIMESTAMP', 0),
 			'poll_length'				=> array('TIMESTAMP', 0),
 			'poll_max_options'			=> array('TINT:4', 1),

@@ -900,7 +900,7 @@ CREATE TABLE phpbb_topics (
 	topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_bumped tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_bumper mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	poll_title varchar(100) DEFAULT '' NOT NULL,
+	poll_title varchar(255) DEFAULT '' NOT NULL,
 	poll_start int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_length int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_max_options tinyint(4) DEFAULT '1' NOT NULL,

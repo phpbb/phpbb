@@ -317,7 +317,7 @@ $database_update_info = array(
 				'seed'					=> array('UINT:10', 0),
 			),
 			SESSIONS_TABLE		=> array(
-				'session_forwarded_for'	=> array('VCHAR:255', 0),
+				'session_forwarded_for'	=> array('VCHAR:255', ''),
 			),
 		),
 		'change_columns'	=> array(
@@ -348,6 +348,17 @@ $database_update_info = array(
 			ZEBRA_TABLE			=> array(
 				'user_id',
 				'zebra_id',
+			),
+		),
+	),
+	// Changes from 3.0.b5 to the next version
+	'3.0.b5'			=> array(
+		'change_columns'	=> array(
+			TOPICS_TABLE		=> array(
+				'poll_title'		=> array('STEXT_UNI', ''),
+			),
+			SESSIONS_TABLE		=> array(
+				'session_forwarded_for'	=> array('VCHAR:255', ''),
 			),
 		),
 	),
