@@ -309,10 +309,10 @@ function decode_ip($int_ip)
 
 	$hexipbang = explode('.', chunk_split($int_ip, 2, '.'));
 
-	// Any mod changing the way ips are stored? Then we are not able to convert.
-	if (sizeof($hexipbang) != 4)
+	// Any mod changing the way ips are stored? Then we are not able to convert...
+	if (sizeof($hexipbang) < 4)
 	{
-		return '';
+		return '127.0.0.1';
 	}
 
 	return hexdec($hexipbang[0]) . '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);

@@ -1024,6 +1024,41 @@ class session
 	}
 
 	/**
+	* Check if URI is blacklisted
+	* This should be called only where absolutly necessary, for example on the submitted website field
+	* This function is not in use at the moment and is only included for testing purposes, it may not work at all!
+	* This means it is untested at the moment and therefore commented out
+	*
+	* @param string $uri URI to check
+	* @return true if uri is on blacklist, else false. Only blacklist is checked (~zero FP), no grey lists
+	function check_uribl($uri)
+	{
+		// Normally parse_url() is not intended to parse uris
+		// We need to get the top-level domain name anyway... change.
+		$uri = parse_url($uri);
+
+		if ($uri === false || empty($uri['host']))
+		{
+			return false;
+		}
+
+		$uri = trim($uri['host']);
+
+		if ($uri)
+		{
+			// One problem here... the return parameter for the "windows" method is different from what
+			// we expect... this may render this check useless...
+			if (phpbb_checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	*/
+
+	/**
 	* Set/Update a persistent login key
 	*
 	* This method creates or updates a persistent session key. When a user makes

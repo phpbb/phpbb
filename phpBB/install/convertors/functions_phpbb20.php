@@ -436,16 +436,6 @@ function phpbb_get_birthday($birthday = '')
 */
 function phpbb_user_id($user_id)
 {
-	if (!$user_id)
-	{
-		return 0;
-	}
-
-	if ($user_id == -1)
-	{
-		return ANONYMOUS;
-	}
-
 	global $config;
 
 	// Increment user id if the old forum is having a user with the id 1
@@ -482,6 +472,19 @@ function phpbb_user_id($user_id)
 			set_config('increment_user_id', 0, true);
 			$config['increment_user_id'] = 0;
 		}
+	}
+
+	// If the old user id is -1 in 2.0.x it is the anonymous user...
+	if ($user_id == -1)
+	{
+		return ANONYMOUS;
+	}
+
+	// This should never ever happen - 2.0.x is not allowing a user id of 0
+	// But we return the anonymous user to be consistent and not breaking functionality
+	if (!$user_id)
+	{
+		return ANONYMOUS;
 	}
 
 	if (!empty($config['increment_user_id']))
@@ -1125,6 +1128,7 @@ function phpbb_prepare_message($message)
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
 	}
 
+	// Already the new user id ;)
 	$user_id = $convert->row['poster_id'];
 
 	$message = str_replace('<', '&lt;', $message);

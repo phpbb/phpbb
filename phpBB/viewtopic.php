@@ -1215,6 +1215,13 @@ $template->assign_vars(array(
 $first_unread = $post_unread = false;
 for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 {
+	// A non-existing rowset only happens if there was no user present for the entered poster_id
+	// This could be a broken posts table.
+	if (!isset($rowset[$post_list[$i]]))
+	{
+		continue;
+	}
+
 	$row =& $rowset[$post_list[$i]];
 	$poster_id = $row['user_id'];
 
