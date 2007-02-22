@@ -1287,7 +1287,7 @@ class install_convert extends module
 
 					$skip_rows++;
 				}
-				$db->sql_freeresult($___result);
+				$src_db->sql_freeresult($___result);
 
 				// We might still have some rows waiting
 				if (sizeof($waiting_rows))
