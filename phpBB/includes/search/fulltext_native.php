@@ -321,7 +321,7 @@ class fulltext_native extends search_backend
 					}
 					else
 					{
-						$this->common_words[] = $row['word_text'];
+						$this->common_words[] = $word;
 					}
 				}
 				else
