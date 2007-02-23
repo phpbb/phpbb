@@ -48,6 +48,7 @@ $lang = array_merge($lang, array(
 
 	'USER_DEACTIVATE_SUCCESS'	=> 'The selected users have been deactivated successfully.',
 	'USER_DELETE_SUCCESS'		=> 'The selected users have been deleted successfully.',
+	'USER_PRUNE_FAILURE'		=> 'No users fit the selected criteria.',
 
 	'WRONG_ACTIVE_JOINED_DATE'	=> 'The date entered is wrong, it is expected in <kbd>YYYY-MM-DD</kbd> format.',
 ));

@@ -301,9 +301,14 @@ class acp_prune
 					}
 
 					add_log('admin', $l_log, implode(', ', $usernames));
+					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
+				}
+				else
+				{
+					$msg = $user->lang['USER_PRUNE_FAILURE'];
 				}
 
-				trigger_error($user->lang['USER_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
+				trigger_error($msg . adm_back_link($this->u_action));
 			}
 			else
 			{
