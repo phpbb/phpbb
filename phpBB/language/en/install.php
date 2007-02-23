@@ -74,7 +74,7 @@ $lang = array_merge($lang, array(
 	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) forum systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the forum software you wish to convert from, please check our website where further conversion modules may be available for download.',
 	'CONVERT_NEW_CONVERSION'	=> 'New conversion',
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist',
-	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion progress, push the button below to begin.',
+	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion process, push the button below to begin.',
 
 	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
 	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',
