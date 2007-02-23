@@ -308,7 +308,7 @@ $lang = array_merge($lang, array(
 
 	'ENABLE_GZIP'				=> 'Enable GZip compression',
 	'FORCE_SERVER_VARS'			=> 'Force server URL settings',
-	'FORCE_SERVER_VARS_EXPLAIN'	=> 'If set to yes the server settings defined here will be used in favour of the automatically determined values',
+	'FORCE_SERVER_VARS_EXPLAIN'	=> 'If set to yes the server settings defined here will be used in favour of the automatically determined values.',
 	'ICONS_PATH'				=> 'Post icons storage path',
 	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/icons</samp>',
 	'PATH_SETTINGS'				=> 'Path settings',

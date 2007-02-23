@@ -141,7 +141,6 @@ class install_convert extends module
 				}
 				$db->sql_freeresult($result);
 
-
 				// Detect if there is already a conversion in progress at this point and offer to resume
 				// It's quite possible that the user will get disconnected during a large conversion so they need to be able to resume it
 				$new_conversion = request_var('new_conv', 0);
@@ -168,13 +167,13 @@ class install_convert extends module
 
 				// This information should have already been checked once, but do it again for safety
 				if (!empty($options) && !empty($options['tag']) &&
-					isset($convert->options['dbms']) &&
-					isset($convert->options['dbhost']) &&
-					isset($convert->options['dbport']) &&
-					isset($convert->options['dbuser']) &&
-					isset($convert->options['dbpasswd']) &&
-					isset($convert->options['dbname']) &&
-					isset($convert->options['table_prefix']))
+					isset($options['dbms']) &&
+					isset($options['dbhost']) &&
+					isset($options['dbport']) &&
+					isset($options['dbuser']) &&
+					isset($options['dbpasswd']) &&
+					isset($options['dbname']) &&
+					isset($options['table_prefix']))
 				{
 					$this->page_title = $lang['CONTINUE_CONVERT'];
 
@@ -943,7 +942,12 @@ class install_convert extends module
 					'dbpasswd'		=> $convert->src_dbpasswd,
 				)), true);
 
-				$msg = $user->lang['PRE_CONVERT_COMPLETE'] . '</p><p>' . sprintf($user->lang['AUTHOR_NOTES'], $convert->convertor_data['author_notes']);
+				$msg = $user->lang['PRE_CONVERT_COMPLETE'];
+
+				if ($convert->convertor_data['author_notes'])
+				{
+					$msg .= '</p><p>' . sprintf($user->lang['AUTHOR_NOTES'], $convert->convertor_data['author_notes']);
+				}
 				$url = $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
 				$template->assign_vars(array(

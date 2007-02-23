@@ -822,7 +822,10 @@ function get_avatar_dim($src, $axis, $func = false, $arg1 = false, $arg2 = false
 		break;
 
 		default:
-			return $axis ? DEFAULT_AVATAR_Y : DEFAULT_AVATAR_X;
+			$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+			$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+			return $axis ? $default_y : $default_x;
 		break;
 	}
 }
@@ -868,7 +871,10 @@ function get_upload_avatar_dim($source, $axis)
 
 	if (empty($cachedims) || empty($cachedims[0]) || empty($cachedims[1]))
 	{
-		$cachedims = array(DEFAULT_AVATAR_X, DEFAULT_AVATAR_Y);
+		$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+		$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+		$cachedims = array($default_x, $default_y);
 	}
 
 	return $cachedims[$axis];
@@ -909,7 +915,10 @@ function get_gallery_avatar_dim($source, $axis)
 
 	if (empty($avatar_cache[$orig_source]) || empty($avatar_cache[$orig_source][0]) || empty($avatar_cache[$orig_source][1]))
 	{
-		$avatar_cache[$orig_source] = array(DEFAULT_AVATAR_X, DEFAULT_AVATAR_Y);
+		$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+		$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+		$avatar_cache[$orig_source] = array($default_x, $default_y);
 	}
 
 	return $avatar_cache[$orig_source][$axis];
@@ -938,7 +947,10 @@ function get_remote_avatar_dim($src,$axis)
 
 	if (empty($avatar_cache[$src]) || empty($avatar_cache[$src][0]) || empty($avatar_cache[$src][1]))
 	{
-		$avatar_cache[$src] = array(DEFAULT_AVATAR_X, DEFAULT_AVATAR_Y);
+		$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+		$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+		$avatar_cache[$src] = array($default_x, $default_y);
 	}
 
 	return $avatar_cache[$src][$axis];
@@ -1805,8 +1817,15 @@ function update_dynamic_config()
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
 		FROM ' . USERS_TABLE . '
-		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-		ORDER BY user_id DESC';
+		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+
+	if (!empty($config['increment_user_id']))
+	{
+		$sql .= ' AND user_id <> ' . $config['increment_user_id'];
+	}
+
+	$sql .= ' ORDER BY user_id DESC';
+
 	$result = $db->sql_query_limit($sql, 1);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);

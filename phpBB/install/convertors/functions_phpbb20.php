@@ -456,6 +456,13 @@ function phpbb_user_id($user_id)
 		$id = (int) $src_db->sql_fetchfield('user_id');
 		$src_db->sql_freeresult($result);
 
+		// Try to get the maximum user id possible...
+		$sql = "SELECT MAX(user_id) AS max_user_id
+			FROM {$convert->src_table_prefix}users";
+		$result = $src_db->sql_query($sql);
+		$max_id = (int) $src_db->sql_fetchfield('max_user_id');
+		$src_db->sql_freeresult($result);
+
 		if ($convert->mysql_convert && $same_db)
 		{
 			$src_db->sql_query("SET NAMES 'utf8'");
@@ -464,8 +471,8 @@ function phpbb_user_id($user_id)
 		// If there is a user id 1, we need to increment user ids. :/
 		if ($id === 1)
 		{
-			set_config('increment_user_id', 1, true);
-			$config['increment_user_id'] = 1;
+			set_config('increment_user_id', ($max_id + 1), true);
+			$config['increment_user_id'] = $max_id + 1;
 		}
 		else
 		{
@@ -487,9 +494,9 @@ function phpbb_user_id($user_id)
 		return ANONYMOUS;
 	}
 
-	if (!empty($config['increment_user_id']))
+	if (!empty($config['increment_user_id']) && $user_id == 1)
 	{
-		$user_id++;
+		return $config['increment_user_id'];
 	}
 
 	return $user_id;
@@ -591,8 +598,8 @@ function phpbb_convert_authentication($mode)
 	// Add Forum Access List
 	$auth_map = array(
 		'auth_view'			=> array('f_', 'f_list'),
-		'auth_read'			=> 'f_read',
-		'auth_post'			=> array('f_post', 'f_bbcode', 'f_smilies', 'f_img', 'f_sigs', 'f_search', 'f_postcount'),
+		'auth_read'			=> array('f_read', 'f_search'),
+		'auth_post'			=> array('f_post', 'f_bbcode', 'f_smilies', 'f_img', 'f_sigs', 'f_postcount', 'f_report', 'f_subscribe', 'f_print', 'f_email'),
 		'auth_reply'		=> 'f_reply',
 		'auth_edit'			=> 'f_edit',
 		'auth_delete'		=> 'f_delete',
@@ -600,7 +607,7 @@ function phpbb_convert_authentication($mode)
 		'auth_vote'			=> 'f_vote',
 		'auth_announce'		=> 'f_announce',
 		'auth_sticky'		=> 'f_sticky',
-		'auth_attachments'	=> 'f_attach',
+		'auth_attachments'	=> array('f_attach', 'f_download'),
 		'auth_download'		=> 'f_download',
 	);
 
@@ -705,18 +712,33 @@ function phpbb_convert_authentication($mode)
 		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS, false);
 
 		// Selecting from old table
-		$auth_sql = 'SELECT ';
-		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
-		$auth_sql .= ', {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+		if (!empty($config['increment_user_id']))
+		{
+			$auth_sql = 'SELECT user_id, {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id <> 1';
+			user_group_auth('administrators', $auth_sql, true);
 
-		user_group_auth('administrators', $auth_sql, true);
+			$auth_sql = 'SELECT ' . $config['increment_user_id'] . ' as user_id, {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id = 1';
+			user_group_auth('administrators', $auth_sql, true);
+		}
+		else
+		{
+			$auth_sql = 'SELECT user_id, {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+			user_group_auth('administrators', $auth_sql, true);
+		}
 
-		// Put administrators into global moderators group too...
-		$auth_sql = 'SELECT ';
-		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
-		$auth_sql .= ', {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+		if (!empty($config['increment_user_id']))
+		{
+			$auth_sql = 'SELECT user_id, {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id <> 1';
+			user_group_auth('global_moderators', $auth_sql, true);
 
-		user_group_auth('global_moderators', $auth_sql, true);
+			$auth_sql = 'SELECT ' . $config['increment_user_id'] . ' as user_id, {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id = 1';
+			user_group_auth('global_moderators', $auth_sql, true);
+		}
+		else
+		{
+			$auth_sql = 'SELECT user_id, {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+			user_group_auth('global_moderators', $auth_sql, true);
+		}
 	}
 	else if ($mode == 'first')
 	{
@@ -762,7 +784,7 @@ function phpbb_convert_authentication($mode)
 				// no break;
 
 				case 'registered_hidden':
-					mass_auth('group_role', $new_forum_id, 'registered', 'FORUM_LIMITED_POLLS');
+					mass_auth('group_role', $new_forum_id, 'registered', 'FORUM_STANDARD_POLLS');
 				break;
 
 				case 'private':
@@ -980,25 +1002,32 @@ function phpbb_convert_authentication($mode)
 			if (sizeof($forum_ids))
 			{
 				// Now make sure the user is able to read these forums
-				$hold_ary = $auth->acl_group_raw_data(get_group_id('guests'), 'f_list', $forum_ids);
+				$hold_ary = $auth->acl_group_raw_data(false, 'f_list', $forum_ids);
 
-				if (!empty($hold_ary))
+				if (empty($hold_ary))
 				{
-					mass_auth('group', $row['forum_id'], 'guests', 'f_list', ACL_YES);
-					mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
-					mass_auth('group', $row['forum_id'], 'registered_coppa', 'f_list', ACL_YES);
-					mass_auth('group', $row['forum_id'], 'bots', 'f_list', ACL_YES);
+					continue;
 				}
-				else
-				{
-					// Now make sure the user is able to read these forums
-					$hold_ary = $auth->acl_group_raw_data(get_group_id('registered'), 'f_list', $forum_ids);
 
-					if (!empty($hold_ary))
+				foreach ($hold_ary as $g_id => $f_id_ary)
+				{
+					$set_group = false;
+
+					foreach ($f_id_ary as $f_id => $auth_ary)
 					{
-						mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
-						mass_auth('group', $row['forum_id'], 'registered_coppa', 'f_list', ACL_YES);
-						mass_auth('group', $row['forum_id'], 'bots', 'f_list', ACL_YES);
+						foreach ($auth_ary as $auth_option => $setting)
+						{
+							if ($setting == ACL_YES)
+							{
+								$set_group = true;
+								break 2;
+							}
+						}
+					}
+
+					if ($set_group)
+					{
+						mass_auth('group', $row['forum_id'], $g_id, 'f_list', ACL_YES);
 					}
 				}
 			}

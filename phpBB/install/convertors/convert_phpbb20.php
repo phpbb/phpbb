@@ -31,7 +31,7 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '0.9',
+	'version'		=> '0.92',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
@@ -42,7 +42,7 @@ $convertor_data = array(
 	'dbname'		=> $dbname,
 	'table_prefix'	=> 'phpbb_',
 	'forum_path'	=> '../forums',
-	'author_notes'	=> 'Avatars may be on a different width/height than with the old forum. This is due to dimensions being stored within phpBB3 but not within phpBB2. The default dimension was set to 80x80 for avatars where dimension settings could not be determined. You might wish to instruct your users to check their profiles after the conversion to ensure that the size is correct.',
+	'author_notes'	=> '',
 );
 
 /**
@@ -206,12 +206,23 @@ if (!$get_info)
 	// If there is a user id 1, we need to increment user ids. :/
 	if ($user_id === 1)
 	{
-		set_config('increment_user_id', 1, true);
+		// Try to get the maximum user id possible...
+		$sql = "SELECT MAX(user_id) AS max_user_id
+			FROM {$convert->src_table_prefix}users";
+		$result = $src_db->sql_query($sql);
+		$user_id = (int) $src_db->sql_fetchfield('max_user_id');
+		$src_db->sql_freeresult($result);
+
+		set_config('increment_user_id', ($user_id + 1), true);
 	}
 	else
 	{
 		set_config('increment_user_id', 0, true);
 	}
+
+	// Overwrite maximum avatar width/height
+	@define('DEFAULT_AVATAR_X_CUSTOM', get_config_value('avatar_max_width'));
+	@define('DEFAULT_AVATAR_Y_CUSTOM', get_config_value('avatar_max_height'));
 
 /**
 *	Description on how to use the convertor framework.
@@ -636,7 +647,7 @@ if (!$get_info)
 				array('enable_smilies',			'privmsgs.privmsgs_enable_smilies AS enable_smilies',	''),
 				array('enable_magic_url',		1,									''),
 				array('enable_sig',				'privmsgs.privmsgs_attach_sig',		''),
-				array('message_subject',		'privmsgs.privmsgs_subject',		array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
+				array('message_subject',		'privmsgs.privmsgs_subject',		'phpbb_set_encoding'), // Already specialchared in 2.0.x
 				array('message_attachment',		((defined('MOD_ATTACHMENT')) ? 'privmsgs.privmsgs_attachment' : 0), ''),
 				array('message_edit_reason',	'',									''),
 				array('message_edit_user',		0,									''),
