@@ -33,7 +33,7 @@ class acp_ban
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= request_var('ban', '');
+			$ban				= request_var('ban', '', true);
 			$ban_len			= request_var('banlength', 0);
 			$ban_len_other		= request_var('banlengthother', '');
 			$ban_exclude		= request_var('banexclude', 0);
