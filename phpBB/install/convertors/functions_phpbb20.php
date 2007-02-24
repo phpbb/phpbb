@@ -784,7 +784,7 @@ function phpbb_convert_authentication($mode)
 				// no break;
 
 				case 'registered_hidden':
-					mass_auth('group_role', $new_forum_id, 'registered', 'FORUM_STANDARD_POLLS');
+					mass_auth('group_role', $new_forum_id, 'registered', 'FORUM_POLLS');
 				break;
 
 				case 'private':
