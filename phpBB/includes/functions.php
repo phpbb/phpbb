@@ -3284,7 +3284,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo 'a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } ';
 			echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
 			echo '.panel { margin: 4px 0; background-color: #FFFFFF; border: solid 1px  #A9B8C2; } ';
-			echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } #errorpage #content h2 { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; } ';
+			echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } ';
+			echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%; text-align: left; } ';
 			echo "\n" . '//-->' . "\n" . '</style';
 			echo '</style>';
 			echo '</head>';
@@ -3297,7 +3298,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '		<div id="content">';
 			echo '			<h1>General Error</h1>';
 			
-			echo '			<h2>' . $msg_text . '</h2>';
+			echo '			<div>' . $msg_text . '</div>';
 			
 			if (!empty($config['board_contact']))
 			{
