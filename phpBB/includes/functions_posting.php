@@ -1816,7 +1816,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	$db->sql_transaction('commit');
 
-	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post')
+	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post' || $post_mode == 'edit_topic')
 	{
 		if ($topic_type != POST_GLOBAL)
 		{

@@ -707,7 +707,7 @@ if ($submit || $preview || $refresh)
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-		if (($result = validate_username($post_data['username'])) !== false)
+		if (($result = validate_username($post_data['username'], $post_data['post_username'])) !== false)
 		{
 			$user->add_lang('ucp');
 			$error[] = $user->lang[$result . '_USERNAME'];

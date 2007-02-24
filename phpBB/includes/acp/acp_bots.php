@@ -165,8 +165,6 @@ class acp_bots
 
 					if (!sizeof($error))
 					{
-						$db->sql_transaction('begin');
-
 						// New bot? Create a new user and group entry
 						if ($action == 'add')
 						{
@@ -251,8 +249,6 @@ class acp_bots
 
 							$log = 'UPDATED';
 						}
-
-						$db->sql_transaction('commit');
 
 						$cache->destroy('bots');
 
