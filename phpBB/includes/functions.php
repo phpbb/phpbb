@@ -1586,11 +1586,11 @@ function redirect($url, $return = false)
 		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
 		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-		echo '<meta http-equiv="refresh" content="0; url=' . $url . '" />';
+		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
 		echo '<body>';
-		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . $url . '">', '</a>') . '</div>';
+		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
 		echo '</body>';
 		echo '</html>';
 
@@ -1706,8 +1706,9 @@ function meta_refresh($time, $url)
 
 	$url = redirect($url, true);
 
+	// For XHTML compatibility we change back & to &amp;
 	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . str_replace('&', '&amp;', $url) . '" />')
 	);
 }
 
@@ -3271,33 +3272,38 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			garbage_collection();
 
+			// Try to not call the adm page data...
+
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
 			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
 			echo '<head>';
 			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
 			echo '<title>' . $msg_title . '</title>';
-			echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+			echo '<style type="text/css">' . "\n" . '<!--' . "\n";
+			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
+			echo 'a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } ';
+			echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
+			echo '.panel { margin: 4px 0; background-color: #FFFFFF; border: solid 1px  #A9B8C2; } ';
+			echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } #errorpage #content h2 { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; } ';
+			echo "\n" . '//-->' . "\n" . '</style';
+			echo '</style>';
 			echo '</head>';
 			echo '<body id="errorpage">';
 			echo '<div id="wrap">';
 			echo '	<div id="page-header">';
 			echo '		<a href="' . $phpbb_root_path . '">Return to forum index</a>';
 			echo '	</div>';
-			echo '	<div id="page-body">';
-			echo '		<div class="panel">';
-			echo '			<span class="corners-top"><span></span></span>';
-			echo '			<div id="content">';
-			echo '				<h1>General Error</h1>';
+			echo '	<div class="panel">';
+			echo '		<div id="content">';
+			echo '			<h1>General Error</h1>';
 			
-			echo '				<h2>' . $msg_text . '</h2>';
+			echo '			<h2>' . $msg_text . '</h2>';
 			
 			if (!empty($config['board_contact']))
 			{
 				echo '				<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
 			}
 			
-			echo '			</div>';
-			echo '			<span class="corners-bottom"><span></span></span>';
 			echo '		</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
