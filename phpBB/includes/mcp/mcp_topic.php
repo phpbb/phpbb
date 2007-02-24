@@ -200,11 +200,11 @@ function mcp_topic_view($id, $mode, $action)
 			else
 			{
 				$to_topic_info = $to_topic_info[$to_topic_id];
-			}
 
-			if (!$to_topic_info['enable_icons'])
-			{
-				$s_topic_icons = false;
+				if (!$to_topic_info['enable_icons'])
+				{
+					$s_topic_icons = false;
+				}
 			}
 		}
 	}
