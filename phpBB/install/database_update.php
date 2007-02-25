@@ -566,7 +566,7 @@ foreach ($database_update_info as $version => $schema_changes)
 		{
 			foreach ($index_array as $index_name => $column)
 			{
-				sql_create_unique_index($dbms, $index_name, $table_name, $column);
+				sql_create_unique_index($dbms, $index_name, $table, $column);
 			}
 		}
 	}
