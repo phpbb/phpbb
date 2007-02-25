@@ -312,6 +312,9 @@ th {
 td {
 	padding: 2px;
 }
+td.profile {
+	padding: 4px;
+}
 
 .tablebg {
 	background-color: #A9B8C2;
