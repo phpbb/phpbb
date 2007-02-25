@@ -37,10 +37,10 @@ $lang = array_merge($lang, array(
 	'COMMON_WORD_THRESHOLD'					=> 'Common word threshold',
 	'COMMON_WORD_THRESHOLD_EXPLAIN'			=> 'Words which are contained in a greater percentage of all posts will be regarded as common. Common words are ignored in search queries. Set to zero to disable. Only takes effect if there are more than 100 posts.',
 	'CONFIRM_SEARCH_BACKEND'				=> 'Are you sure you wish to switch to a different search backend? After changing the search backend you will have to create an index for the new search backend. If you don’t plan on switching back to the old search backend you can also delete the old backend’s index in order to free system resources.',
-	'CONTINUE_DELETING_INDEX'				=> 'Continue previous index deleting process',
-	'CONTINUE_DELETING_INDEX_EXPLAIN'		=> 'An index deleting process has been started. In order to access the search index page again you need to complete it first.',
+	'CONTINUE_DELETING_INDEX'				=> 'Continue previous index removal process',
+	'CONTINUE_DELETING_INDEX_EXPLAIN'		=> 'An index removal process has been started. In order to access the search index page you will have to complete it or cancel it.',
 	'CONTINUE_INDEXING'						=> 'Continue previous indexing process',
-	'CONTINUE_INDEXING_EXPLAIN'				=> 'An indexing process has been started. In order to access the search index page again you need to complete it first.',
+	'CONTINUE_INDEXING_EXPLAIN'				=> 'An indexing process has been started. In order to access the search index page you will have to complete it or cancel it.',
 	'CREATE_INDEX'							=> 'Create index',
 
 	'DELETE_INDEX'							=> 'Delete index',
@@ -76,6 +76,8 @@ $lang = array_merge($lang, array(
 
 	'SEARCH_GUEST_INTERVAL'					=> 'Guest search flood interval',
 	'SEARCH_GUEST_INTERVAL_EXPLAIN'			=> 'Number of seconds guests must wait between searches. If one guest searches all others have to wait until the time interval passed.',
+	'SEARCH_INDEX_CREATE_REDIRECT'			=> 'All posts up to post id %d have been indexed.<br />Indexing in progress ...',
+	'SEARCH_INDEX_DELETE_REDIRECT'			=> 'All posts up to post id %d have been removed from the search index.<br /> Deleting in progress ...',
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
 	'SEARCH_INTERVAL'						=> 'User search flood interval',

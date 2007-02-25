@@ -175,6 +175,41 @@ function unique_id($extra = 'c')
 }
 
 /**
+* Determine whether we are approaching the maximum execution time. Should be called once
+* at the beginning of the script in which it's used.
+* @return	bool	Either true if the maximum execution time is nearly reached, or false
+*					if some time is still left.
+*/
+function still_on_time()
+{
+	static $max_execution_time, $start_time;
+
+	$time = explode(' ', microtime());
+	$current_time = $time[0] + $time[1];
+
+	if (empty($max_execution_time))
+	{
+		$max_execution_time = (function_exists('ini_get')) ? (int) ini_get('max_execution_time') : (int) get_cfg_var('max_execution_time');
+
+		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
+		if ($max_execution_time === 0)
+		{
+			$max_execution_time = 65;
+		}
+
+		$max_execution_time = min(max(10, ($max_execution_time - 15)), 50);
+
+		// For debugging purposes
+		// $max_execution_time = 10;
+
+		global $starttime;
+		$start_time = (empty($starttime)) ? $current_time : $starttime;
+	}
+
+	return (ceil($current_time - $start_time) < $max_execution_time) ? true : false;
+}
+
+/**
 * Generate sort selection fields
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param)
@@ -1868,6 +1903,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
 		}
 
+		// do not allow empty password
+		if (!$password)
+		{
+			trigger_error('NO_PASSWORD_SUPPLIED');
+		}
+
 		// If authentication is successful we redirect user to previous page
 		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
 
@@ -1955,6 +1996,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			break;
 
+			case LOGIN_ERROR_PASSWORD_CONVERT:
+				$err = sprintf(
+					$user->lang[$result['error_msg']],
+					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
+					($config['email_enable']) ? '</a>' : '',
+					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
+					($config['board_contact']) ? '</a>' : ''
+				);
+			break;
+
 			// Username, password, etc...
 			default:
 				$err = $user->lang[$result['error_msg']];
@@ -1964,6 +2015,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
+				
 			break;
 		}
 	}
@@ -2254,7 +2306,7 @@ function decode_message(&$message, $bbcode_uid = '')
 	$message = str_replace($match, $replace, $message);
 
 	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\2', '\1', '', '');
+	$replace = array('\1', '\1', '\2', '\1', '', '');
 
 	$message = preg_replace($match, $replace, $message);
 }
@@ -2272,7 +2324,7 @@ function strip_bbcode(&$text, $uid = '')
 	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
 
 	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\2', '\1', '', '');
+	$replace = array('\1', '\1', '\2', '\1', '', '');
 	
 	$text = preg_replace($match, $replace, $text);
 }
@@ -2399,7 +2451,7 @@ function make_clickable($text, $server_url = false)
 
 		// relative urls for this board
 		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') : '\$2/') . '</a><!-- l -->'";
+		$magic_url_replace[] = "'\$1<!-- l --><a href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
@@ -3027,7 +3079,8 @@ function get_preg_expression($mode)
 		case 'bbcode_htm':
 			return array(
 				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-				'#<!\-\- ([lmw]) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
+				'#<!\-\- l \-\-><a href="(.*?)(?:(&amp;|\?)sid=[0-9a-f]{32})?">.*?</a><!\-\- l \-\->#',
+				'#<!\-\- ([mw]) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
 				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 				'#<!\-\- .*? \-\->#s',
 				'#<.*?>#s',

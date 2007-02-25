@@ -766,6 +766,8 @@ class acp_attachments
 
 							if ($row['left_id'] > $cat_right)
 							{
+								// make sure we don't forget anything
+								$s_forum_id_options .= $holding;
 								$holding = '';
 							}
 
@@ -781,6 +783,12 @@ class acp_attachments
 								$holding = '';
 							}
 						}
+
+						if ($holding)
+						{
+							$s_forum_id_options .= $holding;
+						}
+
 						$db->sql_freeresult($result);
 						unset($padding_store);
 

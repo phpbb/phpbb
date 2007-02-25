@@ -17,38 +17,6 @@ define('DEFAULT_AVATAR_Y', 80);
 
 // Global functions - all functions can be used by convertors
 
-/**
-* Determine whether we are approaching the maximum execution time
-*/
-function still_on_time()
-{
-	static $max_execution_time, $start_time;
-
-	$time = explode(' ', microtime());
-	$current_time = $time[0] + $time[1];
-
-	if (empty($max_execution_time))
-	{
-		$max_execution_time = (function_exists('ini_get')) ? (int) ini_get('max_execution_time') : (int) get_cfg_var('max_execution_time');
-
-		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
-		if ($max_execution_time === 0)
-		{
-			$max_execution_time = 65;
-		}
-
-		$max_execution_time = min(max(10, ($max_execution_time - 15)), 50);
-
-		// For debugging purposes
-		// $max_execution_time = 10;
-
-		global $starttime;
-		$start_time = (empty($starttime)) ? $current_time : $starttime;
-	}
-
-	return (ceil($current_time - $start_time) < $max_execution_time) ? true : false;
-}
-
 // SIMPLE FUNCTIONS
 
 /**

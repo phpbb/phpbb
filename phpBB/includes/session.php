@@ -168,14 +168,9 @@ class session
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
 				if (!empty($ip) && !preg_match($ipv4, $ip) && !preg_match($ipv6, $ip))
 				{
-					if (!defined('DEBUG_EXTRA'))
-					{
-						trigger_error('Hacking attempt!');
-					}
-					else
-					{
-						trigger_error('Invalid HTTP_X_FORWARDED_FOR header detected: ' . htmlspecialchars($this->forwarded_for));
-					}
+					// contains invalid data, don't use the forwarded for header
+					$this->forwarded_for = '';
+					break;
 				}
 			}
 		}

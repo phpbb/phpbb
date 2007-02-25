@@ -366,9 +366,9 @@ class bbcode_firstpass extends bbcode
 		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
 		$htm_match = get_preg_expression('bbcode_htm');
 //		$htm_match[3] = '/&#([0-9]+);/';
-		unset($htm_match[3], $htm_match[4]);
+		unset($htm_match[4], $htm_match[5]);
 
-		$htm_replace = array('\1', '\2', '\1'); //, '&amp;#\1;');
+		$htm_replace = array('\1', '\1', '\2', '\1'); //, '&amp;#\1;');
 
 		$out = '';
 
@@ -848,7 +848,9 @@ class bbcode_firstpass extends bbcode
 			// Is this a link to somewhere inside this board? If so then remove the session id from the url
 			if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
 			{
-				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\1', $url);
+				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\1', $url);
+				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', $url);
+				$url = append_sid($url);
 			}
 
 			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 

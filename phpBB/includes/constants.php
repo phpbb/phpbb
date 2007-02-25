@@ -48,6 +48,7 @@ define('LOGIN_ERROR_PASSWORD', 11);
 define('LOGIN_ERROR_ACTIVE', 12);
 define('LOGIN_ERROR_ATTEMPTS', 13);
 define('LOGIN_ERROR_EXTERNAL_AUTH', 14);
+define('LOGIN_ERROR_PASSWORD_CONVERT', 15);
 
 // Group settings
 define('GROUP_OPEN', 0);

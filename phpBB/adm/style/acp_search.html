@@ -80,13 +80,19 @@
 
 	<h1>{L_ACP_SEARCH_INDEX}</h1>
 
-	<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
-
 	<!-- IF S_CONTINUE_INDEXING -->
-		<a href="{U_CONTINUE_INDEXING}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');">{L_CONTINUE}</a>
-
 		<p>{L_CONTINUE_EXPLAIN}</p>
+
+		<form id="acp_search_continue" method="post" action="{U_CONTINUE_INDEXING}">
+			<fieldset class="submit-buttons">
+				<legend>{L_SUBMIT}</legend>
+				<input class="button1" type="submit" id="continue" name="continue" value="{L_CONTINUE}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');" />&nbsp;
+				<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
+			</fieldset>
+		</form>
 	<!-- ELSE -->
+
+		<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
 
 		<!-- BEGIN backend -->
 

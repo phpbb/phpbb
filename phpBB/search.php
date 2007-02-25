@@ -234,7 +234,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$correct_query = $search->split_keywords($keywords, $search_terms);
 		if (!$correct_query || (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id))
 		{
-			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words), ENT_COMPAT, 'UTF-8')) . '<br />' : '';
+			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], implode(' ', $search->common_words)) . '<br />' : '';
 			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
 		}
 	}
@@ -453,8 +453,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
-	$hilit = htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords)))));
-	$u_hilit = urlencode($keywords);
+	$hilit = implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords))));
+	$u_hilit = urlencode(htmlspecialchars_decode($keywords));
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
@@ -472,8 +472,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
-		'SEARCH_WORDS'		=> preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars($search->search_query)),
-		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? htmlspecialchars(implode(' ', $search->common_words)) : '',
+		'SEARCH_WORDS'		=> $search->search_query,
+		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? implode(' ', $search->common_words) : '',
 		'PAGINATION'		=> generate_pagination($u_search, $total_match_count, $per_page, $start),
 		'PAGE_NUMBER'		=> on_page($total_match_count, $per_page, $start),
 		'TOTAL_MATCHES'		=> $total_match_count,
@@ -960,6 +960,8 @@ while ($row = $db->sql_fetchrow($result))
 
 	if ($row['left_id'] > $cat_right)
 	{
+		// make sure we don't forget anything
+		$s_forums .= $holding;
 		$holding = '';
 	}
 
@@ -1040,7 +1042,7 @@ $result = $db->sql_query_limit($sql, 5);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	$keywords = htmlspecialchars($row['search_keywords'], ENT_COMPAT, 'UTF-8');
+	$keywords = $row['search_keywords'];
 
 	$template->assign_block_vars('recentsearch', array(
 		'KEYWORDS'	=> $keywords,

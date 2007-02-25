@@ -103,19 +103,44 @@ function login_db(&$username, &$password)
 		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
 		$password_new_format = '';
 
-		set_var($password_new_format, $password_old_format, 'string');
+		set_var($password_new_format, stripslashes($password_old_format), 'string');
 
-		if ($password == $password_new_format && md5($password_old_format) == $row['user_password'])
+		if ($password == $password_new_format)
 		{
-			// Update the password in the users table to the new format and remove user_pass_convert flag
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
-					user_pass_convert = 0
-				WHERE user_id = ' . $row['user_id'];
-			$db->sql_query($sql);
+			if (!function_exists('utf8_to_cp1252'))
+			{
+				global $phpbb_root_path, $phpEx;
+				include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+			}
 
-			$row['user_pass_convert'] = 0;
-			$row['user_password'] = md5($password_new_format);
+			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
+			if (md5($password_old_format) == $row['user_password'] || utf8_to_cp1252(md5($password_old_format)) == $row['user_password'])
+			{
+				// Update the password in the users table to the new format and remove user_pass_convert flag
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
+						user_pass_convert = 0
+					WHERE user_id = ' . $row['user_id'];
+				$db->sql_query($sql);
+
+				$row['user_pass_convert'] = 0;
+				$row['user_password'] = md5($password_new_format);
+			}
+			else if (preg_match('/[\x80-\xFF]/', $password_old_format))
+			{
+				// Although we weren't able to convert this password we have to
+				// increase login attempt count to make sure this cannot be exploited
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_login_attempts = user_login_attempts + 1
+					WHERE user_id = ' . $row['user_id'];
+				$db->sql_query($sql);
+
+				return array(
+					'status'		=> LOGIN_ERROR_PASSWORD_CONVERT,
+					'error_msg'		=> 'LOGIN_ERROR_PASSWORD_CONVERT',
+					'user_row'		=> $row,
+				);
+			}
 		}
 	}
 
