@@ -1298,7 +1298,7 @@ CREATE TABLE phpbb_users (
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash);
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type);
-CREATE INDEX phpbb_users_username_clean ON phpbb_users (username_clean);
+CREATE UNIQUE INDEX phpbb_users_username_clean ON phpbb_users (username_clean);
 
 /*
 	Table: 'phpbb_warnings'

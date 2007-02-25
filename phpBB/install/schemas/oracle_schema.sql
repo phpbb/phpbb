@@ -1841,7 +1841,8 @@ CREATE TABLE phpbb_users (
 	user_interests clob DEFAULT '' ,
 	user_actkey varchar2(32) DEFAULT '' ,
 	user_newpasswd varchar2(96) DEFAULT '' ,
-	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id)
+	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id),
+	CONSTRAINT u_phpbb_username_clean UNIQUE (username_clean)
 )
 /
 
@@ -1850,8 +1851,6 @@ CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday)
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash)
 /
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type)
-/
-CREATE INDEX phpbb_users_username_clean ON phpbb_users (username_clean)
 /
 
 CREATE SEQUENCE phpbb_users_seq
