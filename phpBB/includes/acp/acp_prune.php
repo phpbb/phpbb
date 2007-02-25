@@ -46,8 +46,24 @@ class acp_prune
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
+		$all_forums = request_var('all_forums', 0);
 		$forum_id = request_var('f', array(0));
 		$submit = (isset($_POST['submit'])) ? true : false;
+
+		if ($all_forums)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				ORDER BY left_id';
+			$result = $db->sql_query($sql);
+
+			$forum_id = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$forum_id[] = $row['forum_id'];
+			}
+			$db->sql_freeresult($result);
+		}
 
 		if ($submit)
 		{

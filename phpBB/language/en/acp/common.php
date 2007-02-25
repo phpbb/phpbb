@@ -232,6 +232,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_ADMIN_CONFIRM'	=> 'To administer the board you must re-authenticate yourself.',
 	'LOGIN_ADMIN_SUCCESS'	=> 'You have successfully authenticated and will now be redirected to the Administration Control Panel',
 	'LOOK_UP_FORUM'			=> 'Select a forum',
+	'LOOK_UP_FORUMS_EXPLAIN'=> 'You are able to select more than one forum',
 
 	'MANAGE'				=> 'Manage',
 	'MOVE_DOWN'				=> 'Move down',

@@ -118,7 +118,6 @@ $lang = array_merge($lang, array(
 
 	'GROUPS_NOT_ASSIGNED'		=> 'No group assigned to this role',
 
-	'LOOK_UP_FORUMS_EXPLAIN'	=> 'You are able to select more than one forum',
 	'LOOK_UP_GROUP'				=> 'Look up usergroup',
 	'LOOK_UP_USER'				=> 'Look up user',
 

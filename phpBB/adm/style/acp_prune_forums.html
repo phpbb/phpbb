@@ -41,8 +41,11 @@
 	
 	<fieldset>
 		<legend>{L_SELECT_FORUM}</legend>
+		<p>{L_LOOK_UP_FORUMS_EXPLAIN}</p>
 	<dl>
-		<dd class="full"><select name="f[]" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></dd>
+		<dt><label for="forum">{L_LOOK_UP_FORUM}:</label></dt>
+		<dd><select name="f[]" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></dd>
+		<dd><input type="checkbox" class="radio" name="all_forums" value="1" />&nbsp; {L_ALL_FORUMS}</dd>
 	</dl>
 	
 	<p class="quick">
