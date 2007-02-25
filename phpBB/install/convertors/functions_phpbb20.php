@@ -487,17 +487,15 @@ function phpbb_user_id($user_id)
 		return ANONYMOUS;
 	}
 
-	// This should never ever happen - 2.0.x is not allowing a user id of 0
-	// But we return the anonymous user to be consistent and not breaking functionality
-	if (!$user_id)
-	{
-		return ANONYMOUS;
-	}
-
 	if (!empty($config['increment_user_id']) && $user_id == 1)
 	{
 		return $config['increment_user_id'];
 	}
+
+	// A user id of 0 can happen, for example within the ban table if no user is banned...
+	// Within the posts and topics table this can be "dangerous" but is the fault of the user
+	// having mods installed (a poster id of 0 is not possible in 2.0.x). 
+	// Therefore, we return the user id "as is".
 
 	return $user_id;
 }
