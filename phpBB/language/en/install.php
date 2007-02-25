@@ -219,7 +219,7 @@ $lang = array_merge($lang, array(
 
 	// mbstring
 	'MBSTRING_CHECK'						=> '<samp>mbstring</samp> extension check',
-	'MBSTRING_CHECK_EXPLAIN'				=> '<samp>mbstring</samp> is a PHP extension that provides multibyte string functions. Certain features of mbstring are not compatible with phpBB and must be disabled.',
+	'MBSTRING_CHECK_EXPLAIN'				=> '<strong>Required</strong> - <samp>mbstring</samp> is a PHP extension that provides multibyte string functions. Certain features of mbstring are not compatible with phpBB and must be disabled.',
 	'MBSTRING_FUNC_OVERLOAD'				=> 'Function overloading',
 	'MBSTRING_FUNC_OVERLOAD_EXPLAIN'		=> '<var>mbstring.func_overload</var> must be set to either 0 or 4',
 	'MBSTRING_ENCODING_TRANSLATION'			=> 'Transparent character encoding',
