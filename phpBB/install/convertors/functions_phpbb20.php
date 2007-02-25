@@ -812,6 +812,7 @@ function phpbb_convert_authentication($mode)
 							// AUTH_ALL
 							case AUTH_ALL:
 								mass_auth('group', $new_forum_id, 'guests', $new_acl, ACL_YES);
+								mass_auth('group', $new_forum_id, 'bots', $new_acl, ACL_YES);
 								mass_auth('group', $new_forum_id, 'registered', $new_acl, ACL_YES);
 							break;
 
@@ -981,7 +982,7 @@ function phpbb_convert_authentication($mode)
 
 		global $auth;
 
-		// Let us see if guests/registered users have access to these forums...
+		// Let us see which groups have access to these forums...
 		foreach ($parent_forums as $row)
 		{
 			// Get the children
