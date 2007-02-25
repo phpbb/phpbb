@@ -361,6 +361,18 @@ $database_update_info = array(
 				'session_forwarded_for'	=> array('VCHAR:255', ''),
 			),
 		),
+		// Remove the following keys
+		'drop_keys'		=> array(
+			USERS_TABLE		=> array(
+				'username_clean',
+			),
+		),
+		// Add the following unique indexes
+		'add_unique_index'	=> array(
+			USERS_TABLE			=> array(
+				'username_clean'	=> array('username_clean'),
+			),
+		),
 	),
 );
 
@@ -544,6 +556,18 @@ foreach ($database_update_info as $version => $schema_changes)
 		foreach ($schema_changes['add_primary_keys'] as $table => $columns)
 		{
 			sql_create_primary_key($map_dbms, $table, $columns);
+		}
+	}
+
+	// Add unqiue indexes?
+	if (!empty($schema_changes['add_unique_index']))
+	{
+		foreach ($schema_changes['add_unique_index'] as $table => $index_array)
+		{
+			foreach ($index_array as $index_name => $column)
+			{
+				sql_create_unique_index($dbms, $index_name, $table_name, $column);
+			}
 		}
 	}
 }
@@ -1215,6 +1239,30 @@ function sql_create_primary_key($dbms, $table_name, $column)
 			$db->sql_query('DROP TABLE ' . $table_name . '_temp');
 
 			$db->sql_transaction('commit');
+		break;
+	}
+}
+
+function sql_create_unique_index($dbms, $index_name, $table_name, $column)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'firebird':
+		case 'postgres':
+		case 'mysql_40':
+		case 'mysql_41':
+		case 'oracle':
+		case 'sqlite':
+			$sql = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mssql':
+			$sql = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
+			_sql($sql, $errored, $error_ary);
 		break;
 	}
 }
