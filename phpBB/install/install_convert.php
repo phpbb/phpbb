@@ -1155,7 +1155,7 @@ class install_convert extends module
 			$counting = -1;
 			$batch_time = 0;
 
-			while (($counting === -1 || $counting >= $convert->batch_size) && still_on_time())
+			while ($counting === -1 || ($counting >= $convert->batch_size && still_on_time()))
 			{
 				$old_current_table = $current_table;
 
@@ -1207,7 +1207,7 @@ class install_convert extends module
 				}
 
 				// Now handle the rows until time is over or no more rows to process...
-				while (still_on_time())
+				while ($counting === 0 || still_on_time())
 				{
 					$convert_row = $src_db->sql_fetchrow($___result);
 
