@@ -408,7 +408,8 @@ if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 	$sql = 'SELECT draft_id
 		FROM ' . DRAFTS_TABLE . '
 		WHERE (forum_id IN (' . $forum_id . ', 0)' . (($topic_id) ? " OR topic_id = $topic_id" : '') . ')
-			AND user_id = ' . $user->data['user_id'] .
+			AND (forum_id <> 0 AND topic_id <> 0) 
+			AND user_id = ' . $user->data['user_id'] . 
 			(($draft_id) ? " AND draft_id <> $draft_id" : '');
 	$result = $db->sql_query_limit($sql, 1);
 

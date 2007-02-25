@@ -528,6 +528,12 @@ function compose_pm($id, $mode, $action)
 			}
 		}
 
+		// On a refresh we do not care about message parsing errors
+		if (sizeof($message_parser->warn_msg) && $refresh)
+		{
+			$message_parser->warn_msg = array();
+		}
+
 		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
 			$error[] = implode('<br />', $message_parser->warn_msg);
