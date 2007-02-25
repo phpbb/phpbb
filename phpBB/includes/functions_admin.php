@@ -516,12 +516,13 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		{
 			$where_ids = array($where_ids);
 		}
-		$where_clause = $db->sql_in_set($where_type, $where_ids);
-	}
 
-	if (!sizeof($where_ids))
-	{
-		return array('topics' => 0, 'posts' => 0);
+		if (!sizeof($where_ids))
+		{
+			return array('topics' => 0, 'posts' => 0);
+		}
+
+		$where_clause = $db->sql_in_set($where_type, $where_ids);
 	}
 
 	$return = array(
