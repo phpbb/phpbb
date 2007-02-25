@@ -490,7 +490,7 @@ class ucp_profile
 
 			case 'avatar':
 
-				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
+				$display_gallery = request_var('display_gallery', '0');
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
@@ -533,7 +533,9 @@ class ucp_profile
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> $avatar_img,
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
-
+					
+					'U_GALLERY'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
+					
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),)
