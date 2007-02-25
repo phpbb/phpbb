@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'BEGIN_CONVERT'					=> 'Begin conversion',
 	'BLANK_PREFIX_FOUND'			=> 'A scan of your tables has shown a valid installation using no table prefix.',
 	'BOARD_NOT_INSTALLED'			=> 'No installation found',
-	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'To perform a conversion you need to have a default installation of phpBB3. You may now want to <a href="%s">perform an installation</a>.',
+	'BOARD_NOT_INSTALLED_EXPLAIN'	=> 'The phpBB Unified Convertor Framework requires a default installation of phpBB3 to function, please <a href="%s">proceed by first installing phpBB3</a>.',
 
 	'CATEGORY'					=> 'Category',
 	'CACHE_STORE'				=> 'Cache type',
@@ -169,8 +169,13 @@ $lang = array_merge($lang, array(
 	
 	'INITIAL_CONFIG'			=> 'Basic configuration',
 	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
-	'INSTALL_CONGRATS'			=> 'Congratulations',
-	'INSTALL_CONGRATS_EXPLAIN'	=> 'You have now successfully installed phpBB 3.0. Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the <a href="http://www.phpbb.com/support/documentation/3.0/">Userguide</a> and the <a href="http://www.phpbb.com/phpBB/viewforum.php?f=46">Beta support forum</a>, see the %sREADME%s for further information.<br /><br /><strong>Please now delete, move or rename the install directory before you use your forum. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.</strong>',
+	'INSTALL_CONGRATS'			=> 'Congratulations!',
+	'INSTALL_CONGRATS_EXPLAIN'	=> '
+		<p>You have now successfully installed phpBB %1$s. From here, you have two options as to what to do with your newly installed phpBB3:</p>
+		<h2>Convert an existing forum to phpBB3</h2>
+		<p>The phpBB Unified Convertor Framework supports the conversion of phpBB 2.0.x and other forum systems to phpBB3. If you have an existing forum that you wish to convert, please <a href="%2$s">proceed on to the convertor</a>.</p>
+		<h2>Go live with your phpBB3!</h2>
+		<p>Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the <a href="http://www.phpbb.com/support/documentation/3.0/">Userguide</a> and the <a href="http://www.phpbb.com/phpBB/viewforum.php?f=46">Beta support forum</a>, see the <a href="%3$s">README</a> for further information.</p><p><strong>Please now delete, move or rename the install directory before you use your forum. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.</strong></p>',
 	'INSTALL_INTRO'				=> 'Welcome to Installation',
 	'INSTALL_INTRO_BODY'		=> 'With this option, it is possible to install phpBB onto your server.</p><p>In order to proceed, you will need the following information on hand:</p>
 	<ul>
