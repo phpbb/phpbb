@@ -304,15 +304,15 @@ function decode_ip($int_ip)
 {
 	if (!$int_ip)
 	{
-		return '127.0.0.1';
+		return $int_ip;
 	}
 
 	$hexipbang = explode('.', chunk_split($int_ip, 2, '.'));
 
-	// Any mod changing the way ips are stored? Then we are not able to convert...
+	// Any mod changing the way ips are stored? Then we are not able to convert and enter the ip "as is" to not "destroy" anything...
 	if (sizeof($hexipbang) < 4)
 	{
-		return '127.0.0.1';
+		return $int_ip;
 	}
 
 	return hexdec($hexipbang[0]) . '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
