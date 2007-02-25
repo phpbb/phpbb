@@ -372,6 +372,16 @@ switch ($db->sql_layer)
 	break;
 
 	case 'mysql4':
+		if (version_compare($db->mysql_version, '4.1.3', '>='))
+		{
+			$map_dbms = 'mysql_41';
+		}
+		else
+		{
+			$map_dbms = 'mysql_40';
+		}
+	break;
+
 	case 'mysqli':
 		$map_dbms = 'mysql_41';
 	break;
