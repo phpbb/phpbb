@@ -32,8 +32,7 @@ if (empty($lang) || !is_array($lang))
 
 // Board Settings
 $lang = array_merge($lang, array(
-	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
-
+	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, give it a fitting name and description, and among other settings adjust the default values for timezone and language.',
 	'CUSTOM_DATEFORMAT'				=> 'Custom…',
 	'DEFAULT_DATE_FORMAT'			=> 'Date format',
 	'DEFAULT_DATE_FORMAT_EXPLAIN'	=> 'The date format is the same as the PHP <code>date</code> function.',
