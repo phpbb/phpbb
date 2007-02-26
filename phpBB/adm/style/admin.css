@@ -108,12 +108,13 @@ a:hover {
 
 #page-header {
 	text-align: right;
-	background: url("../images/phpbb_logo.gif") 0 0 no-repeat;
+	background: url("../images/phpbb_logo.gif") top left no-repeat;
 	height: 84px;
 }
 
 .rtl #page-header {
 	text-align: left;
+	background: url("../images/phpbb_logo.gif") top right no-repeat;
 }
 
 #page-header h1 {
