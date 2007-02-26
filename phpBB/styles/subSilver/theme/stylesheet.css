@@ -583,6 +583,7 @@ input.radio {
 }
 
 .codecontent {
+	direction: ltr;
 	margin: 0px 5px 10px 5px;
 	padding: 5px;
 	border-color: #A9B8C2;
