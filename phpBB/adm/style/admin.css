@@ -214,6 +214,10 @@ a:hover {
 	text-transform: uppercase;
 }
 
+.rtl #tabs a span {
+	float: right;
+}
+
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
 #tabs a span, .rtl #tabs a span { float:none;}
 /* End hack */
@@ -1121,8 +1125,6 @@ fieldset.perm .perm_switch {
 
 .rtl .perm_cat a {
 	float: right;
-	margin: 0 0 0 1px;
-	padding: 0 6px 0 0;
 }
 
 .perm_cat a span.tabbg {
@@ -1135,8 +1137,7 @@ fieldset.perm .perm_switch {
 }
 
 .rtl .perm_cat a span.tabbg {
-	float: left;
-	padding: 7px 6px 6px 12px;
+	float: right;
 }
 
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
@@ -1183,10 +1184,12 @@ fieldset.perm .perm_switch {
 	margin: 0 5px 0 0;
 }
 
+/* Most browsers will have to live with a left aligned icon in RTL mode, as (currently) only Firefox 3.0 Alpha 3 renders it correctly without destroying it
 .rtl .perm_cat a span.colour {
 	float: right;
 	margin: 0 0 0 5px;
 }
+*/
 
 .perm_cat .activetab span.colour {
 	border-color: #333333;
@@ -1219,7 +1222,7 @@ fieldset.perm .perm_switch {
 	background-color: #EFB0B2;
 }
 
-/* Pemrission panel
+/* Permission panel
 ---------------------------------------- */
 .perm_panel {
 	float: left;
