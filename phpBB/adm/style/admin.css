@@ -697,7 +697,7 @@ fieldset dd {
 	border-right: 1px solid #CCC;
 }
 
-dd.full {
+dd.full, .rtl dd.full {
 	margin: 0;
 	border: 0;
 	padding: 0;
