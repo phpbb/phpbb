@@ -202,8 +202,6 @@ a:hover {
 
 .rtl #tabs a {
 	float: right;
-	margin: 0 0 0 1px;
-	padding: 0 6px 0 0;
 }
 
 #tabs a span {
@@ -214,11 +212,6 @@ a:hover {
 	color: #536482;
 	white-space: nowrap;
 	text-transform: uppercase;
-}
-
-.rtl #tabs a span {
-	float: left;
-	padding: 7px 6px 6px 12px;
 }
 
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
