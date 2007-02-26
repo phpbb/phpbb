@@ -1894,6 +1894,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
+		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
 		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
