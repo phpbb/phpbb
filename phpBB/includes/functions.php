@@ -3750,6 +3750,8 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
