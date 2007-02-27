@@ -51,206 +51,211 @@ class acp_main
 
 		$action = request_var('action', '');
 
-		if ($action && !confirm_box(true))
+		if ($action)
 		{
-			switch ($action)
+			if (!confirm_box(true))
 			{
-				case 'online':
-					$confirm = true;
-					$confirm_lang = 'RESET_ONLINE_CONFIRM';
-				break;
-				case 'stats':
-					$confirm = true;
-					$confirm_lang = 'RESYNC_STATS_CONFIRM';
-				break;
-				case 'user':
-					$confirm = true;
-					$confirm_lang = 'RESYNC_POSTCOUNTS_CONFIRM';
-				break;
-				case 'date':
-					$confirm = true;
-					$confirm_lang = 'RESET_DATE_CONFIRM';
-				break;
-				case 'db_track':
-					$confirm = true;
-					$confirm_lang = 'RESYNC_POST_MARKING_CONFIRM';
-				break;
-
-				default:
-					$confirm = true;
-					$confirm_lang = 'CONFIRM_OPERATION';
-			}
-
-			if ($confirm)
-			{
-				confirm_box(false, $user->lang[$confirm_lang], build_hidden_fields(array(
-					'i'			=> $id,
-					'mode'		=> $mode,
-					'action'	=> $action,
-				)));
-			}
-		}
-
-		switch ($action)
-		{
-			case 'online':
-				if (!$auth->acl_get('a_board'))
+				switch ($action)
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-
-				set_config('record_online_users', 1, true);
-				set_config('record_online_date', time(), true);
-				add_log('admin', 'LOG_RESET_ONLINE');
-			break;
-
-			case 'stats':
-				if (!$auth->acl_get('a_board'))
-				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-
-				$sql = 'SELECT COUNT(post_id) AS stat 
-					FROM ' . POSTS_TABLE . '
-					WHERE post_approved = 1';
-				$result = $db->sql_query($sql);
-				set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT COUNT(topic_id) AS stat
-					FROM ' . TOPICS_TABLE . '
-					WHERE topic_approved = 1';
-				$result = $db->sql_query($sql);
-				set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT COUNT(user_id) AS stat
-					FROM ' . USERS_TABLE . '
-					WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
-				$result = $db->sql_query($sql);
-				set_config('num_users', (int) $db->sql_fetchfield('stat'), true);
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT COUNT(attach_id) as stat
-					FROM ' . ATTACHMENTS_TABLE . '
-					WHERE is_orphan = 0';
-				$result = $db->sql_query($sql);
-				set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
-				$db->sql_freeresult($result);
-
-				$sql = 'SELECT SUM(filesize) as stat
-					FROM ' . ATTACHMENTS_TABLE . '
-					WHERE is_orphan = 0';
-				$result = $db->sql_query($sql);
-				set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
-				$db->sql_freeresult($result);
-
-				add_log('admin', 'LOG_RESYNC_STATS');
-			break;
-
-			case 'user':
-				if (!$auth->acl_get('a_board'))
-				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-
-				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-					FROM ' . POSTS_TABLE . '
-					WHERE post_postcount = 1
-					GROUP BY poster_id';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
-				}
-				$db->sql_freeresult($result);
-
-				add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
-
-			break;
-	
-			case 'date':
-				if (!$auth->acl_get('a_board'))
-				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-				}
-
-				set_config('board_startdate', time() - 1);
-				add_log('admin', 'LOG_RESET_DATE');
-			break;
-		
-			case 'db_track':
-				switch ($db->sql_layer)
-				{
-					case 'sqlite':
-					case 'firebird':
-						$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
+					case 'online':
+						$confirm = true;
+						$confirm_lang = 'RESET_ONLINE_CONFIRM';
+					break;
+					case 'stats':
+						$confirm = true;
+						$confirm_lang = 'RESYNC_STATS_CONFIRM';
+					break;
+					case 'user':
+						$confirm = true;
+						$confirm_lang = 'RESYNC_POSTCOUNTS_CONFIRM';
+					break;
+					case 'date':
+						$confirm = true;
+						$confirm_lang = 'RESET_DATE_CONFIRM';
+					break;
+					case 'db_track':
+						$confirm = true;
+						$confirm_lang = 'RESYNC_POST_MARKING_CONFIRM';
 					break;
 
 					default:
-						$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
+						$confirm = true;
+						$confirm_lang = 'CONFIRM_OPERATION';
+				}
+
+				if ($confirm)
+				{
+					confirm_box(false, $user->lang[$confirm_lang], build_hidden_fields(array(
+						'i'			=> $id,
+						'mode'		=> $mode,
+						'action'	=> $action,
+					)));
+				}
+			}
+			else
+			{
+				switch ($action)
+				{
+					case 'online':
+						if (!$auth->acl_get('a_board'))
+						{
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						set_config('record_online_users', 1, true);
+						set_config('record_online_date', time(), true);
+						add_log('admin', 'LOG_RESET_ONLINE');
+					break;
+
+					case 'stats':
+						if (!$auth->acl_get('a_board'))
+						{
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						$sql = 'SELECT COUNT(post_id) AS stat 
+							FROM ' . POSTS_TABLE . '
+							WHERE post_approved = 1';
+						$result = $db->sql_query($sql);
+						set_config('num_posts', (int) $db->sql_fetchfield('stat'), true);
+						$db->sql_freeresult($result);
+
+						$sql = 'SELECT COUNT(topic_id) AS stat
+							FROM ' . TOPICS_TABLE . '
+							WHERE topic_approved = 1';
+						$result = $db->sql_query($sql);
+						set_config('num_topics', (int) $db->sql_fetchfield('stat'), true);
+						$db->sql_freeresult($result);
+
+						$sql = 'SELECT COUNT(user_id) AS stat
+							FROM ' . USERS_TABLE . '
+							WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
+						$result = $db->sql_query($sql);
+						set_config('num_users', (int) $db->sql_fetchfield('stat'), true);
+						$db->sql_freeresult($result);
+
+						$sql = 'SELECT COUNT(attach_id) as stat
+							FROM ' . ATTACHMENTS_TABLE . '
+							WHERE is_orphan = 0';
+						$result = $db->sql_query($sql);
+						set_config('num_files', (int) $db->sql_fetchfield('stat'), true);
+						$db->sql_freeresult($result);
+
+						$sql = 'SELECT SUM(filesize) as stat
+							FROM ' . ATTACHMENTS_TABLE . '
+							WHERE is_orphan = 0';
+						$result = $db->sql_query($sql);
+						set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
+						$db->sql_freeresult($result);
+
+						add_log('admin', 'LOG_RESYNC_STATS');
+					break;
+
+					case 'user':
+						if (!$auth->acl_get('a_board'))
+						{
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+							FROM ' . POSTS_TABLE . '
+							WHERE post_postcount = 1
+							GROUP BY poster_id';
+						$result = $db->sql_query($sql);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
+						}
+						$db->sql_freeresult($result);
+
+						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+
+					break;
+			
+					case 'date':
+						if (!$auth->acl_get('a_board'))
+						{
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						set_config('board_startdate', time() - 1);
+						add_log('admin', 'LOG_RESET_DATE');
+					break;
+				
+					case 'db_track':
+						switch ($db->sql_layer)
+						{
+							case 'sqlite':
+							case 'firebird':
+								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
+							break;
+
+							default:
+								$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
+							break;
+						}
+
+						// This can get really nasty... therefore we only do the last six months
+						$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
+
+						// Select forum ids, do not include categories
+						$sql = 'SELECT forum_id
+							FROM ' . FORUMS_TABLE . '
+							WHERE forum_type <> ' . FORUM_CAT;
+						$result = $db->sql_query($sql);
+				
+						$forum_ids = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$forum_ids[] = $row['forum_id'];
+						}
+						$db->sql_freeresult($result);
+
+						// Any global announcements? ;)
+						$forum_ids[] = 0;
+
+						// Now go through the forums and get us some topics...
+						foreach ($forum_ids as $forum_id)
+						{
+							$sql = 'SELECT p.poster_id, p.topic_id
+								FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+								WHERE t.forum_id = ' . $forum_id . '
+									AND t.topic_moved_id = 0
+									AND t.topic_last_post_time > ' . $get_from_time . '
+									AND t.topic_id = p.topic_id
+									AND p.poster_id <> ' . ANONYMOUS . '
+								GROUP BY p.poster_id, p.topic_id';
+							$result = $db->sql_query($sql);
+
+							$posted = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$posted[$row['poster_id']][] = $row['topic_id'];
+							}
+							$db->sql_freeresult($result);
+
+							$sql_ary = array();
+							foreach ($posted as $user_id => $topic_row)
+							{
+								foreach ($topic_row as $topic_id)
+								{
+									$sql_ary[] = array(
+										'user_id'		=> $user_id,
+										'topic_id'		=> $topic_id,
+										'topic_posted'	=> 1,
+									);
+								}
+							}
+							unset($posted);
+
+							$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+						}
+			
+						add_log('admin', 'LOG_RESYNC_POST_MARKING');
 					break;
 				}
-
-				// This can get really nasty... therefore we only do the last six months
-				$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
-
-				// Select forum ids, do not include categories
-				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TABLE . '
-					WHERE forum_type <> ' . FORUM_CAT;
-				$result = $db->sql_query($sql);
-		
-				$forum_ids = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$forum_ids[] = $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
-
-				// Any global announcements? ;)
-				$forum_ids[] = 0;
-
-				// Now go through the forums and get us some topics...
-				foreach ($forum_ids as $forum_id)
-				{
-					$sql = 'SELECT p.poster_id, p.topic_id
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-						WHERE t.forum_id = ' . $forum_id . '
-							AND t.topic_moved_id = 0
-							AND t.topic_last_post_time > ' . $get_from_time . '
-							AND t.topic_id = p.topic_id
-							AND p.poster_id <> ' . ANONYMOUS . '
-						GROUP BY p.poster_id, p.topic_id';
-					$result = $db->sql_query($sql);
-
-					$posted = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$posted[$row['poster_id']][] = $row['topic_id'];
-					}
-					$db->sql_freeresult($result);
-
-					$sql_ary = array();
-					foreach ($posted as $user_id => $topic_row)
-					{
-						foreach ($topic_row as $topic_id)
-						{
-							$sql_ary[] = array(
-								'user_id'		=> $user_id,
-								'topic_id'		=> $topic_id,
-								'topic_posted'	=> 1,
-							);
-						}
-					}
-					unset($posted);
-
-					$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
-				}
-	
-				add_log('admin', 'LOG_RESYNC_POST_MARKING');
-			break;
+			}
 		}
 
 		// Get forum statistics
