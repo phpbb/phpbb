@@ -585,7 +585,8 @@ if (!$get_info)
 				'autoincrement'	=> 'post_id',
 				'query_first'	=> array('target', $convert->truncate_statement . POSTS_TABLE),
 				'execute_first'	=> '
-					$config["max_post_chars"] = 0;
+					$config["max_post_chars"] = -1;
+					$config["max_quote_depth"] = 0;
 				',
 
 				array('post_id',				'posts.post_id',					''),
@@ -633,7 +634,8 @@ if (!$get_info)
 				),
 
 				'execute_first'	=> '
-					$config["max_post_chars"] = 0;
+					$config["max_post_chars"] = -1;
+					$config["max_quote_depth"] = 0;
 				',
 
 				array('msg_id',					'privmsgs.privmsgs_id',				''),
